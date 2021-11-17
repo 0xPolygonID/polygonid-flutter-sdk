@@ -1,4 +1,4 @@
-# privadoid_flutter_sdk
+# privadoid_sdk
 
 Privadoid flutter sdk plugin
 

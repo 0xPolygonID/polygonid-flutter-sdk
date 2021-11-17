@@ -1,6 +1,6 @@
-# privadoid_flutter_sdk_example
+# privadoid_sdk_example
 
-Demonstrates how to use the privadoid_flutter_sdk plugin.
+Demonstrates how to use the privadoid_sdk plugin.
 
 ## Getting Started
 

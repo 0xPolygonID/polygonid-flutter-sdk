@@ -1,15 +1,24 @@
-name: privadoid_flutter_sdk
-description: Privadoid flutter sdk plugin
-version: 0.0.1
-homepage:
+name: privadoid_sdk
+description: Privadoid Flutter SDK (https://iden3.io). This plugin provides a cross-platform tool (iOS, Android) to communicate with the Privado Network.
+version: 1.0.0
+homepage: https://iden3.io
+repository: https://github.com/iden3/privadoid_flutter_sdk
+issue_tracker: https://github.com/iden3/privadoid_flutter_sdk/issues
+documentation: https://docs.iden3.io/
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
   flutter: ">=1.20.0"
 
+analyzer:
+  enable-experiment:
+    - non-nullable
+
 dependencies:
   flutter:
     sdk: flutter
+  ffi: ^1.1.2
+  hex: ^0.2.0
 
 dev_dependencies:
   flutter_test:
@@ -21,17 +30,13 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
-  # This section identifies this Flutter project as a plugin project.
-  # The 'pluginClass' and Android 'package' identifiers should not ordinarily
-  # be modified. They are used by the tooling to maintain consistency when
-  # adding or updating assets for this project.
   plugin:
     platforms:
       android:
-        package: com.iden3.privadoidsdk.privadoid_flutter_sdk
-        pluginClass: PrivadoidFlutterSdkPlugin
+        package: io.iden3.privadoid_sdk
+        pluginClass: PrivadoidPlugin
       ios:
-        pluginClass: PrivadoidFlutterSdkPlugin
+        pluginClass: PrivadoidPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:

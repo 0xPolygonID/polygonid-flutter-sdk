@@ -1,9 +1,9 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:privadoid_flutter_sdk/privadoid_flutter_sdk.dart';
+import 'package:privadoid_sdk/privadoid_sdk.dart';
 
 void main() {
-  const MethodChannel channel = MethodChannel('privadoid_flutter_sdk');
+  const MethodChannel channel = MethodChannel('privadoid_sdk');
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -18,6 +18,6 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    expect(await PrivadoidFlutterSdk.platformVersion, '42');
+    expect(await PrivadoidSdk.platformVersion, '42');
   });
 }
