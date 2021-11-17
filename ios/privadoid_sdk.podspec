@@ -11,7 +11,7 @@ Privadoid flutter sdk plugin
                        DESC
   s.homepage         = 'http://example.com'
   s.license          = { :file => '../LICENSE' }
-  s.author           = 'iden3'
+  s.author           = { 'Iden3' => 'info@iden3.io' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
@@ -19,6 +19,9 @@ Privadoid flutter sdk plugin
   s.vendored_libraries = "**/*.a"
   s.dependency 'Flutter'
   s.platform = :ios, '9.0'
+
+  s.ios.deployment_target = '9.0'
+  s.ios.vendored_frameworks = 'Frameworks/Core.xcframework'
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'STRIP_STYLE' => 'non-global', 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
