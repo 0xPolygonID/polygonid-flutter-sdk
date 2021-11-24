@@ -1,5 +1,5 @@
 #import "PrivadoidPlugin.h"
-#if __has_include(<privadoid_sdk/privadoid_flutter_sdk-Swift.h>)
+#if __has_include(<privadoid_sdk/privadoid_sdk-Swift.h>)
 #import <privadoid_sdk/privadoid_sdk-Swift.h>
 #else
 // Support project import fallback if the generated compatibility header
@@ -10,6 +10,6 @@
 
 @implementation PrivadoidPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  [SwiftPrivadoidFlutterSdkPlugin registerWithRegistrar:registrar];
+  [SwiftPrivadoidPlugin registerWithRegistrar:registrar];
 }
 @end

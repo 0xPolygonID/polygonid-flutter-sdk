@@ -4,14 +4,18 @@ import UIKit
 public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
     // We are not using Flutter channels here
-    //let channel = FlutterMethodChannel(name: "privadoid_sdk", binaryMessenger: registrar.messenger())
-    //let instance = SwiftPrivadoidFlutterSdkPlugin()
-    //registrar.addMethodCallDelegate(instance, channel: channel)
+    let channel = FlutterMethodChannel(name: "privadoid_sdk", binaryMessenger: registrar.messenger())
+    let instance = SwiftPrivadoidPlugin()
+    registrar.addMethodCallDelegate(instance, channel: channel)
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    //result("iOS " + UIDevice.current.systemVersion)
-    result(nil)
+    let str = "string"
+    let unsafePointer = UnsafeMutablePointer<Int8>(mutating: (str as NSString).utf8String)
+    let str2 = reverse(unsafePointer)
+    let str3 = String.init(cString: str2!, encoding: .utf8)!
+    result("String in reverse: " + str3)//UIDevice.current.systemVersion)
+    //result(nil)
   }
 
   public func dummyMethodToEnforceBundling() {
@@ -25,6 +29,7 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
       verify_poseidon("", "", "");
       let str = "string"
       let unsafePointer = UnsafeMutablePointer<Int8>(mutating: (str as NSString).utf8String)
+      let str2 = reverse(unsafePointer)
       cstring_free(unsafePointer);
     }
 }
