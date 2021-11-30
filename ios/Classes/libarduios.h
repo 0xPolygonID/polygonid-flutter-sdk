@@ -19,6 +19,63 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 /* Start of preamble from import "C" comments.  */
 
 
+#line 3 "main.go"
+
+#include <stddef.h>
+#include <string.h>
+#include <stdlib.h> // for C.free
+
+struct Int {
+	unsigned char* value;
+	int len;
+};
+
+typedef unsigned char SchemaHash[16];
+
+typedef enum
+{
+	IDENTREEENTRY_OK,
+	IDENTREEENTRY_OUT_OF_MEMORY,
+	IDENTREEENTRY_CREATE_CLAIM_ERROR,
+} IDENtreeEntryStatus;
+
+typedef struct _IDENTreeEntryResult
+{
+	unsigned char *data;
+	size_t data_len;
+	IDENtreeEntryStatus status; // 0 in case of success
+	char *error_msg;
+} IDENTreeEntryResult;
+
+typedef enum
+{
+	IDENTMERKLETREE_OK,
+	IDENTMERKLETREE_CREATE_ERROR,
+} IDENmerkleTreeStatus;
+
+typedef struct _IDENmerkleTree
+{
+	uintptr_t handle;
+	IDENmerkleTreeStatus status;
+	char *error_msg;
+} IDENmerkleTree;
+
+typedef enum
+{
+	IDENSTATUSCODE_OK,
+	IDENSTATUSCODE_ENTRY_STATUS_INCORRECT,
+	IDENSTATUSCODE_ENTRY_LENGTH_INCORRECT,
+	IDENSTATUSCODE_CANT_ADD_ENTRY_TO_MERKLETREE,
+} IDENstatusCode;
+
+typedef struct _IDENstatus
+{
+	IDENstatusCode status;
+	char *error_msg;
+} IDENstatus;
+
+
+#line 1 "cgo-generated-wrapper"
 
 
 /* End of preamble from import "C" comments.  */
@@ -69,6 +126,24 @@ extern "C" {
 #endif
 
 extern char* reverse(char* in);
+
+// Return pointer to IDENTreeEntryResult struct.
+// When result is not neede anymore, it should be freed with
+// `IDENFreeTreeEntryResult` function.
+extern IDENTreeEntryResult* IDENauthClaimTreeEntry(unsigned char* schemaHash, struct Int keyX, struct Int keyY, long long unsigned int revNonce);
+extern void IDENFreeTreeEntryResult(IDENTreeEntryResult* res);
+extern IDENmerkleTree* IDENnewMerkleTree(int maxLevels);
+
+// Free memory used by merkle tree
+extern void IDENFreeMerkleTree(IDENmerkleTree* mt);
+extern IDENstatus* IDENmerkleTreeAddClaim(IDENmerkleTree* mt, IDENTreeEntryResult* treeEntry);
+
+// Return merkle tree root as 32 byte array. Should be freed after usage
+// If merkle tree is in bad status, return nil
+extern unsigned char* IDENmerkleTreeRoot(IDENmerkleTree* mt);
+extern void merkle_tree_generate_proof();
+extern void id_genesis_from_iden_state();
+extern void IDENFreeStatus(IDENstatus* status);
 
 #ifdef __cplusplus
 }
