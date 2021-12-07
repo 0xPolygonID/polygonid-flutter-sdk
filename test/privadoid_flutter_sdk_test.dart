@@ -18,6 +18,10 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    expect(await PrivadoidSdk.platformVersion, '42');
+    expect(await PrivadoIdSdk.platformVersion, '42');
+  });
+
+  test('generateNewClaim', () async {
+    expect(await PrivadoIdSdk.newClaim("", ""), 'OK');
   });
 }

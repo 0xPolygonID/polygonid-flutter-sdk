@@ -125,9 +125,9 @@ class PrivateKey {
   /// @param {Uint8List} buf - private key
   PrivateKey(Uint8List buf) {
     if (buf.length != 32) {
-      throw new ArgumentError('buf must be 32 bytes');
+      throw ArgumentError('buf must be 32 bytes');
     }
-    this.sk = buf;
+    sk = buf;
   }
 
   /// Retrieve PublicKey of the PrivateKey

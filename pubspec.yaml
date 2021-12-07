@@ -17,6 +17,7 @@ analyzer:
 dependencies:
   flutter:
     sdk: flutter
+  http: ^0.13.3
   ffi: ^1.1.2
   hex: ^0.2.0
 

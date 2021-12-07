@@ -2,24 +2,36 @@ import Flutter
 import UIKit
 
 public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
-  public static func register(with registrar: FlutterPluginRegistrar) {
-    // We are not using Flutter channels here
-    let channel = FlutterMethodChannel(name: "privadoid_sdk", binaryMessenger: registrar.messenger())
-    let instance = SwiftPrivadoidPlugin()
-    registrar.addMethodCallDelegate(instance, channel: channel)
-  }
+    
+    public static func register(with registrar: FlutterPluginRegistrar) {
+        // We are not using Flutter channels here
+        let channel = FlutterMethodChannel(name: "privadoid_sdk", binaryMessenger: registrar.messenger())
+        let instance = SwiftPrivadoidPlugin()
+        registrar.addMethodCallDelegate(instance, channel: channel)
+    }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+
+    if (call.method == "getPlatformVersion") {
+        let res =  testNewClaim()
+        result("new claim: " + res)
+    } else if (call.method == "generateNewClaim") {
+        let res = generateNewClaim(pubX: "", pubY: "")
+        result(res)
+    }
     //let str = "string"
     //let unsafePointer = UnsafeMutablePointer<Int8>(mutating: (str as NSString).utf8String)
     //let str2 = reverse(unsafePointer)
     //let str3 = String.init(cString: str2!, encoding: .utf8)!
     //result("String in reverse: " + str3)//UIDevice.current.systemVersion)
-    let res =  testNewClaim()
-    result("new claim: " + res)//UIDevice.current.systemVersion)
+    //UIDevice.current.systemVersion)
       
     //result(nil)
   }
+    
+    public func generateNewClaim(pubX: String, pubY: String) -> String {
+        return "OK"
+    }
     
     public func testNewClaim() -> String {
         // var mtRoot = nil
