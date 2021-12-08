@@ -1,5 +1,6 @@
 import Flutter
 import UIKit
+import CryptoSwift
 
 public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
     
@@ -35,17 +36,18 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         let schemaHash : [UInt8] = [0x52, 0xFD, 0xFC, 0x07, 0x21, 0x82, 0x65, 0x4F, 0x16, 0x3F, 0x5F, 0x0F, 0x9A, 0x62, 0x1D, 0x72]
         let unsafePointerSchemaHash : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: schemaHash)
         
-        let pubXBigInt = "15944627324083773346390189001500210680939402028015651549526524193195473201952"
-        let array = withUnsafeBytes(of: pubXBigInt.value, Array.init)
-        let XVal : [UInt8] = array
+        //let pubXBigInt = "234056d968baf183fe8d237d496d1c04188220cd33e8f8d14df9b84479736b20"
+        let XVal : [UInt8] = [0x23, 0x40, 0x56, 0xd9, 0x68, 0xba, 0xf1, 0x83, 0xfe, 0x8d, 0x23, 0x7d, 0x49, 0x6d, 0x1c, 0x04, 0x18, 0x82, 0x20, 0xcd, 0x33, 0xe8, 0xf8, 0xd1, 0x4d, 0xf9, 0xb8, 0x44, 0x79, 0x73, 0x6b, 0x20]
+        //let XVal : [UInt8] = Array<UInt8>.init(hex: pubXBigInt)
         let unsafePointerX : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: XVal)
         var keyX = BigInt()
         keyX.value = unsafePointerX
         keyX.len = 32
         print(XVal)
         
-        let pubYBigInt = "17251889856797524237981285661279357764562574766148660962999867467495459148286"
-        let YVal : [UInt8] = pubYBigInt.utf8.map{ UInt8($0) }
+        //let pubYBigInt = "2624393fad9b71c04b3b14d8ac45202dbb4eaff4c2d1350c9453fc08d18651fe"
+        let YVal : [UInt8] = [0x26, 0x24, 0x39, 0x3f, 0xad, 0x9b, 0x71, 0xc0, 0x4b, 0x3b, 0x14, 0xd8, 0xac, 0x45, 0x20, 0x2d, 0xbb, 0x4e, 0xaf, 0xf4, 0xc2, 0xd1, 0x35, 0x0c, 0x94, 0x53, 0xfc, 0x08, 0xd1, 0x86, 0x51, 0xfe]
+        //let YVal : [UInt8] = Array<UInt8>.init(hex: pubYBigInt)
         let unsafePointerY = UnsafeMutablePointer<UInt8>(mutating: YVal)
         var keyY = BigInt()
         keyY.value = unsafePointerY
@@ -65,7 +67,7 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         if (entryRes?.pointee.status != IDENTREEENTRY_OK) {
             print("error creating tree entry\n")
             if (entryRes?.pointee.error_msg != nil) {
-                print("error message: " + (entryRes?.pointee.error_msg.debugDescription)!)
+                print("error message: " + (entryRes?.pointee.error_msg.pointee.description)!)
             }
             return "ERROR"
         }

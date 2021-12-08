@@ -18,6 +18,7 @@ Privadoid flutter sdk plugin
   s.static_framework = true
   s.vendored_libraries = "**/*.a"
   s.dependency 'Flutter'
+  s.dependency 'CryptoSwift'
   s.platform = :ios, '9.0'
 
   # s.ios.deployment_target = '9.0'
