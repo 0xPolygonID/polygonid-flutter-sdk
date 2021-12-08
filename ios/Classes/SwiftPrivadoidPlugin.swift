@@ -92,7 +92,8 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         if (entryRes?.pointee.status != IDENTREEENTRY_OK) {
             print("error creating tree entry\n")
             if (entryRes?.pointee.error_msg != nil) {
-                print((entryRes?.pointee.error_msg)!)
+                let msg = String.init(cString: (entryRes?.pointee.error_msg)!)
+                print("error message: " + msg)
             }
             return "ERROR"
         }
@@ -146,7 +147,8 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         if (entryRes?.pointee.status != IDENTREEENTRY_OK) {
             print("error creating tree entry\n")
             if (entryRes?.pointee.error_msg != nil) {
-                print("error message: " + (entryRes?.pointee.error_msg.debugDescription)!)
+                let msg = String.init(cString: (entryRes?.pointee.error_msg)!)
+                print("error message: " + msg)
             }
             return "ERROR"
         }
@@ -260,7 +262,8 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         if (indexHash?.pointee.status != IDENHASHSTATUS_OK) {
             print("cant calc index hash: " + (indexHash?.pointee.status.rawValue.description)!)
             if (indexHash?.pointee.error_msg != nil) {
-                print("error message: " + (indexHash?.pointee.error_msg.debugDescription)!)
+                let msg = String.init(cString: (indexHash?.pointee.error_msg)!)
+                print("error message: " + msg)
             }
             return "ERROR"
         }
