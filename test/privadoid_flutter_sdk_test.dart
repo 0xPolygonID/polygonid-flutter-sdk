@@ -21,7 +21,7 @@ void main() {
     expect(await PrivadoIdSdk.platformVersion, '42');
   });
 
-  test('generateNewClaim', () async {
-    expect(await PrivadoIdSdk.newClaim("", ""), 'OK');
+  test('createNewIdentity', () async {
+    expect(await PrivadoIdSdk.createNewIdentity(), 'OK');
   });
 }

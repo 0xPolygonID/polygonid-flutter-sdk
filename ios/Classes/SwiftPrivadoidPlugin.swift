@@ -15,8 +15,9 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
     if (call.method == "getPlatformVersion") {
         let res =  testNewClaim()
         result("new claim: " + res)
-    } else if (call.method == "generateNewClaim") {
-        let res = generateNewClaim(pubX: "", pubY: "")
+    } else if (call.method == "createNewIdentity") {
+        let arguments : [String] = call.arguments as! [String]
+        let res = createNewIdentity(pubX: arguments[0], pubY: arguments[1])
         result(res)
     }
     //let str = "string"
@@ -29,7 +30,59 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
     //result(nil)
   }
     
-    public func generateNewClaim(pubX: String, pubY: String) -> String {
+    public func createNewIdentity(pubX: String, pubY: String) -> String {
+        
+        let schemaHash : [UInt8] = [0x52, 0xFD, 0xFC, 0x07, 0x21, 0x82, 0x65, 0x4F, 0x16, 0x3F, 0x5F, 0x0F, 0x9A, 0x62, 0x1D, 0x72]
+        let unsafePointerSchemaHash : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: schemaHash)
+        
+        let pubXBigInt = "15944627324083773346390189001500210680939402028015651549526524193195473201952"
+        let array = withUnsafeBytes(of: pubXBigInt.value, Array.init)
+        let XVal : [UInt8] = array
+        let unsafePointerX : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: XVal)
+        var keyX = BigInt()
+        keyX.value = unsafePointerX
+        keyX.len = 32
+        print(XVal)
+        
+        let pubYBigInt = "17251889856797524237981285661279357764562574766148660962999867467495459148286"
+        let YVal : [UInt8] = pubYBigInt.utf8.map{ UInt8($0) }
+        let unsafePointerY = UnsafeMutablePointer<UInt8>(mutating: YVal)
+        var keyY = BigInt()
+        keyY.value = unsafePointerY
+        keyY.len = 32
+        
+        print(YVal)
+        
+        let revNonce = UInt64(13260572831089785859)
+        
+        let entryRes = IDENauthClaimTreeEntry(unsafePointerSchemaHash, keyX, keyY, revNonce)
+        
+        if (entryRes ==  nil) {
+            print("unable to allocate tree entry\n")
+            return "ERROR"
+        }
+        
+        if (entryRes?.pointee.status != IDENTREEENTRY_OK) {
+            print("error creating tree entry\n")
+            if (entryRes?.pointee.error_msg != nil) {
+                print("error message: " + (entryRes?.pointee.error_msg.debugDescription)!)
+            }
+            return "ERROR"
+        }
+        
+        if (entryRes?.pointee.data_len != 8 * 32) {
+            print("unexpected data length\n")
+            return "ERROR"
+        }
+        
+        for i in 1...8 {
+            print("%i:", i)
+            for j in 1...32 {
+                print(String(format:"%02X", entryRes!.pointee.data[32*i+j]))
+            }
+            print("\n")
+        }
+        
         return "OK"
     }
     
