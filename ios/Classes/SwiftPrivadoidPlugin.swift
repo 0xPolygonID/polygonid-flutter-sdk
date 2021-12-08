@@ -61,9 +61,8 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         let unsafePointerSchemaHash : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: schemaHash)
         
         let pubXBigInt = "152f5044240ef872cf7e6742fe202b9e07ed6188e9e734c09b06939704852358"
-        /*let XVal : [UInt8] = [0x23, 0x40, 0x56, 0xd9, 0x68, 0xba, 0xf1, 0x83, 0xfe, 0x8d, 0x23, 0x7d, 0x49, 0x6d, 0x1c, 0x04, 0x18, 0x82, 0x20, 0xcd, 0x33, 0xe8, 0xf8, 0xd1, 0x4d, 0xf9, 0xb8, 0x44, 0x79, 0x73, 0x6b, 0x20]*/
-        let XVal = pubXBigInt.asHexArrayFromNonValidatedSource()
-        //let XVal : [UInt8] = Array<UInt8>.init(hex: pubXBigInt)
+        var XVal = pubXBigInt.asHexArrayFromNonValidatedSource()
+        XVal = XVal.reversed()
         let unsafePointerX : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: XVal)
         var keyX = BigInt()
         keyX.value = unsafePointerX
@@ -71,9 +70,8 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         print(XVal)
         
         let pubYBigInt = "2865441cd3e276643c84e55004ad259dff282c8c47c6e8c151afacdadf6f6db3"
-        //let YVal : [UInt8] = [0x26, 0x24, 0x39, 0x3f, 0xad, 0x9b, 0x71, 0xc0, 0x4b, 0x3b, 0x14, 0xd8, 0xac, 0x45, 0x20, 0x2d, 0xbb, 0x4e, 0xaf, 0xf4, 0xc2, 0xd1, 0x35, 0x0c, 0x94, 0x53, 0xfc, 0x08, 0xd1, 0x86, 0x51, 0xfe]
-        let YVal = pubYBigInt.asHexArrayFromNonValidatedSource()
-        //let YVal : [UInt8] = Array<UInt8>.init(hex: pubYBigInt)
+        var YVal = pubYBigInt.asHexArrayFromNonValidatedSource()
+        YVal = YVal.reversed()
         let unsafePointerY = UnsafeMutablePointer<UInt8>(mutating: YVal)
         var keyY = BigInt()
         keyY.value = unsafePointerY
@@ -108,8 +106,36 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
             for j in 1...32 {
                 print(String(format:"%02X", entryRes!.pointee.data[32*i+j]))
             }
-            print("\n")
+            //print("\n")
         }
+        
+        print("generated Tree Entry IS CORRECT")
+        
+        /*
+         * Test merkle tree
+         */
+        
+        let mt = createCorrectMT()
+        if (mt == nil) {
+            return "ERROR"
+        }
+        
+        let res = addClaimToMT(mt: mt, entryRes: entryRes)
+        if (res != 0) {
+            return "ERROR"
+        }
+        
+        let mtRoot = IDENmerkleTreeRoot(mt)
+        if (mtRoot == nil) {
+          print("unable to get merkle tree root\n")
+          return "ERROR"
+        }
+        
+        print("Root:")
+        for i in 0...31 {
+            print(String(format:"%02X", mtRoot![i]))
+        }
+        print("\n")
         
         return "OK"
     }
@@ -353,8 +379,6 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
             print("merkle tree successfuly created\n")
             //result("New MerkleTree: WRONG!!")
         }
-        
-        
     }
     
     public func createCorrectMT() -> UnsafeMutablePointer<IDENmerkleTree>? {
