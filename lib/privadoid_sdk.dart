@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
+import "package:hex/hex.dart";
+
 
 import 'package:flutter/services.dart';
 import 'package:privadoid_sdk/eddsa_babyjub.dart';
@@ -18,11 +20,18 @@ class PrivadoIdSdk {
     final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
         HexUtils.hexToBytes(
             "21a5e7321d0e2f3ca1cc6504396e6594a2211544b08c206847cdee96f832421a"));
+
     Uint8List bytes = HexUtils.hexToBytes(wallet.publicKeyHex[0]);
     //Babyjubjub signature packed and encoded as an hex string
     String signatureString = wallet.signMessage("12345");
-    Uint8List buf = HexUtils.hexToBytes(signatureString);
+    print("signature");
+    print(signatureString);
+    Uint8List buf = Uint8List.fromList(HEX.decode(signatureString));
     Signature signature = Signature.newFromCompressed(buf);
+    print(signature.s.toString());
+    print(signature.r8[0].toString());
+    print(signature.r8[1].toString());
+
     final String? version = await _channel.invokeMethod(
         'createNewIdentity', [wallet.publicKeyHex[0], wallet.publicKeyHex[1]]);
     return version;

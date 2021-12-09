@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:privadoid_sdk/utils/hex_utils.dart';
@@ -60,15 +61,10 @@ class PrivadoIdWallet {
   /// @param [String] messageStr - message to sign
   /// @returns [String] - Babyjubjub signature packed and encoded as an hex string
   String signMessage(String messageStr) {
-    /*final messBuff = Uint8ArrayUtils.uint8ListfromString(
-        messageStr); //HexUtils.hexToBuffer(messageStr);
-    final messHash = Uint8ArrayUtils.leBuff2int(messBuff);*/
-    //final messHashString =
-    //    eddsaBabyJub.hashPoseidon(messBuff); //HexUtils.hashBuffer(messBuff);
-    //final messHash = //HexUtils.hexToInt(messageStr);
-    BigInt messHash = BigInt.from(12345);
+
+    BigInt? messHash = BigInt.tryParse(messageStr,radix: 10);
     final privateKey = eddsaBabyJub.PrivateKey(this.privateKey);
-    final signature = privateKey.sign(messHash);
+    final signature = privateKey.sign(messHash!);
     return signature;
   }
 }

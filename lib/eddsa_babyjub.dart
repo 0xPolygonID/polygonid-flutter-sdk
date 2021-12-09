@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-
+import 'package:hex/hex.dart';
 import 'package:privadoid_sdk/utils/hex_utils.dart';
 import 'package:privadoid_sdk/utils/uint8_list_utils.dart';
 
@@ -24,34 +24,23 @@ class Signature {
       throw ArgumentError('buf must be 64 bytes');
     }
     CircomLib circomLib = CircomLib();
-    final signature = circomLib.unpackSignature(HexUtils.bytesToHex(buf));
-    final bufSignature = Uint8ArrayUtils.uint8ListfromString(signature);
-    final xList = bufSignature.sublist(0, 16);
-    final yList = bufSignature.sublist(16, 32);
-    final rSList = bufSignature.sublist(32, 64);
-    final xPtr = Uint8ArrayUtils.toPointer(xList);
-    final yPtr = Uint8ArrayUtils.toPointer(yList);
-    final sPtr = Uint8ArrayUtils.toPointer(rSList);
-    final structs.Point point = structs.Point.allocate(xPtr, yPtr);
 
-    final pointPtr = point.address;
-    final structs.Signature sig = structs.Signature.allocate(pointPtr, sPtr);
-    if (sig.r_b8 == null) {
-      throw ArgumentError('unpackSignature failed');
-    }
-    BigInt x = Uint8ArrayUtils.beBuff2int(xList);
-    BigInt y = Uint8ArrayUtils.beBuff2int(yList);
+    final XYSublist = buf.sublist(0, 32);
+    // unpackPoint is used to unpack R8 X and Y
+    final unpackedPoint = circomLib.unpackPoint(HEX.encode(XYSublist.toList()));
+    
+    BigInt? x = BigInt.tryParse(unpackedPoint![0], radix: 10);
+    BigInt? y = BigInt.tryParse(unpackedPoint![1],radix: 10);
     List<BigInt> r8 = [];
-    r8.add(x);
-    r8.add(y);
+    r8.add(x!);
+    r8.add(y!);
 
-    BigInt s =
-        Uint8ArrayUtils.beBuff2int(Uint8ArrayUtils.fromPointer(sig.s!, 32));
-    //calloc.free(pointPtr);
+    // S is decoded manually
+    BigInt s = Uint8ArrayUtils.beBuff2int(
+        Uint8List.fromList(buf.sublist(32,64).reversed.toList()));
     return Signature(r8, s);
   }
 }
-
 /// Class representing a EdDSA Baby Jub public key
 class PublicKey {
   late List<BigInt> p;
