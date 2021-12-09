@@ -24,8 +24,7 @@ class Signature {
       throw ArgumentError('buf must be 64 bytes');
     }
     CircomLib circomLib = CircomLib();
-    final signature =
-        circomLib.unpackSignature(Uint8ArrayUtils.uint8ListToString(buf));
+    final signature = circomLib.unpackSignature(HexUtils.bytesToHex(buf));
     final bufSignature = Uint8ArrayUtils.uint8ListfromString(signature);
     final xList = bufSignature.sublist(0, 16);
     final yList = bufSignature.sublist(16, 32);
@@ -40,14 +39,14 @@ class Signature {
     if (sig.r_b8 == null) {
       throw ArgumentError('unpackSignature failed');
     }
-    BigInt x = Uint8ArrayUtils.leBuff2int(xList);
-    BigInt y = Uint8ArrayUtils.leBuff2int(yList);
+    BigInt x = Uint8ArrayUtils.beBuff2int(xList);
+    BigInt y = Uint8ArrayUtils.beBuff2int(yList);
     List<BigInt> r8 = [];
     r8.add(x);
     r8.add(y);
 
     BigInt s =
-        Uint8ArrayUtils.leBuff2int(Uint8ArrayUtils.fromPointer(sig.s!, 32));
+        Uint8ArrayUtils.beBuff2int(Uint8ArrayUtils.fromPointer(sig.s!, 32));
     //calloc.free(pointPtr);
     return Signature(r8, s);
   }
@@ -162,8 +161,8 @@ String packSignature(Uint8List signature) {
   return circomLib.packSignature(sigString);
 }
 
-/*Point poseidon(Uint8List input) {
-  final ptr = Uint8ArrayUtils.toPointer(input);
-  final resultPtr = hashPoseidon(ptr);
-  return resultPtr.ref;
-}*/
+String hashPoseidon(Uint8List message) {
+  CircomLib circomLib = CircomLib();
+  final msgString = Uint8ArrayUtils.uint8ListToString(message);
+  return circomLib.hashPoseidon(msgString);
+}

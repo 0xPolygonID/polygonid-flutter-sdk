@@ -221,21 +221,49 @@ pub extern fn prv2pub(private_key: *const c_char) -> *mut c_char {
 }
 
 #[no_mangle]
-pub extern fn hash_poseidon(tx_compressed_data: *const c_char, to_eth_addr: *const c_char, to_bjj_ay: *const c_char, rq_txcompressed_data_v2: *const c_char, rq_to_eth_addr: *const c_char, rq_to_bjj_ay: *const c_char) -> *mut c_char {
+//pub extern fn hash_poseidon(tx_compressed_data: *const c_char, to_eth_addr: *const c_char, to_bjj_ay: *const c_char, rq_txcompressed_data_v2: *const c_char, rq_to_eth_addr: *const c_char, rq_to_bjj_ay: *const c_char) -> *mut c_char {
+pub extern fn hash_poseidon(tx_compressed_data: *const c_char) -> *mut c_char {
     let tx_compressed_data_str = unsafe { CStr::from_ptr(tx_compressed_data) }.to_str().unwrap();
     let b0: Fr = Fr::from_str(tx_compressed_data_str).unwrap();
-    let to_eth_addr_str = unsafe { CStr::from_ptr(to_eth_addr) }.to_str().unwrap();
-    let b1: Fr = Fr::from_str(to_eth_addr_str).unwrap();
-    let to_bjj_ay_str = unsafe { CStr::from_ptr(to_bjj_ay) }.to_str().unwrap();
-    let b2: Fr = Fr::from_str(to_bjj_ay_str).unwrap();
-    let rq_txcompressed_data_v2_str = unsafe { CStr::from_ptr(rq_txcompressed_data_v2) }.to_str().unwrap();
-    let b3: Fr = Fr::from_str(rq_txcompressed_data_v2_str).unwrap();
-    let rq_to_eth_addr_str = unsafe { CStr::from_ptr(rq_to_eth_addr) }.to_str().unwrap();
-    let b4: Fr = Fr::from_str(rq_to_eth_addr_str).unwrap();
-    let rq_to_bjj_ay_str = unsafe { CStr::from_ptr(rq_to_bjj_ay) }.to_str().unwrap();
-    let b5: Fr = Fr::from_str(rq_to_bjj_ay_str).unwrap();
 
-    let hm_input = vec![b0.clone(), b1.clone(), b2.clone(), b3.clone(), b4.clone(), b5.clone()];
+    let hm_input = vec![b0.clone()];
+
+    //if to_eth_addr.is_null() {
+    //    let to_eth_addr_str = unsafe { CStr::from_ptr(to_eth_addr) }.to_str().unwrap();
+    //    let b1: Fr = Fr::from_str(to_eth_addr_str).unwrap();
+    //    let mut b1_input = vec![b1.clone()];
+    //    hm_input.append(&mut b1_input);
+    //}
+
+    //if to_bjj_ay.is_null() {
+    //    let to_bjj_ay_str = unsafe { CStr::from_ptr(to_bjj_ay) }.to_str().unwrap();
+    //    let b2: Fr = Fr::from_str(to_bjj_ay_str).unwrap();
+    //    let mut b2_input = vec![b2.clone()];
+    //    hm_input.append(&mut b2_input);
+    //}
+
+    //if rq_txcompressed_data_v2.is_null() {
+    //    let rq_txcompressed_data_v2_str = unsafe { CStr::from_ptr(rq_txcompressed_data_v2) }.to_str().unwrap();
+    //    let b3: Fr = Fr::from_str(rq_txcompressed_data_v2_str).unwrap();
+    //    let mut b3_input = vec![b3.clone()];
+    //    hm_input.append(&mut b3_input);
+    //}
+
+    //if rq_to_eth_addr.is_null() {
+    //    let rq_to_eth_addr_str = unsafe { CStr::from_ptr(rq_to_eth_addr) }.to_str().unwrap();
+    //    let b4: Fr = Fr::from_str(rq_to_eth_addr_str).unwrap();
+    //    let mut b4_input = vec![b4.clone()];
+    //    hm_input.append(&mut b4_input);
+    //}
+
+    //if rq_to_bjj_ay.is_null() {
+    //    let rq_to_bjj_ay_str = unsafe { CStr::from_ptr(rq_to_bjj_ay) }.to_str().unwrap();
+    //    let b5: Fr = Fr::from_str(rq_to_bjj_ay_str).unwrap();
+    //    let mut b5_input = vec![b5.clone()];
+    //    hm_input.append(&mut b5_input);
+    //}
+
+    //let hm_input = vec![b0.clone(), b1.clone(), b2.clone(), b3.clone(), b4.clone(), b5.clone()];
     let poseidon = Poseidon::new();
     let hm = poseidon.hash(hm_input).unwrap();
     return CString::new(to_hex(&hm).as_str()).unwrap().into_raw();

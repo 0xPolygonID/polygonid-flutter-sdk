@@ -77,7 +77,7 @@ class HexUtils {
 
     // String (Dart uses UTF-16) to bytes
     List<int> list = [];
-    source.runes.forEach((rune) {
+    for (var rune in source.runes) {
       if (rune >= 0x10000) {
         rune -= 0x10000;
         int firstWord = (rune >> 10) + 0xD800;
@@ -90,7 +90,7 @@ class HexUtils {
         list.add(rune >> 8);
         list.add(rune & 0xFF);
       }
-    });
+    }
     Uint8List bytes = Uint8List.fromList(list);
     return bytes;
   }
@@ -109,26 +109,26 @@ class HexUtils {
   /// @returns {BigInt} - final hash
   static BigInt hashBuffer(Uint8List msgBuff) {
     const n = 31;
-    const msgArray = [];
+    List<BigInt> msgArray = [];
     final fullParts = (msgBuff.length / n).floor();
     for (int i = 0; i < fullParts; i++) {
-      final v = msgBuff.sublist(n * i, n * (i + 1)).toList();
-      msgArray.addAll(v);
+      final v = msgBuff.sublist(n * i, n * (i + 1));
+      msgArray.add(Uint8ArrayUtils.bytesToBigInt(v));
     }
     if (msgBuff.length % n != 0) {
-      final v = msgBuff.sublist(fullParts * n).toList();
-      msgArray.addAll(v);
+      final v = msgBuff.sublist(fullParts * n);
+      msgArray.add(Uint8ArrayUtils.bytesToBigInt(v));
     }
-    return multiHash(msgArray as List<BigInt>);
+    return multiHash(msgArray);
   }
 
   /// Chunks inputs in five elements and hash with Poseidon all them togheter
   /// @param {Array} arr - inputs hash
   /// @returns {BigInt} - final hash
   static BigInt multiHash(List<BigInt> arr) {
-    //BigInt r = BigInt.zero;
+    BigInt r = BigInt.zero;
     for (int i = 0; i < arr.length; i += 5) {
-      const fiveElems = [];
+      final fiveElems = [];
       for (int j = 0; j < 5; j++) {
         if (i + j < arr.length) {
           fiveElems.add(arr[i + j]);

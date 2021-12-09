@@ -15,12 +15,12 @@ char *unpack_point(const char *compressed_point);
 
 char *prv2pub(const char *private_key);
 
-char *hash_poseidon(const char *tx_compressed_data,
+char *hash_poseidon(const char *tx_compressed_data/*,
                     const char *to_eth_addr,
                     const char *to_bjj_ay,
                     const char *rq_txcompressed_data_v2,
                     const char *rq_to_eth_addr,
-                    const char *rq_to_bjj_ay);
+                    const char *rq_to_bjj_ay*/);
 
 char *sign_poseidon(const char *private_key, const char *msg);
 

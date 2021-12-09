@@ -60,8 +60,13 @@ class PrivadoIdWallet {
   /// @param [String] messageStr - message to sign
   /// @returns [String] - Babyjubjub signature packed and encoded as an hex string
   String signMessage(String messageStr) {
-    final messBuff = HexUtils.hexToBuffer(messageStr);
-    final messHash = HexUtils.hashBuffer(messBuff);
+    /*final messBuff = Uint8ArrayUtils.uint8ListfromString(
+        messageStr); //HexUtils.hexToBuffer(messageStr);
+    final messHash = Uint8ArrayUtils.leBuff2int(messBuff);*/
+    //final messHashString =
+    //    eddsaBabyJub.hashPoseidon(messBuff); //HexUtils.hashBuffer(messBuff);
+    //final messHash = //HexUtils.hexToInt(messageStr);
+    BigInt messHash = BigInt.from(12345);
     final privateKey = eddsaBabyJub.PrivateKey(this.privateKey);
     final signature = privateKey.sign(messHash);
     return signature;

@@ -72,7 +72,7 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         let pubYBigInt = "2865441cd3e276643c84e55004ad259dff282c8c47c6e8c151afacdadf6f6db3"
         var YVal = pubYBigInt.asHexArrayFromNonValidatedSource()
         YVal = YVal.reversed()
-        let unsafePointerY = UnsafeMutablePointer<UInt8>(mutating: YVal)
+        let unsafePointerY : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: YVal)
         var keyY = BigInt()
         keyY.value = unsafePointerY
         keyY.len = 32
@@ -100,6 +100,13 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
             print("unexpected data length\n")
             return "ERROR"
         }
+        
+           /* for (int i = 0; i < dataLength; ++i)
+            {
+                [hexString appendFormat:@"%02x", (unsigned int)dataBuffer[i]];
+            }
+
+            return [NSString stringWithString:hexString];*/
         
         for i in 1...8 {
             print("%i:", i)
@@ -137,7 +144,97 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         }
         print("\n")
         
-        return "OK"
+        let idGenesis = IDENidGenesisFromIdenState(mtRoot)
+        if (idGenesis == nil) {
+            print("unable to get genesis id from iden state\n")
+            return "ERROR"
+        }
+        
+        //let expectedGenesisID : [UInt8] = [
+        /*    0x00, 0x00, 0x47, 0x21, 0xF1, 0x2E, 0xD2, 0xEB,
+            0xEA, 0x79, 0xAB, 0x80, 0x9C, 0xE7, 0x50, 0xB4,
+            0x6A, 0x39, 0xAB, 0x7E, 0x6F, 0xB9, 0x4E, 0xE5,
+            0xE5, 0x25, 0x3B, 0x2B, 0x1F, 0x0E, 0x0F]*/
+        
+        print("Genesis ID:")
+        for i in 0...30 {
+            print(String(format:"%02X", idGenesis![i]))
+        }
+        print("\n")
+        
+        let indexHash = IDENTreeEntryIndexHash(entryRes)
+        if (indexHash == nil) {
+            print("unable to allocate index hash\n")
+            return "ERROR"
+        }
+        
+        if (indexHash?.pointee.status != IDENHASHSTATUS_OK) {
+            print("cant calc index hash: " + (indexHash?.pointee.status.rawValue.description)!)
+            if (indexHash?.pointee.error_msg != nil) {
+                let msg = String.init(cString: (indexHash?.pointee.error_msg)!)
+                print("error message: " + msg)
+            }
+            return "ERROR"
+        }
+        
+        /*print("Index Hash:")
+        var indexHashInt = BigInt()
+        indexHashInt.value =  indexHash!.pointee.data
+        indexHashInt.len = Int32(indexHash!.pointee.data_len)
+        for i in 0...(indexHash?.pointee.data_len)! {
+            print(indexHashInt)
+        }
+        print("\n")*/
+        
+        let proof = IDENmerkleTreeGenerateProof(mt, indexHash)
+        if (proof == nil) {
+            print("unable to allocate proof\n")
+            return "ERROR"
+        }
+        if (proof?.pointee.status != IDENPROOFSTATUS_OK) {
+            print("error generate proof: " + (proof?.pointee.status.rawValue.description)!)
+            if (proof?.pointee.error_msg != nil) {
+                print("error message: " + (proof?.pointee.error_msg.debugDescription)!)
+            }
+            return "ERROR"
+        }
+        
+        print("proof existence: ", proof?.pointee.existence ?? false)
+        if (proof?.pointee.existence == false) {
+            return "ERROR"
+        }
+        
+        if (proof != nil) {
+            IDENFreeProof(proof)
+            print("proof successfully freed")
+        }
+        
+        if (indexHash != nil) {
+            IDENFreeHash(indexHash)
+            print("index hash successfully freed")
+        }
+        
+        if (idGenesis != nil) {
+            free(idGenesis)
+            print("id genesis successfully freed")
+        }
+        
+        if (mtRoot != nil) {
+            free(mtRoot)
+            print("tree root successfuly freed\n")
+        }
+    
+        if (mt != nil) {
+            IDENFreeMerkleTree(mt)
+            print("merkle tree successfuly freed\n")
+        }
+            
+        if (entryRes != nil) {
+            IDENFreeTreeEntry(entryRes)
+            print("tree entry successfuly freed")
+        }
+        
+        return "ALL GOOD";
     }
     
     public func testNewClaim() -> String {
@@ -191,6 +288,8 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
             }
             print("\n")
         }
+        
+        
         
         // expected tree entry
         let expected : [UInt8] = [
@@ -430,7 +529,7 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
       pack_point("17777552123799933955779906779655732241715742912184938656739573121738514868268", "2626589144620713026669568689430873010625803728049924121243784502389097019475");
       unpack_point("53b81ed5bffe9545b54016234682e7b2f699bd42a5e9eae27ff4051bc698ce85");
       prv2pub("0001020304050607080900010203040506070809000102030405060708090001");
-      hash_poseidon("", "", "", "", "", "");
+      hash_poseidon(""/*, "", "", "", "", ""*/);
       sign_poseidon("", "");
       verify_poseidon("", "", "");
       let str = "string"
