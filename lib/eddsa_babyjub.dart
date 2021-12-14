@@ -1,10 +1,10 @@
 import 'dart:typed_data';
+
 import 'package:hex/hex.dart';
 import 'package:privadoid_sdk/utils/hex_utils.dart';
 import 'package:privadoid_sdk/utils/uint8_list_utils.dart';
 
 import 'libs/circomlib.dart';
-import 'utils/structs.dart' as structs;
 
 /// Class representing EdDSA Baby Jub signature
 class Signature {
@@ -28,19 +28,20 @@ class Signature {
     final XYSublist = buf.sublist(0, 32);
     // unpackPoint is used to unpack R8 X and Y
     final unpackedPoint = circomLib.unpackPoint(HEX.encode(XYSublist.toList()));
-    
+
     BigInt? x = BigInt.tryParse(unpackedPoint![0], radix: 10);
-    BigInt? y = BigInt.tryParse(unpackedPoint![1],radix: 10);
+    BigInt? y = BigInt.tryParse(unpackedPoint![1], radix: 10);
     List<BigInt> r8 = [];
     r8.add(x!);
     r8.add(y!);
 
     // S is decoded manually
     BigInt s = Uint8ArrayUtils.beBuff2int(
-        Uint8List.fromList(buf.sublist(32,64).reversed.toList()));
+        Uint8List.fromList(buf.sublist(32, 64).reversed.toList()));
     return Signature(r8, s);
   }
 }
+
 /// Class representing a EdDSA Baby Jub public key
 class PublicKey {
   late List<BigInt> p;
@@ -150,8 +151,7 @@ String packSignature(Uint8List signature) {
   return circomLib.packSignature(sigString);
 }
 
-String hashPoseidon(Uint8List message) {
+String hashPoseidon(String message) {
   CircomLib circomLib = CircomLib();
-  final msgString = Uint8ArrayUtils.uint8ListToString(message);
-  return circomLib.hashPoseidon(msgString);
+  return circomLib.hashPoseidon(message);
 }

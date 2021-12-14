@@ -1,10 +1,10 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:privadoid_sdk/utils/hex_utils.dart';
 import 'package:privadoid_sdk/utils/uint8_list_utils.dart';
 
 import 'eddsa_babyjub.dart' as eddsaBabyJub;
+import 'eddsa_babyjub.dart';
 
 /// @class
 /// Manage Babyjubjub keys
@@ -48,7 +48,7 @@ class PrivadoIdWallet {
   /// @param [Uint8List] privateKey - 32 bytes buffer
   /// @returns [PrivadoIdWallet] privadoIdWallet - PrivadoIdWallet instance
   static Future<PrivadoIdWallet> createPrivadoIdWallet(
-      Uint8List? privateKey) async {
+      {Uint8List? privateKey}) async {
     Uint8List privateBjjKey = privateKey ?? Uint8List(32);
     if (privateKey == null) {
       privateBjjKey.fillRange(0, 32, 1);
@@ -61,10 +61,17 @@ class PrivadoIdWallet {
   /// @param [String] messageStr - message to sign
   /// @returns [String] - Babyjubjub signature packed and encoded as an hex string
   String signMessage(String messageStr) {
-
-    BigInt? messHash = BigInt.tryParse(messageStr,radix: 10);
+    BigInt? messHash = BigInt.tryParse(messageStr, radix: 10);
     final privateKey = eddsaBabyJub.PrivateKey(this.privateKey);
     final signature = privateKey.sign(messHash!);
     return signature;
+  }
+
+  // Hash message with poseidon
+  /// @param [String] messageStr - message to hash
+  /// @returns [String] - hash poseidon
+  String hashMessage(String messageStr) {
+    final hash = hashPoseidon(messageStr);
+    return hash;
   }
 }

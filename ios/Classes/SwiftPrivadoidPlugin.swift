@@ -44,6 +44,14 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         let arguments : [String] = call.arguments as! [String]
         let res = createNewIdentity(pubX: arguments[0], pubY: arguments[1])
         result(res)
+    } else if (call.method == "getMerkleTreeRoot") {
+        let arguments : [String] = call.arguments as! [String]
+        let res = getMerkleTreeRoot(pubX: arguments[0], pubY: arguments[1])
+        result(res)
+    } else if (call.method == "getGenesisId") {
+        let arguments : [String] = call.arguments as! [String]
+        let res = getGenesisId(pubX: arguments[0], pubY: arguments[1])
+        result(res)
     }
     //let str = "string"
     //let unsafePointer = UnsafeMutablePointer<Int8>(mutating: (str as NSString).utf8String)
@@ -54,6 +62,228 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
       
     //result(nil)
   }
+    
+    public func getMerkleTreeRoot(pubX: String, pubY: String) -> String {
+        
+        let schemaHash : [UInt8] = [0x52, 0xFD, 0xFC, 0x07, 0x21, 0x82, 0x65, 0x4F, 0x16, 0x3F, 0x5F, 0x0F, 0x9A, 0x62, 0x1D, 0x72]
+        let unsafePointerSchemaHash : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: schemaHash)
+        
+        let pubXBigInt = pubX
+        var XVal = pubXBigInt.asHexArrayFromNonValidatedSource()
+        XVal = XVal.reversed()
+        let unsafePointerX : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: XVal)
+        var keyX = BigInt()
+        keyX.value = unsafePointerX
+        keyX.len = 32
+        print(XVal)
+        
+        let pubYBigInt = pubY
+        var YVal = pubYBigInt.asHexArrayFromNonValidatedSource()
+        YVal = YVal.reversed()
+        let unsafePointerY : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: YVal)
+        var keyY = BigInt()
+        keyY.value = unsafePointerY
+        keyY.len = 32
+        print(YVal)
+        
+        let revNonce = UInt64(13260572831089785859)
+        
+        let entryRes = IDENauthClaimTreeEntry(unsafePointerSchemaHash, keyX, keyY, revNonce)
+        
+        if (entryRes ==  nil) {
+            print("unable to allocate tree entry\n")
+            return "ERROR"
+        }
+        
+        if (entryRes?.pointee.status != IDENTREEENTRY_OK) {
+            print("error creating tree entry\n")
+            if (entryRes?.pointee.error_msg != nil) {
+                let msg = String.init(cString: (entryRes?.pointee.error_msg)!)
+                print("error message: " + msg)
+            }
+            return "ERROR"
+        }
+        
+        if (entryRes?.pointee.data_len != 8 * 32) {
+            print("unexpected data length\n")
+            return "ERROR"
+        }
+        
+        for i in 1...8 {
+            print("%i:", i)
+            for j in 1...32 {
+                print(String(format:"%02X", entryRes!.pointee.data[32*i+j]))
+            }
+        }
+        
+        print("generated Tree Entry IS CORRECT")
+        
+        /*
+         * Test merkle tree
+         */
+        
+        let mt = createCorrectMT()
+        if (mt == nil) {
+            return "ERROR"
+        }
+        
+        let res = addClaimToMT(mt: mt, entryRes: entryRes)
+        if (res != 0) {
+            return "ERROR"
+        }
+        
+        let mtRoot = IDENmerkleTreeRoot(mt)
+        if (mtRoot == nil) {
+          print("unable to get merkle tree root\n")
+          return "ERROR"
+        }
+        
+        print("Root:")
+        var result = String()
+        for i in 0...31 {
+            result.append(String(format: "%02x",  mtRoot![i]))
+        }
+        
+        if (mtRoot != nil) {
+            free(mtRoot)
+            print("tree root successfuly freed\n")
+        }
+    
+        if (mt != nil) {
+            IDENFreeMerkleTree(mt)
+            print("merkle tree successfuly freed\n")
+        }
+            
+        if (entryRes != nil) {
+            IDENFreeTreeEntry(entryRes)
+            print("tree entry successfuly freed")
+        }
+        
+        return result;
+    }
+    
+    public func getGenesisId(pubX: String, pubY: String) -> String {
+        
+        let schemaHash : [UInt8] = [0x52, 0xFD, 0xFC, 0x07, 0x21, 0x82, 0x65, 0x4F, 0x16, 0x3F, 0x5F, 0x0F, 0x9A, 0x62, 0x1D, 0x72]
+        let unsafePointerSchemaHash : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: schemaHash)
+        
+        let pubXBigInt = pubX
+        var XVal = pubXBigInt.asHexArrayFromNonValidatedSource()
+        XVal = XVal.reversed()
+        let unsafePointerX : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: XVal)
+        var keyX = BigInt()
+        keyX.value = unsafePointerX
+        keyX.len = 32
+        print(XVal)
+        
+        let pubYBigInt = pubY
+        var YVal = pubYBigInt.asHexArrayFromNonValidatedSource()
+        YVal = YVal.reversed()
+        let unsafePointerY : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: YVal)
+        var keyY = BigInt()
+        keyY.value = unsafePointerY
+        keyY.len = 32
+        print(YVal)
+        
+        let revNonce = UInt64(13260572831089785859)
+        
+        let entryRes = IDENauthClaimTreeEntry(unsafePointerSchemaHash, keyX, keyY, revNonce)
+        
+        if (entryRes ==  nil) {
+            print("unable to allocate tree entry\n")
+            return "ERROR"
+        }
+        
+        if (entryRes?.pointee.status != IDENTREEENTRY_OK) {
+            print("error creating tree entry\n")
+            if (entryRes?.pointee.error_msg != nil) {
+                let msg = String.init(cString: (entryRes?.pointee.error_msg)!)
+                print("error message: " + msg)
+            }
+            return "ERROR"
+        }
+        
+        if (entryRes?.pointee.data_len != 8 * 32) {
+            print("unexpected data length\n")
+            return "ERROR"
+        }
+        
+        for i in 1...8 {
+            print("%i:", i)
+            for j in 1...32 {
+                print(String(format:"%02X", entryRes!.pointee.data[32*i+j]))
+            }
+            print("\n")
+        }
+        
+        print("generated Tree Entry IS CORRECT")
+        
+        /*
+         * Test merkle tree
+         */
+        
+        let mt = createCorrectMT()
+        if (mt == nil) {
+            return "ERROR"
+        }
+        
+        let res = addClaimToMT(mt: mt, entryRes: entryRes)
+        if (res != 0) {
+            return "ERROR"
+        }
+        
+        let mtRoot = IDENmerkleTreeRoot(mt)
+        if (mtRoot == nil) {
+          print("unable to get merkle tree root\n")
+          return "ERROR"
+        }
+        
+        print("Root:")
+        for i in 0...31 {
+            print(String(format:"%02X", mtRoot![i]))
+        }
+        print("\n")
+    
+        let idGenesis = IDENidGenesisFromIdenState(mtRoot)
+        if (idGenesis == nil) {
+            print("unable to get genesis id from iden state\n")
+            return "ERROR"
+        }
+        
+        //let expectedGenesisID : [UInt8] = [
+        /*    0x00, 0x00, 0x47, 0x21, 0xF1, 0x2E, 0xD2, 0xEB,
+            0xEA, 0x79, 0xAB, 0x80, 0x9C, 0xE7, 0x50, 0xB4,
+            0x6A, 0x39, 0xAB, 0x7E, 0x6F, 0xB9, 0x4E, 0xE5,
+            0xE5, 0x25, 0x3B, 0x2B, 0x1F, 0x0E, 0x0F]*/
+        
+        print("Genesis ID:")
+        var result = String()
+        for i in 0...30 {
+            result.append(String(format: "%02x", idGenesis![i]))
+        }
+        
+        if (idGenesis != nil) {
+            free(idGenesis)
+            print("id genesis successfully freed")
+        }
+        
+        if (mtRoot != nil) {
+            free(mtRoot)
+            print("tree root successfuly freed\n")
+        }
+    
+        if (mt != nil) {
+            IDENFreeMerkleTree(mt)
+            print("merkle tree successfuly freed\n")
+        }
+            
+        if (entryRes != nil) {
+            IDENFreeTreeEntry(entryRes)
+            print("tree entry successfuly freed")
+        }
+        
+        return result;
+    }
     
     public func createNewIdentity(pubX: String, pubY: String) -> String {
         
