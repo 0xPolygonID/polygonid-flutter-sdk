@@ -44,15 +44,8 @@ class CircomLib {
     _hashPoseidon = lib
         .lookup<
             NativeFunction<
-                Pointer<Utf8> Function(
-                    Pointer<
-                        Utf8> /*,
-                    Pointer<Utf8>?,
-                    Pointer<Utf8>?,
-                    Pointer<Utf8>?,
-                    Pointer<Utf8>?,
-                    Pointer<Utf8>?*/
-                    )>>("hash_poseidon")
+                Pointer<Utf8> Function(Pointer<Utf8>, Pointer<Utf8>,
+                    Pointer<Utf8>)>>("hash_poseidon")
         .asFunction();
 
     _signPoseidon = lib
@@ -137,26 +130,16 @@ class CircomLib {
   }
 
   // circomlib.poseidon -> hashPoseidon
-  late Pointer<Utf8> Function(
-      Pointer<
-          Utf8> /*, Pointer<Utf8>?, Pointer<Utf8>?,
-      Pointer<Utf8>?, Pointer<Utf8>?, Pointer<Utf8>?*/
-      ) _hashPoseidon;
-  String hashPoseidon(String txCompressedData,
-      {String? toEthAddr,
-      String? toBjjAy,
-      String? rqTxCompressedDatav2,
-      String? rqToEthAddr,
-      String? rqToBjjAy}) {
+  late Pointer<Utf8> Function(Pointer<Utf8>, Pointer<Utf8>, Pointer<Utf8>)
+      _hashPoseidon;
+  String hashPoseidon(
+      String claimsTreeRoot, String revocationTree, String rootsTreeRoot) {
     //if (lib == null) return "ERROR: The library is not initialized";
-    final ptr1 = txCompressedData.toNativeUtf8();
-    final ptr2 = toEthAddr?.toNativeUtf8();
-    final ptr3 = toBjjAy?.toNativeUtf8();
-    final ptr4 = rqTxCompressedDatav2?.toNativeUtf8();
-    final ptr5 = rqToEthAddr?.toNativeUtf8();
-    final ptr6 = rqToBjjAy?.toNativeUtf8();
+    final ptr1 = claimsTreeRoot.toNativeUtf8();
+    final ptr2 = revocationTree.toNativeUtf8();
+    final ptr3 = rootsTreeRoot.toNativeUtf8();
     try {
-      final resultPtr = _hashPoseidon(ptr1 /*, ptr2, ptr3, ptr4, ptr5, ptr6*/);
+      final resultPtr = _hashPoseidon(ptr1, ptr2, ptr3);
       String resultString = resultPtr.toDartString();
       resultString = resultString.replaceAll("Fr(", "");
       resultString = resultString.replaceAll(")", "");

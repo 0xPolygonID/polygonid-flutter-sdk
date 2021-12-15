@@ -27,7 +27,8 @@ class Signature {
 
     final XYSublist = buf.sublist(0, 32);
     // unpackPoint is used to unpack R8 X and Y
-    final unpackedPoint = circomLib.unpackPoint(HEX.encode(XYSublist.toList()));
+    final List<String>? unpackedPoint =
+        circomLib.unpackPoint(HEX.encode(XYSublist.toList()));
 
     BigInt? x = BigInt.tryParse(unpackedPoint![0], radix: 10);
     BigInt? y = BigInt.tryParse(unpackedPoint![1], radix: 10);
@@ -151,7 +152,8 @@ String packSignature(Uint8List signature) {
   return circomLib.packSignature(sigString);
 }
 
-String hashPoseidon(String message) {
+String hashPoseidon(
+    String claimsTreeRoot, String revocationTree, String rootsTreeRoot) {
   CircomLib circomLib = CircomLib();
-  return circomLib.hashPoseidon(message);
+  return circomLib.hashPoseidon(claimsTreeRoot, revocationTree, rootsTreeRoot);
 }

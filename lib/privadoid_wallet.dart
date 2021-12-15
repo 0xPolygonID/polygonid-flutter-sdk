@@ -70,8 +70,9 @@ class PrivadoIdWallet {
   // Hash message with poseidon
   /// @param [String] messageStr - message to hash
   /// @returns [String] - hash poseidon
-  String hashMessage(String messageStr) {
-    final hash = hashPoseidon(messageStr);
+  String hashMessage(
+      String claimsTreeRoot, String revocationTree, String rootsTreeRoot) {
+    final hash = hashPoseidon(claimsTreeRoot, revocationTree, rootsTreeRoot);
     return hash;
   }
 }

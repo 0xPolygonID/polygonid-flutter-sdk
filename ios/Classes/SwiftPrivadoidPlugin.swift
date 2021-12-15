@@ -50,7 +50,7 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         result(res)
     } else if (call.method == "getGenesisId") {
         let arguments : [String] = call.arguments as! [String]
-        let res = getGenesisId(pubX: arguments[0], pubY: arguments[1])
+        let res = getGenesisId(idenState: arguments[0])
         result(res)
     }
     //let str = "string"
@@ -65,7 +65,8 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
     
     public func getMerkleTreeRoot(pubX: String, pubY: String) -> String {
         
-        let schemaHash : [UInt8] = [0x52, 0xFD, 0xFC, 0x07, 0x21, 0x82, 0x65, 0x4F, 0x16, 0x3F, 0x5F, 0x0F, 0x9A, 0x62, 0x1D, 0x72]
+        //let schemaHash : [UInt8] = [0x52, 0xFD, 0xFC, 0x07, 0x21, 0x82, 0x65, 0x4F, 0x16, 0x3F, 0x5F, 0x0F, 0x9A, 0x62, 0x1D, 0x72]
+        let schemaHash : [UInt8] = [0x7C, 0x08, 0x44, 0xA0, 0x75, 0xA9, 0xDD, 0xC7, 0xFC, 0xBD, 0xFB, 0x4F, 0x88, 0xAC, 0xD9, 0xBC]
         let unsafePointerSchemaHash : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: schemaHash)
         
         let pubXBigInt = pubX
@@ -86,7 +87,8 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         keyY.len = 32
         print(YVal)
         
-        let revNonce = UInt64(13260572831089785859)
+        //let revNonce = UInt64(13260572831089785859)
+        let revNonce = UInt64(0)
         
         let entryRes = IDENauthClaimTreeEntry(unsafePointerSchemaHash, keyX, keyY, revNonce)
         
@@ -111,7 +113,7 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         
         for i in 1...8 {
             print("%i:", i)
-            for j in 1...32 {
+            for j in 0...31 {
                 print(String(format:"%02X", entryRes!.pointee.data[32*i+j]))
             }
         }
@@ -162,99 +164,17 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         return result;
     }
     
-    public func getGenesisId(pubX: String, pubY: String) -> String {
-        
-        let schemaHash : [UInt8] = [0x52, 0xFD, 0xFC, 0x07, 0x21, 0x82, 0x65, 0x4F, 0x16, 0x3F, 0x5F, 0x0F, 0x9A, 0x62, 0x1D, 0x72]
-        let unsafePointerSchemaHash : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: schemaHash)
-        
-        let pubXBigInt = pubX
-        var XVal = pubXBigInt.asHexArrayFromNonValidatedSource()
-        XVal = XVal.reversed()
-        let unsafePointerX : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: XVal)
-        var keyX = BigInt()
-        keyX.value = unsafePointerX
-        keyX.len = 32
-        print(XVal)
-        
-        let pubYBigInt = pubY
-        var YVal = pubYBigInt.asHexArrayFromNonValidatedSource()
-        YVal = YVal.reversed()
-        let unsafePointerY : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: YVal)
-        var keyY = BigInt()
-        keyY.value = unsafePointerY
-        keyY.len = 32
-        print(YVal)
-        
-        let revNonce = UInt64(13260572831089785859)
-        
-        let entryRes = IDENauthClaimTreeEntry(unsafePointerSchemaHash, keyX, keyY, revNonce)
-        
-        if (entryRes ==  nil) {
-            print("unable to allocate tree entry\n")
-            return "ERROR"
-        }
-        
-        if (entryRes?.pointee.status != IDENTREEENTRY_OK) {
-            print("error creating tree entry\n")
-            if (entryRes?.pointee.error_msg != nil) {
-                let msg = String.init(cString: (entryRes?.pointee.error_msg)!)
-                print("error message: " + msg)
-            }
-            return "ERROR"
-        }
-        
-        if (entryRes?.pointee.data_len != 8 * 32) {
-            print("unexpected data length\n")
-            return "ERROR"
-        }
-        
-        for i in 1...8 {
-            print("%i:", i)
-            for j in 1...32 {
-                print(String(format:"%02X", entryRes!.pointee.data[32*i+j]))
-            }
-            print("\n")
-        }
-        
-        print("generated Tree Entry IS CORRECT")
-        
-        /*
-         * Test merkle tree
-         */
-        
-        let mt = createCorrectMT()
-        if (mt == nil) {
-            return "ERROR"
-        }
-        
-        let res = addClaimToMT(mt: mt, entryRes: entryRes)
-        if (res != 0) {
-            return "ERROR"
-        }
-        
-        let mtRoot = IDENmerkleTreeRoot(mt)
-        if (mtRoot == nil) {
-          print("unable to get merkle tree root\n")
-          return "ERROR"
-        }
-        
-        print("Root:")
-        for i in 0...31 {
-            print(String(format:"%02X", mtRoot![i]))
-        }
-        print("\n")
+    public func getGenesisId(idenState: String) -> String {
     
-        let idGenesis = IDENidGenesisFromIdenState(mtRoot)
+        var state = idenState.asHexArrayFromNonValidatedSource()
+        state = state.reversed()
+        let unsafePointerState : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: state)
+        
+        let idGenesis = IDENidGenesisFromIdenState(unsafePointerState)
         if (idGenesis == nil) {
             print("unable to get genesis id from iden state\n")
             return "ERROR"
         }
-        
-        //let expectedGenesisID : [UInt8] = [
-        /*    0x00, 0x00, 0x47, 0x21, 0xF1, 0x2E, 0xD2, 0xEB,
-            0xEA, 0x79, 0xAB, 0x80, 0x9C, 0xE7, 0x50, 0xB4,
-            0x6A, 0x39, 0xAB, 0x7E, 0x6F, 0xB9, 0x4E, 0xE5,
-            0xE5, 0x25, 0x3B, 0x2B, 0x1F, 0x0E, 0x0F]*/
         
         print("Genesis ID:")
         var result = String()
@@ -265,21 +185,6 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         if (idGenesis != nil) {
             free(idGenesis)
             print("id genesis successfully freed")
-        }
-        
-        if (mtRoot != nil) {
-            free(mtRoot)
-            print("tree root successfuly freed\n")
-        }
-    
-        if (mt != nil) {
-            IDENFreeMerkleTree(mt)
-            print("merkle tree successfuly freed\n")
-        }
-            
-        if (entryRes != nil) {
-            IDENFreeTreeEntry(entryRes)
-            print("tree entry successfuly freed")
         }
         
         return result;
@@ -759,7 +664,7 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
       pack_point("17777552123799933955779906779655732241715742912184938656739573121738514868268", "2626589144620713026669568689430873010625803728049924121243784502389097019475");
       unpack_point("53b81ed5bffe9545b54016234682e7b2f699bd42a5e9eae27ff4051bc698ce85");
       prv2pub("0001020304050607080900010203040506070809000102030405060708090001");
-      hash_poseidon(""/*, "", "", "", "", ""*/);
+      hash_poseidon("", "", "");
       sign_poseidon("", "");
       verify_poseidon("", "", "");
       let str = "string"

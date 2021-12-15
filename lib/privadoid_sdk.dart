@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import "package:hex/hex.dart";
 import 'package:privadoid_sdk/eddsa_babyjub.dart';
-import 'package:privadoid_sdk/model/proof_request.dart';
 import 'package:privadoid_sdk/privadoid_wallet.dart';
 import 'package:privadoid_sdk/utils/hex_utils.dart';
 import 'package:privadoid_sdk/utils/uint8_list_utils.dart';
@@ -29,7 +28,7 @@ class PrivadoIdSdk {
     return HexUtils.bytesToHex(wallet.privateKey);
   }
 
-  static Future<String?> generateProof(String challenge,
+  static Future<Map<String, dynamic>> generateProof(String challenge,
       {String privateKey =
           "21a5e7321d0e2f3ca1cc6504396e6594a2211544b08c206847cdee96f832421a"}) async {
     final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
@@ -41,8 +40,13 @@ class PrivadoIdSdk {
     BigInt mtRootBigInt = Uint8ArrayUtils.beBuff2int(
         Uint8List.fromList(bufMtRoot.reversed.toList()));
 
-    final String? genesisId = await _channel.invokeMethod(
-        'getGenesisId', [wallet.publicKeyHex[0], wallet.publicKeyHex[1]]);
+    String state = wallet.hashMessage(mtRootBigInt.toString(),
+        BigInt.zero.toString(), BigInt.zero.toString());
+    Uint8List bufState = Uint8List.fromList(HEX.decode(state));
+    BigInt stateBigInt = Uint8ArrayUtils.beBuff2int(bufState);
+
+    final String? genesisId =
+        await _channel.invokeMethod('getGenesisId', [state]);
     Uint8List bufGenesisId = Uint8List.fromList(HEX.decode(genesisId!));
     BigInt genesisIdBigInt = Uint8ArrayUtils.beBuff2int(
         Uint8List.fromList(bufGenesisId.reversed.toList()));
@@ -57,8 +61,6 @@ class PrivadoIdSdk {
     print(signature.r8[0].toString());
     print(signature.r8[1].toString());
 
-    String state = wallet.hashMessage(challenge);
-
     Map<String, dynamic> json = <String, dynamic>{};
     json["BBJAx"] = wallet.publicKey[0];
     json["BBJAy"] = wallet.publicKey[1];
@@ -71,9 +73,11 @@ class PrivadoIdSdk {
     json["challengeSignatureR8y"] = signature.r8[1].toString();
     json["challengeSignatureS"] = signature.s.toString();
     json["id"] = genesisIdBigInt.toString();
-    json["state"] = state;
+    json["state"] = stateBigInt.toString();
 
-    ProofRequest proofRequest = ProofRequest.fromJson(json);
-    return "ALL GOOD";
+    return json;
+
+    //ProofRequest proofRequest = ProofRequest.fromJson(json);
+    //return proofRequest.toJson(); //jsonEncode(proofRequest.toJson());
   }
 }
