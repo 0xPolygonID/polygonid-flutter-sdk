@@ -1,7 +1,11 @@
+import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:privadoid_sdk/constants.dart';
 import 'package:privadoid_sdk/utils/hex_utils.dart';
 import 'package:privadoid_sdk/utils/uint8_list_utils.dart';
+import 'package:web3dart/credentials.dart';
+import 'package:web3dart/crypto.dart';
 
 import 'eddsa_babyjub.dart' as eddsaBabyJub;
 import 'eddsa_babyjub.dart';
@@ -51,7 +55,10 @@ class PrivadoIdWallet {
       {Uint8List? privateKey}) async {
     Uint8List privateBjjKey = privateKey ?? Uint8List(32);
     if (privateKey == null) {
-      privateBjjKey.fillRange(0, 32, 1);
+      final prvKey = EthPrivateKey.createRandom(Random.secure());
+      final signature = await prvKey.sign(Uint8ArrayUtils.uint8ListfromString(
+          PRIVADOID_ACCOUNT_ACCESS_MESSAGE));
+      privateBjjKey = keccak256(signature);
     }
     final privadoIdWallet = PrivadoIdWallet(privateBjjKey);
     return privadoIdWallet;

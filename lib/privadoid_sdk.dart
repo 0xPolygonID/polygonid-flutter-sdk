@@ -28,9 +28,8 @@ class PrivadoIdSdk {
     return HexUtils.bytesToHex(wallet.privateKey);
   }
 
-  static Future<Map<String, dynamic>> generateProof(String challenge,
-      {String privateKey =
-          "21a5e7321d0e2f3ca1cc6504396e6594a2211544b08c206847cdee96f832421a"}) async {
+  static Future<Map<String, dynamic>> generateProof(
+      String challenge, String privateKey) async {
     final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
         privateKey: HexUtils.hexToBytes(privateKey));
 

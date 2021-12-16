@@ -20,6 +20,7 @@ dependencies:
   http: ^0.13.3
   ffi: ^1.1.2
   hex: ^0.2.0
+  web3dart: ^2.3.3
 
 dev_dependencies:
   flutter_test:

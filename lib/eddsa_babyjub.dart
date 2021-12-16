@@ -31,7 +31,7 @@ class Signature {
         circomLib.unpackPoint(HEX.encode(XYSublist.toList()));
 
     BigInt? x = BigInt.tryParse(unpackedPoint![0], radix: 10);
-    BigInt? y = BigInt.tryParse(unpackedPoint![1], radix: 10);
+    BigInt? y = BigInt.tryParse(unpackedPoint[1], radix: 10);
     List<BigInt> r8 = [];
     r8.add(x!);
     r8.add(y!);
