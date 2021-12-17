@@ -33,8 +33,8 @@ class PrivadoIdWallet {
     final eddsaBabyJub.PublicKey publicKey = priv.public();
     this.publicKey = [publicKey.p[0].toString(), publicKey.p[1].toString()];
     publicKeyHex = [
-      publicKey.p[0].toRadixString(16),
-      publicKey.p[1].toRadixString(16)
+      publicKey.p[0].toRadixString(16).padLeft(64, '0'),
+      publicKey.p[1].toRadixString(16).padLeft(64, '0')
     ];
     final compressedPublicKey =
         Uint8ArrayUtils.leBuff2int(publicKey.compress());
