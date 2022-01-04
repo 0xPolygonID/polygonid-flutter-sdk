@@ -65,27 +65,36 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
     
     public func getMerkleTreeRoot(pubX: String, pubY: String) -> String {
         
+        
         //let schemaHash : [UInt8] = [0x52, 0xFD, 0xFC, 0x07, 0x21, 0x82, 0x65, 0x4F, 0x16, 0x3F, 0x5F, 0x0F, 0x9A, 0x62, 0x1D, 0x72]
         let schemaHash : [UInt8] = [0x7C, 0x08, 0x44, 0xA0, 0x75, 0xA9, 0xDD, 0xC7, 0xFC, 0xBD, 0xFB, 0x4F, 0x88, 0xAC, 0xD9, 0xBC]
         let unsafePointerSchemaHash : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: schemaHash)
         
-        let pubXBigInt = pubX
+        /*let pubXBigInt = pubX
         var XVal = pubXBigInt.asHexArrayFromNonValidatedSource()
         XVal = XVal.reversed()
         let unsafePointerX : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: XVal)
-        var keyX = BigInt()
-        keyX.value = unsafePointerX
-        keyX.len = 32
-        print(XVal)
+        var keyX = IDENBigInt()
+        keyX.data = unsafePointerX
+        keyX.data_len = 32
+        print(XVal)*/
+        
+        let pubXBigInt = pubX
+        let xBytes = pubXBigInt.cString(using: String.Encoding.utf8)!
+        let unsafePointerX : UnsafeMutablePointer<CChar> = UnsafeMutablePointer<CChar>(mutating: xBytes)
+        let keyX = IDENBigIntFromString(unsafePointerX)
         
         let pubYBigInt = pubY
-        var YVal = pubYBigInt.asHexArrayFromNonValidatedSource()
-        YVal = YVal.reversed()
-        let unsafePointerY : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: YVal)
-        var keyY = BigInt()
-        keyY.value = unsafePointerY
-        keyY.len = 32
-        print(YVal)
+        let yBytes = pubYBigInt.cString(using: String.Encoding.utf8)!
+        let unsafePointerY : UnsafeMutablePointer<CChar> = UnsafeMutablePointer<CChar>(mutating: yBytes)
+        let keyY = IDENBigIntFromString(unsafePointerY)
+        /*
+         var YVal = pubYBigInt.asHexArrayFromNonValidatedSource()
+         YVal = YVal.reversed()
+         var keyY = IDENBigInt()
+         keyY.data = unsafePointerY
+         keyY.data_len = 32*/
+        //print(YVal)
         
         //let revNonce = UInt64(13260572831089785859)
         let revNonce = UInt64(0)
@@ -195,23 +204,34 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         let schemaHash : [UInt8] = [0x52, 0xFD, 0xFC, 0x07, 0x21, 0x82, 0x65, 0x4F, 0x16, 0x3F, 0x5F, 0x0F, 0x9A, 0x62, 0x1D, 0x72]
         let unsafePointerSchemaHash : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: schemaHash)
         
-        let pubXBigInt = "152f5044240ef872cf7e6742fe202b9e07ed6188e9e734c09b06939704852358"
+        let pubXBigInt = pubX
+        let xBytes = pubXBigInt.cString(using: String.Encoding.utf8)!
+        let unsafePointerX : UnsafeMutablePointer<CChar> = UnsafeMutablePointer<CChar>(mutating: xBytes)
+        let keyX = IDENBigIntFromString(unsafePointerX)
+        
+        let pubYBigInt = pubY
+        let yBytes = pubYBigInt.cString(using: String.Encoding.utf8)!
+        let unsafePointerY : UnsafeMutablePointer<CChar> = UnsafeMutablePointer<CChar>(mutating: yBytes)
+        let keyY = IDENBigIntFromString(unsafePointerY)
+        
+        /*let pubXBigInt = "152f5044240ef872cf7e6742fe202b9e07ed6188e9e734c09b06939704852358"
         var XVal = pubXBigInt.asHexArrayFromNonValidatedSource()
         XVal = XVal.reversed()
         let unsafePointerX : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: XVal)
-        var keyX = BigInt()
+        /*var keyX = BigInt()
         keyX.value = unsafePointerX
-        keyX.len = 32
-        print(XVal)
+        keyX.len = 32*/
+        print(XVal)*/
         
-        let pubYBigInt = "2865441cd3e276643c84e55004ad259dff282c8c47c6e8c151afacdadf6f6db3"
+        /*let pubYBigInt = "2865441cd3e276643c84e55004ad259dff282c8c47c6e8c151afacdadf6f6db3"
         var YVal = pubYBigInt.asHexArrayFromNonValidatedSource()
         YVal = YVal.reversed()
         let unsafePointerY : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: YVal)
-        var keyY = BigInt()
+        /*var keyY = BigInt()
         keyY.value = unsafePointerY
-        keyY.len = 32
-        print(YVal)
+        keyY.len = 32*/
+        var keyY =
+        print(YVal)*/
         
         let revNonce = UInt64(13260572831089785859)
         
@@ -380,7 +400,20 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         let unsafePointerSchemaHash : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: schemaHash)
         
         // X = 15468939102716291673743744296736132867654217747684906302563904432835075522918
-        let XVal : [UInt8] = [0x66, 0x41, 0x8C, 0x4D, 0x7F, 0x25, 0x2C, 0xC2, 0x3E, 0xDF, 0x63, 0xE4, 0x5D, 0xBD, 0x98, 0x45, 0x57, 0xD8, 0xA4, 0xDA, 0x41, 0x2C, 0xC8, 0x12, 0x64, 0x16, 0xE0, 0xA4, 0xF8, 0x1B, 0x33, 0x22]
+        let pubXBigInt = "15468939102716291673743744296736132867654217747684906302563904432835075522918"
+        let xBytes = pubXBigInt.cString(using: String.Encoding.utf8)!
+        let unsafePointerX : UnsafeMutablePointer<CChar> = UnsafeMutablePointer<CChar>(mutating: xBytes)
+        let keyX = IDENBigIntFromString(unsafePointerX)
+        
+        // Y = 10564057289999407626309237453457578977834988122411075958351091519856342060014
+        let pubYBigInt = "10564057289999407626309237453457578977834988122411075958351091519856342060014"
+        let yBytes = pubYBigInt.cString(using: String.Encoding.utf8)!
+        let unsafePointerY : UnsafeMutablePointer<CChar> = UnsafeMutablePointer<CChar>(mutating: yBytes)
+        let keyY = IDENBigIntFromString(unsafePointerY)
+        
+        
+        /*let XVal : [UInt8] = [0x66, 0x41, 0x8C, 0x4D, 0x7F, 0x25, 0x2C, 0xC2, 0x3E, 0xDF, 0x63, 0xE4, 0x5D, 0xBD, 0x98, 0x45, 0x57, 0xD8, 0xA4, 0xDA, 0x41, 0x2C, 0xC8, 0x12, 0x64, 0x16, 0xE0, 0xA4, 0xF8, 0x1B, 0x33, 0x22]
+        
         let unsafePointerX : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: XVal)
         var keyX = BigInt()
         keyX.value = unsafePointerX
@@ -391,7 +424,7 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         let unsafePointerY = UnsafeMutablePointer<UInt8>(mutating: YVal)
         var keyY = BigInt()
         keyY.value = unsafePointerY
-        keyY.len = 32
+        keyY.len = 32*/
         
         let revNonce = UInt64(13260572831089785859)
         

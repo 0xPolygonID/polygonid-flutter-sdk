@@ -25,19 +25,27 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 #include <string.h>
 #include <stdlib.h> // for C.free
 #include <stdbool.h> // for bool
+#include <time.h> // for time_t
 
-typedef struct _Int {
-	unsigned char* value;
-	int len;
-} BigInt;
+typedef enum
+{
+	IDENBIGINT_OK,
+	IDENBIGINT_PARSE_FAILED,
+} IDENBigIntStatus;
 
-typedef unsigned char SchemaHash[16];
+typedef struct _IDENBigInt {
+	unsigned char* data;
+	size_t data_len;
+	IDENBigIntStatus status; // 0 in case of success
+	char *error_msg;
+} IDENBigInt;
 
 typedef enum
 {
 	IDENTREEENTRY_OK,
 	IDENTREEENTRY_OUT_OF_MEMORY,
 	IDENTREEENTRY_CREATE_CLAIM_ERROR,
+	IDENTREEENTRY_EXTRACT_CLAIM_ERROR,
 } IDENtreeEntryStatus;
 
 typedef struct _IDENTreeEntry
@@ -110,6 +118,21 @@ typedef struct _IDENHash
 	size_t data_len;
 } IDENHash;
 
+typedef enum
+{
+	IDENCLAIMSTATUS_OK,
+	IDENCLAIMSTATUS_CREATE_ERROR,
+	IDENCLAIMSTATUS_INCORRECT_HANDLE,
+	IDENCLAIMSTATUS_SET_ERROR,
+} IDENClaimStatus;
+
+typedef struct _IDENClaim
+{
+	uintptr_t handle;
+	IDENClaimStatus status;
+	char *error_msg;
+} IDENClaim;
+
 extern unsigned char **iden_alloc_hashes(int n);
 
 extern void
@@ -175,7 +198,7 @@ extern char* reverse(char* in);
 // Return pointer to IDENTreeEntry struct.
 // When tree entry is not needed anymore, it should be freed with
 // `IDENFreeTreeEntry` function.
-extern IDENTreeEntry* IDENauthClaimTreeEntry(unsigned char* schemaHash, BigInt keyX, BigInt keyY, long long unsigned int revNonce);
+extern IDENTreeEntry* IDENauthClaimTreeEntry(unsigned char* schemaHash, IDENBigInt* keyX, IDENBigInt* keyY, long long unsigned int revNonce);
 extern IDENHash* IDENTreeEntryIndexHash(IDENTreeEntry* res);
 extern void IDENFreeHash(IDENHash* res);
 extern void IDENFreeTreeEntry(IDENTreeEntry* res);
@@ -195,6 +218,15 @@ extern void IDENFreeProof(IDENProof* proof);
 // Returns ID — pointer to 31 bytes array
 extern unsigned char* IDENidGenesisFromIdenState(unsigned char* mtHash);
 extern void IDENFreeStatus(IDENstatus* status);
+extern IDENBigInt* IDENBigIntFromString(char* i);
+extern void IDENFreeBigInt(IDENBigInt* bi);
+extern IDENClaim* IDENNewClaim(unsigned char* schemaHash);
+extern void IDENClaimSetValueDataInt(IDENClaim* c, IDENBigInt* slotA, IDENBigInt* slotB);
+extern void IDENClaimSetIndexDataInt(IDENClaim* c, IDENBigInt* slotA, IDENBigInt* slotB);
+extern void IDENClaimSetRevocationNonce(IDENClaim* c, long long unsigned int revNonce);
+extern void IDENClaimSetExpirationDate(IDENClaim* c, time_t t);
+extern IDENTreeEntry* IDENClaimTreeEntry(IDENClaim* c);
+extern void IDENFreeClaim(IDENClaim* claim);
 
 #ifdef __cplusplus
 }
