@@ -28,13 +28,36 @@ class PrivadoIdSdk {
     return HexUtils.bytesToHex(wallet.privateKey);
   }
 
+  static Future<String?> getIdentifier(String privateKey) async {
+    final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
+        privateKey: HexUtils.hexToBytes(privateKey));
+
+    final String? mtRoot = await _channel.invokeMethod(
+        'getMerkleTreeRoot', [wallet.publicKey[0], wallet.publicKey[1]]);
+    Uint8List bufMtRoot = Uint8List.fromList(HEX.decode(mtRoot!));
+    BigInt mtRootBigInt = Uint8ArrayUtils.beBuff2int(
+        Uint8List.fromList(bufMtRoot.reversed.toList()));
+
+    String state = wallet.hashMessage(mtRootBigInt.toString(),
+        BigInt.zero.toString(), BigInt.zero.toString());
+    Uint8List bufState = Uint8List.fromList(HEX.decode(state));
+    BigInt stateBigInt = Uint8ArrayUtils.beBuff2int(bufState);
+
+    final String? genesisId =
+    await _channel.invokeMethod('getGenesisId', [state]);
+    return genesisId;
+    /*Uint8List bufGenesisId = Uint8List.fromList(HEX.decode(genesisId!));
+    BigInt genesisIdBigInt = Uint8ArrayUtils.beBuff2int(
+        Uint8List.fromList(bufGenesisId.reversed.toList()));*/
+  }
+
   static Future<Map<String, dynamic>> generateProof(
       String challenge, String privateKey) async {
     final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
         privateKey: HexUtils.hexToBytes(privateKey));
 
     final String? mtRoot = await _channel.invokeMethod(
-        'getMerkleTreeRoot', [wallet.publicKeyHex[0], wallet.publicKeyHex[1]]);
+        'getMerkleTreeRoot', [wallet.publicKey[0], wallet.publicKey[1]]);
     Uint8List bufMtRoot = Uint8List.fromList(HEX.decode(mtRoot!));
     BigInt mtRootBigInt = Uint8ArrayUtils.beBuff2int(
         Uint8List.fromList(bufMtRoot.reversed.toList()));
