@@ -19,12 +19,12 @@ Privadoid flutter sdk plugin
   s.vendored_libraries = "**/*.a"
   s.dependency 'Flutter'
   s.dependency 'CryptoSwift'
-  s.platform = :ios, '9.0'
+  s.platform = :ios, '12.0'
 
-  # s.ios.deployment_target = '9.0'
+  # s.ios.deployment_target = '12.0'
   # s.ios.vendored_frameworks = 'Frameworks/Core.xcframework'
 
   # Flutter.framework does not contain a i386 nor arm64 slice.
-  s.pod_target_xcconfig = { 'STRIP_STYLE' => 'non-global', 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386, arm64' }
+  s.pod_target_xcconfig = { 'STRIP_STYLE' => 'non-global', 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
   s.swift_version = '5.0'
 end
