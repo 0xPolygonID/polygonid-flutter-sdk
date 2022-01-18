@@ -27,6 +27,17 @@
 
 import 'package:privadoid_sdk/model/proof_data_response.dart';
 
+/*
+
+{"type":"https://iden3-communication.io/credential-fetch-offer/v1",
+"data":{"url":"https://auth-demo.idyllicvision.com/cred-callback",
+ "issuer":"11AVb27nWq5Eq4HzxbmiZandZCbRSh4MDkMyE3s6Ba",
+ "schema":"KYCAgeCredential",
+ "claim_id":"739bb88d-4f46-4680-a9bf-db1b1f578c60",
+ "scope":[{"circuit_id":"auth","type":"zeroknowledge","rules":{"challenge":56675202}}]}}
+
+*/
+
 class ProofResponse {
   String? type = "https://iden3-communication.io/authorization-response/v1";
   late ProofDataResponse? data;

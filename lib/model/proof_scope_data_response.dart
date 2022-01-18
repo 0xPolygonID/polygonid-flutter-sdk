@@ -30,8 +30,10 @@ class ProofScopeDataResponse {
   final List<dynamic>? pi_b;
   final List<dynamic>? pi_c;
   final String? protocol;
+  final String? curve;
 
-  ProofScopeDataResponse({this.pi_a, this.pi_b, this.pi_c, this.protocol});
+  ProofScopeDataResponse(
+      {this.pi_a, this.pi_b, this.pi_c, this.protocol, this.curve});
 
   /// Creates an instance from the given json
   ///
@@ -42,9 +44,15 @@ class ProofScopeDataResponse {
         pi_a: json['pi_a'],
         pi_b: json['pi_b'],
         pi_c: json['pi_c'],
-        protocol: json['protocol']);
+        protocol: json['protocol'],
+        curve: json['curve']);
   }
 
-  Map<String, dynamic> toJson() =>
-      {'pi_a': pi_a, 'pi_b': pi_b, 'pi_c': pi_c, 'protocol': protocol};
+  Map<String, dynamic> toJson() => {
+        'pi_a': pi_a,
+        'pi_b': pi_b,
+        'pi_c': pi_c,
+        'protocol': protocol,
+        'curve': curve
+      };
 }

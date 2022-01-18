@@ -1,15 +1,15 @@
 #
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
-# Run `pod lib lint privadoid_sdk.podspec` to validate before publishing.
+# Run 'pod lib lint privadoid_sdk.podspec' to validate before publishing.
 #
 Pod::Spec.new do |s|
   s.name             = 'privadoid_sdk'
   s.version          = '1.0.0'
   s.summary          = 'Flutter plugin for PrivadoID SDK'
   s.description      = <<-DESC
-Privadoid flutter sdk plugin
+Privadoid library flutter plugin project.
                        DESC
-  s.homepage         = 'http://example.com'
+  s.homepage         = 'http://iden3.io'
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Iden3' => 'info@iden3.io' }
   s.source           = { :path => '.' }
@@ -19,9 +19,8 @@ Privadoid flutter sdk plugin
   s.vendored_libraries = "**/*.a"
   s.dependency 'Flutter'
   s.dependency 'CryptoSwift'
-  s.platform = :ios, '12.0'
-
-  # s.ios.deployment_target = '12.0'
+  s.platform = :ios, '9.0'
+  # s.ios.deployment_target = '9.0'
   # s.ios.vendored_frameworks = 'Frameworks/Core.xcframework'
 
   # Flutter.framework does not contain a i386 nor arm64 slice.

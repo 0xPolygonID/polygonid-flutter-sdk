@@ -691,7 +691,29 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         return 0
     }
 
-  public func dummyMethodToEnforceBundling() {
+  public static func dummyMethodToEnforceBundling() {
+      // Iden3 Core
+      /*let schemaHash : [UInt8] = [0x52, 0xFD, 0xFC, 0x07, 0x21, 0x82, 0x65, 0x4F, 0x16, 0x3F, 0x5F, 0x0F, 0x9A, 0x62, 0x1D, 0x72]
+      let unsafePointerSchemaHash : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: schemaHash)
+      let xBytes = "pubXBigInt".cString(using: String.Encoding.utf8)!
+      let unsafePointerX : UnsafeMutablePointer<CChar> = UnsafeMutablePointer<CChar>(mutating: xBytes)
+      let keyX = IDENBigIntFromString(unsafePointerX)
+      let revNonce = UInt64(13260572831089785859)
+      let entryRes = IDENauthClaimTreeEntry(unsafePointerSchemaHash, keyX, keyX, revNonce)
+      let mt = IDENnewMerkleTree(40)
+      let mtRoot = IDENmerkleTreeRoot(mt)
+      let idGenesis = IDENidGenesisFromIdenState(mtRoot)
+      let addStatus = IDENmerkleTreeAddClaim(mt, entryRes)
+      let indexHash = IDENTreeEntryIndexHash(entryRes)
+      let proof = IDENmerkleTreeGenerateProof(mt, indexHash)
+      IDENFreeProof(proof)
+      IDENFreeHash(indexHash)
+      IDENFreeStatus(addStatus)
+      free(idGenesis)
+      free(mtRoot)
+      IDENFreeMerkleTree(mt)
+      IDENFreeTreeEntry(entryRes)*/
+      // PrivadoID Plugin
       pack_signature("16727755406458403965916091816756284515992637653800319054951151706132152331811672775540645840396591609181675628451599263765380031");
       unpack_signature("16727755406458403965916091816756284515992637653800319054951151706132152331811672775540645840396591609181675628451599263765380031");
       pack_point("17777552123799933955779906779655732241715742912184938656739573121738514868268", "2626589144620713026669568689430873010625803728049924121243784502389097019475");

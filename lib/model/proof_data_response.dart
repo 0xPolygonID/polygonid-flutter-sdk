@@ -27,10 +27,29 @@
 
 import 'package:privadoid_sdk/model/proof_scope_response.dart';
 
+/*
+
+{"type":"https://iden3-communication.io/credential-fetch-offer/v1",
+"data":{"url":"https://auth-demo.idyllicvision.com/cred-callback",
+"issuer":"11AVb27nWq5Eq4HzxbmiZandZCbRSh4MDkMyE3s6Ba",
+"schema":"KYCAgeCredential",
+"claim_id":"739bb88d-4f46-4680-a9bf-db1b1f578c60",
+"scope":[{"circuit_id":"auth","type":"zeroknowledge","rules":{"challenge":56675202}}]}}
+
+*/
+
 class ProofDataResponse {
+  late String? url;
+  late String? issuer;
+  late String? schema;
+  late String? claim_id;
   late List<ProofScopeResponse>? scope;
 
   ProofDataResponse({
+    this.url,
+    this.issuer,
+    this.schema,
+    this.claim_id,
     this.scope,
   });
 
@@ -39,10 +58,19 @@ class ProofDataResponse {
   /// @param [Map<String, dynamic>] json
   /// @returns [ProofDataResponse]
   factory ProofDataResponse.fromJson(Map<String, dynamic> json) {
-    return ProofDataResponse(scope: json['scope']);
+    return ProofDataResponse(
+        url: json['url'],
+        issuer: json['issuer'],
+        schema: json['schema'],
+        claim_id: json['claim_id'],
+        scope: json['scope']);
   }
 
   Map<String, dynamic> toJson() => {
+        'url': url,
+        'issuer': issuer,
+        'schema': schema,
+        'claim_id': claim_id,
         'scope': scope,
       };
 }

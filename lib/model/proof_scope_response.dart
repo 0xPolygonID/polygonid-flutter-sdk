@@ -28,13 +28,13 @@
 import 'package:privadoid_sdk/model/proof_scope_data_response.dart';
 
 class ProofScopeResponse {
-  String? type = "zeroknowledge";
   String? circuit_id = "auth";
+  String? type = "zeroknowledge";
   late List<dynamic>? pub_signals;
   late ProofScopeDataResponse? proof_data;
 
   ProofScopeResponse(
-      {this.type, this.circuit_id, this.pub_signals, this.proof_data});
+      {this.circuit_id, this.type, this.pub_signals, this.proof_data});
 
   /// Creates an instance from the given json
   ///

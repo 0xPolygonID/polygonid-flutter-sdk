@@ -44,7 +44,7 @@ class PrivadoIdSdk {
     BigInt stateBigInt = Uint8ArrayUtils.beBuff2int(bufState);
 
     final String? genesisId =
-    await _channel.invokeMethod('getGenesisId', [state]);
+        await _channel.invokeMethod('getGenesisId', [state]);
     return genesisId;
     /*Uint8List bufGenesisId = Uint8List.fromList(HEX.decode(genesisId!));
     BigInt genesisIdBigInt = Uint8ArrayUtils.beBuff2int(
