@@ -250,7 +250,7 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
             return ["ERROR"]
         }
         var result = [String]()
-        for i in 1...8 {
+        for i in 0...7 {
             print("%i:", i)
             var resultString = String()
             for j in 0...31 {
@@ -370,9 +370,9 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
 
             return [NSString stringWithString:hexString];*/
         
-        for i in 1...8 {
+        for i in 0...7 {
             print("%i:", i)
-            for j in 1...32 {
+            for j in 0...31 {
                 print(String(format:"%02X", entryRes!.pointee.data[32*i+j]))
             }
             //print("\n")
@@ -556,9 +556,9 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
             return "ERROR"
         }
         
-        for i in 1...8 {
+        for i in 0...7 {
             print("%i:", i)
-            for j in 1...32 {
+            for j in 0...31 {
                 print(String(format:"%02X", entryRes!.pointee.data[32*i+j]))
             }
             print("\n")
