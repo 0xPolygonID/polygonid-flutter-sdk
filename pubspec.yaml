@@ -7,7 +7,7 @@ issue_tracker: https://github.com/iden3/privadoid_flutter_sdk/issues
 documentation: https://docs.iden3.io/
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.15.0 <3.0.0"
   flutter: ">=1.20.0"
 
 analyzer:
@@ -21,11 +21,22 @@ dependencies:
   ffi: ^1.1.2
   hex: ^0.2.0
   web3dart: ^2.3.3
+  ffigen: ^4.1.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^1.0.0
+
+ffigen:
+  name: NativeLibrary
+  description: Bindings to `ios/Classes/libiden3core.h`.
+  output: 'generated_bindings.dart'
+  headers:
+    entry-points:
+      - 'ios/Classes/libiden3core.h'
+
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
