@@ -599,15 +599,15 @@ class NativeLibrary {
 
   ffi.Pointer<ffi.Void> memmem(
     ffi.Pointer<ffi.Void> __big,
-    int BigLen,
+    int __big_len,
     ffi.Pointer<ffi.Void> __little,
-    int LittleLen,
+    int __little_len,
   ) {
     return _memmem(
       __big,
-      BigLen,
+      __big_len,
       __little,
-      LittleLen,
+      __little_len,
     );
   }
 
@@ -2430,10 +2430,10 @@ class NativeLibrary {
       _arc4random_stirPtr.asFunction<void Function()>();
 
   int arc4random_uniform(
-    int UpperBound,
+    int __upper_bound,
   ) {
     return _arc4random_uniform(
-      UpperBound,
+      __upper_bound,
     );
   }
 
@@ -3431,11 +3431,11 @@ class NativeLibrary {
       .asFunction<int Function(ffi.Pointer<timespec>, ffi.Pointer<timespec>)>();
 
   int clock_getres(
-    int ClockId,
+    int __clock_id,
     ffi.Pointer<timespec> __res,
   ) {
     return _clock_getres(
-      ClockId,
+      __clock_id,
       __res,
     );
   }
@@ -3448,11 +3448,11 @@ class NativeLibrary {
       _clock_getresPtr.asFunction<int Function(int, ffi.Pointer<timespec>)>();
 
   int clock_gettime(
-    int ClockId,
+    int __clock_id,
     ffi.Pointer<timespec> __tp,
   ) {
     return _clock_gettime(
-      ClockId,
+      __clock_id,
       __tp,
     );
   }
@@ -3465,10 +3465,10 @@ class NativeLibrary {
       _clock_gettimePtr.asFunction<int Function(int, ffi.Pointer<timespec>)>();
 
   int clock_gettime_nsec_np(
-    int ClockId,
+    int __clock_id,
   ) {
     return _clock_gettime_nsec_np(
-      ClockId,
+      __clock_id,
     );
   }
 
@@ -3479,11 +3479,11 @@ class NativeLibrary {
       _clock_gettime_nsec_npPtr.asFunction<int Function(int)>();
 
   int clock_settime(
-    int ClockId,
+    int __clock_id,
     ffi.Pointer<timespec> __tp,
   ) {
     return _clock_settime(
-      ClockId,
+      __clock_id,
       __tp,
     );
   }
@@ -3564,25 +3564,41 @@ class NativeLibrary {
   late final _iden_free_hashes = _iden_free_hashesPtr
       .asFunction<void Function(ffi.Pointer<ffi.Pointer<ffi.Uint8>>, int)>();
 
-  late final ffi.Pointer<size_t> _hashLen = _lookup<size_t>('hashLen');
-
-  int get hashLen => _hashLen.value;
-
-  set hashLen(int value) => _hashLen.value = value;
-
-  ffi.Pointer<ffi.Int8> reverse(
-    ffi.Pointer<ffi.Int8> in1,
+  ffi.Pointer<ffi.Uint8> iden_get_hash_at_idx(
+    ffi.Pointer<ffi.Pointer<ffi.Uint8>> hashes,
+    int idx,
   ) {
-    return _reverse(
-      in1,
+    return _iden_get_hash_at_idx(
+      hashes,
+      idx,
     );
   }
 
-  late final _reversePtr = _lookup<
+  late final _iden_get_hash_at_idxPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Int8> Function(ffi.Pointer<ffi.Int8>)>>('reverse');
-  late final _reverse = _reversePtr
-      .asFunction<ffi.Pointer<ffi.Int8> Function(ffi.Pointer<ffi.Int8>)>();
+          ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
+              ffi.Int32)>>('iden_get_hash_at_idx');
+  late final _iden_get_hash_at_idx = _iden_get_hash_at_idxPtr.asFunction<
+      ffi.Pointer<ffi.Uint8> Function(
+          ffi.Pointer<ffi.Pointer<ffi.Uint8>>, int)>();
+
+  ffi.Pointer<ffi.Void> _iden_get_ptr_by_idx(
+    ffi.Pointer<ffi.Pointer<ffi.Void>> data,
+    int idx,
+  ) {
+    return __iden_get_ptr_by_idx(
+      data,
+      idx,
+    );
+  }
+
+  late final __iden_get_ptr_by_idxPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              ffi.Int32)>>('_iden_get_ptr_by_idx');
+  late final __iden_get_ptr_by_idx = __iden_get_ptr_by_idxPtr.asFunction<
+      ffi.Pointer<ffi.Void> Function(
+          ffi.Pointer<ffi.Pointer<ffi.Void>>, int)>();
 
   ffi.Pointer<IDENTreeEntry> IDENauthClaimTreeEntry(
     ffi.Pointer<ffi.Uint8> schemaHash,
@@ -3608,6 +3624,28 @@ class NativeLibrary {
   late final _IDENauthClaimTreeEntry = _IDENauthClaimTreeEntryPtr.asFunction<
       ffi.Pointer<IDENTreeEntry> Function(ffi.Pointer<ffi.Uint8>,
           ffi.Pointer<IDENBigInt>, ffi.Pointer<IDENBigInt>, int)>();
+
+  ffi.Pointer<IDENstatus> IDENClaimTreeEntryHash(
+    ffi.Pointer<IDENMerkleTreeHash> indexHash,
+    ffi.Pointer<IDENMerkleTreeHash> valueHash,
+    ffi.Pointer<IDENClaim> claim,
+  ) {
+    return _IDENClaimTreeEntryHash(
+      indexHash,
+      valueHash,
+      claim,
+    );
+  }
+
+  late final _IDENClaimTreeEntryHashPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<IDENstatus> Function(
+              ffi.Pointer<IDENMerkleTreeHash>,
+              ffi.Pointer<IDENMerkleTreeHash>,
+              ffi.Pointer<IDENClaim>)>>('IDENClaimTreeEntryHash');
+  late final _IDENClaimTreeEntryHash = _IDENClaimTreeEntryHashPtr.asFunction<
+      ffi.Pointer<IDENstatus> Function(ffi.Pointer<IDENMerkleTreeHash>,
+          ffi.Pointer<IDENMerkleTreeHash>, ffi.Pointer<IDENClaim>)>();
 
   ffi.Pointer<IDENHash> IDENTreeEntryIndexHash(
     ffi.Pointer<IDENTreeEntry> res,
@@ -3713,6 +3751,24 @@ class NativeLibrary {
   late final _IDENmerkleTreeRoot = _IDENmerkleTreeRootPtr.asFunction<
       ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<IDENmerkleTree>)>();
 
+  ffi.Pointer<IDENstatus> IDENTreeRoot(
+    ffi.Pointer<IDENMerkleTreeHash> hash,
+    ffi.Pointer<IDENmerkleTree> mt,
+  ) {
+    return _IDENTreeRoot(
+      hash,
+      mt,
+    );
+  }
+
+  late final _IDENTreeRootPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<IDENstatus> Function(ffi.Pointer<IDENMerkleTreeHash>,
+              ffi.Pointer<IDENmerkleTree>)>>('IDENTreeRoot');
+  late final _IDENTreeRoot = _IDENTreeRootPtr.asFunction<
+      ffi.Pointer<IDENstatus> Function(
+          ffi.Pointer<IDENMerkleTreeHash>, ffi.Pointer<IDENmerkleTree>)>();
+
   ffi.Pointer<IDENProof> IDENmerkleTreeGenerateProof(
     ffi.Pointer<IDENmerkleTree> mt,
     ffi.Pointer<IDENHash> indexHash,
@@ -3731,6 +3787,29 @@ class NativeLibrary {
       _IDENmerkleTreeGenerateProofPtr.asFunction<
           ffi.Pointer<IDENProof> Function(
               ffi.Pointer<IDENmerkleTree>, ffi.Pointer<IDENHash>)>();
+
+  ffi.Pointer<IDENstatus> IDENMerkleTreeGenerateProof(
+    ffi.Pointer<ffi.Pointer<IDENProof>> proof,
+    ffi.Pointer<IDENmerkleTree> mt,
+    IDENMerkleTreeHash indexHash,
+  ) {
+    return _IDENMerkleTreeGenerateProof(
+      proof,
+      mt,
+      indexHash,
+    );
+  }
+
+  late final _IDENMerkleTreeGenerateProofPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<IDENstatus> Function(
+              ffi.Pointer<ffi.Pointer<IDENProof>>,
+              ffi.Pointer<IDENmerkleTree>,
+              IDENMerkleTreeHash)>>('IDENMerkleTreeGenerateProof');
+  late final _IDENMerkleTreeGenerateProof =
+      _IDENMerkleTreeGenerateProofPtr.asFunction<
+          ffi.Pointer<IDENstatus> Function(ffi.Pointer<ffi.Pointer<IDENProof>>,
+              ffi.Pointer<IDENmerkleTree>, IDENMerkleTreeHash)>();
 
   void IDENFreeProof(
     ffi.Pointer<IDENProof> proof,
@@ -3861,6 +3940,23 @@ class NativeLibrary {
           void Function(ffi.Pointer<IDENClaim>, ffi.Pointer<IDENBigInt>,
               ffi.Pointer<IDENBigInt>)>();
 
+  void IDENClaimSetIndexID(
+    ffi.Pointer<IDENClaim> c,
+    IDENId id,
+  ) {
+    return _IDENClaimSetIndexID(
+      c,
+      id,
+    );
+  }
+
+  late final _IDENClaimSetIndexIDPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<IDENClaim>, IDENId)>>('IDENClaimSetIndexID');
+  late final _IDENClaimSetIndexID = _IDENClaimSetIndexIDPtr.asFunction<
+      void Function(ffi.Pointer<IDENClaim>, IDENId)>();
+
   void IDENClaimSetRevocationNonce(
     ffi.Pointer<IDENClaim> c,
     int revNonce,
@@ -3923,6 +4019,161 @@ class NativeLibrary {
           'IDENFreeClaim');
   late final _IDENFreeClaim =
       _IDENFreeClaimPtr.asFunction<void Function(ffi.Pointer<IDENClaim>)>();
+
+  ffi.Pointer<IDENJsonResponse> IDENPrepareAtomicQueryInputs(
+    ffi.Pointer<IDENAtomicQueryInputs> in1,
+  ) {
+    return _IDENPrepareAtomicQueryInputs(
+      in1,
+    );
+  }
+
+  late final _IDENPrepareAtomicQueryInputsPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Pointer<IDENJsonResponse> Function(
+                  ffi.Pointer<IDENAtomicQueryInputs>)>>(
+      'IDENPrepareAtomicQueryInputs');
+  late final _IDENPrepareAtomicQueryInputs =
+      _IDENPrepareAtomicQueryInputsPtr.asFunction<
+          ffi.Pointer<IDENJsonResponse> Function(
+              ffi.Pointer<IDENAtomicQueryInputs>)>();
+
+  ffi.Pointer<IDENJsonResponse> IDENPrepareAuthInputs(
+    ffi.Pointer<IDENAuthInputs> in1,
+  ) {
+    return _IDENPrepareAuthInputs(
+      in1,
+    );
+  }
+
+  late final _IDENPrepareAuthInputsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<IDENJsonResponse> Function(
+              ffi.Pointer<IDENAuthInputs>)>>('IDENPrepareAuthInputs');
+  late final _IDENPrepareAuthInputs = _IDENPrepareAuthInputsPtr.asFunction<
+      ffi.Pointer<IDENJsonResponse> Function(ffi.Pointer<IDENAuthInputs>)>();
+
+  void IDENFreeJsonResponse(
+    ffi.Pointer<IDENJsonResponse> jsonResponse,
+  ) {
+    return _IDENFreeJsonResponse(
+      jsonResponse,
+    );
+  }
+
+  late final _IDENFreeJsonResponsePtr = _lookup<
+          ffi.NativeFunction<ffi.Void Function(ffi.Pointer<IDENJsonResponse>)>>(
+      'IDENFreeJsonResponse');
+  late final _IDENFreeJsonResponse = _IDENFreeJsonResponsePtr.asFunction<
+      void Function(ffi.Pointer<IDENJsonResponse>)>();
+
+  ffi.Pointer<IDENstatus> IDENCalculateGenesisID(
+    ffi.Pointer<IDENId> id,
+    IDENMerkleTreeHash clr,
+  ) {
+    return _IDENCalculateGenesisID(
+      id,
+      clr,
+    );
+  }
+
+  late final _IDENCalculateGenesisIDPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<IDENstatus> Function(ffi.Pointer<IDENId>,
+              IDENMerkleTreeHash)>>('IDENCalculateGenesisID');
+  late final _IDENCalculateGenesisID = _IDENCalculateGenesisIDPtr.asFunction<
+      ffi.Pointer<IDENstatus> Function(
+          ffi.Pointer<IDENId>, IDENMerkleTreeHash)>();
+
+  ffi.Pointer<IDENstatus> IDENHashOfHashes(
+    ffi.Pointer<IDENMerkleTreeHash> dst,
+    ffi.Pointer<ffi.Pointer<IDENMerkleTreeHash>> hashes,
+    int n,
+  ) {
+    return _IDENHashOfHashes(
+      dst,
+      hashes,
+      n,
+    );
+  }
+
+  late final _IDENHashOfHashesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<IDENstatus> Function(
+              ffi.Pointer<IDENMerkleTreeHash>,
+              ffi.Pointer<ffi.Pointer<IDENMerkleTreeHash>>,
+              size_t)>>('IDENHashOfHashes');
+  late final _IDENHashOfHashes = _IDENHashOfHashesPtr.asFunction<
+      ffi.Pointer<IDENstatus> Function(ffi.Pointer<IDENMerkleTreeHash>,
+          ffi.Pointer<ffi.Pointer<IDENMerkleTreeHash>>, int)>();
+
+  void IDENHashFromUInt64(
+    ffi.Pointer<IDENMerkleTreeHash> dst,
+    int i,
+  ) {
+    return _IDENHashFromUInt64(
+      dst,
+      i,
+    );
+  }
+
+  late final _IDENHashFromUInt64Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<IDENMerkleTreeHash>,
+              ffi.Uint64)>>('IDENHashFromUInt64');
+  late final _IDENHashFromUInt64 = _IDENHashFromUInt64Ptr.asFunction<
+      void Function(ffi.Pointer<IDENMerkleTreeHash>, int)>();
+
+  ffi.Pointer<IDENstatus> IDENJsonLDParseClaim(
+    ffi.Pointer<ffi.Pointer<IDENClaim>> claim,
+    ffi.Pointer<ffi.Int8> credential,
+    ffi.Pointer<ffi.Int8> schema,
+  ) {
+    return _IDENJsonLDParseClaim(
+      claim,
+      credential,
+      schema,
+    );
+  }
+
+  late final _IDENJsonLDParseClaimPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<IDENstatus> Function(
+              ffi.Pointer<ffi.Pointer<IDENClaim>>,
+              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Int8>)>>('IDENJsonLDParseClaim');
+  late final _IDENJsonLDParseClaim = _IDENJsonLDParseClaimPtr.asFunction<
+      ffi.Pointer<IDENstatus> Function(ffi.Pointer<ffi.Pointer<IDENClaim>>,
+          ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Int8>)>();
+
+  ffi.Pointer<IDENstatus> IDENJsonLDGetFieldSlotIndex(
+    ffi.Pointer<ffi.Int32> slotIndex,
+    ffi.Pointer<ffi.Int8> field,
+    ffi.Pointer<ffi.Int8> claimType,
+    ffi.Pointer<ffi.Int8> schema,
+  ) {
+    return _IDENJsonLDGetFieldSlotIndex(
+      slotIndex,
+      field,
+      claimType,
+      schema,
+    );
+  }
+
+  late final _IDENJsonLDGetFieldSlotIndexPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<IDENstatus> Function(
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Int8>)>>('IDENJsonLDGetFieldSlotIndex');
+  late final _IDENJsonLDGetFieldSlotIndex =
+      _IDENJsonLDGetFieldSlotIndexPtr.asFunction<
+          ffi.Pointer<IDENstatus> Function(
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Int8>,
+              ffi.Pointer<ffi.Int8>)>();
 }
 
 class __mbstate_t extends ffi.Union {
@@ -5178,9 +5429,18 @@ typedef uintptr_t = ffi.Uint64;
 
 abstract class IDENstatusCode {
   static const int IDENSTATUSCODE_OK = 0;
-  static const int IDENSTATUSCODE_ENTRY_STATUS_INCORRECT = 1;
-  static const int IDENSTATUSCODE_ENTRY_LENGTH_INCORRECT = 2;
-  static const int IDENSTATUSCODE_CANT_ADD_ENTRY_TO_MERKLETREE = 3;
+  static const int IDENSTATUSCODE_NIL_POINTER = 1;
+  static const int IDENSTATUSCODE_OUT_OF_MEMORY = 2;
+  static const int IDENSTATUSCODE_ENTRY_STATUS_INCORRECT = 3;
+  static const int IDENSTATUSCODE_ENTRY_LENGTH_INCORRECT = 4;
+  static const int IDENSTATUSCODE_CANT_ADD_ENTRY_TO_MERKLETREE = 5;
+  static const int IDENSTATUSCODE_GENESIS_ID_ERROR = 6;
+  static const int IDENSTATUSCODE_MERKLE_TREE_ERROR = 7;
+  static const int IDENSTATUSCODE_MERKLE_TREE_HASH_ERROR = 8;
+  static const int IDENSTATUSCODE_PROOF_GENERATION_ERROR = 9;
+  static const int IDENSTATUSCODE_CLAIM_ERROR = 10;
+  static const int IDENSTATUSCODE_IDEN3CREDENTIAL_PARSE_ERROR = 11;
+  static const int IDENSTATUSCODE_GET_FIELD_SLOT_INDEX_ERROR = 12;
 }
 
 class _IDENstatus extends ffi.Struct {
@@ -5252,6 +5512,122 @@ class _IDENClaim extends ffi.Struct {
   external ffi.Pointer<ffi.Int8> error_msg;
 }
 
+class _IDENMerkleTreeHash extends ffi.Struct {
+  @ffi.Array.multi([32])
+  external ffi.Array<ffi.Uint8> data;
+}
+
+class _IDENId extends ffi.Struct {
+  @ffi.Array.multi([31])
+  external ffi.Array<ffi.Uint8> data;
+}
+
+class _IDENBJJSignature extends ffi.Struct {
+  @ffi.Array.multi([64])
+  external ffi.Array<ffi.Uint8> data;
+}
+
+class _IDENTreeState extends ffi.Struct {
+  external IDENMerkleTreeHash state;
+
+  external IDENMerkleTreeHash claims_root;
+
+  external IDENMerkleTreeHash revocation_root;
+
+  external IDENMerkleTreeHash root_of_roots;
+}
+
+typedef IDENMerkleTreeHash = _IDENMerkleTreeHash;
+
+class _IDENCircuitsClaim extends ffi.Struct {
+  external ffi.Pointer<IDENClaim> core_claim;
+
+  external ffi.Pointer<IDENProof> proof;
+
+  external IDENTreeState tree_state;
+
+  @time_t()
+  external int current_timestamp;
+}
+
+typedef IDENClaim = _IDENClaim;
+typedef IDENProof = _IDENProof;
+typedef IDENTreeState = _IDENTreeState;
+
+class _IDENRevocationStatus extends ffi.Struct {
+  external IDENTreeState tree_state;
+
+  external ffi.Pointer<IDENProof> proof;
+}
+
+class _IDENQuery extends ffi.Struct {
+  @ffi.Int32()
+  external int slot_index;
+
+  external ffi.Pointer<IDENBigInt> value;
+
+  @ffi.Int32()
+  external int operator1;
+}
+
+typedef IDENBigInt = _IDENBigInt;
+
+class _IDENAtomicQueryInputs extends ffi.Struct {
+  external IDENId id;
+
+  external IDENCircuitClaim auth_claim;
+
+  external IDENRevocationStatus auth_claim_rev_status;
+
+  @ffi.Int64()
+  external int challenge;
+
+  external IDENBJJSignature signature;
+
+  external IDENTreeState current_tree_state;
+
+  external IDENCircuitClaim claim;
+
+  external IDENRevocationStatus revocation_status;
+
+  external IDENQuery query;
+}
+
+typedef IDENId = _IDENId;
+typedef IDENCircuitClaim = _IDENCircuitsClaim;
+typedef IDENRevocationStatus = _IDENRevocationStatus;
+typedef IDENBJJSignature = _IDENBJJSignature;
+typedef IDENQuery = _IDENQuery;
+
+class _IDENAuthInputs extends ffi.Struct {
+  external IDENId id;
+
+  external IDENTreeState state;
+
+  external IDENCircuitClaim auth_claim;
+
+  external ffi.Pointer<IDENProof> auth_claim_non_revocation_proof;
+
+  external IDENBJJSignature signature;
+
+  @ffi.Int64()
+  external int challenge;
+}
+
+abstract class IDENJsonResponseStatus {
+  static const int IDENJSONRESPONSESTATUS_OK = 0;
+  static const int IDENJSONRESPONSESTATUS_ERROR = 1;
+}
+
+class _IDENJsonResponse extends ffi.Struct {
+  external ffi.Pointer<ffi.Int8> json_string;
+
+  @ffi.Int32()
+  external int status;
+
+  external ffi.Pointer<ffi.Int8> error_msg;
+}
+
 class GoInterface extends ffi.Struct {
   external ffi.Pointer<ffi.Void> t;
 
@@ -5271,13 +5647,12 @@ class GoSlice extends ffi.Struct {
 typedef GoInt = GoInt64;
 typedef GoInt64 = ffi.Int64;
 typedef IDENTreeEntry = _IDENTreeEntry;
-typedef IDENBigInt = _IDENBigInt;
-typedef IDENHash = _IDENHash;
-typedef IDENClaim = _IDENClaim;
-typedef IDENmerkleTree = _IDENmerkleTree;
 typedef IDENstatus = _IDENstatus;
-typedef IDENProof = _IDENProof;
-typedef IDENIDENFreeJsonResponseClaim = _IDENClaim;
+typedef IDENHash = _IDENHash;
+typedef IDENmerkleTree = _IDENmerkleTree;
+typedef IDENJsonResponse = _IDENJsonResponse;
+typedef IDENAtomicQueryInputs = _IDENAtomicQueryInputs;
+typedef IDENAuthInputs = _IDENAuthInputs;
 
 const int __DARWIN_ONLY_64_BIT_INO_T = 0;
 
@@ -6322,3 +6697,9 @@ const int CLOCK_PROCESS_CPUTIME_ID = 12;
 const int CLOCK_THREAD_CPUTIME_ID = 16;
 
 const int TIME_UTC = 1;
+
+const int IDEN_MT_HASH_SIZE = 32;
+
+const int IDEN_ID_SIZE = 31;
+
+const int IDEN_BJJ_SIGNATURE_SIZE = 64;

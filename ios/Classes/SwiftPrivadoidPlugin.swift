@@ -177,9 +177,16 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
     }
     
   public func getGenesisId(idenState: String) -> String {
-    
+        print("idenState: " + idenState)
         var state = idenState.asHexArrayFromNonValidatedSource()
         state = state.reversed()
+      
+        var stateString = String()
+        for i in 0...state.count - 1 {
+          stateString.append(String(format: "%02x", state[i]))
+        }
+        print("reversed idenstate: " + stateString)
+      
         let unsafePointerState : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: state)
         
         let idGenesis = IDENidGenesisFromIdenState(unsafePointerState)
@@ -192,6 +199,7 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         var result = String()
         for i in 0...30 {
             result.append(String(format: "%02x", idGenesis![i]))
+            print(result)
         }
         
         if (idGenesis != nil) {
@@ -734,7 +742,7 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         return "ALL GOOD";
   }
     
-  public func testMerkleTree() {
+  /*public func testMerkleTree() {
         let mt = IDENnewMerkleTree(40)
         
         if (mt == nil) {
@@ -754,7 +762,7 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
             print("merkle tree successfuly created\n")
             //result("New MerkleTree: WRONG!!")
         }
-  }
+  }*/
     
   public func createCorrectMT() -> UnsafeMutablePointer<IDENmerkleTree>? {
         let mt = IDENnewMerkleTree(40)
@@ -832,7 +840,7 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
       verify_poseidon("", "", "");
       let str = "string"
       let unsafePointer = UnsafeMutablePointer<Int8>(mutating: (str as NSString).utf8String)
-      let str2 = reverse(unsafePointer)
+      //let str2 = reverse(unsafePointer)
       cstring_free(unsafePointer);
     }
 }

@@ -30,7 +30,7 @@ class ProofScopeDataResponse {
   final List<dynamic>? pi_b;
   final List<dynamic>? pi_c;
   final String? protocol;
-  final String? curve;
+  String? curve;
 
   ProofScopeDataResponse(
       {this.pi_a, this.pi_b, this.pi_c, this.protocol, this.curve});

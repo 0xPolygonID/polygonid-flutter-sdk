@@ -8,6 +8,8 @@ import 'package:privadoid_sdk/privadoid_wallet.dart';
 import 'package:privadoid_sdk/utils/hex_utils.dart';
 import 'package:privadoid_sdk/utils/uint8_list_utils.dart';
 
+import 'libs/iden3corelib.dart';
+
 class PrivadoIdSdk {
   static const MethodChannel _channel = MethodChannel('privadoid_sdk');
 
@@ -32,23 +34,39 @@ class PrivadoIdSdk {
     final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
         privateKey: HexUtils.hexToBytes(privateKey));
 
-    final String? mtRoot = await _channel.invokeMethod(
-        'getMerkleTreeRoot', [wallet.publicKey[0], wallet.publicKey[1]]);
-    Uint8List bufMtRoot = Uint8List.fromList(HEX.decode(mtRoot!));
+    Iden3CoreLib iden3coreLib = Iden3CoreLib();
+
+    final String? mtRoot = iden3coreLib.getMerkleTreeRoot(
+        wallet.publicKey[0], wallet.publicKey[1]);
+
+    /*final String? mtOldRoot = await _channel.invokeMethod(
+        'getMerkleTreeRoot', [wallet.publicKey[0], wallet.publicKey[1]]);*/
+
+    print("NewMtRoot: " + mtRoot!);
+    //print("OldMtRoot: " + mtOldRoot!);
+
+    Uint8List bufMtRoot = Uint8List.fromList(HEX.decode(mtRoot));
     BigInt mtRootBigInt = Uint8ArrayUtils.beBuff2int(
         Uint8List.fromList(bufMtRoot.reversed.toList()));
+
+    print("mtRootBigInt: " +
+        mtRootBigInt
+            .toString()); // 290650974844617975035577804953618192787930000597803545869756570371061099582
 
     String state = wallet.hashMessage(mtRootBigInt.toString(),
         BigInt.zero.toString(), BigInt.zero.toString());
     Uint8List bufState = Uint8List.fromList(HEX.decode(state));
     BigInt stateBigInt = Uint8ArrayUtils.beBuff2int(bufState);
 
-    final String? genesisId =
-        await _channel.invokeMethod('getGenesisId', [state]);
+    final String? genesisId = iden3coreLib.getGenesisId(state);
+
+    /*final String? oldGenesisId =
+        await _channel.invokeMethod('getGenesisId', [state]);*/
+
+    print("NewGenesisId: " + genesisId!);
+    //print("OldGenesisId: " + oldGenesisId!);
+
     return genesisId;
-    /*Uint8List bufGenesisId = Uint8List.fromList(HEX.decode(genesisId!));
-    BigInt genesisIdBigInt = Uint8ArrayUtils.beBuff2int(
-        Uint8List.fromList(bufGenesisId.reversed.toList()));*/
   }
 
   static Future<Map<String, dynamic>> generateProof(
@@ -56,18 +74,31 @@ class PrivadoIdSdk {
     final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
         privateKey: HexUtils.hexToBytes(privateKey));
 
-    final String? mtRoot = await _channel.invokeMethod(
-        'getMerkleTreeRoot', [wallet.publicKey[0], wallet.publicKey[1]]);
+    Iden3CoreLib iden3coreLib = Iden3CoreLib();
+    final String? mtRoot = iden3coreLib.getMerkleTreeRoot(
+        wallet.publicKey[0], wallet.publicKey[1]);
+
+    /*final String? mtRoot = await _channel.invokeMethod(
+        'getMerkleTreeRoot', [wallet.publicKey[0], wallet.publicKey[1]]);*/
+
     Uint8List bufMtRoot = Uint8List.fromList(HEX.decode(mtRoot!));
     BigInt mtRootBigInt = Uint8ArrayUtils.beBuff2int(
         Uint8List.fromList(bufMtRoot.reversed.toList()));
 
     List<String>? authClaimTree = [];
-    final List<Object?> entryRes = await _channel.invokeMethod(
-        'getAuthClaimTreeEntry', [wallet.publicKey[0], wallet.publicKey[1]]);
+
+    final List<String> entryRes = iden3coreLib.getAuthClaimTreeEntry(
+        wallet.publicKey[0], wallet.publicKey[1]);
+
+    /*final List<Object?> oldEntryRes = await _channel.invokeMethod(
+        'getAuthClaimTreeEntry', [wallet.publicKey[0], wallet.publicKey[1]]);*/
+
+    print("newAuthClaimTreeEntry: " + entryRes.toString());
+    //print("oldAuthClaimTreeEntry: " + oldEntryRes.toString());
+    //print("OldMtRoot: " + mtOldRoot!);
+
     for (var i = 0; i < entryRes.length; i++) {
-      Uint8List bufEntry =
-          Uint8List.fromList(HEX.decode(entryRes[i] as String));
+      Uint8List bufEntry = Uint8List.fromList(HEX.decode(entryRes[i]));
       BigInt entryBigInt = Uint8ArrayUtils.beBuff2int(
           Uint8List.fromList(bufEntry.reversed.toList()));
       authClaimTree.add(entryBigInt.toString());
@@ -85,8 +116,10 @@ class PrivadoIdSdk {
     Uint8List bufState = Uint8List.fromList(HEX.decode(state));
     BigInt stateBigInt = Uint8ArrayUtils.beBuff2int(bufState);
 
-    final String? genesisId =
-        await _channel.invokeMethod('getGenesisId', [state]);
+    final String? genesisId = iden3coreLib.getGenesisId(state);
+
+    /*final String? genesisId =
+        await _channel.invokeMethod('getGenesisId', [state]);*/
     Uint8List bufGenesisId = Uint8List.fromList(HEX.decode(genesisId!));
     BigInt genesisIdBigInt = Uint8ArrayUtils.beBuff2int(
         Uint8List.fromList(bufGenesisId.reversed.toList()));

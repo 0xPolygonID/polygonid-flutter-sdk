@@ -19,13 +19,17 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 /* Start of preamble from import "C" comments.  */
 
 
-#line 3 "main.go"
+#line 5 "main.go"
 
 #include <stddef.h>
 #include <string.h>
 #include <stdlib.h> // for C.free
 #include <stdbool.h> // for bool
 #include <time.h> // for time_t
+
+#define IDEN_MT_HASH_SIZE 32
+#define IDEN_ID_SIZE 31
+#define IDEN_BJJ_SIGNATURE_SIZE 64
 
 typedef enum
 {
@@ -72,9 +76,18 @@ typedef struct _IDENmerkleTree
 typedef enum
 {
 	IDENSTATUSCODE_OK,
+	IDENSTATUSCODE_NIL_POINTER,
+	IDENSTATUSCODE_OUT_OF_MEMORY,
 	IDENSTATUSCODE_ENTRY_STATUS_INCORRECT,
 	IDENSTATUSCODE_ENTRY_LENGTH_INCORRECT,
 	IDENSTATUSCODE_CANT_ADD_ENTRY_TO_MERKLETREE,
+	IDENSTATUSCODE_GENESIS_ID_ERROR,
+	IDENSTATUSCODE_MERKLE_TREE_ERROR,
+	IDENSTATUSCODE_MERKLE_TREE_HASH_ERROR,
+	IDENSTATUSCODE_PROOF_GENERATION_ERROR,
+	IDENSTATUSCODE_CLAIM_ERROR,
+	IDENSTATUSCODE_IDEN3CREDENTIAL_PARSE_ERROR,
+	IDENSTATUSCODE_GET_FIELD_SLOT_INDEX_ERROR,
 } IDENstatusCode;
 
 typedef struct _IDENstatus
@@ -94,8 +107,8 @@ typedef enum
 
 typedef struct _IDENProof
 {
-	IDENProofStatus status; // 0 in case of success
-	char *error_msg;
+	IDENProofStatus status; // 0 in case of success [deprecated]
+	char *error_msg; // [deprecated]
 	bool existence;
 	unsigned char **siblings; // array of pointers to hash — 32 byte arrays
 	size_t siblings_num; // number of hashes in hashes
@@ -133,6 +146,91 @@ typedef struct _IDENClaim
 	char *error_msg;
 } IDENClaim;
 
+typedef struct _IDENMerkleTreeHash
+{
+	unsigned char data[IDEN_MT_HASH_SIZE];
+} IDENMerkleTreeHash;
+
+typedef struct _IDENId
+{
+	unsigned char data[IDEN_ID_SIZE];
+} IDENId;
+
+typedef struct _IDENBJJSignature
+{
+	unsigned char data[64];
+} IDENBJJSignature;
+
+typedef struct _IDENTreeState {
+	IDENMerkleTreeHash state;
+	IDENMerkleTreeHash claims_root;
+	IDENMerkleTreeHash revocation_root;
+	IDENMerkleTreeHash root_of_roots;
+} IDENTreeState;
+
+typedef struct _IDENCircuitsClaim
+{
+	IDENClaim *core_claim;
+	IDENProof *proof;
+	IDENTreeState tree_state;
+	time_t current_timestamp;
+} IDENCircuitClaim;
+
+typedef struct _IDENRevocationStatus
+{
+	IDENTreeState tree_state;
+	IDENProof *proof;
+} IDENRevocationStatus;
+
+typedef struct _IDENQuery
+{
+	int slot_index;
+	IDENBigInt *value;
+	int operator;
+} IDENQuery;
+
+typedef struct _IDENAtomicQueryInputs
+{
+	IDENId id;
+	IDENCircuitClaim auth_claim;
+	IDENRevocationStatus auth_claim_rev_status;
+	long long challenge;
+	IDENBJJSignature signature;
+
+	IDENTreeState current_tree_state;
+
+	IDENCircuitClaim claim;
+	IDENRevocationStatus revocation_status;
+
+	IDENQuery query;
+} IDENAtomicQueryInputs;
+
+typedef struct _IDENAuthInputs
+{
+	IDENId id;
+
+	IDENTreeState state;
+
+	IDENCircuitClaim auth_claim;
+	IDENProof *auth_claim_non_revocation_proof;
+
+	IDENBJJSignature signature;
+	long long challenge;
+} IDENAuthInputs;
+
+typedef enum
+{
+	IDENJSONRESPONSESTATUS_OK,
+	IDENJSONRESPONSESTATUS_ERROR,
+} IDENJsonResponseStatus;
+
+typedef struct _IDENJsonResponse
+{
+	char *json_string;
+	IDENJsonResponseStatus status;
+	char *error_msg;
+} IDENJsonResponse;
+
 extern unsigned char **iden_alloc_hashes(int n);
 
 extern void
@@ -141,7 +239,11 @@ iden_set_hash_idx(unsigned char **hashes, unsigned char *hash, int idx);
 extern void
 iden_free_hashes(unsigned char **hashes, size_t num);
 
-extern const size_t hashLen;
+unsigned char *
+iden_get_hash_at_idx(unsigned char **hashes, int idx);
+
+void *
+_iden_get_ptr_by_idx(void **data, int idx);
 
 #line 1 "cgo-generated-wrapper"
 
@@ -193,12 +295,16 @@ typedef struct { void *data; GoInt len; GoInt cap; } GoSlice;
 extern "C" {
 #endif
 
-extern char* reverse(char* in);
 
 // Return pointer to IDENTreeEntry struct.
 // When tree entry is not needed anymore, it should be freed with
 // `IDENFreeTreeEntry` function.
 extern IDENTreeEntry* IDENauthClaimTreeEntry(unsigned char* schemaHash, IDENBigInt* keyX, IDENBigInt* keyY, long long unsigned int revNonce);
+
+// calculate hashes of claim's index and value and write them to
+// indexHash and valueHash appropriately. If any of pointers is NULL,
+// do not write this hash.
+extern IDENstatus* IDENClaimTreeEntryHash(IDENMerkleTreeHash* indexHash, IDENMerkleTreeHash* valueHash, IDENClaim* claim);
 extern IDENHash* IDENTreeEntryIndexHash(IDENTreeEntry* res);
 extern void IDENFreeHash(IDENHash* res);
 extern void IDENFreeTreeEntry(IDENTreeEntry* res);
@@ -211,7 +317,11 @@ extern IDENstatus* IDENmerkleTreeAddClaim(IDENmerkleTree* mt, IDENTreeEntry* tre
 // Return merkle tree root as 32 byte array. Should be freed after usage
 // If merkle tree is in bad status, return nil
 extern unsigned char* IDENmerkleTreeRoot(IDENmerkleTree* mt);
+extern IDENstatus* IDENTreeRoot(IDENMerkleTreeHash* hash, IDENmerkleTree* mt);
+
+// deprecated
 extern IDENProof* IDENmerkleTreeGenerateProof(IDENmerkleTree* mt, IDENHash* indexHash);
+extern IDENstatus* IDENMerkleTreeGenerateProof(IDENProof** proof, IDENmerkleTree* mt, IDENMerkleTreeHash indexHash);
 extern void IDENFreeProof(IDENProof* proof);
 
 // mtHash is a pointer to merkle tree hash — 32 bytes array
@@ -223,10 +333,19 @@ extern void IDENFreeBigInt(IDENBigInt* bi);
 extern IDENClaim* IDENNewClaim(unsigned char* schemaHash);
 extern void IDENClaimSetValueDataInt(IDENClaim* c, IDENBigInt* slotA, IDENBigInt* slotB);
 extern void IDENClaimSetIndexDataInt(IDENClaim* c, IDENBigInt* slotA, IDENBigInt* slotB);
+extern void IDENClaimSetIndexID(IDENClaim* c, IDENId id);
 extern void IDENClaimSetRevocationNonce(IDENClaim* c, long long unsigned int revNonce);
 extern void IDENClaimSetExpirationDate(IDENClaim* c, time_t t);
 extern IDENTreeEntry* IDENClaimTreeEntry(IDENClaim* c);
 extern void IDENFreeClaim(IDENClaim* claim);
+extern IDENJsonResponse* IDENPrepareAtomicQueryInputs(IDENAtomicQueryInputs* in);
+extern IDENJsonResponse* IDENPrepareAuthInputs(IDENAuthInputs* in);
+extern void IDENFreeJsonResponse(IDENJsonResponse* jsonResponse);
+extern IDENstatus* IDENCalculateGenesisID(IDENId* id, IDENMerkleTreeHash clr);
+extern IDENstatus* IDENHashOfHashes(IDENMerkleTreeHash* dst, IDENMerkleTreeHash** hashes, size_t n);
+extern void IDENHashFromUInt64(IDENMerkleTreeHash* dst, long long unsigned int i);
+extern IDENstatus* IDENJsonLDParseClaim(IDENClaim** claim, char* credential, char* schema);
+extern IDENstatus* IDENJsonLDGetFieldSlotIndex(int* slotIndex, char* field, char* claimType, char* schema);
 
 #ifdef __cplusplus
 }

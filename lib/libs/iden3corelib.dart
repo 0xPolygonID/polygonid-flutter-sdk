@@ -1,7 +1,9 @@
 import 'dart:ffi' as ffi;
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
+import 'package:web3dart/crypto.dart';
 
 import 'generated_bindings.dart';
 
@@ -131,62 +133,142 @@ class Iden3CoreLib {
       ? ffi.DynamicLibrary.open("libiden3core.so")
       : ffi.DynamicLibrary.process();
 
-  //late CStringFree cstringFree;
+  Iden3CoreLib();
 
-  Iden3CoreLib() {
-    /*_packSignature = lib
-        .lookup<ffi.NativeFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<Utf8>)>>(
-            "pack_signature")
-        .asFunction();*/
+  String getGenesisId(String idenState) {
+    print("idenState: " + idenState);
+    NativeLibrary nativeLib = NativeLibrary(lib);
+    List<int> bytes = hexToBytes(idenState);
+    List<int> reversedBytes = bytes.reversed.toList();
+    final ffi.Pointer<ffi.Uint8> unsafePointerState =
+        malloc<ffi.Uint8>(reversedBytes.length);
+    final Uint8List pointerList =
+        unsafePointerState.asTypedList(reversedBytes.length);
+    pointerList.setAll(0, reversedBytes);
 
-    /*_unpackSignature = lib
-        .lookup<NativeFunction<Pointer<Utf8> Function(Pointer<Utf8>)>>(
-            "unpack_signature")
-        .asFunction();
+    String reversed = bytesToHex(reversedBytes, padToEvenLength: true);
+    print("idenState reversed: " + reversed);
 
-    _packPoint = lib
-        .lookup<
-            NativeFunction<
-                Pointer<Utf8> Function(
-                    Pointer<Utf8>, Pointer<Utf8>)>>("pack_point")
-        .asFunction();
+    final idGenesis = nativeLib.IDENidGenesisFromIdenState(unsafePointerState);
+    if (idGenesis == null) {
+      print("unable to get genesis id from iden state\n");
+      return "ERROR";
+    }
 
-    _unpackPoint = lib
-        .lookup<NativeFunction<Pointer<Utf8> Function(Pointer<Utf8>)>>(
-            "unpack_point")
-        .asFunction();
+    print("Genesis ID:\n");
+    var result = "";
+    for (int i = 0; i < 31; i++) {
+      result = result + idGenesis[i].toRadixString(16).padLeft(2, '0');
+      print(result);
+    }
 
-    _prv2Pub = lib
-        .lookup<NativeFunction<Pointer<Utf8> Function(Pointer<Utf8>)>>(
-            "prv2pub")
-        .asFunction();
+    if (idGenesis != null) {
+      nativeLib.free(idGenesis.cast());
+      print("id genesis successfully freed");
+    }
 
-    _hashPoseidon = lib
-        .lookup<
-            NativeFunction<
-                Pointer<Utf8> Function(Pointer<Utf8>, Pointer<Utf8>,
-                    Pointer<Utf8>)>>("hash_poseidon")
-        .asFunction();
-
-    _signPoseidon = lib
-        .lookup<
-            NativeFunction<
-                Pointer<Utf8> Function(
-                    Pointer<Utf8>, Pointer<Utf8>)>>("sign_poseidon")
-        .asFunction();
-
-    _verifyPoseidon = lib
-        .lookup<
-            NativeFunction<
-                Pointer<Utf8> Function(Pointer<Utf8>, Pointer<Utf8>,
-                    Pointer<Utf8>)>>("verify_poseidon")
-        .asFunction();
-
-    cstringFree =
-        lib.lookup<NativeFunction<CStringFreeFFI>>("cstring_free").asFunction();*/
+    return result;
   }
 
-  //late Pointer<Utf8> Function(Pointer<Utf8>) _packSignature;
+  List<String> getAuthClaimTreeEntry(String pubX, String pubY) {
+    NativeLibrary nativeLib = NativeLibrary(lib);
+
+    final schemaHash = [
+      0x7C,
+      0x08,
+      0x44,
+      0xA0,
+      0x75,
+      0xA9,
+      0xDD,
+      0xC7,
+      0xFC,
+      0xBD,
+      0xFB,
+      0x4F,
+      0x88,
+      0xAC,
+      0xD9,
+      0xBC
+    ];
+
+    final ffi.Pointer<ffi.Uint8> unsafePointerSchemaHash =
+        malloc<ffi.Uint8>(schemaHash.length + 1);
+    final Uint8List pointerList =
+        unsafePointerSchemaHash.asTypedList(schemaHash.length + 1);
+    pointerList.setAll(0, schemaHash);
+    pointerList[schemaHash.length] = 0;
+
+    /*final ffi.Pointer<ffi.Uint8> unsafePointerSchemaHash =
+        calloc.allocate<ffi.Uint8>(
+            schemaHash.length); // Allocate a pointer large enough.
+    final pointerList = unsafePointerSchemaHash.asTypedList(schemaHash
+        .length); // Create a list that uses our pointer and copy in the image data.
+    pointerList.setAll(0, schemaHash);*/
+
+    ffi.Pointer<ffi.Int8> unsafePointerX = pubX.toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<IDENBigInt> keyX =
+        nativeLib.IDENBigIntFromString(unsafePointerX);
+
+    ffi.Pointer<ffi.Int8> unsafePointerY = pubY.toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<IDENBigInt> keyY =
+        nativeLib.IDENBigIntFromString(unsafePointerY);
+
+    int revNonce = 0;
+
+    ffi.Pointer<IDENTreeEntry> entryRes = nativeLib.IDENauthClaimTreeEntry(
+        unsafePointerSchemaHash, keyX, keyY, revNonce);
+    if (entryRes == null) {
+      print("unable to allocate tree entry\n");
+      return ["ERROR"];
+    }
+
+    if (entryRes.ref.status != IDENtreeEntryStatus.IDENTREEENTRY_OK) {
+      print("error creating tree entry\n");
+      if (entryRes.ref.error_msg != null) {
+        final msg = entryRes.ref.error_msg.toString();
+        print("error message: " + msg);
+      }
+      return ["ERROR"];
+    }
+
+    if (entryRes.ref.data_len != 8 * 32) {
+      print("unexpected data length\n");
+      return ["ERROR"];
+    }
+
+    List<String> result = [];
+    for (int i = 0; i < 8; i++) {
+      print("$i");
+      var resultString = "";
+      for (int j = 0; j < 32; j++) {
+        resultString = resultString +
+            entryRes.ref.data[32 * i + j].toRadixString(16).padLeft(2, "0");
+        //print(entryRes.ref.data[32 * i + j].toRadixString(16));
+      }
+      result.add(resultString);
+      //print("\n");
+    }
+
+    print("generated Tree Entry IS CORRECT");
+
+    if (entryRes != null) {
+      nativeLib.IDENFreeTreeEntry(entryRes);
+      print("tree entry successfuly freed\n");
+    }
+
+    if (keyX != null) {
+      nativeLib.IDENFreeBigInt(keyX);
+      print("keyX successfuly freed\n");
+    }
+
+    if (keyY != null) {
+      nativeLib.IDENFreeBigInt(keyY);
+      print("keyY successfuly freed\n");
+    }
+
+    return result;
+  }
 
   String getMerkleTreeRoot(String pubX, String pubY) {
     NativeLibrary nativeLib = NativeLibrary(lib);
@@ -211,17 +293,24 @@ class Iden3CoreLib {
     ];
 
     final ffi.Pointer<ffi.Uint8> unsafePointerSchemaHash =
+        malloc<ffi.Uint8>(schemaHash.length + 1);
+    final Uint8List pointerList =
+        unsafePointerSchemaHash.asTypedList(schemaHash.length + 1);
+    pointerList.setAll(0, schemaHash);
+    pointerList[schemaHash.length] = 0;
+
+    /*final ffi.Pointer<ffi.Uint8> unsafePointerSchemaHash =
         calloc.allocate<ffi.Uint8>(
             schemaHash.length); // Allocate a pointer large enough.
     final pointerList = unsafePointerSchemaHash.asTypedList(schemaHash
         .length); // Create a list that uses our pointer and copy in the image data.
-    pointerList.setAll(0, schemaHash);
+    pointerList.setAll(0, schemaHash);*/
 
-    ffi.Pointer<ffi.Int8> unsafePointerX;
+    ffi.Pointer<ffi.Int8> unsafePointerX = pubX.toNativeUtf8().cast<ffi.Int8>();
     ffi.Pointer<IDENBigInt> keyX =
         nativeLib.IDENBigIntFromString(unsafePointerX);
 
-    ffi.Pointer<ffi.Int8> unsafePointerY;
+    ffi.Pointer<ffi.Int8> unsafePointerY = pubY.toNativeUtf8().cast<ffi.Int8>();
     ffi.Pointer<IDENBigInt> keyY =
         nativeLib.IDENBigIntFromString(unsafePointerY);
 
@@ -233,32 +322,261 @@ class Iden3CoreLib {
       return "ERROR";
     }
 
-    /*if (entryRes.pointee.status != IDENtreeEntryStatus.IDENTREEENTRY_OK) {
-      print("error creating tree entry\n")
-      if (entryRes.pointee.error_msg != nil) {
-        let msg = String.init(cString: (entryRes?.pointee.error_msg)!)
-        print("error message: " + msg)
+    if (entryRes.ref.status != IDENtreeEntryStatus.IDENTREEENTRY_OK) {
+      print("error creating tree entry\n");
+      if (entryRes.ref.error_msg != null) {
+        final msg = entryRes.ref.error_msg.toString();
+        print("error message: " + msg);
       }
-      return "ERROR"
-    }*/
+      return "ERROR";
+    }
 
-    /*if (entryRes?.pointee.data_len != 8 * 32) {
+    if (entryRes.ref.data_len != 8 * 32) {
       print("unexpected data length\n");
       return "ERROR";
-    }*/
-
-    /*for i in 0...7 {
-    print("%i:", i)
-    for j in 0...31 {
-    print(String(format:"%02X", entryRes!.pointee.data[32*i+j]))
     }
-    //print("\n")
-    }*/
+    for (int i = 0; i < 8; i++) {
+      print("$i");
+      for (int j = 0; j < 32; j++) {
+        print(entryRes.ref.data[32 * i + j].toRadixString(16).padLeft(2, "0"));
+      }
+      print("\n");
+    }
 
-    nativeLib.IDENFreeBigInt(keyX);
-    nativeLib.IDENFreeBigInt(keyY);
+    final mt = createCorrectMT();
+    if (mt == null) {
+      return "ERROR";
+    }
 
-    return "";
+    final res = addClaimToMT(mt, entryRes);
+    if (res != 0) {
+      return "ERROR";
+    }
+
+    final mtRoot = nativeLib.IDENmerkleTreeRoot(mt);
+    if (mtRoot == null) {
+      print("unable to get merkle tree root\n");
+      return "ERROR";
+    }
+
+    print("Root:");
+    var result = "";
+    for (int i = 0; i < 32; i++) {
+      result = result + mtRoot[i].toRadixString(16).padLeft(2, "0");
+    }
+
+    if (mtRoot != null) {
+      nativeLib.free(mtRoot.cast());
+      print("tree root successfuly freed\n");
+    }
+
+    if (mt != null) {
+      nativeLib.IDENFreeMerkleTree(mt);
+      print("merkle tree successfuly freed\n");
+    }
+
+    if (entryRes != null) {
+      nativeLib.IDENFreeTreeEntry(entryRes);
+      print("tree entry successfuly freed\n");
+    }
+
+    if (keyX != null) {
+      nativeLib.IDENFreeBigInt(keyX);
+      print("keyX successfuly freed\n");
+    }
+
+    if (keyY != null) {
+      nativeLib.IDENFreeBigInt(keyY);
+      print("keyY successfuly freed\n");
+    }
+
+    return result;
+  }
+
+  String createNewIdentity(String pubX, String pubY) {
+    NativeLibrary nativeLib = NativeLibrary(lib);
+
+    final schemaHash = [
+      0x7C,
+      0x08,
+      0x44,
+      0xA0,
+      0x75,
+      0xA9,
+      0xDD,
+      0xC7,
+      0xFC,
+      0xBD,
+      0xFB,
+      0x4F,
+      0x88,
+      0xAC,
+      0xD9,
+      0xBC
+    ];
+
+    final ffi.Pointer<ffi.Uint8> unsafePointerSchemaHash =
+        malloc<ffi.Uint8>(schemaHash.length + 1);
+    final Uint8List pointerList =
+        unsafePointerSchemaHash.asTypedList(schemaHash.length + 1);
+    pointerList.setAll(0, schemaHash);
+    pointerList[schemaHash.length] = 0;
+
+    /*final ffi.Pointer<ffi.Uint8> unsafePointerSchemaHash =
+        calloc.allocate<ffi.Uint8>(
+            schemaHash.length); // Allocate a pointer large enough.
+    final pointerList = unsafePointerSchemaHash.asTypedList(schemaHash
+        .length); // Create a list that uses our pointer and copy in the image data.
+    pointerList.setAll(0, schemaHash);*/
+
+    ffi.Pointer<ffi.Int8> unsafePointerX = pubX.toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<IDENBigInt> keyX =
+        nativeLib.IDENBigIntFromString(unsafePointerX);
+
+    ffi.Pointer<ffi.Int8> unsafePointerY = pubY.toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<IDENBigInt> keyY =
+        nativeLib.IDENBigIntFromString(unsafePointerY);
+
+    int revNonce = 0; // 13260572831089785859
+    ffi.Pointer<IDENTreeEntry> entryRes = nativeLib.IDENauthClaimTreeEntry(
+        unsafePointerSchemaHash, keyX, keyY, revNonce);
+    if (entryRes == null) {
+      print("unable to allocate tree entry\n");
+      return "ERROR";
+    }
+
+    if (entryRes.ref.status != IDENtreeEntryStatus.IDENTREEENTRY_OK) {
+      print("error creating tree entry\n");
+      if (entryRes.ref.error_msg != null) {
+        final msg = entryRes.ref.error_msg.toString();
+        print("error message: " + msg);
+      }
+      return "ERROR";
+    }
+
+    if (entryRes.ref.data_len != 8 * 32) {
+      print("unexpected data length\n");
+      return "ERROR";
+    }
+    for (int i = 0; i < 8; i++) {
+      print("$i");
+      for (int j = 0; j < 32; j++) {
+        print(entryRes.ref.data[32 * i + j].toRadixString(16));
+      }
+      print("\n");
+    }
+
+    print("generated Tree Entry IS CORRECT");
+
+    final mt = createCorrectMT();
+    if (mt == null) {
+      return "ERROR";
+    }
+
+    final res = addClaimToMT(mt, entryRes);
+    if (res != 0) {
+      return "ERROR";
+    }
+
+    final mtRoot = nativeLib.IDENmerkleTreeRoot(mt);
+    if (mtRoot == null) {
+      print("unable to get merkle tree root\n");
+      return "ERROR";
+    }
+
+    print("Root:");
+    for (int i = 0; i < 32; i++) {
+      print(mtRoot[i].toRadixString(16));
+    }
+    print("\n");
+
+    final idGenesis = nativeLib.IDENidGenesisFromIdenState(mtRoot);
+    if (idGenesis == null) {
+      print("unable to get genesis id from iden state\n");
+      return "ERROR";
+    }
+
+    print("Genesis ID:");
+    for (int i = 0; i < 31; i++) {
+      print(idGenesis[i].toRadixString(16));
+    }
+    print("\n");
+
+    final indexHash = nativeLib.IDENTreeEntryIndexHash(entryRes);
+    if (indexHash == null) {
+      print("unable to allocate index hash\n");
+      return "ERROR";
+    }
+
+    if (indexHash.ref.status != IDENHashStatus.IDENHASHSTATUS_OK) {
+      print("cant calc index hash: ${indexHash.ref.status.toString()}");
+      if (indexHash.ref.error_msg != null) {
+        final msg = indexHash.ref.error_msg.toString();
+        print("error message: " + msg);
+      }
+      return "ERROR";
+    }
+
+    final proof = nativeLib.IDENmerkleTreeGenerateProof(mt, indexHash);
+    if (proof == null) {
+      print("unable to allocate proof\n");
+      return "ERROR";
+    }
+
+    if (proof.ref.status != IDENProofStatus.IDENPROOFSTATUS_OK) {
+      print("error generate proof: " + (proof.ref.status.toString()));
+      if (proof.ref.error_msg != null) {
+        print("error message: " + (proof.ref.error_msg.toString()));
+      }
+      return "ERROR";
+    }
+
+    print("proof existence: ${proof.ref.existence}");
+    if (proof.ref.existence == 0) {
+      return "ERROR";
+    }
+
+    if (proof != null) {
+      nativeLib.IDENFreeProof(proof);
+      print("proof successfully freed\n");
+    }
+
+    if (indexHash != null) {
+      nativeLib.IDENFreeHash(indexHash);
+      print("index hash successfully freed\n");
+    }
+
+    if (idGenesis != null) {
+      nativeLib.free(idGenesis.cast());
+      print("id genesis successfully freed\n");
+    }
+
+    if (mtRoot != null) {
+      nativeLib.free(mtRoot.cast());
+      print("tree root successfuly freed\n");
+    }
+
+    if (mt != null) {
+      nativeLib.IDENFreeMerkleTree(mt);
+      print("merkle tree successfuly freed\n");
+    }
+
+    if (entryRes != null) {
+      nativeLib.IDENFreeTreeEntry(entryRes);
+      print("tree entry successfuly freed\n");
+    }
+
+    if (keyX != null) {
+      nativeLib.IDENFreeBigInt(keyX);
+      print("keyX successfuly freed\n");
+    }
+
+    if (keyY != null) {
+      nativeLib.IDENFreeBigInt(keyY);
+      print("keyY successfuly freed\n");
+    }
+
+    return "ALL GOOD";
   }
 
   ffi.Pointer<IDENmerkleTree>? createCorrectMT() {
@@ -266,151 +584,81 @@ class Iden3CoreLib {
 
     var mt = nativeLib.IDENnewMerkleTree(40);
 
-    /*if (mt == null) {
+    if (mt == null) {
       print("unable to allocate merkle tree\n");
       return null;
-    }*/
+    }
 
-    /*if (mt?.pointee.status != IDENTMERKLETREE_OK) {
-  print("error creating merkle tree, code: " + (mt?.pointee.status.rawValue.description)!)
-  if (mt?.pointee.error_msg != nil) {
-  print("error message: " + (mt?.pointee.error_msg.debugDescription)!)
-  }
-  IDENFreeMerkleTree(mt)
-  return nil
-  }*/
+    if (mt.ref.status != IDENmerkleTreeStatus.IDENTMERKLETREE_OK) {
+      print("error creating merkle tree, code: ${mt.ref.status.toString()}");
+      if (mt.ref.error_msg != null) {
+        print("error message: ${mt.ref.error_msg.toString()}");
+      }
+      nativeLib.IDENFreeMerkleTree(mt);
+      return null;
+    }
 
     print("merkle tree successfuly created\n");
     return mt;
   }
 
-  /*String packSignature(String signature) {
-    //if (lib == null) return "ERROR: The library is not initialized";
+  ffi.Pointer<IDENJsonResponse>? authPrepareInputs(String pubX, String pubY) {
+    NativeLibrary nativeLib = NativeLibrary(lib);
 
-    final sig = signature.toNativeUtf8();
-    //print("- Calling packSignature with argument: $sig");
-    // The actual native call
-    final resultPtr = _packSignature(sig);
-    //print("- Result pointer:  $resultPtr");
+    final claimsTree = createCorrectMT();
+    return null;
+    /*if (claimsTree == null) {
+      return "ERROR";
+    }*/
 
-    final result = resultPtr.toDartString();
-    //print("- Response string:  $result");
-    // Free the string pointer, as we already have
-    // an owned String to return
-    //print("- Freeing the native char*");
-    cstringFree(resultPtr);
-    return result;
-  }*/
+    /*ffi.Pointer<IDENTreeEntry> claimTreeEntry = nativeLib.IDENClaimTreeEntry(c);
 
-  /*late Pointer<Utf8> Function(Pointer<Utf8>) _unpackSignature;
-  String unpackSignature(String compressedSignature) {
-    //if (lib == null) return "ERROR: The library is not initialized";
-
-    final sigPtr = compressedSignature.toNativeUtf8();
-    final resultPtr = _unpackSignature(sigPtr);
-    final result = resultPtr.toDartString();
-    //print("- Response string:  $result");
-    // Free the string pointer, as we already have
-    // an owned String to return
-    //print("- Freeing the native char*");
-    cstringFree(resultPtr);
-    return result;
-  }
-
-  late Pointer<Utf8> Function(Pointer<Utf8>, Pointer<Utf8>) _packPoint;
-  String packPoint(String pointX, String pointY) {
-    //if (lib == null) return "ERROR: The library is not initialized";
-
-    final ptrX = pointX.toNativeUtf8();
-    final ptrY = pointY.toNativeUtf8();
-    final resultPtr = _packPoint(ptrX, ptrY);
-    final result = resultPtr.toDartString();
-    //debugPrint("- Response string:  $result");
-    // Free the string pointer, as we already have
-    // an owned String to return
-    //print("- Freeing the native char*");
-    cstringFree(resultPtr);
-    return result;
-  }
-
-  late Pointer<Utf8> Function(Pointer<Utf8>) _unpackPoint;
-  List<String>? unpackPoint(String compressedPoint) {
-    final pointPtr = compressedPoint.toNativeUtf8();
-    final resultPtr = _unpackPoint(pointPtr);
-    final result = resultPtr.toDartString();
-    //print("- Response string:  $result");
-    // Free the string pointer, as we already have
-    // an owned String to return
-    //print("- Freeing the native char*");
-    cstringFree(resultPtr);
-    return result.split(",");
-  }
-
-  // circomlib.poseidon -> hashPoseidon
-  late Pointer<Utf8> Function(Pointer<Utf8>, Pointer<Utf8>, Pointer<Utf8>)
-      _hashPoseidon;
-  String hashPoseidon(
-      String claimsTreeRoot, String revocationTree, String rootsTreeRoot) {
-    //if (lib == null) return "ERROR: The library is not initialized";
-    final ptr1 = claimsTreeRoot.toNativeUtf8();
-    final ptr2 = revocationTree.toNativeUtf8();
-    final ptr3 = rootsTreeRoot.toNativeUtf8();
-    try {
-      final resultPtr = _hashPoseidon(ptr1, ptr2, ptr3);
-      String resultString = resultPtr.toDartString();
-      resultString = resultString.replaceAll("Fr(", "");
-      resultString = resultString.replaceAll(")", "");
-      //print("- Response string:  $resultString");
-      // Free the string pointer, as we already have
-      // an owned String to return
-      //print("- Freeing the native char*");
-      cstringFree(resultPtr);
-      return resultString;
-    } catch (e) {
-      return "";
+    final res = addClaimToMT(claimsTree, claimTreeEntry);
+    if (res != 0) {
+      return "ERROR";
     }
+
+    ffi.Pointer<IDENMerkleTreeHash> userAuthClaimIndexHash;
+    ffi.Pointer<IDENstatus> status = nativeLib.IDENClaimTreeEntryHash(
+        userAuthClaimIndexHash, null, request.auth_claim.core_claim);
+
+    status = nativeLib.IDENMerkleTreeGenerateProof(&request.auth_claim.proof,
+    claimsTree, userAuthClaimIndexHash);
+
+    ffi.Pointer<IDENMerkleTreeHash> claimsTreeRoot;
+    status = nativeLib.IDENTreeRoot(claimsTreeRoot, claimsTree);
+
+    status = nativeLib.IDENCalculateGenesisID(&(request.id), claimsTreeRoot.ref);
+
+    ffi.Pointer<IDENJsonResponse> response =
+        nativeLib.IDENPrepareAuthInputs(request);
+
+    return response;*/
   }
 
-  // privKey.signPoseidon -> signPoseidon
-  late Pointer<Utf8> Function(Pointer<Utf8>, Pointer<Utf8>) _signPoseidon;
-  String signPoseidon(String privateKey, String msg) {
-    //if (lib == null) return "ERROR: The library is not initialized";
-    final prvKeyPtr = privateKey.toNativeUtf8();
-    final msgPtr = msg.toNativeUtf8();
-    final resultPtr = _signPoseidon(prvKeyPtr, msgPtr);
-    final String compressedSignature = resultPtr.toDartString();
-    //print("- Response string:  $compressedSignature");
-    // Free the string pointer, as we already have
-    // an owned String to return
-    //print("- Freeing the native char*");
-    cstringFree(resultPtr);
-    return compressedSignature;
-  }
+  int addClaimToMT(
+      ffi.Pointer<IDENmerkleTree> mt, ffi.Pointer<IDENTreeEntry> entryRes) {
+    NativeLibrary nativeLib = NativeLibrary(lib);
+    ffi.Pointer<IDENstatus> addStatus =
+        nativeLib.IDENmerkleTreeAddClaim(mt, entryRes);
 
-  // privKey.verifyPoseidon -> verifyPoseidon
-  late Pointer<Utf8> Function(Pointer<Utf8>, Pointer<Utf8>, Pointer<Utf8>)
-      _verifyPoseidon;
-  bool verifyPoseidon(
-      String publicKey, String compressedSignature, String msg) {
-    final pubKeyPtr = publicKey.toNativeUtf8();
-    final sigPtr = compressedSignature.toNativeUtf8();
-    final msgPtr = msg.toNativeUtf8();
-    final resultPtr = _verifyPoseidon(pubKeyPtr, sigPtr, msgPtr);
-    final String resultString = resultPtr.toDartString();
-    final bool result = resultString.compareTo("1") == 0;
-    return result;
-  }
+    if (addStatus == null) {
+      print("unable to allocate result to add entry to merkle tree");
+      return 1;
+    }
 
-  late Pointer<Utf8> Function(Pointer<Utf8>) _prv2Pub;
-  String prv2pub(String privateKey) {
-    final prvKeyPtr = privateKey.toNativeUtf8();
-    final resultPtr = _prv2Pub(prvKeyPtr);
-    final String resultString = resultPtr.toDartString();
-    //print("- Response string:  $resultString");
-    // Free the string pointer, as we already have
-    // an owned String to return
-    //print("- Freeing the native char*");
-    cstringFree(resultPtr);
-    return resultString;
-  }*/
+    if (addStatus.ref.status != IDENstatusCode.IDENSTATUSCODE_OK) {
+      print("error add entry to merkle tree, code ${addStatus.ref.status}");
+      if (addStatus.ref.error_msg != null) {
+        print(", error message: ${addStatus.ref.error_msg}");
+      }
+      ;
+      print("\n");
+      nativeLib.IDENFreeStatus(addStatus);
+      return 1;
+    }
+
+    nativeLib.IDENFreeStatus(addStatus);
+    return 0;
+  }
 }
