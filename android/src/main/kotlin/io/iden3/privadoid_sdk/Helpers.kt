@@ -1,12 +1,12 @@
 package io.iden3.privadoid_sdk
 
 import android.util.Log
-import iden3mobile.Ticket
+//import iden3mobile.Ticket
 import java.io.File
 import java.util.HashMap
 
 object Helpers {
-    fun ticketToMap(ticket: Ticket): HashMap<String, String> {
+    /*fun ticketToMap(ticket: Ticket): HashMap<String, String> {
         val tMap: HashMap<String, String> = HashMap<String, String>()
         tMap["id"] = ticket.getId()
         tMap["lastChecked"] = ticket.getLastChecked().toString()
@@ -38,5 +38,5 @@ object Helpers {
                     "deleting file/dir " + fileOrDirectory.path + ". ERROR: " + e.message)
             //TODO: handle exception
         }
-    }
+    }*/
 }

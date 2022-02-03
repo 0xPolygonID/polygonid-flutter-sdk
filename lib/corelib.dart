@@ -4,6 +4,10 @@ import 'package:flutter/services.dart';
 //import 'package:path_provider/path_provider.dart';
 
 class Corelib {
+  /*final DynamicLibrary lib = Platform.isAndroid
+      ? DynamicLibrary.open("libiden3core.so")
+      : DynamicLibrary.process();*/
+
   static const MethodChannel _channel = MethodChannel('corelib');
 
   static Future<String> get platformVersion async {

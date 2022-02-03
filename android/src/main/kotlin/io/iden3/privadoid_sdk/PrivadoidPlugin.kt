@@ -8,8 +8,18 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
+class NativeHost {
+  external fun IDENBigIntFromString(x: Int)
+}
+
 /** PrivadoidPlugin */
 class PrivadoidPlugin: FlutterPlugin, MethodCallHandler {
+
+  init {
+    System.loadLibrary("iden3core")
+  }
+
+  private external fun IDENBigIntFromString(arg: String): String
   /// The MethodChannel that will the communication between Flutter and native Android
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
@@ -24,6 +34,22 @@ class PrivadoidPlugin: FlutterPlugin, MethodCallHandler {
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     if (call.method == "getPlatformVersion") {
       result.success("Android ${android.os.Build.VERSION.RELEASE}")
+    } else if (call.method == "createNewIdentity") {
+      val arguments = call.arguments as List<String>
+      val res = createNewIdentity(arguments[0], arguments[1])
+      result.success(res)
+    } else if (call.method == "getGenesisId") {
+      val arguments = call.arguments as List<String>
+      val res = getGenesisId(arguments[0])
+      result.success(res)
+    } else if (call.method == "getMerkleTreeRoot") {
+      val arguments = call.arguments as List<String>
+      val res = getMerkleTreeRoot(arguments[0], arguments[1])
+      result.success(res)
+    } else if (call.method == "getAuthClaimTreeEntry") {
+      val arguments = call.arguments as List<String>
+      val res = getAuthClaimTreeEntry(arguments[0], arguments[1])
+      result.success(res)
     } else {
       result.notImplemented()
     }
@@ -32,6 +58,34 @@ class PrivadoidPlugin: FlutterPlugin, MethodCallHandler {
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
     channel.setMethodCallHandler(null)
   }
+
+  fun getMerkleTreeRoot(@NonNull pubX: String, @NonNull pubY: String): String {
+    val schemaHash = listOf(0x7C, 0x08, 0x44, 0xA0, 0x75, 0xA9, 0xDD, 0xC7, 0xFC, 0xBD, 0xFB, 0x4F, 0x88, 0xAC, 0xD9, 0xBC)
+    val keyX = IDENBigIntFromString(pubX);
+
+
+    return keyX
+  }
+
+  fun getGenesisId(@NonNull idenState: String): String {
+    return ""
+  }
+
+  fun getAuthClaimTreeEntry(@NonNull pubX: String, @NonNull pubY: String): String {
+    val schemaHash = listOf(0x7C, 0x08, 0x44, 0xA0, 0x75, 0xA9, 0xDD, 0xC7, 0xFC, 0xBD, 0xFB, 0x4F, 0x88, 0xAC, 0xD9, 0xBC)
+
+    return ""
+  }
+
+  fun createNewIdentity(@NonNull pubX: String, @NonNull pubY: String): String {
+
+    val schemaHash = listOf(0x7C, 0x08, 0x44, 0xA0, 0x75, 0xA9, 0xDD, 0xC7, 0xFC, 0xBD, 0xFB, 0x4F, 0x88, 0xAC, 0xD9, 0xBC)
+
+
+    return ""
+  }
+
+
 
   // This static function is optional and equivalent to onAttachedToEngine. It supports the old
   // pre-Flutter-1.12 Android projects. You are encouraged to continue supporting
@@ -42,7 +96,7 @@ class PrivadoidPlugin: FlutterPlugin, MethodCallHandler {
   // them functionally equivalent. Only one of onAttachedToEngine or registerWith will be called
   // depending on the user's project. onAttachedToEngine or registerWith must both be defined
   // in the same class.
-  companion object {
+  /*companion object {
     //var channel : MethodChannel? = null
     var _registrar : Registrar? = null
     @JvmStatic
@@ -290,5 +344,5 @@ class PrivadoidPlugin: FlutterPlugin, MethodCallHandler {
         println("Event is null")
       }
     }
-  }
+  }*/
 }
