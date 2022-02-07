@@ -30,6 +30,38 @@ class PrivadoIdSdk {
     return HexUtils.bytesToHex(wallet.privateKey);
   }
 
+  static Future<String?> parseClaim(
+      String jsonLDDocument, String schema) async {
+    Iden3CoreLib iden3coreLib = Iden3CoreLib();
+    var a = iden3coreLib.getFieldSlotIndex();
+    // return '';
+    //var ss = await _channel.invokeMethod('parseClaim', [jsonLDDocument, schema]);
+    return '';
+
+    List<String>? authClaimTree = [];
+
+    var entryRes =
+        await _channel.invokeMethod('parseClaim', [jsonLDDocument, schema]);
+    print('object: $entryRes');
+
+    /*final List<Object?> oldEntryRes = await _channel.invokeMethod(
+        'getAuthClaimTreeEntry', [wallet.publicKey[0], wallet.publicKey[1]]);*/
+
+    print("newAuthClaimTreeEntry111: " + entryRes.toString());
+    //print("oldAuthClaimTreeEntry: " + oldEntryRes.toString());
+    //print("OldMtRoot: " + mtOldRoot!);
+
+    for (var i = 0; i < entryRes.length; i++) {
+      Uint8List bufEntry = Uint8List.fromList(HEX.decode(entryRes[i]));
+      BigInt entryBigInt = Uint8ArrayUtils.beBuff2int(
+          Uint8List.fromList(bufEntry.reversed.toList()));
+      authClaimTree.add(entryBigInt.toString());
+    }
+    print('ss-------');
+    print(authClaimTree);
+    // print(ss);
+  }
+
   static Future<String?> getIdentifier(String privateKey) async {
     final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
         privateKey: HexUtils.hexToBytes(privateKey));

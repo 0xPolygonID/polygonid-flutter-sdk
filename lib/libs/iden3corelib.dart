@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ffi' as ffi;
 import 'dart:io';
 import 'dart:typed_data';
@@ -134,6 +135,67 @@ class Iden3CoreLib {
       : ffi.DynamicLibrary.process();
 
   Iden3CoreLib();
+
+// String jsonLDDocument, String schema
+
+// .auth_claim = { .current_timestamp = 1642074362 },
+// 	.challenge = 1,
+// 	.claim = { .current_timestamp = 1642074362 },
+// 	.query = { .slot_index = 2, .value = NULL, .operator = 0 }
+  void test() {
+    /*NativeLibrary nativeLib = NativeLibrary(lib);
+    final createStructFn =
+    lib.lookupFunction<CreateStruct, CreateStruct>('CreateStruct');
+
+    IDENAtomicQueryInputs result = createStructFn();
+    result.challenge = 1;
+    result.auth_claim.current_timestamp = 1642074362;
+    result.claim.current_timestamp = 1642074362;
+    result.query.slot_index = 2;
+    result.query.operator1 = 0;
+    ffi.Pointer<IDENJsonResponse> response = nativeLib.IDENPrepareAtomicQueryInputs(result as ffi.Pointer<IDENAtomicQueryInputs>);
+    print(response);*/
+  }
+
+  int getFieldSlotIndex() {
+    NativeLibrary nativeLib = NativeLibrary(lib);
+
+    // var key = "birthday";
+    var key = "documentType";
+    List<int> keyBytes = utf8.encode(key);
+    final ffi.Pointer<ffi.Int8> keyP = malloc<ffi.Int8>(keyBytes.length);
+    final Int8List keyPointerList = keyP.asTypedList(keyBytes.length);
+    keyPointerList.setAll(0, keyBytes);
+
+    var claimType = "KYCAgeCredential";
+    List<int> claimTypeBytes = utf8.encode(claimType);
+    final ffi.Pointer<ffi.Int8> claimTypeP =
+        malloc<ffi.Int8>(claimTypeBytes.length);
+    final Int8List claimTypePointerList =
+        claimTypeP.asTypedList(claimTypeBytes.length);
+    claimTypePointerList.setAll(0, claimTypeBytes);
+
+    var schema =
+        "{\"@context\": [{\"@version\": 1.1, \"@protected\": true, \"id\": \"@id\", \"type\": \"@type\", \"KYCAgeCredential\": {\"@id\": \"https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc.json-ld#KYCAgeCredential\", \"@context\": {\"@version\": 1.1, \"@protected\": true, \"id\": \"@id\", \"type\": \"@type\", \"kyc-vocab\": \"https://github.com/iden3/claim-schema-vocab/blob/main/credentials/kyc.md#\", \"serialization\": \"https://github.com/iden3/claim-schema-vocab/blob/main/credentials/serialization.md#\", \"birthday\": {\"@id\": \"kyc-vocab:birthday\", \"@type\": \"serialization:IndexDataSlotA\"}, \"documentType\": {\"@id\": \"kyc-vocab:documentType\", \"@type\": \"serialization:IndexDataSlotB\"}}}, \"KYCCountryOfResidenceCredential\": {\"@id\": \"https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc.json-ld#KYCCountryOfResidenceCredential\", \"@context\": {\"@version\": 1.1, \"@protected\": true, \"id\": \"@id\", \"type\": \"@type\", \"kyc-vocab\": \"https://github.com/iden3/claim-schema-vocab/blob/main/credentials/kyc.md#\", \"serialization\": \"https://github.com/iden3/claim-schema-vocab/blob/main/credentials/serialization.md#\", \"countryCode\": {\"@id\": \"kyc-vocab:countryCode\", \"@type\": \"serialization:IndexDataSlotA\"}, \"documentType\": {\"@id\": \"kyc-vocab:documentType\", \"@type\": \"serialization:IndexDataSlotB\"}}}}]}";
+    List<int> schemaBytes = utf8.encode(schema);
+    final ffi.Pointer<ffi.Int8> schemaP = malloc<ffi.Int8>(schemaBytes.length);
+    final Int8List schemaPointerList = schemaP.asTypedList(schemaBytes.length);
+    schemaPointerList.setAll(0, schemaBytes);
+
+    List<int> slotInBytes = [0];
+    final ffi.Pointer<ffi.Int32> slotInP =
+        malloc<ffi.Int32>(slotInBytes.length);
+    final Int32List slotInPointerList = slotInP.asTypedList(slotInBytes.length);
+    slotInPointerList.setAll(0, slotInBytes);
+
+    // var status = nativeLib.IDENJsonLDGetFieldSlotIndex(&slotIndex, key, claimType, schema);
+    ffi.Pointer<IDENstatus> status = nativeLib.IDENJsonLDGetFieldSlotIndex(
+        slotInP, keyP, claimTypeP, schemaP);
+
+    //print("slotIndex:");
+    //print(slotInP.value);
+    return status.ref.status;
+  }
 
   String getGenesisId(String idenState) {
     print("idenState: " + idenState);
