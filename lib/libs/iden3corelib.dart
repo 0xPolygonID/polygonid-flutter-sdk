@@ -268,11 +268,8 @@ class Iden3CoreLib {
         "17640206035128972995519606214765283372613874593503528180869261482403155458945";
     String pubY =
         "20634138280259599560273310290025659992320584624461316485434108770067472477956";
-    /*ffi.Pointer<IDENClaim> coreClaim =
-        malloc<IDENClaim>(ffi.sizeOf<IDENClaim>());*/
-    /*int status*/ ffi.Pointer<IDENClaim> coreClaim =
+    ffi.Pointer<IDENClaim> coreClaim =
         makeAuthClaim(pubY, pubX, revNonce.toInt());
-    //if (status == 0) {
     in1.ref.auth_claim.core_claim = coreClaim;
 
     ffi.Pointer<IDENmerkleTree> claimsTree = createCorrectMT()!;
@@ -362,6 +359,9 @@ class Iden3CoreLib {
 
     ffi.Pointer<IDENJsonResponse> response =
         nativeLib.IDENPrepareAuthInputs(in1);
+    ffi.Pointer<ffi.Int8> json = response.ref.json_string;
+    ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+    String result = jsonString.toDartString();
     return response.ref.status;
   }
 
