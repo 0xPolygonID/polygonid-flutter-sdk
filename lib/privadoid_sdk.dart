@@ -33,8 +33,9 @@ class PrivadoIdSdk {
   static Future<String?> parseClaim(
       String jsonLDDocument, String schema) async {
     Iden3CoreLib iden3coreLib = Iden3CoreLib();
-    //var a = iden3coreLib.getFieldSlotIndex();
-    var a = iden3coreLib.prepareAuthInputs();
+    var a = iden3coreLib.prepareAtomicQueryInputs();
+    //var a = iden3coreLib.prepareAuthInputs();
+    //iden3coreLib.parseClaim();
     // return '';
     //var ss = await _channel.invokeMethod('parseClaim', [jsonLDDocument, schema]);
     return '';
