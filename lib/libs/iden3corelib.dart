@@ -249,7 +249,8 @@ class Iden3CoreLib {
     return 0;
   }
 
-  String prepareAuthInputs(String challenge, String pubX, String pubY) {
+  String prepareAuthInputs(
+      String challenge, String pubX, String pubY, String signature) {
     NativeLibrary nativeLib = NativeLibrary(lib);
 
     ffi.Pointer<IDENAuthInputs> in1 = malloc<IDENAuthInputs>();
@@ -398,6 +399,7 @@ class Iden3CoreLib {
     in1.ref.auth_claim.proof = proofP[0];
 
     // TODO: signature is done in privadoid_sdk with the wallet
+    // List<int> r = hexToBytes(signature);
     List<int> r = hexToBytes(
         "9d6a88b9a2eb1ce525065301a65f95a21b387cbf1d94fd4aa0be2e7b51532d0cc79b70d659246c05326b46e915a31163869ed11c44d47eb639bc0af381dba004");
     for (var i = 0; i < r.length; i++) {
@@ -412,7 +414,8 @@ class Iden3CoreLib {
     return result;
   }
 
-  String prepareAtomicQueryInputs(String challenge, String pubX, String pubY) {
+  String prepareAtomicQueryInputs(
+      String challenge, String pubX, String pubY, String signature) {
     NativeLibrary nativeLib = NativeLibrary(lib);
 
     ffi.Pointer<IDENAtomicQueryInputs> request =
@@ -523,6 +526,7 @@ class Iden3CoreLib {
     request.ref.current_tree_state = request.ref.auth_claim.tree_state;
 
     // TODO: signature is done in privadoid_sdk with the wallet
+    // List<int> r = hexToBytes(signature);
     List<int> r = hexToBytes(
         "9d6a88b9a2eb1ce525065301a65f95a21b387cbf1d94fd4aa0be2e7b51532d0cc79b70d659246c05326b46e915a31163869ed11c44d47eb639bc0af381dba004");
     for (var i = 0; i < r.length; i++) {

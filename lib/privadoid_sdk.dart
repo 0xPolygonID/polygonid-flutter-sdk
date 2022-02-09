@@ -31,14 +31,29 @@ class PrivadoIdSdk {
     return HexUtils.bytesToHex(wallet.privateKey);
   }
 
+  static Future<String?> prepareAuthInputs(
+      String challenge, String privateKey) async {
+    final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
+        privateKey: HexUtils.hexToBytes(privateKey));
+
+    String signatureString = wallet.signMessage(challenge);
+
+    Iden3CoreLib iden3coreLib = Iden3CoreLib();
+    var authInputs = iden3coreLib.prepareAuthInputs(
+        challenge, wallet.publicKey[0], wallet.publicKey[1], signatureString);
+    return authInputs;
+  }
+
   static Future<String?> prepareAtomicQueryInputs(
       String challenge, String privateKey) async {
     final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
         privateKey: HexUtils.hexToBytes(privateKey));
 
+    String signatureString = wallet.signMessage(challenge);
+
     Iden3CoreLib iden3coreLib = Iden3CoreLib();
     var queryInputs = iden3coreLib.prepareAtomicQueryInputs(
-        challenge, wallet.publicKey[0], wallet.publicKey[1]);
+        challenge, wallet.publicKey[0], wallet.publicKey[1], signatureString);
     return queryInputs;
   }
 
