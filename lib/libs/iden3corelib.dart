@@ -198,13 +198,13 @@ class Iden3CoreLib {
     return status.ref.status;
   }*/
 
-  int getFieldSlotIndex() {
+  int getFieldSlotIndex(String schema, String claimType, String key) {
     NativeLibrary nativeLib = NativeLibrary(lib);
-    var schema =
+    schema =
         "{\"@context\": [{\"@version\": 1.1, \"@protected\": true, \"id\": \"@id\", \"type\": \"@type\", \"KYCAgeCredential\": {\"@id\": \"https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc.json-ld#KYCAgeCredential\", \"@context\": {\"@version\": 1.1, \"@protected\": true, \"id\": \"@id\", \"type\": \"@type\", \"kyc-vocab\": \"https://github.com/iden3/claim-schema-vocab/blob/main/credentials/kyc.md#\", \"serialization\": \"https://github.com/iden3/claim-schema-vocab/blob/main/credentials/serialization.md#\", \"birthday\": {\"@id\": \"kyc-vocab:birthday\", \"@type\": \"serialization:IndexDataSlotA\"}, \"documentType\": {\"@id\": \"kyc-vocab:documentType\", \"@type\": \"serialization:IndexDataSlotB\"}}}, \"KYCCountryOfResidenceCredential\": {\"@id\": \"https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc.json-ld#KYCCountryOfResidenceCredential\", \"@context\": {\"@version\": 1.1, \"@protected\": true, \"id\": \"@id\", \"type\": \"@type\", \"kyc-vocab\": \"https://github.com/iden3/claim-schema-vocab/blob/main/credentials/kyc.md#\", \"serialization\": \"https://github.com/iden3/claim-schema-vocab/blob/main/credentials/serialization.md#\", \"countryCode\": {\"@id\": \"kyc-vocab:countryCode\", \"@type\": \"serialization:IndexDataSlotA\"}, \"documentType\": {\"@id\": \"kyc-vocab:documentType\", \"@type\": \"serialization:IndexDataSlotB\"}}}}]}";
-    var claimType = "KYCAgeCredential";
+    claimType = "KYCAgeCredential";
     // var key = "birthday";
-    var key = "documentType";
+    key = "documentType";
     var slotIn = 0;
     ffi.Pointer<ffi.Int32> slotI =
         slotIn.toString().toNativeUtf8().cast<ffi.Int32>();
@@ -226,14 +226,10 @@ class Iden3CoreLib {
     return slotI.value;
   }
 
-  IDENClaim? parseClaim() {
+  IDENClaim? parseClaim(String jsonLDDocument, String schema) {
     NativeLibrary nativeLib = NativeLibrary(lib);
-    String jsonLDDocument =
-        "{\"id\":\"c0f6ac87-603e-44cd-8d83-0caeb458d50d\",\"@context\":[\"https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/iden3credential.json-ld\",\"https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/auth.json-ld\"],\"@type\":[\"Iden3Credential\"],\"expiration\":\"2361-03-21T21:14:48+02:00\",\"updatable\":false,\"version\":0,\"rev_nonce\":2034832188220019200,\"credentialSubject\":{\"type\":\"AuthBJJCredential\",\"x\":\"12747559771369266961976321746772881814229091957322087014312756428846389160887\",\"y\":\"7732074634595480184356588475330446395691728690271550550016720788712795268212\"},\"credentialStatus\":{\"id\":\"http://localhost:8001/api/v1/identities/118VhAf6ng6J44FhNrGeYzSbJgGVmcpeXYFR2YTrZ6/claims/revocation/status/2034832188220019081\",\"type\":\"SparseMerkleTreeProof\"},\"credentialSchema\":{\"@id\":\"https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/auth.json-ld\",\"type\":\"JsonSchemaValidator2018\"},\"proof\":[{\"@type\":\"BJJSignature2021\",\"issuer\":\"118VhAf6ng6J44FhNrGeYzSbJgGVmcpeXYFR2YTrZ6\",\"h_index\":\"c89cf5b95157f091f2d8bf49bc1a57cd7988da83bbcd982a74c5e8c70e566403\",\"h_value\":\"0262b2cd6b9ae44cd9a39045c9bb03ad4e1f056cb81d855f1fc4ef0cdf827912\",\"created\":1642518655,\"issuer_mtp\":{\"@type\":\"Iden3SparseMerkleProof\",\"issuer\":\"118VhAf6ng6J44FhNrGeYzSbJgGVmcpeXYFR2YTrZ6\",\"h_index\":\"201a02eb979be695702ea37d930309d2965d803541be5f7b3900459b2fad8726\",\"h_value\":\"0654da1d53ca201cb42b767a6f12265ff7a08720b88a82182e0f20702479d12d\",\"state\":{\"claims_tree_root\":\"a5087cfa6f2c7c565d831327091533f09999133df1df51104d2ce6f8e4d90529\",\"value\":\"dca344e95da517a301729d94b213298b9de96dfddaf7aad9423d918ea3208820\"},\"mtp\":{\"existence\":true,\"siblings\":[]}},\"verification_method\":\"2764e2d8241b18c217010ebf90bebb30240d32c33f3007f33e42d58680813123\",\"proof_value\":\"c354eb1006534c59766ed8398d49a9a614312e430c5373ea493395db6369d49485e9a0d63f3bfe9fd157294ffbf706b6b7df7a8662a58fae0056a046af1caa04\",\"proof_purpose\":\"Authentication\"},{\"@type\":\"Iden3SparseMerkleProof\",\"issuer\":\"118VhAf6ng6J44FhNrGeYzSbJgGVmcpeXYFR2YTrZ6\",\"h_index\":\"c89cf5b95157f091f2d8bf49bc1a57cd7988da83bbcd982a74c5e8c70e566403\",\"h_value\":\"0262b2cd6b9ae44cd9a39045c9bb03ad4e1f056cb81d855f1fc4ef0cdf827912\",\"state\":{\"tx_id\":\"0xf2e23524ab76cb4f371b921a214ff411d5d391962899a2afe20f356e3bdc0c71\",\"block_timestamp\":1642522496,\"block_number\":11837707,\"claims_tree_root\":\"bebcaee8444e93b6e32855f54e9f617d5fd654570badce7d6bc649304169681d\",\"revocation_tree_root\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"value\":\"2806aa9a045b2a5503b12f2979b2d19933e803fd3dd73d8ad40dc138bc9a582e\"},\"mtp\":{\"existence\":true,\"siblings\":[\"0\",\"0\",\"0\",\"18555164879275043542501047154170418730098376961920428892719505858997411121317\"]}}]}";
     ffi.Pointer<ffi.Int8> jsonLDDocumentP =
         jsonLDDocument.toNativeUtf8().cast<ffi.Int8>();
-    String schema =
-        "{\"@context\": [{\"@version\": 1.1, \"@protected\": true, \"id\": \"@id\", \"type\": \"@type\", \"AuthBJJCredential\": {\"@id\": \"https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/auth.json-ld#AuthBJJCredential\", \"@context\": {\"@version\": 1.1, \"@protected\": true, \"id\": \"@id\", \"type\": \"@type\", \"auth-vocab\": \"https://github.com/iden3/claim-schema-vocab/blob/main/credentials/auth.md#\", \"serialization\": \"https://github.com/iden3/claim-schema-vocab/blob/main/credentials/serialization.md#\", \"x\": {\"@id\": \"auth-vocab:x\", \"@type\": \"serialization:IndexDataSlotA\"}, \"y\": {\"@id\": \"auth-vocab:y\", \"@type\": \"serialization:IndexDataSlotB\"}}}}]}";
     ffi.Pointer<ffi.Int8> schemaP = schema.toNativeUtf8().cast<ffi.Int8>();
 
     ffi.Pointer<ffi.Pointer<IDENClaim>> claimI =
@@ -253,17 +249,18 @@ class Iden3CoreLib {
     return 0;
   }
 
-  int prepareAuthInputs() {
+  String prepareAuthInputs(String challenge, String pubX, String pubY) {
     NativeLibrary nativeLib = NativeLibrary(lib);
 
     ffi.Pointer<IDENAuthInputs> in1 = malloc<IDENAuthInputs>();
-    in1.ref.challenge = 1;
+    in1.ref.challenge = 1; // TODO: put challenge
     ffi.Pointer<IDENCircuitClaim> authClaim = malloc<IDENCircuitClaim>();
     authClaim.ref.current_timestamp = 1642074362;
     in1.ref.auth_claim = authClaim.ref;
 
     int revNonce = 0; //13260572831089785859;
     //BigInt.parse("15930428023331155902"); // 13260572831089785859
+    // TODO: put pubX and pubY
     String pubX =
         "17640206035128972995519606214765283372613874593503528180869261482403155458945";
     String pubY =
@@ -275,25 +272,38 @@ class Iden3CoreLib {
     ffi.Pointer<IDENmerkleTree> claimsTree = createCorrectMT()!;
     if (claimsTree == ffi.nullptr ||
         claimsTree.ref.status != IDENmerkleTreeStatus.IDENTMERKLETREE_OK) {
-      print("ERROR");
+      if (claimsTree.ref.error_msg != ffi.nullptr) {
+        ffi.Pointer<ffi.Int8> json = claimsTree.ref.error_msg;
+        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+        String msg = jsonString.toDartString();
+        print("error message: " + msg);
+      }
+      print("ERROR : ${claimsTree.ref.status}");
     }
     //ffi.Pointer<IDENClaim> claim = malloc<IDENClaim>();
     ffi.Pointer<IDENTreeEntry> claimTreeEntry =
         nativeLib.IDENClaimTreeEntry(in1.ref.auth_claim.core_claim);
     if (claimTreeEntry == ffi.nullptr ||
         claimTreeEntry.ref.status != IDENtreeEntryStatus.IDENTREEENTRY_OK) {
-      if (claimTreeEntry.ref.error_msg != null) {
-        final msg = claimTreeEntry.ref.error_msg.toString();
+      if (claimTreeEntry.ref.error_msg != ffi.nullptr) {
+        ffi.Pointer<ffi.Int8> json = claimTreeEntry.ref.error_msg;
+        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+        String msg = jsonString.toDartString();
         print("error message: " + msg);
       }
-      print(
-          "ERROR : ${claimTreeEntry.ref.status}"); // IDENTREEENTRY_EXTRACT_CLAIM_ERROR
+      print("ERROR : ${claimTreeEntry.ref.status}");
     }
 
     ffi.Pointer<IDENstatus> status1 =
         nativeLib.IDENmerkleTreeAddClaim(claimsTree, claimTreeEntry);
     if (status1.ref.status != 0) {
-      print("ERROR");
+      if (status1.ref.error_msg != ffi.nullptr) {
+        ffi.Pointer<ffi.Int8> json = status1.ref.error_msg;
+        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+        String msg = jsonString.toDartString();
+        print("error message: " + msg);
+      }
+      print("ERROR : ${status1.ref.status}");
     }
 
     ffi.Pointer<IDENMerkleTreeHash> userAuthClaimIndexHash =
@@ -301,7 +311,13 @@ class Iden3CoreLib {
     status1 = nativeLib.IDENClaimTreeEntryHash(
         userAuthClaimIndexHash, ffi.nullptr, in1.ref.auth_claim.core_claim);
     if (status1.ref.status != 0) {
-      print("ERROR");
+      if (status1.ref.error_msg != ffi.nullptr) {
+        ffi.Pointer<ffi.Int8> json = status1.ref.error_msg;
+        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+        String msg = jsonString.toDartString();
+        print("error message: " + msg);
+      }
+      print("ERROR : ${status1.ref.status}");
     }
 
     ffi.Pointer<ffi.Pointer<IDENProof>> proof =
@@ -309,7 +325,13 @@ class Iden3CoreLib {
     status1 = nativeLib.IDENMerkleTreeGenerateProof(
         proof, claimsTree, userAuthClaimIndexHash.ref);
     if (status1.ref.status != 0) {
-      print("ERROR");
+      if (status1.ref.error_msg != ffi.nullptr) {
+        ffi.Pointer<ffi.Int8> json = status1.ref.error_msg;
+        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+        String msg = jsonString.toDartString();
+        print("error message: " + msg);
+      }
+      print("ERROR : ${status1.ref.status}");
     }
     in1.ref.auth_claim.proof = proof[0];
 
@@ -317,26 +339,50 @@ class Iden3CoreLib {
         malloc<IDENMerkleTreeHash>();
     status1 = nativeLib.IDENTreeRoot(claimsTreeRoot, claimsTree);
     if (status1.ref.status != 0) {
-      print("ERROR");
+      if (status1.ref.error_msg != ffi.nullptr) {
+        ffi.Pointer<ffi.Int8> json = status1.ref.error_msg;
+        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+        String msg = jsonString.toDartString();
+        print("error message: " + msg);
+      }
+      print("ERROR : ${status1.ref.status}");
     }
 
     ffi.Pointer<IDENId> idP = malloc<IDENId>();
     status1 = nativeLib.IDENCalculateGenesisID(idP, claimsTreeRoot.ref);
     if (status1.ref.status != 0) {
-      print("ERROR");
+      if (status1.ref.error_msg != ffi.nullptr) {
+        ffi.Pointer<ffi.Int8> json = status1.ref.error_msg;
+        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+        String msg = jsonString.toDartString();
+        print("error message: " + msg);
+      }
+      print("ERROR : ${status1.ref.status}");
     }
     in1.ref.id = idP.ref;
 
     ffi.Pointer<IDENmerkleTree> revTree = createCorrectMT()!;
     if (revTree == ffi.nullptr ||
         revTree.ref.status != IDENmerkleTreeStatus.IDENTMERKLETREE_OK) {
-      print("ERROR");
+      if (revTree.ref.error_msg != ffi.nullptr) {
+        ffi.Pointer<ffi.Int8> json = revTree.ref.error_msg;
+        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+        String msg = jsonString.toDartString();
+        print("error message: " + msg);
+      }
+      print("ERROR : ${revTree.ref.status}");
     }
 
     ffi.Pointer<IDENmerkleTree> rorTree = createCorrectMT()!;
     if (rorTree == ffi.nullptr ||
         rorTree.ref.status != IDENmerkleTreeStatus.IDENTMERKLETREE_OK) {
-      print("ERROR");
+      if (rorTree.ref.error_msg != ffi.nullptr) {
+        ffi.Pointer<ffi.Int8> json = rorTree.ref.error_msg;
+        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+        String msg = jsonString.toDartString();
+        print("error message: " + msg);
+      }
+      print("ERROR : ${rorTree.ref.status}");
     }
 
     in1.ref.auth_claim.tree_state = makeTreeState(claimsTree, revTree, rorTree);
@@ -351,6 +397,7 @@ class Iden3CoreLib {
     nativeLib.IDENMerkleTreeGenerateProof(proofP, claimsTree, revNonceHash.ref);
     in1.ref.auth_claim.proof = proofP[0];
 
+    // TODO: signature is done in privadoid_sdk with the wallet
     List<int> r = hexToBytes(
         "9d6a88b9a2eb1ce525065301a65f95a21b387cbf1d94fd4aa0be2e7b51532d0cc79b70d659246c05326b46e915a31163869ed11c44d47eb639bc0af381dba004");
     for (var i = 0; i < r.length; i++) {
@@ -362,15 +409,15 @@ class Iden3CoreLib {
     ffi.Pointer<ffi.Int8> json = response.ref.json_string;
     ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
     String result = jsonString.toDartString();
-    return response.ref.status;
+    return result;
   }
 
-  int prepareAtomicQueryInputs() {
+  String prepareAtomicQueryInputs(String challenge, String pubX, String pubY) {
     NativeLibrary nativeLib = NativeLibrary(lib);
 
     ffi.Pointer<IDENAtomicQueryInputs> request =
         malloc<IDENAtomicQueryInputs>();
-    request.ref.challenge = 1;
+    request.ref.challenge = 1; // TODO: put challenge
     ffi.Pointer<IDENCircuitClaim> authClaim = malloc<IDENCircuitClaim>();
     authClaim.ref.current_timestamp = 1642074362;
     request.ref.auth_claim = authClaim.ref;
@@ -384,14 +431,21 @@ class Iden3CoreLib {
     if (userAuthClaimsTree == ffi.nullptr ||
         userAuthClaimsTree.ref.status !=
             IDENmerkleTreeStatus.IDENTMERKLETREE_OK) {
-      print("ERROR");
+      if (userAuthClaimsTree.ref.error_msg != ffi.nullptr) {
+        ffi.Pointer<ffi.Int8> json = userAuthClaimsTree.ref.error_msg;
+        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+        String msg = jsonString.toDartString();
+        print("error message: " + msg);
+      }
+      print("ERROR : ${userAuthClaimsTree.ref.status}");
     }
 
     //int revNonce = 0; //13260572831089785859;
     //BigInt.parse("15930428023331155902"); // 13260572831089785859
-    String pubX =
+    // TODO: put pubX and pubY
+    pubX =
         "17640206035128972995519606214765283372613874593503528180869261482403155458945";
-    String pubY =
+    pubY =
         "20634138280259599560273310290025659992320584624461316485434108770067472477956";
     ffi.Pointer<IDENClaim> coreClaim = makeAuthClaim(pubX, pubY, 0);
     request.ref.auth_claim.core_claim = coreClaim;
@@ -402,7 +456,7 @@ class Iden3CoreLib {
         nativeLib.IDENClaimTreeEntry(request.ref.auth_claim.core_claim);
     if (claimTreeEntry == ffi.nullptr ||
         claimTreeEntry.ref.status != IDENtreeEntryStatus.IDENTREEENTRY_OK) {
-      if (claimTreeEntry.ref.error_msg != null) {
+      if (claimTreeEntry.ref.error_msg != ffi.nullptr) {
         ffi.Pointer<ffi.Int8> json = claimTreeEntry.ref.error_msg;
         ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
         String msg = jsonString.toDartString();
@@ -415,7 +469,13 @@ class Iden3CoreLib {
     ffi.Pointer<IDENstatus> status1 =
         nativeLib.IDENmerkleTreeAddClaim(userAuthClaimsTree, claimTreeEntry);
     if (status1.ref.status != 0) {
-      print("ERROR");
+      if (status1.ref.error_msg != ffi.nullptr) {
+        ffi.Pointer<ffi.Int8> json = status1.ref.error_msg;
+        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+        String msg = jsonString.toDartString();
+        print("error message: " + msg);
+      }
+      print("ERROR : ${status1.ref.status}");
     }
     //END: Add_Claim_to_Tree
 
@@ -424,26 +484,45 @@ class Iden3CoreLib {
     status1 =
         nativeLib.IDENTreeRoot(userAuthClaimsTreeRoot, userAuthClaimsTree);
     if (status1.ref.status != 0) {
-      print("ERROR");
+      if (status1.ref.error_msg != ffi.nullptr) {
+        ffi.Pointer<ffi.Int8> json = status1.ref.error_msg;
+        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+        String msg = jsonString.toDartString();
+        print("error message: " + msg);
+      }
+      print("ERROR : ${status1.ref.status}");
     }
 
     ffi.Pointer<IDENId> idP = malloc<IDENId>();
     status1 = nativeLib.IDENCalculateGenesisID(idP, userAuthClaimsTreeRoot.ref);
     if (status1.ref.status != 0) {
-      print("ERROR");
+      if (status1.ref.error_msg != ffi.nullptr) {
+        ffi.Pointer<ffi.Int8> json = status1.ref.error_msg;
+        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+        String msg = jsonString.toDartString();
+        print("error message: " + msg);
+      }
+      print("ERROR : ${status1.ref.status}");
     }
     request.ref.id = idP.ref;
 
     ffi.Pointer<IDENmerkleTree> emptyTree = createCorrectMT()!;
     if (emptyTree == ffi.nullptr ||
         emptyTree.ref.status != IDENmerkleTreeStatus.IDENTMERKLETREE_OK) {
-      print("ERROR");
+      if (emptyTree.ref.error_msg != ffi.nullptr) {
+        ffi.Pointer<ffi.Int8> json = emptyTree.ref.error_msg;
+        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+        String msg = jsonString.toDartString();
+        print("error message: " + msg);
+      }
+      print("ERROR : ${emptyTree.ref.status}");
     }
 
     request.ref.auth_claim.tree_state =
         makeTreeState(userAuthClaimsTree, emptyTree, emptyTree);
     request.ref.current_tree_state = request.ref.auth_claim.tree_state;
 
+    // TODO: signature is done in privadoid_sdk with the wallet
     List<int> r = hexToBytes(
         "9d6a88b9a2eb1ce525065301a65f95a21b387cbf1d94fd4aa0be2e7b51532d0cc79b70d659246c05326b46e915a31163869ed11c44d47eb639bc0af381dba004");
     for (var i = 0; i < r.length; i++) {
@@ -455,7 +534,13 @@ class Iden3CoreLib {
     status1 = nativeLib.IDENClaimTreeEntryHash(
         userAuthClaimIndexHash, ffi.nullptr, request.ref.auth_claim.core_claim);
     if (status1.ref.status != 0) {
-      print("ERROR");
+      if (status1.ref.error_msg != ffi.nullptr) {
+        ffi.Pointer<ffi.Int8> json = status1.ref.error_msg;
+        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+        String msg = jsonString.toDartString();
+        print("error message: " + msg);
+      }
+      print("ERROR : ${status1.ref.status}");
     }
 
     ffi.Pointer<ffi.Pointer<IDENProof>> proof =
@@ -463,24 +548,45 @@ class Iden3CoreLib {
     status1 = nativeLib.IDENMerkleTreeGenerateProof(
         proof, userAuthClaimsTree, userAuthClaimIndexHash.ref);
     if (status1.ref.status != 0) {
-      print("ERROR");
+      if (status1.ref.error_msg != ffi.nullptr) {
+        ffi.Pointer<ffi.Int8> json = status1.ref.error_msg;
+        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+        String msg = jsonString.toDartString();
+        print("error message: " + msg);
+      }
+      print("ERROR : ${status1.ref.status}");
     }
     request.ref.auth_claim.proof = proof[0];
 
     ffi.Pointer<IDENmerkleTree> issuerClaimsTree = createCorrectMT()!;
-    if (emptyTree == ffi.nullptr ||
-        emptyTree.ref.status != IDENmerkleTreeStatus.IDENTMERKLETREE_OK) {
-      print("ERROR");
+    if (issuerClaimsTree == ffi.nullptr ||
+        issuerClaimsTree.ref.status !=
+            IDENmerkleTreeStatus.IDENTMERKLETREE_OK) {
+      if (issuerClaimsTree.ref.error_msg != ffi.nullptr) {
+        ffi.Pointer<ffi.Int8> json = issuerClaimsTree.ref.error_msg;
+        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+        String msg = jsonString.toDartString();
+        print("error message: " + msg);
+      }
+      print("ERROR : ${issuerClaimsTree.ref.status}");
     }
 
     ffi.Pointer<IDENmerkleTree> issuerRevTree = createCorrectMT()!;
-    if (emptyTree == ffi.nullptr ||
-        emptyTree.ref.status != IDENmerkleTreeStatus.IDENTMERKLETREE_OK) {
-      print("ERROR");
+    if (issuerRevTree == ffi.nullptr ||
+        issuerRevTree.ref.status != IDENmerkleTreeStatus.IDENTMERKLETREE_OK) {
+      if (issuerRevTree.ref.error_msg != ffi.nullptr) {
+        ffi.Pointer<ffi.Int8> json = issuerRevTree.ref.error_msg;
+        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+        String msg = jsonString.toDartString();
+        print("error message: " + msg);
+      }
+      print("ERROR : ${issuerRevTree.ref.status}");
     }
 
     int issuerRevNonce = 0; //11203087622270641253llu;
     //BigInt.parse("15930428023331155902"); // 13260572831089785859
+
+    // TODO: issuer pubX and pubY??
     String issuerPubX =
         "9582165609074695838007712438814613121302719752874385708394134542816240804696";
     String issuerPubY =
@@ -495,7 +601,7 @@ class Iden3CoreLib {
     if (issuerAuthClaimTreeEntry == ffi.nullptr ||
         issuerAuthClaimTreeEntry.ref.status !=
             IDENtreeEntryStatus.IDENTREEENTRY_OK) {
-      if (issuerAuthClaimTreeEntry.ref.error_msg != null) {
+      if (issuerAuthClaimTreeEntry.ref.error_msg != ffi.nullptr) {
         ffi.Pointer<ffi.Int8> json = issuerAuthClaimTreeEntry.ref.error_msg;
         ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
         String msg = jsonString.toDartString();
@@ -508,7 +614,13 @@ class Iden3CoreLib {
     status1 = nativeLib.IDENmerkleTreeAddClaim(
         issuerClaimsTree, issuerAuthClaimTreeEntry);
     if (status1.ref.status != 0) {
-      print("ERROR");
+      if (status1.ref.error_msg != ffi.nullptr) {
+        ffi.Pointer<ffi.Int8> json = status1.ref.error_msg;
+        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+        String msg = jsonString.toDartString();
+        print("error message: " + msg);
+      }
+      print("ERROR : ${status1.ref.status}");
     }
     //END: Add_Claim_to_Tree
 
@@ -520,7 +632,13 @@ class Iden3CoreLib {
     status1 =
         nativeLib.IDENmerkleTreeAddClaim(issuerClaimsTree, claimTreeEntry);
     if (status1.ref.status != 0) {
-      print("ERROR");
+      if (status1.ref.error_msg != ffi.nullptr) {
+        ffi.Pointer<ffi.Int8> json = status1.ref.error_msg;
+        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+        String msg = jsonString.toDartString();
+        print("error message: " + msg);
+      }
+      print("ERROR : ${status1.ref.status}");
     }
 
     request.ref.claim.tree_state =
@@ -543,7 +661,13 @@ class Iden3CoreLib {
     status1 = nativeLib.IDENClaimTreeEntryHash(
         userClaimIndexHash, ffi.nullptr, request.ref.claim.core_claim);
     if (status1.ref.status != 0) {
-      print("ERROR");
+      if (status1.ref.error_msg != ffi.nullptr) {
+        ffi.Pointer<ffi.Int8> json = status1.ref.error_msg;
+        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+        String msg = jsonString.toDartString();
+        print("error message: " + msg);
+      }
+      print("ERROR : ${status1.ref.status}");
     }
 
     ffi.Pointer<ffi.Pointer<IDENProof>> proofP1 =
@@ -558,12 +682,37 @@ class Iden3CoreLib {
         nativeLib.IDENBigIntFromString(unsafePointerQueryValue);
     request.ref.query.value = queryValue;
 
+    String result = "";
     ffi.Pointer<IDENJsonResponse> response =
         nativeLib.IDENPrepareAtomicQueryInputs(request);
-    ffi.Pointer<ffi.Int8> json = response.ref.json_string;
-    ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
-    String result = jsonString.toDartString();
-    return response.ref.status;
+    if (response.ref.status != 0) {
+      if (response.ref.error_msg != ffi.nullptr) {
+        ffi.Pointer<ffi.Int8> json = response.ref.error_msg;
+        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+        String msg = jsonString.toDartString();
+        print("error message: " + msg);
+      }
+      print("ERROR : ${response.ref.status}");
+    } else {
+      ffi.Pointer<ffi.Int8> json = response.ref.json_string;
+      ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+      if (jsonString != ffi.nullptr) {
+        result = jsonString.toDartString();
+      }
+    }
+
+    nativeLib.IDENFreeBigInt(request.ref.query.value);
+    nativeLib.IDENFreeClaim(request.ref.auth_claim.core_claim);
+    nativeLib.IDENFreeClaim(issuerAuthClaim);
+    nativeLib.IDENFreeMerkleTree(userAuthClaimsTree);
+    nativeLib.IDENFreeMerkleTree(issuerClaimsTree);
+    nativeLib.IDENFreeMerkleTree(issuerRevTree);
+    nativeLib.IDENFreeMerkleTree(emptyTree);
+    nativeLib.IDENFreeProof(request.ref.claim.proof);
+    nativeLib.IDENFreeProof(request.ref.auth_claim.proof);
+    nativeLib.IDENFreeProof(request.ref.revocation_status.proof);
+
+    return result;
   }
 
   String getGenesisId(String idenState) {
@@ -1040,7 +1189,7 @@ class Iden3CoreLib {
     NativeLibrary nativeLib = NativeLibrary(lib);
     revNonce = 0;
 
-    ffi.Pointer<IDENstatus> status = malloc<IDENstatus>();
+    //ffi.Pointer<IDENstatus> status = malloc<IDENstatus>();
 
     final schemaHash = [
       0x7C,
@@ -1176,7 +1325,7 @@ class Iden3CoreLib {
     return mt;
   }
 
-  ffi.Pointer<IDENJsonResponse>? authPrepareInputs(String pubX, String pubY) {
+  /*ffi.Pointer<IDENJsonResponse>? authPrepareInputs(String pubX, String pubY) {
     NativeLibrary nativeLib = NativeLibrary(lib);
 
     //final claimsTree = createCorrectMT();
@@ -1208,7 +1357,7 @@ class Iden3CoreLib {
         nativeLib.IDENPrepareAuthInputs(request);
 
     return response;*/
-  }
+  }*/
 
   int addClaimToMT(
       ffi.Pointer<IDENmerkleTree> mt, ffi.Pointer<IDENTreeEntry> entryRes) {
