@@ -254,18 +254,17 @@ class Iden3CoreLib {
     NativeLibrary nativeLib = NativeLibrary(lib);
 
     ffi.Pointer<IDENAuthInputs> in1 = malloc<IDENAuthInputs>();
-    in1.ref.challenge = 1; // TODO: put challenge
+    in1.ref.challenge = int.parse(challenge); //1;
     ffi.Pointer<IDENCircuitClaim> authClaim = malloc<IDENCircuitClaim>();
     authClaim.ref.current_timestamp = 1642074362;
     in1.ref.auth_claim = authClaim.ref;
 
     int revNonce = 0; //13260572831089785859;
     //BigInt.parse("15930428023331155902"); // 13260572831089785859
-    // TODO: put pubX and pubY
-    String pubX =
+    /*String pubX =
         "17640206035128972995519606214765283372613874593503528180869261482403155458945";
     String pubY =
-        "20634138280259599560273310290025659992320584624461316485434108770067472477956";
+        "20634138280259599560273310290025659992320584624461316485434108770067472477956";*/
     ffi.Pointer<IDENClaim> coreClaim =
         makeAuthClaim(pubY, pubX, revNonce.toInt());
     in1.ref.auth_claim.core_claim = coreClaim;
@@ -398,10 +397,10 @@ class Iden3CoreLib {
     nativeLib.IDENMerkleTreeGenerateProof(proofP, claimsTree, revNonceHash.ref);
     in1.ref.auth_claim.proof = proofP[0];
 
-    // TODO: signature is done in privadoid_sdk with the wallet
-    // List<int> r = hexToBytes(signature);
-    List<int> r = hexToBytes(
+    List<int> r = hexToBytes(signature);
+    /*List<int> r = hexToBytes(
         "9d6a88b9a2eb1ce525065301a65f95a21b387cbf1d94fd4aa0be2e7b51532d0cc79b70d659246c05326b46e915a31163869ed11c44d47eb639bc0af381dba004");
+    */
     for (var i = 0; i < r.length; i++) {
       in1.ref.signature.data[i] = r[i];
     }
@@ -420,7 +419,7 @@ class Iden3CoreLib {
 
     ffi.Pointer<IDENAtomicQueryInputs> request =
         malloc<IDENAtomicQueryInputs>();
-    request.ref.challenge = 1; // TODO: put challenge
+    request.ref.challenge = int.parse(challenge); //1;
     ffi.Pointer<IDENCircuitClaim> authClaim = malloc<IDENCircuitClaim>();
     authClaim.ref.current_timestamp = 1642074362;
     request.ref.auth_claim = authClaim.ref;
@@ -446,10 +445,10 @@ class Iden3CoreLib {
     //int revNonce = 0; //13260572831089785859;
     //BigInt.parse("15930428023331155902"); // 13260572831089785859
     // TODO: put pubX and pubY
-    pubX =
-        "17640206035128972995519606214765283372613874593503528180869261482403155458945";
-    pubY =
-        "20634138280259599560273310290025659992320584624461316485434108770067472477956";
+    //pubX =
+    //    "17640206035128972995519606214765283372613874593503528180869261482403155458945";
+    //pubY =
+    //    "20634138280259599560273310290025659992320584624461316485434108770067472477956";
     ffi.Pointer<IDENClaim> coreClaim = makeAuthClaim(pubX, pubY, 0);
     request.ref.auth_claim.core_claim = coreClaim;
 
@@ -525,10 +524,9 @@ class Iden3CoreLib {
         makeTreeState(userAuthClaimsTree, emptyTree, emptyTree);
     request.ref.current_tree_state = request.ref.auth_claim.tree_state;
 
-    // TODO: signature is done in privadoid_sdk with the wallet
-    // List<int> r = hexToBytes(signature);
-    List<int> r = hexToBytes(
-        "9d6a88b9a2eb1ce525065301a65f95a21b387cbf1d94fd4aa0be2e7b51532d0cc79b70d659246c05326b46e915a31163869ed11c44d47eb639bc0af381dba004");
+    List<int> r = hexToBytes(signature);
+    /*List<int> r = hexToBytes(
+        "9d6a88b9a2eb1ce525065301a65f95a21b387cbf1d94fd4aa0be2e7b51532d0cc79b70d659246c05326b46e915a31163869ed11c44d47eb639bc0af381dba004");*/
     for (var i = 0; i < r.length; i++) {
       request.ref.signature.data[i] = r[i];
     }

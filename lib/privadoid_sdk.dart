@@ -164,7 +164,7 @@ class PrivadoIdSdk {
     /*final List<Object?> oldEntryRes = await _channel.invokeMethod(
         'getAuthClaimTreeEntry', [wallet.publicKey[0], wallet.publicKey[1]]);*/
 
-    print("newAuthClaimTreeEntry: " + entryRes.toString());
+    //print("newAuthClaimTreeEntry: " + entryRes.toString());
     //print("oldAuthClaimTreeEntry: " + oldEntryRes.toString());
     //print("OldMtRoot: " + mtOldRoot!);
 
@@ -174,10 +174,10 @@ class PrivadoIdSdk {
           Uint8List.fromList(bufEntry.reversed.toList()));
       authClaimTree.add(entryBigInt.toString());
     }
-    print("pubKeyX");
+    /*print("pubKeyX");
     print(wallet.publicKey[0]);
     print("pubKeyY");
-    print(wallet.publicKey[1]);
+    print(wallet.publicKey[1]);*/
     //Uint8List bufMtRoot = Uint8List.fromList(HEX.decode(mtRoot!));
     /*BigInt mtRootBigInt = Uint8ArrayUtils.beBuff2int(
         Uint8List.fromList(bufMtRoot.reversed.toList()));*/
