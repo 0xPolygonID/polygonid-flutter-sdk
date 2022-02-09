@@ -146,12 +146,9 @@ class PrivadoIdSdk {
         privateKey: HexUtils.hexToBytes(privateKey));
 
     Iden3CoreLib iden3coreLib = Iden3CoreLib();
+
     final String? mtRoot = iden3coreLib.getMerkleTreeRoot(
         wallet.publicKey[0], wallet.publicKey[1]);
-
-    /*final String? mtRoot = await _channel.invokeMethod(
-        'getMerkleTreeRoot', [wallet.publicKey[0], wallet.publicKey[1]]);*/
-
     Uint8List bufMtRoot = Uint8List.fromList(HEX.decode(mtRoot!));
     BigInt mtRootBigInt = Uint8ArrayUtils.beBuff2int(
         Uint8List.fromList(bufMtRoot.reversed.toList()));
@@ -197,13 +194,13 @@ class PrivadoIdSdk {
 
     //Babyjubjub signature packed and encoded as an hex string
     String signatureString = wallet.signMessage(challenge);
-    print("signature");
-    print(signatureString);
+    /*print("signature");
+    print(signatureString);*/
     Uint8List buf = Uint8List.fromList(HEX.decode(signatureString));
     Signature signature = Signature.newFromCompressed(buf);
-    print(signature.s.toString());
+    /*print(signature.s.toString());
     print(signature.r8[0].toString());
-    print(signature.r8[1].toString());
+    print(signature.r8[1].toString());*/
 
     Map<String, dynamic> json = <String, dynamic>{};
 
