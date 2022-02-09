@@ -242,7 +242,7 @@ class Iden3CoreLib {
     ffi.Pointer<IDENClaim> coreClaim =
         makeAuthClaim(pubY, pubX, revNonce.toInt());
     request.ref.auth_claim.core_claim = coreClaim;
-    nativeLib.IDENFreeClaim(coreClaim);
+    //nativeLib.IDENFreeClaim(coreClaim);
 
     ffi.Pointer<IDENmerkleTree> claimsTree = createCorrectMT()!;
     if (claimsTree == ffi.nullptr ||
@@ -272,7 +272,7 @@ class Iden3CoreLib {
         nativeLib.IDENmerkleTreeAddClaim(claimsTree, claimTreeEntry);
     consumeStatus(status1, "merkle tree add claim");
 
-    nativeLib.IDENFreeTreeEntry(claimTreeEntry);
+    //nativeLib.IDENFreeTreeEntry(claimTreeEntry);
 
     ffi.Pointer<IDENMerkleTreeHash> userAuthClaimIndexHash =
         malloc<IDENMerkleTreeHash>();
@@ -324,9 +324,9 @@ class Iden3CoreLib {
     request.ref.auth_claim.tree_state =
         makeTreeState(claimsTree, revTree, rorTree);
 
-    nativeLib.IDENFreeMerkleTree(claimsTree);
+    /*nativeLib.IDENFreeMerkleTree(claimsTree);
     nativeLib.IDENFreeMerkleTree(revTree);
-    nativeLib.IDENFreeMerkleTree(rorTree);
+    nativeLib.IDENFreeMerkleTree(rorTree);*/
 
     request.ref.state = request.ref.auth_claim.tree_state;
 
@@ -340,11 +340,8 @@ class Iden3CoreLib {
     consumeStatus(status1, "generate proof");
     request.ref.auth_claim.proof = proofP[0];
 
-    nativeLib.IDENFreeProof(proofP[0]);
+    //nativeLib.IDENFreeProof(proofP[0]);
     List<int> r = hexToBytes(signature);
-    /*List<int> r = hexToBytes(
-        "9d6a88b9a2eb1ce525065301a65f95a21b387cbf1d94fd4aa0be2e7b51532d0cc79b70d659246c05326b46e915a31163869ed11c44d47eb639bc0af381dba004");
-    */
     for (var i = 0; i < r.length; i++) {
       request.ref.signature.data[i] = r[i];
     }
@@ -550,8 +547,8 @@ class Iden3CoreLib {
     nativeLib.IDENFreeProof(request.ref.claim.proof);
     nativeLib.IDENFreeProof(request.ref.auth_claim.proof);
     nativeLib.IDENFreeProof(request.ref.revocation_status.proof);
-    nativeLib.IDENFreeJsonResponse(response);
-    nativeLib.free(unsafePointerQueryValue.cast());
+    //nativeLib.IDENFreeJsonResponse(response);
+    //nativeLib.free(unsafePointerQueryValue.cast());
 
     return result;
   }
@@ -1280,12 +1277,10 @@ class Iden3CoreLib {
         nativeLib.IDENmerkleTreeAddClaim(tree, treeEntry);
     consumeStatus(status1, "unable to add claim to tree");
     nativeLib.IDENFreeTreeEntry(treeEntry);
-    //END: Add_Claim_to_Tree
   }
 
   bool addClaimToMT(
       ffi.Pointer<IDENmerkleTree> mt, ffi.Pointer<IDENTreeEntry> entryRes) {
-    //NativeLibrary nativeLib = NativeLibrary(lib);
     ffi.Pointer<IDENstatus> addStatus =
         nativeLib.IDENmerkleTreeAddClaim(mt, entryRes);
     return consumeStatus(addStatus, "add claim");
