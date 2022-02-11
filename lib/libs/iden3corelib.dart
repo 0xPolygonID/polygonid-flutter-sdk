@@ -129,9 +129,9 @@ typedef IDENJsonLDGetFieldSlotIndex = Pointer<Utf8> Function(
     Pointer<Utf8>, Pointer<Utf8>, Pointer<Utf8>, Pointer<Utf8>);*/
 
 class Iden3CoreLib {
-  final NativeLibrary nativeLib = Platform.isAndroid
-      ? NativeLibrary(ffi.DynamicLibrary.open("libiden3core.so"))
-      : NativeLibrary(ffi.DynamicLibrary.process());
+  final lib = Platform.isAndroid
+      ? ffi.DynamicLibrary.open("libiden3core.so")
+      : ffi.DynamicLibrary.process();
 
   Iden3CoreLib();
 
@@ -176,6 +176,7 @@ class Iden3CoreLib {
   }*/
 
   int getFieldSlotIndex(String schema, String claimType, String key) {
+    NativeLibrary nativeLib = NativeLibrary(lib);
     schema =
         "{\"@context\": [{\"@version\": 1.1, \"@protected\": true, \"id\": \"@id\", \"type\": \"@type\", \"KYCAgeCredential\": {\"@id\": \"https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc.json-ld#KYCAgeCredential\", \"@context\": {\"@version\": 1.1, \"@protected\": true, \"id\": \"@id\", \"type\": \"@type\", \"kyc-vocab\": \"https://github.com/iden3/claim-schema-vocab/blob/main/credentials/kyc.md#\", \"serialization\": \"https://github.com/iden3/claim-schema-vocab/blob/main/credentials/serialization.md#\", \"birthday\": {\"@id\": \"kyc-vocab:birthday\", \"@type\": \"serialization:IndexDataSlotA\"}, \"documentType\": {\"@id\": \"kyc-vocab:documentType\", \"@type\": \"serialization:IndexDataSlotB\"}}}, \"KYCCountryOfResidenceCredential\": {\"@id\": \"https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc.json-ld#KYCCountryOfResidenceCredential\", \"@context\": {\"@version\": 1.1, \"@protected\": true, \"id\": \"@id\", \"type\": \"@type\", \"kyc-vocab\": \"https://github.com/iden3/claim-schema-vocab/blob/main/credentials/kyc.md#\", \"serialization\": \"https://github.com/iden3/claim-schema-vocab/blob/main/credentials/serialization.md#\", \"countryCode\": {\"@id\": \"kyc-vocab:countryCode\", \"@type\": \"serialization:IndexDataSlotA\"}, \"documentType\": {\"@id\": \"kyc-vocab:documentType\", \"@type\": \"serialization:IndexDataSlotB\"}}}}]}";
     claimType = "KYCAgeCredential";
@@ -203,7 +204,7 @@ class Iden3CoreLib {
   }
 
   IDENClaim? parseClaim(String jsonLDDocument, String schema) {
-    //NativeLibrary nativeLib = NativeLibrary(lib);
+    NativeLibrary nativeLib = NativeLibrary(lib);
     ffi.Pointer<ffi.Int8> jsonLDDocumentP =
         jsonLDDocument.toNativeUtf8().cast<ffi.Int8>();
     ffi.Pointer<ffi.Int8> schemaP = schema.toNativeUtf8().cast<ffi.Int8>();
@@ -227,6 +228,7 @@ class Iden3CoreLib {
 
   String prepareAuthInputs(
       String challenge, String pubX, String pubY, String signature) {
+    NativeLibrary nativeLib = NativeLibrary(lib);
     ffi.Pointer<IDENAuthInputs> request = malloc<IDENAuthInputs>();
     request.ref.challenge = int.parse(challenge); //1;
     ffi.Pointer<IDENCircuitClaim> authClaim = malloc<IDENCircuitClaim>();
@@ -358,6 +360,7 @@ class Iden3CoreLib {
 
   String prepareAtomicQueryInputs(
       String challenge, String pubX, String pubY, String signature) {
+    NativeLibrary nativeLib = NativeLibrary(lib);
     ffi.Pointer<IDENAtomicQueryInputs> request =
         malloc<IDENAtomicQueryInputs>();
     request.ref.challenge = int.parse(challenge); //1;
@@ -555,7 +558,7 @@ class Iden3CoreLib {
 
   String getGenesisId(String idenState) {
     print("idenState: " + idenState);
-    //NativeLibrary nativeLib = NativeLibrary(lib);
+    NativeLibrary nativeLib = NativeLibrary(lib);
     List<int> bytes = hexToBytes(idenState);
     List<int> reversedBytes = bytes.reversed.toList();
     final ffi.Pointer<ffi.Uint8> unsafePointerState =
@@ -594,7 +597,7 @@ class Iden3CoreLib {
   }
 
   List<String> getAuthClaimTreeEntry(String pubX, String pubY) {
-    //NativeLibrary nativeLib = NativeLibrary(lib);
+    NativeLibrary nativeLib = NativeLibrary(lib);
 
     final schemaHash = [
       0x7C,
@@ -673,7 +676,7 @@ class Iden3CoreLib {
       print("tree entry successfuly freed\n");
     }
 
-    if (keyX != ffi.nullptr) {
+    /*if (keyX != ffi.nullptr) {
       nativeLib.IDENFreeBigInt(keyX);
       print("keyX successfully freed\n");
     }
@@ -681,7 +684,7 @@ class Iden3CoreLib {
     if (keyY != ffi.nullptr) {
       nativeLib.IDENFreeBigInt(keyY);
       print("keyY successfully freed\n");
-    }
+    }*/
 
     if (unsafePointerSchemaHash != ffi.nullptr) {
       nativeLib.free(unsafePointerSchemaHash.cast());
@@ -692,6 +695,7 @@ class Iden3CoreLib {
   }
 
   String getMerkleTreeRoot(String pubX, String pubY) {
+    NativeLibrary nativeLib = NativeLibrary(lib);
     final schemaHash = [
       0x7C,
       0x08,
@@ -801,7 +805,7 @@ class Iden3CoreLib {
       print("tree entry successfuly freed\n");
     }
 
-    if (keyX != ffi.nullptr) {
+    /*if (keyX != ffi.nullptr) {
       nativeLib.IDENFreeBigInt(keyX);
       print("keyX successfuly freed\n");
     }
@@ -809,7 +813,7 @@ class Iden3CoreLib {
     if (keyY != ffi.nullptr) {
       nativeLib.IDENFreeBigInt(keyY);
       print("keyY successfuly freed\n");
-    }
+    }*/
 
     if (unsafePointerSchemaHash != ffi.nullptr) {
       nativeLib.free(unsafePointerSchemaHash.cast());
@@ -820,8 +824,7 @@ class Iden3CoreLib {
   }
 
   String createNewIdentity(String pubX, String pubY) {
-    //NativeLibrary nativeLib = NativeLibrary(lib);
-
+    NativeLibrary nativeLib = NativeLibrary(lib);
     final schemaHash = [
       0x7C,
       0x08,
@@ -999,7 +1002,7 @@ class Iden3CoreLib {
       print("tree entry successfully freed\n");
     }
 
-    if (keyX != ffi.nullptr) {
+    /*if (keyX != ffi.nullptr) {
       nativeLib.IDENFreeBigInt(keyX);
       print("keyX successfully freed\n");
     }
@@ -1007,7 +1010,7 @@ class Iden3CoreLib {
     if (keyY != ffi.nullptr) {
       nativeLib.IDENFreeBigInt(keyY);
       print("keyY successfully freed\n");
-    }
+    }*/
 
     if (unsafePointerSchemaHash != ffi.nullptr) {
       nativeLib.free(unsafePointerSchemaHash.cast());
@@ -1021,6 +1024,7 @@ class Iden3CoreLib {
       ffi.Pointer<IDENmerkleTree> claimsTree,
       ffi.Pointer<IDENmerkleTree> revTree,
       ffi.Pointer<IDENmerkleTree> rorTree) {
+    NativeLibrary nativeLib = NativeLibrary(lib);
     ffi.Pointer<IDENTreeState> treeState = malloc<IDENTreeState>();
 
     ffi.Pointer<IDENMerkleTreeHash> claimsRoot = malloc<IDENMerkleTreeHash>();
@@ -1058,7 +1062,7 @@ class Iden3CoreLib {
   }
 
   ffi.Pointer<IDENClaim> makeAuthClaim(String pubX, String pubY, int revNonce) {
-    //NativeLibrary nativeLib = NativeLibrary(lib);
+    NativeLibrary nativeLib = NativeLibrary(lib);
     revNonce = 0;
 
     //ffi.Pointer<IDENstatus> status = malloc<IDENstatus>();
@@ -1114,7 +1118,7 @@ class Iden3CoreLib {
   }
 
   ffi.Pointer<IDENClaim> makeUserClaim(String idHex, int revNonce) {
-    //NativeLibrary nativeLib = NativeLibrary(lib);
+    NativeLibrary nativeLib = NativeLibrary(lib);
 
     final schemaHash = [
       0xce,
@@ -1175,7 +1179,7 @@ class Iden3CoreLib {
   }
 
   ffi.Pointer<IDENmerkleTree>? createCorrectMT() {
-    //NativeLibrary nativeLib = NativeLibrary(lib);
+    NativeLibrary nativeLib = NativeLibrary(lib);
 
     var mt = nativeLib.IDENnewMerkleTree(40);
 
@@ -1235,6 +1239,7 @@ class Iden3CoreLib {
   }*/
 
   bool consumeStatus(ffi.Pointer<IDENstatus> status, String msg) {
+    NativeLibrary nativeLib = NativeLibrary(lib);
     if (status == ffi.nullptr) {
       print("unable to allocate status\n");
       return false;
@@ -1261,6 +1266,7 @@ class Iden3CoreLib {
 
   void addClaimToTree(
       ffi.Pointer<IDENmerkleTree> tree, ffi.Pointer<IDENClaim> claim) {
+    NativeLibrary nativeLib = NativeLibrary(lib);
     ffi.Pointer<IDENTreeEntry> treeEntry = nativeLib.IDENClaimTreeEntry(claim);
     if (treeEntry == ffi.nullptr ||
         treeEntry.ref.status != IDENtreeEntryStatus.IDENTREEENTRY_OK) {
@@ -1281,6 +1287,7 @@ class Iden3CoreLib {
 
   bool addClaimToMT(
       ffi.Pointer<IDENmerkleTree> mt, ffi.Pointer<IDENTreeEntry> entryRes) {
+    NativeLibrary nativeLib = NativeLibrary(lib);
     ffi.Pointer<IDENstatus> addStatus =
         nativeLib.IDENmerkleTreeAddClaim(mt, entryRes);
     return consumeStatus(addStatus, "add claim");
