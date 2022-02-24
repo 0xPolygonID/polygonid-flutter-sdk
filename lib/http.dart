@@ -15,11 +15,16 @@ Future<http.Response> get(String baseAddress, String endpoint,
   var response;
   try {
     var uri;
-    baseAddress = baseAddress.replaceFirst("https://", "");
-    if (queryParameters != null) {
-      uri = Uri.https(baseAddress, '$API_VERSION$endpoint', queryParameters);
+    if (endpoint.isEmpty) {
+      uri = Uri.parse(baseAddress);
     } else {
-      uri = Uri.https(baseAddress, '$API_VERSION$endpoint');
+      baseAddress = baseAddress.replaceFirst("https://", "");
+      if (queryParameters != null) {
+        uri = Uri.https(
+            baseAddress, endpoint /*'$API_VERSION$endpoint'*/, queryParameters);
+      } else {
+        uri = Uri.https(baseAddress, endpoint /*'$API_VERSION$endpoint'*/);
+      }
     }
     response = await http.get(
       uri,

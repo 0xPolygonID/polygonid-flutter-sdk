@@ -3,6 +3,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
+import 'package:flutter/foundation.dart';
+import 'package:privadoid_sdk/model/credential_credential.dart';
+import 'package:privadoid_sdk/model/revocation_status.dart';
 import 'package:web3dart/crypto.dart';
 
 import 'generated_bindings.dart';
@@ -177,11 +180,11 @@ class Iden3CoreLib {
 
   int getFieldSlotIndex(String schema, String claimType, String key) {
     NativeLibrary nativeLib = NativeLibrary(lib);
-    schema =
-        "{\"@context\": [{\"@version\": 1.1, \"@protected\": true, \"id\": \"@id\", \"type\": \"@type\", \"KYCAgeCredential\": {\"@id\": \"https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc.json-ld#KYCAgeCredential\", \"@context\": {\"@version\": 1.1, \"@protected\": true, \"id\": \"@id\", \"type\": \"@type\", \"kyc-vocab\": \"https://github.com/iden3/claim-schema-vocab/blob/main/credentials/kyc.md#\", \"serialization\": \"https://github.com/iden3/claim-schema-vocab/blob/main/credentials/serialization.md#\", \"birthday\": {\"@id\": \"kyc-vocab:birthday\", \"@type\": \"serialization:IndexDataSlotA\"}, \"documentType\": {\"@id\": \"kyc-vocab:documentType\", \"@type\": \"serialization:IndexDataSlotB\"}}}, \"KYCCountryOfResidenceCredential\": {\"@id\": \"https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc.json-ld#KYCCountryOfResidenceCredential\", \"@context\": {\"@version\": 1.1, \"@protected\": true, \"id\": \"@id\", \"type\": \"@type\", \"kyc-vocab\": \"https://github.com/iden3/claim-schema-vocab/blob/main/credentials/kyc.md#\", \"serialization\": \"https://github.com/iden3/claim-schema-vocab/blob/main/credentials/serialization.md#\", \"countryCode\": {\"@id\": \"kyc-vocab:countryCode\", \"@type\": \"serialization:IndexDataSlotA\"}, \"documentType\": {\"@id\": \"kyc-vocab:documentType\", \"@type\": \"serialization:IndexDataSlotB\"}}}}]}";
-    claimType = "KYCAgeCredential";
+    //schema =
+    //    "{\"@context\": [{\"@version\": 1.1, \"@protected\": true, \"id\": \"@id\", \"type\": \"@type\", \"KYCAgeCredential\": {\"@id\": \"https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc.json-ld#KYCAgeCredential\", \"@context\": {\"@version\": 1.1, \"@protected\": true, \"id\": \"@id\", \"type\": \"@type\", \"kyc-vocab\": \"https://github.com/iden3/claim-schema-vocab/blob/main/credentials/kyc.md#\", \"serialization\": \"https://github.com/iden3/claim-schema-vocab/blob/main/credentials/serialization.md#\", \"birthday\": {\"@id\": \"kyc-vocab:birthday\", \"@type\": \"serialization:IndexDataSlotA\"}, \"documentType\": {\"@id\": \"kyc-vocab:documentType\", \"@type\": \"serialization:IndexDataSlotB\"}}}, \"KYCCountryOfResidenceCredential\": {\"@id\": \"https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc.json-ld#KYCCountryOfResidenceCredential\", \"@context\": {\"@version\": 1.1, \"@protected\": true, \"id\": \"@id\", \"type\": \"@type\", \"kyc-vocab\": \"https://github.com/iden3/claim-schema-vocab/blob/main/credentials/kyc.md#\", \"serialization\": \"https://github.com/iden3/claim-schema-vocab/blob/main/credentials/serialization.md#\", \"countryCode\": {\"@id\": \"kyc-vocab:countryCode\", \"@type\": \"serialization:IndexDataSlotA\"}, \"documentType\": {\"@id\": \"kyc-vocab:documentType\", \"@type\": \"serialization:IndexDataSlotB\"}}}}]}";
+    //claimType = "KYCAgeCredential";
     // var key = "birthday";
-    key = "documentType";
+    //key = "documentType";
     var slotIn = 0;
     ffi.Pointer<ffi.Int32> slotI =
         slotIn.toString().toNativeUtf8().cast<ffi.Int32>();
@@ -194,13 +197,18 @@ class Iden3CoreLib {
     // let keyP : UnsafeMutablePointer<CChar>  = UnsafeMutablePointer<CChar>(mutating: key);
 
     // var status = nativeLib.IDENJsonLDGetFieldSlotIndex(&slotIndex, key, claimType, schema);
+    int result = 0;
     ffi.Pointer<IDENstatus> status =
         nativeLib.IDENJsonLDGetFieldSlotIndex(slotI, keyP, claimTypeP, schemaP);
+    consumeStatus(status, "IDENJsonLDGetFieldSlotIndex error");
     print("slotIndex:");
     print(slotI.value);
-    print("status:");
-    print(status.ref.status);
-    return slotI.value;
+    result = slotI.value;
+    nativeLib.free(slotI.cast());
+    nativeLib.free(keyP.cast());
+    nativeLib.free(claimTypeP.cast());
+    nativeLib.free(schemaP.cast());
+    return result;
   }
 
   IDENClaim? parseClaim(String jsonLDDocument, String schema) {
@@ -212,10 +220,14 @@ class Iden3CoreLib {
     ffi.Pointer<ffi.Pointer<IDENClaim>> claimI =
         malloc<ffi.Pointer<IDENClaim>>();
 
+    //BigInt.parse('9401485880430551000');
+
+    //BigInt.from(2034832188220019200);
     ffi.Pointer<IDENstatus> status =
         nativeLib.IDENJsonLDParseClaim(claimI, jsonLDDocumentP, schemaP);
+    consumeStatus(status, "");
     print("idenClaim status: ${claimI.value.ref.status}");
-    if (status.ref.status == 0 && claimI.value.ref.status == 0) {
+    if (claimI.value.ref.status == 0) {
       return claimI.value.ref;
     } else {
       return null;
@@ -227,7 +239,11 @@ class Iden3CoreLib {
   }
 
   String prepareAuthInputs(
-      String challenge, String pubX, String pubY, String signature) {
+    String challenge,
+    String pubX,
+    String pubY,
+    String signature,
+  ) {
     NativeLibrary nativeLib = NativeLibrary(lib);
     ffi.Pointer<IDENAuthInputs> request = malloc<IDENAuthInputs>();
     request.ref.challenge = int.parse(challenge); //1;
@@ -249,26 +265,30 @@ class Iden3CoreLib {
     ffi.Pointer<IDENmerkleTree> claimsTree = createCorrectMT()!;
     if (claimsTree == ffi.nullptr ||
         claimsTree.ref.status != IDENmerkleTreeStatus.IDENTMERKLETREE_OK) {
-      if (claimsTree.ref.error_msg != ffi.nullptr) {
-        ffi.Pointer<ffi.Int8> json = claimsTree.ref.error_msg;
-        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
-        String msg = jsonString.toDartString();
-        print("error message: " + msg);
+      if (kDebugMode) {
+        if (claimsTree.ref.error_msg != ffi.nullptr) {
+          ffi.Pointer<ffi.Int8> json = claimsTree.ref.error_msg;
+          ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+          String msg = jsonString.toDartString();
+          print("error message: " + msg);
+        }
+        print("Claims Tree Error : ${claimsTree.ref.status}");
       }
-      print("ERROR : ${claimsTree.ref.status}");
     }
     //ffi.Pointer<IDENClaim> claim = malloc<IDENClaim>();
     ffi.Pointer<IDENTreeEntry> claimTreeEntry =
         nativeLib.IDENClaimTreeEntry(request.ref.auth_claim.core_claim);
     if (claimTreeEntry == ffi.nullptr ||
         claimTreeEntry.ref.status != IDENtreeEntryStatus.IDENTREEENTRY_OK) {
-      if (claimTreeEntry.ref.error_msg != ffi.nullptr) {
-        ffi.Pointer<ffi.Int8> json = claimTreeEntry.ref.error_msg;
-        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
-        String msg = jsonString.toDartString();
-        print("error message: " + msg);
+      if (kDebugMode) {
+        if (claimTreeEntry.ref.error_msg != ffi.nullptr) {
+          ffi.Pointer<ffi.Int8> json = claimTreeEntry.ref.error_msg;
+          ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+          String msg = jsonString.toDartString();
+          print("error message: " + msg);
+        }
+        print("ERROR : ${claimTreeEntry.ref.status}");
       }
-      print("ERROR : ${claimTreeEntry.ref.status}");
     }
     ffi.Pointer<IDENstatus> status1 =
         nativeLib.IDENmerkleTreeAddClaim(claimsTree, claimTreeEntry);
@@ -302,25 +322,29 @@ class Iden3CoreLib {
     ffi.Pointer<IDENmerkleTree> revTree = createCorrectMT()!;
     if (revTree == ffi.nullptr ||
         revTree.ref.status != IDENmerkleTreeStatus.IDENTMERKLETREE_OK) {
-      if (revTree.ref.error_msg != ffi.nullptr) {
-        ffi.Pointer<ffi.Int8> json = revTree.ref.error_msg;
-        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
-        String msg = jsonString.toDartString();
-        print("error message: " + msg);
+      if (kDebugMode) {
+        if (revTree.ref.error_msg != ffi.nullptr) {
+          ffi.Pointer<ffi.Int8> json = revTree.ref.error_msg;
+          ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+          String msg = jsonString.toDartString();
+          print("error message: " + msg);
+        }
+        print("ERROR : ${revTree.ref.status}");
       }
-      print("ERROR : ${revTree.ref.status}");
     }
 
     ffi.Pointer<IDENmerkleTree> rorTree = createCorrectMT()!;
     if (rorTree == ffi.nullptr ||
         rorTree.ref.status != IDENmerkleTreeStatus.IDENTMERKLETREE_OK) {
-      if (rorTree.ref.error_msg != ffi.nullptr) {
-        ffi.Pointer<ffi.Int8> json = rorTree.ref.error_msg;
-        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
-        String msg = jsonString.toDartString();
-        print("error message: " + msg);
+      if (kDebugMode) {
+        if (rorTree.ref.error_msg != ffi.nullptr) {
+          ffi.Pointer<ffi.Int8> json = rorTree.ref.error_msg;
+          ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+          String msg = jsonString.toDartString();
+          print("error message: " + msg);
+        }
+        print("ERROR : ${rorTree.ref.status}");
       }
-      print("ERROR : ${rorTree.ref.status}");
     }
 
     request.ref.auth_claim.tree_state =
@@ -359,200 +383,407 @@ class Iden3CoreLib {
   }
 
   String prepareAtomicQueryInputs(
-      String challenge, String pubX, String pubY, String signature) {
+      String challenge,
+      String pubX,
+      String pubY,
+      String signature,
+      CredentialCredential credential,
+      String jsonLDDocument,
+      String schema,
+      String claimType,
+      String key,
+      int value,
+      int operator,
+      RevocationStatus revocationStatus) {
     NativeLibrary nativeLib = NativeLibrary(lib);
     ffi.Pointer<IDENAtomicQueryInputs> request =
         malloc<IDENAtomicQueryInputs>();
-    request.ref.challenge = int.parse(challenge); //1;
-    ffi.Pointer<IDENCircuitClaim> authClaim = malloc<IDENCircuitClaim>();
-    authClaim.ref.current_timestamp = 1642074362;
-    request.ref.auth_claim = authClaim.ref;
+
+    ffi.Pointer<IDENmerkleTree> emptyTree = createCorrectMT()!;
+    if (emptyTree == ffi.nullptr ||
+        emptyTree.ref.status != IDENmerkleTreeStatus.IDENTMERKLETREE_OK) {
+      if (kDebugMode) {
+        if (emptyTree.ref.error_msg != ffi.nullptr) {
+          ffi.Pointer<ffi.Int8> json = emptyTree.ref.error_msg;
+          ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+          String msg = jsonString.toDartString();
+          print("error message: " + msg);
+        }
+        print("ERROR : ${emptyTree.ref.status}");
+      }
+    }
+
+    // QUERY
     ffi.Pointer<IDENQuery> query = malloc<IDENQuery>();
-    query.ref.slot_index = 2;
-    query.ref.value = ffi.nullptr;
-    query.ref.operator1 = 0;
+    query.ref.slot_index = getFieldSlotIndex(schema, claimType, key);
+    ffi.Pointer<ffi.Int8> unsafePointerValue =
+        value.toString().toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<IDENBigInt> valuePtr =
+        nativeLib.IDENBigIntFromString(unsafePointerValue);
+    query.ref.value = valuePtr;
+    query.ref.operator1 = operator;
     request.ref.query = query.ref;
+
+    // AUTH CLAIM
+    ffi.Pointer<IDENCircuitClaim> authClaim = malloc<IDENCircuitClaim>();
+    authClaim.ref.current_timestamp =
+        DateTime.now().millisecondsSinceEpoch ~/ 100; //1642074362;
 
     ffi.Pointer<IDENmerkleTree> userAuthClaimsTree = createCorrectMT()!;
     if (userAuthClaimsTree == ffi.nullptr ||
         userAuthClaimsTree.ref.status !=
             IDENmerkleTreeStatus.IDENTMERKLETREE_OK) {
-      if (userAuthClaimsTree.ref.error_msg != ffi.nullptr) {
-        ffi.Pointer<ffi.Int8> json = userAuthClaimsTree.ref.error_msg;
-        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
-        String msg = jsonString.toDartString();
-        print("error message: " + msg);
+      if (kDebugMode) {
+        if (userAuthClaimsTree.ref.error_msg != ffi.nullptr) {
+          ffi.Pointer<ffi.Int8> json = userAuthClaimsTree.ref.error_msg;
+          ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+          String msg = jsonString.toDartString();
+          print("error message: " + msg);
+        }
+        print("ERROR : ${userAuthClaimsTree.ref.status}");
       }
-      print("ERROR : ${userAuthClaimsTree.ref.status}");
     }
     ffi.Pointer<IDENClaim> coreClaim = makeAuthClaim(pubX, pubY, 0);
-    request.ref.auth_claim.core_claim = coreClaim;
-    addClaimToTree(userAuthClaimsTree, request.ref.auth_claim.core_claim);
+    authClaim.ref.core_claim = coreClaim;
 
-    ffi.Pointer<IDENMerkleTreeHash> userAuthClaimsTreeRoot =
-        malloc<IDENMerkleTreeHash>();
-    ffi.Pointer<IDENstatus> status1 =
-        nativeLib.IDENTreeRoot(userAuthClaimsTreeRoot, userAuthClaimsTree);
-    consumeStatus(status1, "tree root");
-
-    ffi.Pointer<IDENId> idP = malloc<IDENId>();
-    status1 = nativeLib.IDENCalculateGenesisID(idP, userAuthClaimsTreeRoot.ref);
-    consumeStatus(status1, "calculate genesis id");
-    request.ref.id = idP.ref;
-
-    ffi.Pointer<IDENmerkleTree> emptyTree = createCorrectMT()!;
-    if (emptyTree == ffi.nullptr ||
-        emptyTree.ref.status != IDENmerkleTreeStatus.IDENTMERKLETREE_OK) {
-      if (emptyTree.ref.error_msg != ffi.nullptr) {
-        ffi.Pointer<ffi.Int8> json = emptyTree.ref.error_msg;
-        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
-        String msg = jsonString.toDartString();
-        print("error message: " + msg);
+    ///
+    ffi.Pointer<IDENmerkleTree> authClaimsTree = createCorrectMT()!;
+    if (authClaimsTree == ffi.nullptr ||
+        authClaimsTree.ref.status != IDENmerkleTreeStatus.IDENTMERKLETREE_OK) {
+      if (kDebugMode) {
+        if (authClaimsTree.ref.error_msg != ffi.nullptr) {
+          ffi.Pointer<ffi.Int8> json = authClaimsTree.ref.error_msg;
+          ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+          String msg = jsonString.toDartString();
+          print("error message: " + msg);
+        }
+        print("Claims Tree Error : ${authClaimsTree.ref.status}");
       }
-      print("ERROR : ${emptyTree.ref.status}");
     }
-
-    request.ref.auth_claim.tree_state =
-        makeTreeState(userAuthClaimsTree, emptyTree, emptyTree);
-    request.ref.current_tree_state = request.ref.auth_claim.tree_state;
-
-    List<int> r = hexToBytes(signature);
-    for (var i = 0; i < r.length; i++) {
-      request.ref.signature.data[i] = r[i];
+    //ffi.Pointer<IDENClaim> claim = malloc<IDENClaim>();
+    ffi.Pointer<IDENTreeEntry> authClaimTreeEntry =
+        nativeLib.IDENClaimTreeEntry(authClaim.ref.core_claim);
+    if (authClaimTreeEntry == ffi.nullptr ||
+        authClaimTreeEntry.ref.status != IDENtreeEntryStatus.IDENTREEENTRY_OK) {
+      if (kDebugMode) {
+        if (authClaimTreeEntry.ref.error_msg != ffi.nullptr) {
+          ffi.Pointer<ffi.Int8> json = authClaimTreeEntry.ref.error_msg;
+          ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+          String msg = jsonString.toDartString();
+          print("error message: " + msg);
+        }
+        print("ERROR : ${authClaimTreeEntry.ref.status}");
+      }
     }
+    ffi.Pointer<IDENstatus> status1 =
+        nativeLib.IDENmerkleTreeAddClaim(authClaimsTree, authClaimTreeEntry);
+    consumeStatus(status1, "merkle tree add claim");
+
+    //nativeLib.IDENFreeTreeEntry(claimTreeEntry);
 
     ffi.Pointer<IDENMerkleTreeHash> userAuthClaimIndexHash =
         malloc<IDENMerkleTreeHash>();
     status1 = nativeLib.IDENClaimTreeEntryHash(
-        userAuthClaimIndexHash, ffi.nullptr, request.ref.auth_claim.core_claim);
+        userAuthClaimIndexHash, ffi.nullptr, authClaim.ref.core_claim);
     consumeStatus(status1, "claim tree entry hash");
 
     ffi.Pointer<ffi.Pointer<IDENProof>> proof =
         malloc<ffi.Pointer<IDENProof>>();
     status1 = nativeLib.IDENMerkleTreeGenerateProof(
-        proof, userAuthClaimsTree, userAuthClaimIndexHash.ref);
-    consumeStatus(status1, "claim tree entry hash");
-    request.ref.auth_claim.proof = proof[0];
+        proof, authClaimsTree, userAuthClaimIndexHash.ref);
+    consumeStatus(status1, "merkle tree generate proof");
+    authClaim.ref.proof = proof[0];
 
-    // TODO:
-    ffi.Pointer<IDENmerkleTree> issuerClaimsTree = createCorrectMT()!;
-    if (issuerClaimsTree == ffi.nullptr ||
-        issuerClaimsTree.ref.status !=
-            IDENmerkleTreeStatus.IDENTMERKLETREE_OK) {
-      if (issuerClaimsTree.ref.error_msg != ffi.nullptr) {
-        ffi.Pointer<ffi.Int8> json = issuerClaimsTree.ref.error_msg;
-        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
-        String msg = jsonString.toDartString();
-        print("error message: " + msg);
+    ffi.Pointer<IDENMerkleTreeHash> authClaimsTreeRoot =
+        malloc<IDENMerkleTreeHash>();
+    status1 = nativeLib.IDENTreeRoot(authClaimsTreeRoot, authClaimsTree);
+    consumeStatus(status1, "IdenTreeRoot");
+
+    ffi.Pointer<IDENmerkleTree> revTree = createCorrectMT()!;
+    if (revTree == ffi.nullptr ||
+        revTree.ref.status != IDENmerkleTreeStatus.IDENTMERKLETREE_OK) {
+      if (kDebugMode) {
+        if (revTree.ref.error_msg != ffi.nullptr) {
+          ffi.Pointer<ffi.Int8> json = revTree.ref.error_msg;
+          ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+          String msg = jsonString.toDartString();
+          print("error message: " + msg);
+        }
+        print("ERROR : ${revTree.ref.status}");
       }
-      print("ERROR : ${issuerClaimsTree.ref.status}");
     }
 
-    ffi.Pointer<IDENmerkleTree> issuerRevTree = createCorrectMT()!;
-    if (issuerRevTree == ffi.nullptr ||
-        issuerRevTree.ref.status != IDENmerkleTreeStatus.IDENTMERKLETREE_OK) {
-      if (issuerRevTree.ref.error_msg != ffi.nullptr) {
-        ffi.Pointer<ffi.Int8> json = issuerRevTree.ref.error_msg;
-        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
-        String msg = jsonString.toDartString();
-        print("error message: " + msg);
+    ffi.Pointer<IDENmerkleTree> rorTree = createCorrectMT()!;
+    if (rorTree == ffi.nullptr ||
+        rorTree.ref.status != IDENmerkleTreeStatus.IDENTMERKLETREE_OK) {
+      if (kDebugMode) {
+        if (rorTree.ref.error_msg != ffi.nullptr) {
+          ffi.Pointer<ffi.Int8> json = rorTree.ref.error_msg;
+          ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+          String msg = jsonString.toDartString();
+          print("error message: " + msg);
+        }
+        print("ERROR : ${rorTree.ref.status}");
       }
-      print("ERROR : ${issuerRevTree.ref.status}");
     }
 
-    int issuerRevNonce = 0; //11203087622270641253llu;
-    //BigInt.parse("15930428023331155902"); // 13260572831089785859
+    authClaim.ref.tree_state = makeTreeState(authClaimsTree, revTree, rorTree);
+    request.ref.current_tree_state = authClaim.ref.tree_state;
+    request.ref.auth_claim = authClaim.ref;
 
-    // TODO: issuer pubX and pubY??
-    String issuerPubX =
-        "9582165609074695838007712438814613121302719752874385708394134542816240804696";
-    String issuerPubY =
-        "20634138280259599560273310290025659992320584624461316485434108770067472477956";
-    ffi.Pointer<IDENClaim> issuerAuthClaim =
-        makeAuthClaim(issuerPubX, issuerPubY, issuerRevNonce.toInt());
+    // ID
+    ffi.Pointer<IDENId> idP = malloc<IDENId>();
+    status1 = nativeLib.IDENCalculateGenesisID(idP, authClaimsTreeRoot.ref);
+    consumeStatus(status1, "calculate genesis id");
+    request.ref.id = idP.ref;
 
-    addClaimToTree(issuerClaimsTree, issuerAuthClaim);
+    // CHALLENGE
+    request.ref.challenge = int.parse(challenge); //1;
 
-    int revNonce = 1;
-    request.ref.claim.core_claim = makeUserClaim(
-        "0000dd107bd74ed9a1006b0455e0b36af814b07c0bb42f390868eb02220ba6",
-        revNonce);
+    // SIGNATURE OF THE CHALLENGE
+    List<int> r = hexToBytes(signature);
+    for (var i = 0; i < r.length; i++) {
+      request.ref.signature.data[i] = r[i];
+    }
 
-    addClaimToTree(issuerClaimsTree, request.ref.claim.core_claim);
+    // REVOCATION STATUS
+    int siblingsNum = revocationStatus.mtp!.siblings!.length;
+    ffi.Pointer<ffi.Pointer<ffi.Uint8>> siblings =
+        malloc<ffi.Pointer<ffi.Uint8>>(siblingsNum);
+    for (int j = 0; j < siblingsNum; j++) {
+      ffi.Pointer<ffi.Uint8> sib = malloc<ffi.Uint8>();
+      ffi.Pointer<ffi.Int8> unsafePointerSibling =
+          revocationStatus.mtp!.siblings![j].toNativeUtf8().cast<ffi.Int8>();
+      ffi.Pointer<IDENBigInt> sibling =
+          nativeLib.IDENBigIntFromString(unsafePointerSibling);
+      sib = sibling.ref.data;
+      siblings[j] = sib;
+    }
+    ffi.Pointer<IDENProof> revProof = malloc<IDENProof>();
+    revProof.ref.siblings_num = siblingsNum;
+    revProof.ref.siblings = siblings;
+    revProof.ref.existence = revocationStatus.mtp!.existence == false ? 0 : 1;
+    revProof.ref.status = 0;
+    request.ref.revocation_status.proof = revProof;
 
-    request.ref.claim.tree_state =
-        makeTreeState(issuerClaimsTree, issuerRevTree, emptyTree);
-    request.ref.revocation_status.tree_state =
-        request.ref.auth_claim.tree_state;
+    // Revocation Status State
+    ffi.Pointer<IDENTreeState> treeState = malloc<IDENTreeState>();
+    ffi.Pointer<IDENMerkleTreeHash> state = malloc<IDENMerkleTreeHash>();
+    List<int> stateBytes = hexToBytes(revocationStatus.issuer!.state!);
+    for (int i = 0; i < stateBytes.length; i++) {
+      state.ref.data[i] = stateBytes[i];
+    }
+    ffi.Pointer<IDENMerkleTreeHash> claimsRoot = malloc<IDENMerkleTreeHash>();
+    List<int> claimsRootBytes =
+        hexToBytes(revocationStatus.issuer!.claimsTreeRoot!);
+    for (int i = 0; i < claimsRootBytes.length; i++) {
+      claimsRoot.ref.data[i] = claimsRootBytes[i];
+    }
+    ffi.Pointer<IDENMerkleTreeHash> revocationTreeRoot =
+        malloc<IDENMerkleTreeHash>();
+    List<int> revocationTreeRootBytes =
+        hexToBytes(revocationStatus.issuer!.revocationTreeRoot!);
+    for (int i = 0; i < revocationTreeRootBytes.length; i++) {
+      revocationTreeRoot.ref.data[i] = revocationTreeRootBytes[i];
+    }
+    treeState.ref.state = state.ref;
+    treeState.ref.claims_root = claimsRoot.ref;
+    treeState.ref.revocation_root = revocationTreeRoot.ref;
+    request.ref.revocation_status.tree_state = treeState.ref;
 
-    // Generate revocation status proof
-    ffi.Pointer<IDENMerkleTreeHash> revNonceHash = malloc<IDENMerkleTreeHash>();
-    nativeLib.IDENHashFromUInt64(revNonceHash, revNonce.toInt());
+    ///
 
-    ffi.Pointer<ffi.Pointer<IDENProof>> proofP =
-        malloc<ffi.Pointer<IDENProof>>();
-    nativeLib.IDENMerkleTreeGenerateProof(
-        proofP, issuerRevTree, revNonceHash.ref);
-    request.ref.revocation_status.proof = proofP[0];
+    // CLAIM
+    ffi.Pointer<IDENClaim> coreClaimPtr = malloc<IDENClaim>();
+    IDENClaim corelaim = parseClaim(jsonLDDocument, schema)!;
+    coreClaimPtr.ref.handle = corelaim.handle;
+    coreClaimPtr.ref.error_msg = corelaim.error_msg;
+    coreClaimPtr.ref.status = corelaim.status;
+    request.ref.claim.core_claim = coreClaimPtr;
+    request.ref.claim.current_timestamp = authClaim.ref.current_timestamp;
 
-    ffi.Pointer<IDENMerkleTreeHash> userClaimIndexHash =
+    ///
+    /*ffi.Pointer<IDENmerkleTree> claimsTree = createCorrectMT()!;
+    if (claimsTree == ffi.nullptr ||
+        claimsTree.ref.status != IDENmerkleTreeStatus.IDENTMERKLETREE_OK) {
+      if (kDebugMode) {
+        if (claimsTree.ref.error_msg != ffi.nullptr) {
+          ffi.Pointer<ffi.Int8> json = claimsTree.ref.error_msg;
+          ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+          String msg = jsonString.toDartString();
+          print("error message: " + msg);
+        }
+        print("Claims Tree Error : ${claimsTree.ref.status}");
+      }
+    }
+    //ffi.Pointer<IDENClaim> claim = malloc<IDENClaim>();
+    ffi.Pointer<IDENTreeEntry> claimTreeEntry =
+        nativeLib.IDENClaimTreeEntry(request.ref.claim.core_claim);
+    if (claimTreeEntry == ffi.nullptr ||
+        claimTreeEntry.ref.status != IDENtreeEntryStatus.IDENTREEENTRY_OK) {
+      if (kDebugMode) {
+        if (claimTreeEntry.ref.error_msg != ffi.nullptr) {
+          ffi.Pointer<ffi.Int8> json = claimTreeEntry.ref.error_msg;
+          ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+          String msg = jsonString.toDartString();
+          print("error message: " + msg);
+        }
+        print("ERROR : ${claimTreeEntry.ref.status}");
+      }
+    }
+    status1 = nativeLib.IDENmerkleTreeAddClaim(claimsTree, claimTreeEntry);
+    consumeStatus(status1, "merkle tree add claim");
+
+    ffi.Pointer<IDENMerkleTreeHash> claimIndexHash =
         malloc<IDENMerkleTreeHash>();
     status1 = nativeLib.IDENClaimTreeEntryHash(
-        userClaimIndexHash, ffi.nullptr, request.ref.claim.core_claim);
-    if (status1.ref.status != 0) {
-      if (status1.ref.error_msg != ffi.nullptr) {
-        ffi.Pointer<ffi.Int8> json = status1.ref.error_msg;
-        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
-        String msg = jsonString.toDartString();
-        print("error message: " + msg);
-      }
-      print("ERROR : ${status1.ref.status}");
-    }
+        claimIndexHash, ffi.nullptr, request.ref.claim.core_claim);
+    consumeStatus(status1, "claim tree entry hash");
 
-    ffi.Pointer<ffi.Pointer<IDENProof>> proofP1 =
+    ffi.Pointer<ffi.Pointer<IDENProof>> claimProof =
         malloc<ffi.Pointer<IDENProof>>();
-    nativeLib.IDENMerkleTreeGenerateProof(
-        proofP1, issuerClaimsTree, userClaimIndexHash.ref);
-    request.ref.claim.proof = proofP1[0];
+    status1 = nativeLib.IDENMerkleTreeGenerateProof(
+        claimProof, claimsTree, claimIndexHash.ref);
+    consumeStatus(status1, "merkle tree generate proof");
+    request.ref.claim.proof = claimProof[0];
+    request.ref.claim.tree_state = makeTreeState(claimsTree, revTree, rorTree);*/
 
-    ffi.Pointer<ffi.Int8> unsafePointerQueryValue =
-        "10".toNativeUtf8().cast<ffi.Int8>();
-    ffi.Pointer<IDENBigInt> queryValue =
-        nativeLib.IDENBigIntFromString(unsafePointerQueryValue);
-    request.ref.query.value = queryValue;
+    ///
+    int siblingsNum1 = credential.proof![1].mtp!.siblings!.length;
+    ffi.Pointer<ffi.Pointer<ffi.Uint8>> siblings1 =
+        malloc<ffi.Pointer<ffi.Uint8>>(siblingsNum1);
+    for (int j = 0; j < siblingsNum1; j++) {
+      ffi.Pointer<ffi.Int8> unsafePointerSibling = credential
+          .proof![1].mtp!.siblings![j]
+          .toNativeUtf8()
+          .cast<ffi.Int8>();
+      ffi.Pointer<IDENBigInt> sibling =
+          nativeLib.IDENBigIntFromString(unsafePointerSibling);
+      siblings1[j] = sibling.ref.data;
+    }
+    ffi.Pointer<IDENProof> claimProof = malloc<IDENProof>();
+    claimProof.ref.siblings_num = siblingsNum1;
+    claimProof.ref.siblings = siblings1;
+    claimProof.ref.existence =
+        credential.proof![1].mtp!.existence == false ? 0 : 1;
+    claimProof.ref.status = 0;
+    request.ref.claim.proof = claimProof;
 
+    ffi.Pointer<IDENTreeState> treeState1 = malloc<IDENTreeState>();
+    ffi.Pointer<IDENMerkleTreeHash> state1 = malloc<IDENMerkleTreeHash>();
+    Uint8List stateBytes1 = hexToBytes(credential.proof![1].state!.value!);
+    for (int i = 0; i < stateBytes1.length; i++) {
+      state1.ref.data[i] = stateBytes1[i];
+    }
+    ffi.Pointer<IDENMerkleTreeHash> claimsRoot1 = malloc<IDENMerkleTreeHash>();
+    Uint8List claimsRootBytes1 =
+        hexToBytes(credential.proof![1].state!.claims_tree_root!);
+    for (int i = 0; i < claimsRootBytes1.length; i++) {
+      claimsRoot1.ref.data[i] = claimsRootBytes1[i];
+    }
+    ffi.Pointer<IDENMerkleTreeHash> revocationTreeRoot1 =
+        malloc<IDENMerkleTreeHash>();
+    Uint8List revocationTreeRootBytes1 =
+        hexToBytes(credential.proof![1].state!.revocation_tree_root!);
+    for (int i = 0; i < revocationTreeRootBytes1.length; i++) {
+      revocationTreeRoot1.ref.data[i] = revocationTreeRootBytes1[i];
+    }
+    treeState1.ref.state = state1.ref;
+    treeState1.ref.claims_root = claimsRoot1.ref;
+    treeState1.ref.revocation_root = revocationTreeRoot1.ref;
+    request.ref.claim.tree_state = treeState1.ref;
+
+    ///
+
+    // RESULT
     String result = "";
     ffi.Pointer<IDENJsonResponse> response =
         nativeLib.IDENPrepareAtomicQueryInputs(request);
     if (response.ref.status != 0) {
-      if (response.ref.error_msg != ffi.nullptr) {
-        ffi.Pointer<ffi.Int8> json = response.ref.error_msg;
-        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
-        String msg = jsonString.toDartString();
-        print("error message: " + msg);
+      if (kDebugMode) {
+        if (response.ref.error_msg != ffi.nullptr) {
+          ffi.Pointer<ffi.Int8> json = response.ref.error_msg;
+          ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+          String msg = jsonString.toDartString();
+          print("error message: " + msg);
+        }
+        print("idenjsonresponse Error : ${response.ref.status}");
       }
-      print("ERROR : ${response.ref.status}");
     } else {
       ffi.Pointer<ffi.Int8> json = response.ref.json_string;
       ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
       if (jsonString != ffi.nullptr) {
         result = jsonString.toDartString();
       }
+
+      //nativeLib.free(jsonString);
     }
 
-    nativeLib.IDENFreeBigInt(request.ref.query.value);
-    nativeLib.IDENFreeClaim(request.ref.auth_claim.core_claim);
-    nativeLib.IDENFreeClaim(issuerAuthClaim);
-    nativeLib.IDENFreeMerkleTree(userAuthClaimsTree);
-    nativeLib.IDENFreeMerkleTree(issuerClaimsTree);
-    nativeLib.IDENFreeMerkleTree(issuerRevTree);
-    nativeLib.IDENFreeMerkleTree(emptyTree);
+    if (emptyTree != ffi.nullptr) {
+      nativeLib.IDENFreeMerkleTree(emptyTree);
+    }
+    if (authClaim != ffi.nullptr) {
+      nativeLib.free(authClaim.cast());
+    }
+    if (query != ffi.nullptr) {
+      nativeLib.free(query.cast());
+    }
+    if (unsafePointerValue != ffi.nullptr) {
+      nativeLib.free(unsafePointerValue.cast());
+    }
+    if (valuePtr != ffi.nullptr) {
+      nativeLib.IDENFreeBigInt(valuePtr);
+    }
+    if (response != ffi.nullptr) {
+      nativeLib.IDENFreeJsonResponse(response);
+      response = ffi.nullptr;
+      nativeLib.free(response.cast());
+    }
+
+    /*if (coreClaimPtr != ffi.nullptr) {
+      nativeLib.IDENFreeClaim(coreClaimPtr);
+    }*/
+    if (coreClaim != ffi.nullptr) {
+      nativeLib.IDENFreeClaim(coreClaim);
+    }
+    /*if (claimsRoot != ffi.nullptr) {
+      nativeLib.free(claimsRoot.cast());
+    }
+    if (treeState != ffi.nullptr) {
+      nativeLib.free(treeState.cast());
+    }*/
+    /*if (revProof != ffi.nullptr) {
+      nativeLib.IDENFreeProof(revProof);
+    }*/
+    /*if (sib != ffi.nullptr) {
+      nativeLib.free(sib.cast());
+    }*/
+    /*if (siblings != ffi.nullptr) {
+      nativeLib.free(siblings.cast());
+    }*/
+
+    /*if (request.ref.query.value != ffi.nullptr) {
+      nativeLib.IDENFreeBigInt(request.ref.query.value);
+    }
+    nativeLib.IDENFreeClaim(auth_claim);
+    nativeLib.IDENFreeClaim(request.ref.claim.core_claim);*/
+    //nativeLib.IDENFreeClaim(issuerAuthClaim);
+    //nativeLib.IDENFreeMerkleTree(userAuthClaimsTree);
+    //nativeLib.IDENFreeMerkleTree(issuerClaimsTree);
+    //nativeLib.IDENFreeMerkleTree(issuerRevTree);
+    //nativeLib.IDENFreeMerkleTree(emptyTree);
     nativeLib.IDENFreeProof(request.ref.claim.proof);
     nativeLib.IDENFreeProof(request.ref.auth_claim.proof);
     nativeLib.IDENFreeProof(request.ref.revocation_status.proof);
-    //nativeLib.IDENFreeJsonResponse(response);
-    //nativeLib.free(unsafePointerQueryValue.cast());
+    /*if (revProof != ffi.nullptr) {
+      nativeLib.IDENFreeProof(revProof);
+    }*/
 
+    /*if (userAuthClaimsTree != ffi.nullptr) {
+      nativeLib.IDENFreeMerkleTree(userAuthClaimsTree);
+      userAuthClaimsTree = ffi.nullptr;
+    }*/
+    print(result.toString());
     return result;
   }
 
@@ -585,12 +816,16 @@ class Iden3CoreLib {
 
     if (unsafePointerState != ffi.nullptr) {
       nativeLib.free(unsafePointerState.cast());
-      print("idenState successfully freed");
+      if (kDebugMode) {
+        print("idenState successfully freed");
+      }
     }
 
     if (idGenesis != ffi.nullptr) {
       nativeLib.free(idGenesis.cast());
-      print("id genesis successfully freed");
+      if (kDebugMode) {
+        print("id genesis successfully freed");
+      }
     }
 
     return result;
@@ -1056,8 +1291,6 @@ class Iden3CoreLib {
 
     treeState.ref.state = dst.ref;
 
-    // TODO: free!!
-
     return treeState.ref;
   }
 
@@ -1200,7 +1433,7 @@ class Iden3CoreLib {
       return null;
     }
 
-    print("merkle tree successfuly created\n");
+    print("merkle tree successfully created\n");
     return mt;
   }
 

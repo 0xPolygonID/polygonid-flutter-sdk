@@ -1,15 +1,18 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import "package:hex/hex.dart";
 import 'package:privadoid_sdk/eddsa_babyjub.dart';
 import 'package:privadoid_sdk/http.dart';
+import 'package:privadoid_sdk/model/revocation_status.dart';
 import 'package:privadoid_sdk/privadoid_wallet.dart';
 import 'package:privadoid_sdk/utils/hex_utils.dart';
 import 'package:privadoid_sdk/utils/uint8_list_utils.dart';
 
 import 'libs/iden3corelib.dart';
+import 'model/credential_data.dart';
 
 class PrivadoIdSdk {
   static const MethodChannel _channel = MethodChannel('privadoid_sdk');
@@ -45,15 +48,46 @@ class PrivadoIdSdk {
   }
 
   static Future<String?> prepareAtomicQueryInputs(
-      String challenge, String privateKey) async {
+      String challenge,
+      String privateKey,
+      CredentialData credential,
+      String claimType,
+      String key,
+      int value,
+      int operator,
+      String revStatusUrl) async {
     final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
         privateKey: HexUtils.hexToBytes(privateKey));
 
     String signatureString = wallet.signMessage(challenge);
 
     Iden3CoreLib iden3coreLib = Iden3CoreLib();
+
+    // schema
+    var uri = Uri.parse(credential.credential!.credentialSchema!
+        .id!); //https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld
+    var res = await get(uri.authority, uri.path);
+    String schema = (res.body);
+
+    // revocation status
+    res = await get(revStatusUrl, "");
+    String revStatus = (res.body);
+    final RevocationStatus revocationStatus =
+        RevocationStatus.fromJson(json.decode(revStatus));
+
     var queryInputs = iden3coreLib.prepareAtomicQueryInputs(
-        challenge, wallet.publicKey[0], wallet.publicKey[1], signatureString);
+        challenge,
+        wallet.publicKey[0],
+        wallet.publicKey[1],
+        signatureString,
+        credential.credential!,
+        json.encode(credential.credential!.toJson()),
+        schema,
+        claimType,
+        key,
+        value,
+        operator,
+        revocationStatus);
     return queryInputs;
   }
 
@@ -134,7 +168,7 @@ class PrivadoIdSdk {
     /*final String? oldGenesisId =
         await _channel.invokeMethod('getGenesisId', [state]);*/
 
-    print("NewGenesisId: " + genesisId!);
+    print("GenesisId: " + genesisId!);
     //print("OldGenesisId: " + oldGenesisId!);
 
     return genesisId;
