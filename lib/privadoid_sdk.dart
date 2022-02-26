@@ -22,9 +22,9 @@ class PrivadoIdSdk {
     return version;
   }
 
-  static Future<String?> createNewIdentity() async {
+  static Future<String?> createNewIdentity({Uint8List? privateKey}) async {
     final PrivadoIdWallet wallet =
-        await PrivadoIdWallet.createPrivadoIdWallet();
+        await PrivadoIdWallet.createPrivadoIdWallet(privateKey: privateKey);
 
     /*Uint8List bytes = HexUtils.hexToBytes(wallet.publicKeyHex[0]);
 
