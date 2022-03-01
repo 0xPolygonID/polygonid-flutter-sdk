@@ -554,44 +554,50 @@ class Iden3CoreLib {
     // Revocation Status State
     ffi.Pointer<IDENTreeState> treeState = malloc<IDENTreeState>();
     request.ref.revocation_status.tree_state = treeState.ref;
-    //ffi.Pointer<IDENMerkleTreeHash> state = malloc<IDENMerkleTreeHash>();
+    ffi.Pointer<IDENMerkleTreeHash> state = malloc<IDENMerkleTreeHash>();
+    ffi.Pointer<IDENMerkleTreeHash> claimsRoot = malloc<IDENMerkleTreeHash>();
+    ffi.Pointer<IDENMerkleTreeHash> revocationTreeRoot =
+    malloc<IDENMerkleTreeHash>();
+    for (int x = 0; x < 32; x++) {
+      state.ref.data[x] = 0;
+      claimsRoot.ref.data[x] = 0;
+      revocationTreeRoot.ref.data[x] = 0;
+    }
     List<int> stateBytes = hexToBytes(revocationStatus.issuer!.state!);
     for (int i = 0; i < stateBytes.length; i++) {
-      request.ref.revocation_status.tree_state.state.data[i] = stateBytes[i];
+      state.ref.data[i] = stateBytes[i];
     }
-    //ffi.Pointer<IDENMerkleTreeHash> claimsRoot = malloc<IDENMerkleTreeHash>();
     List<int> claimsRootBytes =
         hexToBytes(revocationStatus.issuer!.claimsTreeRoot!);
     for (int i = 0; i < claimsRootBytes.length; i++) {
-      request.ref.revocation_status.tree_state.claims_root.data[i] =
+      claimsRoot.ref.data[i] =
           claimsRootBytes[i];
     }
-    /*ffi.Pointer<IDENMerkleTreeHash> revocationTreeRoot =
-        malloc<IDENMerkleTreeHash>();*/
     List<int> revocationTreeRootBytes =
         hexToBytes(revocationStatus.issuer!.revocationTreeRoot!);
     for (int i = 0; i < revocationTreeRootBytes.length; i++) {
-      request.ref.revocation_status.tree_state.revocation_root.data[i] =
+      revocationTreeRoot.ref.data[i] =
           revocationTreeRootBytes[i];
     }
-    /*request.ref.revocation_status.tree_state.state = state.ref;
+    request.ref.revocation_status.tree_state.state = state.ref;
     request.ref.revocation_status.tree_state.claims_root = claimsRoot.ref;
-    request.ref.revocation_status.tree_state.revocation_root = revocationTreeRoot.ref;*/
-
+    request.ref.revocation_status.tree_state.revocation_root = revocationTreeRoot.ref;
     ///
 
     // CLAIM
     ffi.Pointer<IDENCircuitClaim> claim = malloc<IDENCircuitClaim>();
     claim.ref.current_timestamp =
         request.ref.auth_claim.current_timestamp; //1642074362;
+    // TODO: NEEDED??
     ffi.Pointer<IDENClaim> coreClaimPtr = parseClaim(jsonLDDocument, schema)!;
     claim.ref.core_claim = coreClaimPtr;
+    //claim.ref.core_claim = ffi.nullptr;
     request.ref.claim = claim.ref;
     /*request.ref.claim.current_timestamp =
         request.ref.auth_claim.current_timestamp;*/
 
     ///
-    ffi.Pointer<IDENmerkleTree> issuerClaimsTree = createCorrectMT()!;
+    /*ffi.Pointer<IDENmerkleTree> issuerClaimsTree = createCorrectMT()!;
     if (issuerClaimsTree == ffi.nullptr ||
         issuerClaimsTree.ref.status !=
             IDENmerkleTreeStatus.IDENTMERKLETREE_OK) {
@@ -637,38 +643,52 @@ class Iden3CoreLib {
     consumeStatus(status1, "merkle tree generate proof");
     request.ref.claim.proof = claimProof[0];
     request.ref.claim.tree_state =
-        makeTreeState(issuerClaimsTree, emptyTree, emptyTree);
+        makeTreeState(issuerClaimsTree, emptyTree, emptyTree);*/
 
     ///
 
     /*List<String> sibl = [
-      //"247514503935869953996590827671745463146848755216265640561733781908595034333",
-      //"1489949987702564259617776673941859146614009426491938726018377085464907876268",
+      "247514503935869953996590827671745463146848755216265640561733781908595034333",
       "1489949987702564259617776673941859146614009426491938726018377085464907876268",
       "10988994750042665433834271042690149752335415440803206519477668889946262010711",
-      //"10988994750042665433834271042690149752335415440803206519477668889946262010711",
-      //"10988994750042665433834271042690149752335415440803206519477668889946262010711",
-      //"0",
-      //"4348256684169072579301860566689083471336299110250228311946170849945238939674",
-    ];
-    int siblingsNum1 =
-         0; // credential.proof![1].mtp!.siblings!.length;
+      "0",
+      "4348256684169072579301860566689083471336299110250228311946170849945238939674",
+    ];*/
+    //int siblingsNum1 = credential.proof![0].issuer_mtp!.mtp!.siblings!.length;
+    int siblingsNum1 = credential.proof![1].mtp!.siblings!.length;
     ffi.Pointer<IDENProof> claimProof = malloc<IDENProof>();
-    claimProof.ref.siblings_num = siblingsNum1;
+    request.ref.claim.proof = claimProof;
+    request.ref.claim.proof.ref.siblings_num = siblingsNum1;
+
     if (siblingsNum1 > 0) {
       ffi.Pointer<ffi.Pointer<ffi.Uint8>> siblings =
           malloc<ffi.Pointer<ffi.Uint8>>(siblingsNum1);
-
-      String bigIntString = sibl[0];
-      ffi.Pointer<ffi.Int8> unsafePointerSibling =
-          bigIntString.toNativeUtf8().cast<ffi.Int8>();
-      ffi.Pointer<IDENBigInt> sibling =
-          nativeLib.IDENBigIntFromString(unsafePointerSibling);
-      if (sibling.ref.status == 0) {
-        siblings[0] = sibling.ref.data;
+      request.ref.claim.proof.ref.siblings = siblings;
+      for (int i = 0; i < siblingsNum1; i++) {
+        //String bigIntString =
+        //    credential.proof![0].issuer_mtp!.mtp!.siblings![i];
+        String bigIntString = credential.proof![1].mtp!.siblings![i];
+        ffi.Pointer<ffi.Int8> unsafePointerSibling =
+            bigIntString.toNativeUtf8().cast<ffi.Int8>();
+        ffi.Pointer<IDENBigInt> sibling =
+            nativeLib.IDENBigIntFromString(unsafePointerSibling);
+        if (sibling.ref.status == 0) {
+          ffi.Pointer<ffi.Uint8> sibui = malloc<ffi.Uint8>(32);
+          int dataLen =
+              32; //sibling.ref.data_len != 0 ? sibling.ref.data_len : 32;
+          for (int x = 0; x < 32; x++) {
+            sibui[x] = 0;
+          }
+          int dataLen2 = sibling.ref.data_len;
+          for (int j = 0; j < sibling.ref.data_len; j++) {
+            sibui[j] = sibling.ref.data[j];
+          }
+          request.ref.claim.proof.ref.siblings[i] = sibui;
+        }
+        nativeLib.IDENFreeBigInt(sibling);
       }
 
-      String bigIntString1 = sibl[1];
+      /*String bigIntString1 = sibl[1];
       ffi.Pointer<ffi.Int8> unsafePointerSibling1 =
           bigIntString1.toNativeUtf8().cast<ffi.Int8>();
       ffi.Pointer<IDENBigInt> sibling1 =
@@ -677,7 +697,7 @@ class Iden3CoreLib {
         siblings[1] = sibling1.ref.data;
       }
 
-      /*String bigIntString2 = sibl[2];
+      String bigIntString2 = sibl[2];
       ffi.Pointer<ffi.Int8> unsafePointerSibling2 =
           bigIntString2.toNativeUtf8().cast<ffi.Int8>();
       ffi.Pointer<IDENBigInt> sibling2 =
@@ -694,6 +714,8 @@ class Iden3CoreLib {
       if (sibling3.ref.status == 0) {
         siblings[3] = sibling3.ref.data;
       }
+
+      // nativeLib.IDENFreeBigInt(sibling3);
 
       String bigIntString4 = sibl[4];
       ffi.Pointer<ffi.Int8> unsafePointerSibling4 =
@@ -730,270 +752,78 @@ class Iden3CoreLib {
           print("sibling parse bigint error");
         }
       }*/
-      claimProof.ref.siblings = siblings;
+      request.ref.claim.proof.ref.siblings = siblings;
     } else {
-      claimProof.ref.siblings = ffi.nullptr;
+      request.ref.claim.proof.ref.siblings = ffi.nullptr;
     }
-    claimProof.ref.existence = 1;
-    //credential.proof![1].mtp!.existence == false ? 0 : 1;
-    claimProof.ref.auxNodeKey = ffi.nullptr;
-    claimProof.ref.auxNodeValue = ffi.nullptr;
-    claimProof.ref.status = 0;
-    claimProof.ref.error_msg = ffi.nullptr;
-    request.ref.claim.proof = claimProof;
+    //request.ref.claim.proof.ref.existence =
+    //    credential.proof![0].issuer_mtp!.mtp!.existence == false ? 0 : 1;
+    request.ref.claim.proof.ref.existence =
+        credential.proof![1].mtp!.existence == false ? 0 : 1;
+    //List<int> auxNodeKeyBytes =
+    //    hexToBytes(credential.proof![0].issuer_mtp!.h_index!);
+    List<int> auxNodeKeyBytes = hexToBytes(credential.proof![1].h_index!);
+    ffi.Pointer<ffi.Uint8> auxNodeKey =
+        malloc<ffi.Uint8>(auxNodeKeyBytes.length);
+    for (int i = 0; i < auxNodeKeyBytes.length; i++) {
+      auxNodeKey[i] = auxNodeKeyBytes[i];
+    }
+
+    //List<int> auxNodeValueBytes =
+    //    hexToBytes(credential.proof![0].issuer_mtp!.h_value!);
+    List<int> auxNodeValueBytes = hexToBytes(credential.proof![1].h_value!);
+    ffi.Pointer<ffi.Uint8> auxNodeValue =
+        malloc<ffi.Uint8>(auxNodeValueBytes.length);
+    for (int i = 0; i < auxNodeValueBytes.length; i++) {
+      auxNodeValue[i] = auxNodeValueBytes[i];
+    }
+    request.ref.claim.proof.ref.auxNodeKey = auxNodeKey;
+    request.ref.claim.proof.ref.auxNodeValue = auxNodeValue;
+    request.ref.claim.proof.ref.status = 0;
+    request.ref.claim.proof.ref.error_msg = ffi.nullptr;
 
     ffi.Pointer<IDENTreeState> treeState1 = malloc<IDENTreeState>();
+    request.ref.claim.tree_state = treeState1.ref;
     ffi.Pointer<IDENMerkleTreeHash> state1 = malloc<IDENMerkleTreeHash>();
+    ffi.Pointer<IDENMerkleTreeHash> claimsRoot1 = malloc<IDENMerkleTreeHash>();
+    ffi.Pointer<IDENMerkleTreeHash> revocationTreeRoot1 =
+        malloc<IDENMerkleTreeHash>();
+    for (int x = 0; x < 32; x++) {
+      state1.ref.data[x] = 0;
+      claimsRoot1.ref.data[x] = 0;
+      revocationTreeRoot1.ref.data[x] = 0;
+    }
     //Uint8List stateBytes1 =
     //    hexToBytes(credential.proof![0].issuer_mtp!.state!.value!);
-    Uint8List stateBytes1 = hexToBytes(credential.proof![1].state!.value!);
+    List<int> stateBytes1 = hexToBytes(credential.proof![1].state!.value!);
     for (int i = 0; i < stateBytes1.length; i++) {
       state1.ref.data[i] = stateBytes1[i];
     }
-    ffi.Pointer<IDENMerkleTreeHash> claimsRoot1 = malloc<IDENMerkleTreeHash>();
+
     //Uint8List claimsRootBytes1 =
     //    hexToBytes(credential.proof![0].issuer_mtp!.state!.claims_tree_root!);
-    Uint8List claimsRootBytes1 =
+    List<int> claimsRootBytes1 =
         hexToBytes(credential.proof![1].state!.claims_tree_root!);
     for (int i = 0; i < claimsRootBytes1.length; i++) {
       claimsRoot1.ref.data[i] = claimsRootBytes1[i];
     }
-    ffi.Pointer<IDENMerkleTreeHash> revocationTreeRoot1 =
-        malloc<IDENMerkleTreeHash>();
-    Uint8List revocationTreeRootBytes1 =
+
+    List<int> revocationTreeRootBytes1 =
         hexToBytes(credential.proof![1].state!.revocation_tree_root!);
     for (int i = 0; i < revocationTreeRootBytes1.length; i++) {
       revocationTreeRoot1.ref.data[i] = revocationTreeRootBytes1[i];
     }
-    treeState1.ref.state = state1.ref;
-    treeState1.ref.claims_root = claimsRoot1.ref;
-    treeState1.ref.revocation_root = revocationTreeRoot1.ref;
-    request.ref.claim.tree_state = treeState1.ref;
+    request.ref.claim.tree_state.state = state1.ref;
+    request.ref.claim.tree_state.claims_root = claimsRoot1.ref;
+    //request.ref.claim.tree_state.revocation_root = revocationTreeRoot1.ref;
+    //request.ref.claim.tree_state = treeState1.ref;
     //request.ref.claim.tree_state = request.ref.revocation_status.tree_state;*/
 
     ///
 
     // RESULT
     String result = "";
-    /*String result = '{\n' +
-        '  "authClaim": [\n' +
-        '    "164867201768971999401702181843803888060",\n' +
-        '    "0",\n' +
-        '    "10716384162326860677584018346415352487946899665553664605395309902620028412489",\n' +
-        '    "14611722070321938719565676041787170977854863598214403049524080129726879411123",\n' +
-        '    "15930428023331155902",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0"\n' +
-        '  ],\n' +
-        '  "authClaimMtp": [\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0"\n' +
-        '  ],\n' +
-        '  "authClaimNonRevMtp": [\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0"\n' +
-        '  ],\n' +
-        '  "authClaimNonRevMtpAuxHi": "0",\n' +
-        '  "authClaimNonRevMtpAuxHv": "0",\n' +
-        '  "authClaimNonRevMtpNoAux": "1",\n' +
-        '  "challenge": "438680",\n' +
-        '  "challengeSignatureR8x": "17480527028703496757937666605780942138135630349501497360372145965065015029876",\n' +
-        '  "challengeSignatureR8y": "13835011158001858472699207298485054035079239263689357449634350805203588283932",\n' +
-        '  "challengeSignatureS": "2619086500990558659642179618956165657940796767410838394822001420912730966355",\n' +
-        '  "claim": [\n' +
-        '    "3677203805624134172815825715044445108615",\n' +
-        '    "383496730998907275823696120576523203355766120163503954455394413078566666240",\n' +
-        '    "19870910",\n' +
-        '    "1",\n' +
-        '    "227737578870278824342995087008",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0"\n' +
-        '  ],\n' +
-        '  "claimIssuanceClaimsTreeRoot": "3869973920328231708198314297686760086660937736232911712461326417880844769736",\n' +
-        '  "claimIssuanceIdenState": "20025477422449691321451459286928491899946277716633246854571180803520339724462",\n' +
-        '  "claimIssuanceMtp": [\n' +
-        '"247514503935869953996590827671745463146848755216265640561733781908595034333",\n' +
-        '"1489949987702564259617776673941859146614009426491938726018377085464907876268",\n' +
-        '"10988994750042665433834271042690149752335415440803206519477668889946262010711",\n' +
-        '"0",\n' +
-        '"4348256684169072579301860566689083471336299110250228311946170849945238939674",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0"\n' +
-        '  ],\n' +
-        '  "claimIssuanceRevTreeRoot": "0",\n' +
-        '  "claimIssuanceRootsTreeRoot": "31385508678437657136570962899260101245290185676385955941632",\n' +
-        '  "claimNonRevIssuerClaimsTreeRoot": "3869973920328231708198314297686760086660937736232911712461326417880844769736",\n' +
-        '  "claimNonRevIssuerRevTreeRoot": "0",\n' +
-        '  "claimNonRevIssuerRootsTreeRoot": "384246318496330205515229570127285743435931430907019264",\n' +
-        '  "claimNonRevIssuerState": "20025477422449691321451459286928491899946277716633246854571180803520339724462",\n' +
-        '  "claimNonRevMtp": [\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0",\n' +
-        '    "0"\n' +
-        '  ],\n' +
-        '  "claimNonRevMtpAuxHi": "0",\n' +
-        '  "claimNonRevMtpAuxHv": "0",\n' +
-        '  "claimNonRevMtpNoAux": "1",\n' +
-        '  "claimSchema": "274380136414749538182079640726762994055",\n' +
-        '  "hoClaimsTreeRoot": "1313435026328309473135261697417227363297765567896452929765454178016899270543",\n' +
-        '  "hoIdenState": "12126977094766394484189336217422079324447868608381187625904093754504395388604",\n' +
-        '  "hoRevTreeRoot": "0",\n' +
-        '  "hoRootsTreeRoot": "0",\n' +
-        '  "id": "394097340972249915675867259759742358232074608937582387233060205491161464832",\n' +
-        '  "operator": 1,\n' +
-        '  "slotIndex": 2,\n' +
-        '  "timestamp": "1645788596",\n' +
-        '  "value": "20000101"\n' +
-        '}';*/
-    //"{\"authClaim\":[\"164867201768971999401702181843803888060\",\"0\",\"17640206035128972995519606214765283372613874593503528180869261482403155458945\",\"20634138280259599560273310290025659992320584624461316485434108770067472477956\",\"15930428023331155902\",\"0\",\"0\",\"0\"],\"authClaimMtp\":[\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\"],\"authClaimNonRevMtp\":[\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\"],\"authClaimNonRevMtpAuxHi\":\"0\",\"authClaimNonRevMtpAuxHv\":\"0\",\"authClaimNonRevMtpNoAux\":\"1\",\"challenge\":\"1\",\"challengeSignatureR8x\":\"8553678144208642175027223770335048072652078621216414881653012537434846327449\",\"challengeSignatureR8y\":\"5507837342589329113352496188906367161790372084365285966741761856353367255709\",\"challengeSignatureS\":\"2093461910575977345603199789919760192811763972089699387324401771367839603655\",\"claim\":[\"3677203805624134172815825715044445108615\",\"293373448908678327289599234275657468666604586273320428510206058753616052224\",\"10\",\"0\",\"30803922965249841627828060161\",\"0\",\"0\",\"0\"],\"claimIssuanceClaimsTreeRoot\":\"7246896034587217404391735131819928831029447598354448731452631177424919458245\",\"claimIssuanceIdenState\":\"3465800424177143196107127845857728750770736366457056414231195686681735039800\",\"claimIssuanceMtp\":[\"417537058197893761686953664555712220182002293231272771939654136223079364880\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\"],\"claimIssuanceRevTreeRoot\":\"0\",\"claimIssuanceRootsTreeRoot\":\"0\",\"claimNonRevIssuerClaimsTreeRoot\":\"7246896034587217404391735131819928831029447598354448731452631177424919458245\",\"claimNonRevIssuerRevTreeRoot\":\"0\",\"claimNonRevIssuerRootsTreeRoot\":\"0\",\"claimNonRevIssuerState\":\"3465800424177143196107127845857728750770736366457056414231195686681735039800\",\"claimNonRevMtp\":[\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\"],\"claimNonRevMtpAuxHi\":\"0\",\"claimNonRevMtpAuxHv\":\"0\",\"claimNonRevMtpNoAux\":\"1\",\"claimSchema\":\"274380136414749538182079640726762994055\",\"hoClaimsTreeRoot\":\"209113798174833776229979813091844404331713644587766182643501254985715193770\",\"hoIdenState\":\"15383795261052586569047113011994713909892315748410703061728793744343300034754\",\"hoRevTreeRoot\":\"0\",\"hoRootsTreeRoot\":\"0\",\"id\":\"293373448908678327289599234275657468666604586273320428510206058753616052224\",\"operator\":0,\"slotIndex\":2,\"timestamp\":\"1642074362\",\"value\":\"10\"}";
+    //    "{\"authClaim\":[\"164867201768971999401702181843803888060\",\"0\",\"10716384162326860677584018346415352487946899665553664605395309902620028412489\",\"14611722070321938719565676041787170977854863598214403049524080129726879411123\",\"0\",\"0\",\"0\",\"0\"],\"authClaimMtp\":[\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\"],\"authClaimNonRevMtp\":[\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\"],\"authClaimNonRevMtpAuxHi\":\"0\",\"authClaimNonRevMtpAuxHv\":\"0\",\"authClaimNonRevMtpNoAux\":\"1\",\"challenge\":\"500308\",\"challengeSignatureR8x\":\"20674031000307120176080131714192048228903021326929579905695600068761421314873\",\"challengeSignatureR8y\":\"5474589209221372589638295040190819244278606156460770309658313598288914373533\",\"challengeSignatureS\":\"532299105944809528299186760183669078210016066019987231910096495141782590568\",\"claim\":[\"3677203805624134172815825715044445108615\",\"383496730998907275823696120576523203355766120163503954455394413078566666240\",\"19870910\",\"1\",\"227737578870278824342995087008\",\"0\",\"0\",\"0\"],\"claimIssuanceClaimsTreeRoot\":\"3869973920328231708198314297686760086660937736232911712461326417880844769736\",\"claimIssuanceIdenState\":\"20025477422449691321451459286928491899946277716633246854571180803520339724462\",\"claimIssuanceMtp\":[\"247514503935869953996590827671745463146848755216265640561733781908595034333\",\"1489949987702564259617776673941859146614009426491938726018377085464907876268\",\"10988994750042665433834271042690149752335415440803206519477668889946262010711\",\"0\",\"4348256684169072579301860566689083471336299110250228311946170849945238939674\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\"],\"claimIssuanceRevTreeRoot\":\"0\",\"claimIssuanceRootsTreeRoot\":\"0\",\"claimNonRevIssuerClaimsTreeRoot\":\"3869973920328231708198314297686760086660937736232911712461326417880844769736\",\"claimNonRevIssuerRevTreeRoot\":\"0\",\"claimNonRevIssuerRootsTreeRoot\":\"0\",\"claimNonRevIssuerState\":\"20025477422449691321451459286928491899946277716633246854571180803520339724462\",\"claimNonRevMtp\":[\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\"],\"claimNonRevMtpAuxHi\":\"0\",\"claimNonRevMtpAuxHv\":\"0\",\"claimNonRevMtpNoAux\":\"1\",\"claimSchema\":\"274380136414749538182079640726762994055\",\"hoClaimsTreeRoot\":\"5805884353888396157011520376551853687017326947948362371494696184595479414250\",\"hoIdenState\":\"20052791088731755005951266630711844666345518743219899853778012645317160568957\",\"hoRevTreeRoot\":\"0\",\"hoRootsTreeRoot\":\"0\",\"id\":\"383496730998907275823696120576523203355766120163503954455394413078566666240\",\"operator\":1,\"slotIndex\":2,\"timestamp\":\"1645886935\",\"value\":\"20000101\"}";
     ffi.Pointer<IDENJsonResponse> response =
         nativeLib.IDENPrepareAtomicQueryInputs(request);
     if (response.ref.status != 0) {
@@ -1016,17 +846,16 @@ class Iden3CoreLib {
       //nativeLib.free(jsonString);
     }
 
-    /*nativeLib.IDENFreeBigInt(request.ref.query.value);
+    nativeLib.IDENFreeBigInt(request.ref.query.value);
     nativeLib.IDENFreeClaim(request.ref.auth_claim.core_claim);
-    //nativeLib.IDENFreeClaim(authClaim);
+    nativeLib.IDENFreeClaim(request.ref.claim.core_claim);
     nativeLib.IDENFreeMerkleTree(userAuthClaimsTree);
-    //nativeLib.IDENFreeMerkleTree(issuerClaimsTree);
-    //nativeLib.IDENFreeMerkleTree(issuerRevTree);
     nativeLib.IDENFreeMerkleTree(authClaimsTree);
     nativeLib.IDENFreeMerkleTree(emptyTree);
+    //nativeLib.IDENFreeHash(state1);
     nativeLib.IDENFreeProof(request.ref.claim.proof);
     nativeLib.IDENFreeProof(request.ref.auth_claim.proof);
-    nativeLib.IDENFreeProof(request.ref.revocation_status.proof);*/
+    nativeLib.IDENFreeProof(request.ref.revocation_status.proof);
 
     /*if (emptyTree != ffi.nullptr) {
       nativeLib.IDENFreeMerkleTree(emptyTree);
