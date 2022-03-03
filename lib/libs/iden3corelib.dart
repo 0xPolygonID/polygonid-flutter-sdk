@@ -557,11 +557,13 @@ class Iden3CoreLib {
     ffi.Pointer<IDENMerkleTreeHash> state = malloc<IDENMerkleTreeHash>();
     ffi.Pointer<IDENMerkleTreeHash> claimsRoot = malloc<IDENMerkleTreeHash>();
     ffi.Pointer<IDENMerkleTreeHash> revocationTreeRoot =
-    malloc<IDENMerkleTreeHash>();
+        malloc<IDENMerkleTreeHash>();
+    ffi.Pointer<IDENMerkleTreeHash> rootOfRoots = malloc<IDENMerkleTreeHash>();
     for (int x = 0; x < 32; x++) {
       state.ref.data[x] = 0;
       claimsRoot.ref.data[x] = 0;
       revocationTreeRoot.ref.data[x] = 0;
+      rootOfRoots.ref.data[x] = 0;
     }
     List<int> stateBytes = hexToBytes(revocationStatus.issuer!.state!);
     for (int i = 0; i < stateBytes.length; i++) {
@@ -570,18 +572,19 @@ class Iden3CoreLib {
     List<int> claimsRootBytes =
         hexToBytes(revocationStatus.issuer!.claimsTreeRoot!);
     for (int i = 0; i < claimsRootBytes.length; i++) {
-      claimsRoot.ref.data[i] =
-          claimsRootBytes[i];
+      claimsRoot.ref.data[i] = claimsRootBytes[i];
     }
-    List<int> revocationTreeRootBytes =
+    /*List<int> revocationTreeRootBytes =
         hexToBytes(revocationStatus.issuer!.revocationTreeRoot!);
     for (int i = 0; i < revocationTreeRootBytes.length; i++) {
-      revocationTreeRoot.ref.data[i] =
-          revocationTreeRootBytes[i];
-    }
+      revocationTreeRoot.ref.data[i] = revocationTreeRootBytes[i];
+    }*/
     request.ref.revocation_status.tree_state.state = state.ref;
     request.ref.revocation_status.tree_state.claims_root = claimsRoot.ref;
-    request.ref.revocation_status.tree_state.revocation_root = revocationTreeRoot.ref;
+    request.ref.revocation_status.tree_state.revocation_root =
+        revocationTreeRoot.ref;
+    request.ref.revocation_status.tree_state.root_of_roots = rootOfRoots.ref;
+
     ///
 
     // CLAIM
@@ -788,10 +791,12 @@ class Iden3CoreLib {
     ffi.Pointer<IDENMerkleTreeHash> claimsRoot1 = malloc<IDENMerkleTreeHash>();
     ffi.Pointer<IDENMerkleTreeHash> revocationTreeRoot1 =
         malloc<IDENMerkleTreeHash>();
+    ffi.Pointer<IDENMerkleTreeHash> rootOfRoots1 = malloc<IDENMerkleTreeHash>();
     for (int x = 0; x < 32; x++) {
       state1.ref.data[x] = 0;
       claimsRoot1.ref.data[x] = 0;
       revocationTreeRoot1.ref.data[x] = 0;
+      rootOfRoots1.ref.data[x] = 0;
     }
     //Uint8List stateBytes1 =
     //    hexToBytes(credential.proof![0].issuer_mtp!.state!.value!);
@@ -808,14 +813,15 @@ class Iden3CoreLib {
       claimsRoot1.ref.data[i] = claimsRootBytes1[i];
     }
 
-    List<int> revocationTreeRootBytes1 =
+    /*List<int> revocationTreeRootBytes1 =
         hexToBytes(credential.proof![1].state!.revocation_tree_root!);
     for (int i = 0; i < revocationTreeRootBytes1.length; i++) {
       revocationTreeRoot1.ref.data[i] = revocationTreeRootBytes1[i];
-    }
+    }*/
     request.ref.claim.tree_state.state = state1.ref;
     request.ref.claim.tree_state.claims_root = claimsRoot1.ref;
-    //request.ref.claim.tree_state.revocation_root = revocationTreeRoot1.ref;
+    request.ref.claim.tree_state.revocation_root = revocationTreeRoot1.ref;
+    request.ref.claim.tree_state.root_of_roots = rootOfRoots1.ref;
     //request.ref.claim.tree_state = treeState1.ref;
     //request.ref.claim.tree_state = request.ref.revocation_status.tree_state;*/
 
@@ -852,7 +858,9 @@ class Iden3CoreLib {
     nativeLib.IDENFreeMerkleTree(userAuthClaimsTree);
     nativeLib.IDENFreeMerkleTree(authClaimsTree);
     nativeLib.IDENFreeMerkleTree(emptyTree);
-    //nativeLib.IDENFreeHash(state1);
+    /*nativeLib.IDENFreeHash(state1);
+    nativeLib.IDENFreeHash(claimsRoot1);
+    nativeLib.IDENFreeHash(revocationTreeRoot1);*/
     nativeLib.IDENFreeProof(request.ref.claim.proof);
     nativeLib.IDENFreeProof(request.ref.auth_claim.proof);
     nativeLib.IDENFreeProof(request.ref.revocation_status.proof);
