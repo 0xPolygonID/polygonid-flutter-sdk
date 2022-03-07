@@ -64,8 +64,7 @@ class PrivadoIdSdk {
     Iden3CoreLib iden3coreLib = Iden3CoreLib();
 
     // schema
-    var uri = Uri.parse(credential.credential!.credentialSchema!
-        .id!); //https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld
+    var uri = Uri.parse(credential.credential!.credentialSchema!.id!);
     var res = await get(uri.authority, uri.path);
     String schema = (res.body);
 
