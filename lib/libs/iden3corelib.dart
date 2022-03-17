@@ -642,22 +642,22 @@ class Iden3CoreLib {
   List<String> getAuthClaimTreeEntry(String pubX, String pubY) {
     // TODO schemaHash hardcoded
     final schemaHash = [
-      0x7C,
-      0x08,
-      0x44,
-      0xA0,
-      0x75,
-      0xA9,
-      0xDD,
-      0xC7,
-      0xFC,
-      0xBD,
-      0xFB,
-      0x4F,
+      0xCA,
+      0x93,
       0x88,
-      0xAC,
-      0xD9,
-      0xBC
+      0x57,
+      0x24,
+      0x1D,
+      0xB9,
+      0x45,
+      0x1E,
+      0xA3,
+      0x29,
+      0x25,
+      0x6B,
+      0x9C,
+      0x06,
+      0xE5
     ];
 
     final ffi.Pointer<ffi.Uint8> unsafePointerSchemaHash =
@@ -745,22 +745,22 @@ class Iden3CoreLib {
   String getMerkleTreeRoot(String pubX, String pubY) {
     // TODO schemaHash hardcoded
     final schemaHash = [
-      0x7C,
-      0x08,
-      0x44,
-      0xA0,
-      0x75,
-      0xA9,
-      0xDD,
-      0xC7,
-      0xFC,
-      0xBD,
-      0xFB,
-      0x4F,
+      0xCA,
+      0x93,
       0x88,
-      0xAC,
-      0xD9,
-      0xBC
+      0x57,
+      0x24,
+      0x1D,
+      0xB9,
+      0x45,
+      0x1E,
+      0xA3,
+      0x29,
+      0x25,
+      0x6B,
+      0x9C,
+      0x06,
+      0xE5
     ];
 
     final ffi.Pointer<ffi.Uint8> unsafePointerSchemaHash =
@@ -882,22 +882,22 @@ class Iden3CoreLib {
   String createNewIdentity(String pubX, String pubY) {
     // TODO schemaHash hardcoded
     final schemaHash = [
-      0x7C,
-      0x08,
-      0x44,
-      0xA0,
-      0x75,
-      0xA9,
-      0xDD,
-      0xC7,
-      0xFC,
-      0xBD,
-      0xFB,
-      0x4F,
+      0xCA,
+      0x93,
       0x88,
-      0xAC,
-      0xD9,
-      0xBC
+      0x57,
+      0x24,
+      0x1D,
+      0xB9,
+      0x45,
+      0x1E,
+      0xA3,
+      0x29,
+      0x25,
+      0x6B,
+      0x9C,
+      0x06,
+      0xE5
     ];
 
     final ffi.Pointer<ffi.Uint8> unsafePointerSchemaHash =
@@ -1148,22 +1148,22 @@ class Iden3CoreLib {
     //ffi.Pointer<IDENstatus> status = malloc<IDENstatus>();
 
     final schemaHash = [
-      0x7C,
-      0x08,
-      0x44,
-      0xA0,
-      0x75,
-      0xA9,
-      0xDD,
-      0xC7,
-      0xFC,
-      0xBD,
-      0xFB,
-      0x4F,
+      0xCA,
+      0x93,
       0x88,
-      0xAC,
-      0xD9,
-      0xBC
+      0x57,
+      0x24,
+      0x1D,
+      0xB9,
+      0x45,
+      0x1E,
+      0xA3,
+      0x29,
+      0x25,
+      0x6B,
+      0x9C,
+      0x06,
+      0xE5
     ];
 
     final ffi.Pointer<ffi.Uint8> unsafePointerSchemaHash =
