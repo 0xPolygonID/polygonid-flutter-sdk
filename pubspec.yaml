@@ -34,12 +34,12 @@ dev_dependencies:
   flutter_lints: ^1.0.0
 
 ffigen:
-  name: NativeLibrary
-  description: Bindings to `ios/Classes/libiden3core.h`.
-  output: 'generated_bindings.dart'
+  name: ProverLib
+  description: Bindings to `ios/Classes/prover.h`.
+  output: 'generated_bindings_2.dart'
   headers:
     entry-points:
-      - 'ios/Classes/libiden3core.h'
+      - 'ios/Classes/prover.h'
 
 
 
@@ -57,9 +57,9 @@ flutter:
         pluginClass: PrivadoidPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - circuit_final.zkey
+    - witness.wtns
   #
   # For details regarding assets in packages, see
   # https://flutter.dev/assets-and-images/#from-packages
