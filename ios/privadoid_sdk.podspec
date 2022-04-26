@@ -22,8 +22,9 @@ Privadoid library flutter plugin project.
   s.platform = :ios, '9.0'
   # s.ios.deployment_target = '9.0'
   # s.ios.vendored_frameworks = 'Frameworks/Core.xcframework'
-
   # Flutter.framework does not contain a i386 nor arm64 slice.
+  s.pod_target_xcconfig = { "OTHER_LDFLAGS" => "-force_load $(PODS_TARGET_SRCROOT)/Frameworks/librapidsnark.a -lc++ -lz" }
+  s.vendored_libraries = "Frameworks/**/*.a"
   s.pod_target_xcconfig = { 'STRIP_STYLE' => 'non-global', 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
   s.swift_version = '5.0'
 end
