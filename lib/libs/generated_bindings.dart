@@ -3840,7 +3840,7 @@ class NativeLibrary {
   late final _IDENFreeStatus =
       _IDENFreeStatusPtr.asFunction<void Function(ffi.Pointer<IDENStatus>)>();
 
-  bool IDENBigIntFromString(
+  int IDENBigIntFromString(
     ffi.Pointer<ffi.Pointer<IDENBigInt>> bigInt,
     ffi.Pointer<ffi.Int8> bigIntStr,
     ffi.Pointer<ffi.Pointer<IDENStatus>> status,
@@ -3854,12 +3854,12 @@ class NativeLibrary {
 
   late final _IDENBigIntFromStringPtr = _lookup<
       ffi.NativeFunction<
-          Bool Function(
+          GoUint8 Function(
               ffi.Pointer<ffi.Pointer<IDENBigInt>>,
               ffi.Pointer<ffi.Int8>,
               ffi.Pointer<ffi.Pointer<IDENStatus>>)>>('IDENBigIntFromString');
   late final _IDENBigIntFromString = _IDENBigIntFromStringPtr.asFunction<
-      bool Function(ffi.Pointer<ffi.Pointer<IDENBigInt>>, ffi.Pointer<ffi.Int8>,
+      int Function(ffi.Pointer<ffi.Pointer<IDENBigInt>>, ffi.Pointer<ffi.Int8>,
           ffi.Pointer<ffi.Pointer<IDENStatus>>)>();
 
   void IDENFreeBigInt(
@@ -5934,7 +5934,6 @@ class GoSlice extends ffi.Struct {
 typedef GoInt = GoInt64;
 typedef GoInt64 = ffi.Int64;
 typedef GoUint8 = ffi.Uint8;
-typedef Bool = ffi.Bool;
 typedef IDENStatus = _IDENStatus;
 typedef IDENMerkleTreeEntry = _IDENMerkleTreeEntry;
 typedef IDENMerkleTree = _IDENMerkleTree;

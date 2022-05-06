@@ -121,14 +121,14 @@ class Iden3CoreLib {
         malloc<ffi.Pointer<IDENBigInt>>();
     ffi.Pointer<ffi.Pointer<IDENStatus>> status1 =
         malloc<ffi.Pointer<IDENStatus>>();
-    bool ok = _nativeLib.IDENBigIntFromString(keyX, unsafePointerX, status1);
+    res = _nativeLib.IDENBigIntFromString(keyX, unsafePointerX, status1);
 
     ffi.Pointer<ffi.Int8> unsafePointerY = pubY.toNativeUtf8().cast<ffi.Int8>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> keyY =
         malloc<ffi.Pointer<IDENBigInt>>();
     ffi.Pointer<ffi.Pointer<IDENStatus>> status2 =
         malloc<ffi.Pointer<IDENStatus>>();
-    ok = _nativeLib.IDENBigIntFromString(keyY, unsafePointerY, status2);
+    res = _nativeLib.IDENBigIntFromString(keyY, unsafePointerY, status2);
 
     ffi.Pointer<ffi.Pointer<IDENStatus>> status3 =
         malloc<ffi.Pointer<IDENStatus>>();
@@ -272,7 +272,7 @@ class Iden3CoreLib {
         malloc<ffi.Pointer<IDENBigInt>>();
     ffi.Pointer<ffi.Pointer<IDENStatus>> status =
         malloc<ffi.Pointer<IDENStatus>>();
-    bool ok = _nativeLib.IDENBigIntFromString(
+    int res = _nativeLib.IDENBigIntFromString(
         challengePointer, unsafePointerChallenge, status);
     request.ref.challenge = challengePointer.value;
 
@@ -296,7 +296,7 @@ class Iden3CoreLib {
     ffi.Pointer<IDENId> idP = malloc<IDENId>();
     ffi.Pointer<ffi.Pointer<IDENStatus>> status1 =
         malloc<ffi.Pointer<IDENStatus>>();
-    int res = _nativeLib.IDENCalculateGenesisID(
+    res = _nativeLib.IDENCalculateGenesisID(
         idP, request.ref.auth_claim.tree_state.claims_root, status1);
     _consumeStatus(status1, "calculate genesis ID");
     request.ref.id = idP.ref;
@@ -394,7 +394,7 @@ class Iden3CoreLib {
         value.toString().toNativeUtf8().cast<ffi.Int8>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> valuePtr =
         malloc<ffi.Pointer<IDENBigInt>>();
-    bool ok =
+    int res =
         _nativeLib.IDENBigIntFromString(valuePtr, unsafePointerValue, status);
     request.ref.query.values = valuePtr;
     request.ref.query.values_num = 1;
@@ -408,7 +408,7 @@ class Iden3CoreLib {
         challenge.toNativeUtf8().cast<ffi.Int8>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> challengePointer =
         malloc<ffi.Pointer<IDENBigInt>>();
-    ok = _nativeLib.IDENBigIntFromString(
+    res = _nativeLib.IDENBigIntFromString(
         challengePointer, unsafePointerChallenge, status);
     request.ref.challenge = challengePointer.value;
 
@@ -431,7 +431,7 @@ class Iden3CoreLib {
         malloc<ffi.Pointer<IDENClaim>>();
     ffi.Pointer<ffi.Pointer<IDENMerkleTree>> userAuthClaimsTree =
         malloc<ffi.Pointer<IDENMerkleTree>>();
-    int res = _generateIdentity(
+    res = _generateIdentity(
         id, authClaim, userAuthClaimsTree, pubX, pubY, userRevNonce);
     assert(res == 0);
 
@@ -440,8 +440,8 @@ class Iden3CoreLib {
 
     ffi.Pointer<IDENMerkleTree> emptyTree = createCorrectMT()!;
     ffi.Pointer<IDENTreeState> userAuthTreeState = malloc<IDENTreeState>();
-    ok = _makeTreeState(userAuthTreeState, userAuthClaimsTree.value, emptyTree,
-        emptyTree, status);
+    bool ok = _makeTreeState(userAuthTreeState, userAuthClaimsTree.value,
+        emptyTree, emptyTree, status);
     if (!ok) {
       _consumeStatus(status, "cannot calculate user auth tree state");
       //retVal = 1;
@@ -582,7 +582,7 @@ class Iden3CoreLib {
         "10".toNativeUtf8().cast<ffi.Int8>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> queryValuePointer =
         malloc<ffi.Pointer<IDENBigInt>>();
-    ok = _nativeLib.IDENBigIntFromString(
+    res = _nativeLib.IDENBigIntFromString(
         queryValuePointer, unsafePointerQuery, status);
     request.ref.query.values = queryValuePointer;
 
@@ -729,20 +729,20 @@ class Iden3CoreLib {
         malloc<ffi.Pointer<IDENBigInt>>();
     ffi.Pointer<ffi.Pointer<IDENStatus>> status =
         malloc<ffi.Pointer<IDENStatus>>();
-    bool ok = _nativeLib.IDENBigIntFromString(keyX, unsafePointerX, status);
+    int res = _nativeLib.IDENBigIntFromString(keyX, unsafePointerX, status);
 
     ffi.Pointer<ffi.Int8> unsafePointerY = pubY.toNativeUtf8().cast<ffi.Int8>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> keyY =
         malloc<ffi.Pointer<IDENBigInt>>();
     ffi.Pointer<ffi.Pointer<IDENStatus>> status1 =
         malloc<ffi.Pointer<IDENStatus>>();
-    ok = _nativeLib.IDENBigIntFromString(keyY, unsafePointerY, status1);
+    res = _nativeLib.IDENBigIntFromString(keyY, unsafePointerY, status1);
 
     ffi.Pointer<ffi.Pointer<IDENClaim>> claim =
         malloc<ffi.Pointer<IDENClaim>>();
     ffi.Pointer<ffi.Pointer<IDENStatus>> status2 =
         malloc<ffi.Pointer<IDENStatus>>();
-    int res = _nativeLib.IDENNewClaim(claim, unsafePointerSchemaHash, status2);
+    res = _nativeLib.IDENNewClaim(claim, unsafePointerSchemaHash, status2);
 
     ffi.Pointer<ffi.Pointer<IDENStatus>> status3 =
         malloc<ffi.Pointer<IDENStatus>>();
@@ -860,22 +860,21 @@ class Iden3CoreLib {
     ffi.Pointer<IDENStatus> statusValue = malloc<IDENStatus>();
     ffi.Pointer<ffi.Pointer<IDENStatus>> status =
         malloc<ffi.Pointer<IDENStatus>>();
-    _nativeLib.IDENFreeBigInt(keyXValue);
     status.value = statusValue;
-    bool ok = _nativeLib.IDENBigIntFromString(keyX, unsafePointerX, status);
+    int res = _nativeLib.IDENBigIntFromString(keyX, unsafePointerX, status);
 
     ffi.Pointer<ffi.Int8> unsafePointerY = pubY.toNativeUtf8().cast<ffi.Int8>();
     ffi.Pointer<IDENBigInt> keyYValue = malloc<IDENBigInt>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> keyY =
         malloc<ffi.Pointer<IDENBigInt>>();
     keyY.value = keyYValue;
-    ok = _nativeLib.IDENBigIntFromString(keyY, unsafePointerY, status);
+    res = _nativeLib.IDENBigIntFromString(keyY, unsafePointerY, status);
 
     ffi.Pointer<ffi.Pointer<IDENClaim>> claim =
         malloc<ffi.Pointer<IDENClaim>>();
     ffi.Pointer<ffi.Pointer<IDENStatus>> status2 =
         malloc<ffi.Pointer<IDENStatus>>();
-    int res = _nativeLib.IDENNewClaim(claim, unsafePointerSchemaHash, status2);
+    res = _nativeLib.IDENNewClaim(claim, unsafePointerSchemaHash, status2);
 
     ffi.Pointer<ffi.Pointer<IDENStatus>> status3 =
         malloc<ffi.Pointer<IDENStatus>>();
@@ -1035,7 +1034,7 @@ class Iden3CoreLib {
     ffi.Pointer<ffi.Pointer<IDENStatus>> status =
         malloc<ffi.Pointer<IDENStatus>>();
     status.value = statusI;
-    bool ok = _nativeLib.IDENBigIntFromString(keyX, unsafePointerX, status);
+    int res = _nativeLib.IDENBigIntFromString(keyX, unsafePointerX, status);
 
     ffi.Pointer<ffi.Int8> unsafePointerY = pubY.toNativeUtf8().cast<ffi.Int8>();
     ffi.Pointer<IDENBigInt> bigInt2 = malloc<IDENBigInt>();
@@ -1044,13 +1043,13 @@ class Iden3CoreLib {
     keyY.value = bigInt2;
     //ffi.Pointer<ffi.Pointer<IDENStatus>> status1 =
     //    malloc<ffi.Pointer<IDENStatus>>();
-    ok = _nativeLib.IDENBigIntFromString(keyY, unsafePointerY, status);
+    res = _nativeLib.IDENBigIntFromString(keyY, unsafePointerY, status);
 
     ffi.Pointer<ffi.Pointer<IDENClaim>> claim =
         malloc<ffi.Pointer<IDENClaim>>();
     ffi.Pointer<ffi.Pointer<IDENStatus>> status2 =
         malloc<ffi.Pointer<IDENStatus>>();
-    int res = _nativeLib.IDENNewClaim(claim, unsafePointerSchemaHash, status2);
+    res = _nativeLib.IDENNewClaim(claim, unsafePointerSchemaHash, status2);
 
     ffi.Pointer<ffi.Pointer<IDENStatus>> status3 =
         malloc<ffi.Pointer<IDENStatus>>();
@@ -1314,10 +1313,15 @@ class Iden3CoreLib {
   }
 
   ffi.Pointer<IDENMerkleTree>? createCorrectMT() {
+    ffi.Pointer<IDENMerkleTree>> mtValue =
+    malloc<IDENMerkleTree>();
     ffi.Pointer<ffi.Pointer<IDENMerkleTree>> mt =
         malloc<ffi.Pointer<IDENMerkleTree>>();
+    mt.value = mtValue;
+    ffi.Pointer<IDENStatus> statusValue = malloc<IDENStatus>();
     ffi.Pointer<ffi.Pointer<IDENStatus>> status =
         malloc<ffi.Pointer<IDENStatus>>();
+    status.value = ffi.nullptr;
     int res = _nativeLib.IDENNewMerkleTree(mt, 40, status);
     bool error = _consumeStatus(status, "error new merkle tree");
     if (mt == ffi.nullptr) {
@@ -1339,7 +1343,7 @@ class Iden3CoreLib {
   }
 
   bool _consumeStatus(ffi.Pointer<ffi.Pointer<IDENStatus>> status, String msg) {
-    if (status == ffi.nullptr) {
+    if (status == ffi.nullptr || status.value == ffi.nullptr) {
       print("unable to allocate status\n");
       return false;
     }
@@ -1454,8 +1458,8 @@ class Iden3CoreLib {
         privKeyXHex.toNativeUtf8().cast<ffi.Int8>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> keyX =
         malloc<ffi.Pointer<IDENBigInt>>();
-    bool ok = _nativeLib.IDENBigIntFromString(keyX, unsafePointerX, status);
-    if (!ok) {
+    res = _nativeLib.IDENBigIntFromString(keyX, unsafePointerX, status);
+    if (res != 0) {
       return false;
     }
 
@@ -1463,8 +1467,8 @@ class Iden3CoreLib {
         privKeyYHex.toNativeUtf8().cast<ffi.Int8>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> keyY =
         malloc<ffi.Pointer<IDENBigInt>>();
-    ok = _nativeLib.IDENBigIntFromString(keyY, unsafePointerY, status);
-    if (!ok) {
+    res = _nativeLib.IDENBigIntFromString(keyY, unsafePointerY, status);
+    if (res != 0) {
       return false;
     }
 
@@ -1532,14 +1536,13 @@ class Iden3CoreLib {
     ffi.Pointer<ffi.Pointer<IDENBigInt>> slotA =
         malloc<ffi.Pointer<IDENBigInt>>();
 
-    bool ok =
-        _nativeLib.IDENBigIntFromString(slotA, unsafePointerSlotA, status);
+    res = _nativeLib.IDENBigIntFromString(slotA, unsafePointerSlotA, status);
 
     ffi.Pointer<ffi.Int8> unsafePointerSlotB =
         "0".toNativeUtf8().cast<ffi.Int8>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> slotB =
         malloc<ffi.Pointer<IDENBigInt>>();
-    ok = _nativeLib.IDENBigIntFromString(slotB, unsafePointerSlotB, status);
+    res = _nativeLib.IDENBigIntFromString(slotB, unsafePointerSlotB, status);
 
     res = _nativeLib.IDENClaimSetIndexDataInt(
         claim.value, slotA.value, slotB.value, status);
