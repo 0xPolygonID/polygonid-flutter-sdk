@@ -152,7 +152,7 @@ class PrivadoIdSdk {
     final RevocationStatus revocationStatus =
         RevocationStatus.fromJson(json.decode(revStatus));
 
-    var queryInputs = _iden3coreLib.prepareAtomicQueryInputs(
+    var queryInputs = _iden3coreLib.prepareAtomicQueryMTPInputs(
         challenge,
         wallet.publicKey[0],
         wallet.publicKey[1],

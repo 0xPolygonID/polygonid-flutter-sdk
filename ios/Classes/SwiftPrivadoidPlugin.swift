@@ -68,10 +68,10 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
   }
     
   public func getMerkleTreeRoot(pubX: String, pubY: String) -> String {
-        
+      return "";
     //let schemaHash : [UInt8] = [0x52, 0xFD, 0xFC, 0x07, 0x21, 0x82, 0x65, 0x4F, 0x16, 0x3F, 0x5F, 0x0F, 0x9A, 0x62, 0x1D, 0x72]
-    let schemaHash : [UInt8] = [0x7C, 0x08, 0x44, 0xA0, 0x75, 0xA9, 0xDD, 0xC7, 0xFC, 0xBD, 0xFB, 0x4F, 0x88, 0xAC, 0xD9, 0xBC]
-    let unsafePointerSchemaHash : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: schemaHash)
+    //let schemaHash : [UInt8] = [0x7C, 0x08, 0x44, 0xA0, 0x75, 0xA9, 0xDD, 0xC7, 0xFC, 0xBD, 0xFB, 0x4F, 0x88, 0xAC, 0xD9, 0xBC]
+    //let unsafePointerSchemaHash : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: schemaHash)
         
         /*let pubXBigInt = pubX
         var XVal = pubXBigInt.asHexArrayFromNonValidatedSource()
@@ -82,7 +82,7 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         keyX.data_len = 32
         print(XVal)*/
         
-        let pubXBigInt = pubX
+        /*let pubXBigInt = pubX
         let xBytes = pubXBigInt.cString(using: String.Encoding.utf8)!
         let unsafePointerX : UnsafeMutablePointer<CChar> = UnsafeMutablePointer<CChar>(mutating: xBytes)
         let keyX = IDENBigIntFromString(unsafePointerX)
@@ -90,7 +90,7 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         let pubYBigInt = pubY
         let yBytes = pubYBigInt.cString(using: String.Encoding.utf8)!
         let unsafePointerY : UnsafeMutablePointer<CChar> = UnsafeMutablePointer<CChar>(mutating: yBytes)
-        let keyY = IDENBigIntFromString(unsafePointerY)
+        let keyY = IDENBigIntFromString(unsafePointerY)*/
         /*
          var YVal = pubYBigInt.asHexArrayFromNonValidatedSource()
          YVal = YVal.reversed()
@@ -100,11 +100,11 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         //print(YVal)
         
         //let revNonce = UInt64(13260572831089785859)
-        let revNonce = UInt64(0)
+        //let revNonce = UInt64(0)
         
-        let entryRes = IDENauthClaimTreeEntry(unsafePointerSchemaHash, keyX, keyY, revNonce)
+        /*let entryRes = IDENauthClaimTreeEntry(unsafePointerSchemaHash, keyX, keyY, revNonce)*/
         
-        if (entryRes ==  nil) {
+        /*if (entryRes ==  nil) {
             print("unable to allocate tree entry\n")
             return "ERROR"
         }
@@ -171,13 +171,14 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         if (entryRes != nil) {
             IDENFreeTreeEntry(entryRes)
             print("tree entry successfuly freed")
-        }
+        }*/
         
-        return result;
+        //return result;
     }
     
   public func getGenesisId(idenState: String) -> String {
-        print("idenState: " + idenState)
+        return "";
+        /*print("idenState: " + idenState)
         var state = idenState.asHexArrayFromNonValidatedSource()
         state = state.reversed()
       
@@ -207,13 +208,14 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
             print("id genesis successfully freed")
         }
         
-        return result;
+        return result;*/
   }
     
   public func getAuthClaimTreeEntry(pubX: String, pubY: String) -> [String] {
         
+      return [""];
         //let schemaHash : [UInt8] = [0x52, 0xFD, 0xFC, 0x07, 0x21, 0x82, 0x65, 0x4F, 0x16, 0x3F, 0x5F, 0x0F, 0x9A, 0x62, 0x1D, 0x72]
-        let schemaHash : [UInt8] = [0x7C, 0x08, 0x44, 0xA0, 0x75, 0xA9, 0xDD, 0xC7, 0xFC, 0xBD, 0xFB, 0x4F, 0x88, 0xAC, 0xD9, 0xBC]
+        /*let schemaHash : [UInt8] = [0x7C, 0x08, 0x44, 0xA0, 0x75, 0xA9, 0xDD, 0xC7, 0xFC, 0xBD, 0xFB, 0x4F, 0x88, 0xAC, 0xD9, 0xBC]
         let unsafePointerSchemaHash : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: schemaHash)
         
         
@@ -306,18 +308,18 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
             print("merkle tree successfuly freed\n")
         }*/
             
-        if (entryRes != nil) {
+        /*if (entryRes != nil) {
             IDENFreeTreeEntry(entryRes)
             print("tree entry successfuly freed")
-        }
+        }*/
         
-        return result;
+        return result;*/
   }
     
   public func createNewIdentity(pubX: String, pubY: String) -> String {
         
         //let schemaHash : [UInt8] = [0x52, 0xFD, 0xFC, 0x07, 0x21, 0x82, 0x65, 0x4F, 0x16, 0x3F, 0x5F, 0x0F, 0x9A, 0x62, 0x1D, 0x72]
-        let schemaHash : [UInt8] = [0x7C, 0x08, 0x44, 0xA0, 0x75, 0xA9, 0xDD, 0xC7, 0xFC, 0xBD, 0xFB, 0x4F, 0x88, 0xAC, 0xD9, 0xBC]
+        /*let schemaHash : [UInt8] = [0x7C, 0x08, 0x44, 0xA0, 0x75, 0xA9, 0xDD, 0xC7, 0xFC, 0xBD, 0xFB, 0x4F, 0x88, 0xAC, 0xD9, 0xBC]
         let unsafePointerSchemaHash : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: schemaHash)
         
         let pubXBigInt = pubX
@@ -503,7 +505,7 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         if (entryRes != nil) {
             IDENFreeTreeEntry(entryRes)
             print("tree entry successfuly freed")
-        }
+        }*/
         
         return "ALL GOOD";
   }
@@ -512,7 +514,7 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         // var mtRoot = nil
         // var idGenesis = nil
         
-        let schemaHash : [UInt8] = [0x52, 0xFD, 0xFC, 0x07, 0x21, 0x82, 0x65, 0x4F, 0x16, 0x3F, 0x5F, 0x0F, 0x9A, 0x62, 0x1D, 0x72]
+        /*let schemaHash : [UInt8] = [0x52, 0xFD, 0xFC, 0x07, 0x21, 0x82, 0x65, 0x4F, 0x16, 0x3F, 0x5F, 0x0F, 0x9A, 0x62, 0x1D, 0x72]
         let unsafePointerSchemaHash : UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>(mutating: schemaHash)
         
         // X = 15468939102716291673743744296736132867654217747684906302563904432835075522918
@@ -737,7 +739,7 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         if (entryRes != nil) {
             IDENFreeTreeEntry(entryRes)
             print("tree entry successfuly freed")
-        }
+        }*/
         
         return "ALL GOOD";
   }
@@ -764,7 +766,7 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         }
   }*/
     
-  public func createCorrectMT() -> UnsafeMutablePointer<IDENmerkleTree>? {
+    /*public func createCorrectMT() -> UnsafeMutablePointer<IDENMerkleTree>? {
         let mt = IDENnewMerkleTree(40)
         
         if (mt == nil) {
@@ -805,7 +807,7 @@ public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
         
         IDENFreeStatus(addStatus)
         return 0
-  }
+  }*/
 
   public static func dummyMethodToEnforceBundling() {
       // Iden3 Core

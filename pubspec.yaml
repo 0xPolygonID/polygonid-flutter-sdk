@@ -34,12 +34,15 @@ dev_dependencies:
   flutter_lints: ^1.0.0
 
 ffigen:
-  name: ProverLib
-  description: Bindings to `ios/Classes/prover.h`.
-  output: 'generated_bindings_2.dart'
+  # name: ProverLib
+  # description: Bindings to `ios/Classes/prover.h`.
+  name: NativeLibrary
+  description: Bindings to `ios/Classes/libiden3core.h`.
+  output: 'lib/libs/generated_bindings.dart'
   headers:
     entry-points:
-      - 'ios/Classes/prover.h'
+      - 'ios/Classes/libiden3core.h'
+      # - 'ios/Classes/prover.h'
 
 
 
