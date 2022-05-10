@@ -186,14 +186,14 @@ class Iden3CoreLib {
     if (mtRoot != ffi.nullptr) {
       _nativeLib.free(mtRoot.cast());
       if (kDebugMode) {
-        print("tree root successfuly freed\n");
+        print("tree root successfully freed\n");
       }
     }
 
     if (mt != ffi.nullptr) {
       _nativeLib.IDENFreeMerkleTree(mt);
       if (kDebugMode) {
-        print("merkle tree successfuly freed\n");
+        print("merkle tree successfully freed\n");
       }
     }
 
@@ -471,16 +471,17 @@ class Iden3CoreLib {
     request.ref.auth_claim.non_rev_proof.proof = userAuthClaimNonRevProof.value;
     request.ref.auth_claim.non_rev_proof.tree_state = treeState.ref;
 
-    request.ref.auth_claim.signature_proof.base_signature_proof
-        .auth_claim_issuer_mtp = ffi.nullptr;
-    request.ref.auth_claim.signature_proof.issuer_public_key =
-        malloc<IDENBJJPublicKey>().ref;
+    request.ref.auth_claim.signature_proof.issuer_id = idP.ref;
     request.ref.auth_claim.signature_proof.signature =
         malloc<IDENBJJSignature>().ref;
-    request.ref.auth_claim.signature_proof.h_index =
-        malloc<IDENMerkleTreeHash>().ref;
-    request.ref.auth_claim.signature_proof.h_value =
-        malloc<IDENMerkleTreeHash>().ref;
+    request.ref.auth_claim.signature_proof.issuer_tree_state =
+        malloc<IDENTreeState>().ref;
+    request.ref.auth_claim.signature_proof.issuer_auth_claim =
+        malloc<IDENClaim>();
+    request.ref.auth_claim.signature_proof.issuer_auth_claim_mtp =
+        malloc<IDENProof>();
+    request.ref.auth_claim.signature_proof.issuer_auth_non_rev_proof =
+        malloc<IDENRevocationStatus>().ref;
 
     //Map<String, dynamic> circuitClaim = json.decode(authClaim);
     //IDENCircuitClaim claim = IDENCircuitClaim.fromJson(circuitClaim);

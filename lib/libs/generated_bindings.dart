@@ -5670,28 +5670,6 @@ class _IDENBJJSignature extends ffi.Struct {
   }
 }
 
-class _IDENBJJPublicKey extends ffi.Struct {
-  @ffi.Array.multi([32])
-  external ffi.Array<ffi.Uint8> data;
-
-  static _IDENBJJPublicKey fromJson(Map<String, dynamic> json) {
-    ffi.Pointer<_IDENBJJPublicKey> bjjPublicKey = malloc<_IDENBJJPublicKey>();
-    List<int> dataBytes = hexToBytes(json['data']);
-    for (int i = 0; i < dataBytes.length; i++) {
-      bjjPublicKey.ref.data[i] = dataBytes[i];
-    }
-    return bjjPublicKey.ref;
-  }
-
-  Map<String, dynamic> toJson() {
-    List<int> dataBytes = List.filled(32, 0);
-    for (int i = 0; i < 32; i++) {
-      dataBytes[i] = data[i];
-    }
-    return {'data': bytesToHex(dataBytes)};
-  }
-}
-
 class _IDENTreeState extends ffi.Struct {
   external IDENMerkleTreeHash state;
 
@@ -5746,72 +5724,50 @@ class _IDENRevocationStatus extends ffi.Struct {
 typedef IDENTreeState = _IDENTreeState;
 typedef IDENProof = _IDENProof;
 
-class _IDENCircuitsBaseSignatureProof extends ffi.Struct {
-  external IDENId issuer_id;
-
-  external IDENTreeState issuer_tree_state;
-
-  external ffi.Pointer<IDENProof> auth_claim_issuer_mtp;
-
-  static _IDENCircuitsBaseSignatureProof fromJson(Map<String, dynamic> json) {
-    ffi.Pointer<_IDENCircuitsBaseSignatureProof> baseSignatureProof =
-        malloc<_IDENCircuitsBaseSignatureProof>();
-    baseSignatureProof.ref.issuer_id = IDENId.fromJson(json['issuer_id']);
-    baseSignatureProof.ref.issuer_tree_state =
-        IDENTreeState.fromJson(json['issuer_tree_state']);
-    baseSignatureProof.ref.auth_claim_issuer_mtp =
-        IDENProof.fromJson(json['auth_claim_issuer_mtp']);
-    return baseSignatureProof.ref;
-  }
-
-  Map<String, dynamic> toJson() => {
-        'issuer_id': issuer_id.toJson(),
-        'issuer_tree_state': issuer_tree_state.toJson(),
-        'auth_claim_issuer_mtp': auth_claim_issuer_mtp.ref.toJson(),
-      };
-}
-
-typedef IDENId = _IDENId;
-
 class _IDENBCircuitsBJJSignatureProof extends ffi.Struct {
-  external IDENCircuitsBaseSignatureProof base_signature_proof;
-
-  external IDENBJJPublicKey issuer_public_key;
+  external IDENId issuer_id;
 
   external IDENBJJSignature signature;
 
-  external IDENMerkleTreeHash h_index;
+  external IDENTreeState issuer_tree_state;
 
-  external IDENMerkleTreeHash h_value;
+  external ffi.Pointer<IDENClaim> issuer_auth_claim;
+
+  external ffi.Pointer<IDENProof> issuer_auth_claim_mtp;
+
+  external IDENRevocationStatus issuer_auth_non_rev_proof;
 
   static _IDENBCircuitsBJJSignatureProof fromJson(Map<String, dynamic> json) {
     ffi.Pointer<_IDENBCircuitsBJJSignatureProof> bjjSignatureProof =
         malloc<_IDENBCircuitsBJJSignatureProof>();
-    bjjSignatureProof.ref.base_signature_proof =
-        IDENCircuitsBaseSignatureProof.fromJson(json['base_signature_proof']);
-    bjjSignatureProof.ref.issuer_public_key =
-        IDENBJJPublicKey.fromJson(json['issuer_public_key']);
+    bjjSignatureProof.ref.issuer_id = IDENId.fromJson(json['issuer_id']);
     bjjSignatureProof.ref.signature =
         IDENBJJSignature.fromJson(json['signature']);
-    bjjSignatureProof.ref.h_index =
-        IDENMerkleTreeHash.fromJson(json['h_index']);
-    bjjSignatureProof.ref.h_value =
-        IDENMerkleTreeHash.fromJson(json['h_value']);
+    bjjSignatureProof.ref.issuer_tree_state =
+        IDENTreeState.fromJson(json['issuer_tree_state']);
+    bjjSignatureProof.ref.issuer_auth_claim =
+        IDENClaim.fromJson(json['issuer_auth_claim']);
+    bjjSignatureProof.ref.issuer_auth_claim_mtp =
+        IDENProof.fromJson(json['issuer_auth_claim_mtp']);
+    bjjSignatureProof.ref.issuer_auth_non_rev_proof =
+        IDENRevocationStatus.fromJson(json['issuer_auth_non_rev_proof']);
     return bjjSignatureProof.ref;
   }
 
   Map<String, dynamic> toJson() => {
-        'base_signature_proof': base_signature_proof.toJson(),
-        'issuer_public_key': issuer_public_key.toJson(),
+        'issuer_id': issuer_id.toJson(),
         'signature': signature.toJson(),
-        'h_index': h_index.toJson(),
-        'h_value': h_value.toJson(),
+        'issuer_tree_state': issuer_tree_state.toJson(),
+        'issuer_auth_claim': issuer_auth_claim.ref.toJson(),
+        'issuer_auth_claim_mtp': issuer_auth_claim_mtp.ref.toJson(),
+        'issuer_auth_non_rev_proof': issuer_auth_non_rev_proof.toJson(),
       };
 }
 
-typedef IDENCircuitsBaseSignatureProof = _IDENCircuitsBaseSignatureProof;
-typedef IDENBJJPublicKey = _IDENBJJPublicKey;
+typedef IDENId = _IDENId;
 typedef IDENBJJSignature = _IDENBJJSignature;
+typedef IDENClaim = _IDENClaim;
+typedef IDENRevocationStatus = _IDENRevocationStatus;
 
 class _IDENCircuitsClaim extends ffi.Struct {
   external ffi.Pointer<IDENClaim> core_claim;
@@ -5849,8 +5805,6 @@ class _IDENCircuitsClaim extends ffi.Struct {
       };
 }
 
-typedef IDENClaim = _IDENClaim;
-typedef IDENRevocationStatus = _IDENRevocationStatus;
 typedef IDENBCircuitsBJJSignatureProof = _IDENBCircuitsBJJSignatureProof;
 
 class _IDENQuery extends ffi.Struct {
@@ -7010,5 +6964,3 @@ const int IDEN_ENTRY_DIM = 4;
 const int IDEN_ID_SIZE = 31;
 
 const int IDEN_BJJ_SIGNATURE_SIZE = 64;
-
-const int IDEN_BJJ_PUBLIC_KEY_SIZE = 32;

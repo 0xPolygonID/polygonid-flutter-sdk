@@ -7,7 +7,6 @@
 
 #include <stddef.h> /* for ptrdiff_t below */
 
-
 #ifndef GO_CGO_EXPORT_PROLOGUE_H
 #define GO_CGO_EXPORT_PROLOGUE_H
 
@@ -32,7 +31,6 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 #define IDEN_ENTRY_DIM 4
 #define IDEN_ID_SIZE 31
 #define IDEN_BJJ_SIGNATURE_SIZE 64
-#define IDEN_BJJ_PUBLIC_KEY_SIZE 32
 
 typedef struct _IDENBigInt {
 	unsigned char* data;
@@ -108,11 +106,6 @@ typedef struct _IDENBJJSignature
 	unsigned char data[IDEN_BJJ_SIGNATURE_SIZE];
 } IDENBJJSignature;
 
-typedef struct _IDENBJJPublicKey
-{
-	unsigned char data[IDEN_BJJ_PUBLIC_KEY_SIZE];
-} IDENBJJPublicKey;
-
 typedef struct _IDENTreeState {
 	IDENMerkleTreeHash state;
 	IDENMerkleTreeHash claims_root;
@@ -126,20 +119,14 @@ typedef struct _IDENRevocationStatus
 	IDENProof *proof;
 } IDENRevocationStatus;
 
-typedef struct _IDENCircuitsBaseSignatureProof
-{
-	IDENId issuer_id;
-	IDENTreeState issuer_tree_state;
-	IDENProof *auth_claim_issuer_mtp;
-} IDENCircuitsBaseSignatureProof;
-
 typedef struct _IDENBCircuitsBJJSignatureProof
 {
-	IDENCircuitsBaseSignatureProof base_signature_proof;
-	IDENBJJPublicKey issuer_public_key;
+	IDENId issuer_id;
 	IDENBJJSignature signature;
-	IDENMerkleTreeHash h_index;
-	IDENMerkleTreeHash h_value;
+	IDENTreeState issuer_tree_state;
+	IDENClaim *issuer_auth_claim;
+	IDENProof *issuer_auth_claim_mtp;
+	IDENRevocationStatus issuer_auth_non_rev_proof;
 } IDENBCircuitsBJJSignatureProof;
 
 typedef struct _IDENCircuitsClaim
