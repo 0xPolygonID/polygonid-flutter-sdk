@@ -3994,6 +3994,28 @@ class NativeLibrary {
           int Function(ffi.Pointer<IDENClaim>, int,
               ffi.Pointer<ffi.Pointer<IDENStatus>>)>();
 
+  int IDENClaimSetRevocationNonceAsBigInt(
+    ffi.Pointer<IDENClaim> c,
+    ffi.Pointer<IDENBigInt> revNonce,
+    ffi.Pointer<ffi.Pointer<IDENStatus>> status,
+  ) {
+    return _IDENClaimSetRevocationNonceAsBigInt(
+      c,
+      revNonce,
+      status,
+    );
+  }
+
+  late final _IDENClaimSetRevocationNonceAsBigIntPtr = _lookup<
+          ffi.NativeFunction<
+              GoUint8 Function(ffi.Pointer<IDENClaim>, ffi.Pointer<IDENBigInt>,
+                  ffi.Pointer<ffi.Pointer<IDENStatus>>)>>(
+      'IDENClaimSetRevocationNonceAsBigInt');
+  late final _IDENClaimSetRevocationNonceAsBigInt =
+      _IDENClaimSetRevocationNonceAsBigIntPtr.asFunction<
+          int Function(ffi.Pointer<IDENClaim>, ffi.Pointer<IDENBigInt>,
+              ffi.Pointer<ffi.Pointer<IDENStatus>>)>();
+
   int IDENClaimSetExpirationDate(
     ffi.Pointer<IDENClaim> c,
     int t,

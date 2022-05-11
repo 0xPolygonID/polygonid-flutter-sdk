@@ -288,6 +288,7 @@ extern GoUint8 IDENClaimSetValueDataInt(IDENClaim* c, IDENBigInt* slotA, IDENBig
 extern GoUint8 IDENClaimSetIndexDataInt(IDENClaim* c, IDENBigInt* slotA, IDENBigInt* slotB, IDENStatus** status);
 extern GoUint8 IDENClaimSetIndexID(IDENClaim* c, IDENId id, IDENStatus** status);
 extern GoUint8 IDENClaimSetRevocationNonce(IDENClaim* c, long long unsigned int revNonce, IDENStatus** status);
+extern GoUint8 IDENClaimSetRevocationNonceAsBigInt(IDENClaim* c, IDENBigInt* revNonce, IDENStatus** status);
 extern GoUint8 IDENClaimSetExpirationDate(IDENClaim* c, time_t t, IDENStatus** status);
 extern GoUint8 IDENClaimTreeEntry(IDENMerkleTreeEntry* treeEntry, IDENClaim* claim, IDENStatus** status);
 extern void IDENFreeClaim(IDENClaim* claim);
