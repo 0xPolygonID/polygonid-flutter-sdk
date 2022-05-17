@@ -80,6 +80,7 @@ class PrivadoIdSdk {
 
   static Future<String?> prepareAuthInputs(
       String challenge, String privateKey, String authClaim) async {
+    print("CHALLENGE  " + challenge);
     final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
         privateKey: HexUtils.hexToBytes(privateKey));
     String signatureString = wallet.signMessage(challenge);
@@ -117,7 +118,7 @@ class PrivadoIdSdk {
     final RevocationStatus revocationStatus =
         RevocationStatus.fromJson(json.decode(revStatus));
 
-    var queryInputs = _iden3coreLib.prepareAtomicQueryMTPInputs(
+    var queryInputs = _iden3coreLib.prepareAtomicQuerySigInputs(
         challenge,
         wallet.publicKey[0],
         wallet.publicKey[1],

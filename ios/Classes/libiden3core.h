@@ -298,6 +298,7 @@ extern GoUint8 IDENPrepareAuthInputs(char** response, IDENAuthInputs* in, IDENSt
 extern GoUint8 IDENCalculateGenesisID(IDENId* id, IDENMerkleTreeHash clr, IDENStatus** status);
 extern GoUint8 IDENHashOfHashes(IDENMerkleTreeHash* dst, IDENMerkleTreeHash** hashes, size_t n, IDENStatus** status);
 extern void IDENHashFromUInt64(IDENMerkleTreeHash* dst, long long unsigned int i);
+extern GoUint8 IDENHashFromBigInt(IDENMerkleTreeHash* dst, IDENBigInt* i, IDENStatus** status);
 extern GoUint8 IDENJsonLDParseClaim(IDENClaim** claim, char* credential, char* schema, IDENStatus** status);
 extern GoUint8 IDENJsonLDGetFieldSlotIndex(int* slotIndex, char* field, char* claimType, char* schema, IDENStatus** status);
 

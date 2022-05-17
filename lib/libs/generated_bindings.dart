@@ -4213,6 +4213,28 @@ class NativeLibrary {
   late final _IDENHashFromUInt64 = _IDENHashFromUInt64Ptr.asFunction<
       void Function(ffi.Pointer<IDENMerkleTreeHash>, int)>();
 
+  int IDENHashFromBigInt(
+    ffi.Pointer<IDENMerkleTreeHash> dst,
+    ffi.Pointer<IDENBigInt> i,
+    ffi.Pointer<ffi.Pointer<IDENStatus>> status,
+  ) {
+    return _IDENHashFromBigInt(
+      dst,
+      i,
+      status,
+    );
+  }
+
+  late final _IDENHashFromBigIntPtr = _lookup<
+      ffi.NativeFunction<
+          GoUint8 Function(
+              ffi.Pointer<IDENMerkleTreeHash>,
+              ffi.Pointer<IDENBigInt>,
+              ffi.Pointer<ffi.Pointer<IDENStatus>>)>>('IDENHashFromBigInt');
+  late final _IDENHashFromBigInt = _IDENHashFromBigIntPtr.asFunction<
+      int Function(ffi.Pointer<IDENMerkleTreeHash>, ffi.Pointer<IDENBigInt>,
+          ffi.Pointer<ffi.Pointer<IDENStatus>>)>();
+
   int IDENJsonLDParseClaim(
     ffi.Pointer<ffi.Pointer<IDENClaim>> claim,
     ffi.Pointer<ffi.Int8> credential,
@@ -5739,7 +5761,7 @@ class _IDENRevocationStatus extends ffi.Struct {
 
   Map<String, dynamic> toJson() => {
         'tree_state': tree_state.toJson(),
-        'proof': proof.ref.toJson(),
+        'proof': proof != ffi.nullptr ? proof.ref.toJson() : "",
       };
 }
 
@@ -5781,7 +5803,9 @@ class _IDENBCircuitsBJJSignatureProof extends ffi.Struct {
         'signature': signature.toJson(),
         'issuer_tree_state': issuer_tree_state.toJson(),
         'issuer_auth_claim': issuer_auth_claim.ref.toJson(),
-        'issuer_auth_claim_mtp': issuer_auth_claim_mtp.ref.toJson(),
+        'issuer_auth_claim_mtp': issuer_auth_claim_mtp != ffi.nullptr
+            ? issuer_auth_claim_mtp.ref.toJson()
+            : "",
         'issuer_auth_non_rev_proof': issuer_auth_non_rev_proof.toJson(),
       };
 }
