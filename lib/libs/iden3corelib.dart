@@ -733,8 +733,8 @@ class Iden3CoreLib {
       return "";
     }
 
-    request.ref.claim.core_claim = _makeUserClaim(
-        request.ref.id, userRevNonce, "ce6bb12c96bfd1544c02c289c6b4b987");
+    request.ref.claim.core_claim = _makeUserClaim(request.ref.id, userRevNonce,
+        value, operator, "ce6bb12c96bfd1544c02c289c6b4b987");
 
     res = _nativeLib.IDENMerkleTreeAddClaim(
         issuerAuthClaimsTree.value, request.ref.claim.core_claim, status);
@@ -799,13 +799,13 @@ class Iden3CoreLib {
     }
     request.ref.claim.proof = claimProof[0];
 
-    ffi.Pointer<ffi.Int8> unsafePointerQuery =
+    /*ffi.Pointer<ffi.Int8> unsafePointerQuery =
         "10".toNativeUtf8().cast<ffi.Int8>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> queryValuePointer =
         malloc<ffi.Pointer<IDENBigInt>>();
     res = _nativeLib.IDENBigIntFromString(
         queryValuePointer, unsafePointerQuery, status);
-    request.ref.query.values = queryValuePointer;
+    request.ref.query.values = queryValuePointer;*/
 
     request.ref.auth_claim.issuer_id = malloc<IDENId>().ref;
     //request.ref.auth_claim.non_rev_proof.tree_state =
@@ -1017,8 +1017,8 @@ class Iden3CoreLib {
     request.ref.claim.tree_state = userTreeState.ref;
 
     String revNonce = "1";
-    request.ref.claim.core_claim = _makeUserClaim(
-        request.ref.id, revNonce, "ce6bb12c96bfd1544c02c289c6b4b987");
+    request.ref.claim.core_claim = _makeUserClaim(request.ref.id, revNonce,
+        value, operator, "ce6bb12c96bfd1544c02c289c6b4b987");
 
     ffi.Pointer<IDENId> issuerId = malloc<IDENId>();
     ffi.Pointer<ffi.Pointer<IDENClaim>> issuerAuthClaim =
@@ -1443,7 +1443,7 @@ class Iden3CoreLib {
   }
 
   ffi.Pointer<IDENClaim> _makeUserClaim(
-      IDENId id, String revNonce, String schemaHex) {
+      IDENId id, String revNonce, int slotA, int slotB, String schemaHex) {
     /*final schemaHash = [
       0xce,
       0x6b,
@@ -1485,19 +1485,21 @@ class Iden3CoreLib {
     }
 
     ffi.Pointer<ffi.Int8> unsafePointerSlotA =
-        "10".toNativeUtf8().cast<ffi.Int8>();
-    ffi.Pointer<ffi.Pointer<IDENBigInt>> slotA =
+        slotA.toString().toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<ffi.Pointer<IDENBigInt>> slotABigInt =
         malloc<ffi.Pointer<IDENBigInt>>();
-    res = _nativeLib.IDENBigIntFromString(slotA, unsafePointerSlotA, status);
+    res = _nativeLib.IDENBigIntFromString(
+        slotABigInt, unsafePointerSlotA, status);
     if (res == 0) {
       _consumeStatus(status, "error creating bigInt from string");
     }
 
     ffi.Pointer<ffi.Int8> unsafePointerSlotB =
-        "0".toNativeUtf8().cast<ffi.Int8>();
-    ffi.Pointer<ffi.Pointer<IDENBigInt>> slotB =
+        slotB.toString().toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<ffi.Pointer<IDENBigInt>> slotBBigInt =
         malloc<ffi.Pointer<IDENBigInt>>();
-    res = _nativeLib.IDENBigIntFromString(slotB, unsafePointerSlotB, status);
+    res = _nativeLib.IDENBigIntFromString(
+        slotBBigInt, unsafePointerSlotB, status);
     if (res == 0) {
       _consumeStatus(status, "error creating bigInt from string");
     }
@@ -1513,13 +1515,13 @@ class Iden3CoreLib {
     }
 
     res = _nativeLib.IDENClaimSetIndexDataInt(
-        claim.value, slotA.value, slotB.value, status);
+        claim.value, slotABigInt.value, slotBBigInt.value, status);
     if (res == 0) {
       _consumeStatus(status, "error setting index data int to claim");
     }
 
-    _nativeLib.IDENFreeBigInt(slotA.value);
-    _nativeLib.IDENFreeBigInt(slotB.value);
+    _nativeLib.IDENFreeBigInt(slotABigInt.value);
+    _nativeLib.IDENFreeBigInt(slotBBigInt.value);
 
     res = _nativeLib.IDENClaimSetRevocationNonceAsBigInt(
         claim.value, revNonceBigInt.value, status);
