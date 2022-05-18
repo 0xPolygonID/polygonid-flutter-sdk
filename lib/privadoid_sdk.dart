@@ -97,6 +97,7 @@ class PrivadoIdSdk {
       String challenge,
       String privateKey,
       CredentialData credential,
+      String circuitId,
       String claimType,
       String key,
       int value,
@@ -117,20 +118,37 @@ class PrivadoIdSdk {
     String revStatus = (res.body);
     final RevocationStatus revocationStatus =
         RevocationStatus.fromJson(json.decode(revStatus));
+    var queryInputs;
+    if (circuitId == "credentialAtomicQueryMTP") {
+      queryInputs = _iden3coreLib.prepareAtomicQueryMTPInputs(
+          challenge,
+          wallet.publicKey[0],
+          wallet.publicKey[1],
+          signatureString,
+          credential.credential!,
+          json.encode(credential.credential!.toJson()),
+          schema,
+          claimType,
+          key,
+          value,
+          operator,
+          revocationStatus);
+    } else if (circuitId == "credentialAtomicQuerySig") {
+      queryInputs = _iden3coreLib.prepareAtomicQuerySigInputs(
+          challenge,
+          wallet.publicKey[0],
+          wallet.publicKey[1],
+          signatureString,
+          credential.credential!,
+          json.encode(credential.credential!.toJson()),
+          schema,
+          claimType,
+          key,
+          value,
+          operator,
+          revocationStatus);
+    }
 
-    var queryInputs = _iden3coreLib.prepareAtomicQuerySigInputs(
-        challenge,
-        wallet.publicKey[0],
-        wallet.publicKey[1],
-        signatureString,
-        credential.credential!,
-        json.encode(credential.credential!.toJson()),
-        schema,
-        claimType,
-        key,
-        value,
-        operator,
-        revocationStatus);
     return queryInputs;
   }
 }

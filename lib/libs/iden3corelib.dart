@@ -807,33 +807,65 @@ class Iden3CoreLib {
         queryValuePointer, unsafePointerQuery, status);
     request.ref.query.values = queryValuePointer;
 
+    request.ref.auth_claim.issuer_id = malloc<IDENId>().ref;
+    //request.ref.auth_claim.non_rev_proof.tree_state =
+    //    malloc<IDENTreeState>().ref;
+    request.ref.auth_claim.signature_proof =
+        malloc<IDENBCircuitsBJJSignatureProof>().ref;
+    request.ref.auth_claim.signature_proof.issuer_id = malloc<IDENId>().ref;
+    for (var i = 0; i < 64; i++) {
+      request.ref.auth_claim.signature_proof.signature.data[i] = 0;
+    }
+    request.ref.auth_claim.signature_proof.issuer_tree_state =
+        malloc<IDENTreeState>().ref;
+    request.ref.auth_claim.signature_proof.issuer_auth_claim = ffi.nullptr;
+    request.ref.auth_claim.signature_proof.issuer_auth_claim_mtp = ffi.nullptr;
+    request.ref.auth_claim.signature_proof.issuer_auth_non_rev_proof =
+        malloc<IDENRevocationStatus>().ref;
+    request.ref.auth_claim.signature_proof.issuer_auth_non_rev_proof
+        .tree_state = malloc<IDENTreeState>().ref;
+    request.ref.auth_claim.signature_proof.issuer_auth_non_rev_proof.proof =
+        ffi.nullptr;
+
+    //request.ref.claim.issuer_id = malloc<IDENId>().ref;
+    //request.ref.claim.non_rev_proof.tree_state =
+    //    malloc<IDENTreeState>().ref;
+    request.ref.claim.signature_proof =
+        malloc<IDENBCircuitsBJJSignatureProof>().ref;
+    request.ref.claim.signature_proof.issuer_id = malloc<IDENId>().ref;
+    for (var i = 0; i < 64; i++) {
+      request.ref.claim.signature_proof.signature.data[i] = 0;
+    }
+    request.ref.claim.signature_proof.issuer_tree_state =
+        malloc<IDENTreeState>().ref;
+    request.ref.claim.signature_proof.issuer_auth_claim = ffi.nullptr;
+    request.ref.claim.signature_proof.issuer_auth_claim_mtp = ffi.nullptr;
+    request.ref.claim.signature_proof.issuer_auth_non_rev_proof =
+        malloc<IDENRevocationStatus>().ref;
+    request.ref.claim.signature_proof.issuer_auth_non_rev_proof.tree_state =
+        malloc<IDENTreeState>().ref;
+    request.ref.claim.signature_proof.issuer_auth_non_rev_proof.proof =
+        ffi.nullptr;
+
     // RESULT
     String result = "";
     if (kDebugMode) {
       print("/// RESULT");
     }
+
+    ffi.Pointer<ffi.Int8> responseValue = malloc<ffi.Int8>();
     ffi.Pointer<ffi.Pointer<ffi.Int8>> response =
         malloc<ffi.Pointer<ffi.Int8>>();
+    response.value = responseValue;
     res = _nativeLib.IDENPrepareAtomicQueryMTPInputs(response, request, status);
-    if (status.value.ref.status != 0) {
-      if (kDebugMode) {
-        if (status.value.ref.error_msg != ffi.nullptr) {
-          ffi.Pointer<ffi.Int8> json = status.value.ref.error_msg;
-          ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
-          String msg = jsonString.toDartString();
-          print("error message: " + msg);
-        }
-        print("idenjsonresponse Error : ${status.value.ref.status}");
-      }
-    } else {
-      if (kDebugMode) {
-        print("idenjsonresponse OK : ${status.value.ref.status}");
-      }
-      ffi.Pointer<ffi.Int8> json = response.value;
-      ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
-      if (jsonString != ffi.nullptr) {
-        result = jsonString.toDartString();
-      }
+    if (res == 0) {
+      _consumeStatus(status, "can't prepare atomic query MTP inputs");
+    }
+
+    ffi.Pointer<ffi.Int8> json = response.value;
+    ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+    if (jsonString != ffi.nullptr) {
+      result = jsonString.toDartString();
     }
 
     _nativeLib.IDENFreeBigInt(request.ref.challenge);
