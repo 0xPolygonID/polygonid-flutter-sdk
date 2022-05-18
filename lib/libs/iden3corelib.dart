@@ -733,8 +733,10 @@ class Iden3CoreLib {
       return "";
     }
 
-    request.ref.claim.core_claim = _makeUserClaim(request.ref.id, userRevNonce,
-        value, operator, "ce6bb12c96bfd1544c02c289c6b4b987");
+    request.ref.claim.core_claim = parseClaim(jsonLDDocument, schema)!;
+
+    /*_makeUserClaim(request.ref.id, userRevNonce,
+        value, operator, "ce6bb12c96bfd1544c02c289c6b4b987");*/
 
     res = _nativeLib.IDENMerkleTreeAddClaim(
         issuerAuthClaimsTree.value, request.ref.claim.core_claim, status);
