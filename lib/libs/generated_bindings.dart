@@ -5802,7 +5802,9 @@ class _IDENBCircuitsBJJSignatureProof extends ffi.Struct {
         'issuer_id': issuer_id.toJson(),
         'signature': signature.toJson(),
         'issuer_tree_state': issuer_tree_state.toJson(),
-        'issuer_auth_claim': issuer_auth_claim.ref.toJson(),
+        'issuer_auth_claim': issuer_auth_claim != ffi.nullptr
+            ? issuer_auth_claim.ref.toJson()
+            : "",
         'issuer_auth_claim_mtp': issuer_auth_claim_mtp != ffi.nullptr
             ? issuer_auth_claim_mtp.ref.toJson()
             : "",

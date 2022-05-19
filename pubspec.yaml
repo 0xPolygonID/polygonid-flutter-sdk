@@ -21,7 +21,7 @@ dependencies:
   ffi: ^1.1.2
   hex: ^0.2.0
   web3dart: ^2.3.3
-  ffigen: ^4.1.2
+  ffigen: ^5.0.0
 
 dev_dependencies:
   flutter_test:
@@ -31,7 +31,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^1.0.0
+  flutter_lints: ^2.0.1
 
 ffigen:
   # name: ProverLib

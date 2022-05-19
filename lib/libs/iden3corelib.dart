@@ -358,7 +358,9 @@ class Iden3CoreLib {
     authClaim.ref.non_rev_proof.tree_state = malloc<IDENTreeState>().ref;
 
     authClaim.ref.signature_proof.issuer_id = malloc<IDENId>().ref;
-    authClaim.ref.signature_proof.signature = malloc<IDENBJJSignature>().ref;
+    for (var i = 0; i < 64; i++) {
+      authClaim.ref.signature_proof.signature.data[i] = 0;
+    }
     authClaim.ref.signature_proof.issuer_tree_state =
         malloc<IDENTreeState>().ref;
     authClaim.ref.signature_proof.issuer_auth_claim = ffi.nullptr;
