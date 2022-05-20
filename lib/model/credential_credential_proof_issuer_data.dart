@@ -64,52 +64,87 @@
 
 */
 
-class CredentialCredentialProofState {
-  final int? block_number;
-  final int? block_timestamp;
-  final String? claims_tree_root;
-  final String? revocation_tree_root;
-  final String? root_of_roots;
-  final String? tx_id;
-  final String? value;
+import 'package:privadoid_sdk/model/credential_credential_proof_mtp.dart';
 
-  CredentialCredentialProofState({
-    this.block_number,
-    this.block_timestamp,
-    this.claims_tree_root,
-    this.revocation_tree_root,
-    this.root_of_roots,
-    this.tx_id,
-    this.value,
+import 'credential_credential_proof_state.dart';
+
+class CredentialCredentialProofIssuerData {
+  final List<String>? auth_claim;
+  final CredentialCredentialProofMTP? mtp;
+  final String? revocation_status;
+  final String? id;
+  final CredentialCredentialProofState? state;
+
+  /*final String? type;
+  final String? h_index;
+  final String? h_value;
+  final String? issuer;*/
+
+  CredentialCredentialProofIssuerData({
+    this.id,
+    this.auth_claim,
+    this.revocation_status,
+    /*this.type,
+    this.h_index,
+    this.h_value,
+    this.issuer,*/
+    this.mtp,
+    this.state,
   });
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [CredentialCredentialProofState]
-  factory CredentialCredentialProofState.fromJson(Map<String, dynamic>? json) {
+  /// @returns [CredentialCredentialProofIssuerData]
+  factory CredentialCredentialProofIssuerData.fromJson(
+      Map<String, dynamic>? json) {
     if (json != null) {
-      return CredentialCredentialProofState(
-        block_number: json['block_number'],
-        block_timestamp: json['block_timestamp'],
-        claims_tree_root: json['claims_tree_root'],
-        revocation_tree_root: json['revocation_tree_root'],
-        root_of_roots: json['root_of_roots'],
-        tx_id: json['tx_id'],
-        value: json['value'],
-      );
+      CredentialCredentialProofMTP? mtp;
+      CredentialCredentialProofState? state;
+      List<String>? auth_claim;
+      try {
+        state = CredentialCredentialProofState.fromJson(json['state']);
+      } catch (e) {
+        state = null;
+      }
+
+      try {
+        mtp = CredentialCredentialProofMTP.fromJson(json['mtp']);
+      } catch (e) {
+        mtp = null;
+      }
+
+      try {
+        auth_claim =
+            (json['auth_claim'] as List).map((e) => e as String).toList();
+      } catch (e) {
+        auth_claim = null;
+      }
+
+      return CredentialCredentialProofIssuerData(
+          id: json['id'],
+          auth_claim: auth_claim,
+          revocation_status: json['revocation_status'],
+          /*type: json['@type'],
+          h_index: json['h_index'],
+          h_value: json['h_value'],
+          issuer: json['issuer'],*/
+          mtp: mtp,
+          state: state);
     } else {
       throw "something went wrong";
     }
   }
 
   Map<String, dynamic> toJson() => {
-        'block_number': block_number,
-        'block_timestamp': block_timestamp,
-        'claims_tree_root': claims_tree_root,
-        'revocation_tree_root': revocation_tree_root,
-        'root_of_roots': root_of_roots,
-        'tx_id': tx_id,
-        'value': value,
+        'id': id,
+        'auth_claim': auth_claim?.map((e) => e.toString()).toList(),
+        /*'@type': type,
+        'h_index': h_index,
+        'h_value': h_value,
+        'issuer': issuer,*/
+        'revocation_status': revocation_status,
+        'mtp': mtp?.toJson(),
+        'state': state?.toJson()
       };
 }

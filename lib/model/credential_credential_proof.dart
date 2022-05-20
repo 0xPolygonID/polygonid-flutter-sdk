@@ -64,13 +64,17 @@
 
 */
 
-import 'credential_credential_proof_issuer_mtp.dart';
+import 'package:privadoid_sdk/model/credential_credential_proof_issuer_data.dart';
+
 import 'credential_credential_proof_mtp.dart';
-import 'credential_credential_proof_state.dart';
 
 class CredentialCredentialProof {
   final String? type;
-  final int? created;
+  final CredentialCredentialProofIssuerData? issuer_data;
+  final String? signature;
+  final CredentialCredentialProofMTP? mtp;
+
+  /*final int? created;
   final String? h_index;
   final String? h_value;
   final String? issuer;
@@ -80,21 +84,23 @@ class CredentialCredentialProof {
   final String? proof_value;
   final String? verification_method;
 
-  final CredentialCredentialProofMTP? mtp;
-  final CredentialCredentialProofState? state;
+
+  final CredentialCredentialProofState? state;*/
 
   CredentialCredentialProof({
     this.type,
-    this.created,
+    this.issuer_data,
+    this.signature,
+    /*this.created,
     this.h_index,
     this.h_value,
     this.issuer,
     this.issuer_mtp,
     this.proof_purpose,
     this.proof_value,
-    this.verification_method,
+    this.verification_method,*/
     this.mtp,
-    this.state,
+    //this.state,
   });
 
   /// Creates an instance from the given json
@@ -102,40 +108,48 @@ class CredentialCredentialProof {
   /// @param [Map<String, dynamic>] json
   /// @returns [CredentialCredentialProof]
   factory CredentialCredentialProof.fromJson(Map<String, dynamic> json) {
-    CredentialCredentialProofIssuerMTP? issuer_mtp = json['issuer_mtp'] != null
+    CredentialCredentialProofIssuerData? issuer_data =
+        json['issuer_data'] != null
+            ? CredentialCredentialProofIssuerData.fromJson(json['issuer_data'])
+            : null;
+    /*CredentialCredentialProofIssuerMTP? issuer_mtp = json['issuer_mtp'] != null
         ? CredentialCredentialProofIssuerMTP.fromJson(json['issuer_mtp'])
-        : null;
-    CredentialCredentialProofState? state = json['state'] != null
+        : null;*/
+    /*CredentialCredentialProofState? state = json['state'] != null
         ? CredentialCredentialProofState.fromJson(json['state'])
-        : null;
+        : null;*/
     CredentialCredentialProofMTP? mtp = json['mtp'] != null
         ? CredentialCredentialProofMTP.fromJson(json['mtp'])
         : null;
     return CredentialCredentialProof(
         type: json['@type'],
-        created: json['created'],
+        issuer_data: issuer_data,
+        signature: json['signature'],
+        /*created: json['created'],
         h_index: json['h_index'],
         h_value: json['h_value'],
         issuer: json['issuer'],
         issuer_mtp: issuer_mtp,
         proof_purpose: json['proof_purpose'],
         proof_value: json['proof_value'],
-        verification_method: json['verification_method'],
-        mtp: mtp,
-        state: state);
+        verification_method: json['verification_method'],*/
+        mtp: mtp);
+    //state: state);
   }
 
   Map<String, dynamic> toJson() => {
         '@type': type,
-        'created': created,
+        'issuer_data': issuer_data?.toJson(),
+        /*'created': created,
         'h_index': h_index,
         'h_value': h_value,
         'issuer': issuer,
         'issuer_mtp': issuer_mtp?.toJson(),
         'proof_purpose': proof_purpose,
         'proof_value': proof_value,
-        'verification_method': verification_method,
+        'verification_method': verification_method,*/
+        'signature': signature,
         'mtp': mtp?.toJson(),
-        'state': state?.toJson(),
+        //'state': state?.toJson(),
       };
 }

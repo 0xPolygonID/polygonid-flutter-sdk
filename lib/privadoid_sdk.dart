@@ -35,32 +35,32 @@ class PrivadoIdSdk {
     final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
         privateKey: HexUtils.hexToBytes(privateKey));
 
-    final String? mtRoot = _iden3coreLib.getMerkleTreeRoot(
+    final String mtRoot = _iden3coreLib.getMerkleTreeRoot(
         wallet.publicKey[0], wallet.publicKey[1]);
     if (kDebugMode) {
-      print("mtRoot: " + mtRoot!);
+      print("mtRoot: ${mtRoot}");
     }
-    Uint8List bufMtRoot = Uint8List.fromList(HEX.decode(mtRoot!));
+    Uint8List bufMtRoot = Uint8List.fromList(HEX.decode(mtRoot));
     BigInt mtRootBigInt = Uint8ArrayUtils.beBuff2int(
         Uint8List.fromList(bufMtRoot.reversed.toList()));
     if (kDebugMode) {
-      print("mtRootBigInt: " + mtRootBigInt.toString());
+      print("mtRootBigInt: $mtRootBigInt");
     }
 
     String state = wallet.hashMessage(mtRootBigInt.toString(),
         BigInt.zero.toString(), BigInt.zero.toString());
     if (kDebugMode) {
-      print("state: " + state);
+      print("state: $state");
     }
     Uint8List bufState = Uint8List.fromList(HEX.decode(state));
     BigInt stateBigInt = Uint8ArrayUtils.beBuff2int(bufState);
     if (kDebugMode) {
-      print("stateBigInt: " + stateBigInt.toString());
+      print("stateBigInt: $stateBigInt");
     }
 
-    final String? genesisId = _iden3coreLib.getGenesisId(state);
+    final String genesisId = _iden3coreLib.getGenesisId(state);
     if (kDebugMode) {
-      print("GenesisId: " + genesisId!);
+      print("GenesisId: $genesisId");
     }
 
     return genesisId;
@@ -73,20 +73,24 @@ class PrivadoIdSdk {
     String authClaim =
         _iden3coreLib.getAuthClaim(wallet.publicKey[0], wallet.publicKey[1]);
     if (kDebugMode) {
-      print("authClaim: " + authClaim);
+      print("authClaim: $authClaim");
     }
     return authClaim;
   }
 
   static Future<String?> prepareAuthInputs(
       String challenge, String privateKey, String authClaim) async {
-    print("CHALLENGE  " + challenge);
+    if (kDebugMode) {
+      print("CHALLENGE  $challenge");
+    }
     final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
         privateKey: HexUtils.hexToBytes(privateKey));
     String signatureString = wallet.signMessage(challenge);
 
     String? genesisId = await getIdentifier(privateKey);
-    print("GENESIS ID :" + genesisId!);
+    if (kDebugMode) {
+      print("GENESIS ID :${genesisId!}");
+    }
 
     var authInputs = _iden3coreLib.prepareAuthInputs(challenge, authClaim,
         wallet.publicKey[0], wallet.publicKey[1], signatureString);
@@ -118,7 +122,7 @@ class PrivadoIdSdk {
     String revStatus = (res.body);
     final RevocationStatus revocationStatus =
         RevocationStatus.fromJson(json.decode(revStatus));
-    var queryInputs;
+    String? queryInputs;
     if (circuitId == "credentialAtomicQueryMTP") {
       queryInputs = _iden3coreLib.prepareAtomicQueryMTPInputs(
           challenge,
