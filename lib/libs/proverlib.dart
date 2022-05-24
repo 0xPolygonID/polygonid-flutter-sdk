@@ -10,8 +10,7 @@ class ProverLib {
       _lookup;
 
   /// The symbols are looked up in [dynamicLibrary].
-  ProverLib(
-      ffi.DynamicLibrary dynamicLibrary2, ffi.DynamicLibrary dynamicLibrary)
+  ProverLib(ffi.DynamicLibrary dynamicLibrary)
       : _lookup = dynamicLibrary.lookup;
 
   /// The symbols are looked up with [lookup].
@@ -28,11 +27,11 @@ class ProverLib {
     int zkey_size,
     ffi.Pointer<ffi.Void> wtns_buffer,
     int wtns_size,
-    ffi.Pointer<ffi.Int8> proof_buffer,
-    int proof_size,
-    ffi.Pointer<ffi.Int8> public_buffer,
-    int public_size,
-    ffi.Pointer<ffi.Int8> error_msg,
+    ffi.Pointer<ffi.Char> proof_buffer,
+    ffi.Pointer<ffi.UnsignedLong> proof_size,
+    ffi.Pointer<ffi.Char> public_buffer,
+    ffi.Pointer<ffi.UnsignedLong> public_size,
+    ffi.Pointer<ffi.Char> error_msg,
     int error_msg_maxsize,
   ) {
     return _groth16_prover(
@@ -51,31 +50,33 @@ class ProverLib {
 
   late final _groth16_proverPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
+          ffi.Int Function(
               ffi.Pointer<ffi.Void>,
-              ffi.Uint64,
+              ffi.UnsignedLong,
               ffi.Pointer<ffi.Void>,
-              ffi.Uint64,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Uint64,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Uint64,
-              ffi.Pointer<ffi.Int8>,
-              ffi.Uint64)>>('groth16_prover');
+              ffi.UnsignedLong,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.UnsignedLong>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.UnsignedLong>,
+              ffi.Pointer<ffi.Char>,
+              ffi.UnsignedLong)>>('groth16_prover');
   late final _groth16_prover = _groth16_proverPtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Void>,
           int,
           ffi.Pointer<ffi.Void>,
           int,
-          ffi.Pointer<ffi.Int8>,
-          int,
-          ffi.Pointer<ffi.Int8>,
-          int,
-          ffi.Pointer<ffi.Int8>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.UnsignedLong>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.UnsignedLong>,
+          ffi.Pointer<ffi.Char>,
           int)>();
 }
 
 const int PRPOVER_OK = 0;
 
 const int PPROVER_ERROR = 1;
+
+const int PPROVER_ERROR_SHORT_BUFFER = 2;

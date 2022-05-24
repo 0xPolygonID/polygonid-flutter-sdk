@@ -5,10 +5,13 @@ import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:privadoid_sdk/libs/proverlib.dart';
 import 'package:privadoid_sdk/model/credential_credential.dart';
 import 'package:privadoid_sdk/model/revocation_status.dart';
 import 'package:web3dart/crypto.dart';
 
+import '../utils/uint8_list_utils.dart';
 import 'generated_bindings.dart';
 
 class Iden3CoreLib {
@@ -18,18 +21,18 @@ class Iden3CoreLib {
         : NativeLibrary(ffi.DynamicLibrary.process());
   }
 
-  /*static ProverLib get _proverLib {
+  static ProverLib get _proverLib {
     return Platform.isAndroid
-        ? ProverLib(ffi.DynamicLibrary.open("libgmp.so"),
+        ? ProverLib(/*ffi.DynamicLibrary.open("libgmp.so"),*/
             ffi.DynamicLibrary.open("librapidsnark.so"))
-        : ProverLib(ffi.DynamicLibrary.process(), ffi.DynamicLibrary.process());
-  }*/
+        : ProverLib(ffi.DynamicLibrary.process());
+  }
 
   Iden3CoreLib();
 
   String getGenesisId(String idenState) {
     if (kDebugMode) {
-      print("idenState: " + idenState);
+      print("idenState: $idenState");
     }
     List<int> bytes = hexToBytes(idenState);
     List<int> reversedBytes = bytes.reversed.toList();
@@ -41,7 +44,7 @@ class Iden3CoreLib {
 
     String reversed = bytesToHex(reversedBytes, padToEvenLength: true);
     if (kDebugMode) {
-      print("idenState reversed: " + reversed);
+      print("idenState reversed: $reversed");
     }
 
     ffi.Pointer<IDENId> idP = malloc<IDENId>();
@@ -1673,21 +1676,23 @@ class Iden3CoreLib {
     return result;
   }
 
-  /*Future<bool> prover() async {
+  Future<bool> prover() async {
     ByteData zkeyBytes = await rootBundle.load('assets/circuit_final.zkey');
     ByteData wtnsBytes = await rootBundle.load('assets/witness.wtns');
-    int zkeySize = zkeyBytes.lengthInBytes; // 15613350
+    int zkeySize = zkeyBytes.lengthInBytes; // 15613350 // 32543618
     ffi.Pointer<ffi.Void> zkeyBuffer =
         Uint8ArrayUtils.toPointer(zkeyBytes.buffer.asUint8List()).cast();
-    int wtnsSize = wtnsBytes.lengthInBytes; // 890924
+    int wtnsSize = wtnsBytes.lengthInBytes; // 890924 // 1860716
     ffi.Pointer<ffi.Void> wtnsBuffer =
         Uint8ArrayUtils.toPointer(wtnsBytes.buffer.asUint8List()).cast();
-    int proofSize = 16384;
-    ffi.Pointer<ffi.Int8> proofBuffer = malloc<ffi.Int8>(proofSize);
-    int publicSize = 16384;
-    ffi.Pointer<ffi.Int8> publicBuffer = malloc<ffi.Int8>(publicSize);
+    ffi.Pointer<ffi.UnsignedLong> proofSize = malloc<ffi.UnsignedLong>();
+    proofSize.value = 16384;
+    ffi.Pointer<ffi.Char> proofBuffer = malloc<ffi.Char>(proofSize.value);
+    ffi.Pointer<ffi.UnsignedLong> publicSize = malloc<ffi.UnsignedLong>();
+    publicSize.value = 16384;
+    ffi.Pointer<ffi.Char> publicBuffer = malloc<ffi.Char>(publicSize.value);
     int errorMaxSize = 256;
-    ffi.Pointer<ffi.Int8> errorMsg = malloc<ffi.Int8>(errorMaxSize);
+    ffi.Pointer<ffi.Char> errorMsg = malloc<ffi.Char>(errorMaxSize);
 
     DateTime start = DateTime.now();
 
@@ -1708,25 +1713,34 @@ class Iden3CoreLib {
     int time = end.difference(start).inMicroseconds;
 
     if (result == PRPOVER_OK) {
-      ffi.Pointer<ffi.Int8> json = proofBuffer;
-      ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+      //ffi.Pointer<ffi.Int8> json = proofBuffer.cast<ffi.Int8>();
+      ffi.Pointer<Utf8> jsonString = proofBuffer.cast<Utf8>();
       String proofmsg = jsonString.toDartString();
 
-      ffi.Pointer<ffi.Int8> json2 = publicBuffer;
-      ffi.Pointer<Utf8> jsonString2 = json2.cast<Utf8>();
+      //ffi.Pointer<ffi.Int8> json2 = publicBuffer;
+      ffi.Pointer<Utf8> jsonString2 = publicBuffer.cast<Utf8>();
       String publicmsg = jsonString2.toDartString();
 
-      print("$result: ${result.toString()}");
-      print("Proof: $proofmsg");
-      print("Public: $publicmsg.");
-      print("Time: $time");
-    } else {
-      ffi.Pointer<ffi.Int8> json = errorMsg;
-      ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+      if (kDebugMode) {
+        print("$result: ${result.toString()}");
+        print("Proof: $proofmsg");
+        print("Public: $publicmsg.");
+        print("Time: $time");
+      }
+    } else if (result == PPROVER_ERROR) {
+      //ffi.Pointer<ffi.Int8> json = errorMsg.cast<ffi.Int8>();
+      ffi.Pointer<Utf8> jsonString = errorMsg.cast<Utf8>();
       String errormsg = jsonString.toDartString();
-      print("$result: ${result.toString()}. Error: $errormsg");
+      if (kDebugMode) {
+        print("$result: ${result.toString()}. Error: $errormsg");
+      }
+    } else if (result == PPROVER_ERROR_SHORT_BUFFER) {
+      if (kDebugMode) {
+        print(
+            "$result: ${result.toString()}. Error: Short buffer for proof or public");
+      }
     }
 
     return result == PRPOVER_OK;
-  }*/
+  }
 }

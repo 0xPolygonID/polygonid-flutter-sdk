@@ -38,7 +38,7 @@ class PrivadoIdSdk {
     final String mtRoot = _iden3coreLib.getMerkleTreeRoot(
         wallet.publicKey[0], wallet.publicKey[1]);
     if (kDebugMode) {
-      print("mtRoot: ${mtRoot}");
+      print("mtRoot: $mtRoot");
     }
     Uint8List bufMtRoot = Uint8List.fromList(HEX.decode(mtRoot));
     BigInt mtRootBigInt = Uint8ArrayUtils.beBuff2int(
@@ -154,5 +154,9 @@ class PrivadoIdSdk {
     }
 
     return queryInputs;
+  }
+
+  static Future<bool> prove() async {
+    return _iden3coreLib.prover();
   }
 }
