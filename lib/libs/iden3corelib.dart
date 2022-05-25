@@ -1676,9 +1676,11 @@ class Iden3CoreLib {
     return result;
   }
 
-  Future<bool> prover() async {
-    ByteData zkeyBytes = await rootBundle.load('assets/circuit_final.zkey');
-    ByteData wtnsBytes = await rootBundle.load('assets/witness.wtns');
+  Future<Map<String, dynamic>?> prover(String zKeyPath, String wtnsPath) async {
+    Map<String, dynamic> map = {};
+
+    ByteData zkeyBytes = await rootBundle.load(zKeyPath);
+    ByteData wtnsBytes = await rootBundle.load(wtnsPath);
     int zkeySize = zkeyBytes.lengthInBytes; // 15613350 // 32543618
     ffi.Pointer<ffi.Void> zkeyBuffer =
         Uint8ArrayUtils.toPointer(zkeyBytes.buffer.asUint8List()).cast();
@@ -1727,6 +1729,10 @@ class Iden3CoreLib {
         print("Public: $publicmsg.");
         print("Time: $time");
       }
+      map['circuitId'] = "auth";
+      map['proof'] = json.decode(proofmsg);
+      map['pub_signals'] = json.decode(publicmsg);
+      return map;
     } else if (result == PPROVER_ERROR) {
       //ffi.Pointer<ffi.Int8> json = errorMsg.cast<ffi.Int8>();
       ffi.Pointer<Utf8> jsonString = errorMsg.cast<Utf8>();
@@ -1741,6 +1747,6 @@ class Iden3CoreLib {
       }
     }
 
-    return result == PRPOVER_OK;
+    return null;
   }
 }

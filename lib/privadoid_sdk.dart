@@ -156,7 +156,8 @@ class PrivadoIdSdk {
     return queryInputs;
   }
 
-  static Future<bool> prove() async {
-    return _iden3coreLib.prover();
+  static Future<Map<String, dynamic>?> prove(
+      String zKeyPath, String wtnsPath) async {
+    return _iden3coreLib.prover(zKeyPath, wtnsPath);
   }
 }
