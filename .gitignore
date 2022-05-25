@@ -216,3 +216,6 @@ playground.xcworkspace
 # Add this line if you want to avoid checking in source code from Carthage dependencies.
 # Carthage/Checkouts
 gradle
+
+# Project specific
+rust/target

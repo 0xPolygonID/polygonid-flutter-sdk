@@ -1,5 +1,8 @@
+import 'dart:convert';
+
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:privadoid_sdk/utils/Base64Encoder.dart';
+import 'package:privadoid_sdk/utils/Base64.dart';
 
 part 'jwz_proof.g.dart';
 
@@ -34,7 +37,7 @@ part 'jwz_proof.g.dart';
 ///     }
 /// ```
 @JsonSerializable()
-class JWZBaseProof {
+class JWZBaseProof extends Equatable {
   @JsonKey(name: 'pi_a')
   List<String> piA;
 
@@ -56,6 +59,9 @@ class JWZBaseProof {
       _$JWZBaseProofFromJson(json);
 
   Map<String, dynamic> toJson() => _$JWZBaseProofToJson(this);
+
+  @override
+  List<Object?> get props => [piA, piB, piC, protocol];
 }
 
 /// Sample
@@ -96,17 +102,22 @@ class JWZBaseProof {
 ///   }
 /// ```
 @JsonSerializable()
-class JWZProof with Base64Encoder {
-  JWZBaseProof proof;
-  @JsonKey(name: 'pub_signals')
-  List<String> pubSignals;
+class JWZProof extends Equatable with Base64Encoder {
+  final JWZBaseProof proof;
 
-  JWZProof(
-      {required this.proof,
-      required this.pubSignals});
+  @JsonKey(name: 'pub_signals')
+  final List<String> pubSignals;
+
+  JWZProof({required this.proof, required this.pubSignals});
+
+  factory JWZProof.fromBase64(String data) =>
+      JWZProof.fromJson(jsonDecode(Base64Util.decode(data)));
 
   factory JWZProof.fromJson(Map<String, dynamic> json) =>
       _$JWZProofFromJson(json);
 
   Map<String, dynamic> toJson() => _$JWZProofToJson(this);
+
+  @override
+  List<Object?> get props => [proof, pubSignals];
 }

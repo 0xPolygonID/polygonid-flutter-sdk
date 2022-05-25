@@ -1,5 +1,8 @@
+import 'dart:convert';
+
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:privadoid_sdk/utils/Base64Encoder.dart';
+import 'package:privadoid_sdk/utils/Base64.dart';
 
 part 'jwz_header.g.dart';
 
@@ -15,11 +18,11 @@ part 'jwz_header.g.dart';
 /// }
 /// ```
 @JsonSerializable()
-class JWZHeader with Base64Encoder {
-  String alg;
-  String circuitId;
-  List<String> crit;
-  String typ;
+class JWZHeader extends Equatable with Base64Encoder {
+  final String alg;
+  final String circuitId;
+  final List<String> crit;
+  final String typ;
 
   JWZHeader(
       {required this.alg,
@@ -27,8 +30,14 @@ class JWZHeader with Base64Encoder {
       required this.crit,
       required this.typ});
 
+  factory JWZHeader.fromBase64(String data) =>
+      JWZHeader.fromJson(jsonDecode(Base64Util.decode(data)));
+
   factory JWZHeader.fromJson(Map<String, dynamic> json) =>
       _$JWZHeaderFromJson(json);
 
   Map<String, dynamic> toJson() => _$JWZHeaderToJson(this);
+
+  @override
+  List<Object?> get props => [alg, circuitId, crit, typ];
 }

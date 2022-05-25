@@ -23,6 +23,7 @@ dependencies:
   web3dart: ^2.3.3
   ffigen: ^5.0.0
   json_annotation: ^4.5.0
+  equatable: ^2.0.3
 
 dev_dependencies:
   flutter_test:
