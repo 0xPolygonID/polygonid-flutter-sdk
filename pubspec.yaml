@@ -34,15 +34,27 @@ dev_dependencies:
   flutter_lints: ^2.0.1
 
 ffigen:
-  # name: ProverLib
-  # description: Bindings to `ios/Classes/prover.h`.
-  name: NativeLibrary
-  description: Bindings to `ios/Classes/libiden3core.h`.
-  output: 'lib/libs/generated_bindings.dart'
+  name: WitnessLib
+  description: Bindings to `ios/Classes/witnesscalc.h`.
+  output: 'lib/libs/generated_bindings_witness.dart'
   headers:
     entry-points:
-      - 'ios/Classes/libiden3core.h'
-      # - 'ios/Classes/prover.h'
+      - 'ios/Classes/witnesscalc.h'
+  # name: ProverLib
+  # description: Bindings to `ios/Classes/prover.h`.
+  # output: 'lib/libs/generated_bindings_prover.dart'
+    # headers:
+      # entry-points:
+       # - 'ios/Classes/prover.h'
+
+
+
+  # name: NativeLibrary
+  # description: Bindings to `ios/Classes/libiden3core.h`.
+  # output: 'lib/libs/generated_bindings.dart'
+  #  headers:
+  #    entry-points:
+  #      - 'ios/Classes/libiden3core.h'
 
 
 
@@ -63,6 +75,7 @@ flutter:
   assets:
     - circuit_final.zkey
     - witness.wtns
+    - circuit.wasm
   #
   # For details regarding assets in packages, see
   # https://flutter.dev/assets-and-images/#from-packages

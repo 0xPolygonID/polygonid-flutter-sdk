@@ -13,12 +13,20 @@ import 'package:web3dart/crypto.dart';
 
 import '../utils/uint8_list_utils.dart';
 import 'generated_bindings.dart';
+import 'generated_bindings_witness.dart';
 
 class Iden3CoreLib {
   static NativeLibrary get _nativeLib {
     return Platform.isAndroid
         ? NativeLibrary(ffi.DynamicLibrary.open("libiden3core.so"))
         : NativeLibrary(ffi.DynamicLibrary.process());
+  }
+
+  static WitnessLib get _witnessLib {
+    return Platform.isAndroid
+        ? WitnessLib(/*ffi.DynamicLibrary.open("libgmp.so"),*/
+            ffi.DynamicLibrary.open("libwitnesscalc.so"))
+        : WitnessLib(ffi.DynamicLibrary.process());
   }
 
   static ProverLib get _proverLib {
@@ -110,14 +118,18 @@ class Iden3CoreLib {
       0xE5
     ];
 
-    final ffi.Pointer<ffi.Uint8> unsafePointerSchemaHash =
-        malloc<ffi.Uint8>(schemaHash.length + 1);
-    final Uint8List pointerList =
+    final ffi.Pointer<ffi.UnsignedChar> unsafePointerSchemaHash =
+        malloc<ffi.UnsignedChar>(schemaHash.length + 1);
+    for (int i = 0; i < schemaHash.length; i++) {
+      unsafePointerSchemaHash[i] = schemaHash[i];
+    }
+    unsafePointerSchemaHash[schemaHash.length] = 0;
+    /*final Uint8List pointerList =
         unsafePointerSchemaHash.asTypedList(schemaHash.length + 1);
     pointerList.setAll(0, schemaHash);
-    pointerList[schemaHash.length] = 0;
+    pointerList[schemaHash.length] = 0;*/
 
-    ffi.Pointer<ffi.Int8> unsafePointerX = pubX.toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<ffi.Char> unsafePointerX = pubX.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<IDENBigInt> keyXValue = malloc<IDENBigInt>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> keyX =
         malloc<ffi.Pointer<IDENBigInt>>();
@@ -131,7 +143,7 @@ class Iden3CoreLib {
       _consumeStatus(status, "");
     }
 
-    ffi.Pointer<ffi.Int8> unsafePointerY = pubY.toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<ffi.Char> unsafePointerY = pubY.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<IDENBigInt> keyYValue = malloc<IDENBigInt>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> keyY =
         malloc<ffi.Pointer<IDENBigInt>>();
@@ -156,8 +168,8 @@ class Iden3CoreLib {
 
     String revNonce = "15930428023331155902";
 
-    ffi.Pointer<ffi.Int8> unsafePointerRevNonce =
-        revNonce.toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<ffi.Char> unsafePointerRevNonce =
+        revNonce.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> revNonceBigInt =
         malloc<ffi.Pointer<IDENBigInt>>();
     res = _nativeLib.IDENBigIntFromString(
@@ -238,9 +250,9 @@ class Iden3CoreLib {
   }
 
   ffi.Pointer<IDENClaim>? parseClaim(String jsonLDDocument, String schema) {
-    ffi.Pointer<ffi.Int8> jsonLDDocumentP =
-        jsonLDDocument.toNativeUtf8().cast<ffi.Int8>();
-    ffi.Pointer<ffi.Int8> schemaP = schema.toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<ffi.Char> jsonLDDocumentP =
+        jsonLDDocument.toNativeUtf8().cast<ffi.Char>();
+    ffi.Pointer<ffi.Char> schemaP = schema.toNativeUtf8().cast<ffi.Char>();
 
     ffi.Pointer<ffi.Pointer<IDENClaim>> claimI =
         malloc<ffi.Pointer<IDENClaim>>();
@@ -272,7 +284,7 @@ class Iden3CoreLib {
     String result = "";
     String revNonce = "15930428023331155902";
     if (kDebugMode) {
-      print("revNonce: " + revNonce.toString());
+      print("revNonce: $revNonce");
     }
     ffi.Pointer<ffi.Pointer<IDENClaim>> claim =
         malloc<ffi.Pointer<IDENClaim>>();
@@ -334,8 +346,8 @@ class Iden3CoreLib {
     }
     authClaim.ref.tree_state = treeState.ref;
 
-    ffi.Pointer<ffi.Int8> unsafePointerRevNonce =
-        revNonce.toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<ffi.Char> unsafePointerRevNonce =
+        revNonce.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> revNonceBigInt =
         malloc<ffi.Pointer<IDENBigInt>>();
     res = _nativeLib.IDENBigIntFromString(
@@ -400,8 +412,8 @@ class Iden3CoreLib {
         "9d6a88b9a2eb1ce525065301a65f95a21b387cbf1d94fd4aa0be2e7b51532d0cc79b70d659246c05326b46e915a31163869ed11c44d47eb639bc0af381dba004";*/
 
     // CHALLENGE - ALL GOOD
-    ffi.Pointer<ffi.Int8> unsafePointerChallenge =
-        challenge.toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<ffi.Char> unsafePointerChallenge =
+        challenge.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<IDENBigInt> challengeValue = malloc<IDENBigInt>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> challengePointer =
         malloc<ffi.Pointer<IDENBigInt>>();
@@ -476,8 +488,8 @@ class Iden3CoreLib {
     }
     request.ref.auth_claim.tree_state = treeState.ref;
 
-    ffi.Pointer<ffi.Int8> unsafePointerRevNonce =
-        revNonce.toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<ffi.Char> unsafePointerRevNonce =
+        revNonce.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<IDENBigInt> revNonceValue = malloc<IDENBigInt>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> revNonceBigInt =
         malloc<ffi.Pointer<IDENBigInt>>();
@@ -541,16 +553,16 @@ class Iden3CoreLib {
     if (kDebugMode) {
       print("/// RESULT");
     }
-    ffi.Pointer<ffi.Int8> responseValue = malloc<ffi.Int8>();
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> response =
-        malloc<ffi.Pointer<ffi.Int8>>();
+    ffi.Pointer<ffi.Char> responseValue = malloc<ffi.Char>();
+    ffi.Pointer<ffi.Pointer<ffi.Char>> response =
+        malloc<ffi.Pointer<ffi.Char>>();
     response.value = responseValue;
     res = _nativeLib.IDENPrepareAuthInputs(response, request, status);
     if (res == 0) {
       _consumeStatus(status, "can't prepare auth inputs");
     }
 
-    ffi.Pointer<ffi.Int8> json = response.value;
+    ffi.Pointer<ffi.Char> json = response.value;
     ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
     if (jsonString != ffi.nullptr) {
       result = jsonString.toDartString();
@@ -594,8 +606,8 @@ class Iden3CoreLib {
     // QUERY - ALL GOOD
     request.ref.query.slot_index = _getFieldSlotIndex(schema, claimType, key);
 
-    ffi.Pointer<ffi.Int8> unsafePointerValue =
-        value.toString().toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<ffi.Char> unsafePointerValue =
+        value.toString().toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> valuePtr =
         malloc<ffi.Pointer<IDENBigInt>>();
     int res =
@@ -608,8 +620,8 @@ class Iden3CoreLib {
     }
 
     // CHALLENGE - ALL GOOD
-    ffi.Pointer<ffi.Int8> unsafePointerChallenge =
-        challenge.toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<ffi.Char> unsafePointerChallenge =
+        challenge.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> challengePointer =
         malloc<ffi.Pointer<IDENBigInt>>();
     res = _nativeLib.IDENBigIntFromString(
@@ -649,8 +661,8 @@ class Iden3CoreLib {
     request.ref.auth_claim.tree_state = userAuthTreeState.ref;
     request.ref.auth_claim.non_rev_proof.tree_state = userAuthTreeState.ref;
 
-    ffi.Pointer<ffi.Int8> unsafePointerUserRevNonce =
-        userRevNonce.toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<ffi.Char> unsafePointerUserRevNonce =
+        userRevNonce.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> userRevNonceBigInt =
         malloc<ffi.Pointer<IDENBigInt>>();
     res = _nativeLib.IDENBigIntFromString(
@@ -855,16 +867,16 @@ class Iden3CoreLib {
       print("/// RESULT");
     }
 
-    ffi.Pointer<ffi.Int8> responseValue = malloc<ffi.Int8>();
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> response =
-        malloc<ffi.Pointer<ffi.Int8>>();
+    ffi.Pointer<ffi.Char> responseValue = malloc<ffi.Char>();
+    ffi.Pointer<ffi.Pointer<ffi.Char>> response =
+        malloc<ffi.Pointer<ffi.Char>>();
     response.value = responseValue;
     res = _nativeLib.IDENPrepareAtomicQueryMTPInputs(response, request, status);
     if (res == 0) {
       _consumeStatus(status, "can't prepare atomic query MTP inputs");
     }
 
-    ffi.Pointer<ffi.Int8> json = response.value;
+    ffi.Pointer<ffi.Char> json = response.value;
     ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
     if (jsonString != ffi.nullptr) {
       result = jsonString.toDartString();
@@ -913,8 +925,8 @@ class Iden3CoreLib {
     // QUERY - ALL GOOD
     request.ref.query.slot_index = _getFieldSlotIndex(schema, claimType, key);
 
-    ffi.Pointer<ffi.Int8> unsafePointerValue =
-        value.toString().toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<ffi.Char> unsafePointerValue =
+        value.toString().toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> valuePtr =
         malloc<ffi.Pointer<IDENBigInt>>();
     int res =
@@ -930,8 +942,8 @@ class Iden3CoreLib {
     }
 
     // CHALLENGE - ALL GOOD
-    ffi.Pointer<ffi.Int8> unsafePointerChallenge =
-        challenge.toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<ffi.Char> unsafePointerChallenge =
+        challenge.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<IDENBigInt> challengeValue = malloc<IDENBigInt>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> challengePointer =
         malloc<ffi.Pointer<IDENBigInt>>();
@@ -954,13 +966,13 @@ class Iden3CoreLib {
         "20634138280259599560273310290025659992320584624461316485434108770067472477956";*/
     String userAuthClaimRevNonce = "15930428023331155902";
 
-    String issuerPubX =
+    /*String issuerPubX =
         "9582165609074695838007712438814613121302719752874385708394134542816240804696";
     String issuerPubY =
         "18271435592817415588213874506882839610978320325722319742324814767882756910515";
     String issuerAuthClaimRevNonce = "11203087622270641253";
     String claimSignature =
-        "4fe8744c71cb0f59a0be115fdb1506958f011a2c0e91b8eebb510381c32d25a02be403385b266f3fe681c97746daf86c6e28e33367abf393afb8ff701677b501";
+        "4fe8744c71cb0f59a0be115fdb1506958f011a2c0e91b8eebb510381c32d25a02be403385b266f3fe681c97746daf86c6e28e33367abf393afb8ff701677b501";*/
 
     // ID - ALL GOOD
     ffi.Pointer<IDENId> id = malloc<IDENId>();
@@ -1009,8 +1021,8 @@ class Iden3CoreLib {
     request.ref.auth_claim.tree_state = userTreeState.ref;
     request.ref.auth_claim.non_rev_proof.tree_state = userTreeState.ref;
 
-    ffi.Pointer<ffi.Int8> unsafePointerUserRevNonce =
-        userAuthClaimRevNonce.toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<ffi.Char> unsafePointerUserRevNonce =
+        userAuthClaimRevNonce.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> userRevNonceBigInt =
         malloc<ffi.Pointer<IDENBigInt>>();
     res = _nativeLib.IDENBigIntFromString(
@@ -1047,7 +1059,142 @@ class Iden3CoreLib {
       request.ref.signature.data[i] = r[i];
     }
 
+    // CLAIM
     request.ref.claim.tree_state = userTreeState.ref;
+
+    request.ref.claim.signature_proof =
+        malloc<IDENBCircuitsBJJSignatureProof>().ref;
+
+    /*List<int> issuerId = credential.proof![0].issuer_data!.id!.runes.toList();
+    /*ffi.Pointer<ffi.Int8> unsafePointerIssuerId =
+        credential.proof![0].issuer_data!.id!.toNativeUtf8().cast<ffi.Int8>();*/
+    for (var i = 0; i < issuerId.length; i++) {
+      request.ref.claim.signature_proof.issuer_id.data[i] = issuerId[i];
+    }*/
+
+    // CLAIM SIGNATURE
+    List<int> claimSignature = hexToBytes(credential.proof![0].signature!);
+    for (var i = 0; i < 64; i++) {
+      request.ref.claim.signature_proof.signature.data[i] = claimSignature[i];
+    }
+
+    // CLAIM ISSUER STATE
+    List<int> issuerClaimsTreeRootBytes =
+        hexToBytes(credential.proof![0].issuer_data!.state!.claims_tree_root!);
+    for (var i = 0; i < issuerClaimsTreeRootBytes.length; i++) {
+      request.ref.claim.signature_proof.issuer_tree_state.claims_root.data[i] =
+          issuerClaimsTreeRootBytes[i];
+    }
+    List<int> issuerStateBytes =
+        hexToBytes(credential.proof![0].issuer_data!.state!.value!);
+    for (var i = 0; i < issuerStateBytes.length; i++) {
+      request.ref.claim.signature_proof.issuer_tree_state.state.data[i] =
+          issuerStateBytes[i];
+    }
+    for (var i = 0; i < 32; i++) {
+      request.ref.claim.signature_proof.issuer_tree_state.root_of_roots
+          .data[i] = 0;
+    }
+    for (var i = 0; i < 32; i++) {
+      request.ref.claim.signature_proof.issuer_tree_state.revocation_root
+          .data[i] = 0;
+    }
+
+    //getGenesisId(idenState)
+
+    //request.ref.claim.signature_proof.issuer_id = malloc<IDENId>().ref;
+    /*for (var i = 0; i < 64; i++) {
+      request.ref.claim.signature_proof.signature.data[i] = 0;
+    }*/
+    //request.ref.claim.signature_proof.issuer_tree_state =
+    //    malloc<IDENTreeState>().ref;
+    // TODO credential.proof![0].issuer_data!.auth_claim -> request.ref.claim.signature_proof.issuer_auth_claim
+    request.ref.claim.signature_proof.issuer_auth_claim = ffi.nullptr;
+
+    ffi.Pointer<IDENProof> issuerMTP = malloc<IDENProof>();
+    issuerMTP.ref.existence =
+        credential.proof![0].issuer_data!.mtp!.existence! ? 1 : 0;
+    if (credential.proof![0].issuer_data!.mtp!.siblings!.isNotEmpty) {
+      issuerMTP.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
+          credential.proof![0].issuer_data!.mtp!.siblings!.length);
+      for (int i = 0;
+          i < credential.proof![0].issuer_data!.mtp!.siblings!.length;
+          i++) {
+        List<int> siblingBytes =
+            hexToBytes(credential.proof![0].issuer_data!.mtp!.siblings![i]);
+        ffi.Pointer<ffi.UnsignedChar> unsafePointerSiblingBytes =
+            malloc<ffi.UnsignedChar>(siblingBytes.length);
+        for (int i = 0; i < siblingBytes.length; i++) {
+          unsafePointerSiblingBytes[i] = siblingBytes[i];
+        }
+        /*final Uint8List pointerList =
+            unsafePointerSiblingBytes.asTypedList(siblingBytes.length);
+        pointerList.setAll(0, siblingBytes);*/
+        issuerMTP.ref.siblings[i] = unsafePointerSiblingBytes;
+      }
+      issuerMTP.ref.siblings_num =
+          credential.proof![0].issuer_data!.mtp!.siblings!.length;
+    } else {
+      issuerMTP.ref.siblings = ffi.nullptr;
+      issuerMTP.ref.siblings_num = 0;
+    }
+    issuerMTP.ref.auxNodeKey = ffi.nullptr;
+    issuerMTP.ref.auxNodeValue = ffi.nullptr;
+    request.ref.claim.signature_proof.issuer_auth_claim_mtp = issuerMTP;
+
+    //request.ref.claim.signature_proof.issuer_auth_non_rev_proof =
+    //    malloc<IDENRevocationStatus>().ref;
+
+    // ISSUER CLAIM REV STATUS STATE
+    List<int> issuerClaimsRevStatusTreeRootBytes =
+        hexToBytes(revocationStatus.issuer!.claimsTreeRoot!);
+    for (var i = 0; i < issuerClaimsRevStatusTreeRootBytes.length; i++) {
+      request.ref.claim.signature_proof.issuer_auth_non_rev_proof.tree_state
+          .claims_root.data[i] = issuerClaimsRevStatusTreeRootBytes[i];
+    }
+    List<int> issuerRevStatusStateBytes =
+        hexToBytes(revocationStatus.issuer!.state!);
+    for (var i = 0; i < issuerRevStatusStateBytes.length; i++) {
+      request.ref.claim.signature_proof.issuer_auth_non_rev_proof.tree_state
+          .state.data[i] = issuerRevStatusStateBytes[i];
+    }
+    for (var i = 0; i < 32; i++) {
+      request.ref.claim.signature_proof.issuer_auth_non_rev_proof.tree_state
+          .root_of_roots.data[i] = 0;
+    }
+    List<int> issuerRevStatusRevRootBytes =
+        hexToBytes(revocationStatus.issuer!.revocationTreeRoot!);
+    for (var i = 0; i < 32; i++) {
+      request.ref.claim.signature_proof.issuer_auth_non_rev_proof.tree_state
+          .revocation_root.data[i] = issuerRevStatusRevRootBytes[i];
+    }
+
+    ffi.Pointer<IDENProof> issuerNonRevMTP = malloc<IDENProof>();
+    issuerNonRevMTP.ref.existence = revocationStatus.mtp!.existence! ? 1 : 0;
+    if (revocationStatus.mtp!.siblings!.isNotEmpty) {
+      issuerNonRevMTP.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
+          revocationStatus.mtp!.siblings!.length);
+      for (int i = 0; i < revocationStatus.mtp!.siblings!.length; i++) {
+        List<int> siblingBytes = hexToBytes(revocationStatus.mtp!.siblings![i]);
+        ffi.Pointer<ffi.UnsignedChar> unsafePointerSiblingBytes =
+            malloc<ffi.UnsignedChar>(siblingBytes.length);
+        for (int i = 0; i < siblingBytes.length; i++) {
+          unsafePointerSiblingBytes[i] = siblingBytes[i];
+        }
+        /*final Uint8List pointerList =
+            unsafePointerSiblingBytes.asTypedList(siblingBytes.length);
+        pointerList.setAll(0, siblingBytes);*/
+        issuerNonRevMTP.ref.siblings[i] = unsafePointerSiblingBytes;
+      }
+      issuerNonRevMTP.ref.siblings_num = revocationStatus.mtp!.siblings!.length;
+    } else {
+      issuerNonRevMTP.ref.siblings = ffi.nullptr;
+      issuerNonRevMTP.ref.siblings_num = 0;
+    }
+    issuerNonRevMTP.ref.auxNodeKey = ffi.nullptr;
+    issuerNonRevMTP.ref.auxNodeValue = ffi.nullptr;
+    request.ref.claim.signature_proof.issuer_auth_non_rev_proof.proof =
+        issuerNonRevMTP;
 
     //String revNonce = "1";
     /*request.ref.claim.core_claim = _makeUserClaim(request.ref.id, revNonce,
@@ -1055,7 +1202,7 @@ class Iden3CoreLib {
 
     request.ref.claim.core_claim = parseClaim(jsonLDDocument, schema)!;
 
-    ffi.Pointer<IDENId> issuerId = malloc<IDENId>();
+    /*ffi.Pointer<IDENId> issuerId = malloc<IDENId>();
     ffi.Pointer<ffi.Pointer<IDENClaim>> issuerAuthClaim =
         malloc<ffi.Pointer<IDENClaim>>();
     ffi.Pointer<ffi.Pointer<IDENMerkleTree>> issuerClaimsTree =
@@ -1064,9 +1211,9 @@ class Iden3CoreLib {
         issuerPubX, issuerPubY, issuerAuthClaimRevNonce);
     assert(res == 0);
 
-    request.ref.claim.issuer_id = issuerId.ref;
+    request.ref.claim.issuer_id = issuerId.ref;*/
 
-    ffi.Pointer<IDENMerkleTree> issuerRevTree = _createCorrectMT()!;
+    /*ffi.Pointer<IDENMerkleTree> issuerRevTree = _createCorrectMT()!;
 
     ffi.Pointer<IDENTreeState> issuerGenesisState = malloc<IDENTreeState>();
     ok = _makeTreeState(issuerGenesisState, issuerClaimsTree.value,
@@ -1076,9 +1223,9 @@ class Iden3CoreLib {
       //retVal = 1;
       return "";
     }
-    request.ref.claim.signature_proof.issuer_auth_claim = issuerAuthClaim.value;
+    request.ref.claim.signature_proof.issuer_auth_claim = issuerAuthClaim.value;*/
 
-    ffi.Pointer<IDENMerkleTreeHash> issuerAuthClaimIndexHash =
+    /*ffi.Pointer<IDENMerkleTreeHash> issuerAuthClaimIndexHash =
         malloc<IDENMerkleTreeHash>();
     res = _nativeLib.IDENClaimTreeEntryHash(
         issuerAuthClaimIndexHash, ffi.nullptr, issuerAuthClaim.value, status);
@@ -1099,14 +1246,14 @@ class Iden3CoreLib {
       return "";
     }
     request.ref.claim.signature_proof.issuer_auth_claim_mtp =
-        issuerAuthClaimMTPProof.value;
+        issuerAuthClaimMTPProof.value;*/
 
-    request.ref.claim.signature_proof.issuer_auth_non_rev_proof.tree_state =
-        issuerGenesisState.ref;
+    //request.ref.claim.signature_proof.issuer_auth_non_rev_proof.tree_state =
+    //    issuerGenesisState.ref;
 
     // Generate revocation status proof
 
-    ffi.Pointer<ffi.Int8> unsafePointerIssuerRevNonce =
+    /*ffi.Pointer<ffi.Int8> unsafePointerIssuerRevNonce =
         issuerAuthClaimRevNonce.toNativeUtf8().cast<ffi.Int8>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> issuerRevNonceBigInt =
         malloc<ffi.Pointer<IDENBigInt>>();
@@ -1140,9 +1287,9 @@ class Iden3CoreLib {
           "claim non rev proof existence: ${claimNonRevProof[0].ref.existence}");
     }
     request.ref.claim.signature_proof.issuer_auth_non_rev_proof.proof =
-        claimNonRevProof.value;
+        claimNonRevProof.value;*/
 
-    res = _nativeLib.IDENMerkleTreeAddClaim(
+    /*res = _nativeLib.IDENMerkleTreeAddClaim(
         issuerClaimsTree.value, request.ref.claim.core_claim, status);
     if (res == 0) {
       _consumeStatus(status, "can't add claim to issuer's claims tree");
@@ -1224,7 +1371,7 @@ class Iden3CoreLib {
     List<int> r2 = hexToBytes(claimSignature);
     for (var i = 0; i < r2.length; i++) {
       request.ref.claim.signature_proof.signature.data[i] = r2[i];
-    }
+    }*/
 
     // DO NOT FILL AUTH CLAIM ISSUER_ID
     request.ref.auth_claim.issuer_id = malloc<IDENId>().ref;
@@ -1250,14 +1397,14 @@ class Iden3CoreLib {
     if (kDebugMode) {
       print("/// RESULT");
     }
-    ffi.Pointer<ffi.Pointer<ffi.Int8>> response =
-        malloc<ffi.Pointer<ffi.Int8>>();
+    ffi.Pointer<ffi.Pointer<ffi.Char>> response =
+        malloc<ffi.Pointer<ffi.Char>>();
     res = _nativeLib.IDENPrepareAtomicQuerySigInputs(response, request, status);
     if (res == 0) {
       _consumeStatus(status, "can't prepare atomic query Sig inputs");
     }
 
-    ffi.Pointer<ffi.Int8> json = response.value;
+    ffi.Pointer<ffi.Char> json = response.value;
     ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
     if (jsonString != ffi.nullptr) {
       result = jsonString.toDartString();
@@ -1267,10 +1414,10 @@ class Iden3CoreLib {
     _nativeLib.IDENFreeBigInt(request.ref.query.values[0]);
     _nativeLib.IDENFreeClaim(request.ref.auth_claim.core_claim);
     _nativeLib.IDENFreeClaim(request.ref.claim.core_claim);
-    _nativeLib.IDENFreeClaim(issuerAuthClaim.value);
+    //_nativeLib.IDENFreeClaim(issuerAuthClaim.value);
     _nativeLib.IDENFreeMerkleTree(userClaimsTree.value);
-    _nativeLib.IDENFreeMerkleTree(issuerClaimsTree.value);
-    _nativeLib.IDENFreeMerkleTree(issuerRevTree);
+    //_nativeLib.IDENFreeMerkleTree(issuerClaimsTree.value);
+    //_nativeLib.IDENFreeMerkleTree(issuerRevTree);
     _nativeLib.IDENFreeMerkleTree(emptyTree);
     _nativeLib.IDENFreeProof(request.ref.claim.proof);
     _nativeLib.IDENFreeProof(request.ref.auth_claim.proof);
@@ -1310,7 +1457,7 @@ class Iden3CoreLib {
           print("$msg: ${status.value.ref.status.toString()}");
         }
       } else {
-        ffi.Pointer<ffi.Int8> json = status.value.ref.error_msg;
+        ffi.Pointer<ffi.Char> json = status.value.ref.error_msg;
         ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
         try {
           String errormsg = jsonString.toDartString();
@@ -1405,11 +1552,14 @@ class Iden3CoreLib {
       0xE5
     ];
 
-    final ffi.Pointer<ffi.Uint8> unsafePointerSchemaHash =
-        malloc<ffi.Uint8>(schemaHash.length);
-    final Uint8List pointerList =
+    final ffi.Pointer<ffi.UnsignedChar> unsafePointerSchemaHash =
+        malloc<ffi.UnsignedChar>(schemaHash.length);
+    for (int i = 0; i < schemaHash.length; i++) {
+      unsafePointerSchemaHash[i] = schemaHash[i];
+    }
+    /*final Uint8List pointerList =
         unsafePointerSchemaHash.asTypedList(schemaHash.length);
-    pointerList.setAll(0, schemaHash);
+    pointerList.setAll(0, schemaHash);*/
 
     int res = _nativeLib.IDENNewClaim(claim, unsafePointerSchemaHash, status);
     if (res == 0) {
@@ -1417,8 +1567,8 @@ class Iden3CoreLib {
       return false;
     }
 
-    ffi.Pointer<ffi.Int8> unsafePointerX =
-        privKeyXHex.toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<ffi.Char> unsafePointerX =
+        privKeyXHex.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> keyX =
         malloc<ffi.Pointer<IDENBigInt>>();
     res = _nativeLib.IDENBigIntFromString(keyX, unsafePointerX, status);
@@ -1427,8 +1577,8 @@ class Iden3CoreLib {
       return false;
     }
 
-    ffi.Pointer<ffi.Int8> unsafePointerY =
-        privKeyYHex.toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<ffi.Char> unsafePointerY =
+        privKeyYHex.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> keyY =
         malloc<ffi.Pointer<IDENBigInt>>();
     res = _nativeLib.IDENBigIntFromString(keyY, unsafePointerY, status);
@@ -1444,8 +1594,8 @@ class Iden3CoreLib {
       return false;
     }
 
-    ffi.Pointer<ffi.Int8> unsafePointerRevNonce =
-        revNonce.toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<ffi.Char> unsafePointerRevNonce =
+        revNonce.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> revNonceBigInt =
         malloc<ffi.Pointer<IDENBigInt>>();
     res = _nativeLib.IDENBigIntFromString(
@@ -1491,11 +1641,14 @@ class Iden3CoreLib {
     ];*/
 
     List<int> schemaHash = hexToBytes(schemaHex);
-    final ffi.Pointer<ffi.Uint8> unsafePointerSchemaHash =
-        malloc<ffi.Uint8>(schemaHash.length);
-    final Uint8List pointerList =
+    final ffi.Pointer<ffi.UnsignedChar> unsafePointerSchemaHash =
+        malloc<ffi.UnsignedChar>(schemaHash.length);
+    for (int i = 0; i < schemaHash.length; i++) {
+      unsafePointerSchemaHash[i] = schemaHash[i];
+    }
+    /*final Uint8List pointerList =
         unsafePointerSchemaHash.asTypedList(schemaHash.length);
-    pointerList.setAll(0, schemaHash);
+    pointerList.setAll(0, schemaHash);*/
 
     ffi.Pointer<ffi.Pointer<IDENClaim>> claim =
         malloc<ffi.Pointer<IDENClaim>>();
@@ -1511,8 +1664,8 @@ class Iden3CoreLib {
       _consumeStatus(status, "error setting index id to claim");
     }
 
-    ffi.Pointer<ffi.Int8> unsafePointerSlotA =
-        slotA.toString().toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<ffi.Char> unsafePointerSlotA =
+        slotA.toString().toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> slotABigInt =
         malloc<ffi.Pointer<IDENBigInt>>();
     res = _nativeLib.IDENBigIntFromString(
@@ -1521,8 +1674,8 @@ class Iden3CoreLib {
       _consumeStatus(status, "error creating bigInt from string");
     }
 
-    ffi.Pointer<ffi.Int8> unsafePointerSlotB =
-        slotB.toString().toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<ffi.Char> unsafePointerSlotB =
+        slotB.toString().toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> slotBBigInt =
         malloc<ffi.Pointer<IDENBigInt>>();
     res = _nativeLib.IDENBigIntFromString(
@@ -1531,8 +1684,8 @@ class Iden3CoreLib {
       _consumeStatus(status, "error creating bigInt from string");
     }
 
-    ffi.Pointer<ffi.Int8> unsafePointerRevNonce =
-        revNonce.toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<ffi.Char> unsafePointerRevNonce =
+        revNonce.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> revNonceBigInt =
         malloc<ffi.Pointer<IDENBigInt>>();
     res = _nativeLib.IDENBigIntFromString(
@@ -1650,12 +1803,12 @@ class Iden3CoreLib {
 
   int _getFieldSlotIndex(String schema, String claimType, String key) {
     var slotIn = 0;
-    ffi.Pointer<ffi.Int32> slotI =
-        slotIn.toString().toNativeUtf8().cast<ffi.Int32>();
-    ffi.Pointer<ffi.Int8> keyP = key.toNativeUtf8().cast<ffi.Int8>();
-    ffi.Pointer<ffi.Int8> claimTypeP =
-        claimType.toNativeUtf8().cast<ffi.Int8>();
-    ffi.Pointer<ffi.Int8> schemaP = schema.toNativeUtf8().cast<ffi.Int8>();
+    ffi.Pointer<ffi.Int> slotI =
+        slotIn.toString().toNativeUtf8().cast<ffi.Int>();
+    ffi.Pointer<ffi.Char> keyP = key.toNativeUtf8().cast<ffi.Char>();
+    ffi.Pointer<ffi.Char> claimTypeP =
+        claimType.toNativeUtf8().cast<ffi.Char>();
+    ffi.Pointer<ffi.Char> schemaP = schema.toNativeUtf8().cast<ffi.Char>();
     int result = 0;
     ffi.Pointer<ffi.Pointer<IDENStatus>> status =
         malloc<ffi.Pointer<IDENStatus>>();
@@ -1674,6 +1827,60 @@ class Iden3CoreLib {
     _nativeLib.free(claimTypeP.cast());
     _nativeLib.free(schemaP.cast());
     return result;
+  }
+
+  Future<String?> calculateWitness(String wasmPath) async {
+    //String wasmFilename = "assets/circuit.wasm";
+    ByteData wasmBytes = await rootBundle.load(wasmPath);
+    int circuitSize = wasmBytes.lengthInBytes;
+    ffi.Pointer<ffi.Char> circuitBuffer = malloc<ffi.Char>(circuitSize);
+    final data = wasmBytes.buffer.asUint8List();
+    for (int i = 0; i < circuitSize; i++) {
+      circuitBuffer[i] = data[i];
+    }
+
+    // mockup json
+    String json =
+        '{"userAuthClaim":["304427537360709784173770334266246861770","0","17640206035128972995519606214765283372613874593503528180869261482403155458945","20634138280259599560273310290025659992320584624461316485434108770067472477956","15930428023331155902","0","0","0"],"userAuthClaimMtp":["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],"userAuthClaimNonRevMtp":["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],"userAuthClaimNonRevMtpAuxHi":"0","userAuthClaimNonRevMtpAuxHv":"0","userAuthClaimNonRevMtpNoAux":"1","challenge":"1","challengeSignatureR8x":"8553678144208642175027223770335048072652078621216414881653012537434846327449","challengeSignatureR8y":"5507837342589329113352496188906367161790372084365285966741761856353367255709","challengeSignatureS":"2093461910575977345603199789919760192811763972089699387324401771367839603655","userClaimsTreeRoot":"9763429684850732628215303952870004997159843236039795272605841029866455670219","userID":"379949150130214723420589610911161895495647789006649785264738141299135414272","userRevTreeRoot":"0","userRootsTreeRoot":"0","userState":"18656147546666944484453899241916469544090258810192803949522794490493271005313"}';
+
+    int jsonSize = json.codeUnits.length;
+    ffi.Pointer<ffi.Char> jsonBuffer = malloc<ffi.Char>(jsonSize);
+    final data2 = json.codeUnits;
+    for (int i = 0; i < jsonSize; i++) {
+      jsonBuffer[i] = data2[i];
+    }
+
+    ffi.Pointer<ffi.UnsignedLong> wtnsSize = malloc<ffi.UnsignedLong>();
+    wtnsSize.value = 4 * 1024 * 1024;
+    ffi.Pointer<ffi.Char> wtnsBuffer = malloc<ffi.Char>(wtnsSize.value);
+
+    int errorMaxSize = 256;
+    ffi.Pointer<ffi.Char> errorMsg = malloc<ffi.Char>(errorMaxSize);
+
+    int result = _witnessLib.witnesscalc(circuitBuffer, circuitSize, jsonBuffer,
+        jsonSize, wtnsBuffer, wtnsSize, errorMsg, errorMaxSize);
+    if (result == WITNESSCALC_OK) {
+      ffi.Pointer<Utf8> jsonString = wtnsBuffer.cast<Utf8>();
+      String wtnsmsg = jsonString.toDartString();
+      if (kDebugMode) {
+        print("$result: ${result.toString()}");
+        print("Wtns: $wtnsmsg");
+      }
+      return wtnsmsg;
+    } else if (result == WITNESSCALC_ERROR) {
+      //ffi.Pointer<ffi.Int8> json = errorMsg.cast<ffi.Int8>();
+      ffi.Pointer<Utf8> jsonString = errorMsg.cast<Utf8>();
+      String errormsg = jsonString.toDartString();
+      if (kDebugMode) {
+        print("$result: ${result.toString()}. Error: $errormsg");
+      }
+    } else if (result == WITNESSCALC_ERROR_SHORT_BUFFER) {
+      if (kDebugMode) {
+        print(
+            "$result: ${result.toString()}. Error: Short buffer for proof or public");
+      }
+    }
+    return null;
   }
 
   Future<Map<String, dynamic>?> prover(String zKeyPath, String wtnsPath) async {

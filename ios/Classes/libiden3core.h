@@ -284,6 +284,7 @@ extern void IDENFreeStatus(IDENStatus* status);
 extern GoUint8 IDENBigIntFromString(IDENBigInt** bigInt, char* bigIntStr, IDENStatus** status);
 extern void IDENFreeBigInt(IDENBigInt* bi);
 extern GoUint8 IDENNewClaim(IDENClaim** claim, unsigned char* schemaHash, IDENStatus** status);
+extern GoUint8 IDENNewClaimFromJSON(IDENClaim** claim, char* jsonStr, IDENStatus** status);
 extern GoUint8 IDENClaimSetValueDataInt(IDENClaim* c, IDENBigInt* slotA, IDENBigInt* slotB, IDENStatus** status);
 extern GoUint8 IDENClaimSetIndexDataInt(IDENClaim* c, IDENBigInt* slotA, IDENBigInt* slotB, IDENStatus** status);
 extern GoUint8 IDENClaimSetIndexID(IDENClaim* c, IDENId id, IDENStatus** status);
@@ -301,6 +302,7 @@ extern void IDENHashFromUInt64(IDENMerkleTreeHash* dst, long long unsigned int i
 extern GoUint8 IDENHashFromBigInt(IDENMerkleTreeHash* dst, IDENBigInt* i, IDENStatus** status);
 extern GoUint8 IDENJsonLDParseClaim(IDENClaim** claim, char* credential, char* schema, IDENStatus** status);
 extern GoUint8 IDENJsonLDGetFieldSlotIndex(int* slotIndex, char* field, char* claimType, char* schema, IDENStatus** status);
+extern GoUint8 IDENIdFromString(IDENId* id, char* idStr, IDENStatus** status);
 
 #ifdef __cplusplus
 }
