@@ -1065,12 +1065,18 @@ class Iden3CoreLib {
     request.ref.claim.signature_proof =
         malloc<IDENBCircuitsBJJSignatureProof>().ref;
 
-    /*List<int> issuerId = credential.proof![0].issuer_data!.id!.runes.toList();
-    /*ffi.Pointer<ffi.Int8> unsafePointerIssuerId =
-        credential.proof![0].issuer_data!.id!.toNativeUtf8().cast<ffi.Int8>();*/
-    for (var i = 0; i < issuerId.length; i++) {
-      request.ref.claim.signature_proof.issuer_id.data[i] = issuerId[i];
-    }*/
+    // CLAIM ISSUER ID
+    ffi.Pointer<IDENId> issuerIdPtr = malloc<IDENId>();
+    String issuerId = credential.proof![0].issuer_data!.id!;
+    ffi.Pointer<ffi.Char> issuerIdStr =
+        issuerId.toNativeUtf8().cast<ffi.Char>();
+    res = _nativeLib.IDENIdFromString(issuerIdPtr, issuerIdStr, status);
+    if (res == 0) {
+      _consumeStatus(status, "error getting issuer's auth claim");
+      //retVal = 1;
+      return "";
+    }
+    request.ref.claim.signature_proof.issuer_id = issuerIdPtr.ref;
 
     // CLAIM SIGNATURE
     List<int> claimSignature = hexToBytes(credential.proof![0].signature!);
@@ -1108,8 +1114,22 @@ class Iden3CoreLib {
     }*/
     //request.ref.claim.signature_proof.issuer_tree_state =
     //    malloc<IDENTreeState>().ref;
+
     // TODO credential.proof![0].issuer_data!.auth_claim -> request.ref.claim.signature_proof.issuer_auth_claim
-    request.ref.claim.signature_proof.issuer_auth_claim = ffi.nullptr;
+    ffi.Pointer<ffi.Pointer<IDENClaim>> issuerAuthClaim =
+        malloc<ffi.Pointer<IDENClaim>>();
+    String proofIssuerAuthClaim =
+        credential.proof![0].issuer_data!.auth_claim!.toString();
+    ffi.Pointer<ffi.Char> unsafePointerIssuerAuthClaim =
+        proofIssuerAuthClaim.toNativeUtf8().cast<ffi.Char>();
+    res = _nativeLib.IDENNewClaimFromJSON(
+        issuerAuthClaim, unsafePointerIssuerAuthClaim, status);
+    if (res == 0) {
+      _consumeStatus(status, "error getting issuer's auth claim");
+      //retVal = 1;
+      return "";
+    }
+    request.ref.claim.signature_proof.issuer_auth_claim = issuerAuthClaim.value;
 
     ffi.Pointer<IDENProof> issuerMTP = malloc<IDENProof>();
     issuerMTP.ref.existence =
