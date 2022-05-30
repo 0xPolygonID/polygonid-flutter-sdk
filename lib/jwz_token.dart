@@ -1,10 +1,12 @@
 import 'dart:typed_data';
 
+import 'package:privadoid_sdk/libs/circomlib.dart';
 import 'package:privadoid_sdk/model/jwz/jwz.dart';
 import 'package:privadoid_sdk/model/jwz/jwz_exceptions.dart';
 import 'package:privadoid_sdk/model/jwz/jwz_proof.dart';
 import 'package:privadoid_sdk/utils/Base64.dart';
 
+/// Prove and verify a [JWZToken]
 abstract class JWZProver {
   String alg;
   String circuitID;
@@ -18,14 +20,13 @@ abstract class JWZProver {
   JWZProver({required this.alg, required this.circuitID});
 }
 
+/// Prepare circuit inputs
 abstract class JWZInputPreparer {
   Uint8List prepare(Uint8List hash, String circuitID);
 }
 
-abstract class JWZHashPreparer {
-  Uint8List prepareForHash();
-}
-
+/// Representation of a JWZ Token with [JWZProver] and [JWZInputPreparer]
+/// Wrapper around [JWZ]
 class JWZToken implements Base64Encoder {
   String get alg => prover.alg;
 
@@ -36,6 +37,7 @@ class JWZToken implements Base64Encoder {
 
   JWZToken({required this.prover, required this.preparer});
 
+  /// Construct a [JWZToken] with [JWZ]
   factory JWZToken.withJWZ(
       {required JWZ jwz,
       required JWZProver prover,
@@ -46,6 +48,7 @@ class JWZToken implements Base64Encoder {
     return token;
   }
 
+  /// Construct a [JWZToken] with payload
   factory JWZToken.withPayload(
       {required dynamic payload,
       required JWZProver prover,
@@ -54,6 +57,7 @@ class JWZToken implements Base64Encoder {
         jwz: JWZ(payload: payload), prover: prover, preparer: preparer);
   }
 
+  /// Construct a [JWZToken] from a Base64 string
   factory JWZToken.fromBase64(
       {required String data,
       required JWZProver prover,
@@ -62,6 +66,8 @@ class JWZToken implements Base64Encoder {
         jwz: JWZ.fromBase64(data), prover: prover, preparer: preparer);
   }
 
+  /// Prove and set [JWZToken.proof]
+  /// @return compacted [JWZ]
   Future<String> prove(Uint8List provingKey, Uint8List wasm) async {
     if (jwz.header == null) {
       throw NullJWZHeaderException();
@@ -73,6 +79,8 @@ class JWZToken implements Base64Encoder {
     return encode();
   }
 
+  /// Verify [JWZ]
+  /// @return true if valid
   Future<bool> verify(Uint8List verificationKey) {
     if (jwz.proof == null) {
       throw NullJWZProofException();
@@ -82,13 +90,21 @@ class JWZToken implements Base64Encoder {
   }
 
   Uint8List _getHash() {
-    // FIXME: need Poseidon hashing
-    Uint8List toHash = jwz.prepareForHash();
-    Uint8List hashed = toHash;
+    if (jwz.header == null) {
+      throw NullJWZHeaderException();
+    }
 
-    return hashed;
+    if (jwz.payload == null) {
+      throw NullJWZPayloadException();
+    }
+
+    CircomLib lib = CircomLib();
+    String hashed = lib.poseidonHash("${jwz.header!.encode()}.${jwz.payload!.encode()}");
+
+    return Uint8List.fromList(hashed.codeUnits);
   }
 
+  /// @return compact [JWT]
   @override
   String encode() {
     if (jwz.header == null) {

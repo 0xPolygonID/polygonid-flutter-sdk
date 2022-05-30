@@ -1,16 +1,28 @@
-import 'dart:typed_data';
-
 import 'package:equatable/equatable.dart';
-import 'package:privadoid_sdk/jwz_token.dart';
 import 'package:privadoid_sdk/model/jwz/jwz_header.dart';
 import 'package:privadoid_sdk/model/jwz/jwz_proof.dart';
 import 'package:privadoid_sdk/utils/Base64.dart';
 
+/// Wrapper for [JWZ] payload
+class JWZPayload extends Equatable with Base64Encoder {
+  final dynamic payload;
+
+  JWZPayload({required this.payload});
+
+  @override
+  String encode() {
+    return Base64Util.encode64(payload);
+  }
+
+  @override
+  List<Object?> get props => [payload];
+}
+
 /// JSON Web Zero-knowledge (JWZ) is an open standard
 /// for representing messages proven by zero-knowledge technology.
-class JWZ extends Equatable with Base64Encoder implements JWZHashPreparer {
+class JWZ extends Equatable with Base64Encoder {
   JWZHeader? header;
-  final dynamic payload;
+  final JWZPayload? payload;
   JWZProof? proof;
 
   JWZ({this.header, required this.payload, this.proof});
@@ -20,21 +32,15 @@ class JWZ extends Equatable with Base64Encoder implements JWZHashPreparer {
 
     return JWZ(
         header: JWZHeader.fromBase64(split[0]),
-        payload: Base64Util.decode(split[1]),
+        payload: JWZPayload(payload: Base64Util.decode(split[1])),
         proof: split.length == 3 ? JWZProof.fromBase64(split[2]) : null);
   }
 
   @override
   String encode() {
-    return "${header?.encode()}.${Base64Util.encode64(payload)}.${proof?.encode()}";
+    return "${header?.encode()}.${payload?.encode()}.${proof?.encode()}";
   }
 
   @override
   List<Object?> get props => [header, payload, proof];
-
-  @override
-  Uint8List prepareForHash() {
-    return Uint8List.fromList(
-        "${header?.encode()}.${Base64Util.encode64(payload)}".codeUnits);
-  }
 }
