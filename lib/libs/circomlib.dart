@@ -41,6 +41,11 @@ class CircomLib {
             "prv2pub")
         .asFunction();
 
+    _poseidonHash = lib
+        .lookup<NativeFunction<Pointer<Utf8> Function(Pointer<Utf8>)>>(
+            "poseidon_hash")
+        .asFunction();
+
     _hashPoseidon = lib
         .lookup<
             NativeFunction<
@@ -127,6 +132,27 @@ class CircomLib {
     //print("- Freeing the native char*");
     cstringFree(resultPtr);
     return result.split(",");
+  }
+
+  // circomlib.poseidon -> hashPoseidon
+  late Pointer<Utf8> Function(Pointer<Utf8>) _poseidonHash;
+  String poseidonHash(String input) {
+    //if (lib == null) return "ERROR: The library is not initialized";
+    final ptr1 = input.toNativeUtf8();
+    try {
+      final resultPtr = _poseidonHash(ptr1);
+      String resultString = resultPtr.toDartString();
+      resultString = resultString.replaceAll("Fr(", "");
+      resultString = resultString.replaceAll(")", "");
+      //print("- Response string:  $resultString");
+      // Free the string pointer, as we already have
+      // an owned String to return
+      //print("- Freeing the native char*");
+      cstringFree(resultPtr);
+      return resultString;
+    } catch (e) {
+      return "";
+    }
   }
 
   // circomlib.poseidon -> hashPoseidon
