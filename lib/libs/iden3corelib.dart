@@ -1072,7 +1072,7 @@ class Iden3CoreLib {
         issuerId.toNativeUtf8().cast<ffi.Char>();
     res = _nativeLib.IDENIdFromString(issuerIdPtr, issuerIdStr, status);
     if (res == 0) {
-      _consumeStatus(status, "error getting issuer's auth claim");
+      _consumeStatus(status, "error getting issuer's id");
       //retVal = 1;
       return "";
     }
@@ -1119,7 +1119,7 @@ class Iden3CoreLib {
     ffi.Pointer<ffi.Pointer<IDENClaim>> issuerAuthClaim =
         malloc<ffi.Pointer<IDENClaim>>();
     String proofIssuerAuthClaim =
-        credential.proof![0].issuer_data!.auth_claim!.toString();
+        json.encode(credential.proof![0].issuer_data!.auth_claim!);
     ffi.Pointer<ffi.Char> unsafePointerIssuerAuthClaim =
         proofIssuerAuthClaim.toNativeUtf8().cast<ffi.Char>();
     res = _nativeLib.IDENNewClaimFromJSON(
@@ -1424,8 +1424,8 @@ class Iden3CoreLib {
       _consumeStatus(status, "can't prepare atomic query Sig inputs");
     }
 
-    ffi.Pointer<ffi.Char> json = response.value;
-    ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+    ffi.Pointer<ffi.Char> jsonResponse = response.value;
+    ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
     if (jsonString != ffi.nullptr) {
       result = jsonString.toDartString();
     }
