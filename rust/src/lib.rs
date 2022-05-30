@@ -221,6 +221,19 @@ pub extern fn prv2pub(private_key: *const c_char) -> *mut c_char {
 }
 
 #[no_mangle]
+pub extern fn poseidon_hash(input: *const c_char) -> *mut c_char {
+
+    let input_str = unsafe { CStr::from_ptr(input) }.to_str().unwrap();
+    let b0: Fr = Fr::from_str(input_str).unwrap();
+
+    let hm_input = vec![b0.clone()];
+    //let hm_input = vec![x.clone(), y.clone(), z.clone()];
+    let poseidon = Poseidon::new();
+    let hm = poseidon.hash(hm_input).unwrap();
+    return CString::new(to_hex(&hm).as_str()).unwrap().into_raw();
+}
+
+#[no_mangle]
 //pub extern fn hash_poseidon(tx_compressed_data: *const c_char, to_eth_addr: *const c_char, to_bjj_ay: *const c_char, rq_txcompressed_data_v2: *const c_char, rq_to_eth_addr: *const c_char, rq_to_bjj_ay: *const c_char) -> *mut c_char {
 pub extern fn hash_poseidon(claims_tree: *const c_char, revocation_tree: *const c_char, roots_tree_root: *const c_char) -> *mut c_char {
     //let claims_tree_str = unsafe { CStr::from_ptr(claims_tree) }.to_str().unwrap();
