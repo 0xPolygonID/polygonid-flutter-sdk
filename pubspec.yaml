@@ -76,6 +76,7 @@ flutter:
     - circuit_final.zkey
     - witness.wtns
     - circuit.wasm
+    - auth.dat
   #
   # For details regarding assets in packages, see
   # https://flutter.dev/assets-and-images/#from-packages

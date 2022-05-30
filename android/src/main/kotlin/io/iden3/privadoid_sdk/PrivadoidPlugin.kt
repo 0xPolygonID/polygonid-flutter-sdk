@@ -18,7 +18,8 @@ class PrivadoidPlugin: FlutterPlugin, MethodCallHandler {
   init {
     System.loadLibrary("iden3core")
     System.loadLibrary("gmp")
-    //System.loadLibrary("rapidsnark")
+    System.loadLibrary("witnesscalc")
+    System.loadLibrary("rapidsnark")
   }
 
   private external fun IDENBigIntFromString(arg: String): String
