@@ -69,10 +69,6 @@ class JWZToken implements Base64Encoder {
   /// Prove and set [JWZToken.proof]
   /// @return compacted [JWZ]
   Future<String> prove(Uint8List provingKey, Uint8List wasm) async {
-    if (jwz.header == null) {
-      throw NullJWZHeaderException();
-    }
-
     Uint8List prepared = preparer.prepare(_getHash(), circuitID);
     jwz.proof = await prover.prove(prepared, provingKey, wasm);
 
