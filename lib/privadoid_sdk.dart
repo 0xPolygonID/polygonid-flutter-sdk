@@ -120,7 +120,7 @@ class PrivadoIdSdk {
     // revocation status
     res = await get(revStatusUrl, "");
     String revStatus = (res.body);
-    final RevocationStatus revocationStatus =
+    final RevocationStatus claimRevocaitonStatus =
         RevocationStatus.fromJson(json.decode(revStatus));
     String? queryInputs;
     if (circuitId == "credentialAtomicQueryMTP") {
@@ -136,8 +136,19 @@ class PrivadoIdSdk {
           key,
           value,
           operator,
-          revocationStatus);
+          claimRevocaitonStatus);
     } else if (circuitId == "credentialAtomicQuerySig") {
+
+      // Issuer auth claim revocation status
+      // TODO: !!!! make sure that proof[0] is signature proof
+
+      // revocation status
+      final authRes = await get(credential.credential!.proof![0].issuer_data!.revocation_status!, "");
+      String authRevStatus = (authRes.body);
+      final RevocationStatus authRevocationStatus =
+      RevocationStatus.fromJson(json.decode(authRevStatus));
+
+
       queryInputs = _iden3coreLib.prepareAtomicQuerySigInputs(
           challenge,
           wallet.publicKey[0],
@@ -150,7 +161,8 @@ class PrivadoIdSdk {
           key,
           value,
           operator,
-          revocationStatus);
+          claimRevocaitonStatus,
+          authRevocationStatus);
     }
 
     return queryInputs;
