@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:ffi' as ffi;
 import 'dart:io';
 import 'dart:typed_data';
@@ -811,7 +812,7 @@ class Iden3CoreLib {
     if (kDebugMode) {
       print("proof existence: ${claimProof[0].ref.existence}");
     }
-    request.ref.claim.proof = claimProof[0];
+    request.ref.claim.proof = ffi.nullptr; // in case of sig proof claim.proof should be empty
 
     request.ref.auth_claim.issuer_id = malloc<IDENId>().ref;
     request.ref.auth_claim.signature_proof =
@@ -848,6 +849,9 @@ class Iden3CoreLib {
     request.ref.claim.signature_proof.issuer_auth_non_rev_proof.proof =
         ffi.nullptr;
 
+
+    debugger();
+    request.ref.claim.proof = ffi.nullptr;
     // RESULT
     String result = "";
     if (kDebugMode) {
@@ -1046,6 +1050,8 @@ class Iden3CoreLib {
       request.ref.signature.data[i] = r[i];
     }
 
+
+
     // CLAIM
     request.ref.claim.signature_proof =
         malloc<IDENBCircuitsBJJSignatureProof>().ref;
@@ -1061,6 +1067,8 @@ class Iden3CoreLib {
       //retVal = 1;
       return "";
     }
+    debugger();
+
     request.ref.claim.signature_proof.issuer_id = issuerIdPtr.ref;
 
     // CLAIM SIGNATURE
@@ -1070,6 +1078,7 @@ class Iden3CoreLib {
     }
 
     // CLAIM ISSUER STATE
+    request.ref.claim.issuer_id = issuerIdPtr.ref;
     request.ref.claim.signature_proof.issuer_tree_state =
         malloc<IDENTreeState>().ref;
     List<int> issuerClaimsTreeRootBytes =
@@ -1266,10 +1275,16 @@ class Iden3CoreLib {
     request.ref.auth_claim.signature_proof.issuer_auth_non_rev_proof.proof =
         ffi.nullptr;
 
+    debugger();
+    request.ref.claim.proof = ffi.nullptr;
     // RESULT
     String result = "";
     if (kDebugMode) {
       print("/// RESULT");
+    }
+    debugger();
+    if (kDebugMode) {
+      print(request.ref.id.toString());
     }
     ffi.Pointer<ffi.Pointer<ffi.Char>> response =
         malloc<ffi.Pointer<ffi.Char>>();
