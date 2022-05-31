@@ -156,8 +156,8 @@ class PrivadoIdSdk {
     return queryInputs;
   }
 
-  static Future<String?> calculateWitness(String wasmPath) {
-    return _iden3coreLib.calculateWitness(wasmPath);
+  static Future<String?> calculateWitness(String wasmPath, String jsonPath) {
+    return _iden3coreLib.calculateWitness(wasmPath, jsonPath);
   }
 
   static Future<Map<String, dynamic>?> prove(
