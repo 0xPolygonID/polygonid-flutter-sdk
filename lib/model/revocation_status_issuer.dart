@@ -2,9 +2,10 @@ class RevocationStatusIssuer {
   final String? state;
   final String? claimsTreeRoot;
   final String? revocationTreeRoot;
+  final String? rootOfRoots;
 
   RevocationStatusIssuer(
-      {this.state, this.claimsTreeRoot, this.revocationTreeRoot});
+      {this.state, this.claimsTreeRoot, this.revocationTreeRoot, this.rootOfRoots});
 
   /// Creates an instance from the given json
   ///
@@ -15,6 +16,7 @@ class RevocationStatusIssuer {
       state: json['state'],
       claimsTreeRoot: json['claims_tree_root'],
       revocationTreeRoot: json['revocation_tree_root'],
+      rootOfRoots: json['root_of_roots'],
     );
   }
 
@@ -22,5 +24,6 @@ class RevocationStatusIssuer {
         'state': state.toString(),
         'claims_tree_root': claimsTreeRoot.toString(),
         'revocation_tree_root': revocationTreeRoot.toString(),
+        'root_of_roots': rootOfRoots.toString(),
       };
 }
