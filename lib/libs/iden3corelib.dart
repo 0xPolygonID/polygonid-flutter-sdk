@@ -1229,32 +1229,6 @@ class Iden3CoreLib {
     request.ref.claim.tree_state = issuerStateAfterClaimAdd.ref;
     request.ref.claim.non_rev_proof.tree_state = issuerStateAfterClaimAdd.ref;
 
-    // claim revocation status proof
-    ffi.Pointer<IDENProof> claimNonRevProof = malloc<IDENProof>();
-    claimNonRevProof.ref.existence =
-        credential.proof![1].mtp!.existence! ? 1 : 0;
-    if (credential.proof![1].mtp!.siblings!.isNotEmpty) {
-      claimNonRevProof.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
-          credential.proof![1].mtp!.siblings!.length);
-      for (int i = 0; i < credential.proof![1].mtp!.siblings!.length; i++) {
-        List<int> siblingBytes =
-            intToBytes(BigInt.parse(credential.proof![1].mtp!.siblings![i]));
-        ffi.Pointer<ffi.UnsignedChar> unsafePointerSiblingBytes =
-            malloc<ffi.UnsignedChar>(siblingBytes.length);
-        for (int i = 0; i < siblingBytes.length; i++) {
-          unsafePointerSiblingBytes[i] = siblingBytes[i];
-        }
-        claimNonRevProof.ref.siblings[i] = unsafePointerSiblingBytes;
-      }
-      claimNonRevProof.ref.siblings_num =
-          credential.proof![1].mtp!.siblings!.length;
-    } else {
-      claimNonRevProof.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>();
-      claimNonRevProof.ref.siblings_num = 0;
-    }
-    claimNonRevProof.ref.auxNodeKey = ffi.nullptr;
-    claimNonRevProof.ref.auxNodeValue = ffi.nullptr;
-    request.ref.claim.non_rev_proof.proof = claimNonRevProof;
 
     // DO NOT FILL AUTH CLAIM ISSUER_ID
     request.ref.auth_claim.issuer_id = malloc<IDENId>().ref;
@@ -1275,7 +1249,79 @@ class Iden3CoreLib {
     request.ref.auth_claim.signature_proof.issuer_auth_non_rev_proof.proof =
         ffi.nullptr;
 
-    debugger();
+
+
+
+
+
+    if (kDebugMode) {
+      print(revocationStatus.toJson() );
+    }
+
+
+    request.ref.claim.non_rev_proof.tree_state =
+        malloc<IDENTreeState>().ref;
+    // List<int> issuerClaimsRevStatusTreeRootBytes =
+    // hexToBytes(revocationStatus.issuer!.claimsTreeRoot!);
+    for (var i = 0; i < issuerClaimsRevStatusTreeRootBytes.length; i++) {
+      request.ref.claim.non_rev_proof.tree_state.claims_root.data[i] = issuerClaimsRevStatusTreeRootBytes[i];
+    }
+    // List<int> issuerRevStatusStateBytes =
+    // hexToBytes(revocationStatus.issuer!.state!);
+    for (var i = 0; i < issuerRevStatusStateBytes.length; i++) {
+      request.ref.claim.non_rev_proof.tree_state
+          .state.data[i] = issuerRevStatusStateBytes[i];
+    }
+
+    // List<int> issuerRevStatusRevRootBytes =
+    // hexToBytes(revocationStatus.issuer!.revocationTreeRoot!);
+    for (var i = 0; i < 32; i++) {
+      request.ref.claim.non_rev_proof.tree_state
+          .revocation_root.data[i] = issuerRevStatusRevRootBytes[i];
+    }
+
+    List<int> issuerRevStatusRevRoRBytes =
+    hexToBytes(revocationStatus.issuer!.rootOfRoots!);
+    for (var i = 0; i < 32; i++) {
+      request.ref.claim.non_rev_proof.tree_state
+          .root_of_roots.data[i] = issuerRevStatusRevRoRBytes[i];
+    }
+
+
+    // claim revocation status proof
+    ffi.Pointer<IDENProof> claimNonRevProof = malloc<IDENProof>();
+    claimNonRevProof.ref.existence =
+    revocationStatus.mtp!.existence! ? 1 : 0;
+    if (revocationStatus.mtp!.siblings!.isNotEmpty) {
+      claimNonRevProof.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
+          revocationStatus.mtp!.siblings!.length);
+      for (int i = 0; i < revocationStatus.mtp!.siblings!.length; i++) {
+        List<int> siblingBytes =
+        intToBytes(BigInt.parse(revocationStatus.mtp!.siblings![i]));
+        ffi.Pointer<ffi.UnsignedChar> unsafePointerSiblingBytes =
+        malloc<ffi.UnsignedChar>(siblingBytes.length);
+        for (int i = 0; i < siblingBytes.length; i++) {
+          unsafePointerSiblingBytes[i] = siblingBytes[i];
+        }
+        claimNonRevProof.ref.siblings[i] = unsafePointerSiblingBytes;
+      }
+      claimNonRevProof.ref.siblings_num =
+          revocationStatus.mtp!.siblings!.length;
+    } else {
+      claimNonRevProof.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>();
+      claimNonRevProof.ref.siblings_num = 0;
+    }
+    claimNonRevProof.ref.auxNodeKey = ffi.nullptr;
+    claimNonRevProof.ref.auxNodeValue = ffi.nullptr;
+    request.ref.claim.non_rev_proof.proof = claimNonRevProof;
+
+
+
+
+
+
+
+
     request.ref.claim.proof = ffi.nullptr;
     // RESULT
     String result = "";
