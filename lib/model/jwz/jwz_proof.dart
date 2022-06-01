@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:privadoid_sdk/utils/Base64.dart';
+import 'package:privadoid_sdk/utils/base_64.dart';
 
 part 'jwz_proof.g.dart';
 

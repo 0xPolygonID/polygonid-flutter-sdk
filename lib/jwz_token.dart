@@ -1,10 +1,13 @@
 import 'dart:typed_data';
 
+import 'package:crypto/crypto.dart';
 import 'package:privadoid_sdk/libs/circomlib.dart';
 import 'package:privadoid_sdk/model/jwz/jwz.dart';
 import 'package:privadoid_sdk/model/jwz/jwz_exceptions.dart';
 import 'package:privadoid_sdk/model/jwz/jwz_proof.dart';
-import 'package:privadoid_sdk/utils/Base64.dart';
+import 'package:privadoid_sdk/utils/base_64.dart';
+import 'package:privadoid_sdk/utils/big_int_extension.dart';
+import 'package:privadoid_sdk/utils/uint8_list_utils.dart';
 
 /// Prove and verify a [JWZToken]
 abstract class JWZProver {
@@ -54,7 +57,9 @@ class JWZToken implements Base64Encoder {
       required JWZProver prover,
       required JWZInputPreparer preparer}) {
     return JWZToken.withJWZ(
-        jwz: JWZ(payload: payload), prover: prover, preparer: preparer);
+        jwz: JWZ(payload: JWZPayload(payload: payload)),
+        prover: prover,
+        preparer: preparer);
   }
 
   /// Construct a [JWZToken] from a Base64 string
@@ -94,10 +99,24 @@ class JWZToken implements Base64Encoder {
       throw NullJWZPayloadException();
     }
 
-    CircomLib lib = CircomLib();
-    String hashed = lib.poseidonHash("${jwz.header!.encode()}.${jwz.payload!.encode()}");
+    // Sha256
+    Uint8List sha = Uint8List.fromList(sha256
+        .convert(Uint8ArrayUtils.uint8ListfromString(
+            "${jwz.header!.encode()}.${jwz.payload!.encode()}"))
+        .bytes);
 
-    return Uint8List.fromList(hashed.codeUnits);
+    // Endianness
+    BigInt endian =
+        BigInt.from(ByteData.sublistView(sha).getInt16(0, Endian.little));
+
+    // Check Q
+    BigInt q = endian.qNormalize();
+
+    // Poseidon hash
+    CircomLib lib = CircomLib();
+    String hashed = lib.poseidonHash(q.toString());
+
+    return Uint8ArrayUtils.uint8ListfromString(hashed);
   }
 
   /// @return compact [JWT]
