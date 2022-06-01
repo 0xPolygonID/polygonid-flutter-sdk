@@ -6,13 +6,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import "package:hex/hex.dart";
 import 'package:privadoid_sdk/http.dart';
+import 'package:privadoid_sdk/jwz_preparer.dart';
 import 'package:privadoid_sdk/model/revocation_status.dart';
 import 'package:privadoid_sdk/privadoid_wallet.dart';
 import 'package:privadoid_sdk/utils/hex_utils.dart';
 import 'package:privadoid_sdk/utils/uint8_list_utils.dart';
 
+import 'jwz_prover.dart';
+import 'jwz_token.dart';
 import 'libs/iden3corelib.dart';
 import 'model/credential_data.dart';
+import 'model/jwz/jwz.dart';
+import 'model/jwz/jwz_header.dart';
 
 class PrivadoIdSdk {
   static const MethodChannel _channel = MethodChannel('privadoid_sdk');
@@ -87,13 +92,14 @@ class PrivadoIdSdk {
         privateKey: HexUtils.hexToBytes(privateKey));
     String signatureString = wallet.signMessage(challenge);
 
-    String? genesisId = await getIdentifier(privateKey);
+    /*String? genesisId = await getIdentifier(privateKey);
     if (kDebugMode) {
       print("GENESIS ID :${genesisId!}");
-    }
+    }*/
 
     var authInputs = _iden3coreLib.prepareAuthInputs(challenge, authClaim,
         wallet.publicKey[0], wallet.publicKey[1], signatureString);
+
     return authInputs;
   }
 
@@ -138,16 +144,15 @@ class PrivadoIdSdk {
           operator,
           claimRevocaitonStatus);
     } else if (circuitId == "credentialAtomicQuerySig") {
-
       // Issuer auth claim revocation status
       // TODO: !!!! make sure that proof[0] is signature proof
 
       // revocation status
-      final authRes = await get(credential.credential!.proof![0].issuer_data!.revocation_status!, "");
+      final authRes = await get(
+          credential.credential!.proof![0].issuer_data!.revocation_status!, "");
       String authRevStatus = (authRes.body);
       final RevocationStatus authRevocationStatus =
-      RevocationStatus.fromJson(json.decode(authRevStatus));
-
+          RevocationStatus.fromJson(json.decode(authRevStatus));
 
       queryInputs = _iden3coreLib.prepareAtomicQuerySigInputs(
           challenge,
@@ -172,8 +177,31 @@ class PrivadoIdSdk {
     return _iden3coreLib.calculateWitness(wasmPath);
   }
 
-  static Future<Map<String, dynamic>?> prove(
-      String zKeyPath, String wtnsPath) async {
-    return _iden3coreLib.prover(zKeyPath, wtnsPath);
+  static Future<Map<String, dynamic>?> prover(
+      Uint8List zKeyBytes, Uint8List wtnsBytes) async {
+    return _iden3coreLib.prove(zKeyBytes, wtnsBytes);
+  }
+
+  static Future<JWZToken> generateJWZToken(String payload, String privateKey,
+      String authClaim, Uint8List zKeyBytes, Uint8List wtnsBytes) async {
+    final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
+        privateKey: HexUtils.hexToBytes(privateKey));
+    var preparer = JWZPreparer(wallet: wallet, authClaim: authClaim);
+    var prover = JWZProverImpl(alg: "groth16", circuitID: "auth");
+    var jwztoken = JWZToken.withJWZ(
+        jwz: JWZ(
+            header: JWZHeader(
+                circuitId: "auth",
+                crit: const ["circuitId"],
+                typ: "application/iden3-zkp-json",
+                alg: "groth16"),
+            payload: JWZPayload(payload: payload)),
+        prover: prover,
+        preparer: preparer);
+    String encodedjwz = await jwztoken.prove(zKeyBytes, wtnsBytes);
+    if (kDebugMode) {
+      print(encodedjwz);
+    }
+    return jwztoken;
   }
 }

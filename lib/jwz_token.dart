@@ -54,7 +54,9 @@ class JWZToken implements Base64Encoder {
       required JWZProver prover,
       required JWZInputPreparer preparer}) {
     return JWZToken.withJWZ(
-        jwz: JWZ(payload: payload), prover: prover, preparer: preparer);
+        jwz: JWZ(payload: JWZPayload(payload: payload)),
+        prover: prover,
+        preparer: preparer);
   }
 
   /// Construct a [JWZToken] from a Base64 string
@@ -94,8 +96,20 @@ class JWZToken implements Base64Encoder {
       throw NullJWZPayloadException();
     }
 
+    // TODO missing steps:
+    // ### Algorithm for message hash generation:
+
+    // Message hash is a big integer that represents Poseidon Hash. This Poseidon Hash is created using the following algorithm:
+
+    // 1. Prepare hash to sign: it’s *`is ASCII(BASE64URL(UTF8(JWZ Protected Header)) || '.' || BASE64URL(JWZ Payload)).`*
+    //2. Get serialized representation of Prepared message.
+    //3. Get the sha256 hash of the message, swap endianness, and create a big Integer.
+    //4. If the resulting hash is not a Q field, defined by the go-iden-crypto library, then divide resulted in a big integer from this hash by Q.
+    //5. Make Poseidon hash of resulting big Integer.
+
     CircomLib lib = CircomLib();
-    String hashed = lib.poseidonHash("${jwz.header!.encode()}.${jwz.payload!.encode()}");
+    String hashed =
+        lib.poseidonHash("${jwz.header!.encode()}.${jwz.payload!.encode()}");
 
     return Uint8List.fromList(hashed.codeUnits);
   }

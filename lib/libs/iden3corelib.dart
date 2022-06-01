@@ -812,7 +812,8 @@ class Iden3CoreLib {
     if (kDebugMode) {
       print("proof existence: ${claimProof[0].ref.existence}");
     }
-    request.ref.claim.proof = ffi.nullptr; // in case of sig proof claim.proof should be empty
+    request.ref.claim.proof =
+        ffi.nullptr; // in case of sig proof claim.proof should be empty
 
     request.ref.auth_claim.issuer_id = malloc<IDENId>().ref;
     request.ref.auth_claim.signature_proof =
@@ -848,7 +849,6 @@ class Iden3CoreLib {
         malloc<IDENTreeState>().ref;
     request.ref.claim.signature_proof.issuer_auth_non_rev_proof.proof =
         ffi.nullptr;
-
 
     debugger();
     request.ref.claim.proof = ffi.nullptr;
@@ -1051,8 +1051,6 @@ class Iden3CoreLib {
       request.ref.signature.data[i] = r[i];
     }
 
-
-
     // CLAIM
     request.ref.claim.signature_proof =
         malloc<IDENBCircuitsBJJSignatureProof>().ref;
@@ -1095,15 +1093,15 @@ class Iden3CoreLib {
           issuerStateBytes[i];
     }
 
-    List<int> issuerRoRBytes =
-    hexToBytesOrZero(credential.proof![0].issuer_data!.state!.root_of_roots);
+    List<int> issuerRoRBytes = hexToBytesOrZero(
+        credential.proof![0].issuer_data!.state!.root_of_roots);
     for (var i = 0; i < 32; i++) {
       request.ref.claim.signature_proof.issuer_tree_state.root_of_roots
           .data[i] = issuerRoRBytes[i];
     }
 
-    List<int> issuerRevRBytes =
-    hexToBytesOrZero(credential.proof![0].issuer_data!.state!.revocation_tree_root);
+    List<int> issuerRevRBytes = hexToBytesOrZero(
+        credential.proof![0].issuer_data!.state!.revocation_tree_root);
     for (var i = 0; i < 32; i++) {
       request.ref.claim.signature_proof.issuer_tree_state.revocation_root
           .data[i] = issuerRevRBytes[i];
@@ -1124,7 +1122,7 @@ class Iden3CoreLib {
       return "";
     }
     request.ref.claim.signature_proof.issuer_auth_claim = issuerAuthClaim.value;
-debugger();
+    debugger();
     ffi.Pointer<IDENProof> issuerAuthClaimMTP = malloc<IDENProof>();
     issuerAuthClaimMTP.ref.existence =
         credential.proof![0].issuer_data!.mtp!.existence! ? 1 : 0;
@@ -1151,7 +1149,8 @@ debugger();
     }
     issuerAuthClaimMTP.ref.auxNodeKey = ffi.nullptr;
     issuerAuthClaimMTP.ref.auxNodeValue = ffi.nullptr;
-    request.ref.claim.signature_proof.issuer_auth_claim_mtp = issuerAuthClaimMTP;
+    request.ref.claim.signature_proof.issuer_auth_claim_mtp =
+        issuerAuthClaimMTP;
 
     // ISSUER CLAIM REV STATUS STATE
     request.ref.claim.signature_proof.issuer_auth_non_rev_proof.tree_state =
@@ -1170,7 +1169,7 @@ debugger();
     }
 
     List<int> issuerRevStatusRoRBytes =
-    hexToBytes(authRevocationStatus.issuer!.rootOfRoots!);
+        hexToBytes(authRevocationStatus.issuer!.rootOfRoots!);
     for (var i = 0; i < 32; i++) {
       request.ref.claim.signature_proof.issuer_auth_non_rev_proof.tree_state
           .root_of_roots.data[i] = issuerRevStatusRoRBytes[i];
@@ -1183,7 +1182,8 @@ debugger();
     }
 
     ffi.Pointer<IDENProof> issuerNonRevMTP = malloc<IDENProof>();
-    issuerNonRevMTP.ref.existence = authRevocationStatus.mtp!.existence! ? 1 : 0;
+    issuerNonRevMTP.ref.existence =
+        authRevocationStatus.mtp!.existence! ? 1 : 0;
     if (authRevocationStatus.mtp!.siblings!.isNotEmpty) {
       issuerNonRevMTP.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
           authRevocationStatus.mtp!.siblings!.length);
@@ -1197,7 +1197,8 @@ debugger();
         }
         issuerNonRevMTP.ref.siblings[i] = unsafePointerSiblingBytes;
       }
-      issuerNonRevMTP.ref.siblings_num = authRevocationStatus.mtp!.siblings!.length;
+      issuerNonRevMTP.ref.siblings_num =
+          authRevocationStatus.mtp!.siblings!.length;
     } else {
       issuerNonRevMTP.ref.siblings = ffi.nullptr;
       issuerNonRevMTP.ref.siblings_num = 0;
@@ -1209,10 +1210,6 @@ debugger();
         issuerNonRevMTP;
 
     request.ref.claim.core_claim = parseClaim(jsonLDDocument, schema)!;
-
-
-
-
 
     // ISSUER SPARSE MERKLE PROOF CLAIM STATE
     ffi.Pointer<IDENTreeState> issuerStateAfterClaimAdd =
@@ -1244,9 +1241,6 @@ debugger();
     request.ref.claim.tree_state = issuerStateAfterClaimAdd.ref;
     request.ref.claim.non_rev_proof.tree_state = issuerStateAfterClaimAdd.ref;
 
-
-
-
     // DO NOT FILL AUTH CLAIM ISSUER_ID
     request.ref.auth_claim.issuer_id = malloc<IDENId>().ref;
     request.ref.auth_claim.signature_proof =
@@ -1266,61 +1260,53 @@ debugger();
     request.ref.auth_claim.signature_proof.issuer_auth_non_rev_proof.proof =
         ffi.nullptr;
 
-
-
-
-
-
     if (kDebugMode) {
-      print(revocationStatus.toJson() );
+      print(revocationStatus.toJson());
     }
-
 
     // claim revocation status should be taken from revocationStatus.
     // - first we call for revocation status on the issuer service
     // - fill non_rev_proof for claim
 
-    request.ref.claim.non_rev_proof.tree_state =
-        malloc<IDENTreeState>().ref;
+    request.ref.claim.non_rev_proof.tree_state = malloc<IDENTreeState>().ref;
     List<int> issuerClaimsRevStatusTreeRootBytes =
-    hexToBytes(revocationStatus.issuer!.claimsTreeRoot!);
+        hexToBytes(revocationStatus.issuer!.claimsTreeRoot!);
     for (var i = 0; i < issuerClaimsRevStatusTreeRootBytes.length; i++) {
-      request.ref.claim.non_rev_proof.tree_state.claims_root.data[i] = issuerClaimsRevStatusTreeRootBytes[i];
+      request.ref.claim.non_rev_proof.tree_state.claims_root.data[i] =
+          issuerClaimsRevStatusTreeRootBytes[i];
     }
     List<int> issuerRevStatusStateBytes =
-    hexToBytes(revocationStatus.issuer!.state!);
+        hexToBytes(revocationStatus.issuer!.state!);
     for (var i = 0; i < issuerRevStatusStateBytes.length; i++) {
-      request.ref.claim.non_rev_proof.tree_state
-          .state.data[i] = issuerRevStatusStateBytes[i];
+      request.ref.claim.non_rev_proof.tree_state.state.data[i] =
+          issuerRevStatusStateBytes[i];
     }
 
     List<int> issuerRevStatusRevRootBytes =
-    hexToBytes(revocationStatus.issuer!.revocationTreeRoot!);
+        hexToBytes(revocationStatus.issuer!.revocationTreeRoot!);
     for (var i = 0; i < 32; i++) {
-      request.ref.claim.non_rev_proof.tree_state
-          .revocation_root.data[i] = issuerRevStatusRevRootBytes[i];
+      request.ref.claim.non_rev_proof.tree_state.revocation_root.data[i] =
+          issuerRevStatusRevRootBytes[i];
     }
 
     List<int> issuerRevStatusRevRoRBytes =
-    hexToBytes(revocationStatus.issuer!.rootOfRoots!);
+        hexToBytes(revocationStatus.issuer!.rootOfRoots!);
     for (var i = 0; i < 32; i++) {
-      request.ref.claim.non_rev_proof.tree_state
-          .root_of_roots.data[i] = issuerRevStatusRevRoRBytes[i];
+      request.ref.claim.non_rev_proof.tree_state.root_of_roots.data[i] =
+          issuerRevStatusRevRoRBytes[i];
     }
-
 
     // claim revocation status proof
     ffi.Pointer<IDENProof> claimNonRevProof = malloc<IDENProof>();
-    claimNonRevProof.ref.existence =
-    revocationStatus.mtp!.existence! ? 1 : 0;
+    claimNonRevProof.ref.existence = revocationStatus.mtp!.existence! ? 1 : 0;
     if (revocationStatus.mtp!.siblings!.isNotEmpty) {
       claimNonRevProof.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
           revocationStatus.mtp!.siblings!.length);
       for (int i = 0; i < revocationStatus.mtp!.siblings!.length; i++) {
         List<int> siblingBytes =
-        intToBytes(BigInt.parse(revocationStatus.mtp!.siblings![i]));
+            intToBytes(BigInt.parse(revocationStatus.mtp!.siblings![i]));
         ffi.Pointer<ffi.UnsignedChar> unsafePointerSiblingBytes =
-        malloc<ffi.UnsignedChar>(siblingBytes.length);
+            malloc<ffi.UnsignedChar>(siblingBytes.length);
         for (int i = 0; i < siblingBytes.length; i++) {
           unsafePointerSiblingBytes[i] = siblingBytes[i];
         }
@@ -1335,13 +1321,6 @@ debugger();
     claimNonRevProof.ref.auxNodeKey = ffi.nullptr;
     claimNonRevProof.ref.auxNodeValue = ffi.nullptr;
     request.ref.claim.non_rev_proof.proof = claimNonRevProof;
-
-
-
-
-
-
-
 
     request.ref.claim.proof = ffi.nullptr;
     // RESULT
@@ -1841,11 +1820,12 @@ debugger();
     return null;
   }
 
-  Future<Map<String, dynamic>?> prover(String zKeyPath, String wtnsPath) async {
+  Future<Map<String, dynamic>?> prove(
+      Uint8List zkeyBytes, Uint8List wtnsBytes) async {
     Map<String, dynamic> map = {};
 
-    ByteData zkeyBytes = await rootBundle.load(zKeyPath);
-    ByteData wtnsBytes = await rootBundle.load(wtnsPath);
+    //ByteData zkeyBytes = await rootBundle.load(zKeyPath);
+    //ByteData wtnsBytes = await rootBundle.load(wtnsPath);
     int zkeySize = zkeyBytes.lengthInBytes; // 15613350 // 32543618
     ffi.Pointer<ffi.Void> zkeyBuffer =
         Uint8ArrayUtils.toPointer(zkeyBytes.buffer.asUint8List()).cast();
@@ -1916,8 +1896,41 @@ debugger();
   }
 
   Uint8List hexToBytesOrZero(String? s) {
-    if (s == null){
-      return Uint8List.fromList([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+    if (s == null) {
+      return Uint8List.fromList([
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]);
     }
     return hexToBytes(s);
   }
