@@ -3,6 +3,8 @@ class RevocationStatusMtp {
   final bool? existence;
   final List<dynamic>? siblings;
 
+  // TODO: add NodeAux
+
   RevocationStatusMtp({this.type, this.existence, this.siblings});
 
   /// Creates an instance from the given json
