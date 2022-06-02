@@ -106,8 +106,10 @@ class JWZToken implements Base64Encoder {
         .bytes);
 
     // Endianness
-    BigInt endian =
-        BigInt.from(ByteData.sublistView(sha).getInt16(0, Endian.little));
+    //BigInt endian =
+    //    BigInt.from(ByteData.sublistView(sha).getInt16(0, Endian.big));
+    BigInt endian = Uint8ArrayUtils.beBuff2int(sha);
+    //BigInt endian = Uint8ArrayUtils.leBuff2int(sha);
 
     // Check Q
     BigInt q = endian.qNormalize();
