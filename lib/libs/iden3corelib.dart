@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:ffi' as ffi;
 import 'dart:io';
 import 'dart:typed_data';
@@ -850,7 +849,7 @@ class Iden3CoreLib {
     request.ref.claim.signature_proof.issuer_auth_non_rev_proof.proof =
         ffi.nullptr;
 
-    debugger();
+    //debugger();
     request.ref.claim.proof = ffi.nullptr;
     // RESULT
     String result = "";
@@ -1066,7 +1065,7 @@ class Iden3CoreLib {
       //retVal = 1;
       return "";
     }
-    debugger();
+    //debugger();
 
     request.ref.claim.signature_proof.issuer_id = issuerIdPtr.ref;
 
@@ -1122,7 +1121,7 @@ class Iden3CoreLib {
       return "";
     }
     request.ref.claim.signature_proof.issuer_auth_claim = issuerAuthClaim.value;
-    debugger();
+    //debugger();
     ffi.Pointer<IDENProof> issuerAuthClaimMTP = malloc<IDENProof>();
     issuerAuthClaimMTP.ref.existence =
         credential.proof![0].issuer_data!.mtp!.existence! ? 1 : 0;
@@ -1328,7 +1327,7 @@ class Iden3CoreLib {
     if (kDebugMode) {
       print("/// RESULT");
     }
-    debugger();
+    //debugger();
     if (kDebugMode) {
       print(request.ref.id.toString());
     }
@@ -1823,9 +1822,6 @@ class Iden3CoreLib {
   Future<Map<String, dynamic>?> prove(
       Uint8List zkeyBytes, Uint8List wtnsBytes) async {
     Map<String, dynamic> map = {};
-
-    //ByteData zkeyBytes = await rootBundle.load(zKeyPath);
-    //ByteData wtnsBytes = await rootBundle.load(wtnsPath);
     int zkeySize = zkeyBytes.lengthInBytes; // 15613350 // 32543618
     ffi.Pointer<ffi.Void> zkeyBuffer =
         Uint8ArrayUtils.toPointer(zkeyBytes.buffer.asUint8List()).cast();
