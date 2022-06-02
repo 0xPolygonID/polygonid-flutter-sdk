@@ -8,6 +8,7 @@ import 'package:privadoid_sdk/model/jwz/jwz_proof.dart';
 import 'package:privadoid_sdk/utils/base_64.dart';
 import 'package:privadoid_sdk/utils/big_int_extension.dart';
 import 'package:privadoid_sdk/utils/uint8_list_utils.dart';
+import 'package:web3dart/crypto.dart';
 
 /// Prove and verify a [JWZToken]
 abstract class JWZProver {
@@ -106,10 +107,7 @@ class JWZToken implements Base64Encoder {
         .bytes);
 
     // Endianness
-    //BigInt endian =
-    //    BigInt.from(ByteData.sublistView(sha).getInt16(0, Endian.big));
-    BigInt endian = Uint8ArrayUtils.beBuff2int(sha);
-    //BigInt endian = Uint8ArrayUtils.leBuff2int(sha);
+    BigInt endian = Uint8ArrayUtils.leBuff2int(sha);
 
     // Check Q
     BigInt q = endian.qNormalize();
@@ -118,7 +116,7 @@ class JWZToken implements Base64Encoder {
     CircomLib lib = CircomLib();
     String hashed = lib.poseidonHash(q.toString());
 
-    return Uint8ArrayUtils.uint8ListfromString(hashed);
+    return hexToBytes(hashed);
   }
 
   /// @return compact [JWT]

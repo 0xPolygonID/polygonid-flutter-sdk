@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:privadoid_sdk/privadoid_wallet.dart';
 import 'package:privadoid_sdk/utils/uint8_list_utils.dart';
+import 'package:web3dart/crypto.dart';
 
 import 'jwz_token.dart';
 import 'libs/iden3corelib.dart';
@@ -18,9 +19,8 @@ class JWZPreparer extends JWZInputPreparer {
 
   @override
   Uint8List prepare(Uint8List hash, String circuitID) {
-    // TODO: implement prepare
     String queryInputs = "";
-    String challenge = Uint8ArrayUtils.uint8ListToString(hash);
+    String challenge = bytesToInt(hash).toString();
     String signatureString = wallet.signMessage(challenge);
     if (circuitID == "auth") {
       queryInputs = _iden3coreLib.prepareAuthInputs(challenge, authClaim,
