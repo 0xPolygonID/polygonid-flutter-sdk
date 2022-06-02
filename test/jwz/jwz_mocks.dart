@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
+import 'package:flutter_test/flutter_test.dart';
 import 'package:privadoid_sdk/jwz_token.dart';
+import 'package:privadoid_sdk/libs/circomlib.dart';
 import 'package:privadoid_sdk/model/jwz/jwz.dart';
 import 'package:privadoid_sdk/model/jwz/jwz_header.dart';
 import 'package:privadoid_sdk/model/jwz/jwz_proof.dart';
@@ -157,7 +159,14 @@ class JWZMocks {
   static Uint8List inputPreparer =
       Uint8ArrayUtils.uint8ListfromString(inputPreparerData);
 
-
-
   static JWZ jwz = JWZ(header: jwzHeader, payload: jwzPayload, proof: jwzProof);
+
+  static CircomLib fakeCircom = FakeCircom();
+}
+
+class FakeCircom extends Fake implements CircomLib {
+  @override
+  String poseidonHash(String input) {
+    return 'yep';
+  }
 }
