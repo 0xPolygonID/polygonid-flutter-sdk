@@ -1816,12 +1816,12 @@ class Iden3CoreLib {
   Future<Map<String, dynamic>?> prove(
       Uint8List zkeyBytes, Uint8List wtnsBytes) async {
     Map<String, dynamic> map = {};
-    int zkeySize = zkeyBytes.lengthInBytes; // 15613350 // 32543618
+    int zkeySize = zkeyBytes.length; // 15613350 // 32543618
     ffi.Pointer<ffi.Void> zkeyBuffer =
-        Uint8ArrayUtils.toPointer(zkeyBytes.buffer.asUint8List()).cast();
-    int wtnsSize = wtnsBytes.lengthInBytes; // 890924 // 1860716
+        Uint8ArrayUtils.toPointer(zkeyBytes).cast();
+    int wtnsSize = wtnsBytes.length; // 890924 // 1860716
     ffi.Pointer<ffi.Void> wtnsBuffer =
-        Uint8ArrayUtils.toPointer(wtnsBytes.buffer.asUint8List()).cast();
+        Uint8ArrayUtils.toPointer(wtnsBytes).cast();
     ffi.Pointer<ffi.UnsignedLong> proofSize = malloc<ffi.UnsignedLong>();
     proofSize.value = 16384;
     ffi.Pointer<ffi.Char> proofBuffer = malloc<ffi.Char>(proofSize.value);
@@ -1866,7 +1866,7 @@ class Iden3CoreLib {
       }
       map['circuitId'] = "auth";
       map['proof'] = json.decode(proofmsg);
-      map['pub_signals'] = json.decode(publicmsg);
+      map['pub_signals'] = json.decode(publicmsg).cast<String>();
       return map;
     } else if (result == PPROVER_ERROR) {
       //ffi.Pointer<ffi.Int8> json = errorMsg.cast<ffi.Int8>();
