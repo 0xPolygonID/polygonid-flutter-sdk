@@ -32,8 +32,8 @@ abstract class JWZInputPreparer {
 /// Representation of a JWZ Token with [JWZProver] and [JWZInputPreparer]
 /// Wrapper around [JWZ]
 class JWZToken implements Base64Encoder {
-  // TODO: [circom] should be injected
-  CircomLib? circom;
+  // TODO: should be injected
+  late CircomLib _circom;
 
   String get alg => prover.alg;
 
@@ -42,8 +42,8 @@ class JWZToken implements Base64Encoder {
   JWZProver prover;
   JWZInputPreparer preparer;
 
-  JWZToken({required this.prover, required this.preparer, this.circom}) {
-    circom ?? CircomLib();
+  JWZToken({required this.prover, required this.preparer, CircomLib? circom}) {
+    _circom = circom ?? CircomLib();
   }
 
   /// Construct a [JWZToken] with [JWZ]
@@ -126,7 +126,7 @@ class JWZToken implements Base64Encoder {
     BigInt q = endian.qNormalize();
 
     // Poseidon hash
-    String hashed = circom!.poseidonHash(q.toString());
+    String hashed = _circom!.poseidonHash(q.toString());
 
     return hexToBytes(hashed);
   }

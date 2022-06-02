@@ -6,7 +6,7 @@ import 'dart:async' as _i4;
 import 'dart:typed_data' as _i5;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:privadoid_sdk/jwz_token.dart' as _i3;
+import 'package:privadoid_sdk/jwz/jwz_token.dart' as _i3;
 import 'package:privadoid_sdk/model/jwz/jwz_proof.dart' as _i2;
 
 // ignore_for_file: type=lint

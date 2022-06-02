@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:privadoid_sdk/jwz_token.dart';
+import 'package:privadoid_sdk/jwz/jwz_token.dart';
 import 'package:privadoid_sdk/libs/circomlib.dart';
 import 'package:privadoid_sdk/model/jwz/jwz.dart';
 import 'package:privadoid_sdk/model/jwz/jwz_header.dart';

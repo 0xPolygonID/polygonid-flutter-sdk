@@ -3,15 +3,17 @@ import 'dart:typed_data';
 import 'package:privadoid_sdk/model/jwz/jwz_proof.dart';
 
 import 'jwz_token.dart';
-import 'libs/iden3corelib.dart';
+import '../libs/iden3corelib.dart';
 
 class JWZProverImpl extends JWZProver {
-  static Iden3CoreLib get _iden3coreLib {
-    return Iden3CoreLib();
-  }
+  // TODO: should be injected
+  late Iden3CoreLib _iden3coreLib;
 
-  JWZProverImpl({required String alg, required String circuitID})
-      : super(alg: alg, circuitID: circuitID);
+  JWZProverImpl(
+      {required String alg, required String circuitID, Iden3CoreLib? coreLib})
+      : super(alg: alg, circuitID: circuitID) {
+    _iden3coreLib = coreLib ?? Iden3CoreLib();
+  }
 
   @override
   Future<JWZProof> prove(
