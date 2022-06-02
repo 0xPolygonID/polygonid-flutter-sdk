@@ -1,10 +1,13 @@
 import 'dart:typed_data';
 
+import 'package:crypto/crypto.dart';
 import 'package:privadoid_sdk/libs/circomlib.dart';
 import 'package:privadoid_sdk/model/jwz/jwz.dart';
 import 'package:privadoid_sdk/model/jwz/jwz_exceptions.dart';
 import 'package:privadoid_sdk/model/jwz/jwz_proof.dart';
-import 'package:privadoid_sdk/utils/Base64.dart';
+import 'package:privadoid_sdk/utils/base_64.dart';
+import 'package:privadoid_sdk/utils/big_int_extension.dart';
+import 'package:privadoid_sdk/utils/uint8_list_utils.dart';
 
 /// Prove and verify a [JWZToken]
 abstract class JWZProver {
@@ -96,22 +99,24 @@ class JWZToken implements Base64Encoder {
       throw NullJWZPayloadException();
     }
 
-    // TODO missing steps:
-    // ### Algorithm for message hash generation:
+    // Sha256
+    Uint8List sha = Uint8List.fromList(sha256
+        .convert(Uint8ArrayUtils.uint8ListfromString(
+            "${jwz.header!.encode()}.${jwz.payload!.encode()}"))
+        .bytes);
 
-    // Message hash is a big integer that represents Poseidon Hash. This Poseidon Hash is created using the following algorithm:
+    // Endianness
+    BigInt endian =
+        BigInt.from(ByteData.sublistView(sha).getInt16(0, Endian.little));
 
-    // 1. Prepare hash to sign: it’s *`is ASCII(BASE64URL(UTF8(JWZ Protected Header)) || '.' || BASE64URL(JWZ Payload)).`*
-    //2. Get serialized representation of Prepared message.
-    //3. Get the sha256 hash of the message, swap endianness, and create a big Integer.
-    //4. If the resulting hash is not a Q field, defined by the go-iden-crypto library, then divide resulted in a big integer from this hash by Q.
-    //5. Make Poseidon hash of resulting big Integer.
+    // Check Q
+    BigInt q = endian.qNormalize();
 
+    // Poseidon hash
     CircomLib lib = CircomLib();
-    String hashed =
-        lib.poseidonHash("${jwz.header!.encode()}.${jwz.payload!.encode()}");
+    String hashed = lib.poseidonHash(q.toString());
 
-    return Uint8List.fromList(hashed.codeUnits);
+    return Uint8ArrayUtils.uint8ListfromString(hashed);
   }
 
   /// @return compact [JWT]
