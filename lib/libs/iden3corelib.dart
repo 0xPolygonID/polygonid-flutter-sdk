@@ -5,7 +5,6 @@ import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:privadoid_sdk/libs/proverlib.dart';
 import 'package:privadoid_sdk/model/credential_credential.dart';
 import 'package:privadoid_sdk/model/revocation_status.dart';
@@ -1763,19 +1762,18 @@ class Iden3CoreLib {
     return result;
   }
 
-  Future<String?> calculateWitness(String wasmPath, String jsonPath) async {
-    ByteData wasmBytes = await rootBundle.load(wasmPath);
-    int circuitSize = wasmBytes.lengthInBytes;
+  Future<Uint8List?> calculateWitness(
+      Uint8List wasmBytes, Uint8List inputsJsonBytes) async {
+    int circuitSize = wasmBytes.length;
     ffi.Pointer<ffi.Char> circuitBuffer = malloc<ffi.Char>(circuitSize);
-    final data = wasmBytes.buffer.asUint8List();
+    final data = wasmBytes;
     for (int i = 0; i < circuitSize; i++) {
       circuitBuffer[i] = data[i];
     }
 
-    ByteData jsonBytes = await rootBundle.load(jsonPath);
-    int jsonSize = jsonBytes.lengthInBytes;
+    int jsonSize = inputsJsonBytes.length;
     ffi.Pointer<ffi.Char> jsonBuffer = malloc<ffi.Char>(jsonSize);
-    final data2 = jsonBytes.buffer.asUint8List();
+    final data2 = inputsJsonBytes;
     for (int i = 0; i < jsonSize; i++) {
       jsonBuffer[i] = data2[i];
     }
@@ -1790,13 +1788,17 @@ class Iden3CoreLib {
     int result = _witnessLib.witnesscalc(circuitBuffer, circuitSize, jsonBuffer,
         jsonSize, wtnsBuffer, wtnsSize, errorMsg, errorMaxSize);
     if (result == WITNESSCALC_OK) {
-      ffi.Pointer<Utf8> jsonString = wtnsBuffer.cast<Utf8>();
+      Uint8List wtnsBytes = Uint8List(wtnsSize.value);
+      for (int i = 0; i < wtnsSize.value; i++) {
+        wtnsBytes[i] = wtnsBuffer[i];
+      }
+      /*ffi.Pointer<Utf8> jsonString = wtnsBuffer.cast<Utf8>();
       String wtnsmsg = jsonString.toDartString();
       if (kDebugMode) {
         print("$result: ${result.toString()}");
         print("Wtns: $wtnsmsg");
-      }
-      return wtnsmsg;
+      }*/
+      return wtnsBytes;
     } else if (result == WITNESSCALC_ERROR) {
       //ffi.Pointer<ffi.Int8> json = errorMsg.cast<ffi.Int8>();
       ffi.Pointer<Utf8> jsonString = errorMsg.cast<Utf8>();
