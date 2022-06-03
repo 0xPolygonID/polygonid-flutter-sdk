@@ -10,7 +10,6 @@ import 'package:privadoid_sdk/model/credential_credential.dart';
 import 'package:privadoid_sdk/model/revocation_status.dart';
 import 'package:web3dart/crypto.dart';
 
-import '../utils/uint8_list_utils.dart';
 import 'generated_bindings.dart';
 import 'generated_bindings_witness.dart';
 
@@ -1818,12 +1817,27 @@ class Iden3CoreLib {
   Future<Map<String, dynamic>?> prove(
       Uint8List zkeyBytes, Uint8List wtnsBytes) async {
     Map<String, dynamic> map = {};
-    int zkeySize = zkeyBytes.length; // 15613350 // 32543618
+
+    int zkeySize = zkeyBytes.length;
+    ffi.Pointer<ffi.Char> zkeyBuffer = malloc<ffi.Char>(zkeySize);
+    final data = zkeyBytes;
+    for (int i = 0; i < zkeySize; i++) {
+      zkeyBuffer[i] = data[i];
+    }
+
+    int wtnsSize = wtnsBytes.length;
+    ffi.Pointer<ffi.Char> wtnsBuffer = malloc<ffi.Char>(wtnsSize);
+    final data2 = wtnsBytes;
+    for (int i = 0; i < wtnsSize; i++) {
+      wtnsBuffer[i] = data2[i];
+    }
+
+    /*int zkeySize = zkeyBytes.length; // 15613350 // 32543618
     ffi.Pointer<ffi.Void> zkeyBuffer =
         Uint8ArrayUtils.toPointer(zkeyBytes).cast();
     int wtnsSize = wtnsBytes.length; // 890924 // 1860716
     ffi.Pointer<ffi.Void> wtnsBuffer =
-        Uint8ArrayUtils.toPointer(wtnsBytes).cast();
+        Uint8ArrayUtils.toPointer(wtnsBytes).cast();*/
     ffi.Pointer<ffi.UnsignedLong> proofSize = malloc<ffi.UnsignedLong>();
     proofSize.value = 16384;
     ffi.Pointer<ffi.Char> proofBuffer = malloc<ffi.Char>(proofSize.value);
@@ -1836,9 +1850,9 @@ class Iden3CoreLib {
     DateTime start = DateTime.now();
 
     int result = _proverLib.groth16_prover(
-        zkeyBuffer,
+        zkeyBuffer.cast(),
         zkeySize,
-        wtnsBuffer,
+        wtnsBuffer.cast(),
         wtnsSize,
         proofBuffer,
         proofSize,

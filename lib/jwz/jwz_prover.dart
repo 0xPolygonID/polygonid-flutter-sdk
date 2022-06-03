@@ -18,6 +18,8 @@ class JWZProverImpl extends JWZProver {
   @override
   Future<JWZProof> prove(
       Uint8List inputs, Uint8List provingKey, Uint8List wasm) async {
+    // TODO on IOS not working witness calc
+    //Uint8List wtnsBytes = await _iden3coreLib.calculateWitness(wasm, inputs);
     Map<String, dynamic>? proof = await _iden3coreLib.prove(provingKey, wasm);
     return JWZProof(
         proof: JWZBaseProof.fromJson(proof!["proof"]),
