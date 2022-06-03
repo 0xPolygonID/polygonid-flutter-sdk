@@ -19,7 +19,9 @@ class JWZProverImpl extends JWZProver {
   Future<JWZProof> prove(
       Uint8List inputs, Uint8List provingKey, Uint8List wasm) async {
     Map<String, dynamic>? proof = await _iden3coreLib.prove(provingKey, wasm);
-    return JWZProof(proof: JWZBaseProof.fromJson(proof!), pubSignals: []);
+    return JWZProof(
+        proof: JWZBaseProof.fromJson(proof!["proof"]),
+        pubSignals: (proof["pub_signals"] as List<String>));
   }
 
   @override
