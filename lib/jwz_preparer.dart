@@ -25,35 +25,7 @@ class JWZPreparer extends JWZInputPreparer {
     if (circuitID == "auth") {
       queryInputs = _iden3coreLib.prepareAuthInputs(challenge, authClaim,
           wallet.publicKey[0], wallet.publicKey[1], signatureString);
-    } /* else if (circuitID == "credentialAtomicQueryMTP") {
-      queryInputs = _iden3coreLib.prepareAtomicQueryMTPInputs(
-          challenge,
-          pubX,
-          pubY,
-          signatureString,
-          credential.credential!,
-          json.encode(credential.credential!.toJson()),
-          schema,
-          claimType,
-          key,
-          value,
-          operator,
-          revocationStatus);
-    } else if (circuitID == "credentialAtomicQuerySig") {
-      queryInputs = _iden3coreLib.prepareAtomicQuerySigInputs(
-          Uint8ArrayUtils.uint8ListToString(hash),
-          pubX,
-          pubY,
-          signatureString,
-          credential.credential!,
-          json.encode(credential.credential!.toJson()),
-          schema,
-          claimType,
-          key,
-          value,
-          operator,
-          revocationStatus);
-    }*/
+    }
     return Uint8ArrayUtils.uint8ListfromString(queryInputs);
   }
 }
