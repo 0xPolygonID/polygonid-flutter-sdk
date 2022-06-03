@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:privadoid_sdk/libs/proverlib.dart';
 import 'package:privadoid_sdk/model/credential_credential.dart';
 import 'package:privadoid_sdk/model/revocation_status.dart';
@@ -1825,9 +1826,13 @@ class Iden3CoreLib {
       zkeyBuffer[i] = data[i];
     }
 
+    ByteData wtnsBytes2 =
+    await rootBundle.load("assets/witness.wtns");
+
+
     int wtnsSize = wtnsBytes.length;
     ffi.Pointer<ffi.Char> wtnsBuffer = malloc<ffi.Char>(wtnsSize);
-    final data2 = wtnsBytes;
+    final data2 = wtnsBytes2.buffer.asUint8List();
     for (int i = 0; i < wtnsSize; i++) {
       wtnsBuffer[i] = data2[i];
     }
@@ -1848,6 +1853,8 @@ class Iden3CoreLib {
     ffi.Pointer<ffi.Char> errorMsg = malloc<ffi.Char>(errorMaxSize);
 
     DateTime start = DateTime.now();
+
+    // TODO:
 
     int result = _proverLib.groth16_prover(
         zkeyBuffer.cast(),
