@@ -68,6 +68,8 @@ class PrivadoIdWallet {
   /// @param [String] messageStr - message to sign
   /// @returns [String] - Babyjubjub signature packed and encoded as an hex string
   String signMessage(String messageStr) {
+    //Uint8List message = Uint8ArrayUtils.uint8ListfromString(messageStr);
+    //BigInt messHash = Uint8ArrayUtils.beBuff2int(message);
     BigInt? messHash = BigInt.tryParse(messageStr, radix: 10);
     final privateKey = eddsaBabyJub.PrivateKey(this.privateKey);
     final signature = privateKey.sign(messHash!);
