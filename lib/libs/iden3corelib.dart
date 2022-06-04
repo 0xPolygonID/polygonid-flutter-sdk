@@ -1817,6 +1817,7 @@ class Iden3CoreLib {
 
   Future<Map<String, dynamic>?> prove(
       Uint8List zkeyBytes, Uint8List wtnsBytes) async {
+
     Map<String, dynamic> map = {};
 
     int zkeySize = zkeyBytes.length;
@@ -1947,4 +1948,14 @@ class Iden3CoreLib {
     }
     return hexToBytes(s);
   }
+
+
+
+  Future<Map<String, dynamic>?> calculateProof(Uint8List inputsJsonBytes, Uint8List zkeyBytes,Uint8List datBytes) async{
+
+    final Uint8List? wtnsBytes = await calculateWitness(datBytes, inputsJsonBytes);
+
+    return await prove(zkeyBytes, wtnsBytes!);
+  }
+
 }

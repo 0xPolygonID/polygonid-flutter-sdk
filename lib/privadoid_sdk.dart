@@ -184,7 +184,7 @@ class PrivadoIdSdk {
   }
 
   static Future<JWZToken> generateJWZToken(String payload, String privateKey,
-      String authClaim, Uint8List zKeyBytes, Uint8List wtnsBytes) async {
+      String authClaim, Uint8List zKeyBytes, Uint8List datFile) async {
     final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
         privateKey: HexUtils.hexToBytes(privateKey));
     var preparer = JWZPreparer(wallet: wallet, authClaim: authClaim);
@@ -199,7 +199,7 @@ class PrivadoIdSdk {
             payload: JWZPayload(payload: payload)),
         prover: prover,
         preparer: preparer);
-    String encodedjwz = await jwztoken.prove(zKeyBytes, wtnsBytes);
+    String encodedjwz = await jwztoken.prove(zKeyBytes, datFile);
     if (kDebugMode) {
       print(encodedjwz);
     }
