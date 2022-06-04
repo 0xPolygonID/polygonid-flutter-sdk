@@ -1816,7 +1816,7 @@ class Iden3CoreLib {
   }
 
   Future<Map<String, dynamic>?> prove(
-      Uint8List zkeyBytes, Uint8List _) async {
+      Uint8List zkeyBytes, Uint8List wtnsBytes) async {
     Map<String, dynamic> map = {};
 
     int zkeySize = zkeyBytes.length;
@@ -1826,13 +1826,13 @@ class Iden3CoreLib {
       zkeyBuffer[i] = data[i];
     }
 
-    ByteData wtnsBytes2 =
-    await rootBundle.load("assets/witness.wtns");
+    // ByteData wtnsBytes2 =
+    // await rootBundle.load("assets/witness.wtns");
 
 
-    int wtnsSize = wtnsBytes2.lengthInBytes;
+    int wtnsSize = wtnsBytes.length;
     ffi.Pointer<ffi.Char> wtnsBuffer = malloc<ffi.Char>(wtnsSize);
-    final data2 = wtnsBytes2.buffer.asUint8List();
+    final data2 = wtnsBytes.buffer.asUint8List();
     for (int i = 0; i < wtnsSize; i++) {
       wtnsBuffer[i] = data2[i];
     }
