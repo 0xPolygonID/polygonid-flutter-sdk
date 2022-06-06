@@ -1827,10 +1827,6 @@ class Iden3CoreLib {
       zkeyBuffer[i] = data[i];
     }
 
-    // ByteData wtnsBytes2 =
-    // await rootBundle.load("assets/witness.wtns");
-
-
     int wtnsSize = wtnsBytes.length;
     ffi.Pointer<ffi.Char> wtnsBuffer = malloc<ffi.Char>(wtnsSize);
     final data2 = wtnsBytes.buffer.asUint8List();

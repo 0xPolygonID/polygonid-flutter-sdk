@@ -80,7 +80,6 @@ flutter:
   # To add assets to your plugin package, add an assets section, like this:
   assets:
     - circuit_final.zkey
-    - witness.wtns
     - auth.dat
     - inputs.json
   #
