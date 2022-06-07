@@ -764,23 +764,23 @@ class Iden3CoreLib {
     /*_makeUserClaim(request.ref.id, userRevNonce,
         value, operator, "ce6bb12c96bfd1544c02c289c6b4b987");*/
 
-    res = _nativeLib.IDENMerkleTreeAddClaim(
-        issuerAuthClaimsTree.value, request.ref.claim.core_claim, status);
-    if (res == 0) {
-      _consumeStatus(status, "can't add claim to issuer's claims tree");
-      return "";
-    }
-    ffi.Pointer<IDENTreeState> issuerStateAfterClaimAdd =
-        malloc<IDENTreeState>();
-    ok = _makeTreeState(issuerStateAfterClaimAdd, issuerAuthClaimsTree.value,
-        issuerRevTree, emptyTree, status);
-    if (!ok) {
-      _consumeStatus(status, "can't calculate issuer's state after claim add");
-      return "";
-    }
+    // res = _nativeLib.IDENMerkleTreeAddClaim(
+    //     issuerAuthClaimsTree.value, request.ref.claim.core_claim, status);
+    // if (res == 0) {
+    //   _consumeStatus(status, "can't add claim to issuer's claims tree");
+    //   return "";
+    // }
+    // ffi.Pointer<IDENTreeState> issuerStateAfterClaimAdd =
+    //     malloc<IDENTreeState>();
+    // ok = _makeTreeState(issuerStateAfterClaimAdd, issuerAuthClaimsTree.value,
+    //     issuerRevTree, emptyTree, status);
+    // if (!ok) {
+    //   _consumeStatus(status, "can't calculate issuer's state after claim add");
+    //   return "";
+    // }
 
-    request.ref.claim.tree_state = issuerStateAfterClaimAdd.ref;
-    request.ref.claim.non_rev_proof.tree_state = issuerStateAfterClaimAdd.ref;
+    // request.ref.claim.tree_state = issuerStateAfterClaimAdd.ref;
+    //request.ref.claim.non_rev_proof.tree_state = issuerStateAfterClaimAdd.ref;
 
     // Generate revocation status proof
     ffi.Pointer<IDENMerkleTreeHash> revNonceHash = malloc<IDENMerkleTreeHash>();
@@ -791,42 +791,42 @@ class Iden3CoreLib {
       return "";
     }
 
-    ffi.Pointer<ffi.Pointer<IDENProof>> claimNonRevProof =
-        malloc<ffi.Pointer<IDENProof>>();
-    res = _nativeLib.IDENMerkleTreeGenerateProof(
-        claimNonRevProof, issuerRevTree, revNonceHash.ref, status);
-    if (res == 0) {
-      _consumeStatus(status, "error generating revocation status proof");
-      return "";
-    }
-    if (kDebugMode) {
-      print("proof existence: ${claimNonRevProof[0].ref.existence}");
-    }
-    request.ref.claim.non_rev_proof.proof = claimNonRevProof[0];
+    // ffi.Pointer<ffi.Pointer<IDENProof>> claimNonRevProof =
+    //     malloc<ffi.Pointer<IDENProof>>();
+    // res = _nativeLib.IDENMerkleTreeGenerateProof(
+    //     claimNonRevProof, issuerRevTree, revNonceHash.ref, status);
+    // if (res == 0) {
+    //   _consumeStatus(status, "error generating revocation status proof");
+    //   return "";
+    // }
+    // if (kDebugMode) {
+    //   print("proof existence: ${claimNonRevProof[0].ref.existence}");
+    // }
+    // request.ref.claim.non_rev_proof.proof = claimNonRevProof[0];
 
-    ffi.Pointer<IDENMerkleTreeHash> userClaimIndexHash =
-        malloc<IDENMerkleTreeHash>();
-    res = _nativeLib.IDENClaimTreeEntryHash(
-        userClaimIndexHash, ffi.nullptr, request.ref.claim.core_claim, status);
-    if (res == 0) {
-      _consumeStatus(status, "error calculating index hash of user's claim");
-      return "";
-    }
-
-    ffi.Pointer<ffi.Pointer<IDENProof>> claimProof =
-        malloc<ffi.Pointer<IDENProof>>();
-    res = _nativeLib.IDENMerkleTreeGenerateProof(
-        claimProof, issuerAuthClaimsTree.value, userClaimIndexHash.ref, status);
-    if (res == 0) {
-      _consumeStatus(status,
-          "error generating proof that user's claim is in the issuers claims tree");
-      return "";
-    }
-    if (kDebugMode) {
-      print("proof existence: ${claimProof[0].ref.existence}");
-    }
-    request.ref.claim.proof =
-        ffi.nullptr; // in case of sig proof claim.proof should be empty
+    // ffi.Pointer<IDENMerkleTreeHash> userClaimIndexHash =
+    //     malloc<IDENMerkleTreeHash>();
+    // res = _nativeLib.IDENClaimTreeEntryHash(
+    //     userClaimIndexHash, ffi.nullptr, request.ref.claim.core_claim, status);
+    // if (res == 0) {
+    //   _consumeStatus(status, "error calculating index hash of user's claim");
+    //   return "";
+    // }
+    //
+    // ffi.Pointer<ffi.Pointer<IDENProof>> claimProof =
+    //     malloc<ffi.Pointer<IDENProof>>();
+    // res = _nativeLib.IDENMerkleTreeGenerateProof(
+    //     claimProof, issuerAuthClaimsTree.value, userClaimIndexHash.ref, status);
+    // if (res == 0) {
+    //   _consumeStatus(status,
+    //       "error generating proof that user's claim is in the issuers claims tree");
+    //   return "";
+    // }
+    // if (kDebugMode) {
+    //   print("proof existence: ${claimProof[0].ref.existence}");
+    // }
+    // request.ref.claim.proof =
+    //     ffi.nullptr; // in case of sig proof claim.proof should be empty
 
     request.ref.auth_claim.issuer_id = malloc<IDENId>().ref;
     request.ref.auth_claim.signature_proof =
@@ -865,6 +865,141 @@ class Iden3CoreLib {
 
     //debugger();
     request.ref.claim.proof = ffi.nullptr;
+
+
+
+
+    ffi.Pointer<IDENProof> claimMTP = malloc<IDENProof>();
+    claimMTP.ref.existence =
+    credential.proof![1].mtp!.existence! ? 1 : 0;
+    if (credential.proof![1].mtp!.siblings!.isNotEmpty) {
+      claimMTP.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
+          credential.proof![1].mtp!.siblings!.length);
+      for (int i = 0;
+      i < credential.proof![1].mtp!.siblings!.length;
+      i++) {
+        List<int> siblingBytes = intToBytes(
+            BigInt.parse(credential.proof![1].mtp!.siblings![i]));
+        ffi.Pointer<ffi.UnsignedChar> unsafePointerSiblingBytes =
+        malloc<ffi.UnsignedChar>(siblingBytes.length);
+        for (int i = 0; i < siblingBytes.length; i++) {
+          unsafePointerSiblingBytes[i] = siblingBytes[i];
+        }
+        claimMTP.ref.siblings[i] = unsafePointerSiblingBytes;
+      }
+      claimMTP.ref.siblings_num =
+          credential.proof![1].mtp!.siblings!.length;
+    } else {
+      claimMTP.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>();
+      claimMTP.ref.siblings_num = 0;
+    }
+    claimMTP.ref.auxNodeKey = ffi.nullptr;
+    claimMTP.ref.auxNodeValue = ffi.nullptr;
+
+    request.ref.claim.proof = claimMTP;
+
+
+
+    ffi.Pointer<IDENTreeState> issuerState =
+    malloc<IDENTreeState>();
+    List<int> issuerProofClaimsTreeRootBytes =
+    hexToBytes(credential.proof![1].issuer_data!.state!.claims_tree_root!);
+    for (var i = 0; i < issuerProofClaimsTreeRootBytes.length; i++) {
+      issuerState.ref.claims_root.data[i] =
+      issuerProofClaimsTreeRootBytes[i];
+    }
+    List<int> issuerProofStateBytes =
+    hexToBytes(credential.proof![1].issuer_data!.state!.value!);
+    for (var i = 0; i < issuerProofStateBytes.length; i++) {
+      issuerState.ref.state.data[i] = issuerProofStateBytes[i];
+    }
+    List<int> issuerProofRootRootsBytes =
+    hexToBytes(credential.proof![1].issuer_data!.state!.value!);
+    for (var i = 0; i < issuerProofRootRootsBytes.length; i++) {
+      issuerState.ref.root_of_roots.data[i] =
+      issuerProofRootRootsBytes[i];
+    }
+    List<int> issuerProofRevRootBytes = hexToBytes(
+        credential.proof![1].issuer_data!.state!.revocation_tree_root!);
+    for (var i = 0; i < issuerProofRevRootBytes.length; i++) {
+      issuerState.ref.revocation_root.data[i] =
+      issuerProofRevRootBytes[i];
+    }
+
+    request.ref.claim.tree_state = issuerState.ref;
+
+
+
+
+
+
+
+
+
+    request.ref.claim.non_rev_proof.tree_state = malloc<IDENTreeState>().ref;
+    List<int> issuerClaimsRevStatusTreeRootBytes =
+    hexToBytes(revocationStatus.issuer!.claimsTreeRoot!);
+    for (var i = 0; i < issuerClaimsRevStatusTreeRootBytes.length; i++) {
+      request.ref.claim.non_rev_proof.tree_state.claims_root.data[i] =
+      issuerClaimsRevStatusTreeRootBytes[i];
+    }
+    List<int> issuerRevStatusStateBytes =
+    hexToBytes(revocationStatus.issuer!.state!);
+    for (var i = 0; i < issuerRevStatusStateBytes.length; i++) {
+      request.ref.claim.non_rev_proof.tree_state.state.data[i] =
+      issuerRevStatusStateBytes[i];
+    }
+
+    List<int> issuerRevStatusRevRootBytes =
+    hexToBytes(revocationStatus.issuer!.revocationTreeRoot!);
+    for (var i = 0; i < 32; i++) {
+      request.ref.claim.non_rev_proof.tree_state.revocation_root.data[i] =
+      issuerRevStatusRevRootBytes[i];
+    }
+
+    List<int> issuerRevStatusRevRoRBytes =
+    hexToBytes(revocationStatus.issuer!.rootOfRoots!);
+    for (var i = 0; i < 32; i++) {
+      request.ref.claim.non_rev_proof.tree_state.root_of_roots.data[i] =
+      issuerRevStatusRevRoRBytes[i];
+    }
+
+    // claim revocation status proof
+    ffi.Pointer<IDENProof> claimNonRevProof = malloc<IDENProof>();
+    claimNonRevProof.ref.existence = revocationStatus.mtp!.existence! ? 1 : 0;
+    if (revocationStatus.mtp!.siblings!.isNotEmpty) {
+      claimNonRevProof.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
+          revocationStatus.mtp!.siblings!.length);
+      for (int i = 0; i < revocationStatus.mtp!.siblings!.length; i++) {
+        List<int> siblingBytes =
+        intToBytes(BigInt.parse(revocationStatus.mtp!.siblings![i]));
+        ffi.Pointer<ffi.UnsignedChar> unsafePointerSiblingBytes =
+        malloc<ffi.UnsignedChar>(siblingBytes.length);
+        for (int i = 0; i < siblingBytes.length; i++) {
+          unsafePointerSiblingBytes[i] = siblingBytes[i];
+        }
+        claimNonRevProof.ref.siblings[i] = unsafePointerSiblingBytes;
+      }
+      claimNonRevProof.ref.siblings_num =
+          revocationStatus.mtp!.siblings!.length;
+    } else {
+      claimNonRevProof.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>();
+      claimNonRevProof.ref.siblings_num = 0;
+    }
+    claimNonRevProof.ref.auxNodeKey = ffi.nullptr;
+    claimNonRevProof.ref.auxNodeValue = ffi.nullptr;
+    request.ref.claim.non_rev_proof.proof = claimNonRevProof;
+
+
+
+
+
+
+
+
+
+
+
     // RESULT
     String result = "";
     if (kDebugMode) {
