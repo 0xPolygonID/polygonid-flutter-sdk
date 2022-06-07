@@ -40,12 +40,20 @@ dev_dependencies:
   build_runner:
 
 ffigen:
-  name: WitnessLib
-  description: Bindings to `ios/Classes/witnesscalc.h`.
-  output: 'lib/libs/generated_bindings_witness.dart'
+  name: WitnessMtpLib
+  description: Bindings to `ios/Classes/witnesscalc_mtp.h`.
+  output: 'lib/libs/generated_bindings_witness_mtp.dart'
   headers:
     entry-points:
-      - 'ios/Classes/witnesscalc.h'
+      - 'ios/Classes/witnesscalc_mtp.h'
+  # name: WitnessLib
+  # description: Bindings to `ios/Classes/witnesscalc.h`.
+  # output: 'lib/libs/generated_bindings_witness.dart'
+  # headers:
+  #  entry-points:
+   #   - 'ios/Classes/witnesscalc.h'
+
+
   # name: ProverLib
   # description: Bindings to `ios/Classes/prover.h`.
   # output: 'lib/libs/generated_bindings_prover.dart'
