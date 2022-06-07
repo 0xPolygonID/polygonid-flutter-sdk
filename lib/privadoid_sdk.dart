@@ -178,6 +178,16 @@ class PrivadoIdSdk {
     return _iden3coreLib.calculateWitness(wasmBytes, inputsJsonBytes);
   }
 
+  static Future<Uint8List?> calculateWitnessSig(
+      Uint8List wasmBytes, Uint8List inputsJsonBytes) {
+    return _iden3coreLib.calculateWitnessSig(wasmBytes, inputsJsonBytes);
+  }
+
+  static Future<Uint8List?> calculateWitnessMtp(
+      Uint8List wasmBytes, Uint8List inputsJsonBytes) {
+    return _iden3coreLib.calculateWitnessMtp(wasmBytes, inputsJsonBytes);
+  }
+
   static Future<Map<String, dynamic>?> prover(
       Uint8List zKeyBytes, Uint8List wtnsBytes) async {
     return _iden3coreLib.prove(zKeyBytes, wtnsBytes);
