@@ -5,7 +5,7 @@ import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
+import 'package:privadoid_sdk/libs/generated_bindings_witness_mtp.dart';
 import 'package:privadoid_sdk/libs/proverlib.dart';
 import 'package:privadoid_sdk/model/credential_credential.dart';
 import 'package:privadoid_sdk/model/revocation_status.dart';
@@ -13,6 +13,7 @@ import 'package:web3dart/crypto.dart';
 
 import 'generated_bindings.dart';
 import 'generated_bindings_witness.dart';
+import 'generated_bindings_witness_sig.dart';
 
 class Iden3CoreLib {
   static NativeLibrary get _nativeLib {
@@ -26,6 +27,20 @@ class Iden3CoreLib {
         ? WitnessLib(/*ffi.DynamicLibrary.open("libgmp.so"),*/
             ffi.DynamicLibrary.open("libwitnesscalc.so"))
         : WitnessLib(ffi.DynamicLibrary.process());
+  }
+
+  static WitnessSigLib get _witnessSigLib {
+    return Platform.isAndroid
+        ? WitnessSigLib(/*ffi.DynamicLibrary.open("libgmp.so"),*/
+            ffi.DynamicLibrary.open("libwitnesscalc_sig.so"))
+        : WitnessSigLib(ffi.DynamicLibrary.process());
+  }
+
+  static WitnessMtpLib get _witnessMtpLib {
+    return Platform.isAndroid
+        ? WitnessMtpLib(/*ffi.DynamicLibrary.open("libgmp.so"),*/
+            ffi.DynamicLibrary.open("libwitnesscalc_mtp.so"))
+        : WitnessMtpLib(ffi.DynamicLibrary.process());
   }
 
   static ProverLib get _proverLib {
@@ -1817,7 +1832,6 @@ class Iden3CoreLib {
 
   Future<Map<String, dynamic>?> prove(
       Uint8List zkeyBytes, Uint8List wtnsBytes) async {
-
     Map<String, dynamic> map = {};
 
     int zkeySize = zkeyBytes.length;
@@ -1829,7 +1843,6 @@ class Iden3CoreLib {
 
     // ByteData wtnsBytes2 =
     // await rootBundle.load("assets/witness.wtns");
-
 
     int wtnsSize = wtnsBytes.length;
     ffi.Pointer<ffi.Char> wtnsBuffer = malloc<ffi.Char>(wtnsSize);
@@ -1949,13 +1962,11 @@ class Iden3CoreLib {
     return hexToBytes(s);
   }
 
-
-
-  Future<Map<String, dynamic>?> calculateProof(Uint8List inputsJsonBytes, Uint8List zkeyBytes,Uint8List datBytes) async{
-
-    final Uint8List? wtnsBytes = await calculateWitness(datBytes, inputsJsonBytes);
+  Future<Map<String, dynamic>?> calculateProof(Uint8List inputsJsonBytes,
+      Uint8List zkeyBytes, Uint8List datBytes) async {
+    final Uint8List? wtnsBytes =
+        await calculateWitness(datBytes, inputsJsonBytes);
 
     return await prove(zkeyBytes, wtnsBytes!);
   }
-
 }
