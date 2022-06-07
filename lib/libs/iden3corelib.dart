@@ -5,14 +5,14 @@ import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
-import 'package:privadoid_sdk/libs/generated_bindings_witness_mtp.dart';
 import 'package:privadoid_sdk/libs/proverlib.dart';
 import 'package:privadoid_sdk/model/credential_credential.dart';
 import 'package:privadoid_sdk/model/revocation_status.dart';
 import 'package:web3dart/crypto.dart';
 
 import 'generated_bindings.dart';
-import 'generated_bindings_witness.dart';
+import 'generated_bindings_witness.dart' as witness;
+import 'generated_bindings_witness_mtp.dart';
 import 'generated_bindings_witness_sig.dart';
 
 class Iden3CoreLib {
@@ -22,11 +22,11 @@ class Iden3CoreLib {
         : NativeLibrary(ffi.DynamicLibrary.process());
   }
 
-  static WitnessLib get _witnessLib {
+  static witness.WitnessLib get _witnessLib {
     return Platform.isAndroid
-        ? WitnessLib(/*ffi.DynamicLibrary.open("libgmp.so"),*/
+        ? witness.WitnessLib(/*ffi.DynamicLibrary.open("libgmp.so"),*/
             ffi.DynamicLibrary.open("libwitnesscalc.so"))
-        : WitnessLib(ffi.DynamicLibrary.process());
+        : witness.WitnessLib(ffi.DynamicLibrary.process());
   }
 
   static WitnessSigLib get _witnessSigLib {
@@ -1802,7 +1802,7 @@ class Iden3CoreLib {
 
     int result = _witnessLib.witnesscalc(circuitBuffer, circuitSize, jsonBuffer,
         jsonSize, wtnsBuffer, wtnsSize, errorMsg, errorMaxSize);
-    if (result == WITNESSCALC_OK) {
+    if (result == witness.WITNESSCALC_OK) {
       Uint8List wtnsBytes = Uint8List(wtnsSize.value);
       for (int i = 0; i < wtnsSize.value; i++) {
         wtnsBytes[i] = wtnsBuffer[i];
@@ -1814,14 +1814,14 @@ class Iden3CoreLib {
         print("Wtns: $wtnsmsg");
       }*/
       return wtnsBytes;
-    } else if (result == WITNESSCALC_ERROR) {
+    } else if (result == witness.WITNESSCALC_ERROR) {
       //ffi.Pointer<ffi.Int8> json = errorMsg.cast<ffi.Int8>();
       ffi.Pointer<Utf8> jsonString = errorMsg.cast<Utf8>();
       String errormsg = jsonString.toDartString();
       if (kDebugMode) {
         print("$result: ${result.toString()}. Error: $errormsg");
       }
-    } else if (result == WITNESSCALC_ERROR_SHORT_BUFFER) {
+    } else if (result == witness.WITNESSCALC_ERROR_SHORT_BUFFER) {
       if (kDebugMode) {
         print(
             "$result: ${result.toString()}. Error: Short buffer for proof or public");
