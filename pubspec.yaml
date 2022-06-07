@@ -90,6 +90,10 @@ flutter:
     - circuit_final.zkey
     - auth.dat
     - inputs.json
+    - credentialAtomicQueryMTP.dat
+    - credentialAtomicQueryMTP.zkey
+    - credentialAtomicQuerySig.dat
+    - credentialAtomicQuerySig.zkey
   #
   # For details regarding assets in packages, see
   # https://flutter.dev/assets-and-images/#from-packages
