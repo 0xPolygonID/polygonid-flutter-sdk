@@ -111,6 +111,34 @@ class Iden3CoreLib {
     return result;
   }
 
+
+  String generateIdentity(String pubX, String pubY){
+
+    // ID - ALL GOOD
+    String userRevNonce = "15930428023331155902";
+
+    ffi.Pointer<IDENId> id = malloc<IDENId>();
+    ffi.Pointer<ffi.Pointer<IDENClaim>> authClaim =
+    malloc<ffi.Pointer<IDENClaim>>();
+    ffi.Pointer<ffi.Pointer<IDENMerkleTree>> userAuthClaimsTree =
+    malloc<ffi.Pointer<IDENMerkleTree>>();
+    int res = _generateIdentity(
+        id, authClaim, userAuthClaimsTree, pubX, pubY, userRevNonce);
+    assert(res == 0);
+
+    var result = "";
+    for (int i = 0; i < 31; i++) {
+      result = result + id.ref.data[i].toRadixString(16).padLeft(2, '0');
+    }
+    print(result);
+    print(id.toString());
+    _nativeLib.IDENFreeMerkleTree(userAuthClaimsTree.value);
+    _nativeLib.IDENFreeClaim(authClaim.value);
+
+    return result;
+  }
+
+
   String getMerkleTreeRoot(String pubX, String pubY) {
     // TODO schemaHash hardcoded
     final schemaHash = [
@@ -642,6 +670,8 @@ class Iden3CoreLib {
         challengePointer, unsafePointerChallenge, status);
     request.ref.challenge = challengePointer.value;
 
+
+
     // ID - ALL GOOD
     String userRevNonce = "15930428023331155902";
 
@@ -875,16 +905,17 @@ class Iden3CoreLib {
     if (credential.proof![1].mtp!.siblings!.isNotEmpty) {
       claimMTP.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
           credential.proof![1].mtp!.siblings!.length);
-      for (int i = 0;
-      i < credential.proof![1].mtp!.siblings!.length;
-      i++) {
+
+      for (int i = 0; i < credential.proof![1].mtp!.siblings!.length; i++) {
         List<int> siblingBytes = intToBytes(
             BigInt.parse(credential.proof![1].mtp!.siblings![i]));
         ffi.Pointer<ffi.UnsignedChar> unsafePointerSiblingBytes =
         malloc<ffi.UnsignedChar>(siblingBytes.length);
+
         for (int i = 0; i < siblingBytes.length; i++) {
           unsafePointerSiblingBytes[i] = siblingBytes[i];
         }
+
         claimMTP.ref.siblings[i] = unsafePointerSiblingBytes;
       }
       claimMTP.ref.siblings_num =
@@ -1123,6 +1154,8 @@ class Iden3CoreLib {
     res = _generateIdentity(
         id, authClaim, userClaimsTree, pubX, pubY, userAuthClaimRevNonce);
     assert(res == 0);
+    
+    print(id);
 
     request.ref.id = id.ref;
     request.ref.auth_claim.core_claim = authClaim.value;
@@ -1814,7 +1847,7 @@ class Iden3CoreLib {
     int result = 0;
     ffi.Pointer<ffi.Pointer<IDENStatus>> status =
         malloc<ffi.Pointer<IDENStatus>>();
-    int res = _nativeLib.IDENNewMerkleTree(claimsTree, 40, status);
+    int res = _nativeLib.IDENNewMerkleTree(claimsTree, 32, status);
     if (res == 0) {
       _consumeStatus(status, "can't create merkle tree");
       result = 1;

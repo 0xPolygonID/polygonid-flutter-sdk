@@ -40,33 +40,39 @@ class PrivadoIdSdk {
     final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
         privateKey: HexUtils.hexToBytes(privateKey));
 
-    final String mtRoot = _iden3coreLib.getMerkleTreeRoot(
-        wallet.publicKey[0], wallet.publicKey[1]);
-    if (kDebugMode) {
-      print("mtRoot: $mtRoot");
-    }
-    Uint8List bufMtRoot = Uint8List.fromList(HEX.decode(mtRoot));
-    BigInt mtRootBigInt = Uint8ArrayUtils.beBuff2int(
-        Uint8List.fromList(bufMtRoot.reversed.toList()));
-    if (kDebugMode) {
-      print("mtRootBigInt: $mtRootBigInt");
-    }
+    // final String mtRoot = _iden3coreLib.getMerkleTreeRoot(
+    //     wallet.publicKey[0], wallet.publicKey[1]);
+    // if (kDebugMode) {
+    //   print("mtRoot: $mtRoot");
+    // }
+    // Uint8List bufMtRoot = Uint8List.fromList(HEX.decode(mtRoot));
+    // BigInt mtRootBigInt = Uint8ArrayUtils.beBuff2int(
+    //     Uint8List.fromList(bufMtRoot.reversed.toList()));
+    // if (kDebugMode) {
+    //   print("mtRootBigInt: $mtRootBigInt");
+    // }
+    //
+    // String state = wallet.hashMessage(mtRootBigInt.toString(),
+    //     BigInt.zero.toString(), BigInt.zero.toString());
+    // if (kDebugMode) {
+    //   print("state: $state");
+    // }
+    // Uint8List bufState = Uint8List.fromList(HEX.decode(state));
+    // BigInt stateBigInt = Uint8ArrayUtils.beBuff2int(bufState);
+    // if (kDebugMode) {
+    //   print("stateBigInt: $stateBigInt");
+    // }
+    //
+    // final String genesisId = _iden3coreLib.getGenesisId(state);
+    // if (kDebugMode) {
+    //   print("GenesisId: $genesisId");
+    // }
 
-    String state = wallet.hashMessage(mtRootBigInt.toString(),
-        BigInt.zero.toString(), BigInt.zero.toString());
-    if (kDebugMode) {
-      print("state: $state");
-    }
-    Uint8List bufState = Uint8List.fromList(HEX.decode(state));
-    BigInt stateBigInt = Uint8ArrayUtils.beBuff2int(bufState);
-    if (kDebugMode) {
-      print("stateBigInt: $stateBigInt");
-    }
+    String genesisId = _iden3coreLib.generateIdentity(wallet.publicKey[0], wallet.publicKey[1]);
 
-    final String genesisId = _iden3coreLib.getGenesisId(state);
-    if (kDebugMode) {
-      print("GenesisId: $genesisId");
-    }
+    String? rest = await getAuthClaim(privateKey);
+    print(rest);
+    print(genesisId);
 
     return genesisId;
   }
