@@ -662,12 +662,9 @@ class Iden3CoreLib {
     }
 
     // CHALLENGE - ALL GOOD
-    ffi.Pointer<ffi.Char> unsafePointerChallenge =
-        challenge.toNativeUtf8().cast<ffi.Char>();
-    ffi.Pointer<ffi.Pointer<IDENBigInt>> challengePointer =
-        malloc<ffi.Pointer<IDENBigInt>>();
-    res = _nativeLib.IDENBigIntFromString(
-        challengePointer, unsafePointerChallenge, status);
+    ffi.Pointer<ffi.Char> unsafePointerChallenge = challenge.toNativeUtf8().cast<ffi.Char>();
+    ffi.Pointer<ffi.Pointer<IDENBigInt>> challengePointer = malloc<ffi.Pointer<IDENBigInt>>();
+    res = _nativeLib.IDENBigIntFromString(challengePointer, unsafePointerChallenge, status);
     request.ref.challenge = challengePointer.value;
 
 
@@ -907,16 +904,13 @@ class Iden3CoreLib {
           credential.proof![1].mtp!.siblings!.length);
 
       for (int i = 0; i < credential.proof![1].mtp!.siblings!.length; i++) {
-        List<int> siblingBytes = intToBytes(
-            BigInt.parse(credential.proof![1].mtp!.siblings![i]));
-        ffi.Pointer<ffi.UnsignedChar> unsafePointerSiblingBytes =
-        malloc<ffi.UnsignedChar>(siblingBytes.length);
 
-        for (int i = 0; i < siblingBytes.length; i++) {
-          unsafePointerSiblingBytes[i] = siblingBytes[i];
-        }
+        claimMTP.ref.siblings[i] = malloc<ffi.UnsignedChar>(64);
+        // Fill siblings
+        res = fillDataSibling(claimMTP.ref.siblings[i], credential.proof![1].mtp!.siblings![i], status);
+        assert(res == 1);
 
-        claimMTP.ref.siblings[i] = unsafePointerSiblingBytes;
+
       }
       claimMTP.ref.siblings_num =
           credential.proof![1].mtp!.siblings!.length;
@@ -945,7 +939,7 @@ class Iden3CoreLib {
       issuerState.ref.state.data[i] = issuerProofStateBytes[i];
     }
     List<int> issuerProofRootRootsBytes =
-    hexToBytes(credential.proof![1].issuer_data!.state!.value!);
+    hexToBytes(credential.proof![1].issuer_data!.state!.root_of_roots!);
     for (var i = 0; i < issuerProofRootRootsBytes.length; i++) {
       issuerState.ref.root_of_roots.data[i] =
       issuerProofRootRootsBytes[i];
@@ -1407,7 +1401,7 @@ class Iden3CoreLib {
       issuerStateAfterClaimAdd.ref.state.data[i] = issuerProofStateBytes[i];
     }
     List<int> issuerProofRootRootsBytes =
-        hexToBytes(credential.proof![1].issuer_data!.state!.value!);
+        hexToBytes(credential.proof![1].issuer_data!.state!.root_of_roots!);
     for (var i = 0; i < issuerProofRootRootsBytes.length; i++) {
       issuerStateAfterClaimAdd.ref.root_of_roots.data[i] =
           issuerProofRootRootsBytes[i];
@@ -2256,5 +2250,30 @@ class Iden3CoreLib {
         await calculateWitness(datBytes, inputsJsonBytes);
 
     return await prove(zkeyBytes, wtnsBytes!);
+  }
+
+  int fillDataSibling(ffi.Pointer<ffi.UnsignedChar> dest, String source, ffi.Pointer<ffi.Pointer<IDENStatus>> status) {
+
+    ffi.Pointer<ffi.Char> unsafePointerValue = source.toNativeUtf8().cast<ffi.Char>();
+    ffi.Pointer<ffi.Pointer<IDENBigInt>> valuePtr = malloc<ffi.Pointer<IDENBigInt>>();
+    int res = _nativeLib.IDENBigIntFromString(valuePtr, unsafePointerValue, status);
+    if (res == 0) {
+      return res;
+    }
+
+
+    ffi.Pointer<IDENMerkleTreeHash> itemHash = malloc<IDENMerkleTreeHash>();
+    res = _nativeLib.IDENHashFromBigInt(itemHash, valuePtr.value, status);
+    if (res == 0) {
+      return res;
+    }
+
+    for(int j =0; j<64; j++){
+      dest[j] = itemHash.ref.data[j];
+    }
+
+    // TODO: properly free memory
+
+    return 1;
   }
 }
