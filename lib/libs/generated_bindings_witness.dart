@@ -60,7 +60,7 @@ class WitnessLib {
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.UnsignedLong>,
               ffi.Pointer<ffi.Char>,
-              ffi.UnsignedLong)>>('witnesscalc');
+              ffi.UnsignedLong)>>('witnesscalc_auth');
   late final _witnesscalc = _witnesscalcPtr.asFunction<
       int Function(
           ffi.Pointer<ffi.Char>,
