@@ -763,28 +763,28 @@ class Iden3CoreLib {
     }
     request.ref.auth_claim.proof = proof[0];
 
-    ffi.Pointer<IDENId> issuerId = malloc<IDENId>();
-    ffi.Pointer<ffi.Pointer<IDENClaim>> issuerAuthClaim =
-        malloc<ffi.Pointer<IDENClaim>>();
-    ffi.Pointer<ffi.Pointer<IDENMerkleTree>> issuerAuthClaimsTree =
-        malloc<ffi.Pointer<IDENMerkleTree>>();
-    res = _generateIdentity(issuerId, issuerAuthClaim, issuerAuthClaimsTree,
-        issuerPubX, issuerPubY, issuerRevNonce);
-    assert(res == 0);
+    // ffi.Pointer<IDENId> issuerId = malloc<IDENId>();
+    // ffi.Pointer<ffi.Pointer<IDENClaim>> issuerAuthClaim =
+    //     malloc<ffi.Pointer<IDENClaim>>();
+    // ffi.Pointer<ffi.Pointer<IDENMerkleTree>> issuerAuthClaimsTree =
+    //     malloc<ffi.Pointer<IDENMerkleTree>>();
+    // res = _generateIdentity(issuerId, issuerAuthClaim, issuerAuthClaimsTree,
+    //     issuerPubX, issuerPubY, issuerRevNonce);
+    // assert(res == 0);
+    //
+    // request.ref.claim.issuer_id = issuerId.ref;
 
-    request.ref.claim.issuer_id = issuerId.ref;
-
-    ffi.Pointer<IDENMerkleTree> issuerRevTree = _createCorrectMT()!;
-
-    ffi.Pointer<IDENMerkleTreeHash> issuerClaimsTreeRoot =
-        malloc<IDENMerkleTreeHash>();
-
-    res = _nativeLib.IDENMerkleTreeRoot(
-        issuerClaimsTreeRoot, issuerRevTree, status);
-    if (res == 0) {
-      _consumeStatus(status, "can't calculate issuer's claims tree root");
-      return "";
-    }
+    // ffi.Pointer<IDENMerkleTree> issuerRevTree = _createCorrectMT()!;
+    //
+    // ffi.Pointer<IDENMerkleTreeHash> issuerClaimsTreeRoot =
+    //     malloc<IDENMerkleTreeHash>();
+    //
+    // res = _nativeLib.IDENMerkleTreeRoot(
+    //     issuerClaimsTreeRoot, issuerRevTree, status);
+    // if (res == 0) {
+    //   _consumeStatus(status, "can't calculate issuer's claims tree root");
+    //   return "";
+    // }
 
     request.ref.claim.core_claim = parseClaim(jsonLDDocument, schema)!;
 
@@ -890,12 +890,9 @@ class Iden3CoreLib {
     request.ref.claim.signature_proof.issuer_auth_non_rev_proof.proof =
         ffi.nullptr;
 
-    //debugger();
-    request.ref.claim.proof = ffi.nullptr;
 
 
-
-
+    // Claim MTP
     ffi.Pointer<IDENProof> claimMTP = malloc<IDENProof>();
     claimMTP.ref.existence =
     credential.proof![1].mtp!.existence! ? 1 : 0;
@@ -924,7 +921,7 @@ class Iden3CoreLib {
     request.ref.claim.proof = claimMTP;
 
 
-
+    // Claim state
     ffi.Pointer<IDENTreeState> issuerState =
     malloc<IDENTreeState>();
     List<int> issuerProofClaimsTreeRootBytes =
@@ -954,7 +951,19 @@ class Iden3CoreLib {
     request.ref.claim.tree_state = issuerState.ref;
 
 
-
+    // Claim issuer
+    // Issuer ID
+    ffi.Pointer<IDENId> issuerIdPtr = malloc<IDENId>();
+    String issuerId = credential.proof![1].issuer_data!.id!;
+    ffi.Pointer<ffi.Char> issuerIdStr =
+    issuerId.toNativeUtf8().cast<ffi.Char>();
+    res = _nativeLib.IDENIdFromString(issuerIdPtr, issuerIdStr, status);
+    if (res == 0) {
+      _consumeStatus(status, "error getting issuer's id");
+      //retVal = 1;
+      return "";
+    }
+    request.ref.claim.issuer_id = issuerIdPtr.ref;
 
 
 
@@ -1049,10 +1058,10 @@ class Iden3CoreLib {
     _nativeLib.IDENFreeBigInt(request.ref.challenge);
     _nativeLib.IDENFreeBigInt(request.ref.query.values[0]);
     _nativeLib.IDENFreeClaim(request.ref.auth_claim.core_claim);
-    _nativeLib.IDENFreeClaim(issuerAuthClaim.value);
+    // _nativeLib.IDENFreeClaim(issuerAuthClaim.value);
     _nativeLib.IDENFreeMerkleTree(userAuthClaimsTree.value);
-    _nativeLib.IDENFreeMerkleTree(issuerAuthClaimsTree.value);
-    _nativeLib.IDENFreeMerkleTree(issuerRevTree);
+    // _nativeLib.IDENFreeMerkleTree(issuerAuthClaimsTree.value);
+    // _nativeLib.IDENFreeMerkleTree(issuerRevTree);
     _nativeLib.IDENFreeMerkleTree(emptyTree);
     _nativeLib.IDENFreeProof(request.ref.claim.proof);
     _nativeLib.IDENFreeProof(request.ref.auth_claim.proof);
