@@ -6,14 +6,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import "package:hex/hex.dart";
 import 'package:privadoid_sdk/http.dart';
-import 'package:privadoid_sdk/jwz_preparer.dart';
+import 'package:privadoid_sdk/jwz/jwz_preparer.dart';
 import 'package:privadoid_sdk/model/revocation_status.dart';
 import 'package:privadoid_sdk/privadoid_wallet.dart';
 import 'package:privadoid_sdk/utils/hex_utils.dart';
 import 'package:privadoid_sdk/utils/uint8_list_utils.dart';
 
-import 'jwz_prover.dart';
-import 'jwz_token.dart';
+import 'jwz/jwz_prover.dart';
+import 'jwz/jwz_token.dart';
 import 'libs/iden3corelib.dart';
 import 'model/credential_data.dart';
 import 'model/jwz/jwz.dart';
@@ -21,6 +21,7 @@ import 'model/jwz/jwz_header.dart';
 
 class PrivadoIdSdk {
   static const MethodChannel _channel = MethodChannel('privadoid_sdk');
+
   static Iden3CoreLib get _iden3coreLib {
     return Iden3CoreLib();
   }
@@ -203,8 +204,10 @@ class PrivadoIdSdk {
       String authClaim, Uint8List zKeyBytes, Uint8List datFile) async {
     final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
         privateKey: HexUtils.hexToBytes(privateKey));
-    var preparer = JWZPreparer(wallet: wallet, authClaim: authClaim);
-    var prover = JWZProverImpl(alg: "groth16", circuitID: "auth");
+    var preparer = JWZPreparer(
+        wallet: wallet, authClaim: authClaim, coreLib: _iden3coreLib);
+    var prover = JWZProverImpl(
+        alg: "groth16", circuitID: "auth", coreLib: _iden3coreLib);
     var jwztoken = JWZToken.withJWZ(
         jwz: JWZ(
             header: JWZHeader(

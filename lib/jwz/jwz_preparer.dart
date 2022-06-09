@@ -4,18 +4,20 @@ import 'package:privadoid_sdk/privadoid_wallet.dart';
 import 'package:privadoid_sdk/utils/uint8_list_utils.dart';
 import 'package:web3dart/crypto.dart';
 
+import '../libs/iden3corelib.dart';
 import 'jwz_token.dart';
-import 'libs/iden3corelib.dart';
 
 class JWZPreparer extends JWZInputPreparer {
-  static Iden3CoreLib get _iden3coreLib {
-    return Iden3CoreLib();
-  }
+  // TODO: should be injected
+  late Iden3CoreLib _iden3coreLib;
 
   String authClaim;
   PrivadoIdWallet wallet;
 
-  JWZPreparer({required this.wallet, required this.authClaim});
+  JWZPreparer(
+      {required this.wallet, required this.authClaim, Iden3CoreLib? coreLib}) {
+    _iden3coreLib = coreLib ?? Iden3CoreLib();
+  }
 
   @override
   Uint8List prepare(Uint8List hash, String circuitID) {
