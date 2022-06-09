@@ -126,7 +126,7 @@ class JWZToken implements Base64Encoder {
     BigInt q = endian.qNormalize();
 
     // Poseidon hash
-    String hashed = _circom!.poseidonHash(q.toString());
+    String hashed = _circom.poseidonHash(q.toString());
 
     return hexToBytes(hashed);
   }
