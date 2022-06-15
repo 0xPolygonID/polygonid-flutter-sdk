@@ -70,6 +70,7 @@ class CredentialCredentialSubject {
   final int? birthday;
   final int? countryCode;
   final int? documentType;
+  final int? version;
 
   CredentialCredentialSubject({
     this.id,
@@ -77,6 +78,7 @@ class CredentialCredentialSubject {
     this.birthday,
     this.documentType,
     this.countryCode,
+    this.version,
   });
 
   /// Creates an instance from the given json
@@ -87,9 +89,10 @@ class CredentialCredentialSubject {
     return CredentialCredentialSubject(
         id: json['id'],
         type: json['type'],
-        birthday: json['birthday'],
+        birthday: json['birthday'] ?? json['birthDay'],
         countryCode: json['countryCode'],
-        documentType: json['documentType']);
+        documentType: json['documentType'],
+        version: json['version']);
   }
 
   Map<String, dynamic> toJson() => {
@@ -98,5 +101,6 @@ class CredentialCredentialSubject {
         'birthday': birthday,
         'countryCode': countryCode,
         'documentType': documentType,
+        'version': version,
       };
 }
