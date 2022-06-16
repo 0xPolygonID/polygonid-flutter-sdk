@@ -897,9 +897,9 @@ class Iden3CoreLib {
 
       for (int i = 0; i < credential.proof![1].mtp!.siblings!.length; i++) {
         List<int> siblingBytes =
-        intToBytes(BigInt.parse(credential.proof![1].mtp!.siblings![i]));
+            intToBytes(BigInt.parse(credential.proof![1].mtp!.siblings![i]));
         ffi.Pointer<ffi.UnsignedChar> unsafePointerSiblingBytes =
-        malloc<ffi.UnsignedChar>(siblingBytes.length);
+            malloc<ffi.UnsignedChar>(siblingBytes.length);
         for (int i = 0; i < siblingBytes.length; i++) {
           unsafePointerSiblingBytes[i] = siblingBytes[i];
         }
@@ -2110,9 +2110,6 @@ class Iden3CoreLib {
       zkeyBuffer[i] = data[i];
     }
 
-    // ByteData wtnsBytes2 =
-    // await rootBundle.load("assets/witness.wtns");
-
     int wtnsSize = wtnsBytes.length;
     ffi.Pointer<ffi.Char> wtnsBuffer = malloc<ffi.Char>(wtnsSize);
     final data2 = wtnsBytes.buffer.asUint8List();
@@ -2120,12 +2117,6 @@ class Iden3CoreLib {
       wtnsBuffer[i] = data2[i];
     }
 
-    /*int zkeySize = zkeyBytes.length; // 15613350 // 32543618
-    ffi.Pointer<ffi.Void> zkeyBuffer =
-        Uint8ArrayUtils.toPointer(zkeyBytes).cast();
-    int wtnsSize = wtnsBytes.length; // 890924 // 1860716
-    ffi.Pointer<ffi.Void> wtnsBuffer =
-        Uint8ArrayUtils.toPointer(wtnsBytes).cast();*/
     ffi.Pointer<ffi.UnsignedLong> proofSize = malloc<ffi.UnsignedLong>();
     proofSize.value = 16384;
     ffi.Pointer<ffi.Char> proofBuffer = malloc<ffi.Char>(proofSize.value);
