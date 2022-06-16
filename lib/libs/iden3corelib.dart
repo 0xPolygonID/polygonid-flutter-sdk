@@ -894,17 +894,8 @@ class Iden3CoreLib {
     if (credential.proof![1].mtp!.siblings!.isNotEmpty) {
       claimMTP.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
           credential.proof![1].mtp!.siblings!.length);
-
       for (int i = 0; i < credential.proof![1].mtp!.siblings!.length; i++) {
         claimMTP.ref.siblings[i] = malloc<ffi.UnsignedChar>(64);
-        /*List<int> siblingBytes =
-            intToBytes(BigInt.parse(credential.proof![1].mtp!.siblings![i]));
-        ffi.Pointer<ffi.UnsignedChar> unsafePointerSiblingBytes =
-            malloc<ffi.UnsignedChar>(siblingBytes.length);
-        for (int i = 0; i < siblingBytes.length; i++) {
-          unsafePointerSiblingBytes[i] = siblingBytes[i];
-        }
-        claimMTP.ref.siblings[i] = unsafePointerSiblingBytes;*/
         // Fill siblings
         res = fillDataSibling(claimMTP.ref.siblings[i],
             credential.proof![1].mtp!.siblings![i], status);
@@ -994,14 +985,11 @@ class Iden3CoreLib {
       claimNonRevProof.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
           revocationStatus.mtp!.siblings!.length);
       for (int i = 0; i < revocationStatus.mtp!.siblings!.length; i++) {
-        List<int> siblingBytes =
-            intToBytes(BigInt.parse(revocationStatus.mtp!.siblings![i]));
-        ffi.Pointer<ffi.UnsignedChar> unsafePointerSiblingBytes =
-            malloc<ffi.UnsignedChar>(siblingBytes.length);
-        for (int i = 0; i < siblingBytes.length; i++) {
-          unsafePointerSiblingBytes[i] = siblingBytes[i];
-        }
-        claimNonRevProof.ref.siblings[i] = unsafePointerSiblingBytes;
+        claimNonRevProof.ref.siblings[i] = malloc<ffi.UnsignedChar>(64);
+        // Fill siblings
+        res = fillDataSibling(claimNonRevProof.ref.siblings[i],
+            revocationStatus.mtp!.siblings![i], status);
+        assert(res == 1);
       }
       claimNonRevProof.ref.siblings_num =
           revocationStatus.mtp!.siblings!.length;
@@ -1295,14 +1283,11 @@ class Iden3CoreLib {
       for (int i = 0;
           i < credential.proof![0].issuer_data!.mtp!.siblings!.length;
           i++) {
-        List<int> siblingBytes = intToBytes(
-            BigInt.parse(credential.proof![0].issuer_data!.mtp!.siblings![i]));
-        ffi.Pointer<ffi.UnsignedChar> unsafePointerSiblingBytes =
-            malloc<ffi.UnsignedChar>(siblingBytes.length);
-        for (int i = 0; i < siblingBytes.length; i++) {
-          unsafePointerSiblingBytes[i] = siblingBytes[i];
-        }
-        issuerAuthClaimMTP.ref.siblings[i] = unsafePointerSiblingBytes;
+        issuerAuthClaimMTP.ref.siblings[i] = malloc<ffi.UnsignedChar>(64);
+        // Fill siblings
+        res = fillDataSibling(issuerAuthClaimMTP.ref.siblings[i],
+            credential.proof![0].issuer_data!.mtp!.siblings![i], status);
+        assert(res == 1);
       }
       issuerAuthClaimMTP.ref.siblings_num =
           credential.proof![0].issuer_data!.mtp!.siblings!.length;
@@ -1351,14 +1336,11 @@ class Iden3CoreLib {
       issuerNonRevMTP.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
           authRevocationStatus.mtp!.siblings!.length);
       for (int i = 0; i < authRevocationStatus.mtp!.siblings!.length; i++) {
-        List<int> siblingBytes =
-            intToBytes(BigInt.parse(authRevocationStatus.mtp!.siblings![i]));
-        ffi.Pointer<ffi.UnsignedChar> unsafePointerSiblingBytes =
-            malloc<ffi.UnsignedChar>(siblingBytes.length);
-        for (int i = 0; i < siblingBytes.length; i++) {
-          unsafePointerSiblingBytes[i] = siblingBytes[i];
-        }
-        issuerNonRevMTP.ref.siblings[i] = unsafePointerSiblingBytes;
+        issuerNonRevMTP.ref.siblings[i] = malloc<ffi.UnsignedChar>(64);
+        // Fill siblings
+        res = fillDataSibling(issuerNonRevMTP.ref.siblings[i],
+            authRevocationStatus.mtp!.siblings![i], status);
+        assert(res == 1);
       }
       issuerNonRevMTP.ref.siblings_num =
           authRevocationStatus.mtp!.siblings!.length;
@@ -1466,14 +1448,11 @@ class Iden3CoreLib {
       claimNonRevProof.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
           revocationStatus.mtp!.siblings!.length);
       for (int i = 0; i < revocationStatus.mtp!.siblings!.length; i++) {
-        List<int> siblingBytes =
-            intToBytes(BigInt.parse(revocationStatus.mtp!.siblings![i]));
-        ffi.Pointer<ffi.UnsignedChar> unsafePointerSiblingBytes =
-            malloc<ffi.UnsignedChar>(siblingBytes.length);
-        for (int i = 0; i < siblingBytes.length; i++) {
-          unsafePointerSiblingBytes[i] = siblingBytes[i];
-        }
-        claimNonRevProof.ref.siblings[i] = unsafePointerSiblingBytes;
+        claimNonRevProof.ref.siblings[i] = malloc<ffi.UnsignedChar>(64);
+        // Fill siblings
+        res = fillDataSibling(claimNonRevProof.ref.siblings[i],
+            revocationStatus.mtp!.siblings![i], status);
+        assert(res == 1);
       }
       claimNonRevProof.ref.siblings_num =
           revocationStatus.mtp!.siblings!.length;
