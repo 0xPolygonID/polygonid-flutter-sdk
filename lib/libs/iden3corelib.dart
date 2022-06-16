@@ -896,18 +896,19 @@ class Iden3CoreLib {
           credential.proof![1].mtp!.siblings!.length);
 
       for (int i = 0; i < credential.proof![1].mtp!.siblings!.length; i++) {
-        List<int> siblingBytes =
+        claimMTP.ref.siblings[i] = malloc<ffi.UnsignedChar>(64);
+        /*List<int> siblingBytes =
             intToBytes(BigInt.parse(credential.proof![1].mtp!.siblings![i]));
         ffi.Pointer<ffi.UnsignedChar> unsafePointerSiblingBytes =
             malloc<ffi.UnsignedChar>(siblingBytes.length);
         for (int i = 0; i < siblingBytes.length; i++) {
           unsafePointerSiblingBytes[i] = siblingBytes[i];
         }
-        claimMTP.ref.siblings[i] = unsafePointerSiblingBytes;
+        claimMTP.ref.siblings[i] = unsafePointerSiblingBytes;*/
         // Fill siblings
-        //res = fillDataSibling(claimMTP.ref.siblings[i],
-        //    credential.proof![1].mtp!.siblings![i], status);
-        //assert(res == 1);
+        res = fillDataSibling(claimMTP.ref.siblings[i],
+            credential.proof![1].mtp!.siblings![i], status);
+        assert(res == 1);
       }
       claimMTP.ref.siblings_num = credential.proof![1].mtp!.siblings!.length;
     } else {
