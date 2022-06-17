@@ -4,13 +4,11 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import "package:hex/hex.dart";
 import 'package:privadoid_sdk/http.dart';
 import 'package:privadoid_sdk/jwz/jwz_preparer.dart';
 import 'package:privadoid_sdk/model/revocation_status.dart';
 import 'package:privadoid_sdk/privadoid_wallet.dart';
 import 'package:privadoid_sdk/utils/hex_utils.dart';
-import 'package:privadoid_sdk/utils/uint8_list_utils.dart';
 
 import 'jwz/jwz_prover.dart';
 import 'jwz/jwz_token.dart';
@@ -69,7 +67,8 @@ class PrivadoIdSdk {
     //   print("GenesisId: $genesisId");
     // }
 
-    String genesisId = _iden3coreLib.generateIdentity(wallet.publicKey[0], wallet.publicKey[1]);
+    String genesisId = _iden3coreLib.generateIdentity(
+        wallet.publicKey[0], wallet.publicKey[1]);
 
     String? rest = await getAuthClaim(privateKey);
     print(rest);
@@ -117,7 +116,7 @@ class PrivadoIdSdk {
       String circuitId,
       String claimType,
       String key,
-      int value,
+      List<int> values,
       int operator,
       String revStatusUrl) async {
     final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
@@ -147,7 +146,7 @@ class PrivadoIdSdk {
           schema,
           claimType,
           key,
-          value,
+          values,
           operator,
           claimRevocaitonStatus);
     } else if (circuitId == "credentialAtomicQuerySig") {
@@ -171,7 +170,7 @@ class PrivadoIdSdk {
           schema,
           claimType,
           key,
-          value,
+          values,
           operator,
           claimRevocaitonStatus,
           authRevocationStatus);

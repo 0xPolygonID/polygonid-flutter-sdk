@@ -632,7 +632,7 @@ class Iden3CoreLib {
       String schema,
       String claimType,
       String key,
-      int value,
+      List<int> values,
       int operator,
       RevocationStatus revocationStatus) {
     ffi.Pointer<ffi.Pointer<IDENStatus>> status =
@@ -641,18 +641,24 @@ class Iden3CoreLib {
         malloc<IDENAtomicQueryMTPInputs>();
     request.ref.current_timestamp =
         DateTime.now().millisecondsSinceEpoch ~/ 1000;
-
+    int res = 0;
     // QUERY - ALL GOOD
     request.ref.query.slot_index = _getFieldSlotIndex(schema, claimType, key);
-
-    ffi.Pointer<ffi.Char> unsafePointerValue =
-        value.toString().toNativeUtf8().cast<ffi.Char>();
-    ffi.Pointer<ffi.Pointer<IDENBigInt>> valuePtr =
-        malloc<ffi.Pointer<IDENBigInt>>();
-    int res =
-        _nativeLib.IDENBigIntFromString(valuePtr, unsafePointerValue, status);
-    request.ref.query.values = valuePtr;
-    request.ref.query.values_num = 1;
+    ffi.Pointer<ffi.Pointer<IDENBigInt>> valuesPtr =
+        malloc<ffi.Pointer<IDENBigInt>>(values.length);
+    for (int i = 0; i < values.length; i++) {
+      ffi.Pointer<ffi.Pointer<IDENBigInt>> valuePtr =
+          malloc<ffi.Pointer<IDENBigInt>>(values.length);
+      int value = values[i];
+      ffi.Pointer<ffi.Char> unsafePointerValue =
+          value.toString().toNativeUtf8().cast<ffi.Char>();
+      res =
+          _nativeLib.IDENBigIntFromString(valuePtr, unsafePointerValue, status);
+      assert(res == 0);
+      valuesPtr[i] = valuePtr.value;
+    }
+    request.ref.query.values = valuesPtr;
+    request.ref.query.values_num = values.length;
     request.ref.query.operator1 = operator;
     if (kDebugMode) {
       print("query after free: ${request.ref.query.slot_index}");
@@ -1052,7 +1058,7 @@ class Iden3CoreLib {
       String schema,
       String claimType,
       String key,
-      int value,
+      List<int> values,
       int operator,
       RevocationStatus revocationStatus,
       RevocationStatus authRevocationStatus) {
@@ -1062,21 +1068,26 @@ class Iden3CoreLib {
         malloc<IDENAtomicQuerySigInputs>();
     request.ref.current_timestamp =
         DateTime.now().millisecondsSinceEpoch ~/ 1000;
-
+    int res = 0;
     // QUERY - ALL GOOD
     request.ref.query.slot_index = _getFieldSlotIndex(schema, claimType, key);
-
-    ffi.Pointer<ffi.Char> unsafePointerValue =
-        value.toString().toNativeUtf8().cast<ffi.Char>();
-    ffi.Pointer<ffi.Pointer<IDENBigInt>> valuePtr =
-        malloc<ffi.Pointer<IDENBigInt>>();
-    int res =
-        _nativeLib.IDENBigIntFromString(valuePtr, unsafePointerValue, status);
-    if (res == 0) {
-      _consumeStatus(status, "");
+    ffi.Pointer<ffi.Pointer<IDENBigInt>> valuesPtr =
+        malloc<ffi.Pointer<IDENBigInt>>(values.length);
+    for (int i = 0; i < values.length; i++) {
+      ffi.Pointer<ffi.Pointer<IDENBigInt>> valuePtr =
+          malloc<ffi.Pointer<IDENBigInt>>(values.length);
+      int value = values[i];
+      ffi.Pointer<ffi.Char> unsafePointerValue =
+          value.toString().toNativeUtf8().cast<ffi.Char>();
+      res =
+          _nativeLib.IDENBigIntFromString(valuePtr, unsafePointerValue, status);
+      if (res == 0) {
+        _consumeStatus(status, "");
+      }
+      valuesPtr[i] = valuePtr.value;
     }
-    request.ref.query.values = valuePtr;
-    request.ref.query.values_num = 1;
+    request.ref.query.values = valuesPtr;
+    request.ref.query.values_num = values.length;
     request.ref.query.operator1 = operator;
     if (kDebugMode) {
       print("query after free: ${request.ref.query.slot_index}");
@@ -1879,34 +1890,33 @@ class Iden3CoreLib {
   }
 
   int _getFieldSlotIndex(String schema, String claimType, String key) {
-
     if (key.isEmpty) {
       return 0;
     }
     var slotIn = 0;
-      ffi.Pointer<ffi.Int> slotI =
-      slotIn.toString().toNativeUtf8().cast<ffi.Int>();
-      ffi.Pointer<ffi.Char> keyP = key.toNativeUtf8().cast<ffi.Char>();
-      ffi.Pointer<ffi.Char> claimTypeP =
-      claimType.toNativeUtf8().cast<ffi.Char>();
-      ffi.Pointer<ffi.Char> schemaP = schema.toNativeUtf8().cast<ffi.Char>();
-      int result = 0;
-      ffi.Pointer<ffi.Pointer<IDENStatus>> status =
-      malloc<ffi.Pointer<IDENStatus>>();
-      int res = _nativeLib.IDENJsonLDGetFieldSlotIndex(
-          slotI, keyP, claimTypeP, schemaP, status);
-      if (res == 0) {
-        _consumeStatus(status, "IDENJsonLDGetFieldSlotIndex error");
-        return result;
-      }
-      if (kDebugMode) {
-        print("slotIndex: ${slotI.value}");
-      }
-      result = slotI.value;
-      _nativeLib.free(slotI.cast());
-      _nativeLib.free(keyP.cast());
-      _nativeLib.free(claimTypeP.cast());
-      _nativeLib.free(schemaP.cast());
+    ffi.Pointer<ffi.Int> slotI =
+        slotIn.toString().toNativeUtf8().cast<ffi.Int>();
+    ffi.Pointer<ffi.Char> keyP = key.toNativeUtf8().cast<ffi.Char>();
+    ffi.Pointer<ffi.Char> claimTypeP =
+        claimType.toNativeUtf8().cast<ffi.Char>();
+    ffi.Pointer<ffi.Char> schemaP = schema.toNativeUtf8().cast<ffi.Char>();
+    int result = 0;
+    ffi.Pointer<ffi.Pointer<IDENStatus>> status =
+        malloc<ffi.Pointer<IDENStatus>>();
+    int res = _nativeLib.IDENJsonLDGetFieldSlotIndex(
+        slotI, keyP, claimTypeP, schemaP, status);
+    if (res == 0) {
+      _consumeStatus(status, "IDENJsonLDGetFieldSlotIndex error");
+      return result;
+    }
+    if (kDebugMode) {
+      print("slotIndex: ${slotI.value}");
+    }
+    result = slotI.value;
+    _nativeLib.free(slotI.cast());
+    _nativeLib.free(keyP.cast());
+    _nativeLib.free(claimTypeP.cast());
+    _nativeLib.free(schemaP.cast());
     return result;
   }
 
