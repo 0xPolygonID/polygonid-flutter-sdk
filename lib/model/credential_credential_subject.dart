@@ -70,6 +70,7 @@ class CredentialCredentialSubject {
   final int? birthday;
   final int? countryCode;
   final int? documentType;
+  final int? role;
   final int? version;
 
   CredentialCredentialSubject({
@@ -78,6 +79,7 @@ class CredentialCredentialSubject {
     this.birthday,
     this.documentType,
     this.countryCode,
+    this.role,
     this.version,
   });
 
@@ -92,6 +94,7 @@ class CredentialCredentialSubject {
         birthday: json['birthday'] ?? json['birthDay'],
         countryCode: json['countryCode'],
         documentType: json['documentType'],
+        role: json['role'],
         version: json['version']);
   }
 
@@ -101,6 +104,7 @@ class CredentialCredentialSubject {
         'birthday': birthday,
         'countryCode': countryCode,
         'documentType': documentType,
+        'role': role,
         'version': version,
       };
 }

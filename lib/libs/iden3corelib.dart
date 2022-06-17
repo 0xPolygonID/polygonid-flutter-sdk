@@ -1879,30 +1879,34 @@ class Iden3CoreLib {
   }
 
   int _getFieldSlotIndex(String schema, String claimType, String key) {
+
+    if (key.isEmpty) {
+      return 0;
+    }
     var slotIn = 0;
-    ffi.Pointer<ffi.Int> slotI =
-        slotIn.toString().toNativeUtf8().cast<ffi.Int>();
-    ffi.Pointer<ffi.Char> keyP = key.toNativeUtf8().cast<ffi.Char>();
-    ffi.Pointer<ffi.Char> claimTypeP =
-        claimType.toNativeUtf8().cast<ffi.Char>();
-    ffi.Pointer<ffi.Char> schemaP = schema.toNativeUtf8().cast<ffi.Char>();
-    int result = 0;
-    ffi.Pointer<ffi.Pointer<IDENStatus>> status =
-        malloc<ffi.Pointer<IDENStatus>>();
-    int res = _nativeLib.IDENJsonLDGetFieldSlotIndex(
-        slotI, keyP, claimTypeP, schemaP, status);
-    if (res == 0) {
-      _consumeStatus(status, "IDENJsonLDGetFieldSlotIndex error");
-      return result;
-    }
-    if (kDebugMode) {
-      print("slotIndex: ${slotI.value}");
-    }
-    result = slotI.value;
-    _nativeLib.free(slotI.cast());
-    _nativeLib.free(keyP.cast());
-    _nativeLib.free(claimTypeP.cast());
-    _nativeLib.free(schemaP.cast());
+      ffi.Pointer<ffi.Int> slotI =
+      slotIn.toString().toNativeUtf8().cast<ffi.Int>();
+      ffi.Pointer<ffi.Char> keyP = key.toNativeUtf8().cast<ffi.Char>();
+      ffi.Pointer<ffi.Char> claimTypeP =
+      claimType.toNativeUtf8().cast<ffi.Char>();
+      ffi.Pointer<ffi.Char> schemaP = schema.toNativeUtf8().cast<ffi.Char>();
+      int result = 0;
+      ffi.Pointer<ffi.Pointer<IDENStatus>> status =
+      malloc<ffi.Pointer<IDENStatus>>();
+      int res = _nativeLib.IDENJsonLDGetFieldSlotIndex(
+          slotI, keyP, claimTypeP, schemaP, status);
+      if (res == 0) {
+        _consumeStatus(status, "IDENJsonLDGetFieldSlotIndex error");
+        return result;
+      }
+      if (kDebugMode) {
+        print("slotIndex: ${slotI.value}");
+      }
+      result = slotI.value;
+      _nativeLib.free(slotI.cast());
+      _nativeLib.free(keyP.cast());
+      _nativeLib.free(claimTypeP.cast());
+      _nativeLib.free(schemaP.cast());
     return result;
   }
 
