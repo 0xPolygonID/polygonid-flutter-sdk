@@ -648,13 +648,16 @@ class Iden3CoreLib {
         malloc<ffi.Pointer<IDENBigInt>>(values.length);
     for (int i = 0; i < values.length; i++) {
       ffi.Pointer<ffi.Pointer<IDENBigInt>> valuePtr =
-          malloc<ffi.Pointer<IDENBigInt>>(values.length);
+          malloc<ffi.Pointer<IDENBigInt>>();
       int value = values[i];
       ffi.Pointer<ffi.Char> unsafePointerValue =
           value.toString().toNativeUtf8().cast<ffi.Char>();
       res =
           _nativeLib.IDENBigIntFromString(valuePtr, unsafePointerValue, status);
-      assert(res == 0);
+      if (res == 0) {
+        _consumeStatus(status, "");
+        return "";
+      }
       valuesPtr[i] = valuePtr.value;
     }
     request.ref.query.values = valuesPtr;
@@ -1075,7 +1078,7 @@ class Iden3CoreLib {
         malloc<ffi.Pointer<IDENBigInt>>(values.length);
     for (int i = 0; i < values.length; i++) {
       ffi.Pointer<ffi.Pointer<IDENBigInt>> valuePtr =
-          malloc<ffi.Pointer<IDENBigInt>>(values.length);
+          malloc<ffi.Pointer<IDENBigInt>>();
       int value = values[i];
       ffi.Pointer<ffi.Char> unsafePointerValue =
           value.toString().toNativeUtf8().cast<ffi.Char>();
