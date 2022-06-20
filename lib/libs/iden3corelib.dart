@@ -900,7 +900,8 @@ class Iden3CoreLib {
     // Claim MTP
     ffi.Pointer<IDENProof> claimMTP = malloc<IDENProof>();
     claimMTP.ref.existence = credential.proof![1].mtp!.existence! ? 1 : 0;
-    if (credential.proof![1].mtp!.siblings!.isNotEmpty) {
+    if (credential.proof![1].mtp!.siblings != null &&
+        credential.proof![1].mtp!.siblings!.isNotEmpty) {
       claimMTP.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
           credential.proof![1].mtp!.siblings!.length);
       for (int i = 0; i < credential.proof![1].mtp!.siblings!.length; i++) {
@@ -990,7 +991,8 @@ class Iden3CoreLib {
     // claim revocation status proof
     ffi.Pointer<IDENProof> claimNonRevProof = malloc<IDENProof>();
     claimNonRevProof.ref.existence = revocationStatus.mtp!.existence! ? 1 : 0;
-    if (revocationStatus.mtp!.siblings!.isNotEmpty) {
+    if (revocationStatus.mtp!.siblings != null &&
+        revocationStatus.mtp!.siblings!.isNotEmpty) {
       claimNonRevProof.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
           revocationStatus.mtp!.siblings!.length);
       for (int i = 0; i < revocationStatus.mtp!.siblings!.length; i++) {
@@ -1291,7 +1293,8 @@ class Iden3CoreLib {
     ffi.Pointer<IDENProof> issuerAuthClaimMTP = malloc<IDENProof>();
     issuerAuthClaimMTP.ref.existence =
         credential.proof![0].issuer_data!.mtp!.existence! ? 1 : 0;
-    if (credential.proof![0].issuer_data!.mtp!.siblings!.isNotEmpty) {
+    if (credential.proof![0].issuer_data!.mtp!.siblings != null &&
+        credential.proof![0].issuer_data!.mtp!.siblings!.isNotEmpty) {
       issuerAuthClaimMTP.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
           credential.proof![0].issuer_data!.mtp!.siblings!.length);
       for (int i = 0;
@@ -1346,7 +1349,8 @@ class Iden3CoreLib {
     ffi.Pointer<IDENProof> issuerNonRevMTP = malloc<IDENProof>();
     issuerNonRevMTP.ref.existence =
         authRevocationStatus.mtp!.existence! ? 1 : 0;
-    if (authRevocationStatus.mtp!.siblings!.isNotEmpty) {
+    if (authRevocationStatus.mtp!.siblings != null &&
+        authRevocationStatus.mtp!.siblings!.isNotEmpty) {
       issuerNonRevMTP.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
           authRevocationStatus.mtp!.siblings!.length);
       for (int i = 0; i < authRevocationStatus.mtp!.siblings!.length; i++) {
@@ -1370,35 +1374,8 @@ class Iden3CoreLib {
 
     request.ref.claim.core_claim = parseClaim(jsonLDDocument, schema)!;
 
-    // ISSUER SPARSE MERKLE PROOF CLAIM STATE
-    ffi.Pointer<IDENTreeState> issuerStateAfterClaimAdd =
-        malloc<IDENTreeState>();
-    List<int> issuerProofClaimsTreeRootBytes =
-        hexToBytes(credential.proof![1].issuer_data!.state!.claims_tree_root!);
-    for (var i = 0; i < issuerProofClaimsTreeRootBytes.length; i++) {
-      issuerStateAfterClaimAdd.ref.claims_root.data[i] =
-          issuerProofClaimsTreeRootBytes[i];
-    }
-    List<int> issuerProofStateBytes =
-        hexToBytes(credential.proof![1].issuer_data!.state!.value!);
-    for (var i = 0; i < issuerProofStateBytes.length; i++) {
-      issuerStateAfterClaimAdd.ref.state.data[i] = issuerProofStateBytes[i];
-    }
-    List<int> issuerProofRootRootsBytes =
-        hexToBytes(credential.proof![1].issuer_data!.state!.root_of_roots!);
-    for (var i = 0; i < issuerProofRootRootsBytes.length; i++) {
-      issuerStateAfterClaimAdd.ref.root_of_roots.data[i] =
-          issuerProofRootRootsBytes[i];
-    }
-    List<int> issuerProofRevRootBytes = hexToBytes(
-        credential.proof![1].issuer_data!.state!.revocation_tree_root!);
-    for (var i = 0; i < issuerProofRevRootBytes.length; i++) {
-      issuerStateAfterClaimAdd.ref.revocation_root.data[i] =
-          issuerProofRevRootBytes[i];
-    }
-
-    request.ref.claim.tree_state = issuerStateAfterClaimAdd.ref;
-    request.ref.claim.non_rev_proof.tree_state = issuerStateAfterClaimAdd.ref;
+    request.ref.claim.tree_state = malloc<IDENTreeState>().ref;
+    request.ref.claim.non_rev_proof.tree_state = malloc<IDENTreeState>().ref;
 
     // DO NOT FILL AUTH CLAIM ISSUER_ID
     request.ref.auth_claim.issuer_id = malloc<IDENId>().ref;
@@ -1458,7 +1435,8 @@ class Iden3CoreLib {
     // claim revocation status proof
     ffi.Pointer<IDENProof> claimNonRevProof = malloc<IDENProof>();
     claimNonRevProof.ref.existence = revocationStatus.mtp!.existence! ? 1 : 0;
-    if (revocationStatus.mtp!.siblings!.isNotEmpty) {
+    if (revocationStatus.mtp!.siblings != null &&
+        revocationStatus.mtp!.siblings!.isNotEmpty) {
       claimNonRevProof.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
           revocationStatus.mtp!.siblings!.length);
       for (int i = 0; i < revocationStatus.mtp!.siblings!.length; i++) {
