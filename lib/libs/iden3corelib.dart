@@ -1038,7 +1038,11 @@ class Iden3CoreLib {
     }
 
     _nativeLib.IDENFreeBigInt(request.ref.challenge);
-    _nativeLib.IDENFreeBigInt(request.ref.query.values[0]);
+    if (request.ref.query.values_num > 0) {
+      for (int i = 0; i < request.ref.query.values_num; i++) {
+        _nativeLib.IDENFreeBigInt(request.ref.query.values[i]);
+      }
+    }
     _nativeLib.IDENFreeClaim(request.ref.auth_claim.core_claim);
     // _nativeLib.IDENFreeClaim(issuerAuthClaim.value);
     _nativeLib.IDENFreeMerkleTree(userAuthClaimsTree.value);
@@ -1116,24 +1120,7 @@ class Iden3CoreLib {
     }
     request.ref.challenge = challengePointer.value;
 
-    // MOCKUP_DATA
-    //challenge = "1";
-    /*signature =
-        "9d6a88b9a2eb1ce525065301a65f95a21b387cbf1d94fd4aa0be2e7b51532d0cc79b70d659246c05326b46e915a31163869ed11c44d47eb639bc0af381dba004";
-
-    pubX =
-        "17640206035128972995519606214765283372613874593503528180869261482403155458945";
-    pubY =
-        "20634138280259599560273310290025659992320584624461316485434108770067472477956";*/
     String userAuthClaimRevNonce = "15930428023331155902";
-
-    /*String issuerPubX =
-        "9582165609074695838007712438814613121302719752874385708394134542816240804696";
-    String issuerPubY =
-        "18271435592817415588213874506882839610978320325722319742324814767882756910515";
-    String issuerAuthClaimRevNonce = "11203087622270641253";
-    String claimSignature =
-        "4fe8744c71cb0f59a0be115fdb1506958f011a2c0e91b8eebb510381c32d25a02be403385b266f3fe681c97746daf86c6e28e33367abf393afb8ff701677b501";*/
 
     // ID - ALL GOOD
     ffi.Pointer<IDENId> id = malloc<IDENId>();
@@ -1484,7 +1471,11 @@ class Iden3CoreLib {
     }
 
     _nativeLib.IDENFreeBigInt(request.ref.challenge);
-    _nativeLib.IDENFreeBigInt(request.ref.query.values[0]);
+    if (request.ref.query.values_num > 0) {
+      for (int i = 0; i < request.ref.query.values_num; i++) {
+        _nativeLib.IDENFreeBigInt(request.ref.query.values[i]);
+      }
+    }
     _nativeLib.IDENFreeClaim(request.ref.auth_claim.core_claim);
     _nativeLib.IDENFreeClaim(request.ref.claim.core_claim);
     //_nativeLib.IDENFreeClaim(issuerAuthClaim.value);
