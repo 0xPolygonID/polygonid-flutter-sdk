@@ -1,42 +1,92 @@
-name: privadoid_flutter_sdk
-description: Privadoid flutter sdk plugin
-version: 0.0.1
-homepage:
+name: privadoid_sdk
+description: Privadoid Flutter SDK (https://iden3.io). This plugin provides a cross-platform tool (iOS, Android) to communicate with the Privado Network.
+version: 1.0.0
+homepage: https://iden3.io
+repository: https://github.com/iden3/privadoid_flutter_sdk
+issue_tracker: https://github.com/iden3/privadoid_flutter_sdk/issues
+documentation: https://docs.iden3.io/
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.14.0 <3.0.0"
   flutter: ">=1.20.0"
+
+analyzer:
+  enable-experiment:
+    - non-nullable
 
 dependencies:
   flutter:
     sdk: flutter
+  http: ^0.13.4
+  ffi: ^1.1.2
+  hex: ^0.2.0
+  web3dart: ^2.3.3
+  ffigen: ^5.0.0
+  json_annotation: ^4.5.0
+  equatable: ^2.0.3
+  crypto: ^3.0.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^1.0.0
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^2.0.1
+  json_serializable: ^6.2.0
+  mockito: ^5.2.0
+  build_runner:
+
+ffigen:
+  name: WitnessMtpLib
+  description: Bindings to `ios/Classes/witnesscalc_mtp.h`.
+  output: 'lib/libs/generated_bindings_witness_mtp.dart'
+  headers:
+    entry-points:
+      - 'ios/Classes/witnesscalc_mtp.h'
+  # name: WitnessLib
+  # description: Bindings to `ios/Classes/witnesscalc.h`.
+  # output: 'lib/libs/generated_bindings_witness.dart'
+  # headers:
+  #  entry-points:
+   #   - 'ios/Classes/witnesscalc.h'
+
+
+  # name: ProverLib
+  # description: Bindings to `ios/Classes/prover.h`.
+  # output: 'lib/libs/generated_bindings_prover.dart'
+    # headers:
+      # entry-points:
+       # - 'ios/Classes/prover.h'
+
+
+
+  # name: NativeLibrary
+  # description: Bindings to `ios/Classes/libiden3core.h`.
+  # output: 'lib/libs/generated_bindings.dart'
+  #  headers:
+  #    entry-points:
+  #      - 'ios/Classes/libiden3core.h'
+
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
 flutter:
-  # This section identifies this Flutter project as a plugin project.
-  # The 'pluginClass' and Android 'package' identifiers should not ordinarily
-  # be modified. They are used by the tooling to maintain consistency when
-  # adding or updating assets for this project.
   plugin:
     platforms:
       android:
-        package: com.iden3.privadoidsdk.privadoid_flutter_sdk
-        pluginClass: PrivadoidFlutterSdkPlugin
+        package: io.iden3.privadoid_sdk
+        pluginClass: PrivadoidPlugin
       ios:
-        pluginClass: PrivadoidFlutterSdkPlugin
+        pluginClass: PrivadoidPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
   #
   # For details regarding assets in packages, see
   # https://flutter.dev/assets-and-images/#from-packages

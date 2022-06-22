@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.iden3.privadoidsdk.privadoid_flutter_sdk_example">
+    package="io.iden3.privadoid_sdk.privadoid_sdk_example">
     <!-- Flutter needs it to communicate with the running application
          to allow setting breakpoints, to provide hot reload, etc.
     -->

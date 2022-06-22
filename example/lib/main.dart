@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:privadoid_flutter_sdk/privadoid_flutter_sdk.dart';
+import 'package:privadoid_sdk/privadoid_sdk.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,8 +30,10 @@ class _MyAppState extends State<MyApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
+      //platformVersion =
+      //    await PrivadoIdSdk.platformVersion ?? 'Unknown platform version';
       platformVersion =
-          await PrivadoidFlutterSdk.platformVersion ?? 'Unknown platform version';
+          await PrivadoIdSdk.createNewIdentity() ?? 'Unknown platform version';
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
@@ -54,7 +56,7 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: Text('$_platformVersion\n'),
         ),
       ),
     );
