@@ -25,6 +25,7 @@ dependencies:
   json_annotation: ^4.5.0
   equatable: ^2.0.3
   crypto: ^3.0.2
+  bip39: ^1.0.6
 
 dev_dependencies:
   flutter_test:

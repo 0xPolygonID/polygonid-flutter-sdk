@@ -35,7 +35,7 @@ class PrivadoIdSdk {
     return HexUtils.bytesToHex(wallet.privateKey);
   }
 
-  static Future<String?> getIdentifier(String privateKey) async {
+  static Future<String> getIdentifier(String privateKey) async {
     final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
         privateKey: HexUtils.hexToBytes(privateKey));
 
