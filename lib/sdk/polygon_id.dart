@@ -6,7 +6,9 @@ class PolygonID {
 
   PolygonID(this._getIdentityUseCase);
 
-  Future<Pair<String, String>> getIdentity(String? seedPhrase) async {
-    return _getIdentityUseCase.execute(param: seedPhrase);
+  /// Get a private key and an identity from a string
+  /// If [key] if ommited or null, a random one will be used to create the identity
+  Future<Pair<String, String>> getIdentity(String? key) async {
+    return _getIdentityUseCase.execute(param: key);
   }
 }
