@@ -5,7 +5,7 @@ import 'package:privadoid_sdk/domain/common/tuples.dart';
 import 'package:privadoid_sdk/domain/repositories/identity_repository.dart';
 import 'package:privadoid_sdk/domain/use_cases/get_identity_use_case.dart';
 
-import 'get_identity_use_case.mocks.dart';
+import 'get_identity_use_case_test.mocks.dart';
 
 // Data
 const key = "theKey";

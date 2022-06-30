@@ -1,10 +1,13 @@
 import 'dart:typed_data';
 
+import 'package:injectable/injectable.dart';
+
 import '../../privadoid_sdk.dart';
 import '../../privadoid_wallet.dart';
 import '../../utils/hex_utils.dart';
 
 // TODO: move all static code here
+@injectable
 class LibWrapper {
   Future<Uint8List> generatePrivateKey({Uint8List? privateKey}) {
     return PrivadoIdWallet.createPrivadoIdWallet(privateKey: privateKey)
