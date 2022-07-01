@@ -1,4 +1,4 @@
-package io.iden3.privadoid_sdk
+package io.iden3.polygonid_flutter_sdk
 
 import androidx.annotation.NonNull
 
@@ -12,8 +12,8 @@ class NativeHost {
   external fun IDENBigIntFromString(x: Int)
 }
 
-/** PrivadoidPlugin */
-class PrivadoidPlugin: FlutterPlugin, MethodCallHandler {
+/** PolygonIdSdkPlugin */
+class PolygonIdSdkPlugin: FlutterPlugin, MethodCallHandler {
 
   init {
     System.loadLibrary("iden3core")
@@ -30,7 +30,7 @@ class PrivadoidPlugin: FlutterPlugin, MethodCallHandler {
   private lateinit var channel : MethodChannel
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "privadoid_sdk")
+    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "polygonid_flutter_sdk")
     channel.setMethodCallHandler(this)
   }
 
@@ -105,7 +105,7 @@ class PrivadoidPlugin: FlutterPlugin, MethodCallHandler {
     @JvmStatic
     fun registerWith(registrar: Registrar) {
       _registrar = registrar
-      val channel = MethodChannel(registrar.messenger(), "privadoid_sdk")
+      val channel = MethodChannel(registrar.messenger(), "polygonid_flutter_sdk")
       channel.setMethodCallHandler(CorelibPlugin())
     }
   }

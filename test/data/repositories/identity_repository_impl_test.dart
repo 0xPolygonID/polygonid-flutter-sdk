@@ -3,11 +3,11 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:privadoid_sdk/data/data_sources/local_identity_data_source.dart';
-import 'package:privadoid_sdk/data/repositories/identity_repository_impl.dart';
-import 'package:privadoid_sdk/domain/common/tuples.dart';
-import 'package:privadoid_sdk/domain/exceptions/identity_exceptions.dart';
-import 'package:privadoid_sdk/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/data/data_sources/local_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/data/repositories/identity_repository_impl.dart';
+import 'package:polygonid_flutter_sdk/domain/common/tuples.dart';
+import 'package:polygonid_flutter_sdk/domain/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/domain/repositories/identity_repository.dart';
 
 import 'identity_repository_impl_test.mocks.dart';
 

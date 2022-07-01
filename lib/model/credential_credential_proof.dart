@@ -64,7 +64,7 @@
 
 */
 
-import 'package:privadoid_sdk/model/credential_credential_proof_issuer_data.dart';
+import 'package:polygonid_flutter_sdk/model/credential_credential_proof_issuer_data.dart';
 
 import 'credential_credential_proof_mtp.dart';
 

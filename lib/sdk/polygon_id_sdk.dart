@@ -1,6 +1,6 @@
-import 'package:privadoid_sdk/domain/common/tuples.dart';
-import 'package:privadoid_sdk/domain/use_cases/get_identity_use_case.dart';
-import 'package:privadoid_sdk/sdk/di/injector.dart';
+import 'package:polygonid_flutter_sdk/domain/common/tuples.dart';
+import 'package:polygonid_flutter_sdk/domain/use_cases/get_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 class PolygonIdSdk {
   late GetIdentityUseCase _getIdentityUseCase;

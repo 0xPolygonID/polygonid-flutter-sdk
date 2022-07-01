@@ -5,9 +5,9 @@ import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
-import 'package:privadoid_sdk/libs/proverlib.dart';
-import 'package:privadoid_sdk/model/credential_credential.dart';
-import 'package:privadoid_sdk/model/revocation_status.dart';
+import 'package:polygonid_flutter_sdk/libs/proverlib.dart';
+import 'package:polygonid_flutter_sdk/model/credential_credential.dart';
+import 'package:polygonid_flutter_sdk/model/revocation_status.dart';
 import 'package:web3dart/crypto.dart';
 
 import 'generated_bindings.dart';

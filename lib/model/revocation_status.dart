@@ -1,5 +1,5 @@
-import 'package:privadoid_sdk/model/revocation_status_issuer.dart';
-import 'package:privadoid_sdk/model/revocation_status_mtp.dart';
+import 'package:polygonid_flutter_sdk/model/revocation_status_issuer.dart';
+import 'package:polygonid_flutter_sdk/model/revocation_status_mtp.dart';
 
 class RevocationStatus {
   final RevocationStatusIssuer? issuer;

@@ -25,7 +25,7 @@
       ]
 */
 
-import 'package:privadoid_sdk/model/proof_scope_response.dart';
+import 'package:polygonid_flutter_sdk/model/proof_scope_response.dart';
 
 /*
 

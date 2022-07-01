@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:privadoid_sdk/privadoid_sdk.dart';
-import 'package:privadoid_sdk/sdk/polygon_id_sdk.dart';
+import 'package:polygonid_flutter_sdk/privadoid_sdk.dart';
+import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 
 void main() {
   runApp(const MyApp());

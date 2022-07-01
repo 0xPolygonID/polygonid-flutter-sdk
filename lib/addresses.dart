@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:privadoid_sdk/utils/hex_utils.dart';
-import 'package:privadoid_sdk/utils/uint8_list_utils.dart';
+import 'package:polygonid_flutter_sdk/utils/hex_utils.dart';
+import 'package:polygonid_flutter_sdk/utils/uint8_list_utils.dart';
 
 const String hermezPrefix = 'hez:';
 final ethereumAddressPattern = new RegExp('^0x[a-fA-F0-9]{40}\$');

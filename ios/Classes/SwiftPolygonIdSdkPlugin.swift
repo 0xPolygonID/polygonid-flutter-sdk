@@ -26,12 +26,12 @@ extension StringProtocol {
     }
 }
 
-public class SwiftPrivadoidPlugin: NSObject, FlutterPlugin {
+public class SwiftPolygonIdSdkPlugin: NSObject, FlutterPlugin {
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         // We are not using Flutter channels here
-        let channel = FlutterMethodChannel(name: "privadoid_sdk", binaryMessenger: registrar.messenger())
-        let instance = SwiftPrivadoidPlugin()
+        let channel = FlutterMethodChannel(name: "polygonid_flutter_sdk", binaryMessenger: registrar.messenger())
+        let instance = PolygonIdSdkPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
 

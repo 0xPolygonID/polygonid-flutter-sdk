@@ -4,11 +4,11 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:privadoid_sdk/http.dart';
-import 'package:privadoid_sdk/jwz/jwz_preparer.dart';
-import 'package:privadoid_sdk/model/revocation_status.dart';
-import 'package:privadoid_sdk/privadoid_wallet.dart';
-import 'package:privadoid_sdk/utils/hex_utils.dart';
+import 'package:polygonid_flutter_sdk/http.dart';
+import 'package:polygonid_flutter_sdk/jwz/jwz_preparer.dart';
+import 'package:polygonid_flutter_sdk/model/revocation_status.dart';
+import 'package:polygonid_flutter_sdk/privadoid_wallet.dart';
+import 'package:polygonid_flutter_sdk/utils/hex_utils.dart';
 
 import 'jwz/jwz_prover.dart';
 import 'jwz/jwz_token.dart';
@@ -18,7 +18,7 @@ import 'model/jwz/jwz.dart';
 import 'model/jwz/jwz_header.dart';
 
 class PrivadoIdSdk {
-  static const MethodChannel _channel = MethodChannel('privadoid_sdk');
+  static const MethodChannel _channel = MethodChannel('polygonid_flutter_sdk');
 
   static Iden3CoreLib get _iden3coreLib {
     return Iden3CoreLib();
