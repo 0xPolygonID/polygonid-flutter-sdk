@@ -5,6 +5,7 @@ import 'package:polygonid_flutter_sdk/domain/common/tuples.dart';
 import 'package:polygonid_flutter_sdk/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/domain/use_cases/get_identity_use_case.dart';
 
+import '../../data/data_sources/local_identity_data_source_test.dart';
 import 'get_identity_use_case_test.mocks.dart';
 
 // Data
@@ -28,12 +29,11 @@ void main() {
         .thenAnswer((realInvocation) => Future.value(mockResult));
 
     // When
-    expect(await useCase.execute(param: key), mockResult);
+    expect(await useCase.execute(param: privateKey), mockResult);
 
     // Then
     expect(
-        verify(identityRepository.getIdentity(
-                key: captureAnyNamed('key')))
+        verify(identityRepository.getIdentity(key: captureAnyNamed('key')))
             .captured
             .first,
         key);
@@ -51,8 +51,7 @@ void main() {
 
     // Then
     expect(
-        verify(identityRepository.getIdentity(
-                key: captureAnyNamed('key')))
+        verify(identityRepository.getIdentity(key: captureAnyNamed('key')))
             .captured
             .first,
         null);
@@ -66,12 +65,11 @@ void main() {
         .thenAnswer((realInvocation) => Future.error(exception));
 
     // When
-    await expectLater(useCase.execute(param: key), throwsA(exception));
+    await expectLater(useCase.execute(param: privateKey), throwsA(exception));
 
     // Then
     expect(
-        verify(identityRepository.getIdentity(
-                key: captureAnyNamed('key')))
+        verify(identityRepository.getIdentity(key: captureAnyNamed('key')))
             .captured
             .first,
         key);

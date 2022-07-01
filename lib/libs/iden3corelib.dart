@@ -111,7 +111,7 @@ class Iden3CoreLib {
     return result;
   }
 
-  String generateIdentity(String pubX, String pubY) {
+  Map<String, String> generateIdentity(String pubX, String pubY) {
     // ID - ALL GOOD
     String userRevNonce = "15930428023331155902";
 
@@ -133,7 +133,11 @@ class Iden3CoreLib {
     _nativeLib.IDENFreeMerkleTree(userAuthClaimsTree.value);
     _nativeLib.IDENFreeClaim(authClaim.value);
 
-    return result;
+    Map<String, String> map = {};
+    map['id'] = id.toString();
+    map['authClaim'] = authClaim.value.ref.toJson().toString();
+
+    return map;
   }
 
   String getMerkleTreeRoot(String pubX, String pubY) {

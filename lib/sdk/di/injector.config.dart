@@ -6,16 +6,16 @@
 
 import 'package:get_it/get_it.dart' as _i1;
 import 'package:injectable/injectable.dart' as _i2;
-import 'package:polygonid_flutter_sdk/data/data_sources/local_identity_data_source.dart'
+import 'package:polygonid_flutter_sdk/data/identity/local_identity_data_source.dart'
     as _i3;
-import 'package:polygonid_flutter_sdk/data/repositories/identity_repository_impl.dart'
-    as _i4;
 import 'package:polygonid_flutter_sdk/domain/repositories/identity_repository.dart'
     as _i5;
 import 'package:polygonid_flutter_sdk/domain/use_cases/get_identity_use_case.dart'
     as _i6;
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart'
     as _i7; // ignore_for_file: unnecessary_lambdas
+
+import '../../data/identity/repositories/identity_repository_impl.dart' as _i4;
 
 // ignore_for_file: lines_longer_than_80_chars
 /// initializes the registration of provided dependencies inside of [GetIt]

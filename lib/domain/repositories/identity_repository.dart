@@ -1,5 +1,5 @@
-import '../common/tuples.dart';
+import 'dart:typed_data';
 
 abstract class IdentityRepository {
-  Future<Pair<String, String>> getIdentity({String? key});
+  Future<Map<String, dynamic>> createIdentity({Uint8List? privateKey});
 }

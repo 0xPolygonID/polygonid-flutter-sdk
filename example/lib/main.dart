@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:polygonid_flutter_sdk/privadoid_sdk.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 
 void main() {
@@ -37,12 +35,12 @@ class _MyAppState extends State<MyApp> {
     String platformVersion;
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
-    try {
-      platformVersion =
-          await PrivadoIdSdk.platformVersion ?? 'Unknown platform version';
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
+    //try {
+    platformVersion =
+        //    await PrivadoIdSdk.platformVersion ?? 'Unknown platform version';
+        //} on PlatformException {
+        platformVersion = 'Failed to get platform version.';
+    //}
 
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling

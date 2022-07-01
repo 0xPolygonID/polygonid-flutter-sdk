@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:polygonid_flutter_sdk/http.dart';
 import 'package:polygonid_flutter_sdk/jwz/jwz_preparer.dart';
 import 'package:polygonid_flutter_sdk/model/revocation_status.dart';
@@ -18,27 +17,39 @@ import 'model/jwz/jwz.dart';
 import 'model/jwz/jwz_header.dart';
 
 class PrivadoIdSdk {
-  static const MethodChannel _channel = MethodChannel('polygonid_flutter_sdk');
+  //static const MethodChannel _channel = MethodChannel('polygonid_flutter_sdk');
 
   static Iden3CoreLib get _iden3coreLib {
     return Iden3CoreLib();
   }
 
-  static Future<String?> get platformVersion async {
+  /*static Future<String?> get platformVersion async {
     final String? version = await _channel.invokeMethod('getPlatformVersion');
     return version;
-  }
+  }*/
 
-  static Future<String?> createNewIdentity({Uint8List? privateKey}) async {
+  /*static Future<String?> createNewIdentity({Uint8List? privateKey}) async {
     final PrivadoIdWallet wallet =
         await PrivadoIdWallet.createPrivadoIdWallet(privateKey: privateKey);
     return HexUtils.bytesToHex(wallet.privateKey);
+  }*/
+
+  // TODO: NEW METHOD
+  static Future<Map<String, dynamic>> createIdentity(
+      {Uint8List? privateKey}) async {
+    final PrivadoIdWallet wallet =
+        await PrivadoIdWallet.createPrivadoIdWallet(privateKey: privateKey);
+    Map<String, dynamic> map = {};
+    String? genesisId =
+        await _getIdentifier(wallet.publicKey[0], wallet.publicKey[1]);
+    String? authClaim =
+        await _getAuthClaim(wallet.publicKey[0], wallet.publicKey[1]);
+    map["id"] = genesisId;
+    map["authClaim"] = authClaim;
+    return map;
   }
 
-  static Future<String> getIdentifier(String privateKey) async {
-    final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
-        privateKey: HexUtils.hexToBytes(privateKey));
-
+  static Future<String?> _getIdentifier(String pubX, String pubY) async {
     // final String mtRoot = _iden3coreLib.getMerkleTreeRoot(
     //     wallet.publicKey[0], wallet.publicKey[1]);
     // if (kDebugMode) {
@@ -67,22 +78,14 @@ class PrivadoIdSdk {
     //   print("GenesisId: $genesisId");
     // }
 
-    String genesisId = _iden3coreLib.generateIdentity(
-        wallet.publicKey[0], wallet.publicKey[1]);
+    Map<String, String> map = _iden3coreLib.generateIdentity(pubX, pubY);
+    //print(genesisId);
 
-    String? rest = await getAuthClaim(privateKey);
-    print(rest);
-    print(genesisId);
-
-    return genesisId;
+    return map['id'];
   }
 
-  static Future<String?> getAuthClaim(String privateKey) async {
-    final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
-        privateKey: HexUtils.hexToBytes(privateKey));
-
-    String authClaim =
-        _iden3coreLib.getAuthClaim(wallet.publicKey[0], wallet.publicKey[1]);
+  static Future<String?> _getAuthClaim(String pubX, String pubY) async {
+    String authClaim = _iden3coreLib.getAuthClaim(pubX, pubY);
     if (kDebugMode) {
       print("authClaim: $authClaim");
     }
