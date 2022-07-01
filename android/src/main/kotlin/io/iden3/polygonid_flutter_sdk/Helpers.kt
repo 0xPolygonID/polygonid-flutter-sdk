@@ -1,4 +1,4 @@
-package io.iden3.privadoid_sdk
+package io.iden3.polygonid_flutter_sdk
 
 import android.util.Log
 //import iden3mobile.Ticket

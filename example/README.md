@@ -1,6 +1,6 @@
-# privadoid_sdk_example
+# polygonid_flutter_sdk_example
 
-Demonstrates how to use the privadoid_sdk plugin.
+Demonstrates how to use the polygonid_flutter_sdk plugin.
 
 ## Getting Started
 

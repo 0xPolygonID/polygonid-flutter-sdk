@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:hex/hex.dart';
-import 'package:privadoid_sdk/utils/hex_utils.dart';
-import 'package:privadoid_sdk/utils/uint8_list_utils.dart';
+import 'package:polygonid_flutter_sdk/utils/hex_utils.dart';
+import 'package:polygonid_flutter_sdk/utils/uint8_list_utils.dart';
 
 import 'libs/circomlib.dart';
 

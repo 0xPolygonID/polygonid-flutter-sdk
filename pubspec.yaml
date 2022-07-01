@@ -1,4 +1,4 @@
-name: privadoid_sdk
+name: polygonid_flutter_sdk
 description: PolygonID Flutter SDK (https://iden3.io). This plugin provides a cross-platform tool (iOS, Android) to integrate the PolygonID solution.
 version: 1.0.0
 homepage: https://iden3.io
@@ -83,10 +83,10 @@ flutter:
   plugin:
     platforms:
       android:
-        package: io.iden3.privadoid_sdk
-        pluginClass: PrivadoidPlugin
+        package: io.iden3.polygonid_flutter_sdk
+        pluginClass: PolygonIdSdkPlugin
       ios:
-        pluginClass: PrivadoidPlugin
+        pluginClass: PolygonIdSdkPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:

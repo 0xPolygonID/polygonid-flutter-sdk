@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:privadoid_sdk/http.dart' show extractJSON, get, post;
+import 'package:polygonid_flutter_sdk/http.dart' show extractJSON, get, post;
 
 import 'model/onboard_request.dart';
 import 'model/onboard_response.dart';
@@ -81,7 +81,7 @@ http.Response filterResponses(Set<http.Response> responsesArray) {
   }
 }
 
-/// Onboard User into Privado Network
+/// Onboard User into PolygonID
 /// POST https://api.internal.privadoid.com/v1/verifications/start
 ///
 Future<OnboardResponse> onboardUser(OnboardRequest request) async {

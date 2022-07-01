@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:privadoid_sdk/utils/base_64.dart';
+import 'package:polygonid_flutter_sdk/utils/base_64.dart';
 
 part 'jwz_header.g.dart';
 

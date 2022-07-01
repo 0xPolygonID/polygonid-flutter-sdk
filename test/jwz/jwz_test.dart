@@ -4,10 +4,10 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:privadoid_sdk/jwz/jwz_token.dart';
-import 'package:privadoid_sdk/model/jwz/jwz.dart';
-import 'package:privadoid_sdk/model/jwz/jwz_header.dart';
-import 'package:privadoid_sdk/model/jwz/jwz_proof.dart';
+import 'package:polygonid_flutter_sdk/jwz/jwz_token.dart';
+import 'package:polygonid_flutter_sdk/model/jwz/jwz.dart';
+import 'package:polygonid_flutter_sdk/model/jwz/jwz_header.dart';
+import 'package:polygonid_flutter_sdk/model/jwz/jwz_proof.dart';
 
 import 'jwz_mocks.dart';
 import 'jwz_test.mocks.dart';

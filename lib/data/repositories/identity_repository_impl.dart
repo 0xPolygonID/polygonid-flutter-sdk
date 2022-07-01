@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:privadoid_sdk/data/data_sources/local_identity_data_source.dart';
-import 'package:privadoid_sdk/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/data/data_sources/local_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/domain/repositories/identity_repository.dart';
 
 import '../../domain/common/tuples.dart';
 import '../../domain/exceptions/identity_exceptions.dart';

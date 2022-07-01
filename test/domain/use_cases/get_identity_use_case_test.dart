@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:privadoid_sdk/domain/common/tuples.dart';
-import 'package:privadoid_sdk/domain/repositories/identity_repository.dart';
-import 'package:privadoid_sdk/domain/use_cases/get_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/domain/common/tuples.dart';
+import 'package:polygonid_flutter_sdk/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/domain/use_cases/get_identity_use_case.dart';
 
 import 'get_identity_use_case_test.mocks.dart';
 

@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:privadoid_sdk/privadoid_wallet.dart';
-import 'package:privadoid_sdk/utils/uint8_list_utils.dart';
+import 'package:polygonid_flutter_sdk/privadoid_wallet.dart';
+import 'package:polygonid_flutter_sdk/utils/uint8_list_utils.dart';
 import 'package:web3dart/crypto.dart';
 
 import '../libs/iden3corelib.dart';

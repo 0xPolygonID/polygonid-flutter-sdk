@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:privadoid_sdk/model/jwz/jwz_proof.dart';
+import 'package:polygonid_flutter_sdk/model/jwz/jwz_proof.dart';
 
 import 'jwz_token.dart';
 import '../libs/iden3corelib.dart';

@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:privadoid_sdk/data/data_sources/local_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/data/data_sources/local_identity_data_source.dart';
 
 import 'local_identity_data_source_test.mocks.dart';
 

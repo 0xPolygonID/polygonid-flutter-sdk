@@ -1,13 +1,13 @@
 #
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
-# Run 'pod lib lint privadoid_sdk.podspec' to validate before publishing.
+# Run 'pod lib lint polygonid_flutter_sdk.podspec' to validate before publishing.
 #
 Pod::Spec.new do |s|
-  s.name             = 'privadoid_sdk'
+  s.name             = 'polygonid_flutter_sdk'
   s.version          = '1.0.0'
-  s.summary          = 'Flutter plugin for PrivadoID SDK'
+  s.summary          = 'Flutter plugin for PolygonID SDK'
   s.description      = <<-DESC
-Privadoid library flutter plugin project.
+PolygonID SDK flutter plugin project.
                        DESC
   s.homepage         = 'http://iden3.io'
   s.license          = { :file => '../LICENSE' }

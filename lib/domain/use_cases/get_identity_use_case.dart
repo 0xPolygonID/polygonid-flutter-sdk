@@ -1,4 +1,4 @@
-import 'package:privadoid_sdk/domain/common/use_case.dart';
+import 'package:polygonid_flutter_sdk/domain/common/use_case.dart';
 
 import '../common/domain_logger.dart';
 import '../common/tuples.dart';
