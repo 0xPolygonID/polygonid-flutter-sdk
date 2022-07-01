@@ -1,9 +1,9 @@
 name: privadoid_sdk
-description: Privadoid Flutter SDK (https://iden3.io). This plugin provides a cross-platform tool (iOS, Android) to communicate with the Privado Network.
+description: PolygonID Flutter SDK (https://iden3.io). This plugin provides a cross-platform tool (iOS, Android) to integrate the PolygonID solution.
 version: 1.0.0
 homepage: https://iden3.io
-repository: https://github.com/iden3/privadoid_flutter_sdk
-issue_tracker: https://github.com/iden3/privadoid_flutter_sdk/issues
+repository: https://github.com/iden3/polygonid-flutter-sdk
+issue_tracker: https://github.com/iden3/polygonid-flutter-sdk/issues
 documentation: https://docs.iden3.io/
 
 environment:

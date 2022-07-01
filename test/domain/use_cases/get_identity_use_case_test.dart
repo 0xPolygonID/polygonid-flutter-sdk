@@ -24,7 +24,7 @@ void main() {
       "Given a seed phrase, when I call execute, then I expect a private key and an identity to be returned (as a Pair)",
       () async {
     // Given
-    when(identityRepository.getIdentity(key: anyNamed('seedPhrase')))
+    when(identityRepository.getIdentity(key: anyNamed('key')))
         .thenAnswer((realInvocation) => Future.value(mockResult));
 
     // When
@@ -33,7 +33,7 @@ void main() {
     // Then
     expect(
         verify(identityRepository.getIdentity(
-                key: captureAnyNamed('seedPhrase')))
+                key: captureAnyNamed('key')))
             .captured
             .first,
         key);
@@ -43,7 +43,7 @@ void main() {
       "Given a seed phrase which is null, when I call execute, then I expect a private key and an identity to be returned (as a Pair)",
       () async {
     // Given
-    when(identityRepository.getIdentity(key: anyNamed('seedPhrase')))
+    when(identityRepository.getIdentity(key: anyNamed('key')))
         .thenAnswer((realInvocation) => Future.value(mockResult));
 
     // When
@@ -52,7 +52,7 @@ void main() {
     // Then
     expect(
         verify(identityRepository.getIdentity(
-                key: captureAnyNamed('seedPhrase')))
+                key: captureAnyNamed('key')))
             .captured
             .first,
         null);
@@ -62,7 +62,7 @@ void main() {
       "Given a seed phrase, when I call getIdentity and an error occured, then I expect an error to be thrown",
       () async {
     // Given
-    when(identityRepository.getIdentity(key: anyNamed('seedPhrase')))
+    when(identityRepository.getIdentity(key: anyNamed('key')))
         .thenAnswer((realInvocation) => Future.error(exception));
 
     // When
@@ -71,7 +71,7 @@ void main() {
     // Then
     expect(
         verify(identityRepository.getIdentity(
-                key: captureAnyNamed('seedPhrase')))
+                key: captureAnyNamed('key')))
             .captured
             .first,
         key);
