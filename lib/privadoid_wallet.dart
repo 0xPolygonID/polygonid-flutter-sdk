@@ -1,9 +1,9 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:privadoid_sdk/constants.dart';
-import 'package:privadoid_sdk/utils/hex_utils.dart';
-import 'package:privadoid_sdk/utils/uint8_list_utils.dart';
+import 'package:polygonid_flutter_sdk/constants.dart';
+import 'package:polygonid_flutter_sdk/utils/hex_utils.dart';
+import 'package:polygonid_flutter_sdk/utils/uint8_list_utils.dart';
 import 'package:web3dart/credentials.dart';
 import 'package:web3dart/crypto.dart';
 

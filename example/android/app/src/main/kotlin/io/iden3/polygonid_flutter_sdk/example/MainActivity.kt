@@ -1,4 +1,4 @@
-package io.iden3.privadoid_sdk.privadoid_sdk_example
+package io.iden3.polygonid_flutter_sdk.example
 
 import io.flutter.embedding.android.FlutterActivity
 

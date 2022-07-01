@@ -1,6 +1,6 @@
-# privadoid_sdk
+# polygonid_flutter_sdk
 
-Privadoid flutter sdk plugin
+PolygonID Flutter SDK plugin
 
 ## Getting Started
 

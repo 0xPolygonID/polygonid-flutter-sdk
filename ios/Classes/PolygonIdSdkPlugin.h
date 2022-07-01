@@ -1,6 +1,6 @@
 #import <Flutter/Flutter.h>
 
-@interface PrivadoidPlugin : NSObject<FlutterPlugin>
+@interface PolygonIdSdkPlugin : NSObject<FlutterPlugin>
 @end
 
 // NOTE: Append the lines below to ios/Classes/<your>Plugin.h

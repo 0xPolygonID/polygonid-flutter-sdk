@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:privadoid_sdk/privadoid_sdk.dart';
+import 'package:polygonid_flutter_sdk/privadoid_sdk.dart';
+import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,6 +23,13 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initPlatformState();
+
+    var sdk = PolygonIdSdk();
+    sdk.getIdentity().then((value) {
+      print(value);
+    }).catchError((error) {
+      print(error);
+    });
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -30,10 +38,8 @@ class _MyAppState extends State<MyApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      //platformVersion =
-      //    await PrivadoIdSdk.platformVersion ?? 'Unknown platform version';
       platformVersion =
-          await PrivadoIdSdk.createNewIdentity() ?? 'Unknown platform version';
+          await PrivadoIdSdk.platformVersion ?? 'Unknown platform version';
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }

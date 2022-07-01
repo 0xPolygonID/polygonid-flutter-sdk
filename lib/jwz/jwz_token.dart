@@ -1,13 +1,13 @@
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
-import 'package:privadoid_sdk/libs/circomlib.dart';
-import 'package:privadoid_sdk/model/jwz/jwz.dart';
-import 'package:privadoid_sdk/model/jwz/jwz_exceptions.dart';
-import 'package:privadoid_sdk/model/jwz/jwz_proof.dart';
-import 'package:privadoid_sdk/utils/base_64.dart';
-import 'package:privadoid_sdk/utils/big_int_extension.dart';
-import 'package:privadoid_sdk/utils/uint8_list_utils.dart';
+import 'package:polygonid_flutter_sdk/libs/circomlib.dart';
+import 'package:polygonid_flutter_sdk/model/jwz/jwz.dart';
+import 'package:polygonid_flutter_sdk/model/jwz/jwz_exceptions.dart';
+import 'package:polygonid_flutter_sdk/model/jwz/jwz_proof.dart';
+import 'package:polygonid_flutter_sdk/utils/base_64.dart';
+import 'package:polygonid_flutter_sdk/utils/big_int_extension.dart';
+import 'package:polygonid_flutter_sdk/utils/uint8_list_utils.dart';
 import 'package:web3dart/crypto.dart';
 
 /// Prove and verify a [JWZToken]

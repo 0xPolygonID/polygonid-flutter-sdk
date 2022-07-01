@@ -25,7 +25,7 @@
       ]
 */
 
-import 'package:privadoid_sdk/model/proof_scope_data_response.dart';
+import 'package:polygonid_flutter_sdk/model/proof_scope_data_response.dart';
 
 class ProofScopeResponse {
   String? circuit_id = "auth";

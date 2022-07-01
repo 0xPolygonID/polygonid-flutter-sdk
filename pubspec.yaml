@@ -1,9 +1,9 @@
-name: privadoid_sdk
-description: Privadoid Flutter SDK (https://iden3.io). This plugin provides a cross-platform tool (iOS, Android) to communicate with the Privado Network.
+name: polygonid_flutter_sdk
+description: PolygonID Flutter SDK (https://iden3.io). This plugin provides a cross-platform tool (iOS, Android) to integrate the PolygonID solution.
 version: 1.0.0
 homepage: https://iden3.io
-repository: https://github.com/iden3/privadoid_flutter_sdk
-issue_tracker: https://github.com/iden3/privadoid_flutter_sdk/issues
+repository: https://github.com/iden3/polygonid-flutter-sdk
+issue_tracker: https://github.com/iden3/polygonid-flutter-sdk/issues
 documentation: https://docs.iden3.io/
 
 environment:
@@ -25,6 +25,8 @@ dependencies:
   json_annotation: ^4.5.0
   equatable: ^2.0.3
   crypto: ^3.0.2
+  get_it: ^7.2.0
+  injectable: ^1.5.3
 
 dev_dependencies:
   flutter_test:
@@ -37,6 +39,7 @@ dev_dependencies:
   flutter_lints: ^2.0.1
   json_serializable: ^6.2.0
   mockito: ^5.2.0
+  injectable_generator: ^1.5.3
   build_runner:
 
 ffigen:
@@ -80,10 +83,10 @@ flutter:
   plugin:
     platforms:
       android:
-        package: io.iden3.privadoid_sdk
-        pluginClass: PrivadoidPlugin
+        package: io.iden3.polygonid_flutter_sdk
+        pluginClass: PolygonIdSdkPlugin
       ios:
-        pluginClass: PrivadoidPlugin
+        pluginClass: PolygonIdSdkPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:

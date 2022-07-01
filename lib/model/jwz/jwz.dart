@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:privadoid_sdk/model/jwz/jwz_header.dart';
-import 'package:privadoid_sdk/model/jwz/jwz_proof.dart';
-import 'package:privadoid_sdk/utils/base_64.dart';
+import 'package:polygonid_flutter_sdk/model/jwz/jwz_header.dart';
+import 'package:polygonid_flutter_sdk/model/jwz/jwz_proof.dart';
+import 'package:polygonid_flutter_sdk/utils/base_64.dart';
 
 /// Wrapper for [JWZ] payload
 class JWZPayload extends Equatable with Base64Encoder {
