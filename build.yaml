@@ -10,3 +10,12 @@ targets:
           # auto registers any class inside a file with a
           # name matches the given pattern
           # file_name_pattern: "_bloc$|_use_case$|_data_source$|_mapper"
+      injectable_generator:injectable_config_builder:
+        generate_for:
+          - lib/**/*.dart
+      mockito:mockBuilder:
+        generate_for:
+          - test/**/*.dart
+      json_serializable:json_serializable:
+        generate_for:
+          - lib/**/*.dart

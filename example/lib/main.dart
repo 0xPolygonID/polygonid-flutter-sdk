@@ -23,7 +23,7 @@ class _MyAppState extends State<MyApp> {
     initPlatformState();
 
     var sdk = PolygonIdSdk();
-    sdk.getIdentity().then((value) {
+    sdk.identity.createIdentity().then((value) {
       print(value);
     }).catchError((error) {
       print(error);

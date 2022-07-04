@@ -17,79 +17,8 @@ import 'model/jwz/jwz.dart';
 import 'model/jwz/jwz_header.dart';
 
 class PrivadoIdSdk {
-  //static const MethodChannel _channel = MethodChannel('polygonid_flutter_sdk');
-
   static Iden3CoreLib get _iden3coreLib {
     return Iden3CoreLib();
-  }
-
-  /*static Future<String?> get platformVersion async {
-    final String? version = await _channel.invokeMethod('getPlatformVersion');
-    return version;
-  }*/
-
-  /*static Future<String?> createNewIdentity({Uint8List? privateKey}) async {
-    final PrivadoIdWallet wallet =
-        await PrivadoIdWallet.createPrivadoIdWallet(privateKey: privateKey);
-    return HexUtils.bytesToHex(wallet.privateKey);
-  }*/
-
-  // TODO: NEW METHOD
-  static Future<Map<String, dynamic>> createIdentity(
-      {Uint8List? privateKey}) async {
-    final PrivadoIdWallet wallet =
-        await PrivadoIdWallet.createPrivadoIdWallet(privateKey: privateKey);
-    Map<String, dynamic> map = {};
-    String? genesisId =
-        await _getIdentifier(wallet.publicKey[0], wallet.publicKey[1]);
-    String? authClaim =
-        await _getAuthClaim(wallet.publicKey[0], wallet.publicKey[1]);
-    map["id"] = genesisId;
-    map["authClaim"] = authClaim;
-    return map;
-  }
-
-  static Future<String?> _getIdentifier(String pubX, String pubY) async {
-    // final String mtRoot = _iden3coreLib.getMerkleTreeRoot(
-    //     wallet.publicKey[0], wallet.publicKey[1]);
-    // if (kDebugMode) {
-    //   print("mtRoot: $mtRoot");
-    // }
-    // Uint8List bufMtRoot = Uint8List.fromList(HEX.decode(mtRoot));
-    // BigInt mtRootBigInt = Uint8ArrayUtils.beBuff2int(
-    //     Uint8List.fromList(bufMtRoot.reversed.toList()));
-    // if (kDebugMode) {
-    //   print("mtRootBigInt: $mtRootBigInt");
-    // }
-    //
-    // String state = wallet.hashMessage(mtRootBigInt.toString(),
-    //     BigInt.zero.toString(), BigInt.zero.toString());
-    // if (kDebugMode) {
-    //   print("state: $state");
-    // }
-    // Uint8List bufState = Uint8List.fromList(HEX.decode(state));
-    // BigInt stateBigInt = Uint8ArrayUtils.beBuff2int(bufState);
-    // if (kDebugMode) {
-    //   print("stateBigInt: $stateBigInt");
-    // }
-    //
-    // final String genesisId = _iden3coreLib.getGenesisId(state);
-    // if (kDebugMode) {
-    //   print("GenesisId: $genesisId");
-    // }
-
-    Map<String, String> map = _iden3coreLib.generateIdentity(pubX, pubY);
-    //print(genesisId);
-
-    return map['id'];
-  }
-
-  static Future<String?> _getAuthClaim(String pubX, String pubY) async {
-    String authClaim = _iden3coreLib.getAuthClaim(pubX, pubY);
-    if (kDebugMode) {
-      print("authClaim: $authClaim");
-    }
-    return authClaim;
   }
 
   static Future<String?> prepareAuthInputs(
