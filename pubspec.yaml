@@ -24,7 +24,7 @@ dependencies:
   ffigen: ^5.0.0
   json_annotation: ^4.5.0
   equatable: ^2.0.3
-  crypto: ^3.0.2
+  crypto: ^3.0.1
   get_it: ^7.2.0
   injectable: ^1.5.3
 
