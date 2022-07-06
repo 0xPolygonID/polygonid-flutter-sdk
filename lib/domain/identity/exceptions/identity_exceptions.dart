@@ -3,3 +3,5 @@ class IdentityException implements Exception {
 
   IdentityException(this.error);
 }
+
+class TooLongPrivateKeyException implements Exception {}

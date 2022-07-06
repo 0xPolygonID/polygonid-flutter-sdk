@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
+import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/libs/proverlib.dart';
 import 'package:polygonid_flutter_sdk/model/credential_credential.dart';
 import 'package:polygonid_flutter_sdk/model/revocation_status.dart';
@@ -15,6 +16,7 @@ import 'generated_bindings_witness.dart' as witness;
 import 'generated_bindings_witness_mtp.dart';
 import 'generated_bindings_witness_sig.dart';
 
+@injectable
 class Iden3CoreLib {
   static NativeLibrary get _nativeLib {
     return Platform.isAndroid
@@ -111,7 +113,7 @@ class Iden3CoreLib {
     return result;
   }
 
-  String generateIdentity(String pubX, String pubY) {
+  Map<String, String> generateIdentity(String pubX, String pubY) {
     // ID - ALL GOOD
     String userRevNonce = "15930428023331155902";
 
@@ -133,7 +135,11 @@ class Iden3CoreLib {
     _nativeLib.IDENFreeMerkleTree(userAuthClaimsTree.value);
     _nativeLib.IDENFreeClaim(authClaim.value);
 
-    return result;
+    Map<String, String> map = {};
+    map['id'] = id.toString();
+    map['authClaim'] = authClaim.value.ref.toJson().toString();
+
+    return map;
   }
 
   String getMerkleTreeRoot(String pubX, String pubY) {
@@ -288,7 +294,7 @@ class Iden3CoreLib {
     return result;
   }
 
-  ffi.Pointer<IDENClaim>? parseClaim(String jsonLDDocument, String schema) {
+  ffi.Pointer<IDENClaim>? _parseClaim(String jsonLDDocument, String schema) {
     ffi.Pointer<ffi.Char> jsonLDDocumentP =
         jsonLDDocument.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Char> schemaP = schema.toNativeUtf8().cast<ffi.Char>();
@@ -787,7 +793,7 @@ class Iden3CoreLib {
     //   return "";
     // }
 
-    request.ref.claim.core_claim = parseClaim(jsonLDDocument, schema)!;
+    request.ref.claim.core_claim = _parseClaim(jsonLDDocument, schema)!;
 
     /*_makeUserClaim(request.ref.id, userRevNonce,
         value, operator, "ce6bb12c96bfd1544c02c289c6b4b987");*/
@@ -902,7 +908,7 @@ class Iden3CoreLib {
         for (int i = 0; i < credential.proof![1].mtp!.siblings!.length; i++) {
           claimMTP.ref.siblings[i] = malloc<ffi.UnsignedChar>(64);
           // Fill siblings
-          res = fillDataSibling(claimMTP.ref.siblings[i],
+          res = _fillDataSibling(claimMTP.ref.siblings[i],
               credential.proof![1].mtp!.siblings![i], status);
           assert(res == 1);
         }
@@ -1002,7 +1008,7 @@ class Iden3CoreLib {
       for (int i = 0; i < revocationStatus.mtp!.siblings!.length; i++) {
         claimNonRevProof.ref.siblings[i] = malloc<ffi.UnsignedChar>(64);
         // Fill siblings
-        res = fillDataSibling(claimNonRevProof.ref.siblings[i],
+        res = _fillDataSibling(claimNonRevProof.ref.siblings[i],
             revocationStatus.mtp!.siblings![i], status);
         assert(res == 1);
       }
@@ -1293,7 +1299,7 @@ class Iden3CoreLib {
           i++) {
         issuerAuthClaimMTP.ref.siblings[i] = malloc<ffi.UnsignedChar>(64);
         // Fill siblings
-        res = fillDataSibling(issuerAuthClaimMTP.ref.siblings[i],
+        res = _fillDataSibling(issuerAuthClaimMTP.ref.siblings[i],
             credential.proof![0].issuer_data!.mtp!.siblings![i], status);
         assert(res == 1);
       }
@@ -1347,7 +1353,7 @@ class Iden3CoreLib {
       for (int i = 0; i < authRevocationStatus.mtp!.siblings!.length; i++) {
         issuerNonRevMTP.ref.siblings[i] = malloc<ffi.UnsignedChar>(64);
         // Fill siblings
-        res = fillDataSibling(issuerNonRevMTP.ref.siblings[i],
+        res = _fillDataSibling(issuerNonRevMTP.ref.siblings[i],
             authRevocationStatus.mtp!.siblings![i], status);
         assert(res == 1);
       }
@@ -1363,7 +1369,7 @@ class Iden3CoreLib {
     request.ref.claim.signature_proof.issuer_auth_non_rev_proof.proof =
         issuerNonRevMTP;
 
-    request.ref.claim.core_claim = parseClaim(jsonLDDocument, schema)!;
+    request.ref.claim.core_claim = _parseClaim(jsonLDDocument, schema)!;
 
     request.ref.claim.tree_state = malloc<IDENTreeState>().ref;
     request.ref.claim.non_rev_proof.tree_state = malloc<IDENTreeState>().ref;
@@ -1433,7 +1439,7 @@ class Iden3CoreLib {
       for (int i = 0; i < revocationStatus.mtp!.siblings!.length; i++) {
         claimNonRevProof.ref.siblings[i] = malloc<ffi.UnsignedChar>(64);
         // Fill siblings
-        res = fillDataSibling(claimNonRevProof.ref.siblings[i],
+        res = _fillDataSibling(claimNonRevProof.ref.siblings[i],
             revocationStatus.mtp!.siblings![i], status);
         assert(res == 1);
       }
@@ -2200,7 +2206,7 @@ class Iden3CoreLib {
     return await prove(zkeyBytes, wtnsBytes!);
   }
 
-  int fillDataSibling(ffi.Pointer<ffi.UnsignedChar> dest, String source,
+  int _fillDataSibling(ffi.Pointer<ffi.UnsignedChar> dest, String source,
       ffi.Pointer<ffi.Pointer<IDENStatus>> status) {
     ffi.Pointer<ffi.Char> unsafePointerValue =
         source.toNativeUtf8().cast<ffi.Char>();

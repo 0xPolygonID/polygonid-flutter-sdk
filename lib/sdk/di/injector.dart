@@ -1,7 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
-import 'package:polygonid_flutter_sdk/data/repositories/identity_repository_impl.dart';
-import 'package:polygonid_flutter_sdk/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/data/identity/repositories/identity_repository_impl.dart';
+import 'package:polygonid_flutter_sdk/domain/identity/repositories/identity_repository.dart';
 
 import 'injector.config.dart';
 

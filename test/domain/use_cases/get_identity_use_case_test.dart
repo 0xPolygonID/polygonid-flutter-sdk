@@ -1,15 +1,17 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/domain/common/tuples.dart';
-import 'package:polygonid_flutter_sdk/domain/repositories/identity_repository.dart';
-import 'package:polygonid_flutter_sdk/domain/use_cases/get_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/domain/identity/entities/identity.dart';
+import 'package:polygonid_flutter_sdk/domain/identity/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/domain/identity/use_cases/get_identity_use_case.dart';
 
 import 'get_identity_use_case_test.mocks.dart';
 
 // Data
-const key = "theKey";
-final mockResult = Pair<String, String>("theResult1", "theResult2");
+const privateKey = "thePrivateKey";
+const identifier = "theIdentifier";
+const authClaim = "theAuthClaim";
+const result = Identity(identifier: identifier, authClaim: authClaim);
 var exception = Exception();
 
 // Dependencies
@@ -21,59 +23,59 @@ GetIdentityUseCase useCase = GetIdentityUseCase(identityRepository);
 @GenerateMocks([IdentityRepository])
 void main() {
   test(
-      "Given a seed phrase, when I call execute, then I expect a private key and an identity to be returned (as a Pair)",
+      "Given a private key, when I call execute, then I expect an Identity to be returned",
       () async {
     // Given
-    when(identityRepository.getIdentity(key: anyNamed('key')))
-        .thenAnswer((realInvocation) => Future.value(mockResult));
+    when(identityRepository.createIdentity(privateKey: anyNamed('privateKey')))
+        .thenAnswer((realInvocation) => Future.value(result));
 
     // When
-    expect(await useCase.execute(param: key), mockResult);
+    expect(await useCase.execute(param: privateKey), result);
 
     // Then
     expect(
-        verify(identityRepository.getIdentity(
-                key: captureAnyNamed('key')))
+        verify(identityRepository.createIdentity(
+                privateKey: captureAnyNamed('privateKey')))
             .captured
             .first,
-        key);
+        privateKey);
   });
 
   test(
-      "Given a seed phrase which is null, when I call execute, then I expect a private key and an identity to be returned (as a Pair)",
+      "Given a private key which is null, when I call execute, then I expect an Identity to be returned",
       () async {
     // Given
-    when(identityRepository.getIdentity(key: anyNamed('key')))
-        .thenAnswer((realInvocation) => Future.value(mockResult));
+    when(identityRepository.createIdentity(privateKey: anyNamed('privateKey')))
+        .thenAnswer((realInvocation) => Future.value(result));
 
     // When
-    expect(await useCase.execute(param: null), mockResult);
+    expect(await useCase.execute(), isA<Identity>());
 
     // Then
     expect(
-        verify(identityRepository.getIdentity(
-                key: captureAnyNamed('key')))
+        verify(identityRepository.createIdentity(
+                privateKey: captureAnyNamed('privateKey')))
             .captured
             .first,
         null);
   });
 
   test(
-      "Given a seed phrase, when I call getIdentity and an error occured, then I expect an error to be thrown",
+      "Given a private key, when I call execute and an error occured, then I expect an exception to be thrown",
       () async {
     // Given
-    when(identityRepository.getIdentity(key: anyNamed('key')))
+    when(identityRepository.createIdentity(privateKey: anyNamed('privateKey')))
         .thenAnswer((realInvocation) => Future.error(exception));
 
     // When
-    await expectLater(useCase.execute(param: key), throwsA(exception));
+    await expectLater(useCase.execute(param: privateKey), throwsA(exception));
 
     // Then
     expect(
-        verify(identityRepository.getIdentity(
-                key: captureAnyNamed('key')))
+        verify(identityRepository.createIdentity(
+                privateKey: captureAnyNamed('privateKey')))
             .captured
             .first,
-        key);
+        privateKey);
   });
 }

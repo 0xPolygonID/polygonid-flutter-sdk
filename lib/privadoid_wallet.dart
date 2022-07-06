@@ -10,6 +10,7 @@ import 'package:web3dart/crypto.dart';
 import 'eddsa_babyjub.dart' as eddsaBabyJub;
 import 'eddsa_babyjub.dart';
 
+// TODO: move impl to a DS and transform this class to an entity
 /// @class
 /// Manage Babyjubjub keys
 /// Perform standard wallet actions
