@@ -9,9 +9,11 @@ import 'get_identity_use_case_test.mocks.dart';
 
 // Data
 const privateKey = "thePrivateKey";
+const walletPrivateKey = "theWalletPrivateKey";
 const identifier = "theIdentifier";
 const authClaim = "theAuthClaim";
-const result = Identity(identifier: identifier, authClaim: authClaim);
+const result = Identity(
+    privateKey: walletPrivateKey, identifier: identifier, authClaim: authClaim);
 var exception = Exception();
 
 // Dependencies
