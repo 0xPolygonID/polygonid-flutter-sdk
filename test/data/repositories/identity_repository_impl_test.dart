@@ -15,18 +15,23 @@ import 'identity_repository_impl_test.mocks.dart';
 // Data
 class FakeWallet extends Fake implements PrivadoIdWallet {
   @override
+  dynamic get privateKey => walletPrivateKey;
+
+  @override
   dynamic get publicKey => [pubX, pubY];
 }
 
 const pubX = "thePubX";
 const pubY = "thePubY";
 const privateKey = "thePrivateKey";
+const walletPrivateKey = "theWalletPrivateKey";
 const longPrivateKey =
     "thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long";
 var mockWallet = FakeWallet();
 const identifier = "theIdentifier";
 const authClaim = "theAuthClaim";
-const result = Identity(identifier: identifier, authClaim: authClaim);
+const result = Identity(
+    privateKey: walletPrivateKey, identifier: identifier, authClaim: authClaim);
 var exception = Exception();
 var identityException = IdentityException(exception);
 

@@ -21,8 +21,10 @@ class IdentityRepositoryImpl extends IdentityRepository {
                   pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]),
               _localIdentityDataSource.getAuthclaim(
                   pubX: wallet.publicKey[0], pubY: wallet.publicKey[1])
-            ]))
-        .then((values) => Identity(identifier: values[0], authClaim: values[1]))
+            ]).then((values) => Identity(
+                privateKey: wallet.privateKey,
+                identifier: values[0],
+                authClaim: values[1])))
         .catchError((error) => throw IdentityException(error)));
   }
 
