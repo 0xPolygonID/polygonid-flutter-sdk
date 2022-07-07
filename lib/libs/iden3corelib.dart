@@ -1448,31 +1448,31 @@ class Iden3CoreLib {
           .revocation_root.data[i] = authRevStatusRevRootBytes[i];
     }
 
-    ffi.Pointer<IDENProof> issuerNonRevMTP = malloc<IDENProof>();
-    issuerNonRevMTP.ref.existence =
-        authRevocationStatus.mtp!.existence! ? 1 : 0;
-    if (authRevocationStatus.mtp!.siblings != null &&
-        authRevocationStatus.mtp!.siblings!.isNotEmpty) {
-      issuerNonRevMTP.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
-          authRevocationStatus.mtp!.siblings!.length);
-      for (int i = 0; i < authRevocationStatus.mtp!.siblings!.length; i++) {
-        issuerNonRevMTP.ref.siblings[i] = malloc<ffi.UnsignedChar>(64);
-        // Fill siblings
-        res = fillDataSibling(issuerNonRevMTP.ref.siblings[i],
-            authRevocationStatus.mtp!.siblings![i], status);
-        assert(res == 1);
-      }
-      issuerNonRevMTP.ref.siblings_num =
-          authRevocationStatus.mtp!.siblings!.length;
-    } else {
-      issuerNonRevMTP.ref.siblings = ffi.nullptr;
-      issuerNonRevMTP.ref.siblings_num = 0;
-    }
-
-    issuerNonRevMTP.ref.auxNodeKey = ffi.nullptr;
-    issuerNonRevMTP.ref.auxNodeValue = ffi.nullptr;
-    request.ref.claim.signature_proof.issuer_auth_non_rev_proof.proof =
-        issuerNonRevMTP;
+    // ffi.Pointer<IDENProof> issuerNonRevMTP = malloc<IDENProof>();
+    // issuerNonRevMTP.ref.existence =
+    //     authRevocationStatus.mtp!.existence! ? 1 : 0;
+    // if (authRevocationStatus.mtp!.siblings != null &&
+    //     authRevocationStatus.mtp!.siblings!.isNotEmpty) {
+    //   issuerNonRevMTP.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
+    //       authRevocationStatus.mtp!.siblings!.length);
+    //   for (int i = 0; i < authRevocationStatus.mtp!.siblings!.length; i++) {
+    //     issuerNonRevMTP.ref.siblings[i] = malloc<ffi.UnsignedChar>(64);
+    //     // Fill siblings
+    //     res = fillDataSibling(issuerNonRevMTP.ref.siblings[i],
+    //         authRevocationStatus.mtp!.siblings![i], status);
+    //     assert(res == 1);
+    //   }
+    //   issuerNonRevMTP.ref.siblings_num =
+    //       authRevocationStatus.mtp!.siblings!.length;
+    // } else {
+    //   issuerNonRevMTP.ref.siblings = ffi.nullptr;
+    //   issuerNonRevMTP.ref.siblings_num = 0;
+    // }
+    //
+    // issuerNonRevMTP.ref.auxNodeKey = ffi.nullptr;
+    // issuerNonRevMTP.ref.auxNodeValue = ffi.nullptr;
+    // request.ref.claim.signature_proof.issuer_auth_non_rev_proof.proof =
+    //     issuerNonRevMTP;
 
 
     //TODO: review
@@ -1541,28 +1541,28 @@ class Iden3CoreLib {
     }
 
     // claim revocation status proof
-    ffi.Pointer<IDENProof> claimNonRevProof = malloc<IDENProof>();
-    claimNonRevProof.ref.existence = revocationStatus.mtp!.existence! ? 1 : 0;
-    if (revocationStatus.mtp!.siblings != null &&
-        revocationStatus.mtp!.siblings!.isNotEmpty) {
-      claimNonRevProof.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
-          revocationStatus.mtp!.siblings!.length);
-      for (int i = 0; i < revocationStatus.mtp!.siblings!.length; i++) {
-        claimNonRevProof.ref.siblings[i] = malloc<ffi.UnsignedChar>(64);
-        // Fill siblings
-        res = fillDataSibling(claimNonRevProof.ref.siblings[i],
-            revocationStatus.mtp!.siblings![i], status);
-        assert(res == 1);
-      }
-      claimNonRevProof.ref.siblings_num =
-          revocationStatus.mtp!.siblings!.length;
-    } else {
-      claimNonRevProof.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>();
-      claimNonRevProof.ref.siblings_num = 0;
-    }
-    claimNonRevProof.ref.auxNodeKey = ffi.nullptr;
-    claimNonRevProof.ref.auxNodeValue = ffi.nullptr;
-    request.ref.claim.non_rev_proof.proof = claimNonRevProof;
+    // ffi.Pointer<IDENProof> claimNonRevProof = malloc<IDENProof>();
+    // claimNonRevProof.ref.existence = revocationStatus.mtp!.existence! ? 1 : 0;
+    // if (revocationStatus.mtp!.siblings != null &&
+    //     revocationStatus.mtp!.siblings!.isNotEmpty) {
+    //   claimNonRevProof.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
+    //       revocationStatus.mtp!.siblings!.length);
+    //   for (int i = 0; i < revocationStatus.mtp!.siblings!.length; i++) {
+    //     claimNonRevProof.ref.siblings[i] = malloc<ffi.UnsignedChar>(64);
+    //     // Fill siblings
+    //     res = fillDataSibling(claimNonRevProof.ref.siblings[i],
+    //         revocationStatus.mtp!.siblings![i], status);
+    //     assert(res == 1);
+    //   }
+    //   claimNonRevProof.ref.siblings_num =
+    //       revocationStatus.mtp!.siblings!.length;
+    // } else {
+    //   claimNonRevProof.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>();
+    //   claimNonRevProof.ref.siblings_num = 0;
+    // }
+    // claimNonRevProof.ref.auxNodeKey = ffi.nullptr;
+    // claimNonRevProof.ref.auxNodeValue = ffi.nullptr;
+    // request.ref.claim.non_rev_proof.proof = claimNonRevProof;
 
     request.ref.claim.non_rev_proof.proof = parseMTPjson(jsonEncode(revocationStatus.mtp?.toJson()))!;
 
