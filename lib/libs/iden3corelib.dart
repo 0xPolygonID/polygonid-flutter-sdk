@@ -136,7 +136,7 @@ class Iden3CoreLib {
     _nativeLib.IDENFreeClaim(authClaim.value);
 
     Map<String, String> map = {};
-    map['id'] = id.toString();
+    map['id'] = result.toString();
     map['authClaim'] = authClaim.value.ref.toJson().toString();
 
     return map;

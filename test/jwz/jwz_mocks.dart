@@ -167,6 +167,6 @@ class JWZMocks {
 class FakeCircom extends Fake implements CircomLib {
   @override
   String poseidonHash(String input) {
-    return 'yep';
+    return '3DFF';
   }
 }

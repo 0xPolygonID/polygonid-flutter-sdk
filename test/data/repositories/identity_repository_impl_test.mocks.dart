@@ -8,6 +8,8 @@ import 'dart:typed_data' as _i5;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/data/identity/data_sources/local_identity_data_source.dart'
     as _i3;
+import 'package:polygonid_flutter_sdk/data/identity/mappers/private_key_mapper.dart'
+    as _i6;
 import 'package:polygonid_flutter_sdk/privadoid_wallet.dart' as _i2;
 
 // ignore_for_file: type=lint
@@ -48,4 +50,22 @@ class MockLocalIdentityDataSource extends _i1.Mock
               returnValue:
                   Future<_i2.PrivadoIdWallet>.value(_FakePrivadoIdWallet_0()))
           as _i4.Future<_i2.PrivadoIdWallet>);
+}
+
+/// A class which mocks [PrivateKeyMapper].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockPrivateKeyMapper extends _i1.Mock implements _i6.PrivateKeyMapper {
+  MockPrivateKeyMapper() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  String mapFrom(_i5.Uint8List? from) =>
+      (super.noSuchMethod(Invocation.method(#mapFrom, [from]), returnValue: '')
+          as String);
+  @override
+  _i5.Uint8List mapTo(String? to) =>
+      (super.noSuchMethod(Invocation.method(#mapTo, [to]),
+          returnValue: _i5.Uint8List(0)) as _i5.Uint8List);
 }

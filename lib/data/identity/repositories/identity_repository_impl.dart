@@ -5,11 +5,13 @@ import 'package:polygonid_flutter_sdk/domain/identity/exceptions/identity_except
 
 import '../../../domain/identity/repositories/identity_repository.dart';
 import '../data_sources/local_identity_data_source.dart';
+import '../mappers/private_key_mapper.dart';
 
 class IdentityRepositoryImpl extends IdentityRepository {
   final LocalIdentityDataSource _localIdentityDataSource;
+  final PrivateKeyMapper _privateKeyMapper;
 
-  IdentityRepositoryImpl(this._localIdentityDataSource);
+  IdentityRepositoryImpl(this._localIdentityDataSource, this._privateKeyMapper);
 
   /// Get an [Identity] from a String
   @override
@@ -22,10 +24,11 @@ class IdentityRepositoryImpl extends IdentityRepository {
               _localIdentityDataSource.getAuthclaim(
                   pubX: wallet.publicKey[0], pubY: wallet.publicKey[1])
             ]).then((values) => Identity(
-                privateKey: wallet.privateKey,
+                privateKey: _privateKeyMapper.mapFrom(wallet.privateKey),
                 identifier: values[0],
                 authClaim: values[1])))
-        .catchError((error) => throw IdentityException(error)));
+        .catchError((error) =>
+    throw IdentityException(error)));
   }
 
   // TODO: this part should go on a mapper, so we can test it separately
