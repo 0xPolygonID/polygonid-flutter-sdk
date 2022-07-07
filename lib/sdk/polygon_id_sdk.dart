@@ -7,7 +7,7 @@ class PolygonIdSdk {
 
   PolygonIdSdk() {
     configureInjection();
-    identity = getIt<IdentityWallet>();
+    identity = getItSdk<IdentityWallet>();
   }
 
 // TODO: SDK should be separated in 4 parts:

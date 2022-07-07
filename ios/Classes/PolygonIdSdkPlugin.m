@@ -10,6 +10,6 @@
 
 @implementation PolygonIdSdkPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  [PolygonIdSdkPlugin registerWithRegistrar:registrar];
+  [SwiftPolygonIdSdkPlugin registerWithRegistrar:registrar];
 }
 @end

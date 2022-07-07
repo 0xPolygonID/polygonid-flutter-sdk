@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/data/identity/data_sources/local_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/data/identity/mappers/private_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/data/identity/repositories/identity_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/domain/identity/entities/identity.dart';
 import 'package:polygonid_flutter_sdk/domain/identity/exceptions/identity_exceptions.dart';
@@ -15,7 +16,7 @@ import 'identity_repository_impl_test.mocks.dart';
 // Data
 class FakeWallet extends Fake implements PrivadoIdWallet {
   @override
-  dynamic get privateKey => walletPrivateKey;
+  Uint8List get privateKey => Uint8List(32);
 
   @override
   dynamic get publicKey => [pubX, pubY];
@@ -38,11 +39,13 @@ var identityException = IdentityException(exception);
 // Dependencies
 MockLocalIdentityDataSource localIdentityDataSource =
     MockLocalIdentityDataSource();
+MockPrivateKeyMapper privateKeyMapper = MockPrivateKeyMapper();
 
 // Tested instance
-IdentityRepository repository = IdentityRepositoryImpl(localIdentityDataSource);
+IdentityRepository repository =
+    IdentityRepositoryImpl(localIdentityDataSource, privateKeyMapper);
 
-@GenerateMocks([LocalIdentityDataSource])
+@GenerateMocks([LocalIdentityDataSource, PrivateKeyMapper])
 void main() {
   group("Get identity", () {
     setUp(() {
@@ -58,6 +61,8 @@ void main() {
       when(localIdentityDataSource.createWallet(
               privateKey: anyNamed('privateKey')))
           .thenAnswer((realInvocation) => Future.value(mockWallet));
+      when(privateKeyMapper.mapFrom(any))
+          .thenAnswer((realInvocation) => walletPrivateKey);
     });
 
     test(

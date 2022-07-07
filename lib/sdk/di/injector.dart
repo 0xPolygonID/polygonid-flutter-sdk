@@ -5,18 +5,12 @@ import 'package:polygonid_flutter_sdk/domain/identity/repositories/identity_repo
 
 import 'injector.config.dart';
 
-final getIt = GetIt.instance;
+final getItSdk = GetIt.asNewInstance();
 
 @InjectableInit(
   initializerName: r'$initSDKGetIt',
 )
-void configureInjection() => $initSDKGetIt(getIt);
-
-@module
-abstract class CoreModule {
-  @lazySingleton
-  GetIt get getIt => GetIt.instance;
-}
+void configureInjection() => $initSDKGetIt(getItSdk);
 
 @module
 abstract class RepositoriesModule {
