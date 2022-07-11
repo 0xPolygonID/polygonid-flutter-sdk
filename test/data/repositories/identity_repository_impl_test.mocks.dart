@@ -8,8 +8,10 @@ import 'dart:typed_data' as _i5;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/data/identity/data_sources/local_identity_data_source.dart'
     as _i3;
-import 'package:polygonid_flutter_sdk/data/identity/mappers/private_key_mapper.dart'
+import 'package:polygonid_flutter_sdk/data/identity/mappers/hex_mapper.dart'
     as _i6;
+import 'package:polygonid_flutter_sdk/data/identity/mappers/private_key_mapper.dart'
+    as _i7;
 import 'package:polygonid_flutter_sdk/privadoid_wallet.dart' as _i2;
 
 // ignore_for_file: type=lint
@@ -50,13 +52,20 @@ class MockLocalIdentityDataSource extends _i1.Mock
               returnValue:
                   Future<_i2.PrivadoIdWallet>.value(_FakePrivadoIdWallet_0()))
           as _i4.Future<_i2.PrivadoIdWallet>);
+  @override
+  _i4.Future<String> signMessage(
+          {_i5.Uint8List? privateKey, String? message}) =>
+      (super.noSuchMethod(
+          Invocation.method(
+              #signMessage, [], {#privateKey: privateKey, #message: message}),
+          returnValue: Future<String>.value('')) as _i4.Future<String>);
 }
 
-/// A class which mocks [PrivateKeyMapper].
+/// A class which mocks [HexMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockPrivateKeyMapper extends _i1.Mock implements _i6.PrivateKeyMapper {
-  MockPrivateKeyMapper() {
+class MockHexMapper extends _i1.Mock implements _i6.HexMapper {
+  MockHexMapper() {
     _i1.throwOnMissingStub(this);
   }
 
@@ -68,4 +77,18 @@ class MockPrivateKeyMapper extends _i1.Mock implements _i6.PrivateKeyMapper {
   _i5.Uint8List mapTo(String? to) =>
       (super.noSuchMethod(Invocation.method(#mapTo, [to]),
           returnValue: _i5.Uint8List(0)) as _i5.Uint8List);
+}
+
+/// A class which mocks [PrivateKeyMapper].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockPrivateKeyMapper extends _i1.Mock implements _i7.PrivateKeyMapper {
+  MockPrivateKeyMapper() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  String mapTo(_i5.Uint8List? to) =>
+      (super.noSuchMethod(Invocation.method(#mapTo, [to]), returnValue: '')
+          as String);
 }

@@ -12,6 +12,9 @@ import 'local_identity_data_source_test.mocks.dart';
 // Data
 class FakeWallet extends Fake implements PrivadoIdWallet {
   @override
+  Uint8List get privateKey => walletPrivateKey;
+
+  @override
   dynamic get publicKey => [pubX, pubY];
 }
 
@@ -19,7 +22,9 @@ const pubX = "thePubX";
 const pubY = "thePubY";
 const identifier = "theIdentifier";
 const authClaim = "theAuthClaim";
-final privateKey = Uint8List.fromList("thePrivateKey".codeUnits);
+const message = "theMessage";
+const signature = "theSignature";
+final walletPrivateKey = Uint8List.fromList("thePrivateKey".codeUnits);
 var mockWallet = FakeWallet();
 const mockCoreIdentity = {"id": identifier, "authClaim": authClaim};
 const keyHex = "707269766174654b6579";
@@ -117,7 +122,8 @@ void main() {
           .thenAnswer((realInvocation) => Future.value(mockWallet));
 
       // When
-      expect(await dataSource.createWallet(privateKey: privateKey), mockWallet);
+      expect(await dataSource.createWallet(privateKey: walletPrivateKey),
+          mockWallet);
 
       // Then
       expect(
@@ -125,7 +131,7 @@ void main() {
                   privateKey: captureAnyNamed('privateKey')))
               .captured
               .first,
-          privateKey);
+          walletPrivateKey);
     });
 
     test(
@@ -136,7 +142,7 @@ void main() {
           .thenAnswer((realInvocation) => Future.error(exception));
 
       // When
-      await expectLater(dataSource.createWallet(privateKey: privateKey),
+      await expectLater(dataSource.createWallet(privateKey: walletPrivateKey),
           throwsA(exception));
 
       // Then
@@ -145,7 +151,74 @@ void main() {
                   privateKey: captureAnyNamed('privateKey')))
               .captured
               .first,
-          privateKey);
+          walletPrivateKey);
+    });
+  });
+
+  group("Sign message", () {
+    setUp(() {
+      when(walletLibWrapper.createWallet(privateKey: anyNamed('privateKey')))
+          .thenAnswer((realInvocation) => Future.value(mockWallet));
+    });
+
+    test(
+        "Given a private key and a message, when I call signMessage, then I expect a signature as a String to be returned",
+        () async {
+      // Given
+      when(walletLibWrapper.signMessage(
+              privateKey: anyNamed("privateKey"), message: anyNamed('message')))
+          .thenAnswer((realInvocation) => Future.value(signature));
+
+      // When
+      expect(
+          await dataSource.signMessage(
+              privateKey: walletPrivateKey, message: message),
+          signature);
+
+      // Then
+      expect(
+          verify(walletLibWrapper.createWallet(
+                  privateKey: captureAnyNamed('privateKey')))
+              .captured
+              .first,
+          walletPrivateKey);
+
+      var capturedSign = verify(walletLibWrapper.signMessage(
+              privateKey: captureAnyNamed("privateKey"),
+              message: captureAnyNamed('message')))
+          .captured;
+      expect(capturedSign[0], walletPrivateKey);
+      expect(capturedSign[1], message);
+    });
+
+    test(
+        "Given a private key and a message, when I call signMessage and an error occured, then I expect an exception to be thrown",
+        () async {
+      // Given
+      when(walletLibWrapper.signMessage(
+              privateKey: anyNamed("privateKey"), message: anyNamed('message')))
+          .thenAnswer((realInvocation) => Future.error(exception));
+
+      // When
+      await expectLater(
+          dataSource.signMessage(
+              privateKey: walletPrivateKey, message: message),
+          throwsA(exception));
+
+      // Then
+      expect(
+          verify(walletLibWrapper.createWallet(
+                  privateKey: captureAnyNamed('privateKey')))
+              .captured
+              .first,
+          walletPrivateKey);
+
+      var capturedSign = verify(walletLibWrapper.signMessage(
+              privateKey: captureAnyNamed("privateKey"),
+              message: captureAnyNamed('message')))
+          .captured;
+      expect(capturedSign[0], walletPrivateKey);
+      expect(capturedSign[1], message);
     });
   });
 }

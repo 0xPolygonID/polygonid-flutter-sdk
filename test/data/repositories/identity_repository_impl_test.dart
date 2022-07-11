@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/data/identity/data_sources/local_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/data/identity/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/data/identity/mappers/private_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/data/identity/repositories/identity_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/domain/identity/entities/identity.dart';
@@ -26,11 +27,12 @@ const pubX = "thePubX";
 const pubY = "thePubY";
 const privateKey = "thePrivateKey";
 const walletPrivateKey = "theWalletPrivateKey";
-const longPrivateKey =
-    "thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long";
+final bbjjKey = Uint8List(32);
 var mockWallet = FakeWallet();
 const identifier = "theIdentifier";
 const authClaim = "theAuthClaim";
+const message = "theMessage";
+const signature = "theSignature";
 const result = Identity(
     privateKey: walletPrivateKey, identifier: identifier, authClaim: authClaim);
 var exception = Exception();
@@ -39,17 +41,20 @@ var identityException = IdentityException(exception);
 // Dependencies
 MockLocalIdentityDataSource localIdentityDataSource =
     MockLocalIdentityDataSource();
+MockHexMapper hexMapper = MockHexMapper();
 MockPrivateKeyMapper privateKeyMapper = MockPrivateKeyMapper();
 
 // Tested instance
-IdentityRepository repository =
-    IdentityRepositoryImpl(localIdentityDataSource, privateKeyMapper);
+IdentityRepository repository = IdentityRepositoryImpl(
+    localIdentityDataSource, hexMapper, privateKeyMapper);
 
-@GenerateMocks([LocalIdentityDataSource, PrivateKeyMapper])
+@GenerateMocks([LocalIdentityDataSource, HexMapper, PrivateKeyMapper])
 void main() {
   group("Get identity", () {
     setUp(() {
       reset(localIdentityDataSource);
+      reset(hexMapper);
+      reset(privateKeyMapper);
 
       // Given
       when(localIdentityDataSource.getAuthclaim(
@@ -61,8 +66,10 @@ void main() {
       when(localIdentityDataSource.createWallet(
               privateKey: anyNamed('privateKey')))
           .thenAnswer((realInvocation) => Future.value(mockWallet));
-      when(privateKeyMapper.mapFrom(any))
+      when(hexMapper.mapFrom(any))
           .thenAnswer((realInvocation) => walletPrivateKey);
+      when(privateKeyMapper.mapFrom(any))
+          .thenAnswer((realInvocation) => bbjjKey);
     });
 
     test(
@@ -94,6 +101,9 @@ void main() {
     test(
         "Given a private key which is null, when I call getIdentity, then I expect an Identity to be returned",
         () async {
+      // Given
+      when(privateKeyMapper.mapFrom(any)).thenAnswer((realInvocation) => null);
+
       // When
       expect(await repository.createIdentity(), isA<Identity>());
 
@@ -115,22 +125,6 @@ void main() {
           .captured;
       expect(authCaptured[0], isA<String>());
       expect(authCaptured[1], isA<String>());
-    });
-
-    test(
-        "Given a private key which is too long, when I call getIdentity, then I expect a TooLongPrivateKeyException to be thrown",
-        () async {
-      // When
-      await expectLater(repository.createIdentity(privateKey: longPrivateKey),
-          throwsA(isA<TooLongPrivateKeyException>()));
-
-      // Then
-      verifyNever(localIdentityDataSource.createWallet(
-          privateKey: anyNamed('privateKey')));
-      verifyNever(localIdentityDataSource.getIdentifier(
-          pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')));
-      verifyNever(localIdentityDataSource.getAuthclaim(
-          pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')));
     });
 
     test(
@@ -168,6 +162,67 @@ void main() {
           .captured;
       expect(authCaptured[0], isA<String>());
       expect(authCaptured[1], isA<String>());
+    });
+  });
+
+  group("Sign message", () {
+    setUp(() {
+      reset(localIdentityDataSource);
+      reset(privateKeyMapper);
+
+      // Given
+      when(localIdentityDataSource.signMessage(
+              privateKey: anyNamed('privateKey'), message: anyNamed('message')))
+          .thenAnswer((realInvocation) => Future.value(signature));
+      when(hexMapper.mapTo(any)).thenAnswer((realInvocation) => bbjjKey);
+    });
+
+    test(
+        "Given a private key and a message, when I call signMessage, then I expect a signature as a String to be returned",
+        () async {
+      // When
+      expect(
+          await repository.signMessage(
+              privateKey: privateKey, message: message),
+          signature);
+
+      // Then
+      expect(verify(hexMapper.mapTo(captureAny)).captured.first,
+          privateKey);
+      var signCaptured = verify(localIdentityDataSource.signMessage(
+              privateKey: captureAnyNamed('privateKey'),
+              message: captureAnyNamed('message')))
+          .captured;
+      expect(signCaptured[0], bbjjKey);
+      expect(signCaptured[1], message);
+    });
+
+    test(
+        "Given a private key and a message, when I call signMessage and an error occured, then I expect an IdentityException to be thrown",
+        () async {
+      // Given
+      when(localIdentityDataSource.signMessage(
+              privateKey: anyNamed('privateKey'), message: anyNamed('message')))
+          .thenAnswer((realInvocation) => Future.error(exception));
+
+      // When
+      await repository
+          .signMessage(privateKey: privateKey, message: message)
+          .then((_) => null)
+          .catchError((error) {
+        expect(error, isA<IdentityException>());
+        expect(error.error, exception);
+      });
+
+      // Then
+      expect(verify(hexMapper.mapTo(captureAny)).captured.first,
+          privateKey);
+      var signCaptured = verify(localIdentityDataSource.signMessage(
+              privateKey: captureAnyNamed('privateKey'),
+              message: captureAnyNamed('message')))
+          .captured;
+      expect(signCaptured[0], bbjjKey);
+      expect(signCaptured[1], message);
     });
   });
 }
