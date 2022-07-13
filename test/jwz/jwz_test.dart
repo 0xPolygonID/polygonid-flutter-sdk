@@ -61,7 +61,7 @@ void main() {
 
     test("JWZProver prove", () async {
       when(preparer.prepare(any, any))
-          .thenAnswer((realInvocation) => Uint8List(0));
+          .thenAnswer((realInvocation) => Future.value(Uint8List(0)));
       when(prover.prove(any, any, any))
           .thenAnswer((realInvocation) => Future.value(JWZMocks.jwzProof));
       JWZToken token = JWZToken.withJWZ(
@@ -78,10 +78,7 @@ void main() {
     when(prover.verify(any, any, any))
         .thenAnswer((realInvocation) => Future.value(true));
     JWZToken token = JWZToken.fromBase64(
-        data: compacted,
-        prover: prover,
-        preparer: preparer,
-        circom: circom);
+        data: compacted, prover: prover, preparer: preparer, circom: circom);
     var verificationKey =
         await File('test/jwz/verification_key.json').readAsBytes();
 

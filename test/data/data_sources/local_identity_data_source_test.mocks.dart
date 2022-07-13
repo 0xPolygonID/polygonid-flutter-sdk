@@ -180,4 +180,11 @@ class MockWalletLibWrapper extends _i1.Mock implements _i8.WalletLibWrapper {
               returnValue:
                   Future<_i2.PrivadoIdWallet>.value(_FakePrivadoIdWallet_0()))
           as _i6.Future<_i2.PrivadoIdWallet>);
+  @override
+  _i6.Future<String> signMessage(
+          {_i7.Uint8List? privateKey, String? message}) =>
+      (super.noSuchMethod(
+          Invocation.method(
+              #signMessage, [], {#privateKey: privateKey, #message: message}),
+          returnValue: Future<String>.value('')) as _i6.Future<String>);
 }

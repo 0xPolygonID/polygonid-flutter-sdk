@@ -1,0 +1,81 @@
+import 'dart:typed_data';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:polygonid_flutter_sdk/data/identity/mappers/private_key_mapper.dart';
+import 'package:polygonid_flutter_sdk/domain/identity/exceptions/identity_exceptions.dart';
+
+// Data
+const privateKey = "thePrivateKey";
+final convertedKey = Uint8List.fromList([
+  116,
+  104,
+  101,
+  80,
+  114,
+  105,
+  118,
+  97,
+  116,
+  101,
+  75,
+  101,
+  121,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+]);
+const longPrivateKey =
+    "thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long";
+
+// Tested instance
+PrivateKeyMapper mapper = PrivateKeyMapper();
+
+void main() {
+  group("Map from", () {
+    test(
+        "Given a string, when I call mapFrom, then I expect a Uint8List to be returned",
+        () {
+      // When
+      expect(mapper.mapFrom(privateKey), convertedKey);
+    });
+
+    test(
+        "Given a string which is null, when I call mapFrom, then I expect a null to be returned",
+        () {
+      // When
+      expect(mapper.mapFrom(null), null);
+    });
+
+    test(
+        "Given a string which is too long, when I call mapFrom, then I expect a TooLongPrivateKeyException to be thrown",
+        () {
+      bool hasThrown = false;
+      // When
+      try {
+        mapper.mapFrom(longPrivateKey);
+      } catch (e) {
+        // Then
+        expect(e, isA<TooLongPrivateKeyException>());
+        hasThrown = true;
+      }
+
+      expect(hasThrown, true);
+    });
+  });
+}

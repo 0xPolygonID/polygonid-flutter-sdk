@@ -66,7 +66,8 @@ class MockJWZInputPreparer extends _i1.Mock implements _i3.JWZInputPreparer {
   }
 
   @override
-  _i5.Uint8List prepare(_i5.Uint8List? hash, String? circuitID) =>
+  _i4.Future<_i5.Uint8List> prepare(_i5.Uint8List? hash, String? circuitID) =>
       (super.noSuchMethod(Invocation.method(#prepare, [hash, circuitID]),
-          returnValue: _i5.Uint8List(0)) as _i5.Uint8List);
+              returnValue: Future<_i5.Uint8List>.value(_i5.Uint8List(0)))
+          as _i4.Future<_i5.Uint8List>);
 }

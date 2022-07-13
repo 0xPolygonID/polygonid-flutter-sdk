@@ -26,7 +26,7 @@ abstract class JWZProver {
 
 /// Prepare circuit inputs
 abstract class JWZInputPreparer {
-  Uint8List prepare(Uint8List hash, String circuitID);
+  Future<Uint8List> prepare(Uint8List hash, String circuitID);
 }
 
 /// Representation of a JWZ Token with [JWZProver] and [JWZInputPreparer]
@@ -88,7 +88,7 @@ class JWZToken implements Base64Encoder {
   /// Prove and set [JWZToken.proof]
   /// Returns compacted [JWZ]
   Future<String> prove(Uint8List provingKey, Uint8List wasm) async {
-    Uint8List prepared = preparer.prepare(_getHash(), circuitID);
+    Uint8List prepared = await preparer.prepare(_getHash(), circuitID);
     jwz.proof = await prover.prove(prepared, provingKey, wasm);
 
     return encode();

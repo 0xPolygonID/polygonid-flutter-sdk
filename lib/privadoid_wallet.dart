@@ -65,18 +65,6 @@ class PrivadoIdWallet {
     return privadoIdWallet;
   }
 
-  /// Signs message with private key
-  /// @param [String] messageStr - message to sign
-  /// @returns [String] - Babyjubjub signature packed and encoded as an hex string
-  String signMessage(String messageStr) {
-    //Uint8List message = Uint8ArrayUtils.uint8ListfromString(messageStr);
-    //BigInt messHash = Uint8ArrayUtils.beBuff2int(message);
-    BigInt? messHash = BigInt.tryParse(messageStr, radix: 10);
-    final privateKey = eddsaBabyJub.PrivateKey(this.privateKey);
-    final signature = privateKey.sign(messHash!);
-    return signature;
-  }
-
   // Hash message with poseidon
   /// @param [String] messageStr - message to hash
   /// @returns [String] - hash poseidon
