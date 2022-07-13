@@ -22,11 +22,14 @@ dependencies:
   hex: ^0.2.0
   web3dart: ^2.3.3
   ffigen: ^5.0.0
-  json_annotation: ^4.5.0
+  json_annotation: ^4.6.0
   equatable: ^2.0.3
   crypto: ^3.0.1
   get_it: ^7.2.0
   injectable: ^1.5.3
+  path_provider: ^2.0.11
+  sembast: ^3.2.0+1
+
 
 dev_dependencies:
   flutter_test:
@@ -37,7 +40,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.1
-  json_serializable: ^6.2.0
+  json_serializable: ^6.3.1
   mockito: ^5.2.0
   injectable_generator: ^1.5.3
   build_runner:

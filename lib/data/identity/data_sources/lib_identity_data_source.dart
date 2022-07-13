@@ -26,11 +26,11 @@ class WalletLibWrapper {
   }
 }
 
-class LocalIdentityDataSource {
+class LibIdentityDataSource {
   final Iden3CoreLib _iden3coreLib;
   final WalletLibWrapper _walletLibWrapper;
 
-  LocalIdentityDataSource(this._iden3coreLib, this._walletLibWrapper);
+  LibIdentityDataSource(this._iden3coreLib, this._walletLibWrapper);
 
   Future<String> getIdentifier({required String pubX, required String pubY}) {
     try {

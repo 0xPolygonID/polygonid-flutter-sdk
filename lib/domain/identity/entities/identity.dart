@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 
 /// Represents an identity.
-/// An identity is a pair of an identifier and an auth claim.
 class Identity extends Equatable {
   final String privateKey;
   final String identifier;

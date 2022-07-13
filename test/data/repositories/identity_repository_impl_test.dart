@@ -3,7 +3,9 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/data/identity/data_sources/local_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/data/identity/data_sources/lib_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/data/identity/data_sources/storage_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/data/identity/dtos/identity_dto.dart';
 import 'package:polygonid_flutter_sdk/data/identity/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/data/identity/mappers/private_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/data/identity/repositories/identity_repository_impl.dart';
@@ -28,9 +30,11 @@ const pubY = "thePubY";
 const privateKey = "thePrivateKey";
 const walletPrivateKey = "theWalletPrivateKey";
 final bbjjKey = Uint8List(32);
-var mockWallet = FakeWallet();
+final mockWallet = FakeWallet();
 const identifier = "theIdentifier";
 const authClaim = "theAuthClaim";
+const mockDTO = IdentityDTO(
+    privateKey: privateKey, identifier: identifier, authClaim: authClaim);
 const message = "theMessage";
 const signature = "theSignature";
 const result = Identity(
@@ -39,33 +43,43 @@ var exception = Exception();
 var identityException = IdentityException(exception);
 
 // Dependencies
-MockLocalIdentityDataSource localIdentityDataSource =
-    MockLocalIdentityDataSource();
+MockLibIdentityDataSource libIdentityDataSource = MockLibIdentityDataSource();
+MockStorageIdentityDataSource storageIdentityDataSource =
+    MockStorageIdentityDataSource();
 MockHexMapper hexMapper = MockHexMapper();
 MockPrivateKeyMapper privateKeyMapper = MockPrivateKeyMapper();
 
 // Tested instance
-IdentityRepository repository = IdentityRepositoryImpl(
-    localIdentityDataSource, hexMapper, privateKeyMapper);
+IdentityRepository repository = IdentityRepositoryImpl(libIdentityDataSource,
+    storageIdentityDataSource, hexMapper, privateKeyMapper);
 
-@GenerateMocks([LocalIdentityDataSource, HexMapper, PrivateKeyMapper])
+@GenerateMocks([
+  LibIdentityDataSource,
+  StorageIdentityDataSource,
+  HexMapper,
+  PrivateKeyMapper
+])
 void main() {
-  group("Get identity", () {
+  group("Create identity", () {
     setUp(() {
-      reset(localIdentityDataSource);
+      reset(libIdentityDataSource);
+      reset(storageIdentityDataSource);
       reset(hexMapper);
       reset(privateKeyMapper);
 
       // Given
-      when(localIdentityDataSource.getAuthclaim(
+      when(libIdentityDataSource.getAuthclaim(
               pubX: anyNamed('pubX'), pubY: anyNamed('pubY')))
           .thenAnswer((realInvocation) => Future.value(authClaim));
-      when(localIdentityDataSource.getIdentifier(
+      when(libIdentityDataSource.getIdentifier(
               pubX: anyNamed('pubX'), pubY: anyNamed('pubY')))
           .thenAnswer((realInvocation) => Future.value(identifier));
-      when(localIdentityDataSource.createWallet(
+      when(libIdentityDataSource.createWallet(
               privateKey: anyNamed('privateKey')))
           .thenAnswer((realInvocation) => Future.value(mockWallet));
+      when(storageIdentityDataSource.getIdentity(
+              identifier: anyNamed('identifier')))
+          .thenAnswer((realInvocation) => Future.value(null));
       when(hexMapper.mapFrom(any))
           .thenAnswer((realInvocation) => walletPrivateKey);
       when(privateKeyMapper.mapFrom(any))
@@ -73,25 +87,25 @@ void main() {
     });
 
     test(
-        "Given a private key, when I call getIdentity, then I expect an Identity to be returned",
+        "Given a private key, when I call createIdentity, then I expect an Identity to be returned",
         () async {
       // When
       expect(await repository.createIdentity(privateKey: privateKey), result);
 
       // Then
       expect(
-          verify(localIdentityDataSource.createWallet(
+          verify(libIdentityDataSource.createWallet(
                   privateKey: captureAnyNamed('privateKey')))
               .captured
               .first,
-          isA<Uint8List>());
-      var identifierCaptured = verify(localIdentityDataSource.getIdentifier(
+          bbjjKey);
+      var identifierCaptured = verify(libIdentityDataSource.getIdentifier(
               pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')))
           .captured;
       expect(identifierCaptured[0], pubX);
       expect(identifierCaptured[1], pubY);
 
-      var authCaptured = verify(localIdentityDataSource.getAuthclaim(
+      var authCaptured = verify(libIdentityDataSource.getAuthclaim(
               pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')))
           .captured;
       expect(authCaptured[0], pubX);
@@ -99,7 +113,7 @@ void main() {
     });
 
     test(
-        "Given a private key which is null, when I call getIdentity, then I expect an Identity to be returned",
+        "Given a private key which is null, when I call createIdentity, then I expect an Identity to be returned",
         () async {
       // Given
       when(privateKeyMapper.mapFrom(any)).thenAnswer((realInvocation) => null);
@@ -109,18 +123,18 @@ void main() {
 
       // Then
       expect(
-          verify(localIdentityDataSource.createWallet(
+          verify(libIdentityDataSource.createWallet(
                   privateKey: captureAnyNamed('privateKey')))
               .captured
               .first,
           null);
-      var identifierCaptured = verify(localIdentityDataSource.getIdentifier(
+      var identifierCaptured = verify(libIdentityDataSource.getIdentifier(
               pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')))
           .captured;
       expect(identifierCaptured[0], pubX);
       expect(identifierCaptured[1], pubY);
 
-      var authCaptured = verify(localIdentityDataSource.getAuthclaim(
+      var authCaptured = verify(libIdentityDataSource.getAuthclaim(
               pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')))
           .captured;
       expect(authCaptured[0], isA<String>());
@@ -128,10 +142,47 @@ void main() {
     });
 
     test(
-        "Given a private key, when I call getIdentity and an error occured, then I expect a IdentityException to be thrown",
+        "Given a private key with an associated Identity already stored, when I call createIdentity, then I expect an Identity to be returned",
         () async {
       // Given
-      when(localIdentityDataSource.getIdentifier(
+      when(storageIdentityDataSource.getIdentity(
+              identifier: anyNamed('identifier')))
+          .thenAnswer((realInvocation) => Future.value(mockDTO));
+
+      // When
+      expect(await repository.createIdentity(), isA<Identity>());
+
+      // Then
+      expect(
+          verify(libIdentityDataSource.createWallet(
+                  privateKey: captureAnyNamed('privateKey')))
+              .captured
+              .first,
+          bbjjKey);
+      expect(
+          verify(storageIdentityDataSource.getIdentity(
+                  identifier: captureAnyNamed('identifier')))
+              .captured
+              .first,
+          identifier);
+      var identifierCaptured = verify(libIdentityDataSource.getIdentifier(
+              pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')))
+          .captured;
+      expect(identifierCaptured[0], pubX);
+      expect(identifierCaptured[1], pubY);
+
+      var authCaptured = verify(libIdentityDataSource.getAuthclaim(
+              pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')))
+          .captured;
+      expect(authCaptured[0], isA<String>());
+      expect(authCaptured[1], isA<String>());
+    });
+
+    test(
+        "Given a private key, when I call createIdentity and an error occured, then I expect a IdentityException to be thrown",
+        () async {
+      // Given
+      when(libIdentityDataSource.getIdentifier(
               pubX: anyNamed('pubX'), pubY: anyNamed('pubY')))
           .thenAnswer((realInvocation) => Future.error(exception));
 
@@ -146,32 +197,29 @@ void main() {
 
       // Then
       expect(
-          verify(localIdentityDataSource.createWallet(
+          verify(libIdentityDataSource.createWallet(
                   privateKey: captureAnyNamed('privateKey')))
               .captured
               .first,
-          isA<Uint8List>());
-      var identifierCaptured = verify(localIdentityDataSource.getIdentifier(
+          bbjjKey);
+      var identifierCaptured = verify(libIdentityDataSource.getIdentifier(
               pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')))
           .captured;
       expect(identifierCaptured[0], pubX);
       expect(identifierCaptured[1], pubY);
 
-      var authCaptured = verify(localIdentityDataSource.getAuthclaim(
-              pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')))
-          .captured;
-      expect(authCaptured[0], isA<String>());
-      expect(authCaptured[1], isA<String>());
+      verifyNever(libIdentityDataSource.getAuthclaim(
+          pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')));
     });
   });
 
   group("Sign message", () {
     setUp(() {
-      reset(localIdentityDataSource);
+      reset(libIdentityDataSource);
       reset(privateKeyMapper);
 
       // Given
-      when(localIdentityDataSource.signMessage(
+      when(libIdentityDataSource.signMessage(
               privateKey: anyNamed('privateKey'), message: anyNamed('message')))
           .thenAnswer((realInvocation) => Future.value(signature));
       when(hexMapper.mapTo(any)).thenAnswer((realInvocation) => bbjjKey);
@@ -187,9 +235,8 @@ void main() {
           signature);
 
       // Then
-      expect(verify(hexMapper.mapTo(captureAny)).captured.first,
-          privateKey);
-      var signCaptured = verify(localIdentityDataSource.signMessage(
+      expect(verify(hexMapper.mapTo(captureAny)).captured.first, privateKey);
+      var signCaptured = verify(libIdentityDataSource.signMessage(
               privateKey: captureAnyNamed('privateKey'),
               message: captureAnyNamed('message')))
           .captured;
@@ -201,7 +248,7 @@ void main() {
         "Given a private key and a message, when I call signMessage and an error occured, then I expect an IdentityException to be thrown",
         () async {
       // Given
-      when(localIdentityDataSource.signMessage(
+      when(libIdentityDataSource.signMessage(
               privateKey: anyNamed('privateKey'), message: anyNamed('message')))
           .thenAnswer((realInvocation) => Future.error(exception));
 
@@ -215,9 +262,8 @@ void main() {
       });
 
       // Then
-      expect(verify(hexMapper.mapTo(captureAny)).captured.first,
-          privateKey);
-      var signCaptured = verify(localIdentityDataSource.signMessage(
+      expect(verify(hexMapper.mapTo(captureAny)).captured.first, privateKey);
+      var signCaptured = verify(libIdentityDataSource.signMessage(
               privateKey: captureAnyNamed('privateKey'),
               message: captureAnyNamed('message')))
           .captured;

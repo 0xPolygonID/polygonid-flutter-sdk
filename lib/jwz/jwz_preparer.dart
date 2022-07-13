@@ -1,17 +1,28 @@
+import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:polygonid_flutter_sdk/privadoid_wallet.dart';
-import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:polygonid_flutter_sdk/sdk/identity_wallet.dart';
+import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk/utils/uint8_list_utils.dart';
 import 'package:web3dart/crypto.dart';
 
 import '../libs/iden3corelib.dart';
 import 'jwz_token.dart';
 
+class AuthInputsIsolateParam {
+  final String challenge;
+  final String authClaim;
+  final String pubX;
+  final String pubY;
+  final String signature;
+
+  AuthInputsIsolateParam(
+      this.challenge, this.authClaim, this.pubX, this.pubY, this.signature);
+}
+
 class JWZPreparer extends JWZInputPreparer {
-  // TODO: should be injected
-  late Iden3CoreLib _iden3coreLib;
   late IdentityWallet _identityWallet;
 
   final String privateKey;
@@ -21,10 +32,8 @@ class JWZPreparer extends JWZInputPreparer {
   JWZPreparer(
       {required this.privateKey,
       required this.wallet,
-      required this.authClaim,
-      Iden3CoreLib? coreLib}) {
-    _iden3coreLib = coreLib ?? Iden3CoreLib();
-    _identityWallet = getItSdk<IdentityWallet>();
+      required this.authClaim}) {
+    _identityWallet = PolygonIdSdk.I.identity;
   }
 
   @override
@@ -35,10 +44,19 @@ class JWZPreparer extends JWZInputPreparer {
         await _identityWallet.sign(privateKey: privateKey, message: challenge);
 
     if (circuitID == "auth") {
-      queryInputs = _iden3coreLib.prepareAuthInputs(challenge, authClaim,
-          wallet.publicKey[0], wallet.publicKey[1], signatureString);
+      queryInputs = await compute(
+          _computeAuthInputs,
+          AuthInputsIsolateParam(challenge, authClaim, wallet.publicKey[0],
+              wallet.publicKey[1], signatureString));
     }
 
     return Uint8ArrayUtils.uint8ListfromString(queryInputs);
+  }
+
+  Future<String> _computeAuthInputs(AuthInputsIsolateParam param) {
+    final iden3coreLib = Iden3CoreLib();
+
+    return Future.value(iden3coreLib.prepareAuthInputs(param.challenge,
+        param.authClaim, param.pubX, param.pubY, param.signature));
   }
 }
