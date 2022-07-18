@@ -10,7 +10,6 @@ import 'package:polygonid_flutter_sdk/data/identity/dtos/identity_dto.dart';
 import 'package:polygonid_flutter_sdk/data/identity/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/data/identity/mappers/private_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/data/identity/repositories/identity_repository_impl.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/entities/identity.dart';
 import 'package:polygonid_flutter_sdk/domain/identity/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/domain/identity/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/privadoid_wallet.dart';
@@ -38,8 +37,6 @@ const mockDTO = IdentityDTO(
     privateKey: privateKey, identifier: identifier, authClaim: authClaim);
 const message = "theMessage";
 const signature = "theSignature";
-const result = Identity(
-    privateKey: walletPrivateKey, identifier: identifier, authClaim: authClaim);
 var exception = Exception();
 var identityException = IdentityException(exception);
 
@@ -95,10 +92,11 @@ void main() {
     });
 
     test(
-        "Given a private key, when I call createIdentity, then I expect an Identity to be returned",
+        "Given a private key, when I call createIdentity, then I expect an identifier to be returned",
         () async {
       // When
-      expect(await repository.createIdentity(privateKey: privateKey), result);
+      expect(
+          await repository.createIdentity(privateKey: privateKey), identifier);
 
       // Then
       expect(
@@ -121,13 +119,13 @@ void main() {
     });
 
     test(
-        "Given a private key which is null, when I call createIdentity, then I expect an Identity to be returned",
+        "Given a private key which is null, when I call createIdentity, then I expect an identifier to be returned",
         () async {
       // Given
       when(privateKeyMapper.mapFrom(any)).thenAnswer((realInvocation) => null);
 
       // When
-      expect(await repository.createIdentity(), isA<Identity>());
+      expect(await repository.createIdentity(), identifier);
 
       // Then
       expect(
@@ -150,7 +148,7 @@ void main() {
     });
 
     test(
-        "Given a private key with an associated Identity already stored, when I call createIdentity, then I expect an Identity to be returned",
+        "Given a private key with an associated Identity already stored, when I call createIdentity, then I expect an identifier to be returned",
         () async {
       // Given
       when(storageIdentityDataSource.getIdentity(
@@ -158,7 +156,7 @@ void main() {
           .thenAnswer((realInvocation) => Future.value(mockDTO));
 
       // When
-      expect(await repository.createIdentity(), isA<Identity>());
+      expect(await repository.createIdentity(), identifier);
 
       // Then
       expect(
@@ -179,15 +177,12 @@ void main() {
       expect(identifierCaptured[0], pubX);
       expect(identifierCaptured[1], pubY);
 
-      var authCaptured = verify(libIdentityDataSource.getAuthclaim(
-              pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')))
-          .captured;
-      expect(authCaptured[0], isA<String>());
-      expect(authCaptured[1], isA<String>());
+      verifyNever(libIdentityDataSource.getAuthclaim(
+          pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')));
     });
 
     test(
-        "Given a private key, when I call createIdentity and an error occured, then I expect a IdentityException to be thrown",
+        "Given a private key, when I call createIdentity and an error occurred, then I expect a IdentityException to be thrown",
         () async {
       // Given
       when(libIdentityDataSource.getIdentifier(
