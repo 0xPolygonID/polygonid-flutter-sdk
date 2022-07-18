@@ -9,3 +9,5 @@ const STORAGE_VERSION = 1;
 /// Database
 const databaseName = "polygonIdSdk.db";
 const identityStoreName = "identityStore";
+const keyValueStoreName = "keyValueStore";
+const currentIdentifierKey = "currentIdentifier";

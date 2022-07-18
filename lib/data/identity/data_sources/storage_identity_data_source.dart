@@ -3,6 +3,8 @@ import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/data/identity/dtos/identity_dto.dart';
 import 'package:sembast/sembast.dart';
 
+import 'storage_key_value_data_source.dart';
+
 /// [StoreRef] wrapper
 /// Delegates all call to [IdentityStoreRefWrapper._store]
 /// Needed for UT for mocking extension methods
@@ -21,21 +23,46 @@ class IdentityStoreRefWrapper {
       {bool? merge}) {
     return _store.record(key).put(database, value, merge: merge);
   }
+
+  Future<String?> remove(Database database, String identifier) {
+    return _store.record(identifier).delete(database);
+  }
 }
 
 class StorageIdentityDataSource {
   final Database _database;
   final IdentityStoreRefWrapper _storeRefWrapper;
+  final StorageKeyValueDataSource _storageKeyValueDataSource;
 
-  StorageIdentityDataSource(this._database, this._storeRefWrapper);
+  StorageIdentityDataSource(
+      this._database, this._storeRefWrapper, this._storageKeyValueDataSource);
 
   Future<IdentityDTO?> getIdentity({required String identifier}) {
     return _storeRefWrapper.get(_database, identifier).then((storeValue) =>
         storeValue != null ? IdentityDTO.fromJson(storeValue) : null);
   }
 
+  /// As we support only one identity at the moment, we need to maintain
+  /// the stored current identifier up to date
   Future<void> storeIdentity(
       {required String identifier, required IdentityDTO identity}) {
-    return _storeRefWrapper.put(_database, identifier, identity.toJson());
+    return _database.transaction((transaction) => storeIdentityTransact(
+        transaction: transaction, identifier: identifier, identity: identity));
+  }
+
+  // For UT purpose
+  Future<void> storeIdentityTransact(
+      {required DatabaseClient transaction,
+      required String identifier,
+      required IdentityDTO identity}) async {
+    await _storageKeyValueDataSource.remove(
+        key: currentIdentifierKey, database: transaction);
+    await _storeRefWrapper.put(transaction, identifier, identity.toJson());
+    await _storageKeyValueDataSource.store(
+        key: currentIdentifierKey, value: identifier, database: transaction);
+  }
+
+  Future<String?> removeIdentity({required String identifier}) {
+    return _storeRefWrapper.remove(_database, identifier);
   }
 }

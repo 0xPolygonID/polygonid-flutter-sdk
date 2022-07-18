@@ -5,6 +5,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/data/identity/data_sources/lib_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/data/identity/data_sources/storage_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/data/identity/data_sources/storage_key_value_data_source.dart';
 import 'package:polygonid_flutter_sdk/data/identity/dtos/identity_dto.dart';
 import 'package:polygonid_flutter_sdk/data/identity/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/data/identity/mappers/private_key_mapper.dart';
@@ -46,16 +47,23 @@ var identityException = IdentityException(exception);
 MockLibIdentityDataSource libIdentityDataSource = MockLibIdentityDataSource();
 MockStorageIdentityDataSource storageIdentityDataSource =
     MockStorageIdentityDataSource();
+MockStorageKeyValueDataSource storageKeyValueDataSource =
+    MockStorageKeyValueDataSource();
 MockHexMapper hexMapper = MockHexMapper();
 MockPrivateKeyMapper privateKeyMapper = MockPrivateKeyMapper();
 
 // Tested instance
-IdentityRepository repository = IdentityRepositoryImpl(libIdentityDataSource,
-    storageIdentityDataSource, hexMapper, privateKeyMapper);
+IdentityRepository repository = IdentityRepositoryImpl(
+    libIdentityDataSource,
+    storageIdentityDataSource,
+    storageKeyValueDataSource,
+    hexMapper,
+    privateKeyMapper);
 
 @GenerateMocks([
   LibIdentityDataSource,
   StorageIdentityDataSource,
+  StorageKeyValueDataSource,
   HexMapper,
   PrivateKeyMapper
 ])

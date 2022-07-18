@@ -11,7 +11,7 @@ class GetIdentityUseCase extends FutureUseCase<String?, Identity> {
   @override
   Future<Identity> execute({String? param}) {
     return _identityRepository
-        .createIdentity(privateKey: param)
+        .getIdentity(privateKey: param)
         .then((identity) {
       logger().i("[GetIdentityUseCase] Identity: $identity");
 

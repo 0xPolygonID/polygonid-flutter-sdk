@@ -7,6 +7,8 @@ import 'dart:async' as _i3;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/data/identity/data_sources/storage_identity_data_source.dart'
     as _i5;
+import 'package:polygonid_flutter_sdk/data/identity/data_sources/storage_key_value_data_source.dart'
+    as _i7;
 import 'package:sembast/sembast.dart' as _i2;
 import 'package:sembast/src/api/client.dart' as _i6;
 import 'package:sembast/src/api/transaction.dart' as _i4;
@@ -69,4 +71,37 @@ class MockIdentityStoreRefWrapper extends _i1.Mock
               returnValue:
                   Future<Map<String, Object?>>.value(<String, Object?>{}))
           as _i3.Future<Map<String, Object?>>);
+  @override
+  _i3.Future<String?> remove(_i2.Database? database, String? identifier) =>
+      (super.noSuchMethod(Invocation.method(#remove, [database, identifier]),
+          returnValue: Future<String?>.value()) as _i3.Future<String?>);
+}
+
+/// A class which mocks [StorageKeyValueDataSource].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockStorageKeyValueDataSource extends _i1.Mock
+    implements _i7.StorageKeyValueDataSource {
+  MockStorageKeyValueDataSource() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i3.Future<dynamic> get({String? key, _i6.DatabaseClient? database}) =>
+      (super.noSuchMethod(
+          Invocation.method(#get, [], {#key: key, #database: database}),
+          returnValue: Future<dynamic>.value()) as _i3.Future<dynamic>);
+  @override
+  _i3.Future<void> store(
+          {String? key, dynamic value, _i6.DatabaseClient? database}) =>
+      (super.noSuchMethod(
+          Invocation.method(
+              #store, [], {#key: key, #value: value, #database: database}),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i3.Future<void>);
+  @override
+  _i3.Future<String?> remove({String? key, _i6.DatabaseClient? database}) =>
+      (super.noSuchMethod(
+          Invocation.method(#remove, [], {#key: key, #database: database}),
+          returnValue: Future<String?>.value()) as _i3.Future<String?>);
 }

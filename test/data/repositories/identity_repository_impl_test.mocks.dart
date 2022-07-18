@@ -10,13 +10,16 @@ import 'package:polygonid_flutter_sdk/data/identity/data_sources/lib_identity_da
     as _i3;
 import 'package:polygonid_flutter_sdk/data/identity/data_sources/storage_identity_data_source.dart'
     as _i6;
+import 'package:polygonid_flutter_sdk/data/identity/data_sources/storage_key_value_data_source.dart'
+    as _i8;
 import 'package:polygonid_flutter_sdk/data/identity/dtos/identity_dto.dart'
     as _i7;
 import 'package:polygonid_flutter_sdk/data/identity/mappers/hex_mapper.dart'
-    as _i8;
+    as _i10;
 import 'package:polygonid_flutter_sdk/data/identity/mappers/private_key_mapper.dart'
-    as _i9;
+    as _i11;
 import 'package:polygonid_flutter_sdk/privadoid_wallet.dart' as _i2;
+import 'package:sembast/sembast.dart' as _i9;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -88,12 +91,46 @@ class MockStorageIdentityDataSource extends _i1.Mock
               {#identifier: identifier, #identity: identity}),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<String?> removeIdentity({String? identifier}) =>
+      (super.noSuchMethod(
+          Invocation.method(#removeIdentity, [], {#identifier: identifier}),
+          returnValue: Future<String?>.value()) as _i4.Future<String?>);
+}
+
+/// A class which mocks [StorageKeyValueDataSource].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockStorageKeyValueDataSource extends _i1.Mock
+    implements _i8.StorageKeyValueDataSource {
+  MockStorageKeyValueDataSource() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.Future<dynamic> get({String? key, _i9.DatabaseClient? database}) =>
+      (super.noSuchMethod(
+          Invocation.method(#get, [], {#key: key, #database: database}),
+          returnValue: Future<dynamic>.value()) as _i4.Future<dynamic>);
+  @override
+  _i4.Future<void> store(
+          {String? key, dynamic value, _i9.DatabaseClient? database}) =>
+      (super.noSuchMethod(
+          Invocation.method(
+              #store, [], {#key: key, #value: value, #database: database}),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<String?> remove({String? key, _i9.DatabaseClient? database}) =>
+      (super.noSuchMethod(
+          Invocation.method(#remove, [], {#key: key, #database: database}),
+          returnValue: Future<String?>.value()) as _i4.Future<String?>);
 }
 
 /// A class which mocks [HexMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockHexMapper extends _i1.Mock implements _i8.HexMapper {
+class MockHexMapper extends _i1.Mock implements _i10.HexMapper {
   MockHexMapper() {
     _i1.throwOnMissingStub(this);
   }
@@ -111,7 +148,7 @@ class MockHexMapper extends _i1.Mock implements _i8.HexMapper {
 /// A class which mocks [PrivateKeyMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockPrivateKeyMapper extends _i1.Mock implements _i9.PrivateKeyMapper {
+class MockPrivateKeyMapper extends _i1.Mock implements _i11.PrivateKeyMapper {
   MockPrivateKeyMapper() {
     _i1.throwOnMissingStub(this);
   }
