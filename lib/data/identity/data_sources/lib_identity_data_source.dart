@@ -42,7 +42,7 @@ class LibIdentityDataSource {
     }
   }
 
-  Future<String> getAuthclaim({required String pubX, required String pubY}) {
+  Future<String> getAuthClaim({required String pubX, required String pubY}) {
     try {
       String authClaim = _iden3coreLib.getAuthClaim(pubX, pubY);
 
@@ -58,8 +58,7 @@ class LibIdentityDataSource {
 
   Future<String> signMessage(
       {required Uint8List privateKey, required String message}) {
-    return _walletLibWrapper.createWallet(privateKey: privateKey).then(
-        (wallet) => _walletLibWrapper.signMessage(
-            privateKey: wallet.privateKey, message: message));
+    return _walletLibWrapper.signMessage(
+        privateKey: privateKey, message: message);
   }
 }

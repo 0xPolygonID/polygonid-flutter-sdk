@@ -1,11 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polygonid_flutter_sdk/jwz/jwz_token.dart';
+import 'package:polygonid_flutter_sdk/data/identity/jwz/jwz.dart';
+import 'package:polygonid_flutter_sdk/data/identity/jwz/jwz_header.dart';
+import 'package:polygonid_flutter_sdk/data/identity/jwz/jwz_proof.dart';
 import 'package:polygonid_flutter_sdk/libs/circomlib.dart';
-import 'package:polygonid_flutter_sdk/model/jwz/jwz.dart';
-import 'package:polygonid_flutter_sdk/model/jwz/jwz_header.dart';
-import 'package:polygonid_flutter_sdk/model/jwz/jwz_proof.dart';
 import 'package:polygonid_flutter_sdk/utils/uint8_list_utils.dart';
 
 class JWZMocks {

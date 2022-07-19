@@ -6,8 +6,8 @@ import 'dart:async' as _i4;
 import 'dart:typed_data' as _i5;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/jwz/jwz_token.dart' as _i3;
-import 'package:polygonid_flutter_sdk/model/jwz/jwz_proof.dart' as _i2;
+import 'package:polygonid_flutter_sdk/data/identity/jwz/jwz_proof.dart' as _i2;
+import 'package:polygonid_flutter_sdk/data/identity/jwz/jwz_token.dart' as _i3;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values

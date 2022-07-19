@@ -5,6 +5,7 @@ import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/data/identity/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/data/identity/data_sources/storage_key_value_data_source.dart';
 import 'package:polygonid_flutter_sdk/data/identity/dtos/identity_dto.dart';
+import 'package:polygonid_flutter_sdk/domain/identity/exceptions/identity_exceptions.dart';
 import 'package:sembast/sembast.dart';
 
 import 'storage_identity_data_source_test.mocks.dart';
@@ -59,7 +60,13 @@ void main() {
           .thenAnswer((realInvocation) => Future.value(null));
 
       // When
-      expect(await dataSource.getIdentity(identifier: identifier), null);
+      await dataSource
+          .getIdentity(identifier: identifier)
+          .then((_) => null)
+          .catchError((error) {
+        expect(error, isA<UnknownIdentityException>());
+        expect(error.identifier, identifier);
+      });
 
       // Then
       var captured =

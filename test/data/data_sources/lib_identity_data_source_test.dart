@@ -86,7 +86,7 @@ void main() {
           .thenAnswer((realInvocation) => authClaim);
 
       // When
-      expect(await dataSource.getAuthclaim(pubX: pubX, pubY: pubY), authClaim);
+      expect(await dataSource.getAuthClaim(pubX: pubX, pubY: pubY), authClaim);
 
       // Then
       var captured =
@@ -103,7 +103,7 @@ void main() {
 
       // When
       await expectLater(
-          dataSource.getAuthclaim(pubX: pubX, pubY: pubY), throwsA(exception));
+          dataSource.getAuthClaim(pubX: pubX, pubY: pubY), throwsA(exception));
 
       // Then
       var captured =

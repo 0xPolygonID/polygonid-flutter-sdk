@@ -26,7 +26,7 @@ void main() {
       () async {
     // Given
     when(identityRepository.signMessage(
-            privateKey: anyNamed('privateKey'), message: anyNamed('message')))
+            identifier: anyNamed('privateKey'), message: anyNamed('message')))
         .thenAnswer((realInvocation) => Future.value(result));
 
     // When
@@ -34,7 +34,7 @@ void main() {
 
     // Then
     var signCaptured = verify(identityRepository.signMessage(
-            privateKey: captureAnyNamed('privateKey'),
+            identifier: captureAnyNamed('privateKey'),
             message: captureAnyNamed('message')))
         .captured;
     expect(signCaptured[0], privateKey);
@@ -46,7 +46,7 @@ void main() {
       () async {
     // Given
     when(identityRepository.signMessage(
-            privateKey: anyNamed('privateKey'), message: anyNamed('message')))
+            identifier: anyNamed('privateKey'), message: anyNamed('message')))
         .thenAnswer((realInvocation) => Future.error(exception));
 
     // When
@@ -54,7 +54,7 @@ void main() {
 
     // Then
     var signCaptured = verify(identityRepository.signMessage(
-            privateKey: captureAnyNamed('privateKey'),
+            identifier: captureAnyNamed('privateKey'),
             message: captureAnyNamed('message')))
         .captured;
     expect(signCaptured[0], privateKey);

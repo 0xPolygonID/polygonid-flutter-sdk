@@ -72,7 +72,8 @@ class MockIdentityStoreRefWrapper extends _i1.Mock
                   Future<Map<String, Object?>>.value(<String, Object?>{}))
           as _i3.Future<Map<String, Object?>>);
   @override
-  _i3.Future<String?> remove(_i2.Database? database, String? identifier) =>
+  _i3.Future<String?> remove(
+          _i6.DatabaseClient? database, String? identifier) =>
       (super.noSuchMethod(Invocation.method(#remove, [database, identifier]),
           returnValue: Future<String?>.value()) as _i3.Future<String?>);
 }
