@@ -176,13 +176,6 @@ void main() {
           signature);
 
       // Then
-      expect(
-          verify(walletLibWrapper.createWallet(
-                  privateKey: captureAnyNamed('privateKey')))
-              .captured
-              .first,
-          walletPrivateKey);
-
       var capturedSign = verify(walletLibWrapper.signMessage(
               privateKey: captureAnyNamed("privateKey"),
               message: captureAnyNamed('message')))
@@ -206,13 +199,6 @@ void main() {
           throwsA(exception));
 
       // Then
-      expect(
-          verify(walletLibWrapper.createWallet(
-                  privateKey: captureAnyNamed('privateKey')))
-              .captured
-              .first,
-          walletPrivateKey);
-
       var capturedSign = verify(walletLibWrapper.signMessage(
               privateKey: captureAnyNamed("privateKey"),
               message: captureAnyNamed('message')))

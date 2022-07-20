@@ -85,14 +85,6 @@ class JWZDataSource {
     });
   }
 
-  /// As this is running is a separate thread, we cannot inject [Iden3CoreLib]
-  Future<String> _computeAuthInputs(AuthInputsIsolateParam param) {
-    final iden3coreLib = Iden3CoreLib();
-
-    return Future.value(iden3coreLib.prepareAuthInputs(param.challenge,
-        param.authClaim, param.pubX, param.pubY, param.signature));
-  }
-
   Uint8List _getHash(JWZ jwz) {
     if (jwz.header == null) {
       throw NullJWZHeaderException();
@@ -129,13 +121,23 @@ class JWZDataSource {
         proof: JWZBaseProof.fromJson(proof!["proof"]),
         pubSignals: (proof["pub_signals"] as List<String>));
   }
+}
 
-  /// As this is running is a separate thread, we cannot inject [Iden3CoreLib]
-  Future<Map<String, dynamic>?> _computeCalculateProof(
-      CalculateProofIsolateParam param) {
-    final iden3coreLib = Iden3CoreLib();
+/// Isolates have to be top level methods or statics
 
-    return Future.value(iden3coreLib.calculateProof(
-        param.inputs, param.provingKey, param.wasm));
-  }
+/// As this is running is a separate thread, we cannot inject [Iden3CoreLib]
+Future<String> _computeAuthInputs(AuthInputsIsolateParam param) {
+  final iden3coreLib = Iden3CoreLib();
+
+  return Future.value(iden3coreLib.prepareAuthInputs(param.challenge,
+      param.authClaim, param.pubX, param.pubY, param.signature));
+}
+
+/// As this is running is a separate thread, we cannot inject [Iden3CoreLib]
+Future<Map<String, dynamic>?> _computeCalculateProof(
+    CalculateProofIsolateParam param) {
+  final iden3coreLib = Iden3CoreLib();
+
+  return Future.value(
+      iden3coreLib.calculateProof(param.inputs, param.provingKey, param.wasm));
 }

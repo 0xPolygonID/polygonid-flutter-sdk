@@ -8,10 +8,10 @@ import 'sign_message_use_case_test.mocks.dart';
 
 // Data
 const message = "theMessage";
-const privateKey = "thePrivateKey";
+const identifier = "theIdentifier";
 const result = "theSignature";
 var exception = Exception();
-final param = SignMessageParam(privateKey, message);
+final param = SignMessageParam(identifier, message);
 
 // Dependencies
 MockIdentityRepository identityRepository = MockIdentityRepository();
@@ -26,7 +26,7 @@ void main() {
       () async {
     // Given
     when(identityRepository.signMessage(
-            identifier: anyNamed('privateKey'), message: anyNamed('message')))
+            identifier: anyNamed('identifier'), message: anyNamed('message')))
         .thenAnswer((realInvocation) => Future.value(result));
 
     // When
@@ -34,10 +34,10 @@ void main() {
 
     // Then
     var signCaptured = verify(identityRepository.signMessage(
-            identifier: captureAnyNamed('privateKey'),
+            identifier: captureAnyNamed('identifier'),
             message: captureAnyNamed('message')))
         .captured;
-    expect(signCaptured[0], privateKey);
+    expect(signCaptured[0], identifier);
     expect(signCaptured[1], message);
   });
 
@@ -46,7 +46,7 @@ void main() {
       () async {
     // Given
     when(identityRepository.signMessage(
-            identifier: anyNamed('privateKey'), message: anyNamed('message')))
+            identifier: anyNamed('identifier'), message: anyNamed('message')))
         .thenAnswer((realInvocation) => Future.error(exception));
 
     // When
@@ -54,10 +54,10 @@ void main() {
 
     // Then
     var signCaptured = verify(identityRepository.signMessage(
-            identifier: captureAnyNamed('privateKey'),
+            identifier: captureAnyNamed('identifier'),
             message: captureAnyNamed('message')))
         .captured;
-    expect(signCaptured[0], privateKey);
+    expect(signCaptured[0], identifier);
     expect(signCaptured[1], message);
   });
 }
