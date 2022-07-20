@@ -272,6 +272,11 @@ extern GoUint8 IDENMerkleTreeRoot(IDENMerkleTreeHash* hash, IDENMerkleTree* mt, 
 // true on success. On failure, return false and write error to status if
 // it is not nil.
 extern GoUint8 IDENMerkleTreeGenerateProof(IDENProof** proof, IDENMerkleTree* mt, IDENMerkleTreeHash indexHash, IDENStatus** status);
+
+// IDENNewProofFromJson unmarshal json string to IDENProof and return
+// true on success. On failure, return false and write error to status if
+// it is not nil.
+extern GoUint8 IDENNewProofFromJson(IDENProof** proof, char* jsonStr, IDENStatus** status);
 extern void IDENFreeProof(IDENProof* proof);
 
 // Calculate genesis ID from state and write it to pre-allocated `id`.
