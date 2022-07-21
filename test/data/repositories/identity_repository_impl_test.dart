@@ -11,10 +11,12 @@ import 'package:polygonid_flutter_sdk/data/identity/dtos/identity_dto.dart';
 import 'package:polygonid_flutter_sdk/data/identity/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/data/identity/mappers/private_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/data/identity/repositories/identity_repository_impl.dart';
+import 'package:polygonid_flutter_sdk/domain/identity/entities/circuit_data.dart';
 import 'package:polygonid_flutter_sdk/domain/identity/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/domain/identity/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/privadoid_wallet.dart';
 
+import '../data_sources/storage_identity_data_source_test.dart';
 import 'identity_repository_impl_test.mocks.dart';
 
 // Data
@@ -38,6 +40,11 @@ const mockDTO = IdentityDTO(
     privateKey: privateKey, identifier: identifier, authClaim: authClaim);
 const message = "theMessage";
 const signature = "theSignature";
+const circuitId = "1";
+final datFile = Uint8List(32);
+final zKeyFile = Uint8List(32);
+final circuitData = CircuitData(circuitId, datFile, zKeyFile);
+const token = "token";
 var exception = Exception();
 
 // Dependencies
@@ -294,6 +301,136 @@ void main() {
           .captured;
       expect(signCaptured[0], bbjjKey);
       expect(signCaptured[1], message);
+    });
+  });
+
+  group("Remove identity", () {
+    test(
+        "Given an identifier, when I call removeIdentity, then I expect the process to complete",
+        () async {
+      // Given
+      when(storageIdentityDataSource.removeIdentity(
+              identifier: anyNamed('identifier')))
+          .thenAnswer((realInvocation) => Future.value());
+
+      // When
+      await expectLater(
+          repository.removeIdentity(identifier: identifier), completes);
+
+      // Then
+      expect(
+          verify(storageIdentityDataSource.removeIdentity(
+                  identifier: captureAnyNamed('identifier')))
+              .captured
+              .first,
+          identifier);
+    });
+
+    test(
+        "Given an identifier, when I call removeIdentity and an error occurred, then I expect an error to be thrown",
+        () async {
+      // Given
+      when(storageIdentityDataSource.removeIdentity(
+              identifier: anyNamed('identifier')))
+          .thenAnswer((realInvocation) => Future.error(exception));
+
+      // When
+      await expectLater(repository.removeIdentity(identifier: identifier),
+          throwsA(exception));
+
+      // Then
+      expect(
+          verify(storageIdentityDataSource.removeIdentity(
+                  identifier: captureAnyNamed('identifier')))
+              .captured
+              .first,
+          identifier);
+    });
+  });
+
+  group("Get auth token", () {
+    setUp(() {
+      // Given
+      when(storageIdentityDataSource.getIdentity(
+              identifier: anyNamed('identifier')))
+          .thenAnswer((realInvocation) => Future.value(identityDTO));
+      when(jwzDataSource.getAuthToken(
+              privateKey: anyNamed('privateKey'),
+              authClaim: anyNamed('authClaim'),
+              message: anyNamed('message'),
+              circuitId: anyNamed('circuitId'),
+              datFile: anyNamed('datFile'),
+              zKeyFile: anyNamed('zKeyFile')))
+          .thenAnswer((realInvocation) => Future.value(token));
+      when(hexMapper.mapTo(any)).thenAnswer((realInvocation) => bbjjKey);
+    });
+
+    test(
+        "Given an identifier, a circuitData and a message to sign, when I call getAuthToken, then I expect an auth token to be returned as a string",
+        () async {
+      // When
+      expect(
+          await repository.getAuthToken(
+              identifier: identifier,
+              circuitData: circuitData,
+              message: message),
+          token);
+
+      // Then
+      expect(
+          verify(storageIdentityDataSource.getIdentity(
+                  identifier: captureAnyNamed('identifier')))
+              .captured
+              .first,
+          identifier);
+      expect(verify(hexMapper.mapTo(captureAny)).captured.first,
+          mockDTO.privateKey);
+      var authCaptured = verify(jwzDataSource.getAuthToken(
+              privateKey: captureAnyNamed('privateKey'),
+              authClaim: captureAnyNamed('authClaim'),
+              message: captureAnyNamed('message'),
+              circuitId: captureAnyNamed('circuitId'),
+              datFile: captureAnyNamed('datFile'),
+              zKeyFile: captureAnyNamed('zKeyFile')))
+          .captured;
+      expect(authCaptured[0], bbjjKey);
+      expect(authCaptured[1], mockDTO.authClaim);
+      expect(authCaptured[2], message);
+      expect(authCaptured[3], circuitData.circuitId);
+      expect(authCaptured[4], circuitData.datFile);
+      expect(authCaptured[5], circuitData.zKeyFile);
+    });
+
+    test(
+        "Given an identifier, a circuitData and a message to sign, when I call getAuthToken and an error occurred, then I expect an exception to be thrown",
+        () async {
+      // Given
+      when(hexMapper.mapTo(any)).thenThrow(exception);
+
+      // When
+      await expectLater(
+          repository.getAuthToken(
+              identifier: identifier,
+              circuitData: circuitData,
+              message: message),
+          throwsA(exception));
+
+      // Then
+      expect(
+          verify(storageIdentityDataSource.getIdentity(
+                  identifier: captureAnyNamed('identifier')))
+              .captured
+              .first,
+          identifier);
+      expect(verify(hexMapper.mapTo(captureAny)).captured.first,
+          mockDTO.privateKey);
+      verifyNever(jwzDataSource.getAuthToken(
+          privateKey: captureAnyNamed('privateKey'),
+          authClaim: captureAnyNamed('authClaim'),
+          message: captureAnyNamed('message'),
+          circuitId: captureAnyNamed('circuitId'),
+          datFile: captureAnyNamed('datFile'),
+          zKeyFile: captureAnyNamed('zKeyFile')));
     });
   });
 }

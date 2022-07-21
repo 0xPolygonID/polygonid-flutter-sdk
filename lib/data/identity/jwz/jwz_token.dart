@@ -1,25 +1,20 @@
 import 'dart:typed_data';
 
-import 'package:crypto/crypto.dart';
-import 'package:polygonid_flutter_sdk/libs/circomlib.dart';
 import 'package:polygonid_flutter_sdk/data/identity/jwz/jwz.dart';
 import 'package:polygonid_flutter_sdk/data/identity/jwz/jwz_exceptions.dart';
 import 'package:polygonid_flutter_sdk/data/identity/jwz/jwz_proof.dart';
 import 'package:polygonid_flutter_sdk/utils/base_64.dart';
-import 'package:polygonid_flutter_sdk/utils/big_int_extension.dart';
-import 'package:polygonid_flutter_sdk/utils/uint8_list_utils.dart';
-import 'package:web3dart/crypto.dart';
 
 /// Prove and verify a [JWZToken]
 abstract class JWZProver {
   String alg;
   String circuitID;
 
-  Future<bool> verify(Uint8List hash, JWZProof proof,
-      Uint8List verificationKey);
+  Future<bool> verify(
+      Uint8List hash, JWZProof proof, Uint8List verificationKey);
 
-  Future<JWZProof> prove(Uint8List inputs, Uint8List provingKey,
-      Uint8List wasm);
+  Future<JWZProof> prove(
+      Uint8List inputs, Uint8List provingKey, Uint8List wasm);
 
   JWZProver({required this.alg, required this.circuitID});
 }
@@ -38,30 +33,22 @@ class JWZToken implements Base64Encoder {
 
   /// Construct a [JWZToken] with [JWZ]
   factory JWZToken.withJWZ({required JWZ jwz}) {
-    JWZToken token =
-    JWZToken();
+    JWZToken token = JWZToken();
     token.jwz = jwz;
 
     return token;
   }
 
   /// Construct a [JWZToken] with payload
-  factory JWZToken.withPayload({required dynamic payload,
-    required JWZProver prover,
-    required JWZInputPreparer preparer,
-    CircomLib? circom}) {
-    return JWZToken.withJWZ(
-        jwz: JWZ(payload: JWZPayload(payload: payload)));
+  factory JWZToken.withPayload({required dynamic payload}) {
+    return JWZToken.withJWZ(jwz: JWZ(payload: JWZPayload(payload: payload)));
   }
 
   /// Construct a [JWZToken] from a Base64 string
-  factory JWZToken.fromBase64({required String data,
-    required JWZProver prover,
-    required JWZInputPreparer preparer,
-    CircomLib? circom}) {
-    return JWZToken.withJWZ(
-        jwz: JWZ.fromBase64(data));
+  factory JWZToken.fromBase64({required String data}) {
+    return JWZToken.withJWZ(jwz: JWZ.fromBase64(data));
   }
+
   //
   // /// Prove and set [JWZToken.proof]
   // /// Returns compacted [JWZ]

@@ -1,8 +1,10 @@
 import 'dart:typed_data';
 
+import 'package:fast_base58/fast_base58.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/eddsa_babyjub.dart';
 import 'package:polygonid_flutter_sdk/privadoid_wallet.dart';
+import 'package:polygonid_flutter_sdk/utils/hex_utils.dart';
 
 import '../../../libs/iden3corelib.dart';
 
@@ -35,8 +37,9 @@ class LibIdentityDataSource {
   Future<String> getIdentifier({required String pubX, required String pubY}) {
     try {
       Map<String, String> map = _iden3coreLib.generateIdentity(pubX, pubY);
+      Uint8List hex = HexUtils.hexToBytes(map['id']!);
 
-      return Future.value(map['id']);
+      return Future.value(Base58Encode(hex));
     } catch (e) {
       return Future.error(e);
     }

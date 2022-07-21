@@ -20,7 +20,7 @@ void main() {
     });
 
     test(
-        "Given a hex String which is too long, when I call mapTo, then I expect Uint8List to be returned",
+        "Given a hex String, when I call mapTo, then I expect Uint8List to be returned",
         () {
       // When
       expect(mapper.mapTo(convertedKey), privateKey);

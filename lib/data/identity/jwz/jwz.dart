@@ -22,7 +22,7 @@ class JWZPayload extends Equatable with Base64Encoder {
 /// JSON Web Zero-knowledge (JWZ) is an open standard
 /// for representing messages proven by zero-knowledge technology.
 class JWZ extends Equatable with Base64Encoder {
-  JWZHeader? header;
+  final JWZHeader? header;
   final JWZPayload? payload;
   JWZProof? proof;
 

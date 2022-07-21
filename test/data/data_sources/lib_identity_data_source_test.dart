@@ -20,10 +20,11 @@ class FakeWallet extends Fake implements PrivadoIdWallet {
 
 const pubX = "thePubX";
 const pubY = "thePubY";
-const identifier = "theIdentifier";
+const identifier = "3DFF";
 const authClaim = "theAuthClaim";
 const message = "theMessage";
 const signature = "theSignature";
+const resultIdentifier = "5ie";
 final walletPrivateKey = Uint8List.fromList("thePrivateKey".codeUnits);
 var mockWallet = FakeWallet();
 const mockCoreIdentity = {"id": identifier, "authClaim": authClaim};
@@ -50,7 +51,7 @@ void main() {
 
       // When
       expect(
-          await dataSource.getIdentifier(pubX: pubX, pubY: pubY), identifier);
+          await dataSource.getIdentifier(pubX: pubX, pubY: pubY), resultIdentifier);
 
       // Then
       var captured =

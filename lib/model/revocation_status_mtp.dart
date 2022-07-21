@@ -2,9 +2,9 @@ import 'package:json_annotation/json_annotation.dart';
 
 import 'mtp_node_aux.dart';
 
-@JsonSerializable()
+// @JsonSerializable()
 class RevocationStatusMtp {
-  @JsonKey(ignore: true)
+//  @JsonKey(ignore: true)
   final String? type;
   final bool? existence;
   final List<dynamic>? siblings;

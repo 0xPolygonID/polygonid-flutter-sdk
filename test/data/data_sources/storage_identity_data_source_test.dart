@@ -182,4 +182,64 @@ void main() {
           database: captureAnyNamed('database')));
     });
   });
+
+  group("Remove identity", () {
+    setUp(() {
+      when(storageKeyValueDataSource.remove(
+              key: anyNamed('key'), database: anyNamed('database')))
+          .thenAnswer((realInvocation) => Future.value());
+    });
+
+    test(
+        "Given an identifier, when I call removeIdentityTransact, then I expect the process to be completed",
+        () async {
+      // Given
+      when(storeRefWrapper.remove(any, any))
+          .thenAnswer((realInvocation) => Future.value());
+
+      // When
+      await expectLater(
+          dataSource.removeIdentityTransact(
+              transaction: database, identifier: identifier),
+          completes);
+
+      // Then
+      var capturedKeyValue = verify(storageKeyValueDataSource.remove(
+              key: captureAnyNamed('key'),
+              database: captureAnyNamed('database')))
+          .captured;
+      expect(capturedKeyValue[0], currentIdentifierKey);
+      expect(capturedKeyValue[1], database);
+
+      var capturedStore =
+          verify(storeRefWrapper.remove(captureAny, captureAny)).captured;
+      expect(capturedStore[0], database);
+      expect(capturedStore[1], identifier);
+    });
+
+    test(
+        "Given an identifier, when I call removeIdentity and an error occurred, then I expect an exception to be thrown",
+        () async {
+      // Given
+      when(storageKeyValueDataSource.remove(
+              key: anyNamed('key'), database: anyNamed('database')))
+          .thenAnswer((realInvocation) => Future.error(exception));
+
+      // When
+      await expectLater(
+          dataSource.removeIdentityTransact(
+              transaction: database, identifier: identifier),
+          throwsA(exception));
+
+      // Then
+      var capturedKeyValue = verify(storageKeyValueDataSource.remove(
+              key: captureAnyNamed('key'),
+              database: captureAnyNamed('database')))
+          .captured;
+      expect(capturedKeyValue[0], currentIdentifierKey);
+      expect(capturedKeyValue[1], database);
+
+      verifyNever(storeRefWrapper.remove(captureAny, captureAny));
+    });
+  });
 }

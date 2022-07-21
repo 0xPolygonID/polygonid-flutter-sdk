@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
+import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/libs/circomlib.dart';
 import 'package:polygonid_flutter_sdk/utils/big_int_extension.dart';
 import 'package:polygonid_flutter_sdk/utils/uint8_list_utils.dart';
@@ -34,11 +35,48 @@ class CalculateProofIsolateParam {
   CalculateProofIsolateParam(this.inputs, this.provingKey, this.wasm);
 }
 
+/// For UT purpose, we wrap the isolate call into a separate class
+@injectable
+class JWZIsolatesWrapper {
+  Future<String> computeAuthInputs(String challenge, String authClaim,
+      String pubX, String pubY, String signature) {
+    return compute(_computeAuthInputs,
+        AuthInputsIsolateParam(challenge, authClaim, pubX, pubY, signature));
+  }
+
+  Future<Map<String, dynamic>?> computeCalculateProof(
+      Uint8List inputs, Uint8List provingKey, Uint8List wasm) {
+    return compute(_computeCalculateProof,
+        CalculateProofIsolateParam(inputs, provingKey, wasm));
+  }
+}
+
+/// Isolates have to be top level methods or statics
+
+/// As this is running is a separate thread, we cannot inject [Iden3CoreLib]
+Future<String> _computeAuthInputs(AuthInputsIsolateParam param) {
+  final iden3coreLib = Iden3CoreLib();
+
+  return Future.value(iden3coreLib.prepareAuthInputs(param.challenge,
+      param.authClaim, param.pubX, param.pubY, param.signature));
+}
+
+/// As this is running is a separate thread, we cannot inject [Iden3CoreLib]
+Future<Map<String, dynamic>?> _computeCalculateProof(
+    CalculateProofIsolateParam param) {
+  final iden3coreLib = Iden3CoreLib();
+
+  return Future.value(
+      iden3coreLib.calculateProof(param.inputs, param.provingKey, param.wasm));
+}
+
 class JWZDataSource {
   final CircomLib _circomLib;
   final LibIdentityDataSource _libIdentityDataSource;
+  final JWZIsolatesWrapper _jwzIsolateWrapper;
 
-  JWZDataSource(this._circomLib, this._libIdentityDataSource);
+  JWZDataSource(
+      this._circomLib, this._libIdentityDataSource, this._jwzIsolateWrapper);
 
   Future<String> getAuthToken(
       {required Uint8List privateKey,
@@ -55,8 +93,8 @@ class JWZDataSource {
             alg: "groth16"),
         payload: JWZPayload(payload: message));
     Uint8List prepared =
-        await prepare(privateKey, authClaim, _getHash(jwz), circuitId);
-    jwz.proof = await prove(prepared, zKeyFile, datFile);
+        await _prepare(privateKey, authClaim, _getHash(jwz), circuitId);
+    jwz.proof = await _prove(prepared, zKeyFile, datFile);
 
     var token = JWZToken.withJWZ(jwz: jwz);
 
@@ -64,21 +102,19 @@ class JWZDataSource {
   }
 
   /// Prepare inputs
-  Future<Uint8List> prepare(Uint8List privateKey, String authClaim,
-      Uint8List hash, String circuitID) {
+  Future<Uint8List> _prepare(Uint8List privateKey, String authClaim,
+      Uint8List hash, String circuitId) {
     return _libIdentityDataSource
         .createWallet(privateKey: privateKey)
         .then((wallet) async {
       String queryInputs = "";
       String challenge = bytesToInt(hash).toString();
-      String signatureString = await _libIdentityDataSource.signMessage(
+      String signature = await _libIdentityDataSource.signMessage(
           privateKey: privateKey, message: challenge);
 
-      if (circuitID == "auth") {
-        queryInputs = await compute(
-            _computeAuthInputs,
-            AuthInputsIsolateParam(challenge, authClaim, wallet.publicKey[0],
-                wallet.publicKey[1], signatureString));
+      if (circuitId == "auth") {
+        queryInputs = await _jwzIsolateWrapper.computeAuthInputs(challenge,
+            authClaim, wallet.publicKey[0], wallet.publicKey[1], signature);
       }
 
       return Uint8ArrayUtils.uint8ListfromString(queryInputs);
@@ -113,31 +149,12 @@ class JWZDataSource {
   }
 
   /// Calculate proof
-  Future<JWZProof> prove(
-      Uint8List inputs, Uint8List provingKey, Uint8List wasm) async {
-    Map<String, dynamic>? proof = await compute(_computeCalculateProof,
-        CalculateProofIsolateParam(inputs, provingKey, wasm));
-    return JWZProof(
-        proof: JWZBaseProof.fromJson(proof!["proof"]),
-        pubSignals: (proof["pub_signals"] as List<String>));
+  Future<JWZProof> _prove(
+      Uint8List inputs, Uint8List provingKey, Uint8List wasm) {
+    return _jwzIsolateWrapper
+        .computeCalculateProof(inputs, provingKey, wasm)
+        .then((proof) => JWZProof(
+            proof: JWZBaseProof.fromJson(proof!["proof"]),
+            pubSignals: (proof["pub_signals"] as List<String>)));
   }
-}
-
-/// Isolates have to be top level methods or statics
-
-/// As this is running is a separate thread, we cannot inject [Iden3CoreLib]
-Future<String> _computeAuthInputs(AuthInputsIsolateParam param) {
-  final iden3coreLib = Iden3CoreLib();
-
-  return Future.value(iden3coreLib.prepareAuthInputs(param.challenge,
-      param.authClaim, param.pubX, param.pubY, param.signature));
-}
-
-/// As this is running is a separate thread, we cannot inject [Iden3CoreLib]
-Future<Map<String, dynamic>?> _computeCalculateProof(
-    CalculateProofIsolateParam param) {
-  final iden3coreLib = Iden3CoreLib();
-
-  return Future.value(
-      iden3coreLib.calculateProof(param.inputs, param.provingKey, param.wasm));
 }
