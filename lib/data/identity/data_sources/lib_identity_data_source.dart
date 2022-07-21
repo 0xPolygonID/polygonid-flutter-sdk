@@ -3,10 +3,9 @@ import 'dart:typed_data';
 import 'package:fast_base58/fast_base58.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/eddsa_babyjub.dart';
+import 'package:polygonid_flutter_sdk/libs/iden3corelib.dart';
 import 'package:polygonid_flutter_sdk/privadoid_wallet.dart';
 import 'package:polygonid_flutter_sdk/utils/hex_utils.dart';
-
-import '../../../libs/iden3corelib.dart';
 
 @injectable
 class WalletLibWrapper {

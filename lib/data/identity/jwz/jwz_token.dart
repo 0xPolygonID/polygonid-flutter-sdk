@@ -49,53 +49,6 @@ class JWZToken implements Base64Encoder {
     return JWZToken.withJWZ(jwz: JWZ.fromBase64(data));
   }
 
-  //
-  // /// Prove and set [JWZToken.proof]
-  // /// Returns compacted [JWZ]
-  // Future<String> prove(Uint8List provingKey, Uint8List wasm) async {
-  //   Uint8List prepared = await preparer.prepare(_getHash(), circuitID);
-  //   jwz.proof = await prover.prove(prepared, provingKey, wasm);
-  //
-  //   return encode();
-  // }
-  //
-  // /// Verify [JWZ]
-  // /// Returns true if valid
-  // Future<bool> verify(Uint8List verificationKey) {
-  //   if (jwz.proof == null) {
-  //     throw NullJWZProofException();
-  //   }
-  //
-  //   return prover.verify(_getHash(), jwz.proof!, verificationKey);
-  // }
-  //
-  // Uint8List _getHash() {
-  //   if (jwz.header == null) {
-  //     throw NullJWZHeaderException();
-  //   }
-  //
-  //   if (jwz.payload == null) {
-  //     throw NullJWZPayloadException();
-  //   }
-  //
-  //   // Sha256
-  //   Uint8List sha = Uint8List.fromList(sha256
-  //       .convert(Uint8ArrayUtils.uint8ListfromString(
-  //       "${jwz.header!.encode()}.${jwz.payload!.encode()}"))
-  //       .bytes);
-  //
-  //   // Endianness
-  //   BigInt endian = Uint8ArrayUtils.leBuff2int(sha);
-  //
-  //   // Check Q
-  //   BigInt q = endian.qNormalize();
-  //
-  //   // Poseidon hash
-  //   String hashed = _circom.poseidonHash(q.toString());
-  //
-  //   return hexToBytes(hashed);
-  // }
-
   /// Returns compact [JWT]
   @override
   String encode() {
