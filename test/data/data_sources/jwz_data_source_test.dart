@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/data/identity/data_sources/jwz_data_source.dart';
-import 'package:polygonid_flutter_sdk/data/identity/data_sources/lib_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/data/identity/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/data/identity/jwz/jwz.dart';
 import 'package:polygonid_flutter_sdk/data/identity/jwz/jwz_header.dart';
 import 'package:polygonid_flutter_sdk/data/identity/jwz/jwz_proof.dart';
@@ -72,25 +72,24 @@ var exception = Exception();
 
 // Dependencies
 FakeCircom circom = FakeCircom();
-MockLibIdentityDataSource libIdentityDataSource = MockLibIdentityDataSource();
+MockWalletDataSource walletDataSource = MockWalletDataSource();
 MockJWZIsolatesWrapper jwzIsolatesWrapper = MockJWZIsolatesWrapper();
 
 // Tested instance
 JWZDataSource dataSource =
-    JWZDataSource(circom, libIdentityDataSource, jwzIsolatesWrapper);
+    JWZDataSource(circom, walletDataSource, jwzIsolatesWrapper);
 
-@GenerateMocks([LibIdentityDataSource, JWZIsolatesWrapper])
+@GenerateMocks([WalletDataSource, JWZIsolatesWrapper])
 void main() {
   group("Get auth token", () {
     setUp(() {
-      reset(libIdentityDataSource);
+      reset(walletDataSource);
       reset(jwzIsolatesWrapper);
 
       // Given
-      when(libIdentityDataSource.createWallet(
-              privateKey: anyNamed('privateKey')))
+      when(walletDataSource.createWallet(privateKey: anyNamed('privateKey')))
           .thenAnswer((realInvocation) => Future.value(mockWallet));
-      when(libIdentityDataSource.signMessage(
+      when(walletDataSource.signMessage(
               privateKey: anyNamed('privateKey'), message: anyNamed('message')))
           .thenAnswer((realInvocation) => Future.value(signature));
       when(jwzIsolatesWrapper.computeAuthInputs(any, any, any, any, any))
@@ -115,13 +114,13 @@ void main() {
 
       // Then
       expect(
-          verify(libIdentityDataSource.createWallet(
+          verify(walletDataSource.createWallet(
                   privateKey: captureAnyNamed('privateKey')))
               .captured
               .first,
           privateKey);
 
-      var captureSign = verify(libIdentityDataSource.signMessage(
+      var captureSign = verify(walletDataSource.signMessage(
               privateKey: captureAnyNamed('privateKey'),
               message: captureAnyNamed('message')))
           .captured;
@@ -161,13 +160,13 @@ void main() {
 
       // Then
       expect(
-          verify(libIdentityDataSource.createWallet(
+          verify(walletDataSource.createWallet(
                   privateKey: captureAnyNamed('privateKey')))
               .captured
               .first,
           privateKey);
 
-      var captureSign = verify(libIdentityDataSource.signMessage(
+      var captureSign = verify(walletDataSource.signMessage(
               privateKey: captureAnyNamed('privateKey'),
               message: captureAnyNamed('message')))
           .captured;
@@ -189,7 +188,7 @@ void main() {
         "Given parameters, when I call getAuthToken and an error occurred, then I expect an exception to be thrown",
         () async {
       // Given
-      when(libIdentityDataSource.signMessage(
+      when(walletDataSource.signMessage(
               privateKey: anyNamed('privateKey'), message: anyNamed('message')))
           .thenAnswer((realInvocation) => Future.error(exception));
 
@@ -206,13 +205,13 @@ void main() {
 
       // Then
       expect(
-          verify(libIdentityDataSource.createWallet(
+          verify(walletDataSource.createWallet(
                   privateKey: captureAnyNamed('privateKey')))
               .captured
               .first,
           privateKey);
 
-      var captureSign = verify(libIdentityDataSource.signMessage(
+      var captureSign = verify(walletDataSource.signMessage(
               privateKey: captureAnyNamed('privateKey'),
               message: captureAnyNamed('message')))
           .captured;

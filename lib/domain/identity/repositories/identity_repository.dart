@@ -5,7 +5,11 @@ import '../entities/identity.dart';
 abstract class IdentityRepository {
   Future<String> createIdentity({String? privateKey});
 
-  Future<Identity> getIdentity({String? privateKey});
+  Future<Identity> getIdentityFromKey({String? privateKey});
+
+  Future<String> getIdentifier({String? privateKey});
+
+  Future<Identity> getIdentity({required String identifier});
 
   Future<String> signMessage(
       {required String identifier, required String message});

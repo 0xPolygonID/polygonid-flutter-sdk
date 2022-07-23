@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/data/identity/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/libs/circomlib.dart';
 import 'package:polygonid_flutter_sdk/utils/big_int_extension.dart';
 import 'package:polygonid_flutter_sdk/utils/uint8_list_utils.dart';
@@ -14,7 +15,6 @@ import '../jwz/jwz_exceptions.dart';
 import '../jwz/jwz_header.dart';
 import '../jwz/jwz_proof.dart';
 import '../jwz/jwz_token.dart';
-import 'lib_identity_data_source.dart';
 
 class AuthInputsIsolateParam {
   final String challenge;
@@ -72,11 +72,11 @@ Future<Map<String, dynamic>?> _computeCalculateProof(
 
 class JWZDataSource {
   final CircomLib _circomLib;
-  final LibIdentityDataSource _libIdentityDataSource;
+  final WalletDataSource _walletDataSource;
   final JWZIsolatesWrapper _jwzIsolateWrapper;
 
   JWZDataSource(
-      this._circomLib, this._libIdentityDataSource, this._jwzIsolateWrapper);
+      this._circomLib, this._walletDataSource, this._jwzIsolateWrapper);
 
   Future<String> getAuthToken(
       {required Uint8List privateKey,
@@ -104,12 +104,12 @@ class JWZDataSource {
   /// Prepare inputs
   Future<Uint8List> _prepare(Uint8List privateKey, String authClaim,
       Uint8List hash, String circuitId) {
-    return _libIdentityDataSource
+    return _walletDataSource
         .createWallet(privateKey: privateKey)
         .then((wallet) async {
       String queryInputs = "";
       String challenge = bytesToInt(hash).toString();
-      String signature = await _libIdentityDataSource.signMessage(
+      String signature = await _walletDataSource.signMessage(
           privateKey: privateKey, message: challenge);
 
       if (circuitId == "auth") {
