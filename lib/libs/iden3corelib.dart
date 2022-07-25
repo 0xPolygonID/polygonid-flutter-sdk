@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:ffi' as ffi;
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/libs/generated_bindings_extension.dart';
 import 'package:polygonid_flutter_sdk/libs/proverlib.dart';
 import 'package:polygonid_flutter_sdk/model/credential_credential.dart';
 import 'package:polygonid_flutter_sdk/model/revocation_status.dart';
@@ -317,6 +319,27 @@ class Iden3CoreLib {
     ffi.Pointer<IDENClaim> claim = claimI[0];
     _nativeLib.free(claimI.cast());
     return claim;
+  }
+
+  ffi.Pointer<IDENProof>? _parseMTPjson(String jsonDoc) {
+    ffi.Pointer<ffi.Pointer<IDENProof>> proof =
+        malloc<ffi.Pointer<IDENProof>>();
+    ffi.Pointer<ffi.Char> json = jsonDoc.toNativeUtf8().cast<ffi.Char>();
+    ffi.Pointer<ffi.Pointer<IDENStatus>> status =
+        malloc<ffi.Pointer<IDENStatus>>();
+
+    int res = _nativeLib.IDENNewProofFromJson(proof, json, status);
+    if (res == 0) {
+      _consumeStatus(status, "");
+      return null;
+    }
+
+    _nativeLib.free(json.cast());
+
+    ffi.Pointer<IDENProof> p = proof[0];
+    _nativeLib.free(proof.cast());
+
+    return p;
   }
 
   int claimTreeEntryHash() {
@@ -1020,6 +1043,55 @@ class Iden3CoreLib {
     }
     claimNonRevProof.ref.auxNodeKey = ffi.nullptr;
     claimNonRevProof.ref.auxNodeValue = ffi.nullptr;
+
+    if (revocationStatus.mtp != null && revocationStatus.mtp!.nodeAux != null) {
+      // ffi.Pointer<ffi.UnsignedChar> unsafePointerNodeAuxKey =
+      // revocationStatus.mtp!.nodeAux!.key!.toString().toNativeUtf8().cast<ffi.UnsignedChar>();
+      // ffi.Pointer<ffi.Pointer<IDENBigInt>> nodeAuxKeyInt = malloc<ffi.Pointer<IDENBigInt>>();
+      // res =
+      //     _nativeLib.IDENBigIntFromString(nodeAuxKeyInt, unsafePointerNodeAuxKey, status);
+      // if (res == 0) {
+      //   _consumeStatus(status, "");
+      // }
+      // claimNonRevProof.ref.auxNodeKey = unsafePointerNodeAuxKey;
+      //
+      // ffi.Pointer<ffi.UnsignedChar> unsafePointerNodeAuxValue =
+      // revocationStatus.mtp!.nodeAux!.value!.toString().toNativeUtf8().cast<ffi.UnsignedChar>();
+      // ffi.Pointer<ffi.Pointer<IDENBigInt>> nodeAuxValueInt = malloc<ffi.Pointer<IDENBigInt>>();
+      // res =
+      //     _nativeLib.IDENBigIntFromString(nodeAuxValueInt, unsafePointerNodeAuxValue, status);
+      // if (res == 0) {
+      //   _consumeStatus(status, "");
+      // }
+
+      // claimNonRevProof.ref.auxNodeValue = unsafePointerNodeAuxValue;
+
+      // ffi.Pointer<Utf8> auxNodeKeyBytes = revocationStatus.mtp!.nodeAux!.key!.toString().toNativeUtf8();
+      // if (auxNodeKeyBytes.length > 0) {
+      //   claimNonRevProof.ref.auxNodeKey = malloc<ffi.Uint8>(auxNodeKeyBytes.length) as ffi.Pointer<ffi.UnsignedChar>;
+      //   for (int i = 0; i < auxNodeKeyBytes.length; i++) {
+      //     claimNonRevProof.ref.auxNodeKey[i] = auxNodeKeyBytes[i];
+      //   }
+      // }
+      //
+      // ffi.Pointer<Utf8> auxNodeValueBytes = revocationStatus.mtp!.nodeAux!.value!.toString().toNativeUtf8();
+      // if (auxNodeValueBytes.length > 0) {
+      //   claimNonRevProof.ref.auxNodeKey = malloc<ffi.Uint8>(auxNodeValueBytes.length) as ffi.Pointer<ffi.UnsignedChar>;
+      //   for (int i = 0; i < auxNodeValueBytes.length; i++) {
+      //     claimNonRevProof.ref.auxNodeValue[i] = auxNodeValueBytes[i];
+      //   }
+      // }
+      claimNonRevProof.ref.auxNodeKey = malloc<ffi.UnsignedChar>(32);
+      claimNonRevProof.ref.auxNodeValue = malloc<ffi.UnsignedChar>(32);
+      res = _fillAux(claimNonRevProof.ref.auxNodeKey,
+          revocationStatus.mtp!.nodeAux!.key!, status);
+      assert(res == 1);
+
+      res = _fillAux(claimNonRevProof.ref.auxNodeValue,
+          revocationStatus.mtp!.nodeAux!.value!, status);
+      assert(res == 1);
+    }
+
     request.ref.claim.non_rev_proof.proof = claimNonRevProof;
 
     // RESULT
@@ -1309,8 +1381,44 @@ class Iden3CoreLib {
       issuerAuthClaimMTP.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>();
       issuerAuthClaimMTP.ref.siblings_num = 0;
     }
+
     issuerAuthClaimMTP.ref.auxNodeKey = ffi.nullptr;
     issuerAuthClaimMTP.ref.auxNodeValue = ffi.nullptr;
+
+    if (revocationStatus.mtp != null && revocationStatus.mtp!.nodeAux != null) {
+      ffi.Pointer<ffi.UnsignedChar> unsafePointerNodeAuxKey = revocationStatus
+          .mtp!.nodeAux!.key!
+          .toString()
+          .toNativeUtf8()
+          .cast<ffi.UnsignedChar>();
+      // ffi.Pointer<ffi.Pointer<IDENBigInt>> nodeAuxKeyInt = malloc<ffi.Pointer<IDENBigInt>>();
+      // res =
+      //     _nativeLib.IDENBigIntFromString(nodeAuxKeyInt, unsafePointerNodeAuxKey, status);
+      // if (res == 0) {
+      //   _consumeStatus(status, "");
+      // }
+      // issuerAuthClaimMTP.ref.auxNodeKey = unsafePointerNodeAuxKey;
+      //
+      // ffi.Pointer<ffi.UnsignedChar> unsafePointerNodeAuxValue =
+      // revocationStatus.mtp!.nodeAux!.value!.toString().toNativeUtf8().cast<ffi.UnsignedChar>();
+      // ffi.Pointer<ffi.Pointer<IDENBigInt>> nodeAuxValueInt = malloc<ffi.Pointer<IDENBigInt>>();
+      // res =
+      //     _nativeLib.IDENBigIntFromString(nodeAuxValueInt, unsafePointerNodeAuxValue, status);
+      // if (res == 0) {
+      //   _consumeStatus(status, "");
+      // }
+      // issuerAuthClaimMTP.ref.auxNodeValue = unsafePointerNodeAuxValue;
+      issuerAuthClaimMTP.ref.auxNodeKey = malloc<ffi.UnsignedChar>(64);
+      issuerAuthClaimMTP.ref.auxNodeValue = malloc<ffi.UnsignedChar>(64);
+
+      res = _fillAux(issuerAuthClaimMTP.ref.auxNodeKey,
+          revocationStatus.mtp!.nodeAux!.key!, status);
+      assert(res == 1);
+      res = _fillAux(issuerAuthClaimMTP.ref.auxNodeValue,
+          revocationStatus.mtp!.nodeAux!.value!, status);
+      assert(res == 1);
+    }
+
     request.ref.claim.signature_proof.issuer_auth_claim_mtp =
         issuerAuthClaimMTP;
 
@@ -1343,31 +1451,9 @@ class Iden3CoreLib {
           .revocation_root.data[i] = authRevStatusRevRootBytes[i];
     }
 
-    ffi.Pointer<IDENProof> issuerNonRevMTP = malloc<IDENProof>();
-    issuerNonRevMTP.ref.existence =
-        authRevocationStatus.mtp!.existence! ? 1 : 0;
-    if (authRevocationStatus.mtp!.siblings != null &&
-        authRevocationStatus.mtp!.siblings!.isNotEmpty) {
-      issuerNonRevMTP.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
-          authRevocationStatus.mtp!.siblings!.length);
-      for (int i = 0; i < authRevocationStatus.mtp!.siblings!.length; i++) {
-        issuerNonRevMTP.ref.siblings[i] = malloc<ffi.UnsignedChar>(64);
-        // Fill siblings
-        res = _fillDataSibling(issuerNonRevMTP.ref.siblings[i],
-            authRevocationStatus.mtp!.siblings![i], status);
-        assert(res == 1);
-      }
-      issuerNonRevMTP.ref.siblings_num =
-          authRevocationStatus.mtp!.siblings!.length;
-    } else {
-      issuerNonRevMTP.ref.siblings = ffi.nullptr;
-      issuerNonRevMTP.ref.siblings_num = 0;
-    }
-
-    issuerNonRevMTP.ref.auxNodeKey = ffi.nullptr;
-    issuerNonRevMTP.ref.auxNodeValue = ffi.nullptr;
+    //TODO: review
     request.ref.claim.signature_proof.issuer_auth_non_rev_proof.proof =
-        issuerNonRevMTP;
+        _parseMTPjson(jsonEncode(authRevocationStatus.mtp?.toJson()))!;
 
     request.ref.claim.core_claim = _parseClaim(jsonLDDocument, schema)!;
 
@@ -1430,28 +1516,8 @@ class Iden3CoreLib {
     }
 
     // claim revocation status proof
-    ffi.Pointer<IDENProof> claimNonRevProof = malloc<IDENProof>();
-    claimNonRevProof.ref.existence = revocationStatus.mtp!.existence! ? 1 : 0;
-    if (revocationStatus.mtp!.siblings != null &&
-        revocationStatus.mtp!.siblings!.isNotEmpty) {
-      claimNonRevProof.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
-          revocationStatus.mtp!.siblings!.length);
-      for (int i = 0; i < revocationStatus.mtp!.siblings!.length; i++) {
-        claimNonRevProof.ref.siblings[i] = malloc<ffi.UnsignedChar>(64);
-        // Fill siblings
-        res = _fillDataSibling(claimNonRevProof.ref.siblings[i],
-            revocationStatus.mtp!.siblings![i], status);
-        assert(res == 1);
-      }
-      claimNonRevProof.ref.siblings_num =
-          revocationStatus.mtp!.siblings!.length;
-    } else {
-      claimNonRevProof.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>();
-      claimNonRevProof.ref.siblings_num = 0;
-    }
-    claimNonRevProof.ref.auxNodeKey = ffi.nullptr;
-    claimNonRevProof.ref.auxNodeValue = ffi.nullptr;
-    request.ref.claim.non_rev_proof.proof = claimNonRevProof;
+    request.ref.claim.non_rev_proof.proof =
+        _parseMTPjson(jsonEncode(revocationStatus.mtp?.toJson()))!;
 
     request.ref.claim.proof = ffi.nullptr;
     // RESULT
@@ -2231,6 +2297,34 @@ class Iden3CoreLib {
     // TODO: properly free memory
     _nativeLib.IDENFreeBigInt(valuePtr.value);
     _nativeLib.free(itemHash.cast());
+
+    return 1;
+  }
+
+  int _fillAux(ffi.Pointer<ffi.UnsignedChar> dest, String source,
+      ffi.Pointer<ffi.Pointer<IDENStatus>> status) {
+    ffi.Pointer<ffi.Char> unsafePointerValue =
+        source.toNativeUtf8().cast<ffi.Char>();
+    ffi.Pointer<ffi.Pointer<IDENBigInt>> valuePtr =
+        malloc<ffi.Pointer<IDENBigInt>>();
+    int res =
+        _nativeLib.IDENBigIntFromString(valuePtr, unsafePointerValue, status);
+    if (res == 0) {
+      return res;
+    }
+
+    for (int j = 0; j < 32; j++) {
+      dest[j] = 0;
+    }
+
+    if (valuePtr.value.ref.data_len != 0) {
+      for (int j = 0; j < valuePtr.value.ref.data_len; j++) {
+        dest[j] = valuePtr.value.ref.data[j];
+      }
+    }
+
+    // TODO: properly free memory
+    _nativeLib.IDENFreeBigInt(valuePtr.value);
 
     return 1;
   }

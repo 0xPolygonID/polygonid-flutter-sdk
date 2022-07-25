@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:polygonid_flutter_sdk/utils/mapper.dart';
+import 'package:polygonid_flutter_sdk/common/mappers/mapper.dart';
 import 'package:web3dart/crypto.dart';
 
 class HexMapper extends Mapper<Uint8List, String> {

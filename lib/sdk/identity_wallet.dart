@@ -1,36 +1,76 @@
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/domain/identity/entities/circuit_data.dart';
 import 'package:polygonid_flutter_sdk/domain/identity/entities/identity.dart';
+import 'package:polygonid_flutter_sdk/domain/identity/use_cases/create_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/domain/identity/use_cases/get_auth_token_use_case.dart';
+import 'package:polygonid_flutter_sdk/domain/identity/use_cases/get_current_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/domain/identity/use_cases/get_identity_use_case.dart';
-
-import '../domain/identity/use_cases/sign_message_use_case.dart';
+import 'package:polygonid_flutter_sdk/domain/identity/use_cases/sign_message_use_case.dart';
 
 @injectable
 class IdentityWallet {
+  final CreateIdentityUseCase _createIdentityUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
   final SignMessageUseCase _signMessageUseCase;
+  final GetAuthTokenUseCase _getAuthTokenUseCase;
+  final GetCurrentIdentifierUseCase _getCurrentIdentifierUseCase;
 
-  IdentityWallet(this._getIdentityUseCase, this._signMessageUseCase);
+  IdentityWallet(
+      this._createIdentityUseCase,
+      this._getIdentityUseCase,
+      this._signMessageUseCase,
+      this._getAuthTokenUseCase,
+      this._getCurrentIdentifierUseCase);
 
   /// Get an [Identity] from a private key.
-  /// If [privateKey] is ommited or null, a random one will be used to create a new identity.
+  /// If [privateKey] is omitted or null, a random one will be used to create a new identity.
   /// Throws [IdentityException] if an error occurs.
   ///
   /// Be aware the private key is internally converted to a 32 length bytes array
   /// in order to be compatible with the SDK. The following rules will be applied:
   /// - If the byte array is not 32 length, it will be padded with 0s.
   /// - If the byte array is longer than 32, an exception will be thrown.
+  ///
+  /// TODO: remove [_getIdentityUseCase] as we will only return an identifier
+  /// We are returning a full [Identity] for now for back compatibility
   Future<Identity> createIdentity({String? privateKey}) async {
-    return _getIdentityUseCase.execute(param: privateKey);
+    return _createIdentityUseCase
+        .execute(param: privateKey)
+        .then((_) => _getIdentityUseCase.execute(param: privateKey));
   }
 
-  /// Sign a message with a private key and return the signature.
-  /// Throws [IdentityException] if an error occurs.
-  ///
-  /// The private key is internally converted to a 32 length bytes array with the
-  /// same rules as in [createIdentity].
+  /// Sign a message through an identifier.
+  /// The [identifier] is a string returned when creating an identity with [createIdentity]
+  /// and [message] is the message to sign. Returns a string representing the signature.
   Future<String> sign(
-      {required String privateKey, required String message}) async {
+      {required String identifier, required String message}) async {
     return _signMessageUseCase.execute(
-        param: SignMessageParam(privateKey, message));
+        param: SignMessageParam(identifier, message));
+  }
+
+  /// Get a string auth token through an identifier
+  /// The [identifier] is a string returned when creating an identity with [createIdentity]
+  /// and [circuitData] describes data about the used circuit, see [CircuitData].
+  /// [message] will be fully integrated on the resulting encoded string (follow JWZ standard).
+  /// See [JWZ].
+  Future<String> getAuthToken(
+      {required String identifier,
+      required CircuitData circuitData,
+      required String message}) {
+    return _getAuthTokenUseCase.execute(
+        param: GetAuthTokenParam(identifier, circuitData, message));
+  }
+
+  /// As the SDK support only one identity for the moment, we return the last
+  /// known identifier (stored when creating an identity via [createIdentity]).
+  Future<String?> getCurrentIdentifier() {
+    return _getCurrentIdentifierUseCase.execute();
+  }
+
+  /// As the SDK support only one identity for the moment, we remove the identity
+  /// associated with the last known identifier (stored when creating
+  /// an identity via [createIdentity]).
+  Future<void> removeCurrentIdentity() {
+    return _getCurrentIdentifierUseCase.execute();
   }
 }

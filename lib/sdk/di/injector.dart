@@ -32,6 +32,10 @@ abstract class DatabaseModule {
   @Named(identityStoreName)
   StoreRef<String, Map<String, Object?>> get identityStore =>
       stringMapStoreFactory.store(identityStoreName);
+
+  @Named(keyValueStoreName)
+  StoreRef<String, dynamic> get keyValueStore =>
+      stringMapStoreFactory.store(keyValueStoreName);
 }
 
 @module

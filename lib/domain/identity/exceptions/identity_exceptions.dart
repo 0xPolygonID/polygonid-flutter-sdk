@@ -5,3 +5,9 @@ class IdentityException implements Exception {
 }
 
 class TooLongPrivateKeyException implements Exception {}
+
+class UnknownIdentityException implements Exception {
+  final String identifier;
+
+  UnknownIdentityException(this.identifier);
+}

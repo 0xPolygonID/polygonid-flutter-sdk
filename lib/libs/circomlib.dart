@@ -2,10 +2,12 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:ffi/ffi.dart';
+import 'package:injectable/injectable.dart';
 
 typedef CStringFree = void Function(Pointer<Utf8>);
 typedef CStringFreeFFI = Void Function(Pointer<Utf8>);
 
+@injectable
 class CircomLib {
   final DynamicLibrary lib = Platform.isAndroid
       ? DynamicLibrary.open("libbabyjubjub.so")

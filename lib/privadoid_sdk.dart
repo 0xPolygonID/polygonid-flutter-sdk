@@ -4,20 +4,15 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:polygonid_flutter_sdk/http.dart';
-import 'package:polygonid_flutter_sdk/jwz/jwz_preparer.dart';
 import 'package:polygonid_flutter_sdk/model/revocation_status.dart';
 import 'package:polygonid_flutter_sdk/privadoid_wallet.dart';
 import 'package:polygonid_flutter_sdk/sdk/identity_wallet.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk/utils/hex_utils.dart';
 
-import 'jwz/jwz_prover.dart';
-import 'jwz/jwz_token.dart';
 import 'libs/iden3corelib.dart';
 import 'model/credential_credential.dart';
 import 'model/credential_data.dart';
-import 'model/jwz/jwz.dart';
-import 'model/jwz/jwz_header.dart';
 
 enum AtomicQueryInputsType { mtp, sig }
 
@@ -37,7 +32,8 @@ class AtomicQueryInputsParam {
   final RevocationStatus revocationStatus;
   RevocationStatus? authRevocationStatus;
 
-  AtomicQueryInputsParam(this.type,
+  AtomicQueryInputsParam(
+      this.type,
       this.challenge,
       this.pubX,
       this.pubY,
@@ -77,7 +73,8 @@ class PrivadoIdSdk {
     return PolygonIdSdk.I.identity;
   }
 
-  static Future<String?> prepareAtomicQueryInputs(String challenge,
+  static Future<String?> prepareAtomicQueryInputs(
+      String challenge,
       String privateKey,
       CredentialData credential,
       String circuitId,
@@ -88,9 +85,10 @@ class PrivadoIdSdk {
       String revStatusUrl) async {
     final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
         privateKey: HexUtils.hexToBytes(privateKey));
+    final String? identifier = await _identityWallet.getCurrentIdentifier();
 
     String signatureString =
-    await _identityWallet.sign(privateKey: privateKey, message: challenge);
+        await _identityWallet.sign(identifier: identifier!, message: challenge);
 
     // schema
     var uri = Uri.parse(credential.credential!.credentialSchema!.id!);
@@ -101,7 +99,7 @@ class PrivadoIdSdk {
     res = await get(revStatusUrl, "");
     String revStatus = (res.body);
     final RevocationStatus claimRevocationStatus =
-    RevocationStatus.fromJson(json.decode(revStatus));
+        RevocationStatus.fromJson(json.decode(revStatus));
     String? queryInputs;
     if (circuitId == "credentialAtomicQueryMTP") {
       queryInputs = await compute(
@@ -129,7 +127,7 @@ class PrivadoIdSdk {
           credential.credential!.proof![0].issuer_data!.revocation_status!, "");
       String authRevStatus = (authRes.body);
       final RevocationStatus authRevocationStatus =
-      RevocationStatus.fromJson(json.decode(authRevStatus));
+          RevocationStatus.fromJson(json.decode(authRevStatus));
 
       queryInputs = await compute(
           _computeAtomicQueryInputs,
@@ -196,20 +194,20 @@ class PrivadoIdSdk {
     return Future.value(result);
   }
 
-  static Future<Uint8List?> calculateWitness(Uint8List wasmBytes,
-      Uint8List inputsJsonBytes) {
+  static Future<Uint8List?> calculateWitness(
+      Uint8List wasmBytes, Uint8List inputsJsonBytes) {
     return compute(_computeWitness,
         WitnessParam(WitnessType.def, wasmBytes, inputsJsonBytes));
   }
 
-  static Future<Uint8List?> calculateWitnessSig(Uint8List wasmBytes,
-      Uint8List inputsJsonBytes) {
+  static Future<Uint8List?> calculateWitnessSig(
+      Uint8List wasmBytes, Uint8List inputsJsonBytes) {
     return compute(_computeWitness,
         WitnessParam(WitnessType.sig, wasmBytes, inputsJsonBytes));
   }
 
-  static Future<Uint8List?> calculateWitnessMtp(Uint8List wasmBytes,
-      Uint8List inputsJsonBytes) {
+  static Future<Uint8List?> calculateWitnessMtp(
+      Uint8List wasmBytes, Uint8List inputsJsonBytes) {
     return compute(_computeWitness,
         WitnessParam(WitnessType.mtp, wasmBytes, inputsJsonBytes));
   }
@@ -227,8 +225,8 @@ class PrivadoIdSdk {
     }
   }
 
-  static Future<Map<String, dynamic>?> prover(Uint8List zKeyBytes,
-      Uint8List wtnsBytes) async {
+  static Future<Map<String, dynamic>?> prover(
+      Uint8List zKeyBytes, Uint8List wtnsBytes) async {
     return compute(_computeProve, ProveParam(zKeyBytes, wtnsBytes));
   }
 
@@ -237,28 +235,25 @@ class PrivadoIdSdk {
 
     return iden3coreLib.prove(param.zKey, param.wtns);
   }
-
-  static Future<JWZToken> generateJWZToken(String payload, String privateKey,
-      String authClaim, Uint8List zKeyBytes, Uint8List datFile) async {
-    final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
-        privateKey: HexUtils.hexToBytes(privateKey));
-    var preparer = JWZPreparer(
-        privateKey: privateKey, wallet: wallet, authClaim: authClaim);
-    var prover = JWZProverImpl(alg: "groth16", circuitID: "auth");
-    var jwztoken = JWZToken.withJWZ(
-        jwz: JWZ(
-            header: JWZHeader(
-                circuitId: "auth",
-                crit: const ["circuitId"],
-                typ: "application/iden3-zkp-json",
-                alg: "groth16"),
-            payload: JWZPayload(payload: payload)),
-        prover: prover,
-        preparer: preparer);
-    String encodedjwz = await jwztoken.prove(zKeyBytes, datFile);
-    if (kDebugMode) {
-      print(encodedjwz);
-    }
-    return jwztoken;
-  }
+//
+// static Future<JWZToken> generateJWZToken(String payload, String identifier, Uint8List zKeyBytes, Uint8List datFile) async {
+//   var preparer = JWZPreparer(
+//       identifier: identifier);
+//   var prover = JWZProverImpl(alg: "groth16", circuitID: "auth");
+//   var jwztoken = JWZToken.withJWZ(
+//       jwz: JWZ(
+//           header: JWZHeader(
+//               circuitId: "auth",
+//               crit: const ["circuitId"],
+//               typ: "application/iden3-zkp-json",
+//               alg: "groth16"),
+//           payload: JWZPayload(payload: payload)),
+//       prover: prover,
+//       preparer: preparer);
+//   String encodedjwz = await jwztoken.prove(zKeyBytes, datFile);
+//   if (kDebugMode) {
+//     print(encodedjwz);
+//   }
+//   return jwztoken;
+// }
 }
