@@ -321,7 +321,7 @@ class Iden3CoreLib {
     return claim;
   }
 
-  ffi.Pointer<IDENProof>? parseMTPjson(String jsonDoc) {
+  ffi.Pointer<IDENProof>? _parseMTPjson(String jsonDoc) {
     ffi.Pointer<ffi.Pointer<IDENProof>> proof =
         malloc<ffi.Pointer<IDENProof>>();
     ffi.Pointer<ffi.Char> json = jsonDoc.toNativeUtf8().cast<ffi.Char>();
@@ -1083,11 +1083,11 @@ class Iden3CoreLib {
       // }
       claimNonRevProof.ref.auxNodeKey = malloc<ffi.UnsignedChar>(32);
       claimNonRevProof.ref.auxNodeValue = malloc<ffi.UnsignedChar>(32);
-      res = fillAux(claimNonRevProof.ref.auxNodeKey,
+      res = _fillAux(claimNonRevProof.ref.auxNodeKey,
           revocationStatus.mtp!.nodeAux!.key!, status);
       assert(res == 1);
 
-      res = fillAux(claimNonRevProof.ref.auxNodeValue,
+      res = _fillAux(claimNonRevProof.ref.auxNodeValue,
           revocationStatus.mtp!.nodeAux!.value!, status);
       assert(res == 1);
     }
@@ -1411,10 +1411,10 @@ class Iden3CoreLib {
       issuerAuthClaimMTP.ref.auxNodeKey = malloc<ffi.UnsignedChar>(64);
       issuerAuthClaimMTP.ref.auxNodeValue = malloc<ffi.UnsignedChar>(64);
 
-      res = fillAux(issuerAuthClaimMTP.ref.auxNodeKey,
+      res = _fillAux(issuerAuthClaimMTP.ref.auxNodeKey,
           revocationStatus.mtp!.nodeAux!.key!, status);
       assert(res == 1);
-      res = fillAux(issuerAuthClaimMTP.ref.auxNodeValue,
+      res = _fillAux(issuerAuthClaimMTP.ref.auxNodeValue,
           revocationStatus.mtp!.nodeAux!.value!, status);
       assert(res == 1);
     }
@@ -1453,7 +1453,7 @@ class Iden3CoreLib {
 
     //TODO: review
     request.ref.claim.signature_proof.issuer_auth_non_rev_proof.proof =
-        parseMTPjson(jsonEncode(authRevocationStatus.mtp?.toJson()))!;
+        _parseMTPjson(jsonEncode(authRevocationStatus.mtp?.toJson()))!;
 
     request.ref.claim.core_claim = _parseClaim(jsonLDDocument, schema)!;
 
@@ -1517,7 +1517,7 @@ class Iden3CoreLib {
 
     // claim revocation status proof
     request.ref.claim.non_rev_proof.proof =
-        parseMTPjson(jsonEncode(revocationStatus.mtp?.toJson()))!;
+        _parseMTPjson(jsonEncode(revocationStatus.mtp?.toJson()))!;
 
     request.ref.claim.proof = ffi.nullptr;
     // RESULT
@@ -2301,7 +2301,7 @@ class Iden3CoreLib {
     return 1;
   }
 
-  int fillAux(ffi.Pointer<ffi.UnsignedChar> dest, String source,
+  int _fillAux(ffi.Pointer<ffi.UnsignedChar> dest, String source,
       ffi.Pointer<ffi.Pointer<IDENStatus>> status) {
     ffi.Pointer<ffi.Char> unsafePointerValue =
         source.toNativeUtf8().cast<ffi.Char>();

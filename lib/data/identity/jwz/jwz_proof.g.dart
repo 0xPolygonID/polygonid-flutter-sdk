@@ -31,6 +31,6 @@ JWZProof _$JWZProofFromJson(Map<String, dynamic> json) => JWZProof(
     );
 
 Map<String, dynamic> _$JWZProofToJson(JWZProof instance) => <String, dynamic>{
-      'proof': instance.proof,
+      'proof': instance.proof.toJson(),
       'pub_signals': instance.pubSignals,
     };

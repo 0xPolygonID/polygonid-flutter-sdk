@@ -39,17 +39,17 @@ part 'jwz_proof.g.dart';
 @JsonSerializable()
 class JWZBaseProof extends Equatable {
   @JsonKey(name: 'pi_a')
-  List<String> piA;
+  final List<String> piA;
 
   @JsonKey(name: 'pi_b')
-  List<List<String>> piB;
+  final List<List<String>> piB;
 
   @JsonKey(name: 'pi_c')
-  List<String> piC;
+  final List<String> piC;
 
-  String protocol;
+  final String protocol;
 
-  JWZBaseProof(
+  const JWZBaseProof(
       {required this.piA,
       required this.piB,
       required this.piC,
@@ -101,7 +101,7 @@ class JWZBaseProof extends Equatable {
 ///     ]
 ///   }
 /// ```
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class JWZProof extends Equatable with Base64Encoder {
   final JWZBaseProof proof;
 

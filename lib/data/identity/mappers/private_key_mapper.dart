@@ -1,10 +1,9 @@
 import 'dart:typed_data';
 
+import 'package:polygonid_flutter_sdk/common/mappers/from_mapper.dart';
 import 'package:polygonid_flutter_sdk/domain/identity/exceptions/identity_exceptions.dart';
-import 'package:polygonid_flutter_sdk/utils/mapper.dart';
-import 'package:web3dart/crypto.dart';
 
-class PrivateKeyMapper extends Mapper<String?, Uint8List?> {
+class PrivateKeyMapper extends FromMapper<String?, Uint8List?> {
   @override
   Uint8List? mapFrom(String? from) {
     Uint8List? key;
@@ -22,10 +21,5 @@ class PrivateKeyMapper extends Mapper<String?, Uint8List?> {
     }
 
     return key;
-  }
-
-  @override
-  String mapTo(Uint8List? to) {
-    throw UnimplementedError();
   }
 }

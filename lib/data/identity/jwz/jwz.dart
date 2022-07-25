@@ -1,7 +1,8 @@
 import 'package:equatable/equatable.dart';
-import 'package:polygonid_flutter_sdk/model/jwz/jwz_header.dart';
-import 'package:polygonid_flutter_sdk/model/jwz/jwz_proof.dart';
+import 'package:polygonid_flutter_sdk/data/identity/jwz/jwz_proof.dart';
 import 'package:polygonid_flutter_sdk/utils/base_64.dart';
+
+import 'jwz_header.dart';
 
 /// Wrapper for [JWZ] payload
 class JWZPayload extends Equatable with Base64Encoder {
@@ -21,7 +22,7 @@ class JWZPayload extends Equatable with Base64Encoder {
 /// JSON Web Zero-knowledge (JWZ) is an open standard
 /// for representing messages proven by zero-knowledge technology.
 class JWZ extends Equatable with Base64Encoder {
-  JWZHeader? header;
+  final JWZHeader? header;
   final JWZPayload? payload;
   JWZProof? proof;
 

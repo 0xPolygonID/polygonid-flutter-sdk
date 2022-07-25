@@ -1,19 +1,44 @@
-import 'package:polygonid_flutter_sdk/privadoid_sdk.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 import 'identity_wallet.dart';
 
-class PolygonIdSdk {
-  late IdentityWallet identity;
+class PolygonIsSdkNotInitializedException implements Exception {
+  String message;
 
-  PolygonIdSdk() {
-    configureInjection();
-    identity = getItSdk<IdentityWallet>();
+  PolygonIsSdkNotInitializedException(this.message);
+}
+
+class PolygonIdSdk {
+  static PolygonIdSdk? _ref;
+
+  static PolygonIdSdk get I {
+    if (_ref == null) {
+      throw PolygonIsSdkNotInitializedException(
+          "The PolygonID SDK has not been initialized,"
+          "please call and await PolygonIdSDK.init()");
+    }
+
+    return _ref!;
   }
 
-  /// This method is here only to bootstrap the injection.
-  /// It should be removed when the Statics are gone, see [PrivadoIdSdk].
-  void init() {}
+  static Future<void> init() async {
+    // As [PolygonIdSdk] uses path_provider plugin, we need to ensure the
+    // platform is initialized
+    WidgetsFlutterBinding.ensureInitialized();
+
+    // Init injection
+    configureInjection();
+    await getItSdk.allReady();
+
+    // SDK singleton
+    _ref = PolygonIdSdk._();
+    _ref!.identity = await getItSdk.getAsync<IdentityWallet>();
+  }
+
+  late IdentityWallet identity;
+
+  PolygonIdSdk._();
 
 // TODO: SDK should be separated in 4 parts:
 // - Identity Wallet

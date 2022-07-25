@@ -49,21 +49,21 @@ PrivateKeyMapper mapper = PrivateKeyMapper();
 void main() {
   group("Map from", () {
     test(
-        "Given a string, when I call mapFrom, then I expect a Uint8List to be returned",
+        "Given a string, when I call map, then I expect a Uint8List to be returned",
         () {
       // When
       expect(mapper.mapFrom(privateKey), convertedKey);
     });
 
     test(
-        "Given a string which is null, when I call mapFrom, then I expect a null to be returned",
+        "Given a string which is null, when I call map, then I expect a null to be returned",
         () {
       // When
       expect(mapper.mapFrom(null), null);
     });
 
     test(
-        "Given a string which is too long, when I call mapFrom, then I expect a TooLongPrivateKeyException to be thrown",
+        "Given a string which is too long, when I call map, then I expect a TooLongPrivateKeyException to be thrown",
         () {
       bool hasThrown = false;
       // When

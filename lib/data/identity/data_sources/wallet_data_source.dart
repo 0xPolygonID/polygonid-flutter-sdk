@@ -4,8 +4,6 @@ import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/eddsa_babyjub.dart';
 import 'package:polygonid_flutter_sdk/privadoid_wallet.dart';
 
-import '../../../libs/iden3corelib.dart';
-
 @injectable
 class WalletLibWrapper {
   Future<PrivadoIdWallet> createWallet({Uint8List? privateKey}) {
@@ -26,31 +24,10 @@ class WalletLibWrapper {
   }
 }
 
-class LocalIdentityDataSource {
-  final Iden3CoreLib _iden3coreLib;
+class WalletDataSource {
   final WalletLibWrapper _walletLibWrapper;
 
-  LocalIdentityDataSource(this._iden3coreLib, this._walletLibWrapper);
-
-  Future<String> getIdentifier({required String pubX, required String pubY}) {
-    try {
-      Map<String, String> map = _iden3coreLib.generateIdentity(pubX, pubY);
-
-      return Future.value(map['id']);
-    } catch (e) {
-      return Future.error(e);
-    }
-  }
-
-  Future<String> getAuthclaim({required String pubX, required String pubY}) {
-    try {
-      String authClaim = _iden3coreLib.getAuthClaim(pubX, pubY);
-
-      return Future.value(authClaim);
-    } catch (e) {
-      return Future.error(e);
-    }
-  }
+  WalletDataSource(this._walletLibWrapper);
 
   Future<PrivadoIdWallet> createWallet({Uint8List? privateKey}) {
     return _walletLibWrapper.createWallet(privateKey: privateKey);
@@ -58,8 +35,7 @@ class LocalIdentityDataSource {
 
   Future<String> signMessage(
       {required Uint8List privateKey, required String message}) {
-    return _walletLibWrapper.createWallet(privateKey: privateKey).then(
-        (wallet) => _walletLibWrapper.signMessage(
-            privateKey: wallet.privateKey, message: message));
+    return _walletLibWrapper.signMessage(
+        privateKey: privateKey, message: message);
   }
 }
