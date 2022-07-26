@@ -5,6 +5,7 @@ import 'package:polygonid_flutter_sdk/domain/identity/use_cases/create_identity_
 import 'package:polygonid_flutter_sdk/domain/identity/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/domain/identity/use_cases/get_current_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/domain/identity/use_cases/get_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/domain/identity/use_cases/remove_current_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/domain/identity/use_cases/sign_message_use_case.dart';
 
 @injectable
@@ -14,13 +15,28 @@ class IdentityWallet {
   final SignMessageUseCase _signMessageUseCase;
   final GetAuthTokenUseCase _getAuthTokenUseCase;
   final GetCurrentIdentifierUseCase _getCurrentIdentifierUseCase;
+  final RemoveCurrentIdentityUseCase _removeCurrentIdentityUseCase;
 
   IdentityWallet(
       this._createIdentityUseCase,
       this._getIdentityUseCase,
       this._signMessageUseCase,
       this._getAuthTokenUseCase,
-      this._getCurrentIdentifierUseCase);
+      this._getCurrentIdentifierUseCase,
+      this._removeCurrentIdentityUseCase);
+
+  /// Create and store an [Identity] from a private key.
+  /// If [privateKey] is omitted or null, a random one will be used to create a new identity.
+  /// Return an identifier as a String.
+  /// Throws [IdentityException] if an error occurs.
+  ///
+  /// Be aware the private key is internally converted to a 32 length bytes array
+  /// in order to be compatible with the SDK. The following rules will be applied:
+  /// - If the byte array is not 32 length, it will be padded with 0s.
+  /// - If the byte array is longer than 32, an exception will be thrown.
+  Future<String> createIdentity({String? privateKey}) async {
+    return _createIdentityUseCase.execute(param: privateKey);
+  }
 
   /// Get an [Identity] from a private key.
   /// If [privateKey] is omitted or null, a random one will be used to create a new identity.
@@ -31,12 +47,10 @@ class IdentityWallet {
   /// - If the byte array is not 32 length, it will be padded with 0s.
   /// - If the byte array is longer than 32, an exception will be thrown.
   ///
-  /// TODO: remove [_getIdentityUseCase] as we will only return an identifier
-  /// We are returning a full [Identity] for now for back compatibility
-  Future<Identity> createIdentity({String? privateKey}) async {
-    return _createIdentityUseCase
-        .execute(param: privateKey)
-        .then((_) => _getIdentityUseCase.execute(param: privateKey));
+  /// TODO: to be removed to not expose sensitive information
+  /// (here for back compatibility).
+  Future<Identity> getIdentity({String? privateKey}) async {
+    return _getIdentityUseCase.execute(param: privateKey);
   }
 
   /// Sign a message through an identifier.
@@ -71,6 +85,6 @@ class IdentityWallet {
   /// associated with the last known identifier (stored when creating
   /// an identity via [createIdentity]).
   Future<void> removeCurrentIdentity() {
-    return _getCurrentIdentifierUseCase.execute();
+    return _removeCurrentIdentityUseCase.execute();
   }
 }

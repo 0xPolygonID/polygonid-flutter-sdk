@@ -70,11 +70,6 @@ class MockIdentityRepository extends _i1.Mock
       (super.noSuchMethod(Invocation.method(#getCurrentIdentifier, []),
           returnValue: Future<String?>.value()) as _i4.Future<String?>);
   @override
-  _i4.Future<void> removeCurrentIdentity() =>
-      (super.noSuchMethod(Invocation.method(#removeCurrentIdentity, []),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
-  @override
   _i4.Future<String> getAuthToken(
           {String? identifier,
           _i5.CircuitData? circuitData,

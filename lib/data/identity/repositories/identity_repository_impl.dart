@@ -145,15 +145,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
             zKeyFile: circuitData.zKeyFile));
   }
 
-  @override
-  Future<void> removeCurrentIdentity() {
-    return getCurrentIdentifier().then((identifier) {
-      if (identifier != null) {
-        return removeIdentity(identifier: identifier).then((_) => null);
-      }
-    });
-  }
-
   /// Get an identifier from a [privateKey]
   @override
   Future<String> getIdentifier({String? privateKey}) {

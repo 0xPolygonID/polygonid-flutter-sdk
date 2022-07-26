@@ -25,7 +25,7 @@ import '../../domain/identity/use_cases/get_auth_token_use_case.dart' as _i19;
 import '../../domain/identity/use_cases/get_current_identifier_use_case.dart'
     as _i20;
 import '../../domain/identity/use_cases/get_identity_use_case.dart' as _i21;
-import '../../domain/identity/use_cases/remove_current_identifier_use_case.dart'
+import '../../domain/identity/use_cases/remove_current_identity_use_case.dart'
     as _i16;
 import '../../domain/identity/use_cases/sign_message_use_case.dart' as _i17;
 import '../../libs/circomlib.dart' as _i3;
@@ -104,7 +104,8 @@ _i1.GetIt $initSDKGetIt(_i1.GetIt get,
       await get.getAsync<_i21.GetIdentityUseCase>(),
       await get.getAsync<_i17.SignMessageUseCase>(),
       await get.getAsync<_i19.GetAuthTokenUseCase>(),
-      await get.getAsync<_i20.GetCurrentIdentifierUseCase>()));
+      await get.getAsync<_i20.GetCurrentIdentifierUseCase>(),
+      await get.getAsync<_i16.RemoveCurrentIdentityUseCase>()));
   return get;
 }
 
