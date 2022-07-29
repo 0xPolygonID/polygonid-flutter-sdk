@@ -223,11 +223,6 @@ class MockPrivateKeyMapper extends _i1.Mock implements _i14.PrivateKeyMapper {
   MockPrivateKeyMapper() {
     _i1.throwOnMissingStub(this);
   }
-
-  @override
-  String mapTo(_i7.Uint8List? to) =>
-      (super.noSuchMethod(Invocation.method(#mapTo, [to]), returnValue: '')
-          as String);
 }
 
 /// A class which mocks [IdentityDTOMapper].
@@ -240,6 +235,6 @@ class MockIdentityDTOMapper extends _i1.Mock implements _i15.IdentityDTOMapper {
 
   @override
   _i4.Identity mapFrom(_i3.IdentityDTO? from) =>
-      (super.noSuchMethod(Invocation.method(#map, [from]),
+      (super.noSuchMethod(Invocation.method(#mapFrom, [from]),
           returnValue: _FakeIdentity_2()) as _i4.Identity);
 }

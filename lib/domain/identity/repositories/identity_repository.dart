@@ -19,9 +19,6 @@ abstract class IdentityRepository {
   /// TODO: Remove this method when we support multiple identity
   Future<String?> getCurrentIdentifier();
 
-  /// TODO: Remove this method when we support multiple identity
-  Future<void> removeCurrentIdentity();
-
   Future<String> getAuthToken(
       {required String identifier,
       required CircuitData circuitData,

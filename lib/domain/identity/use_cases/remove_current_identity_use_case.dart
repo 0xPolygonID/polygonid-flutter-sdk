@@ -10,11 +10,16 @@ class RemoveCurrentIdentityUseCase extends FutureUseCase<void, void> {
 
   @override
   Future<void> execute({void param}) {
-    return _identityRepository
-        .removeCurrentIdentity()
-        .then((_) => logger().i(
-            "[RemoveCurrentIdentifierUseCase] Current identity has been removed"))
-        .catchError((error) {
+    return _identityRepository.getCurrentIdentifier().then((identifier) {
+      if (identifier != null) {
+        _identityRepository.removeIdentity(identifier: identifier).then((_) =>
+            logger().i(
+                "[RemoveCurrentIdentifierUseCase] Current identity has been removed"));
+      } else {
+        logger().i(
+            "[RemoveCurrentIdentifierUseCase] No current identity to removed");
+      }
+    }).catchError((error) {
       logger().e("[RemoveCurrentIdentifierUseCase] Error: $error");
 
       throw error;
