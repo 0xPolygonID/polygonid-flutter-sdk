@@ -12,6 +12,7 @@ import 'package:polygonid_flutter_sdk/utils/hex_utils.dart';
 
 import 'libs/iden3corelib.dart';
 import 'model/credential_credential.dart';
+import 'model/credential_credential_proof.dart';
 import 'model/credential_data.dart';
 
 enum AtomicQueryInputsType { mtp, sig }
@@ -120,32 +121,39 @@ class PrivadoIdSdk {
               claimRevocationStatus));
     } else if (circuitId == "credentialAtomicQuerySig") {
       // Issuer auth claim revocation status
-      // TODO: !!!! make sure that proof[0] is signature proof
+      if (credential.credential!.proof != null &&
+          credential.credential!.proof!.isNotEmpty) {
+        for (var proof in credential.credential!.proof!) {
+          if (proof.type ==
+              CredentialCredentialProofType.BJJSignature2021.toString()) {
+            // revocation status
+            final authRes =
+                await get(proof.issuer_data!.revocation_status!, "");
+            String authRevStatus = (authRes.body);
+            final RevocationStatus authRevocationStatus =
+                RevocationStatus.fromJson(json.decode(authRevStatus));
 
-      // revocation status
-      final authRes = await get(
-          credential.credential!.proof![0].issuer_data!.revocation_status!, "");
-      String authRevStatus = (authRes.body);
-      final RevocationStatus authRevocationStatus =
-          RevocationStatus.fromJson(json.decode(authRevStatus));
-
-      queryInputs = await compute(
-          _computeAtomicQueryInputs,
-          AtomicQueryInputsParam(
-              AtomicQueryInputsType.sig,
-              challenge,
-              wallet.publicKey[0],
-              wallet.publicKey[1],
-              signatureString,
-              credential.credential!,
-              json.encode(credential.credential!.toJson()),
-              schema,
-              claimType,
-              key,
-              values,
-              operator,
-              claimRevocationStatus,
-              authRevocationStatus));
+            queryInputs = await compute(
+                _computeAtomicQueryInputs,
+                AtomicQueryInputsParam(
+                    AtomicQueryInputsType.sig,
+                    challenge,
+                    wallet.publicKey[0],
+                    wallet.publicKey[1],
+                    signatureString,
+                    credential.credential!,
+                    json.encode(credential.credential!.toJson()),
+                    schema,
+                    claimType,
+                    key,
+                    values,
+                    operator,
+                    claimRevocationStatus,
+                    authRevocationStatus));
+            break;
+          }
+        }
+      }
     }
 
     return queryInputs;
