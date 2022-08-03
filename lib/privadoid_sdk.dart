@@ -125,7 +125,7 @@ class PrivadoIdSdk {
           credential.credential!.proof!.isNotEmpty) {
         for (var proof in credential.credential!.proof!) {
           if (proof.type ==
-              CredentialCredentialProofType.BJJSignature2021.toString()) {
+              CredentialCredentialProofType.BJJSignature2021.name) {
             // revocation status
             final authRes =
                 await get(proof.issuer_data!.revocation_status!, "");
