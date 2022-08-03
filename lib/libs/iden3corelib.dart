@@ -7,7 +7,6 @@ import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:polygonid_flutter_sdk/libs/generated_bindings_extension.dart';
 import 'package:polygonid_flutter_sdk/libs/proverlib.dart';
 import 'package:polygonid_flutter_sdk/model/credential_credential.dart';
 import 'package:polygonid_flutter_sdk/model/revocation_status.dart';
@@ -669,10 +668,13 @@ class Iden3CoreLib {
     if (credential.proof != null && credential.proof!.isNotEmpty) {
       for (var proof in credential.proof!) {
         if (proof.type ==
-            CredentialCredentialProofType.Iden3SparseMerkleProof.toString()) {
+            CredentialCredentialProofType.Iden3SparseMerkleProof.name) {
           smtProof = proof;
         }
       }
+    }
+    if (smtProof == null) {
+      return "";
     }
     ffi.Pointer<ffi.Pointer<IDENStatus>> status =
         malloc<ffi.Pointer<IDENStatus>>();
@@ -1085,8 +1087,7 @@ class Iden3CoreLib {
     CredentialCredentialProof? signatureProof;
     if (credential.proof != null && credential.proof!.isNotEmpty) {
       for (var proof in credential.proof!) {
-        if (proof.type ==
-            CredentialCredentialProofType.BJJSignature2021.toString()) {
+        if (proof.type == CredentialCredentialProofType.BJJSignature2021.name) {
           signatureProof = proof;
         }
       }
