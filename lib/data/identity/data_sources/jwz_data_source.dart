@@ -92,13 +92,10 @@ class JWZDataSource {
             typ: "application/iden3-zkp-json",
             alg: "groth16"),
         payload: JWZPayload(payload: message));
-    Uint8List prepared;
-    try {
-      prepared =
-          await _prepare(privateKey, authClaim, _getHash(jwz), circuitId);
-    } catch (e) {
-      rethrow;
-    }
+
+    Uint8List prepared =
+        await _prepare(privateKey, authClaim, _getHash(jwz), circuitId);
+
     jwz.proof = await _prove(prepared, zKeyFile, datFile);
 
     var token = JWZToken.withJWZ(jwz: jwz);
@@ -114,13 +111,9 @@ class JWZDataSource {
         .then((wallet) async {
       String queryInputs = "";
       String challenge = bytesToInt(hash).toString();
-      String signature;
-      try {
-        signature = await _walletDataSource.signMessage(
-            privateKey: privateKey, message: challenge);
-      } catch (e) {
-        rethrow;
-      }
+
+      String signature = await _walletDataSource.signMessage(
+          privateKey: privateKey, message: challenge);
 
       if (circuitId == "auth") {
         queryInputs = await _jwzIsolateWrapper.computeAuthInputs(challenge,
