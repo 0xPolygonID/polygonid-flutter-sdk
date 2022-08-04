@@ -9,6 +9,7 @@ import 'package:polygonid_flutter_sdk/privadoid_wallet.dart';
 import 'package:polygonid_flutter_sdk/sdk/identity_wallet.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk/utils/hex_utils.dart';
+import 'package:web3dart/crypto.dart';
 
 import 'libs/iden3corelib.dart';
 import 'model/credential_credential.dart';
@@ -87,6 +88,11 @@ class PrivadoIdSdk {
     final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
         privateKey: HexUtils.hexToBytes(privateKey));
     final String? identifier = await _identityWallet.getCurrentIdentifier();
+
+    if (challenge.toLowerCase().startsWith("0x")) {
+      challenge = strip0x(challenge);
+      challenge = BigInt.tryParse(challenge, radix: 16).toString();
+    }
 
     String signatureString =
         await _identityWallet.sign(identifier: identifier!, message: challenge);
