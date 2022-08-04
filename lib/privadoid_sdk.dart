@@ -87,9 +87,13 @@ class PrivadoIdSdk {
     final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
         privateKey: HexUtils.hexToBytes(privateKey));
     final String? identifier = await _identityWallet.getCurrentIdentifier();
-
-    String signatureString =
-        await _identityWallet.sign(identifier: identifier!, message: challenge);
+    String signatureString;
+    try {
+      signatureString = await _identityWallet.sign(
+          identifier: identifier!, message: challenge);
+    } catch (e) {
+      return null;
+    }
 
     // schema
     var uri = Uri.parse(credential.credential!.credentialSchema!.id!);
