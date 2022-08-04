@@ -18,10 +18,10 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^0.13.4
-  ffi: ^1.1.2
+  ffi: ^2.0.1
   hex: ^0.2.0
   web3dart: ^2.3.3
-  ffigen: ^5.0.0
+  ffigen: ^6.0.1
   json_annotation: ^4.6.0
   equatable: ^2.0.3
   crypto: ^3.0.1
