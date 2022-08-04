@@ -87,11 +87,11 @@ class PrivadoIdSdk {
     final PrivadoIdWallet wallet = await PrivadoIdWallet.createPrivadoIdWallet(
         privateKey: HexUtils.hexToBytes(privateKey));
     final String? identifier = await _identityWallet.getCurrentIdentifier();
-
-    String signatureString =
-        await _identityWallet.sign(identifier: identifier!, message: challenge);
-
-    if (signatureString.isEmpty) {
+    String signatureString;
+    try {
+      signatureString = await _identityWallet.sign(
+          identifier: identifier!, message: challenge);
+    } catch (e) {
       return null;
     }
 

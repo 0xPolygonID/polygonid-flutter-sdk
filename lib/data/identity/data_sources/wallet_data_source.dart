@@ -33,7 +33,7 @@ class WalletLibWrapper {
       final signature = bjjKey.sign(messHash);
       return Future.value(signature);
     } else {
-      return Future.value("");
+      throw const FormatException("message string couldnt be parsed as BigInt");
     }
   }
 }
