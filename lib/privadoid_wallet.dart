@@ -65,7 +65,7 @@ class PrivadoIdWallet {
     return privadoIdWallet;
   }
 
-  // Hash message with poseidon
+  /// Hash message with poseidon
   /// @param [String] messageStr - message to hash
   /// @returns [String] - hash poseidon
   String hashMessage(
