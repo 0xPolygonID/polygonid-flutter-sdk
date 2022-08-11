@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polygonid_flutter_sdk/data/identity/dtos/identity_dto.dart';
 import 'package:polygonid_flutter_sdk/data/identity/mappers/identity_dto_mapper.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/entities/identity.dart';
+import 'package:polygonid_flutter_sdk/domain/identity/entities/identity_entity.dart';
 
 // Data
 const privateKey = "thePrivateKey";
@@ -9,7 +9,7 @@ const identifier = "theIdentifier";
 const authClaim = "theAuthClaim";
 const mockDTO = IdentityDTO(
     privateKey: privateKey, identifier: identifier, authClaim: authClaim);
-const mockEntity = Identity(
+const mockEntity = IdentityEntity(
     privateKey: privateKey, identifier: identifier, authClaim: authClaim);
 
 // Tested instance
