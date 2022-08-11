@@ -13,8 +13,8 @@ import 'package:polygonid_flutter_sdk/data/identity/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/data/identity/mappers/identity_dto_mapper.dart';
 import 'package:polygonid_flutter_sdk/data/identity/mappers/private_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/data/identity/repositories/identity_repository_impl.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/entities/circuit_data.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/entities/identity.dart';
+import 'package:polygonid_flutter_sdk/domain/identity/entities/circuit_data_entity.dart';
+import 'package:polygonid_flutter_sdk/domain/identity/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/domain/identity/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/domain/identity/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/privadoid_wallet.dart';
@@ -41,14 +41,14 @@ const identifier = "theIdentifier";
 const authClaim = "theAuthClaim";
 const mockDTO = IdentityDTO(
     privateKey: privateKey, identifier: identifier, authClaim: authClaim);
-const mockEntity = Identity(
+const mockEntity = IdentityEntity(
     privateKey: privateKey, identifier: identifier, authClaim: authClaim);
 const message = "theMessage";
 const signature = "theSignature";
 const circuitId = "1";
 final datFile = Uint8List(32);
 final zKeyFile = Uint8List(32);
-final circuitData = CircuitData(circuitId, datFile, zKeyFile);
+final circuitData = CircuitDataEntity(circuitId, datFile, zKeyFile);
 const token = "token";
 var exception = Exception();
 
@@ -109,7 +109,8 @@ void main() {
               Future.error(UnknownIdentityException(identifier)));
       when(hexMapper.mapFrom(any))
           .thenAnswer((realInvocation) => walletPrivateKey);
-      when(privateKeyMapper.mapFrom(any)).thenAnswer((realInvocation) => bbjjKey);
+      when(privateKeyMapper.mapFrom(any))
+          .thenAnswer((realInvocation) => bbjjKey);
       when(identityDTOMapper.mapFrom(any))
           .thenAnswer((realInvocation) => mockEntity);
     });

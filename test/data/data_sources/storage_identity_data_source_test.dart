@@ -62,7 +62,7 @@ void main() {
       // When
       await dataSource
           .getIdentity(identifier: identifier)
-          .then((_) => null)
+          .then((_) => expect(true, false)) // Be sure we don't succeed
           .catchError((error) {
         expect(error, isA<UnknownIdentityException>());
         expect(error.identifier, identifier);

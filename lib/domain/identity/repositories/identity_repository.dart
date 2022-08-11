@@ -1,15 +1,15 @@
-import 'package:polygonid_flutter_sdk/domain/identity/entities/circuit_data.dart';
+import 'package:polygonid_flutter_sdk/domain/identity/entities/circuit_data_entity.dart';
 
-import '../entities/identity.dart';
+import '../entities/identity_entity.dart';
 
 abstract class IdentityRepository {
   Future<String> createIdentity({String? privateKey});
 
-  Future<Identity> getIdentityFromKey({String? privateKey});
+  Future<IdentityEntity> getIdentityFromKey({String? privateKey});
 
   Future<String> getIdentifier({String? privateKey});
 
-  Future<Identity> getIdentity({required String identifier});
+  Future<IdentityEntity> getIdentity({required String identifier});
 
   Future<String> signMessage(
       {required String identifier, required String message});
@@ -21,6 +21,6 @@ abstract class IdentityRepository {
 
   Future<String> getAuthToken(
       {required String identifier,
-      required CircuitData circuitData,
+      required CircuitDataEntity circuitData,
       required String message});
 }

@@ -2,8 +2,8 @@ import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/data/identity/data_sources/jwz_data_source.dart';
 import 'package:polygonid_flutter_sdk/data/identity/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/data/identity/dtos/identity_dto.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/entities/circuit_data.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/entities/identity.dart';
+import 'package:polygonid_flutter_sdk/domain/identity/entities/circuit_data_entity.dart';
+import 'package:polygonid_flutter_sdk/domain/identity/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/domain/identity/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/privadoid_wallet.dart';
 
@@ -71,11 +71,11 @@ class IdentityRepositoryImpl extends IdentityRepository {
     }
   }
 
-  /// Get an [Identity] from a String
+  /// Get an [IdentityEntity] from a String
   ///
   /// Used for retro compatibility with demo
   @override
-  Future<Identity> getIdentityFromKey({String? privateKey}) {
+  Future<IdentityEntity> getIdentityFromKey({String? privateKey}) {
     return Future.value(_privateKeyMapper.mapFrom(privateKey)).then((key) =>
         _walletDataSource
             .createWallet(privateKey: key)
@@ -84,18 +84,18 @@ class IdentityRepositoryImpl extends IdentityRepository {
                       pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]),
                   _libIdentityDataSource.getAuthClaim(
                       pubX: wallet.publicKey[0], pubY: wallet.publicKey[1])
-                ]).then((values) => Identity(
+                ]).then((values) => IdentityEntity(
                     privateKey: _hexMapper.mapFrom(wallet.privateKey),
                     identifier: values[0],
                     authClaim: values[1])))
             .catchError((error) => throw IdentityException(error)));
   }
 
-  /// Get an [Identity] from an identifier
-  /// The [Identity] is the one previously stored and associated to the identifier
+  /// Get an [IdentityEntity] from an identifier
+  /// The [IdentityEntity] is the one previously stored and associated to the identifier
   /// Throws an [UnknownIdentityException] if not found.
   @override
-  Future<Identity> getIdentity({required String identifier}) {
+  Future<IdentityEntity> getIdentity({required String identifier}) {
     return _storageIdentityDataSource
         .getIdentity(identifier: identifier)
         .then((dto) => _identityDTOMapper.mapFrom(dto))
@@ -133,7 +133,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   @override
   Future<String> getAuthToken(
       {required String identifier,
-      required CircuitData circuitData,
+      required CircuitDataEntity circuitData,
       required String message}) {
     return _storageIdentityDataSource.getIdentity(identifier: identifier).then(
         (dto) => _jwzDataSource.getAuthToken(

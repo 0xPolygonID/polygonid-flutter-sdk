@@ -1,4 +1,4 @@
-import 'package:polygonid_flutter_sdk/domain/identity/entities/circuit_data.dart';
+import 'package:polygonid_flutter_sdk/domain/identity/entities/circuit_data_entity.dart';
 
 import '../../common/domain_logger.dart';
 import '../../common/use_case.dart';
@@ -6,7 +6,7 @@ import '../repositories/identity_repository.dart';
 
 class GetAuthTokenParam {
   final String identifier;
-  final CircuitData circuitData;
+  final CircuitDataEntity circuitData;
   final String message;
 
   GetAuthTokenParam(this.identifier, this.circuitData, this.message);
