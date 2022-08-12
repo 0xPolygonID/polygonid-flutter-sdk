@@ -323,6 +323,21 @@ pub extern fn hash_poseidon(claims_tree: *const c_char, revocation_tree: *const 
 }
 
 #[no_mangle]
+pub extern fn hash2_poseidon(hash0: *const c_char, hash1: *const c_char, roots_tree_root: *const c_char) -> *mut c_char {
+    let hash0_str = unsafe { CStr::from_ptr(hash0) }.to_str().unwrap();
+    let b0: Fr = Fr::from_str(hash0_str).unwrap();
+
+    let hash1_str = unsafe { CStr::from_ptr(hash1) }.to_str().unwrap();
+    let b1: Fr = Fr::from_str(hash1_str).unwrap();
+
+    let hm_input = vec![b0.clone(), b1.clone()];
+    //let hm_input = vec![x.clone(), y.clone(), z.clone()];
+    let poseidon = Poseidon::new();
+    let hm = poseidon.hash(hm_input).unwrap();
+    return CString::new(to_hex(&hm).as_str()).unwrap().into_raw();
+}
+
+#[no_mangle]
 pub extern fn sign_poseidon(private_key: *const c_char, msg: *const c_char) -> *mut c_char {
     let private_key_str = unsafe { CStr::from_ptr(private_key) }.to_str().unwrap();
     //let pk_bigint = BigInt::from_str(private_key_str).unwrap();
