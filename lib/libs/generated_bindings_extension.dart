@@ -174,11 +174,11 @@ extension IDENRevocationStatusJsonParsing on IDENRevocationStatus {
       };
 }
 
-extension IDENBCircuitsBJJSignatureProofJsonParsing
-    on IDENBCircuitsBJJSignatureProof {
-  static IDENBCircuitsBJJSignatureProof fromJson(Map<String, dynamic> json) {
-    ffi.Pointer<IDENBCircuitsBJJSignatureProof> bjjSignatureProof =
-        malloc<IDENBCircuitsBJJSignatureProof>();
+extension IDENCircuitsBJJSignatureProofJsonParsing
+    on IDENCircuitsBJJSignatureProof {
+  static IDENCircuitsBJJSignatureProof fromJson(Map<String, dynamic> json) {
+    ffi.Pointer<IDENCircuitsBJJSignatureProof> bjjSignatureProof =
+        malloc<IDENCircuitsBJJSignatureProof>();
     bjjSignatureProof.ref.issuer_id =
         IDENIdJsonParsing.fromJson(json['issuer_id']);
     bjjSignatureProof.ref.signature =
@@ -220,7 +220,7 @@ extension IDENCircuitsClaimJsonParsing on IDENCircuitClaim {
     claim.ref.non_rev_proof =
         IDENRevocationStatusJsonParsing.fromJson(json['non_rev_proof']);
     claim.ref.signature_proof =
-        IDENBCircuitsBJJSignatureProofJsonParsing.fromJson(
+        IDENCircuitsBJJSignatureProofJsonParsing.fromJson(
             json['signature_proof']);
     return claim.ref;
   }

@@ -3664,6 +3664,36 @@ class NativeLibrary {
       int Function(ffi.Pointer<ffi.Pointer<IDENMerkleTree>>, int,
           ffi.Pointer<ffi.Pointer<IDENStatus>>)>();
 
+  int IDENNewMerkleTreeWithStorage(
+    ffi.Pointer<ffi.Pointer<IDENMerkleTree>> merkleTree,
+    int maxLevels,
+    ffi.Pointer<IDENMtStorage> storage,
+    ffi.Pointer<ffi.Pointer<IDENStatus>> status,
+  ) {
+    return _IDENNewMerkleTreeWithStorage(
+      merkleTree,
+      maxLevels,
+      storage,
+      status,
+    );
+  }
+
+  late final _IDENNewMerkleTreeWithStoragePtr = _lookup<
+          ffi.NativeFunction<
+              GoUint8 Function(
+                  ffi.Pointer<ffi.Pointer<IDENMerkleTree>>,
+                  ffi.Int,
+                  ffi.Pointer<IDENMtStorage>,
+                  ffi.Pointer<ffi.Pointer<IDENStatus>>)>>(
+      'IDENNewMerkleTreeWithStorage');
+  late final _IDENNewMerkleTreeWithStorage =
+      _IDENNewMerkleTreeWithStoragePtr.asFunction<
+          int Function(
+              ffi.Pointer<ffi.Pointer<IDENMerkleTree>>,
+              int,
+              ffi.Pointer<IDENMtStorage>,
+              ffi.Pointer<ffi.Pointer<IDENStatus>>)>();
+
   void IDENFreeMerkleTree(
     ffi.Pointer<IDENMerkleTree> mt,
   ) {
@@ -3721,6 +3751,30 @@ class NativeLibrary {
           ffi.Pointer<IDENMerkleTree>,
           ffi.Pointer<IDENMerkleTreeEntry>,
           ffi.Pointer<ffi.Pointer<IDENStatus>>)>();
+
+  int IDENMerkleTreeAddKeyValue(
+    ffi.Pointer<IDENMerkleTree> merkleTree,
+    IDENMerkleTreeHash key,
+    IDENMerkleTreeHash value,
+    ffi.Pointer<ffi.Pointer<IDENStatus>> status,
+  ) {
+    return _IDENMerkleTreeAddKeyValue(
+      merkleTree,
+      key,
+      value,
+      status,
+    );
+  }
+
+  late final _IDENMerkleTreeAddKeyValuePtr = _lookup<
+          ffi.NativeFunction<
+              GoUint8 Function(ffi.Pointer<IDENMerkleTree>, IDENMerkleTreeHash,
+                  IDENMerkleTreeHash, ffi.Pointer<ffi.Pointer<IDENStatus>>)>>(
+      'IDENMerkleTreeAddKeyValue');
+  late final _IDENMerkleTreeAddKeyValue =
+      _IDENMerkleTreeAddKeyValuePtr.asFunction<
+          int Function(ffi.Pointer<IDENMerkleTree>, IDENMerkleTreeHash,
+              IDENMerkleTreeHash, ffi.Pointer<ffi.Pointer<IDENStatus>>)>();
 
   int IDENMerkleTreeRoot(
     ffi.Pointer<IDENMerkleTreeHash> hash,
@@ -3865,6 +3919,28 @@ class NativeLibrary {
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Pointer<IDENStatus>>)>>('IDENBigIntFromString');
   late final _IDENBigIntFromString = _IDENBigIntFromStringPtr.asFunction<
+      int Function(ffi.Pointer<ffi.Pointer<IDENBigInt>>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<IDENStatus>>)>();
+
+  int IDENBigIntFromHex(
+    ffi.Pointer<ffi.Pointer<IDENBigInt>> bigInt,
+    ffi.Pointer<ffi.Char> bigIntHex,
+    ffi.Pointer<ffi.Pointer<IDENStatus>> status,
+  ) {
+    return _IDENBigIntFromHex(
+      bigInt,
+      bigIntHex,
+      status,
+    );
+  }
+
+  late final _IDENBigIntFromHexPtr = _lookup<
+      ffi.NativeFunction<
+          GoUint8 Function(
+              ffi.Pointer<ffi.Pointer<IDENBigInt>>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<IDENStatus>>)>>('IDENBigIntFromHex');
+  late final _IDENBigIntFromHex = _IDENBigIntFromHexPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<IDENBigInt>>, ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Pointer<IDENStatus>>)>();
 
@@ -4265,6 +4341,28 @@ class NativeLibrary {
       int Function(ffi.Pointer<IDENMerkleTreeHash>, ffi.Pointer<IDENBigInt>,
           ffi.Pointer<ffi.Pointer<IDENStatus>>)>();
 
+  int IDENHashFromHex(
+    ffi.Pointer<IDENMerkleTreeHash> dst,
+    ffi.Pointer<cchar_t> hexStr,
+    ffi.Pointer<ffi.Pointer<IDENStatus>> status,
+  ) {
+    return _IDENHashFromHex(
+      dst,
+      hexStr,
+      status,
+    );
+  }
+
+  late final _IDENHashFromHexPtr = _lookup<
+      ffi.NativeFunction<
+          GoUint8 Function(
+              ffi.Pointer<IDENMerkleTreeHash>,
+              ffi.Pointer<cchar_t>,
+              ffi.Pointer<ffi.Pointer<IDENStatus>>)>>('IDENHashFromHex');
+  late final _IDENHashFromHex = _IDENHashFromHexPtr.asFunction<
+      int Function(ffi.Pointer<IDENMerkleTreeHash>, ffi.Pointer<cchar_t>,
+          ffi.Pointer<ffi.Pointer<IDENStatus>>)>();
+
   int IDENJsonLDParseClaim(
     ffi.Pointer<ffi.Pointer<IDENClaim>> claim,
     ffi.Pointer<ffi.Char> credential,
@@ -4344,59 +4442,73 @@ class NativeLibrary {
       int Function(ffi.Pointer<IDENId>, ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Pointer<IDENStatus>>)>();
 
-  /// @return error code:
-  /// WITNESSCALC_OK - in case of success.
-  /// WITNESSCALC_ERROR - in case of an error.
-  ///
-  /// On success wtns_buffer is filled with witness data and
-  /// wtns_size contains the number bytes copied to wtns_buffer.
-  ///
-  /// If wtns_buffer is too small then the function returns WITNESSCALC_ERROR_SHORT_BUFFER
-  /// and the minimum size for wtns_buffer in wtns_size.
-  int witnesscalc_credentialAtomicQueryMTP(
-    ffi.Pointer<ffi.Char> circuit_buffer,
-    int circuit_size,
-    ffi.Pointer<ffi.Char> json_buffer,
-    int json_size,
-    ffi.Pointer<ffi.Char> wtns_buffer,
-    ffi.Pointer<ffi.UnsignedLong> wtns_size,
-    ffi.Pointer<ffi.Char> error_msg,
-    int error_msg_maxsize,
+  int IDENCircuitsBJJSignatureProofFromJson(
+    ffi.Pointer<ffi.Pointer<IDENCircuitsBJJSignatureProof>> proof,
+    ffi.Pointer<ffi.Char> jsonStr,
+    ffi.Pointer<ffi.Pointer<IDENStatus>> status,
   ) {
-    return _witnesscalc_credentialAtomicQueryMTP(
-      circuit_buffer,
-      circuit_size,
-      json_buffer,
-      json_size,
-      wtns_buffer,
-      wtns_size,
-      error_msg,
-      error_msg_maxsize,
+    return _IDENCircuitsBJJSignatureProofFromJson(
+      proof,
+      jsonStr,
+      status,
     );
   }
 
-  late final _witnesscalc_credentialAtomicQueryMTPPtr = _lookup<
+  late final _IDENCircuitsBJJSignatureProofFromJsonPtr = _lookup<
+          ffi.NativeFunction<
+              GoUint8 Function(
+                  ffi.Pointer<ffi.Pointer<IDENCircuitsBJJSignatureProof>>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Pointer<IDENStatus>>)>>(
+      'IDENCircuitsBJJSignatureProofFromJson');
+  late final _IDENCircuitsBJJSignatureProofFromJson =
+      _IDENCircuitsBJJSignatureProofFromJsonPtr.asFunction<
+          int Function(ffi.Pointer<ffi.Pointer<IDENCircuitsBJJSignatureProof>>,
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<IDENStatus>>)>();
+
+  void IDENFreeCircuitsBJJSignatureProof(
+    ffi.Pointer<IDENCircuitsBJJSignatureProof> p,
+  ) {
+    return _IDENFreeCircuitsBJJSignatureProof(
+      p,
+    );
+  }
+
+  late final _IDENFreeCircuitsBJJSignatureProofPtr = _lookup<
+          ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<IDENCircuitsBJJSignatureProof>)>>(
+      'IDENFreeCircuitsBJJSignatureProof');
+  late final _IDENFreeCircuitsBJJSignatureProof =
+      _IDENFreeCircuitsBJJSignatureProofPtr.asFunction<
+          void Function(ffi.Pointer<IDENCircuitsBJJSignatureProof>)>();
+
+  int IDENHashInts(
+    ffi.Pointer<ffi.Pointer<IDENBigInt>> hash,
+    int n,
+    ffi.Pointer<ffi.Pointer<IDENBigInt>> ints,
+    ffi.Pointer<ffi.Pointer<IDENStatus>> status,
+  ) {
+    return _IDENHashInts(
+      hash,
+      n,
+      ints,
+      status,
+    );
+  }
+
+  late final _IDENHashIntsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int Function(
-              ffi.Pointer<ffi.Char>,
-              ffi.UnsignedLong,
-              ffi.Pointer<ffi.Char>,
-              ffi.UnsignedLong,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.UnsignedLong>,
-              ffi.Pointer<ffi.Char>,
-              ffi.UnsignedLong)>>('witnesscalc_credentialAtomicQueryMTP');
-  late final _witnesscalc_credentialAtomicQueryMTP =
-      _witnesscalc_credentialAtomicQueryMTPPtr.asFunction<
-          int Function(
-              ffi.Pointer<ffi.Char>,
-              int,
-              ffi.Pointer<ffi.Char>,
-              int,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.UnsignedLong>,
-              ffi.Pointer<ffi.Char>,
-              int)>();
+          GoUint8 Function(
+              ffi.Pointer<ffi.Pointer<IDENBigInt>>,
+              ffi.Size,
+              ffi.Pointer<ffi.Pointer<IDENBigInt>>,
+              ffi.Pointer<ffi.Pointer<IDENStatus>>)>>('IDENHashInts');
+  late final _IDENHashInts = _IDENHashIntsPtr.asFunction<
+      int Function(
+          ffi.Pointer<ffi.Pointer<IDENBigInt>>,
+          int,
+          ffi.Pointer<ffi.Pointer<IDENBigInt>>,
+          ffi.Pointer<ffi.Pointer<IDENStatus>>)>();
 }
 
 class __mbstate_t extends ffi.Union {
@@ -4512,151 +4624,316 @@ abstract class idtype_t {
   static const int P_PGID = 2;
 }
 
-class __darwin_arm_exception_state extends ffi.Struct {
-  @__uint32_t()
-  external int __exception;
+class __darwin_i386_thread_state extends ffi.Struct {
+  @ffi.UnsignedInt()
+  external int __eax;
 
-  @__uint32_t()
-  external int __fsr;
+  @ffi.UnsignedInt()
+  external int __ebx;
 
-  @__uint32_t()
-  external int __far;
+  @ffi.UnsignedInt()
+  external int __ecx;
+
+  @ffi.UnsignedInt()
+  external int __edx;
+
+  @ffi.UnsignedInt()
+  external int __edi;
+
+  @ffi.UnsignedInt()
+  external int __esi;
+
+  @ffi.UnsignedInt()
+  external int __ebp;
+
+  @ffi.UnsignedInt()
+  external int __esp;
+
+  @ffi.UnsignedInt()
+  external int __ss;
+
+  @ffi.UnsignedInt()
+  external int __eflags;
+
+  @ffi.UnsignedInt()
+  external int __eip;
+
+  @ffi.UnsignedInt()
+  external int __cs;
+
+  @ffi.UnsignedInt()
+  external int __ds;
+
+  @ffi.UnsignedInt()
+  external int __es;
+
+  @ffi.UnsignedInt()
+  external int __fs;
+
+  @ffi.UnsignedInt()
+  external int __gs;
 }
 
+class __darwin_fp_control extends ffi.Opaque {}
+
+class __darwin_fp_status extends ffi.Opaque {}
+
+class __darwin_mmst_reg extends ffi.Struct {
+  @ffi.Array.multi([10])
+  external ffi.Array<ffi.Char> __mmst_reg;
+
+  @ffi.Array.multi([6])
+  external ffi.Array<ffi.Char> __mmst_rsrv;
+}
+
+class __darwin_xmm_reg extends ffi.Struct {
+  @ffi.Array.multi([16])
+  external ffi.Array<ffi.Char> __xmm_reg;
+}
+
+class __darwin_ymm_reg extends ffi.Struct {
+  @ffi.Array.multi([32])
+  external ffi.Array<ffi.Char> __ymm_reg;
+}
+
+class __darwin_zmm_reg extends ffi.Struct {
+  @ffi.Array.multi([64])
+  external ffi.Array<ffi.Char> __zmm_reg;
+}
+
+class __darwin_opmask_reg extends ffi.Struct {
+  @ffi.Array.multi([8])
+  external ffi.Array<ffi.Char> __opmask_reg;
+}
+
+class __darwin_i386_float_state extends ffi.Opaque {}
+
+class __darwin_i386_avx_state extends ffi.Opaque {}
+
+class __darwin_i386_avx512_state extends ffi.Opaque {}
+
+class __darwin_i386_exception_state extends ffi.Struct {
+  @__uint16_t()
+  external int __trapno;
+
+  @__uint16_t()
+  external int __cpu;
+
+  @__uint32_t()
+  external int __err;
+
+  @__uint32_t()
+  external int __faultvaddr;
+}
+
+typedef __uint16_t = ffi.UnsignedShort;
 typedef __uint32_t = ffi.UnsignedInt;
 
-class __darwin_arm_exception_state64 extends ffi.Struct {
-  @__uint64_t()
-  external int __far;
+class __darwin_x86_debug_state32 extends ffi.Struct {
+  @ffi.UnsignedInt()
+  external int __dr0;
 
-  @__uint32_t()
-  external int __esr;
+  @ffi.UnsignedInt()
+  external int __dr1;
 
-  @__uint32_t()
-  external int __exception;
+  @ffi.UnsignedInt()
+  external int __dr2;
+
+  @ffi.UnsignedInt()
+  external int __dr3;
+
+  @ffi.UnsignedInt()
+  external int __dr4;
+
+  @ffi.UnsignedInt()
+  external int __dr5;
+
+  @ffi.UnsignedInt()
+  external int __dr6;
+
+  @ffi.UnsignedInt()
+  external int __dr7;
 }
 
-typedef __uint64_t = ffi.UnsignedLongLong;
+class __x86_instruction_state extends ffi.Struct {
+  @ffi.Int()
+  external int __insn_stream_valid_bytes;
 
-class __darwin_arm_thread_state extends ffi.Struct {
-  @ffi.Array.multi([13])
-  external ffi.Array<__uint32_t> __r;
+  @ffi.Int()
+  external int __insn_offset;
 
-  @__uint32_t()
-  external int __sp;
+  @ffi.Int()
+  external int __out_of_synch;
 
-  @__uint32_t()
-  external int __lr;
+  @ffi.Array.multi([2380])
+  external ffi.Array<__uint8_t> __insn_bytes;
 
-  @__uint32_t()
-  external int __pc;
-
-  @__uint32_t()
-  external int __cpsr;
-}
-
-class __darwin_arm_thread_state64 extends ffi.Struct {
-  @ffi.Array.multi([29])
-  external ffi.Array<__uint64_t> __x;
-
-  @__uint64_t()
-  external int __fp;
-
-  @__uint64_t()
-  external int __lr;
-
-  @__uint64_t()
-  external int __sp;
-
-  @__uint64_t()
-  external int __pc;
-
-  @__uint32_t()
-  external int __cpsr;
-
-  @__uint32_t()
-  external int __pad;
-}
-
-class __darwin_arm_vfp_state extends ffi.Struct {
   @ffi.Array.multi([64])
-  external ffi.Array<__uint32_t> __r;
-
-  @__uint32_t()
-  external int __fpscr;
+  external ffi.Array<__uint8_t> __insn_cacheline;
 }
 
-class __darwin_arm_neon_state64 extends ffi.Opaque {}
+typedef __uint8_t = ffi.UnsignedChar;
 
-class __darwin_arm_neon_state extends ffi.Opaque {}
+class __last_branch_record extends ffi.Opaque {}
 
-class __arm_pagein_state extends ffi.Struct {
+class __last_branch_state extends ffi.Opaque {}
+
+class __x86_pagein_state extends ffi.Struct {
   @ffi.Int()
   external int __pagein_error;
 }
 
-class __arm_legacy_debug_state extends ffi.Struct {
-  @ffi.Array.multi([16])
-  external ffi.Array<__uint32_t> __bvr;
-
-  @ffi.Array.multi([16])
-  external ffi.Array<__uint32_t> __bcr;
-
-  @ffi.Array.multi([16])
-  external ffi.Array<__uint32_t> __wvr;
-
-  @ffi.Array.multi([16])
-  external ffi.Array<__uint32_t> __wcr;
-}
-
-class __darwin_arm_debug_state32 extends ffi.Struct {
-  @ffi.Array.multi([16])
-  external ffi.Array<__uint32_t> __bvr;
-
-  @ffi.Array.multi([16])
-  external ffi.Array<__uint32_t> __bcr;
-
-  @ffi.Array.multi([16])
-  external ffi.Array<__uint32_t> __wvr;
-
-  @ffi.Array.multi([16])
-  external ffi.Array<__uint32_t> __wcr;
+class __darwin_x86_thread_state64 extends ffi.Struct {
+  @__uint64_t()
+  external int __rax;
 
   @__uint64_t()
-  external int __mdscr_el1;
-}
-
-class __darwin_arm_debug_state64 extends ffi.Struct {
-  @ffi.Array.multi([16])
-  external ffi.Array<__uint64_t> __bvr;
-
-  @ffi.Array.multi([16])
-  external ffi.Array<__uint64_t> __bcr;
-
-  @ffi.Array.multi([16])
-  external ffi.Array<__uint64_t> __wvr;
-
-  @ffi.Array.multi([16])
-  external ffi.Array<__uint64_t> __wcr;
+  external int __rbx;
 
   @__uint64_t()
-  external int __mdscr_el1;
+  external int __rcx;
+
+  @__uint64_t()
+  external int __rdx;
+
+  @__uint64_t()
+  external int __rdi;
+
+  @__uint64_t()
+  external int __rsi;
+
+  @__uint64_t()
+  external int __rbp;
+
+  @__uint64_t()
+  external int __rsp;
+
+  @__uint64_t()
+  external int __r8;
+
+  @__uint64_t()
+  external int __r9;
+
+  @__uint64_t()
+  external int __r10;
+
+  @__uint64_t()
+  external int __r11;
+
+  @__uint64_t()
+  external int __r12;
+
+  @__uint64_t()
+  external int __r13;
+
+  @__uint64_t()
+  external int __r14;
+
+  @__uint64_t()
+  external int __r15;
+
+  @__uint64_t()
+  external int __rip;
+
+  @__uint64_t()
+  external int __rflags;
+
+  @__uint64_t()
+  external int __cs;
+
+  @__uint64_t()
+  external int __fs;
+
+  @__uint64_t()
+  external int __gs;
 }
 
-class __darwin_arm_cpmu_state64 extends ffi.Struct {
+typedef __uint64_t = ffi.UnsignedLongLong;
+
+class __darwin_x86_thread_full_state64 extends ffi.Struct {
+  external __darwin_x86_thread_state64 __ss64;
+
+  @__uint64_t()
+  external int __ds;
+
+  @__uint64_t()
+  external int __es;
+
+  @__uint64_t()
+  external int __ss;
+
+  @__uint64_t()
+  external int __gsbase;
+}
+
+class __darwin_x86_float_state64 extends ffi.Opaque {}
+
+class __darwin_x86_avx_state64 extends ffi.Opaque {}
+
+class __darwin_x86_avx512_state64 extends ffi.Opaque {}
+
+class __darwin_x86_exception_state64 extends ffi.Struct {
+  @__uint16_t()
+  external int __trapno;
+
+  @__uint16_t()
+  external int __cpu;
+
+  @__uint32_t()
+  external int __err;
+
+  @__uint64_t()
+  external int __faultvaddr;
+}
+
+class __darwin_x86_debug_state64 extends ffi.Struct {
+  @__uint64_t()
+  external int __dr0;
+
+  @__uint64_t()
+  external int __dr1;
+
+  @__uint64_t()
+  external int __dr2;
+
+  @__uint64_t()
+  external int __dr3;
+
+  @__uint64_t()
+  external int __dr4;
+
+  @__uint64_t()
+  external int __dr5;
+
+  @__uint64_t()
+  external int __dr6;
+
+  @__uint64_t()
+  external int __dr7;
+}
+
+class __darwin_x86_cpmu_state64 extends ffi.Struct {
   @ffi.Array.multi([16])
   external ffi.Array<__uint64_t> __ctrs;
 }
 
-class __darwin_mcontext32 extends ffi.Struct {
-  external __darwin_arm_exception_state __es;
+class __darwin_mcontext32 extends ffi.Opaque {}
 
-  external __darwin_arm_thread_state __ss;
+class __darwin_mcontext_avx32 extends ffi.Opaque {}
 
-  external __darwin_arm_vfp_state __fs;
-}
+class __darwin_mcontext_avx512_32 extends ffi.Opaque {}
 
 class __darwin_mcontext64 extends ffi.Opaque {}
+
+class __darwin_mcontext64_full extends ffi.Opaque {}
+
+class __darwin_mcontext_avx64 extends ffi.Opaque {}
+
+class __darwin_mcontext_avx64_full extends ffi.Opaque {}
+
+class __darwin_mcontext_avx512_64 extends ffi.Opaque {}
+
+class __darwin_mcontext_avx512_64_full extends ffi.Opaque {}
 
 class __darwin_sigaltstack extends ffi.Struct {
   external ffi.Pointer<ffi.Void> ss_sp;
@@ -5341,24 +5618,6 @@ class proc_rlimit_control_wakeupmon extends ffi.Struct {
 typedef id_t = __darwin_id_t;
 typedef __darwin_id_t = __uint32_t;
 
-@ffi.Packed(1)
-class _OSUnalignedU16 extends ffi.Struct {
-  @ffi.Uint16()
-  external int __val;
-}
-
-@ffi.Packed(1)
-class _OSUnalignedU32 extends ffi.Struct {
-  @ffi.Uint32()
-  external int __val;
-}
-
-@ffi.Packed(1)
-class _OSUnalignedU64 extends ffi.Struct {
-  @ffi.Uint64()
-  external int __val;
-}
-
 class wait extends ffi.Opaque {}
 
 class div_t extends ffi.Struct {
@@ -5389,7 +5648,6 @@ typedef dev_t = __darwin_dev_t;
 typedef __darwin_dev_t = __int32_t;
 typedef mode_t = __darwin_mode_t;
 typedef __darwin_mode_t = __uint16_t;
-typedef __uint16_t = ffi.UnsignedShort;
 
 class timespec extends ffi.Struct {
   @__darwin_time_t()
@@ -5499,8 +5757,8 @@ class _IDENStatus extends ffi.Struct {
 }
 
 class _IDENProof extends ffi.Struct {
-  @ffi.Uint8()
-  external int existence;
+  @ffi.Bool()
+  external bool existence;
 
   external ffi.Pointer<ffi.Pointer<ffi.UnsignedChar>> siblings;
 
@@ -5553,7 +5811,7 @@ class _IDENRevocationStatus extends ffi.Struct {
 typedef IDENTreeState = _IDENTreeState;
 typedef IDENProof = _IDENProof;
 
-class _IDENBCircuitsBJJSignatureProof extends ffi.Struct {
+class _IDENCircuitsBJJSignatureProof extends ffi.Struct {
   external IDENId issuer_id;
 
   external IDENBJJSignature signature;
@@ -5583,10 +5841,10 @@ class _IDENCircuitsClaim extends ffi.Struct {
 
   external IDENRevocationStatus non_rev_proof;
 
-  external IDENBCircuitsBJJSignatureProof signature_proof;
+  external IDENCircuitsBJJSignatureProof signature_proof;
 }
 
-typedef IDENBCircuitsBJJSignatureProof = _IDENBCircuitsBJJSignatureProof;
+typedef IDENCircuitsBJJSignatureProof = _IDENCircuitsBJJSignatureProof;
 
 class _IDENQuery extends ffi.Struct {
   @ffi.Int()
@@ -5650,6 +5908,41 @@ class _IDENAuthInputs extends ffi.Struct {
   external ffi.Pointer<IDENBigInt> challenge;
 }
 
+class _IDENByteArray extends ffi.Struct {
+  external ffi.Pointer<ffi.UnsignedChar> data;
+
+  @ffi.Size()
+  external int data_len;
+}
+
+class _IDENMtStorage extends ffi.Struct {
+  external ffi.Pointer<ffi.Void> ctx;
+
+  external IDENMtStorageFnGetNode get_node;
+
+  external IDENMtStorageFnPutNode put_node;
+
+  external IDENMtStorageFnGetRoot get_root;
+
+  external IDENMtStorageFnSetRoot set_root;
+}
+
+typedef IDENMtStorageFnGetNode = ffi.Pointer<
+    ffi.NativeFunction<
+        ffi.Bool Function(
+            ffi.Pointer<ffi.Void>, IDENByteArray, ffi.Pointer<IDENByteArray>)>>;
+typedef IDENByteArray = _IDENByteArray;
+typedef IDENMtStorageFnPutNode = ffi.Pointer<
+    ffi.NativeFunction<
+        ffi.Bool Function(
+            ffi.Pointer<ffi.Void>, IDENByteArray, IDENByteArray)>>;
+typedef IDENMtStorageFnGetRoot = ffi.Pointer<
+    ffi.NativeFunction<
+        ffi.Bool Function(ffi.Pointer<ffi.Void>, ffi.Pointer<IDENByteArray>)>>;
+typedef IDENMtStorageFnSetRoot = ffi.Pointer<
+    ffi.NativeFunction<
+        ffi.Bool Function(ffi.Pointer<ffi.Void>, IDENByteArray)>>;
+
 class GoInterface extends ffi.Struct {
   external ffi.Pointer<ffi.Void> t;
 
@@ -5672,15 +5965,17 @@ typedef GoUint8 = ffi.UnsignedChar;
 typedef IDENStatus = _IDENStatus;
 typedef IDENMerkleTreeEntry = _IDENMerkleTreeEntry;
 typedef IDENMerkleTree = _IDENMerkleTree;
+typedef IDENMtStorage = _IDENMtStorage;
 typedef IDENAtomicQueryMTPInputs = _IDENAtomicQueryMTPInputs;
 typedef IDENAtomicQuerySigInputs = _IDENAtomicQuerySigInputs;
 typedef IDENAuthInputs = _IDENAuthInputs;
+typedef cchar_t = ffi.Char;
 
-const int __DARWIN_ONLY_64_BIT_INO_T = 1;
+const int __DARWIN_ONLY_64_BIT_INO_T = 0;
 
 const int __DARWIN_ONLY_UNIX_CONFORMANCE = 1;
 
-const int __DARWIN_ONLY_VERS_1050 = 1;
+const int __DARWIN_ONLY_VERS_1050 = 0;
 
 const int __DARWIN_UNIX03 = 1;
 
@@ -5689,6 +5984,10 @@ const int __DARWIN_64_BIT_INO_T = 1;
 const int __DARWIN_VERS_1050 = 1;
 
 const int __DARWIN_NON_CANCELABLE = 0;
+
+const String __DARWIN_SUF_64_BIT_INO_T = '\$INODE64';
+
+const String __DARWIN_SUF_1050 = '\$1050';
 
 const String __DARWIN_SUF_EXTSN = '\$DARWIN_EXTSN';
 
@@ -5703,10 +6002,6 @@ const int __STDC_WANT_LIB_EXT1__ = 1;
 const int __DARWIN_NO_LONG_LONG = 0;
 
 const int _DARWIN_FEATURE_64_BIT_INODE = 1;
-
-const int _DARWIN_FEATURE_ONLY_64_BIT_INODE = 1;
-
-const int _DARWIN_FEATURE_ONLY_VERS_1050 = 1;
 
 const int _DARWIN_FEATURE_ONLY_UNIX_CONFORMANCE = 1;
 
@@ -6166,7 +6461,7 @@ const int __DARWIN_NSIG = 32;
 
 const int NSIG = 32;
 
-const int _ARM_SIGNAL_ = 1;
+const int _I386_SIGNAL_H_ = 1;
 
 const int SIGHUP = 1;
 
@@ -6232,7 +6527,27 @@ const int SIGUSR1 = 30;
 
 const int SIGUSR2 = 31;
 
-const int __DARWIN_OPAQUE_ARM_THREAD_STATE64 = 0;
+const int FP_PREC_24B = 0;
+
+const int FP_PREC_53B = 2;
+
+const int FP_PREC_64B = 3;
+
+const int FP_RND_NEAR = 0;
+
+const int FP_RND_DOWN = 1;
+
+const int FP_RND_UP = 2;
+
+const int FP_CHOP = 3;
+
+const int FP_STATE_BYTES = 512;
+
+const int _X86_INSTRUCTION_STATE_MAX_INSN_BYTES = 2380;
+
+const int _X86_INSTRUCTION_STATE_CACHELINE_SIZE = 64;
+
+const int __LASTBRANCH_MAX = 32;
 
 const int SIGEV_NONE = 0;
 
@@ -6725,9 +7040,3 @@ const int IDEN_ENTRY_DIM = 4;
 const int IDEN_ID_SIZE = 31;
 
 const int IDEN_BJJ_SIGNATURE_SIZE = 64;
-
-const int WITNESSCALC_CREDENTIALATOMICQUERYMTP_OK = 0;
-
-const int WITNESSCALC_CREDENTIALATOMICQUERYMTP_ERROR = 1;
-
-const int WITNESSCALC_CREDENTIALATOMICQUERYMTP_ERROR_SHORT_BUFFER = 2;

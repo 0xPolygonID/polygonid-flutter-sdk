@@ -591,7 +591,7 @@ class Iden3CoreLib {
     request.ref.auth_claim.non_rev_proof.tree_state =
         malloc<IDENTreeState>().ref;
     request.ref.auth_claim.signature_proof =
-        malloc<IDENBCircuitsBJJSignatureProof>().ref;
+        malloc<IDENCircuitsBJJSignatureProof>().ref;
     request.ref.auth_claim.signature_proof.issuer_id = malloc<IDENId>().ref;
     for (var i = 0; i < 64; i++) {
       request.ref.auth_claim.signature_proof.signature.data[i] = 0;
@@ -819,7 +819,7 @@ class Iden3CoreLib {
 
     request.ref.auth_claim.issuer_id = malloc<IDENId>().ref;
     request.ref.auth_claim.signature_proof =
-        malloc<IDENBCircuitsBJJSignatureProof>().ref;
+        malloc<IDENCircuitsBJJSignatureProof>().ref;
     request.ref.auth_claim.signature_proof.issuer_id = malloc<IDENId>().ref;
     for (var i = 0; i < 64; i++) {
       request.ref.auth_claim.signature_proof.signature.data[i] = 0;
@@ -836,7 +836,7 @@ class Iden3CoreLib {
         ffi.nullptr;
 
     request.ref.claim.signature_proof =
-        malloc<IDENBCircuitsBJJSignatureProof>().ref;
+        malloc<IDENCircuitsBJJSignatureProof>().ref;
     request.ref.claim.signature_proof.issuer_id = malloc<IDENId>().ref;
     for (var i = 0; i < 64; i++) {
       request.ref.claim.signature_proof.signature.data[i] = 0;
@@ -855,7 +855,7 @@ class Iden3CoreLib {
     // Claim MTP
     ffi.Pointer<IDENProof> claimMTP = malloc<IDENProof>();
     if (smtProof != null) {
-      claimMTP.ref.existence = smtProof.mtp!.existence! ? 1 : 0;
+      claimMTP.ref.existence = smtProof.mtp!.existence!;
       if (smtProof.mtp!.siblings != null &&
           smtProof.mtp!.siblings!.isNotEmpty) {
         claimMTP.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
@@ -873,7 +873,7 @@ class Iden3CoreLib {
         claimMTP.ref.siblings_num = 0;
       }
     } else {
-      claimMTP.ref.existence = 0;
+      claimMTP.ref.existence = false;
       claimMTP.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>();
       claimMTP.ref.siblings_num = 0;
     }
@@ -955,7 +955,7 @@ class Iden3CoreLib {
 
     // claim revocation status proof
     ffi.Pointer<IDENProof> claimNonRevProof = malloc<IDENProof>();
-    claimNonRevProof.ref.existence = revocationStatus.mtp!.existence! ? 1 : 0;
+    claimNonRevProof.ref.existence = revocationStatus.mtp!.existence!;
     if (revocationStatus.mtp!.siblings != null &&
         revocationStatus.mtp!.siblings!.isNotEmpty) {
       claimNonRevProof.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
@@ -1233,7 +1233,7 @@ class Iden3CoreLib {
 
     // CLAIM
     request.ref.claim.signature_proof =
-        malloc<IDENBCircuitsBJJSignatureProof>().ref;
+        malloc<IDENCircuitsBJJSignatureProof>().ref;
 
     // CLAIM ISSUER ID
     ffi.Pointer<IDENId> issuerIdPtr = malloc<IDENId>();
@@ -1305,7 +1305,7 @@ class Iden3CoreLib {
     //debugger();
     ffi.Pointer<IDENProof> issuerAuthClaimMTP = malloc<IDENProof>();
     issuerAuthClaimMTP.ref.existence =
-        signatureProof.issuer_data!.mtp!.existence! ? 1 : 0;
+        signatureProof.issuer_data!.mtp!.existence!;
     if (signatureProof.issuer_data!.mtp!.siblings != null &&
         signatureProof.issuer_data!.mtp!.siblings!.isNotEmpty) {
       issuerAuthClaimMTP.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
@@ -1407,7 +1407,7 @@ class Iden3CoreLib {
     // DO NOT FILL AUTH CLAIM ISSUER_ID
     request.ref.auth_claim.issuer_id = malloc<IDENId>().ref;
     request.ref.auth_claim.signature_proof =
-        malloc<IDENBCircuitsBJJSignatureProof>().ref;
+        malloc<IDENCircuitsBJJSignatureProof>().ref;
     request.ref.auth_claim.signature_proof.issuer_id = malloc<IDENId>().ref;
     for (var i = 0; i < 64; i++) {
       request.ref.auth_claim.signature_proof.signature.data[i] = 0;
