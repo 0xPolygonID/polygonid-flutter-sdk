@@ -1,7 +1,7 @@
 # polygonid_flutter_sdk
 
 [![pub package](https://img.shields.io/badge/pub-1.0.0-orange)](https://pub.dev/packages/polygonid_flutter_sdk)
-[![build](https://github.com/iden3/polygonid-flutter-sdk/workflows/polygonid_flutter_sdk/badge.svg)](https://github.com/iden3/polygonid-flutter-sdk/actions?query=workflow%3Ahermez_flutter_sdk)
+[![build](https://github.com/iden3/polygonid-flutter-sdk/workflows/polygonid_flutter_sdk/badge.svg)](https://github.com/iden3/polygonid-flutter-sdk/actions?query=workflow%3Apolygonid_flutter_sdk)
 [![license](https://img.shields.io/badge/License-Apache-blue.svg)](https://github.com/iden3/polygonid-flutter-sdk/blob/master/LICENSE)
 
 ## Description
