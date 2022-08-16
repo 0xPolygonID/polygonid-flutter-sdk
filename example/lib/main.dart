@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
+import 'package:flutter/services.dart';
+import 'package:polygonid_flutter_sdk_example/src/dependency_injection/dependencies_provider.dart' as di;
+import 'package:polygonid_flutter_sdk_example/src/presentation/app.dart';
 
 Future<void> main() async {
-  await PolygonIdSdk.init();
-  runApp(const MyApp());
+  //Dependency Injection initialization
+  await di.init();
+
+  //
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+  runApp(const App());
 }
 
-class MyApp extends StatefulWidget {
+/*class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
@@ -41,4 +48,4 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
-}
+}*/
