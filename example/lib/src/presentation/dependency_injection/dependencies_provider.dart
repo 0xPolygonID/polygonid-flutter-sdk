@@ -5,8 +5,8 @@ import 'package:polygonid_flutter_sdk_example/src/data/identitity/repositories/i
 import 'package:polygonid_flutter_sdk_example/src/domain/identity/repositories/identity_repositories.dart';
 import 'package:polygonid_flutter_sdk_example/src/domain/identity/use_cases/create_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk_example/src/domain/identity/use_cases/get_identifier_use_case.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/home/home_bloc.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/splash/splash_bloc.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_bloc.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/splash_bloc.dart';
 
 final getIt = GetIt.instance;
 

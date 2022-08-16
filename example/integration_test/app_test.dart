@@ -5,9 +5,9 @@ import 'package:integration_test/integration_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:polygonid_flutter_sdk_example/src/dependency_injection/dependencies_provider.dart' as di;
+import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart' as di;
 import 'package:polygonid_flutter_sdk_example/src/domain/identity/repositories/identity_repositories.dart';
-import 'package:polygonid_flutter_sdk_example/src/navigations/routes.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/navigations/routes.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/app.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_dimensions.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';

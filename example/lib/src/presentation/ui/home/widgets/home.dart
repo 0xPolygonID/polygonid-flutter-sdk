@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:polygonid_flutter_sdk_example/src/dependency_injection/dependencies_provider.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/home/home_bloc.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/home/home_state.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_bloc.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_state.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_button_style.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_colors.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';

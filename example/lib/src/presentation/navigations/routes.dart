@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/home/widgets/home.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/splash/widgets/splash.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/widgets/home.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/widgets/splash.dart';
 
 class Routes {
   static const String initialPath = "/";

@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:polygonid_flutter_sdk_example/src/dependency_injection/dependencies_provider.dart';
-import 'package:polygonid_flutter_sdk_example/src/navigations/routes.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/splash/splash_bloc.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/splash/splash_state.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/navigations/routes.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/splash_bloc.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/splash_state.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_colors.dart';
 import 'package:polygonid_flutter_sdk_example/utils/image_resources.dart';
 

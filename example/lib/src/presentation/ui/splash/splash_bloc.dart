@@ -1,5 +1,5 @@
 import 'package:polygonid_flutter_sdk_example/src/common/bloc/bloc.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/splash/splash_state.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/splash_state.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_dimensions.dart';
 
 class SplashBloc extends Bloc<SplashState> {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:polygonid_flutter_sdk_example/src/navigations/routes.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/navigations/routes.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_colors.dart';
 
 class App extends StatefulWidget {
