@@ -13,6 +13,7 @@ import 'package:polygonid_flutter_sdk/model/credential_credential.dart';
 import 'package:polygonid_flutter_sdk/model/revocation_status.dart';
 import 'package:web3dart/crypto.dart';
 
+import '../data/identity/smt/hash.dart';
 import '../model/credential_credential_proof.dart';
 import 'generated_bindings.dart';
 import 'generated_bindings_witness.dart' as witness;
@@ -2271,5 +2272,118 @@ class Iden3CoreLib {
     _nativeLib.IDENFreeBigInt(valuePtr.value);
 
     return 1;
+  }
+
+  // SMT
+
+  Hash poseidonHashHashes(List<Hash> hs) {
+    if (hs.isEmpty) {
+      return Hash.zero();
+    }
+
+    Pointer<Pointer<IDENBigInt>> ints = malloc<Pointer<IDENBigInt>>(hs.length);
+    for (int i = 0; i < hs.length; i++) {
+      ints[i] = nullptr;
+    }
+
+    Pointer<Pointer<IDENBigInt>> hash = malloc<Pointer<IDENBigInt>>();
+    hash.value = nullptr;
+
+    try {
+      for (int i = 0; i < hs.length; i++) {
+        final intACStr = hs[i].toBigInt().toRadixString(10).toNativeUtf8();
+        try {
+          int ok = _nativeLib.IDENBigIntFromString(
+              ints.elementAt(i), intACStr.cast(), nullptr);
+          if (ok != 1) {
+            throw Exception("can't create IDENBigInt from int");
+          }
+        } finally {
+          malloc.free(intACStr);
+        }
+      }
+
+      int ok = _nativeLib.IDENHashInts(hash, hs.length, ints, nullptr);
+      if (ok != 1) {
+        throw Exception("can't calc hash of ints");
+      }
+
+      return hashFromIdenBigInt(hash.value);
+    } finally {
+      for (int i = 0; i < hs.length; i++) {
+        _nativeLib.IDENFreeBigInt(ints[i]);
+      }
+      _nativeLib.IDENFreeBigInt(hash.value);
+    }
+  }
+
+  BigInt poseidonHashInts(List<BigInt> bis) {
+    if (bis.isEmpty) {
+      return BigInt.zero;
+    }
+
+    Pointer<Pointer<IDENBigInt>> ints = malloc<Pointer<IDENBigInt>>(bis.length);
+    for (int i = 0; i < bis.length; i++) {
+      ints[i] = nullptr;
+    }
+
+    Pointer<Pointer<IDENBigInt>> hash = malloc<Pointer<IDENBigInt>>();
+    hash.value = nullptr;
+
+    try {
+      for (int i = 0; i < bis.length; i++) {
+        final intACStr = bis[i].toRadixString(10).toNativeUtf8();
+        try {
+          int ok = _nativeLib.IDENBigIntFromString(
+              ints.elementAt(i), intACStr.cast(), nullptr);
+          if (ok != 1) {
+            throw Exception("can't create IDENBigInt from int");
+          }
+        } finally {
+          malloc.free(intACStr);
+        }
+      }
+
+      int ok = _nativeLib.IDENHashInts(hash, bis.length, ints, nullptr);
+      if (ok != 1) {
+        throw Exception("can't calc hash of ints");
+      }
+
+      return bigIntFromIdenBigInt(hash.value);
+    } finally {
+      for (int i = 0; i < bis.length; i++) {
+        _nativeLib.IDENFreeBigInt(ints[i]);
+      }
+      _nativeLib.IDENFreeBigInt(hash.value);
+    }
+  }
+
+  Hash hashFromIdenBigInt(Pointer<IDENBigInt> v) {
+    if (v.ref.data_len == 0) {
+      return Hash.zero();
+    }
+    if (v.ref.data_len > 32) {
+      throw ArgumentError("value is too big");
+    }
+
+    final h = Hash.zero();
+    for (int i = 0; i < v.ref.data_len; i++) {
+      h.data[i] = v.ref.data[i];
+    }
+
+    return h;
+  }
+
+  BigInt bigIntFromIdenBigInt(Pointer<IDENBigInt> v) {
+    if (v.ref.data_len == 0) {
+      return BigInt.zero;
+    }
+
+    final b = BigInt.from(256);
+    BigInt i = BigInt.from(0);
+    for (int j = v.ref.data_len - 1; j >= 0; j--) {
+      i = i * b + BigInt.from(v.ref.data[j]);
+    }
+    return i;
   }
 }
