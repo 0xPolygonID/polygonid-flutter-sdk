@@ -1,5 +1,6 @@
 abstract class HomeState {
   String? identifier;
+  bool isLoadingData = true;
 
   HomeState({this.identifier});
 
@@ -19,17 +20,23 @@ class InitHomeState extends HomeState {
 
 ///
 class LoadingDataHomeState extends HomeState {
-  LoadingDataHomeState();
+  LoadingDataHomeState() {
+    isLoadingData = true;
+  }
 }
 
 ///
 class LoadedIdentifierHomeState extends HomeState {
-  LoadedIdentifierHomeState(identifier) : super(identifier: identifier);
+  LoadedIdentifierHomeState(identifier) : super(identifier: identifier) {
+    isLoadingData = false;
+  }
 }
 
 ///
 class ErrorHomeState<T> extends HomeState {
   final String message;
 
-  ErrorHomeState({required this.message});
+  ErrorHomeState({required this.message}) {
+    isLoadingData = false;
+  }
 }

@@ -44,7 +44,6 @@ void main() {
     testWidgets(
       'home screen test',
       (WidgetTester widgetTester) async {
-        //app.main();
         await widgetTester.pumpWidget(const App());
         await widgetTester.pumpAndSettle();
 
@@ -87,7 +86,7 @@ void main() {
     testWidgets(
       'initial state, splash screen and after n seconds navigate to home',
       (widgetTester) async {
-        when(identityRepository.getCurrentIdentifier(privateKey: anyNamed('privateKey'))).thenAnswer((realInvocation) => Future.value(null));
+        when(identityRepository.getCurrentIdentifier()).thenAnswer((realInvocation) => Future.value(null));
         await widgetTester.pumpWidget(const App());
         await widgetTester.pumpAndSettle();
         expect(find.byType(SvgPicture), findsOneWidget);
@@ -101,7 +100,6 @@ void main() {
     testWidgets(
       'home screen test',
       (WidgetTester widgetTester) async {
-        //app.main();
         await widgetTester.pumpWidget(const App());
         await widgetTester.pumpAndSettle();
 
@@ -111,7 +109,7 @@ void main() {
         navigatorState.pushReplacementNamed(Routes.homePath);
 
         await widgetTester.pump();
-        when(identityRepository.getCurrentIdentifier(privateKey: anyNamed('privateKey'))).thenAnswer((realInvocation) => Future.value(null));
+        when(identityRepository.getCurrentIdentifier()).thenAnswer((realInvocation) => Future.value(null));
         await widgetTester.pumpAndSettle();
 
         expect(find.text(CustomStrings.homeDescription), findsOneWidget);
@@ -119,7 +117,7 @@ void main() {
         expect(find.byKey(const ValueKey('identifier')), findsOneWidget);
 
         await widgetTester.pump();
-        when(identityRepository.createIdentity(privateKey: anyNamed('privateKey'))).thenAnswer((realInvocation) => Future.value(identifier));
+        when(identityRepository.createIdentity()).thenAnswer((realInvocation) => Future.value(identifier));
         await widgetTester.tap(find.byType(ElevatedButton));
         await widgetTester.pumpAndSettle(const Duration(seconds: 5));
 
@@ -128,7 +126,7 @@ void main() {
         await widgetTester.pumpAndSettle();
 
         await widgetTester.pump();
-        when(identityRepository.getCurrentIdentifier(privateKey: anyNamed('privateKey'))).thenAnswer((realInvocation) => Future.value(identifier));
+        when(identityRepository.getCurrentIdentifier()).thenAnswer((realInvocation) => Future.value(identifier));
         await widgetTester.pump();
         navigatorState.pushReplacementNamed(Routes.homePath);
 

@@ -6,12 +6,8 @@
 import 'dart:async' as _i3;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk_example/src/data/identitity/data_sources/polygonid_sdk_identity_data_source.dart'
-    as _i4;
 import 'package:polygonid_flutter_sdk_example/src/domain/identity/repositories/identity_repositories.dart'
     as _i2;
-import 'package:polygonid_flutter_sdk_example/src/domain/identity/use_cases/get_identifier_use_case.dart'
-    as _i5;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -34,49 +30,11 @@ class MockIdentityRepository extends _i1.Mock
   }
 
   @override
-  _i3.Future<String> createIdentity({String? privateKey}) =>
-      (super.noSuchMethod(
-          Invocation.method(#createIdentity, [], {#privateKey: privateKey}),
+  _i3.Future<String> createIdentity() =>
+      (super.noSuchMethod(Invocation.method(#createIdentity, []),
           returnValue: _i3.Future<String>.value('')) as _i3.Future<String>);
   @override
-  _i3.Future<String?> getCurrentIdentifier({String? privateKey}) =>
-      (super.noSuchMethod(
-          Invocation.method(
-              #getCurrentIdentifier, [], {#privateKey: privateKey}),
-          returnValue: _i3.Future<String?>.value()) as _i3.Future<String?>);
-}
-
-/// A class which mocks [PolygonIdSdkIdentityDataSource].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockPolygonIdSdkIdentityDataSource extends _i1.Mock
-    implements _i4.PolygonIdSdkIdentityDataSource {
-  MockPolygonIdSdkIdentityDataSource() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  _i3.Future<String> createIdentity({String? privateKey}) =>
-      (super.noSuchMethod(
-          Invocation.method(#createIdentity, [], {#privateKey: privateKey}),
-          returnValue: _i3.Future<String>.value('')) as _i3.Future<String>);
-  @override
-  _i3.Future<String?> getIdentifier() =>
-      (super.noSuchMethod(Invocation.method(#getIdentifier, []),
-          returnValue: _i3.Future<String?>.value()) as _i3.Future<String?>);
-}
-
-/// A class which mocks [GetIdentifierUseCase].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockGetIdentifierUseCase extends _i1.Mock
-    implements _i5.GetIdentifierUseCase {
-  MockGetIdentifierUseCase() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  _i3.Future<String?> execute({String? param}) =>
-      (super.noSuchMethod(Invocation.method(#execute, [], {#param: param}),
+  _i3.Future<String?> getCurrentIdentifier() =>
+      (super.noSuchMethod(Invocation.method(#getCurrentIdentifier, []),
           returnValue: _i3.Future<String?>.value()) as _i3.Future<String?>);
 }

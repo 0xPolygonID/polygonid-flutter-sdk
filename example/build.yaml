@@ -9,18 +9,6 @@ targets:
       - pubspec.*
       - $package$
     builders:
-      injectable_generator:injectable_builder:
-        options:
-          auto_register: true
-          # auto registers any class with a name matches the given pattern
-          class_name_pattern:
-            "^.*UseCase$|^.*Mapper$|^.*RepositoryImpl$|^.*DataSource$"
-          # auto registers any class inside a file with a
-          # name matches the given pattern
-          # file_name_pattern: "_bloc$|_use_case$|_data_source$|_mapper"
-      injectable_generator:injectable_config_builder:
-        generate_for:
-          - lib/**/*.dart
       mockito:mockBuilder:
         generate_for:
           - test/**/*.dart

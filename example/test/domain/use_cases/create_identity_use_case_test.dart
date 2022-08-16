@@ -17,50 +17,22 @@ CreateIdentityUseCase useCase = CreateIdentityUseCase(identityRepository);
 @GenerateMocks([IdentityRepository])
 void main() {
   setUp(() {
-    when(identityRepository.createIdentity(privateKey: anyNamed('privateKey'))).thenAnswer((realInvocation) => Future.value(identifier));
+    when(identityRepository.createIdentity()).thenAnswer((realInvocation) => Future.value(identifier));
   });
 
   test(
-    'get identifier after creating identity without passing privateKey',
+    'get identifier after creating identity',
     () async {
       expect(await useCase.execute(), identifier);
-
-      expect(
-        verify(
-          identityRepository.createIdentity(privateKey: captureAnyNamed('privateKey')),
-        ).captured.first,
-        null,
-      );
-    },
-  );
-
-  test(
-    'get identifier after creating identity with privateKey',
-    () async {
-      expect(await useCase.execute(param: privateKey), identifier);
-
-      expect(
-        verify(
-          identityRepository.createIdentity(privateKey: captureAnyNamed('privateKey')),
-        ).captured.first,
-        privateKey,
-      );
     },
   );
 
   test(
     'intercept exception while try to get identifier after creating identity',
     () async {
-      when(identityRepository.createIdentity(privateKey: anyNamed('privateKey'))).thenAnswer((realInvocation) => Future.error(identityException));
+      when(identityRepository.createIdentity()).thenAnswer((realInvocation) => Future.error(identityException));
 
       await expectLater(useCase.execute(), throwsA(identityException));
-
-      expect(
-        verify(
-          identityRepository.createIdentity(privateKey: captureAnyNamed('privateKey')),
-        ).captured.first,
-        null,
-      );
     },
   );
 }

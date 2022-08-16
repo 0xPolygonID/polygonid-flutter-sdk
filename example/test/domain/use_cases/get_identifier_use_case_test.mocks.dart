@@ -30,14 +30,11 @@ class MockIdentityRepository extends _i1.Mock
   }
 
   @override
-  _i3.Future<String> createIdentity({String? privateKey}) =>
-      (super.noSuchMethod(
-          Invocation.method(#createIdentity, [], {#privateKey: privateKey}),
+  _i3.Future<String> createIdentity() =>
+      (super.noSuchMethod(Invocation.method(#createIdentity, []),
           returnValue: _i3.Future<String>.value('')) as _i3.Future<String>);
   @override
-  _i3.Future<String?> getCurrentIdentifier({String? privateKey}) =>
-      (super.noSuchMethod(
-          Invocation.method(
-              #getCurrentIdentifier, [], {#privateKey: privateKey}),
+  _i3.Future<String?> getCurrentIdentifier() =>
+      (super.noSuchMethod(Invocation.method(#getCurrentIdentifier, []),
           returnValue: _i3.Future<String?>.value()) as _i3.Future<String?>);
 }

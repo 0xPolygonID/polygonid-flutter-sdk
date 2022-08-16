@@ -3,6 +3,7 @@ import 'package:polygonid_flutter_sdk_example/src/common/bloc/bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/domain/identity/use_cases/create_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk_example/src/domain/identity/use_cases/get_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_state.dart';
+import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
 
 class HomeBloc extends Bloc<HomeState> {
   final GetIdentifierUseCase _getIdentifierUseCase;
@@ -32,7 +33,7 @@ class HomeBloc extends Bloc<HomeState> {
     } on IdentityException catch (identityException) {
       changeState(HomeState.error(identityException.error));
     } catch (_) {
-      changeState(HomeState.error("A generic error occurred, try again"));
+      changeState(HomeState.error(CustomStrings.genericError));
     } finally {
       changeState(HomeState.loaded(identifier));
     }

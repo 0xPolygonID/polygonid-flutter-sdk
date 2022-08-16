@@ -15,34 +15,13 @@ GetIdentifierUseCase useCase = GetIdentifierUseCase(identityRepository);
 @GenerateMocks([IdentityRepository])
 void main() {
   setUp(() {
-    when(identityRepository.getCurrentIdentifier(privateKey: anyNamed('privateKey'))).thenAnswer((realInvocation) => Future.value(identifier));
+    when(identityRepository.getCurrentIdentifier()).thenAnswer((realInvocation) => Future.value(identifier));
   });
 
   test(
-    'get current identifier without passing privateKey, expect identifier',
+    'get current identifier, expect identifier',
     () async {
       expect(await useCase.execute(), identifier);
-
-      expect(
-        verify(
-          identityRepository.getCurrentIdentifier(privateKey: captureAnyNamed('privateKey')),
-        ).captured.first,
-        null,
-      );
-    },
-  );
-
-  test(
-    'get current identifier by passing privateKey, expect identifier',
-    () async {
-      expect(await useCase.execute(param: privateKey), identifier);
-
-      expect(
-        verify(
-          identityRepository.getCurrentIdentifier(privateKey: captureAnyNamed('privateKey')),
-        ).captured.first,
-        privateKey,
-      );
     },
   );
 }

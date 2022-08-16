@@ -96,31 +96,49 @@ class _HomeScreenState extends State<HomeScreen> {
 
   ///
   void _handleHomeState(HomeState event) {
-    if (event is LoadingDataHomeState) _handleLoadingData();
-    if (event is LoadedIdentifierHomeState) _handleLoadedIdentifier(event.identifier);
-    if (event is ErrorHomeState) _handleError(event.message);
+    // handle loading in progress State
+    if (event is LoadingDataHomeState) {
+      _handleLoadingData(event.isLoadingData);
+    }
+
+    // handle loaded data State
+    if (event is LoadedIdentifierHomeState) {
+      _handleLoadedIdentifier(
+        identifier: event.identifier,
+        isLoadingData: event.isLoadingData,
+      );
+    }
+
+    // handle error state
+    if (event is ErrorHomeState) {
+      _handleError(
+        message: event.message,
+        isLoadingData: event.isLoadingData,
+      );
+    }
   }
 
   ///
-  void _handleLoadingData() {
+  void _handleLoadingData(bool isLoadingData) {
     setState(() {
-      _isLoadingData = true;
+      _isLoadingData = isLoadingData;
       _error = "";
     });
   }
 
   ///
-  void _handleLoadedIdentifier(String? identifier) {
+  void _handleLoadedIdentifier({String? identifier, required bool isLoadingData}) {
     setState(() {
-      _isLoadingData = false;
+      _isLoadingData = isLoadingData;
       _identifier = identifier;
     });
   }
 
   ///
-  void _handleError(String message) {
+  void _handleError({required String message, required bool isLoadingData}) {
     setState(() {
       _error = message;
+      _isLoadingData = isLoadingData;
     });
   }
 

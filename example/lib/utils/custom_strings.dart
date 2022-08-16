@@ -5,4 +5,5 @@ class CustomStrings{
   static const String homeIdentifierSectionPrefix = "Identifier:";
   static const String homeIdentifierSectionPlaceHolder = "Not yet created";
   static const String homeButtonCTA = "Create identity";
+  static const String genericError = "A generic error occurred, try again";
 }
