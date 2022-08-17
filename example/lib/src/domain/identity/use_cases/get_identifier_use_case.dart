@@ -7,9 +7,7 @@ class GetIdentifierUseCase extends FutureUseCase<void, String?> {
   GetIdentifierUseCase(this._identityRepository);
 
   @override
-  Future<String?> execute({void param}) async {
-    String? identifier = await _identityRepository.getCurrentIdentifier();
-
-    return identifier;
+  Future<String?> execute({void param}) {
+    return _identityRepository.getCurrentIdentifier();
   }
 }

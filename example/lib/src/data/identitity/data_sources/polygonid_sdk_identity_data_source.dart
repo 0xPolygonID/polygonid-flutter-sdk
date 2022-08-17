@@ -6,8 +6,8 @@ class PolygonIdSdkIdentityDataSource {
   PolygonIdSdkIdentityDataSource(this._polygonIdSdk);
 
   ///
-  Future<String> createIdentity({String? privateKey}) {
-    return _polygonIdSdk.identity.createIdentity(privateKey: privateKey);
+  Future<String> createIdentity() {
+    return _polygonIdSdk.identity.createIdentity();
   }
 
   ///

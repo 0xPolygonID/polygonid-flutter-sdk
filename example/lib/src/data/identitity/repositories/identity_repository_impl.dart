@@ -7,12 +7,12 @@ class IdentityRepositoryImpl extends IdentityRepository {
   IdentityRepositoryImpl(this._polygonIdSdkIdentityDataSource);
 
   @override
-  Future<String> createIdentity({String? privateKey}) {
-    return _polygonIdSdkIdentityDataSource.createIdentity(privateKey: privateKey);
+  Future<String> createIdentity() {
+    return _polygonIdSdkIdentityDataSource.createIdentity();
   }
 
   @override
-  Future<String?> getCurrentIdentifier({String? privateKey}) {
+  Future<String?> getCurrentIdentifier() {
     return _polygonIdSdkIdentityDataSource.getIdentifier();
   }
 }

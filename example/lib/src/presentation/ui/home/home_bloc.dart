@@ -27,15 +27,13 @@ class HomeBloc extends Bloc<HomeState> {
   Future<void> createIdentity() async {
     changeState(HomeState.loading());
 
-    String? identifier;
     try {
-      identifier = await _createIdentityUseCase.execute();
+      String identifier = await _createIdentityUseCase.execute();
+      changeState(HomeState.loaded(identifier));
     } on IdentityException catch (identityException) {
       changeState(HomeState.error(identityException.error));
     } catch (_) {
       changeState(HomeState.error(CustomStrings.genericError));
-    } finally {
-      changeState(HomeState.loaded(identifier));
     }
   }
 }

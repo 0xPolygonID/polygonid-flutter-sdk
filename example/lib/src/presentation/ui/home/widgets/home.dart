@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart';
@@ -23,25 +21,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  StreamSubscription? _changeStateStreamSubscription;
-
-  bool _isLoadingData = true;
-  String? _identifier;
-  String? _error;
-
   @override
   void initState() {
     super.initState();
-    _initChangeStateListener();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initGetIdentifier();
     });
-  }
-
-  @override
-  void dispose() {
-    _changeStateStreamSubscription?.cancel();
-    super.dispose();
   }
 
   @override
@@ -83,79 +68,28 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   ///
-  void _initChangeStateListener() {
-    _changeStateStreamSubscription = widget._bloc.observableState.listen((HomeState event) {
-      _handleHomeState(event);
-    });
-  }
-
-  ///
   void _initGetIdentifier() {
     widget._bloc.getIdentifier();
   }
 
   ///
-  void _handleHomeState(HomeState event) {
-    // handle loading in progress State
-    if (event is LoadingDataHomeState) {
-      _handleLoadingData(event.isLoadingData);
-    }
-
-    // handle loaded data State
-    if (event is LoadedIdentifierHomeState) {
-      _handleLoadedIdentifier(
-        identifier: event.identifier,
-        isLoadingData: event.isLoadingData,
-      );
-    }
-
-    // handle error state
-    if (event is ErrorHomeState) {
-      _handleError(
-        message: event.message,
-        isLoadingData: event.isLoadingData,
-      );
-    }
-  }
-
-  ///
-  void _handleLoadingData(bool isLoadingData) {
-    setState(() {
-      _isLoadingData = isLoadingData;
-      _error = "";
-    });
-  }
-
-  ///
-  void _handleLoadedIdentifier({String? identifier, required bool isLoadingData}) {
-    setState(() {
-      _isLoadingData = isLoadingData;
-      _identifier = identifier;
-    });
-  }
-
-  ///
-  void _handleError({required String message, required bool isLoadingData}) {
-    setState(() {
-      _error = message;
-      _isLoadingData = isLoadingData;
-    });
-  }
-
-  ///
   Widget _buildCreateIdentityButton() {
-    bool enabled = (!_isLoadingData) && (_identifier == null || _identifier!.isEmpty);
-    return AbsorbPointer(
-      absorbing: !enabled,
-      child: ElevatedButton(
-        onPressed: widget._bloc.createIdentity,
-        style: enabled ? CustomButtonStyle.primaryButtonStyle : CustomButtonStyle.disabledPrimaryButtonStyle,
-        child: const Text(
-          CustomStrings.homeButtonCTA,
-          style: CustomTextStyles.primaryButtonTextStyle,
-        ),
-      ),
-    );
+    return StreamBuilder<HomeState>(
+        stream: widget._bloc.observableState,
+        builder: (context, snapshot) {
+          bool enabled = (snapshot.data is! LoadingDataHomeState) && (snapshot.data?.identifier == null || snapshot.data!.identifier!.isEmpty);
+          return AbsorbPointer(
+            absorbing: !enabled,
+            child: ElevatedButton(
+              onPressed: widget._bloc.createIdentity,
+              style: enabled ? CustomButtonStyle.primaryButtonStyle : CustomButtonStyle.disabledPrimaryButtonStyle,
+              child: const Text(
+                CustomStrings.homeButtonCTA,
+                style: CustomTextStyles.primaryButtonTextStyle,
+              ),
+            ),
+          );
+        });
   }
 
   ///
@@ -188,21 +122,24 @@ class _HomeScreenState extends State<HomeScreen> {
 
   ///
   Widget _buildProgress() {
-    return SizedBox(
-      height: 48,
-      width: 48,
-      child: Visibility(
-        visible: _isLoadingData,
-        child: const CircularProgressIndicator(
-          backgroundColor: CustomColors.primaryButton,
-        ),
-      ),
-    );
+    return StreamBuilder<HomeState>(
+        stream: widget._bloc.observableState,
+        builder: (context, snapshot) {
+          return SizedBox(
+            height: 48,
+            width: 48,
+            child: Visibility(
+              visible: snapshot.data is LoadingDataHomeState,
+              child: const CircularProgressIndicator(
+                backgroundColor: CustomColors.primaryButton,
+              ),
+            ),
+          );
+        });
   }
 
   ///
   Widget _buildIdentifierSection() {
-    String identifierText = _identifier ?? CustomStrings.homeIdentifierSectionPlaceHolder;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -212,11 +149,16 @@ class _HomeScreenState extends State<HomeScreen> {
             CustomStrings.homeIdentifierSectionPrefix,
             style: CustomTextStyles.descriptionTextStyle.copyWith(fontSize: 20),
           ),
-          Text(
-            identifierText,
-            key: const Key('identifier'),
-            style: CustomTextStyles.descriptionTextStyle.copyWith(fontSize: 20, fontWeight: FontWeight.w700),
-          ),
+          StreamBuilder<HomeState>(
+              stream: widget._bloc.observableState,
+              builder: (context, snapshot) {
+                String identifierText = snapshot.data?.identifier ?? CustomStrings.homeIdentifierSectionPlaceHolder;
+                return Text(
+                  identifierText,
+                  key: const Key('identifier'),
+                  style: CustomTextStyles.descriptionTextStyle.copyWith(fontSize: 20, fontWeight: FontWeight.w700),
+                );
+              }),
         ],
       ),
     );
@@ -224,15 +166,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
   ///
   Widget _buildErrorSection() {
-    return Visibility(
-      visible: _error != null && _error!.isNotEmpty,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: Text(
-          _error ?? "",
-          style: CustomTextStyles.descriptionTextStyle.copyWith(color: CustomColors.redError),
-        ),
-      ),
-    );
+    return StreamBuilder<HomeState>(
+        stream: widget._bloc.observableState,
+        builder: (context, snapshot) {
+          bool visible = snapshot.data is ErrorHomeState && (snapshot.data as ErrorHomeState).message.isNotEmpty;
+          String message = snapshot.data is ErrorHomeState ? (snapshot.data as ErrorHomeState).message : "";
+          return Visibility(
+            visible: visible,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                message,
+                style: CustomTextStyles.descriptionTextStyle.copyWith(color: CustomColors.redError),
+              ),
+            ),
+          );
+        });
   }
 }

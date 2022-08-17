@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/domain/identity/exceptions/identity_exceptions.dart';
 
 import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart' as di;
 import 'package:polygonid_flutter_sdk_example/src/domain/identity/repositories/identity_repositories.dart';
@@ -108,6 +109,7 @@ void main() {
         NavigatorState navigatorState = state.navigatorKey.currentState!;
         navigatorState.pushReplacementNamed(Routes.homePath);
 
+        // 1. getCurrentIdentifier() with identity not created yet case
         await widgetTester.pump();
         when(identityRepository.getCurrentIdentifier()).thenAnswer((realInvocation) => Future.value(null));
         await widgetTester.pumpAndSettle();
@@ -116,21 +118,33 @@ void main() {
         expect(find.text(CustomStrings.homeIdentifierSectionPlaceHolder), findsOneWidget);
         expect(find.byKey(const ValueKey('identifier')), findsOneWidget);
 
+        // 2. exception while calling createIdentity()
+        await widgetTester.pump();
+        when(identityRepository.createIdentity()).thenAnswer((realInvocation)=>Future.error(IdentityException('error')));
+        await widgetTester.pumpAndSettle();
+
+        await widgetTester.tap(find.byType(ElevatedButton));
+        await widgetTester.pumpAndSettle(const Duration(seconds: 1));
+
+        expect(find.text('error'), findsOneWidget);
+
+        // 3. createIdentity() positive case
         await widgetTester.pump();
         when(identityRepository.createIdentity()).thenAnswer((realInvocation) => Future.value(identifier));
         await widgetTester.tap(find.byType(ElevatedButton));
-        await widgetTester.pumpAndSettle(const Duration(seconds: 5));
+        await widgetTester.pumpAndSettle(const Duration(seconds: 1));
 
         expect(find.text(CustomStrings.homeIdentifierSectionPlaceHolder), findsNothing);
 
         await widgetTester.pumpAndSettle();
 
+        // 4. getCurrentIdentifier() positive case
         await widgetTester.pump();
         when(identityRepository.getCurrentIdentifier()).thenAnswer((realInvocation) => Future.value(identifier));
         await widgetTester.pump();
         navigatorState.pushReplacementNamed(Routes.homePath);
 
-        await widgetTester.pumpAndSettle(const Duration(seconds: 5));
+        await widgetTester.pumpAndSettle(const Duration(seconds: 1));
 
         expect(find.text(CustomStrings.homeIdentifierSectionPlaceHolder), findsNothing);
 
