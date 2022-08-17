@@ -1,44 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
+import 'package:flutter/services.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart' as di;
+import 'package:polygonid_flutter_sdk_example/src/presentation/app.dart';
 
 Future<void> main() async {
-  await PolygonIdSdk.init();
-  runApp(const MyApp());
-}
+  //Dependency Injection initialization
+  await di.init();
 
-class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  // App UI locked in portrait mode
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
-
-  @override
-  void initState() {
-    super.initState();
-    var sdk = PolygonIdSdk.I;
-
-    sdk.identity.createIdentity(privateKey: "thePrivateKeyy").then((value) {
-      print(value);
-    }).catchError((error) {
-      print(error);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Text('$_platformVersion\n'),
-        ),
-      ),
-    );
-  }
+  runApp(const App());
 }
