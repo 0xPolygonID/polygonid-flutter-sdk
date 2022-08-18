@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
+import 'package:polygonid_flutter_sdk/data/proof_generation/witnesscalc/auth/witness_auth.dart';
 import 'package:polygonid_flutter_sdk/http.dart';
 import 'package:polygonid_flutter_sdk/model/revocation_status.dart';
 import 'package:polygonid_flutter_sdk/privadoid_wallet.dart';
@@ -10,7 +11,10 @@ import 'package:polygonid_flutter_sdk/sdk/identity_wallet.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk/utils/hex_utils.dart';
 
-import 'libs/iden3corelib.dart';
+import 'data/identity/iden3core/iden3core.dart';
+import 'data/proof_generation/prover/prover.dart';
+import 'data/proof_generation/witnesscalc/mtp/witness_mtp.dart';
+import 'data/proof_generation/witnesscalc/sig/witness_sig.dart';
 import 'model/credential_credential.dart';
 import 'model/credential_credential_proof.dart';
 import 'model/credential_data.dart';
@@ -225,15 +229,16 @@ class PrivadoIdSdk {
   }
 
   static Future<Uint8List?> _computeWitness(WitnessParam param) {
-    Iden3CoreLib iden3coreLib = Iden3CoreLib();
-
     switch (param.type) {
       case WitnessType.def:
-        return iden3coreLib.calculateWitness(param.wasm, param.json);
-      case WitnessType.mtp:
-        return iden3coreLib.calculateWitnessMtp(param.wasm, param.json);
+        WitnessAuthLib witnessAuthLib = WitnessAuthLib();
+        return witnessAuthLib.calculateWitnessAuth(param.wasm, param.json);
       case WitnessType.sig:
-        return iden3coreLib.calculateWitnessSig(param.wasm, param.json);
+        WitnessSigLib witnessSigLib = WitnessSigLib();
+        return witnessSigLib.calculateWitnessSig(param.wasm, param.json);
+      case WitnessType.mtp:
+        WitnessMtpLib witnessMtpLib = WitnessMtpLib();
+        return witnessMtpLib.calculateWitnessMtp(param.wasm, param.json);
     }
   }
 
@@ -243,9 +248,8 @@ class PrivadoIdSdk {
   }
 
   static Future<Map<String, dynamic>?> _computeProve(ProveParam param) {
-    Iden3CoreLib iden3coreLib = Iden3CoreLib();
-
-    return iden3coreLib.prove(param.zKey, param.wtns);
+    ProverLib proverLib = ProverLib();
+    return proverLib.prove(param.zKey, param.wtns);
   }
 //
 // static Future<JWZToken> generateJWZToken(String payload, String identifier, Uint8List zKeyBytes, Uint8List datFile) async {

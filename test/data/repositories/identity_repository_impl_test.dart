@@ -39,10 +39,11 @@ final bbjjKey = Uint8List(32);
 final mockWallet = FakeWallet();
 const identifier = "theIdentifier";
 const authClaim = "theAuthClaim";
+const smt = "theSmt";
 const mockDTO = IdentityDTO(
-    privateKey: privateKey, identifier: identifier, authClaim: authClaim);
+    privateKey: privateKey, identifier: identifier, authClaim: authClaim, smt: smt);
 const mockEntity = Identity(
-    privateKey: privateKey, identifier: identifier, authClaim: authClaim);
+    privateKey: privateKey, identifier: identifier, authClaim: authClaim, smt: smt);
 const message = "theMessage";
 const signature = "theSignature";
 const circuitId = "1";

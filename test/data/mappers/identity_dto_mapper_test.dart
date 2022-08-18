@@ -7,10 +7,17 @@ import 'package:polygonid_flutter_sdk/domain/identity/entities/identity.dart';
 const privateKey = "thePrivateKey";
 const identifier = "theIdentifier";
 const authClaim = "theAuthClaim";
+const smt = "theSmt";
 const mockDTO = IdentityDTO(
-    privateKey: privateKey, identifier: identifier, authClaim: authClaim);
+    privateKey: privateKey,
+    identifier: identifier,
+    authClaim: authClaim,
+    smt: smt);
 const mockEntity = Identity(
-    privateKey: privateKey, identifier: identifier, authClaim: authClaim);
+    privateKey: privateKey,
+    identifier: identifier,
+    authClaim: authClaim,
+    smt: smt);
 
 // Tested instance
 IdentityDTOMapper mapper = IdentityDTOMapper();

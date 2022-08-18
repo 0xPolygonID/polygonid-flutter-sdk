@@ -1,6 +1,6 @@
 import 'package:polygonid_flutter_sdk/data/identity/smt/smt_utils.dart';
 
-import '../../../libs/iden3corelib.dart';
+import '../iden3core/iden3core.dart';
 import 'hash.dart';
 import 'node.dart';
 

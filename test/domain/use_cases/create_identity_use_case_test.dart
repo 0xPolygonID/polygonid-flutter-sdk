@@ -13,8 +13,12 @@ const privateKey = "thePrivateKey";
 const walletPrivateKey = "theWalletPrivateKey";
 const identifier = "theIdentifier";
 const authClaim = "theAuthClaim";
+const smt = "theSmt";
 const mockEntity = Identity(
-    privateKey: privateKey, identifier: identifier, authClaim: authClaim);
+    privateKey: privateKey,
+    identifier: identifier,
+    authClaim: authClaim,
+    smt: smt);
 var exception = Exception();
 
 // Dependencies

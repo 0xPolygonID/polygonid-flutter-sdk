@@ -3,13 +3,15 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/data/identity/bjj/bjj.dart';
 import 'package:polygonid_flutter_sdk/data/identity/data_sources/wallet_data_source.dart';
-import 'package:polygonid_flutter_sdk/libs/circomlib.dart';
+import 'package:polygonid_flutter_sdk/data/proof_generation/prover/prover.dart';
 import 'package:polygonid_flutter_sdk/utils/big_int_extension.dart';
 import 'package:polygonid_flutter_sdk/utils/uint8_list_utils.dart';
 import 'package:web3dart/crypto.dart';
 
-import '../../../libs/iden3corelib.dart';
+import '../../proof_generation/witnesscalc/auth/witness_auth.dart';
+import '../iden3core/iden3core.dart';
 import '../jwz/jwz.dart';
 import '../jwz/jwz_exceptions.dart';
 import '../jwz/jwz_header.dart';
@@ -61,22 +63,24 @@ Future<String> _computeAuthInputs(AuthInputsIsolateParam param) {
       param.authClaim, param.pubX, param.pubY, param.signature));
 }
 
-/// As this is running is a separate thread, we cannot inject [Iden3CoreLib]
+/// As this is running is a separate thread, we cannot inject [WitnessAuthLib] or [ProverLib]
 Future<Map<String, dynamic>?> _computeCalculateProof(
-    CalculateProofIsolateParam param) {
-  final iden3coreLib = Iden3CoreLib();
+    CalculateProofIsolateParam param) async {
+  final witnessAuthLib = WitnessAuthLib();
+  final proverLib = ProverLib();
 
-  return Future.value(
-      iden3coreLib.calculateProof(param.inputs, param.provingKey, param.wasm));
+  final Uint8List? wtnsBytes =
+      await witnessAuthLib.calculateWitnessAuth(param.wasm, param.inputs);
+
+  return Future.value(proverLib.prove(param.provingKey, wtnsBytes!));
 }
 
 class JWZDataSource {
-  final CircomLib _circomLib;
+  final BabyjubjubLib _bjjLib;
   final WalletDataSource _walletDataSource;
   final JWZIsolatesWrapper _jwzIsolateWrapper;
 
-  JWZDataSource(
-      this._circomLib, this._walletDataSource, this._jwzIsolateWrapper);
+  JWZDataSource(this._bjjLib, this._walletDataSource, this._jwzIsolateWrapper);
 
   Future<String> getAuthToken(
       {required Uint8List privateKey,
@@ -146,7 +150,7 @@ class JWZDataSource {
     BigInt q = endian.qNormalize();
 
     // Poseidon hash
-    String hashed = _circomLib.poseidonHash(q.toString());
+    String hashed = _bjjLib.poseidonHash(q.toString());
 
     return hexToBytes(hashed);
   }

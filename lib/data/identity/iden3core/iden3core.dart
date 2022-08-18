@@ -7,53 +7,21 @@ import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:polygonid_flutter_sdk/libs/generated_bindings_extension.dart';
-import 'package:polygonid_flutter_sdk/libs/proverlib.dart';
+import 'package:polygonid_flutter_sdk/data/identity/iden3core/native_iden3core_extension.dart';
 import 'package:polygonid_flutter_sdk/model/credential_credential.dart';
 import 'package:polygonid_flutter_sdk/model/revocation_status.dart';
 import 'package:web3dart/crypto.dart';
 
-import '../data/identity/smt/hash.dart';
-import '../model/credential_credential_proof.dart';
-import 'generated_bindings.dart';
-import 'generated_bindings_witness.dart' as witness;
-import 'generated_bindings_witness_mtp.dart';
-import 'generated_bindings_witness_sig.dart';
+import '../../../model/credential_credential_proof.dart';
+import '../smt/hash.dart';
+import 'native_iden3core.dart';
 
 @injectable
 class Iden3CoreLib {
-  static NativeLibrary get _nativeLib {
+  static NativeIden3CoreLib get _nativeIden3CoreLib {
     return Platform.isAndroid
-        ? NativeLibrary(ffi.DynamicLibrary.open("libiden3core.so"))
-        : NativeLibrary(ffi.DynamicLibrary.process());
-  }
-
-  static witness.WitnessLib get _witnessLib {
-    return Platform.isAndroid
-        ? witness.WitnessLib(/*ffi.DynamicLibrary.open("libgmp.so"),*/
-            ffi.DynamicLibrary.open("libwitnesscalc.so"))
-        : witness.WitnessLib(ffi.DynamicLibrary.process());
-  }
-
-  static WitnessSigLib get _witnessSigLib {
-    return Platform.isAndroid
-        ? WitnessSigLib(/*ffi.DynamicLibrary.open("libgmp.so"),*/
-            ffi.DynamicLibrary.open("libwitnesscalc_sig.so"))
-        : WitnessSigLib(ffi.DynamicLibrary.process());
-  }
-
-  static WitnessMtpLib get _witnessMtpLib {
-    return Platform.isAndroid
-        ? WitnessMtpLib(/*ffi.DynamicLibrary.open("libgmp.so"),*/
-            ffi.DynamicLibrary.open("libwitnesscalc_mtp.so"))
-        : WitnessMtpLib(ffi.DynamicLibrary.process());
-  }
-
-  static ProverLib get _proverLib {
-    return Platform.isAndroid
-        ? ProverLib(/*ffi.DynamicLibrary.open("libgmp.so"),*/
-            ffi.DynamicLibrary.open("librapidsnark.so"))
-        : ProverLib(ffi.DynamicLibrary.process());
+        ? NativeIden3CoreLib(ffi.DynamicLibrary.open("libiden3core.so"))
+        : NativeIden3CoreLib(ffi.DynamicLibrary.process());
   }
 
   Iden3CoreLib();
@@ -85,7 +53,8 @@ class Iden3CoreLib {
     ffi.Pointer<ffi.Pointer<IDENStatus>> status =
         malloc<ffi.Pointer<IDENStatus>>();
 
-    int res = _nativeLib.IDENidGenesisFromIdenState(idP, state.ref, status);
+    int res =
+        _nativeIden3CoreLib.IDENidGenesisFromIdenState(idP, state.ref, status);
     if (res == 0) {
       if (kDebugMode) {
         print("unable to get genesis id from iden state\n");
@@ -101,14 +70,14 @@ class Iden3CoreLib {
     }
 
     if (unsafePointerState != ffi.nullptr) {
-      _nativeLib.free(unsafePointerState.cast());
+      _nativeIden3CoreLib.free(unsafePointerState.cast());
       if (kDebugMode) {
         print("idenState successfully freed");
       }
     }
 
     if (idP != ffi.nullptr) {
-      _nativeLib.free(idP.cast());
+      _nativeIden3CoreLib.free(idP.cast());
       if (kDebugMode) {
         print("id genesis successfully freed");
       }
@@ -136,8 +105,8 @@ class Iden3CoreLib {
     }
     print(result);
     print(id.toString());
-    _nativeLib.IDENFreeMerkleTree(userAuthClaimsTree.value);
-    _nativeLib.IDENFreeClaim(authClaim.value);
+    _nativeIden3CoreLib.IDENFreeMerkleTree(userAuthClaimsTree.value);
+    _nativeIden3CoreLib.IDENFreeClaim(authClaim.value);
 
     Map<String, String> map = {};
     map['id'] = result.toString();
@@ -187,7 +156,8 @@ class Iden3CoreLib {
     ffi.Pointer<ffi.Pointer<IDENStatus>> status =
         malloc<ffi.Pointer<IDENStatus>>();
     status.value = statusValue;
-    int res = _nativeLib.IDENBigIntFromString(keyX, unsafePointerX, status);
+    int res =
+        _nativeIden3CoreLib.IDENBigIntFromString(keyX, unsafePointerX, status);
     if (res == 0) {
       _consumeStatus(status, "");
     }
@@ -197,19 +167,21 @@ class Iden3CoreLib {
     ffi.Pointer<ffi.Pointer<IDENBigInt>> keyY =
         malloc<ffi.Pointer<IDENBigInt>>();
     keyY.value = keyYValue;
-    res = _nativeLib.IDENBigIntFromString(keyY, unsafePointerY, status);
+    res =
+        _nativeIden3CoreLib.IDENBigIntFromString(keyY, unsafePointerY, status);
     if (res == 0) {
       _consumeStatus(status, "");
     }
 
     ffi.Pointer<ffi.Pointer<IDENClaim>> claim =
         malloc<ffi.Pointer<IDENClaim>>();
-    res = _nativeLib.IDENNewClaim(claim, unsafePointerSchemaHash, status);
+    res = _nativeIden3CoreLib.IDENNewClaim(
+        claim, unsafePointerSchemaHash, status);
     if (res == 0) {
       _consumeStatus(status, "");
     }
 
-    res = _nativeLib.IDENClaimSetValueDataInt(
+    res = _nativeIden3CoreLib.IDENClaimSetValueDataInt(
         claim.value, keyX.value, keyY.value, status);
     if (res == 0) {
       _consumeStatus(status, "");
@@ -221,13 +193,13 @@ class Iden3CoreLib {
         revNonce.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> revNonceBigInt =
         malloc<ffi.Pointer<IDENBigInt>>();
-    res = _nativeLib.IDENBigIntFromString(
+    res = _nativeIden3CoreLib.IDENBigIntFromString(
         revNonceBigInt, unsafePointerRevNonce, status);
     if (res == 0) {
       _consumeStatus(status, "");
     }
 
-    res = _nativeLib.IDENClaimSetRevocationNonceAsBigInt(
+    res = _nativeIden3CoreLib.IDENClaimSetRevocationNonceAsBigInt(
         claim.value, revNonceBigInt.value, status);
     if (res == 0) {
       _consumeStatus(status, "");
@@ -238,14 +210,14 @@ class Iden3CoreLib {
       return "ERROR";
     }
 
-    res = _nativeLib.IDENMerkleTreeAddClaim(mt, claim.value, status);
+    res = _nativeIden3CoreLib.IDENMerkleTreeAddClaim(mt, claim.value, status);
     if (res == 0) {
       _consumeStatus(status, "unable to add auth claim to tree");
       return "ERROR";
     }
 
     ffi.Pointer<IDENMerkleTreeHash> mtRoot = malloc<IDENMerkleTreeHash>();
-    res = _nativeLib.IDENMerkleTreeRoot(mtRoot, mt, status);
+    res = _nativeIden3CoreLib.IDENMerkleTreeRoot(mtRoot, mt, status);
     if (res == 0) {
       if (kDebugMode) {
         print("unable to get merkle tree root\n");
@@ -260,14 +232,14 @@ class Iden3CoreLib {
     }
 
     if (mtRoot != ffi.nullptr) {
-      _nativeLib.free(mtRoot.cast());
+      _nativeIden3CoreLib.free(mtRoot.cast());
       if (kDebugMode) {
         print("tree root successfully freed\n");
       }
     }
 
     if (mt != ffi.nullptr) {
-      _nativeLib.IDENFreeMerkleTree(mt);
+      _nativeIden3CoreLib.IDENFreeMerkleTree(mt);
       if (kDebugMode) {
         print("merkle tree successfully freed\n");
       }
@@ -289,7 +261,7 @@ class Iden3CoreLib {
     }*/
 
     if (unsafePointerSchemaHash != ffi.nullptr) {
-      _nativeLib.free(unsafePointerSchemaHash.cast());
+      _nativeIden3CoreLib.free(unsafePointerSchemaHash.cast());
       if (kDebugMode) {
         print("schema hash successfully freed\n");
       }
@@ -309,17 +281,17 @@ class Iden3CoreLib {
     ffi.Pointer<ffi.Pointer<IDENStatus>> status =
         malloc<ffi.Pointer<IDENStatus>>();
 
-    int res = _nativeLib.IDENJsonLDParseClaim(
+    int res = _nativeIden3CoreLib.IDENJsonLDParseClaim(
         claimI, jsonLDDocumentP, schemaP, status);
     if (res == 0) {
       _consumeStatus(status, "");
       return null;
     }
-    _nativeLib.free(jsonLDDocumentP.cast());
-    _nativeLib.free(schemaP.cast());
+    _nativeIden3CoreLib.free(jsonLDDocumentP.cast());
+    _nativeIden3CoreLib.free(schemaP.cast());
 
     ffi.Pointer<IDENClaim> claim = claimI[0];
-    _nativeLib.free(claimI.cast());
+    _nativeIden3CoreLib.free(claimI.cast());
     return claim;
   }
 
@@ -330,16 +302,16 @@ class Iden3CoreLib {
     ffi.Pointer<ffi.Pointer<IDENStatus>> status =
         malloc<ffi.Pointer<IDENStatus>>();
 
-    int res = _nativeLib.IDENNewProofFromJson(proof, json, status);
+    int res = _nativeIden3CoreLib.IDENNewProofFromJson(proof, json, status);
     if (res == 0) {
       _consumeStatus(status, "");
       return null;
     }
 
-    _nativeLib.free(json.cast());
+    _nativeIden3CoreLib.free(json.cast());
 
     ffi.Pointer<IDENProof> p = proof[0];
-    _nativeLib.free(proof.cast());
+    _nativeIden3CoreLib.free(proof.cast());
 
     return p;
   }
@@ -368,7 +340,7 @@ class Iden3CoreLib {
 
     ffi.Pointer<IDENMerkleTree> claimsTree = _createCorrectMT()!;
 
-    int res = _nativeLib.IDENMerkleTreeAddClaim(
+    int res = _nativeIden3CoreLib.IDENMerkleTreeAddClaim(
         claimsTree, authClaim.ref.core_claim, status);
     if (res == 0) {
       _consumeStatus(status, "unable to add auth claim to tree");
@@ -376,7 +348,7 @@ class Iden3CoreLib {
 
     ffi.Pointer<IDENMerkleTreeHash> userAuthClaimIndexHash =
         malloc<IDENMerkleTreeHash>();
-    res = _nativeLib.IDENClaimTreeEntryHash(
+    res = _nativeIden3CoreLib.IDENClaimTreeEntryHash(
         userAuthClaimIndexHash, ffi.nullptr, authClaim.ref.core_claim, status);
     if (res == 0) {
       _consumeStatus(
@@ -385,7 +357,7 @@ class Iden3CoreLib {
 
     ffi.Pointer<ffi.Pointer<IDENProof>> userAuthClaimProof =
         malloc<ffi.Pointer<IDENProof>>();
-    res = _nativeLib.IDENMerkleTreeGenerateProof(
+    res = _nativeIden3CoreLib.IDENMerkleTreeGenerateProof(
         userAuthClaimProof, claimsTree, userAuthClaimIndexHash.ref, status);
     if (res == 0) {
       _consumeStatus(status, "error generating user auth claim's proof");
@@ -394,13 +366,15 @@ class Iden3CoreLib {
 
     ffi.Pointer<IDENMerkleTreeHash> claimsTreeRoot =
         malloc<IDENMerkleTreeHash>();
-    res = _nativeLib.IDENMerkleTreeRoot(claimsTreeRoot, claimsTree, status);
+    res = _nativeIden3CoreLib.IDENMerkleTreeRoot(
+        claimsTreeRoot, claimsTree, status);
     if (res == 0) {
       _consumeStatus(status, "can't calc tree root");
     }
 
     ffi.Pointer<IDENId> idP = malloc<IDENId>();
-    res = _nativeLib.IDENCalculateGenesisID(idP, claimsTreeRoot.ref, status);
+    res = _nativeIden3CoreLib.IDENCalculateGenesisID(
+        idP, claimsTreeRoot.ref, status);
     if (res == 0) {
       _consumeStatus(status, "unable to calculate genesis ID");
     }
@@ -420,21 +394,21 @@ class Iden3CoreLib {
         revNonce.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> revNonceBigInt =
         malloc<ffi.Pointer<IDENBigInt>>();
-    res = _nativeLib.IDENBigIntFromString(
+    res = _nativeIden3CoreLib.IDENBigIntFromString(
         revNonceBigInt, unsafePointerRevNonce, status);
     if (res == 0) {
       _consumeStatus(status, "");
     }
 
     ffi.Pointer<IDENMerkleTreeHash> revNonceHash = malloc<IDENMerkleTreeHash>();
-    res = _nativeLib.IDENHashFromBigInt(
+    res = _nativeIden3CoreLib.IDENHashFromBigInt(
         revNonceHash, revNonceBigInt.value, status);
     if (res == 0) {
       _consumeStatus(status, "");
     }
     ffi.Pointer<ffi.Pointer<IDENProof>> userAuthClaimNonRevProof =
         malloc<ffi.Pointer<IDENProof>>();
-    res = _nativeLib.IDENMerkleTreeGenerateProof(
+    res = _nativeIden3CoreLib.IDENMerkleTreeGenerateProof(
         userAuthClaimNonRevProof, revTree, revNonceHash.ref, status);
     if (res == 0) {
       _consumeStatus(status, "error generating revocation status proof");
@@ -488,7 +462,7 @@ class Iden3CoreLib {
     ffi.Pointer<ffi.Pointer<IDENBigInt>> challengePointer =
         malloc<ffi.Pointer<IDENBigInt>>();
     challengePointer.value = challengeValue;
-    int res = _nativeLib.IDENBigIntFromString(
+    int res = _nativeIden3CoreLib.IDENBigIntFromString(
         challengePointer, unsafePointerChallenge, status);
     if (res == 0) {
       _consumeStatus(status, "can't convert BigInt from String");
@@ -508,7 +482,7 @@ class Iden3CoreLib {
 
     ffi.Pointer<IDENMerkleTree> claimsTree = _createCorrectMT()!;
 
-    res = _nativeLib.IDENMerkleTreeAddClaim(
+    res = _nativeIden3CoreLib.IDENMerkleTreeAddClaim(
         claimsTree, request.ref.auth_claim.core_claim, status);
     if (res == 0) {
       _consumeStatus(status, "unable to add auth claim to tree");
@@ -516,8 +490,8 @@ class Iden3CoreLib {
 
     ffi.Pointer<IDENMerkleTreeHash> userAuthClaimIndexHash =
         malloc<IDENMerkleTreeHash>();
-    res = _nativeLib.IDENClaimTreeEntryHash(userAuthClaimIndexHash, ffi.nullptr,
-        request.ref.auth_claim.core_claim, status);
+    res = _nativeIden3CoreLib.IDENClaimTreeEntryHash(userAuthClaimIndexHash,
+        ffi.nullptr, request.ref.auth_claim.core_claim, status);
     if (res == 0) {
       _consumeStatus(
           status, "error calculating index hash of user's auth claimf");
@@ -527,7 +501,7 @@ class Iden3CoreLib {
     ffi.Pointer<ffi.Pointer<IDENProof>> userAuthClaimProof =
         malloc<ffi.Pointer<IDENProof>>();
     userAuthClaimProof.value = userAuthClaimProofValue;
-    res = _nativeLib.IDENMerkleTreeGenerateProof(
+    res = _nativeIden3CoreLib.IDENMerkleTreeGenerateProof(
         userAuthClaimProof, claimsTree, userAuthClaimIndexHash.ref, status);
     if (res == 0) {
       _consumeStatus(status, "error generating user auth claim's proof");
@@ -536,13 +510,15 @@ class Iden3CoreLib {
 
     ffi.Pointer<IDENMerkleTreeHash> claimsTreeRoot =
         malloc<IDENMerkleTreeHash>();
-    res = _nativeLib.IDENMerkleTreeRoot(claimsTreeRoot, claimsTree, status);
+    res = _nativeIden3CoreLib.IDENMerkleTreeRoot(
+        claimsTreeRoot, claimsTree, status);
     if (res == 0) {
       _consumeStatus(status, "can't calc tree root");
     }
 
     ffi.Pointer<IDENId> idP = malloc<IDENId>();
-    res = _nativeLib.IDENCalculateGenesisID(idP, claimsTreeRoot.ref, status);
+    res = _nativeIden3CoreLib.IDENCalculateGenesisID(
+        idP, claimsTreeRoot.ref, status);
     if (res == 0) {
       _consumeStatus(status, "unable to calculate genesis ID");
     }
@@ -564,14 +540,14 @@ class Iden3CoreLib {
     ffi.Pointer<ffi.Pointer<IDENBigInt>> revNonceBigInt =
         malloc<ffi.Pointer<IDENBigInt>>();
     revNonceBigInt.value = revNonceValue;
-    res = _nativeLib.IDENBigIntFromString(
+    res = _nativeIden3CoreLib.IDENBigIntFromString(
         revNonceBigInt, unsafePointerRevNonce, status);
     if (res == 0) {
       _consumeStatus(status, "revNonce: can't convert BigInt from String");
     }
 
     ffi.Pointer<IDENMerkleTreeHash> revNonceHash = malloc<IDENMerkleTreeHash>();
-    res = _nativeLib.IDENHashFromBigInt(
+    res = _nativeIden3CoreLib.IDENHashFromBigInt(
         revNonceHash, revNonceBigInt.value, status);
     if (res == 0) {
       _consumeStatus(status, "revNonce: can't convert Hash from BigInt");
@@ -581,7 +557,7 @@ class Iden3CoreLib {
     ffi.Pointer<ffi.Pointer<IDENProof>> userAuthClaimNonRevProof =
         malloc<ffi.Pointer<IDENProof>>();
     userAuthClaimNonRevProof.value = userAuthClaimNonRevProofValue;
-    res = _nativeLib.IDENMerkleTreeGenerateProof(
+    res = _nativeIden3CoreLib.IDENMerkleTreeGenerateProof(
         userAuthClaimNonRevProof, revTree, revNonceHash.ref, status);
     if (res == 0) {
       _consumeStatus(status, "error generating revocation status proof");
@@ -627,7 +603,7 @@ class Iden3CoreLib {
     ffi.Pointer<ffi.Pointer<ffi.Char>> response =
         malloc<ffi.Pointer<ffi.Char>>();
     response.value = responseValue;
-    res = _nativeLib.IDENPrepareAuthInputs(response, request, status);
+    res = _nativeIden3CoreLib.IDENPrepareAuthInputs(response, request, status);
     if (res == 0) {
       _consumeStatus(status, "can't prepare auth inputs");
     }
@@ -638,14 +614,15 @@ class Iden3CoreLib {
       result = jsonString.toDartString();
     }
 
-    _nativeLib.IDENFreeMerkleTree(claimsTree);
-    _nativeLib.IDENFreeMerkleTree(revTree);
-    _nativeLib.IDENFreeMerkleTree(rorTree);
-    _nativeLib.IDENFreeClaim(request.ref.auth_claim.core_claim);
-    _nativeLib.IDENFreeBigInt(request.ref.challenge);
-    _nativeLib.IDENFreeProof(request.ref.auth_claim.proof);
-    _nativeLib.IDENFreeProof(request.ref.auth_claim.non_rev_proof.proof);
-    _nativeLib.free(response.cast());
+    _nativeIden3CoreLib.IDENFreeMerkleTree(claimsTree);
+    _nativeIden3CoreLib.IDENFreeMerkleTree(revTree);
+    _nativeIden3CoreLib.IDENFreeMerkleTree(rorTree);
+    _nativeIden3CoreLib.IDENFreeClaim(request.ref.auth_claim.core_claim);
+    _nativeIden3CoreLib.IDENFreeBigInt(request.ref.challenge);
+    _nativeIden3CoreLib.IDENFreeProof(request.ref.auth_claim.proof);
+    _nativeIden3CoreLib.IDENFreeProof(
+        request.ref.auth_claim.non_rev_proof.proof);
+    _nativeIden3CoreLib.free(response.cast());
 
     if (kDebugMode) {
       print(result.toString());
@@ -695,8 +672,8 @@ class Iden3CoreLib {
       int value = values[i];
       ffi.Pointer<ffi.Char> unsafePointerValue =
           value.toString().toNativeUtf8().cast<ffi.Char>();
-      res =
-          _nativeLib.IDENBigIntFromString(valuePtr, unsafePointerValue, status);
+      res = _nativeIden3CoreLib.IDENBigIntFromString(
+          valuePtr, unsafePointerValue, status);
       if (res == 0) {
         _consumeStatus(status, "");
         return "";
@@ -715,7 +692,7 @@ class Iden3CoreLib {
         challenge.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> challengePointer =
         malloc<ffi.Pointer<IDENBigInt>>();
-    res = _nativeLib.IDENBigIntFromString(
+    res = _nativeIden3CoreLib.IDENBigIntFromString(
         challengePointer, unsafePointerChallenge, status);
     request.ref.challenge = challengePointer.value;
 
@@ -750,7 +727,7 @@ class Iden3CoreLib {
         userRevNonce.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> userRevNonceBigInt =
         malloc<ffi.Pointer<IDENBigInt>>();
-    res = _nativeLib.IDENBigIntFromString(
+    res = _nativeIden3CoreLib.IDENBigIntFromString(
         userRevNonceBigInt, unsafePointerUserRevNonce, status);
     if (res == 0) {
       _consumeStatus(status, "");
@@ -759,7 +736,7 @@ class Iden3CoreLib {
 
     ffi.Pointer<IDENMerkleTreeHash> userRevNonceHash =
         malloc<IDENMerkleTreeHash>();
-    res = _nativeLib.IDENHashFromBigInt(
+    res = _nativeIden3CoreLib.IDENHashFromBigInt(
         userRevNonceHash, userRevNonceBigInt.value, status);
     if (res == 0) {
       _consumeStatus(status, "");
@@ -768,7 +745,7 @@ class Iden3CoreLib {
 
     ffi.Pointer<ffi.Pointer<IDENProof>> nonRevProof =
         malloc<ffi.Pointer<IDENProof>>();
-    res = _nativeLib.IDENMerkleTreeGenerateProof(
+    res = _nativeIden3CoreLib.IDENMerkleTreeGenerateProof(
         nonRevProof, emptyTree, userRevNonceHash.ref, status);
     if (res == 0) {
       _consumeStatus(
@@ -786,8 +763,8 @@ class Iden3CoreLib {
 
     ffi.Pointer<IDENMerkleTreeHash> userAuthClaimIndexHash =
         malloc<IDENMerkleTreeHash>();
-    res = _nativeLib.IDENClaimTreeEntryHash(userAuthClaimIndexHash, ffi.nullptr,
-        request.ref.auth_claim.core_claim, status);
+    res = _nativeIden3CoreLib.IDENClaimTreeEntryHash(userAuthClaimIndexHash,
+        ffi.nullptr, request.ref.auth_claim.core_claim, status);
     if (res == 0) {
       _consumeStatus(
           status, "error calculating index hash of user's auth claim");
@@ -796,7 +773,7 @@ class Iden3CoreLib {
 
     ffi.Pointer<ffi.Pointer<IDENProof>> proof =
         malloc<ffi.Pointer<IDENProof>>();
-    res = _nativeLib.IDENMerkleTreeGenerateProof(
+    res = _nativeIden3CoreLib.IDENMerkleTreeGenerateProof(
         proof, userAuthClaimsTree.value, userAuthClaimIndexHash.ref, status);
     if (res == 0) {
       _consumeStatus(status, "error generating user auth claim's proof");
@@ -811,7 +788,7 @@ class Iden3CoreLib {
 
     // Generate revocation status proof
     ffi.Pointer<IDENMerkleTreeHash> revNonceHash = malloc<IDENMerkleTreeHash>();
-    res = _nativeLib.IDENHashFromBigInt(
+    res = _nativeIden3CoreLib.IDENHashFromBigInt(
         revNonceHash, userRevNonceBigInt.value, status);
     if (res == 0) {
       _consumeStatus(status, "");
@@ -917,7 +894,8 @@ class Iden3CoreLib {
       String issuerId = smtProof.issuer_data!.id!;
       ffi.Pointer<ffi.Char> issuerIdStr =
           issuerId.toNativeUtf8().cast<ffi.Char>();
-      res = _nativeLib.IDENIdFromString(issuerIdPtr, issuerIdStr, status);
+      res = _nativeIden3CoreLib.IDENIdFromString(
+          issuerIdPtr, issuerIdStr, status);
       if (res == 0) {
         _consumeStatus(status, "error getting issuer's id");
         //retVal = 1;
@@ -1037,7 +1015,8 @@ class Iden3CoreLib {
     ffi.Pointer<ffi.Pointer<ffi.Char>> response =
         malloc<ffi.Pointer<ffi.Char>>();
     response.value = responseValue;
-    res = _nativeLib.IDENPrepareAtomicQueryMTPInputs(response, request, status);
+    res = _nativeIden3CoreLib.IDENPrepareAtomicQueryMTPInputs(
+        response, request, status);
     if (res == 0) {
       _consumeStatus(status, "can't prepare atomic query MTP inputs");
     }
@@ -1048,23 +1027,24 @@ class Iden3CoreLib {
       result = jsonString.toDartString();
     }
 
-    _nativeLib.IDENFreeBigInt(request.ref.challenge);
+    _nativeIden3CoreLib.IDENFreeBigInt(request.ref.challenge);
     if (request.ref.query.values_num > 0) {
       for (int i = 0; i < request.ref.query.values_num; i++) {
-        _nativeLib.IDENFreeBigInt(request.ref.query.values[i]);
+        _nativeIden3CoreLib.IDENFreeBigInt(request.ref.query.values[i]);
       }
     }
-    _nativeLib.IDENFreeClaim(request.ref.auth_claim.core_claim);
+    _nativeIden3CoreLib.IDENFreeClaim(request.ref.auth_claim.core_claim);
     // _nativeLib.IDENFreeClaim(issuerAuthClaim.value);
-    _nativeLib.IDENFreeMerkleTree(userAuthClaimsTree.value);
+    _nativeIden3CoreLib.IDENFreeMerkleTree(userAuthClaimsTree.value);
     // _nativeLib.IDENFreeMerkleTree(issuerAuthClaimsTree.value);
     // _nativeLib.IDENFreeMerkleTree(issuerRevTree);
-    _nativeLib.IDENFreeMerkleTree(emptyTree);
-    _nativeLib.IDENFreeProof(request.ref.claim.proof);
-    _nativeLib.IDENFreeProof(request.ref.auth_claim.proof);
-    _nativeLib.IDENFreeProof(request.ref.claim.non_rev_proof.proof);
-    _nativeLib.IDENFreeProof(request.ref.auth_claim.non_rev_proof.proof);
-    _nativeLib.free(response.cast());
+    _nativeIden3CoreLib.IDENFreeMerkleTree(emptyTree);
+    _nativeIden3CoreLib.IDENFreeProof(request.ref.claim.proof);
+    _nativeIden3CoreLib.IDENFreeProof(request.ref.auth_claim.proof);
+    _nativeIden3CoreLib.IDENFreeProof(request.ref.claim.non_rev_proof.proof);
+    _nativeIden3CoreLib.IDENFreeProof(
+        request.ref.auth_claim.non_rev_proof.proof);
+    _nativeIden3CoreLib.free(response.cast());
 
     if (kDebugMode) {
       print(result.toString());
@@ -1115,8 +1095,8 @@ class Iden3CoreLib {
       int value = values[i];
       ffi.Pointer<ffi.Char> unsafePointerValue =
           value.toString().toNativeUtf8().cast<ffi.Char>();
-      res =
-          _nativeLib.IDENBigIntFromString(valuePtr, unsafePointerValue, status);
+      res = _nativeIden3CoreLib.IDENBigIntFromString(
+          valuePtr, unsafePointerValue, status);
       if (res == 0) {
         _consumeStatus(status, "");
       }
@@ -1136,7 +1116,7 @@ class Iden3CoreLib {
     ffi.Pointer<ffi.Pointer<IDENBigInt>> challengePointer =
         malloc<ffi.Pointer<IDENBigInt>>();
     challengePointer.value = challengeValue;
-    res = _nativeLib.IDENBigIntFromString(
+    res = _nativeIden3CoreLib.IDENBigIntFromString(
         challengePointer, unsafePointerChallenge, status);
     if (res == 0) {
       _consumeStatus(status, "can't convert BigInt from String");
@@ -1162,8 +1142,8 @@ class Iden3CoreLib {
 
     ffi.Pointer<IDENMerkleTreeHash> userAuthClaimIndexHash =
         malloc<IDENMerkleTreeHash>();
-    res = _nativeLib.IDENClaimTreeEntryHash(userAuthClaimIndexHash, ffi.nullptr,
-        request.ref.auth_claim.core_claim, status);
+    res = _nativeIden3CoreLib.IDENClaimTreeEntryHash(userAuthClaimIndexHash,
+        ffi.nullptr, request.ref.auth_claim.core_claim, status);
     if (res == 0) {
       _consumeStatus(
           status, "error calculating index hash of user's auth claim");
@@ -1173,7 +1153,7 @@ class Iden3CoreLib {
     // AUTH CLAIM
     ffi.Pointer<ffi.Pointer<IDENProof>> authClaimProof =
         malloc<ffi.Pointer<IDENProof>>();
-    res = _nativeLib.IDENMerkleTreeGenerateProof(authClaimProof,
+    res = _nativeIden3CoreLib.IDENMerkleTreeGenerateProof(authClaimProof,
         userClaimsTree.value, userAuthClaimIndexHash.ref, status);
     if (res == 0) {
       _consumeStatus(status, "error generating user auth claim's proof");
@@ -1198,7 +1178,7 @@ class Iden3CoreLib {
         userAuthClaimRevNonce.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> userRevNonceBigInt =
         malloc<ffi.Pointer<IDENBigInt>>();
-    res = _nativeLib.IDENBigIntFromString(
+    res = _nativeIden3CoreLib.IDENBigIntFromString(
         userRevNonceBigInt, unsafePointerUserRevNonce, status);
     if (res == 0) {
       _consumeStatus(status, "");
@@ -1207,7 +1187,7 @@ class Iden3CoreLib {
 
     ffi.Pointer<IDENMerkleTreeHash> userAuthClaimRevNonceHash =
         malloc<IDENMerkleTreeHash>();
-    res = _nativeLib.IDENHashFromBigInt(
+    res = _nativeIden3CoreLib.IDENHashFromBigInt(
         userAuthClaimRevNonceHash, userRevNonceBigInt.value, status);
     if (res == 0) {
       _consumeStatus(status, "");
@@ -1216,7 +1196,7 @@ class Iden3CoreLib {
 
     ffi.Pointer<ffi.Pointer<IDENProof>> nonRevProof =
         malloc<ffi.Pointer<IDENProof>>();
-    res = _nativeLib.IDENMerkleTreeGenerateProof(
+    res = _nativeIden3CoreLib.IDENMerkleTreeGenerateProof(
         nonRevProof, emptyTree, userAuthClaimRevNonceHash.ref, status);
     if (res == 0) {
       _consumeStatus(
@@ -1241,7 +1221,8 @@ class Iden3CoreLib {
     String issuerId = signatureProof.issuer_data!.id!;
     ffi.Pointer<ffi.Char> issuerIdStr =
         issuerId.toNativeUtf8().cast<ffi.Char>();
-    res = _nativeLib.IDENIdFromString(issuerIdPtr, issuerIdStr, status);
+    res =
+        _nativeIden3CoreLib.IDENIdFromString(issuerIdPtr, issuerIdStr, status);
     if (res == 0) {
       _consumeStatus(status, "error getting issuer's id");
       //retVal = 1;
@@ -1295,7 +1276,7 @@ class Iden3CoreLib {
         json.encode(signatureProof.issuer_data!.auth_claim!);
     ffi.Pointer<ffi.Char> unsafePointerIssuerAuthClaim =
         proofIssuerAuthClaim.toNativeUtf8().cast<ffi.Char>();
-    res = _nativeLib.IDENNewClaimFromJSON(
+    res = _nativeIden3CoreLib.IDENNewClaimFromJSON(
         issuerAuthClaim, unsafePointerIssuerAuthClaim, status);
     if (res == 0) {
       _consumeStatus(status, "error getting issuer's auth claim");
@@ -1476,7 +1457,8 @@ class Iden3CoreLib {
     }
     ffi.Pointer<ffi.Pointer<ffi.Char>> response =
         malloc<ffi.Pointer<ffi.Char>>();
-    res = _nativeLib.IDENPrepareAtomicQuerySigInputs(response, request, status);
+    res = _nativeIden3CoreLib.IDENPrepareAtomicQuerySigInputs(
+        response, request, status);
     if (res == 0) {
       _consumeStatus(status, "can't prepare atomic query Sig inputs");
     }
@@ -1487,28 +1469,29 @@ class Iden3CoreLib {
       result = jsonString.toDartString();
     }
 
-    _nativeLib.IDENFreeBigInt(request.ref.challenge);
+    _nativeIden3CoreLib.IDENFreeBigInt(request.ref.challenge);
     if (request.ref.query.values_num > 0) {
       for (int i = 0; i < request.ref.query.values_num; i++) {
-        _nativeLib.IDENFreeBigInt(request.ref.query.values[i]);
+        _nativeIden3CoreLib.IDENFreeBigInt(request.ref.query.values[i]);
       }
     }
-    _nativeLib.IDENFreeClaim(request.ref.auth_claim.core_claim);
-    _nativeLib.IDENFreeClaim(request.ref.claim.core_claim);
+    _nativeIden3CoreLib.IDENFreeClaim(request.ref.auth_claim.core_claim);
+    _nativeIden3CoreLib.IDENFreeClaim(request.ref.claim.core_claim);
     //_nativeLib.IDENFreeClaim(issuerAuthClaim.value);
-    _nativeLib.IDENFreeMerkleTree(userClaimsTree.value);
+    _nativeIden3CoreLib.IDENFreeMerkleTree(userClaimsTree.value);
     //_nativeLib.IDENFreeMerkleTree(issuerClaimsTree.value);
     //_nativeLib.IDENFreeMerkleTree(issuerRevTree);
-    _nativeLib.IDENFreeMerkleTree(emptyTree);
-    _nativeLib.IDENFreeProof(request.ref.claim.proof);
-    _nativeLib.IDENFreeProof(request.ref.auth_claim.proof);
-    _nativeLib.IDENFreeProof(request.ref.auth_claim.non_rev_proof.proof);
-    _nativeLib.IDENFreeProof(request.ref.claim.non_rev_proof.proof);
-    _nativeLib.IDENFreeProof(
+    _nativeIden3CoreLib.IDENFreeMerkleTree(emptyTree);
+    _nativeIden3CoreLib.IDENFreeProof(request.ref.claim.proof);
+    _nativeIden3CoreLib.IDENFreeProof(request.ref.auth_claim.proof);
+    _nativeIden3CoreLib.IDENFreeProof(
+        request.ref.auth_claim.non_rev_proof.proof);
+    _nativeIden3CoreLib.IDENFreeProof(request.ref.claim.non_rev_proof.proof);
+    _nativeIden3CoreLib.IDENFreeProof(
         request.ref.claim.signature_proof.issuer_auth_claim_mtp);
-    _nativeLib.IDENFreeProof(
+    _nativeIden3CoreLib.IDENFreeProof(
         request.ref.claim.signature_proof.issuer_auth_non_rev_proof.proof);
-    _nativeLib.free(response.cast());
+    _nativeIden3CoreLib.free(response.cast());
 
     if (kDebugMode) {
       print(result.toString());
@@ -1553,7 +1536,7 @@ class Iden3CoreLib {
         }
       }
     }
-    _nativeLib.IDENFreeStatus(status.value);
+    _nativeIden3CoreLib.IDENFreeStatus(status.value);
     return result;
   }
 
@@ -1564,7 +1547,8 @@ class Iden3CoreLib {
       ffi.Pointer<IDENMerkleTree> rorTree,
       ffi.Pointer<ffi.Pointer<IDENStatus>> status) {
     ffi.Pointer<IDENMerkleTreeHash> claimsRoot = malloc<IDENMerkleTreeHash>();
-    int res = _nativeLib.IDENMerkleTreeRoot(claimsRoot, claimsTree, status);
+    int res =
+        _nativeIden3CoreLib.IDENMerkleTreeRoot(claimsRoot, claimsTree, status);
     if (res == 0) {
       _consumeStatus(status, "claims tree root");
       return false;
@@ -1573,7 +1557,8 @@ class Iden3CoreLib {
 
     ffi.Pointer<IDENMerkleTreeHash> revocationRoot =
         malloc<IDENMerkleTreeHash>();
-    res = _nativeLib.IDENMerkleTreeRoot(revocationRoot, revTree, status);
+    res =
+        _nativeIden3CoreLib.IDENMerkleTreeRoot(revocationRoot, revTree, status);
     if (res == 0) {
       _consumeStatus(status, "revocation root");
       return false;
@@ -1582,7 +1567,7 @@ class Iden3CoreLib {
     treeState.ref.revocation_root = revocationRoot.ref;
 
     ffi.Pointer<IDENMerkleTreeHash> rootOfRoots = malloc<IDENMerkleTreeHash>();
-    res = _nativeLib.IDENMerkleTreeRoot(rootOfRoots, rorTree, status);
+    res = _nativeIden3CoreLib.IDENMerkleTreeRoot(rootOfRoots, rorTree, status);
     if (res == 0) {
       _consumeStatus(status, "root of roots");
       return false;
@@ -1597,7 +1582,7 @@ class Iden3CoreLib {
     hashes[2] = rootOfRoots;
 
     ffi.Pointer<IDENMerkleTreeHash> dst = malloc<IDENMerkleTreeHash>();
-    res = _nativeLib.IDENHashOfHashes(dst, hashes, 3, status);
+    res = _nativeIden3CoreLib.IDENHashOfHashes(dst, hashes, 3, status);
     if (res == 0) {
       _consumeStatus(status, "hash of Hashes");
       return false;
@@ -1642,7 +1627,8 @@ class Iden3CoreLib {
         unsafePointerSchemaHash.asTypedList(schemaHash.length);
     pointerList.setAll(0, schemaHash);*/
 
-    int res = _nativeLib.IDENNewClaim(claim, unsafePointerSchemaHash, status);
+    int res = _nativeIden3CoreLib.IDENNewClaim(
+        claim, unsafePointerSchemaHash, status);
     if (res == 0) {
       _consumeStatus(status, "");
       return false;
@@ -1652,7 +1638,8 @@ class Iden3CoreLib {
         privKeyXHex.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> keyX =
         malloc<ffi.Pointer<IDENBigInt>>();
-    res = _nativeLib.IDENBigIntFromString(keyX, unsafePointerX, status);
+    res =
+        _nativeIden3CoreLib.IDENBigIntFromString(keyX, unsafePointerX, status);
     if (res == 0) {
       _consumeStatus(status, "");
       return false;
@@ -1662,13 +1649,14 @@ class Iden3CoreLib {
         privKeyYHex.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> keyY =
         malloc<ffi.Pointer<IDENBigInt>>();
-    res = _nativeLib.IDENBigIntFromString(keyY, unsafePointerY, status);
+    res =
+        _nativeIden3CoreLib.IDENBigIntFromString(keyY, unsafePointerY, status);
     if (res == 0) {
       _consumeStatus(status, "");
       return false;
     }
 
-    res = _nativeLib.IDENClaimSetIndexDataInt(
+    res = _nativeIden3CoreLib.IDENClaimSetIndexDataInt(
         claim.value, keyX.value, keyY.value, status);
     if (res == 0) {
       _consumeStatus(status, "");
@@ -1679,24 +1667,24 @@ class Iden3CoreLib {
         revNonce.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> revNonceBigInt =
         malloc<ffi.Pointer<IDENBigInt>>();
-    res = _nativeLib.IDENBigIntFromString(
+    res = _nativeIden3CoreLib.IDENBigIntFromString(
         revNonceBigInt, unsafePointerRevNonce, status);
     if (res == 0) {
       _consumeStatus(status, "");
       return false;
     }
 
-    res = _nativeLib.IDENClaimSetRevocationNonceAsBigInt(
+    res = _nativeIden3CoreLib.IDENClaimSetRevocationNonceAsBigInt(
         claim.value, revNonceBigInt.value, status);
     if (res == 0) {
       _consumeStatus(status, "");
       return false;
     }
 
-    _nativeLib.free(unsafePointerSchemaHash.cast());
-    _nativeLib.IDENFreeBigInt(keyX.value);
-    _nativeLib.IDENFreeBigInt(keyY.value);
-    _nativeLib.IDENFreeBigInt(revNonceBigInt.value);
+    _nativeIden3CoreLib.free(unsafePointerSchemaHash.cast());
+    _nativeIden3CoreLib.IDENFreeBigInt(keyX.value);
+    _nativeIden3CoreLib.IDENFreeBigInt(keyY.value);
+    _nativeIden3CoreLib.IDENFreeBigInt(revNonceBigInt.value);
     return true;
   }
 
@@ -1735,12 +1723,13 @@ class Iden3CoreLib {
         malloc<ffi.Pointer<IDENClaim>>();
     ffi.Pointer<ffi.Pointer<IDENStatus>> status =
         malloc<ffi.Pointer<IDENStatus>>();
-    int res = _nativeLib.IDENNewClaim(claim, unsafePointerSchemaHash, status);
+    int res = _nativeIden3CoreLib.IDENNewClaim(
+        claim, unsafePointerSchemaHash, status);
     if (res == 0) {
       _consumeStatus(status, "error creating new claim");
     }
 
-    res = _nativeLib.IDENClaimSetIndexID(claim.value, id, status);
+    res = _nativeIden3CoreLib.IDENClaimSetIndexID(claim.value, id, status);
     if (res == 0) {
       _consumeStatus(status, "error setting index id to claim");
     }
@@ -1749,7 +1738,7 @@ class Iden3CoreLib {
         slotA.toString().toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> slotABigInt =
         malloc<ffi.Pointer<IDENBigInt>>();
-    res = _nativeLib.IDENBigIntFromString(
+    res = _nativeIden3CoreLib.IDENBigIntFromString(
         slotABigInt, unsafePointerSlotA, status);
     if (res == 0) {
       _consumeStatus(status, "error creating bigInt from string");
@@ -1759,7 +1748,7 @@ class Iden3CoreLib {
         slotB.toString().toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> slotBBigInt =
         malloc<ffi.Pointer<IDENBigInt>>();
-    res = _nativeLib.IDENBigIntFromString(
+    res = _nativeIden3CoreLib.IDENBigIntFromString(
         slotBBigInt, unsafePointerSlotB, status);
     if (res == 0) {
       _consumeStatus(status, "error creating bigInt from string");
@@ -1769,29 +1758,29 @@ class Iden3CoreLib {
         revNonce.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> revNonceBigInt =
         malloc<ffi.Pointer<IDENBigInt>>();
-    res = _nativeLib.IDENBigIntFromString(
+    res = _nativeIden3CoreLib.IDENBigIntFromString(
         revNonceBigInt, unsafePointerRevNonce, status);
     if (res == 0) {
       _consumeStatus(status, "error creating bigInt from string");
     }
 
-    res = _nativeLib.IDENClaimSetIndexDataInt(
+    res = _nativeIden3CoreLib.IDENClaimSetIndexDataInt(
         claim.value, slotABigInt.value, slotBBigInt.value, status);
     if (res == 0) {
       _consumeStatus(status, "error setting index data int to claim");
     }
 
-    _nativeLib.IDENFreeBigInt(slotABigInt.value);
-    _nativeLib.IDENFreeBigInt(slotBBigInt.value);
+    _nativeIden3CoreLib.IDENFreeBigInt(slotABigInt.value);
+    _nativeIden3CoreLib.IDENFreeBigInt(slotBBigInt.value);
 
-    res = _nativeLib.IDENClaimSetRevocationNonceAsBigInt(
+    res = _nativeIden3CoreLib.IDENClaimSetRevocationNonceAsBigInt(
         claim.value, revNonceBigInt.value, status);
     if (res == 0) {
       _consumeStatus(status, "error setting revocation nonce to claim");
     }
 
-    res =
-        _nativeLib.IDENClaimSetExpirationDate(claim.value, 1669884010, status);
+    res = _nativeIden3CoreLib.IDENClaimSetExpirationDate(
+        claim.value, 1669884010, status);
     if (res == 0) {
       _consumeStatus(status, "error setting expiration date to claim");
     }
@@ -1812,7 +1801,7 @@ class Iden3CoreLib {
     int result = 0;
     ffi.Pointer<ffi.Pointer<IDENStatus>> status =
         malloc<ffi.Pointer<IDENStatus>>();
-    int res = _nativeLib.IDENNewMerkleTree(claimsTree, 32, status);
+    int res = _nativeIden3CoreLib.IDENNewMerkleTree(claimsTree, 32, status);
     if (res == 0) {
       _consumeStatus(status, "can't create merkle tree");
       result = 1;
@@ -1827,7 +1816,7 @@ class Iden3CoreLib {
       return result;
     }
 
-    res = _nativeLib.IDENMerkleTreeAddClaim(
+    res = _nativeIden3CoreLib.IDENMerkleTreeAddClaim(
         claimsTree.value, claim.value, status);
     if (res == 0) {
       _consumeStatus(status, "can't add claim to merkle tree");
@@ -1837,15 +1826,16 @@ class Iden3CoreLib {
 
     ffi.Pointer<IDENMerkleTreeHash> claimsTreeRoot =
         malloc<IDENMerkleTreeHash>();
-    res =
-        _nativeLib.IDENMerkleTreeRoot(claimsTreeRoot, claimsTree.value, status);
+    res = _nativeIden3CoreLib.IDENMerkleTreeRoot(
+        claimsTreeRoot, claimsTree.value, status);
     if (res == 0) {
       _consumeStatus(status, "unable to calculate claim's tree root");
       result = 1;
       return result;
     }
 
-    res = _nativeLib.IDENCalculateGenesisID(id, claimsTreeRoot.ref, status);
+    res = _nativeIden3CoreLib.IDENCalculateGenesisID(
+        id, claimsTreeRoot.ref, status);
     if (res == 0) {
       _consumeStatus(status, "unable to calculate genesis ID");
       result = 1;
@@ -1864,11 +1854,11 @@ class Iden3CoreLib {
     ffi.Pointer<ffi.Pointer<IDENStatus>> status =
         malloc<ffi.Pointer<IDENStatus>>();
     status.value = statusValue;
-    int res = _nativeLib.IDENNewMerkleTree(mt, 40, status);
+    int res = _nativeIden3CoreLib.IDENNewMerkleTree(mt, 40, status);
     if (res == 0 || mt == ffi.nullptr) {
       bool error = _consumeStatus(status, "error new merkle tree");
       if (error) {
-        _nativeLib.IDENFreeMerkleTree(mt.value);
+        _nativeIden3CoreLib.IDENFreeMerkleTree(mt.value);
       }
       if (kDebugMode) {
         print("unable to allocate merkle tree\n");
@@ -1896,7 +1886,7 @@ class Iden3CoreLib {
     int result = 0;
     ffi.Pointer<ffi.Pointer<IDENStatus>> status =
         malloc<ffi.Pointer<IDENStatus>>();
-    int res = _nativeLib.IDENJsonLDGetFieldSlotIndex(
+    int res = _nativeIden3CoreLib.IDENJsonLDGetFieldSlotIndex(
         slotI, keyP, claimTypeP, schemaP, status);
     if (res == 0) {
       _consumeStatus(status, "IDENJsonLDGetFieldSlotIndex error");
@@ -1906,267 +1896,11 @@ class Iden3CoreLib {
       print("slotIndex: ${slotI.value}");
     }
     result = slotI.value;
-    _nativeLib.free(slotI.cast());
-    _nativeLib.free(keyP.cast());
-    _nativeLib.free(claimTypeP.cast());
-    _nativeLib.free(schemaP.cast());
+    _nativeIden3CoreLib.free(slotI.cast());
+    _nativeIden3CoreLib.free(keyP.cast());
+    _nativeIden3CoreLib.free(claimTypeP.cast());
+    _nativeIden3CoreLib.free(schemaP.cast());
     return result;
-  }
-
-  Future<Uint8List?> calculateWitness(
-      Uint8List wasmBytes, Uint8List inputsJsonBytes) async {
-    int circuitSize = wasmBytes.length;
-    ffi.Pointer<ffi.Char> circuitBuffer = malloc<ffi.Char>(circuitSize);
-    final data = wasmBytes;
-    for (int i = 0; i < circuitSize; i++) {
-      circuitBuffer[i] = data[i];
-    }
-
-    int jsonSize = inputsJsonBytes.length;
-    ffi.Pointer<ffi.Char> jsonBuffer = malloc<ffi.Char>(jsonSize);
-    final data2 = inputsJsonBytes;
-    for (int i = 0; i < jsonSize; i++) {
-      jsonBuffer[i] = data2[i];
-    }
-
-    ffi.Pointer<ffi.UnsignedLong> wtnsSize = malloc<ffi.UnsignedLong>();
-    wtnsSize.value = 4 * 1024 * 1024;
-    ffi.Pointer<ffi.Char> wtnsBuffer = malloc<ffi.Char>(wtnsSize.value);
-
-    int errorMaxSize = 256;
-    ffi.Pointer<ffi.Char> errorMsg = malloc<ffi.Char>(errorMaxSize);
-
-    int result = _witnessLib.witnesscalc(circuitBuffer, circuitSize, jsonBuffer,
-        jsonSize, wtnsBuffer, wtnsSize, errorMsg, errorMaxSize);
-    if (result == witness.WITNESSCALC_OK) {
-      Uint8List wtnsBytes = Uint8List(wtnsSize.value);
-      for (int i = 0; i < wtnsSize.value; i++) {
-        wtnsBytes[i] = wtnsBuffer[i];
-      }
-      /*ffi.Pointer<Utf8> jsonString = wtnsBuffer.cast<Utf8>();
-      String wtnsmsg = jsonString.toDartString();
-      if (kDebugMode) {
-        print("$result: ${result.toString()}");
-        print("Wtns: $wtnsmsg");
-      }*/
-      return wtnsBytes;
-    } else if (result == witness.WITNESSCALC_ERROR) {
-      //ffi.Pointer<ffi.Int8> json = errorMsg.cast<ffi.Int8>();
-      ffi.Pointer<Utf8> jsonString = errorMsg.cast<Utf8>();
-      String errormsg = jsonString.toDartString();
-      if (kDebugMode) {
-        print("$result: ${result.toString()}. Error: $errormsg");
-      }
-    } else if (result == witness.WITNESSCALC_ERROR_SHORT_BUFFER) {
-      if (kDebugMode) {
-        print(
-            "$result: ${result.toString()}. Error: Short buffer for proof or public");
-      }
-    }
-    return null;
-  }
-
-  Future<Uint8List?> calculateWitnessSig(
-      Uint8List wasmBytes, Uint8List inputsJsonBytes) async {
-    int circuitSize = wasmBytes.length;
-    ffi.Pointer<ffi.Char> circuitBuffer = malloc<ffi.Char>(circuitSize);
-    final data = wasmBytes;
-    for (int i = 0; i < circuitSize; i++) {
-      circuitBuffer[i] = data[i];
-    }
-
-    int jsonSize = inputsJsonBytes.length;
-    ffi.Pointer<ffi.Char> jsonBuffer = malloc<ffi.Char>(jsonSize);
-    final data2 = inputsJsonBytes;
-    for (int i = 0; i < jsonSize; i++) {
-      jsonBuffer[i] = data2[i];
-    }
-
-    ffi.Pointer<ffi.UnsignedLong> wtnsSize = malloc<ffi.UnsignedLong>();
-    wtnsSize.value = 4 * 1024 * 1024;
-    ffi.Pointer<ffi.Char> wtnsBuffer = malloc<ffi.Char>(wtnsSize.value);
-
-    int errorMaxSize = 256;
-    ffi.Pointer<ffi.Char> errorMsg = malloc<ffi.Char>(errorMaxSize);
-
-    int result = _witnessSigLib.witnesscalc_credentialAtomicQuerySig(
-        circuitBuffer,
-        circuitSize,
-        jsonBuffer,
-        jsonSize,
-        wtnsBuffer,
-        wtnsSize,
-        errorMsg,
-        errorMaxSize);
-    if (result == witness.WITNESSCALC_OK) {
-      Uint8List wtnsBytes = Uint8List(wtnsSize.value);
-      for (int i = 0; i < wtnsSize.value; i++) {
-        wtnsBytes[i] = wtnsBuffer[i];
-      }
-      /*ffi.Pointer<Utf8> jsonString = wtnsBuffer.cast<Utf8>();
-      String wtnsmsg = jsonString.toDartString();
-      if (kDebugMode) {
-        print("$result: ${result.toString()}");
-        print("Wtns: $wtnsmsg");
-      }*/
-      return wtnsBytes;
-    } else if (result == witness.WITNESSCALC_ERROR) {
-      //ffi.Pointer<ffi.Int8> json = errorMsg.cast<ffi.Int8>();
-      ffi.Pointer<Utf8> jsonString = errorMsg.cast<Utf8>();
-      String errormsg = jsonString.toDartString();
-      if (kDebugMode) {
-        print("$result: ${result.toString()}. Error: $errormsg");
-      }
-    } else if (result == witness.WITNESSCALC_ERROR_SHORT_BUFFER) {
-      if (kDebugMode) {
-        print(
-            "$result: ${result.toString()}. Error: Short buffer for proof or public");
-      }
-    }
-    return null;
-  }
-
-  Future<Uint8List?> calculateWitnessMtp(
-      Uint8List wasmBytes, Uint8List inputsJsonBytes) async {
-    int circuitSize = wasmBytes.length;
-    ffi.Pointer<ffi.Char> circuitBuffer = malloc<ffi.Char>(circuitSize);
-    final data = wasmBytes;
-    for (int i = 0; i < circuitSize; i++) {
-      circuitBuffer[i] = data[i];
-    }
-
-    int jsonSize = inputsJsonBytes.length;
-    ffi.Pointer<ffi.Char> jsonBuffer = malloc<ffi.Char>(jsonSize);
-    final data2 = inputsJsonBytes;
-    for (int i = 0; i < jsonSize; i++) {
-      jsonBuffer[i] = data2[i];
-    }
-
-    ffi.Pointer<ffi.UnsignedLong> wtnsSize = malloc<ffi.UnsignedLong>();
-    wtnsSize.value = 4 * 1024 * 1024;
-    ffi.Pointer<ffi.Char> wtnsBuffer = malloc<ffi.Char>(wtnsSize.value);
-
-    int errorMaxSize = 256;
-    ffi.Pointer<ffi.Char> errorMsg = malloc<ffi.Char>(errorMaxSize);
-
-    int result = _witnessMtpLib.witnesscalc_credentialAtomicQueryMTP(
-        circuitBuffer,
-        circuitSize,
-        jsonBuffer,
-        jsonSize,
-        wtnsBuffer,
-        wtnsSize,
-        errorMsg,
-        errorMaxSize);
-    if (result == witness.WITNESSCALC_OK) {
-      Uint8List wtnsBytes = Uint8List(wtnsSize.value);
-      for (int i = 0; i < wtnsSize.value; i++) {
-        wtnsBytes[i] = wtnsBuffer[i];
-      }
-      /*ffi.Pointer<Utf8> jsonString = wtnsBuffer.cast<Utf8>();
-      String wtnsmsg = jsonString.toDartString();
-      if (kDebugMode) {
-        print("$result: ${result.toString()}");
-        print("Wtns: $wtnsmsg");
-      }*/
-      return wtnsBytes;
-    } else if (result == witness.WITNESSCALC_ERROR) {
-      //ffi.Pointer<ffi.Int8> json = errorMsg.cast<ffi.Int8>();
-      ffi.Pointer<Utf8> jsonString = errorMsg.cast<Utf8>();
-      String errormsg = jsonString.toDartString();
-      if (kDebugMode) {
-        print("$result: ${result.toString()}. Error: $errormsg");
-      }
-    } else if (result == witness.WITNESSCALC_ERROR_SHORT_BUFFER) {
-      if (kDebugMode) {
-        print(
-            "$result: ${result.toString()}. Error: Short buffer for proof or public");
-      }
-    }
-    return null;
-  }
-
-  Future<Map<String, dynamic>?> prove(
-      Uint8List zkeyBytes, Uint8List wtnsBytes) async {
-    Map<String, dynamic> map = {};
-
-    int zkeySize = zkeyBytes.length;
-    ffi.Pointer<ffi.Char> zkeyBuffer = malloc<ffi.Char>(zkeySize);
-    final data = zkeyBytes;
-    for (int i = 0; i < zkeySize; i++) {
-      zkeyBuffer[i] = data[i];
-    }
-
-    int wtnsSize = wtnsBytes.length;
-    ffi.Pointer<ffi.Char> wtnsBuffer = malloc<ffi.Char>(wtnsSize);
-    final data2 = wtnsBytes.buffer.asUint8List();
-    for (int i = 0; i < wtnsSize; i++) {
-      wtnsBuffer[i] = data2[i];
-    }
-
-    ffi.Pointer<ffi.UnsignedLong> proofSize = malloc<ffi.UnsignedLong>();
-    proofSize.value = 16384;
-    ffi.Pointer<ffi.Char> proofBuffer = malloc<ffi.Char>(proofSize.value);
-    ffi.Pointer<ffi.UnsignedLong> publicSize = malloc<ffi.UnsignedLong>();
-    publicSize.value = 16384;
-    ffi.Pointer<ffi.Char> publicBuffer = malloc<ffi.Char>(publicSize.value);
-    int errorMaxSize = 256;
-    ffi.Pointer<ffi.Char> errorMsg = malloc<ffi.Char>(errorMaxSize);
-
-    DateTime start = DateTime.now();
-
-    // TODO:
-
-    int result = _proverLib.groth16_prover(
-        zkeyBuffer.cast(),
-        zkeySize,
-        wtnsBuffer.cast(),
-        wtnsSize,
-        proofBuffer,
-        proofSize,
-        publicBuffer,
-        publicSize,
-        errorMsg,
-        errorMaxSize);
-
-    DateTime end = DateTime.now();
-
-    int time = end.difference(start).inMicroseconds;
-
-    if (result == PRPOVER_OK) {
-      //ffi.Pointer<ffi.Int8> json = proofBuffer.cast<ffi.Int8>();
-      ffi.Pointer<Utf8> jsonString = proofBuffer.cast<Utf8>();
-      String proofmsg = jsonString.toDartString();
-
-      //ffi.Pointer<ffi.Int8> json2 = publicBuffer;
-      ffi.Pointer<Utf8> jsonString2 = publicBuffer.cast<Utf8>();
-      String publicmsg = jsonString2.toDartString();
-
-      if (kDebugMode) {
-        print("$result: ${result.toString()}");
-        print("Proof: $proofmsg");
-        print("Public: $publicmsg.");
-        print("Time: $time");
-      }
-      map['circuitId'] = "auth";
-      map['proof'] = json.decode(proofmsg);
-      map['pub_signals'] = json.decode(publicmsg).cast<String>();
-      return map;
-    } else if (result == PPROVER_ERROR) {
-      //ffi.Pointer<ffi.Int8> json = errorMsg.cast<ffi.Int8>();
-      ffi.Pointer<Utf8> jsonString = errorMsg.cast<Utf8>();
-      String errormsg = jsonString.toDartString();
-      if (kDebugMode) {
-        print("$result: ${result.toString()}. Error: $errormsg");
-      }
-    } else if (result == PPROVER_ERROR_SHORT_BUFFER) {
-      if (kDebugMode) {
-        print(
-            "$result: ${result.toString()}. Error: Short buffer for proof or public");
-      }
-    }
-
-    return null;
   }
 
   Uint8List hexToBytesOrZero(String? s) {
@@ -2209,28 +1943,21 @@ class Iden3CoreLib {
     return hexToBytes(s);
   }
 
-  Future<Map<String, dynamic>?> calculateProof(Uint8List inputsJsonBytes,
-      Uint8List zkeyBytes, Uint8List datBytes) async {
-    final Uint8List? wtnsBytes =
-        await calculateWitness(datBytes, inputsJsonBytes);
-
-    return await prove(zkeyBytes, wtnsBytes!);
-  }
-
   int _fillDataSibling(ffi.Pointer<ffi.UnsignedChar> dest, String source,
       ffi.Pointer<ffi.Pointer<IDENStatus>> status) {
     ffi.Pointer<ffi.Char> unsafePointerValue =
         source.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> valuePtr =
         malloc<ffi.Pointer<IDENBigInt>>();
-    int res =
-        _nativeLib.IDENBigIntFromString(valuePtr, unsafePointerValue, status);
+    int res = _nativeIden3CoreLib.IDENBigIntFromString(
+        valuePtr, unsafePointerValue, status);
     if (res == 0) {
       return res;
     }
 
     ffi.Pointer<IDENMerkleTreeHash> itemHash = malloc<IDENMerkleTreeHash>();
-    res = _nativeLib.IDENHashFromBigInt(itemHash, valuePtr.value, status);
+    res = _nativeIden3CoreLib.IDENHashFromBigInt(
+        itemHash, valuePtr.value, status);
     if (res == 0) {
       return res;
     }
@@ -2240,8 +1967,8 @@ class Iden3CoreLib {
     }
 
     // TODO: properly free memory
-    _nativeLib.IDENFreeBigInt(valuePtr.value);
-    _nativeLib.free(itemHash.cast());
+    _nativeIden3CoreLib.IDENFreeBigInt(valuePtr.value);
+    _nativeIden3CoreLib.free(itemHash.cast());
 
     return 1;
   }
@@ -2252,8 +1979,8 @@ class Iden3CoreLib {
         source.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> valuePtr =
         malloc<ffi.Pointer<IDENBigInt>>();
-    int res =
-        _nativeLib.IDENBigIntFromString(valuePtr, unsafePointerValue, status);
+    int res = _nativeIden3CoreLib.IDENBigIntFromString(
+        valuePtr, unsafePointerValue, status);
     if (res == 0) {
       return res;
     }
@@ -2269,7 +1996,7 @@ class Iden3CoreLib {
     }
 
     // TODO: properly free memory
-    _nativeLib.IDENFreeBigInt(valuePtr.value);
+    _nativeIden3CoreLib.IDENFreeBigInt(valuePtr.value);
 
     return 1;
   }
@@ -2293,7 +2020,7 @@ class Iden3CoreLib {
       for (int i = 0; i < hs.length; i++) {
         final intACStr = hs[i].toBigInt().toRadixString(10).toNativeUtf8();
         try {
-          int ok = _nativeLib.IDENBigIntFromString(
+          int ok = _nativeIden3CoreLib.IDENBigIntFromString(
               ints.elementAt(i), intACStr.cast(), nullptr);
           if (ok != 1) {
             throw Exception("can't create IDENBigInt from int");
@@ -2303,7 +2030,7 @@ class Iden3CoreLib {
         }
       }
 
-      int ok = _nativeLib.IDENHashInts(hash, hs.length, ints, nullptr);
+      int ok = _nativeIden3CoreLib.IDENHashInts(hash, hs.length, ints, nullptr);
       if (ok != 1) {
         throw Exception("can't calc hash of ints");
       }
@@ -2311,9 +2038,9 @@ class Iden3CoreLib {
       return hashFromIdenBigInt(hash.value);
     } finally {
       for (int i = 0; i < hs.length; i++) {
-        _nativeLib.IDENFreeBigInt(ints[i]);
+        _nativeIden3CoreLib.IDENFreeBigInt(ints[i]);
       }
-      _nativeLib.IDENFreeBigInt(hash.value);
+      _nativeIden3CoreLib.IDENFreeBigInt(hash.value);
     }
   }
 
@@ -2334,7 +2061,7 @@ class Iden3CoreLib {
       for (int i = 0; i < bis.length; i++) {
         final intACStr = bis[i].toRadixString(10).toNativeUtf8();
         try {
-          int ok = _nativeLib.IDENBigIntFromString(
+          int ok = _nativeIden3CoreLib.IDENBigIntFromString(
               ints.elementAt(i), intACStr.cast(), nullptr);
           if (ok != 1) {
             throw Exception("can't create IDENBigInt from int");
@@ -2344,7 +2071,8 @@ class Iden3CoreLib {
         }
       }
 
-      int ok = _nativeLib.IDENHashInts(hash, bis.length, ints, nullptr);
+      int ok =
+          _nativeIden3CoreLib.IDENHashInts(hash, bis.length, ints, nullptr);
       if (ok != 1) {
         throw Exception("can't calc hash of ints");
       }
@@ -2352,9 +2080,9 @@ class Iden3CoreLib {
       return bigIntFromIdenBigInt(hash.value);
     } finally {
       for (int i = 0; i < bis.length; i++) {
-        _nativeLib.IDENFreeBigInt(ints[i]);
+        _nativeIden3CoreLib.IDENFreeBigInt(ints[i]);
       }
-      _nativeLib.IDENFreeBigInt(hash.value);
+      _nativeIden3CoreLib.IDENFreeBigInt(hash.value);
     }
   }
 

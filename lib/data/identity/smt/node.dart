@@ -1,4 +1,4 @@
-import '../../../libs/iden3corelib.dart';
+import '../iden3core/iden3core.dart';
 import 'hash.dart';
 
 enum NodeType {

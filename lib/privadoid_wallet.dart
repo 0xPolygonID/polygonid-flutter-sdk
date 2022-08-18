@@ -7,8 +7,8 @@ import 'package:polygonid_flutter_sdk/utils/uint8_list_utils.dart';
 import 'package:web3dart/credentials.dart';
 import 'package:web3dart/crypto.dart';
 
-import 'eddsa_babyjub.dart' as eddsaBabyJub;
-import 'eddsa_babyjub.dart';
+import 'data/identity/bjj/eddsa_babyjub.dart' as eddsaBabyJub;
+import 'data/identity/bjj/eddsa_babyjub.dart';
 
 // TODO: move impl to a DS and transform this class to an entity
 /// @class

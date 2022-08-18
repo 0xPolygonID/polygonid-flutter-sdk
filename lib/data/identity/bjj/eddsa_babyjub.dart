@@ -4,7 +4,7 @@ import 'package:hex/hex.dart';
 import 'package:polygonid_flutter_sdk/utils/hex_utils.dart';
 import 'package:polygonid_flutter_sdk/utils/uint8_list_utils.dart';
 
-import 'libs/circomlib.dart';
+import 'bjj.dart';
 
 /// Class representing EdDSA Baby Jub signature
 class Signature {
@@ -23,12 +23,12 @@ class Signature {
     if (buf.length != 64) {
       throw ArgumentError('buf must be 64 bytes');
     }
-    CircomLib circomLib = CircomLib();
+    BabyjubjubLib bjjLib = BabyjubjubLib();
 
     final XYSublist = buf.sublist(0, 32);
     // unpackPoint is used to unpack R8 X and Y
     final List<String>? unpackedPoint =
-        circomLib.unpackPoint(HEX.encode(XYSublist.toList()));
+        bjjLib.unpackPoint(HEX.encode(XYSublist.toList()));
 
     BigInt? x = BigInt.tryParse(unpackedPoint![0], radix: 10);
     BigInt? y = BigInt.tryParse(unpackedPoint[1], radix: 10);
@@ -62,9 +62,9 @@ class PublicKey {
     if (compressedBuffLE.length != 32) {
       throw ArgumentError('buf must be 32 bytes');
     }
-    CircomLib circomLib = CircomLib();
-    final p = circomLib
-        .unpackPoint(Uint8ArrayUtils.uint8ListToString(compressedBuffLE));
+    BabyjubjubLib bjjLib = BabyjubjubLib();
+    final p =
+        bjjLib.unpackPoint(Uint8ArrayUtils.uint8ListToString(compressedBuffLE));
     if (p == null) {
       throw ArgumentError('unpackPoint failed');
     }
@@ -79,20 +79,13 @@ class PublicKey {
   /// Compress the PublicKey
   /// @returns {Uint8List} - point compressed into a buffer
   Uint8List compress() {
-    CircomLib circomLib = CircomLib();
-    /*Uint8List xList = Uint8ArrayUtils.bigIntToBytes(p[0]);
-    Uint8List yList = Uint8ArrayUtils.bigIntToBytes(p[1]);
-    List<int> pointList = xList.toList();
-    pointList.addAll(yList.toList());
-    BigInt result = Uint8ArrayUtils.leBuff2int(Uint8List.fromList(pointList));*/
+    BabyjubjubLib bjjLib = BabyjubjubLib();
     return HexUtils.hexToBytes(
-        circomLib.packPoint(p[0].toString(), p[1].toString()));
-    /*return Uint8ArrayUtils.uint8ListfromString(
-        circomLib.packPoint(p[0].toString(), p[1].toString()));*/
+        bjjLib.packPoint(p[0].toString(), p[1].toString()));
   }
 
   bool verify(String messageHash, Signature signature) {
-    CircomLib circomLib = CircomLib();
+    BabyjubjubLib bjjLib = BabyjubjubLib();
     List<int> pointList = [];
     pointList.add(p[0].toInt());
     pointList.add(p[1].toInt());
@@ -100,7 +93,7 @@ class PublicKey {
     sigList.add(signature.r8[0].toInt());
     sigList.add(signature.r8[1].toInt());
     sigList.add(signature.s.toInt());
-    return circomLib.verifyPoseidon(
+    return bjjLib.verifyPoseidon(
         Uint8ArrayUtils.uint8ListToString(Uint8List.fromList(pointList)),
         Uint8ArrayUtils.uint8ListToString(Uint8List.fromList(sigList)),
         messageHash);
@@ -123,8 +116,8 @@ class PrivateKey {
   /// Retrieve PublicKey of the PrivateKey
   /// @returns {PublicKey} PublicKey derived from PrivateKey
   PublicKey public() {
-    CircomLib circomLib = CircomLib();
-    String resultString = circomLib.prv2pub(HexUtils.bytesToHex(sk));
+    BabyjubjubLib bjjLib = BabyjubjubLib();
+    String resultString = bjjLib.prv2pub(HexUtils.bytesToHex(sk));
     final stringList = resultString.split(",");
     stringList[0] = stringList[0].replaceAll("Fr(", "");
     stringList[0] = stringList[0].replaceAll(")", "");
@@ -139,21 +132,21 @@ class PrivateKey {
   }
 
   String sign(BigInt messageHash) {
-    CircomLib circomLib = CircomLib();
+    BabyjubjubLib bjjLib = BabyjubjubLib();
     String signature =
-        circomLib.signPoseidon(HexUtils.bytesToHex(sk), messageHash.toString());
+        bjjLib.signPoseidon(HexUtils.bytesToHex(sk), messageHash.toString());
     return signature;
   }
 }
 
 String packSignature(Uint8List signature) {
-  CircomLib circomLib = CircomLib();
+  BabyjubjubLib bjjLib = BabyjubjubLib();
   final sigString = Uint8ArrayUtils.uint8ListToString(signature);
-  return circomLib.packSignature(sigString);
+  return bjjLib.packSignature(sigString);
 }
 
 String hashPoseidon(
     String claimsTreeRoot, String revocationTree, String rootsTreeRoot) {
-  CircomLib circomLib = CircomLib();
-  return circomLib.hashPoseidon(claimsTreeRoot, revocationTree, rootsTreeRoot);
+  BabyjubjubLib bjjLib = BabyjubjubLib();
+  return bjjLib.hashPoseidon(claimsTreeRoot, revocationTree, rootsTreeRoot);
 }

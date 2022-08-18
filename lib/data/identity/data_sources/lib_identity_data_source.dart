@@ -1,8 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:fast_base58/fast_base58.dart';
-import 'package:polygonid_flutter_sdk/libs/iden3corelib.dart';
 import 'package:polygonid_flutter_sdk/utils/hex_utils.dart';
+
+import '../iden3core/iden3core.dart';
 
 class LibIdentityDataSource {
   final Iden3CoreLib _iden3coreLib;

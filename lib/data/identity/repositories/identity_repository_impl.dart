@@ -50,6 +50,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
       String identifier = await _libIdentityDataSource.getIdentifier(
           pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]);
 
+      // TODO: Create the smt
+      String smt = ""; // await _libIdentityDataSource.createSMT(identifier);
+
       // Store the identity
       await _libIdentityDataSource
           .getAuthClaim(pubX: wallet.publicKey[0], pubY: wallet.publicKey[1])
@@ -57,7 +60,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
         IdentityDTO dto = IdentityDTO(
             privateKey: _hexMapper.mapFrom(wallet.privateKey),
             identifier: identifier,
-            authClaim: authClaim);
+            authClaim: authClaim,
+            smt: smt);
 
         return _storageIdentityDataSource
             .storeIdentity(identifier: identifier, identity: dto)
@@ -87,7 +91,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
                 ]).then((values) => Identity(
                     privateKey: _hexMapper.mapFrom(wallet.privateKey),
                     identifier: values[0],
-                    authClaim: values[1])))
+                    authClaim: values[1],
+                    smt: values[2])))
             .catchError((error) => throw IdentityException(error)));
   }
 

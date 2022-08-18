@@ -8,69 +8,70 @@ typedef CStringFree = void Function(Pointer<Utf8>);
 typedef CStringFreeFFI = Void Function(Pointer<Utf8>);
 
 @injectable
-class CircomLib {
-  final DynamicLibrary lib = Platform.isAndroid
+class BabyjubjubLib {
+  final DynamicLibrary _nativeBabyjubjubLib = Platform.isAndroid
       ? DynamicLibrary.open("libbabyjubjub.so")
       : DynamicLibrary.process();
 
   late CStringFree cstringFree;
 
-  CircomLib() {
-    _packSignature = lib
+  BabyjubjubLib() {
+    _packSignature = _nativeBabyjubjubLib
         .lookup<NativeFunction<Pointer<Utf8> Function(Pointer<Utf8>)>>(
             "pack_signature")
         .asFunction();
 
-    _unpackSignature = lib
+    _unpackSignature = _nativeBabyjubjubLib
         .lookup<NativeFunction<Pointer<Utf8> Function(Pointer<Utf8>)>>(
             "unpack_signature")
         .asFunction();
 
-    _packPoint = lib
+    _packPoint = _nativeBabyjubjubLib
         .lookup<
             NativeFunction<
                 Pointer<Utf8> Function(
                     Pointer<Utf8>, Pointer<Utf8>)>>("pack_point")
         .asFunction();
 
-    _unpackPoint = lib
+    _unpackPoint = _nativeBabyjubjubLib
         .lookup<NativeFunction<Pointer<Utf8> Function(Pointer<Utf8>)>>(
             "unpack_point")
         .asFunction();
 
-    _prv2Pub = lib
+    _prv2Pub = _nativeBabyjubjubLib
         .lookup<NativeFunction<Pointer<Utf8> Function(Pointer<Utf8>)>>(
             "prv2pub")
         .asFunction();
 
-    _poseidonHash = lib
+    _poseidonHash = _nativeBabyjubjubLib
         .lookup<NativeFunction<Pointer<Utf8> Function(Pointer<Utf8>)>>(
             "poseidon_hash")
         .asFunction();
 
-    _hashPoseidon = lib
+    _hashPoseidon = _nativeBabyjubjubLib
         .lookup<
             NativeFunction<
                 Pointer<Utf8> Function(Pointer<Utf8>, Pointer<Utf8>,
                     Pointer<Utf8>)>>("hash_poseidon")
         .asFunction();
 
-    _signPoseidon = lib
+    _signPoseidon = _nativeBabyjubjubLib
         .lookup<
             NativeFunction<
                 Pointer<Utf8> Function(
                     Pointer<Utf8>, Pointer<Utf8>)>>("sign_poseidon")
         .asFunction();
 
-    _verifyPoseidon = lib
+    _verifyPoseidon = _nativeBabyjubjubLib
         .lookup<
             NativeFunction<
                 Pointer<Utf8> Function(Pointer<Utf8>, Pointer<Utf8>,
                     Pointer<Utf8>)>>("verify_poseidon")
         .asFunction();
 
-    cstringFree =
-        lib.lookup<NativeFunction<CStringFreeFFI>>("cstring_free").asFunction();
+    cstringFree = _nativeBabyjubjubLib
+        .lookup<NativeFunction<CStringFreeFFI>>("cstring_free")
+        .asFunction();
   }
 
   late Pointer<Utf8> Function(Pointer<Utf8>) _packSignature;

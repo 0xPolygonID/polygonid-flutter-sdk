@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:injectable/injectable.dart';
-import 'package:polygonid_flutter_sdk/eddsa_babyjub.dart';
+import 'package:polygonid_flutter_sdk/data/identity/bjj/eddsa_babyjub.dart';
 import 'package:polygonid_flutter_sdk/privadoid_wallet.dart';
 import 'package:web3dart/crypto.dart';
 

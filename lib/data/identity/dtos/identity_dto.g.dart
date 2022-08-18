@@ -10,6 +10,7 @@ IdentityDTO _$IdentityDTOFromJson(Map<String, dynamic> json) => IdentityDTO(
       privateKey: json['privateKey'] as String,
       identifier: json['identifier'] as String,
       authClaim: json['authClaim'] as String,
+      smt: json['smt'] as String,
     );
 
 Map<String, dynamic> _$IdentityDTOToJson(IdentityDTO instance) =>
@@ -17,4 +18,5 @@ Map<String, dynamic> _$IdentityDTOToJson(IdentityDTO instance) =>
       'privateKey': instance.privateKey,
       'identifier': instance.identifier,
       'authClaim': instance.authClaim,
+      'smt': instance.smt,
     };

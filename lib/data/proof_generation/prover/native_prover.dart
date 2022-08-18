@@ -4,17 +4,17 @@
 import 'dart:ffi' as ffi;
 
 /// Bindings to `ios/Classes/prover.h`.
-class ProverLib {
+class NativeProverLib {
   /// Holds the symbol lookup function.
   final ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
       _lookup;
 
   /// The symbols are looked up in [dynamicLibrary].
-  ProverLib(ffi.DynamicLibrary dynamicLibrary)
+  NativeProverLib(ffi.DynamicLibrary dynamicLibrary)
       : _lookup = dynamicLibrary.lookup;
 
   /// The symbols are looked up with [lookup].
-  ProverLib.fromLookup(
+  NativeProverLib.fromLookup(
       ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
           lookup)
       : _lookup = lookup;

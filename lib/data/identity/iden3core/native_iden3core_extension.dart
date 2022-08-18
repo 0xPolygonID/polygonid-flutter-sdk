@@ -3,7 +3,7 @@ import 'dart:ffi' as ffi;
 import 'package:ffi/ffi.dart';
 import 'package:web3dart/crypto.dart';
 
-import 'generated_bindings.dart';
+import 'native_iden3core.dart';
 
 extension IDENProofJsonParsing on IDENProof {
   static ffi.Pointer<IDENProof> fromJson(Map<String, dynamic> json) {

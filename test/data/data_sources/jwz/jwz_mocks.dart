@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:polygonid_flutter_sdk/data/identity/bjj/bjj.dart';
 import 'package:polygonid_flutter_sdk/data/identity/jwz/jwz.dart';
 import 'package:polygonid_flutter_sdk/data/identity/jwz/jwz_header.dart';
 import 'package:polygonid_flutter_sdk/data/identity/jwz/jwz_proof.dart';
-import 'package:polygonid_flutter_sdk/libs/circomlib.dart';
 import 'package:polygonid_flutter_sdk/utils/uint8_list_utils.dart';
 
 class JWZMocks {
@@ -160,10 +160,10 @@ class JWZMocks {
 
   static JWZ jwz = JWZ(header: jwzHeader, payload: jwzPayload, proof: jwzProof);
 
-  static CircomLib fakeCircom = FakeCircom();
+  static BabyjubjubLib fakeBjj = FakeBjj();
 }
 
-class FakeCircom extends Fake implements CircomLib {
+class FakeBjj extends Fake implements BabyjubjubLib {
   @override
   String poseidonHash(String input) {
     return '3DFF';
