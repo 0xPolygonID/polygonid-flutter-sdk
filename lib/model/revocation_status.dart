@@ -26,7 +26,7 @@ class RevocationStatus {
     } catch (e) {
       mtp = null;
     }
-    try{
+    try {
       mtpRaw = json['mtp'];
     } catch (e) {
       mtpRaw = null;

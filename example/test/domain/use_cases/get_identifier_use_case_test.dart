@@ -15,7 +15,8 @@ GetIdentifierUseCase useCase = GetIdentifierUseCase(identityRepository);
 @GenerateMocks([IdentityRepository])
 void main() {
   setUp(() {
-    when(identityRepository.getCurrentIdentifier()).thenAnswer((realInvocation) => Future.value(identifier));
+    when(identityRepository.getCurrentIdentifier())
+        .thenAnswer((realInvocation) => Future.value(identifier));
   });
 
   test(

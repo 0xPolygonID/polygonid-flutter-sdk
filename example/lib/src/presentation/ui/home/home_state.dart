@@ -7,7 +7,8 @@ abstract class HomeState {
 
   factory HomeState.loading() => LoadingDataHomeState();
 
-  factory HomeState.loaded(String? identifier) => LoadedIdentifierHomeState(identifier);
+  factory HomeState.loaded(String? identifier) =>
+      LoadedIdentifierHomeState(identifier);
 
   factory HomeState.error(String message) => ErrorHomeState(message: message);
 }

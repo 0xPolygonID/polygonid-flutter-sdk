@@ -73,8 +73,7 @@ class StorageIdentityDataSource {
   /// the stored current identifier up to date
   ///
   /// TODO: remove when we support multiple identity
-  Future<void> removeIdentity(
-      {required String identifier}) {
+  Future<void> removeIdentity({required String identifier}) {
     return _database.transaction((transaction) => removeIdentityTransact(
         transaction: transaction, identifier: identifier));
   }

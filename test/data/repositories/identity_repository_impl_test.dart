@@ -109,7 +109,8 @@ void main() {
               Future.error(UnknownIdentityException(identifier)));
       when(hexMapper.mapFrom(any))
           .thenAnswer((realInvocation) => walletPrivateKey);
-      when(privateKeyMapper.mapFrom(any)).thenAnswer((realInvocation) => bbjjKey);
+      when(privateKeyMapper.mapFrom(any))
+          .thenAnswer((realInvocation) => bbjjKey);
       when(identityDTOMapper.mapFrom(any))
           .thenAnswer((realInvocation) => mockEntity);
     });

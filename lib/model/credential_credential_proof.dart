@@ -68,10 +68,7 @@ import 'package:polygonid_flutter_sdk/model/credential_credential_proof_issuer_d
 
 import 'credential_credential_proof_mtp.dart';
 
-enum CredentialCredentialProofType {
-  BJJSignature2021,
-  Iden3SparseMerkleProof
-}
+enum CredentialCredentialProofType { BJJSignature2021, Iden3SparseMerkleProof }
 
 class CredentialCredentialProof {
   final String? type;

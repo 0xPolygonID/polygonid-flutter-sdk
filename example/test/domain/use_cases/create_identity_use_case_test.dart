@@ -17,7 +17,8 @@ CreateIdentityUseCase useCase = CreateIdentityUseCase(identityRepository);
 @GenerateMocks([IdentityRepository])
 void main() {
   setUp(() {
-    when(identityRepository.createIdentity()).thenAnswer((realInvocation) => Future.value(identifier));
+    when(identityRepository.createIdentity())
+        .thenAnswer((realInvocation) => Future.value(identifier));
   });
 
   test(
@@ -30,7 +31,8 @@ void main() {
   test(
     'intercept exception while try to get identifier after creating identity',
     () async {
-      when(identityRepository.createIdentity()).thenAnswer((realInvocation) => Future.error(identityException));
+      when(identityRepository.createIdentity())
+          .thenAnswer((realInvocation) => Future.error(identityException));
 
       await expectLater(useCase.execute(), throwsA(identityException));
     },

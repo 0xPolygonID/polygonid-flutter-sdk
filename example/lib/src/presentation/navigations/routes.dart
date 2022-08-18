@@ -23,7 +23,7 @@ class Routes {
   }
 
   ///
-  static WidgetBuilder _homeRoute(){
+  static WidgetBuilder _homeRoute() {
     return (BuildContext context) => HomeScreen();
   }
 }
