@@ -1,5 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/mappers/to_mapper.dart';
-import 'package:polygonid_flutter_sdk/domain/common/entities/FIlterEntity.dart';
+import 'package:polygonid_flutter_sdk/domain/common/entities/filter_entity.dart';
 import 'package:sembast/sembast.dart';
 
 import 'filter_mapper.dart';

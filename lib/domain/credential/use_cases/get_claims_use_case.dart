@@ -1,4 +1,4 @@
-import 'package:polygonid_flutter_sdk/domain/common/entities/FIlterEntity.dart';
+import 'package:polygonid_flutter_sdk/domain/common/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/domain/credential/entities/claim_entity.dart';
 
 import '../../common/domain_logger.dart';

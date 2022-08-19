@@ -1,7 +1,7 @@
-class IdentityException implements Exception {
-  final dynamic error;
+import '../../common/error_exception.dart';
 
-  IdentityException(this.error);
+class IdentityException extends ErrorException {
+  IdentityException(error) : super(error);
 }
 
 class TooLongPrivateKeyException implements Exception {}

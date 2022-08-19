@@ -3,7 +3,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/data/credential/mappers/filter_mapper.dart';
 import 'package:polygonid_flutter_sdk/data/credential/mappers/filters_mapper.dart';
-import 'package:polygonid_flutter_sdk/domain/common/entities/FIlterEntity.dart';
+import 'package:polygonid_flutter_sdk/domain/common/entities/filter_entity.dart';
 import 'package:sembast/sembast.dart';
 
 import 'filters_mapper_test.mocks.dart';

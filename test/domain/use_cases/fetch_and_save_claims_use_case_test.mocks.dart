@@ -5,7 +5,7 @@
 import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/domain/common/entities/FIlterEntity.dart'
+import 'package:polygonid_flutter_sdk/domain/common/entities/filter_entity.dart'
     as _i7;
 import 'package:polygonid_flutter_sdk/domain/credential/entities/claim_entity.dart'
     as _i2;
@@ -85,4 +85,9 @@ class MockCredentialRepository extends _i1.Mock
               returnValue:
                   Future<List<_i2.ClaimEntity>>.value(<_i2.ClaimEntity>[]))
           as _i4.Future<List<_i2.ClaimEntity>>);
+  @override
+  _i4.Future<void> removeClaims({List<String>? ids}) =>
+      (super.noSuchMethod(Invocation.method(#removeClaims, [], {#ids: ids}),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
 }

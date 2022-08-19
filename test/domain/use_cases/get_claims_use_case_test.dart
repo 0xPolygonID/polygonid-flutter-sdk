@@ -1,12 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/domain/common/entities/FIlterEntity.dart';
+import 'package:polygonid_flutter_sdk/domain/common/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/domain/credential/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/domain/credential/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/domain/identity/repositories/credential_repository.dart';
 
-import '../../data/repositories/identity_repository_impl_test.dart';
 import 'get_claims_use_case_test.mocks.dart';
 
 // Data
@@ -45,6 +44,7 @@ final claimEntities = [
       state: ClaimState.revoked,
       id: "id3")
 ];
+var exception = Exception();
 
 // Dependencies
 MockCredentialRepository credentialRepository = MockCredentialRepository();

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:polygonid_flutter_sdk/data/credential/data_sources/remote_claim_data_source.dart';
-import 'package:polygonid_flutter_sdk/domain/common/entities/FIlterEntity.dart';
+import 'package:polygonid_flutter_sdk/domain/common/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/domain/credential/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/domain/credential/entities/credential_request_entity.dart';
 import 'package:polygonid_flutter_sdk/domain/credential/exceptions/credential_exceptions.dart';
@@ -59,6 +59,14 @@ class CredentialRepositoryImpl extends CredentialRepository {
         .getClaims(
             filter: filters == null ? null : _filtersMapper.mapTo(filters))
         .then((claims) =>
-            claims.map((claim) => _claimMapper.mapFrom(claim)).toList());
+            claims.map((claim) => _claimMapper.mapFrom(claim)).toList())
+        .catchError((error) => throw GetClaimsException(error));
+  }
+
+  @override
+  Future<void> removeClaims({required List<String> ids}) {
+    return _storageClaimDataSource
+        .removeClaims(ids: ids)
+        .catchError((error) => throw RemoveClaimsException(error));
   }
 }

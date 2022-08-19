@@ -1,6 +1,6 @@
 import 'package:polygonid_flutter_sdk/domain/credential/entities/claim_entity.dart';
 
-import '../../common/entities/FIlterEntity.dart';
+import '../../common/entities/filter_entity.dart';
 import '../../credential/entities/credential_request_entity.dart';
 
 abstract class CredentialRepository {
@@ -15,4 +15,6 @@ abstract class CredentialRepository {
   Future<void> saveClaims({required List<ClaimEntity> claims});
 
   Future<List<ClaimEntity>> getClaims({List<FilterEntity>? filters});
+
+  Future<void> removeClaims({required List<String> ids});
 }

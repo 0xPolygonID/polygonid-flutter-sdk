@@ -1,17 +1,21 @@
-class FetchClaimException implements Exception {
-  final dynamic error;
+import '../../common/error_exception.dart';
 
-  FetchClaimException(this.error);
+class FetchClaimException extends ErrorException {
+  FetchClaimException(error) : super(error);
 }
 
-class UnsupportedFetchClaimTypeException implements Exception {
-  final dynamic error;
-
-  UnsupportedFetchClaimTypeException(this.error);
+class UnsupportedFetchClaimTypeException extends ErrorException {
+  UnsupportedFetchClaimTypeException(error) : super(error);
 }
 
-class SaveClaimException implements Exception {
-  final dynamic error;
+class SaveClaimException extends ErrorException {
+  SaveClaimException(error) : super(error);
+}
 
-  SaveClaimException(this.error);
+class GetClaimsException extends ErrorException {
+  GetClaimsException(error) : super(error);
+}
+
+class RemoveClaimsException extends ErrorException {
+  RemoveClaimsException(error) : super(error);
 }

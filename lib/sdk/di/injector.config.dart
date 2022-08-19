@@ -31,23 +31,24 @@ import '../../data/identity/mappers/identity_dto_mapper.dart' as _i12;
 import '../../data/identity/mappers/private_key_mapper.dart' as _i15;
 import '../../data/identity/repositories/identity_repository_impl.dart' as _i25;
 import '../../domain/credential/use_cases/fetch_and_save_claims_use_case.dart'
-    as _i34;
+    as _i35;
 import '../../domain/credential/use_cases/get_claims_use_case.dart' as _i24;
+import '../../domain/credential/use_cases/remove_claims_use_case.dart' as _i26;
 import '../../domain/identity/repositories/credential_repository.dart' as _i23;
-import '../../domain/identity/repositories/identity_repository.dart' as _i26;
-import '../../domain/identity/use_cases/create_identity_use_case.dart' as _i29;
-import '../../domain/identity/use_cases/get_auth_token_use_case.dart' as _i30;
+import '../../domain/identity/repositories/identity_repository.dart' as _i27;
+import '../../domain/identity/use_cases/create_identity_use_case.dart' as _i30;
+import '../../domain/identity/use_cases/get_auth_token_use_case.dart' as _i31;
 import '../../domain/identity/use_cases/get_current_identifier_use_case.dart'
-    as _i31;
-import '../../domain/identity/use_cases/get_identity_use_case.dart' as _i32;
+    as _i32;
+import '../../domain/identity/use_cases/get_identity_use_case.dart' as _i33;
 import '../../domain/identity/use_cases/remove_current_identity_use_case.dart'
-    as _i27;
-import '../../domain/identity/use_cases/sign_message_use_case.dart' as _i28;
+    as _i28;
+import '../../domain/identity/use_cases/sign_message_use_case.dart' as _i29;
 import '../../libs/circomlib.dart' as _i3;
 import '../../libs/iden3corelib.dart' as _i11;
-import '../credential_wallet.dart' as _i35;
-import '../identity_wallet.dart' as _i33;
-import 'injector.dart' as _i36; // ignore_for_file: unnecessary_lambdas
+import '../credential_wallet.dart' as _i36;
+import '../identity_wallet.dart' as _i34;
+import 'injector.dart' as _i37; // ignore_for_file: unnecessary_lambdas
 
 // ignore_for_file: lines_longer_than_80_chars
 /// initializes the registration of provided dependencies inside of [GetIt]
@@ -130,42 +131,46 @@ _i1.GetIt $initSDKGetIt(_i1.GetIt get,
           get<_i10.HexMapper>(),
           get<_i15.PrivateKeyMapper>(),
           get<_i12.IdentityDTOMapper>()));
-  gh.factoryAsync<_i26.IdentityRepository>(() async => repositoriesModule
-      .identityRepository(await get.getAsync<_i25.IdentityRepositoryImpl>()));
-  gh.factoryAsync<_i27.RemoveCurrentIdentityUseCase>(() async =>
-      _i27.RemoveCurrentIdentityUseCase(
-          await get.getAsync<_i26.IdentityRepository>()));
-  gh.factoryAsync<_i28.SignMessageUseCase>(() async =>
-      _i28.SignMessageUseCase(await get.getAsync<_i26.IdentityRepository>()));
-  gh.factoryAsync<_i29.CreateIdentityUseCase>(() async =>
-      _i29.CreateIdentityUseCase(
-          await get.getAsync<_i26.IdentityRepository>()));
-  gh.factoryAsync<_i30.GetAuthTokenUseCase>(() async =>
-      _i30.GetAuthTokenUseCase(await get.getAsync<_i26.IdentityRepository>()));
-  gh.factoryAsync<_i31.GetCurrentIdentifierUseCase>(() async =>
-      _i31.GetCurrentIdentifierUseCase(
-          await get.getAsync<_i26.IdentityRepository>()));
-  gh.factoryAsync<_i32.GetIdentityUseCase>(() async =>
-      _i32.GetIdentityUseCase(await get.getAsync<_i26.IdentityRepository>()));
-  gh.factoryAsync<_i33.IdentityWallet>(() async => _i33.IdentityWallet(
-      await get.getAsync<_i29.CreateIdentityUseCase>(),
-      await get.getAsync<_i32.GetIdentityUseCase>(),
-      await get.getAsync<_i28.SignMessageUseCase>(),
-      await get.getAsync<_i30.GetAuthTokenUseCase>(),
-      await get.getAsync<_i31.GetCurrentIdentifierUseCase>(),
-      await get.getAsync<_i27.RemoveCurrentIdentityUseCase>()));
-  gh.factoryAsync<_i34.FetchAndSaveClaimsUseCase>(() async =>
-      _i34.FetchAndSaveClaimsUseCase(
-          await get.getAsync<_i30.GetAuthTokenUseCase>(),
+  gh.factoryAsync<_i26.RemoveClaimsUseCase>(() async =>
+      _i26.RemoveClaimsUseCase(
           await get.getAsync<_i23.CredentialRepository>()));
-  gh.factoryAsync<_i35.CredentialWallet>(() async => _i35.CredentialWallet(
-      await get.getAsync<_i34.FetchAndSaveClaimsUseCase>(),
-      await get.getAsync<_i24.GetClaimsUseCase>()));
+  gh.factoryAsync<_i27.IdentityRepository>(() async => repositoriesModule
+      .identityRepository(await get.getAsync<_i25.IdentityRepositoryImpl>()));
+  gh.factoryAsync<_i28.RemoveCurrentIdentityUseCase>(() async =>
+      _i28.RemoveCurrentIdentityUseCase(
+          await get.getAsync<_i27.IdentityRepository>()));
+  gh.factoryAsync<_i29.SignMessageUseCase>(() async =>
+      _i29.SignMessageUseCase(await get.getAsync<_i27.IdentityRepository>()));
+  gh.factoryAsync<_i30.CreateIdentityUseCase>(() async =>
+      _i30.CreateIdentityUseCase(
+          await get.getAsync<_i27.IdentityRepository>()));
+  gh.factoryAsync<_i31.GetAuthTokenUseCase>(() async =>
+      _i31.GetAuthTokenUseCase(await get.getAsync<_i27.IdentityRepository>()));
+  gh.factoryAsync<_i32.GetCurrentIdentifierUseCase>(() async =>
+      _i32.GetCurrentIdentifierUseCase(
+          await get.getAsync<_i27.IdentityRepository>()));
+  gh.factoryAsync<_i33.GetIdentityUseCase>(() async =>
+      _i33.GetIdentityUseCase(await get.getAsync<_i27.IdentityRepository>()));
+  gh.factoryAsync<_i34.IdentityWallet>(() async => _i34.IdentityWallet(
+      await get.getAsync<_i30.CreateIdentityUseCase>(),
+      await get.getAsync<_i33.GetIdentityUseCase>(),
+      await get.getAsync<_i29.SignMessageUseCase>(),
+      await get.getAsync<_i31.GetAuthTokenUseCase>(),
+      await get.getAsync<_i32.GetCurrentIdentifierUseCase>(),
+      await get.getAsync<_i28.RemoveCurrentIdentityUseCase>()));
+  gh.factoryAsync<_i35.FetchAndSaveClaimsUseCase>(() async =>
+      _i35.FetchAndSaveClaimsUseCase(
+          await get.getAsync<_i31.GetAuthTokenUseCase>(),
+          await get.getAsync<_i23.CredentialRepository>()));
+  gh.factoryAsync<_i36.CredentialWallet>(() async => _i36.CredentialWallet(
+      await get.getAsync<_i35.FetchAndSaveClaimsUseCase>(),
+      await get.getAsync<_i24.GetClaimsUseCase>(),
+      await get.getAsync<_i26.RemoveClaimsUseCase>()));
   return get;
 }
 
-class _$NetworkModule extends _i36.NetworkModule {}
+class _$NetworkModule extends _i37.NetworkModule {}
 
-class _$DatabaseModule extends _i36.DatabaseModule {}
+class _$DatabaseModule extends _i37.DatabaseModule {}
 
-class _$RepositoriesModule extends _i36.RepositoriesModule {}
+class _$RepositoriesModule extends _i37.RepositoriesModule {}

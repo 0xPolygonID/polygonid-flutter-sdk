@@ -5,7 +5,7 @@
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/data/credential/mappers/filter_mapper.dart'
     as _i3;
-import 'package:polygonid_flutter_sdk/domain/common/entities/FIlterEntity.dart'
+import 'package:polygonid_flutter_sdk/domain/common/entities/filter_entity.dart'
     as _i4;
 import 'package:sembast/sembast.dart' as _i2;
 

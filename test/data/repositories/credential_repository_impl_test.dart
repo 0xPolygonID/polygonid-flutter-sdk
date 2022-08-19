@@ -12,7 +12,7 @@ import 'package:polygonid_flutter_sdk/data/credential/dtos/fetch_claim_response_
 import 'package:polygonid_flutter_sdk/data/credential/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/data/credential/mappers/credential_request_mapper.dart';
 import 'package:polygonid_flutter_sdk/data/credential/mappers/filters_mapper.dart';
-import 'package:polygonid_flutter_sdk/domain/common/entities/FIlterEntity.dart';
+import 'package:polygonid_flutter_sdk/domain/common/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/domain/credential/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/domain/credential/entities/credential_request_entity.dart';
 import 'package:polygonid_flutter_sdk/domain/credential/exceptions/credential_exceptions.dart';
@@ -26,6 +26,7 @@ import 'credential_repository_impl_test.mocks.dart';
 const identifier = "theIdentifier";
 const token = "theToken";
 const url = "theUrl";
+const ids = ["theId", "theId1", "theId2"];
 final exception = Exception();
 
 final CredentialRequestEntity requestEntity = CredentialRequestEntity(
@@ -294,8 +295,13 @@ void main() {
           .thenAnswer((realInvocation) => Future.error(exception));
 
       // When
-      await expectLater(
-          repository.getClaims(filters: filters), throwsA(exception));
+      await repository
+          .getClaims(filters: filters)
+          .then((_) => expect(true, false))
+          .catchError((error) {
+        expect(error, isA<GetClaimsException>());
+        expect(error.error, exception);
+      });
 
       // Then
       expect(
@@ -307,6 +313,54 @@ void main() {
       expect(verify(filtersMapper.mapTo(captureAny)).captured.first, filters);
 
       verifyNever(claimMapper.mapFrom(captureAny));
+    });
+  });
+
+  group("Remove claims", () {
+    setUp(() {
+      // Given
+      when(storageClaimDataSource.removeClaims(ids: anyNamed('ids')))
+          .thenAnswer((realInvocation) => Future.value());
+    });
+
+    test(
+        "Given a list of ids, when I call removeClaims, then I expect the process to completes",
+        () async {
+      // When
+      await expectLater(repository.removeClaims(ids: ids), completes);
+
+      // Then
+      expect(
+          verify(storageClaimDataSource.removeClaims(
+                  ids: captureAnyNamed('ids')))
+              .captured
+              .first,
+          ids);
+    });
+
+    test(
+        "Given a list of ids, when I call removeClaims and an error occurred, then I expect a RemoveClaimsException exception to be thrown",
+        () async {
+      // Given
+      when(storageClaimDataSource.removeClaims(ids: anyNamed('ids')))
+          .thenAnswer((realInvocation) => Future.error(exception));
+
+      // When
+      await repository
+          .removeClaims(ids: ids)
+          .then((_) => expect(true, false))
+          .catchError((error) {
+        expect(error, isA<RemoveClaimsException>());
+        expect(error.error, exception);
+      });
+
+      // Then
+      expect(
+          verify(storageClaimDataSource.removeClaims(
+                  ids: captureAnyNamed('ids')))
+              .captured
+              .first,
+          ids);
     });
   });
 }

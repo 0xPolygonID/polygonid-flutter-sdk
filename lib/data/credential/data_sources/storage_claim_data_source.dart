@@ -56,6 +56,21 @@ class StorageClaimDataSource {
     }
   }
 
+  /// Store all claims in a single transaction
+  /// If one storing fail, they will all be reverted
+  Future<void> removeClaims({required List<String> ids}) {
+    return _database.transaction((transaction) =>
+        removeClaimsTransact(transaction: transaction, ids: ids));
+  }
+
+  // For UT purpose
+  Future<void> removeClaimsTransact(
+      {required DatabaseClient transaction, required List<String> ids}) async {
+    for (String id in ids) {
+      await _storeRefWrapper.remove(transaction, id);
+    }
+  }
+
   Future<List<ClaimDTO>> getClaims({Filter? filter}) {
     return _storeRefWrapper
         .find(_database, finder: Finder(filter: filter))

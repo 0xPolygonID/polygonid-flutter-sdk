@@ -20,7 +20,7 @@ import 'package:polygonid_flutter_sdk/data/credential/mappers/credential_request
     as _i10;
 import 'package:polygonid_flutter_sdk/data/credential/mappers/filters_mapper.dart'
     as _i13;
-import 'package:polygonid_flutter_sdk/domain/common/entities/FIlterEntity.dart'
+import 'package:polygonid_flutter_sdk/domain/common/entities/filter_entity.dart'
     as _i14;
 import 'package:polygonid_flutter_sdk/domain/credential/entities/claim_entity.dart'
     as _i5;
@@ -91,6 +91,19 @@ class MockStorageClaimDataSource extends _i1.Mock
       (super.noSuchMethod(
           Invocation.method(#storeClaimsTransact, [],
               {#transaction: transaction, #claims: claims}),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+  @override
+  _i8.Future<void> removeClaims({List<String>? ids}) =>
+      (super.noSuchMethod(Invocation.method(#removeClaims, [], {#ids: ids}),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
+  @override
+  _i8.Future<void> removeClaimsTransact(
+          {_i6.DatabaseClient? transaction, List<String>? ids}) =>
+      (super.noSuchMethod(
+          Invocation.method(#removeClaimsTransact, [],
+              {#transaction: transaction, #ids: ids}),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i8.Future<void>);
   @override

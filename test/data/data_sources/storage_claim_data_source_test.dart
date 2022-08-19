@@ -37,6 +37,7 @@ class FakeRecordSnapshot
 // Data
 const issuers = ["theIssuer", "theIssuer1", "theIssuer2"];
 const identifiers = ["theIdentifier", "theIdentifier1", "theIdentifier2"];
+const ids = ["theId", "theId1", "theId2"];
 final snapshots = [
   FakeRecordSnapshot(),
   FakeRecordSnapshot(),
@@ -188,6 +189,51 @@ void main() {
       expect(storeCaptured[0], database);
       expect(
           storeCaptured[1].toString(), sem.Finder(filter: filter).toString());
+    });
+  });
+
+  group("Remove claims", () {
+    test(
+        "Given a list of ids, when I call removeClaims, then I expect the process to complete",
+        () async {
+      // Given
+      when(storeRefWrapper.remove(any, any))
+          .thenAnswer((realInvocation) => Future.value(""));
+
+      // When
+      await expectLater(
+          dataSource.removeClaimsTransact(transaction: database, ids: ids),
+          completes);
+
+      // Then
+      var storeVerify = verify(storeRefWrapper.remove(captureAny, captureAny));
+      expect(storeVerify.callCount, ids.length);
+
+      int j = 0;
+      for (int i = 0; i < ids.length; i += 2) {
+        expect(storeVerify.captured[i], database);
+        expect(storeVerify.captured[i + 1], ids[j]);
+        j++;
+      }
+    });
+
+    test(
+        "Given a list of ids, when I call removeClaims and an error occurred, then I expect an exception to be thrown",
+        () async {
+      // Given
+      when(storeRefWrapper.remove(any, any))
+          .thenAnswer((realInvocation) => Future.error(exception));
+
+      // When
+      await expectLater(
+          dataSource.removeClaimsTransact(transaction: database, ids: ids),
+          throwsA(exception));
+
+      // Then
+      var storeVerify = verify(storeRefWrapper.remove(captureAny, captureAny));
+      expect(storeVerify.callCount, 1);
+      expect(storeVerify.captured[0], database);
+      expect(storeVerify.captured[1], ids[0]);
     });
   });
 }
