@@ -17,4 +17,7 @@ abstract class CredentialRepository {
   Future<List<ClaimEntity>> getClaims({List<FilterEntity>? filters});
 
   Future<void> removeClaims({required List<String> ids});
+
+  Future<ClaimEntity> updateClaim(
+      {required String id, required Map<String, dynamic> data});
 }

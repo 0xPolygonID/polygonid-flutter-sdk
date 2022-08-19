@@ -19,21 +19,19 @@ class CredentialRepositoryImpl extends CredentialRepository {
   final ClaimMapper _claimMapper;
   final FiltersMapper _filtersMapper;
 
-  CredentialRepositoryImpl(
-      this._remoteClaimDataSource,
+  CredentialRepositoryImpl(this._remoteClaimDataSource,
       this._storageClaimDataSource,
       this._credentialRequestMapper,
       this._claimMapper,
       this._filtersMapper);
 
   @override
-  Future<ClaimEntity> fetchClaim(
-      {required String identifier,
-      required String token,
-      required CredentialRequestEntity credentialRequest}) {
+  Future<ClaimEntity> fetchClaim({required String identifier,
+    required String token,
+    required CredentialRequestEntity credentialRequest}) {
     return _remoteClaimDataSource
         .fetchClaim(
-            token: token, url: credentialRequest.url, identifier: identifier)
+        token: token, url: credentialRequest.url, identifier: identifier)
         .then((dto) => _claimMapper.mapFrom(dto))
         .catchError((error) => throw FetchClaimException(error));
   }
@@ -49,7 +47,7 @@ class CredentialRepositoryImpl extends CredentialRepository {
   Future<void> saveClaims({required List<ClaimEntity> claims}) {
     return _storageClaimDataSource
         .storeClaims(
-            claims: claims.map((claim) => _claimMapper.mapTo(claim)).toList())
+        claims: claims.map((claim) => _claimMapper.mapTo(claim)).toList())
         .catchError((error) => throw SaveClaimException(error));
   }
 
@@ -57,9 +55,9 @@ class CredentialRepositoryImpl extends CredentialRepository {
   Future<List<ClaimEntity>> getClaims({List<FilterEntity>? filters}) {
     return _storageClaimDataSource
         .getClaims(
-            filter: filters == null ? null : _filtersMapper.mapTo(filters))
+        filter: filters == null ? null : _filtersMapper.mapTo(filters))
         .then((claims) =>
-            claims.map((claim) => _claimMapper.mapFrom(claim)).toList())
+        claims.map((claim) => _claimMapper.mapFrom(claim)).toList())
         .catchError((error) => throw GetClaimsException(error));
   }
 
@@ -68,5 +66,13 @@ class CredentialRepositoryImpl extends CredentialRepository {
     return _storageClaimDataSource
         .removeClaims(ids: ids)
         .catchError((error) => throw RemoveClaimsException(error));
+  }
+
+  @override
+  Future<ClaimEntity> updateClaim(
+      {required String id, required Map<String, dynamic> data}) {
+    return _storageClaimDataSource.updateClaim(id: id, data: data)
+        .then((claim) => _claimMapper.mapFrom(claim))
+        .catchError((error) => throw UpdateClaimException(error));
   }
 }

@@ -1,5 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
+import 'package:polygonid_flutter_sdk/data/credential/dtos/credential_dto.dart';
+import 'package:polygonid_flutter_sdk/domain/credential/exceptions/credential_exceptions.dart';
 import 'package:sembast/sembast.dart';
 
 import '../dtos/claim_dto.dart';
@@ -41,7 +43,7 @@ class StorageClaimDataSource {
   StorageClaimDataSource(this._database, this._storeRefWrapper);
 
   /// Store all claims in a single transaction
-  /// If one storing fail, they will all be reverted
+  /// If one storing fails, they will all be reverted
   Future<void> storeClaims({required List<ClaimDTO> claims}) {
     return _database.transaction((transaction) =>
         storeClaimsTransact(transaction: transaction, claims: claims));
@@ -56,8 +58,8 @@ class StorageClaimDataSource {
     }
   }
 
-  /// Store all claims in a single transaction
-  /// If one storing fail, they will all be reverted
+  /// Remove all claims in a single transaction
+  /// If one removing fails, they will all be reverted
   Future<void> removeClaims({required List<String> ids}) {
     return _database.transaction((transaction) =>
         removeClaimsTransact(transaction: transaction, ids: ids));
@@ -77,5 +79,27 @@ class StorageClaimDataSource {
         .then((snapshots) => snapshots
             .map((snapshot) => ClaimDTO.fromJson(snapshot.value))
             .toList());
+  }
+
+  /// Update a claim and return it
+  Future<ClaimDTO> updateClaim(
+      {required String id, required Map<String, dynamic> data}) {
+    return getClaims(filter: Filter.equals("id", id)).then((claims) {
+      if (claims.isNotEmpty) {
+        ClaimDTO originClaim = claims[0];
+        CredentialDTO credential = CredentialDTO.fromJson(data);
+        ClaimDTO updated = ClaimDTO(
+            id: originClaim.id,
+            issuer: originClaim.issuer,
+            identifier: originClaim.identifier,
+            credential: credential);
+
+        return _storeRefWrapper
+            .put(_database, originClaim.id, updated.toJson())
+            .then((_) => updated);
+      }
+
+      throw ClaimNotFoundException(id);
+    });
   }
 }

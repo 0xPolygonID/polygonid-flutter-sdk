@@ -73,4 +73,11 @@ class MockCredentialRepository extends _i1.Mock
       (super.noSuchMethod(Invocation.method(#removeClaims, [], {#ids: ids}),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<_i2.ClaimEntity> updateClaim(
+          {String? id, Map<String, dynamic>? data}) =>
+      (super.noSuchMethod(
+              Invocation.method(#updateClaim, [], {#id: id, #data: data}),
+              returnValue: Future<_i2.ClaimEntity>.value(_FakeClaimEntity_0()))
+          as _i4.Future<_i2.ClaimEntity>);
 }

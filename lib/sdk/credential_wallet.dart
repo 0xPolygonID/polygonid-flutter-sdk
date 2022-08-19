@@ -5,15 +5,17 @@ import 'package:polygonid_flutter_sdk/domain/credential/entities/credential_requ
 import 'package:polygonid_flutter_sdk/domain/credential/use_cases/fetch_and_save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/domain/credential/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/domain/credential/use_cases/remove_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/domain/credential/use_cases/update_claim_use_case.dart';
 
 @injectable
 class CredentialWallet {
   final FetchAndSaveClaimsUseCase _fetchAndSaveClaimsUseCase;
   final GetClaimsUseCase _getClaimsUseCase;
   final RemoveClaimsUseCase _removeClaimsUseCase;
+  final UpdateClaimUseCase _updateClaimUseCase;
 
   CredentialWallet(this._fetchAndSaveClaimsUseCase, this._getClaimsUseCase,
-      this._removeClaimsUseCase);
+      this._removeClaimsUseCase, this._updateClaimUseCase);
 
   /// Fetch a list of [ClaimEntity] and store them
   Future<List<ClaimEntity>> fetchAndSaveClaims(
@@ -44,5 +46,13 @@ class CredentialWallet {
   /// This is a shortcut of [removeClaims] with only one id
   Future<void> removeClaim({required String id}) {
     return _removeClaimsUseCase.execute(param: [id]);
+  }
+
+  /// Update the Claim associated to the [id] in storage
+  /// Be aware only the [ClaimEntity.data] will be updated
+  /// and [data] is subject to validation by the data layer
+  Future<ClaimEntity> updateClaim(
+      {required String id, required Map<String, dynamic> data}) {
+    return _updateClaimUseCase.execute(param: UpdateClaimParam(id, data));
   }
 }

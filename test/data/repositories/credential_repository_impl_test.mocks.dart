@@ -111,6 +111,13 @@ class MockStorageClaimDataSource extends _i1.Mock
       (super.noSuchMethod(Invocation.method(#getClaims, [], {#filter: filter}),
               returnValue: Future<List<_i3.ClaimDTO>>.value(<_i3.ClaimDTO>[]))
           as _i8.Future<List<_i3.ClaimDTO>>);
+  @override
+  _i8.Future<_i3.ClaimDTO> updateClaim(
+          {String? id, Map<String, dynamic>? data}) =>
+      (super.noSuchMethod(
+              Invocation.method(#updateClaim, [], {#id: id, #data: data}),
+              returnValue: Future<_i3.ClaimDTO>.value(_FakeClaimDTO_1()))
+          as _i8.Future<_i3.ClaimDTO>);
 }
 
 /// A class which mocks [CredentialRequestMapper].
