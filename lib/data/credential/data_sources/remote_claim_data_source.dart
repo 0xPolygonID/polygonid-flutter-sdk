@@ -33,10 +33,13 @@ class RemoteClaimDataSource {
 
         if (fetchResponse.type == FetchClaimResponseType.issuance) {
           return ClaimDTO(
-              id: fetchResponse.credential.id,
-              issuer: fetchResponse.from,
-              identifier: identifier,
-              credential: fetchResponse.credential);
+            id: fetchResponse.credential.id,
+            issuer: fetchResponse.from,
+            identifier: identifier,
+            type: fetchResponse.credential.credentialSubject.type,
+            expiration: fetchResponse.credential.expiration,
+            credential: fetchResponse.credential,
+          );
         } else {
           throw UnsupportedFetchClaimTypeException(response);
         }

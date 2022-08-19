@@ -27,10 +27,12 @@ class ClaimMapper extends Mapper<ClaimDTO, ClaimEntity> {
     CredentialDTO credential = CredentialDTO.fromJson(to.data);
 
     return ClaimDTO(
-        id: credential.id,
+        id: to.id,
         issuer: to.issuer,
         identifier: to.identifier,
         state: _claimStateMapper.mapTo(to.state),
+        type: to.type,
+        expiration: to.expiration,
         credential: credential);
   }
 }

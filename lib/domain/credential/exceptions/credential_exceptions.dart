@@ -1,5 +1,11 @@
 import '../../common/error_exception.dart';
 
+class ClaimNotFoundException implements Exception {
+  final String id;
+
+  ClaimNotFoundException(this.id);
+}
+
 class FetchClaimException extends ErrorException {
   FetchClaimException(error) : super(error);
 }
@@ -18,4 +24,8 @@ class GetClaimsException extends ErrorException {
 
 class RemoveClaimsException extends ErrorException {
   RemoveClaimsException(error) : super(error);
+}
+
+class UpdateClaimException extends ErrorException {
+  UpdateClaimException(error) : super(error);
 }

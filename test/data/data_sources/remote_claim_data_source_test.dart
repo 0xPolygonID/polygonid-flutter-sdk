@@ -30,6 +30,8 @@ final claim = ClaimDTO(
     id: fetchClaimDTO.credential.id,
     issuer: fetchClaimDTO.from,
     identifier: identifier,
+    expiration: fetchClaimDTO.credential.expiration,
+    type: fetchClaimDTO.credential.credentialSubject.type,
     credential: fetchClaimDTO.credential);
 final exception = Exception();
 

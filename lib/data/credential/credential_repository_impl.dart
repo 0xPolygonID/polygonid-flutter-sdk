@@ -11,6 +11,7 @@ import 'data_sources/storage_claim_data_source.dart';
 import 'mappers/claim_mapper.dart';
 import 'mappers/credential_request_mapper.dart';
 import 'mappers/filters_mapper.dart';
+import 'mappers/id_filter_mapper.dart';
 
 class CredentialRepositoryImpl extends CredentialRepository {
   final RemoteClaimDataSource _remoteClaimDataSource;
@@ -18,13 +19,15 @@ class CredentialRepositoryImpl extends CredentialRepository {
   final CredentialRequestMapper _credentialRequestMapper;
   final ClaimMapper _claimMapper;
   final FiltersMapper _filtersMapper;
+  final IdFilterMapper _idFilterMapper;
 
   CredentialRepositoryImpl(
       this._remoteClaimDataSource,
       this._storageClaimDataSource,
       this._credentialRequestMapper,
       this._claimMapper,
-      this._filtersMapper);
+      this._filtersMapper,
+      this._idFilterMapper);
 
   @override
   Future<ClaimEntity> fetchClaim(
@@ -64,9 +67,26 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
+  Future<ClaimEntity> getClaim({required String id}) {
+    return _storageClaimDataSource
+        .getClaims(filter: _idFilterMapper.mapTo(id))
+        .then((claims) => claims.isEmpty
+            ? throw ClaimNotFoundException(id)
+            : _claimMapper.mapFrom(claims.first));
+  }
+
+  @override
   Future<void> removeClaims({required List<String> ids}) {
     return _storageClaimDataSource
         .removeClaims(ids: ids)
         .catchError((error) => throw RemoveClaimsException(error));
+  }
+
+  @override
+  Future<ClaimEntity> updateClaim({required ClaimEntity claim}) {
+    return _storageClaimDataSource
+        .storeClaims(claims: [_claimMapper.mapTo(claim)])
+        .then((_) => claim)
+        .catchError((error) => throw UpdateClaimException(error));
   }
 }

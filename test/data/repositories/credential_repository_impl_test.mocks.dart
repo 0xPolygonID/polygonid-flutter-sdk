@@ -20,6 +20,8 @@ import 'package:polygonid_flutter_sdk/data/credential/mappers/credential_request
     as _i10;
 import 'package:polygonid_flutter_sdk/data/credential/mappers/filters_mapper.dart'
     as _i13;
+import 'package:polygonid_flutter_sdk/data/credential/mappers/id_filter_mapper.dart'
+    as _i15;
 import 'package:polygonid_flutter_sdk/domain/common/entities/filter_entity.dart'
     as _i14;
 import 'package:polygonid_flutter_sdk/domain/credential/entities/claim_entity.dart'
@@ -157,6 +159,20 @@ class MockFiltersMapper extends _i1.Mock implements _i13.FiltersMapper {
 
   @override
   _i6.Filter mapTo(List<_i14.FilterEntity>? to) =>
+      (super.noSuchMethod(Invocation.method(#mapTo, [to]),
+          returnValue: _FakeFilter_4()) as _i6.Filter);
+}
+
+/// A class which mocks [IdFilterMapper].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockIdFilterMapper extends _i1.Mock implements _i15.IdFilterMapper {
+  MockIdFilterMapper() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i6.Filter mapTo(String? to) =>
       (super.noSuchMethod(Invocation.method(#mapTo, [to]),
           returnValue: _FakeFilter_4()) as _i6.Filter);
 }

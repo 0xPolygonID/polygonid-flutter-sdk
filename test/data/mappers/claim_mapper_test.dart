@@ -21,10 +21,13 @@ const authClaim = "theAuthClaim";
 final fetchClaimDTO =
     FetchClaimResponseDTO.fromJson(jsonDecode(mockFetchClaim));
 final dto = ClaimDTO(
-    id: fetchClaimDTO.credential.id,
-    issuer: fetchClaimDTO.from,
-    identifier: identifier,
-    credential: fetchClaimDTO.credential);
+  id: fetchClaimDTO.credential.id,
+  issuer: fetchClaimDTO.from,
+  identifier: identifier,
+  expiration: fetchClaimDTO.credential.expiration,
+  type: fetchClaimDTO.credential.credentialSubject.type,
+  credential: fetchClaimDTO.credential,
+);
 final entity = ClaimEntity(
     issuer: fetchClaimDTO.from,
     identifier: identifier,

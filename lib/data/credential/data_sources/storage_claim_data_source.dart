@@ -41,7 +41,7 @@ class StorageClaimDataSource {
   StorageClaimDataSource(this._database, this._storeRefWrapper);
 
   /// Store all claims in a single transaction
-  /// If one storing fail, they will all be reverted
+  /// If one storing fails, they will all be reverted
   Future<void> storeClaims({required List<ClaimDTO> claims}) {
     return _database.transaction((transaction) =>
         storeClaimsTransact(transaction: transaction, claims: claims));
@@ -56,8 +56,8 @@ class StorageClaimDataSource {
     }
   }
 
-  /// Store all claims in a single transaction
-  /// If one storing fail, they will all be reverted
+  /// Remove all claims in a single transaction
+  /// If one removing fails, they will all be reverted
   Future<void> removeClaims({required List<String> ids}) {
     return _database.transaction((transaction) =>
         removeClaimsTransact(transaction: transaction, ids: ids));

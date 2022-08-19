@@ -12,6 +12,7 @@ import 'package:polygonid_flutter_sdk/data/credential/dtos/fetch_claim_response_
 import 'package:polygonid_flutter_sdk/data/credential/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/data/credential/mappers/credential_request_mapper.dart';
 import 'package:polygonid_flutter_sdk/data/credential/mappers/filters_mapper.dart';
+import 'package:polygonid_flutter_sdk/data/credential/mappers/id_filter_mapper.dart';
 import 'package:polygonid_flutter_sdk/domain/common/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/domain/credential/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/domain/credential/entities/credential_request_entity.dart';
@@ -45,11 +46,13 @@ final claimDTOs = [
       id: "id1",
       issuer: "",
       identifier: "",
+      type: '',
       credential: fetchClaimDTO.credential),
   ClaimDTO(
       id: "id2",
       issuer: "",
       identifier: "",
+      type: '',
       credential: fetchClaimDTO.credential),
 ];
 final claimEntities = [
@@ -85,6 +88,7 @@ MockCredentialRequestMapper credentialRequestMapper =
     MockCredentialRequestMapper();
 MockClaimMapper claimMapper = MockClaimMapper();
 MockFiltersMapper filtersMapper = MockFiltersMapper();
+MockIdFilterMapper idFilterMapper = MockIdFilterMapper();
 
 // Tested instance
 CredentialRepositoryImpl repository = CredentialRepositoryImpl(
@@ -92,14 +96,16 @@ CredentialRepositoryImpl repository = CredentialRepositoryImpl(
     storageClaimDataSource,
     credentialRequestMapper,
     claimMapper,
-    filtersMapper);
+    filtersMapper,
+    idFilterMapper);
 
 @GenerateMocks([
   RemoteClaimDataSource,
   StorageClaimDataSource,
   CredentialRequestMapper,
   ClaimMapper,
-  FiltersMapper
+  FiltersMapper,
+  IdFilterMapper
 ])
 void main() {
   group("Fetch claim", () {

@@ -38,6 +38,8 @@ class FakeRecordSnapshot
 const issuers = ["theIssuer", "theIssuer1", "theIssuer2"];
 const identifiers = ["theIdentifier", "theIdentifier1", "theIdentifier2"];
 const ids = ["theId", "theId1", "theId2"];
+const expirations = ["theExpiration", "theExpiration1", "theExpiration2"];
+const types = ["theType", "theType1", "theType2"];
 final snapshots = [
   FakeRecordSnapshot(),
   FakeRecordSnapshot(),
@@ -54,16 +56,22 @@ final mockClaims = [
       id: credential.id,
       issuer: issuers[0],
       identifier: identifiers[0],
+      expiration: expirations[0],
+      type: types[0],
       credential: credential),
   ClaimDTO(
       id: credential.id,
       issuer: issuers[1],
       identifier: identifiers[1],
+      expiration: expirations[1],
+      type: types[1],
       credential: credential),
   ClaimDTO(
       id: credential.id,
       issuer: issuers[2],
       identifier: identifiers[2],
+      expiration: expirations[2],
+      type: types[2],
       credential: credential)
 ];
 final exception = Exception();

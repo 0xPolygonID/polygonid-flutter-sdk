@@ -69,8 +69,18 @@ class MockCredentialRepository extends _i1.Mock
                   Future<List<_i2.ClaimEntity>>.value(<_i2.ClaimEntity>[]))
           as _i4.Future<List<_i2.ClaimEntity>>);
   @override
+  _i4.Future<_i2.ClaimEntity> getClaim({String? id}) =>
+      (super.noSuchMethod(Invocation.method(#getClaim, [], {#id: id}),
+              returnValue: Future<_i2.ClaimEntity>.value(_FakeClaimEntity_0()))
+          as _i4.Future<_i2.ClaimEntity>);
+  @override
   _i4.Future<void> removeClaims({List<String>? ids}) =>
       (super.noSuchMethod(Invocation.method(#removeClaims, [], {#ids: ids}),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<_i2.ClaimEntity> updateClaim({_i2.ClaimEntity? claim}) =>
+      (super.noSuchMethod(Invocation.method(#updateClaim, [], {#claim: claim}),
+              returnValue: Future<_i2.ClaimEntity>.value(_FakeClaimEntity_0()))
+          as _i4.Future<_i2.ClaimEntity>);
 }

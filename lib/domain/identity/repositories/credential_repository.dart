@@ -16,5 +16,9 @@ abstract class CredentialRepository {
 
   Future<List<ClaimEntity>> getClaims({List<FilterEntity>? filters});
 
+  Future<ClaimEntity> getClaim({required String id});
+
   Future<void> removeClaims({required List<String> ids});
+
+  Future<ClaimEntity> updateClaim({required ClaimEntity claim});
 }
