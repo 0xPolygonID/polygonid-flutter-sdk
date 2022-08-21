@@ -9,44 +9,45 @@ import 'package:http/http.dart' as _i5;
 import 'package:injectable/injectable.dart' as _i2;
 import 'package:sembast/sembast.dart' as _i7;
 
-import '../../data/credential/credential_repository_impl.dart' as _i22;
-import '../../data/credential/data_sources/remote_claim_data_source.dart'
+import '../../credential/data/credential_repository_impl.dart' as _i22;
+import '../../credential/data/data_sources/remote_claim_data_source.dart'
     as _i16;
-import '../../data/credential/data_sources/storage_claim_data_source.dart'
+import '../../credential/data/data_sources/storage_claim_data_source.dart'
     as _i19;
-import '../../data/credential/mappers/claim_mapper.dart' as _i18;
-import '../../data/credential/mappers/claim_state_mapper.dart' as _i4;
-import '../../data/credential/mappers/credential_request_mapper.dart' as _i6;
-import '../../data/credential/mappers/filter_mapper.dart' as _i8;
-import '../../data/credential/mappers/filters_mapper.dart' as _i9;
-import '../../data/identity/data_sources/jwz_data_source.dart' as _i13;
-import '../../data/identity/data_sources/lib_identity_data_source.dart' as _i14;
-import '../../data/identity/data_sources/storage_identity_data_source.dart'
-    as _i20;
-import '../../data/identity/data_sources/storage_key_value_data_source.dart'
-    as _i21;
-import '../../data/identity/data_sources/wallet_data_source.dart' as _i17;
-import '../../data/identity/mappers/hex_mapper.dart' as _i10;
-import '../../data/identity/mappers/identity_dto_mapper.dart' as _i12;
-import '../../data/identity/mappers/private_key_mapper.dart' as _i15;
-import '../../data/identity/repositories/identity_repository_impl.dart' as _i25;
-import '../../domain/credential/use_cases/fetch_and_save_claims_use_case.dart'
+import '../../credential/data/mappers/claim_mapper.dart' as _i18;
+import '../../credential/data/mappers/claim_state_mapper.dart' as _i4;
+import '../../credential/data/mappers/credential_request_mapper.dart' as _i6;
+import '../../credential/data/mappers/filter_mapper.dart' as _i8;
+import '../../credential/data/mappers/filters_mapper.dart' as _i9;
+import '../../credential/domain/repositories/credential_repository.dart'
+    as _i23;
+import '../../credential/domain/use_cases/fetch_and_save_claims_use_case.dart'
     as _i36;
-import '../../domain/credential/use_cases/get_claims_use_case.dart' as _i24;
-import '../../domain/credential/use_cases/remove_claims_use_case.dart' as _i26;
-import '../../domain/credential/use_cases/update_claim_use_case.dart' as _i27;
-import '../../domain/identity/repositories/credential_repository.dart' as _i23;
-import '../../domain/identity/repositories/identity_repository.dart' as _i28;
-import '../../domain/identity/use_cases/create_identity_use_case.dart' as _i31;
-import '../../domain/identity/use_cases/get_auth_token_use_case.dart' as _i32;
-import '../../domain/identity/use_cases/get_current_identifier_use_case.dart'
+import '../../credential/domain/use_cases/get_claims_use_case.dart' as _i24;
+import '../../credential/domain/use_cases/remove_claims_use_case.dart' as _i26;
+import '../../credential/domain/use_cases/update_claim_use_case.dart' as _i27;
+import '../../identity/data/data_sources/jwz_data_source.dart' as _i13;
+import '../../identity/data/data_sources/lib_identity_data_source.dart' as _i14;
+import '../../identity/data/data_sources/storage_identity_data_source.dart'
+    as _i20;
+import '../../identity/data/data_sources/storage_key_value_data_source.dart'
+    as _i21;
+import '../../identity/data/data_sources/wallet_data_source.dart' as _i17;
+import '../../identity/data/mappers/hex_mapper.dart' as _i10;
+import '../../identity/data/mappers/identity_dto_mapper.dart' as _i12;
+import '../../identity/data/mappers/private_key_mapper.dart' as _i15;
+import '../../identity/data/repositories/identity_repository_impl.dart' as _i25;
+import '../../identity/domain/repositories/identity_repository.dart' as _i28;
+import '../../identity/domain/use_cases/create_identity_use_case.dart' as _i31;
+import '../../identity/domain/use_cases/get_auth_token_use_case.dart' as _i32;
+import '../../identity/domain/use_cases/get_current_identifier_use_case.dart'
     as _i33;
-import '../../domain/identity/use_cases/get_identity_use_case.dart' as _i34;
-import '../../domain/identity/use_cases/remove_current_identity_use_case.dart'
+import '../../identity/domain/use_cases/get_identity_use_case.dart' as _i34;
+import '../../identity/domain/use_cases/remove_current_identity_use_case.dart'
     as _i29;
-import '../../domain/identity/use_cases/sign_message_use_case.dart' as _i30;
-import '../../libs/circomlib.dart' as _i3;
-import '../../libs/iden3corelib.dart' as _i11;
+import '../../identity/domain/use_cases/sign_message_use_case.dart' as _i30;
+import '../../identity/libs/bjj/bjj.dart' as _i3;
+import '../../identity/libs/iden3core/iden3core.dart' as _i11;
 import '../credential_wallet.dart' as _i37;
 import '../identity_wallet.dart' as _i35;
 import 'injector.dart' as _i38; // ignore_for_file: unnecessary_lambdas
@@ -59,7 +60,7 @@ _i1.GetIt $initSDKGetIt(_i1.GetIt get,
   final networkModule = _$NetworkModule();
   final databaseModule = _$DatabaseModule();
   final repositoriesModule = _$RepositoriesModule();
-  gh.factory<_i3.CircomLib>(() => _i3.CircomLib());
+  gh.factory<_i3.BabyjubjubLib>(() => _i3.BabyjubjubLib());
   gh.factory<_i4.ClaimStateMapper>(() => _i4.ClaimStateMapper());
   gh.factory<_i5.Client>(() => networkModule.client);
   gh.factory<_i6.CredentialRequestMapper>(() => _i6.CredentialRequestMapper());
@@ -110,8 +111,10 @@ _i1.GetIt $initSDKGetIt(_i1.GetIt get,
           get<_i6.CredentialRequestMapper>(),
           get<_i18.ClaimMapper>(),
           get<_i9.FiltersMapper>()));
-  gh.factory<_i13.JWZDataSource>(() => _i13.JWZDataSource(get<_i3.CircomLib>(),
-      get<_i17.WalletDataSource>(), get<_i13.JWZIsolatesWrapper>()));
+  gh.factory<_i13.JWZDataSource>(() => _i13.JWZDataSource(
+      get<_i3.BabyjubjubLib>(),
+      get<_i17.WalletDataSource>(),
+      get<_i13.JWZIsolatesWrapper>()));
   gh.factoryAsync<_i20.StorageIdentityDataSource>(() async =>
       _i20.StorageIdentityDataSource(
           await get.getAsync<_i7.Database>(),

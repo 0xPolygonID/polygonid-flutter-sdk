@@ -1,11 +1,11 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polygonid_flutter_sdk/data/identity/jwz/jwz.dart';
-import 'package:polygonid_flutter_sdk/data/identity/jwz/jwz_header.dart';
-import 'package:polygonid_flutter_sdk/data/identity/jwz/jwz_proof.dart';
-import 'package:polygonid_flutter_sdk/libs/circomlib.dart';
-import 'package:polygonid_flutter_sdk/utils/uint8_list_utils.dart';
+import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
+import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj.dart';
+import 'package:polygonid_flutter_sdk/identity/libs/jwz/jwz.dart';
+import 'package:polygonid_flutter_sdk/identity/libs/jwz/jwz_header.dart';
+import 'package:polygonid_flutter_sdk/identity/libs/jwz/jwz_proof.dart';
 
 class JWZMocks {
   /// Header
@@ -127,11 +127,11 @@ class JWZMocks {
       typ: "application/iden3-zkp-json");
 
   static JWZProof jwzProof = JWZProof(
-      proof: JWZBaseProof(piA: const [
+      proof: const JWZBaseProof(piA: [
         "10412436197494479587396667385707368282568055118269864457927476990636419702451",
         "10781739095445201996467414817941805879982410676386176845296376344985187663334",
         "1"
-      ], piB: const [
+      ], piB: [
         [
           "18067868740006225615447194471370658980999926369695293115712951366707744064606",
           "21599241570547731234304039989166406415899717659171760043899509152011479663757"
@@ -141,7 +141,7 @@ class JWZMocks {
           "11257643293201627450293185164288482420559806649937371568160742601386671659800"
         ],
         ["1", "0"]
-      ], piC: const [
+      ], piC: [
         "6216423503289496292944052032190353625422411483383378979029667243785319208095",
         "14816218045158388758567608605576384994339714390370300963580658386534158603711",
         "1"
@@ -160,10 +160,10 @@ class JWZMocks {
 
   static JWZ jwz = JWZ(header: jwzHeader, payload: jwzPayload, proof: jwzProof);
 
-  static CircomLib fakeCircom = FakeCircom();
+  static BabyjubjubLib fakeBabyjubjub = FakeBabyjubjub();
 }
 
-class FakeCircom extends Fake implements CircomLib {
+class FakeBabyjubjub extends Fake implements BabyjubjubLib {
   @override
   String poseidonHash(String input) {
     return '3DFF';

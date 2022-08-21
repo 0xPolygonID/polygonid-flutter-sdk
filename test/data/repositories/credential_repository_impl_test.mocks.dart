@@ -6,25 +6,25 @@ import 'dart:async' as _i8;
 
 import 'package:http/http.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/data/credential/data_sources/remote_claim_data_source.dart'
-    as _i7;
-import 'package:polygonid_flutter_sdk/data/credential/data_sources/storage_claim_data_source.dart'
-    as _i9;
-import 'package:polygonid_flutter_sdk/data/credential/dtos/claim_dto.dart'
-    as _i3;
-import 'package:polygonid_flutter_sdk/data/credential/dtos/credential_fetch_request.dart'
-    as _i4;
-import 'package:polygonid_flutter_sdk/data/credential/mappers/claim_mapper.dart'
-    as _i12;
-import 'package:polygonid_flutter_sdk/data/credential/mappers/credential_request_mapper.dart'
-    as _i10;
-import 'package:polygonid_flutter_sdk/data/credential/mappers/filters_mapper.dart'
-    as _i13;
-import 'package:polygonid_flutter_sdk/domain/common/entities/filter_entity.dart'
+import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
     as _i14;
-import 'package:polygonid_flutter_sdk/domain/credential/entities/claim_entity.dart'
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/remote_claim_data_source.dart'
+    as _i7;
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart'
+    as _i9;
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart'
+    as _i3;
+import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_fetch_request.dart'
+    as _i4;
+import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart'
+    as _i12;
+import 'package:polygonid_flutter_sdk/credential/data/mappers/credential_request_mapper.dart'
+    as _i10;
+import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart'
+    as _i13;
+import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
     as _i5;
-import 'package:polygonid_flutter_sdk/domain/credential/entities/credential_request_entity.dart'
+import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart'
     as _i11;
 import 'package:sembast/sembast.dart' as _i6;
 

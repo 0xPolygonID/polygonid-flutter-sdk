@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polygonid_flutter_sdk/data/credential/dtos/credential_fetch_request.dart';
-import 'package:polygonid_flutter_sdk/data/credential/mappers/credential_request_mapper.dart';
-import 'package:polygonid_flutter_sdk/domain/credential/entities/credential_request_entity.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/entities/circuit_data_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_fetch_request.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/credential_request_mapper.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
 
 // Data
 const id = "theId";

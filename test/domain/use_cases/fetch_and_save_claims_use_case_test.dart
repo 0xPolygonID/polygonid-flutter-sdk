@@ -3,12 +3,12 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/domain/credential/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/domain/credential/entities/credential_request_entity.dart';
-import 'package:polygonid_flutter_sdk/domain/credential/use_cases/fetch_and_save_claims_use_case.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/entities/circuit_data_entity.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/repositories/credential_repository.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/use_cases/get_auth_token_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/fetch_and_save_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_auth_token_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
 
 import 'fetch_and_save_claims_use_case_test.mocks.dart';
 

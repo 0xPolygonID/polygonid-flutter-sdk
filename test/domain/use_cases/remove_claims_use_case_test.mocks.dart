@@ -5,13 +5,13 @@
 import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/domain/common/entities/filter_entity.dart'
+import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
     as _i6;
-import 'package:polygonid_flutter_sdk/domain/credential/entities/claim_entity.dart'
+import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
     as _i2;
-import 'package:polygonid_flutter_sdk/domain/credential/entities/credential_request_entity.dart'
+import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart'
     as _i5;
-import 'package:polygonid_flutter_sdk/domain/identity/repositories/credential_repository.dart'
+import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart'
     as _i3;
 
 // ignore_for_file: type=lint

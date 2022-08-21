@@ -6,9 +6,12 @@ import 'dart:async' as _i5;
 import 'dart:typed_data' as _i6;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/libs/iden3corelib.dart' as _i2;
-import 'package:polygonid_flutter_sdk/model/credential_credential.dart' as _i3;
-import 'package:polygonid_flutter_sdk/model/revocation_status.dart' as _i4;
+import 'package:polygonid_flutter_sdk/credential/model/credential_credential.dart'
+    as _i3;
+import 'package:polygonid_flutter_sdk/credential/model/revocation_status.dart'
+    as _i4;
+import 'package:polygonid_flutter_sdk/identity/libs/iden3core/iden3core.dart'
+    as _i2;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values

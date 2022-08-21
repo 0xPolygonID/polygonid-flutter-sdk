@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/domain/credential/use_cases/remove_claims_use_case.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/repositories/credential_repository.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart';
 
 import 'get_claims_use_case_test.mocks.dart';
 

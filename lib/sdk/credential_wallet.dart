@@ -1,11 +1,12 @@
 import 'package:injectable/injectable.dart';
-import 'package:polygonid_flutter_sdk/domain/common/entities/filter_entity.dart';
-import 'package:polygonid_flutter_sdk/domain/credential/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/domain/credential/entities/credential_request_entity.dart';
-import 'package:polygonid_flutter_sdk/domain/credential/use_cases/fetch_and_save_claims_use_case.dart';
-import 'package:polygonid_flutter_sdk/domain/credential/use_cases/get_claims_use_case.dart';
-import 'package:polygonid_flutter_sdk/domain/credential/use_cases/remove_claims_use_case.dart';
-import 'package:polygonid_flutter_sdk/domain/credential/use_cases/update_claim_use_case.dart';
+
+import '../common/domain/entities/filter_entity.dart';
+import '../credential/domain/entities/claim_entity.dart';
+import '../credential/domain/entities/credential_request_entity.dart';
+import '../credential/domain/use_cases/fetch_and_save_claims_use_case.dart';
+import '../credential/domain/use_cases/get_claims_use_case.dart';
+import '../credential/domain/use_cases/remove_claims_use_case.dart';
+import '../credential/domain/use_cases/update_claim_use_case.dart';
 
 @injectable
 class CredentialWallet {

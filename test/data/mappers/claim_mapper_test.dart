@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/data/credential/dtos/claim_dto.dart';
-import 'package:polygonid_flutter_sdk/data/credential/dtos/fetch_claim_response_dto.dart';
-import 'package:polygonid_flutter_sdk/data/credential/mappers/claim_mapper.dart';
-import 'package:polygonid_flutter_sdk/data/credential/mappers/claim_state_mapper.dart';
-import 'package:polygonid_flutter_sdk/domain/credential/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/fetch_claim_response_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_state_mapper.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 
 import '../dtos/fetch_claim_response_dto_test.dart';
 import 'claim_mapper_test.mocks.dart';

@@ -4,13 +4,13 @@ import 'package:injectable/injectable.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
-import 'package:polygonid_flutter_sdk/data/credential/credential_repository_impl.dart';
-import 'package:polygonid_flutter_sdk/data/identity/repositories/identity_repository_impl.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/repositories/credential_repository.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/repositories/identity_repository.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 
+import '../../credential/data/credential_repository_impl.dart';
+import '../../credential/domain/repositories/credential_repository.dart';
+import '../../identity/data/repositories/identity_repository_impl.dart';
+import '../../identity/domain/repositories/identity_repository.dart';
 import 'injector.config.dart';
 
 final getItSdk = GetIt.asNewInstance();

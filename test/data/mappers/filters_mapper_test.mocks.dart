@@ -3,10 +3,10 @@
 // Do not manually edit this file.
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/data/credential/mappers/filter_mapper.dart'
-    as _i3;
-import 'package:polygonid_flutter_sdk/domain/common/entities/filter_entity.dart'
+import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
     as _i4;
+import 'package:polygonid_flutter_sdk/credential/data/mappers/filter_mapper.dart'
+    as _i3;
 import 'package:sembast/sembast.dart' as _i2;
 
 // ignore_for_file: type=lint

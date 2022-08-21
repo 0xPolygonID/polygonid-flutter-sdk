@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polygonid_flutter_sdk/data/credential/dtos/credential_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_dto.dart';
 
 // Data
 String data = '''{
