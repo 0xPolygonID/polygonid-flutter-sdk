@@ -12,13 +12,14 @@ class UpdateClaimParam {
   final String? type;
   final Map<String, dynamic>? data;
 
-  UpdateClaimParam(this.id,
-      [this.issuer,
+  UpdateClaimParam(
+      {required this.id,
+      this.issuer,
       this.identifier,
       this.state,
       this.expiration,
       this.type,
-      this.data]);
+      this.data});
 }
 
 class UpdateClaimUseCase extends FutureUseCase<UpdateClaimParam, ClaimEntity> {
@@ -29,7 +30,7 @@ class UpdateClaimUseCase extends FutureUseCase<UpdateClaimParam, ClaimEntity> {
   @override
   Future<ClaimEntity> execute({required UpdateClaimParam param}) async {
     /// Get the [ClaimEntity] associated with the [param.id]
-    /// If found, we update the info with the [param]
+    /// If found, we update the info with the corresponding [param]
     /// then update in storage
     return _credentialRepository
         .getClaim(id: param.id)
@@ -38,6 +39,7 @@ class UpdateClaimUseCase extends FutureUseCase<UpdateClaimParam, ClaimEntity> {
             issuer: param.issuer ?? claim.issuer,
             identifier: param.identifier ?? claim.identifier,
             state: param.state ?? claim.state,
+            expiration: param.expiration ?? claim.expiration,
             type: param.type ?? claim.type,
             data: param.data ?? claim.data))
         .then((updated) => _credentialRepository.updateClaim(claim: updated))

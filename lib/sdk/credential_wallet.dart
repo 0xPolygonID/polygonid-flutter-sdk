@@ -63,6 +63,12 @@ class CredentialWallet {
   }) {
     return _updateClaimUseCase.execute(
         param: UpdateClaimParam(
-            id, issuer, identifier, state, expiration, type, data));
+            id: id,
+            issuer: issuer,
+            identifier: identifier,
+            state: state,
+            expiration: expiration,
+            type: type,
+            data: data));
   }
 }

@@ -322,6 +322,82 @@ void main() {
     });
   });
 
+  group("Get claim", () {
+    setUp(() {
+      // Given
+      when(storageClaimDataSource.getClaims(filter: anyNamed('filter')))
+          .thenAnswer((realInvocation) => Future.value([claimDTOs[0]]));
+      when(claimMapper.mapFrom(any)).thenReturn(claimEntities[0]);
+      when(idFilterMapper.mapTo(any)).thenReturn(filter);
+    });
+
+    test(
+        "Given an id, when I call getClaim, then I expect a ClaimEntity to be returned",
+        () async {
+      // When
+      expect(await repository.getClaim(id: ids[0]), claimEntities[0]);
+
+      // Then
+      expect(verify(idFilterMapper.mapTo(captureAny)).captured.first, ids[0]);
+      expect(
+          verify(storageClaimDataSource.getClaims(
+                  filter: captureAnyNamed('filter')))
+              .captured
+              .first,
+          filter);
+      expect(
+          verify(claimMapper.mapFrom(captureAny)).captured.first, claimDTOs[0]);
+    });
+
+    test(
+        "Given an id, when I call getClaim and no claim are found, then I expect a ClaimNotFoundException to be thrown",
+        () async {
+      // Given
+      when(storageClaimDataSource.getClaims(filter: anyNamed('filter')))
+          .thenAnswer((realInvocation) => Future.value([]));
+      // When
+      await repository
+          .getClaim(id: ids[0])
+          .then((value) => expect(true, false))
+          .catchError((error) {
+        expect(error, isA<ClaimNotFoundException>());
+        expect(error.id, ids[0]);
+      });
+
+      // Then
+      expect(verify(idFilterMapper.mapTo(captureAny)).captured.first, ids[0]);
+      expect(
+          verify(storageClaimDataSource.getClaims(
+                  filter: captureAnyNamed('filter')))
+              .captured
+              .first,
+          filter);
+
+      verifyNever(claimMapper.mapFrom(captureAny));
+    });
+
+    test(
+        "Given an id, when I call getClaim and an error occurred, then I expect an exception to be thrown",
+        () async {
+      // Given
+      when(storageClaimDataSource.getClaims(filter: anyNamed('filter')))
+          .thenAnswer((realInvocation) => Future.error(exception));
+      // When
+      await expectLater(repository.getClaim(id: ids[0]), throwsA(exception));
+
+      // Then
+      expect(verify(idFilterMapper.mapTo(captureAny)).captured.first, ids[0]);
+      expect(
+          verify(storageClaimDataSource.getClaims(
+                  filter: captureAnyNamed('filter')))
+              .captured
+              .first,
+          filter);
+
+      verifyNever(claimMapper.mapFrom(captureAny));
+    });
+  });
+
   group("Remove claims", () {
     setUp(() {
       // Given
@@ -367,6 +443,60 @@ void main() {
               .captured
               .first,
           ids);
+    });
+  });
+
+  group("Update claim", () {
+    setUp(() {
+      // Given
+      when(claimMapper.mapTo(any)).thenReturn(claimDTOs[0]);
+      when(storageClaimDataSource.storeClaims(claims: anyNamed('claims')))
+          .thenAnswer((realInvocation) => Future.value());
+    });
+
+    test(
+        "Given a claim, when I call updateClaim, then I expect the process to completes and the claim to be returned",
+        () async {
+      // When
+      expect(await repository.updateClaim(claim: claimEntities[0]),
+          claimEntities[0]);
+
+      // Then
+      expect(verify(claimMapper.mapTo(captureAny)).captured.first,
+          claimEntities[0]);
+      expect(
+          verify(storageClaimDataSource.storeClaims(
+                  claims: captureAnyNamed('claims')))
+              .captured
+              .first,
+          [claimDTOs[0]]);
+    });
+
+    test(
+        "Given a claim, when I call updateClaim and an error occurred, then I expect a UpdateClaimException to be thrown",
+        () async {
+      // Given
+      when(storageClaimDataSource.storeClaims(claims: anyNamed('claims')))
+          .thenAnswer((realInvocation) => Future.error(exception));
+
+      // When
+      await repository
+          .updateClaim(claim: claimEntities[0])
+          .then((value) => expect(true, false))
+          .catchError((error) {
+        expect(error, isA<UpdateClaimException>());
+        expect(error.error, exception);
+      });
+
+      // Then
+      expect(verify(claimMapper.mapTo(captureAny)).captured.first,
+          claimEntities[0]);
+      expect(
+          verify(storageClaimDataSource.storeClaims(
+                  claims: captureAnyNamed('claims')))
+              .captured
+              .first,
+          [claimDTOs[0]]);
     });
   });
 }
