@@ -6,27 +6,28 @@ import 'dart:async' as _i6;
 import 'dart:typed_data' as _i7;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/data/identity/data_sources/jwz_data_source.dart'
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/jwz_data_source.dart'
     as _i12;
-import 'package:polygonid_flutter_sdk/data/identity/data_sources/lib_identity_data_source.dart'
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart'
     as _i8;
-import 'package:polygonid_flutter_sdk/data/identity/data_sources/storage_identity_data_source.dart'
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart'
     as _i9;
-import 'package:polygonid_flutter_sdk/data/identity/data_sources/storage_key_value_data_source.dart'
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_key_value_data_source.dart'
     as _i11;
-import 'package:polygonid_flutter_sdk/data/identity/data_sources/wallet_data_source.dart'
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart'
     as _i5;
-import 'package:polygonid_flutter_sdk/data/identity/dtos/identity_dto.dart'
+import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart'
     as _i3;
-import 'package:polygonid_flutter_sdk/data/identity/mappers/hex_mapper.dart'
+import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart'
     as _i13;
-import 'package:polygonid_flutter_sdk/data/identity/mappers/identity_dto_mapper.dart'
+import 'package:polygonid_flutter_sdk/identity/data/mappers/identity_dto_mapper.dart'
     as _i15;
-import 'package:polygonid_flutter_sdk/data/identity/mappers/private_key_mapper.dart'
+import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key_mapper.dart'
     as _i14;
-import 'package:polygonid_flutter_sdk/domain/identity/entities/identity_entity.dart'
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
     as _i4;
-import 'package:polygonid_flutter_sdk/privadoid_wallet.dart' as _i2;
+import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart'
+    as _i2;
 import 'package:sembast/sembast.dart' as _i10;
 
 // ignore_for_file: type=lint

@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polygonid_flutter_sdk/data/identity/mappers/private_key_mapper.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 
 // Data
 const privateKey = "thePrivateKey";

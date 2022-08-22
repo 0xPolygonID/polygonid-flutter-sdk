@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/data/credential/data_sources/storage_claim_data_source.dart';
-import 'package:polygonid_flutter_sdk/data/credential/dtos/claim_dto.dart';
-import 'package:polygonid_flutter_sdk/data/credential/dtos/fetch_claim_response_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/fetch_claim_response_dto.dart';
 import 'package:sembast/sembast.dart' as sem;
 
 import '../dtos/fetch_claim_response_dto_test.dart';

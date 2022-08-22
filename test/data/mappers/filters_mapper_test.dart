@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/data/credential/mappers/filter_mapper.dart';
-import 'package:polygonid_flutter_sdk/data/credential/mappers/filters_mapper.dart';
-import 'package:polygonid_flutter_sdk/domain/common/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/filter_mapper.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:sembast/sembast.dart';
 
 import 'filters_mapper_test.mocks.dart';

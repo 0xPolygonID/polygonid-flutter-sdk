@@ -3,9 +3,9 @@
 // Do not manually edit this file.
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/data/credential/mappers/claim_state_mapper.dart'
+import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_state_mapper.dart'
     as _i2;
-import 'package:polygonid_flutter_sdk/domain/credential/entities/claim_entity.dart'
+import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
     as _i3;
 
 // ignore_for_file: type=lint

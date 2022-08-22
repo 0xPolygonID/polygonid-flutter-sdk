@@ -5,11 +5,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/data/common/exceptions/network_exceptions.dart';
-import 'package:polygonid_flutter_sdk/data/credential/data_sources/remote_claim_data_source.dart';
-import 'package:polygonid_flutter_sdk/data/credential/dtos/claim_dto.dart';
-import 'package:polygonid_flutter_sdk/data/credential/dtos/fetch_claim_response_dto.dart';
-import 'package:polygonid_flutter_sdk/domain/credential/exceptions/credential_exceptions.dart';
+import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/remote_claim_data_source.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/fetch_claim_response_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 
 import '../dtos/fetch_claim_response_dto_test.dart';
 import 'remote_claim_data_source_test.mocks.dart';

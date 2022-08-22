@@ -2,13 +2,16 @@
 // in polygonid_flutter_sdk/test/data/data_sources/lib_identity_data_source_test.dart.
 // Do not manually edit this file.
 
-import 'dart:async' as _i5;
 import 'dart:typed_data' as _i6;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/libs/iden3corelib.dart' as _i2;
-import 'package:polygonid_flutter_sdk/model/credential_credential.dart' as _i3;
-import 'package:polygonid_flutter_sdk/model/revocation_status.dart' as _i4;
+import 'package:polygonid_flutter_sdk/credential/model/credential_credential.dart'
+    as _i4;
+import 'package:polygonid_flutter_sdk/credential/model/revocation_status.dart'
+    as _i5;
+import 'package:polygonid_flutter_sdk/identity/libs/iden3core/iden3core.dart'
+    as _i3;
+import 'package:polygonid_flutter_sdk/identity/libs/smt/hash.dart' as _i2;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -20,10 +23,14 @@ import 'package:polygonid_flutter_sdk/model/revocation_status.dart' as _i4;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 
+class _FakeHash_0 extends _i1.Fake implements _i2.Hash {}
+
+class _FakeBigInt_1 extends _i1.Fake implements BigInt {}
+
 /// A class which mocks [Iden3CoreLib].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockIden3CoreLib extends _i1.Mock implements _i2.Iden3CoreLib {
+class MockIden3CoreLib extends _i1.Mock implements _i3.Iden3CoreLib {
   MockIden3CoreLib() {
     _i1.throwOnMissingStub(this);
   }
@@ -61,14 +68,14 @@ class MockIden3CoreLib extends _i1.Mock implements _i2.Iden3CoreLib {
           String? pubX,
           String? pubY,
           String? signature,
-          _i3.CredentialCredential? credential,
+          _i4.CredentialCredential? credential,
           String? jsonLDDocument,
           String? schema,
           String? claimType,
           String? key,
           List<int>? values,
           int? operator,
-          _i4.RevocationStatus? revocationStatus) =>
+          _i5.RevocationStatus? revocationStatus) =>
       (super.noSuchMethod(
           Invocation.method(#prepareAtomicQueryMTPInputs, [
             challenge,
@@ -91,15 +98,15 @@ class MockIden3CoreLib extends _i1.Mock implements _i2.Iden3CoreLib {
           String? pubX,
           String? pubY,
           String? signature,
-          _i3.CredentialCredential? credential,
+          _i4.CredentialCredential? credential,
           String? jsonLDDocument,
           String? schema,
           String? claimType,
           String? key,
           List<int>? values,
           int? operator,
-          _i4.RevocationStatus? revocationStatus,
-          _i4.RevocationStatus? authRevocationStatus) =>
+          _i5.RevocationStatus? revocationStatus,
+          _i5.RevocationStatus? authRevocationStatus) =>
       (super.noSuchMethod(
           Invocation.method(#prepareAtomicQuerySigInputs, [
             challenge,
@@ -118,44 +125,15 @@ class MockIden3CoreLib extends _i1.Mock implements _i2.Iden3CoreLib {
           ]),
           returnValue: '') as String);
   @override
-  _i5.Future<_i6.Uint8List?> calculateWitness(
-          _i6.Uint8List? wasmBytes, _i6.Uint8List? inputsJsonBytes) =>
-      (super.noSuchMethod(
-          Invocation.method(#calculateWitness, [wasmBytes, inputsJsonBytes]),
-          returnValue:
-              Future<_i6.Uint8List?>.value()) as _i5.Future<_i6.Uint8List?>);
-  @override
-  _i5.Future<_i6.Uint8List?> calculateWitnessSig(
-          _i6.Uint8List? wasmBytes, _i6.Uint8List? inputsJsonBytes) =>
-      (super.noSuchMethod(
-          Invocation.method(#calculateWitnessSig, [wasmBytes, inputsJsonBytes]),
-          returnValue:
-              Future<_i6.Uint8List?>.value()) as _i5.Future<_i6.Uint8List?>);
-  @override
-  _i5.Future<_i6.Uint8List?> calculateWitnessMtp(
-          _i6.Uint8List? wasmBytes, _i6.Uint8List? inputsJsonBytes) =>
-      (super.noSuchMethod(
-          Invocation.method(#calculateWitnessMtp, [wasmBytes, inputsJsonBytes]),
-          returnValue:
-              Future<_i6.Uint8List?>.value()) as _i5.Future<_i6.Uint8List?>);
-  @override
-  _i5.Future<Map<String, dynamic>?> prove(
-          _i6.Uint8List? zkeyBytes, _i6.Uint8List? wtnsBytes) =>
-      (super.noSuchMethod(Invocation.method(#prove, [zkeyBytes, wtnsBytes]),
-              returnValue: Future<Map<String, dynamic>?>.value())
-          as _i5.Future<Map<String, dynamic>?>);
-  @override
   _i6.Uint8List hexToBytesOrZero(String? s) =>
       (super.noSuchMethod(Invocation.method(#hexToBytesOrZero, [s]),
           returnValue: _i6.Uint8List(0)) as _i6.Uint8List);
   @override
-  _i5.Future<Map<String, dynamic>?> calculateProof(
-          _i6.Uint8List? inputsJsonBytes,
-          _i6.Uint8List? zkeyBytes,
-          _i6.Uint8List? datBytes) =>
-      (super.noSuchMethod(
-              Invocation.method(
-                  #calculateProof, [inputsJsonBytes, zkeyBytes, datBytes]),
-              returnValue: Future<Map<String, dynamic>?>.value())
-          as _i5.Future<Map<String, dynamic>?>);
+  _i2.Hash poseidonHashHashes(List<_i2.Hash>? hs) =>
+      (super.noSuchMethod(Invocation.method(#poseidonHashHashes, [hs]),
+          returnValue: _FakeHash_0()) as _i2.Hash);
+  @override
+  BigInt poseidonHashInts(List<BigInt>? bis) =>
+      (super.noSuchMethod(Invocation.method(#poseidonHashInts, [bis]),
+          returnValue: _FakeBigInt_1()) as BigInt);
 }

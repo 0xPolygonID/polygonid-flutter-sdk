@@ -3,19 +3,19 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/data/identity/data_sources/jwz_data_source.dart';
-import 'package:polygonid_flutter_sdk/data/identity/data_sources/wallet_data_source.dart';
-import 'package:polygonid_flutter_sdk/data/identity/jwz/jwz.dart';
-import 'package:polygonid_flutter_sdk/data/identity/jwz/jwz_header.dart';
-import 'package:polygonid_flutter_sdk/data/identity/jwz/jwz_proof.dart';
-import 'package:polygonid_flutter_sdk/data/identity/jwz/jwz_token.dart';
-import 'package:polygonid_flutter_sdk/libs/circomlib.dart';
-import 'package:polygonid_flutter_sdk/privadoid_wallet.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/jwz_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj.dart';
+import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart';
+import 'package:polygonid_flutter_sdk/identity/libs/jwz/jwz.dart';
+import 'package:polygonid_flutter_sdk/identity/libs/jwz/jwz_header.dart';
+import 'package:polygonid_flutter_sdk/identity/libs/jwz/jwz_proof.dart';
+import 'package:polygonid_flutter_sdk/identity/libs/jwz/jwz_token.dart';
 
 import 'jwz_data_source_test.mocks.dart';
 
 // Data
-class FakeCircom extends Fake implements CircomLib {
+class FakeBabyjubjub extends Fake implements BabyjubjubLib {
   @override
   String poseidonHash(String input) {
     return '3DFF';
@@ -71,13 +71,13 @@ final JWZToken token = JWZToken.withJWZ(jwz: jwz);
 var exception = Exception();
 
 // Dependencies
-FakeCircom circom = FakeCircom();
+FakeBabyjubjub bjj = FakeBabyjubjub();
 MockWalletDataSource walletDataSource = MockWalletDataSource();
 MockJWZIsolatesWrapper jwzIsolatesWrapper = MockJWZIsolatesWrapper();
 
 // Tested instance
 JWZDataSource dataSource =
-    JWZDataSource(circom, walletDataSource, jwzIsolatesWrapper);
+    JWZDataSource(bjj, walletDataSource, jwzIsolatesWrapper);
 
 @GenerateMocks([WalletDataSource, JWZIsolatesWrapper])
 void main() {

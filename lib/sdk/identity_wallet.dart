@@ -1,12 +1,13 @@
 import 'package:injectable/injectable.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/entities/circuit_data_entity.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/entities/identity_entity.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/use_cases/create_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/use_cases/get_auth_token_use_case.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/use_cases/get_current_identifier_use_case.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/use_cases/get_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/use_cases/remove_current_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/use_cases/sign_message_use_case.dart';
+
+import '../identity/domain/entities/identity_entity.dart';
+import '../identity/domain/use_cases/create_identity_use_case.dart';
+import '../identity/domain/use_cases/get_auth_token_use_case.dart';
+import '../identity/domain/use_cases/get_current_identifier_use_case.dart';
+import '../identity/domain/use_cases/get_identity_use_case.dart';
+import '../identity/domain/use_cases/remove_current_identity_use_case.dart';
+import '../identity/domain/use_cases/sign_message_use_case.dart';
+import '../proof_generation/domain/entities/circuit_data_entity.dart';
 
 @injectable
 class IdentityWallet {
