@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
+import 'credential_wallet.dart';
 import 'identity_wallet.dart';
 
 class PolygonIsSdkNotInitializedException implements Exception {
@@ -34,9 +35,11 @@ class PolygonIdSdk {
     // SDK singleton
     _ref = PolygonIdSdk._();
     _ref!.identity = await getItSdk.getAsync<IdentityWallet>();
+    _ref!.credential = await getItSdk.getAsync<CredentialWallet>();
   }
 
   late IdentityWallet identity;
+  late CredentialWallet credential;
 
   PolygonIdSdk._();
 

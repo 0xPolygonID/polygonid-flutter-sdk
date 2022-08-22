@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polygonid_flutter_sdk/data/identity/mappers/hex_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 
 // Data
 final privateKey = Uint8List.fromList("thePrivateKey".codeUnits);

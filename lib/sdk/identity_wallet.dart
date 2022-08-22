@@ -1,12 +1,13 @@
 import 'package:injectable/injectable.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/entities/circuit_data.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/entities/identity.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/use_cases/create_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/use_cases/get_auth_token_use_case.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/use_cases/get_current_identifier_use_case.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/use_cases/get_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/use_cases/remove_current_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/use_cases/sign_message_use_case.dart';
+
+import '../identity/domain/entities/identity_entity.dart';
+import '../identity/domain/use_cases/create_identity_use_case.dart';
+import '../identity/domain/use_cases/get_auth_token_use_case.dart';
+import '../identity/domain/use_cases/get_current_identifier_use_case.dart';
+import '../identity/domain/use_cases/get_identity_use_case.dart';
+import '../identity/domain/use_cases/remove_current_identity_use_case.dart';
+import '../identity/domain/use_cases/sign_message_use_case.dart';
+import '../proof_generation/domain/entities/circuit_data_entity.dart';
 
 @injectable
 class IdentityWallet {
@@ -25,7 +26,7 @@ class IdentityWallet {
       this._getCurrentIdentifierUseCase,
       this._removeCurrentIdentityUseCase);
 
-  /// Create and store an [Identity] from a private key.
+  /// Create and store an [IdentityEntity] from a private key.
   /// If [privateKey] is omitted or null, a random one will be used to create a new identity.
   /// Return an identifier as a String.
   /// Throws [IdentityException] if an error occurs.
@@ -38,7 +39,7 @@ class IdentityWallet {
     return _createIdentityUseCase.execute(param: privateKey);
   }
 
-  /// Get an [Identity] from a private key.
+  /// Get an [IdentityEntity] from a private key.
   /// If [privateKey] is omitted or null, a random one will be used to create a new identity.
   /// Throws [IdentityException] if an error occurs.
   ///
@@ -49,7 +50,7 @@ class IdentityWallet {
   ///
   /// TODO: to be removed to not expose sensitive information
   /// (here for back compatibility).
-  Future<Identity> getIdentity({String? privateKey}) async {
+  Future<IdentityEntity> getIdentity({String? privateKey}) async {
     return _getIdentityUseCase.execute(param: privateKey);
   }
 
@@ -64,12 +65,12 @@ class IdentityWallet {
 
   /// Get a string auth token through an identifier
   /// The [identifier] is a string returned when creating an identity with [createIdentity]
-  /// and [circuitData] describes data about the used circuit, see [CircuitData].
+  /// and [circuitData] describes data about the used circuit, see [CircuitDataEntity].
   /// [message] will be fully integrated on the resulting encoded string (follow JWZ standard).
   /// See [JWZ].
   Future<String> getAuthToken(
       {required String identifier,
-      required CircuitData circuitData,
+      required CircuitDataEntity circuitData,
       required String message}) {
     return _getAuthTokenUseCase.execute(
         param: GetAuthTokenParam(identifier, circuitData, message));

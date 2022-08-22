@@ -3,9 +3,9 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/entities/circuit_data.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/repositories/identity_repository.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/use_cases/get_auth_token_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_auth_token_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
 
 import 'get_auth_token_use_case_test.mocks.dart';
 
@@ -15,7 +15,7 @@ const identifier = "theIdentifier";
 const circuitId = "1";
 final datFile = Uint8List(32);
 final zKeyFile = Uint8List(32);
-final circuitData = CircuitData(circuitId, datFile, zKeyFile);
+final circuitData = CircuitDataEntity(circuitId, datFile, zKeyFile);
 final param = GetAuthTokenParam(identifier, circuitData, message);
 const result = "token";
 var exception = Exception();

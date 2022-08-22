@@ -5,7 +5,7 @@
 import 'dart:async' as _i3;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/data/identity/data_sources/storage_key_value_data_source.dart'
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_key_value_data_source.dart'
     as _i5;
 import 'package:sembast/sembast.dart' as _i2;
 import 'package:sembast/src/api/client.dart' as _i6;
