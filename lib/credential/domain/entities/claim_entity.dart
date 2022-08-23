@@ -1,5 +1,3 @@
-
-
 enum ClaimState { active, expired, pending, revoked }
 
 class ClaimEntity {

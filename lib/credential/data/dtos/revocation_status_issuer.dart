@@ -5,7 +5,10 @@ class RevocationStatusIssuer {
   final String? rootOfRoots;
 
   RevocationStatusIssuer(
-      {this.state, this.claimsTreeRoot, this.revocationTreeRoot, this.rootOfRoots});
+      {this.state,
+      this.claimsTreeRoot,
+      this.revocationTreeRoot,
+      this.rootOfRoots});
 
   /// Creates an instance from the given json
   ///

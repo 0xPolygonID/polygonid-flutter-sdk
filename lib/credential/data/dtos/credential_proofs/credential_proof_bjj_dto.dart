@@ -8,7 +8,9 @@ part 'credential_proof_bjj_dto.g.dart';
 class CredentialProofBJJDTO extends CredentialProofDTO {
   final String signature;
 
-  CredentialProofBJJDTO(CredentialProofType type, CredentialProofIssuerDTO issuer, this.signature): super(type, issuer);
+  CredentialProofBJJDTO(
+      CredentialProofType type, CredentialProofIssuerDTO issuer, this.signature)
+      : super(type, issuer);
 
   factory CredentialProofBJJDTO.fromJson(Map<String, dynamic> json) =>
       _$CredentialProofBJJDTOFromJson(json);

@@ -56,7 +56,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   ///
   void _initChangeStateListener() {
-    _changeStateStreamSubscription = widget._bloc.observableState.listen((SplashState event) {
+    _changeStateStreamSubscription =
+        widget._bloc.observableState.listen((SplashState event) {
       _handleSplashState(event);
     });
   }

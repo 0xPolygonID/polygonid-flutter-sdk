@@ -2,7 +2,6 @@ class NodeAux {
   final String? key;
   final String? value;
 
-
   // TODO: add NodeAux
 
   NodeAux({this.key, this.value});
@@ -19,7 +18,7 @@ class NodeAux {
   }
 
   Map<String, String> toJson() => {
-    'key': key.toString(),
-    'value': value.toString(),
-  };
+        'key': key.toString(),
+        'value': value.toString(),
+      };
 }

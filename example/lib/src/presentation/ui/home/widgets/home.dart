@@ -77,12 +77,16 @@ class _HomeScreenState extends State<HomeScreen> {
     return StreamBuilder<HomeState>(
         stream: widget._bloc.observableState,
         builder: (context, snapshot) {
-          bool enabled = (snapshot.data is! LoadingDataHomeState) && (snapshot.data?.identifier == null || snapshot.data!.identifier!.isEmpty);
+          bool enabled = (snapshot.data is! LoadingDataHomeState) &&
+              (snapshot.data?.identifier == null ||
+                  snapshot.data!.identifier!.isEmpty);
           return AbsorbPointer(
             absorbing: !enabled,
             child: ElevatedButton(
               onPressed: widget._bloc.createIdentity,
-              style: enabled ? CustomButtonStyle.primaryButtonStyle : CustomButtonStyle.disabledPrimaryButtonStyle,
+              style: enabled
+                  ? CustomButtonStyle.primaryButtonStyle
+                  : CustomButtonStyle.disabledPrimaryButtonStyle,
               child: const Text(
                 CustomStrings.homeButtonCTA,
                 style: CustomTextStyles.primaryButtonTextStyle,
@@ -152,11 +156,13 @@ class _HomeScreenState extends State<HomeScreen> {
           StreamBuilder<HomeState>(
               stream: widget._bloc.observableState,
               builder: (context, snapshot) {
-                String identifierText = snapshot.data?.identifier ?? CustomStrings.homeIdentifierSectionPlaceHolder;
+                String identifierText = snapshot.data?.identifier ??
+                    CustomStrings.homeIdentifierSectionPlaceHolder;
                 return Text(
                   identifierText,
                   key: const Key('identifier'),
-                  style: CustomTextStyles.descriptionTextStyle.copyWith(fontSize: 20, fontWeight: FontWeight.w700),
+                  style: CustomTextStyles.descriptionTextStyle
+                      .copyWith(fontSize: 20, fontWeight: FontWeight.w700),
                 );
               }),
         ],
@@ -169,15 +175,19 @@ class _HomeScreenState extends State<HomeScreen> {
     return StreamBuilder<HomeState>(
         stream: widget._bloc.observableState,
         builder: (context, snapshot) {
-          bool visible = snapshot.data is ErrorHomeState && (snapshot.data as ErrorHomeState).message.isNotEmpty;
-          String message = snapshot.data is ErrorHomeState ? (snapshot.data as ErrorHomeState).message : "";
+          bool visible = snapshot.data is ErrorHomeState &&
+              (snapshot.data as ErrorHomeState).message.isNotEmpty;
+          String message = snapshot.data is ErrorHomeState
+              ? (snapshot.data as ErrorHomeState).message
+              : "";
           return Visibility(
             visible: visible,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text(
                 message,
-                style: CustomTextStyles.descriptionTextStyle.copyWith(color: CustomColors.redError),
+                style: CustomTextStyles.descriptionTextStyle
+                    .copyWith(color: CustomColors.redError),
               ),
             ),
           );
