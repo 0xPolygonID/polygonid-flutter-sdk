@@ -1,4 +1,4 @@
-import 'package:polygonid_flutter_sdk/domain/common/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk_example/src/domain/identity/repositories/identity_repositories.dart';
 
 class CreateIdentityUseCase extends FutureUseCase<void, String> {

@@ -1,4 +1,4 @@
-import 'package:polygonid_flutter_sdk/domain/identity/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk_example/src/common/bloc/bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/domain/identity/use_cases/create_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk_example/src/domain/identity/use_cases/get_identifier_use_case.dart';
