@@ -26,10 +26,14 @@ Future<void> registerProviders() async {
 
 ///
 void registerIdentityDependencies() {
-  getIt.registerFactory<PolygonIdSdkIdentityDataSource>(() => PolygonIdSdkIdentityDataSource(getIt()));
-  getIt.registerLazySingleton<IdentityRepository>(() => IdentityRepositoryImpl(getIt()));
-  getIt.registerLazySingleton<GetIdentifierUseCase>(() => GetIdentifierUseCase(getIt()));
-  getIt.registerLazySingleton<CreateIdentityUseCase>(() => CreateIdentityUseCase(getIt()));
+  getIt.registerFactory<PolygonIdSdkIdentityDataSource>(
+      () => PolygonIdSdkIdentityDataSource(getIt()));
+  getIt.registerLazySingleton<IdentityRepository>(
+      () => IdentityRepositoryImpl(getIt()));
+  getIt.registerLazySingleton<GetIdentifierUseCase>(
+      () => GetIdentifierUseCase(getIt()));
+  getIt.registerLazySingleton<CreateIdentityUseCase>(
+      () => CreateIdentityUseCase(getIt()));
 }
 
 ///
