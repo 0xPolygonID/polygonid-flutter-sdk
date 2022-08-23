@@ -5,9 +5,9 @@
 import 'dart:typed_data' as _i6;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/credential/model/credential_credential.dart'
+import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_credential.dart'
     as _i4;
-import 'package:polygonid_flutter_sdk/credential/model/revocation_status.dart'
+import 'package:polygonid_flutter_sdk/credential/data/dtos/revocation_status.dart'
     as _i5;
 import 'package:polygonid_flutter_sdk/identity/libs/iden3core/iden3core.dart'
     as _i3;

@@ -3,21 +3,21 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
-import 'package:polygonid_flutter_sdk/common/http.dart';
-import 'package:polygonid_flutter_sdk/credential/model/revocation_status.dart';
-import 'package:polygonid_flutter_sdk/sdk/identity_wallet.dart';
-import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 
+import 'common/http.dart';
 import 'common/utils/hex_utils.dart';
-import 'credential/model/credential_credential.dart';
-import 'credential/model/credential_credential_proof.dart';
-import 'credential/model/credential_data.dart';
+import 'credential/data/dtos/credential_credential.dart';
+import 'credential/data/dtos/credential_credential_proof.dart';
+import 'credential/data/dtos/credential_data.dart';
+import 'credential/data/dtos/revocation_status.dart';
 import 'identity/libs/bjj/privadoid_wallet.dart';
 import 'identity/libs/iden3core/iden3core.dart';
 import 'proof_generation/libs/prover/prover.dart';
 import 'proof_generation/libs/witnesscalc/auth/witness_auth.dart';
 import 'proof_generation/libs/witnesscalc/mtp/witness_mtp.dart';
 import 'proof_generation/libs/witnesscalc/sig/witness_sig.dart';
+import 'sdk/identity_wallet.dart';
+import 'sdk/polygon_id_sdk.dart';
 
 enum AtomicQueryInputsType { mtp, sig }
 

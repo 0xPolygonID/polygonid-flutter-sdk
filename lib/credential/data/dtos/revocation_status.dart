@@ -1,5 +1,5 @@
-import 'package:polygonid_flutter_sdk/credential/model/revocation_status_issuer.dart';
-import 'package:polygonid_flutter_sdk/credential/model/revocation_status_mtp.dart';
+import 'revocation_status_issuer.dart';
+import 'revocation_status_mtp.dart';
 
 class RevocationStatus {
   final RevocationStatusIssuer? issuer;

@@ -7,11 +7,11 @@ import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:polygonid_flutter_sdk/credential/model/credential_credential.dart';
-import 'package:polygonid_flutter_sdk/credential/model/revocation_status.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_credential.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/revocation_status.dart';
 import 'package:web3dart/crypto.dart';
 
-import '../../../credential/model/credential_credential_proof.dart';
+import '../../../credential/data/dtos/credential_credential_proof.dart';
 import '../smt/hash.dart';
 import 'native_iden3core.dart';
 import 'native_iden3core_extension.dart';

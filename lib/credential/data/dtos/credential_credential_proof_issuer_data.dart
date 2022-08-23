@@ -64,8 +64,7 @@
 
 */
 
-import 'package:polygonid_flutter_sdk/credential/model/credential_credential_proof_mtp.dart';
-
+import 'credential_credential_proof_mtp.dart';
 import 'credential_credential_proof_state.dart';
 
 class CredentialCredentialProofIssuerData {
