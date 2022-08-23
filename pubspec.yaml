@@ -7,7 +7,7 @@ issue_tracker: https://github.com/iden3/polygonid-flutter-sdk/issues
 documentation: https://docs.iden3.io/
 
 environment:
-  sdk: ">=2.14.0 <3.0.0"
+  sdk: ">=2.17.0 <3.0.0"
   flutter: ">=1.20.0"
 
 analyzer:
@@ -30,6 +30,7 @@ dependencies:
   path_provider: ^2.0.11
   sembast: ^3.2.0+1
   fast_base58: 0.2.1
+  uuid: ^3.0.6
 
 dev_dependencies:
   flutter_test:

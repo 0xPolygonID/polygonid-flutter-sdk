@@ -6,9 +6,10 @@ import 'dart:async' as _i4;
 import 'dart:typed_data' as _i5;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/data/identity/data_sources/wallet_data_source.dart'
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart'
     as _i3;
-import 'package:polygonid_flutter_sdk/privadoid_wallet.dart' as _i2;
+import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart'
+    as _i2;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values

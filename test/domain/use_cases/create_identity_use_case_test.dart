@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/entities/identity.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/exceptions/identity_exceptions.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/repositories/identity_repository.dart';
-import 'package:polygonid_flutter_sdk/domain/identity/use_cases/create_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_identity_use_case.dart';
 
 import 'create_identity_use_case_test.mocks.dart';
 
@@ -13,7 +13,7 @@ const privateKey = "thePrivateKey";
 const walletPrivateKey = "theWalletPrivateKey";
 const identifier = "theIdentifier";
 const authClaim = "theAuthClaim";
-const mockEntity = Identity(
+const mockEntity = IdentityEntity(
     privateKey: privateKey, identifier: identifier, authClaim: authClaim);
 var exception = Exception();
 

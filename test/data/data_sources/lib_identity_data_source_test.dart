@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/data/identity/data_sources/lib_identity_data_source.dart';
-import 'package:polygonid_flutter_sdk/libs/iden3corelib.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/libs/iden3core/iden3core.dart';
 
 import 'lib_identity_data_source_test.mocks.dart';
 

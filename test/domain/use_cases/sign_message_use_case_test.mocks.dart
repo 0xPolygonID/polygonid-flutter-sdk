@@ -5,12 +5,12 @@
 import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/domain/identity/entities/circuit_data.dart'
-    as _i5;
-import 'package:polygonid_flutter_sdk/domain/identity/entities/identity.dart'
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
     as _i2;
-import 'package:polygonid_flutter_sdk/domain/identity/repositories/identity_repository.dart'
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart'
     as _i3;
+import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart'
+    as _i5;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -22,7 +22,7 @@ import 'package:polygonid_flutter_sdk/domain/identity/repositories/identity_repo
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 
-class _FakeIdentity_0 extends _i1.Fake implements _i2.Identity {}
+class _FakeIdentityEntity_0 extends _i1.Fake implements _i2.IdentityEntity {}
 
 /// A class which mocks [IdentityRepository].
 ///
@@ -39,21 +39,23 @@ class MockIdentityRepository extends _i1.Mock
           Invocation.method(#createIdentity, [], {#privateKey: privateKey}),
           returnValue: Future<String>.value('')) as _i4.Future<String>);
   @override
-  _i4.Future<_i2.Identity> getIdentityFromKey({String? privateKey}) => (super
-      .noSuchMethod(
+  _i4.Future<_i2.IdentityEntity> getIdentityFromKey({String? privateKey}) =>
+      (super.noSuchMethod(
           Invocation.method(#getIdentityFromKey, [], {#privateKey: privateKey}),
-          returnValue: Future<_i2.Identity>.value(_FakeIdentity_0())) as _i4
-      .Future<_i2.Identity>);
+          returnValue:
+              Future<_i2.IdentityEntity>.value(_FakeIdentityEntity_0())) as _i4
+          .Future<_i2.IdentityEntity>);
   @override
   _i4.Future<String> getIdentifier({String? privateKey}) => (super.noSuchMethod(
       Invocation.method(#getIdentifier, [], {#privateKey: privateKey}),
       returnValue: Future<String>.value('')) as _i4.Future<String>);
   @override
-  _i4.Future<_i2.Identity> getIdentity({String? identifier}) => (super
-          .noSuchMethod(
+  _i4.Future<_i2.IdentityEntity> getIdentity({String? identifier}) =>
+      (super.noSuchMethod(
               Invocation.method(#getIdentity, [], {#identifier: identifier}),
-              returnValue: Future<_i2.Identity>.value(_FakeIdentity_0()))
-      as _i4.Future<_i2.Identity>);
+              returnValue:
+                  Future<_i2.IdentityEntity>.value(_FakeIdentityEntity_0()))
+          as _i4.Future<_i2.IdentityEntity>);
   @override
   _i4.Future<String> signMessage({String? identifier, String? message}) =>
       (super.noSuchMethod(
@@ -72,7 +74,7 @@ class MockIdentityRepository extends _i1.Mock
   @override
   _i4.Future<String> getAuthToken(
           {String? identifier,
-          _i5.CircuitData? circuitData,
+          _i5.CircuitDataEntity? circuitData,
           String? message}) =>
       (super.noSuchMethod(
           Invocation.method(#getAuthToken, [], {
