@@ -23,6 +23,8 @@ class CustomColors {
 
   static const Color redError = Color(0xffFF4B40);
 
+  static const Color backButtonPressed = Color(0xffE1E1E1);
+
   static const int _whitePrimaryValue = 0xFFFFFFFF;
   static const MaterialColor primaryWhite = MaterialColor(
     _whitePrimaryValue,

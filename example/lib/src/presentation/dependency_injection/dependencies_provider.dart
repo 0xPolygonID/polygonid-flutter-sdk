@@ -1,10 +1,16 @@
 import 'package:get_it/get_it.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
+import 'package:polygonid_flutter_sdk_example/src/data/credential/data_sources/polygonid_sdk_credential_data_source.dart';
+import 'package:polygonid_flutter_sdk_example/src/data/credential/repositories/credential_repository_impl.dart';
 import 'package:polygonid_flutter_sdk_example/src/data/identitity/data_sources/polygonid_sdk_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk_example/src/data/identitity/repositories/identity_repository_impl.dart';
+import 'package:polygonid_flutter_sdk_example/src/domain/credential/repositories/credential_repository.dart';
+import 'package:polygonid_flutter_sdk_example/src/domain/credential/use_cases/fetch_and_saves_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk_example/src/domain/identity/repositories/identity_repositories.dart';
 import 'package:polygonid_flutter_sdk_example/src/domain/identity/use_cases/create_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk_example/src/domain/identity/use_cases/get_identifier_use_case.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_bloc.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/splash_bloc.dart';
 
@@ -15,7 +21,9 @@ Future<void> init() async {
   await registerProviders();
   registerSplashDependencies();
   registerHomeDependencies();
+  registerClaimsDependencies();
   registerIdentityDependencies();
+  registerAuthDependencies();
 }
 
 ///
@@ -44,4 +52,17 @@ void registerSplashDependencies() {
 ///
 void registerHomeDependencies() {
   getIt.registerFactory(() => HomeBloc(getIt(), getIt()));
+}
+
+///
+void registerClaimsDependencies() {
+  getIt.registerFactory(() => ClaimsBloc(getIt(), getIt()));
+  getIt.registerFactory<PolygonSdkCredentialDataSource>(() => PolygonSdkCredentialDataSource(getIt()));
+  getIt.registerLazySingleton<CredentialRepository>(() => CredentialRepositoryImpl(getIt()));
+  getIt.registerLazySingleton<FetchAndSavesClaimsUseCase>(() => FetchAndSavesClaimsUseCase(getIt()));
+}
+
+///
+void registerAuthDependencies() {
+  getIt.registerFactory(() => AuthBloc());
 }

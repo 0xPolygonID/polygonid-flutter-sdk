@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/common/widgets/button_next_action.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_state.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_button_style.dart';
@@ -59,7 +60,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              _buildCreateIdentityButton(),
+              Stack(
+                children: [
+                  _buildCreateIdentityButton(),
+                  _buildNavigateToNextPageButton(),
+                ],
+              ),
             ],
           ),
         ),
@@ -74,26 +80,25 @@ class _HomeScreenState extends State<HomeScreen> {
 
   ///
   Widget _buildCreateIdentityButton() {
-    return StreamBuilder<HomeState>(
-        stream: widget._bloc.observableState,
-        builder: (context, snapshot) {
-          bool enabled = (snapshot.data is! LoadingDataHomeState) &&
-              (snapshot.data?.identifier == null ||
-                  snapshot.data!.identifier!.isEmpty);
-          return AbsorbPointer(
-            absorbing: !enabled,
-            child: ElevatedButton(
-              onPressed: widget._bloc.createIdentity,
-              style: enabled
-                  ? CustomButtonStyle.primaryButtonStyle
-                  : CustomButtonStyle.disabledPrimaryButtonStyle,
-              child: const Text(
-                CustomStrings.homeButtonCTA,
-                style: CustomTextStyles.primaryButtonTextStyle,
+    return Align(
+      alignment: Alignment.center,
+      child: StreamBuilder<HomeState>(
+          stream: widget._bloc.observableState,
+          builder: (context, snapshot) {
+            bool enabled = (snapshot.data is! LoadingDataHomeState) && (snapshot.data?.identifier == null || snapshot.data!.identifier!.isEmpty);
+            return AbsorbPointer(
+              absorbing: !enabled,
+              child: ElevatedButton(
+                onPressed: widget._bloc.createIdentity,
+                style: enabled ? CustomButtonStyle.primaryButtonStyle : CustomButtonStyle.disabledPrimaryButtonStyle,
+                child: const Text(
+                  CustomStrings.homeButtonCTA,
+                  style: CustomTextStyles.primaryButtonTextStyle,
+                ),
               ),
-            ),
-          );
-        });
+            );
+          }),
+    );
   }
 
   ///
@@ -156,13 +161,11 @@ class _HomeScreenState extends State<HomeScreen> {
           StreamBuilder<HomeState>(
               stream: widget._bloc.observableState,
               builder: (context, snapshot) {
-                String identifierText = snapshot.data?.identifier ??
-                    CustomStrings.homeIdentifierSectionPlaceHolder;
+                String identifierText = snapshot.data?.identifier ?? CustomStrings.homeIdentifierSectionPlaceHolder;
                 return Text(
                   identifierText,
                   key: const Key('identifier'),
-                  style: CustomTextStyles.descriptionTextStyle
-                      .copyWith(fontSize: 20, fontWeight: FontWeight.w700),
+                  style: CustomTextStyles.descriptionTextStyle.copyWith(fontSize: 20, fontWeight: FontWeight.w700),
                 );
               }),
         ],
@@ -175,22 +178,33 @@ class _HomeScreenState extends State<HomeScreen> {
     return StreamBuilder<HomeState>(
         stream: widget._bloc.observableState,
         builder: (context, snapshot) {
-          bool visible = snapshot.data is ErrorHomeState &&
-              (snapshot.data as ErrorHomeState).message.isNotEmpty;
-          String message = snapshot.data is ErrorHomeState
-              ? (snapshot.data as ErrorHomeState).message
-              : "";
+          bool visible = snapshot.data is ErrorHomeState && (snapshot.data as ErrorHomeState).message.isNotEmpty;
+          String message = snapshot.data is ErrorHomeState ? (snapshot.data as ErrorHomeState).message : "";
           return Visibility(
             visible: visible,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text(
                 message,
-                style: CustomTextStyles.descriptionTextStyle
-                    .copyWith(color: CustomColors.redError),
+                style: CustomTextStyles.descriptionTextStyle.copyWith(color: CustomColors.redError),
               ),
             ),
           );
         });
+  }
+
+  ///
+  Widget _buildNavigateToNextPageButton() {
+    return Padding(
+      padding: const EdgeInsets.only(right: 16),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: ButtonNextAction(
+          onPressed: () {
+            widget._bloc.navigateToNextPage(context);
+          },
+        ),
+      ),
+    );
   }
 }

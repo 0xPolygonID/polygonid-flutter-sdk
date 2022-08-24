@@ -1,7 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
+
 import 'package:polygonid_flutter_sdk_example/src/common/bloc/bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/domain/identity/use_cases/create_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk_example/src/domain/identity/use_cases/get_identifier_use_case.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/navigations/routes.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_state.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
 
@@ -20,6 +23,7 @@ class HomeBloc extends Bloc<HomeState> {
   Future<void> getIdentifier() async {
     changeState(HomeState.loading());
     String? identifier = await _getIdentifierUseCase.execute();
+    print(identifier); //TODO delete
     changeState(HomeState.loaded(identifier));
   }
 
@@ -35,5 +39,10 @@ class HomeBloc extends Bloc<HomeState> {
     } catch (_) {
       changeState(HomeState.error(CustomStrings.genericError));
     }
+  }
+
+  ///
+  void navigateToNextPage(BuildContext context) {
+    Navigator.pushNamed(context, Routes.authPath);
   }
 }
