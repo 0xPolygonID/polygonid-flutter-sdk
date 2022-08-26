@@ -23,7 +23,6 @@ class HomeBloc extends Bloc<HomeState> {
   Future<void> getIdentifier() async {
     changeState(HomeState.loading());
     String? identifier = await _getIdentifierUseCase.execute();
-    print(identifier); //TODO delete
     changeState(HomeState.loaded(identifier));
   }
 

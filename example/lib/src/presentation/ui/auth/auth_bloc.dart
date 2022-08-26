@@ -37,4 +37,9 @@ class AuthBloc extends Bloc<AuthState> {
     //PolygonIdSdk.I.identity.getAuthToken(identifier: identifier, circuitData: circuitData, message: message)
     return Future.value("");
   }
+
+  ///
+  void navigateToNextPage(BuildContext context) {
+    Navigator.pushNamed(context, Routes.claimsPath);
+  }
 }
