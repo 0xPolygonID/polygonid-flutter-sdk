@@ -32,7 +32,7 @@ final entity = ClaimEntity(
     issuer: fetchClaimDTO.from,
     identifier: identifier,
     expiration: fetchClaimDTO.credential.expiration,
-    data: fetchClaimDTO.credential.toJson(),
+    credential: fetchClaimDTO.credential.toJson(),
     type: fetchClaimDTO.credential.credentialSubject.type,
     state: ClaimState.active,
     id: fetchClaimDTO.credential.id);
