@@ -70,8 +70,6 @@ import 'credential_credential_status.dart';
 import 'credential_credential_subject.dart';
 
 class CredentialCredential {
-  final List<String>? context;
-  final List<String>? type;
   final CredentialCredentialSchema? credentialSchema;
   final CredentialCredentialStatus? credentialStatus;
   final CredentialCredentialSubject? credentialSubject;
@@ -83,9 +81,7 @@ class CredentialCredential {
   final int? version;
 
   CredentialCredential(
-      {this.context,
-      this.type,
-      this.credentialSchema,
+      {this.credentialSchema,
       this.credentialStatus,
       this.credentialSubject,
       this.expiration,
@@ -111,8 +107,6 @@ class CredentialCredential {
         .toList();
 
     return CredentialCredential(
-        context: List<String>.from(json['@context']),
-        type: List<String>.from(json['@type']),
         credentialSchema: credentialSchema,
         credentialStatus: credentialStatus,
         credentialSubject: credentialSubject,
@@ -125,8 +119,6 @@ class CredentialCredential {
   }
 
   Map<String, dynamic> toJson() => {
-        '@context': context,
-        '@type': type,
         'credentialSchema': credentialSchema!.toJson(),
         'credentialStatus': credentialStatus!.toJson(),
         'credentialSubject': credentialSubject!.toJson(),

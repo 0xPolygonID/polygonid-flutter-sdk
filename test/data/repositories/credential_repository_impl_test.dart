@@ -60,7 +60,7 @@ final claimEntities = [
       issuer: "",
       identifier: "",
       expiration: "",
-      data: {},
+      credential: {},
       type: "",
       state: ClaimState.active,
       id: "id1"),
@@ -68,7 +68,7 @@ final claimEntities = [
       issuer: "",
       identifier: "",
       expiration: "",
-      data: {},
+      credential: {},
       type: "",
       state: ClaimState.active,
       id: "id2")
