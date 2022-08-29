@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -50,31 +52,27 @@ class CredentialDTO extends Equatable {
 }
 
 class CredentialSubjectDTO extends Equatable {
-  final int documentType;
   final String id;
   final String type;
   final Map<String, dynamic>? data;
 
-  const CredentialSubjectDTO(this.documentType, this.id, this.type, this.data);
+  const CredentialSubjectDTO(this.id, this.type, this.data);
 
   /// There are dynamic field which depends on the [type]
   /// but since we don't want to set the possible [type] in stone, we unserialize
   /// them in [data] (removing the known fields)
   factory CredentialSubjectDTO.fromJson(Map<String, dynamic> json) {
-    Map<String, dynamic>? data = json;
-    int documentType = json['documentType'] as int;
+    Map<String, dynamic> data = jsonDecode(jsonEncode(json));
     String id = json['id'] as String;
     String type = json['type'] as String;
-    data.remove('documentType');
     data.remove('id');
     data.remove('type');
 
-    return CredentialSubjectDTO(documentType, id, type, data);
+    return CredentialSubjectDTO(id, type, data);
   }
 
   Map<String, dynamic> toJson() {
-    var result = {
-      'documentType': documentType,
+    Map<String, dynamic> result = {
       'id': id,
       'type': type,
     };
@@ -85,7 +83,7 @@ class CredentialSubjectDTO extends Equatable {
   }
 
   @override
-  List<Object?> get props => [documentType, id, type, data];
+  List<Object?> get props => [id, type, data];
 }
 
 @JsonSerializable()
