@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/navigations/routes.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/common/widgets/button_next_action.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_bloc.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_state.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_button_style.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_colors.dart';
@@ -75,29 +78,32 @@ class _HomeScreenState extends State<HomeScreen> {
 
   ///
   void _initGetIdentifier() {
-    widget._bloc.getIdentifier();
+    widget._bloc.add(const GetIdentifierHomeEvent());
   }
 
   ///
   Widget _buildCreateIdentityButton() {
     return Align(
       alignment: Alignment.center,
-      child: StreamBuilder<HomeState>(
-          stream: widget._bloc.observableState,
-          builder: (context, snapshot) {
-            bool enabled = (snapshot.data is! LoadingDataHomeState) && (snapshot.data?.identifier == null || snapshot.data!.identifier!.isEmpty);
-            return AbsorbPointer(
-              absorbing: !enabled,
-              child: ElevatedButton(
-                onPressed: widget._bloc.createIdentity,
-                style: enabled ? CustomButtonStyle.primaryButtonStyle : CustomButtonStyle.disabledPrimaryButtonStyle,
-                child: const Text(
-                  CustomStrings.homeButtonCTA,
-                  style: CustomTextStyles.primaryButtonTextStyle,
-                ),
+      child: BlocBuilder(
+        bloc: widget._bloc,
+        builder: (BuildContext context, HomeState state) {
+          bool enabled = (state is! LoadingDataHomeState) && (state.identifier == null || state.identifier!.isEmpty);
+          return AbsorbPointer(
+            absorbing: !enabled,
+            child: ElevatedButton(
+              onPressed: () {
+                widget._bloc.add(const HomeEvent.createIdentity());
+              },
+              style: enabled ? CustomButtonStyle.primaryButtonStyle : CustomButtonStyle.disabledPrimaryButtonStyle,
+              child: const Text(
+                CustomStrings.homeButtonCTA,
+                style: CustomTextStyles.primaryButtonTextStyle,
               ),
-            );
-          }),
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -131,20 +137,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   ///
   Widget _buildProgress() {
-    return StreamBuilder<HomeState>(
-        stream: widget._bloc.observableState,
-        builder: (context, snapshot) {
-          return SizedBox(
-            height: 48,
-            width: 48,
-            child: Visibility(
-              visible: snapshot.data is LoadingDataHomeState,
-              child: const CircularProgressIndicator(
-                backgroundColor: CustomColors.primaryButton,
-              ),
-            ),
-          );
-        });
+    return BlocBuilder(
+      bloc: widget._bloc,
+      builder: (BuildContext context, HomeState state) {
+        if (state is! LoadingDataHomeState) return const SizedBox.shrink();
+        return const SizedBox(
+          height: 48,
+          width: 48,
+          child: CircularProgressIndicator(
+            backgroundColor: CustomColors.primaryButton,
+          ),
+        );
+      },
+    );
   }
 
   ///
@@ -158,16 +163,17 @@ class _HomeScreenState extends State<HomeScreen> {
             CustomStrings.homeIdentifierSectionPrefix,
             style: CustomTextStyles.descriptionTextStyle.copyWith(fontSize: 20),
           ),
-          StreamBuilder<HomeState>(
-              stream: widget._bloc.observableState,
-              builder: (context, snapshot) {
-                String identifierText = snapshot.data?.identifier ?? CustomStrings.homeIdentifierSectionPlaceHolder;
-                return Text(
-                  identifierText,
-                  key: const Key('identifier'),
-                  style: CustomTextStyles.descriptionTextStyle.copyWith(fontSize: 20, fontWeight: FontWeight.w700),
-                );
-              }),
+          BlocBuilder(
+            bloc: widget._bloc,
+            builder: (BuildContext context, HomeState state) {
+              return Text(
+                state.identifier ?? CustomStrings.homeIdentifierSectionPlaceHolder,
+                key: const Key('identifier'),
+                style: CustomTextStyles.descriptionTextStyle.copyWith(fontSize: 20, fontWeight: FontWeight.w700),
+              );
+            },
+            buildWhen: (_, currentState) => currentState is LoadedIdentifierHomeState,
+          ),
         ],
       ),
     );
@@ -175,22 +181,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   ///
   Widget _buildErrorSection() {
-    return StreamBuilder<HomeState>(
-        stream: widget._bloc.observableState,
-        builder: (context, snapshot) {
-          bool visible = snapshot.data is ErrorHomeState && (snapshot.data as ErrorHomeState).message.isNotEmpty;
-          String message = snapshot.data is ErrorHomeState ? (snapshot.data as ErrorHomeState).message : "";
-          return Visibility(
-            visible: visible,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Text(
-                message,
-                style: CustomTextStyles.descriptionTextStyle.copyWith(color: CustomColors.redError),
-              ),
-            ),
-          );
-        });
+    return BlocBuilder(
+      bloc: widget._bloc,
+      builder: (BuildContext context, HomeState state) {
+        if(state is! ErrorHomeState)return const SizedBox.shrink();
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Text(
+            state.message,
+            style: CustomTextStyles.descriptionTextStyle.copyWith(color: CustomColors.redError),
+          ),
+        );
+      },
+    );
   }
 
   ///
@@ -201,7 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
         alignment: Alignment.centerRight,
         child: ButtonNextAction(
           onPressed: () {
-            widget._bloc.navigateToNextPage(context);
+            Navigator.pushNamed(context, Routes.authPath);
           },
         ),
       ),

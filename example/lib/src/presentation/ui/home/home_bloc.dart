@@ -1,47 +1,44 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 
-import 'package:polygonid_flutter_sdk_example/src/common/bloc/bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/domain/identity/use_cases/create_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk_example/src/domain/identity/use_cases/get_identifier_use_case.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/navigations/routes.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_state.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
 
-class HomeBloc extends Bloc<HomeState> {
+class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetIdentifierUseCase _getIdentifierUseCase;
   final CreateIdentityUseCase _createIdentityUseCase;
 
   HomeBloc(
     this._getIdentifierUseCase,
     this._createIdentityUseCase,
-  ) {
-    changeState(HomeState.init());
+  ) : super(const HomeState.initial()) {
+    on<CreateIdentityHomeEvent>(_createIdentity);
+    on<GetIdentifierHomeEvent>(_getIdentifier);
   }
 
   ///
-  Future<void> getIdentifier() async {
-    changeState(HomeState.loading());
+  Future<void> _getIdentifier(GetIdentifierHomeEvent event, Emitter<HomeState> emit) async {
+    emit(const HomeState.loading());
     String? identifier = await _getIdentifierUseCase.execute();
-    changeState(HomeState.loaded(identifier));
+    emit(HomeState.loaded(identifier: identifier));
   }
 
   ///
-  Future<void> createIdentity() async {
-    changeState(HomeState.loading());
+  Future<void> _createIdentity(CreateIdentityHomeEvent event, Emitter<HomeState> emit) async {
+    emit(const HomeState.loading());
 
     try {
       String identifier = await _createIdentityUseCase.execute();
-      changeState(HomeState.loaded(identifier));
+      emit(HomeState.loaded(identifier: identifier));
     } on IdentityException catch (identityException) {
-      changeState(HomeState.error(identityException.error));
+      emit(HomeState.error(message: identityException.error));
     } catch (_) {
-      changeState(HomeState.error(CustomStrings.genericError));
+      emit(const HomeState.error(message: CustomStrings.genericError));
     }
-  }
-
-  ///
-  void navigateToNextPage(BuildContext context) {
-    Navigator.pushNamed(context, Routes.authPath);
   }
 }

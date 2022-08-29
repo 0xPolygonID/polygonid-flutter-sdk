@@ -55,7 +55,7 @@ void registerHomeDependencies() {
 
 ///
 void registerClaimsDependencies() {
-  getIt.registerFactory(() => ClaimsBloc(getIt(), getIt(), getIt()));
+  getIt.registerFactory(() => ClaimsBloc(getIt(), getIt(), getIt(), getIt()));
   getIt.registerFactory<PolygonSdkCredentialDataSource>(() => PolygonSdkCredentialDataSource(getIt()));
   getIt.registerLazySingleton<CredentialRepository>(() => CredentialRepositoryImpl(getIt()));
   getIt.registerLazySingleton<FetchAndSavesClaimsUseCase>(() => FetchAndSavesClaimsUseCase(getIt()));

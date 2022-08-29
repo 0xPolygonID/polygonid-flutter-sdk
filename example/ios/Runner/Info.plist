@@ -47,5 +47,7 @@
 	<array>
 	    <string>_dartobservatory._tcp</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+    <string>This app needs camera access to scan QR codes for authentication, claim offers and proof requests</string>
 </dict>
 </plist>

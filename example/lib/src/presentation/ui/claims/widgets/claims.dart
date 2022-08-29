@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/navigations/routes.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_state.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/models/claim_model.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/widgets/claim_card.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/ui/common/widgets/button_next_action.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_event.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_button_style.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_colors.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
@@ -27,7 +29,7 @@ class _ClaimsScreenState extends State<ClaimsScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       //TODO temp logic
-      widget._bloc.getClaims();
+      widget._bloc.add(const ClaimsEvent.getClaims());
     });
   }
 
@@ -74,6 +76,7 @@ class _ClaimsScreenState extends State<ClaimsScreen> {
             ),
             const SizedBox(height: 24),
             _buildClaimsConnectButton(),
+            _buildBlocListener(),
           ],
         ),
       ),
@@ -109,7 +112,7 @@ class _ClaimsScreenState extends State<ClaimsScreen> {
       alignment: Alignment.center,
       child: ElevatedButton(
         onPressed: () {
-          widget._bloc.getIden3messageFromQrScanning(context);
+          widget._bloc.add(const ClaimsEvent.clickScanQrCode());
         },
         style: CustomButtonStyle.primaryButtonStyle,
         child: const Text(
@@ -122,15 +125,22 @@ class _ClaimsScreenState extends State<ClaimsScreen> {
 
   ///
   Widget _buildClaimList() {
-    return StreamBuilder<ClaimsState>(
-      stream: widget._bloc.observableState,
-      builder: (context, snapshot) {
-        List<ClaimModel> claimList = snapshot.data?.claimList ?? [];
-        List<Widget> claimWidgetList = _buildClaimCardWidgetList(claimList);
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: claimWidgetList,
-        );
+    return BlocBuilder(
+      bloc: widget._bloc,
+      builder: (BuildContext context, ClaimsState state) {
+        if (state is LoadedDataClaimsState) {
+          List<ClaimModel> claimList = state.claimList;
+          List<Widget> claimWidgetList = _buildClaimCardWidgetList(claimList);
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: claimWidgetList,
+          );
+        }
+        return const SizedBox.shrink();
+      },
+      buildWhen: (_, ClaimsState currentState) {
+        bool rebuild = currentState is LoadedDataClaimsState;
+        return rebuild;
       },
     );
   }
@@ -143,5 +153,22 @@ class _ClaimsScreenState extends State<ClaimsScreen> {
               child: ClaimCard(claimModel: claimModelItem),
             ))
         .toList();
+  }
+
+  ///
+  Widget _buildBlocListener() {
+    return BlocListener<ClaimsBloc, ClaimsState>(
+      bloc: widget._bloc,
+      listener: (context, state) {
+        if (state is NavigateToQrCodeScannerClaimsState) _handleNavigateToQrCodeScannerClaimsState();
+      },
+      child: const SizedBox.shrink(),
+    );
+  }
+
+  ///
+  Future<void> _handleNavigateToQrCodeScannerClaimsState() async {
+    String? qrCodeScanningResult = await Navigator.pushNamed(context, Routes.qrCodeScannerPath) as String?;
+    widget._bloc.add(ClaimsEvent.onScanQrCodeResponse(qrCodeScanningResult));
   }
 }

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/navigations/routes.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_bloc.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_event.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_state.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/common/widgets/button_next_action.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_button_style.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_colors.dart';
@@ -56,6 +60,7 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
             Stack(
               children: [
+                _buildBlocListener(),
                 _buildAuthConnectButton(),
                 _buildNavigateToNextPageButton(),
               ],
@@ -72,7 +77,8 @@ class _AuthScreenState extends State<AuthScreen> {
       alignment: Alignment.center,
       child: ElevatedButton(
         onPressed: () {
-          widget._bloc.getIden3messageFromQrScanning(context);
+          //widget._bloc.getIden3messageFromQrScanning(context);
+          widget._bloc.add(const AuthEvent.clickScanQrCode());
         },
         style: CustomButtonStyle.primaryButtonStyle,
         child: const Text(
@@ -103,10 +109,27 @@ class _AuthScreenState extends State<AuthScreen> {
         alignment: Alignment.centerRight,
         child: ButtonNextAction(
           onPressed: () {
-            widget._bloc.navigateToNextPage(context);
+            Navigator.pushNamed(context, Routes.claimsPath);
           },
         ),
       ),
     );
+  }
+
+  ///
+  Widget _buildBlocListener() {
+    return BlocListener<AuthBloc, AuthState>(
+      bloc: widget._bloc,
+      listener: (context, state) {
+        if (state is NavigateToQrCodeScannerAuthState) _handleNavigateToQrCodeScannerAuthState();
+      },
+      child: const SizedBox.shrink(),
+    );
+  }
+
+  ///
+  Future<void> _handleNavigateToQrCodeScannerAuthState() async {
+    String? qrCodeScanningResult = await Navigator.pushNamed(context, Routes.qrCodeScannerPath) as String?;
+    widget._bloc.add(AuthEvent.onScanQrCodeResponse(qrCodeScanningResult));
   }
 }

@@ -1,37 +1,20 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/models/iden3_message.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/models/claim_model.dart';
 
-abstract class ClaimsState {
-  List<ClaimModel> claimList = [];
+part 'claims_state.freezed.dart';
 
-  ClaimsState({this.claimList = const []});
+@freezed
+class ClaimsState with _$ClaimsState {
+  const factory ClaimsState.initial() = InitialClaimsState;
 
-  factory ClaimsState.init() => InitialClaimsState();
+  const factory ClaimsState.loading() = LoadingDataClaimsState;
 
-  factory ClaimsState.loading() => LoadingDataClaimsState();
+  const factory ClaimsState.navigateToQrCodeScanner() = NavigateToQrCodeScannerClaimsState;
 
-  factory ClaimsState.loaded(List<ClaimModel> claimList) => LoadedDataClaimsState(claimList);
+  const factory ClaimsState.qrCodeScanned(Iden3Message iden3message) = QrCodeScannedClaimsState;
 
-  factory ClaimsState.error(String message) => ErrorClaimsState(message: message);
-}
+  const factory ClaimsState.loadedClaims(List<ClaimModel> claimList) = LoadedDataClaimsState;
 
-///
-class InitialClaimsState extends ClaimsState {
-  InitialClaimsState();
-}
-
-///
-class LoadingDataClaimsState extends ClaimsState {
-  LoadingDataClaimsState();
-}
-
-///
-class LoadedDataClaimsState extends ClaimsState {
-  LoadedDataClaimsState(claimList) : super(claimList: claimList);
-}
-
-///
-class ErrorClaimsState extends ClaimsState {
-  final String message;
-
-  ErrorClaimsState({required this.message});
+  const factory ClaimsState.error(String message) = ErrorClaimsState;
 }

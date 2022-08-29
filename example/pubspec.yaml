@@ -37,6 +37,9 @@ dependencies:
   country_code: ^1.0.0
   country_list: ^0.0.5
   intl: ^0.17.0
+  bloc: ^8.1.0
+  flutter_bloc: ^8.1.1
+  freezed_annotation: ^2.1.0
 
 dev_dependencies:
   integration_test:
@@ -45,6 +48,8 @@ dev_dependencies:
     sdk: flutter
   mockito: ^5.3.0
   build_runner: ^2.2.0
+  json_serializable: ^6.3.1
+  freezed: ^2.1.0+1
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

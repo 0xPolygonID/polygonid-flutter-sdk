@@ -1,37 +1,13 @@
 import 'package:polygonid_flutter_sdk_example/src/presentation/models/iden3_message.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-abstract class AuthState {
-  Iden3Message? iden3message;
+part 'auth_state.freezed.dart';
 
-  AuthState({this.iden3message});
-
-  factory AuthState.init() => InitAuthState();
-
-  factory AuthState.loading() => LoadingAuthState();
-
-  factory AuthState.loaded(Iden3Message? iden3message) => LoadedAuthState(iden3message);
-
-  factory AuthState.error(String message) => ErrorAuthState(message: message);
-}
-
-///
-class InitAuthState extends AuthState {
-  InitAuthState();
-}
-
-///
-class LoadingAuthState extends AuthState {
-  LoadingAuthState();
-}
-
-///
-class LoadedAuthState extends AuthState {
-  LoadedAuthState(iden3message) : super(iden3message: iden3message);
-}
-
-///
-class ErrorAuthState<T> extends AuthState {
-  final String message;
-
-  ErrorAuthState({required this.message});
+@freezed
+class AuthState with _$AuthState{
+  const factory AuthState.initial() = InitAuthState;
+  const factory AuthState.loading() = LoadingAuthState;
+  const factory AuthState.navigateToQrCodeScanner() = NavigateToQrCodeScannerAuthState;
+  const factory AuthState.loaded(Iden3Message iden3message) = LoadedAuthState;
+  const factory AuthState.error(String message) = ErrorAuthState;
 }

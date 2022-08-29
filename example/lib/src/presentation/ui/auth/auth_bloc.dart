@@ -1,45 +1,52 @@
 import 'dart:convert';
+import 'package:bloc/bloc.dart';
 
-import 'package:flutter/material.dart';
-import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
-import 'package:polygonid_flutter_sdk_example/src/common/bloc/bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/models/iden3_message.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/navigations/routes.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_state.dart';
 
-class AuthBloc extends Bloc<AuthState> {
-  AuthBloc() {
-    changeState(AuthState.init());
+class AuthBloc extends Bloc<AuthEvent, AuthState> {
+  AuthBloc() : super(const AuthState.initial()) {
+    on<AuthEvent>(_handleAuthEvent);
   }
 
-  Future<void> getIden3messageFromQrScanning(BuildContext context) async {
-    changeState(AuthState.loading());
-    String? scanningResult = await Navigator.pushNamed(context, Routes.qrCodeScannerPath) as String?;
+  Future<void> _handleAuthEvent(AuthEvent event, Emitter<AuthState> emit) async {
+    event.when(
+      clickScanQrCode: () {
+        _handleClickScanQrCode(emit);
+      },
+      onScanQrCodeResponse: (String? qrCodeResponse) {
+        _handleScanQrCodeResponse(emit, qrCodeResponse);
+      },
+    );
+  }
 
-    if (scanningResult == null) {
-      changeState(AuthState.error("no qr code scanned"));
-      return;
+  ///
+  void _handleClickScanQrCode(Emitter<AuthState> emit) {
+    emit(const AuthState.navigateToQrCodeScanner());
+  }
+
+  ///
+  void _handleScanQrCodeResponse(Emitter<AuthState> emit, String? qrCodeResponse) {
+    if (qrCodeResponse == null || qrCodeResponse.isEmpty) {
+      emit(const AuthState.error("no qr code scanned"));
     }
 
     try {
-      final Map<String, dynamic> data = jsonDecode(scanningResult);
+      final Map<String, dynamic> data = jsonDecode(qrCodeResponse!);
       final Iden3Message iden3message = Iden3Message.fromJson(data);
-      changeState(AuthState.loaded(iden3message));
-
-      String getAuthToken = await _getAuthToken();
+      emit(AuthState.loaded(iden3message));
     } catch (error) {
-      changeState(AuthState.error("Scanned code is not valid"));
+      emit(const AuthState.error("Scanned code is not valid"));
     }
   }
+
+/*
 
   ///
   Future<String> _getAuthToken() {
     //PolygonIdSdk.I.identity.getAuthToken(identifier: identifier, circuitData: circuitData, message: message)
     return Future.value("");
   }
-
-  ///
-  void navigateToNextPage(BuildContext context) {
-    Navigator.pushNamed(context, Routes.claimsPath);
-  }
+ */
 }
