@@ -22,4 +22,7 @@ abstract class IdentityRepository {
       {required String identifier,
       required CircuitDataEntity circuitData,
       required String message});
+
+  ///
+  Future<bool> authenticate({required String authQrCodeResult});
 }

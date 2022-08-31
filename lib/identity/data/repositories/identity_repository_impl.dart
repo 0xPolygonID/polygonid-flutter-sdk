@@ -1,4 +1,13 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:http/http.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_files_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 
 import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
 import '../../domain/entities/identity_entity.dart';
@@ -24,16 +33,23 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final HexMapper _hexMapper;
   final PrivateKeyMapper _privateKeyMapper;
   final IdentityDTOMapper _identityDTOMapper;
+  final LocalIdentityDataSource _localIdentityDataSource;
+  final LocalFilesDataSource _localFilesDataSource;
+  final RemoteIdentityDataSource _remoteIdentityDataSource;
 
   IdentityRepositoryImpl(
-      this._walletDataSource,
-      this._libIdentityDataSource,
-      this._storageIdentityDataSource,
-      this._storageKeyValueDataSource,
-      this._jwzDataSource,
-      this._hexMapper,
-      this._privateKeyMapper,
-      this._identityDTOMapper);
+    this._walletDataSource,
+    this._libIdentityDataSource,
+    this._storageIdentityDataSource,
+    this._storageKeyValueDataSource,
+    this._jwzDataSource,
+    this._hexMapper,
+    this._privateKeyMapper,
+    this._identityDTOMapper,
+    this._localIdentityDataSource,
+    this._localFilesDataSource,
+    this._remoteIdentityDataSource,
+  );
 
   /// Get an identifier from a String
   /// It will create and store a new [IdentityDTO] if it doesn't exists
@@ -43,25 +59,16 @@ class IdentityRepositoryImpl extends IdentityRepository {
   Future<String> createIdentity({String? privateKey}) async {
     try {
       // Create a wallet
-      PrivadoIdWallet wallet = await _walletDataSource.createWallet(
-          privateKey: _privateKeyMapper.mapFrom(privateKey));
+      PrivadoIdWallet wallet = await _walletDataSource.createWallet(privateKey: _privateKeyMapper.mapFrom(privateKey));
 
       // Get the associated identifier
-      String identifier = await _libIdentityDataSource.getIdentifier(
-          pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]);
+      String identifier = await _libIdentityDataSource.getIdentifier(pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]);
 
       // Store the identity
-      await _libIdentityDataSource
-          .getAuthClaim(pubX: wallet.publicKey[0], pubY: wallet.publicKey[1])
-          .then((authClaim) {
-        IdentityDTO dto = IdentityDTO(
-            privateKey: _hexMapper.mapFrom(wallet.privateKey),
-            identifier: identifier,
-            authClaim: authClaim);
+      await _libIdentityDataSource.getAuthClaim(pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]).then((authClaim) {
+        IdentityDTO dto = IdentityDTO(privateKey: _hexMapper.mapFrom(wallet.privateKey), identifier: identifier, authClaim: authClaim);
 
-        return _storageIdentityDataSource
-            .storeIdentity(identifier: identifier, identity: dto)
-            .then((_) => dto);
+        return _storageIdentityDataSource.storeIdentity(identifier: identifier, identity: dto).then((_) => dto);
       });
 
       // Return the identifier
@@ -76,19 +83,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   /// Used for retro compatibility with demo
   @override
   Future<IdentityEntity> getIdentityFromKey({String? privateKey}) {
-    return Future.value(_privateKeyMapper.mapFrom(privateKey)).then((key) =>
-        _walletDataSource
-            .createWallet(privateKey: key)
-            .then((wallet) => Future.wait([
-                  _libIdentityDataSource.getIdentifier(
-                      pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]),
-                  _libIdentityDataSource.getAuthClaim(
-                      pubX: wallet.publicKey[0], pubY: wallet.publicKey[1])
-                ]).then((values) => IdentityEntity(
-                    privateKey: _hexMapper.mapFrom(wallet.privateKey),
-                    identifier: values[0],
-                    authClaim: values[1])))
-            .catchError((error) => throw IdentityException(error)));
+    return Future.value(_privateKeyMapper.mapFrom(privateKey)).then((key) => _walletDataSource.createWallet(privateKey: key).then((wallet) => Future.wait([_libIdentityDataSource.getIdentifier(pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]), _libIdentityDataSource.getAuthClaim(pubX: wallet.publicKey[0], pubY: wallet.publicKey[1])]).then((values) => IdentityEntity(privateKey: _hexMapper.mapFrom(wallet.privateKey), identifier: values[0], authClaim: values[1]))).catchError((error) => throw IdentityException(error)));
   }
 
   /// Get an [IdentityEntity] from an identifier
@@ -96,11 +91,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   /// Throws an [UnknownIdentityException] if not found.
   @override
   Future<IdentityEntity> getIdentity({required String identifier}) {
-    return _storageIdentityDataSource
-        .getIdentity(identifier: identifier)
-        .then((dto) => _identityDTOMapper.mapFrom(dto))
-        .catchError((error) => throw IdentityException(error),
-            test: (error) => error is! UnknownIdentityException);
+    return _storageIdentityDataSource.getIdentity(identifier: identifier).then((dto) => _identityDTOMapper.mapFrom(dto)).catchError((error) => throw IdentityException(error), test: (error) => error is! UnknownIdentityException);
   }
 
   /// Sign a message through an identifier
@@ -109,20 +100,13 @@ class IdentityRepositoryImpl extends IdentityRepository {
   ///
   /// Return a signature in hexadecimal format
   @override
-  Future<String> signMessage(
-      {required String identifier, required String message}) {
-    return _storageIdentityDataSource
-        .getIdentity(identifier: identifier)
-        .then((dto) => _walletDataSource.signMessage(
-            privateKey: _hexMapper.mapTo(dto.privateKey), message: message))
-        .catchError((error) => throw IdentityException(error));
+  Future<String> signMessage({required String identifier, required String message}) {
+    return _storageIdentityDataSource.getIdentity(identifier: identifier).then((dto) => _walletDataSource.signMessage(privateKey: _hexMapper.mapTo(dto.privateKey), message: message)).catchError((error) => throw IdentityException(error));
   }
 
   @override
   Future<String?> getCurrentIdentifier() {
-    return _storageKeyValueDataSource
-        .get(key: currentIdentifierKey)
-        .then((value) => value == null ? null : value as String);
+    return _storageKeyValueDataSource.get(key: currentIdentifierKey).then((value) => value == null ? null : value as String);
   }
 
   @override
@@ -131,28 +115,35 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<String> getAuthToken(
-      {required String identifier,
-      required CircuitDataEntity circuitData,
-      required String message}) {
-    return _storageIdentityDataSource.getIdentity(identifier: identifier).then(
-        (dto) => _jwzDataSource.getAuthToken(
-            privateKey: _hexMapper.mapTo(dto.privateKey),
-            authClaim: dto.authClaim,
-            message: message,
-            circuitId: circuitData.circuitId,
-            datFile: circuitData.datFile,
-            zKeyFile: circuitData.zKeyFile));
+  Future<String> getAuthToken({required String identifier, required CircuitDataEntity circuitData, required String message}) {
+    return _storageIdentityDataSource.getIdentity(identifier: identifier).then((dto) => _jwzDataSource.getAuthToken(privateKey: _hexMapper.mapTo(dto.privateKey), authClaim: dto.authClaim, message: message, circuitId: circuitData.circuitId, datFile: circuitData.datFile, zKeyFile: circuitData.zKeyFile));
   }
 
   /// Get an identifier from a [privateKey]
   @override
   Future<String> getIdentifier({String? privateKey}) {
-    return Future.value(_privateKeyMapper.mapFrom(privateKey))
-        .then((key) => // Create a wallet from the private key
-            _walletDataSource.createWallet(privateKey: key))
-        .then((wallet) => // Get the associated identifier
-            _libIdentityDataSource.getIdentifier(
-                pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]));
+    return Future.value(_privateKeyMapper.mapFrom(privateKey)).then((key) => // Create a wallet from the private key
+        _walletDataSource.createWallet(privateKey: key)).then((wallet) => // Get the associated identifier
+        _libIdentityDataSource.getIdentifier(pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]));
+  }
+
+  @override
+  Future<bool> authenticate({required String authQrCodeResult}) async {
+    Map<String, dynamic> param = jsonDecode(authQrCodeResult);
+    String? identifier = await getCurrentIdentifier();
+    IdentityDTO identity = await _storageIdentityDataSource.getIdentity(identifier: identifier!);
+    String privateKey = identity.privateKey;
+
+    AuthRequest authRequest = AuthRequest.fromJson(param);
+
+    AuthResponse authResponse = await _localIdentityDataSource.getAuthResponse(identifier: identifier, privateKey: privateKey, authRequest: authRequest);
+    String message = json.encode(authResponse);
+
+    List<Uint8List> circuitFiles = await _localFilesDataSource.loadCircuitFiles('auth');
+    CircuitDataEntity circuitData = CircuitDataEntity('auth', circuitFiles[0], circuitFiles[1]);
+    String authToken = await getAuthToken(identifier: identifier, circuitData: circuitData, message: message);
+
+    Response authWithTokenResponse = await _remoteIdentityDataSource.authWithToken(authToken, authRequest);
+    return authWithTokenResponse.statusCode == 200;
   }
 }

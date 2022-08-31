@@ -11,3 +11,9 @@ class UnknownIdentityException implements Exception {
 
   UnknownIdentityException(this.identifier);
 }
+
+class NullWitnessException implements Exception {
+  final String? circuit;
+
+  NullWitnessException(this.circuit);
+}

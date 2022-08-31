@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/authenticate_use_case.dart';
 
 import '../identity/domain/entities/identity_entity.dart';
 import '../identity/domain/use_cases/create_identity_use_case.dart';
@@ -17,14 +18,15 @@ class IdentityWallet {
   final GetAuthTokenUseCase _getAuthTokenUseCase;
   final GetCurrentIdentifierUseCase _getCurrentIdentifierUseCase;
   final RemoveCurrentIdentityUseCase _removeCurrentIdentityUseCase;
+  final AuthenticateUseCase _authenticateUseCase;
 
-  IdentityWallet(
-      this._createIdentityUseCase,
+  IdentityWallet(this._createIdentityUseCase,
       this._getIdentityUseCase,
       this._signMessageUseCase,
       this._getAuthTokenUseCase,
       this._getCurrentIdentifierUseCase,
-      this._removeCurrentIdentityUseCase);
+      this._removeCurrentIdentityUseCase,
+      this._authenticateUseCase,);
 
   /// Create and store an [IdentityEntity] from a private key.
   /// If [privateKey] is omitted or null, a random one will be used to create a new identity.
@@ -87,5 +89,15 @@ class IdentityWallet {
   /// an identity via [createIdentity]).
   Future<void> removeCurrentIdentity() {
     return _removeCurrentIdentityUseCase.execute();
+  }
+
+
+  ///AUTHENTICATION
+  /// get iden3message from qr code and transform it as string "message" #3 through _getAuthMessage(data)
+  /// get CircuitDataEntity #1 by loadCircuitFiles #2
+  /// get authToken #4
+  /// auth with token #5 TODO rewrite as soon as development is completed
+  Future<bool> authenticate({required String scannedAuthQrCode}) {
+    return _authenticateUseCase.execute(param: scannedAuthQrCode);
   }
 }

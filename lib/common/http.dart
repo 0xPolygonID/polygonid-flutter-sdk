@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import '../constants.dart';
 import 'http_exceptions.dart';
 
+export 'package:http/http.dart';
+
 Future<String> extractJSON(http.Response response) async {
   return response.body;
 }
@@ -82,5 +84,27 @@ http.Response returnResponseOrThrowException(http.Response response) {
     throw UnknownApiException(response.statusCode);
   } else {
     return response;
+  }
+
+
+}
+
+///
+Future<http.Response> postRawMsg(String endpoint, {Object? body}) async {
+  http.Response response;
+  try {
+    var uri = Uri.parse(endpoint);
+    response = await http.post(
+      uri,
+      body: body,
+      headers: {
+        HttpHeaders.acceptHeader: '*/*',
+        HttpHeaders.contentTypeHeader: 'text/plain',
+      },
+    );
+
+    return returnResponseOrThrowException(response);
+  } catch (e) {
+    throw Exception();
   }
 }
