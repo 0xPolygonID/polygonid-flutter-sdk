@@ -19,7 +19,7 @@ class WitnessIsolatesWrapper {
   Future<Uint8List?> computeWitnessMtp(WitnessParam param) => compute(_computeWitnessMtp, param);
 }
 
-/// As this is running is a separate thread, we cannot inject [WitnessAuthLib]
+/// As this is running in a separate thread, we cannot inject [WitnessAuthLib]
 Future<Uint8List?> _computeWitnessAuth(WitnessParam param) async {
   final WitnessAuthLib witnessAuthLib = WitnessAuthLib();
   final WitnessAuthDataSource witnessAuthDataSource = WitnessAuthDataSource(witnessAuthLib);
@@ -27,7 +27,7 @@ Future<Uint8List?> _computeWitnessAuth(WitnessParam param) async {
   return witnessBytes;
 }
 
-/// As this is running is a separate thread, we cannot inject [WitnessSigLib]
+/// As this is running in a separate thread, we cannot inject [WitnessSigLib]
 Future<Uint8List?> _computeWitnessSig(WitnessParam param) async {
   final WitnessSigLib witnessSigLib = WitnessSigLib();
   final WitnessSigDataSource witnessSigDataSource = WitnessSigDataSource(witnessSigLib);
@@ -35,10 +35,31 @@ Future<Uint8List?> _computeWitnessSig(WitnessParam param) async {
   return witnessBytes;
 }
 
-/// As this is running is a separate thread, we cannot inject [WitnessMtpLib]
+/// As this is running in a separate thread, we cannot inject [WitnessMtpLib]
 Future<Uint8List?> _computeWitnessMtp(WitnessParam param) async {
   final WitnessMtpLib witnessMtpLib = WitnessMtpLib();
   final WitnessMtpDataSource witnessMtpDataSource = WitnessMtpDataSource(witnessMtpLib);
   final Uint8List? witnessBytes = await witnessMtpDataSource.calculateWitnessMtp(param);
   return witnessBytes;
+}
+
+class WitnessDataSource {
+  final WitnessIsolatesWrapper _witnessIsolatesWrapper;
+
+  WitnessDataSource(this._witnessIsolatesWrapper);
+
+  ///
+  Future<Uint8List?> computeWitnessAuth(WitnessParam param) async {
+    return _witnessIsolatesWrapper.computeWitnessAuth(param);
+  }
+
+  ///
+  Future<Uint8List?> computeWitnessMtp(WitnessParam param) async {
+    return _witnessIsolatesWrapper.computeWitnessMtp(param);
+  }
+
+  ///
+  Future<Uint8List?> computeWitnessSig(WitnessParam param) async {
+    return _witnessIsolatesWrapper.computeWitnessSig(param);
+  }
 }

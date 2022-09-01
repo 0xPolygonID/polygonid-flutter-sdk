@@ -3,10 +3,9 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/auth_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/jwz_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_files_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_key_value_data_source.dart';
@@ -62,8 +61,7 @@ MockJWZDataSource jwzDataSource = MockJWZDataSource();
 MockHexMapper hexMapper = MockHexMapper();
 MockPrivateKeyMapper privateKeyMapper = MockPrivateKeyMapper();
 MockIdentityDTOMapper identityDTOMapper = MockIdentityDTOMapper();
-MockLocalIdentityDataSource localIdentityDataSource = MockLocalIdentityDataSource();
-MockLocalFilesDataSource localFilesDataSource = MockLocalFilesDataSource();
+MockAuthDataSource authDataSource = MockAuthDataSource();
 MockRemoteIdentityDataSource remoteIdentityDataSource = MockRemoteIdentityDataSource();
 
 // Tested instance
@@ -76,8 +74,7 @@ IdentityRepository repository = IdentityRepositoryImpl(
   hexMapper,
   privateKeyMapper,
   identityDTOMapper,
-  localIdentityDataSource,
-  localFilesDataSource,
+  authDataSource,
   remoteIdentityDataSource,
 );
 
@@ -90,8 +87,7 @@ IdentityRepository repository = IdentityRepositoryImpl(
   HexMapper,
   PrivateKeyMapper,
   IdentityDTOMapper,
-  LocalIdentityDataSource,
-  LocalFilesDataSource,
+  AuthDataSource,
   RemoteIdentityDataSource,
 ])
 void main() {

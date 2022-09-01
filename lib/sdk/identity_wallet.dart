@@ -97,7 +97,7 @@ class IdentityWallet {
   /// get CircuitDataEntity #1 by loadCircuitFiles #2
   /// get authToken #4
   /// auth with token #5 TODO rewrite as soon as development is completed
-  Future<bool> authenticate({required String scannedAuthQrCode}) {
-    return _authenticateUseCase.execute(param: scannedAuthQrCode);
+  Future<bool> authenticate({required String scannedAuthQrCode, required CircuitDataEntity circuitDataEntity}) {
+    return _authenticateUseCase.execute(param: AuthenticateParam(authQrCodeResult: scannedAuthQrCode, circuitDataEntity: circuitDataEntity));
   }
 }

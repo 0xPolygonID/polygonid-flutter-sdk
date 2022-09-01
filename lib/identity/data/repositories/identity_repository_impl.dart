@@ -5,8 +5,7 @@ import 'package:http/http.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_files_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/auth_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 
 import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
@@ -33,8 +32,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final HexMapper _hexMapper;
   final PrivateKeyMapper _privateKeyMapper;
   final IdentityDTOMapper _identityDTOMapper;
-  final LocalIdentityDataSource _localIdentityDataSource;
-  final LocalFilesDataSource _localFilesDataSource;
+  final AuthDataSource _authDataSource;
   final RemoteIdentityDataSource _remoteIdentityDataSource;
 
   IdentityRepositoryImpl(
@@ -46,8 +44,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._hexMapper,
     this._privateKeyMapper,
     this._identityDTOMapper,
-    this._localIdentityDataSource,
-    this._localFilesDataSource,
+    this._authDataSource,
     this._remoteIdentityDataSource,
   );
 
@@ -128,7 +125,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<bool> authenticate({required String authQrCodeResult}) async {
+  Future<bool> authenticate({required String authQrCodeResult, required CircuitDataEntity circuitDataEntity}) async {
     Map<String, dynamic> param = jsonDecode(authQrCodeResult);
     String? identifier = await getCurrentIdentifier();
     IdentityDTO identity = await _storageIdentityDataSource.getIdentity(identifier: identifier!);
@@ -136,12 +133,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
     AuthRequest authRequest = AuthRequest.fromJson(param);
 
-    AuthResponse authResponse = await _localIdentityDataSource.getAuthResponse(identifier: identifier, privateKey: privateKey, authRequest: authRequest);
-    String message = json.encode(authResponse);
+    String authResponse = await _authDataSource.getAuthResponse(identifier: identifier, privateKey: privateKey, authRequest: authRequest, circuitDataEntity: circuitDataEntity);
 
-    List<Uint8List> circuitFiles = await _localFilesDataSource.loadCircuitFiles('auth');
-    CircuitDataEntity circuitData = CircuitDataEntity('auth', circuitFiles[0], circuitFiles[1]);
-    String authToken = await getAuthToken(identifier: identifier, circuitData: circuitData, message: message);
+    String authToken = await getAuthToken(identifier: identifier, circuitData: circuitDataEntity, message: authResponse);
 
     Response authWithTokenResponse = await _remoteIdentityDataSource.authWithToken(authToken, authRequest);
     return authWithTokenResponse.statusCode == 200;

@@ -3,23 +3,21 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i8;
-import 'dart:typed_data' as _i9;
+import 'dart:async' as _i7;
+import 'dart:typed_data' as _i8;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/common/http.dart' as _i6;
+import 'package:polygonid_flutter_sdk/common/http.dart' as _i5;
+import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_data.dart'
+    as _i10;
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart'
     as _i19;
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart'
-    as _i5;
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/auth_data_source.dart'
+    as _i18;
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/jwz_data_source.dart'
     as _i14;
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart'
-    as _i10;
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_files_data_source.dart'
-    as _i20;
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_identity_data_source.dart'
-    as _i18;
+    as _i9;
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart'
     as _i21;
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart'
@@ -27,7 +25,7 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identit
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_key_value_data_source.dart'
     as _i13;
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart'
-    as _i7;
+    as _i6;
 import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart'
     as _i3;
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart'
@@ -40,6 +38,8 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.d
     as _i4;
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart'
     as _i2;
+import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart'
+    as _i20;
 import 'package:sembast/sembast.dart' as _i12;
 
 // ignore_for_file: type=lint
@@ -70,62 +70,81 @@ class _FakeIdentityEntity_2 extends _i1.SmartFake
       : super(parent, parentInvocation);
 }
 
-class _FakeAuthResponse_3 extends _i1.SmartFake implements _i5.AuthResponse {
-  _FakeAuthResponse_3(Object parent, Invocation parentInvocation)
-      : super(parent, parentInvocation);
-}
-
-class _FakeResponse_4 extends _i1.SmartFake implements _i6.Response {
-  _FakeResponse_4(Object parent, Invocation parentInvocation)
+class _FakeResponse_3 extends _i1.SmartFake implements _i5.Response {
+  _FakeResponse_3(Object parent, Invocation parentInvocation)
       : super(parent, parentInvocation);
 }
 
 /// A class which mocks [WalletDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockWalletDataSource extends _i1.Mock implements _i7.WalletDataSource {
+class MockWalletDataSource extends _i1.Mock implements _i6.WalletDataSource {
   MockWalletDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i8.Future<_i2.PrivadoIdWallet> createWallet({_i9.Uint8List? privateKey}) =>
+  _i7.Future<_i2.PrivadoIdWallet> createWallet({_i8.Uint8List? privateKey}) =>
       (super.noSuchMethod(
               Invocation.method(#createWallet, [], {#privateKey: privateKey}),
-              returnValue: _i8.Future<_i2.PrivadoIdWallet>.value(
+              returnValue: _i7.Future<_i2.PrivadoIdWallet>.value(
                   _FakePrivadoIdWallet_0(
                       this,
                       Invocation.method(
                           #createWallet, [], {#privateKey: privateKey}))))
-          as _i8.Future<_i2.PrivadoIdWallet>);
+          as _i7.Future<_i2.PrivadoIdWallet>);
   @override
-  _i8.Future<String> signMessage(
-          {_i9.Uint8List? privateKey, String? message}) =>
+  _i7.Future<String> signMessage(
+          {_i8.Uint8List? privateKey, String? message}) =>
       (super.noSuchMethod(
           Invocation.method(
               #signMessage, [], {#privateKey: privateKey, #message: message}),
-          returnValue: _i8.Future<String>.value('')) as _i8.Future<String>);
+          returnValue: _i7.Future<String>.value('')) as _i7.Future<String>);
 }
 
 /// A class which mocks [LibIdentityDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockLibIdentityDataSource extends _i1.Mock
-    implements _i10.LibIdentityDataSource {
+    implements _i9.LibIdentityDataSource {
   MockLibIdentityDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i8.Future<String> getIdentifier({String? pubX, String? pubY}) =>
+  _i7.Future<String> getIdentifier({String? pubX, String? pubY}) =>
       (super.noSuchMethod(
           Invocation.method(#getIdentifier, [], {#pubX: pubX, #pubY: pubY}),
-          returnValue: _i8.Future<String>.value('')) as _i8.Future<String>);
+          returnValue: _i7.Future<String>.value('')) as _i7.Future<String>);
   @override
-  _i8.Future<String> getAuthClaim({String? pubX, String? pubY}) =>
+  _i7.Future<String> getAuthClaim({String? pubX, String? pubY}) =>
       (super.noSuchMethod(
           Invocation.method(#getAuthClaim, [], {#pubX: pubX, #pubY: pubY}),
-          returnValue: _i8.Future<String>.value('')) as _i8.Future<String>);
+          returnValue: _i7.Future<String>.value('')) as _i7.Future<String>);
+  @override
+  _i7.Future<String?> prepareAtomicQueryInputs(
+          String? challenge,
+          String? privateKey,
+          _i10.CredentialData? credential,
+          String? circuitId,
+          String? claimType,
+          String? key,
+          List<int>? values,
+          int? operator,
+          String? revStatusUrl) =>
+      (super.noSuchMethod(
+          Invocation.method(#prepareAtomicQueryInputs, [
+            challenge,
+            privateKey,
+            credential,
+            circuitId,
+            claimType,
+            key,
+            values,
+            operator,
+            revStatusUrl
+          ]),
+          returnValue: _i7.Future<String?>.value()) as _i7.Future<String?>);
 }
 
 /// A class which mocks [StorageIdentityDataSource].
@@ -138,25 +157,25 @@ class MockStorageIdentityDataSource extends _i1.Mock
   }
 
   @override
-  _i8.Future<_i3.IdentityDTO> getIdentity({String? identifier}) =>
+  _i7.Future<_i3.IdentityDTO> getIdentity({String? identifier}) =>
       (super.noSuchMethod(
               Invocation.method(#getIdentity, [], {#identifier: identifier}),
-              returnValue: _i8.Future<_i3.IdentityDTO>.value(_FakeIdentityDTO_1(
+              returnValue: _i7.Future<_i3.IdentityDTO>.value(_FakeIdentityDTO_1(
                   this,
                   Invocation.method(
                       #getIdentity, [], {#identifier: identifier}))))
-          as _i8.Future<_i3.IdentityDTO>);
+          as _i7.Future<_i3.IdentityDTO>);
   @override
-  _i8.Future<void> storeIdentity(
+  _i7.Future<void> storeIdentity(
           {String? identifier, _i3.IdentityDTO? identity}) =>
       (super.noSuchMethod(
               Invocation.method(#storeIdentity, [],
                   {#identifier: identifier, #identity: identity}),
-              returnValue: _i8.Future<void>.value(),
-              returnValueForMissingStub: _i8.Future<void>.value())
-          as _i8.Future<void>);
+              returnValue: _i7.Future<void>.value(),
+              returnValueForMissingStub: _i7.Future<void>.value())
+          as _i7.Future<void>);
   @override
-  _i8.Future<void> storeIdentityTransact(
+  _i7.Future<void> storeIdentityTransact(
           {_i12.DatabaseClient? transaction,
           String? identifier,
           _i3.IdentityDTO? identity}) =>
@@ -166,23 +185,23 @@ class MockStorageIdentityDataSource extends _i1.Mock
                 #identifier: identifier,
                 #identity: identity
               }),
-              returnValue: _i8.Future<void>.value(),
-              returnValueForMissingStub: _i8.Future<void>.value())
-          as _i8.Future<void>);
+              returnValue: _i7.Future<void>.value(),
+              returnValueForMissingStub: _i7.Future<void>.value())
+          as _i7.Future<void>);
   @override
-  _i8.Future<void> removeIdentity({String? identifier}) => (super.noSuchMethod(
+  _i7.Future<void> removeIdentity({String? identifier}) => (super.noSuchMethod(
       Invocation.method(#removeIdentity, [], {#identifier: identifier}),
-      returnValue: _i8.Future<void>.value(),
-      returnValueForMissingStub: _i8.Future<void>.value()) as _i8.Future<void>);
+      returnValue: _i7.Future<void>.value(),
+      returnValueForMissingStub: _i7.Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<void> removeIdentityTransact(
+  _i7.Future<void> removeIdentityTransact(
           {_i12.DatabaseClient? transaction, String? identifier}) =>
       (super.noSuchMethod(
               Invocation.method(#removeIdentityTransact, [],
                   {#transaction: transaction, #identifier: identifier}),
-              returnValue: _i8.Future<void>.value(),
-              returnValueForMissingStub: _i8.Future<void>.value())
-          as _i8.Future<void>);
+              returnValue: _i7.Future<void>.value(),
+              returnValueForMissingStub: _i7.Future<void>.value())
+          as _i7.Future<void>);
 }
 
 /// A class which mocks [StorageKeyValueDataSource].
@@ -195,24 +214,24 @@ class MockStorageKeyValueDataSource extends _i1.Mock
   }
 
   @override
-  _i8.Future<dynamic> get({String? key, _i12.DatabaseClient? database}) =>
+  _i7.Future<dynamic> get({String? key, _i12.DatabaseClient? database}) =>
       (super.noSuchMethod(
           Invocation.method(#get, [], {#key: key, #database: database}),
-          returnValue: _i8.Future<dynamic>.value()) as _i8.Future<dynamic>);
+          returnValue: _i7.Future<dynamic>.value()) as _i7.Future<dynamic>);
   @override
-  _i8.Future<void> store(
+  _i7.Future<void> store(
           {String? key, dynamic value, _i12.DatabaseClient? database}) =>
       (super.noSuchMethod(
               Invocation.method(
                   #store, [], {#key: key, #value: value, #database: database}),
-              returnValue: _i8.Future<void>.value(),
-              returnValueForMissingStub: _i8.Future<void>.value())
-          as _i8.Future<void>);
+              returnValue: _i7.Future<void>.value(),
+              returnValueForMissingStub: _i7.Future<void>.value())
+          as _i7.Future<void>);
   @override
-  _i8.Future<String?> remove({String? key, _i12.DatabaseClient? database}) =>
+  _i7.Future<String?> remove({String? key, _i12.DatabaseClient? database}) =>
       (super.noSuchMethod(
           Invocation.method(#remove, [], {#key: key, #database: database}),
-          returnValue: _i8.Future<String?>.value()) as _i8.Future<String?>);
+          returnValue: _i7.Future<String?>.value()) as _i7.Future<String?>);
 }
 
 /// A class which mocks [JWZDataSource].
@@ -224,13 +243,13 @@ class MockJWZDataSource extends _i1.Mock implements _i14.JWZDataSource {
   }
 
   @override
-  _i8.Future<String> getAuthToken(
-          {_i9.Uint8List? privateKey,
+  _i7.Future<String> getAuthToken(
+          {_i8.Uint8List? privateKey,
           String? authClaim,
           String? message,
           String? circuitId,
-          _i9.Uint8List? datFile,
-          _i9.Uint8List? zKeyFile}) =>
+          _i8.Uint8List? datFile,
+          _i8.Uint8List? zKeyFile}) =>
       (super.noSuchMethod(
           Invocation.method(#getAuthToken, [], {
             #privateKey: privateKey,
@@ -240,7 +259,7 @@ class MockJWZDataSource extends _i1.Mock implements _i14.JWZDataSource {
             #datFile: datFile,
             #zKeyFile: zKeyFile
           }),
-          returnValue: _i8.Future<String>.value('')) as _i8.Future<String>);
+          returnValue: _i7.Future<String>.value('')) as _i7.Future<String>);
 }
 
 /// A class which mocks [HexMapper].
@@ -252,13 +271,13 @@ class MockHexMapper extends _i1.Mock implements _i15.HexMapper {
   }
 
   @override
-  String mapFrom(_i9.Uint8List? from) =>
+  String mapFrom(_i8.Uint8List? from) =>
       (super.noSuchMethod(Invocation.method(#mapFrom, [from]), returnValue: '')
           as String);
   @override
-  _i9.Uint8List mapTo(String? to) =>
+  _i8.Uint8List mapTo(String? to) =>
       (super.noSuchMethod(Invocation.method(#mapTo, [to]),
-          returnValue: _i9.Uint8List(0)) as _i9.Uint8List);
+          returnValue: _i8.Uint8List(0)) as _i8.Uint8List);
 }
 
 /// A class which mocks [PrivateKeyMapper].
@@ -286,45 +305,28 @@ class MockIdentityDTOMapper extends _i1.Mock implements _i17.IdentityDTOMapper {
       as _i4.IdentityEntity);
 }
 
-/// A class which mocks [LocalIdentityDataSource].
+/// A class which mocks [AuthDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockLocalIdentityDataSource extends _i1.Mock
-    implements _i18.LocalIdentityDataSource {
-  MockLocalIdentityDataSource() {
+class MockAuthDataSource extends _i1.Mock implements _i18.AuthDataSource {
+  MockAuthDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i8.Future<_i5.AuthResponse> getAuthResponse(
+  _i7.Future<String> getAuthResponse(
           {String? identifier,
           String? privateKey,
-          _i19.AuthRequest? authRequest}) =>
-      (super.noSuchMethod(Invocation.method(#getAuthResponse, [], {#identifier: identifier, #privateKey: privateKey, #authRequest: authRequest}),
-          returnValue: _i8.Future<_i5.AuthResponse>.value(_FakeAuthResponse_3(
-              this,
-              Invocation.method(#getAuthResponse, [], {
-                #identifier: identifier,
-                #privateKey: privateKey,
-                #authRequest: authRequest
-              })))) as _i8.Future<_i5.AuthResponse>);
-}
-
-/// A class which mocks [LocalFilesDataSource].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockLocalFilesDataSource extends _i1.Mock
-    implements _i20.LocalFilesDataSource {
-  MockLocalFilesDataSource() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  _i8.Future<List<_i9.Uint8List>> loadCircuitFiles(String? circuitId) =>
-      (super.noSuchMethod(Invocation.method(#loadCircuitFiles, [circuitId]),
-              returnValue:
-                  _i8.Future<List<_i9.Uint8List>>.value(<_i9.Uint8List>[]))
-          as _i8.Future<List<_i9.Uint8List>>);
+          _i19.AuthRequest? authRequest,
+          _i20.CircuitDataEntity? circuitDataEntity}) =>
+      (super.noSuchMethod(
+          Invocation.method(#getAuthResponse, [], {
+            #identifier: identifier,
+            #privateKey: privateKey,
+            #authRequest: authRequest,
+            #circuitDataEntity: circuitDataEntity
+          }),
+          returnValue: _i7.Future<String>.value('')) as _i7.Future<String>);
 }
 
 /// A class which mocks [RemoteIdentityDataSource].
@@ -337,10 +339,10 @@ class MockRemoteIdentityDataSource extends _i1.Mock
   }
 
   @override
-  _i8.Future<_i6.Response> authWithToken(
+  _i7.Future<_i5.Response> authWithToken(
           String? token, _i19.AuthRequest? request) =>
       (super.noSuchMethod(Invocation.method(#authWithToken, [token, request]),
-              returnValue: _i8.Future<_i6.Response>.value(_FakeResponse_4(
+              returnValue: _i7.Future<_i5.Response>.value(_FakeResponse_3(
                   this, Invocation.method(#authWithToken, [token, request]))))
-          as _i8.Future<_i6.Response>);
+          as _i7.Future<_i5.Response>);
 }
