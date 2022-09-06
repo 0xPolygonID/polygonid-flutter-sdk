@@ -1,7 +1,7 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:fast_base58/fast_base58.dart';
+import 'package:polygonid_flutter_sdk/identity/data/repositories/smt_memory_storage_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/smt/merkletree.dart';
 
 import '../../../common/utils/hex_utils.dart';
@@ -37,8 +37,10 @@ class LibIdentityDataSource {
 
   Future<String> createSMT(SMTStorageRepository smtStorageRepository) {
     try {
-      return Future.value(
-          json.encode(MerkleTree(_iden3coreLib, smtStorageRepository, 32)));
+      return Future.value((MerkleTree(_iden3coreLib, smtStorageRepository, 32)
+              .storage as SMTMemoryStorageRepositoryImpl)
+          .toJson()
+          .toString());
     } catch (e) {
       return Future.error(e);
     }

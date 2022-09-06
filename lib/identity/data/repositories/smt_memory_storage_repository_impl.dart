@@ -7,8 +7,7 @@ class SMTMemoryStorageRepositoryImpl implements SMTStorageRepository {
   Hash? root;
   final Map<Hash, Node> data;
 
-  SMTMemoryStorageRepositoryImpl(this.root, {required data})
-      : data = <Hash, Node>{};
+  SMTMemoryStorageRepositoryImpl(this.root, {data}) : data = <Hash, Node>{};
 
   @override
   Node get(Hash k) {
