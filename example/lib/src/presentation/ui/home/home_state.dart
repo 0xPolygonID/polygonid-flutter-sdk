@@ -1,36 +1,14 @@
-abstract class HomeState {
-  String? identifier;
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  HomeState({this.identifier});
+part 'home_state.freezed.dart';
 
-  factory HomeState.init() => InitHomeState();
+@freezed
+class HomeState with _$HomeState {
+  const factory HomeState.initial({String? identifier}) = InitialHomeState;
 
-  factory HomeState.loading() => LoadingDataHomeState();
+  const factory HomeState.loading({String? identifier}) = LoadingDataHomeState;
 
-  factory HomeState.loaded(String? identifier) =>
-      LoadedIdentifierHomeState(identifier);
+  const factory HomeState.loaded({String? identifier}) = LoadedIdentifierHomeState;
 
-  factory HomeState.error(String message) => ErrorHomeState(message: message);
-}
-
-/// Initial state
-class InitHomeState extends HomeState {
-  InitHomeState();
-}
-
-///
-class LoadingDataHomeState extends HomeState {
-  LoadingDataHomeState();
-}
-
-///
-class LoadedIdentifierHomeState extends HomeState {
-  LoadedIdentifierHomeState(identifier) : super(identifier: identifier);
-}
-
-///
-class ErrorHomeState<T> extends HomeState {
-  final String message;
-
-  ErrorHomeState({required this.message});
+  const factory HomeState.error({required String message, String? identifier}) = ErrorHomeState;
 }

@@ -27,4 +27,16 @@ class CustomButtonStyle {
       borderRadius: BorderRadius.circular(10),
     ),
   );
+
+  static ButtonStyle iconButtonStyle = ButtonStyle(
+    elevation: MaterialStateProperty.all(0.0),
+    shape: MaterialStateProperty.all(const CircleBorder()),
+    backgroundColor: MaterialStateProperty.all(Colors.white), // <-- Button color
+    overlayColor: MaterialStateProperty.resolveWith<Color?>((states) {
+      if (states.contains(MaterialState.pressed)) {
+        return CustomColors.backButtonPressed;
+      }
+      return null; // <-- Splash color
+    }),
+  );
 }
