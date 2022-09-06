@@ -4,6 +4,7 @@ import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
 import '../../domain/entities/identity_entity.dart';
 import '../../domain/exceptions/identity_exceptions.dart';
 import '../../domain/repositories/identity_repository.dart';
+import '../../domain/repositories/smt_storage_repository.dart';
 import '../../libs/bjj/privadoid_wallet.dart';
 import '../data_sources/jwz_data_source.dart';
 import '../data_sources/lib_identity_data_source.dart';
@@ -24,6 +25,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final HexMapper _hexMapper;
   final PrivateKeyMapper _privateKeyMapper;
   final IdentityDTOMapper _identityDTOMapper;
+  final SMTStorageRepository _smtStorageRepository;
 
   IdentityRepositoryImpl(
       this._walletDataSource,
@@ -33,7 +35,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
       this._jwzDataSource,
       this._hexMapper,
       this._privateKeyMapper,
-      this._identityDTOMapper);
+      this._identityDTOMapper,
+      this._smtStorageRepository);
 
   /// Get an identifier from a String
   /// It will create and store a new [IdentityDTO] if it doesn't exists
@@ -50,6 +53,10 @@ class IdentityRepositoryImpl extends IdentityRepository {
       String identifier = await _libIdentityDataSource.getIdentifier(
           pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]);
 
+      // Generate the smt
+      String smt =
+          await _libIdentityDataSource.createSMT(_smtStorageRepository);
+
       // Store the identity
       await _libIdentityDataSource
           .getAuthClaim(pubX: wallet.publicKey[0], pubY: wallet.publicKey[1])
@@ -57,7 +64,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
         IdentityDTO dto = IdentityDTO(
             privateKey: _hexMapper.mapFrom(wallet.privateKey),
             identifier: identifier,
-            authClaim: authClaim);
+            authClaim: authClaim,
+            smt: smt);
 
         return _storageIdentityDataSource
             .storeIdentity(identifier: identifier, identity: dto)
@@ -83,11 +91,13 @@ class IdentityRepositoryImpl extends IdentityRepository {
                   _libIdentityDataSource.getIdentifier(
                       pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]),
                   _libIdentityDataSource.getAuthClaim(
-                      pubX: wallet.publicKey[0], pubY: wallet.publicKey[1])
+                      pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]),
+                  _libIdentityDataSource.createSMT(_smtStorageRepository)
                 ]).then((values) => IdentityEntity(
                     privateKey: _hexMapper.mapFrom(wallet.privateKey),
                     identifier: values[0],
-                    authClaim: values[1])))
+                    authClaim: values[1],
+                    smt: values[2])))
             .catchError((error) => throw IdentityException(error)));
   }
 
@@ -129,6 +139,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
   Future<void> removeIdentity({required String identifier}) {
     return _storageIdentityDataSource.removeIdentity(identifier: identifier);
   }
+
+  // TODO: move to iden3comm with dependency of proof_gen: JWZ
 
   @override
   Future<String> getAuthToken(

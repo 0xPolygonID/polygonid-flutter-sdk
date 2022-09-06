@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_storage_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/iden3core/iden3core.dart';
 
 import 'lib_identity_data_source_test.mocks.dart';
@@ -17,11 +18,13 @@ var exception = Exception();
 
 // Dependencies
 MockIden3CoreLib coreLib = MockIden3CoreLib();
+MockSMTStorageRepository smtStorageRepository = MockSMTStorageRepository();
 
 // Tested instance
-LibIdentityDataSource dataSource = LibIdentityDataSource(coreLib);
+LibIdentityDataSource dataSource =
+    LibIdentityDataSource(coreLib, smtStorageRepository);
 
-@GenerateMocks([Iden3CoreLib])
+@GenerateMocks([Iden3CoreLib, SMTStorageRepository])
 void main() {
   group("Get identifier", () {
     test(

@@ -9,11 +9,13 @@ class IdentityDTO extends Equatable {
   final String privateKey;
   final String identifier;
   final String authClaim;
+  final String smt;
 
   const IdentityDTO(
       {required this.privateKey,
       required this.identifier,
-      required this.authClaim});
+      required this.authClaim,
+      required this.smt});
 
   factory IdentityDTO.fromJson(Map<String, dynamic> json) =>
       _$IdentityDTOFromJson(json);
@@ -21,5 +23,5 @@ class IdentityDTO extends Equatable {
   Map<String, dynamic> toJson() => _$IdentityDTOToJson(this);
 
   @override
-  List<Object?> get props => [privateKey, identifier, authClaim];
+  List<Object?> get props => [privateKey, identifier, authClaim, smt];
 }
