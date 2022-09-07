@@ -24,5 +24,9 @@ abstract class IdentityRepository {
       required String message});
 
   ///
-  Future<bool> authenticate({required String authQrCodeResult, required CircuitDataEntity circuitDataEntity});
+  Future<void> authenticate({
+    required String issuerMessage,
+    required CircuitDataEntity circuitDataEntity,
+    required String identifier,
+  });
 }

@@ -3,13 +3,20 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'dart:async' as _i8;
 import 'dart:typed_data' as _i6;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_credential.dart'
     as _i4;
+import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_data.dart'
+    as _i10;
 import 'package:polygonid_flutter_sdk/credential/data/dtos/revocation_status.dart'
     as _i5;
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart'
+    as _i7;
+import 'package:polygonid_flutter_sdk/identity/data/dtos/atomic_query_inputs_param.dart'
+    as _i9;
 import 'package:polygonid_flutter_sdk/identity/libs/iden3core/iden3core.dart'
     as _i3;
 import 'package:polygonid_flutter_sdk/identity/libs/smt/hash.dart' as _i2;
@@ -148,4 +155,31 @@ class MockIden3CoreLib extends _i1.Mock implements _i3.Iden3CoreLib {
           returnValue:
               _FakeBigInt_1(this, Invocation.method(#poseidonHashInts, [bis])))
       as BigInt);
+}
+
+/// A class which mocks [LibIdentityWrapper].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockLibIdentityWrapper extends _i1.Mock
+    implements _i7.LibIdentityWrapper {
+  MockLibIdentityWrapper() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i8.Future<String?> queryInputsFromMTP(
+          _i9.AtomicQueryInputsParam? atomicQueryInputsParam) =>
+      (super.noSuchMethod(
+          Invocation.method(#queryInputsFromMTP, [atomicQueryInputsParam]),
+          returnValue: _i8.Future<String?>.value()) as _i8.Future<String?>);
+  @override
+  _i8.Future<String?> queryInputsFromSIG(
+          {_i9.AtomicQueryInputsParam? atomicQueryInputsParam,
+          _i10.CredentialData? credential}) =>
+      (super.noSuchMethod(
+          Invocation.method(#queryInputsFromSIG, [], {
+            #atomicQueryInputsParam: atomicQueryInputsParam,
+            #credential: credential
+          }),
+          returnValue: _i8.Future<String?>.value()) as _i8.Future<String?>);
 }

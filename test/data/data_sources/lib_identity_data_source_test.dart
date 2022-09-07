@@ -2,11 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/iden3core/iden3core.dart';
 
-import '../repositories/identity_repository_impl_test.mocks.dart';
 import 'lib_identity_data_source_test.mocks.dart';
 
 // Data
@@ -20,13 +17,13 @@ var exception = Exception();
 
 // Dependencies
 MockIden3CoreLib coreLib = MockIden3CoreLib();
-MockStorageIdentityDataSource storageIdentityDataSource = MockStorageIdentityDataSource();
-MockWalletDataSource walletDataSource = MockWalletDataSource();
+MockLibIdentityWrapper libIdentityWrapper = MockLibIdentityWrapper();
 
 // Tested instance
-LibIdentityDataSource dataSource = LibIdentityDataSource(coreLib, walletDataSource, storageIdentityDataSource);
+LibIdentityDataSource dataSource =
+    LibIdentityDataSource(coreLib, libIdentityWrapper);
 
-@GenerateMocks([Iden3CoreLib,WalletDataSource,StorageIdentityDataSource])
+@GenerateMocks([Iden3CoreLib, LibIdentityWrapper])
 void main() {
   group("Get identifier", () {
     test(

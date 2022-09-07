@@ -3,23 +3,30 @@ import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repo
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
 
 class AuthenticateParam {
-  final String authQrCodeResult;
+  final String issuerMessage;
   final CircuitDataEntity circuitDataEntity;
+  final String identifier;
 
-  AuthenticateParam({required this.authQrCodeResult, required this.circuitDataEntity});
+  AuthenticateParam({
+    required this.issuerMessage,
+    required this.circuitDataEntity,
+    required this.identifier,
+  });
 }
 
-class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, bool> {
+class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
   final IdentityRepository _identityRepository;
 
   AuthenticateUseCase(this._identityRepository);
 
   @override
-  Future<bool> execute({required AuthenticateParam param}) async {
-    bool authenticated = false;
+  Future<void> execute({required AuthenticateParam param}) async {
     try {
-      authenticated = await _identityRepository.authenticate(authQrCodeResult: param.authQrCodeResult, circuitDataEntity: param.circuitDataEntity);
+      await _identityRepository.authenticate(
+        issuerMessage: param.issuerMessage,
+        circuitDataEntity: param.circuitDataEntity,
+        identifier: param.identifier,
+      );
     } catch (_) {}
-    return authenticated;
   }
 }

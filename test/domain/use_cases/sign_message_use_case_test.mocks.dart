@@ -96,13 +96,17 @@ class MockIdentityRepository extends _i1.Mock
           }),
           returnValue: _i4.Future<String>.value('')) as _i4.Future<String>);
   @override
-  _i4.Future<bool> authenticate(
-          {String? authQrCodeResult,
-          _i5.CircuitDataEntity? circuitDataEntity}) =>
+  _i4.Future<void> authenticate(
+          {String? issuerMessage,
+          _i5.CircuitDataEntity? circuitDataEntity,
+          String? identifier}) =>
       (super.noSuchMethod(
-          Invocation.method(#authenticate, [], {
-            #authQrCodeResult: authQrCodeResult,
-            #circuitDataEntity: circuitDataEntity
-          }),
-          returnValue: _i4.Future<bool>.value(false)) as _i4.Future<bool>);
+              Invocation.method(#authenticate, [], {
+                #issuerMessage: issuerMessage,
+                #circuitDataEntity: circuitDataEntity,
+                #identifier: identifier
+              }),
+              returnValue: _i4.Future<void>.value(),
+              returnValueForMissingStub: _i4.Future<void>.value())
+          as _i4.Future<void>);
 }
