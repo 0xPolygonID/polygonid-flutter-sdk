@@ -18,13 +18,16 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_bod
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/proof_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/zk_proof.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/proof_scope_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/prover_lib_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/local_files_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/proof_scope_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/prover_lib_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/witness_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/witness_param.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/witness_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/dtos/witness_param.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_request_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_response_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/atomic_query_inputs_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:sembast/sembast.dart';
 import 'package:uuid/uuid.dart';
 
@@ -63,6 +66,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final WitnessDataSource _witnessDataSource;
   final ProverLibDataSource _proverLibDataSource;
   final AuthResponseMapper _authResponseMapper;
+  final AtomicQueryInputsDataSource _atomicQueryInputsDataSource;
+  final LocalFilesDataSource _localFilesDataSource;
 
   IdentityRepositoryImpl(
     this._walletDataSource,
@@ -82,6 +87,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._witnessDataSource,
     this._proverLibDataSource,
     this._authResponseMapper,
+    this._atomicQueryInputsDataSource,
+    this._localFilesDataSource,
   );
 
   static const Map<SupportedCircuits, String> _supportedCircuits = {
@@ -222,7 +229,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
   @override
   Future<void> authenticate({
     required String issuerMessage,
-    required CircuitDataEntity circuitDataEntity,
     required String identifier,
   }) async {
     IdentityDTO identity =
@@ -232,22 +238,27 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
     AuthRequest authRequest = _authRequestMapper.mapFrom(issuerMessage);
 
+    List<Uint8List> circuitFiles =
+        await _localFilesDataSource.loadCircuitFiles("auth");
+    CircuitDataEntity authData =
+        CircuitDataEntity("auth", circuitFiles[0], circuitFiles[1]);
+
     List<ProofResponse> scope = await _getProofResponseList(
         scope: authRequest.body?.scope,
         privateKey: privateKey,
-        circuit: circuitDataEntity);
+        circuit: authData);
 
     String authResponse = _getAuthResponse(
       identifier: identifier,
       privateKey: privateKey,
       authRequest: authRequest,
-      circuitDataEntity: circuitDataEntity,
+      circuitDataEntity: authData,
       scope: scope,
     );
 
     String authToken = await getAuthToken(
         identifier: identifier,
-        circuitData: circuitDataEntity,
+        circuitData: authData,
         message: authResponse);
 
     await _remoteIdentityDataSource.authWithToken(authToken, authRequest);
@@ -333,7 +344,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
           privateKey: HexUtils.hexToBytes(privateKey), message: challenge);
     } catch (_) {}
 
-    String? res = await _libIdentityDataSource.prepareAtomicQueryInputs(
+    String? res = await _atomicQueryInputsDataSource.prepareAtomicQueryInputs(
       challenge,
       privateKey,
       credentialData,

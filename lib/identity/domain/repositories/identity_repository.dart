@@ -26,7 +26,6 @@ abstract class IdentityRepository {
   ///
   Future<void> authenticate({
     required String issuerMessage,
-    required CircuitDataEntity circuitDataEntity,
     required String identifier,
   });
 }

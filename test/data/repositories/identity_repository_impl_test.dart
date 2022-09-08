@@ -8,13 +8,15 @@ import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart'
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/jwz_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/proof_scope_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/prover_lib_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/atomic_query_inputs_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/local_files_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/proof_scope_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/prover_lib_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_key_value_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/witness_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/witness_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_request_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_response_mapper.dart';
@@ -83,6 +85,9 @@ MockFiltersMapper filtersMapper = MockFiltersMapper();
 MockWitnessDataSource witnessDataSource = MockWitnessDataSource();
 MockProverLibDataSource proverLibDataSource = MockProverLibDataSource();
 MockAuthResponseMapper authResponseMapper = MockAuthResponseMapper();
+MockAtomicQueryInputsDataSource atomicQueryInputsDataSource =
+    MockAtomicQueryInputsDataSource();
+MockLocalFilesDataSource localFilesDataSource = MockLocalFilesDataSource();
 
 // Tested instance
 IdentityRepository repository = IdentityRepositoryImpl(
@@ -103,6 +108,8 @@ IdentityRepository repository = IdentityRepositoryImpl(
   witnessDataSource,
   proverLibDataSource,
   authResponseMapper,
+  atomicQueryInputsDataSource,
+  localFilesDataSource,
 );
 
 @GenerateMocks([
@@ -123,6 +130,8 @@ IdentityRepository repository = IdentityRepositoryImpl(
   WitnessDataSource,
   ProverLibDataSource,
   AuthResponseMapper,
+  AtomicQueryInputsDataSource,
+  LocalFilesDataSource,
 ])
 void main() {
   group("Create identity", () {

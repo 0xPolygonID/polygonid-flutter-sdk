@@ -106,7 +106,6 @@ class IdentityWallet {
     return _authenticateUseCase.execute(
         param: AuthenticateParam(
       issuerMessage: issuerMessage,
-      circuitDataEntity: circuitDataEntity,
       identifier: identifier,
     ));
   }

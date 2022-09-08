@@ -85,6 +85,7 @@ ffigen:
 
 # The following section is specific to Flutter.
 flutter:
+
   plugin:
     platforms:
       android:
@@ -93,6 +94,8 @@ flutter:
       ios:
         pluginClass: PolygonIdSdkPlugin
 
+  assets:
+    - assets/auth/
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
   #

@@ -17,13 +17,12 @@ var exception = Exception();
 
 // Dependencies
 MockIden3CoreLib coreLib = MockIden3CoreLib();
-MockLibIdentityWrapper libIdentityWrapper = MockLibIdentityWrapper();
 
 // Tested instance
 LibIdentityDataSource dataSource =
-    LibIdentityDataSource(coreLib, libIdentityWrapper);
+    LibIdentityDataSource(coreLib);
 
-@GenerateMocks([Iden3CoreLib, LibIdentityWrapper])
+@GenerateMocks([Iden3CoreLib])
 void main() {
   group("Get identifier", () {
     test(

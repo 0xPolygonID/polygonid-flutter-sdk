@@ -9,63 +9,67 @@ import 'dart:typed_data' as _i12;
 import 'package:http/http.dart' as _i5;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
-    as _i25;
+    as _i24;
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart'
-    as _i27;
+    as _i26;
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart'
     as _i8;
 import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_data.dart'
-    as _i14;
+    as _i35;
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart'
-    as _i28;
+    as _i27;
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart'
-    as _i29;
+    as _i28;
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
     as _i7;
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart'
     as _i6;
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/proof_scope_request.dart'
-    as _i24;
+    as _i23;
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/proof_scope_rules_query_request.dart'
-    as _i26;
+    as _i25;
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart'
-    as _i34;
+    as _i33;
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/jwz_data_source.dart'
-    as _i17;
+    as _i16;
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart'
     as _i13;
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/proof_scope_data_source.dart'
-    as _i23;
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/prover_lib_data_source.dart'
-    as _i32;
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart'
-    as _i21;
+    as _i20;
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart'
-    as _i15;
+    as _i14;
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_key_value_data_source.dart'
-    as _i16;
+    as _i15;
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart'
     as _i10;
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/witness_data_source.dart'
-    as _i30;
 import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart'
     as _i3;
-import 'package:polygonid_flutter_sdk/identity/data/dtos/witness_param.dart'
-    as _i31;
 import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_request_mapper.dart'
-    as _i22;
+    as _i21;
 import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_response_mapper.dart'
-    as _i33;
+    as _i32;
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart'
-    as _i18;
+    as _i17;
 import 'package:polygonid_flutter_sdk/identity/data/mappers/identity_dto_mapper.dart'
-    as _i20;
-import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key_mapper.dart'
     as _i19;
+import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key_mapper.dart'
+    as _i18;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
     as _i4;
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart'
     as _i2;
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/atomic_query_inputs_data_source.dart'
+    as _i34;
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/local_files_data_source.dart'
+    as _i36;
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/proof_scope_data_source.dart'
+    as _i22;
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/prover_lib_data_source.dart'
+    as _i31;
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/witness_data_source.dart'
+    as _i29;
+import 'package:polygonid_flutter_sdk/proof_generation/data/dtos/witness_param.dart'
+    as _i30;
 import 'package:sembast/sembast.dart' as _i9;
 
 // ignore_for_file: type=lint
@@ -172,43 +176,13 @@ class MockLibIdentityDataSource extends _i1.Mock
       (super.noSuchMethod(
           Invocation.method(#getAuthClaim, [], {#pubX: pubX, #pubY: pubY}),
           returnValue: _i11.Future<String>.value('')) as _i11.Future<String>);
-  @override
-  _i11.Future<String?> prepareAtomicQueryInputs(
-          String? challenge,
-          String? privateKey,
-          _i14.CredentialData? credential,
-          String? circuitId,
-          String? claimType,
-          String? key,
-          List<int>? values,
-          int? operator,
-          String? revStatusUrl,
-          String? pubX,
-          String? pubY,
-          String? signature) =>
-      (super.noSuchMethod(
-          Invocation.method(#prepareAtomicQueryInputs, [
-            challenge,
-            privateKey,
-            credential,
-            circuitId,
-            claimType,
-            key,
-            values,
-            operator,
-            revStatusUrl,
-            pubX,
-            pubY,
-            signature
-          ]),
-          returnValue: _i11.Future<String?>.value()) as _i11.Future<String?>);
 }
 
 /// A class which mocks [StorageIdentityDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockStorageIdentityDataSource extends _i1.Mock
-    implements _i15.StorageIdentityDataSource {
+    implements _i14.StorageIdentityDataSource {
   MockStorageIdentityDataSource() {
     _i1.throwOnMissingStub(this);
   }
@@ -266,7 +240,7 @@ class MockStorageIdentityDataSource extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockStorageKeyValueDataSource extends _i1.Mock
-    implements _i16.StorageKeyValueDataSource {
+    implements _i15.StorageKeyValueDataSource {
   MockStorageKeyValueDataSource() {
     _i1.throwOnMissingStub(this);
   }
@@ -295,7 +269,7 @@ class MockStorageKeyValueDataSource extends _i1.Mock
 /// A class which mocks [JWZDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockJWZDataSource extends _i1.Mock implements _i17.JWZDataSource {
+class MockJWZDataSource extends _i1.Mock implements _i16.JWZDataSource {
   MockJWZDataSource() {
     _i1.throwOnMissingStub(this);
   }
@@ -323,7 +297,7 @@ class MockJWZDataSource extends _i1.Mock implements _i17.JWZDataSource {
 /// A class which mocks [HexMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockHexMapper extends _i1.Mock implements _i18.HexMapper {
+class MockHexMapper extends _i1.Mock implements _i17.HexMapper {
   MockHexMapper() {
     _i1.throwOnMissingStub(this);
   }
@@ -341,7 +315,7 @@ class MockHexMapper extends _i1.Mock implements _i18.HexMapper {
 /// A class which mocks [PrivateKeyMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockPrivateKeyMapper extends _i1.Mock implements _i19.PrivateKeyMapper {
+class MockPrivateKeyMapper extends _i1.Mock implements _i18.PrivateKeyMapper {
   MockPrivateKeyMapper() {
     _i1.throwOnMissingStub(this);
   }
@@ -350,7 +324,7 @@ class MockPrivateKeyMapper extends _i1.Mock implements _i19.PrivateKeyMapper {
 /// A class which mocks [IdentityDTOMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockIdentityDTOMapper extends _i1.Mock implements _i20.IdentityDTOMapper {
+class MockIdentityDTOMapper extends _i1.Mock implements _i19.IdentityDTOMapper {
   MockIdentityDTOMapper() {
     _i1.throwOnMissingStub(this);
   }
@@ -367,7 +341,7 @@ class MockIdentityDTOMapper extends _i1.Mock implements _i20.IdentityDTOMapper {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockRemoteIdentityDataSource extends _i1.Mock
-    implements _i21.RemoteIdentityDataSource {
+    implements _i20.RemoteIdentityDataSource {
   MockRemoteIdentityDataSource() {
     _i1.throwOnMissingStub(this);
   }
@@ -394,7 +368,7 @@ class MockRemoteIdentityDataSource extends _i1.Mock
 /// A class which mocks [AuthRequestMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAuthRequestMapper extends _i1.Mock implements _i22.AuthRequestMapper {
+class MockAuthRequestMapper extends _i1.Mock implements _i21.AuthRequestMapper {
   MockAuthRequestMapper() {
     _i1.throwOnMissingStub(this);
   }
@@ -411,33 +385,33 @@ class MockAuthRequestMapper extends _i1.Mock implements _i22.AuthRequestMapper {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockProofScopeDataSource extends _i1.Mock
-    implements _i23.ProofScopeDataSource {
+    implements _i22.ProofScopeDataSource {
   MockProofScopeDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  List<_i24.ProofScopeRequest> filteredProofScopeRequestList(
-          List<_i24.ProofScopeRequest>? proofScopeRequestList) =>
+  List<_i23.ProofScopeRequest> filteredProofScopeRequestList(
+          List<_i23.ProofScopeRequest>? proofScopeRequestList) =>
       (super.noSuchMethod(
               Invocation.method(
                   #filteredProofScopeRequestList, [proofScopeRequestList]),
-              returnValue: <_i24.ProofScopeRequest>[])
-          as List<_i24.ProofScopeRequest>);
+              returnValue: <_i23.ProofScopeRequest>[])
+          as List<_i23.ProofScopeRequest>);
   @override
-  List<_i25.FilterEntity> proofScopeRulesQueryRequestFilters(
-          _i26.ProofScopeRulesQueryRequest? proofScopeRulesQueryRequest) =>
+  List<_i24.FilterEntity> proofScopeRulesQueryRequestFilters(
+          _i25.ProofScopeRulesQueryRequest? proofScopeRulesQueryRequest) =>
       (super.noSuchMethod(
           Invocation.method(#proofScopeRulesQueryRequestFilters,
               [proofScopeRulesQueryRequest]),
-          returnValue: <_i25.FilterEntity>[]) as List<_i25.FilterEntity>);
+          returnValue: <_i24.FilterEntity>[]) as List<_i24.FilterEntity>);
 }
 
 /// A class which mocks [StorageClaimDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockStorageClaimDataSource extends _i1.Mock
-    implements _i27.StorageClaimDataSource {
+    implements _i26.StorageClaimDataSource {
   MockStorageClaimDataSource() {
     _i1.throwOnMissingStub(this);
   }
@@ -483,7 +457,7 @@ class MockStorageClaimDataSource extends _i1.Mock
 /// A class which mocks [ClaimMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockClaimMapper extends _i1.Mock implements _i28.ClaimMapper {
+class MockClaimMapper extends _i1.Mock implements _i27.ClaimMapper {
   MockClaimMapper() {
     _i1.throwOnMissingStub(this);
   }
@@ -504,13 +478,13 @@ class MockClaimMapper extends _i1.Mock implements _i28.ClaimMapper {
 /// A class which mocks [FiltersMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockFiltersMapper extends _i1.Mock implements _i29.FiltersMapper {
+class MockFiltersMapper extends _i1.Mock implements _i28.FiltersMapper {
   MockFiltersMapper() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i9.Filter mapTo(List<_i25.FilterEntity>? to) =>
+  _i9.Filter mapTo(List<_i24.FilterEntity>? to) =>
       (super.noSuchMethod(Invocation.method(#mapTo, [to]),
               returnValue: _FakeFilter_8(this, Invocation.method(#mapTo, [to])))
           as _i9.Filter);
@@ -519,23 +493,23 @@ class MockFiltersMapper extends _i1.Mock implements _i29.FiltersMapper {
 /// A class which mocks [WitnessDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockWitnessDataSource extends _i1.Mock implements _i30.WitnessDataSource {
+class MockWitnessDataSource extends _i1.Mock implements _i29.WitnessDataSource {
   MockWitnessDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i11.Future<_i12.Uint8List?> computeWitnessAuth(_i31.WitnessParam? param) =>
+  _i11.Future<_i12.Uint8List?> computeWitnessAuth(_i30.WitnessParam? param) =>
       (super.noSuchMethod(Invocation.method(#computeWitnessAuth, [param]),
               returnValue: _i11.Future<_i12.Uint8List?>.value())
           as _i11.Future<_i12.Uint8List?>);
   @override
-  _i11.Future<_i12.Uint8List?> computeWitnessMtp(_i31.WitnessParam? param) =>
+  _i11.Future<_i12.Uint8List?> computeWitnessMtp(_i30.WitnessParam? param) =>
       (super.noSuchMethod(Invocation.method(#computeWitnessMtp, [param]),
               returnValue: _i11.Future<_i12.Uint8List?>.value())
           as _i11.Future<_i12.Uint8List?>);
   @override
-  _i11.Future<_i12.Uint8List?> computeWitnessSig(_i31.WitnessParam? param) =>
+  _i11.Future<_i12.Uint8List?> computeWitnessSig(_i30.WitnessParam? param) =>
       (super.noSuchMethod(Invocation.method(#computeWitnessSig, [param]),
               returnValue: _i11.Future<_i12.Uint8List?>.value())
           as _i11.Future<_i12.Uint8List?>);
@@ -545,7 +519,7 @@ class MockWitnessDataSource extends _i1.Mock implements _i30.WitnessDataSource {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockProverLibDataSource extends _i1.Mock
-    implements _i32.ProverLibDataSource {
+    implements _i31.ProverLibDataSource {
   MockProverLibDataSource() {
     _i1.throwOnMissingStub(this);
   }
@@ -562,13 +536,71 @@ class MockProverLibDataSource extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockAuthResponseMapper extends _i1.Mock
-    implements _i33.AuthResponseMapper {
+    implements _i32.AuthResponseMapper {
   MockAuthResponseMapper() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  String mapFrom(_i34.AuthResponse? from) =>
+  String mapFrom(_i33.AuthResponse? from) =>
       (super.noSuchMethod(Invocation.method(#mapFrom, [from]), returnValue: '')
           as String);
+}
+
+/// A class which mocks [AtomicQueryInputsDataSource].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockAtomicQueryInputsDataSource extends _i1.Mock
+    implements _i34.AtomicQueryInputsDataSource {
+  MockAtomicQueryInputsDataSource() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i11.Future<String?> prepareAtomicQueryInputs(
+          String? challenge,
+          String? privateKey,
+          _i35.CredentialData? credential,
+          String? circuitId,
+          String? claimType,
+          String? key,
+          List<int>? values,
+          int? operator,
+          String? revStatusUrl,
+          String? pubX,
+          String? pubY,
+          String? signature) =>
+      (super.noSuchMethod(
+          Invocation.method(#prepareAtomicQueryInputs, [
+            challenge,
+            privateKey,
+            credential,
+            circuitId,
+            claimType,
+            key,
+            values,
+            operator,
+            revStatusUrl,
+            pubX,
+            pubY,
+            signature
+          ]),
+          returnValue: _i11.Future<String?>.value()) as _i11.Future<String?>);
+}
+
+/// A class which mocks [LocalFilesDataSource].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockLocalFilesDataSource extends _i1.Mock
+    implements _i36.LocalFilesDataSource {
+  MockLocalFilesDataSource() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i11.Future<List<_i12.Uint8List>> loadCircuitFiles(String? circuitId) =>
+      (super.noSuchMethod(Invocation.method(#loadCircuitFiles, [circuitId]),
+              returnValue:
+                  _i11.Future<List<_i12.Uint8List>>.value(<_i12.Uint8List>[]))
+          as _i11.Future<List<_i12.Uint8List>>);
 }
