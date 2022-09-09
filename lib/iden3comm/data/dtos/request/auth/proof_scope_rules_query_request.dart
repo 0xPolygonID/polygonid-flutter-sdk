@@ -119,7 +119,8 @@ class ProofScopeRulesQueryRequest {
       ProofScopeRulesQuerySchemaRequest? schema =
           ProofScopeRulesQuerySchemaRequest.fromJson(json['schema']);
       return ProofScopeRulesQueryRequest(
-          allowedIssuers: List<String>.from(json['allowedIssuers']),
+          allowedIssuers: List<String>.from(
+              json['allowedIssuers'] ?? json['allowed_issuers']),
           challenge: json['challenge'],
           req: json['req'],
           schema: schema);
