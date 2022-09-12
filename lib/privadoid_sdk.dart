@@ -111,22 +111,29 @@ class PrivadoIdSdk {
         RevocationStatus.fromJson(json.decode(revStatus));
     String? queryInputs;
     if (circuitId == "credentialAtomicQueryMTP") {
-      queryInputs = await compute(
-          _computeAtomicQueryInputs,
-          AtomicQueryInputsParam(
-              AtomicQueryInputsType.mtp,
-              challenge,
-              wallet.publicKey[0],
-              wallet.publicKey[1],
-              signatureString,
-              credential,
-              json.encode(credential.toJson()),
-              schema,
-              claimType,
-              key,
-              values,
-              operator,
-              claimRevocationStatus));
+      if (credential.proofs.isNotEmpty) {
+        for (var proof in credential.proofs) {
+          if (proof.type == CredentialProofType.sparseMerkle) {
+            queryInputs = await compute(
+                _computeAtomicQueryInputs,
+                AtomicQueryInputsParam(
+                    AtomicQueryInputsType.mtp,
+                    challenge,
+                    wallet.publicKey[0],
+                    wallet.publicKey[1],
+                    signatureString,
+                    credential,
+                    json.encode(credential.toJson()),
+                    schema,
+                    claimType,
+                    key,
+                    values,
+                    operator,
+                    claimRevocationStatus));
+            break;
+          }
+        }
+      }
     } else if (circuitId == "credentialAtomicQuerySig") {
       // Issuer auth claim revocation status
       if (credential.proofs.isNotEmpty) {
