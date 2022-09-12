@@ -257,9 +257,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
     );
 
     String authToken = await getAuthToken(
-        identifier: identifier,
-        circuitData: authData,
-        message: authResponse);
+        identifier: identifier, circuitData: authData, message: authResponse);
 
     await _remoteIdentityDataSource.authWithToken(authToken, authRequest);
   }
@@ -271,7 +269,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
     required CircuitDataEntity circuit,
   }) async {
     List<ProofResponse> proofResponseScopeList = [];
-    if (scope == null) return proofResponseScopeList;
+    if (scope == null || scope.isEmpty) return proofResponseScopeList;
 
     List<ProofScopeRequest> proofScopeRequestList =
         _proofScopeDataSource.filteredProofScopeRequestList(scope);

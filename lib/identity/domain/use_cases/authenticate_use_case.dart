@@ -18,11 +18,9 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
 
   @override
   Future<void> execute({required AuthenticateParam param}) async {
-    try {
-      await _identityRepository.authenticate(
-        issuerMessage: param.issuerMessage,
-        identifier: param.identifier,
-      );
-    } catch (_) {}
+    await _identityRepository.authenticate(
+      issuerMessage: param.issuerMessage,
+      identifier: param.identifier,
+    );
   }
 }
