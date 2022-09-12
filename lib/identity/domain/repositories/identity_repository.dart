@@ -22,4 +22,10 @@ abstract class IdentityRepository {
       {required String identifier,
       required CircuitDataEntity circuitData,
       required String message});
+
+  ///
+  Future<void> authenticate({
+    required String issuerMessage,
+    required String identifier,
+  });
 }

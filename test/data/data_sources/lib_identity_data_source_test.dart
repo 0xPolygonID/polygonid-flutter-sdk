@@ -19,7 +19,8 @@ var exception = Exception();
 MockIden3CoreLib coreLib = MockIden3CoreLib();
 
 // Tested instance
-LibIdentityDataSource dataSource = LibIdentityDataSource(coreLib);
+LibIdentityDataSource dataSource =
+    LibIdentityDataSource(coreLib);
 
 @GenerateMocks([Iden3CoreLib])
 void main() {

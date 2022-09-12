@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 
 import 'package:fast_base58/fast_base58.dart';
 
@@ -10,6 +10,7 @@ class LibIdentityDataSource {
 
   LibIdentityDataSource(this._iden3coreLib);
 
+  ///
   Future<String> getIdentifier({required String pubX, required String pubY}) {
     try {
       Map<String, String> map = _iden3coreLib.generateIdentity(pubX, pubY);
@@ -21,6 +22,7 @@ class LibIdentityDataSource {
     }
   }
 
+  ///
   Future<String> getAuthClaim({required String pubX, required String pubY}) {
     try {
       String authClaim = _iden3coreLib.getAuthClaim(pubX, pubY);
