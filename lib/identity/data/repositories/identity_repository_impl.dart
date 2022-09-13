@@ -202,17 +202,20 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
   @override
   Future<String> getAuthToken(
-      {required String identifier,
-      required CircuitDataEntity circuitData,
-      required String message}) {
+      {required String identifier, required String message}) async {
+    List<Uint8List> circuitFiles =
+        await _localFilesDataSource.loadCircuitFiles("auth");
+    CircuitDataEntity authData =
+        CircuitDataEntity("auth", circuitFiles[0], circuitFiles[1]);
+
     return _storageIdentityDataSource.getIdentity(identifier: identifier).then(
         (dto) => _jwzDataSource.getAuthToken(
             privateKey: _hexMapper.mapTo(dto.privateKey),
             authClaim: dto.authClaim,
             message: message,
-            circuitId: circuitData.circuitId,
-            datFile: circuitData.datFile,
-            zKeyFile: circuitData.zKeyFile));
+            circuitId: authData.circuitId,
+            datFile: authData.datFile,
+            zKeyFile: authData.zKeyFile));
   }
 
   /// Get an identifier from a [privateKey]
@@ -257,7 +260,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
     );
 
     String authToken = await getAuthToken(
-        identifier: identifier, circuitData: authData, message: authResponse);
+      identifier: identifier,
+      message: authResponse,
+    );
 
     await _remoteIdentityDataSource.authWithToken(authToken, authRequest);
   }

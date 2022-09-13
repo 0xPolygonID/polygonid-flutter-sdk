@@ -20,7 +20,6 @@ abstract class IdentityRepository {
 
   Future<String> getAuthToken(
       {required String identifier,
-      required CircuitDataEntity circuitData,
       required String message});
 
   ///

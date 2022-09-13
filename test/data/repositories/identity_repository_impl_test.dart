@@ -424,7 +424,6 @@ void main() {
       expect(
           await repository.getAuthToken(
               identifier: identifier,
-              circuitData: circuitData,
               message: message),
           token);
 
@@ -463,7 +462,6 @@ void main() {
       await expectLater(
           repository.getAuthToken(
               identifier: identifier,
-              circuitData: circuitData,
               message: message),
           throwsA(exception));
 

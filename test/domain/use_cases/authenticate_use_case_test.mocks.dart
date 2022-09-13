@@ -10,8 +10,6 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.d
     as _i2;
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart'
     as _i3;
-import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart'
-    as _i5;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -84,16 +82,10 @@ class MockIdentityRepository extends _i1.Mock
       (super.noSuchMethod(Invocation.method(#getCurrentIdentifier, []),
           returnValue: _i4.Future<String?>.value()) as _i4.Future<String?>);
   @override
-  _i4.Future<String> getAuthToken(
-          {String? identifier,
-          _i5.CircuitDataEntity? circuitData,
-          String? message}) =>
+  _i4.Future<String> getAuthToken({String? identifier, String? message}) =>
       (super.noSuchMethod(
-          Invocation.method(#getAuthToken, [], {
-            #identifier: identifier,
-            #circuitData: circuitData,
-            #message: message
-          }),
+          Invocation.method(
+              #getAuthToken, [], {#identifier: identifier, #message: message}),
           returnValue: _i4.Future<String>.value('')) as _i4.Future<String>);
   @override
   _i4.Future<void> authenticate({String? issuerMessage, String? identifier}) =>

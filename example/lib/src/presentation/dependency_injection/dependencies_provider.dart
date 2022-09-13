@@ -63,7 +63,7 @@ void registerClaimsDependencies() {
 
 ///
 void registerAuthDependencies() {
-  getIt.registerFactory(() => AuthBloc());
+  getIt.registerFactory(() => AuthBloc(getIt()));
 }
 
 ///

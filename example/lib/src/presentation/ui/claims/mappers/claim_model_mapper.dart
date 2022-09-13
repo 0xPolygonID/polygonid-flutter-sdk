@@ -29,7 +29,7 @@ class ClaimModelMapper implements Mapper<ClaimEntity, ClaimModel> {
       id: to.id,
       identifier: "",//TODO do we need user identifier for each one?
       issuer: to.issuer!,
-      data: to.credentialData.toJson(),
+      credential: to.credentialData.toJson(),
       expiration: to.expiration,
       state: stateMapper.mapTo(to.state),
       type: to.type,

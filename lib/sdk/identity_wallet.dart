@@ -74,10 +74,9 @@ class IdentityWallet {
   /// See [JWZ].
   Future<String> getAuthToken(
       {required String identifier,
-      required CircuitDataEntity circuitData,
       required String message}) {
     return _getAuthTokenUseCase.execute(
-        param: GetAuthTokenParam(identifier, circuitData, message));
+        param: GetAuthTokenParam(identifier, message));
   }
 
   /// As the SDK support only one identity for the moment, we return the last
@@ -100,7 +99,6 @@ class IdentityWallet {
   /// auth with token #5 TODO rewrite as soon as development is completed
   Future<void> authenticate({
     required String issuerMessage,
-    required CircuitDataEntity circuitDataEntity,
     required String identifier,
   }) {
     return _authenticateUseCase.execute(

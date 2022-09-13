@@ -16,6 +16,7 @@ class RemoteIdentityDataSource with HttpExceptionsHandlerMixin {
     var uri = Uri.parse(endpoint);
     Response response = await client.post(
       uri,
+      body: token,
       headers: {
         HttpHeaders.acceptHeader: '*/*',
         HttpHeaders.contentTypeHeader: 'text/plain',

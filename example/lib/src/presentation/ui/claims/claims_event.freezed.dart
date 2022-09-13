@@ -18,7 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$ClaimsEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function() fetchAndSaveClaims,
+    required TResult Function(Iden3Message iden3message) fetchAndSaveClaims,
     required TResult Function(List<FilterEntity>? filters) getClaims,
     required TResult Function(List<String> ids) getClaimsByIds,
     required TResult Function(String id) removeClaim,
@@ -38,7 +38,7 @@ mixin _$ClaimsEvent {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? fetchAndSaveClaims,
+    TResult Function(Iden3Message iden3message)? fetchAndSaveClaims,
     TResult Function(List<FilterEntity>? filters)? getClaims,
     TResult Function(List<String> ids)? getClaimsByIds,
     TResult Function(String id)? removeClaim,
@@ -58,7 +58,7 @@ mixin _$ClaimsEvent {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? fetchAndSaveClaims,
+    TResult Function(Iden3Message iden3message)? fetchAndSaveClaims,
     TResult Function(List<FilterEntity>? filters)? getClaims,
     TResult Function(List<String> ids)? getClaimsByIds,
     TResult Function(String id)? removeClaim,
@@ -137,6 +137,7 @@ abstract class _$$FetchAndSaveClaimsEventCopyWith<$Res> {
   factory _$$FetchAndSaveClaimsEventCopyWith(_$FetchAndSaveClaimsEvent value,
           $Res Function(_$FetchAndSaveClaimsEvent) then) =
       __$$FetchAndSaveClaimsEventCopyWithImpl<$Res>;
+  $Res call({Iden3Message iden3message});
 }
 
 /// @nodoc
@@ -150,32 +151,56 @@ class __$$FetchAndSaveClaimsEventCopyWithImpl<$Res>
   @override
   _$FetchAndSaveClaimsEvent get _value =>
       super._value as _$FetchAndSaveClaimsEvent;
+
+  @override
+  $Res call({
+    Object? iden3message = freezed,
+  }) {
+    return _then(_$FetchAndSaveClaimsEvent(
+      iden3message: iden3message == freezed
+          ? _value.iden3message
+          : iden3message // ignore: cast_nullable_to_non_nullable
+              as Iden3Message,
+    ));
+  }
 }
 
 /// @nodoc
 
 class _$FetchAndSaveClaimsEvent implements FetchAndSaveClaimsEvent {
-  const _$FetchAndSaveClaimsEvent();
+  const _$FetchAndSaveClaimsEvent({required this.iden3message});
+
+  @override
+  final Iden3Message iden3message;
 
   @override
   String toString() {
-    return 'ClaimsEvent.fetchAndSaveClaims()';
+    return 'ClaimsEvent.fetchAndSaveClaims(iden3message: $iden3message)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$FetchAndSaveClaimsEvent);
+            other is _$FetchAndSaveClaimsEvent &&
+            const DeepCollectionEquality()
+                .equals(other.iden3message, iden3message));
   }
 
   @override
-  int get hashCode => runtimeType.hashCode;
+  int get hashCode => Object.hash(
+      runtimeType, const DeepCollectionEquality().hash(iden3message));
+
+  @JsonKey(ignore: true)
+  @override
+  _$$FetchAndSaveClaimsEventCopyWith<_$FetchAndSaveClaimsEvent> get copyWith =>
+      __$$FetchAndSaveClaimsEventCopyWithImpl<_$FetchAndSaveClaimsEvent>(
+          this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function() fetchAndSaveClaims,
+    required TResult Function(Iden3Message iden3message) fetchAndSaveClaims,
     required TResult Function(List<FilterEntity>? filters) getClaims,
     required TResult Function(List<String> ids) getClaimsByIds,
     required TResult Function(String id) removeClaim,
@@ -192,13 +217,13 @@ class _$FetchAndSaveClaimsEvent implements FetchAndSaveClaimsEvent {
     required TResult Function() clickScanQrCode,
     required TResult Function(String? response) onScanQrCodeResponse,
   }) {
-    return fetchAndSaveClaims();
+    return fetchAndSaveClaims(iden3message);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? fetchAndSaveClaims,
+    TResult Function(Iden3Message iden3message)? fetchAndSaveClaims,
     TResult Function(List<FilterEntity>? filters)? getClaims,
     TResult Function(List<String> ids)? getClaimsByIds,
     TResult Function(String id)? removeClaim,
@@ -215,13 +240,13 @@ class _$FetchAndSaveClaimsEvent implements FetchAndSaveClaimsEvent {
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
   }) {
-    return fetchAndSaveClaims?.call();
+    return fetchAndSaveClaims?.call(iden3message);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? fetchAndSaveClaims,
+    TResult Function(Iden3Message iden3message)? fetchAndSaveClaims,
     TResult Function(List<FilterEntity>? filters)? getClaims,
     TResult Function(List<String> ids)? getClaimsByIds,
     TResult Function(String id)? removeClaim,
@@ -240,7 +265,7 @@ class _$FetchAndSaveClaimsEvent implements FetchAndSaveClaimsEvent {
     required TResult orElse(),
   }) {
     if (fetchAndSaveClaims != null) {
-      return fetchAndSaveClaims();
+      return fetchAndSaveClaims(iden3message);
     }
     return orElse();
   }
@@ -296,7 +321,13 @@ class _$FetchAndSaveClaimsEvent implements FetchAndSaveClaimsEvent {
 }
 
 abstract class FetchAndSaveClaimsEvent implements ClaimsEvent {
-  const factory FetchAndSaveClaimsEvent() = _$FetchAndSaveClaimsEvent;
+  const factory FetchAndSaveClaimsEvent(
+      {required final Iden3Message iden3message}) = _$FetchAndSaveClaimsEvent;
+
+  Iden3Message get iden3message;
+  @JsonKey(ignore: true)
+  _$$FetchAndSaveClaimsEventCopyWith<_$FetchAndSaveClaimsEvent> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -371,7 +402,7 @@ class _$GetClaimsEvent implements GetClaimsEvent {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function() fetchAndSaveClaims,
+    required TResult Function(Iden3Message iden3message) fetchAndSaveClaims,
     required TResult Function(List<FilterEntity>? filters) getClaims,
     required TResult Function(List<String> ids) getClaimsByIds,
     required TResult Function(String id) removeClaim,
@@ -394,7 +425,7 @@ class _$GetClaimsEvent implements GetClaimsEvent {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? fetchAndSaveClaims,
+    TResult Function(Iden3Message iden3message)? fetchAndSaveClaims,
     TResult Function(List<FilterEntity>? filters)? getClaims,
     TResult Function(List<String> ids)? getClaimsByIds,
     TResult Function(String id)? removeClaim,
@@ -417,7 +448,7 @@ class _$GetClaimsEvent implements GetClaimsEvent {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? fetchAndSaveClaims,
+    TResult Function(Iden3Message iden3message)? fetchAndSaveClaims,
     TResult Function(List<FilterEntity>? filters)? getClaims,
     TResult Function(List<String> ids)? getClaimsByIds,
     TResult Function(String id)? removeClaim,
@@ -571,7 +602,7 @@ class _$GetClaimsByIdsEvent implements GetClaimsByIdsEvent {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function() fetchAndSaveClaims,
+    required TResult Function(Iden3Message iden3message) fetchAndSaveClaims,
     required TResult Function(List<FilterEntity>? filters) getClaims,
     required TResult Function(List<String> ids) getClaimsByIds,
     required TResult Function(String id) removeClaim,
@@ -594,7 +625,7 @@ class _$GetClaimsByIdsEvent implements GetClaimsByIdsEvent {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? fetchAndSaveClaims,
+    TResult Function(Iden3Message iden3message)? fetchAndSaveClaims,
     TResult Function(List<FilterEntity>? filters)? getClaims,
     TResult Function(List<String> ids)? getClaimsByIds,
     TResult Function(String id)? removeClaim,
@@ -617,7 +648,7 @@ class _$GetClaimsByIdsEvent implements GetClaimsByIdsEvent {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? fetchAndSaveClaims,
+    TResult Function(Iden3Message iden3message)? fetchAndSaveClaims,
     TResult Function(List<FilterEntity>? filters)? getClaims,
     TResult Function(List<String> ids)? getClaimsByIds,
     TResult Function(String id)? removeClaim,
@@ -766,7 +797,7 @@ class _$RemoveClaimEvent implements RemoveClaimEvent {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function() fetchAndSaveClaims,
+    required TResult Function(Iden3Message iden3message) fetchAndSaveClaims,
     required TResult Function(List<FilterEntity>? filters) getClaims,
     required TResult Function(List<String> ids) getClaimsByIds,
     required TResult Function(String id) removeClaim,
@@ -789,7 +820,7 @@ class _$RemoveClaimEvent implements RemoveClaimEvent {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? fetchAndSaveClaims,
+    TResult Function(Iden3Message iden3message)? fetchAndSaveClaims,
     TResult Function(List<FilterEntity>? filters)? getClaims,
     TResult Function(List<String> ids)? getClaimsByIds,
     TResult Function(String id)? removeClaim,
@@ -812,7 +843,7 @@ class _$RemoveClaimEvent implements RemoveClaimEvent {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? fetchAndSaveClaims,
+    TResult Function(Iden3Message iden3message)? fetchAndSaveClaims,
     TResult Function(List<FilterEntity>? filters)? getClaims,
     TResult Function(List<String> ids)? getClaimsByIds,
     TResult Function(String id)? removeClaim,
@@ -965,7 +996,7 @@ class _$RemoveClaimsEvent implements RemoveClaimsEvent {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function() fetchAndSaveClaims,
+    required TResult Function(Iden3Message iden3message) fetchAndSaveClaims,
     required TResult Function(List<FilterEntity>? filters) getClaims,
     required TResult Function(List<String> ids) getClaimsByIds,
     required TResult Function(String id) removeClaim,
@@ -988,7 +1019,7 @@ class _$RemoveClaimsEvent implements RemoveClaimsEvent {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? fetchAndSaveClaims,
+    TResult Function(Iden3Message iden3message)? fetchAndSaveClaims,
     TResult Function(List<FilterEntity>? filters)? getClaims,
     TResult Function(List<String> ids)? getClaimsByIds,
     TResult Function(String id)? removeClaim,
@@ -1011,7 +1042,7 @@ class _$RemoveClaimsEvent implements RemoveClaimsEvent {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? fetchAndSaveClaims,
+    TResult Function(Iden3Message iden3message)? fetchAndSaveClaims,
     TResult Function(List<FilterEntity>? filters)? getClaims,
     TResult Function(List<String> ids)? getClaimsByIds,
     TResult Function(String id)? removeClaim,
@@ -1238,7 +1269,7 @@ class _$UpdateClaimEvent implements UpdateClaimEvent {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function() fetchAndSaveClaims,
+    required TResult Function(Iden3Message iden3message) fetchAndSaveClaims,
     required TResult Function(List<FilterEntity>? filters) getClaims,
     required TResult Function(List<String> ids) getClaimsByIds,
     required TResult Function(String id) removeClaim,
@@ -1261,7 +1292,7 @@ class _$UpdateClaimEvent implements UpdateClaimEvent {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? fetchAndSaveClaims,
+    TResult Function(Iden3Message iden3message)? fetchAndSaveClaims,
     TResult Function(List<FilterEntity>? filters)? getClaims,
     TResult Function(List<String> ids)? getClaimsByIds,
     TResult Function(String id)? removeClaim,
@@ -1285,7 +1316,7 @@ class _$UpdateClaimEvent implements UpdateClaimEvent {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? fetchAndSaveClaims,
+    TResult Function(Iden3Message iden3message)? fetchAndSaveClaims,
     TResult Function(List<FilterEntity>? filters)? getClaims,
     TResult Function(List<String> ids)? getClaimsByIds,
     TResult Function(String id)? removeClaim,
@@ -1422,7 +1453,7 @@ class _$ClickScanQrCodeEvent implements ClickScanQrCodeEvent {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function() fetchAndSaveClaims,
+    required TResult Function(Iden3Message iden3message) fetchAndSaveClaims,
     required TResult Function(List<FilterEntity>? filters) getClaims,
     required TResult Function(List<String> ids) getClaimsByIds,
     required TResult Function(String id) removeClaim,
@@ -1445,7 +1476,7 @@ class _$ClickScanQrCodeEvent implements ClickScanQrCodeEvent {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? fetchAndSaveClaims,
+    TResult Function(Iden3Message iden3message)? fetchAndSaveClaims,
     TResult Function(List<FilterEntity>? filters)? getClaims,
     TResult Function(List<String> ids)? getClaimsByIds,
     TResult Function(String id)? removeClaim,
@@ -1468,7 +1499,7 @@ class _$ClickScanQrCodeEvent implements ClickScanQrCodeEvent {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? fetchAndSaveClaims,
+    TResult Function(Iden3Message iden3message)? fetchAndSaveClaims,
     TResult Function(List<FilterEntity>? filters)? getClaims,
     TResult Function(List<String> ids)? getClaimsByIds,
     TResult Function(String id)? removeClaim,
@@ -1612,7 +1643,7 @@ class _$ScanQrCodeResponse implements ScanQrCodeResponse {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function() fetchAndSaveClaims,
+    required TResult Function(Iden3Message iden3message) fetchAndSaveClaims,
     required TResult Function(List<FilterEntity>? filters) getClaims,
     required TResult Function(List<String> ids) getClaimsByIds,
     required TResult Function(String id) removeClaim,
@@ -1635,7 +1666,7 @@ class _$ScanQrCodeResponse implements ScanQrCodeResponse {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? fetchAndSaveClaims,
+    TResult Function(Iden3Message iden3message)? fetchAndSaveClaims,
     TResult Function(List<FilterEntity>? filters)? getClaims,
     TResult Function(List<String> ids)? getClaimsByIds,
     TResult Function(String id)? removeClaim,
@@ -1658,7 +1689,7 @@ class _$ScanQrCodeResponse implements ScanQrCodeResponse {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? fetchAndSaveClaims,
+    TResult Function(Iden3Message iden3message)? fetchAndSaveClaims,
     TResult Function(List<FilterEntity>? filters)? getClaims,
     TResult Function(List<String> ids)? getClaimsByIds,
     TResult Function(String id)? removeClaim,

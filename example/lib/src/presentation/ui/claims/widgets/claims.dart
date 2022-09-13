@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/models/iden3_message.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/navigations/routes.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_state.dart';
@@ -28,7 +29,6 @@ class _ClaimsScreenState extends State<ClaimsScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      //TODO temp logic
       widget._bloc.add(const ClaimsEvent.getClaims());
     });
   }
@@ -160,7 +160,12 @@ class _ClaimsScreenState extends State<ClaimsScreen> {
     return BlocListener<ClaimsBloc, ClaimsState>(
       bloc: widget._bloc,
       listener: (context, state) {
-        if (state is NavigateToQrCodeScannerClaimsState) _handleNavigateToQrCodeScannerClaimsState();
+        if (state is NavigateToQrCodeScannerClaimsState) {
+          _handleNavigateToQrCodeScannerClaimsState();
+        }
+        if (state is QrCodeScannedClaimsState) {
+          _handleQrCodeScanned(state.iden3message);
+        }
       },
       child: const SizedBox.shrink(),
     );
@@ -168,7 +173,14 @@ class _ClaimsScreenState extends State<ClaimsScreen> {
 
   ///
   Future<void> _handleNavigateToQrCodeScannerClaimsState() async {
-    String? qrCodeScanningResult = await Navigator.pushNamed(context, Routes.qrCodeScannerPath) as String?;
+    String? qrCodeScanningResult =
+        await Navigator.pushNamed(context, Routes.qrCodeScannerPath) as String?;
     widget._bloc.add(ClaimsEvent.onScanQrCodeResponse(qrCodeScanningResult));
+  }
+
+  ///
+  void _handleQrCodeScanned(Iden3Message iden3message) {
+    widget._bloc
+        .add(ClaimsEvent.fetchAndSaveClaims(iden3message: iden3message));
   }
 }
