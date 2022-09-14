@@ -241,21 +241,15 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
     AuthRequest authRequest = _authRequestMapper.mapFrom(issuerMessage);
 
-    List<Uint8List> circuitFiles =
-        await _localFilesDataSource.loadCircuitFiles("auth");
-    CircuitDataEntity authData =
-        CircuitDataEntity("auth", circuitFiles[0], circuitFiles[1]);
-
     List<ProofResponse> scope = await _getProofResponseList(
-        scope: authRequest.body?.scope,
-        privateKey: privateKey,
-        circuit: authData);
+      scope: authRequest.body?.scope,
+      privateKey: privateKey,
+    );
 
     String authResponse = _getAuthResponse(
       identifier: identifier,
       privateKey: privateKey,
       authRequest: authRequest,
-      circuitDataEntity: authData,
       scope: scope,
     );
 
@@ -271,10 +265,11 @@ class IdentityRepositoryImpl extends IdentityRepository {
   Future<List<ProofResponse>> _getProofResponseList({
     List<ProofScopeRequest>? scope,
     required String privateKey,
-    required CircuitDataEntity circuit,
   }) async {
     List<ProofResponse> proofResponseScopeList = [];
-    if (scope == null || scope.isEmpty) return proofResponseScopeList;
+    if (scope == null || scope.isEmpty) {
+      return proofResponseScopeList;
+    }
 
     List<ProofScopeRequest> proofScopeRequestList =
         _proofScopeDataSource.filteredProofScopeRequestList(scope);
@@ -283,13 +278,22 @@ class IdentityRepositoryImpl extends IdentityRepository {
       List<FilterEntity> filters = _proofScopeDataSource
           .proofScopeRulesQueryRequestFilters(proofReq.rules!.query!);
       Filter filter = _filtersMapper.mapTo(filters);
+
       List<ClaimDTO> claimDtoList =
           await _storageClaimDataSource.getClaims(filter: filter);
+
       List<ClaimEntity> claims = claimDtoList
           .map((claimDTO) => _claimMapper.mapFrom(claimDTO))
           .toList();
+
       if (claims.isNotEmpty) {
+        List<Uint8List> circuitFiles =
+            await _localFilesDataSource.loadCircuitFiles(proofReq.circuit_id!);
+        CircuitDataEntity circuit = CircuitDataEntity(
+            proofReq.circuit_id!, circuitFiles[0], circuitFiles[1]);
+
         ClaimEntity authClaim = claims.first;
+
         ProofResponse proofResponse =
             await _getProofResponse(proofReq, privateKey, circuit, authClaim);
         proofResponseScopeList.add(proofResponse);
@@ -412,7 +416,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
     required String identifier,
     required String privateKey,
     required AuthRequest authRequest,
-    required CircuitDataEntity circuitDataEntity,
     required List<ProofResponse> scope,
   }) {
     AuthResponse authResponse = AuthResponse(
