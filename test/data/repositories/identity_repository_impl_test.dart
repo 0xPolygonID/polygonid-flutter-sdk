@@ -33,6 +33,7 @@ import 'package:polygonid_flutter_sdk/identity/data/repositories/identity_reposi
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_storage_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
 
@@ -56,10 +57,17 @@ final bbjjKey = Uint8List(32);
 final mockWallet = FakeWallet();
 const identifier = "theIdentifier";
 const authClaim = "theAuthClaim";
+const smt = "smt";
 const mockDTO = IdentityDTO(
-    privateKey: privateKey, identifier: identifier, authClaim: authClaim);
+    privateKey: privateKey,
+    identifier: identifier,
+    authClaim: authClaim,
+    smt: smt);
 const mockEntity = IdentityEntity(
-    privateKey: privateKey, identifier: identifier, authClaim: authClaim);
+    privateKey: privateKey,
+    identifier: identifier,
+    authClaim: authClaim,
+    smt: smt);
 const message = "theMessage";
 const signature = "theSignature";
 const circuitId = "1";
@@ -99,6 +107,7 @@ MockJWZDataSource jwzDataSource = MockJWZDataSource();
 MockHexMapper hexMapper = MockHexMapper();
 MockPrivateKeyMapper privateKeyMapper = MockPrivateKeyMapper();
 MockIdentityDTOMapper identityDTOMapper = MockIdentityDTOMapper();
+MockSMTStorageRepository smtStorageRepository = MockSMTStorageRepository();
 MockRemoteIdentityDataSource remoteIdentityDataSource =
     MockRemoteIdentityDataSource();
 MockAuthRequestMapper authRequestMapper = MockAuthRequestMapper();
@@ -135,7 +144,10 @@ IdentityRepository repository = IdentityRepositoryImpl(
   authResponseMapper,
   atomicQueryInputsDataSource,
   localFilesDataSource,
+  smtStorageRepository,
 );
+
+
 
 @GenerateMocks([
   WalletDataSource,
@@ -157,6 +169,7 @@ IdentityRepository repository = IdentityRepositoryImpl(
   AuthResponseMapper,
   AtomicQueryInputsDataSource,
   LocalFilesDataSource,
+  SMTStorageRepository
 ])
 void main() {
   group("Create identity", () {

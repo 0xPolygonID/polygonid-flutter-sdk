@@ -7,11 +7,13 @@ import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_credential.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/revocation_status.dart';
 import 'package:web3dart/crypto.dart';
 
-import '../../../credential/data/dtos/credential_credential_proof.dart';
+import '../../../credential/data/dtos/credential_dto.dart';
+import '../../../credential/data/dtos/credential_proofs/credential_proof_bjj_dto.dart';
+import '../../../credential/data/dtos/credential_proofs/credential_proof_dto.dart';
+import '../../../credential/data/dtos/credential_proofs/credential_proof_sm_dto.dart';
 import '../smt/hash.dart';
 import 'native_iden3core.dart';
 import 'native_iden3core_extension.dart';
@@ -635,7 +637,7 @@ class Iden3CoreLib {
       String pubX,
       String pubY,
       String signature,
-      CredentialCredential credential,
+      CredentialDTO credential,
       String jsonLDDocument,
       String schema,
       String claimType,
@@ -643,12 +645,11 @@ class Iden3CoreLib {
       List<int> values,
       int operator,
       RevocationStatus revocationStatus) {
-    CredentialCredentialProof? smtProof;
-    if (credential.proof != null && credential.proof!.isNotEmpty) {
-      for (var proof in credential.proof!) {
-        if (proof.type ==
-            CredentialCredentialProofType.Iden3SparseMerkleProof.name) {
-          smtProof = proof;
+    CredentialProofSMDTO? smtProof;
+    if (credential.proofs.isNotEmpty) {
+      for (var proof in credential.proofs) {
+        if (proof.type == CredentialProofType.sparseMerkle) {
+          smtProof = proof as CredentialProofSMDTO?;
         }
       }
     }
@@ -832,26 +833,19 @@ class Iden3CoreLib {
 
     // Claim MTP
     ffi.Pointer<IDENProof> claimMTP = malloc<IDENProof>();
-    if (smtProof != null) {
-      claimMTP.ref.existence = smtProof.mtp!.existence!;
-      if (smtProof.mtp!.siblings != null &&
-          smtProof.mtp!.siblings!.isNotEmpty) {
-        claimMTP.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
-            smtProof.mtp!.siblings!.length);
-        for (int i = 0; i < smtProof.mtp!.siblings!.length; i++) {
-          claimMTP.ref.siblings[i] = malloc<ffi.UnsignedChar>(64);
-          // Fill siblings
-          res = _fillDataSibling(
-              claimMTP.ref.siblings[i], smtProof.mtp!.siblings![i], status);
-          assert(res == 1);
-        }
-        claimMTP.ref.siblings_num = smtProof.mtp!.siblings!.length;
-      } else {
-        claimMTP.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>();
-        claimMTP.ref.siblings_num = 0;
+    claimMTP.ref.existence = smtProof.mtp.existence;
+    if (smtProof.mtp.siblings.isNotEmpty) {
+      claimMTP.ref.siblings =
+          malloc<ffi.Pointer<ffi.UnsignedChar>>(smtProof.mtp.siblings.length);
+      for (int i = 0; i < smtProof.mtp.siblings.length; i++) {
+        claimMTP.ref.siblings[i] = malloc<ffi.UnsignedChar>(64);
+        // Fill siblings
+        res = _fillDataSibling(
+            claimMTP.ref.siblings[i], smtProof.mtp.siblings[i], status);
+        assert(res == 1);
       }
+      claimMTP.ref.siblings_num = smtProof.mtp.siblings.length;
     } else {
-      claimMTP.ref.existence = false;
       claimMTP.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>();
       claimMTP.ref.siblings_num = 0;
     }
@@ -862,27 +856,27 @@ class Iden3CoreLib {
 
     // Claim state
     ffi.Pointer<IDENTreeState> issuerState = malloc<IDENTreeState>();
-    if (smtProof != null) {
-      List<int> issuerProofClaimsTreeRootBytes =
-          hexToBytes(smtProof.issuer_data!.state!.claims_tree_root!);
-      for (var i = 0; i < issuerProofClaimsTreeRootBytes.length; i++) {
-        issuerState.ref.claims_root.data[i] = issuerProofClaimsTreeRootBytes[i];
-      }
-      List<int> issuerProofStateBytes =
-          hexToBytes(smtProof.issuer_data!.state!.value!);
-      for (var i = 0; i < issuerProofStateBytes.length; i++) {
-        issuerState.ref.state.data[i] = issuerProofStateBytes[i];
-      }
-      List<int> issuerProofRootRootsBytes =
-          hexToBytes(smtProof.issuer_data!.state!.root_of_roots!);
-      for (var i = 0; i < issuerProofRootRootsBytes.length; i++) {
-        issuerState.ref.root_of_roots.data[i] = issuerProofRootRootsBytes[i];
-      }
-      List<int> issuerProofRevRootBytes =
-          hexToBytes(smtProof.issuer_data!.state!.revocation_tree_root!);
-      for (var i = 0; i < issuerProofRevRootBytes.length; i++) {
-        issuerState.ref.revocation_root.data[i] = issuerProofRevRootBytes[i];
-      }
+
+    CredentialProofIssuerStateSMDTO smtProofIssuerState =
+        smtProof.issuer.state as CredentialProofIssuerStateSMDTO;
+
+    List<int> issuerProofClaimsTreeRootBytes =
+        hexToBytes(smtProofIssuerState.treeRoot);
+    for (var i = 0; i < issuerProofClaimsTreeRootBytes.length; i++) {
+      issuerState.ref.claims_root.data[i] = issuerProofClaimsTreeRootBytes[i];
+    }
+    List<int> issuerProofStateBytes = hexToBytes(smtProofIssuerState.value);
+    for (var i = 0; i < issuerProofStateBytes.length; i++) {
+      issuerState.ref.state.data[i] = issuerProofStateBytes[i];
+    }
+    List<int> issuerProofRootRootsBytes = hexToBytes(smtProofIssuerState.root);
+    for (var i = 0; i < issuerProofRootRootsBytes.length; i++) {
+      issuerState.ref.root_of_roots.data[i] = issuerProofRootRootsBytes[i];
+    }
+    List<int> issuerProofRevRootBytes =
+        hexToBytes(smtProofIssuerState.revocationTree);
+    for (var i = 0; i < issuerProofRevRootBytes.length; i++) {
+      issuerState.ref.revocation_root.data[i] = issuerProofRevRootBytes[i];
     }
 
     request.ref.claim.tree_state = issuerState.ref;
@@ -890,17 +884,15 @@ class Iden3CoreLib {
     // Claim issuer
     // Issuer ID
     ffi.Pointer<IDENId> issuerIdPtr = malloc<IDENId>();
-    if (smtProof != null) {
-      String issuerId = smtProof.issuer_data!.id!;
-      ffi.Pointer<ffi.Char> issuerIdStr =
-          issuerId.toNativeUtf8().cast<ffi.Char>();
-      res = _nativeIden3CoreLib.IDENIdFromString(
-          issuerIdPtr, issuerIdStr, status);
-      if (res == 0) {
-        _consumeStatus(status, "error getting issuer's id");
-        //retVal = 1;
-        return "";
-      }
+    String issuerId = smtProof.issuer.id;
+    ffi.Pointer<ffi.Char> issuerIdStr =
+        issuerId.toNativeUtf8().cast<ffi.Char>();
+    res =
+        _nativeIden3CoreLib.IDENIdFromString(issuerIdPtr, issuerIdStr, status);
+    if (res == 0) {
+      _consumeStatus(status, "error getting issuer's id");
+      //retVal = 1;
+      return "";
     }
     request.ref.claim.issuer_id = issuerIdPtr.ref;
 
@@ -1057,7 +1049,7 @@ class Iden3CoreLib {
       String pubX,
       String pubY,
       String signature,
-      CredentialCredential credential,
+      CredentialDTO credential,
       String jsonLDDocument,
       String schema,
       String claimType,
@@ -1066,11 +1058,11 @@ class Iden3CoreLib {
       int operator,
       RevocationStatus revocationStatus,
       RevocationStatus authRevocationStatus) {
-    CredentialCredentialProof? signatureProof;
-    if (credential.proof != null && credential.proof!.isNotEmpty) {
-      for (var proof in credential.proof!) {
-        if (proof.type == CredentialCredentialProofType.BJJSignature2021.name) {
-          signatureProof = proof;
+    CredentialProofBJJDTO? signatureProof;
+    if (credential.proofs.isNotEmpty) {
+      for (var proof in credential.proofs) {
+        if (proof.type == CredentialProofType.bjj) {
+          signatureProof = proof as CredentialProofBJJDTO?;
         }
       }
     }
@@ -1218,7 +1210,7 @@ class Iden3CoreLib {
 
     // CLAIM ISSUER ID
     ffi.Pointer<IDENId> issuerIdPtr = malloc<IDENId>();
-    String issuerId = signatureProof.issuer_data!.id!;
+    String issuerId = signatureProof.issuer.id;
     ffi.Pointer<ffi.Char> issuerIdStr =
         issuerId.toNativeUtf8().cast<ffi.Char>();
     res =
@@ -1233,37 +1225,40 @@ class Iden3CoreLib {
     request.ref.claim.signature_proof.issuer_id = issuerIdPtr.ref;
 
     // CLAIM SIGNATURE
-    List<int> claim_signature = hexToBytes(signatureProof.signature!);
+
+    List<int> claimSignature = hexToBytes(signatureProof.signature);
     for (var i = 0; i < 64; i++) {
-      request.ref.claim.signature_proof.signature.data[i] = claim_signature[i];
+      request.ref.claim.signature_proof.signature.data[i] = claimSignature[i];
     }
 
     // CLAIM ISSUER STATE
     request.ref.claim.issuer_id = issuerIdPtr.ref;
     request.ref.claim.signature_proof.issuer_tree_state =
         malloc<IDENTreeState>().ref;
+
+    CredentialProofIssuerStateDTO sigProofIssuerState =
+        signatureProof.issuer.state; //as CredentialProofIssuerStateDTO;
     List<int> issuerClaimsTreeRootBytes =
-        hexToBytes(signatureProof.issuer_data!.state!.claims_tree_root!);
+        hexToBytes(sigProofIssuerState.treeRoot);
     for (var i = 0; i < issuerClaimsTreeRootBytes.length; i++) {
       request.ref.claim.signature_proof.issuer_tree_state.claims_root.data[i] =
           issuerClaimsTreeRootBytes[i];
     }
-    List<int> issuerStateBytes =
-        hexToBytes(signatureProof.issuer_data!.state!.value!);
+    List<int> issuerStateBytes = hexToBytes(sigProofIssuerState.value);
     for (var i = 0; i < issuerStateBytes.length; i++) {
       request.ref.claim.signature_proof.issuer_tree_state.state.data[i] =
           issuerStateBytes[i];
     }
 
     List<int> issuerRoRBytes =
-        hexToBytesOrZero(signatureProof.issuer_data!.state!.root_of_roots);
+        hexToBytesOrZero(null); //sigProofIssuerState.root);
     for (var i = 0; i < 32; i++) {
       request.ref.claim.signature_proof.issuer_tree_state.root_of_roots
           .data[i] = issuerRoRBytes[i];
     }
 
-    List<int> issuerRevRBytes = hexToBytesOrZero(
-        signatureProof.issuer_data!.state!.revocation_tree_root);
+    List<int> issuerRevRBytes =
+        hexToBytesOrZero(null); //sigProofIssuerState.revocationTree);
     for (var i = 0; i < 32; i++) {
       request.ref.claim.signature_proof.issuer_tree_state.revocation_root
           .data[i] = issuerRevRBytes[i];
@@ -1272,8 +1267,9 @@ class Iden3CoreLib {
     // ISSUER AUTH CLAIM
     ffi.Pointer<ffi.Pointer<IDENClaim>> issuerAuthClaim =
         malloc<ffi.Pointer<IDENClaim>>();
-    String proofIssuerAuthClaim =
-        json.encode(signatureProof.issuer_data!.auth_claim!);
+    CredentialProofIssuerBJJDTO sigProofIssuer =
+        signatureProof.issuer as CredentialProofIssuerBJJDTO;
+    String proofIssuerAuthClaim = json.encode(sigProofIssuer.authClaim);
     ffi.Pointer<ffi.Char> unsafePointerIssuerAuthClaim =
         proofIssuerAuthClaim.toNativeUtf8().cast<ffi.Char>();
     res = _nativeIden3CoreLib.IDENNewClaimFromJSON(
@@ -1286,23 +1282,18 @@ class Iden3CoreLib {
     request.ref.claim.signature_proof.issuer_auth_claim = issuerAuthClaim.value;
     //debugger();
     ffi.Pointer<IDENProof> issuerAuthClaimMTP = malloc<IDENProof>();
-    issuerAuthClaimMTP.ref.existence =
-        signatureProof.issuer_data!.mtp!.existence!;
-    if (signatureProof.issuer_data!.mtp!.siblings != null &&
-        signatureProof.issuer_data!.mtp!.siblings!.isNotEmpty) {
+    issuerAuthClaimMTP.ref.existence = sigProofIssuer.mtp.existence;
+    if (sigProofIssuer.mtp.siblings.isNotEmpty) {
       issuerAuthClaimMTP.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
-          signatureProof.issuer_data!.mtp!.siblings!.length);
-      for (int i = 0;
-          i < signatureProof.issuer_data!.mtp!.siblings!.length;
-          i++) {
+          sigProofIssuer.mtp.siblings.length);
+      for (int i = 0; i < sigProofIssuer.mtp.siblings.length; i++) {
         issuerAuthClaimMTP.ref.siblings[i] = malloc<ffi.UnsignedChar>(64);
         // Fill siblings
         res = _fillDataSibling(issuerAuthClaimMTP.ref.siblings[i],
-            signatureProof.issuer_data!.mtp!.siblings![i], status);
+            sigProofIssuer.mtp.siblings[i], status);
         assert(res == 1);
       }
-      issuerAuthClaimMTP.ref.siblings_num =
-          signatureProof.issuer_data!.mtp!.siblings!.length;
+      issuerAuthClaimMTP.ref.siblings_num = sigProofIssuer.mtp.siblings.length;
     } else {
       issuerAuthClaimMTP.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>();
       issuerAuthClaimMTP.ref.siblings_num = 0;

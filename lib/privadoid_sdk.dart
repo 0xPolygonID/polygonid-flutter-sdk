@@ -4,12 +4,12 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_proofs/credential_proof_bjj_dto.dart';
 
 import 'common/http.dart';
 import 'common/utils/hex_utils.dart';
-import 'credential/data/dtos/credential_credential.dart';
-import 'credential/data/dtos/credential_credential_proof.dart';
-import 'credential/data/dtos/credential_data.dart';
+import 'credential/data/dtos/credential_proofs/credential_proof_dto.dart';
 import 'credential/data/dtos/revocation_status.dart';
 import 'identity/libs/bjj/privadoid_wallet.dart';
 import 'identity/libs/iden3core/iden3core.dart';
@@ -28,7 +28,7 @@ class AtomicQueryInputsParam {
   final String pubX;
   final String pubY;
   final String signature;
-  final CredentialCredential credential;
+  final CredentialDTO credential;
   final String jsonLDDocument;
   final String schema;
   final String claimType;
@@ -82,7 +82,7 @@ class PrivadoIdSdk {
   static Future<String?> prepareAtomicQueryInputs(
       String challenge,
       String privateKey,
-      CredentialData credential,
+      CredentialDTO credential,
       String circuitId,
       String claimType,
       String key,
@@ -101,7 +101,13 @@ class PrivadoIdSdk {
     }
 
     // schema
-    var uri = Uri.parse(credential.credential!.credentialSchema!.id!);
+    String schemaId = credential.credentialSchema.id;
+    String schemaUrl = schemaId;
+    if (schemaId.toLowerCase().startsWith("ipfs://")) {
+      String fileHash = schemaId.toLowerCase().replaceFirst("ipfs://", "");
+      schemaUrl = "https://ipfs.io/ipfs/$fileHash";
+    }
+    var uri = Uri.parse(schemaUrl);
     var res = await get(uri.authority, uri.path);
     String schema = (res.body);
 
@@ -112,32 +118,39 @@ class PrivadoIdSdk {
         RevocationStatus.fromJson(json.decode(revStatus));
     String? queryInputs;
     if (circuitId == "credentialAtomicQueryMTP") {
-      queryInputs = await compute(
-          _computeAtomicQueryInputs,
-          AtomicQueryInputsParam(
-              AtomicQueryInputsType.mtp,
-              challenge,
-              wallet.publicKey[0],
-              wallet.publicKey[1],
-              signatureString,
-              credential.credential!,
-              json.encode(credential.credential!.toJson()),
-              schema,
-              claimType,
-              key,
-              values,
-              operator,
-              claimRevocationStatus));
+      if (credential.proofs.isNotEmpty) {
+        for (var proof in credential.proofs) {
+          if (proof.type == CredentialProofType.sparseMerkle) {
+            queryInputs = await compute(
+                _computeAtomicQueryInputs,
+                AtomicQueryInputsParam(
+                    AtomicQueryInputsType.mtp,
+                    challenge,
+                    wallet.publicKey[0],
+                    wallet.publicKey[1],
+                    signatureString,
+                    credential,
+                    json.encode(credential.toJson()),
+                    schema,
+                    claimType,
+                    key,
+                    values,
+                    operator,
+                    claimRevocationStatus));
+            break;
+          }
+        }
+      }
     } else if (circuitId == "credentialAtomicQuerySig") {
       // Issuer auth claim revocation status
-      if (credential.credential!.proof != null &&
-          credential.credential!.proof!.isNotEmpty) {
-        for (var proof in credential.credential!.proof!) {
-          if (proof.type ==
-              CredentialCredentialProofType.BJJSignature2021.name) {
+      if (credential.proofs.isNotEmpty) {
+        for (var proof in credential.proofs) {
+          if (proof.type == CredentialProofType.bjj) {
             // revocation status
-            final authRes =
-                await get(proof.issuer_data!.revocation_status!, "");
+
+            CredentialProofIssuerBJJDTO proofIssuer =
+                proof.issuer as CredentialProofIssuerBJJDTO;
+            final authRes = await get(proofIssuer.revocationStatus, "");
             String authRevStatus = (authRes.body);
             final RevocationStatus authRevocationStatus =
                 RevocationStatus.fromJson(json.decode(authRevStatus));
@@ -150,8 +163,8 @@ class PrivadoIdSdk {
                     wallet.publicKey[0],
                     wallet.publicKey[1],
                     signatureString,
-                    credential.credential!,
-                    json.encode(credential.credential!.toJson()),
+                    credential,
+                    json.encode(credential.toJson()),
                     schema,
                     claimType,
                     key,
