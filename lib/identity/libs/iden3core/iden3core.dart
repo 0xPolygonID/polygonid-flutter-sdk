@@ -1236,8 +1236,8 @@ class Iden3CoreLib {
     request.ref.claim.signature_proof.issuer_tree_state =
         malloc<IDENTreeState>().ref;
 
-    CredentialProofIssuerStateSMDTO sigProofIssuerState =
-        signatureProof.issuer.state as CredentialProofIssuerStateSMDTO;
+    CredentialProofIssuerStateDTO sigProofIssuerState =
+        signatureProof.issuer.state; //as CredentialProofIssuerStateDTO;
     List<int> issuerClaimsTreeRootBytes =
         hexToBytes(sigProofIssuerState.treeRoot);
     for (var i = 0; i < issuerClaimsTreeRootBytes.length; i++) {
@@ -1250,14 +1250,15 @@ class Iden3CoreLib {
           issuerStateBytes[i];
     }
 
-    List<int> issuerRoRBytes = hexToBytesOrZero(sigProofIssuerState.root);
+    List<int> issuerRoRBytes =
+        hexToBytesOrZero(null); //sigProofIssuerState.root);
     for (var i = 0; i < 32; i++) {
       request.ref.claim.signature_proof.issuer_tree_state.root_of_roots
           .data[i] = issuerRoRBytes[i];
     }
 
     List<int> issuerRevRBytes =
-        hexToBytesOrZero(sigProofIssuerState.revocationTree);
+        hexToBytesOrZero(null); //sigProofIssuerState.revocationTree);
     for (var i = 0; i < 32; i++) {
       request.ref.claim.signature_proof.issuer_tree_state.revocation_root
           .data[i] = issuerRevRBytes[i];

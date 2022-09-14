@@ -101,7 +101,7 @@ class PrivadoIdSdk {
 
     // schema
     String schemaId = credential.credentialSchema.id;
-    String schemaUrl =  schemaId;
+    String schemaUrl = schemaId;
     if (schemaId.toLowerCase().startsWith("ipfs://")) {
       String fileHash = schemaId.toLowerCase().replaceFirst("ipfs://", "");
       schemaUrl = "https://ipfs.io/ipfs/$fileHash";
@@ -116,7 +116,7 @@ class PrivadoIdSdk {
     final RevocationStatus claimRevocationStatus =
         RevocationStatus.fromJson(json.decode(revStatus));
     String? queryInputs;
-    if (circuitId== "credentialAtomicQueryMTP") {
+    if (circuitId == "credentialAtomicQueryMTP") {
       if (credential.proofs.isNotEmpty) {
         for (var proof in credential.proofs) {
           if (proof.type == CredentialProofType.sparseMerkle) {

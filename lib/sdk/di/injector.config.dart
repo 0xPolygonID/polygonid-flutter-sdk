@@ -53,6 +53,7 @@ import '../../identity/domain/use_cases/remove_current_identity_use_case.dart'
 import '../../identity/domain/use_cases/sign_message_use_case.dart' as _i38;
 import '../../identity/libs/bjj/bjj.dart' as _i3;
 import '../../identity/libs/iden3core/iden3core.dart' as _i12;
+import '../../identity/libs/smt/hash.dart' as _i19;
 import '../../proof_generation/libs/prover/prover.dart' as _i16;
 import '../../proof_generation/libs/witnesscalc/auth/witness_auth.dart' as _i22;
 import '../../proof_generation/libs/witnesscalc/mtp/witness_mtp.dart' as _i23;

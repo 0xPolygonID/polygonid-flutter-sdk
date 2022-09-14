@@ -10,7 +10,6 @@ class ClaimDTO extends Equatable {
   final String id;
   final String issuer;
   final String identifier;
-  @JsonKey(defaultValue: '')
   final String state;
   final CredentialDTO credential;
   final String? expiration;
