@@ -1,4 +1,3 @@
-import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
 import '../entities/identity_entity.dart';
 
 abstract class IdentityRepository {

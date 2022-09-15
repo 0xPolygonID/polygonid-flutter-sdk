@@ -8,52 +8,59 @@ import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_stat
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final PolygonIdSdk _polygonIdSdk;
-  AuthBloc(this._polygonIdSdk) : super(const AuthState.initial()) {
-    on<AuthEvent>(_handleAuthEvent);
-  }
 
-  Future<void> _handleAuthEvent(AuthEvent event, Emitter<AuthState> emit) async {
-    event.when(
-      clickScanQrCode: () {
-        _handleClickScanQrCode(emit);
-      },
-      onScanQrCodeResponse: (String? qrCodeResponse) {
-        _handleScanQrCodeResponse(emit, qrCodeResponse);
-      },
-    );
+  AuthBloc(this._polygonIdSdk) : super(const AuthState.initial()) {
+    on<ClickScanQrCodeEvent>(_handleClickScanQrCode);
+    on<ScanQrCodeResponse>(_handleScanQrCodeResponse);
   }
 
   ///
-  void _handleClickScanQrCode(Emitter<AuthState> emit) {
+  void _handleClickScanQrCode(
+      ClickScanQrCodeEvent event, Emitter<AuthState> emit) {
     emit(const AuthState.navigateToQrCodeScanner());
   }
 
   ///
-  Future<void> _handleScanQrCodeResponse(Emitter<AuthState> emit, String? qrCodeResponse) async {
+  Future<void> _handleScanQrCodeResponse(
+      ScanQrCodeResponse event, Emitter<AuthState> emit) async {
+    String? qrCodeResponse = event.response;
     if (qrCodeResponse == null || qrCodeResponse.isEmpty) {
       emit(const AuthState.error("no qr code scanned"));
+      return;
     }
 
     try {
       final Map<String, dynamic> data = jsonDecode(qrCodeResponse!);
       final Iden3Message iden3message = Iden3Message.fromJson(data);
       emit(AuthState.loaded(iden3message));
-      await _authenticate(qrCodeResponse);
+
+      await _authenticate(iden3message: qrCodeResponse, emit: emit);
     } catch (error) {
       emit(const AuthState.error("Scanned code is not valid"));
     }
   }
 
   ///
-  Future<String> _getAuthToken() {
-    //return _polygonIdSdk.identity.getAuthToken(identifier: identifier, message: message);
-    return Future.value("");
-  }
-
-  ///
-  Future<void>_authenticate(String iden3message) async {
+  Future<void> _authenticate({
+    required String iden3message,
+    required Emitter<AuthState> emit,
+  }) async {
+    emit(const AuthState.loading());
     String? identifier = await _polygonIdSdk.identity.getCurrentIdentifier();
 
-    await _polygonIdSdk.identity.authenticate(issuerMessage: iden3message, identifier: identifier!);
+    if (identifier == null) {
+      emit(const AuthState.error(
+          "an identity is needed before trying to authenticate"));
+    }
+
+    try {
+      await _polygonIdSdk.identity.authenticate(
+        issuerMessage: iden3message,
+        identifier: identifier!,
+      );
+      emit(const AuthState.authenticated());
+    } catch (error) {
+      emit(AuthState.error(error.toString()));
+    }
   }
 }

@@ -147,8 +147,6 @@ IdentityRepository repository = IdentityRepositoryImpl(
   smtStorageRepository,
 );
 
-
-
 @GenerateMocks([
   WalletDataSource,
   LibIdentityDataSource,
@@ -179,24 +177,34 @@ void main() {
       reset(hexMapper);
       reset(privateKeyMapper);
       reset(identityDTOMapper);
+      reset(smtStorageRepository);
 
       // Given
       when(libIdentityDataSource.getAuthClaim(
               pubX: anyNamed('pubX'), pubY: anyNamed('pubY')))
           .thenAnswer((realInvocation) => Future.value(authClaim));
+
       when(libIdentityDataSource.getIdentifier(
               pubX: anyNamed('pubX'), pubY: anyNamed('pubY')))
           .thenAnswer((realInvocation) => Future.value(identifier));
+
+      when(libIdentityDataSource.createSMT(smtStorageRepository))
+          .thenAnswer((realInvocation) => Future.value("smt"));
+
       when(walletDataSource.createWallet(privateKey: anyNamed('privateKey')))
           .thenAnswer((realInvocation) => Future.value(mockWallet));
+
       when(storageIdentityDataSource.getIdentity(
               identifier: anyNamed('identifier')))
           .thenAnswer((realInvocation) =>
               Future.error(UnknownIdentityException(identifier)));
+
       when(hexMapper.mapFrom(any))
           .thenAnswer((realInvocation) => walletPrivateKey);
+
       when(privateKeyMapper.mapFrom(any))
           .thenAnswer((realInvocation) => bbjjKey);
+
       when(identityDTOMapper.mapFrom(any))
           .thenAnswer((realInvocation) => mockEntity);
     });
@@ -419,6 +427,10 @@ void main() {
       when(storageIdentityDataSource.getIdentity(
               identifier: anyNamed('identifier')))
           .thenAnswer((realInvocation) => Future.value(identityDTO));
+
+      when(localFilesDataSource.loadCircuitFiles(any))
+          .thenAnswer((realInvocation) => Future.value([datFile, zKeyFile]));
+
       when(jwzDataSource.getAuthToken(
               privateKey: anyNamed('privateKey'),
               authClaim: anyNamed('authClaim'),
@@ -436,8 +448,7 @@ void main() {
       // When
       expect(
           await repository.getAuthToken(
-              identifier: identifier,
-              message: message),
+              identifier: identifier, message: message),
           token);
 
       // Then
@@ -460,7 +471,7 @@ void main() {
       expect(authCaptured[0], bbjjKey);
       expect(authCaptured[1], mockDTO.authClaim);
       expect(authCaptured[2], message);
-      expect(authCaptured[3], circuitData.circuitId);
+      expect(authCaptured[3], 'auth');
       expect(authCaptured[4], circuitData.datFile);
       expect(authCaptured[5], circuitData.zKeyFile);
     });
@@ -473,9 +484,7 @@ void main() {
 
       // When
       await expectLater(
-          repository.getAuthToken(
-              identifier: identifier,
-              message: message),
+          repository.getAuthToken(identifier: identifier, message: message),
           throwsA(exception));
 
       // Then

@@ -92,7 +92,7 @@ class ClaimCard extends StatelessWidget {
                       height: 4,
                     ),
                     Text(
-                      claimModel.issuerName,
+                      claimModel.issuer,
                       style: CustomTextStyles.claimCardIssuerNameTextStyle,
                       softWrap: true,
                     ),

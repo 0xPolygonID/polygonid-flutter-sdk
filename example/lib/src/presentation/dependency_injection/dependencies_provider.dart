@@ -13,6 +13,8 @@ import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_bloc
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/mappers/claim_model_mapper.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/mappers/claim_model_state_mapper.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/mappers/claim_model_type_mapper.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/mappers/proof_model_type_mapper.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/splash_bloc.dart';
 
@@ -37,10 +39,14 @@ Future<void> registerProviders() async {
 
 ///
 void registerIdentityDependencies() {
-  getIt.registerFactory<PolygonIdSdkIdentityDataSource>(() => PolygonIdSdkIdentityDataSource(getIt()));
-  getIt.registerLazySingleton<IdentityRepository>(() => IdentityRepositoryImpl(getIt()));
-  getIt.registerLazySingleton<GetIdentifierUseCase>(() => GetIdentifierUseCase(getIt()));
-  getIt.registerLazySingleton<CreateIdentityUseCase>(() => CreateIdentityUseCase(getIt()));
+  getIt.registerFactory<PolygonIdSdkIdentityDataSource>(
+      () => PolygonIdSdkIdentityDataSource(getIt()));
+  getIt.registerLazySingleton<IdentityRepository>(
+      () => IdentityRepositoryImpl(getIt()));
+  getIt.registerLazySingleton<GetIdentifierUseCase>(
+      () => GetIdentifierUseCase(getIt()));
+  getIt.registerLazySingleton<CreateIdentityUseCase>(
+      () => CreateIdentityUseCase(getIt()));
 }
 
 ///
@@ -56,9 +62,12 @@ void registerHomeDependencies() {
 ///
 void registerClaimsDependencies() {
   getIt.registerFactory(() => ClaimsBloc(getIt(), getIt(), getIt(), getIt()));
-  getIt.registerFactory<PolygonSdkCredentialDataSource>(() => PolygonSdkCredentialDataSource(getIt()));
-  getIt.registerLazySingleton<CredentialRepository>(() => CredentialRepositoryImpl(getIt()));
-  getIt.registerLazySingleton<FetchAndSavesClaimsUseCase>(() => FetchAndSavesClaimsUseCase(getIt()));
+  getIt.registerFactory<PolygonSdkCredentialDataSource>(
+      () => PolygonSdkCredentialDataSource(getIt()));
+  getIt.registerLazySingleton<CredentialRepository>(
+      () => CredentialRepositoryImpl(getIt()));
+  getIt.registerLazySingleton<FetchAndSavesClaimsUseCase>(
+      () => FetchAndSavesClaimsUseCase(getIt()));
 }
 
 ///
@@ -68,6 +77,8 @@ void registerAuthDependencies() {
 
 ///
 void registerMappers() {
-  getIt.registerFactory(() => ClaimModelMapper(getIt()));
+  getIt.registerFactory(() => ClaimModelMapper(getIt(), getIt(), getIt()));
   getIt.registerFactory(() => ClaimModelStateMapper());
+  getIt.registerFactory(() => ClaimModelTypeMapper());
+  getIt.registerFactory(() => ProofModelTypeMapper());
 }

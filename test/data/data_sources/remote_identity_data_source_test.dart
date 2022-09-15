@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -68,7 +67,7 @@ void main() {
           .captured;
 
       expect(captured[0], Uri.parse(mockAuthRequest.body!.callbackUrl!));
-      expect(captured[1], null);
+      expect(captured[1], token);
       expect(captured[2], {
         HttpHeaders.acceptHeader: '*/*',
         HttpHeaders.contentTypeHeader: 'text/plain',
@@ -105,7 +104,7 @@ void main() {
       ).captured;
 
       expect(captured[0], Uri.parse(mockAuthRequest.body!.callbackUrl!));
-      expect(captured[1], null);
+      expect(captured[1], token);
       expect(captured[2], {
         HttpHeaders.acceptHeader: '*/*',
         HttpHeaders.contentTypeHeader: 'text/plain',

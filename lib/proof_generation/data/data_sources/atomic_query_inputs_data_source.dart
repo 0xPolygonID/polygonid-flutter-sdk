@@ -3,8 +3,9 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/http.dart';
-import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_credential_proof.dart';
-import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_data.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_proofs/credential_proof_bjj_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_proofs/credential_proof_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/revocation_status.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/iden3core/iden3core.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/data/dtos/atomic_query_inputs_param.dart';
@@ -24,14 +25,19 @@ class AtomicQueryInputsWrapper {
   ///
   Future<String?> queryInputsFromSIG(
       {required AtomicQueryInputsParam atomicQueryInputsParam,
-      required CredentialData credential}) async {
+      required CredentialDTO credential}) async {
     String? queryInputs;
-    if (credential.credential!.proof != null &&
-        credential.credential!.proof!.isNotEmpty) {
-      for (var proof in credential.credential!.proof!) {
-        if (proof.type == CredentialCredentialProofType.BJJSignature2021.name) {
+    if (credential.proofs.isNotEmpty) {
+      for (var proof in credential.proofs) {
+        if (proof.type == CredentialProofType.bjj) {
+
+          CredentialProofBJJDTO proofBJJ = proof as CredentialProofBJJDTO;
+
+          CredentialProofIssuerBJJDTO issuerBJJ =
+              proofBJJ.issuer as CredentialProofIssuerBJJDTO;
+
           // revocation status
-          final authRes = await get(proof.issuer_data!.revocation_status!, "");
+          final authRes = await get(issuerBJJ.revocationStatus, "");
           String authRevStatus = (authRes.body);
           final RevocationStatus authRevocationStatus =
               RevocationStatus.fromJson(json.decode(authRevStatus));
@@ -98,7 +104,7 @@ class AtomicQueryInputsDataSource {
   Future<String?> prepareAtomicQueryInputs(
     String challenge,
     String privateKey,
-    CredentialData credential,
+    CredentialDTO credential,
     String circuitId,
     String claimType,
     String key,
@@ -110,8 +116,15 @@ class AtomicQueryInputsDataSource {
     String? signature,
   ) async {
     if (signature == null) return null;
+
     // schema
-    var uri = Uri.parse(credential.credential!.credentialSchema!.id!);
+    String schemaId = credential.credentialSchema.id;
+    String schemaUrl = schemaId;
+    if (schemaId.toLowerCase().startsWith("ipfs://")) {
+      String fileHash = schemaId.toLowerCase().replaceFirst("ipfs://", "");
+      schemaUrl = "https://ipfs.io/ipfs/$fileHash";
+    }
+    var uri = Uri.parse(schemaUrl);
     var res = await get(uri.authority, uri.path);
     String schema = (res.body);
 
@@ -128,8 +141,8 @@ class AtomicQueryInputsDataSource {
           pubX,
           pubY,
           signature,
-          credential.credential!,
-          json.encode(credential.credential!.toJson()),
+          credential,
+          json.encode(credential.toJson()),
           schema,
           claimType,
           key,
@@ -145,8 +158,8 @@ class AtomicQueryInputsDataSource {
           pubX,
           pubY,
           signature,
-          credential.credential!,
-          json.encode(credential.credential!.toJson()),
+          credential,
+          json.encode(credential.toJson()),
           schema,
           claimType,
           key,

@@ -54,6 +54,13 @@ class _AuthScreenState extends State<AuthScreen> {
                   children: [
                     const SizedBox(height: 50),
                     _buildDescription(),
+                    const SizedBox(height: 24),
+                    _buildProgress(),
+                    const SizedBox(height: 24),
+                    _buildAuthenticationSuccessSection(),
+                    const SizedBox(height: 24),
+                    _buildErrorSection(),
+                    const SizedBox(height: 48),
                   ],
                 ),
               ),
@@ -77,7 +84,6 @@ class _AuthScreenState extends State<AuthScreen> {
       alignment: Alignment.center,
       child: ElevatedButton(
         onPressed: () {
-          //widget._bloc.getIden3messageFromQrScanning(context);
           widget._bloc.add(const AuthEvent.clickScanQrCode());
         },
         style: CustomButtonStyle.primaryButtonStyle,
@@ -121,7 +127,9 @@ class _AuthScreenState extends State<AuthScreen> {
     return BlocListener<AuthBloc, AuthState>(
       bloc: widget._bloc,
       listener: (context, state) {
-        if (state is NavigateToQrCodeScannerAuthState) _handleNavigateToQrCodeScannerAuthState();
+        if (state is NavigateToQrCodeScannerAuthState) {
+          _handleNavigateToQrCodeScannerAuthState();
+        }
       },
       child: const SizedBox.shrink(),
     );
@@ -129,7 +137,66 @@ class _AuthScreenState extends State<AuthScreen> {
 
   ///
   Future<void> _handleNavigateToQrCodeScannerAuthState() async {
-    String? qrCodeScanningResult = await Navigator.pushNamed(context, Routes.qrCodeScannerPath) as String?;
+    String? qrCodeScanningResult =
+        await Navigator.pushNamed(context, Routes.qrCodeScannerPath) as String?;
     widget._bloc.add(AuthEvent.onScanQrCodeResponse(qrCodeScanningResult));
+  }
+
+  ///
+  Widget _buildProgress() {
+    return BlocBuilder(
+      bloc: widget._bloc,
+      builder: (BuildContext context, AuthState state) {
+        if (state is! LoadingAuthState) {
+          return const SizedBox(
+            height: 48,
+            width: 48,
+          );
+        }
+        return const SizedBox(
+          height: 48,
+          width: 48,
+          child: CircularProgressIndicator(
+            backgroundColor: CustomColors.primaryButton,
+          ),
+        );
+      },
+    );
+  }
+
+  ///
+  Widget _buildAuthenticationSuccessSection() {
+    return BlocBuilder(
+      bloc: widget._bloc,
+      builder: (BuildContext context, AuthState state) {
+        if (state is! AuthenticatedAuthState) return const SizedBox.shrink();
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Text(
+            "Authenticated successfully",
+            style: CustomTextStyles.descriptionTextStyle
+                .copyWith(color: CustomColors.greenSuccess),
+          ),
+        );
+      },
+    );
+  }
+
+  ///
+  Widget _buildErrorSection() {
+    return BlocBuilder(
+      bloc: widget._bloc,
+      builder: (BuildContext context, AuthState state) {
+        if (state is! ErrorAuthState) return const SizedBox.shrink();
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Text(
+            state.message,
+            style: CustomTextStyles.descriptionTextStyle
+                .copyWith(color: CustomColors.redError),
+          ),
+        );
+      },
+    );
   }
 }

@@ -23,6 +23,7 @@ mixin _$AuthState {
     required TResult Function() navigateToQrCodeScanner,
     required TResult Function(Iden3Message iden3message) loaded,
     required TResult Function(String message) error,
+    required TResult Function() authenticated,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -32,6 +33,7 @@ mixin _$AuthState {
     TResult Function()? navigateToQrCodeScanner,
     TResult Function(Iden3Message iden3message)? loaded,
     TResult Function(String message)? error,
+    TResult Function()? authenticated,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -41,6 +43,7 @@ mixin _$AuthState {
     TResult Function()? navigateToQrCodeScanner,
     TResult Function(Iden3Message iden3message)? loaded,
     TResult Function(String message)? error,
+    TResult Function()? authenticated,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -52,6 +55,7 @@ mixin _$AuthState {
         navigateToQrCodeScanner,
     required TResult Function(LoadedAuthState value) loaded,
     required TResult Function(ErrorAuthState value) error,
+    required TResult Function(AuthenticatedAuthState value) authenticated,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -62,6 +66,7 @@ mixin _$AuthState {
         navigateToQrCodeScanner,
     TResult Function(LoadedAuthState value)? loaded,
     TResult Function(ErrorAuthState value)? error,
+    TResult Function(AuthenticatedAuthState value)? authenticated,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -72,6 +77,7 @@ mixin _$AuthState {
         navigateToQrCodeScanner,
     TResult Function(LoadedAuthState value)? loaded,
     TResult Function(ErrorAuthState value)? error,
+    TResult Function(AuthenticatedAuthState value)? authenticated,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -137,6 +143,7 @@ class _$InitAuthState implements InitAuthState {
     required TResult Function() navigateToQrCodeScanner,
     required TResult Function(Iden3Message iden3message) loaded,
     required TResult Function(String message) error,
+    required TResult Function() authenticated,
   }) {
     return initial();
   }
@@ -149,6 +156,7 @@ class _$InitAuthState implements InitAuthState {
     TResult Function()? navigateToQrCodeScanner,
     TResult Function(Iden3Message iden3message)? loaded,
     TResult Function(String message)? error,
+    TResult Function()? authenticated,
   }) {
     return initial?.call();
   }
@@ -161,6 +169,7 @@ class _$InitAuthState implements InitAuthState {
     TResult Function()? navigateToQrCodeScanner,
     TResult Function(Iden3Message iden3message)? loaded,
     TResult Function(String message)? error,
+    TResult Function()? authenticated,
     required TResult orElse(),
   }) {
     if (initial != null) {
@@ -178,6 +187,7 @@ class _$InitAuthState implements InitAuthState {
         navigateToQrCodeScanner,
     required TResult Function(LoadedAuthState value) loaded,
     required TResult Function(ErrorAuthState value) error,
+    required TResult Function(AuthenticatedAuthState value) authenticated,
   }) {
     return initial(this);
   }
@@ -191,6 +201,7 @@ class _$InitAuthState implements InitAuthState {
         navigateToQrCodeScanner,
     TResult Function(LoadedAuthState value)? loaded,
     TResult Function(ErrorAuthState value)? error,
+    TResult Function(AuthenticatedAuthState value)? authenticated,
   }) {
     return initial?.call(this);
   }
@@ -204,6 +215,7 @@ class _$InitAuthState implements InitAuthState {
         navigateToQrCodeScanner,
     TResult Function(LoadedAuthState value)? loaded,
     TResult Function(ErrorAuthState value)? error,
+    TResult Function(AuthenticatedAuthState value)? authenticated,
     required TResult orElse(),
   }) {
     if (initial != null) {
@@ -263,6 +275,7 @@ class _$LoadingAuthState implements LoadingAuthState {
     required TResult Function() navigateToQrCodeScanner,
     required TResult Function(Iden3Message iden3message) loaded,
     required TResult Function(String message) error,
+    required TResult Function() authenticated,
   }) {
     return loading();
   }
@@ -275,6 +288,7 @@ class _$LoadingAuthState implements LoadingAuthState {
     TResult Function()? navigateToQrCodeScanner,
     TResult Function(Iden3Message iden3message)? loaded,
     TResult Function(String message)? error,
+    TResult Function()? authenticated,
   }) {
     return loading?.call();
   }
@@ -287,6 +301,7 @@ class _$LoadingAuthState implements LoadingAuthState {
     TResult Function()? navigateToQrCodeScanner,
     TResult Function(Iden3Message iden3message)? loaded,
     TResult Function(String message)? error,
+    TResult Function()? authenticated,
     required TResult orElse(),
   }) {
     if (loading != null) {
@@ -304,6 +319,7 @@ class _$LoadingAuthState implements LoadingAuthState {
         navigateToQrCodeScanner,
     required TResult Function(LoadedAuthState value) loaded,
     required TResult Function(ErrorAuthState value) error,
+    required TResult Function(AuthenticatedAuthState value) authenticated,
   }) {
     return loading(this);
   }
@@ -317,6 +333,7 @@ class _$LoadingAuthState implements LoadingAuthState {
         navigateToQrCodeScanner,
     TResult Function(LoadedAuthState value)? loaded,
     TResult Function(ErrorAuthState value)? error,
+    TResult Function(AuthenticatedAuthState value)? authenticated,
   }) {
     return loading?.call(this);
   }
@@ -330,6 +347,7 @@ class _$LoadingAuthState implements LoadingAuthState {
         navigateToQrCodeScanner,
     TResult Function(LoadedAuthState value)? loaded,
     TResult Function(ErrorAuthState value)? error,
+    TResult Function(AuthenticatedAuthState value)? authenticated,
     required TResult orElse(),
   }) {
     if (loading != null) {
@@ -394,6 +412,7 @@ class _$NavigateToQrCodeScannerAuthState
     required TResult Function() navigateToQrCodeScanner,
     required TResult Function(Iden3Message iden3message) loaded,
     required TResult Function(String message) error,
+    required TResult Function() authenticated,
   }) {
     return navigateToQrCodeScanner();
   }
@@ -406,6 +425,7 @@ class _$NavigateToQrCodeScannerAuthState
     TResult Function()? navigateToQrCodeScanner,
     TResult Function(Iden3Message iden3message)? loaded,
     TResult Function(String message)? error,
+    TResult Function()? authenticated,
   }) {
     return navigateToQrCodeScanner?.call();
   }
@@ -418,6 +438,7 @@ class _$NavigateToQrCodeScannerAuthState
     TResult Function()? navigateToQrCodeScanner,
     TResult Function(Iden3Message iden3message)? loaded,
     TResult Function(String message)? error,
+    TResult Function()? authenticated,
     required TResult orElse(),
   }) {
     if (navigateToQrCodeScanner != null) {
@@ -435,6 +456,7 @@ class _$NavigateToQrCodeScannerAuthState
         navigateToQrCodeScanner,
     required TResult Function(LoadedAuthState value) loaded,
     required TResult Function(ErrorAuthState value) error,
+    required TResult Function(AuthenticatedAuthState value) authenticated,
   }) {
     return navigateToQrCodeScanner(this);
   }
@@ -448,6 +470,7 @@ class _$NavigateToQrCodeScannerAuthState
         navigateToQrCodeScanner,
     TResult Function(LoadedAuthState value)? loaded,
     TResult Function(ErrorAuthState value)? error,
+    TResult Function(AuthenticatedAuthState value)? authenticated,
   }) {
     return navigateToQrCodeScanner?.call(this);
   }
@@ -461,6 +484,7 @@ class _$NavigateToQrCodeScannerAuthState
         navigateToQrCodeScanner,
     TResult Function(LoadedAuthState value)? loaded,
     TResult Function(ErrorAuthState value)? error,
+    TResult Function(AuthenticatedAuthState value)? authenticated,
     required TResult orElse(),
   }) {
     if (navigateToQrCodeScanner != null) {
@@ -546,6 +570,7 @@ class _$LoadedAuthState implements LoadedAuthState {
     required TResult Function() navigateToQrCodeScanner,
     required TResult Function(Iden3Message iden3message) loaded,
     required TResult Function(String message) error,
+    required TResult Function() authenticated,
   }) {
     return loaded(iden3message);
   }
@@ -558,6 +583,7 @@ class _$LoadedAuthState implements LoadedAuthState {
     TResult Function()? navigateToQrCodeScanner,
     TResult Function(Iden3Message iden3message)? loaded,
     TResult Function(String message)? error,
+    TResult Function()? authenticated,
   }) {
     return loaded?.call(iden3message);
   }
@@ -570,6 +596,7 @@ class _$LoadedAuthState implements LoadedAuthState {
     TResult Function()? navigateToQrCodeScanner,
     TResult Function(Iden3Message iden3message)? loaded,
     TResult Function(String message)? error,
+    TResult Function()? authenticated,
     required TResult orElse(),
   }) {
     if (loaded != null) {
@@ -587,6 +614,7 @@ class _$LoadedAuthState implements LoadedAuthState {
         navigateToQrCodeScanner,
     required TResult Function(LoadedAuthState value) loaded,
     required TResult Function(ErrorAuthState value) error,
+    required TResult Function(AuthenticatedAuthState value) authenticated,
   }) {
     return loaded(this);
   }
@@ -600,6 +628,7 @@ class _$LoadedAuthState implements LoadedAuthState {
         navigateToQrCodeScanner,
     TResult Function(LoadedAuthState value)? loaded,
     TResult Function(ErrorAuthState value)? error,
+    TResult Function(AuthenticatedAuthState value)? authenticated,
   }) {
     return loaded?.call(this);
   }
@@ -613,6 +642,7 @@ class _$LoadedAuthState implements LoadedAuthState {
         navigateToQrCodeScanner,
     TResult Function(LoadedAuthState value)? loaded,
     TResult Function(ErrorAuthState value)? error,
+    TResult Function(AuthenticatedAuthState value)? authenticated,
     required TResult orElse(),
   }) {
     if (loaded != null) {
@@ -701,6 +731,7 @@ class _$ErrorAuthState implements ErrorAuthState {
     required TResult Function() navigateToQrCodeScanner,
     required TResult Function(Iden3Message iden3message) loaded,
     required TResult Function(String message) error,
+    required TResult Function() authenticated,
   }) {
     return error(message);
   }
@@ -713,6 +744,7 @@ class _$ErrorAuthState implements ErrorAuthState {
     TResult Function()? navigateToQrCodeScanner,
     TResult Function(Iden3Message iden3message)? loaded,
     TResult Function(String message)? error,
+    TResult Function()? authenticated,
   }) {
     return error?.call(message);
   }
@@ -725,6 +757,7 @@ class _$ErrorAuthState implements ErrorAuthState {
     TResult Function()? navigateToQrCodeScanner,
     TResult Function(Iden3Message iden3message)? loaded,
     TResult Function(String message)? error,
+    TResult Function()? authenticated,
     required TResult orElse(),
   }) {
     if (error != null) {
@@ -742,6 +775,7 @@ class _$ErrorAuthState implements ErrorAuthState {
         navigateToQrCodeScanner,
     required TResult Function(LoadedAuthState value) loaded,
     required TResult Function(ErrorAuthState value) error,
+    required TResult Function(AuthenticatedAuthState value) authenticated,
   }) {
     return error(this);
   }
@@ -755,6 +789,7 @@ class _$ErrorAuthState implements ErrorAuthState {
         navigateToQrCodeScanner,
     TResult Function(LoadedAuthState value)? loaded,
     TResult Function(ErrorAuthState value)? error,
+    TResult Function(AuthenticatedAuthState value)? authenticated,
   }) {
     return error?.call(this);
   }
@@ -768,6 +803,7 @@ class _$ErrorAuthState implements ErrorAuthState {
         navigateToQrCodeScanner,
     TResult Function(LoadedAuthState value)? loaded,
     TResult Function(ErrorAuthState value)? error,
+    TResult Function(AuthenticatedAuthState value)? authenticated,
     required TResult orElse(),
   }) {
     if (error != null) {
@@ -784,4 +820,137 @@ abstract class ErrorAuthState implements AuthState {
   @JsonKey(ignore: true)
   _$$ErrorAuthStateCopyWith<_$ErrorAuthState> get copyWith =>
       throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$AuthenticatedAuthStateCopyWith<$Res> {
+  factory _$$AuthenticatedAuthStateCopyWith(_$AuthenticatedAuthState value,
+          $Res Function(_$AuthenticatedAuthState) then) =
+      __$$AuthenticatedAuthStateCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$AuthenticatedAuthStateCopyWithImpl<$Res>
+    extends _$AuthStateCopyWithImpl<$Res>
+    implements _$$AuthenticatedAuthStateCopyWith<$Res> {
+  __$$AuthenticatedAuthStateCopyWithImpl(_$AuthenticatedAuthState _value,
+      $Res Function(_$AuthenticatedAuthState) _then)
+      : super(_value, (v) => _then(v as _$AuthenticatedAuthState));
+
+  @override
+  _$AuthenticatedAuthState get _value =>
+      super._value as _$AuthenticatedAuthState;
+}
+
+/// @nodoc
+
+class _$AuthenticatedAuthState implements AuthenticatedAuthState {
+  const _$AuthenticatedAuthState();
+
+  @override
+  String toString() {
+    return 'AuthState.authenticated()';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$AuthenticatedAuthState);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initial,
+    required TResult Function() loading,
+    required TResult Function() navigateToQrCodeScanner,
+    required TResult Function(Iden3Message iden3message) loaded,
+    required TResult Function(String message) error,
+    required TResult Function() authenticated,
+  }) {
+    return authenticated();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function()? loading,
+    TResult Function()? navigateToQrCodeScanner,
+    TResult Function(Iden3Message iden3message)? loaded,
+    TResult Function(String message)? error,
+    TResult Function()? authenticated,
+  }) {
+    return authenticated?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function()? loading,
+    TResult Function()? navigateToQrCodeScanner,
+    TResult Function(Iden3Message iden3message)? loaded,
+    TResult Function(String message)? error,
+    TResult Function()? authenticated,
+    required TResult orElse(),
+  }) {
+    if (authenticated != null) {
+      return authenticated();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(InitAuthState value) initial,
+    required TResult Function(LoadingAuthState value) loading,
+    required TResult Function(NavigateToQrCodeScannerAuthState value)
+        navigateToQrCodeScanner,
+    required TResult Function(LoadedAuthState value) loaded,
+    required TResult Function(ErrorAuthState value) error,
+    required TResult Function(AuthenticatedAuthState value) authenticated,
+  }) {
+    return authenticated(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult Function(InitAuthState value)? initial,
+    TResult Function(LoadingAuthState value)? loading,
+    TResult Function(NavigateToQrCodeScannerAuthState value)?
+        navigateToQrCodeScanner,
+    TResult Function(LoadedAuthState value)? loaded,
+    TResult Function(ErrorAuthState value)? error,
+    TResult Function(AuthenticatedAuthState value)? authenticated,
+  }) {
+    return authenticated?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(InitAuthState value)? initial,
+    TResult Function(LoadingAuthState value)? loading,
+    TResult Function(NavigateToQrCodeScannerAuthState value)?
+        navigateToQrCodeScanner,
+    TResult Function(LoadedAuthState value)? loaded,
+    TResult Function(ErrorAuthState value)? error,
+    TResult Function(AuthenticatedAuthState value)? authenticated,
+    required TResult orElse(),
+  }) {
+    if (authenticated != null) {
+      return authenticated(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class AuthenticatedAuthState implements AuthState {
+  const factory AuthenticatedAuthState() = _$AuthenticatedAuthState;
 }

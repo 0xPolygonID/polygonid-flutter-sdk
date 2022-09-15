@@ -1,8 +1,13 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/utils/hex_utils.dart';
+import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
-import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_credential.dart';
-import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_data.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
@@ -342,11 +347,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
       });
     }
 
-    /// FIXME: remove the usage of [CredentialData]
-    CredentialData credentialData = CredentialData(
-        issuer: authClaim.issuer,
-        identifier: authClaim.identifier,
-        credential: CredentialCredential.fromJson(authClaim.credential));
+    CredentialDTO credential = CredentialDTO.fromJson(authClaim.credential);
 
     PrivadoIdWallet wallet = await _walletDataSource.createWallet(
         privateKey: HexUtils.hexToBytes(privateKey));
@@ -360,13 +361,13 @@ class IdentityRepositoryImpl extends IdentityRepository {
     String? res = await _atomicQueryInputsDataSource.prepareAtomicQueryInputs(
       challenge,
       privateKey,
-      credentialData,
+      credential,
       circuitId,
       claimType,
       field,
       values,
       operator,
-      credentialData.credential!.credentialStatus!.id!,
+      credential.credentialStatus.id,
       wallet.publicKey[0],
       wallet.publicKey[1],
       signatureString,

@@ -22,17 +22,6 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
   final ClaimModelMapper _mapper;
   final PolygonIdSdk _polygonIdSdk;
 
-  //MOCKED
-  final _tempClaimEntity = ClaimEntity(
-    issuer: "Polygon Service",
-    identifier: "",
-    expiration: "",
-    credential: {},
-    type: "Date of Birth",
-    state: ClaimState.active,
-    id: "id",
-  );
-
   ClaimsBloc(
     this._fetchAndSavesClaimsUseCase,
     this._getIdentifierUseCase,
@@ -66,7 +55,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     Map<String, dynamic>? messageBody = iden3message.body;
 
     if (messageBody == null) {
-      emit(const ClaimsState.error("error while in the readed message"));
+      emit(const ClaimsState.error("error in the readed message"));
       return;
     }
 
@@ -104,10 +93,9 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     List<ClaimEntity> claimList = await _fetchAndSavesClaimsUseCase.execute(
         param: credentialRequestEntityList);
 
-    List<ClaimModel> claimModelList =
-        claimList.map((claimEntity) => _mapper.mapFrom(claimEntity)).toList();
-
-    emit(ClaimsState.loadedClaims(claimModelList));
+    if (claimList.isNotEmpty) {
+      add(const GetClaimsEvent());
+    }
   }
 
   ///
@@ -133,15 +121,11 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       GetClaimsByIdsEvent event, Emitter<ClaimsState> emit) async {
     List<String> ids = event.ids;
     try {
-      //List<ClaimEntity> claimList = await _polygonIdSdk.credential.getClaimsByIds(ids: ids);
-      List<ClaimEntity> claimEntityList = [
-        _tempClaimEntity,
-        _tempClaimEntity,
-        _tempClaimEntity
-      ];
-      List<ClaimModel> claimModelList = claimEntityList
-          .map((claimEntity) => _mapper.mapFrom(claimEntity))
-          .toList();
+      List<ClaimEntity> claimList =
+          await _polygonIdSdk.credential.getClaimsByIds(ids: ids);
+
+      List<ClaimModel> claimModelList =
+          claimList.map((claimEntity) => _mapper.mapFrom(claimEntity)).toList();
       emit(ClaimsState.loadedClaims(claimModelList));
     } on GetClaimsException catch (_) {
       emit(const ClaimsState.error("error while retrieving claims"));
@@ -189,7 +173,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     String? type = event.type;
     Map<String, dynamic>? data = event.data;
     try {
-      ClaimEntity updatedClaim = await _polygonIdSdk.credential.updateClaim(
+      await _polygonIdSdk.credential.updateClaim(
         id: id,
         issuer: issuer,
         identifier: identifier,

@@ -23,6 +23,8 @@ class CustomColors {
 
   static const Color redError = Color(0xffFF4B40);
 
+  static const Color greenSuccess = Color(0xff1BC44B);
+
   static const Color backButtonPressed = Color(0xffE1E1E1);
 
   static const Color proofCardSubtitle = Color(0xffEBEDF3);

@@ -1,4 +1,4 @@
-import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_credential.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/revocation_status.dart';
 
 enum AtomicQueryInputsType { mtp, sig }
@@ -9,7 +9,7 @@ class AtomicQueryInputsParam {
   final String pubX;
   final String pubY;
   final String signature;
-  final CredentialCredential credential;
+  final CredentialDTO credential;
   final String jsonLDDocument;
   final String schema;
   final String claimType;
