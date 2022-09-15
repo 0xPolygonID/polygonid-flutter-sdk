@@ -9,6 +9,7 @@ class IdentityDTOMapper extends FromMapper<IdentityDTO, IdentityEntity> {
     return IdentityEntity(
         privateKey: from.privateKey,
         identifier: from.identifier,
-        authClaim: from.authClaim);
+        authClaim: from.authClaim,
+        smt: from.smt);
   }
 }

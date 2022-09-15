@@ -4,6 +4,8 @@ import 'package:injectable/injectable.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
+import 'package:polygonid_flutter_sdk/identity/data/repositories/smt_memory_storage_repository_impl.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_storage_repository.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 
@@ -57,6 +59,10 @@ abstract class RepositoriesModule {
   IdentityRepository identityRepository(
           IdentityRepositoryImpl identityRepositoryImpl) =>
       identityRepositoryImpl;
+
+  SMTStorageRepository smtStorageRepository(
+          SMTMemoryStorageRepositoryImpl smtStorageRepositoryImpl) =>
+      smtStorageRepositoryImpl;
 
   CredentialRepository credentialRepository(
           CredentialRepositoryImpl credentialRepositoryImpl) =>

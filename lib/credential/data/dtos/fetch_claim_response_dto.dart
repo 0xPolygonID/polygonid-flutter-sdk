@@ -13,7 +13,10 @@ enum FetchClaimResponseType {
   @JsonValue("https://iden3-communication.io/credentials/1.0/offer")
   offer,
   @JsonValue("https://iden3-communication.io/credentials/1.0/issuance-response")
-  issuance;
+  issuance,
+  @JsonValue(
+      "https://iden3-communication.io/proofs/1.0/contract-invoke-request")
+  contractFunctionCall;
 }
 
 @JsonSerializable(explicitToJson: true, createToJson: false)
