@@ -1,4 +1,3 @@
-import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
 import '../entities/identity_entity.dart';
 
 abstract class IdentityRepository {
@@ -20,6 +19,11 @@ abstract class IdentityRepository {
 
   Future<String> getAuthToken(
       {required String identifier,
-      required CircuitDataEntity circuitData,
       required String message});
+
+  ///
+  Future<void> authenticate({
+    required String issuerMessage,
+    required String identifier,
+  });
 }

@@ -27,7 +27,7 @@ class FetchAndSaveClaimsUseCase
                 .then((message) => _getAuthTokenUseCase
                     .execute(
                         param: GetAuthTokenParam(
-                            request.identifier, request.circuitData, message))
+                            request.identifier, message))
                     .then((token) => _credentialRepository.fetchClaim(
                         identifier: request.identifier,
                         token: token,

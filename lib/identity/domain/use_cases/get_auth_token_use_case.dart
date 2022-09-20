@@ -5,10 +5,9 @@ import '../repositories/identity_repository.dart';
 
 class GetAuthTokenParam {
   final String identifier;
-  final CircuitDataEntity circuitData;
   final String message;
 
-  GetAuthTokenParam(this.identifier, this.circuitData, this.message);
+  GetAuthTokenParam(this.identifier, this.message);
 }
 
 class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
@@ -21,7 +20,6 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
     return _identityRepository
         .getAuthToken(
             identifier: param.identifier,
-            circuitData: param.circuitData,
             message: param.message)
         .then((token) {
       logger().i("[GetAuthTokenUseCase] Auth token: $token");

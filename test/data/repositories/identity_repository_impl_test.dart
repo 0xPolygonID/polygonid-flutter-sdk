@@ -1,14 +1,31 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/jwz_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/atomic_query_inputs_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/local_files_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/proof_scope_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/prover_lib_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_key_value_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/witness_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_request_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_response_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/identity_dto_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key_mapper.dart';
@@ -59,6 +76,25 @@ final zKeyFile = Uint8List(32);
 final circuitData = CircuitDataEntity(circuitId, datFile, zKeyFile);
 const token = "token";
 var exception = Exception();
+const issuerMessage =
+    '{"id":"0b78a480-c710-4bd8-a4fd-454b577ca991","typ":"application/iden3comm-plain-json","type":"https://iden3-communication.io/authorization/1.0/request","thid":"0b78a480-c710-4bd8-a4fd-454b577ca991","body":{"callbackUrl":"https://issuer.polygonid.me/api/callback?sessionId=867314","reason":"test flow","scope":[]},"from":"1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ"}';
+final mockAuthRequest = AuthRequest.fromJson(jsonDecode(issuerMessage));
+
+final mockAuthResponse = AuthResponse(
+  id: "id",
+  thid: mockAuthRequest.thid,
+  to: mockAuthRequest.from,
+  from: identifier,
+  typ: "application/iden3comm-plain-json",
+  type: "https://iden3-communication.io/authorization/1.0/response",
+  body: AuthBodyResponse(
+    message: mockAuthRequest.body?.message,
+    scope: [],
+    did_doc: null,
+  ),
+);
+
+Response errorResponse = Response("body", 450);
 
 // Dependencies
 MockWalletDataSource walletDataSource = MockWalletDataSource();
@@ -72,18 +108,44 @@ MockHexMapper hexMapper = MockHexMapper();
 MockPrivateKeyMapper privateKeyMapper = MockPrivateKeyMapper();
 MockIdentityDTOMapper identityDTOMapper = MockIdentityDTOMapper();
 MockSMTStorageRepository smtStorageRepository = MockSMTStorageRepository();
+MockRemoteIdentityDataSource remoteIdentityDataSource =
+    MockRemoteIdentityDataSource();
+MockAuthRequestMapper authRequestMapper = MockAuthRequestMapper();
+MockProofScopeDataSource proofScopeDataSource = MockProofScopeDataSource();
+MockStorageClaimDataSource storageClaimDataSource =
+    MockStorageClaimDataSource();
+MockClaimMapper claimMapper = MockClaimMapper();
+MockFiltersMapper filtersMapper = MockFiltersMapper();
+MockWitnessDataSource witnessDataSource = MockWitnessDataSource();
+MockProverLibDataSource proverLibDataSource = MockProverLibDataSource();
+MockAuthResponseMapper authResponseMapper = MockAuthResponseMapper();
+MockAtomicQueryInputsDataSource atomicQueryInputsDataSource =
+    MockAtomicQueryInputsDataSource();
+MockLocalFilesDataSource localFilesDataSource = MockLocalFilesDataSource();
 
 // Tested instance
 IdentityRepository repository = IdentityRepositoryImpl(
-    walletDataSource,
-    libIdentityDataSource,
-    storageIdentityDataSource,
-    storageKeyValueDataSource,
-    jwzDataSource,
-    hexMapper,
-    privateKeyMapper,
-    identityDTOMapper,
-    smtStorageRepository);
+  walletDataSource,
+  libIdentityDataSource,
+  storageIdentityDataSource,
+  storageKeyValueDataSource,
+  jwzDataSource,
+  hexMapper,
+  privateKeyMapper,
+  identityDTOMapper,
+  remoteIdentityDataSource,
+  authRequestMapper,
+  proofScopeDataSource,
+  storageClaimDataSource,
+  claimMapper,
+  filtersMapper,
+  witnessDataSource,
+  proverLibDataSource,
+  authResponseMapper,
+  atomicQueryInputsDataSource,
+  localFilesDataSource,
+  smtStorageRepository,
+);
 
 @GenerateMocks([
   WalletDataSource,
@@ -94,6 +156,17 @@ IdentityRepository repository = IdentityRepositoryImpl(
   HexMapper,
   PrivateKeyMapper,
   IdentityDTOMapper,
+  RemoteIdentityDataSource,
+  AuthRequestMapper,
+  ProofScopeDataSource,
+  StorageClaimDataSource,
+  ClaimMapper,
+  FiltersMapper,
+  WitnessDataSource,
+  ProverLibDataSource,
+  AuthResponseMapper,
+  AtomicQueryInputsDataSource,
+  LocalFilesDataSource,
   SMTStorageRepository
 ])
 void main() {
@@ -104,24 +177,34 @@ void main() {
       reset(hexMapper);
       reset(privateKeyMapper);
       reset(identityDTOMapper);
+      reset(smtStorageRepository);
 
       // Given
       when(libIdentityDataSource.getAuthClaim(
               pubX: anyNamed('pubX'), pubY: anyNamed('pubY')))
           .thenAnswer((realInvocation) => Future.value(authClaim));
+
       when(libIdentityDataSource.getIdentifier(
               pubX: anyNamed('pubX'), pubY: anyNamed('pubY')))
           .thenAnswer((realInvocation) => Future.value(identifier));
+
+      when(libIdentityDataSource.createSMT(smtStorageRepository))
+          .thenAnswer((realInvocation) => Future.value("smt"));
+
       when(walletDataSource.createWallet(privateKey: anyNamed('privateKey')))
           .thenAnswer((realInvocation) => Future.value(mockWallet));
+
       when(storageIdentityDataSource.getIdentity(
               identifier: anyNamed('identifier')))
           .thenAnswer((realInvocation) =>
               Future.error(UnknownIdentityException(identifier)));
+
       when(hexMapper.mapFrom(any))
           .thenAnswer((realInvocation) => walletPrivateKey);
+
       when(privateKeyMapper.mapFrom(any))
           .thenAnswer((realInvocation) => bbjjKey);
+
       when(identityDTOMapper.mapFrom(any))
           .thenAnswer((realInvocation) => mockEntity);
     });
@@ -344,6 +427,10 @@ void main() {
       when(storageIdentityDataSource.getIdentity(
               identifier: anyNamed('identifier')))
           .thenAnswer((realInvocation) => Future.value(identityDTO));
+
+      when(localFilesDataSource.loadCircuitFiles(any))
+          .thenAnswer((realInvocation) => Future.value([datFile, zKeyFile]));
+
       when(jwzDataSource.getAuthToken(
               privateKey: anyNamed('privateKey'),
               authClaim: anyNamed('authClaim'),
@@ -361,9 +448,7 @@ void main() {
       // When
       expect(
           await repository.getAuthToken(
-              identifier: identifier,
-              circuitData: circuitData,
-              message: message),
+              identifier: identifier, message: message),
           token);
 
       // Then
@@ -386,7 +471,7 @@ void main() {
       expect(authCaptured[0], bbjjKey);
       expect(authCaptured[1], mockDTO.authClaim);
       expect(authCaptured[2], message);
-      expect(authCaptured[3], circuitData.circuitId);
+      expect(authCaptured[3], 'auth');
       expect(authCaptured[4], circuitData.datFile);
       expect(authCaptured[5], circuitData.zKeyFile);
     });
@@ -399,10 +484,7 @@ void main() {
 
       // When
       await expectLater(
-          repository.getAuthToken(
-              identifier: identifier,
-              circuitData: circuitData,
-              message: message),
+          repository.getAuthToken(identifier: identifier, message: message),
           throwsA(exception));
 
       // Then
@@ -423,4 +505,76 @@ void main() {
           zKeyFile: captureAnyNamed('zKeyFile')));
     });
   });
+
+  group(
+    "Authenticate",
+    () {
+      setUp(
+        () {
+          reset(storageIdentityDataSource);
+          reset(authRequestMapper);
+          reset(localFilesDataSource);
+          reset(remoteIdentityDataSource);
+
+          when(storageIdentityDataSource.getIdentity(
+                  identifier: anyNamed('identifier')))
+              .thenAnswer((realInvocation) => Future.value(mockDTO));
+
+          when(authRequestMapper.mapFrom(any))
+              .thenAnswer((realInvocation) => mockAuthRequest);
+
+          when(localFilesDataSource.loadCircuitFiles(any)).thenAnswer(
+              (realInvocation) => Future.value([Uint8List(32), Uint8List(32)]));
+
+          when(authResponseMapper.mapFrom(any))
+              .thenAnswer((realInvocation) => "authResponseString");
+
+          when(storageIdentityDataSource.getIdentity(
+                  identifier: anyNamed('identifier')))
+              .thenAnswer((realInvocation) => Future.value(identityDTO));
+          when(jwzDataSource.getAuthToken(
+                  privateKey: anyNamed('privateKey'),
+                  authClaim: anyNamed('authClaim'),
+                  message: anyNamed('message'),
+                  circuitId: anyNamed('circuitId'),
+                  datFile: anyNamed('datFile'),
+                  zKeyFile: anyNamed('zKeyFile')))
+              .thenAnswer((realInvocation) => Future.value(token));
+          when(hexMapper.mapTo(any)).thenAnswer((realInvocation) => bbjjKey);
+
+          when(remoteIdentityDataSource.authWithToken(token, mockAuthRequest))
+              .thenAnswer(
+                  (realInvocation) => Future.value(Response("body", 200)));
+        },
+      );
+
+      test(
+        'Given an Identifier and a message (iden3message) when we call Authenticate, we expect that flow ended up without exception',
+        () async {
+          await expectLater(
+            repository.authenticate(
+              issuerMessage: issuerMessage,
+              identifier: identifier,
+            ),
+            completes,
+          );
+        },
+      );
+
+      test(
+        'Given an Identifier and a message (iden3message) when we call Authenticate, we expect that flow ended up with exception',
+        () async {
+          when(remoteIdentityDataSource.authWithToken(any, any))
+              .thenThrow(UnknownApiException(450));
+
+          //
+          await expectLater(
+            repository.authenticate(
+                issuerMessage: issuerMessage, identifier: identifier),
+            throwsA(isA<UnknownApiException>()),
+          );
+        },
+      );
+    },
+  );
 }

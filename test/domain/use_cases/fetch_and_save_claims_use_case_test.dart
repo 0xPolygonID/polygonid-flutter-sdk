@@ -96,8 +96,6 @@ void main() {
       for (int i = 0; i < requestEntities.length; i++) {
         expect(
             authVerify.captured[i].identifier, requestEntities[i].identifier);
-        expect(
-            authVerify.captured[i].circuitData, requestEntities[i].circuitData);
         expect(authVerify.captured[i].message, message);
       }
 
@@ -153,8 +151,6 @@ void main() {
       for (int i = 0; i < requestEntities.length; i++) {
         expect(
             authVerify.captured[i].identifier, requestEntities[i].identifier);
-        expect(
-            authVerify.captured[i].circuitData, requestEntities[i].circuitData);
         expect(authVerify.captured[i].message, message);
       }
 

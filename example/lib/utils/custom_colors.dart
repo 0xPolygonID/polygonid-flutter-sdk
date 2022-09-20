@@ -23,6 +23,12 @@ class CustomColors {
 
   static const Color redError = Color(0xffFF4B40);
 
+  static const Color greenSuccess = Color(0xff1BC44B);
+
+  static const Color backButtonPressed = Color(0xffE1E1E1);
+
+  static const Color proofCardSubtitle = Color(0xffEBEDF3);
+
   static const int _whitePrimaryValue = 0xFFFFFFFF;
   static const MaterialColor primaryWhite = MaterialColor(
     _whitePrimaryValue,
@@ -55,5 +61,17 @@ class CustomColors {
       800: Color(0xffffa600),
       900: Color(0xffffa600),
     },
+  );
+
+  static const Color claimCardStartColor = Color(0xff7B3FE4);
+  static const Color claimCardEndColor = Color(0xff5D12E1);
+
+  static const LinearGradient claimCardBackground = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: <Color>[
+      claimCardStartColor,
+      claimCardEndColor,
+    ],
   );
 }
