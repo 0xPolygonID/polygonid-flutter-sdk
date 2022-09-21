@@ -1,7 +1,7 @@
 import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
-
 import 'package:polygonid_flutter_sdk_example/src/presentation/models/iden3_message.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_state.dart';
@@ -54,7 +54,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
 
     try {
-      await _polygonIdSdk.identity.authenticate(
+      await _polygonIdSdk.iden3comm.authenticate(
         issuerMessage: iden3message,
         identifier: identifier!,
       );

@@ -32,6 +32,8 @@ dependencies:
   fast_base58: 0.2.1
   uuid: ^3.0.6
   country_code: ^1.0.0
+  encrypt: ^5.0.1
+  pointycastle: ^3.6.1
 
 dev_dependencies:
   flutter_test:

@@ -14,7 +14,7 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_requ
     as _i6;
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart'
     as _i5;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_auth_token_use_case.dart'
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart'
     as _i3;
 
 // ignore_for_file: type=lint

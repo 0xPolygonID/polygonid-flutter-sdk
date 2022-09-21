@@ -10,9 +10,9 @@ import '../../libs/iden3core/iden3core.dart';
 
 class LibIdentityDataSource {
   final Iden3CoreLib _iden3coreLib;
-  final SMTStorageRepository _smtStorageRepository;
+  //final SMTStorageRepository _smtStorageRepository;
 
-  LibIdentityDataSource(this._iden3coreLib, this._smtStorageRepository);
+  LibIdentityDataSource(this._iden3coreLib, /*this._smtStorageRepository*/);
 
   ///
   Future<String> getIdentifier({required String pubX, required String pubY}) {

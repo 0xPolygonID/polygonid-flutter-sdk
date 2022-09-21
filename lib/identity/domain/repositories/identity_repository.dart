@@ -9,21 +9,11 @@ abstract class IdentityRepository {
 
   Future<IdentityEntity> getIdentity({required String identifier});
 
+  Future<void> removeIdentity({required String identifier});
+
   Future<String> signMessage(
       {required String identifier, required String message});
 
-  Future<void> removeIdentity({required String identifier});
-
   /// TODO: Remove this method when we support multiple identity
   Future<String?> getCurrentIdentifier();
-
-  Future<String> getAuthToken(
-      {required String identifier,
-      required String message});
-
-  ///
-  Future<void> authenticate({
-    required String issuerMessage,
-    required String identifier,
-  });
 }

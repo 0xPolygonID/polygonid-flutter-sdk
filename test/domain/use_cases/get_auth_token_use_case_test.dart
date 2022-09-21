@@ -3,8 +3,8 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
 
 import 'get_auth_token_use_case_test.mocks.dart';
@@ -33,8 +33,7 @@ void main() {
       () async {
     // Given
     when(identityRepository.getAuthToken(
-            identifier: anyNamed('identifier'),
-            message: anyNamed('message')))
+            identifier: anyNamed('identifier'), message: anyNamed('message')))
         .thenAnswer((realInvocation) => Future.value(result));
 
     // When
@@ -54,8 +53,7 @@ void main() {
       () async {
     // Given
     when(identityRepository.getAuthToken(
-            identifier: anyNamed('identifier'),
-            message: anyNamed('message')))
+            identifier: anyNamed('identifier'), message: anyNamed('message')))
         .thenAnswer((realInvocation) => Future.error(exception));
 
     // When

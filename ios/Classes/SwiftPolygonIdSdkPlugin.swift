@@ -37,7 +37,7 @@ public class SwiftPolygonIdSdkPlugin: NSObject, FlutterPlugin {
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
 
-    if (call.method == "getPlatformVersion") {
+    /*if (call.method == "getPlatformVersion") {
         let res =  testNewClaim()
         result("new claim: " + res)
     } else if (call.method == "createNewIdentity") {
@@ -56,7 +56,7 @@ public class SwiftPolygonIdSdkPlugin: NSObject, FlutterPlugin {
         let arguments : [String] = call.arguments as! [String]
         let res = getAuthClaimTreeEntry(pubX: arguments[0], pubY: arguments[1])
         result(res)
-    }
+    }*/
     //let str = "string"
     //let unsafePointer = UnsafeMutablePointer<Int8>(mutating: (str as NSString).utf8String)
     //let str2 = reverse(unsafePointer)
@@ -67,7 +67,7 @@ public class SwiftPolygonIdSdkPlugin: NSObject, FlutterPlugin {
     //result(nil)
   }
     
-  public func getMerkleTreeRoot(pubX: String, pubY: String) -> String {
+  /*public func getMerkleTreeRoot(pubX: String, pubY: String) -> String {
       return "";
     //let schemaHash : [UInt8] = [0x52, 0xFD, 0xFC, 0x07, 0x21, 0x82, 0x65, 0x4F, 0x16, 0x3F, 0x5F, 0x0F, 0x9A, 0x62, 0x1D, 0x72]
     //let schemaHash : [UInt8] = [0x7C, 0x08, 0x44, 0xA0, 0x75, 0xA9, 0xDD, 0xC7, 0xFC, 0xBD, 0xFB, 0x4F, 0x88, 0xAC, 0xD9, 0xBC]
@@ -807,7 +807,7 @@ public class SwiftPolygonIdSdkPlugin: NSObject, FlutterPlugin {
         
         IDENFreeStatus(addStatus)
         return 0
-  }*/
+  }*/*/
 
   public static func dummyMethodToEnforceBundling() {
       // Iden3 Core
@@ -831,7 +831,7 @@ public class SwiftPolygonIdSdkPlugin: NSObject, FlutterPlugin {
       free(mtRoot)
       IDENFreeMerkleTree(mt)
       IDENFreeTreeEntry(entryRes)*/
-      // PrivadoID Plugin
+      // PolygonId Plugin
       pack_signature("16727755406458403965916091816756284515992637653800319054951151706132152331811672775540645840396591609181675628451599263765380031");
       unpack_signature("16727755406458403965916091816756284515992637653800319054951151706132152331811672775540645840396591609181675628451599263765380031");
       pack_point("17777552123799933955779906779655732241715742912184938656739573121738514868268", "2626589144620713026669568689430873010625803728049924121243784502389097019475");

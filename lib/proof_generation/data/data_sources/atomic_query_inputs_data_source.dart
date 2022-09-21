@@ -30,7 +30,6 @@ class AtomicQueryInputsWrapper {
     if (credential.proofs.isNotEmpty) {
       for (var proof in credential.proofs) {
         if (proof.type == CredentialProofType.bjj) {
-
           CredentialProofBJJDTO proofBJJ = proof as CredentialProofBJJDTO;
 
           CredentialProofIssuerBJJDTO issuerBJJ =
@@ -103,7 +102,6 @@ class AtomicQueryInputsDataSource {
   ///
   Future<String?> prepareAtomicQueryInputs(
     String challenge,
-    String privateKey,
     CredentialDTO credential,
     String circuitId,
     String claimType,

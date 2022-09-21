@@ -1,3 +1,5 @@
+import 'package:injectable/injectable.dart';
+
 import '../../domain/exceptions/smt_exceptions.dart';
 import '../../domain/repositories/smt_storage_repository.dart';
 import '../iden3core/iden3core.dart';
@@ -6,6 +8,7 @@ import 'node.dart';
 import 'proof.dart';
 import 'smt_utils.dart';
 
+@injectable
 class MerkleTree {
   Iden3CoreLib _iden3coreLib;
   Hash root;

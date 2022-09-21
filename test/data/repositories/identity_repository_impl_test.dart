@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
@@ -14,15 +13,9 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_bod
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/jwz_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/atomic_query_inputs_data_source.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/local_files_data_source.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/proof_scope_data_source.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/prover_lib_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_key_value_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/witness_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_request_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_response_mapper.dart';
@@ -35,9 +28,13 @@ import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_except
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_storage_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/atomic_query_inputs_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/local_files_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/proof_scope_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/prover_lib_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/witness_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
 
-import '../data_sources/storage_identity_data_source_test.dart';
 import 'identity_repository_impl_test.mocks.dart';
 
 // Data
@@ -108,8 +105,6 @@ MockHexMapper hexMapper = MockHexMapper();
 MockPrivateKeyMapper privateKeyMapper = MockPrivateKeyMapper();
 MockIdentityDTOMapper identityDTOMapper = MockIdentityDTOMapper();
 MockSMTStorageRepository smtStorageRepository = MockSMTStorageRepository();
-MockRemoteIdentityDataSource remoteIdentityDataSource =
-    MockRemoteIdentityDataSource();
 MockAuthRequestMapper authRequestMapper = MockAuthRequestMapper();
 MockProofScopeDataSource proofScopeDataSource = MockProofScopeDataSource();
 MockStorageClaimDataSource storageClaimDataSource =
@@ -133,7 +128,6 @@ IdentityRepository repository = IdentityRepositoryImpl(
   hexMapper,
   privateKeyMapper,
   identityDTOMapper,
-  remoteIdentityDataSource,
   authRequestMapper,
   proofScopeDataSource,
   storageClaimDataSource,
@@ -156,7 +150,6 @@ IdentityRepository repository = IdentityRepositoryImpl(
   HexMapper,
   PrivateKeyMapper,
   IdentityDTOMapper,
-  RemoteIdentityDataSource,
   AuthRequestMapper,
   ProofScopeDataSource,
   StorageClaimDataSource,
@@ -420,161 +413,4 @@ void main() {
           identifier);
     });
   });
-
-  group("Get auth token", () {
-    setUp(() {
-      // Given
-      when(storageIdentityDataSource.getIdentity(
-              identifier: anyNamed('identifier')))
-          .thenAnswer((realInvocation) => Future.value(identityDTO));
-
-      when(localFilesDataSource.loadCircuitFiles(any))
-          .thenAnswer((realInvocation) => Future.value([datFile, zKeyFile]));
-
-      when(jwzDataSource.getAuthToken(
-              privateKey: anyNamed('privateKey'),
-              authClaim: anyNamed('authClaim'),
-              message: anyNamed('message'),
-              circuitId: anyNamed('circuitId'),
-              datFile: anyNamed('datFile'),
-              zKeyFile: anyNamed('zKeyFile')))
-          .thenAnswer((realInvocation) => Future.value(token));
-      when(hexMapper.mapTo(any)).thenAnswer((realInvocation) => bbjjKey);
-    });
-
-    test(
-        "Given an identifier, a circuitData and a message to sign, when I call getAuthToken, then I expect an auth token to be returned as a string",
-        () async {
-      // When
-      expect(
-          await repository.getAuthToken(
-              identifier: identifier, message: message),
-          token);
-
-      // Then
-      expect(
-          verify(storageIdentityDataSource.getIdentity(
-                  identifier: captureAnyNamed('identifier')))
-              .captured
-              .first,
-          identifier);
-      expect(verify(hexMapper.mapTo(captureAny)).captured.first,
-          mockDTO.privateKey);
-      var authCaptured = verify(jwzDataSource.getAuthToken(
-              privateKey: captureAnyNamed('privateKey'),
-              authClaim: captureAnyNamed('authClaim'),
-              message: captureAnyNamed('message'),
-              circuitId: captureAnyNamed('circuitId'),
-              datFile: captureAnyNamed('datFile'),
-              zKeyFile: captureAnyNamed('zKeyFile')))
-          .captured;
-      expect(authCaptured[0], bbjjKey);
-      expect(authCaptured[1], mockDTO.authClaim);
-      expect(authCaptured[2], message);
-      expect(authCaptured[3], 'auth');
-      expect(authCaptured[4], circuitData.datFile);
-      expect(authCaptured[5], circuitData.zKeyFile);
-    });
-
-    test(
-        "Given an identifier, a circuitData and a message to sign, when I call getAuthToken and an error occurred, then I expect an exception to be thrown",
-        () async {
-      // Given
-      when(hexMapper.mapTo(any)).thenThrow(exception);
-
-      // When
-      await expectLater(
-          repository.getAuthToken(identifier: identifier, message: message),
-          throwsA(exception));
-
-      // Then
-      expect(
-          verify(storageIdentityDataSource.getIdentity(
-                  identifier: captureAnyNamed('identifier')))
-              .captured
-              .first,
-          identifier);
-      expect(verify(hexMapper.mapTo(captureAny)).captured.first,
-          mockDTO.privateKey);
-      verifyNever(jwzDataSource.getAuthToken(
-          privateKey: captureAnyNamed('privateKey'),
-          authClaim: captureAnyNamed('authClaim'),
-          message: captureAnyNamed('message'),
-          circuitId: captureAnyNamed('circuitId'),
-          datFile: captureAnyNamed('datFile'),
-          zKeyFile: captureAnyNamed('zKeyFile')));
-    });
-  });
-
-  group(
-    "Authenticate",
-    () {
-      setUp(
-        () {
-          reset(storageIdentityDataSource);
-          reset(authRequestMapper);
-          reset(localFilesDataSource);
-          reset(remoteIdentityDataSource);
-
-          when(storageIdentityDataSource.getIdentity(
-                  identifier: anyNamed('identifier')))
-              .thenAnswer((realInvocation) => Future.value(mockDTO));
-
-          when(authRequestMapper.mapFrom(any))
-              .thenAnswer((realInvocation) => mockAuthRequest);
-
-          when(localFilesDataSource.loadCircuitFiles(any)).thenAnswer(
-              (realInvocation) => Future.value([Uint8List(32), Uint8List(32)]));
-
-          when(authResponseMapper.mapFrom(any))
-              .thenAnswer((realInvocation) => "authResponseString");
-
-          when(storageIdentityDataSource.getIdentity(
-                  identifier: anyNamed('identifier')))
-              .thenAnswer((realInvocation) => Future.value(identityDTO));
-          when(jwzDataSource.getAuthToken(
-                  privateKey: anyNamed('privateKey'),
-                  authClaim: anyNamed('authClaim'),
-                  message: anyNamed('message'),
-                  circuitId: anyNamed('circuitId'),
-                  datFile: anyNamed('datFile'),
-                  zKeyFile: anyNamed('zKeyFile')))
-              .thenAnswer((realInvocation) => Future.value(token));
-          when(hexMapper.mapTo(any)).thenAnswer((realInvocation) => bbjjKey);
-
-          when(remoteIdentityDataSource.authWithToken(token, mockAuthRequest))
-              .thenAnswer(
-                  (realInvocation) => Future.value(Response("body", 200)));
-        },
-      );
-
-      test(
-        'Given an Identifier and a message (iden3message) when we call Authenticate, we expect that flow ended up without exception',
-        () async {
-          await expectLater(
-            repository.authenticate(
-              issuerMessage: issuerMessage,
-              identifier: identifier,
-            ),
-            completes,
-          );
-        },
-      );
-
-      test(
-        'Given an Identifier and a message (iden3message) when we call Authenticate, we expect that flow ended up with exception',
-        () async {
-          when(remoteIdentityDataSource.authWithToken(any, any))
-              .thenThrow(UnknownApiException(450));
-
-          //
-          await expectLater(
-            repository.authenticate(
-                issuerMessage: issuerMessage, identifier: identifier),
-            throwsA(isA<UnknownApiException>()),
-          );
-        },
-      );
-    },
-  );
 }

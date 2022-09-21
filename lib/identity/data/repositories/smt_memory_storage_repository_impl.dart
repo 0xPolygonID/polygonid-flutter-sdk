@@ -5,13 +5,14 @@ import '../../libs/smt/node.dart';
 
 class SMTMemoryStorageRepositoryImpl implements SMTStorageRepository {
   Hash? root;
-  final Map<Hash, Node> data;
+  Map<Hash, Node>? data;
 
-  SMTMemoryStorageRepositoryImpl(this.root, {data}) : data = <Hash, Node>{};
+  SMTMemoryStorageRepositoryImpl(this.root, this.data);
 
   @override
   Node get(Hash k) {
-    final n = data[k];
+    data ??= <Hash, Node>{};
+    final n = data![k];
     // print("get $k => $n");
     if (n == null) {
       throw SMTNotFound();
@@ -22,7 +23,8 @@ class SMTMemoryStorageRepositoryImpl implements SMTStorageRepository {
   @override
   put(Hash k, Node n) {
     // print("put $k $n");
-    data[k] = n;
+    data ??= <Hash, Node>{};
+    data![k] = n;
   }
 
   @override
@@ -41,7 +43,7 @@ class SMTMemoryStorageRepositoryImpl implements SMTStorageRepository {
   factory SMTMemoryStorageRepositoryImpl.fromJson(Map<String, dynamic> json) {
     return SMTMemoryStorageRepositoryImpl(
       json['root'],
-      data: json['data'],
+      json['data'],
     );
   }
 

@@ -1,10 +1,12 @@
 import 'dart:typed_data';
 
 import 'package:convert/convert.dart' as convert;
+import 'package:injectable/injectable.dart';
 
 final _q = BigInt.parse(
     "21888242871839275222246405745257275088548364400416034343698204186575808495617");
 
+@injectable
 class Hash {
   final Uint8List data;
 

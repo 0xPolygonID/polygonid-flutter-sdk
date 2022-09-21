@@ -1,3 +1,5 @@
+import 'package:injectable/injectable.dart';
+
 import '../iden3core/iden3core.dart';
 import 'hash.dart';
 
@@ -7,6 +9,7 @@ enum NodeType {
   empty,
 }
 
+@injectable
 class Node {
   NodeType type;
   Iden3CoreLib _iden3coreLib;
