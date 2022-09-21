@@ -1,9 +1,5 @@
 // NOTE: Append the lines below to ios/Classes/<your>Plugin.h
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 extern char *pack_signature(const char *signature);
 
 extern char *unpack_signature(const char *compressed_signature);
@@ -14,7 +10,7 @@ extern char *unpack_point(const char *compressed_point);
 
 extern char *prv2pub(const char *private_key);
 
-extern __attribute__((visibility("default"))) char *poseidon_hash(const char *input);
+extern char *poseidon_hash(const char *input);
 
 extern char *hash_poseidon(const char *claims_tree,
                     const char *revocation_tree,
@@ -27,7 +23,3 @@ extern char *verify_poseidon(const char *private_key,
                       const char *message);
 
 extern void cstring_free(char *str);
-
-#ifdef __cplusplus
-}
-#endif
