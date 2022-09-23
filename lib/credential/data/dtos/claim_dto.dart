@@ -14,6 +14,8 @@ class ClaimDTO extends Equatable {
   final CredentialDTO credential;
   final String? expiration;
   final String type;
+  final Map<String, dynamic>? schema;
+  final Map<String, dynamic>? vocab;
 
   const ClaimDTO(
       {required this.id,
@@ -22,7 +24,9 @@ class ClaimDTO extends Equatable {
       required this.type,
       this.state = '',
       this.expiration,
-      required this.credential});
+      required this.credential,
+      this.schema,
+      this.vocab});
 
   factory ClaimDTO.fromJson(Map<String, dynamic> json) =>
       _$ClaimDTOFromJson(json);

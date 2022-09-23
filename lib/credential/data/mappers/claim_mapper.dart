@@ -18,6 +18,8 @@ class ClaimMapper extends Mapper<ClaimDTO, ClaimEntity> {
         identifier: from.identifier,
         state: _claimStateMapper.mapFrom(from.state),
         expiration: from.expiration,
+        schema: from.schema,
+        vocab: from.vocab,
         type: from.type,
         credential: from.credential.toJson());
   }
@@ -33,6 +35,8 @@ class ClaimMapper extends Mapper<ClaimDTO, ClaimEntity> {
         state: _claimStateMapper.mapTo(to.state),
         type: to.type,
         expiration: to.expiration,
+        schema: to.schema,
+        vocab: to.vocab,
         credential: credential);
   }
 }
