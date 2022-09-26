@@ -4,7 +4,7 @@
   "typ": "application/iden3comm-plain-json",
   "type": "https://iden3-communication.io/proofs/1.0/contract-invoke-request",
   "body": {
-    "transcation_data": {
+    "transaction_data": {
       "contract_address": "0x516D8DBece16890d0670Dfd3Cb1740FcdF375B10",
       "method_id": "b68967e2",
       "chain_id": 80001,
