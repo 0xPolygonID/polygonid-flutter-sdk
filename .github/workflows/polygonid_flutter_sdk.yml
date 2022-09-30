@@ -1,0 +1,22 @@
+name: polygonid_flutter_sdk
+on: pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.0.5'
+          channel: 'stable'
+      - name: verify flutter version          
+        run: flutter --version    
+      - name: Install dependencies
+        run: flutter packages get
+      - name: Format
+        run: flutter format --set-exit-if-changed lib test example
+      - name: Analyze
+        run: flutter analyze lib test example
+      - name: Publish dry run
+        run: flutter pub publish --dry-run

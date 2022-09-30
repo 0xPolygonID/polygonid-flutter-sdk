@@ -1,0 +1,19 @@
+targets:
+  $default:
+    sources:
+      - integration_test/**
+      - test/**
+      - lib/**
+      - web/**
+      # Note that it is important to include these in the default target.
+      - pubspec.*
+      - $package$
+    builders:
+      mockito:mockBuilder:
+        generate_for:
+          - test/**/*.dart
+          - integration_test/**.dart
+          - integration_test/**/*.dart
+      json_serializable:json_serializable:
+        generate_for:
+          - lib/**/*.dart

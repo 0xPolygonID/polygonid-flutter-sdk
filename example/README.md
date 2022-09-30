@@ -1,16 +1,25 @@
-# privadoid_sdk_example
+# PolygonID Flutter SDK Example App
 
-Demonstrates how to use the privadoid_sdk plugin.
+Demonstrates how to use the polygonid_flutter_sdk plugin.
 
-## Getting Started
+**Contents**
+1. [Setup](#setup)
+2. [Examples](#examples)
+   - [Identity](#identity)
 
-This project is a starting point for a Flutter application.
+## Setup
 
-A few resources to get you started if this is your first Flutter project:
+### Install
+1. Clone the `polygonid-flutter-sdk` repository.
+2. Run `flutter pub get` from example directory.
+3. After the previous steps, build and run the project.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## Examples
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Identity
+#### Overview
+1. Initialize PoligonID sdk inside dependency injection initializer with `await PolygonIdSdk.init();`
+2. Checks the existence of a previously created identifier via `identity.getCurrentIdentifier();`
+3. If not yet created, create an identity via `identity.createIdentity(privateKey: privateKey);`
+   - `privateKey` if not passed there will be one generated randomly.
+4. The SDK will take care of keeping the `identifier` safetely saved.
