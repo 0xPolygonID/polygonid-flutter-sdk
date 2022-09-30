@@ -17,6 +17,7 @@ import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart'
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/iden3_message.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
@@ -330,5 +331,12 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     } else {
       return null;
     }
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getVocabsFromIden3Message(
+      {required Iden3Message iden3Message}) {
+    // TODO: implement getVocabsFromIden3Message
+    throw UnimplementedError();
   }
 }

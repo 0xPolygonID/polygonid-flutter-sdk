@@ -3,13 +3,13 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i4;
+import 'dart:async' as _i3;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/iden3_message.dart'
+    as _i4;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart'
     as _i2;
-import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart'
-    as _i3;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -22,63 +22,38 @@ import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repo
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakeIdentityEntity_0 extends _i1.SmartFake
-    implements _i2.IdentityEntity {
-  _FakeIdentityEntity_0(Object parent, Invocation parentInvocation)
-      : super(parent, parentInvocation);
-}
-
-/// A class which mocks [IdentityRepository].
+/// A class which mocks [Iden3commRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockIdentityRepository extends _i1.Mock
-    implements _i3.IdentityRepository {
-  MockIdentityRepository() {
+class MockIden3commRepository extends _i1.Mock
+    implements _i2.Iden3commRepository {
+  MockIden3commRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.Future<String> createIdentity({String? privateKey}) =>
+  _i3.Future<bool> authenticate(
+          {String? issuerMessage, String? identifier, String? pushToken}) =>
       (super.noSuchMethod(
-          Invocation.method(#createIdentity, [], {#privateKey: privateKey}),
-          returnValue: _i4.Future<String>.value('')) as _i4.Future<String>);
+          Invocation.method(#authenticate, [], {
+            #issuerMessage: issuerMessage,
+            #identifier: identifier,
+            #pushToken: pushToken
+          }),
+          returnValue: _i3.Future<bool>.value(false)) as _i3.Future<bool>);
   @override
-  _i4.Future<_i2.IdentityEntity> getIdentityFromKey({String? privateKey}) =>
-      (super.noSuchMethod(
-          Invocation.method(#getIdentityFromKey, [], {#privateKey: privateKey}),
-          returnValue: _i4.Future<_i2.IdentityEntity>.value(
-              _FakeIdentityEntity_0(
-                  this,
-                  Invocation.method(#getIdentityFromKey, [], {
-                    #privateKey: privateKey
-                  })))) as _i4.Future<_i2.IdentityEntity>);
-  @override
-  _i4.Future<String> getIdentifier({String? privateKey}) => (super.noSuchMethod(
-      Invocation.method(#getIdentifier, [], {#privateKey: privateKey}),
-      returnValue: _i4.Future<String>.value('')) as _i4.Future<String>);
-  @override
-  _i4.Future<_i2.IdentityEntity> getIdentity({String? identifier}) =>
-      (super.noSuchMethod(
-              Invocation.method(#getIdentity, [], {#identifier: identifier}),
-              returnValue: _i4.Future<_i2.IdentityEntity>.value(
-                  _FakeIdentityEntity_0(
-                      this,
-                      Invocation.method(
-                          #getIdentity, [], {#identifier: identifier}))))
-          as _i4.Future<_i2.IdentityEntity>);
-  @override
-  _i4.Future<void> removeIdentity({String? identifier}) => (super.noSuchMethod(
-      Invocation.method(#removeIdentity, [], {#identifier: identifier}),
-      returnValue: _i4.Future<void>.value(),
-      returnValueForMissingStub: _i4.Future<void>.value()) as _i4.Future<void>);
-  @override
-  _i4.Future<String> signMessage({String? identifier, String? message}) =>
+  _i3.Future<String> getAuthToken({String? identifier, String? message}) =>
       (super.noSuchMethod(
           Invocation.method(
-              #signMessage, [], {#identifier: identifier, #message: message}),
-          returnValue: _i4.Future<String>.value('')) as _i4.Future<String>);
+              #getAuthToken, [], {#identifier: identifier, #message: message}),
+          returnValue: _i3.Future<String>.value('')) as _i3.Future<String>);
   @override
-  _i4.Future<String?> getCurrentIdentifier() =>
-      (super.noSuchMethod(Invocation.method(#getCurrentIdentifier, []),
-          returnValue: _i4.Future<String?>.value()) as _i4.Future<String?>);
+  _i3.Future<List<Map<String, dynamic>>> getVocabsFromIden3Message(
+          {_i4.Iden3Message? iden3Message}) =>
+      (super.noSuchMethod(
+          Invocation.method(
+              #getVocabsFromIden3Message, [], {#iden3Message: iden3Message}),
+          returnValue: _i3.Future<List<Map<String, dynamic>>>.value(
+              <Map<String, dynamic>>[])) as _i3
+          .Future<List<Map<String, dynamic>>>);
 }

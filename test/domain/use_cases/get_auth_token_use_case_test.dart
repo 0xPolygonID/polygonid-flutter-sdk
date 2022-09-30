@@ -3,8 +3,8 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
 
 import 'get_auth_token_use_case_test.mocks.dart';
@@ -21,18 +21,18 @@ const result = "token";
 var exception = Exception();
 
 // Dependencies
-MockIdentityRepository identityRepository = MockIdentityRepository();
+MockIden3commRepository iden3commRepository = MockIden3commRepository();
 
 // Tested instance
-GetAuthTokenUseCase useCase = GetAuthTokenUseCase(identityRepository);
+GetAuthTokenUseCase useCase = GetAuthTokenUseCase(iden3commRepository);
 
-@GenerateMocks([IdentityRepository])
+@GenerateMocks([Iden3commRepository])
 void main() {
   test(
       "Given an identifier and a message, when I call execute, then I expect a String to be returned",
       () async {
     // Given
-    when(identityRepository.getAuthToken(
+    when(iden3commRepository.getAuthToken(
             identifier: anyNamed('identifier'), message: anyNamed('message')))
         .thenAnswer((realInvocation) => Future.value(result));
 
@@ -40,7 +40,7 @@ void main() {
     expect(await useCase.execute(param: param), result);
 
     // Then
-    var authCaptured = verify(identityRepository.getAuthToken(
+    var authCaptured = verify(iden3commRepository.getAuthToken(
             identifier: captureAnyNamed('identifier'),
             message: captureAnyNamed('message')))
         .captured;
@@ -52,7 +52,7 @@ void main() {
       "Given an identifier and a message, when I call execute and an error occurred, then I expect an exception to be thrown",
       () async {
     // Given
-    when(identityRepository.getAuthToken(
+    when(iden3commRepository.getAuthToken(
             identifier: anyNamed('identifier'), message: anyNamed('message')))
         .thenAnswer((realInvocation) => Future.error(exception));
 
@@ -60,7 +60,7 @@ void main() {
     await expectLater(useCase.execute(param: param), throwsA(exception));
 
     // Then
-    var authCaptured = verify(identityRepository.getAuthToken(
+    var authCaptured = verify(iden3commRepository.getAuthToken(
             identifier: captureAnyNamed('identifier'),
             message: captureAnyNamed('message')))
         .captured;

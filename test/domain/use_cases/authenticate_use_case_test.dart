@@ -1,40 +1,40 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 
 import 'authenticate_use_case_test.mocks.dart';
 
-MockIdentityRepository identityRepository = MockIdentityRepository();
+MockIden3commRepository iden3commRepository = MockIden3commRepository();
 
-AuthenticateUseCase useCase = AuthenticateUseCase(identityRepository);
+AuthenticateUseCase useCase = AuthenticateUseCase(iden3commRepository);
 
 const issuerMessage = "theIssuerMessage";
 const identifier = "theIdentifier";
 AuthenticateParam param =
     AuthenticateParam(issuerMessage: issuerMessage, identifier: identifier);
 
-@GenerateMocks([IdentityRepository])
+@GenerateMocks([Iden3commRepository])
 void main() {
   group(
     "Authenticate",
     () {
       setUp(() {
-        reset(identityRepository);
+        reset(iden3commRepository);
       });
 
       test(
         'Given an issuerMessage and a identifier, when we call execute, then we expect that the flow completes without exception',
         () async {
-          when(identityRepository.authenticate(
+          when(iden3commRepository.authenticate(
                   issuerMessage: anyNamed('issuerMessage'),
                   identifier: anyNamed('identifier')))
               .thenAnswer((realInvocation) => Future.value());
 
           await expectLater(useCase.execute(param: param), completes);
 
-          var captured = verify(identityRepository.authenticate(
+          var captured = verify(iden3commRepository.authenticate(
             issuerMessage: captureAnyNamed('issuerMessage'),
             identifier: captureAnyNamed('identifier'),
           )).captured;

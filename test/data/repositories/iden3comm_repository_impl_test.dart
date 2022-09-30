@@ -16,7 +16,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_res
 import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/iden3comm_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/jwz_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_request_mapper.dart';
@@ -29,7 +28,6 @@ import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/proof_s
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/repositories/proof_repository.dart';
 
-import '../../domain/use_cases/authenticate_use_case_test.mocks.dart';
 import '../data_sources/storage_identity_data_source_test.dart';
 import 'iden3comm_repository_impl_test.mocks.dart';
 import 'identity_repository_impl_test.dart';
@@ -144,8 +142,8 @@ void main() {
               identifier: anyNamed('identifier')))
           .thenAnswer((realInvocation) => Future.value(identityDTO));
 
-      when(localFilesDataSource.loadCircuitFiles(any))
-          .thenAnswer((realInvocation) => Future.value([datFile, zKeyFile]));
+      //when(localFilesDataSource.loadCircuitFiles(any))
+      //   .thenAnswer((realInvocation) => Future.value([datFile, zKeyFile]));
 
       when(jwzDataSource.getAuthToken(
               privateKey: anyNamed('privateKey'),
@@ -229,7 +227,7 @@ void main() {
         () {
           reset(storageIdentityDataSource);
           reset(authRequestMapper);
-          reset(localFilesDataSource);
+          //reset(localFilesDataSource);
           reset(remoteIden3commDataSource);
 
           when(storageIdentityDataSource.getIdentity(
@@ -239,8 +237,8 @@ void main() {
           when(authRequestMapper.mapFrom(any))
               .thenAnswer((realInvocation) => mockAuthRequest);
 
-          when(localFilesDataSource.loadCircuitFiles(any)).thenAnswer(
-              (realInvocation) => Future.value([Uint8List(32), Uint8List(32)]));
+          //when(localFilesDataSource.loadCircuitFiles(any)).thenAnswer(
+          //    (realInvocation) => Future.value([Uint8List(32), Uint8List(32)]));
 
           when(authResponseMapper.mapFrom(any))
               .thenAnswer((realInvocation) => "authResponseString");
