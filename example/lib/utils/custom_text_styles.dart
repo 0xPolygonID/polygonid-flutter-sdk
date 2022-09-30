@@ -36,4 +36,17 @@ class CustomTextStyles {
     fontFamily: 'ModernEra',
     fontWeight: FontWeight.w400,
   );
+
+  static TextStyle claimCardIssuerTextStyle = TextStyle(
+    color: CustomColors.proofCardSubtitle.withOpacity(0.8),
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+  );
+
+  static TextStyle claimCardIssuerNameTextStyle = const TextStyle(
+    fontFamily: 'ModernEra',
+    color: Colors.white,
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+  );
 }

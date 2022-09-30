@@ -14,11 +14,14 @@ import 'storage_identity_data_source_test.mocks.dart';
 const privateKey = "thePrivateKey";
 const identifier = "theIdentifier";
 const authClaim = "theAuthClaim";
+const smt = "theSmt";
 final mockGet = {
   'privateKey': privateKey,
   'identifier': identifier,
-  'authClaim': authClaim
+  'authClaim': authClaim,
+  'smt': smt,
 };
+
 final identityDTO = IdentityDTO.fromJson(mockGet);
 final exception = Exception();
 

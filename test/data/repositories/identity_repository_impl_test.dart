@@ -1,14 +1,24 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/jwz_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_key_value_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_request_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_response_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/identity_dto_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key_mapper.dart';
@@ -16,10 +26,15 @@ import 'package:polygonid_flutter_sdk/identity/data/repositories/identity_reposi
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_storage_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/atomic_query_inputs_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/local_files_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/proof_scope_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/prover_lib_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/witness_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
 
-import '../data_sources/storage_identity_data_source_test.dart';
 import 'identity_repository_impl_test.mocks.dart';
 
 // Data
@@ -58,6 +73,25 @@ final zKeyFile = Uint8List(32);
 final circuitData = CircuitDataEntity(circuitId, datFile, zKeyFile);
 const token = "token";
 var exception = Exception();
+const issuerMessage =
+    '{"id":"0b78a480-c710-4bd8-a4fd-454b577ca991","typ":"application/iden3comm-plain-json","type":"https://iden3-communication.io/authorization/1.0/request","thid":"0b78a480-c710-4bd8-a4fd-454b577ca991","body":{"callbackUrl":"https://issuer.polygonid.me/api/callback?sessionId=867314","reason":"test flow","scope":[]},"from":"1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ"}';
+final mockAuthRequest = AuthRequest.fromJson(jsonDecode(issuerMessage));
+
+final mockAuthResponse = AuthResponse(
+  id: "id",
+  thid: mockAuthRequest.thid,
+  to: mockAuthRequest.from,
+  from: identifier,
+  typ: "application/iden3comm-plain-json",
+  type: "https://iden3-communication.io/authorization/1.0/response",
+  body: AuthBodyResponse(
+    message: mockAuthRequest.body?.message,
+    scope: [],
+    did_doc: null,
+  ),
+);
+
+Response errorResponse = Response("body", 450);
 
 // Dependencies
 MockWalletDataSource walletDataSource = MockWalletDataSource();
@@ -71,6 +105,18 @@ MockHexMapper hexMapper = MockHexMapper();
 MockPrivateKeyMapper privateKeyMapper = MockPrivateKeyMapper();
 MockIdentityDTOMapper identityDTOMapper = MockIdentityDTOMapper();
 MockSMTStorageRepository smtStorageRepository = MockSMTStorageRepository();
+MockAuthRequestMapper authRequestMapper = MockAuthRequestMapper();
+MockProofScopeDataSource proofScopeDataSource = MockProofScopeDataSource();
+MockStorageClaimDataSource storageClaimDataSource =
+    MockStorageClaimDataSource();
+MockClaimMapper claimMapper = MockClaimMapper();
+MockFiltersMapper filtersMapper = MockFiltersMapper();
+MockWitnessDataSource witnessDataSource = MockWitnessDataSource();
+MockProverLibDataSource proverLibDataSource = MockProverLibDataSource();
+MockAuthResponseMapper authResponseMapper = MockAuthResponseMapper();
+MockAtomicQueryInputsDataSource atomicQueryInputsDataSource =
+    MockAtomicQueryInputsDataSource();
+MockLocalFilesDataSource localFilesDataSource = MockLocalFilesDataSource();
 
 // Tested instance
 IdentityRepository repository = IdentityRepositoryImpl(
@@ -81,7 +127,18 @@ IdentityRepository repository = IdentityRepositoryImpl(
   jwzDataSource,
   hexMapper,
   privateKeyMapper,
-  identityDTOMapper, /*smtStorageRepository*/
+  identityDTOMapper,
+  authRequestMapper,
+  proofScopeDataSource,
+  storageClaimDataSource,
+  claimMapper,
+  filtersMapper,
+  witnessDataSource,
+  proverLibDataSource,
+  authResponseMapper,
+  atomicQueryInputsDataSource,
+  localFilesDataSource,
+  smtStorageRepository,
 );
 
 @GenerateMocks([
@@ -93,7 +150,17 @@ IdentityRepository repository = IdentityRepositoryImpl(
   HexMapper,
   PrivateKeyMapper,
   IdentityDTOMapper,
-  //SMTStorageRepository
+  AuthRequestMapper,
+  ProofScopeDataSource,
+  StorageClaimDataSource,
+  ClaimMapper,
+  FiltersMapper,
+  WitnessDataSource,
+  ProverLibDataSource,
+  AuthResponseMapper,
+  AtomicQueryInputsDataSource,
+  LocalFilesDataSource,
+  SMTStorageRepository
 ])
 void main() {
   group("Create identity", () {
@@ -103,24 +170,34 @@ void main() {
       reset(hexMapper);
       reset(privateKeyMapper);
       reset(identityDTOMapper);
+      reset(smtStorageRepository);
 
       // Given
       when(libIdentityDataSource.getAuthClaim(
               pubX: anyNamed('pubX'), pubY: anyNamed('pubY')))
           .thenAnswer((realInvocation) => Future.value(authClaim));
+
       when(libIdentityDataSource.getIdentifier(
               pubX: anyNamed('pubX'), pubY: anyNamed('pubY')))
           .thenAnswer((realInvocation) => Future.value(identifier));
+
+      when(libIdentityDataSource.createSMT(smtStorageRepository))
+          .thenAnswer((realInvocation) => Future.value("smt"));
+
       when(walletDataSource.createWallet(privateKey: anyNamed('privateKey')))
           .thenAnswer((realInvocation) => Future.value(mockWallet));
+
       when(storageIdentityDataSource.getIdentity(
               identifier: anyNamed('identifier')))
           .thenAnswer((realInvocation) =>
               Future.error(UnknownIdentityException(identifier)));
+
       when(hexMapper.mapFrom(any))
           .thenAnswer((realInvocation) => walletPrivateKey);
+
       when(privateKeyMapper.mapFrom(any))
           .thenAnswer((realInvocation) => bbjjKey);
+
       when(identityDTOMapper.mapFrom(any))
           .thenAnswer((realInvocation) => mockEntity);
     });
@@ -334,92 +411,6 @@ void main() {
               .captured
               .first,
           identifier);
-    });
-  });
-
-  group("Get auth token", () {
-    setUp(() {
-      // Given
-      when(storageIdentityDataSource.getIdentity(
-              identifier: anyNamed('identifier')))
-          .thenAnswer((realInvocation) => Future.value(identityDTO));
-      when(jwzDataSource.getAuthToken(
-              privateKey: anyNamed('privateKey'),
-              authClaim: anyNamed('authClaim'),
-              message: anyNamed('message'),
-              circuitId: anyNamed('circuitId'),
-              datFile: anyNamed('datFile'),
-              zKeyFile: anyNamed('zKeyFile')))
-          .thenAnswer((realInvocation) => Future.value(token));
-      when(hexMapper.mapTo(any)).thenAnswer((realInvocation) => bbjjKey);
-    });
-
-    test(
-        "Given an identifier, a circuitData and a message to sign, when I call getAuthToken, then I expect an auth token to be returned as a string",
-        () async {
-      // When
-      expect(
-          await repository.getAuthToken(
-              identifier: identifier,
-              circuitData: circuitData,
-              message: message),
-          token);
-
-      // Then
-      expect(
-          verify(storageIdentityDataSource.getIdentity(
-                  identifier: captureAnyNamed('identifier')))
-              .captured
-              .first,
-          identifier);
-      expect(verify(hexMapper.mapTo(captureAny)).captured.first,
-          mockDTO.privateKey);
-      var authCaptured = verify(jwzDataSource.getAuthToken(
-              privateKey: captureAnyNamed('privateKey'),
-              authClaim: captureAnyNamed('authClaim'),
-              message: captureAnyNamed('message'),
-              circuitId: captureAnyNamed('circuitId'),
-              datFile: captureAnyNamed('datFile'),
-              zKeyFile: captureAnyNamed('zKeyFile')))
-          .captured;
-      expect(authCaptured[0], bbjjKey);
-      expect(authCaptured[1], mockDTO.authClaim);
-      expect(authCaptured[2], message);
-      expect(authCaptured[3], circuitData.circuitId);
-      expect(authCaptured[4], circuitData.datFile);
-      expect(authCaptured[5], circuitData.zKeyFile);
-    });
-
-    test(
-        "Given an identifier, a circuitData and a message to sign, when I call getAuthToken and an error occurred, then I expect an exception to be thrown",
-        () async {
-      // Given
-      when(hexMapper.mapTo(any)).thenThrow(exception);
-
-      // When
-      await expectLater(
-          repository.getAuthToken(
-              identifier: identifier,
-              circuitData: circuitData,
-              message: message),
-          throwsA(exception));
-
-      // Then
-      expect(
-          verify(storageIdentityDataSource.getIdentity(
-                  identifier: captureAnyNamed('identifier')))
-              .captured
-              .first,
-          identifier);
-      expect(verify(hexMapper.mapTo(captureAny)).captured.first,
-          mockDTO.privateKey);
-      verifyNever(jwzDataSource.getAuthToken(
-          privateKey: captureAnyNamed('privateKey'),
-          authClaim: captureAnyNamed('authClaim'),
-          message: captureAnyNamed('message'),
-          circuitId: captureAnyNamed('circuitId'),
-          datFile: captureAnyNamed('datFile'),
-          zKeyFile: captureAnyNamed('zKeyFile')));
     });
   });
 }

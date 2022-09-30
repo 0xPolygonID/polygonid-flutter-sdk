@@ -1450,7 +1450,7 @@ class Iden3CoreLib {
     }
     //debugger();
     if (kDebugMode) {
-      print(request.ref.id.toString());
+      print(request.ref.id.data.toString());
     }
     ffi.Pointer<ffi.Pointer<ffi.Char>> response =
         malloc<ffi.Pointer<ffi.Char>>();

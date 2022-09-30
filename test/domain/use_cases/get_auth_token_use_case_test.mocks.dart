@@ -10,8 +10,6 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.d
     as _i2;
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart'
     as _i3;
-import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart'
-    as _i5;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -69,30 +67,18 @@ class MockIdentityRepository extends _i1.Mock
                           #getIdentity, [], {#identifier: identifier}))))
           as _i4.Future<_i2.IdentityEntity>);
   @override
+  _i4.Future<void> removeIdentity({String? identifier}) => (super.noSuchMethod(
+      Invocation.method(#removeIdentity, [], {#identifier: identifier}),
+      returnValue: _i4.Future<void>.value(),
+      returnValueForMissingStub: _i4.Future<void>.value()) as _i4.Future<void>);
+  @override
   _i4.Future<String> signMessage({String? identifier, String? message}) =>
       (super.noSuchMethod(
           Invocation.method(
               #signMessage, [], {#identifier: identifier, #message: message}),
           returnValue: _i4.Future<String>.value('')) as _i4.Future<String>);
   @override
-  _i4.Future<void> removeIdentity({String? identifier}) => (super.noSuchMethod(
-      Invocation.method(#removeIdentity, [], {#identifier: identifier}),
-      returnValue: _i4.Future<void>.value(),
-      returnValueForMissingStub: _i4.Future<void>.value()) as _i4.Future<void>);
-  @override
   _i4.Future<String?> getCurrentIdentifier() =>
       (super.noSuchMethod(Invocation.method(#getCurrentIdentifier, []),
           returnValue: _i4.Future<String?>.value()) as _i4.Future<String?>);
-  @override
-  _i4.Future<String> getAuthToken(
-          {String? identifier,
-          _i5.CircuitDataEntity? circuitData,
-          String? message}) =>
-      (super.noSuchMethod(
-          Invocation.method(#getAuthToken, [], {
-            #identifier: identifier,
-            #circuitData: circuitData,
-            #message: message
-          }),
-          returnValue: _i4.Future<String>.value('')) as _i4.Future<String>);
 }

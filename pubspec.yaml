@@ -31,6 +31,9 @@ dependencies:
   sembast: ^3.2.0+1
   fast_base58: 0.2.1
   uuid: ^3.0.6
+  country_code: ^1.0.0
+  encrypt: ^5.0.1
+  pointycastle: ^3.6.1
 
 dev_dependencies:
   flutter_test:
@@ -86,6 +89,7 @@ ffigen:
 
 # The following section is specific to Flutter.
 flutter:
+
   plugin:
     platforms:
       android:
@@ -94,6 +98,8 @@ flutter:
       ios:
         pluginClass: PolygonIdSdkPlugin
 
+  assets:
+    - assets/auth/
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
   #

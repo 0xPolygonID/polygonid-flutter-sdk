@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/navigations/routes.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/splash_bloc.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/splash_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/splash_state.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_colors.dart';
 import 'package:polygonid_flutter_sdk_example/utils/image_resources.dart';
@@ -25,9 +27,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
-    _initChangeStateListener();
-    _initFakeLoading();
     super.initState();
+    _initFakeLoading();
   }
 
   @override
@@ -46,25 +47,18 @@ class _SplashScreenState extends State<SplashScreen> {
 
   ///
   Widget _buildBody() {
-    return Center(
-      child: SvgPicture.asset(
-        ImageResources.logo,
-        width: 180,
+    return BlocListener(
+      bloc: widget._bloc,
+      listener: (BuildContext context, SplashState state) {
+        if (state is WaitingTimeEndedSplashState) _handleWaitingTImeEnded();
+      },
+      child: Center(
+        child: SvgPicture.asset(
+          ImageResources.logo,
+          width: 180,
+        ),
       ),
     );
-  }
-
-  ///
-  void _initChangeStateListener() {
-    _changeStateStreamSubscription =
-        widget._bloc.observableState.listen((SplashState event) {
-      _handleSplashState(event);
-    });
-  }
-
-  ///
-  void _handleSplashState(SplashState event) {
-    if (event is WaitingTimeEndedSplashState) _handleWaitingTImeEnded();
   }
 
   ///
@@ -74,6 +68,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
   /// Simulating a data loading, useful for any purpose
   void _initFakeLoading() {
-    widget._bloc.fakeLoading();
+    widget._bloc.add(const SplashEvent.fakeLoadingEvent());
   }
 }

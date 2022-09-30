@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 
 import '../constants.dart';
-import 'http_exceptions.dart';
 
 Future<String> extractJSON(http.Response response) async {
   return response.body;
@@ -14,7 +14,7 @@ Future<http.Response> get(String baseAddress, String endpoint,
     {Map<String, String?>? queryParameters}) async {
   var response;
   try {
-    var uri;
+    Uri uri;
     if (endpoint.isEmpty) {
       uri = Uri.parse(baseAddress);
     } else {
@@ -35,9 +35,8 @@ Future<http.Response> get(String baseAddress, String endpoint,
 
     return returnResponseOrThrowException(response);
   } on IOException {
-    throw NetworkException();
+    throw NetworkException("network error");
   } catch (e) {
-    print(e);
     return response;
   }
 }
@@ -46,7 +45,7 @@ Future<http.Response> post(String baseAddress, String endpoint,
     {Map<String, dynamic>? body}) async {
   var response;
   try {
-    var uri;
+    Uri uri;
     baseAddress = baseAddress.replaceFirst("https://", "");
     uri = Uri.https(baseAddress, '$API_VERSION$endpoint');
     response = await http.post(
@@ -60,9 +59,8 @@ Future<http.Response> post(String baseAddress, String endpoint,
 
     return returnResponseOrThrowException(response);
   } on IOException {
-    throw NetworkException();
+    throw NetworkException("network error");
   } catch (e) {
-    print(e);
     return response;
   }
 }

@@ -9,8 +9,12 @@ import 'package:sembast/sembast_io.dart';
 
 import '../../credential/data/credential_repository_impl.dart';
 import '../../credential/domain/repositories/credential_repository.dart';
+import '../../iden3comm/data/repositories/iden3comm_repository_impl.dart';
+import '../../iden3comm/domain/repositories/iden3comm_repository.dart';
 import '../../identity/data/repositories/identity_repository_impl.dart';
 import '../../identity/domain/repositories/identity_repository.dart';
+import '../../proof_generation/data/repositories/proof_repository_impl.dart';
+import '../../proof_generation/domain/repositories/proof_repository.dart';
 import 'injector.config.dart';
 
 final getItSdk = GetIt.asNewInstance();
@@ -54,15 +58,22 @@ abstract class DatabaseModule {
 
 @module
 abstract class RepositoriesModule {
-  IdentityRepository identityRepository(
-          IdentityRepositoryImpl identityRepositoryImpl) =>
-      identityRepositoryImpl;
-
   /*SMTStorageRepository smtStorageRepository(
           SMTMemoryStorageRepositoryImpl smtStorageRepositoryImpl) =>
       smtStorageRepositoryImpl;*/
 
+  IdentityRepository identityRepository(
+          IdentityRepositoryImpl identityRepositoryImpl) =>
+      identityRepositoryImpl;
+
   CredentialRepository credentialRepository(
           CredentialRepositoryImpl credentialRepositoryImpl) =>
       credentialRepositoryImpl;
+
+  ProofRepository proofRepository(ProofRepositoryImpl proofRepositoryImpl) =>
+      proofRepositoryImpl;
+
+  Iden3commRepository iden3commRepository(
+          Iden3commRepositoryImpl iden3commRepositoryImpl) =>
+      iden3commRepositoryImpl;
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
+import 'package:polygonid_flutter_sdk/sdk/proof_generation.dart';
 
 import 'credential_wallet.dart';
+import 'iden3comm.dart';
 import 'identity_wallet.dart';
 
 class PolygonIsSdkNotInitializedException implements Exception {
@@ -36,18 +38,14 @@ class PolygonIdSdk {
     _ref = PolygonIdSdk._();
     _ref!.identity = await getItSdk.getAsync<IdentityWallet>();
     _ref!.credential = await getItSdk.getAsync<CredentialWallet>();
+    _ref!.proof = getItSdk.get<ProofGeneration>();
+    _ref!.iden3comm = await getItSdk.getAsync<Iden3comm>();
   }
 
   late IdentityWallet identity;
   late CredentialWallet credential;
+  late ProofGeneration proof;
+  late Iden3comm iden3comm;
 
   PolygonIdSdk._();
-
-// TODO: SDK should be separated in 4 parts:
-// - Identity Wallet
-// - Credential Wallet
-// - Proof Generation Service
-// - iden3comm Service
-
-// This file should be the entry point for all parts
 }

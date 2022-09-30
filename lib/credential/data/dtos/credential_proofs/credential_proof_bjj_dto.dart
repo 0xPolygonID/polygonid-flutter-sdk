@@ -8,7 +8,7 @@ part 'credential_proof_bjj_dto.g.dart';
 class CredentialProofBJJDTO extends CredentialProofDTO {
   final String signature;
 
-  CredentialProofBJJDTO(
+  const CredentialProofBJJDTO(
       CredentialProofType type, CredentialProofIssuerDTO issuer, this.signature)
       : super(type, issuer);
 

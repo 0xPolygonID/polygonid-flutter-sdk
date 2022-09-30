@@ -73,9 +73,8 @@ class ProverLib {
       String publicmsg = jsonString2.toDartString();
 
       if (kDebugMode) {
-        print("$result: ${result.toString()}");
         print("Proof: $proofmsg");
-        print("Public: $publicmsg.");
+        print("Public: $publicmsg");
         print("Time: $time");
       }
       map['circuitId'] = "auth";

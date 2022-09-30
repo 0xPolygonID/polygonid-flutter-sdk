@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 
 import 'package:fast_base58/fast_base58.dart';
 import 'package:polygonid_flutter_sdk/identity/data/repositories/smt_memory_storage_repository_impl.dart';
@@ -14,6 +14,7 @@ class LibIdentityDataSource {
 
   LibIdentityDataSource(this._iden3coreLib, /*this._smtStorageRepository*/);
 
+  ///
   Future<String> getIdentifier({required String pubX, required String pubY}) {
     try {
       Map<String, String> map = _iden3coreLib.generateIdentity(pubX, pubY);
@@ -25,6 +26,7 @@ class LibIdentityDataSource {
     }
   }
 
+  ///
   Future<String> getAuthClaim({required String pubX, required String pubY}) {
     try {
       String authClaim = _iden3coreLib.getAuthClaim(pubX, pubY);

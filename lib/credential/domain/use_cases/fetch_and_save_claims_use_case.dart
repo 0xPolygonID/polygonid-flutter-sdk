@@ -1,7 +1,7 @@
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
 import '../../../credential/domain/repositories/credential_repository.dart';
-import '../../../identity/domain/use_cases/get_auth_token_use_case.dart';
+import '../../../iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import '../entities/claim_entity.dart';
 import '../entities/credential_request_entity.dart';
 
@@ -26,8 +26,7 @@ class FetchAndSaveClaimsUseCase
                 .getFetchMessage(credentialRequest: request)
                 .then((message) => _getAuthTokenUseCase
                     .execute(
-                        param: GetAuthTokenParam(
-                            request.identifier, request.circuitData, message))
+                        param: GetAuthTokenParam(request.identifier, message))
                     .then((token) => _credentialRepository.fetchClaim(
                         identifier: request.identifier,
                         token: token,
