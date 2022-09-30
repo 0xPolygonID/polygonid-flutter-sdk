@@ -47,12 +47,19 @@ dev_dependencies:
   build_runner:
 
 ffigen:
-  name: WitnessMtpLib
-  description: Bindings to `ios/Classes/witnesscalc_mtp.h`.
-  output: 'lib/libs/generated_bindings_witness_mtp.dart'
+  name: NativeIden3CoreLib
+  description: Bindings to `ios/Classes/libiden3core.h`.
+  output: 'lib/identity/libs/iden3core/native_iden3core.dart'
   headers:
     entry-points:
-      - 'ios/Classes/witnesscalc_mtp.h'
+       - 'ios/Classes/libiden3core.h'
+
+  # name: WitnessMtpLib
+  # description: Bindings to `ios/Classes/witnesscalc_mtp.h`.
+  # output: 'lib/libs/generated_bindings_witness_mtp.dart'
+  # headers:
+  #  entry-points:
+  #    - 'ios/Classes/witnesscalc_mtp.h'
   # name: WitnessLib
   # description: Bindings to `ios/Classes/witnesscalc.h`.
   # output: 'lib/libs/generated_bindings_witness.dart'
@@ -70,12 +77,7 @@ ffigen:
 
 
 
-  # name: NativeLibrary
-  # description: Bindings to `ios/Classes/libiden3core.h`.
-  # output: 'lib/libs/generated_bindings.dart'
-  #  headers:
-  #    entry-points:
-  #      - 'ios/Classes/libiden3core.h'
+
 
 
 
