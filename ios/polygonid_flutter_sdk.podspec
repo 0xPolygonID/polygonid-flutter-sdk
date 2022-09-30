@@ -26,6 +26,12 @@ PolygonID SDK flutter plugin project.
   # Flutter.framework does not contain a i386 nor arm64 slice.
   s.pod_target_xcconfig = { "OTHER_LDFLAGS" => "-force_load $(PODS_TARGET_SRCROOT)/Frameworks/libbabyjubjub.a -force_load $(PODS_TARGET_SRCROOT)/Frameworks/librapidsnark.a -force_load $(PODS_TARGET_SRCROOT)/Frameworks/libwitnesscalc.a -force_load $(PODS_TARGET_SRCROOT)/Frameworks/libwitnesscalc_mtp.a -force_load $(PODS_TARGET_SRCROOT)/Frameworks/libwitnesscalc_sig.a -lc++ -lz" }
   # s.vendored_libraries = "Frameworks/**/*.a"
-  s.pod_target_xcconfig = { 'STRIP_STYLE' => 'non-global', 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
+  s.pod_target_xcconfig = {
+    'STRIP_STYLE' => 'non-global',
+    'DEAD_CODE_STRIPPING' => 'NO',
+    'DEFINES_MODULE' => 'YES',
+    'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386',
+    'EXCLUDED_ARCHS[sdk=iphoneos*]' => 'armv7 armv7s'
+  }
   s.swift_version = '5.0'
 end

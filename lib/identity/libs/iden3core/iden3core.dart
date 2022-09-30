@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:ffi' as ffi;
 import 'dart:ffi';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
@@ -105,8 +104,9 @@ class Iden3CoreLib {
     for (int i = 0; i < 31; i++) {
       result = result + id.ref.data[i].toRadixString(16).padLeft(2, '0');
     }
-    print(result);
-    print(id.toString());
+    if (kDebugMode) {
+      print(result);
+    }
     _nativeIden3CoreLib.IDENFreeMerkleTree(userAuthClaimsTree.value);
     _nativeIden3CoreLib.IDENFreeClaim(authClaim.value);
 
@@ -1127,7 +1127,13 @@ class Iden3CoreLib {
         id, authClaim, userClaimsTree, pubX, pubY, userAuthClaimRevNonce);
     assert(res == 0);
 
-    print(id);
+    var idString = "";
+    for (int i = 0; i < 31; i++) {
+      idString = idString + id.ref.data[i].toRadixString(16).padLeft(2, '0');
+    }
+    if (kDebugMode) {
+      print(idString);
+    }
 
     request.ref.id = id.ref;
     request.ref.auth_claim.core_claim = authClaim.value;
@@ -1303,11 +1309,11 @@ class Iden3CoreLib {
     issuerAuthClaimMTP.ref.auxNodeValue = ffi.nullptr;
 
     if (revocationStatus.mtp != null && revocationStatus.mtp!.nodeAux != null) {
-      ffi.Pointer<ffi.UnsignedChar> unsafePointerNodeAuxKey = revocationStatus
-          .mtp!.nodeAux!.key!
-          .toString()
-          .toNativeUtf8()
-          .cast<ffi.UnsignedChar>();
+      // ffi.Pointer<ffi.UnsignedChar> unsafePointerNodeAuxKey = revocationStatus
+      //    .mtp!.nodeAux!.key!
+      //    .toString()
+      //    .toNativeUtf8()
+      //    .cast<ffi.UnsignedChar>();
       // ffi.Pointer<ffi.Pointer<IDENBigInt>> nodeAuxKeyInt = malloc<ffi.Pointer<IDENBigInt>>();
       // res =
       //     _nativeLib.IDENBigIntFromString(nodeAuxKeyInt, unsafePointerNodeAuxKey, status);
@@ -1679,7 +1685,7 @@ class Iden3CoreLib {
     return true;
   }
 
-  ffi.Pointer<IDENClaim> _makeUserClaim(
+  /*ffi.Pointer<IDENClaim> _makeUserClaim(
       IDENId id, String revNonce, int slotA, int slotB, String schemaHex) {
     /*final schemaHash = [
       0xce,
@@ -1777,7 +1783,7 @@ class Iden3CoreLib {
     }
 
     return claim.value;
-  }
+  }*/
 
   /// Allocate new IDENClaim & IDENMerkleTree. Caller must free those object.
   ///
