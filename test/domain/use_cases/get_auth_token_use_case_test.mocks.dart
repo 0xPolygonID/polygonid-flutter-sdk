@@ -33,10 +33,12 @@ class MockIden3commRepository extends _i1.Mock
 
   @override
   _i3.Future<bool> authenticate(
-          {String? issuerMessage, String? identifier, String? pushToken}) =>
+          {_i4.Iden3Message? iden3message,
+          String? identifier,
+          String? pushToken}) =>
       (super.noSuchMethod(
           Invocation.method(#authenticate, [], {
-            #issuerMessage: issuerMessage,
+            #iden3message: iden3message,
             #identifier: identifier,
             #pushToken: pushToken
           }),

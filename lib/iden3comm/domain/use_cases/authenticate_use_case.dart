@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/iden3_message.dart';
 
 import '../repositories/iden3comm_repository.dart';
 
@@ -19,7 +22,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
   @override
   Future<bool> execute({required AuthenticateParam param}) async {
     return await _iden3commRepository.authenticate(
-        issuerMessage: param.issuerMessage,
+        iden3message: Iden3Message.fromJson(jsonDecode(param.issuerMessage)),
         identifier: param.identifier,
         pushToken: param.pushToken);
   }

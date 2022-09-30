@@ -10,6 +10,7 @@ import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/iden3_message.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
@@ -71,6 +72,7 @@ var exception = Exception();
 const issuerMessage =
     '{"id":"0b78a480-c710-4bd8-a4fd-454b577ca991","typ":"application/iden3comm-plain-json","type":"https://iden3-communication.io/authorization/1.0/request","thid":"0b78a480-c710-4bd8-a4fd-454b577ca991","body":{"callbackUrl":"https://issuer.polygonid.me/api/callback?sessionId=867314","reason":"test flow","scope":[]},"from":"1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ"}';
 final mockAuthRequest = AuthRequest.fromJson(jsonDecode(issuerMessage));
+final mockIden3Message = Iden3Message.fromJson(jsonDecode(issuerMessage));
 
 final mockAuthResponse = AuthResponse(
   id: "id",
@@ -267,7 +269,7 @@ void main() {
         () async {
           await expectLater(
             repository.authenticate(
-              issuerMessage: issuerMessage,
+              iden3message: mockIden3Message,
               identifier: identifier,
             ),
             completes,
@@ -284,7 +286,7 @@ void main() {
           //
           await expectLater(
             repository.authenticate(
-                issuerMessage: issuerMessage, identifier: identifier),
+                iden3message: mockIden3Message, identifier: identifier),
             throwsA(isA<UnknownApiException>()),
           );
         },

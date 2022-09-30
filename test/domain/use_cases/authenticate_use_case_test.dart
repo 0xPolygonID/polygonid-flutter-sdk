@@ -28,14 +28,14 @@ void main() {
         'Given an issuerMessage and a identifier, when we call execute, then we expect that the flow completes without exception',
         () async {
           when(iden3commRepository.authenticate(
-                  issuerMessage: anyNamed('issuerMessage'),
+                  iden3message: anyNamed('iden3message'),
                   identifier: anyNamed('identifier')))
               .thenAnswer((realInvocation) => Future.value());
 
           await expectLater(useCase.execute(param: param), completes);
 
           var captured = verify(iden3commRepository.authenticate(
-            issuerMessage: captureAnyNamed('issuerMessage'),
+            iden3message: captureAnyNamed('iden3message'),
             identifier: captureAnyNamed('identifier'),
           )).captured;
           expect(captured[0], issuerMessage);

@@ -2,7 +2,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/iden3_message.dart';
 
 abstract class Iden3commRepository {
   Future<bool> authenticate(
-      {required String issuerMessage,
+      {required Iden3Message iden3message,
       required String identifier,
       String? pushToken});
 
@@ -15,7 +15,10 @@ abstract class Iden3commRepository {
   Future<List<Map<String, dynamic>>> getVocabsFromIden3Message(
       {required Iden3Message iden3Message});
 
-/*Future<List<ProofResponse>> getProofResponseList({
+/*Future<List<ProofResponse>> getProofResponses(
+      {required Iden3Message iden3message, String? challenge});
+
+Future<List<ProofResponse>> getProofResponseList({
     List<ProofScopeRequest>? scope,
     required String privateKey,
   });

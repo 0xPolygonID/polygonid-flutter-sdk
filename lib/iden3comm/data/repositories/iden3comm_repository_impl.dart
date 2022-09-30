@@ -22,12 +22,12 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_requ
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/proof_response.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/zk_proof.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/proof_response.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_request_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_response_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/dtos/zk_proof.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/repositories/proof_repository.dart';
 import 'package:sembast/sembast.dart';
 import 'package:uuid/uuid.dart';
@@ -40,6 +40,7 @@ import '../../../proof_generation/data/data_sources/proof_scope_data_source.dart
 import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
 import '../../../proof_generation/domain/exceptions/proof_generation_exceptions.dart';
 import '../../domain/repositories/iden3comm_repository.dart';
+import '../dtos/iden3_msg_type.dart';
 import '../dtos/response/auth/auth_body_did_doc_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_metadata_devices_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_metadata_response.dart';
@@ -85,31 +86,36 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
 
   @override
   Future<bool> authenticate(
-      {required String issuerMessage,
+      {required Iden3Message iden3message,
       required String identifier,
       String? pushToken}) async {
-    AuthRequest authRequest = _authRequestMapper.mapFrom(issuerMessage);
+    if (iden3message.type == Iden3MsgType.auth) {
+      AuthRequest authRequest =
+          _authRequestMapper.mapFrom(iden3message.toString());
 
-    List<ProofResponse> scope = await _getProofResponseList(
-      scope: authRequest.body?.scope,
-      identifier: identifier,
-    );
+      List<ProofResponse> scope = await _getProofResponseList(
+        scope: authRequest.body?.scope,
+        identifier: identifier,
+      );
 
-    String authResponse = await _getAuthResponse(
-      identifier: identifier,
-      authRequest: authRequest,
-      scope: scope,
-      pushToken: pushToken,
-    );
+      String authResponse = await _getAuthResponse(
+        identifier: identifier,
+        authRequest: authRequest,
+        scope: scope,
+        pushToken: pushToken,
+      );
 
-    String authToken = await getAuthToken(
-      identifier: identifier,
-      message: authResponse,
-    );
+      String authToken = await getAuthToken(
+        identifier: identifier,
+        message: authResponse,
+      );
 
-    Response res =
-        await _remoteIden3commDataSource.authWithToken(authToken, authRequest);
-    return res.statusCode == 200;
+      Response res = await _remoteIden3commDataSource.authWithToken(
+          authToken, authRequest);
+      return res.statusCode == 200;
+    } else {
+      return false;
+    }
   }
 
   @override

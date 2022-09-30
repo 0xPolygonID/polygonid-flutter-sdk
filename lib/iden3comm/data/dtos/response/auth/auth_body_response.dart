@@ -64,8 +64,8 @@
 
 */
 
-import '../proof_response.dart';
 import 'auth_body_did_doc_response.dart';
+import 'proof_response.dart';
 
 class AuthBodyResponse {
   final AuthBodyDidDocResponse? did_doc;
