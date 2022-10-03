@@ -258,7 +258,8 @@ _i1.GetIt $initSDKGetIt(_i1.GetIt get,
           get<_i11.FiltersMapper>(),
           get<_i4.AuthResponseMapper>(),
           await get.getAsync<_i52.IdentityRepository>(),
-          get<_i46.ProofRepository>()));
+          get<_i46.ProofRepository>(),
+          await get.getAsync<_i43.CredentialRepository>()));
   gh.factoryAsync<_i60.IdentityWallet>(() async => _i60.IdentityWallet(
       await get.getAsync<_i56.CreateIdentityUseCase>(),
       await get.getAsync<_i58.GetIdentityUseCase>(),

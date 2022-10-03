@@ -9,6 +9,7 @@ import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/iden3_message.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart';
@@ -105,22 +106,23 @@ MockFiltersMapper filtersMapper = MockFiltersMapper();
 MockAuthResponseMapper authResponseMapper = MockAuthResponseMapper();
 MockIdentityRepository identityRepository = MockIdentityRepository();
 MockProofRepository proofRepository = MockProofRepository();
+MockCredentialRepository credentialRepository = MockCredentialRepository();
 
 // Tested instance
 Iden3commRepository repository = Iden3commRepositoryImpl(
-  walletDataSource,
-  remoteIden3commDataSource,
-  jwzDataSource,
-  hexMapper,
-  authRequestMapper,
-  proofScopeDataSource,
-  storageClaimDataSource,
-  claimMapper,
-  filtersMapper,
-  authResponseMapper,
-  identityRepository,
-  proofRepository,
-);
+    walletDataSource,
+    remoteIden3commDataSource,
+    jwzDataSource,
+    hexMapper,
+    authRequestMapper,
+    proofScopeDataSource,
+    storageClaimDataSource,
+    claimMapper,
+    filtersMapper,
+    authResponseMapper,
+    identityRepository,
+    proofRepository,
+    credentialRepository);
 
 @GenerateMocks([
   WalletDataSource,
@@ -135,6 +137,7 @@ Iden3commRepository repository = Iden3commRepositoryImpl(
   AuthResponseMapper,
   IdentityRepository,
   ProofRepository,
+  CredentialRepository,
 ])
 void main() {
   group("Get auth token", () {

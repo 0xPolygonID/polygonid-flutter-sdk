@@ -34,10 +34,10 @@ class RemoteClaimDataSource {
             FetchClaimResponseDTO.fromJson(json.decode(response.body));
 
         //fetch schema
-        Map<String, dynamic>? schema = await _fetchSchema(
+        Map<String, dynamic>? schema = await fetchSchema(
             url: fetchResponse.credential.credentialSchema.id);
         //fetch vocab
-        Map<String, dynamic>? vocab = await _fetchVocab(
+        Map<String, dynamic>? vocab = await fetchVocab(
             schema: schema,
             type: fetchResponse.credential.credentialSubject.type);
 
@@ -55,13 +55,14 @@ class RemoteClaimDataSource {
           throw UnsupportedFetchClaimTypeException(response);
         }
       } else {
-        logger().d('fetchClaim Error: code: ${response.statusCode} msg: ${response.body}');
+        logger().d(
+            'fetchClaim Error: code: ${response.statusCode} msg: ${response.body}');
         throw NetworkException(response);
       }
     });
   }
 
-  Future<Map<String, dynamic>?> _fetchSchema({required String url}) async {
+  Future<Map<String, dynamic>?> fetchSchema({required String url}) async {
     try {
       //fetch schema and save it
       String schemaId = url;
@@ -84,7 +85,7 @@ class RemoteClaimDataSource {
     }
   }
 
-  Future<Map<String, dynamic>?> _fetchVocab(
+  Future<Map<String, dynamic>?> fetchVocab(
       {required Map<String, dynamic>? schema, required String type}) async {
     try {
       // fetch vocab from schema

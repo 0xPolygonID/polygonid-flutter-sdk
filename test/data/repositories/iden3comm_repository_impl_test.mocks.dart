@@ -22,6 +22,10 @@ import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dar
     as _i23;
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
     as _i5;
+import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart'
+    as _i30;
+import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart'
+    as _i29;
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart'
     as _i13;
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart'
@@ -472,4 +476,82 @@ class MockProofRepository extends _i1.Mock implements _i27.ProofRepository {
       (super.noSuchMethod(Invocation.method(#prove, [circuitData, wtnsBytes]),
               returnValue: _i11.Future<Map<String, dynamic>?>.value())
           as _i11.Future<Map<String, dynamic>?>);
+}
+
+/// A class which mocks [CredentialRepository].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockCredentialRepository extends _i1.Mock
+    implements _i29.CredentialRepository {
+  MockCredentialRepository() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i11.Future<_i5.ClaimEntity> fetchClaim(
+          {String? identifier,
+          String? token,
+          _i30.CredentialRequestEntity? credentialRequest}) =>
+      (super
+          .noSuchMethod(Invocation.method(#fetchClaim, [], {#identifier: identifier, #token: token, #credentialRequest: credentialRequest}),
+              returnValue: _i11.Future<_i5.ClaimEntity>.value(_FakeClaimEntity_4(
+                  this,
+                  Invocation.method(#fetchClaim, [], {
+                    #identifier: identifier,
+                    #token: token,
+                    #credentialRequest: credentialRequest
+                  })))) as _i11.Future<_i5.ClaimEntity>);
+  @override
+  _i11.Future<String> getFetchMessage(
+          {_i30.CredentialRequestEntity? credentialRequest}) =>
+      (super.noSuchMethod(
+          Invocation.method(
+              #getFetchMessage, [], {#credentialRequest: credentialRequest}),
+          returnValue: _i11.Future<String>.value('')) as _i11.Future<String>);
+  @override
+  _i11.Future<void> saveClaims({List<_i5.ClaimEntity>? claims}) =>
+      (super.noSuchMethod(Invocation.method(#saveClaims, [], {#claims: claims}),
+              returnValue: _i11.Future<void>.value(),
+              returnValueForMissingStub: _i11.Future<void>.value())
+          as _i11.Future<void>);
+  @override
+  _i11.Future<List<_i5.ClaimEntity>> getClaims(
+          {List<_i19.FilterEntity>? filters}) =>
+      (super.noSuchMethod(
+              Invocation.method(#getClaims, [], {#filters: filters}),
+              returnValue:
+                  _i11.Future<List<_i5.ClaimEntity>>.value(<_i5.ClaimEntity>[]))
+          as _i11.Future<List<_i5.ClaimEntity>>);
+  @override
+  _i11.Future<_i5.ClaimEntity> getClaim({String? id}) => (super.noSuchMethod(
+          Invocation.method(#getClaim, [], {#id: id}),
+          returnValue: _i11.Future<_i5.ClaimEntity>.value(_FakeClaimEntity_4(
+              this, Invocation.method(#getClaim, [], {#id: id}))))
+      as _i11.Future<_i5.ClaimEntity>);
+  @override
+  _i11.Future<void> removeClaims({List<String>? ids}) =>
+      (super.noSuchMethod(Invocation.method(#removeClaims, [], {#ids: ids}),
+              returnValue: _i11.Future<void>.value(),
+              returnValueForMissingStub: _i11.Future<void>.value())
+          as _i11.Future<void>);
+  @override
+  _i11.Future<_i5.ClaimEntity> updateClaim({_i5.ClaimEntity? claim}) =>
+      (super.noSuchMethod(Invocation.method(#updateClaim, [], {#claim: claim}),
+          returnValue: _i11.Future<_i5.ClaimEntity>.value(_FakeClaimEntity_4(
+              this,
+              Invocation.method(#updateClaim, [], {#claim: claim})))) as _i11
+          .Future<_i5.ClaimEntity>);
+  @override
+  _i11.Future<Map<String, dynamic>?> fetchSchema({String? url}) =>
+      (super.noSuchMethod(Invocation.method(#fetchSchema, [], {#url: url}),
+              returnValue: _i11.Future<Map<String, dynamic>?>.value())
+          as _i11.Future<Map<String, dynamic>?>);
+  @override
+  _i11.Future<Map<String, dynamic>?> fetchVocab(
+          {Map<String, dynamic>? schema, String? type}) =>
+      (super.noSuchMethod(
+          Invocation.method(#fetchVocab, [], {#schema: schema, #type: type}),
+          returnValue:
+              _i11.Future<Map<String, dynamic>?>.value()) as _i11
+          .Future<Map<String, dynamic>?>);
 }

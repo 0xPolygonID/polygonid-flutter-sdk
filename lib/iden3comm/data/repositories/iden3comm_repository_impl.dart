@@ -20,6 +20,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3co
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/iden3_message.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/proof_scope_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/onchain/contract_function_call_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/proof_response.dart';
@@ -32,6 +33,7 @@ import 'package:polygonid_flutter_sdk/proof_generation/domain/repositories/proof
 import 'package:sembast/sembast.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../credential/domain/repositories/credential_repository.dart';
 import '../../../identity/data/data_sources/jwz_data_source.dart';
 import '../../../identity/data/mappers/hex_mapper.dart';
 import '../../../identity/domain/entities/identity_entity.dart';
@@ -39,8 +41,10 @@ import '../../../identity/libs/bjj/privadoid_wallet.dart';
 import '../../../proof_generation/data/data_sources/proof_scope_data_source.dart';
 import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
 import '../../../proof_generation/domain/exceptions/proof_generation_exceptions.dart';
+import '../../domain/exceptions/iden3comm_exceptions.dart';
 import '../../domain/repositories/iden3comm_repository.dart';
 import '../dtos/iden3_msg_type.dart';
+import '../dtos/iden3_msg_type_mapper.dart';
 import '../dtos/response/auth/auth_body_did_doc_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_metadata_devices_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_metadata_response.dart';
@@ -59,6 +63,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   final AuthResponseMapper _authResponseMapper;
   final IdentityRepository _identityRepository;
   final ProofRepository _proofRepository;
+  final CredentialRepository _credentialRepository;
 
   Iden3commRepositoryImpl(
     this._walletDataSource,
@@ -73,6 +78,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     this._authResponseMapper,
     this._identityRepository,
     this._proofRepository,
+    this._credentialRepository,
   );
 
   static const Map<String, int> _queryOperators = {
@@ -341,8 +347,66 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
 
   @override
   Future<List<Map<String, dynamic>>> getVocabsFromIden3Message(
-      {required Iden3Message iden3Message}) {
+      {required Iden3Message iden3Message}) async {
     // TODO: implement getVocabsFromIden3Message
-    throw UnimplementedError();
+    List<String> schemaUrls =
+        getSchemaUrlsFromIden3Message(iden3Message: iden3Message);
+
+    List<Map<String, dynamic>> result = [];
+
+    for (String schemaUrl in schemaUrls) {
+      Map<String, dynamic>? schema =
+          await _credentialRepository.fetchSchema(url: schemaUrl);
+      Map<String, dynamic>? vocab = await _credentialRepository.fetchVocab(
+          schema: schema,
+          type: Iden3MsgTypeMapper().mapFrom(iden3Message.type));
+      if (vocab != null) {
+        result.add(vocab);
+      }
+    }
+    return result;
+  }
+
+  List<String> getSchemaUrlsFromIden3Message(
+      {required Iden3Message iden3Message}) {
+    List<String> schemaUrls = [];
+    switch (iden3Message.type) {
+      case Iden3MsgType.unknown:
+        throw UnsupportedIden3MsgTypeException(null);
+      case Iden3MsgType.auth:
+        AuthRequest authRequest = AuthRequest.fromJson(iden3Message.toJson());
+        if (authRequest.body?.scope != null &&
+            authRequest.body!.scope!.isNotEmpty) {
+          for (ProofScopeRequest proofScopeRequest
+              in authRequest.body!.scope!) {
+            String? schemaUrl = proofScopeRequest.rules?.query?.schema?.url;
+            if (schemaUrl != null && schemaUrl.isNotEmpty) {
+              schemaUrls.add(schemaUrl);
+            }
+          }
+        }
+        break;
+      case Iden3MsgType.offer:
+        // TODO: Handle this case.
+        break;
+      case Iden3MsgType.issuance:
+        // TODO: Handle this case.
+        break;
+      case Iden3MsgType.contractFunctionCall:
+        ContractFunctionCallRequest contractFunctionCallRequest =
+            ContractFunctionCallRequest.fromJson(iden3Message.toJson());
+        if (contractFunctionCallRequest.body?.scope != null &&
+            contractFunctionCallRequest.body!.scope!.isNotEmpty) {
+          for (ProofScopeRequest proofScopeRequest
+              in contractFunctionCallRequest.body!.scope!) {
+            String? schemaUrl = proofScopeRequest.rules?.query?.schema?.url;
+            if (schemaUrl != null && schemaUrl.isNotEmpty) {
+              schemaUrls.add(schemaUrl);
+            }
+          }
+        }
+        break;
+    }
+    return schemaUrls;
   }
 }
