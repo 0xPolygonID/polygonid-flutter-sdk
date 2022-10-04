@@ -5,7 +5,6 @@ import 'package:integration_test/integration_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
-import 'package:polygonid_flutter_sdk/sdk/identity_wallet.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/domain/identity/repositories/identity_repositories.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/app.dart';
@@ -23,7 +22,6 @@ const String qrCodeScanResponse = "qrCodeScanResponse";
 @GenerateMocks([
   IdentityRepository,
   PolygonIdSdk,
-  IdentityWallet,
 ])
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -31,7 +29,6 @@ void main() {
 
   late MockIdentityRepository identityRepository;
   late MockPolygonIdSdk polygonIdSdk;
-  late MockIdentityWallet identityWallet;
 
   group('app integration test with live data', () {
     setUpAll(() async {
@@ -94,7 +91,6 @@ void main() {
       await di.init();
       identityRepository = MockIdentityRepository();
       polygonIdSdk = MockPolygonIdSdk();
-      identityWallet = MockIdentityWallet();
 
       await di.getIt.unregister<PolygonIdSdk>();
       await di.getIt.unregister<IdentityRepository>();
@@ -198,12 +194,8 @@ void main() {
 
         await widgetTester.pump();
 
-        when(polygonIdSdk.identity)
-            .thenAnswer((realInvocation) => identityWallet);
-        when(identityWallet.getCurrentIdentifier())
+        when(polygonIdSdk.identity.getCurrentIdentifier())
             .thenAnswer((realInvocation) => Future.value(null));
-        /*when(polygonIdSdk.identity.getCurrentIdentifier())
-            .thenAnswer((realInvocation) => Future.value(null));*/
 
         await widgetTester.pumpAndSettle();
 
