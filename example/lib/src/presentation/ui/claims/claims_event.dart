@@ -23,6 +23,8 @@ class ClaimsEvent with _$ClaimsEvent {
   const factory ClaimsEvent.removeClaims({required List<String> ids}) =
       RemoveClaimsEvent;
 
+  const factory ClaimsEvent.removeAllClaims() = RemoveAllClaimsEvent;
+
   const factory ClaimsEvent.updateClaim({
     required String id,
     String? issuer,

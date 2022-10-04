@@ -26,4 +26,5 @@ class CustomStrings {
       "Error while removing selected claim, please try again";
 
   static String deleteClaimButtonCTA = "Remove claim";
+  static String deleteAllClaimsButtonCTA = "Remove all claims";
 }

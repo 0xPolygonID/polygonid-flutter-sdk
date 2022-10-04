@@ -33,6 +33,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     on<GetClaimsByIdsEvent>(_getClaimsByIds);
     on<RemoveClaimEvent>(_removeClaim);
     on<RemoveClaimsEvent>(_removeClaims);
+    on<RemoveAllClaimsEvent>(_removeAllClaims);
     on<UpdateClaimEvent>(_updateClaim);
     on<ClickScanQrCodeEvent>(_handleClickScanQrCode);
     on<ScanQrCodeResponse>(_handleScanQrCodeResponse);
@@ -237,5 +238,19 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     }
 
     add(const GetClaimsEvent());
+  }
+
+  ///
+  Future<void> _removeAllClaims(
+      RemoveAllClaimsEvent event, Emitter<ClaimsState> emit) async {
+    emit(const ClaimsState.loading());
+    try {
+      List<ClaimEntity> claimList = await _polygonIdSdk.credential.getClaims();
+      List<String> claimIds = claimList.map((claim) => claim.id).toList();
+      await _polygonIdSdk.credential.removeClaims(ids: claimIds);
+      add(const GetClaimsEvent());
+    } catch (_) {
+      emit(const ClaimsState.error("error while removing claims"));
+    }
   }
 }

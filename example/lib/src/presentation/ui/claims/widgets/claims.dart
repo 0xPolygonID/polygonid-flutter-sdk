@@ -75,7 +75,7 @@ class _ClaimsScreenState extends State<ClaimsScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            _buildClaimsConnectButton(),
+            _buildBottomBar(),
             _buildBlocListener(),
           ],
         ),
@@ -107,6 +107,17 @@ class _ClaimsScreenState extends State<ClaimsScreen> {
   }
 
   ///
+  Widget _buildBottomBar() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _buildRemoveAllClaimsButton(),
+        _buildClaimsConnectButton(),
+      ],
+    );
+  }
+
+  ///
   Widget _buildClaimsConnectButton() {
     return Align(
       alignment: Alignment.center,
@@ -134,6 +145,42 @@ class _ClaimsScreenState extends State<ClaimsScreen> {
                           CustomStrings.authButtonCTA,
                           style: CustomTextStyles.primaryButtonTextStyle,
                         ),
+                ),
+              ),
+            );
+          }),
+    );
+  }
+
+  ///
+  Widget _buildRemoveAllClaimsButton() {
+    return Align(
+      alignment: Alignment.center,
+      child: BlocBuilder(
+          bloc: widget._bloc,
+          builder: (BuildContext context, ClaimsState state) {
+            bool loading = state is LoadingDataClaimsState;
+            return ElevatedButton(
+              onPressed: () {
+                if (!loading) {
+                  widget._bloc.add(const ClaimsEvent.removeAllClaims());
+                }
+              },
+              style: CustomButtonStyle.outlinedPrimaryButtonStyle,
+              child: Container(
+                constraints: const BoxConstraints(
+                  minWidth: 120,
+                  maxWidth: 120,
+                  maxHeight: 20,
+                ),
+                child: Center(
+                  child: FittedBox(
+                    child: Text(
+                      CustomStrings.deleteAllClaimsButtonCTA,
+                      style: CustomTextStyles.primaryButtonTextStyle
+                          .copyWith(color: CustomColors.primaryButton),
+                    ),
+                  ),
                 ),
               ),
             );
