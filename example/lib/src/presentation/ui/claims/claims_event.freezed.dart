@@ -34,6 +34,8 @@ mixin _$ClaimsEvent {
         updateClaim,
     required TResult Function() clickScanQrCode,
     required TResult Function(String? response) onScanQrCodeResponse,
+    required TResult Function(ClaimModel claimModel) onClickClaim,
+    required TResult Function(bool? removed) onClaimDetailRemoveResponse,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -54,6 +56,8 @@ mixin _$ClaimsEvent {
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
+    TResult Function(ClaimModel claimModel)? onClickClaim,
+    TResult Function(bool? removed)? onClaimDetailRemoveResponse,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -74,6 +78,8 @@ mixin _$ClaimsEvent {
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
+    TResult Function(ClaimModel claimModel)? onClickClaim,
+    TResult Function(bool? removed)? onClaimDetailRemoveResponse,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -87,6 +93,9 @@ mixin _$ClaimsEvent {
     required TResult Function(UpdateClaimEvent value) updateClaim,
     required TResult Function(ClickScanQrCodeEvent value) clickScanQrCode,
     required TResult Function(ScanQrCodeResponse value) onScanQrCodeResponse,
+    required TResult Function(OnClickClaim value) onClickClaim,
+    required TResult Function(OnClaimDetailRemoveResponse value)
+        onClaimDetailRemoveResponse,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -99,6 +108,9 @@ mixin _$ClaimsEvent {
     TResult Function(UpdateClaimEvent value)? updateClaim,
     TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
     TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult Function(OnClickClaim value)? onClickClaim,
+    TResult Function(OnClaimDetailRemoveResponse value)?
+        onClaimDetailRemoveResponse,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -111,6 +123,9 @@ mixin _$ClaimsEvent {
     TResult Function(UpdateClaimEvent value)? updateClaim,
     TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
     TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult Function(OnClickClaim value)? onClickClaim,
+    TResult Function(OnClaimDetailRemoveResponse value)?
+        onClaimDetailRemoveResponse,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -216,6 +231,8 @@ class _$FetchAndSaveClaimsEvent implements FetchAndSaveClaimsEvent {
         updateClaim,
     required TResult Function() clickScanQrCode,
     required TResult Function(String? response) onScanQrCodeResponse,
+    required TResult Function(ClaimModel claimModel) onClickClaim,
+    required TResult Function(bool? removed) onClaimDetailRemoveResponse,
   }) {
     return fetchAndSaveClaims(iden3message);
   }
@@ -239,6 +256,8 @@ class _$FetchAndSaveClaimsEvent implements FetchAndSaveClaimsEvent {
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
+    TResult Function(ClaimModel claimModel)? onClickClaim,
+    TResult Function(bool? removed)? onClaimDetailRemoveResponse,
   }) {
     return fetchAndSaveClaims?.call(iden3message);
   }
@@ -262,6 +281,8 @@ class _$FetchAndSaveClaimsEvent implements FetchAndSaveClaimsEvent {
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
+    TResult Function(ClaimModel claimModel)? onClickClaim,
+    TResult Function(bool? removed)? onClaimDetailRemoveResponse,
     required TResult orElse(),
   }) {
     if (fetchAndSaveClaims != null) {
@@ -281,6 +302,9 @@ class _$FetchAndSaveClaimsEvent implements FetchAndSaveClaimsEvent {
     required TResult Function(UpdateClaimEvent value) updateClaim,
     required TResult Function(ClickScanQrCodeEvent value) clickScanQrCode,
     required TResult Function(ScanQrCodeResponse value) onScanQrCodeResponse,
+    required TResult Function(OnClickClaim value) onClickClaim,
+    required TResult Function(OnClaimDetailRemoveResponse value)
+        onClaimDetailRemoveResponse,
   }) {
     return fetchAndSaveClaims(this);
   }
@@ -296,6 +320,9 @@ class _$FetchAndSaveClaimsEvent implements FetchAndSaveClaimsEvent {
     TResult Function(UpdateClaimEvent value)? updateClaim,
     TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
     TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult Function(OnClickClaim value)? onClickClaim,
+    TResult Function(OnClaimDetailRemoveResponse value)?
+        onClaimDetailRemoveResponse,
   }) {
     return fetchAndSaveClaims?.call(this);
   }
@@ -311,6 +338,9 @@ class _$FetchAndSaveClaimsEvent implements FetchAndSaveClaimsEvent {
     TResult Function(UpdateClaimEvent value)? updateClaim,
     TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
     TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult Function(OnClickClaim value)? onClickClaim,
+    TResult Function(OnClaimDetailRemoveResponse value)?
+        onClaimDetailRemoveResponse,
     required TResult orElse(),
   }) {
     if (fetchAndSaveClaims != null) {
@@ -418,6 +448,8 @@ class _$GetClaimsEvent implements GetClaimsEvent {
         updateClaim,
     required TResult Function() clickScanQrCode,
     required TResult Function(String? response) onScanQrCodeResponse,
+    required TResult Function(ClaimModel claimModel) onClickClaim,
+    required TResult Function(bool? removed) onClaimDetailRemoveResponse,
   }) {
     return getClaims(filters);
   }
@@ -441,6 +473,8 @@ class _$GetClaimsEvent implements GetClaimsEvent {
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
+    TResult Function(ClaimModel claimModel)? onClickClaim,
+    TResult Function(bool? removed)? onClaimDetailRemoveResponse,
   }) {
     return getClaims?.call(filters);
   }
@@ -464,6 +498,8 @@ class _$GetClaimsEvent implements GetClaimsEvent {
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
+    TResult Function(ClaimModel claimModel)? onClickClaim,
+    TResult Function(bool? removed)? onClaimDetailRemoveResponse,
     required TResult orElse(),
   }) {
     if (getClaims != null) {
@@ -483,6 +519,9 @@ class _$GetClaimsEvent implements GetClaimsEvent {
     required TResult Function(UpdateClaimEvent value) updateClaim,
     required TResult Function(ClickScanQrCodeEvent value) clickScanQrCode,
     required TResult Function(ScanQrCodeResponse value) onScanQrCodeResponse,
+    required TResult Function(OnClickClaim value) onClickClaim,
+    required TResult Function(OnClaimDetailRemoveResponse value)
+        onClaimDetailRemoveResponse,
   }) {
     return getClaims(this);
   }
@@ -498,6 +537,9 @@ class _$GetClaimsEvent implements GetClaimsEvent {
     TResult Function(UpdateClaimEvent value)? updateClaim,
     TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
     TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult Function(OnClickClaim value)? onClickClaim,
+    TResult Function(OnClaimDetailRemoveResponse value)?
+        onClaimDetailRemoveResponse,
   }) {
     return getClaims?.call(this);
   }
@@ -513,6 +555,9 @@ class _$GetClaimsEvent implements GetClaimsEvent {
     TResult Function(UpdateClaimEvent value)? updateClaim,
     TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
     TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult Function(OnClickClaim value)? onClickClaim,
+    TResult Function(OnClaimDetailRemoveResponse value)?
+        onClaimDetailRemoveResponse,
     required TResult orElse(),
   }) {
     if (getClaims != null) {
@@ -618,6 +663,8 @@ class _$GetClaimsByIdsEvent implements GetClaimsByIdsEvent {
         updateClaim,
     required TResult Function() clickScanQrCode,
     required TResult Function(String? response) onScanQrCodeResponse,
+    required TResult Function(ClaimModel claimModel) onClickClaim,
+    required TResult Function(bool? removed) onClaimDetailRemoveResponse,
   }) {
     return getClaimsByIds(ids);
   }
@@ -641,6 +688,8 @@ class _$GetClaimsByIdsEvent implements GetClaimsByIdsEvent {
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
+    TResult Function(ClaimModel claimModel)? onClickClaim,
+    TResult Function(bool? removed)? onClaimDetailRemoveResponse,
   }) {
     return getClaimsByIds?.call(ids);
   }
@@ -664,6 +713,8 @@ class _$GetClaimsByIdsEvent implements GetClaimsByIdsEvent {
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
+    TResult Function(ClaimModel claimModel)? onClickClaim,
+    TResult Function(bool? removed)? onClaimDetailRemoveResponse,
     required TResult orElse(),
   }) {
     if (getClaimsByIds != null) {
@@ -683,6 +734,9 @@ class _$GetClaimsByIdsEvent implements GetClaimsByIdsEvent {
     required TResult Function(UpdateClaimEvent value) updateClaim,
     required TResult Function(ClickScanQrCodeEvent value) clickScanQrCode,
     required TResult Function(ScanQrCodeResponse value) onScanQrCodeResponse,
+    required TResult Function(OnClickClaim value) onClickClaim,
+    required TResult Function(OnClaimDetailRemoveResponse value)
+        onClaimDetailRemoveResponse,
   }) {
     return getClaimsByIds(this);
   }
@@ -698,6 +752,9 @@ class _$GetClaimsByIdsEvent implements GetClaimsByIdsEvent {
     TResult Function(UpdateClaimEvent value)? updateClaim,
     TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
     TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult Function(OnClickClaim value)? onClickClaim,
+    TResult Function(OnClaimDetailRemoveResponse value)?
+        onClaimDetailRemoveResponse,
   }) {
     return getClaimsByIds?.call(this);
   }
@@ -713,6 +770,9 @@ class _$GetClaimsByIdsEvent implements GetClaimsByIdsEvent {
     TResult Function(UpdateClaimEvent value)? updateClaim,
     TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
     TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult Function(OnClickClaim value)? onClickClaim,
+    TResult Function(OnClaimDetailRemoveResponse value)?
+        onClaimDetailRemoveResponse,
     required TResult orElse(),
   }) {
     if (getClaimsByIds != null) {
@@ -813,6 +873,8 @@ class _$RemoveClaimEvent implements RemoveClaimEvent {
         updateClaim,
     required TResult Function() clickScanQrCode,
     required TResult Function(String? response) onScanQrCodeResponse,
+    required TResult Function(ClaimModel claimModel) onClickClaim,
+    required TResult Function(bool? removed) onClaimDetailRemoveResponse,
   }) {
     return removeClaim(id);
   }
@@ -836,6 +898,8 @@ class _$RemoveClaimEvent implements RemoveClaimEvent {
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
+    TResult Function(ClaimModel claimModel)? onClickClaim,
+    TResult Function(bool? removed)? onClaimDetailRemoveResponse,
   }) {
     return removeClaim?.call(id);
   }
@@ -859,6 +923,8 @@ class _$RemoveClaimEvent implements RemoveClaimEvent {
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
+    TResult Function(ClaimModel claimModel)? onClickClaim,
+    TResult Function(bool? removed)? onClaimDetailRemoveResponse,
     required TResult orElse(),
   }) {
     if (removeClaim != null) {
@@ -878,6 +944,9 @@ class _$RemoveClaimEvent implements RemoveClaimEvent {
     required TResult Function(UpdateClaimEvent value) updateClaim,
     required TResult Function(ClickScanQrCodeEvent value) clickScanQrCode,
     required TResult Function(ScanQrCodeResponse value) onScanQrCodeResponse,
+    required TResult Function(OnClickClaim value) onClickClaim,
+    required TResult Function(OnClaimDetailRemoveResponse value)
+        onClaimDetailRemoveResponse,
   }) {
     return removeClaim(this);
   }
@@ -893,6 +962,9 @@ class _$RemoveClaimEvent implements RemoveClaimEvent {
     TResult Function(UpdateClaimEvent value)? updateClaim,
     TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
     TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult Function(OnClickClaim value)? onClickClaim,
+    TResult Function(OnClaimDetailRemoveResponse value)?
+        onClaimDetailRemoveResponse,
   }) {
     return removeClaim?.call(this);
   }
@@ -908,6 +980,9 @@ class _$RemoveClaimEvent implements RemoveClaimEvent {
     TResult Function(UpdateClaimEvent value)? updateClaim,
     TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
     TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult Function(OnClickClaim value)? onClickClaim,
+    TResult Function(OnClaimDetailRemoveResponse value)?
+        onClaimDetailRemoveResponse,
     required TResult orElse(),
   }) {
     if (removeClaim != null) {
@@ -1012,6 +1087,8 @@ class _$RemoveClaimsEvent implements RemoveClaimsEvent {
         updateClaim,
     required TResult Function() clickScanQrCode,
     required TResult Function(String? response) onScanQrCodeResponse,
+    required TResult Function(ClaimModel claimModel) onClickClaim,
+    required TResult Function(bool? removed) onClaimDetailRemoveResponse,
   }) {
     return removeClaims(ids);
   }
@@ -1035,6 +1112,8 @@ class _$RemoveClaimsEvent implements RemoveClaimsEvent {
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
+    TResult Function(ClaimModel claimModel)? onClickClaim,
+    TResult Function(bool? removed)? onClaimDetailRemoveResponse,
   }) {
     return removeClaims?.call(ids);
   }
@@ -1058,6 +1137,8 @@ class _$RemoveClaimsEvent implements RemoveClaimsEvent {
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
+    TResult Function(ClaimModel claimModel)? onClickClaim,
+    TResult Function(bool? removed)? onClaimDetailRemoveResponse,
     required TResult orElse(),
   }) {
     if (removeClaims != null) {
@@ -1077,6 +1158,9 @@ class _$RemoveClaimsEvent implements RemoveClaimsEvent {
     required TResult Function(UpdateClaimEvent value) updateClaim,
     required TResult Function(ClickScanQrCodeEvent value) clickScanQrCode,
     required TResult Function(ScanQrCodeResponse value) onScanQrCodeResponse,
+    required TResult Function(OnClickClaim value) onClickClaim,
+    required TResult Function(OnClaimDetailRemoveResponse value)
+        onClaimDetailRemoveResponse,
   }) {
     return removeClaims(this);
   }
@@ -1092,6 +1176,9 @@ class _$RemoveClaimsEvent implements RemoveClaimsEvent {
     TResult Function(UpdateClaimEvent value)? updateClaim,
     TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
     TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult Function(OnClickClaim value)? onClickClaim,
+    TResult Function(OnClaimDetailRemoveResponse value)?
+        onClaimDetailRemoveResponse,
   }) {
     return removeClaims?.call(this);
   }
@@ -1107,6 +1194,9 @@ class _$RemoveClaimsEvent implements RemoveClaimsEvent {
     TResult Function(UpdateClaimEvent value)? updateClaim,
     TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
     TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult Function(OnClickClaim value)? onClickClaim,
+    TResult Function(OnClaimDetailRemoveResponse value)?
+        onClaimDetailRemoveResponse,
     required TResult orElse(),
   }) {
     if (removeClaims != null) {
@@ -1285,6 +1375,8 @@ class _$UpdateClaimEvent implements UpdateClaimEvent {
         updateClaim,
     required TResult Function() clickScanQrCode,
     required TResult Function(String? response) onScanQrCodeResponse,
+    required TResult Function(ClaimModel claimModel) onClickClaim,
+    required TResult Function(bool? removed) onClaimDetailRemoveResponse,
   }) {
     return updateClaim(id, issuer, identifier, state, expiration, type, data);
   }
@@ -1308,6 +1400,8 @@ class _$UpdateClaimEvent implements UpdateClaimEvent {
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
+    TResult Function(ClaimModel claimModel)? onClickClaim,
+    TResult Function(bool? removed)? onClaimDetailRemoveResponse,
   }) {
     return updateClaim?.call(
         id, issuer, identifier, state, expiration, type, data);
@@ -1332,6 +1426,8 @@ class _$UpdateClaimEvent implements UpdateClaimEvent {
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
+    TResult Function(ClaimModel claimModel)? onClickClaim,
+    TResult Function(bool? removed)? onClaimDetailRemoveResponse,
     required TResult orElse(),
   }) {
     if (updateClaim != null) {
@@ -1351,6 +1447,9 @@ class _$UpdateClaimEvent implements UpdateClaimEvent {
     required TResult Function(UpdateClaimEvent value) updateClaim,
     required TResult Function(ClickScanQrCodeEvent value) clickScanQrCode,
     required TResult Function(ScanQrCodeResponse value) onScanQrCodeResponse,
+    required TResult Function(OnClickClaim value) onClickClaim,
+    required TResult Function(OnClaimDetailRemoveResponse value)
+        onClaimDetailRemoveResponse,
   }) {
     return updateClaim(this);
   }
@@ -1366,6 +1465,9 @@ class _$UpdateClaimEvent implements UpdateClaimEvent {
     TResult Function(UpdateClaimEvent value)? updateClaim,
     TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
     TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult Function(OnClickClaim value)? onClickClaim,
+    TResult Function(OnClaimDetailRemoveResponse value)?
+        onClaimDetailRemoveResponse,
   }) {
     return updateClaim?.call(this);
   }
@@ -1381,6 +1483,9 @@ class _$UpdateClaimEvent implements UpdateClaimEvent {
     TResult Function(UpdateClaimEvent value)? updateClaim,
     TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
     TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult Function(OnClickClaim value)? onClickClaim,
+    TResult Function(OnClaimDetailRemoveResponse value)?
+        onClaimDetailRemoveResponse,
     required TResult orElse(),
   }) {
     if (updateClaim != null) {
@@ -1469,6 +1574,8 @@ class _$ClickScanQrCodeEvent implements ClickScanQrCodeEvent {
         updateClaim,
     required TResult Function() clickScanQrCode,
     required TResult Function(String? response) onScanQrCodeResponse,
+    required TResult Function(ClaimModel claimModel) onClickClaim,
+    required TResult Function(bool? removed) onClaimDetailRemoveResponse,
   }) {
     return clickScanQrCode();
   }
@@ -1492,6 +1599,8 @@ class _$ClickScanQrCodeEvent implements ClickScanQrCodeEvent {
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
+    TResult Function(ClaimModel claimModel)? onClickClaim,
+    TResult Function(bool? removed)? onClaimDetailRemoveResponse,
   }) {
     return clickScanQrCode?.call();
   }
@@ -1515,6 +1624,8 @@ class _$ClickScanQrCodeEvent implements ClickScanQrCodeEvent {
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
+    TResult Function(ClaimModel claimModel)? onClickClaim,
+    TResult Function(bool? removed)? onClaimDetailRemoveResponse,
     required TResult orElse(),
   }) {
     if (clickScanQrCode != null) {
@@ -1534,6 +1645,9 @@ class _$ClickScanQrCodeEvent implements ClickScanQrCodeEvent {
     required TResult Function(UpdateClaimEvent value) updateClaim,
     required TResult Function(ClickScanQrCodeEvent value) clickScanQrCode,
     required TResult Function(ScanQrCodeResponse value) onScanQrCodeResponse,
+    required TResult Function(OnClickClaim value) onClickClaim,
+    required TResult Function(OnClaimDetailRemoveResponse value)
+        onClaimDetailRemoveResponse,
   }) {
     return clickScanQrCode(this);
   }
@@ -1549,6 +1663,9 @@ class _$ClickScanQrCodeEvent implements ClickScanQrCodeEvent {
     TResult Function(UpdateClaimEvent value)? updateClaim,
     TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
     TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult Function(OnClickClaim value)? onClickClaim,
+    TResult Function(OnClaimDetailRemoveResponse value)?
+        onClaimDetailRemoveResponse,
   }) {
     return clickScanQrCode?.call(this);
   }
@@ -1564,6 +1681,9 @@ class _$ClickScanQrCodeEvent implements ClickScanQrCodeEvent {
     TResult Function(UpdateClaimEvent value)? updateClaim,
     TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
     TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult Function(OnClickClaim value)? onClickClaim,
+    TResult Function(OnClaimDetailRemoveResponse value)?
+        onClaimDetailRemoveResponse,
     required TResult orElse(),
   }) {
     if (clickScanQrCode != null) {
@@ -1659,6 +1779,8 @@ class _$ScanQrCodeResponse implements ScanQrCodeResponse {
         updateClaim,
     required TResult Function() clickScanQrCode,
     required TResult Function(String? response) onScanQrCodeResponse,
+    required TResult Function(ClaimModel claimModel) onClickClaim,
+    required TResult Function(bool? removed) onClaimDetailRemoveResponse,
   }) {
     return onScanQrCodeResponse(response);
   }
@@ -1682,6 +1804,8 @@ class _$ScanQrCodeResponse implements ScanQrCodeResponse {
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
+    TResult Function(ClaimModel claimModel)? onClickClaim,
+    TResult Function(bool? removed)? onClaimDetailRemoveResponse,
   }) {
     return onScanQrCodeResponse?.call(response);
   }
@@ -1705,6 +1829,8 @@ class _$ScanQrCodeResponse implements ScanQrCodeResponse {
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
+    TResult Function(ClaimModel claimModel)? onClickClaim,
+    TResult Function(bool? removed)? onClaimDetailRemoveResponse,
     required TResult orElse(),
   }) {
     if (onScanQrCodeResponse != null) {
@@ -1724,6 +1850,9 @@ class _$ScanQrCodeResponse implements ScanQrCodeResponse {
     required TResult Function(UpdateClaimEvent value) updateClaim,
     required TResult Function(ClickScanQrCodeEvent value) clickScanQrCode,
     required TResult Function(ScanQrCodeResponse value) onScanQrCodeResponse,
+    required TResult Function(OnClickClaim value) onClickClaim,
+    required TResult Function(OnClaimDetailRemoveResponse value)
+        onClaimDetailRemoveResponse,
   }) {
     return onScanQrCodeResponse(this);
   }
@@ -1739,6 +1868,9 @@ class _$ScanQrCodeResponse implements ScanQrCodeResponse {
     TResult Function(UpdateClaimEvent value)? updateClaim,
     TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
     TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult Function(OnClickClaim value)? onClickClaim,
+    TResult Function(OnClaimDetailRemoveResponse value)?
+        onClaimDetailRemoveResponse,
   }) {
     return onScanQrCodeResponse?.call(this);
   }
@@ -1754,6 +1886,9 @@ class _$ScanQrCodeResponse implements ScanQrCodeResponse {
     TResult Function(UpdateClaimEvent value)? updateClaim,
     TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
     TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult Function(OnClickClaim value)? onClickClaim,
+    TResult Function(OnClaimDetailRemoveResponse value)?
+        onClaimDetailRemoveResponse,
     required TResult orElse(),
   }) {
     if (onScanQrCodeResponse != null) {
@@ -1771,4 +1906,427 @@ abstract class ScanQrCodeResponse implements ClaimsEvent {
   @JsonKey(ignore: true)
   _$$ScanQrCodeResponseCopyWith<_$ScanQrCodeResponse> get copyWith =>
       throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$OnClickClaimCopyWith<$Res> {
+  factory _$$OnClickClaimCopyWith(
+          _$OnClickClaim value, $Res Function(_$OnClickClaim) then) =
+      __$$OnClickClaimCopyWithImpl<$Res>;
+  $Res call({ClaimModel claimModel});
+}
+
+/// @nodoc
+class __$$OnClickClaimCopyWithImpl<$Res> extends _$ClaimsEventCopyWithImpl<$Res>
+    implements _$$OnClickClaimCopyWith<$Res> {
+  __$$OnClickClaimCopyWithImpl(
+      _$OnClickClaim _value, $Res Function(_$OnClickClaim) _then)
+      : super(_value, (v) => _then(v as _$OnClickClaim));
+
+  @override
+  _$OnClickClaim get _value => super._value as _$OnClickClaim;
+
+  @override
+  $Res call({
+    Object? claimModel = freezed,
+  }) {
+    return _then(_$OnClickClaim(
+      claimModel == freezed
+          ? _value.claimModel
+          : claimModel // ignore: cast_nullable_to_non_nullable
+              as ClaimModel,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$OnClickClaim implements OnClickClaim {
+  const _$OnClickClaim(this.claimModel);
+
+  @override
+  final ClaimModel claimModel;
+
+  @override
+  String toString() {
+    return 'ClaimsEvent.onClickClaim(claimModel: $claimModel)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$OnClickClaim &&
+            const DeepCollectionEquality()
+                .equals(other.claimModel, claimModel));
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(claimModel));
+
+  @JsonKey(ignore: true)
+  @override
+  _$$OnClickClaimCopyWith<_$OnClickClaim> get copyWith =>
+      __$$OnClickClaimCopyWithImpl<_$OnClickClaim>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(Iden3Message iden3message) fetchAndSaveClaims,
+    required TResult Function(List<FilterEntity>? filters) getClaims,
+    required TResult Function(List<String> ids) getClaimsByIds,
+    required TResult Function(String id) removeClaim,
+    required TResult Function(List<String> ids) removeClaims,
+    required TResult Function(
+            String id,
+            String? issuer,
+            String? identifier,
+            ClaimState? state,
+            String? expiration,
+            String? type,
+            Map<String, dynamic>? data)
+        updateClaim,
+    required TResult Function() clickScanQrCode,
+    required TResult Function(String? response) onScanQrCodeResponse,
+    required TResult Function(ClaimModel claimModel) onClickClaim,
+    required TResult Function(bool? removed) onClaimDetailRemoveResponse,
+  }) {
+    return onClickClaim(claimModel);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult Function(Iden3Message iden3message)? fetchAndSaveClaims,
+    TResult Function(List<FilterEntity>? filters)? getClaims,
+    TResult Function(List<String> ids)? getClaimsByIds,
+    TResult Function(String id)? removeClaim,
+    TResult Function(List<String> ids)? removeClaims,
+    TResult Function(
+            String id,
+            String? issuer,
+            String? identifier,
+            ClaimState? state,
+            String? expiration,
+            String? type,
+            Map<String, dynamic>? data)?
+        updateClaim,
+    TResult Function()? clickScanQrCode,
+    TResult Function(String? response)? onScanQrCodeResponse,
+    TResult Function(ClaimModel claimModel)? onClickClaim,
+    TResult Function(bool? removed)? onClaimDetailRemoveResponse,
+  }) {
+    return onClickClaim?.call(claimModel);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(Iden3Message iden3message)? fetchAndSaveClaims,
+    TResult Function(List<FilterEntity>? filters)? getClaims,
+    TResult Function(List<String> ids)? getClaimsByIds,
+    TResult Function(String id)? removeClaim,
+    TResult Function(List<String> ids)? removeClaims,
+    TResult Function(
+            String id,
+            String? issuer,
+            String? identifier,
+            ClaimState? state,
+            String? expiration,
+            String? type,
+            Map<String, dynamic>? data)?
+        updateClaim,
+    TResult Function()? clickScanQrCode,
+    TResult Function(String? response)? onScanQrCodeResponse,
+    TResult Function(ClaimModel claimModel)? onClickClaim,
+    TResult Function(bool? removed)? onClaimDetailRemoveResponse,
+    required TResult orElse(),
+  }) {
+    if (onClickClaim != null) {
+      return onClickClaim(claimModel);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(FetchAndSaveClaimsEvent value) fetchAndSaveClaims,
+    required TResult Function(GetClaimsEvent value) getClaims,
+    required TResult Function(GetClaimsByIdsEvent value) getClaimsByIds,
+    required TResult Function(RemoveClaimEvent value) removeClaim,
+    required TResult Function(RemoveClaimsEvent value) removeClaims,
+    required TResult Function(UpdateClaimEvent value) updateClaim,
+    required TResult Function(ClickScanQrCodeEvent value) clickScanQrCode,
+    required TResult Function(ScanQrCodeResponse value) onScanQrCodeResponse,
+    required TResult Function(OnClickClaim value) onClickClaim,
+    required TResult Function(OnClaimDetailRemoveResponse value)
+        onClaimDetailRemoveResponse,
+  }) {
+    return onClickClaim(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult Function(FetchAndSaveClaimsEvent value)? fetchAndSaveClaims,
+    TResult Function(GetClaimsEvent value)? getClaims,
+    TResult Function(GetClaimsByIdsEvent value)? getClaimsByIds,
+    TResult Function(RemoveClaimEvent value)? removeClaim,
+    TResult Function(RemoveClaimsEvent value)? removeClaims,
+    TResult Function(UpdateClaimEvent value)? updateClaim,
+    TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
+    TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult Function(OnClickClaim value)? onClickClaim,
+    TResult Function(OnClaimDetailRemoveResponse value)?
+        onClaimDetailRemoveResponse,
+  }) {
+    return onClickClaim?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(FetchAndSaveClaimsEvent value)? fetchAndSaveClaims,
+    TResult Function(GetClaimsEvent value)? getClaims,
+    TResult Function(GetClaimsByIdsEvent value)? getClaimsByIds,
+    TResult Function(RemoveClaimEvent value)? removeClaim,
+    TResult Function(RemoveClaimsEvent value)? removeClaims,
+    TResult Function(UpdateClaimEvent value)? updateClaim,
+    TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
+    TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult Function(OnClickClaim value)? onClickClaim,
+    TResult Function(OnClaimDetailRemoveResponse value)?
+        onClaimDetailRemoveResponse,
+    required TResult orElse(),
+  }) {
+    if (onClickClaim != null) {
+      return onClickClaim(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class OnClickClaim implements ClaimsEvent {
+  const factory OnClickClaim(final ClaimModel claimModel) = _$OnClickClaim;
+
+  ClaimModel get claimModel;
+  @JsonKey(ignore: true)
+  _$$OnClickClaimCopyWith<_$OnClickClaim> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$OnClaimDetailRemoveResponseCopyWith<$Res> {
+  factory _$$OnClaimDetailRemoveResponseCopyWith(
+          _$OnClaimDetailRemoveResponse value,
+          $Res Function(_$OnClaimDetailRemoveResponse) then) =
+      __$$OnClaimDetailRemoveResponseCopyWithImpl<$Res>;
+  $Res call({bool? removed});
+}
+
+/// @nodoc
+class __$$OnClaimDetailRemoveResponseCopyWithImpl<$Res>
+    extends _$ClaimsEventCopyWithImpl<$Res>
+    implements _$$OnClaimDetailRemoveResponseCopyWith<$Res> {
+  __$$OnClaimDetailRemoveResponseCopyWithImpl(
+      _$OnClaimDetailRemoveResponse _value,
+      $Res Function(_$OnClaimDetailRemoveResponse) _then)
+      : super(_value, (v) => _then(v as _$OnClaimDetailRemoveResponse));
+
+  @override
+  _$OnClaimDetailRemoveResponse get _value =>
+      super._value as _$OnClaimDetailRemoveResponse;
+
+  @override
+  $Res call({
+    Object? removed = freezed,
+  }) {
+    return _then(_$OnClaimDetailRemoveResponse(
+      removed == freezed
+          ? _value.removed
+          : removed // ignore: cast_nullable_to_non_nullable
+              as bool?,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$OnClaimDetailRemoveResponse implements OnClaimDetailRemoveResponse {
+  const _$OnClaimDetailRemoveResponse(this.removed);
+
+  @override
+  final bool? removed;
+
+  @override
+  String toString() {
+    return 'ClaimsEvent.onClaimDetailRemoveResponse(removed: $removed)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$OnClaimDetailRemoveResponse &&
+            const DeepCollectionEquality().equals(other.removed, removed));
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(removed));
+
+  @JsonKey(ignore: true)
+  @override
+  _$$OnClaimDetailRemoveResponseCopyWith<_$OnClaimDetailRemoveResponse>
+      get copyWith => __$$OnClaimDetailRemoveResponseCopyWithImpl<
+          _$OnClaimDetailRemoveResponse>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(Iden3Message iden3message) fetchAndSaveClaims,
+    required TResult Function(List<FilterEntity>? filters) getClaims,
+    required TResult Function(List<String> ids) getClaimsByIds,
+    required TResult Function(String id) removeClaim,
+    required TResult Function(List<String> ids) removeClaims,
+    required TResult Function(
+            String id,
+            String? issuer,
+            String? identifier,
+            ClaimState? state,
+            String? expiration,
+            String? type,
+            Map<String, dynamic>? data)
+        updateClaim,
+    required TResult Function() clickScanQrCode,
+    required TResult Function(String? response) onScanQrCodeResponse,
+    required TResult Function(ClaimModel claimModel) onClickClaim,
+    required TResult Function(bool? removed) onClaimDetailRemoveResponse,
+  }) {
+    return onClaimDetailRemoveResponse(removed);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult Function(Iden3Message iden3message)? fetchAndSaveClaims,
+    TResult Function(List<FilterEntity>? filters)? getClaims,
+    TResult Function(List<String> ids)? getClaimsByIds,
+    TResult Function(String id)? removeClaim,
+    TResult Function(List<String> ids)? removeClaims,
+    TResult Function(
+            String id,
+            String? issuer,
+            String? identifier,
+            ClaimState? state,
+            String? expiration,
+            String? type,
+            Map<String, dynamic>? data)?
+        updateClaim,
+    TResult Function()? clickScanQrCode,
+    TResult Function(String? response)? onScanQrCodeResponse,
+    TResult Function(ClaimModel claimModel)? onClickClaim,
+    TResult Function(bool? removed)? onClaimDetailRemoveResponse,
+  }) {
+    return onClaimDetailRemoveResponse?.call(removed);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(Iden3Message iden3message)? fetchAndSaveClaims,
+    TResult Function(List<FilterEntity>? filters)? getClaims,
+    TResult Function(List<String> ids)? getClaimsByIds,
+    TResult Function(String id)? removeClaim,
+    TResult Function(List<String> ids)? removeClaims,
+    TResult Function(
+            String id,
+            String? issuer,
+            String? identifier,
+            ClaimState? state,
+            String? expiration,
+            String? type,
+            Map<String, dynamic>? data)?
+        updateClaim,
+    TResult Function()? clickScanQrCode,
+    TResult Function(String? response)? onScanQrCodeResponse,
+    TResult Function(ClaimModel claimModel)? onClickClaim,
+    TResult Function(bool? removed)? onClaimDetailRemoveResponse,
+    required TResult orElse(),
+  }) {
+    if (onClaimDetailRemoveResponse != null) {
+      return onClaimDetailRemoveResponse(removed);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(FetchAndSaveClaimsEvent value) fetchAndSaveClaims,
+    required TResult Function(GetClaimsEvent value) getClaims,
+    required TResult Function(GetClaimsByIdsEvent value) getClaimsByIds,
+    required TResult Function(RemoveClaimEvent value) removeClaim,
+    required TResult Function(RemoveClaimsEvent value) removeClaims,
+    required TResult Function(UpdateClaimEvent value) updateClaim,
+    required TResult Function(ClickScanQrCodeEvent value) clickScanQrCode,
+    required TResult Function(ScanQrCodeResponse value) onScanQrCodeResponse,
+    required TResult Function(OnClickClaim value) onClickClaim,
+    required TResult Function(OnClaimDetailRemoveResponse value)
+        onClaimDetailRemoveResponse,
+  }) {
+    return onClaimDetailRemoveResponse(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult Function(FetchAndSaveClaimsEvent value)? fetchAndSaveClaims,
+    TResult Function(GetClaimsEvent value)? getClaims,
+    TResult Function(GetClaimsByIdsEvent value)? getClaimsByIds,
+    TResult Function(RemoveClaimEvent value)? removeClaim,
+    TResult Function(RemoveClaimsEvent value)? removeClaims,
+    TResult Function(UpdateClaimEvent value)? updateClaim,
+    TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
+    TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult Function(OnClickClaim value)? onClickClaim,
+    TResult Function(OnClaimDetailRemoveResponse value)?
+        onClaimDetailRemoveResponse,
+  }) {
+    return onClaimDetailRemoveResponse?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(FetchAndSaveClaimsEvent value)? fetchAndSaveClaims,
+    TResult Function(GetClaimsEvent value)? getClaims,
+    TResult Function(GetClaimsByIdsEvent value)? getClaimsByIds,
+    TResult Function(RemoveClaimEvent value)? removeClaim,
+    TResult Function(RemoveClaimsEvent value)? removeClaims,
+    TResult Function(UpdateClaimEvent value)? updateClaim,
+    TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
+    TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult Function(OnClickClaim value)? onClickClaim,
+    TResult Function(OnClaimDetailRemoveResponse value)?
+        onClaimDetailRemoveResponse,
+    required TResult orElse(),
+  }) {
+    if (onClaimDetailRemoveResponse != null) {
+      return onClaimDetailRemoveResponse(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class OnClaimDetailRemoveResponse implements ClaimsEvent {
+  const factory OnClaimDetailRemoveResponse(final bool? removed) =
+      _$OnClaimDetailRemoveResponse;
+
+  bool? get removed;
+  @JsonKey(ignore: true)
+  _$$OnClaimDetailRemoveResponseCopyWith<_$OnClaimDetailRemoveResponse>
+      get copyWith => throw _privateConstructorUsedError;
 }

@@ -10,10 +10,10 @@ import 'package:polygonid_flutter_sdk_example/src/domain/identity/repositories/i
 import 'package:polygonid_flutter_sdk_example/src/domain/identity/use_cases/create_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk_example/src/domain/identity/use_cases/get_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_bloc.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claim_detail/bloc/claim_detail_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/mappers/claim_model_mapper.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/mappers/claim_model_state_mapper.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/mappers/claim_model_type_mapper.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/mappers/proof_model_type_mapper.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/splash_bloc.dart';
@@ -25,6 +25,7 @@ Future<void> init() async {
   await registerProviders();
   registerSplashDependencies();
   registerHomeDependencies();
+  registerClaimDetailDependencies();
   registerClaimsDependencies();
   registerIdentityDependencies();
   registerAuthDependencies();
@@ -71,14 +72,18 @@ void registerClaimsDependencies() {
 }
 
 ///
+void registerClaimDetailDependencies() {
+  getIt.registerFactory(() => ClaimDetailBloc(getIt()));
+}
+
+///
 void registerAuthDependencies() {
   getIt.registerFactory(() => AuthBloc(getIt()));
 }
 
 ///
 void registerMappers() {
-  getIt.registerFactory(() => ClaimModelMapper(getIt(), getIt(), getIt()));
+  getIt.registerFactory(() => ClaimModelMapper(getIt(), getIt()));
   getIt.registerFactory(() => ClaimModelStateMapper());
-  getIt.registerFactory(() => ClaimModelTypeMapper());
   getIt.registerFactory(() => ProofModelTypeMapper());
 }

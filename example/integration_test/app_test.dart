@@ -5,6 +5,8 @@ import 'package:integration_test/integration_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/sdk/identity_wallet.dart';
+import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/domain/identity/repositories/identity_repositories.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/app.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart'
@@ -16,13 +18,20 @@ import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
 import 'app_test.mocks.dart';
 
 const String identifier = "retrievedIdentifier";
+const String qrCodeScanResponse = "qrCodeScanResponse";
 
-@GenerateMocks([IdentityRepository])
+@GenerateMocks([
+  IdentityRepository,
+  PolygonIdSdk,
+  IdentityWallet,
+])
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
 
   late MockIdentityRepository identityRepository;
+  late MockPolygonIdSdk polygonIdSdk;
+  late MockIdentityWallet identityWallet;
 
   group('app integration test with live data', () {
     setUpAll(() async {
@@ -78,15 +87,23 @@ void main() {
     );
   });
 
+  /// APP INTEGRATION TEST WITH MOCK DATA
+  ///
   group('app integration test with mocked data', () {
     setUpAll(() async {
       await di.init();
       identityRepository = MockIdentityRepository();
+      polygonIdSdk = MockPolygonIdSdk();
+      identityWallet = MockIdentityWallet();
+
+      await di.getIt.unregister<PolygonIdSdk>();
       await di.getIt.unregister<IdentityRepository>();
+      di.getIt.registerLazySingleton<PolygonIdSdk>(() => polygonIdSdk);
       di.getIt
           .registerLazySingleton<IdentityRepository>(() => identityRepository);
     });
 
+    /// SPLASH PAGE
     testWidgets(
       'initial state, splash screen and after n seconds navigate to home',
       (widgetTester) async {
@@ -102,6 +119,7 @@ void main() {
       },
     );
 
+    /// HOME PAGE
     testWidgets(
       'home screen test',
       (WidgetTester widgetTester) async {
@@ -158,6 +176,43 @@ void main() {
 
         expect(find.text(CustomStrings.homeIdentifierSectionPlaceHolder),
             findsNothing);
+
+        await widgetTester.pumpAndSettle();
+      },
+    );
+
+    /// AUTHENTICATION PAGE
+    testWidgets(
+      'authentication screen test',
+      (WidgetTester widgetTester) async {
+        await widgetTester.pumpWidget(const App());
+        await widgetTester.pumpAndSettle();
+
+        AppState state = widgetTester.state(find.byType(App));
+        NavigatorState navigatorState = state.navigatorKey.currentState!;
+        navigatorState.pushReplacementNamed(Routes.authPath);
+
+        await widgetTester.pump();
+        await widgetTester.pumpAndSettle();
+        expect(find.text(CustomStrings.authDescription), findsOneWidget);
+
+        await widgetTester.pump();
+
+        when(polygonIdSdk.identity)
+            .thenAnswer((realInvocation) => identityWallet);
+        when(identityWallet.getCurrentIdentifier())
+            .thenAnswer((realInvocation) => Future.value(null));
+        /*when(polygonIdSdk.identity.getCurrentIdentifier())
+            .thenAnswer((realInvocation) => Future.value(null));*/
+
+        await widgetTester.pumpAndSettle();
+
+        await widgetTester.tap(find.byType(ElevatedButton));
+        await widgetTester.pumpAndSettle();
+        navigatorState.pop(null);
+        await widgetTester.pumpAndSettle();
+
+        expect(find.text('no qr code scanned'), findsOneWidget);
 
         await widgetTester.pumpAndSettle();
       },

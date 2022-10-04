@@ -9,7 +9,7 @@ class CustomButtonStyle {
     enableFeedback: false,
     padding:
         const EdgeInsets.only(top: 18.0, bottom: 18.0, right: 24.0, left: 24.0),
-    primary: CustomColors.primaryButton,
+    backgroundColor: CustomColors.primaryButton,
     shadowColor: CustomColors.transparent,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(10),
@@ -21,7 +21,7 @@ class CustomButtonStyle {
     enableFeedback: false,
     padding:
         const EdgeInsets.only(top: 18.0, bottom: 18.0, right: 24.0, left: 24.0),
-    primary: CustomColors.primaryButton.withOpacity(0.5),
+    backgroundColor: CustomColors.primaryButton.withOpacity(0.5),
     shadowColor: CustomColors.transparent,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(10),

@@ -17,4 +17,6 @@ class ClaimsState with _$ClaimsState {
   const factory ClaimsState.loadedClaims(List<ClaimModel> claimList) = LoadedDataClaimsState;
 
   const factory ClaimsState.error(String message) = ErrorClaimsState;
+
+  const factory ClaimsState.navigateToClaimDetail(ClaimModel claimModel) = NavigateToClaimDetailClaimState;
 }

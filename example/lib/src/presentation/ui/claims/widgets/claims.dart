@@ -110,16 +110,34 @@ class _ClaimsScreenState extends State<ClaimsScreen> {
   Widget _buildClaimsConnectButton() {
     return Align(
       alignment: Alignment.center,
-      child: ElevatedButton(
-        onPressed: () {
-          widget._bloc.add(const ClaimsEvent.clickScanQrCode());
-        },
-        style: CustomButtonStyle.primaryButtonStyle,
-        child: const Text(
-          CustomStrings.authButtonCTA,
-          style: CustomTextStyles.primaryButtonTextStyle,
-        ),
-      ),
+      child: BlocBuilder(
+          bloc: widget._bloc,
+          builder: (BuildContext context, ClaimsState state) {
+            bool loading = state is LoadingDataClaimsState;
+            return ElevatedButton(
+              onPressed: () {
+                if (!loading) {
+                  widget._bloc.add(const ClaimsEvent.clickScanQrCode());
+                }
+              },
+              style: CustomButtonStyle.primaryButtonStyle,
+              child: Container(
+                constraints: const BoxConstraints(
+                  minWidth: 120,
+                  maxWidth: 120,
+                  maxHeight: 20,
+                ),
+                child: Center(
+                  child: loading
+                      ? _buildCircularProgress()
+                      : const Text(
+                          CustomStrings.authButtonCTA,
+                          style: CustomTextStyles.primaryButtonTextStyle,
+                        ),
+                ),
+              ),
+            );
+          }),
     );
   }
 
@@ -148,10 +166,17 @@ class _ClaimsScreenState extends State<ClaimsScreen> {
   ///
   List<Widget> _buildClaimCardWidgetList(List<ClaimModel> claimList) {
     return claimList
-        .map((claimModelItem) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        .map(
+          (claimModelItem) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            child: InkWell(
+              onTap: () {
+                widget._bloc.add(ClaimsEvent.onClickClaim(claimModelItem));
+              },
               child: ClaimCard(claimModel: claimModelItem),
-            ))
+            ),
+          ),
+        )
         .toList();
   }
 
@@ -165,6 +190,9 @@ class _ClaimsScreenState extends State<ClaimsScreen> {
         }
         if (state is QrCodeScannedClaimsState) {
           _handleQrCodeScanned(state.iden3message);
+        }
+        if (state is NavigateToClaimDetailClaimState) {
+          _handleNavigationToClaimDetail(state.claimModel);
         }
       },
       child: const SizedBox.shrink(),
@@ -182,5 +210,28 @@ class _ClaimsScreenState extends State<ClaimsScreen> {
   void _handleQrCodeScanned(Iden3Message iden3message) {
     widget._bloc
         .add(ClaimsEvent.fetchAndSaveClaims(iden3message: iden3message));
+  }
+
+  ///
+  Future<void> _handleNavigationToClaimDetail(ClaimModel claimModel) async {
+    bool? deleted = await Navigator.pushNamed(
+      context,
+      Routes.claimDetailPath,
+      arguments: claimModel,
+    ) as bool?;
+
+    widget._bloc.add(ClaimsEvent.onClaimDetailRemoveResponse(deleted));
+  }
+
+  ///
+  Widget _buildCircularProgress() {
+    return const SizedBox(
+      height: 20,
+      width: 20,
+      child: CircularProgressIndicator(
+        strokeWidth: 2,
+        backgroundColor: CustomColors.primaryButton,
+      ),
+    );
   }
 }
