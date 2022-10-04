@@ -33,6 +33,7 @@ import 'package:polygonid_flutter_sdk/proof_generation/domain/repositories/proof
 import 'package:sembast/sembast.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../common/domain/tuples.dart';
 import '../../../credential/domain/repositories/credential_repository.dart';
 import '../../../identity/data/data_sources/jwz_data_source.dart';
 import '../../../identity/data/mappers/hex_mapper.dart';
@@ -44,7 +45,6 @@ import '../../../proof_generation/domain/exceptions/proof_generation_exceptions.
 import '../../domain/exceptions/iden3comm_exceptions.dart';
 import '../../domain/repositories/iden3comm_repository.dart';
 import '../dtos/iden3_msg_type.dart';
-import '../dtos/iden3_msg_type_mapper.dart';
 import '../dtos/response/auth/auth_body_did_doc_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_metadata_devices_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_metadata_response.dart';
@@ -349,17 +349,16 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   Future<List<Map<String, dynamic>>> getVocabsFromIden3Message(
       {required Iden3Message iden3Message}) async {
     // TODO: implement getVocabsFromIden3Message
-    List<String> schemaUrls =
-        getSchemaUrlsFromIden3Message(iden3Message: iden3Message);
+    List<Pair<String, String>> schemaInfos =
+        getSchemaInfoFromIden3Message(iden3Message: iden3Message);
 
     List<Map<String, dynamic>> result = [];
 
-    for (String schemaUrl in schemaUrls) {
+    for (Pair<String, String> schemaInfo in schemaInfos) {
       Map<String, dynamic>? schema =
-          await _credentialRepository.fetchSchema(url: schemaUrl);
+          await _credentialRepository.fetchSchema(url: schemaInfo.first);
       Map<String, dynamic>? vocab = await _credentialRepository.fetchVocab(
-          schema: schema,
-          type: Iden3MsgTypeMapper().mapFrom(iden3Message.type));
+          schema: schema, type: schemaInfo.second);
       if (vocab != null) {
         result.add(vocab);
       }
@@ -367,9 +366,9 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     return result;
   }
 
-  List<String> getSchemaUrlsFromIden3Message(
+  List<Pair<String, String>> getSchemaInfoFromIden3Message(
       {required Iden3Message iden3Message}) {
-    List<String> schemaUrls = [];
+    List<Pair<String, String>> schemaInfo = [];
     switch (iden3Message.type) {
       case Iden3MsgType.unknown:
         throw UnsupportedIden3MsgTypeException(null);
@@ -380,8 +379,12 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
           for (ProofScopeRequest proofScopeRequest
               in authRequest.body!.scope!) {
             String? schemaUrl = proofScopeRequest.rules?.query?.schema?.url;
-            if (schemaUrl != null && schemaUrl.isNotEmpty) {
-              schemaUrls.add(schemaUrl);
+            String? schemaType = proofScopeRequest.rules?.query?.schema?.type;
+            if (schemaUrl != null &&
+                schemaUrl.isNotEmpty &&
+                schemaType != null &&
+                schemaType.isNotEmpty) {
+              schemaInfo.add(Pair(schemaUrl, schemaType));
             }
           }
         }
@@ -400,13 +403,17 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
           for (ProofScopeRequest proofScopeRequest
               in contractFunctionCallRequest.body!.scope!) {
             String? schemaUrl = proofScopeRequest.rules?.query?.schema?.url;
-            if (schemaUrl != null && schemaUrl.isNotEmpty) {
-              schemaUrls.add(schemaUrl);
+            String? schemaType = proofScopeRequest.rules?.query?.schema?.type;
+            if (schemaUrl != null &&
+                schemaUrl.isNotEmpty &&
+                schemaType != null &&
+                schemaType.isNotEmpty) {
+              schemaInfo.add(Pair(schemaUrl, schemaType));
             }
           }
         }
         break;
     }
-    return schemaUrls;
+    return schemaInfo;
   }
 }
