@@ -9,7 +9,7 @@ class ClaimModel {
   final String name;
   final String issuer;
   final ClaimModelState state;
-  final ClaimModelType type;
+  final String type;
   final List<ClaimDetailModel> details;
 
   ClaimModel(

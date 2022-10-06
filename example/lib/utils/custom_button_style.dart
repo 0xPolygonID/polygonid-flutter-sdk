@@ -9,9 +9,22 @@ class CustomButtonStyle {
     enableFeedback: false,
     padding:
         const EdgeInsets.only(top: 18.0, bottom: 18.0, right: 24.0, left: 24.0),
-    primary: CustomColors.primaryButton,
+    backgroundColor: CustomColors.primaryButton,
     shadowColor: CustomColors.transparent,
     shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10),
+    ),
+  );
+
+  static ButtonStyle outlinedPrimaryButtonStyle = ElevatedButton.styleFrom(
+    elevation: 0,
+    enableFeedback: false,
+    padding:
+    const EdgeInsets.only(top: 18.0, bottom: 18.0, right: 24.0, left: 24.0),
+    backgroundColor: CustomColors.background,
+    shadowColor: CustomColors.transparent,
+    shape: RoundedRectangleBorder(
+      side: const BorderSide(color: CustomColors.primaryButton),
       borderRadius: BorderRadius.circular(10),
     ),
   );
@@ -21,7 +34,7 @@ class CustomButtonStyle {
     enableFeedback: false,
     padding:
         const EdgeInsets.only(top: 18.0, bottom: 18.0, right: 24.0, left: 24.0),
-    primary: CustomColors.primaryButton.withOpacity(0.5),
+    backgroundColor: CustomColors.primaryButton.withOpacity(0.5),
     shadowColor: CustomColors.transparent,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(10),

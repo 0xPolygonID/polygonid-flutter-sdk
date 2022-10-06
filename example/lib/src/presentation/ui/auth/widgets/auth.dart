@@ -114,6 +114,7 @@ class _AuthScreenState extends State<AuthScreen> {
       child: Align(
         alignment: Alignment.centerRight,
         child: ButtonNextAction(
+          enabled: true,
           onPressed: () {
             Navigator.pushNamed(context, Routes.claimsPath);
           },
