@@ -20,7 +20,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3co
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/iden3_message.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/proof_scope_request.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/onchain/contract_function_call_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/proof_response.dart';
@@ -42,13 +41,13 @@ import '../../../identity/libs/bjj/privadoid_wallet.dart';
 import '../../../proof_generation/data/data_sources/proof_scope_data_source.dart';
 import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
 import '../../../proof_generation/domain/exceptions/proof_generation_exceptions.dart';
-import '../../domain/exceptions/iden3comm_exceptions.dart';
 import '../../domain/repositories/iden3comm_repository.dart';
 import '../dtos/iden3_msg_type.dart';
 import '../dtos/response/auth/auth_body_did_doc_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_metadata_devices_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_metadata_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_response.dart';
+import '../mappers/schema_info_mapper.dart';
 
 class Iden3commRepositoryImpl extends Iden3commRepository {
   final WalletDataSource _walletDataSource;
@@ -348,9 +347,8 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   @override
   Future<List<Map<String, dynamic>>> getVocabsFromIden3Message(
       {required Iden3Message iden3Message}) async {
-    // TODO: implement getVocabsFromIden3Message
     List<Pair<String, String>> schemaInfos =
-        getSchemaInfoFromIden3Message(iden3Message: iden3Message);
+        SchemaInfoMapper().mapFrom(iden3Message);
 
     List<Map<String, dynamic>> result = [];
 
@@ -364,56 +362,5 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       }
     }
     return result;
-  }
-
-  List<Pair<String, String>> getSchemaInfoFromIden3Message(
-      {required Iden3Message iden3Message}) {
-    List<Pair<String, String>> schemaInfo = [];
-    switch (iden3Message.type) {
-      case Iden3MsgType.unknown:
-        throw UnsupportedIden3MsgTypeException(null);
-      case Iden3MsgType.auth:
-        AuthRequest authRequest = AuthRequest.fromJson(iden3Message.toJson());
-        if (authRequest.body?.scope != null &&
-            authRequest.body!.scope!.isNotEmpty) {
-          for (ProofScopeRequest proofScopeRequest
-              in authRequest.body!.scope!) {
-            String? schemaUrl = proofScopeRequest.rules?.query?.schema?.url;
-            String? schemaType = proofScopeRequest.rules?.query?.schema?.type;
-            if (schemaUrl != null &&
-                schemaUrl.isNotEmpty &&
-                schemaType != null &&
-                schemaType.isNotEmpty) {
-              schemaInfo.add(Pair(schemaUrl, schemaType));
-            }
-          }
-        }
-        break;
-      case Iden3MsgType.offer:
-        // TODO: Handle this case.
-        break;
-      case Iden3MsgType.issuance:
-        // TODO: Handle this case.
-        break;
-      case Iden3MsgType.contractFunctionCall:
-        ContractFunctionCallRequest contractFunctionCallRequest =
-            ContractFunctionCallRequest.fromJson(iden3Message.toJson());
-        if (contractFunctionCallRequest.body?.scope != null &&
-            contractFunctionCallRequest.body!.scope!.isNotEmpty) {
-          for (ProofScopeRequest proofScopeRequest
-              in contractFunctionCallRequest.body!.scope!) {
-            String? schemaUrl = proofScopeRequest.rules?.query?.schema?.url;
-            String? schemaType = proofScopeRequest.rules?.query?.schema?.type;
-            if (schemaUrl != null &&
-                schemaUrl.isNotEmpty &&
-                schemaType != null &&
-                schemaType.isNotEmpty) {
-              schemaInfo.add(Pair(schemaUrl, schemaType));
-            }
-          }
-        }
-        break;
-    }
-    return schemaInfo;
   }
 }
