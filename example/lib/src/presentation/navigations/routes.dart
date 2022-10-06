@@ -1,4 +1,6 @@
 import 'package:flutter/widgets.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claim_detail/widgets/claim_detail.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/models/claim_model.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/widgets/claims.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/widgets/auth.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/widgets/home.dart';
@@ -13,6 +15,7 @@ class Routes {
   static const String claimsPath = "/claims";
   static const String qrCodeScannerPath = "/qrcode_scanner";
   static const String authPath = "/auth";
+  static const String claimDetailPath = "/claim_detail";
 
   ///
   static Map<String, WidgetBuilder> getRoutes(context) {
@@ -23,6 +26,7 @@ class Routes {
       qrCodeScannerPath: _qrCodeScannerRoute(),
       authPath: _authRoute(),
       claimsPath: _claimsRoute(),
+      claimDetailPath: _claimDetailPath(),
     };
   }
 
@@ -49,5 +53,13 @@ class Routes {
   ///
   static WidgetBuilder _authRoute() {
     return (BuildContext context) => AuthScreen();
+  }
+
+  ///
+  static WidgetBuilder _claimDetailPath() {
+    return (BuildContext context) {
+      final args = ModalRoute.of(context)!.settings.arguments as ClaimModel;
+      return ClaimDetailScreen(claimModel: args);
+    };
   }
 }

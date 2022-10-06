@@ -33,9 +33,12 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     on<GetClaimsByIdsEvent>(_getClaimsByIds);
     on<RemoveClaimEvent>(_removeClaim);
     on<RemoveClaimsEvent>(_removeClaims);
+    on<RemoveAllClaimsEvent>(_removeAllClaims);
     on<UpdateClaimEvent>(_updateClaim);
     on<ClickScanQrCodeEvent>(_handleClickScanQrCode);
     on<ScanQrCodeResponse>(_handleScanQrCodeResponse);
+    on<OnClickClaim>(_handleClickClaim);
+    on<OnClaimDetailRemoveResponse>(_handleRemoveClaimResponse);
   }
 
   ///
@@ -101,7 +104,10 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
   ///
   Future<void> _getClaims(
       GetClaimsEvent event, Emitter<ClaimsState> emit) async {
+    emit(const ClaimsState.loading());
+
     List<FilterEntity>? filters = event.filters;
+
     try {
       List<ClaimEntity> claimList =
           await _polygonIdSdk.credential.getClaims(filters: filters);
@@ -119,7 +125,10 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
   ///
   Future<void> _getClaimsByIds(
       GetClaimsByIdsEvent event, Emitter<ClaimsState> emit) async {
+    emit(const ClaimsState.loading());
+
     List<String> ids = event.ids;
+
     try {
       List<ClaimEntity> claimList =
           await _polygonIdSdk.credential.getClaimsByIds(ids: ids);
@@ -211,6 +220,37 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       emit(ClaimsState.qrCodeScanned(iden3message));
     } catch (error) {
       emit(const ClaimsState.error("Scanned code is not valid"));
+    }
+  }
+
+  ///
+  void _handleClickClaim(OnClickClaim event, Emitter<ClaimsState> emit) {
+    emit(ClaimsState.navigateToClaimDetail(event.claimModel));
+  }
+
+  ///
+  void _handleRemoveClaimResponse(
+      OnClaimDetailRemoveResponse event, Emitter<ClaimsState> emit) {
+    bool removed = event.removed ?? false;
+
+    if (!removed) {
+      return;
+    }
+
+    add(const GetClaimsEvent());
+  }
+
+  ///
+  Future<void> _removeAllClaims(
+      RemoveAllClaimsEvent event, Emitter<ClaimsState> emit) async {
+    emit(const ClaimsState.loading());
+    try {
+      List<ClaimEntity> claimList = await _polygonIdSdk.credential.getClaims();
+      List<String> claimIds = claimList.map((claim) => claim.id).toList();
+      await _polygonIdSdk.credential.removeClaims(ids: claimIds);
+      add(const GetClaimsEvent());
+    } catch (_) {
+      emit(const ClaimsState.error("error while removing claims"));
     }
   }
 }

@@ -88,14 +88,17 @@ class _HomeScreenState extends State<HomeScreen> {
       child: BlocBuilder(
         bloc: widget._bloc,
         builder: (BuildContext context, HomeState state) {
-          bool enabled = (state is! LoadingDataHomeState) && (state.identifier == null || state.identifier!.isEmpty);
+          bool enabled = (state is! LoadingDataHomeState) &&
+              (state.identifier == null || state.identifier!.isEmpty);
           return AbsorbPointer(
             absorbing: !enabled,
             child: ElevatedButton(
               onPressed: () {
                 widget._bloc.add(const HomeEvent.createIdentity());
               },
-              style: enabled ? CustomButtonStyle.primaryButtonStyle : CustomButtonStyle.disabledPrimaryButtonStyle,
+              style: enabled
+                  ? CustomButtonStyle.primaryButtonStyle
+                  : CustomButtonStyle.disabledPrimaryButtonStyle,
               child: const Text(
                 CustomStrings.homeButtonCTA,
                 style: CustomTextStyles.primaryButtonTextStyle,
@@ -167,12 +170,15 @@ class _HomeScreenState extends State<HomeScreen> {
             bloc: widget._bloc,
             builder: (BuildContext context, HomeState state) {
               return Text(
-                state.identifier ?? CustomStrings.homeIdentifierSectionPlaceHolder,
+                state.identifier ??
+                    CustomStrings.homeIdentifierSectionPlaceHolder,
                 key: const Key('identifier'),
-                style: CustomTextStyles.descriptionTextStyle.copyWith(fontSize: 20, fontWeight: FontWeight.w700),
+                style: CustomTextStyles.descriptionTextStyle
+                    .copyWith(fontSize: 20, fontWeight: FontWeight.w700),
               );
             },
-            buildWhen: (_, currentState) => currentState is LoadedIdentifierHomeState,
+            buildWhen: (_, currentState) =>
+                currentState is LoadedIdentifierHomeState,
           ),
         ],
       ),
@@ -184,12 +190,13 @@ class _HomeScreenState extends State<HomeScreen> {
     return BlocBuilder(
       bloc: widget._bloc,
       builder: (BuildContext context, HomeState state) {
-        if(state is! ErrorHomeState)return const SizedBox.shrink();
+        if (state is! ErrorHomeState) return const SizedBox.shrink();
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Text(
             state.message,
-            style: CustomTextStyles.descriptionTextStyle.copyWith(color: CustomColors.redError),
+            style: CustomTextStyles.descriptionTextStyle
+                .copyWith(color: CustomColors.redError),
           ),
         );
       },
@@ -202,9 +209,17 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.only(right: 16),
       child: Align(
         alignment: Alignment.centerRight,
-        child: ButtonNextAction(
-          onPressed: () {
-            Navigator.pushNamed(context, Routes.authPath);
+        child: BlocBuilder(
+          bloc: widget._bloc,
+          builder: (BuildContext context, HomeState state) {
+            bool enabled = (state is! LoadingDataHomeState) &&
+                (state.identifier != null && state.identifier!.isNotEmpty);
+            return ButtonNextAction(
+              enabled: enabled,
+              onPressed: () {
+                Navigator.pushNamed(context, Routes.authPath);
+              },
+            );
           },
         ),
       ),

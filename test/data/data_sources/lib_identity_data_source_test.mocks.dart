@@ -3,19 +3,16 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:typed_data' as _i7;
+import 'dart:typed_data' as _i6;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_dto.dart'
-    as _i5;
-import 'package:polygonid_flutter_sdk/credential/data/dtos/revocation_status.dart'
-    as _i6;
-import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_storage_repository.dart'
-    as _i8;
-import 'package:polygonid_flutter_sdk/identity/libs/iden3core/iden3core.dart'
     as _i4;
+import 'package:polygonid_flutter_sdk/credential/data/dtos/revocation_status.dart'
+    as _i5;
+import 'package:polygonid_flutter_sdk/identity/libs/iden3core/iden3core.dart'
+    as _i3;
 import 'package:polygonid_flutter_sdk/identity/libs/smt/hash.dart' as _i2;
-import 'package:polygonid_flutter_sdk/identity/libs/smt/node.dart' as _i3;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -38,15 +35,10 @@ class _FakeBigInt_1 extends _i1.SmartFake implements BigInt {
       : super(parent, parentInvocation);
 }
 
-class _FakeNode_2 extends _i1.SmartFake implements _i3.Node {
-  _FakeNode_2(Object parent, Invocation parentInvocation)
-      : super(parent, parentInvocation);
-}
-
 /// A class which mocks [Iden3CoreLib].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockIden3CoreLib extends _i1.Mock implements _i4.Iden3CoreLib {
+class MockIden3CoreLib extends _i1.Mock implements _i3.Iden3CoreLib {
   MockIden3CoreLib() {
     _i1.throwOnMissingStub(this);
   }
@@ -84,14 +76,14 @@ class MockIden3CoreLib extends _i1.Mock implements _i4.Iden3CoreLib {
           String? pubX,
           String? pubY,
           String? signature,
-          _i5.CredentialDTO? credential,
+          _i4.CredentialDTO? credential,
           String? jsonLDDocument,
           String? schema,
           String? claimType,
           String? key,
           List<int>? values,
           int? operator,
-          _i6.RevocationStatus? revocationStatus) =>
+          _i5.RevocationStatus? revocationStatus) =>
       (super.noSuchMethod(
           Invocation.method(#prepareAtomicQueryMTPInputs, [
             challenge,
@@ -114,15 +106,15 @@ class MockIden3CoreLib extends _i1.Mock implements _i4.Iden3CoreLib {
           String? pubX,
           String? pubY,
           String? signature,
-          _i5.CredentialDTO? credential,
+          _i4.CredentialDTO? credential,
           String? jsonLDDocument,
           String? schema,
           String? claimType,
           String? key,
           List<int>? values,
           int? operator,
-          _i6.RevocationStatus? revocationStatus,
-          _i6.RevocationStatus? authRevocationStatus) =>
+          _i5.RevocationStatus? revocationStatus,
+          _i5.RevocationStatus? authRevocationStatus) =>
       (super.noSuchMethod(
           Invocation.method(#prepareAtomicQuerySigInputs, [
             challenge,
@@ -141,9 +133,9 @@ class MockIden3CoreLib extends _i1.Mock implements _i4.Iden3CoreLib {
           ]),
           returnValue: '') as String);
   @override
-  _i7.Uint8List hexToBytesOrZero(String? s) =>
+  _i6.Uint8List hexToBytesOrZero(String? s) =>
       (super.noSuchMethod(Invocation.method(#hexToBytesOrZero, [s]),
-          returnValue: _i7.Uint8List(0)) as _i7.Uint8List);
+          returnValue: _i6.Uint8List(0)) as _i6.Uint8List);
   @override
   _i2.Hash poseidonHashHashes(List<_i2.Hash>? hs) => (super.noSuchMethod(
           Invocation.method(#poseidonHashHashes, [hs]),
@@ -156,31 +148,4 @@ class MockIden3CoreLib extends _i1.Mock implements _i4.Iden3CoreLib {
           returnValue:
               _FakeBigInt_1(this, Invocation.method(#poseidonHashInts, [bis])))
       as BigInt);
-}
-
-/// A class which mocks [SMTStorageRepository].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockSMTStorageRepository extends _i1.Mock
-    implements _i8.SMTStorageRepository {
-  MockSMTStorageRepository() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  _i3.Node get(_i2.Hash? k) => (super.noSuchMethod(Invocation.method(#get, [k]),
-          returnValue: _FakeNode_2(this, Invocation.method(#get, [k])))
-      as _i3.Node);
-  @override
-  void put(_i2.Hash? k, _i3.Node? n) =>
-      super.noSuchMethod(Invocation.method(#put, [k, n]),
-          returnValueForMissingStub: null);
-  @override
-  _i2.Hash getRoot() => (super.noSuchMethod(Invocation.method(#getRoot, []),
-          returnValue: _FakeHash_0(this, Invocation.method(#getRoot, [])))
-      as _i2.Hash);
-  @override
-  void setRoot(_i2.Hash? r) =>
-      super.noSuchMethod(Invocation.method(#setRoot, [r]),
-          returnValueForMissingStub: null);
 }
