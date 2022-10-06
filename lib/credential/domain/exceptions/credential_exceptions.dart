@@ -37,3 +37,7 @@ class FetchSchemaException extends ErrorException {
 class FetchVocabException extends ErrorException {
   FetchVocabException(error) : super(error);
 }
+
+class UnsupportedSchemaFetchVocabException extends ErrorException {
+  UnsupportedSchemaFetchVocabException(error) : super(error);
+}

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 
 import '../../../common/data/exceptions/network_exceptions.dart';
@@ -77,11 +76,12 @@ class RemoteClaimDataSource {
         Map<String, dynamic>? schema = json.decode(schemaResponse.body);
         logger().d('schema: $schema');
         return schema;
+      } else {
+        throw NetworkException(schemaResponse);
       }
-      return null;
-    } catch (e) {
-      logger().e('schema error: $e');
-      return null;
+    } catch (error) {
+      logger().e('schema error: $error');
+      throw FetchSchemaException(error);
     }
   }
 
@@ -96,35 +96,32 @@ class RemoteClaimDataSource {
         schemaContext = schema['@context'];
       }
 
-      if (schemaContext != null) {
-        if (schemaContext[type]["@context"]["poly-vocab"] != null) {
-          String vocabId = schemaContext[type]["@context"]["poly-vocab"];
-          String vocabUrl = vocabId;
-          if (vocabId.toLowerCase().startsWith("ipfs://")) {
-            String vocabHash =
-                vocabId.toLowerCase().replaceFirst("ipfs://", "");
-            vocabUrl = "https://ipfs.io/ipfs/$vocabHash";
-          }
-          var vocabUri = Uri.parse(vocabUrl);
-          var vocabResponse = await get(vocabUri, headers: {
-            HttpHeaders.acceptHeader: '*/*',
-            HttpHeaders.contentTypeHeader: 'application/json',
-          });
-          if (vocabResponse.statusCode == 200) {
-            Map<String, dynamic>? vocab = json.decode(vocabResponse.body);
-            if (kDebugMode) {
-              print('vocab: $vocab');
-            }
-            return vocab;
-          }
+      if (schemaContext != null &&
+          schemaContext[type]["@context"]["poly-vocab"] != null) {
+        String vocabId = schemaContext[type]["@context"]["poly-vocab"];
+        String vocabUrl = vocabId;
+        if (vocabId.toLowerCase().startsWith("ipfs://")) {
+          String vocabHash = vocabId.toLowerCase().replaceFirst("ipfs://", "");
+          vocabUrl = "https://ipfs.io/ipfs/$vocabHash";
         }
+        var vocabUri = Uri.parse(vocabUrl);
+        var vocabResponse = await get(vocabUri, headers: {
+          HttpHeaders.acceptHeader: '*/*',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        });
+        if (vocabResponse.statusCode == 200) {
+          Map<String, dynamic>? vocab = json.decode(vocabResponse.body);
+          logger().d('vocab: $vocab');
+          return vocab;
+        } else {
+          throw NetworkException(vocabResponse);
+        }
+      } else {
+        throw UnsupportedSchemaFetchVocabException(schema);
       }
-      return null;
-    } catch (e) {
-      if (kDebugMode) {
-        print('vocab error: $e');
-      }
-      return null;
+    } catch (error) {
+      logger().e('vocab error: $error');
+      throw FetchVocabException(error);
     }
   }
 }
