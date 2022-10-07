@@ -41,8 +41,8 @@ import '../../../identity/libs/bjj/privadoid_wallet.dart';
 import '../../../proof_generation/data/data_sources/proof_scope_data_source.dart';
 import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
 import '../../../proof_generation/domain/exceptions/proof_generation_exceptions.dart';
+import '../../domain/entities/iden3_message_entity.dart';
 import '../../domain/repositories/iden3comm_repository.dart';
-import '../dtos/iden3_msg_type.dart';
 import '../dtos/response/auth/auth_body_did_doc_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_metadata_devices_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_metadata_response.dart';
@@ -91,10 +91,10 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
 
   @override
   Future<bool> authenticate(
-      {required Iden3Message iden3message,
+      {required Iden3MessageEntity iden3message,
       required String identifier,
       String? pushToken}) async {
-    if (iden3message.type == Iden3MsgType.auth) {
+    if (iden3message.type == Iden3MessageType.auth) {
       AuthRequest authRequest =
           _authRequestMapper.mapFrom(iden3message.toString());
 

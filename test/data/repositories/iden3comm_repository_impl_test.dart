@@ -15,6 +15,8 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/iden3_message.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/iden3_message_mapper.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/iden3_message_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/iden3comm_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/jwz_data_source.dart';
@@ -73,7 +75,8 @@ var exception = Exception();
 const issuerMessage =
     '{"id":"0b78a480-c710-4bd8-a4fd-454b577ca991","typ":"application/iden3comm-plain-json","type":"https://iden3-communication.io/authorization/1.0/request","thid":"0b78a480-c710-4bd8-a4fd-454b577ca991","body":{"callbackUrl":"https://issuer.polygonid.me/api/callback?sessionId=867314","reason":"test flow","scope":[]},"from":"1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ"}';
 final mockAuthRequest = AuthRequest.fromJson(jsonDecode(issuerMessage));
-final mockIden3Message = Iden3Message.fromJson(jsonDecode(issuerMessage));
+final mockIden3MessageEntity = Iden3MessageMapper(Iden3MessageTypeMapper())
+    .mapFrom(Iden3Message.fromJson(jsonDecode(issuerMessage)));
 
 final mockAuthResponse = AuthResponse(
   id: "id",
@@ -272,7 +275,7 @@ void main() {
         () async {
           await expectLater(
             repository.authenticate(
-              iden3message: mockIden3Message,
+              iden3message: mockIden3MessageEntity,
               identifier: identifier,
             ),
             completes,
@@ -289,7 +292,7 @@ void main() {
           //
           await expectLater(
             repository.authenticate(
-                iden3message: mockIden3Message, identifier: identifier),
+                iden3message: mockIden3MessageEntity, identifier: identifier),
             throwsA(isA<UnknownApiException>()),
           );
         },

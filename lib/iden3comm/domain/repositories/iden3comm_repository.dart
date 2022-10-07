@@ -1,8 +1,10 @@
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/iden3_message.dart';
 
+import '../entities/iden3_message_entity.dart';
+
 abstract class Iden3commRepository {
   Future<bool> authenticate(
-      {required Iden3Message iden3message,
+      {required Iden3MessageEntity iden3message,
       required String identifier,
       String? pushToken});
 

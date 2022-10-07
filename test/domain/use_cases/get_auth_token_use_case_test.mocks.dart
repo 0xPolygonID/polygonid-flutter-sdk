@@ -7,6 +7,8 @@ import 'dart:async' as _i3;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/iden3_message.dart'
+    as _i5;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart'
     as _i4;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart'
     as _i2;
@@ -33,7 +35,7 @@ class MockIden3commRepository extends _i1.Mock
 
   @override
   _i3.Future<bool> authenticate(
-          {_i4.Iden3Message? iden3message,
+          {_i4.Iden3MessageEntity? iden3message,
           String? identifier,
           String? pushToken}) =>
       (super.noSuchMethod(
@@ -51,7 +53,7 @@ class MockIden3commRepository extends _i1.Mock
           returnValue: _i3.Future<String>.value('')) as _i3.Future<String>);
   @override
   _i3.Future<List<Map<String, dynamic>>> getVocabsFromIden3Message(
-          {_i4.Iden3Message? iden3Message}) =>
+          {_i5.Iden3Message? iden3Message}) =>
       (super.noSuchMethod(
           Invocation.method(
               #getVocabsFromIden3Message, [], {#iden3Message: iden3Message}),

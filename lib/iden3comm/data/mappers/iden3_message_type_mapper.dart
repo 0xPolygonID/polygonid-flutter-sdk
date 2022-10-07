@@ -1,17 +1,17 @@
 import '../../../common/mappers/mapper.dart';
-import 'iden3_msg_type.dart';
+import '../../domain/entities/iden3_message_entity.dart';
 
-class Iden3MsgTypeMapper extends Mapper<Iden3MsgType, String> {
+class Iden3MessageTypeMapper extends Mapper<Iden3MessageType, String> {
   @override
-  String mapFrom(Iden3MsgType from) {
+  String mapFrom(Iden3MessageType from) {
     switch (from) {
-      case Iden3MsgType.auth:
+      case Iden3MessageType.auth:
         return "https://iden3-communication.io/authorization/1.0/request";
-      case Iden3MsgType.offer:
+      case Iden3MessageType.offer:
         return "https://iden3-communication.io/credentials/1.0/offer";
-      case Iden3MsgType.issuance:
+      case Iden3MessageType.issuance:
         return "https://iden3-communication.io/credentials/1.0/issuance-response";
-      case Iden3MsgType.contractFunctionCall:
+      case Iden3MessageType.contractFunctionCall:
         return "https://iden3-communication.io/proofs/1.0/contract-invoke-request";
       default:
         return "";
@@ -19,18 +19,18 @@ class Iden3MsgTypeMapper extends Mapper<Iden3MsgType, String> {
   }
 
   @override
-  Iden3MsgType mapTo(String to) {
+  Iden3MessageType mapTo(String to) {
     switch (to) {
       case "https://iden3-communication.io/authorization/1.0/request":
-        return Iden3MsgType.auth;
+        return Iden3MessageType.auth;
       case "https://iden3-communication.io/credentials/1.0/offer":
-        return Iden3MsgType.offer;
+        return Iden3MessageType.offer;
       case "https://iden3-communication.io/credentials/1.0/issuance-response":
-        return Iden3MsgType.issuance;
+        return Iden3MessageType.issuance;
       case "https://iden3-communication.io/proofs/1.0/contract-invoke-request":
-        return Iden3MsgType.contractFunctionCall;
+        return Iden3MessageType.contractFunctionCall;
       default:
-        return Iden3MsgType.unknown;
+        return Iden3MessageType.unknown;
     }
   }
 }
