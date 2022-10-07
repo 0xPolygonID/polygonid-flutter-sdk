@@ -14,7 +14,7 @@ abstract class Iden3commRepository {
   /// VOCABS
   /// get the vocabulary json-ld files to translate the values of the schemas
   /// to show them to end users in a natural language format in the apps
-  Future<List<Map<String, dynamic>>> getVocabsFromIden3Message(
+  Future<List<Map<String, dynamic>>> getVocabs(
       {required Iden3Message iden3Message});
 
 /*Future<List<ProofResponse>> getProofResponses(

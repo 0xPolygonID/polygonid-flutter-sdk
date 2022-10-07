@@ -345,7 +345,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getVocabsFromIden3Message(
+  Future<List<Map<String, dynamic>>> getVocabs(
       {required Iden3Message iden3Message}) async {
     List<Pair<String, String>> schemaInfos =
         SchemaInfoMapper().mapFrom(iden3Message);

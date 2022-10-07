@@ -52,12 +52,11 @@ class MockIden3commRepository extends _i1.Mock
               #getAuthToken, [], {#identifier: identifier, #message: message}),
           returnValue: _i3.Future<String>.value('')) as _i3.Future<String>);
   @override
-  _i3.Future<List<Map<String, dynamic>>> getVocabsFromIden3Message(
+  _i3.Future<List<Map<String, dynamic>>> getVocabs(
           {_i5.Iden3Message? iden3Message}) =>
       (super.noSuchMethod(
-          Invocation.method(
-              #getVocabsFromIden3Message, [], {#iden3Message: iden3Message}),
-          returnValue: _i3.Future<List<Map<String, dynamic>>>.value(
-              <Map<String, dynamic>>[])) as _i3
-          .Future<List<Map<String, dynamic>>>);
+              Invocation.method(#getVocabs, [], {#iden3Message: iden3Message}),
+              returnValue: _i3.Future<List<Map<String, dynamic>>>.value(
+                  <Map<String, dynamic>>[]))
+          as _i3.Future<List<Map<String, dynamic>>>);
 }

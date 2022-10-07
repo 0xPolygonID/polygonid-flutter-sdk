@@ -38,8 +38,7 @@ import '../../iden3comm/data/repositories/iden3comm_repository_impl.dart'
 import '../../iden3comm/domain/repositories/iden3comm_repository.dart' as _i63;
 import '../../iden3comm/domain/use_cases/authenticate_use_case.dart' as _i64;
 import '../../iden3comm/domain/use_cases/get_auth_token_use_case.dart' as _i65;
-import '../../iden3comm/domain/use_cases/get_vocabs_from_iden3message_use_case.dart'
-    as _i66;
+import '../../iden3comm/domain/use_cases/get_vocabs_use_case.dart' as _i66;
 import '../../identity/data/data_sources/jwz_data_source.dart' as _i17;
 import '../../identity/data/data_sources/lib_identity_data_source.dart' as _i18;
 import '../../identity/data/data_sources/storage_identity_data_source.dart'
@@ -277,11 +276,10 @@ _i1.GetIt $initSDKGetIt(_i1.GetIt get,
       _i64.AuthenticateUseCase(await get.getAsync<_i63.Iden3commRepository>()));
   gh.factoryAsync<_i65.GetAuthTokenUseCase>(() async =>
       _i65.GetAuthTokenUseCase(await get.getAsync<_i63.Iden3commRepository>()));
-  gh.factoryAsync<_i66.GetVocabsFromIden3MsgUseCase>(() async =>
-      _i66.GetVocabsFromIden3MsgUseCase(
-          await get.getAsync<_i63.Iden3commRepository>()));
+  gh.factoryAsync<_i66.GetVocabsUseCase>(() async =>
+      _i66.GetVocabsUseCase(await get.getAsync<_i63.Iden3commRepository>()));
   gh.factoryAsync<_i67.Iden3comm>(() async => _i67.Iden3comm(
-      await get.getAsync<_i66.GetVocabsFromIden3MsgUseCase>(),
+      await get.getAsync<_i66.GetVocabsUseCase>(),
       await get.getAsync<_i64.AuthenticateUseCase>()));
   gh.factoryAsync<_i68.FetchAndSaveClaimsUseCase>(() async =>
       _i68.FetchAndSaveClaimsUseCase(

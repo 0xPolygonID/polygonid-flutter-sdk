@@ -2,12 +2,12 @@ import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/iden3_message.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart';
 
-import '../iden3comm/domain/use_cases/get_vocabs_from_iden3message_use_case.dart';
+import '../iden3comm/domain/use_cases/get_vocabs_use_case.dart';
 
 @injectable
 class Iden3comm {
   //final GetAuthTokenUseCase _getAuthTokenUseCase;
-  final GetVocabsFromIden3MsgUseCase _getVocabsFromIden3MsgUseCase;
+  final GetVocabsUseCase _getVocabsFromIden3MsgUseCase;
   final AuthenticateUseCase _authenticateUseCase;
 
   Iden3comm(
