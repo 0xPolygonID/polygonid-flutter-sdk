@@ -3,16 +3,13 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i7;
+import 'dart:async' as _i3;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/sdk/credential_wallet.dart' as _i3;
-import 'package:polygonid_flutter_sdk/sdk/iden3comm.dart' as _i5;
-import 'package:polygonid_flutter_sdk/sdk/identity_wallet.dart' as _i2;
-import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart' as _i8;
-import 'package:polygonid_flutter_sdk/sdk/proof_generation.dart' as _i4;
+import 'package:polygonid_flutter_sdk_example/src/domain/iden3comm/repositories/iden3comm_repository.dart'
+    as _i4;
 import 'package:polygonid_flutter_sdk_example/src/domain/identity/repositories/identity_repositories.dart'
-    as _i6;
+    as _i2;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -25,146 +22,57 @@ import 'package:polygonid_flutter_sdk_example/src/domain/identity/repositories/i
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakeIdentityWallet_0 extends _i1.SmartFake
-    implements _i2.IdentityWallet {
-  _FakeIdentityWallet_0(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-}
-
-class _FakeCredentialWallet_1 extends _i1.SmartFake
-    implements _i3.CredentialWallet {
-  _FakeCredentialWallet_1(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-}
-
-class _FakeProofGeneration_2 extends _i1.SmartFake
-    implements _i4.ProofGeneration {
-  _FakeProofGeneration_2(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-}
-
-class _FakeIden3comm_3 extends _i1.SmartFake implements _i5.Iden3comm {
-  _FakeIden3comm_3(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-}
-
 /// A class which mocks [IdentityRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockIdentityRepository extends _i1.Mock
-    implements _i6.IdentityRepository {
+    implements _i2.IdentityRepository {
   MockIdentityRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i7.Future<String> createIdentity() => (super.noSuchMethod(
+  _i3.Future<String> createIdentity() => (super.noSuchMethod(
         Invocation.method(
           #createIdentity,
           [],
         ),
-        returnValue: _i7.Future<String>.value(''),
-      ) as _i7.Future<String>);
+        returnValue: _i3.Future<String>.value(''),
+      ) as _i3.Future<String>);
   @override
-  _i7.Future<String?> getCurrentIdentifier() => (super.noSuchMethod(
+  _i3.Future<String?> getCurrentIdentifier() => (super.noSuchMethod(
         Invocation.method(
           #getCurrentIdentifier,
           [],
         ),
-        returnValue: _i7.Future<String?>.value(),
-      ) as _i7.Future<String?>);
+        returnValue: _i3.Future<String?>.value(),
+      ) as _i3.Future<String?>);
 }
 
-/// A class which mocks [PolygonIdSdk].
+/// A class which mocks [Iden3CommRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockPolygonIdSdk extends _i1.Mock implements _i8.PolygonIdSdk {
-  MockPolygonIdSdk() {
+class MockIden3CommRepository extends _i1.Mock
+    implements _i4.Iden3CommRepository {
+  MockIden3CommRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i2.IdentityWallet get identity => (super.noSuchMethod(
-        Invocation.getter(#identity),
-        returnValue: _FakeIdentityWallet_0(
-          this,
-          Invocation.getter(#identity),
+  _i3.Future<void> authenticate({
+    required String? issuerMessage,
+    required String? identifier,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #authenticate,
+          [],
+          {
+            #issuerMessage: issuerMessage,
+            #identifier: identifier,
+          },
         ),
-      ) as _i2.IdentityWallet);
-  @override
-  set identity(_i2.IdentityWallet? _identity) => super.noSuchMethod(
-        Invocation.setter(
-          #identity,
-          _identity,
-        ),
-        returnValueForMissingStub: null,
-      );
-  @override
-  _i3.CredentialWallet get credential => (super.noSuchMethod(
-        Invocation.getter(#credential),
-        returnValue: _FakeCredentialWallet_1(
-          this,
-          Invocation.getter(#credential),
-        ),
-      ) as _i3.CredentialWallet);
-  @override
-  set credential(_i3.CredentialWallet? _credential) => super.noSuchMethod(
-        Invocation.setter(
-          #credential,
-          _credential,
-        ),
-        returnValueForMissingStub: null,
-      );
-  @override
-  _i4.ProofGeneration get proof => (super.noSuchMethod(
-        Invocation.getter(#proof),
-        returnValue: _FakeProofGeneration_2(
-          this,
-          Invocation.getter(#proof),
-        ),
-      ) as _i4.ProofGeneration);
-  @override
-  set proof(_i4.ProofGeneration? _proof) => super.noSuchMethod(
-        Invocation.setter(
-          #proof,
-          _proof,
-        ),
-        returnValueForMissingStub: null,
-      );
-  @override
-  _i5.Iden3comm get iden3comm => (super.noSuchMethod(
-        Invocation.getter(#iden3comm),
-        returnValue: _FakeIden3comm_3(
-          this,
-          Invocation.getter(#iden3comm),
-        ),
-      ) as _i5.Iden3comm);
-  @override
-  set iden3comm(_i5.Iden3comm? _iden3comm) => super.noSuchMethod(
-        Invocation.setter(
-          #iden3comm,
-          _iden3comm,
-        ),
-        returnValueForMissingStub: null,
-      );
+        returnValue: _i3.Future<void>.value(),
+        returnValueForMissingStub: _i3.Future<void>.value(),
+      ) as _i3.Future<void>);
 }

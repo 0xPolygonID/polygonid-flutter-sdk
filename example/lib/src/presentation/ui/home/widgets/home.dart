@@ -63,11 +63,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              Stack(
-                children: [
-                  _buildCreateIdentityButton(),
-                  _buildNavigateToNextPageButton(),
-                ],
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Stack(
+                  children: [
+                    _buildCreateIdentityButton(),
+                    _buildNavigateToNextPageButton(),
+                  ],
+                ),
               ),
             ],
           ),

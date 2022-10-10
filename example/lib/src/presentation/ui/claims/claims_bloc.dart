@@ -225,6 +225,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
   ///
   void _handleClickClaim(OnClickClaim event, Emitter<ClaimsState> emit) {
+    emit(const ClaimsState.loading());
     emit(ClaimsState.navigateToClaimDetail(event.claimModel));
   }
 
