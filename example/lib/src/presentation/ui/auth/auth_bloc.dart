@@ -1,18 +1,15 @@
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
-import 'package:polygonid_flutter_sdk_example/src/domain/iden3comm/use_cases/authenticate_use_case.dart';
-import 'package:polygonid_flutter_sdk_example/src/domain/identity/use_cases/get_identifier_use_case.dart';
+import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/models/iden3_message.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final GetIdentifierUseCase _getIdentifierUseCase;
-  final AuthenticateUseCase _authenticateUseCase;
+  final PolygonIdSdk _polygonIdSdk;
 
-  AuthBloc(this._getIdentifierUseCase, this._authenticateUseCase)
-      : super(const AuthState.initial()) {
+  AuthBloc(this._polygonIdSdk) : super(const AuthState.initial()) {
     on<ClickScanQrCodeEvent>(_handleClickScanQrCode);
     on<ScanQrCodeResponse>(_handleScanQrCodeResponse);
   }
@@ -49,7 +46,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required Emitter<AuthState> emit,
   }) async {
     emit(const AuthState.loading());
-    String? identifier = await _getIdentifierUseCase.execute();
+    String? identifier = await _polygonIdSdk.identity.getCurrentIdentifier();
 
     if (identifier == null) {
       emit(const AuthState.error(
@@ -58,11 +55,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
 
     try {
-      await _authenticateUseCase.execute(
-        param: AuthenticateParam(
-          issuerMessage: iden3message,
-          identifier: identifier,
-        ),
+      await _polygonIdSdk.iden3comm.authenticate(
+        issuerMessage: iden3message,
+        identifier: identifier,
       );
 
       emit(const AuthState.authenticated());

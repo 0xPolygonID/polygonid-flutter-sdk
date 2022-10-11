@@ -5,8 +5,6 @@ import 'package:integration_test/integration_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
-import 'package:polygonid_flutter_sdk_example/src/domain/iden3comm/repositories/iden3comm_repository.dart';
-import 'package:polygonid_flutter_sdk_example/src/domain/identity/repositories/identity_repositories.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/app.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart'
     as di;
@@ -15,7 +13,7 @@ import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/widgets/a
 import 'package:polygonid_flutter_sdk_example/utils/custom_dimensions.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
 
-import 'app_test.mocks.dart';
+//import 'app_test.mocks.dart';
 
 const String identifier = "retrievedIdentifier";
 const String invalidQrCodeScanResponse = "invalidQrCodeScanResponse";
@@ -27,32 +25,16 @@ const String validQrCodeScanResponse =
     '"body":{"callbackUrl":"https://issuer.polygonid.me/api/callback?sessionId=148757","reason":"test flow","scope":[]},'
     '"from":"1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ"}';
 
-@GenerateMocks([
-  IdentityRepository,
-  Iden3CommRepository,
-])
+@GenerateMocks([])
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
 
-  late MockIdentityRepository identityRepository;
-  late MockIden3CommRepository iden3commRepository;
-
   /// APP INTEGRATION TEST WITH MOCK DATA
   ///
-  group('app integration test with mocked data', () {
+  /*group('app integration test with mocked data', () {
     setUpAll(() async {
       await di.init();
-      identityRepository = MockIdentityRepository();
-      iden3commRepository = MockIden3CommRepository();
-
-      await di.getIt.unregister<IdentityRepository>();
-      await di.getIt.unregister<Iden3CommRepository>();
-
-      di.getIt
-          .registerLazySingleton<IdentityRepository>(() => identityRepository);
-      di.getIt.registerLazySingleton<Iden3CommRepository>(
-          () => iden3commRepository);
     });
 
     /// SPLASH PAGE
@@ -208,5 +190,5 @@ void main() {
         await widgetTester.pumpAndSettle();
       },
     );
-  });
+  });*/
 }
