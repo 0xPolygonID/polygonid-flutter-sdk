@@ -287,12 +287,7 @@ _i1.GetIt $initSDKGetIt(_i1.GetIt get,
   gh.factoryAsync<_i68.AuthenticateUseCase>(() async =>
       _i68.AuthenticateUseCase(
           await get.getAsync<_i57.Iden3commRepository>(),
-          get<_i51.ProofRepository>(),
-          await get.getAsync<_i58.IdentityRepository>(),
-          await get.getAsync<_i46.CredentialRepository>(),
           get<_i3.AuthRequestMapper>(),
-          get<_i25.ProofScopeDataSource>(),
-          get<_i33.WalletDataSource>(),
           await get.getAsync<_i66.GetProofsUseCase>(),
           await get.getAsync<_i63.GetAuthTokenUseCase>()));
   gh.factoryAsync<_i69.FetchAndSaveClaimsUseCase>(() async =>

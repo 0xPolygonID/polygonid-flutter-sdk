@@ -77,13 +77,13 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   };*/
 
   @override
-  Future<bool> authenticate(
-      {required AuthRequest authRequest,
-      required IdentityEntity identityEntity,
-      required CircuitDataEntity authData,
-      required List<Pair<ProofScopeRequest, Map<String, dynamic>>> proofList,
-      String? pushToken}) async {
-    List<ProofResponse> scope = await _getProofResponseList(proofs: proofList);
+  Future<bool> authenticate({
+    required String url,
+    required String authToken,
+    //required List<Pair<ProofScopeRequest, Map<String, dynamic>>> proofList,
+    /*String? pushToken*/
+  }) async {
+    /*List<ProofResponse> scope = await _getProofResponseList(proofs: proofList);
 
     String authResponse = await _getAuthResponse(
       identifier: identityEntity.identifier,
@@ -98,8 +98,9 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       authData: authData,
     );
 
-    Response res =
-        await _remoteIden3commDataSource.authWithToken(authToken, authRequest);
+    String url = authRequest.body!.callbackUrl!;*/
+    Response res = await _remoteIden3commDataSource.authWithToken(
+        token: authToken, url: url);
     return res.statusCode == 200;
   }
 
@@ -117,8 +118,8 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
         zKeyFile: authData.zKeyFile);
   }
 
-  ///
-  Future<List<ProofResponse>> _getProofResponseList({
+  @override
+  Future<List<ProofResponse>> getProofResponseList({
     required List<Pair<ProofScopeRequest, Map<String, dynamic>>> proofs,
   }) async {
     List<ProofResponse> proofResponseScopeList = [];
@@ -158,7 +159,8 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     return Future.value(zkProofResp);
   }
 
-  Future<String> _getAuthResponse({
+  @override
+  Future<String> getAuthResponse({
     required String identifier,
     required AuthRequest authRequest,
     required List<ProofResponse> scope,

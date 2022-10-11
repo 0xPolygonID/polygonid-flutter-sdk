@@ -6,17 +6,19 @@
 import 'dart:async' as _i3;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/common/domain/tuples.dart' as _i7;
+import 'package:polygonid_flutter_sdk/common/domain/tuples.dart' as _i8;
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart'
-    as _i4;
+    as _i6;
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/proof_scope_request.dart'
-    as _i8;
+    as _i9;
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/proof_response.dart'
+    as _i7;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart'
     as _i2;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
-    as _i5;
+    as _i4;
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart'
-    as _i6;
+    as _i5;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -39,27 +41,16 @@ class MockIden3commRepository extends _i1.Mock
   }
 
   @override
-  _i3.Future<bool> authenticate(
-          {_i4.AuthRequest? authRequest,
-          _i5.IdentityEntity? identityEntity,
-          _i6.CircuitDataEntity? authData,
-          List<_i7.Pair<_i8.ProofScopeRequest, Map<String, dynamic>>>?
-              proofList,
-          String? pushToken}) =>
+  _i3.Future<bool> authenticate({String? url, String? authToken}) =>
       (super.noSuchMethod(
-          Invocation.method(#authenticate, [], {
-            #authRequest: authRequest,
-            #identityEntity: identityEntity,
-            #authData: authData,
-            #proofList: proofList,
-            #pushToken: pushToken
-          }),
+          Invocation.method(
+              #authenticate, [], {#url: url, #authToken: authToken}),
           returnValue: _i3.Future<bool>.value(false)) as _i3.Future<bool>);
   @override
   _i3.Future<String> getAuthToken(
-          {_i5.IdentityEntity? identityEntity,
+          {_i4.IdentityEntity? identityEntity,
           String? message,
-          _i6.CircuitDataEntity? authData}) =>
+          _i5.CircuitDataEntity? authData}) =>
       (super.noSuchMethod(
           Invocation.method(#getAuthToken, [], {
             #identityEntity: identityEntity,
@@ -67,4 +58,26 @@ class MockIden3commRepository extends _i1.Mock
             #authData: authData
           }),
           returnValue: _i3.Future<String>.value('')) as _i3.Future<String>);
+  @override
+  _i3.Future<String> getAuthResponse(
+          {String? identifier,
+          _i6.AuthRequest? authRequest,
+          List<_i7.ProofResponse>? scope,
+          String? pushToken}) =>
+      (super.noSuchMethod(
+          Invocation.method(#getAuthResponse, [], {
+            #identifier: identifier,
+            #authRequest: authRequest,
+            #scope: scope,
+            #pushToken: pushToken
+          }),
+          returnValue: _i3.Future<String>.value('')) as _i3.Future<String>);
+  @override
+  _i3.Future<List<_i7.ProofResponse>> getProofResponseList(
+          {List<_i8.Pair<_i9.ProofScopeRequest, Map<String, dynamic>>>?
+              proofs}) =>
+      (super.noSuchMethod(
+          Invocation.method(#getProofResponseList, [], {#proofs: proofs}),
+          returnValue: _i3.Future<List<_i7.ProofResponse>>.value(
+              <_i7.ProofResponse>[])) as _i3.Future<List<_i7.ProofResponse>>);
 }
