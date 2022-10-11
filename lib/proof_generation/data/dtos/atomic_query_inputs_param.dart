@@ -12,7 +12,6 @@ class AtomicQueryInputsParam {
   final CredentialDTO credential;
   final String jsonLDDocument;
   final String schema;
-  final String claimType;
   final String key;
   final List<int> values;
   final int operator;
@@ -28,7 +27,6 @@ class AtomicQueryInputsParam {
       this.credential,
       this.jsonLDDocument,
       this.schema,
-      this.claimType,
       this.key,
       this.values,
       this.operator,

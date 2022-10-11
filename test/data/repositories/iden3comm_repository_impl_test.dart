@@ -9,7 +9,7 @@ import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/proof_scope_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/iden3_message.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart';
@@ -22,15 +22,11 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_re
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/jwz_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_request_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_response_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/proof_scope_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/repositories/proof_repository.dart';
 
 import '../data_sources/storage_identity_data_source_test.dart';
 import 'iden3comm_repository_impl_test.mocks.dart';
@@ -49,7 +45,7 @@ const pubX = "thePubX";
 const pubY = "thePubY";
 const privateKey = "thePrivateKey";
 const walletPrivateKey = "theWalletPrivateKey";
-final bbjjKey = Uint8List(32);
+final bjjKey = Uint8List(32);
 final mockWallet = FakeWallet();
 const identifier = "theIdentifier";
 const authClaim = "theAuthClaim";
@@ -117,30 +113,22 @@ Iden3commRepository repository = Iden3commRepositoryImpl(
     remoteIden3commDataSource,
     jwzDataSource,
     hexMapper,
-    authRequestMapper,
     proofScopeDataSource,
     storageClaimDataSource,
     claimMapper,
     filtersMapper,
-    authResponseMapper,
-    identityRepository,
-    proofRepository,
-    credentialRepository);
+    authResponseMapper);
 
 @GenerateMocks([
   WalletDataSource,
   RemoteIden3commDataSource,
   JWZDataSource,
   HexMapper,
-  AuthRequestMapper,
   ProofScopeDataSource,
   StorageClaimDataSource,
   ClaimMapper,
   FiltersMapper,
   AuthResponseMapper,
-  IdentityRepository,
-  ProofRepository,
-  CredentialRepository,
 ])
 void main() {
   group("Get auth token", () {

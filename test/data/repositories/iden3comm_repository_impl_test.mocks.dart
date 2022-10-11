@@ -26,6 +26,8 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_requ
     as _i30;
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart'
     as _i29;
+import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/proof_scope_data_source.dart'
+    as _i17;
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart'
     as _i13;
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart'
@@ -52,8 +54,6 @@ import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repo
     as _i26;
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart'
     as _i2;
-import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/proof_scope_data_source.dart'
-    as _i17;
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart'
     as _i9;
 import 'package:polygonid_flutter_sdk/proof_generation/domain/repositories/proof_repository.dart'
@@ -260,6 +260,12 @@ class MockProofScopeDataSource extends _i1.Mock
           Invocation.method(#proofScopeRulesQueryRequestFilters,
               [proofScopeRulesQueryRequest]),
           returnValue: <_i19.FilterEntity>[]) as List<_i19.FilterEntity>);
+  @override
+  Map<String, dynamic> getFieldOperatorAndValues(
+          _i18.ProofScopeRequest? scopeRequest) =>
+      (super.noSuchMethod(
+          Invocation.method(#getFieldOperatorAndValues, [scopeRequest]),
+          returnValue: <String, dynamic>{}) as Map<String, dynamic>);
 }
 
 /// A class which mocks [StorageClaimDataSource].
@@ -437,11 +443,9 @@ class MockProofRepository extends _i1.Mock implements _i27.ProofRepository {
           String? challenge,
           _i28.CredentialDTO? credential,
           String? circuitId,
-          String? claimType,
           String? key,
           List<int>? values,
           int? operator,
-          String? revStatusUrl,
           String? pubX,
           String? pubY,
           String? signature) =>
@@ -450,11 +454,9 @@ class MockProofRepository extends _i1.Mock implements _i27.ProofRepository {
                 challenge,
                 credential,
                 circuitId,
-                claimType,
                 key,
                 values,
                 operator,
-                revStatusUrl,
                 pubX,
                 pubY,
                 signature

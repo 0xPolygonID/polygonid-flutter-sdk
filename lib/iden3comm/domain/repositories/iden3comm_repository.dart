@@ -1,21 +1,28 @@
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/iden3_message.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 
-import '../entities/iden3_message_entity.dart';
+import '../../../common/domain/tuples.dart';
+import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
+import '../../data/dtos/request/auth/auth_request.dart';
+import '../../data/dtos/request/auth/proof_scope_request.dart';
 
 abstract class Iden3commRepository {
   Future<bool> authenticate(
-      {required Iden3MessageEntity iden3message,
-      required String identifier,
+      {required AuthRequest authRequest,
+      required IdentityEntity identityEntity,
+      required CircuitDataEntity authData,
+      required List<Pair<ProofScopeRequest, Map<String, dynamic>>> proofList,
       String? pushToken});
 
   Future<String> getAuthToken(
-      {required String identifier, required String message});
+      {required IdentityEntity identityEntity,
+      required String message,
+      required CircuitDataEntity authData});
 
   /// VOCABS
   /// get the vocabulary json-ld files to translate the values of the schemas
   /// to show them to end users in a natural language format in the apps
-  Future<List<Map<String, dynamic>>> getVocabs(
-      {required Iden3Message iden3Message});
+  //Future<List<Map<String, dynamic>>> getVocabs(
+  //    {required Iden3Message iden3Message});
 
 /*Future<List<ProofResponse>> getProofResponses(
       {required Iden3Message iden3message, String? challenge});

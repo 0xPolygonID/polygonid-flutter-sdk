@@ -2,7 +2,7 @@ import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/iden3_message.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart';
 
-import '../iden3comm/domain/use_cases/get_vocabs_use_case.dart';
+import '../credential/domain/use_cases/get_vocabs_use_case.dart';
 
 @injectable
 class Iden3comm {

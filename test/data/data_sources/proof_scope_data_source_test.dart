@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/proof_scope_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/proof_scope_rules_query_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/proof_scope_rules_request.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/proof_scope_data_source.dart';
 
 List<ProofScopeRequest> mockProofScopeRequestList = [
   ProofScopeRequest(
@@ -28,7 +28,8 @@ List<ProofScopeRequest> mockProofScopeRequestList = [
   ),
 ];
 
-ProofScopeRulesQueryRequest mockProofScopeRulesQueryRequest = ProofScopeRulesQueryRequest();
+ProofScopeRulesQueryRequest mockProofScopeRulesQueryRequest =
+    ProofScopeRulesQueryRequest();
 
 ProofScopeDataSource dataSource = ProofScopeDataSource();
 
