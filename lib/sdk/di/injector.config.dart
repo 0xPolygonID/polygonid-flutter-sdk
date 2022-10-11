@@ -275,7 +275,6 @@ _i1.GetIt $initSDKGetIt(_i1.GetIt get,
       get<_i51.ProofRepository>(),
       await get.getAsync<_i58.IdentityRepository>(),
       await get.getAsync<_i46.CredentialRepository>(),
-      get<_i3.AuthRequestMapper>(),
       get<_i25.ProofScopeDataSource>(),
       get<_i33.WalletDataSource>()));
   gh.factoryAsync<_i67.IdentityWallet>(() async => _i67.IdentityWallet(
@@ -287,7 +286,6 @@ _i1.GetIt $initSDKGetIt(_i1.GetIt get,
   gh.factoryAsync<_i68.AuthenticateUseCase>(() async =>
       _i68.AuthenticateUseCase(
           await get.getAsync<_i57.Iden3commRepository>(),
-          get<_i3.AuthRequestMapper>(),
           await get.getAsync<_i66.GetProofsUseCase>(),
           await get.getAsync<_i63.GetAuthTokenUseCase>()));
   gh.factoryAsync<_i69.FetchAndSaveClaimsUseCase>(() async =>
@@ -296,7 +294,8 @@ _i1.GetIt $initSDKGetIt(_i1.GetIt get,
           await get.getAsync<_i46.CredentialRepository>()));
   gh.factoryAsync<_i70.Iden3comm>(() async => _i70.Iden3comm(
       await get.getAsync<_i48.GetVocabsUseCase>(),
-      await get.getAsync<_i68.AuthenticateUseCase>()));
+      await get.getAsync<_i68.AuthenticateUseCase>(),
+      get<_i3.AuthRequestMapper>()));
   gh.factoryAsync<_i71.CredentialWallet>(() async => _i71.CredentialWallet(
       await get.getAsync<_i69.FetchAndSaveClaimsUseCase>(),
       await get.getAsync<_i47.GetClaimsUseCase>(),
