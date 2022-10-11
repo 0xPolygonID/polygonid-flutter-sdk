@@ -8,8 +8,6 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_requ
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
-import 'package:polygonid_flutter_sdk_example/src/domain/credential/use_cases/fetch_and_saves_claims_use_case.dart';
-import 'package:polygonid_flutter_sdk_example/src/domain/identity/use_cases/get_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/models/iden3_message.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_state.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/mappers/claim_model_mapper.dart';
@@ -17,14 +15,10 @@ import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/models/
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_event.dart';
 
 class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
-  final FetchAndSavesClaimsUseCase _fetchAndSavesClaimsUseCase;
-  final GetIdentifierUseCase _getIdentifierUseCase;
   final ClaimModelMapper _mapper;
   final PolygonIdSdk _polygonIdSdk;
 
   ClaimsBloc(
-    this._fetchAndSavesClaimsUseCase,
-    this._getIdentifierUseCase,
     this._mapper,
     this._polygonIdSdk,
   ) : super(const ClaimsState.initial()) {
@@ -44,7 +38,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
   ///
   Future<void> _fetchAndSaveClaims(
       FetchAndSaveClaimsEvent event, Emitter<ClaimsState> emit) async {
-    String? identifier = await _getIdentifierUseCase.execute();
+    String? identifier = await _polygonIdSdk.identity.getCurrentIdentifier();
 
     if (identifier == null || identifier.isEmpty) {
       emit(const ClaimsState.error(
@@ -93,8 +87,8 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       credentialRequestEntityList.add(entity);
     }
 
-    List<ClaimEntity> claimList = await _fetchAndSavesClaimsUseCase.execute(
-        param: credentialRequestEntityList);
+    List<ClaimEntity> claimList = await _polygonIdSdk.credential
+        .fetchAndSaveClaims(credentialRequests: credentialRequestEntityList);
 
     if (claimList.isNotEmpty) {
       add(const GetClaimsEvent());
@@ -225,6 +219,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
   ///
   void _handleClickClaim(OnClickClaim event, Emitter<ClaimsState> emit) {
+    emit(const ClaimsState.loading());
     emit(ClaimsState.navigateToClaimDetail(event.claimModel));
   }
 

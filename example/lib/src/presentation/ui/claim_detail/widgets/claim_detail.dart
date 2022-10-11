@@ -109,17 +109,20 @@ class _ClaimDetailScreenState extends State<ClaimDetailScreen> {
 
   ///
   Widget _buildRemoveClaimButton() {
-    return Align(
-      alignment: Alignment.center,
-      child: ElevatedButton(
-        onPressed: () {
-          widget._bloc
-              .add(ClaimDetailEvent.deleteClaim(claimId: widget.claimModel.id));
-        },
-        style: CustomButtonStyle.primaryButtonStyle,
-        child: Text(
-          CustomStrings.deleteClaimButtonCTA,
-          style: CustomTextStyles.primaryButtonTextStyle,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Align(
+        alignment: Alignment.center,
+        child: ElevatedButton(
+          onPressed: () {
+            widget._bloc
+                .add(ClaimDetailEvent.deleteClaim(claimId: widget.claimModel.id));
+          },
+          style: CustomButtonStyle.primaryButtonStyle,
+          child: Text(
+            CustomStrings.deleteClaimButtonCTA,
+            style: CustomTextStyles.primaryButtonTextStyle,
+          ),
         ),
       ),
     );

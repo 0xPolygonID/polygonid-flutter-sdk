@@ -5,98 +5,36 @@ import 'package:integration_test/integration_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
-import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
-import 'package:polygonid_flutter_sdk_example/src/domain/identity/repositories/identity_repositories.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/app.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart'
     as di;
 import 'package:polygonid_flutter_sdk_example/src/presentation/navigations/routes.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/widgets/auth.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_dimensions.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
 
-import 'app_test.mocks.dart';
+//import 'app_test.mocks.dart';
 
 const String identifier = "retrievedIdentifier";
-const String qrCodeScanResponse = "qrCodeScanResponse";
+const String invalidQrCodeScanResponse = "invalidQrCodeScanResponse";
+const String validQrCodeScanResponse =
+    '{"id":"193546d2-db06-4c49-8e92-686dd5c92b23",'
+    '"typ":"application/iden3comm-plain-json",'
+    '"type":"https://iden3-communication.io/authorization/1.0/request",'
+    '"thid":"193546d2-db06-4c49-8e92-686dd5c92b23",'
+    '"body":{"callbackUrl":"https://issuer.polygonid.me/api/callback?sessionId=148757","reason":"test flow","scope":[]},'
+    '"from":"1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ"}';
 
-@GenerateMocks([
-  IdentityRepository,
-  PolygonIdSdk,
-])
+@GenerateMocks([])
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
 
-  late MockIdentityRepository identityRepository;
-  late MockPolygonIdSdk polygonIdSdk;
-
-  group('app integration test with live data', () {
-    setUpAll(() async {
-      await di.init();
-    });
-
-    testWidgets(
-      'initial state, splash screen and after n seconds navigate to home',
-      (widgetTester) async {
-        await widgetTester.pumpWidget(const App());
-        await widgetTester.pumpAndSettle();
-        expect(find.byType(SvgPicture), findsOneWidget);
-
-        await widgetTester.pumpAndSettle(CustomDimensions.splashDuration);
-        expect(find.text(CustomStrings.homeDescription), findsOneWidget);
-        await widgetTester.pumpAndSettle();
-      },
-    );
-
-    testWidgets(
-      'home screen test',
-      (WidgetTester widgetTester) async {
-        await widgetTester.pumpWidget(const App());
-        await widgetTester.pumpAndSettle();
-
-        AppState state = widgetTester.state(find.byType(App));
-
-        NavigatorState navigatorState = state.navigatorKey.currentState!;
-        navigatorState.pushReplacementNamed(Routes.homePath);
-
-        await widgetTester.pumpAndSettle();
-
-        expect(find.text(CustomStrings.homeDescription), findsOneWidget);
-        expect(find.byKey(const ValueKey('identifier')), findsOneWidget);
-
-        await widgetTester.tap(find.byType(ElevatedButton));
-        await widgetTester.pumpAndSettle(const Duration(seconds: 1));
-
-        expect(find.text(CustomStrings.homeIdentifierSectionPlaceHolder),
-            findsNothing);
-
-        await widgetTester.pumpAndSettle();
-
-        navigatorState.pushReplacementNamed(Routes.homePath);
-
-        await widgetTester.pumpAndSettle(const Duration(seconds: 1));
-
-        expect(find.text(CustomStrings.homeIdentifierSectionPlaceHolder),
-            findsNothing);
-
-        await widgetTester.pumpAndSettle();
-      },
-    );
-  });
-
   /// APP INTEGRATION TEST WITH MOCK DATA
   ///
-  group('app integration test with mocked data', () {
+  /*group('app integration test with mocked data', () {
     setUpAll(() async {
       await di.init();
-      identityRepository = MockIdentityRepository();
-      polygonIdSdk = MockPolygonIdSdk();
-
-      await di.getIt.unregister<PolygonIdSdk>();
-      await di.getIt.unregister<IdentityRepository>();
-      di.getIt.registerLazySingleton<PolygonIdSdk>(() => polygonIdSdk);
-      di.getIt
-          .registerLazySingleton<IdentityRepository>(() => identityRepository);
     });
 
     /// SPLASH PAGE
@@ -181,12 +119,17 @@ void main() {
     testWidgets(
       'authentication screen test',
       (WidgetTester widgetTester) async {
-        await widgetTester.pumpWidget(const App());
-        await widgetTester.pumpAndSettle();
-
-        AppState state = widgetTester.state(find.byType(App));
-        NavigatorState navigatorState = state.navigatorKey.currentState!;
-        navigatorState.pushReplacementNamed(Routes.authPath);
+        final key = GlobalKey<NavigatorState>();
+        await widgetTester.pumpWidget(
+          MaterialApp(
+            navigatorKey: key,
+            initialRoute: Routes.authPath,
+            routes: {
+              Routes.authPath: (BuildContext context) => AuthScreen(),
+              Routes.qrCodeScannerPath: (BuildContext context) => Container(),
+            },
+          ),
+        );
 
         await widgetTester.pump();
         await widgetTester.pumpAndSettle();
@@ -194,20 +137,58 @@ void main() {
 
         await widgetTester.pump();
 
-        when(polygonIdSdk.identity.getCurrentIdentifier())
-            .thenAnswer((realInvocation) => Future.value(null));
-
         await widgetTester.pumpAndSettle();
 
+        // Tap to scan code and then return null from scanning page
         await widgetTester.tap(find.byType(ElevatedButton));
         await widgetTester.pumpAndSettle();
-        navigatorState.pop(null);
+
+        key.currentState?.pop(null);
         await widgetTester.pumpAndSettle();
 
         expect(find.text('no qr code scanned'), findsOneWidget);
 
+        //Tap to scan and then return an invalid qrCode
+        await widgetTester.tap(find.byType(ElevatedButton));
+        await widgetTester.pumpAndSettle();
+
+        key.currentState?.pop(invalidQrCodeScanResponse);
+        await widgetTester.pumpAndSettle();
+
+        expect(find.text('Scanned code is not valid'), findsOneWidget);
+
+        //Tap to scan and then return a valid qrCode but identity not yet created
+        await widgetTester.tap(find.byType(ElevatedButton));
+        await widgetTester.pumpAndSettle();
+
+        when(identityRepository.getCurrentIdentifier())
+            .thenAnswer((realInvocation) => Future.value(null));
+
+        key.currentState?.pop(validQrCodeScanResponse);
+        await widgetTester.pumpAndSettle();
+
+        expect(find.text('an identity is needed before trying to authenticate'),
+            findsOneWidget);
+
+        //Tap to scan and then return a valid qrCode
+        await widgetTester.tap(find.byType(ElevatedButton));
+        await widgetTester.pumpAndSettle();
+
+        when(identityRepository.getCurrentIdentifier())
+            .thenAnswer((realInvocation) => Future.value(identifier));
+
+        when(iden3commRepository.authenticate(
+                issuerMessage: anyNamed('issuerMessage'),
+                identifier: anyNamed('identifier')))
+            .thenAnswer((realInvocation) => Future.value());
+
+        key.currentState?.pop(validQrCodeScanResponse);
+        await widgetTester.pumpAndSettle();
+
+        expect(find.text('Authenticated successfully'), findsOneWidget);
+
         await widgetTester.pumpAndSettle();
       },
     );
-  });
+  });*/
 }

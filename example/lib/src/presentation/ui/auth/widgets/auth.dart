@@ -65,12 +65,15 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
               ),
             ),
-            Stack(
-              children: [
-                _buildBlocListener(),
-                _buildAuthConnectButton(),
-                _buildNavigateToNextPageButton(),
-              ],
+            Padding(
+              padding: const EdgeInsets.only(bottom:16),
+              child: Stack(
+                children: [
+                  _buildBlocListener(),
+                  _buildAuthConnectButton(),
+                  _buildNavigateToNextPageButton(),
+                ],
+              ),
             ),
           ],
         ),

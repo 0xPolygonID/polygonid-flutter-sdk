@@ -108,12 +108,15 @@ class _ClaimsScreenState extends State<ClaimsScreen> {
 
   ///
   Widget _buildBottomBar() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        _buildRemoveAllClaimsButton(),
-        _buildClaimsConnectButton(),
-      ],
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildRemoveAllClaimsButton(),
+          _buildClaimsConnectButton(),
+        ],
+      ),
     );
   }
 
