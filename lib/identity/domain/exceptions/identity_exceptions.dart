@@ -11,5 +11,3 @@ class UnknownIdentityException implements Exception {
 
   UnknownIdentityException(this.identifier);
 }
-
-

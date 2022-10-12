@@ -66,7 +66,7 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom:16),
+              padding: const EdgeInsets.only(bottom: 16),
               child: Stack(
                 children: [
                   _buildBlocListener(),
