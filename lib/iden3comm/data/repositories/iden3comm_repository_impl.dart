@@ -20,7 +20,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/proof_sco
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/proof_response.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_response_mapper.dart';
 import 'package:sembast/sembast.dart';
 import 'package:uuid/uuid.dart';
@@ -39,7 +38,6 @@ import '../dtos/response/auth/auth_body_did_doc_service_response.dart';
 import '../mappers/proof_response_mapper.dart';
 
 class Iden3commRepositoryImpl extends Iden3commRepository {
-  final WalletDataSource _walletDataSource;
   final RemoteIden3commDataSource _remoteIden3commDataSource;
   final JWZDataSource _jwzDataSource;
   final HexMapper _hexMapper;
@@ -48,12 +46,8 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   final ClaimMapper _claimMapper;
   final FiltersMapper _filtersMapper;
   final AuthResponseMapper _authResponseMapper;
-  //final IdentityRepository _identityRepository;
-  //final ProofRepository _proofRepository;
-  //final CredentialRepository _credentialRepository;
 
   Iden3commRepositoryImpl(
-    this._walletDataSource,
     this._remoteIden3commDataSource,
     this._jwzDataSource,
     this._hexMapper,
@@ -62,43 +56,13 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     this._claimMapper,
     this._filtersMapper,
     this._authResponseMapper,
-    //this._identityRepository,
-    //this._proofRepository,
-    //this._credentialRepository,
   );
-
-  /*static const Map<String, int> _queryOperators = {
-    "\$noop": 0,
-    "\$eq": 1,
-    "\$lt": 2,
-    "\$gt": 3,
-    "\$in": 4,
-    "\$nin": 5,
-  };*/
 
   @override
   Future<bool> authenticate({
     required String url,
     required String authToken,
-    //required List<Pair<ProofScopeRequest, Map<String, dynamic>>> proofList,
-    /*String? pushToken*/
   }) async {
-    /*List<ProofResponse> scope = await _getProofResponseList(proofs: proofList);
-
-    String authResponse = await _getAuthResponse(
-      identifier: identityEntity.identifier,
-      authRequest: authRequest,
-      scope: scope,
-      pushToken: pushToken,
-    );
-
-    String authToken = await getAuthToken(
-      identityEntity: identityEntity,
-      message: authResponse,
-      authData: authData,
-    );
-
-    String url = authRequest.body!.callbackUrl!;*/
     Response res = await _remoteIden3commDataSource.authWithToken(
         token: authToken, url: url);
     return res.statusCode == 200;
@@ -136,6 +100,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     return proofResponseScopeList;
   }
 
+  ///
   Future<List<ClaimEntity>> _getClaimsFromScope(
       ProofScopeRequest proofReq) async {
     List<FilterEntity> filters = _proofScopeDataSource

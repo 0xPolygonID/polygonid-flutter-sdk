@@ -216,7 +216,6 @@ _i1.GetIt $initSDKGetIt(_i1.GetIt get,
       _i48.GetVocabsUseCase(await get.getAsync<_i46.CredentialRepository>()));
   gh.factoryAsync<_i49.Iden3commRepositoryImpl>(() async =>
       _i49.Iden3commRepositoryImpl(
-          get<_i33.WalletDataSource>(),
           get<_i29.RemoteIden3commDataSource>(),
           get<_i17.JWZDataSource>(),
           get<_i12.HexMapper>(),
