@@ -6,7 +6,9 @@ import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/domain/repositories/proof_repository.dart';
 
+import 'create_identity_use_case_test.mocks.dart';
 import 'get_auth_token_use_case_test.mocks.dart';
 
 // Data
@@ -22,11 +24,14 @@ var exception = Exception();
 
 // Dependencies
 MockIden3commRepository iden3commRepository = MockIden3commRepository();
+MockProofRepository proofRepository = MockProofRepository();
+MockIdentityRepository identityRepository = MockIdentityRepository();
 
 // Tested instance
-GetAuthTokenUseCase useCase = GetAuthTokenUseCase(iden3commRepository);
+GetAuthTokenUseCase useCase = GetAuthTokenUseCase(
+    iden3commRepository, proofRepository, identityRepository);
 
-@GenerateMocks([Iden3commRepository])
+@GenerateMocks([Iden3commRepository, ProofRepository])
 void main() {
   test(
       "Given an identifier and a message, when I call execute, then I expect a String to be returned",

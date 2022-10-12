@@ -3,10 +3,13 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i3;
+import 'dart:async' as _i4;
+import 'dart:typed_data' as _i11;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/common/domain/tuples.dart' as _i8;
+import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_dto.dart'
+    as _i12;
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart'
     as _i6;
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/proof_scope_request.dart'
@@ -14,11 +17,13 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/proof_sco
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/proof_response.dart'
     as _i7;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart'
-    as _i2;
+    as _i3;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
-    as _i4;
-import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart'
     as _i5;
+import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart'
+    as _i2;
+import 'package:polygonid_flutter_sdk/proof_generation/domain/repositories/proof_repository.dart'
+    as _i10;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -31,35 +36,41 @@ import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_d
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
+class _FakeCircuitDataEntity_0 extends _i1.SmartFake
+    implements _i2.CircuitDataEntity {
+  _FakeCircuitDataEntity_0(Object parent, Invocation parentInvocation)
+      : super(parent, parentInvocation);
+}
+
 /// A class which mocks [Iden3commRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockIden3commRepository extends _i1.Mock
-    implements _i2.Iden3commRepository {
+    implements _i3.Iden3commRepository {
   MockIden3commRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<bool> authenticate({String? url, String? authToken}) =>
+  _i4.Future<bool> authenticate({String? url, String? authToken}) =>
       (super.noSuchMethod(
           Invocation.method(
               #authenticate, [], {#url: url, #authToken: authToken}),
-          returnValue: _i3.Future<bool>.value(false)) as _i3.Future<bool>);
+          returnValue: _i4.Future<bool>.value(false)) as _i4.Future<bool>);
   @override
-  _i3.Future<String> getAuthToken(
-          {_i4.IdentityEntity? identityEntity,
+  _i4.Future<String> getAuthToken(
+          {_i5.IdentityEntity? identityEntity,
           String? message,
-          _i5.CircuitDataEntity? authData}) =>
+          _i2.CircuitDataEntity? authData}) =>
       (super.noSuchMethod(
           Invocation.method(#getAuthToken, [], {
             #identityEntity: identityEntity,
             #message: message,
             #authData: authData
           }),
-          returnValue: _i3.Future<String>.value('')) as _i3.Future<String>);
+          returnValue: _i4.Future<String>.value('')) as _i4.Future<String>);
   @override
-  _i3.Future<String> getAuthResponse(
+  _i4.Future<String> getAuthResponse(
           {String? identifier,
           _i6.AuthRequest? authRequest,
           List<_i7.ProofResponse>? scope,
@@ -71,13 +82,70 @@ class MockIden3commRepository extends _i1.Mock
             #scope: scope,
             #pushToken: pushToken
           }),
-          returnValue: _i3.Future<String>.value('')) as _i3.Future<String>);
+          returnValue: _i4.Future<String>.value('')) as _i4.Future<String>);
   @override
-  _i3.Future<List<_i7.ProofResponse>> getProofResponseList(
+  _i4.Future<List<_i7.ProofResponse>> getProofResponseList(
           {List<_i8.Pair<_i9.ProofScopeRequest, Map<String, dynamic>>>?
               proofs}) =>
       (super.noSuchMethod(
           Invocation.method(#getProofResponseList, [], {#proofs: proofs}),
-          returnValue: _i3.Future<List<_i7.ProofResponse>>.value(
-              <_i7.ProofResponse>[])) as _i3.Future<List<_i7.ProofResponse>>);
+          returnValue: _i4.Future<List<_i7.ProofResponse>>.value(
+              <_i7.ProofResponse>[])) as _i4.Future<List<_i7.ProofResponse>>);
+}
+
+/// A class which mocks [ProofRepository].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockProofRepository extends _i1.Mock implements _i10.ProofRepository {
+  MockProofRepository() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.Future<_i2.CircuitDataEntity> loadCircuitFiles(String? circuitId) =>
+      (super.noSuchMethod(Invocation.method(#loadCircuitFiles, [circuitId]),
+              returnValue: _i4.Future<_i2.CircuitDataEntity>.value(
+                  _FakeCircuitDataEntity_0(
+                      this, Invocation.method(#loadCircuitFiles, [circuitId]))))
+          as _i4.Future<_i2.CircuitDataEntity>);
+  @override
+  _i4.Future<_i11.Uint8List?> calculateAtomicQueryInputs(
+          String? challenge,
+          _i12.CredentialDTO? credential,
+          String? circuitId,
+          String? key,
+          List<int>? values,
+          int? operator,
+          String? pubX,
+          String? pubY,
+          String? signature) =>
+      (super.noSuchMethod(
+              Invocation.method(#calculateAtomicQueryInputs, [
+                challenge,
+                credential,
+                circuitId,
+                key,
+                values,
+                operator,
+                pubX,
+                pubY,
+                signature
+              ]),
+              returnValue: _i4.Future<_i11.Uint8List?>.value())
+          as _i4.Future<_i11.Uint8List?>);
+  @override
+  _i4.Future<_i11.Uint8List?> calculateWitness(
+          _i2.CircuitDataEntity? circuitData,
+          _i11.Uint8List? atomicQueryInputs) =>
+      (super.noSuchMethod(
+              Invocation.method(
+                  #calculateWitness, [circuitData, atomicQueryInputs]),
+              returnValue: _i4.Future<_i11.Uint8List?>.value())
+          as _i4.Future<_i11.Uint8List?>);
+  @override
+  _i4.Future<Map<String, dynamic>?> prove(
+          _i2.CircuitDataEntity? circuitData, _i11.Uint8List? wtnsBytes) =>
+      (super.noSuchMethod(Invocation.method(#prove, [circuitData, wtnsBytes]),
+              returnValue: _i4.Future<Map<String, dynamic>?>.value())
+          as _i4.Future<Map<String, dynamic>?>);
 }
