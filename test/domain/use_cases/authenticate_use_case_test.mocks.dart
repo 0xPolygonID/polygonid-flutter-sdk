@@ -15,6 +15,8 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/proof_re
     as _i7;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart'
     as _i2;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proofs_use_case.dart'
+    as _i10;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
     as _i4;
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart'
@@ -80,4 +82,22 @@ class MockIden3commRepository extends _i1.Mock
           Invocation.method(#getProofResponseList, [], {#proofs: proofs}),
           returnValue: _i3.Future<List<_i7.ProofResponse>>.value(
               <_i7.ProofResponse>[])) as _i3.Future<List<_i7.ProofResponse>>);
+}
+
+/// A class which mocks [GetProofsUseCase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetProofsUseCase extends _i1.Mock implements _i10.GetProofsUseCase {
+  MockGetProofsUseCase() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i3.Future<List<_i8.Pair<_i9.ProofScopeRequest, Map<String, dynamic>>>> execute(
+          {_i10.GetProofsParam? param}) =>
+      (super.noSuchMethod(Invocation.method(#execute, [], {#param: param}),
+          returnValue: _i3.Future<
+                  List<_i8.Pair<_i9.ProofScopeRequest, Map<String, dynamic>>>>.value(
+              <_i8.Pair<_i9.ProofScopeRequest, Map<String, dynamic>>>[])) as _i3
+          .Future<List<_i8.Pair<_i9.ProofScopeRequest, Map<String, dynamic>>>>);
 }

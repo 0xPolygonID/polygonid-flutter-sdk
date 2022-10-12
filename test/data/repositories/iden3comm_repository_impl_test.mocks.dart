@@ -3,44 +3,40 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i8;
+import 'dart:async' as _i7;
 import 'dart:typed_data' as _i9;
 
-import 'package:http/http.dart' as _i3;
+import 'package:http/http.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
-    as _i15;
-import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart'
-    as _i17;
-import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart'
-    as _i5;
-import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart'
-    as _i18;
-import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart'
-    as _i19;
-import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
-    as _i4;
-import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/proof_scope_data_source.dart'
     as _i13;
-import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart'
-    as _i10;
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/proof_scope_request.dart'
-    as _i14;
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/proof_scope_rules_query_request.dart'
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart'
+    as _i15;
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart'
+    as _i4;
+import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart'
     as _i16;
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart'
-    as _i21;
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/jwz_data_source.dart'
+import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart'
+    as _i17;
+import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
+    as _i3;
+import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/proof_scope_data_source.dart'
     as _i11;
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart'
-    as _i7;
-import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_response_mapper.dart'
-    as _i20;
-import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart'
+import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart'
+    as _i6;
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/proof_scope_request.dart'
     as _i12;
-import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart'
-    as _i2;
-import 'package:sembast/sembast.dart' as _i6;
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/proof_scope_rules_query_request.dart'
+    as _i14;
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart'
+    as _i19;
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/jwz_data_source.dart'
+    as _i8;
+import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_response_mapper.dart'
+    as _i18;
+import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart'
+    as _i10;
+import 'package:sembast/sembast.dart' as _i5;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -53,86 +49,53 @@ import 'package:sembast/sembast.dart' as _i6;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakePrivadoIdWallet_0 extends _i1.SmartFake
-    implements _i2.PrivadoIdWallet {
-  _FakePrivadoIdWallet_0(Object parent, Invocation parentInvocation)
+class _FakeClient_0 extends _i1.SmartFake implements _i2.Client {
+  _FakeClient_0(Object parent, Invocation parentInvocation)
       : super(parent, parentInvocation);
 }
 
-class _FakeClient_1 extends _i1.SmartFake implements _i3.Client {
-  _FakeClient_1(Object parent, Invocation parentInvocation)
+class _FakeResponse_1 extends _i1.SmartFake implements _i2.Response {
+  _FakeResponse_1(Object parent, Invocation parentInvocation)
       : super(parent, parentInvocation);
 }
 
-class _FakeResponse_2 extends _i1.SmartFake implements _i3.Response {
-  _FakeResponse_2(Object parent, Invocation parentInvocation)
+class _FakeClaimEntity_2 extends _i1.SmartFake implements _i3.ClaimEntity {
+  _FakeClaimEntity_2(Object parent, Invocation parentInvocation)
       : super(parent, parentInvocation);
 }
 
-class _FakeClaimEntity_3 extends _i1.SmartFake implements _i4.ClaimEntity {
-  _FakeClaimEntity_3(Object parent, Invocation parentInvocation)
+class _FakeClaimDTO_3 extends _i1.SmartFake implements _i4.ClaimDTO {
+  _FakeClaimDTO_3(Object parent, Invocation parentInvocation)
       : super(parent, parentInvocation);
 }
 
-class _FakeClaimDTO_4 extends _i1.SmartFake implements _i5.ClaimDTO {
-  _FakeClaimDTO_4(Object parent, Invocation parentInvocation)
+class _FakeFilter_4 extends _i1.SmartFake implements _i5.Filter {
+  _FakeFilter_4(Object parent, Invocation parentInvocation)
       : super(parent, parentInvocation);
-}
-
-class _FakeFilter_5 extends _i1.SmartFake implements _i6.Filter {
-  _FakeFilter_5(Object parent, Invocation parentInvocation)
-      : super(parent, parentInvocation);
-}
-
-/// A class which mocks [WalletDataSource].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockWalletDataSource extends _i1.Mock implements _i7.WalletDataSource {
-  MockWalletDataSource() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  _i8.Future<_i2.PrivadoIdWallet> createWallet({_i9.Uint8List? privateKey}) =>
-      (super.noSuchMethod(
-              Invocation.method(#createWallet, [], {#privateKey: privateKey}),
-              returnValue: _i8.Future<_i2.PrivadoIdWallet>.value(
-                  _FakePrivadoIdWallet_0(
-                      this,
-                      Invocation.method(
-                          #createWallet, [], {#privateKey: privateKey}))))
-          as _i8.Future<_i2.PrivadoIdWallet>);
-  @override
-  _i8.Future<String> signMessage(
-          {_i9.Uint8List? privateKey, String? message}) =>
-      (super.noSuchMethod(
-          Invocation.method(
-              #signMessage, [], {#privateKey: privateKey, #message: message}),
-          returnValue: _i8.Future<String>.value('')) as _i8.Future<String>);
 }
 
 /// A class which mocks [RemoteIden3commDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockRemoteIden3commDataSource extends _i1.Mock
-    implements _i10.RemoteIden3commDataSource {
+    implements _i6.RemoteIden3commDataSource {
   MockRemoteIden3commDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Client get client => (super.noSuchMethod(Invocation.getter(#client),
-          returnValue: _FakeClient_1(this, Invocation.getter(#client)))
-      as _i3.Client);
+  _i2.Client get client => (super.noSuchMethod(Invocation.getter(#client),
+          returnValue: _FakeClient_0(this, Invocation.getter(#client)))
+      as _i2.Client);
   @override
-  _i8.Future<_i3.Response> authWithToken({String? token, String? url}) =>
+  _i7.Future<_i2.Response> authWithToken({String? token, String? url}) =>
       (super.noSuchMethod(
               Invocation.method(#authWithToken, [], {#token: token, #url: url}),
-              returnValue: _i8.Future<_i3.Response>.value(_FakeResponse_2(
+              returnValue: _i7.Future<_i2.Response>.value(_FakeResponse_1(
                   this,
                   Invocation.method(
                       #authWithToken, [], {#token: token, #url: url}))))
-          as _i8.Future<_i3.Response>);
+          as _i7.Future<_i2.Response>);
   @override
   void throwExceptionOnStatusCode(int? statusCode, String? responseBody) =>
       super.noSuchMethod(
@@ -144,13 +107,13 @@ class MockRemoteIden3commDataSource extends _i1.Mock
 /// A class which mocks [JWZDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockJWZDataSource extends _i1.Mock implements _i11.JWZDataSource {
+class MockJWZDataSource extends _i1.Mock implements _i8.JWZDataSource {
   MockJWZDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i8.Future<String> getAuthToken(
+  _i7.Future<String> getAuthToken(
           {_i9.Uint8List? privateKey,
           String? authClaim,
           String? message,
@@ -166,13 +129,13 @@ class MockJWZDataSource extends _i1.Mock implements _i11.JWZDataSource {
             #datFile: datFile,
             #zKeyFile: zKeyFile
           }),
-          returnValue: _i8.Future<String>.value('')) as _i8.Future<String>);
+          returnValue: _i7.Future<String>.value('')) as _i7.Future<String>);
 }
 
 /// A class which mocks [HexMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockHexMapper extends _i1.Mock implements _i12.HexMapper {
+class MockHexMapper extends _i1.Mock implements _i10.HexMapper {
   MockHexMapper() {
     _i1.throwOnMissingStub(this);
   }
@@ -191,29 +154,29 @@ class MockHexMapper extends _i1.Mock implements _i12.HexMapper {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockProofScopeDataSource extends _i1.Mock
-    implements _i13.ProofScopeDataSource {
+    implements _i11.ProofScopeDataSource {
   MockProofScopeDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  List<_i14.ProofScopeRequest> filteredProofScopeRequestList(
-          List<_i14.ProofScopeRequest>? proofScopeRequestList) =>
+  List<_i12.ProofScopeRequest> filteredProofScopeRequestList(
+          List<_i12.ProofScopeRequest>? proofScopeRequestList) =>
       (super.noSuchMethod(
               Invocation.method(
                   #filteredProofScopeRequestList, [proofScopeRequestList]),
-              returnValue: <_i14.ProofScopeRequest>[])
-          as List<_i14.ProofScopeRequest>);
+              returnValue: <_i12.ProofScopeRequest>[])
+          as List<_i12.ProofScopeRequest>);
   @override
-  List<_i15.FilterEntity> proofScopeRulesQueryRequestFilters(
-          _i16.ProofScopeRulesQueryRequest? proofScopeRulesQueryRequest) =>
+  List<_i13.FilterEntity> proofScopeRulesQueryRequestFilters(
+          _i14.ProofScopeRulesQueryRequest? proofScopeRulesQueryRequest) =>
       (super.noSuchMethod(
           Invocation.method(#proofScopeRulesQueryRequestFilters,
               [proofScopeRulesQueryRequest]),
-          returnValue: <_i15.FilterEntity>[]) as List<_i15.FilterEntity>);
+          returnValue: <_i13.FilterEntity>[]) as List<_i13.FilterEntity>);
   @override
   Map<String, dynamic> getFieldOperatorAndValues(
-          _i14.ProofScopeRequest? scopeRequest) =>
+          _i12.ProofScopeRequest? scopeRequest) =>
       (super.noSuchMethod(
           Invocation.method(#getFieldOperatorAndValues, [scopeRequest]),
           returnValue: <String, dynamic>{}) as Map<String, dynamic>);
@@ -223,95 +186,95 @@ class MockProofScopeDataSource extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockStorageClaimDataSource extends _i1.Mock
-    implements _i17.StorageClaimDataSource {
+    implements _i15.StorageClaimDataSource {
   MockStorageClaimDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i8.Future<void> storeClaims({List<_i5.ClaimDTO>? claims}) => (super
+  _i7.Future<void> storeClaims({List<_i4.ClaimDTO>? claims}) => (super
           .noSuchMethod(Invocation.method(#storeClaims, [], {#claims: claims}),
-              returnValue: _i8.Future<void>.value(),
-              returnValueForMissingStub: _i8.Future<void>.value())
-      as _i8.Future<void>);
+              returnValue: _i7.Future<void>.value(),
+              returnValueForMissingStub: _i7.Future<void>.value())
+      as _i7.Future<void>);
   @override
-  _i8.Future<void> storeClaimsTransact(
-          {_i6.DatabaseClient? transaction, List<_i5.ClaimDTO>? claims}) =>
+  _i7.Future<void> storeClaimsTransact(
+          {_i5.DatabaseClient? transaction, List<_i4.ClaimDTO>? claims}) =>
       (super.noSuchMethod(
               Invocation.method(#storeClaimsTransact, [],
                   {#transaction: transaction, #claims: claims}),
-              returnValue: _i8.Future<void>.value(),
-              returnValueForMissingStub: _i8.Future<void>.value())
-          as _i8.Future<void>);
+              returnValue: _i7.Future<void>.value(),
+              returnValueForMissingStub: _i7.Future<void>.value())
+          as _i7.Future<void>);
   @override
-  _i8.Future<void> removeClaims({List<String>? ids}) => (super.noSuchMethod(
+  _i7.Future<void> removeClaims({List<String>? ids}) => (super.noSuchMethod(
       Invocation.method(#removeClaims, [], {#ids: ids}),
-      returnValue: _i8.Future<void>.value(),
-      returnValueForMissingStub: _i8.Future<void>.value()) as _i8.Future<void>);
+      returnValue: _i7.Future<void>.value(),
+      returnValueForMissingStub: _i7.Future<void>.value()) as _i7.Future<void>);
   @override
-  _i8.Future<void> removeClaimsTransact(
-          {_i6.DatabaseClient? transaction, List<String>? ids}) =>
+  _i7.Future<void> removeClaimsTransact(
+          {_i5.DatabaseClient? transaction, List<String>? ids}) =>
       (super.noSuchMethod(
               Invocation.method(#removeClaimsTransact, [],
                   {#transaction: transaction, #ids: ids}),
-              returnValue: _i8.Future<void>.value(),
-              returnValueForMissingStub: _i8.Future<void>.value())
-          as _i8.Future<void>);
+              returnValue: _i7.Future<void>.value(),
+              returnValueForMissingStub: _i7.Future<void>.value())
+          as _i7.Future<void>);
   @override
-  _i8.Future<List<_i5.ClaimDTO>> getClaims({_i6.Filter? filter}) =>
+  _i7.Future<List<_i4.ClaimDTO>> getClaims({_i5.Filter? filter}) =>
       (super.noSuchMethod(Invocation.method(#getClaims, [], {#filter: filter}),
               returnValue:
-                  _i8.Future<List<_i5.ClaimDTO>>.value(<_i5.ClaimDTO>[]))
-          as _i8.Future<List<_i5.ClaimDTO>>);
+                  _i7.Future<List<_i4.ClaimDTO>>.value(<_i4.ClaimDTO>[]))
+          as _i7.Future<List<_i4.ClaimDTO>>);
 }
 
 /// A class which mocks [ClaimMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockClaimMapper extends _i1.Mock implements _i18.ClaimMapper {
+class MockClaimMapper extends _i1.Mock implements _i16.ClaimMapper {
   MockClaimMapper() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.ClaimEntity mapFrom(_i5.ClaimDTO? from) =>
+  _i3.ClaimEntity mapFrom(_i4.ClaimDTO? from) =>
       (super.noSuchMethod(Invocation.method(#mapFrom, [from]),
               returnValue:
-                  _FakeClaimEntity_3(this, Invocation.method(#mapFrom, [from])))
-          as _i4.ClaimEntity);
+                  _FakeClaimEntity_2(this, Invocation.method(#mapFrom, [from])))
+          as _i3.ClaimEntity);
   @override
-  _i5.ClaimDTO mapTo(_i4.ClaimEntity? to) => (super.noSuchMethod(
+  _i4.ClaimDTO mapTo(_i3.ClaimEntity? to) => (super.noSuchMethod(
           Invocation.method(#mapTo, [to]),
-          returnValue: _FakeClaimDTO_4(this, Invocation.method(#mapTo, [to])))
-      as _i5.ClaimDTO);
+          returnValue: _FakeClaimDTO_3(this, Invocation.method(#mapTo, [to])))
+      as _i4.ClaimDTO);
 }
 
 /// A class which mocks [FiltersMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockFiltersMapper extends _i1.Mock implements _i19.FiltersMapper {
+class MockFiltersMapper extends _i1.Mock implements _i17.FiltersMapper {
   MockFiltersMapper() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i6.Filter mapTo(List<_i15.FilterEntity>? to) =>
+  _i5.Filter mapTo(List<_i13.FilterEntity>? to) =>
       (super.noSuchMethod(Invocation.method(#mapTo, [to]),
-              returnValue: _FakeFilter_5(this, Invocation.method(#mapTo, [to])))
-          as _i6.Filter);
+              returnValue: _FakeFilter_4(this, Invocation.method(#mapTo, [to])))
+          as _i5.Filter);
 }
 
 /// A class which mocks [AuthResponseMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockAuthResponseMapper extends _i1.Mock
-    implements _i20.AuthResponseMapper {
+    implements _i18.AuthResponseMapper {
   MockAuthResponseMapper() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  String mapFrom(_i21.AuthResponse? from) =>
+  String mapFrom(_i19.AuthResponse? from) =>
       (super.noSuchMethod(Invocation.method(#mapFrom, [from]), returnValue: '')
           as String);
 }

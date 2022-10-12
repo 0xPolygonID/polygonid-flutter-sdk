@@ -38,17 +38,20 @@ void main() {
       () async {
     // Given
     when(iden3commRepository.getAuthToken(
-            identifier: anyNamed('identifier'), message: anyNamed('message')))
-        .thenAnswer((realInvocation) => Future.value(result));
+      identityEntity: anyNamed('identityEntity'),
+      message: anyNamed('message'),
+      authData: anyNamed('authData'),
+    )).thenAnswer((realInvocation) => Future.value(result));
 
     // When
     expect(await useCase.execute(param: param), result);
 
     // Then
     var authCaptured = verify(iden3commRepository.getAuthToken(
-            identifier: captureAnyNamed('identifier'),
-            message: captureAnyNamed('message')))
-        .captured;
+      identityEntity: anyNamed('identityEntity'),
+      message: anyNamed('message'),
+      authData: anyNamed('authData'),
+    )).captured;
     expect(authCaptured[0], identifier);
     expect(authCaptured[1], message);
   });
@@ -58,17 +61,20 @@ void main() {
       () async {
     // Given
     when(iden3commRepository.getAuthToken(
-            identifier: anyNamed('identifier'), message: anyNamed('message')))
-        .thenAnswer((realInvocation) => Future.error(exception));
+      identityEntity: anyNamed('identityEntity'),
+      message: anyNamed('message'),
+      authData: anyNamed('authData'),
+    )).thenAnswer((realInvocation) => Future.error(exception));
 
     // When
     await expectLater(useCase.execute(param: param), throwsA(exception));
 
     // Then
     var authCaptured = verify(iden3commRepository.getAuthToken(
-            identifier: captureAnyNamed('identifier'),
-            message: captureAnyNamed('message')))
-        .captured;
+      identityEntity: anyNamed('identityEntity'),
+      message: anyNamed('message'),
+      authData: anyNamed('authData'),
+    )).captured;
     expect(authCaptured[0], identifier);
     expect(authCaptured[1], message);
   });
