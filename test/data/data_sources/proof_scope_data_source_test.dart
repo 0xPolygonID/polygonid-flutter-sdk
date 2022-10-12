@@ -28,7 +28,8 @@ List<ProofScopeRequest> mockProofScopeRequestList = [
   ),
 ];
 
-ProofScopeRulesQueryRequest mockProofScopeRulesQueryRequest = ProofScopeRulesQueryRequest();
+ProofScopeRulesQueryRequest mockProofScopeRulesQueryRequest =
+    ProofScopeRulesQueryRequest();
 
 ProofScopeDataSource dataSource = ProofScopeDataSource();
 

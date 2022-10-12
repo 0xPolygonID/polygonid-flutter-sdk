@@ -14,11 +14,11 @@ class ClaimModel {
 
   ClaimModel(
       {required this.id,
-        required this.value,
-        required this.expiration,
-        required this.issuer,
-        required this.type,
-        required this.state,
-        required this.name,
-        required this.details});
+      required this.value,
+      required this.expiration,
+      required this.issuer,
+      required this.type,
+      required this.state,
+      required this.name,
+      required this.details});
 }

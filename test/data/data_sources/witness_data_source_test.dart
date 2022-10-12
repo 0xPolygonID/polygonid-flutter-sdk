@@ -53,7 +53,7 @@ main() {
 
       test(
         'Given a WitnessParam obj (wasm, json), when called computeWitnessMtp, we expect a Uint8List to be returned',
-            () async {
+        () async {
           expect(await dataSource.computeWitnessMtp(param), mockResponse);
 
           WitnessParam captured =
@@ -67,7 +67,7 @@ main() {
 
       test(
         'Given a WitnessParam obj (wasm, json), when called computeWitnessSig, we expect a Uint8List to be returned',
-            () async {
+        () async {
           expect(await dataSource.computeWitnessSig(param), mockResponse);
 
           WitnessParam captured =

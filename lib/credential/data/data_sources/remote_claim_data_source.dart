@@ -55,7 +55,8 @@ class RemoteClaimDataSource {
           throw UnsupportedFetchClaimTypeException(response);
         }
       } else {
-        logger().d('fetchClaim Error: code: ${response.statusCode} msg: ${response.body}');
+        logger().d(
+            'fetchClaim Error: code: ${response.statusCode} msg: ${response.body}');
         throw NetworkException(response);
       }
     });

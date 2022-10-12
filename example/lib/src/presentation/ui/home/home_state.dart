@@ -8,7 +8,9 @@ class HomeState with _$HomeState {
 
   const factory HomeState.loading({String? identifier}) = LoadingDataHomeState;
 
-  const factory HomeState.loaded({String? identifier}) = LoadedIdentifierHomeState;
+  const factory HomeState.loaded({String? identifier}) =
+      LoadedIdentifierHomeState;
 
-  const factory HomeState.error({required String message, String? identifier}) = ErrorHomeState;
+  const factory HomeState.error({required String message, String? identifier}) =
+      ErrorHomeState;
 }

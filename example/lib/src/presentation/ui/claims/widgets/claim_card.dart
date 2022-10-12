@@ -13,7 +13,8 @@ class ClaimCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double cardHeight = MediaQuery.of(context).size.width * CustomDimensions.claimCardHeightRatio;
+    double cardHeight = MediaQuery.of(context).size.width *
+        CustomDimensions.claimCardHeightRatio;
     return SizedBox(
       height: cardHeight,
       child: Stack(

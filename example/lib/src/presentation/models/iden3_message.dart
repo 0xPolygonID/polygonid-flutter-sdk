@@ -12,12 +12,12 @@ class Iden3Message {
 
   Iden3Message(
       {this.id,
-        this.typ,
-        this.type = AuthType.unknown,
-        this.thid,
-        this.body,
-        this.from,
-        this.to});
+      this.typ,
+      this.type = AuthType.unknown,
+      this.thid,
+      this.body,
+      this.from,
+      this.to});
 
   /// Creates an instance from the given json
   ///
@@ -36,12 +36,12 @@ class Iden3Message {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'typ': typ,
-    'type': AuthTypeModelMapper().mapFrom(type),
-    'thid': thid,
-    'from': from,
-    'to': to,
-    'body': body,
-  };
+        'id': id,
+        'typ': typ,
+        'type': AuthTypeModelMapper().mapFrom(type),
+        'thid': thid,
+        'from': from,
+        'to': to,
+        'body': body,
+      };
 }

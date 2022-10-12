@@ -20,7 +20,7 @@ class CustomButtonStyle {
     elevation: 0,
     enableFeedback: false,
     padding:
-    const EdgeInsets.only(top: 18.0, bottom: 18.0, right: 24.0, left: 24.0),
+        const EdgeInsets.only(top: 18.0, bottom: 18.0, right: 24.0, left: 24.0),
     backgroundColor: CustomColors.background,
     shadowColor: CustomColors.transparent,
     shape: RoundedRectangleBorder(
@@ -44,7 +44,8 @@ class CustomButtonStyle {
   static ButtonStyle iconButtonStyle = ButtonStyle(
     elevation: MaterialStateProperty.all(0.0),
     shape: MaterialStateProperty.all(const CircleBorder()),
-    backgroundColor: MaterialStateProperty.all(Colors.white), // <-- Button color
+    backgroundColor:
+        MaterialStateProperty.all(Colors.white), // <-- Button color
     overlayColor: MaterialStateProperty.resolveWith<Color?>((states) {
       if (states.contains(MaterialState.pressed)) {
         return CustomColors.backButtonPressed;
