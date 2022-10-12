@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 
@@ -13,8 +11,8 @@ import '../../../identity/domain/entities/identity_entity.dart';
 import '../../../identity/domain/repositories/identity_repository.dart';
 import '../../../identity/libs/bjj/privadoid_wallet.dart';
 import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
-import '../../../proof_generation/domain/exceptions/proof_generation_exceptions.dart';
 import '../../../proof_generation/domain/repositories/proof_repository.dart';
+import '../../../proof_generation/domain/use_cases/generate_proof_use_case.dart';
 import '../../data/data_sources/proof_scope_data_source.dart';
 import '../../data/dtos/request/auth/proof_scope_request.dart';
 
@@ -33,6 +31,7 @@ class GetProofsUseCase extends FutureUseCase<GetProofsParam,
   final CredentialRepository _credentialRepository;
   final ProofScopeDataSource _proofScopeDataSource;
   final WalletDataSource _walletDataSource;
+  final GenerateProofUseCase _generateProofUseCase;
 
   GetProofsUseCase(
     this._proofRepository,
@@ -40,6 +39,7 @@ class GetProofsUseCase extends FutureUseCase<GetProofsParam,
     this._credentialRepository,
     this._proofScopeDataSource,
     this._walletDataSource,
+    this._generateProofUseCase,
   );
 
   @override
@@ -73,9 +73,10 @@ class GetProofsUseCase extends FutureUseCase<GetProofsParam,
         // &&
         //circuitDataMap.containsKey(proofReq.circuit_id!)) {
 
+        // TODO load circuitFiles
         String circuitId = proofReq.circuit_id!;
-        //String claimType = proofReq.rules!.query!.schema!.type!;
-        Map<String, dynamic> fieldParams =
+
+        Map<String, dynamic> queryParams =
             _proofScopeDataSource.getFieldOperatorAndValues(proofReq);
 
         // Challenge
@@ -88,36 +89,11 @@ class GetProofsUseCase extends FutureUseCase<GetProofsParam,
         PrivadoIdWallet wallet = await _walletDataSource.createWallet(
             privateKey: HexUtils.hexToBytes(identityEntity.privateKey));
 
-        //String revStatusUrl = credential.credentialStatus.id;
-
-        // TODO move generation of proof to proof_generation module
-
         // Generate proof
-        Uint8List? atomicQueryInputs =
-            await _proofRepository.calculateAtomicQueryInputs(
-                challenge,
-                credential,
-                circuitId,
-                fieldParams['key'],
-                fieldParams['values'],
-                fieldParams['operator'],
-                wallet.publicKey[0],
-                wallet.publicKey[1],
-                signatureString);
+        Map<String, dynamic>? proofResult = await _generateProofUseCase.execute(
+            param: GenerateProofParam(challenge, signatureString, credential,
+                authData, wallet.publicKey, queryParams));
 
-        if (atomicQueryInputs == null) {
-          throw NullAtomicQueryInputsException(circuitId);
-        }
-        Uint8List? wtnsBytes = await _proofRepository.calculateWitness(
-            authData, atomicQueryInputs);
-
-        if (wtnsBytes == null) {
-          throw NullWitnessException(circuitId);
-        }
-
-        // 4. generate proof
-        Map<String, dynamic>? proofResult =
-            await _proofRepository.prove(authData, wtnsBytes);
         if (proofResult != null) {
           proofs.add(Pair(proofReq, proofResult));
         }
