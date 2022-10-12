@@ -51,13 +51,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     if (identifier == null) {
       emit(const AuthState.error(
           "an identity is needed before trying to authenticate"));
+      return;
     }
 
     try {
       await _polygonIdSdk.iden3comm.authenticate(
         issuerMessage: iden3message,
-        identifier: identifier!,
+        identifier: identifier,
       );
+
       emit(const AuthState.authenticated());
     } catch (error) {
       emit(AuthState.error(error.toString()));

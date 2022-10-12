@@ -1,5 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/mappers/mapper.dart';
-import 'package:polygonid_flutter_sdk_example/src/domain/identity/auth.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/models/auth_type.dart';
 
 
 class AuthTypeModelMapper extends Mapper<AuthType, String> {
