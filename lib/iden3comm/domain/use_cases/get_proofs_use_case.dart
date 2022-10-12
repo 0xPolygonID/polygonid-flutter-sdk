@@ -51,9 +51,13 @@ class GetProofsUseCase extends FutureUseCase<GetProofsParam,
       return proofs;
     }
 
-    // TODO: check to load correct circuit files
+    Map<String, CircuitDataEntity> circuitDataMap = {};
+
+    // TODO: not needed??
     CircuitDataEntity authData =
         await _proofRepository.loadCircuitFiles("auth");
+    circuitDataMap["auth"] = authData;
+
     IdentityEntity identityEntity =
         await _identityRepository.getIdentity(identifier: param.identifier);
 
@@ -70,11 +74,14 @@ class GetProofsUseCase extends FutureUseCase<GetProofsParam,
       if (claims.isNotEmpty) {
         ClaimEntity authClaim = claims.first;
         CredentialDTO credential = CredentialDTO.fromJson(authClaim.credential);
-        // &&
-        //circuitDataMap.containsKey(proofReq.circuit_id!)) {
-
-        // TODO load circuitFiles
         String circuitId = proofReq.circuit_id!;
+        CircuitDataEntity? circuitData;
+        if (!circuitDataMap.containsKey(circuitId)) {
+          circuitData = await _proofRepository.loadCircuitFiles(circuitId);
+          circuitDataMap[circuitId] = circuitData;
+        } else {
+          circuitData = circuitDataMap[circuitId];
+        }
 
         Map<String, dynamic> queryParams =
             _proofScopeDataSource.getFieldOperatorAndValues(proofReq);
@@ -92,7 +99,7 @@ class GetProofsUseCase extends FutureUseCase<GetProofsParam,
         // Generate proof
         Map<String, dynamic>? proofResult = await _generateProofUseCase.execute(
             param: GenerateProofParam(challenge, signatureString, credential,
-                authData, wallet.publicKey, queryParams));
+                circuitData!, wallet.publicKey, queryParams));
 
         if (proofResult != null) {
           proofs.add(Pair(proofReq, proofResult));
