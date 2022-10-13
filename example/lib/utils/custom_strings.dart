@@ -1,6 +1,7 @@
 class CustomStrings {
   CustomStrings._();
 
+  static const String appTitle = "PolygonID Example App";
   static const String homeDescription =
       "Generate a new identity or if saved retrieved via PolygonID SDK";
   static const String homeIdentifierSectionPrefix = "Identifier:";
@@ -9,10 +10,11 @@ class CustomStrings {
   static const String genericError = "A generic error occurred, try again";
   static const String authButtonCTA = "Connect";
   static const String authDescription =
-      "Authenticate through verifier provider by scanning QR Code";
+      "Authenticate through verifier provider by scanning QR Code.\nIf you are already authenticated, you can skip this step";
   static const String claimsTitle = "Claims";
   static const String claimsDescription =
       "Connect with a service to add claims about your identity";
+  static const String claimsListNoResult = "empty claims list";
 
   static const String claimNameCountryOfResidence = "Country of residence";
   static const String claimNameDateOfBirth = "Date of birth";
@@ -27,4 +29,7 @@ class CustomStrings {
 
   static String deleteClaimButtonCTA = "Remove claim";
   static String deleteAllClaimsButtonCTA = "Remove all claims";
+  static String claimCardIssuerLabel = "Issuer:";
+
+  static String iden3messageGenericError = "Error in the readed message";
 }
