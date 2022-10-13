@@ -24,27 +24,15 @@ class ProofGeneration {
       {required String challenge,
       required CredentialDTO credential,
       required String circuitId,
-      required String claimType,
       required String key,
       required List<int> values,
       required int operator,
-      required String revStatusUrl,
       required String pubX,
       required String pubY,
       String? signature}) {
     return _getAtomicQueryInputsUseCase.execute(
-        param: GetAtomicQueryInputsParam(
-            challenge,
-            credential,
-            circuitId,
-            claimType,
-            key,
-            values,
-            operator,
-            revStatusUrl,
-            pubX,
-            pubY,
-            signature));
+        param: GetAtomicQueryInputsParam(challenge, credential, circuitId, key,
+            values, operator, pubX, pubY, signature));
   }
 
   Future<Uint8List?> calculateWitness(

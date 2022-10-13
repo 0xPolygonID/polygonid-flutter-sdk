@@ -66,8 +66,6 @@
 
 */
 
-import 'dart:convert';
-
 class ZKProof {
   final List<String> a;
   final List<List<String>> b;

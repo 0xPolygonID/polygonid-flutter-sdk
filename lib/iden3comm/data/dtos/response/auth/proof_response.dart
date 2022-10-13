@@ -64,7 +64,7 @@
 
 import 'dart:convert';
 
-import 'zk_proof.dart';
+import '../../../../../proof_generation/data/dtos/zk_proof.dart';
 
 class ProofResponse {
   final int id;

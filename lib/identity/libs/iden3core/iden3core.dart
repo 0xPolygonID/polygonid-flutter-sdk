@@ -640,7 +640,6 @@ class Iden3CoreLib {
       CredentialDTO credential,
       String jsonLDDocument,
       String schema,
-      String claimType,
       String key,
       List<int> values,
       int operator,
@@ -664,6 +663,7 @@ class Iden3CoreLib {
         DateTime.now().millisecondsSinceEpoch ~/ 1000;
     int res = 0;
     // QUERY - ALL GOOD
+    String claimType = credential.credentialSchema.type;
     request.ref.query.slot_index = _getFieldSlotIndex(schema, claimType, key);
     ffi.Pointer<ffi.Pointer<IDENBigInt>> valuesPtr =
         malloc<ffi.Pointer<IDENBigInt>>(values.length);
@@ -1052,7 +1052,6 @@ class Iden3CoreLib {
       CredentialDTO credential,
       String jsonLDDocument,
       String schema,
-      String claimType,
       String key,
       List<int> values,
       int operator,
@@ -1078,6 +1077,7 @@ class Iden3CoreLib {
         DateTime.now().millisecondsSinceEpoch ~/ 1000;
     int res = 0;
     // QUERY - ALL GOOD
+    String claimType = credential.credentialSchema.type;
     request.ref.query.slot_index = _getFieldSlotIndex(schema, claimType, key);
     ffi.Pointer<ffi.Pointer<IDENBigInt>> valuesPtr =
         malloc<ffi.Pointer<IDENBigInt>>(values.length);

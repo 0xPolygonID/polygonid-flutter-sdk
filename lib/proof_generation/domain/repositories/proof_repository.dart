@@ -10,11 +10,9 @@ abstract class ProofRepository {
       String challenge,
       CredentialDTO credential,
       String circuitId,
-      String claimType,
       String key,
       List<int> values,
       int operator,
-      String revStatusUrl,
       String pubX,
       String pubY,
       String? signature);

@@ -29,3 +29,15 @@ class RemoveClaimsException extends ErrorException {
 class UpdateClaimException extends ErrorException {
   UpdateClaimException(error) : super(error);
 }
+
+class FetchSchemaException extends ErrorException {
+  FetchSchemaException(error) : super(error);
+}
+
+class FetchVocabException extends ErrorException {
+  FetchVocabException(error) : super(error);
+}
+
+class UnsupportedSchemaFetchVocabException extends ErrorException {
+  UnsupportedSchemaFetchVocabException(error) : super(error);
+}

@@ -2,3 +2,34 @@ include: package:flutter_lints/flutter.yaml
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
+analyzer:
+  errors:
+    non_constant_identifier_names: ignore
+    constant_identifier_names: ignore
+    prefer_final_fields: ignore
+    unused_element: ignore
+    unused_local_variable: ignore
+    null_argument_to_non_null_type: ignore
+    unnecessary_import: ignore
+    unused_import: ignore
+    unused_field: ignore
+    camel_case_types: ignore
+    no_leading_underscores_for_local_identifiers: ignore
+    unnecessary_new: ignore
+    unnecessary_null_comparison: ignore
+    override_on_non_overriding_member: ignore
+    prefer_typing_uninitialized_variables: ignore
+    prefer_interpolation_to_compose_strings: ignore
+    avoid_print: ignore
+    prefer_double_quotes: ignore
+    depend_on_referenced_packages: ignore
+    annotate_overrides: ignore
+    must_be_immutable: ignore
+    library_prefixes: ignore
+    prefer_const_constructors_in_immutables: ignore
+  #enable-experiment:
+  #  - non-nullable
+
+linter:
+  rules:
+    prefer_double_quotes: false

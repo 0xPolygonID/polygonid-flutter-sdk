@@ -20,4 +20,9 @@ abstract class CredentialRepository {
   Future<void> removeClaims({required List<String> ids});
 
   Future<ClaimEntity> updateClaim({required ClaimEntity claim});
+
+  Future<Map<String, dynamic>?> fetchSchema({required String url});
+
+  Future<Map<String, dynamic>?> fetchVocab(
+      {required Map<String, dynamic>? schema, required String type});
 }

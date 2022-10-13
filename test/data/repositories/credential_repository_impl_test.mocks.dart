@@ -93,6 +93,19 @@ class MockRemoteClaimDataSource extends _i1.Mock
                     #url: url,
                     #identifier: identifier
                   })))) as _i8.Future<_i3.ClaimDTO>);
+  @override
+  _i8.Future<Map<String, dynamic>?> fetchSchema({String? url}) =>
+      (super.noSuchMethod(Invocation.method(#fetchSchema, [], {#url: url}),
+              returnValue: _i8.Future<Map<String, dynamic>?>.value())
+          as _i8.Future<Map<String, dynamic>?>);
+  @override
+  _i8.Future<Map<String, dynamic>?> fetchVocab(
+          {Map<String, dynamic>? schema, String? type}) =>
+      (super.noSuchMethod(
+          Invocation.method(#fetchVocab, [], {#schema: schema, #type: type}),
+          returnValue:
+              _i8.Future<Map<String, dynamic>?>.value()) as _i8
+          .Future<Map<String, dynamic>?>);
 }
 
 /// A class which mocks [StorageClaimDataSource].

@@ -9,11 +9,9 @@ class GetAtomicQueryInputsParam {
   final String challenge;
   final CredentialDTO credential;
   final String circuitId;
-  final String claimType;
   final String key;
   final List<int> values;
   final int operator;
-  final String revStatusUrl;
   final String pubX;
   final String pubY;
   final String? signature;
@@ -22,11 +20,9 @@ class GetAtomicQueryInputsParam {
       this.challenge,
       this.credential,
       this.circuitId,
-      this.claimType,
       this.key,
       this.values,
       this.operator,
-      this.revStatusUrl,
       this.pubX,
       this.pubY,
       this.signature);
@@ -45,11 +41,9 @@ class GetAtomicQueryInputsUseCase
             param.challenge,
             param.credential,
             param.circuitId,
-            param.claimType,
             param.key,
             param.values,
             param.operator,
-            param.revStatusUrl,
             param.pubX,
             param.pubY,
             param.signature)
