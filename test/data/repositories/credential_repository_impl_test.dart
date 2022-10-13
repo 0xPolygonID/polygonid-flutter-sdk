@@ -10,12 +10,15 @@ import 'package:polygonid_flutter_sdk/credential/data/data_sources/remote_claim_
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/fetch_claim_response_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/rhs_node_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/credential_request_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/id_filter_mapper.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/rhs_node_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/entities/rhs_node_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
 import 'package:sembast/sembast.dart';
@@ -79,6 +82,32 @@ final filters = [
   FilterEntity(name: "theName2", value: "theValue2")
 ];
 final filter = Filter.equals("theField", "theValue");
+final rhsNodeDTOs = [
+  const RhsNodeDTO(
+      node: RhsNodeItemDTO(
+        children: [],
+        hash: '',
+      ),
+      status: ''),
+  const RhsNodeDTO(
+      node: RhsNodeItemDTO(
+        children: [],
+        hash: '',
+      ),
+      status: ''),
+];
+final rhsNodeEntities = [
+  RhsNodeEntity(
+    node: {},
+    status: '',
+    nodeType: RhsNodeType.state,
+  ),
+  RhsNodeEntity(
+    node: {},
+    status: '',
+    nodeType: RhsNodeType.state,
+  ),
+];
 
 // Dependencies
 MockRemoteClaimDataSource remoteClaimDataSource = MockRemoteClaimDataSource();
@@ -89,6 +118,7 @@ MockCredentialRequestMapper credentialRequestMapper =
 MockClaimMapper claimMapper = MockClaimMapper();
 MockFiltersMapper filtersMapper = MockFiltersMapper();
 MockIdFilterMapper idFilterMapper = MockIdFilterMapper();
+MockRhsNodeMapper rhsNodeMapper = MockRhsNodeMapper();
 
 // Tested instance
 CredentialRepositoryImpl repository = CredentialRepositoryImpl(
@@ -97,7 +127,8 @@ CredentialRepositoryImpl repository = CredentialRepositoryImpl(
     credentialRequestMapper,
     claimMapper,
     filtersMapper,
-    idFilterMapper);
+    idFilterMapper,
+    rhsNodeMapper);
 
 @GenerateMocks([
   RemoteClaimDataSource,
@@ -105,7 +136,8 @@ CredentialRepositoryImpl repository = CredentialRepositoryImpl(
   CredentialRequestMapper,
   ClaimMapper,
   FiltersMapper,
-  IdFilterMapper
+  IdFilterMapper,
+  RhsNodeMapper,
 ])
 void main() {
   group("Fetch claim", () {
@@ -497,6 +529,62 @@ void main() {
               .captured
               .first,
           [claimDTOs[0]]);
+    });
+  });
+
+  group("Fetch Identity State", () {
+    setUp(() {
+      reset(remoteClaimDataSource);
+      reset(rhsNodeMapper);
+
+      // Given
+      when(remoteClaimDataSource.fetchIdentityState(url: anyNamed('url')))
+          .thenAnswer((realInvocation) => Future.value(rhsNodeDTOs[0]));
+      when(rhsNodeMapper.mapFrom(any)).thenReturn(rhsNodeEntities[0]);
+    });
+
+    test(
+        "Given parameters, when I call fetchIdentityState, then I expect a RhsNodeEntity to be returned",
+        () async {
+      // When
+      expect(await repository.fetchIdentityState(url: url), rhsNodeEntities[0]);
+
+      // Then
+      var fetchCaptured = verify(remoteClaimDataSource.fetchIdentityState(
+              url: captureAnyNamed('url')))
+          .captured;
+
+      expect(fetchCaptured[0], url);
+
+      expect(verify(rhsNodeMapper.mapFrom(captureAny)).captured.first,
+          rhsNodeDTOs[0]);
+    });
+
+    test(
+        "Given parameters, when I call fetchIdentityState and an error occurred, then I expect a FetchIdentityStateException to be thrown",
+        () async {
+      // Given
+      when(remoteClaimDataSource.fetchIdentityState(
+        url: anyNamed('url'),
+      )).thenAnswer((realInvocation) => Future.error(exception));
+
+      // When
+      await repository
+          .fetchIdentityState(url: url)
+          .then((_) => expect(true, false))
+          .catchError((error) {
+        expect(error, isA<FetchIdentityStateException>());
+        expect(error.error, exception);
+      });
+
+      // Then
+      var fetchCaptured = verify(remoteClaimDataSource.fetchIdentityState(
+        url: captureAnyNamed('url'),
+      )).captured;
+
+      expect(fetchCaptured[0], url);
+
+      verifyNever(rhsNodeMapper.mapFrom(captureAny));
     });
   });
 }

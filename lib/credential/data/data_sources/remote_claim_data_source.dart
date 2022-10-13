@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/rhs_node_dto.dart';
 
 import '../../../common/data/exceptions/network_exceptions.dart';
 import '../../../common/domain/domain_logger.dart';
@@ -122,6 +123,31 @@ class RemoteClaimDataSource {
     } catch (error) {
       logger().e('vocab error: $error');
       throw FetchVocabException(error);
+    }
+  }
+
+  Future<RhsNodeDTO> fetchIdentityState({required String url}) async {
+    try {
+      //fetch rhs state and save it
+      String rhsId = url;
+      String rhsUrl = rhsId;
+      if (rhsId.toLowerCase().startsWith("ipfs://")) {
+        String fileHash = rhsId.toLowerCase().replaceFirst("ipfs://", "");
+        rhsUrl = "https://ipfs.io/ipfs/$fileHash";
+      }
+      var rhsUri = Uri.parse(rhsUrl);
+      var rhsResponse = await get(rhsUri);
+      if (rhsResponse.statusCode == 200) {
+        Map<String, dynamic>? rhsNode = json.decode(rhsResponse.body);
+        RhsNodeDTO rhsNodeResponse = RhsNodeDTO.fromJson(rhsNode!);
+        logger().d('rhs node: ${rhsNodeResponse.toString()}');
+        return rhsNodeResponse;
+      } else {
+        throw NetworkException(rhsResponse);
+      }
+    } catch (error) {
+      logger().e('identity state error: $error');
+      throw FetchIdentityStateException(error);
     }
   }
 }
