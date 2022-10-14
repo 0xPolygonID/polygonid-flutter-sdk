@@ -130,10 +130,15 @@ class MockCredentialRepository extends _i1.Mock
               _i5.Future<Map<String, dynamic>?>.value()) as _i5
           .Future<Map<String, dynamic>?>);
   @override
-  _i5.Future<_i3.RhsNodeEntity> fetchIdentityState({String? url}) => (super
-      .noSuchMethod(Invocation.method(#fetchIdentityState, [], {#url: url}),
+  _i5.Future<List<dynamic>> fetchIdentityState({String? id}) =>
+      (super.noSuchMethod(Invocation.method(#fetchIdentityState, [], {#id: id}),
+              returnValue: _i5.Future<List<dynamic>>.value(<dynamic>[]))
+          as _i5.Future<List<dynamic>>);
+  @override
+  _i5.Future<_i3.RhsNodeEntity> fetchStateRoots({String? url}) =>
+      (super.noSuchMethod(Invocation.method(#fetchStateRoots, [], {#url: url}),
           returnValue: _i5.Future<_i3.RhsNodeEntity>.value(_FakeRhsNodeEntity_1(
               this,
-              Invocation.method(#fetchIdentityState, [], {#url: url})))) as _i5
-      .Future<_i3.RhsNodeEntity>);
+              Invocation.method(#fetchStateRoots, [], {#url: url})))) as _i5
+          .Future<_i3.RhsNodeEntity>);
 }

@@ -123,12 +123,16 @@ class MockRemoteClaimDataSource extends _i1.Mock
               _i10.Future<Map<String, dynamic>?>.value()) as _i10
           .Future<Map<String, dynamic>?>);
   @override
-  _i10.Future<_i4.RhsNodeDTO> fetchIdentityState({String? url}) => (super
-          .noSuchMethod(Invocation.method(#fetchIdentityState, [], {#url: url}),
+  _i10.Future<List<dynamic>> fetchIdentityState({String? id}) =>
+      (super.noSuchMethod(Invocation.method(#fetchIdentityState, [], {#id: id}),
+              returnValue: _i10.Future<List<dynamic>>.value(<dynamic>[]))
+          as _i10.Future<List<dynamic>>);
+  @override
+  _i10.Future<_i4.RhsNodeDTO> fetchStateRoots({String? url}) =>
+      (super.noSuchMethod(Invocation.method(#fetchStateRoots, [], {#url: url}),
               returnValue: _i10.Future<_i4.RhsNodeDTO>.value(_FakeRhsNodeDTO_2(
-                  this,
-                  Invocation.method(#fetchIdentityState, [], {#url: url}))))
-      as _i10.Future<_i4.RhsNodeDTO>);
+                  this, Invocation.method(#fetchStateRoots, [], {#url: url}))))
+          as _i10.Future<_i4.RhsNodeDTO>);
 }
 
 /// A class which mocks [StorageClaimDataSource].

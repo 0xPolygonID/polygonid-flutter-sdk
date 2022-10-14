@@ -110,17 +110,17 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<RhsNodeEntity> fetchIdentityState({required String url}) {
+  Future<List<dynamic>> fetchIdentityState({required String id}) {
     return _remoteClaimDataSource
-        .fetchIdentityState(url: url)
-        .then((dto) => _rhsNodeMapper.mapFrom(dto))
+        .fetchIdentityState(id: id)
         .catchError((error) => throw FetchIdentityStateException(error));
   }
 
   @override
-  Future<List<dynamic>> fetchIssuerState({required String id}) {
+  Future<RhsNodeEntity> fetchStateRoots({required String url}) {
     return _remoteClaimDataSource
-        .fetchIssuerState(id: id)
-        .catchError((error) => throw FetchIssuerStateException(error));
+        .fetchStateRoots(url: url)
+        .then((dto) => _rhsNodeMapper.mapFrom(dto))
+        .catchError((error) => throw FetchStateRootsException(error));
   }
 }

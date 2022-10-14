@@ -130,7 +130,7 @@ class RemoteClaimDataSource {
     }
   }
 
-  Future<List<dynamic>> fetchIssuerState({required String id}) async {
+  Future<List<dynamic>> fetchIdentityState({required String id}) async {
     try {
       Web3Client web3Client =
           Web3Client(SdkEnv().infuraUrl, client, socketConnector: () {
@@ -140,11 +140,11 @@ class RemoteClaimDataSource {
       return StateContract(web3Client).getState(id);
     } catch (error) {
       logger().e('identity state error: $error');
-      throw FetchIssuerStateException(error);
+      throw FetchIdentityStateException(error);
     }
   }
 
-  Future<RhsNodeDTO> fetchIdentityState({required String url}) async {
+  Future<RhsNodeDTO> fetchStateRoots({required String url}) async {
     try {
       //fetch rhs state and save it
       String rhsId = url;
@@ -164,8 +164,8 @@ class RemoteClaimDataSource {
         throw NetworkException(rhsResponse);
       }
     } catch (error) {
-      logger().e('identity state error: $error');
-      throw FetchIdentityStateException(error);
+      logger().e('state roots error: $error');
+      throw FetchStateRootsException(error);
     }
   }
 }

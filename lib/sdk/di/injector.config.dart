@@ -29,7 +29,7 @@ import '../../credential/domain/use_cases/fetch_and_save_claims_use_case.dart'
     as _i75;
 import '../../credential/domain/use_cases/fetch_identity_state_use_case.dart'
     as _i49;
-import '../../credential/domain/use_cases/fetch_issuer_state_use_case.dart'
+import '../../credential/domain/use_cases/fetch_state_roots_use_case.dart'
     as _i50;
 import '../../credential/domain/use_cases/get_claims_use_case.dart' as _i51;
 import '../../credential/domain/use_cases/get_vocabs_use_case.dart' as _i52;
@@ -153,14 +153,14 @@ _i1.GetIt $initSDKGetIt(_i1.GetIt get,
       _i31.SMTMemoryStorageRepositoryImpl(
           get<_i32.Hash>(), get<Map<_i32.Hash, _i22.Node>>()));
   gh.factory<_i33.SchemaInfoMapper>(() => _i33.SchemaInfoMapper());
-  gh.factory<_i9.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.identityStore,
-      instanceName: 'identityStore');
+  gh.factory<_i9.StoreRef<String, dynamic>>(() => databaseModule.keyValueStore,
+      instanceName: 'keyValueStore');
   gh.factory<_i9.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.claimStore,
       instanceName: 'claimStore');
-  gh.factory<_i9.StoreRef<String, dynamic>>(() => databaseModule.keyValueStore,
-      instanceName: 'keyValueStore');
+  gh.factory<_i9.StoreRef<String, Map<String, Object?>>>(
+      () => databaseModule.identityStore,
+      instanceName: 'identityStore');
   gh.factory<_i34.WalletLibWrapper>(() => _i34.WalletLibWrapper());
   gh.factory<_i35.WitnessAuthLib>(() => _i35.WitnessAuthLib());
   gh.factory<_i36.WitnessIsolatesWrapper>(() => _i36.WitnessIsolatesWrapper());
@@ -225,8 +225,8 @@ _i1.GetIt $initSDKGetIt(_i1.GetIt get,
   gh.factoryAsync<_i49.FetchIdentityStateUseCase>(() async =>
       _i49.FetchIdentityStateUseCase(
           await get.getAsync<_i48.CredentialRepository>()));
-  gh.factoryAsync<_i50.FetchIssuerStateUseCase>(() async =>
-      _i50.FetchIssuerStateUseCase(
+  gh.factoryAsync<_i50.FetchStateRootsUseCase>(() async =>
+      _i50.FetchStateRootsUseCase(
           await get.getAsync<_i48.CredentialRepository>()));
   gh.factoryAsync<_i51.GetClaimsUseCase>(() async =>
       _i51.GetClaimsUseCase(await get.getAsync<_i48.CredentialRepository>()));

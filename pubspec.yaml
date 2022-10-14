@@ -21,6 +21,7 @@ dependencies:
   ffi: ^2.0.1
   hex: ^0.2.0
   web3dart: ^2.3.3
+  web_socket_channel: ^2.2.0
   ffigen: ^6.0.1
   json_annotation: ^4.6.0
   equatable: ^2.0.3
@@ -34,6 +35,7 @@ dependencies:
   country_code: ^1.0.0
   encrypt: ^5.0.1
   pointycastle: ^3.6.1
+  envied: ^0.2.3
 
 dev_dependencies:
   flutter_test:
@@ -48,6 +50,7 @@ dev_dependencies:
   mockito: ^5.2.0
   injectable_generator: ^1.5.3
   build_runner:
+  envied_generator: ^0.2.3
 
 ffigen:
   name: NativeIden3CoreLib
@@ -100,6 +103,7 @@ flutter:
 
   assets:
     - assets/auth/
+    - StateABI.json
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
   #

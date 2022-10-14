@@ -27,7 +27,7 @@ abstract class CredentialRepository {
   Future<Map<String, dynamic>?> fetchVocab(
       {required Map<String, dynamic>? schema, required String type});
 
-  Future<List<dynamic>> fetchIssuerState({required String id});
+  Future<List<dynamic>> fetchIdentityState({required String id});
 
-  Future<RhsNodeEntity> fetchIdentityState({required String url});
+  Future<RhsNodeEntity> fetchStateRoots({required String url});
 }

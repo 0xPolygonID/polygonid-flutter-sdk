@@ -532,25 +532,25 @@ void main() {
     });
   });
 
-  group("Fetch Identity State", () {
+  group("Fetch State Roots", () {
     setUp(() {
       reset(remoteClaimDataSource);
       reset(rhsNodeMapper);
 
       // Given
-      when(remoteClaimDataSource.fetchIdentityState(url: anyNamed('url')))
+      when(remoteClaimDataSource.fetchStateRoots(url: anyNamed('url')))
           .thenAnswer((realInvocation) => Future.value(rhsNodeDTOs[0]));
       when(rhsNodeMapper.mapFrom(any)).thenReturn(rhsNodeEntities[0]);
     });
 
     test(
-        "Given parameters, when I call fetchIdentityState, then I expect a RhsNodeEntity to be returned",
+        "Given parameters, when I call fetchStateRoots, then I expect a RhsNodeEntity to be returned",
         () async {
       // When
-      expect(await repository.fetchIdentityState(url: url), rhsNodeEntities[0]);
+      expect(await repository.fetchStateRoots(url: url), rhsNodeEntities[0]);
 
       // Then
-      var fetchCaptured = verify(remoteClaimDataSource.fetchIdentityState(
+      var fetchCaptured = verify(remoteClaimDataSource.fetchStateRoots(
               url: captureAnyNamed('url')))
           .captured;
 
@@ -561,16 +561,16 @@ void main() {
     });
 
     test(
-        "Given parameters, when I call fetchIdentityState and an error occurred, then I expect a FetchIdentityStateException to be thrown",
+        "Given parameters, when I call fetchStateRoots and an error occurred, then I expect a FetchIdentityStateException to be thrown",
         () async {
       // Given
-      when(remoteClaimDataSource.fetchIdentityState(
+      when(remoteClaimDataSource.fetchStateRoots(
         url: anyNamed('url'),
       )).thenAnswer((realInvocation) => Future.error(exception));
 
       // When
       await repository
-          .fetchIdentityState(url: url)
+          .fetchStateRoots(url: url)
           .then((_) => expect(true, false))
           .catchError((error) {
         expect(error, isA<FetchIdentityStateException>());
@@ -578,7 +578,7 @@ void main() {
       });
 
       // Then
-      var fetchCaptured = verify(remoteClaimDataSource.fetchIdentityState(
+      var fetchCaptured = verify(remoteClaimDataSource.fetchStateRoots(
         url: captureAnyNamed('url'),
       )).captured;
 

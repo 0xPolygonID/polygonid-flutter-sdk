@@ -1,29 +1,26 @@
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/entities/rhs_node_entity.dart';
 
 import '../repositories/credential_repository.dart';
 
 class FetchIdentityStateParam {
-  final String rhsBaseUrl;
-  final String idStateHash;
+  final String id;
 
   FetchIdentityStateParam({
-    required this.rhsBaseUrl,
-    required this.idStateHash,
+    required this.id,
   });
 }
 
 class FetchIdentityStateUseCase
-    extends FutureUseCase<FetchIdentityStateParam, RhsNodeEntity> {
+    extends FutureUseCase<FetchIdentityStateParam, List<dynamic>> {
   final CredentialRepository _credentialRepository;
 
   FetchIdentityStateUseCase(this._credentialRepository);
 
   @override
-  Future<RhsNodeEntity> execute(
+  Future<List<dynamic>> execute(
       {required FetchIdentityStateParam param}) async {
-    RhsNodeEntity rhsIdentityState = await _credentialRepository
-        .fetchIdentityState(url: param.rhsBaseUrl + param.idStateHash);
-    return rhsIdentityState;
+    List<dynamic> issuerState =
+        await _credentialRepository.fetchIdentityState(id: param.id);
+    return issuerState;
   }
 }
