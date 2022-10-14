@@ -1,7 +1,7 @@
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/entities/rhs_node_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart';
 
-import '../repositories/credential_repository.dart';
+import '../repositories/identity_repository.dart';
 
 class FetchStateRootsParam {
   final String rhsBaseUrl;
@@ -15,14 +15,14 @@ class FetchStateRootsParam {
 
 class FetchStateRootsUseCase
     extends FutureUseCase<FetchStateRootsParam, RhsNodeEntity> {
-  final CredentialRepository _credentialRepository;
+  final IdentityRepository _identityRepository;
 
-  FetchStateRootsUseCase(this._credentialRepository);
+  FetchStateRootsUseCase(this._identityRepository);
 
   @override
   Future<RhsNodeEntity> execute({required FetchStateRootsParam param}) async {
-    RhsNodeEntity rhsIdentityState = await _credentialRepository
-        .fetchStateRoots(url: param.rhsBaseUrl + param.idStateHash);
+    RhsNodeEntity rhsIdentityState = await _identityRepository.fetchStateRoots(
+        url: param.rhsBaseUrl + param.idStateHash);
     return rhsIdentityState;
   }
 }

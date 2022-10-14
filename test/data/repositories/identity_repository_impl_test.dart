@@ -9,15 +9,19 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_requ
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_key_value_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/rhs_node_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/identity_dto_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/rhs_node_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/repositories/identity_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart';
@@ -60,6 +64,7 @@ final datFile = Uint8List(32);
 final zKeyFile = Uint8List(32);
 final circuitData = CircuitDataEntity(circuitId, datFile, zKeyFile);
 const token = "token";
+const url = "theUrl";
 var exception = Exception();
 const issuerMessage =
     '{"id":"0b78a480-c710-4bd8-a4fd-454b577ca991","typ":"application/iden3comm-plain-json","type":"https://iden3-communication.io/authorization/1.0/request","thid":"0b78a480-c710-4bd8-a4fd-454b577ca991","body":{"callbackUrl":"https://issuer.polygonid.me/api/callback?sessionId=867314","reason":"test flow","scope":[]},"from":"1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ"}';
@@ -78,12 +83,40 @@ final mockAuthResponse = AuthResponse(
     did_doc: null,
   ),
 );
+final rhsNodeDTOs = [
+  const RhsNodeDTO(
+      node: RhsNodeItemDTO(
+        children: [],
+        hash: '',
+      ),
+      status: ''),
+  const RhsNodeDTO(
+      node: RhsNodeItemDTO(
+        children: [],
+        hash: '',
+      ),
+      status: ''),
+];
+final rhsNodeEntities = [
+  RhsNodeEntity(
+    node: {},
+    status: '',
+    nodeType: RhsNodeType.state,
+  ),
+  RhsNodeEntity(
+    node: {},
+    status: '',
+    nodeType: RhsNodeType.state,
+  ),
+];
 
 Response errorResponse = Response("body", 450);
 
 // Dependencies
 MockWalletDataSource walletDataSource = MockWalletDataSource();
 MockLibIdentityDataSource libIdentityDataSource = MockLibIdentityDataSource();
+MockRemoteIdentityDataSource remoteIdentityDataSource =
+    MockRemoteIdentityDataSource();
 MockStorageIdentityDataSource storageIdentityDataSource =
     MockStorageIdentityDataSource();
 MockStorageKeyValueDataSource storageKeyValueDataSource =
@@ -91,28 +124,33 @@ MockStorageKeyValueDataSource storageKeyValueDataSource =
 MockHexMapper hexMapper = MockHexMapper();
 MockPrivateKeyMapper privateKeyMapper = MockPrivateKeyMapper();
 MockIdentityDTOMapper identityDTOMapper = MockIdentityDTOMapper();
+MockRhsNodeMapper rhsNodeMapper = MockRhsNodeMapper();
 //MockSMTStorageRepository smtStorageRepository = MockSMTStorageRepository();
 
 // Tested instance
 IdentityRepository repository = IdentityRepositoryImpl(
   walletDataSource,
   libIdentityDataSource,
+  remoteIdentityDataSource,
   storageIdentityDataSource,
   storageKeyValueDataSource,
   hexMapper,
   privateKeyMapper,
   identityDTOMapper,
+  rhsNodeMapper,
   //smtStorageRepository,
 );
 
 @GenerateMocks([
   WalletDataSource,
   LibIdentityDataSource,
+  RemoteIdentityDataSource,
   StorageIdentityDataSource,
   StorageKeyValueDataSource,
   HexMapper,
   PrivateKeyMapper,
   IdentityDTOMapper,
+  RhsNodeMapper,
   //SMTStorageRepository
 ])
 void main() {
@@ -364,6 +402,62 @@ void main() {
               .captured
               .first,
           identifier);
+    });
+  });
+
+  group("Fetch State Roots", () {
+    setUp(() {
+      reset(remoteIdentityDataSource);
+      reset(rhsNodeMapper);
+
+      // Given
+      when(remoteIdentityDataSource.fetchStateRoots(url: anyNamed('url')))
+          .thenAnswer((realInvocation) => Future.value(rhsNodeDTOs[0]));
+      when(rhsNodeMapper.mapFrom(any)).thenReturn(rhsNodeEntities[0]);
+    });
+
+    test(
+        "Given parameters, when I call fetchStateRoots, then I expect a RhsNodeEntity to be returned",
+        () async {
+      // When
+      expect(await repository.fetchStateRoots(url: url), rhsNodeEntities[0]);
+
+      // Then
+      var fetchCaptured = verify(remoteIdentityDataSource.fetchStateRoots(
+              url: captureAnyNamed('url')))
+          .captured;
+
+      expect(fetchCaptured[0], url);
+
+      expect(verify(rhsNodeMapper.mapFrom(captureAny)).captured.first,
+          rhsNodeDTOs[0]);
+    });
+
+    test(
+        "Given parameters, when I call fetchStateRoots and an error occurred, then I expect a FetchIdentityStateException to be thrown",
+        () async {
+      // Given
+      when(remoteIdentityDataSource.fetchStateRoots(
+        url: anyNamed('url'),
+      )).thenAnswer((realInvocation) => Future.error(exception));
+
+      // When
+      await repository
+          .fetchStateRoots(url: url)
+          .then((_) => expect(true, false))
+          .catchError((error) {
+        expect(error, isA<FetchIdentityStateException>());
+        expect(error.error, exception);
+      });
+
+      // Then
+      var fetchCaptured = verify(remoteIdentityDataSource.fetchStateRoots(
+        url: captureAnyNamed('url'),
+      )).captured;
+
+      expect(fetchCaptured[0], url);
+
+      verifyNever(rhsNodeMapper.mapFrom(captureAny));
     });
   });
 }

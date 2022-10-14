@@ -1,7 +1,6 @@
 import '../../../common/domain/entities/filter_entity.dart';
 import '../entities/claim_entity.dart';
 import '../entities/credential_request_entity.dart';
-import '../entities/rhs_node_entity.dart';
 
 abstract class CredentialRepository {
   Future<ClaimEntity> fetchClaim(
@@ -26,8 +25,4 @@ abstract class CredentialRepository {
 
   Future<Map<String, dynamic>?> fetchVocab(
       {required Map<String, dynamic>? schema, required String type});
-
-  Future<List<dynamic>> fetchIdentityState({required String id});
-
-  Future<RhsNodeEntity> fetchStateRoots({required String url});
 }

@@ -1,10 +1,12 @@
 import 'package:polygonid_flutter_sdk/constants.dart';
 
 import '../../domain/entities/identity_entity.dart';
+import '../../domain/entities/rhs_node_entity.dart';
 import '../../domain/exceptions/identity_exceptions.dart';
 import '../../domain/repositories/identity_repository.dart';
 import '../../libs/bjj/privadoid_wallet.dart';
 import '../data_sources/lib_identity_data_source.dart';
+import '../data_sources/remote_identity_data_source.dart';
 import '../data_sources/storage_identity_data_source.dart';
 import '../data_sources/storage_key_value_data_source.dart';
 import '../data_sources/wallet_data_source.dart';
@@ -12,27 +14,32 @@ import '../dtos/identity_dto.dart';
 import '../mappers/hex_mapper.dart';
 import '../mappers/identity_dto_mapper.dart';
 import '../mappers/private_key_mapper.dart';
+import '../mappers/rhs_node_mapper.dart';
 
 enum SupportedCircuits { mtp, sig }
 
 class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
   final LibIdentityDataSource _libIdentityDataSource;
+  final RemoteIdentityDataSource _remoteIdentityDataSource;
   final StorageIdentityDataSource _storageIdentityDataSource;
   final StorageKeyValueDataSource _storageKeyValueDataSource;
   final HexMapper _hexMapper;
   final PrivateKeyMapper _privateKeyMapper;
   final IdentityDTOMapper _identityDTOMapper;
+  final RhsNodeMapper _rhsNodeMapper;
   //final SMTStorageRepository _smtStorageRepository;
 
   IdentityRepositoryImpl(
     this._walletDataSource,
     this._libIdentityDataSource,
+    this._remoteIdentityDataSource,
     this._storageIdentityDataSource,
     this._storageKeyValueDataSource,
     this._hexMapper,
     this._privateKeyMapper,
     this._identityDTOMapper,
+    this._rhsNodeMapper,
     //this._smtStorageRepository,
   );
 
@@ -147,5 +154,20 @@ class IdentityRepositoryImpl extends IdentityRepository {
         .then((dto) => _walletDataSource.signMessage(
             privateKey: _hexMapper.mapTo(dto.privateKey), message: message))
         .catchError((error) => throw IdentityException(error));
+  }
+
+  @override
+  Future<List<dynamic>> fetchIdentityState({required String id}) {
+    return _remoteIdentityDataSource
+        .fetchIdentityState(id: id)
+        .catchError((error) => throw FetchIdentityStateException(error));
+  }
+
+  @override
+  Future<RhsNodeEntity> fetchStateRoots({required String url}) {
+    return _remoteIdentityDataSource
+        .fetchStateRoots(url: url)
+        .then((dto) => _rhsNodeMapper.mapFrom(dto))
+        .catchError((error) => throw FetchStateRootsException(error));
   }
 }

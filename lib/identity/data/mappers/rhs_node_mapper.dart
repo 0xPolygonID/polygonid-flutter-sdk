@@ -1,8 +1,8 @@
 import 'package:polygonid_flutter_sdk/common/mappers/mapper.dart';
-import 'package:polygonid_flutter_sdk/credential/data/mappers/rhs_node_type_mapper.dart';
 
 import '../../domain/entities/rhs_node_entity.dart';
 import '../dtos/rhs_node_dto.dart';
+import 'rhs_node_type_mapper.dart';
 
 class RhsNodeMapper extends Mapper<RhsNodeDTO, RhsNodeEntity> {
   final RhsNodeTypeMapper _rhsNodeTypeMapper;

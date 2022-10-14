@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/entities/rhs_node_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 
@@ -13,7 +12,6 @@ import 'mappers/claim_mapper.dart';
 import 'mappers/credential_request_mapper.dart';
 import 'mappers/filters_mapper.dart';
 import 'mappers/id_filter_mapper.dart';
-import 'mappers/rhs_node_mapper.dart';
 
 class CredentialRepositoryImpl extends CredentialRepository {
   final RemoteClaimDataSource _remoteClaimDataSource;
@@ -22,16 +20,15 @@ class CredentialRepositoryImpl extends CredentialRepository {
   final ClaimMapper _claimMapper;
   final FiltersMapper _filtersMapper;
   final IdFilterMapper _idFilterMapper;
-  final RhsNodeMapper _rhsNodeMapper;
 
   CredentialRepositoryImpl(
-      this._remoteClaimDataSource,
-      this._storageClaimDataSource,
-      this._credentialRequestMapper,
-      this._claimMapper,
-      this._filtersMapper,
-      this._idFilterMapper,
-      this._rhsNodeMapper);
+    this._remoteClaimDataSource,
+    this._storageClaimDataSource,
+    this._credentialRequestMapper,
+    this._claimMapper,
+    this._filtersMapper,
+    this._idFilterMapper,
+  );
 
   @override
   Future<ClaimEntity> fetchClaim(
@@ -107,20 +104,5 @@ class CredentialRepositoryImpl extends CredentialRepository {
     return _remoteClaimDataSource
         .fetchVocab(schema: schema, type: type)
         .catchError((error) => throw FetchVocabException(error));
-  }
-
-  @override
-  Future<List<dynamic>> fetchIdentityState({required String id}) {
-    return _remoteClaimDataSource
-        .fetchIdentityState(id: id)
-        .catchError((error) => throw FetchIdentityStateException(error));
-  }
-
-  @override
-  Future<RhsNodeEntity> fetchStateRoots({required String url}) {
-    return _remoteClaimDataSource
-        .fetchStateRoots(url: url)
-        .then((dto) => _rhsNodeMapper.mapFrom(dto))
-        .catchError((error) => throw FetchStateRootsException(error));
   }
 }

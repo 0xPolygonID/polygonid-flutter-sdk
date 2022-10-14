@@ -1,7 +1,7 @@
-import 'package:polygonid_flutter_sdk/credential/domain/entities/rhs_node_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart';
 
 import '../../../common/mappers/from_mapper.dart';
-import '../dtos/rhs_node_dto.dart';
+import '../../../identity/data/dtos/rhs_node_dto.dart';
 
 class RhsNodeTypeMapper extends FromMapper<RhsNodeItemDTO, RhsNodeType> {
   @override
