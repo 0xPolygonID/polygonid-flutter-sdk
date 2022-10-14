@@ -11,6 +11,7 @@ import 'package:polygonid_flutter_sdk_example/utils/custom_button_style.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_colors.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_text_styles.dart';
+import 'package:polygonid_flutter_sdk_example/utils/custom_widgets_keys.dart';
 import 'package:polygonid_flutter_sdk_example/utils/image_resources.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -96,6 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
           return AbsorbPointer(
             absorbing: !enabled,
             child: ElevatedButton(
+              key: CustomWidgetsKeys.homeScreenButtonCreateIdentity,
               onPressed: () {
                 widget._bloc.add(const HomeEvent.createIdentity());
               },
@@ -218,6 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
             bool enabled = (state is! LoadingDataHomeState) &&
                 (state.identifier != null && state.identifier!.isNotEmpty);
             return ButtonNextAction(
+              key: CustomWidgetsKeys.homeScreenButtonNextAction,
               enabled: enabled,
               onPressed: () {
                 Navigator.pushNamed(context, Routes.authPath);

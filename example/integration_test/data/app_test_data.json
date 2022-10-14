@@ -1,11 +1,11 @@
 {
   "authIden3Message": {
-    "id": "920a9ea1-9d94-4d5d-8492-f3b27be9f1c0",
+    "id": "213906b8-05f1-4113-ada3-efcdffffe878",
     "typ": "application/iden3comm-plain-json",
     "type": "https://iden3-communication.io/authorization/1.0/request",
-    "thid": "920a9ea1-9d94-4d5d-8492-f3b27be9f1c0",
+    "thid": "213906b8-05f1-4113-ada3-efcdffffe878",
     "body": {
-      "callbackUrl": "https://issuer.polygonid.me/api/callback?sessionId=440724",
+      "callbackUrl": "https://issuer.polygonid.me/api/callback?sessionId=790632",
       "reason": "test flow",
       "scope": []
     },
