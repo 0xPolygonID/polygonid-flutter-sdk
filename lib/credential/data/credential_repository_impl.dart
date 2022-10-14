@@ -116,4 +116,11 @@ class CredentialRepositoryImpl extends CredentialRepository {
         .then((dto) => _rhsNodeMapper.mapFrom(dto))
         .catchError((error) => throw FetchIdentityStateException(error));
   }
+
+  @override
+  Future<List<dynamic>> fetchIssuerState({required String id}) {
+    return _remoteClaimDataSource
+        .fetchIssuerState(id: id)
+        .catchError((error) => throw FetchIssuerStateException(error));
+  }
 }

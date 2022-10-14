@@ -26,13 +26,15 @@ import '../../credential/data/mappers/rhs_node_type_mapper.dart' as _i30;
 import '../../credential/domain/repositories/credential_repository.dart'
     as _i48;
 import '../../credential/domain/use_cases/fetch_and_save_claims_use_case.dart'
-    as _i74;
+    as _i75;
 import '../../credential/domain/use_cases/fetch_identity_state_use_case.dart'
     as _i49;
-import '../../credential/domain/use_cases/get_claims_use_case.dart' as _i50;
-import '../../credential/domain/use_cases/get_vocabs_use_case.dart' as _i51;
-import '../../credential/domain/use_cases/remove_claims_use_case.dart' as _i56;
-import '../../credential/domain/use_cases/update_claim_use_case.dart' as _i57;
+import '../../credential/domain/use_cases/fetch_issuer_state_use_case.dart'
+    as _i50;
+import '../../credential/domain/use_cases/get_claims_use_case.dart' as _i51;
+import '../../credential/domain/use_cases/get_vocabs_use_case.dart' as _i52;
+import '../../credential/domain/use_cases/remove_claims_use_case.dart' as _i57;
+import '../../credential/domain/use_cases/update_claim_use_case.dart' as _i58;
 import '../../iden3comm/data/data_sources/proof_scope_data_source.dart' as _i25;
 import '../../iden3comm/data/data_sources/remote_iden3comm_data_source.dart'
     as _i29;
@@ -41,11 +43,11 @@ import '../../iden3comm/data/mappers/iden3_message_type_mapper.dart' as _i15;
 import '../../iden3comm/data/mappers/proof_response_mapper.dart' as _i24;
 import '../../iden3comm/data/mappers/schema_info_mapper.dart' as _i33;
 import '../../iden3comm/data/repositories/iden3comm_repository_impl.dart'
-    as _i52;
-import '../../iden3comm/domain/repositories/iden3comm_repository.dart' as _i62;
-import '../../iden3comm/domain/use_cases/authenticate_use_case.dart' as _i73;
-import '../../iden3comm/domain/use_cases/get_auth_token_use_case.dart' as _i68;
-import '../../iden3comm/domain/use_cases/get_proofs_use_case.dart' as _i71;
+    as _i53;
+import '../../iden3comm/domain/repositories/iden3comm_repository.dart' as _i63;
+import '../../iden3comm/domain/use_cases/authenticate_use_case.dart' as _i74;
+import '../../iden3comm/domain/use_cases/get_auth_token_use_case.dart' as _i69;
+import '../../iden3comm/domain/use_cases/get_proofs_use_case.dart' as _i72;
 import '../../identity/data/data_sources/jwz_data_source.dart' as _i17;
 import '../../identity/data/data_sources/lib_identity_data_source.dart' as _i18;
 import '../../identity/data/data_sources/storage_identity_data_source.dart'
@@ -58,18 +60,18 @@ import '../../identity/data/mappers/auth_response_mapper.dart' as _i4;
 import '../../identity/data/mappers/hex_mapper.dart' as _i12;
 import '../../identity/data/mappers/identity_dto_mapper.dart' as _i16;
 import '../../identity/data/mappers/private_key_mapper.dart' as _i23;
-import '../../identity/data/repositories/identity_repository_impl.dart' as _i53;
+import '../../identity/data/repositories/identity_repository_impl.dart' as _i54;
 import '../../identity/data/repositories/smt_memory_storage_repository_impl.dart'
     as _i31;
-import '../../identity/domain/repositories/identity_repository.dart' as _i63;
+import '../../identity/domain/repositories/identity_repository.dart' as _i64;
 import '../../identity/domain/repositories/smt_storage_repository.dart' as _i21;
-import '../../identity/domain/use_cases/create_identity_use_case.dart' as _i67;
+import '../../identity/domain/use_cases/create_identity_use_case.dart' as _i68;
 import '../../identity/domain/use_cases/get_current_identifier_use_case.dart'
-    as _i69;
-import '../../identity/domain/use_cases/get_identity_use_case.dart' as _i70;
+    as _i70;
+import '../../identity/domain/use_cases/get_identity_use_case.dart' as _i71;
 import '../../identity/domain/use_cases/remove_current_identity_use_case.dart'
-    as _i65;
-import '../../identity/domain/use_cases/sign_message_use_case.dart' as _i66;
+    as _i66;
+import '../../identity/domain/use_cases/sign_message_use_case.dart' as _i67;
 import '../../identity/libs/bjj/bjj.dart' as _i5;
 import '../../identity/libs/iden3core/iden3core.dart' as _i14;
 import '../../identity/libs/smt/hash.dart' as _i32;
@@ -86,25 +88,25 @@ import '../../proof_generation/data/data_sources/witness_data_source.dart'
 import '../../proof_generation/data/repositories/proof_repository_impl.dart'
     as _i47;
 import '../../proof_generation/domain/repositories/proof_repository.dart'
-    as _i54;
+    as _i55;
 import '../../proof_generation/domain/use_cases/generate_non_rev_proof_use_case.dart'
-    as _i58;
-import '../../proof_generation/domain/use_cases/generate_proof_use_case.dart'
     as _i59;
-import '../../proof_generation/domain/use_cases/get_atomic_query_inputs_use_case.dart'
+import '../../proof_generation/domain/use_cases/generate_proof_use_case.dart'
     as _i60;
-import '../../proof_generation/domain/use_cases/get_witness_use_case.dart'
+import '../../proof_generation/domain/use_cases/get_atomic_query_inputs_use_case.dart'
     as _i61;
-import '../../proof_generation/domain/use_cases/prove_use_case.dart' as _i55;
+import '../../proof_generation/domain/use_cases/get_witness_use_case.dart'
+    as _i62;
+import '../../proof_generation/domain/use_cases/prove_use_case.dart' as _i56;
 import '../../proof_generation/libs/prover/prover.dart' as _i26;
 import '../../proof_generation/libs/witnesscalc/auth/witness_auth.dart' as _i35;
 import '../../proof_generation/libs/witnesscalc/mtp/witness_mtp.dart' as _i37;
 import '../../proof_generation/libs/witnesscalc/sig/witness_sig.dart' as _i38;
-import '../credential_wallet.dart' as _i76;
-import '../iden3comm.dart' as _i75;
-import '../identity_wallet.dart' as _i72;
-import '../proof_generation.dart' as _i64;
-import 'injector.dart' as _i77; // ignore_for_file: unnecessary_lambdas
+import '../credential_wallet.dart' as _i77;
+import '../iden3comm.dart' as _i76;
+import '../identity_wallet.dart' as _i73;
+import '../proof_generation.dart' as _i65;
+import 'injector.dart' as _i78; // ignore_for_file: unnecessary_lambdas
 
 // ignore_for_file: lines_longer_than_80_chars
 /// initializes the registration of provided dependencies inside of [GetIt]
@@ -223,12 +225,15 @@ _i1.GetIt $initSDKGetIt(_i1.GetIt get,
   gh.factoryAsync<_i49.FetchIdentityStateUseCase>(() async =>
       _i49.FetchIdentityStateUseCase(
           await get.getAsync<_i48.CredentialRepository>()));
-  gh.factoryAsync<_i50.GetClaimsUseCase>(() async =>
-      _i50.GetClaimsUseCase(await get.getAsync<_i48.CredentialRepository>()));
-  gh.factoryAsync<_i51.GetVocabsUseCase>(() async =>
-      _i51.GetVocabsUseCase(await get.getAsync<_i48.CredentialRepository>()));
-  gh.factoryAsync<_i52.Iden3commRepositoryImpl>(() async =>
-      _i52.Iden3commRepositoryImpl(
+  gh.factoryAsync<_i50.FetchIssuerStateUseCase>(() async =>
+      _i50.FetchIssuerStateUseCase(
+          await get.getAsync<_i48.CredentialRepository>()));
+  gh.factoryAsync<_i51.GetClaimsUseCase>(() async =>
+      _i51.GetClaimsUseCase(await get.getAsync<_i48.CredentialRepository>()));
+  gh.factoryAsync<_i52.GetVocabsUseCase>(() async =>
+      _i52.GetVocabsUseCase(await get.getAsync<_i48.CredentialRepository>()));
+  gh.factoryAsync<_i53.Iden3commRepositoryImpl>(() async =>
+      _i53.Iden3commRepositoryImpl(
           get<_i29.RemoteIden3commDataSource>(),
           get<_i17.JWZDataSource>(),
           get<_i12.HexMapper>(),
@@ -237,8 +242,8 @@ _i1.GetIt $initSDKGetIt(_i1.GetIt get,
           get<_i40.ClaimMapper>(),
           get<_i11.FiltersMapper>(),
           get<_i4.AuthResponseMapper>()));
-  gh.factoryAsync<_i53.IdentityRepositoryImpl>(() async =>
-      _i53.IdentityRepositoryImpl(
+  gh.factoryAsync<_i54.IdentityRepositoryImpl>(() async =>
+      _i54.IdentityRepositoryImpl(
           get<_i34.WalletDataSource>(),
           get<_i18.LibIdentityDataSource>(),
           await get.getAsync<_i43.StorageIdentityDataSource>(),
@@ -246,85 +251,85 @@ _i1.GetIt $initSDKGetIt(_i1.GetIt get,
           get<_i12.HexMapper>(),
           get<_i23.PrivateKeyMapper>(),
           get<_i16.IdentityDTOMapper>()));
-  gh.factory<_i54.ProofRepository>(() =>
+  gh.factory<_i55.ProofRepository>(() =>
       repositoriesModule.proofRepository(get<_i47.ProofRepositoryImpl>()));
-  gh.factory<_i55.ProveUseCase>(
-      () => _i55.ProveUseCase(get<_i54.ProofRepository>()));
-  gh.factoryAsync<_i56.RemoveClaimsUseCase>(() async =>
-      _i56.RemoveClaimsUseCase(
+  gh.factory<_i56.ProveUseCase>(
+      () => _i56.ProveUseCase(get<_i55.ProofRepository>()));
+  gh.factoryAsync<_i57.RemoveClaimsUseCase>(() async =>
+      _i57.RemoveClaimsUseCase(
           await get.getAsync<_i48.CredentialRepository>()));
-  gh.factoryAsync<_i57.UpdateClaimUseCase>(() async =>
-      _i57.UpdateClaimUseCase(await get.getAsync<_i48.CredentialRepository>()));
-  gh.factory<_i58.GenerateNonRevProofUseCase>(
-      () => _i58.GenerateNonRevProofUseCase(get<_i54.ProofRepository>()));
-  gh.factory<_i59.GenerateProofUseCase>(
-      () => _i59.GenerateProofUseCase(get<_i54.ProofRepository>()));
-  gh.factory<_i60.GetAtomicQueryInputsUseCase>(
-      () => _i60.GetAtomicQueryInputsUseCase(get<_i54.ProofRepository>()));
-  gh.factory<_i61.GetWitnessUseCase>(
-      () => _i61.GetWitnessUseCase(get<_i54.ProofRepository>()));
-  gh.factoryAsync<_i62.Iden3commRepository>(() async => repositoriesModule
-      .iden3commRepository(await get.getAsync<_i52.Iden3commRepositoryImpl>()));
-  gh.factoryAsync<_i63.IdentityRepository>(() async => repositoriesModule
-      .identityRepository(await get.getAsync<_i53.IdentityRepositoryImpl>()));
-  gh.factory<_i64.ProofGeneration>(() => _i64.ProofGeneration(
-      get<_i60.GetAtomicQueryInputsUseCase>(),
-      get<_i61.GetWitnessUseCase>(),
-      get<_i55.ProveUseCase>()));
-  gh.factoryAsync<_i65.RemoveCurrentIdentityUseCase>(() async =>
-      _i65.RemoveCurrentIdentityUseCase(
-          await get.getAsync<_i63.IdentityRepository>()));
-  gh.factoryAsync<_i66.SignMessageUseCase>(() async =>
-      _i66.SignMessageUseCase(await get.getAsync<_i63.IdentityRepository>()));
-  gh.factoryAsync<_i67.CreateIdentityUseCase>(() async =>
-      _i67.CreateIdentityUseCase(
-          await get.getAsync<_i63.IdentityRepository>()));
-  gh.factoryAsync<_i68.GetAuthTokenUseCase>(() async =>
-      _i68.GetAuthTokenUseCase(
-          await get.getAsync<_i62.Iden3commRepository>(),
-          get<_i54.ProofRepository>(),
-          await get.getAsync<_i63.IdentityRepository>()));
-  gh.factoryAsync<_i69.GetCurrentIdentifierUseCase>(() async =>
-      _i69.GetCurrentIdentifierUseCase(
-          await get.getAsync<_i63.IdentityRepository>()));
-  gh.factoryAsync<_i70.GetIdentityUseCase>(() async =>
-      _i70.GetIdentityUseCase(await get.getAsync<_i63.IdentityRepository>()));
-  gh.factoryAsync<_i71.GetProofsUseCase>(() async => _i71.GetProofsUseCase(
-      get<_i54.ProofRepository>(),
-      await get.getAsync<_i63.IdentityRepository>(),
+  gh.factoryAsync<_i58.UpdateClaimUseCase>(() async =>
+      _i58.UpdateClaimUseCase(await get.getAsync<_i48.CredentialRepository>()));
+  gh.factory<_i59.GenerateNonRevProofUseCase>(
+      () => _i59.GenerateNonRevProofUseCase(get<_i55.ProofRepository>()));
+  gh.factory<_i60.GenerateProofUseCase>(
+      () => _i60.GenerateProofUseCase(get<_i55.ProofRepository>()));
+  gh.factory<_i61.GetAtomicQueryInputsUseCase>(
+      () => _i61.GetAtomicQueryInputsUseCase(get<_i55.ProofRepository>()));
+  gh.factory<_i62.GetWitnessUseCase>(
+      () => _i62.GetWitnessUseCase(get<_i55.ProofRepository>()));
+  gh.factoryAsync<_i63.Iden3commRepository>(() async => repositoriesModule
+      .iden3commRepository(await get.getAsync<_i53.Iden3commRepositoryImpl>()));
+  gh.factoryAsync<_i64.IdentityRepository>(() async => repositoriesModule
+      .identityRepository(await get.getAsync<_i54.IdentityRepositoryImpl>()));
+  gh.factory<_i65.ProofGeneration>(() => _i65.ProofGeneration(
+      get<_i61.GetAtomicQueryInputsUseCase>(),
+      get<_i62.GetWitnessUseCase>(),
+      get<_i56.ProveUseCase>()));
+  gh.factoryAsync<_i66.RemoveCurrentIdentityUseCase>(() async =>
+      _i66.RemoveCurrentIdentityUseCase(
+          await get.getAsync<_i64.IdentityRepository>()));
+  gh.factoryAsync<_i67.SignMessageUseCase>(() async =>
+      _i67.SignMessageUseCase(await get.getAsync<_i64.IdentityRepository>()));
+  gh.factoryAsync<_i68.CreateIdentityUseCase>(() async =>
+      _i68.CreateIdentityUseCase(
+          await get.getAsync<_i64.IdentityRepository>()));
+  gh.factoryAsync<_i69.GetAuthTokenUseCase>(() async =>
+      _i69.GetAuthTokenUseCase(
+          await get.getAsync<_i63.Iden3commRepository>(),
+          get<_i55.ProofRepository>(),
+          await get.getAsync<_i64.IdentityRepository>()));
+  gh.factoryAsync<_i70.GetCurrentIdentifierUseCase>(() async =>
+      _i70.GetCurrentIdentifierUseCase(
+          await get.getAsync<_i64.IdentityRepository>()));
+  gh.factoryAsync<_i71.GetIdentityUseCase>(() async =>
+      _i71.GetIdentityUseCase(await get.getAsync<_i64.IdentityRepository>()));
+  gh.factoryAsync<_i72.GetProofsUseCase>(() async => _i72.GetProofsUseCase(
+      get<_i55.ProofRepository>(),
+      await get.getAsync<_i64.IdentityRepository>(),
       await get.getAsync<_i48.CredentialRepository>(),
       get<_i25.ProofScopeDataSource>(),
       get<_i34.WalletDataSource>(),
-      get<_i59.GenerateProofUseCase>()));
-  gh.factoryAsync<_i72.IdentityWallet>(() async => _i72.IdentityWallet(
-      await get.getAsync<_i67.CreateIdentityUseCase>(),
-      await get.getAsync<_i70.GetIdentityUseCase>(),
-      await get.getAsync<_i66.SignMessageUseCase>(),
-      await get.getAsync<_i69.GetCurrentIdentifierUseCase>(),
-      await get.getAsync<_i65.RemoveCurrentIdentityUseCase>()));
-  gh.factoryAsync<_i73.AuthenticateUseCase>(() async =>
-      _i73.AuthenticateUseCase(
-          await get.getAsync<_i62.Iden3commRepository>(),
-          await get.getAsync<_i71.GetProofsUseCase>(),
-          await get.getAsync<_i68.GetAuthTokenUseCase>()));
-  gh.factoryAsync<_i74.FetchAndSaveClaimsUseCase>(() async =>
-      _i74.FetchAndSaveClaimsUseCase(
-          await get.getAsync<_i68.GetAuthTokenUseCase>(),
+      get<_i60.GenerateProofUseCase>()));
+  gh.factoryAsync<_i73.IdentityWallet>(() async => _i73.IdentityWallet(
+      await get.getAsync<_i68.CreateIdentityUseCase>(),
+      await get.getAsync<_i71.GetIdentityUseCase>(),
+      await get.getAsync<_i67.SignMessageUseCase>(),
+      await get.getAsync<_i70.GetCurrentIdentifierUseCase>(),
+      await get.getAsync<_i66.RemoveCurrentIdentityUseCase>()));
+  gh.factoryAsync<_i74.AuthenticateUseCase>(() async =>
+      _i74.AuthenticateUseCase(
+          await get.getAsync<_i63.Iden3commRepository>(),
+          await get.getAsync<_i72.GetProofsUseCase>(),
+          await get.getAsync<_i69.GetAuthTokenUseCase>()));
+  gh.factoryAsync<_i75.FetchAndSaveClaimsUseCase>(() async =>
+      _i75.FetchAndSaveClaimsUseCase(
+          await get.getAsync<_i69.GetAuthTokenUseCase>(),
           await get.getAsync<_i48.CredentialRepository>()));
-  gh.factoryAsync<_i75.Iden3comm>(() async => _i75.Iden3comm(
-      await get.getAsync<_i51.GetVocabsUseCase>(),
-      await get.getAsync<_i73.AuthenticateUseCase>(),
+  gh.factoryAsync<_i76.Iden3comm>(() async => _i76.Iden3comm(
+      await get.getAsync<_i52.GetVocabsUseCase>(),
+      await get.getAsync<_i74.AuthenticateUseCase>(),
       get<_i3.AuthRequestMapper>()));
-  gh.factoryAsync<_i76.CredentialWallet>(() async => _i76.CredentialWallet(
-      await get.getAsync<_i74.FetchAndSaveClaimsUseCase>(),
-      await get.getAsync<_i50.GetClaimsUseCase>(),
-      await get.getAsync<_i56.RemoveClaimsUseCase>(),
-      await get.getAsync<_i57.UpdateClaimUseCase>()));
+  gh.factoryAsync<_i77.CredentialWallet>(() async => _i77.CredentialWallet(
+      await get.getAsync<_i75.FetchAndSaveClaimsUseCase>(),
+      await get.getAsync<_i51.GetClaimsUseCase>(),
+      await get.getAsync<_i57.RemoveClaimsUseCase>(),
+      await get.getAsync<_i58.UpdateClaimUseCase>()));
   return get;
 }
 
-class _$NetworkModule extends _i77.NetworkModule {}
+class _$NetworkModule extends _i78.NetworkModule {}
 
-class _$DatabaseModule extends _i77.DatabaseModule {}
+class _$DatabaseModule extends _i78.DatabaseModule {}
 
-class _$RepositoriesModule extends _i77.RepositoriesModule {}
+class _$RepositoriesModule extends _i78.RepositoriesModule {}

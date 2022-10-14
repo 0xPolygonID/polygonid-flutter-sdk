@@ -38,6 +38,10 @@ class FetchVocabException extends ErrorException {
   FetchVocabException(error) : super(error);
 }
 
+class FetchIssuerStateException extends ErrorException {
+  FetchIssuerStateException(error) : super(error);
+}
+
 class FetchIdentityStateException extends ErrorException {
   FetchIdentityStateException(error) : super(error);
 }

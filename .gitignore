@@ -219,3 +219,5 @@ gradle
 
 # Project specific
 rust/target
+.env
+.env.dev

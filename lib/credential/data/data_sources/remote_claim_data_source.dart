@@ -3,9 +3,13 @@ import 'dart:io';
 
 import 'package:http/http.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/rhs_node_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/libs/rhs/state_contract.dart';
+import 'package:web3dart/web3dart.dart';
+import 'package:web_socket_channel/io.dart';
 
 import '../../../common/data/exceptions/network_exceptions.dart';
 import '../../../common/domain/domain_logger.dart';
+import '../../../env/sdk_env.dart';
 import '../../domain/exceptions/credential_exceptions.dart';
 import '../dtos/claim_dto.dart';
 import '../dtos/fetch_claim_response_dto.dart';
@@ -123,6 +127,20 @@ class RemoteClaimDataSource {
     } catch (error) {
       logger().e('vocab error: $error');
       throw FetchVocabException(error);
+    }
+  }
+
+  Future<List<dynamic>> fetchIssuerState({required String id}) async {
+    try {
+      Web3Client web3Client =
+          Web3Client(SdkEnv().infuraUrl, client, socketConnector: () {
+        return IOWebSocketChannel.connect(SdkEnv().infuraRdpUrl).cast<String>();
+      });
+
+      return StateContract(web3Client).getState(id);
+    } catch (error) {
+      logger().e('identity state error: $error');
+      throw FetchIssuerStateException(error);
     }
   }
 
