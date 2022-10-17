@@ -65,6 +65,7 @@ final zKeyFile = Uint8List(32);
 final circuitData = CircuitDataEntity(circuitId, datFile, zKeyFile);
 const token = "token";
 const url = "theUrl";
+const id = "1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ"; //"theId";
 var exception = Exception();
 const issuerMessage =
     '{"id":"0b78a480-c710-4bd8-a4fd-454b577ca991","typ":"application/iden3comm-plain-json","type":"https://iden3-communication.io/authorization/1.0/request","thid":"0b78a480-c710-4bd8-a4fd-454b577ca991","body":{"callbackUrl":"https://issuer.polygonid.me/api/callback?sessionId=867314","reason":"test flow","scope":[]},"from":"1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ"}';
@@ -405,6 +406,61 @@ void main() {
     });
   });
 
+  group("Fetch Identity State", () {
+    setUp(() {
+      reset(remoteIdentityDataSource);
+
+      // Given
+      when(remoteIdentityDataSource.fetchIdentityState(id: anyNamed('id')))
+          .thenAnswer((realInvocation) => Future.value([]));
+      //when(rhsNodeMapper.mapFrom(any)).thenReturn(rhsNodeEntities[0]);
+    });
+
+    test(
+        "Given parameters, when I call fetchIdentityState, then I expect a RhsNodeEntity to be returned",
+        () async {
+      // When
+      expect(await repository.fetchIdentityState(id: id), []);
+
+      // Then
+      var fetchCaptured = verify(remoteIdentityDataSource.fetchIdentityState(
+              id: captureAnyNamed('id')))
+          .captured;
+
+      expect(fetchCaptured[0], id);
+
+      //expect(verify(rhsNodeMapper.mapFrom(captureAny)).captured.first,
+      // rhsNodeDTOs[0]);
+    });
+
+    test(
+        "Given parameters, when I call fetchStateRoots and an error occurred, then I expect a FetchIdentityStateException to be thrown",
+        () async {
+      // Given
+      when(remoteIdentityDataSource.fetchIdentityState(
+        id: anyNamed('id'),
+      )).thenAnswer((realInvocation) => Future.error(exception));
+
+      // When
+      await repository
+          .fetchIdentityState(id: id)
+          .then((_) => expect(true, false))
+          .catchError((error) {
+        expect(error, isA<FetchIdentityStateException>());
+        expect(error.error, exception);
+      });
+
+      // Then
+      var fetchCaptured = verify(remoteIdentityDataSource.fetchStateRoots(
+        url: captureAnyNamed('url'),
+      )).captured;
+
+      expect(fetchCaptured[0], url);
+
+      verifyNever(rhsNodeMapper.mapFrom(captureAny));
+    });
+  });
+
   group("Fetch State Roots", () {
     setUp(() {
       reset(remoteIdentityDataSource);
@@ -446,7 +502,7 @@ void main() {
           .fetchStateRoots(url: url)
           .then((_) => expect(true, false))
           .catchError((error) {
-        expect(error, isA<FetchIdentityStateException>());
+        expect(error, isA<FetchStateRootsException>());
         expect(error.error, exception);
       });
 

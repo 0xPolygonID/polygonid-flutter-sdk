@@ -11,18 +11,18 @@ class ProdEnv implements SdkEnv, SdkEnvFields {
   const ProdEnv();
 
   @override
-  @EnviedField(varName: 'POLYGONID_ACCESS_MESSAGE')
+  @EnviedField(varName: 'POLYGONID_ACCESS_MESSAGE', obfuscate: true)
   final String polygonIdAccessMessage = _Env.polygonIdAccessMessage;
   @override
-  @EnviedField(varName: 'INFURA_URL')
+  @EnviedField(varName: 'INFURA_URL', obfuscate: true)
   final String infuraUrl = _Env.infuraUrl;
   @override
-  @EnviedField(varName: 'INFURA_RDP_URL')
+  @EnviedField(varName: 'INFURA_RDP_URL', obfuscate: true)
   final String infuraRdpUrl = _Env.infuraRdpUrl;
   @override
-  @EnviedField(varName: 'INFURA_API_KEY')
+  @EnviedField(varName: 'INFURA_API_KEY', obfuscate: true)
   final String infuraApiKey = _Env.infuraApiKey;
   @override
-  @EnviedField(varName: 'ID_STATE_CONTRACT_ADDR')
+  @EnviedField(varName: 'ID_STATE_CONTRACT_ADDR', obfuscate: true)
   final String idStateContractAddress = _Env.idStateContractAddress;
 }
