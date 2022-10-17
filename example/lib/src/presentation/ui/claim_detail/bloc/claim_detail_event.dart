@@ -4,5 +4,6 @@ part 'claim_detail_event.freezed.dart';
 
 @freezed
 class ClaimDetailEvent with _$ClaimDetailEvent {
-  const factory ClaimDetailEvent.deleteClaim({required String claimId}) = DeleteClaimEvent;
+  const factory ClaimDetailEvent.deleteClaim({required String claimId}) =
+      DeleteClaimEvent;
 }

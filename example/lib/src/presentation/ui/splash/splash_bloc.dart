@@ -11,7 +11,8 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
   }
 
   /// Simulation of a possible loading time
-  Future<void> onFakeLoadingSplashEvent(FakeLoadingSplashEvent event, Emitter<SplashState> emit) async {
+  Future<void> onFakeLoadingSplashEvent(
+      FakeLoadingSplashEvent event, Emitter<SplashState> emit) async {
     await Future.delayed(CustomDimensions.splashDuration);
     emit(SplashState.waitingTimeEnded());
   }

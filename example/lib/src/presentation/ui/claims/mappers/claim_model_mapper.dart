@@ -69,7 +69,7 @@ class ClaimModelMapper implements FromMapper<ClaimEntity, ClaimModel> {
             (from.vocab!['properties'] as Map<String, dynamic>)
                 .containsKey(key)) {
           Map<String, dynamic> vocabProperty =
-          (from.vocab!['properties'] as Map<String, dynamic>)[key];
+              (from.vocab!['properties'] as Map<String, dynamic>)[key];
           if (vocabProperty.containsKey("display")) {
             claimTitle = vocabProperty["display"];
           }

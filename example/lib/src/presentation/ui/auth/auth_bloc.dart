@@ -30,7 +30,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
 
     try {
-      final Map<String, dynamic> data = jsonDecode(qrCodeResponse!);
+      final Map<String, dynamic> data = jsonDecode(qrCodeResponse);
       final Iden3Message iden3message = Iden3Message.fromJson(data);
       emit(AuthState.loaded(iden3message));
 

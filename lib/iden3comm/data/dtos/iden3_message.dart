@@ -1,23 +1,14 @@
-import 'package:polygonid_flutter_sdk_example/src/presentation/models/auth_type.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/models/auth_type_model_mapper.dart';
-
 class Iden3Message {
   final String? id;
   final String? typ;
-  final AuthType type;
+  final String? type;
   final String? thid;
   final Map<String, dynamic>? body;
   final String? from;
   final String? to;
 
   Iden3Message(
-      {this.id,
-      this.typ,
-      this.type = AuthType.unknown,
-      this.thid,
-      this.body,
-      this.from,
-      this.to});
+      {this.id, this.typ, this.type, this.thid, this.body, this.from, this.to});
 
   /// Creates an instance from the given json
   ///
@@ -27,7 +18,7 @@ class Iden3Message {
     return Iden3Message(
       id: json['id'],
       typ: json['typ'],
-      type: AuthTypeModelMapper().mapTo(json['type']),
+      type: json['type'],
       thid: json['thid'],
       from: json['from'],
       to: json['to'],
@@ -38,7 +29,7 @@ class Iden3Message {
   Map<String, dynamic> toJson() => {
         'id': id,
         'typ': typ,
-        'type': AuthTypeModelMapper().mapFrom(type),
+        'type': type,
         'thid': thid,
         'from': from,
         'to': to,

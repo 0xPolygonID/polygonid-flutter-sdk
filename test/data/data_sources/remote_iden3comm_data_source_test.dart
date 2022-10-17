@@ -56,7 +56,7 @@ void main() {
 
       //
       expect(
-        await dataSource.authWithToken(token, mockAuthRequest),
+        await dataSource.authWithToken(token: token, url: url),
         response,
       );
 
@@ -90,7 +90,7 @@ void main() {
 
       //
       await expectLater(
-        dataSource.authWithToken(token, mockAuthRequest),
+        dataSource.authWithToken(token: token, url: url),
         throwsA(isA<UnknownApiException>()),
       );
 

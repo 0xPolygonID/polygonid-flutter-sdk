@@ -89,4 +89,19 @@ class CredentialRepositoryImpl extends CredentialRepository {
         .then((_) => claim)
         .catchError((error) => throw UpdateClaimException(error));
   }
+
+  @override
+  Future<Map<String, dynamic>?> fetchSchema({required String url}) {
+    return _remoteClaimDataSource
+        .fetchSchema(url: url)
+        .catchError((error) => throw FetchSchemaException(error));
+  }
+
+  @override
+  Future<Map<String, dynamic>?> fetchVocab(
+      {required Map<String, dynamic>? schema, required String type}) {
+    return _remoteClaimDataSource
+        .fetchVocab(schema: schema, type: type)
+        .catchError((error) => throw FetchVocabException(error));
+  }
 }

@@ -73,7 +73,7 @@ void main() {
 
     test("Serializable", () {
       CredentialDTO dto = CredentialDTO.fromJson(json);
-      Map<String, dynamic> toJson = dto.toJson();
+      dto.toJson();
     });
   });
 }
