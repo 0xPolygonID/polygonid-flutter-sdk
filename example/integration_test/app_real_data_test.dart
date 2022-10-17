@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
+
+import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -15,6 +17,7 @@ import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/widgets
 import 'package:polygonid_flutter_sdk_example/utils/custom_dimensions.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_widgets_keys.dart';
+import 'package:uuid/uuid.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -73,7 +76,7 @@ void main() {
 
         // we simulate the qrCode scanning, we cannot mock it because
         // it change everytime and also it expire
-        String iden3Message = await _getIden3MessageFromJsonFile();
+        String iden3Message = await _getAuthenticationIden3MessageFromApi();
         await widgetTester
             .tap(find.byKey(CustomWidgetsKeys.authScreenButtonConnect));
         await widgetTester.pumpAndSettle();
@@ -83,7 +86,7 @@ void main() {
         // with the iden3message scanned
         // we expect to authenticate succesfully
         await widgetTester.pumpAndSettle(const Duration(seconds: 3));
-        expect(find.text('Authenticated successfully'), findsOneWidget);
+        expect(find.text(CustomStrings.authSuccess), findsOneWidget);
         await widgetTester.pumpAndSettle();
 
         // then, we navigate to the claims list screen
@@ -101,10 +104,18 @@ void main() {
 }
 
 ///
-Future<String> _getIden3MessageFromJsonFile() async {
-  String appTestData =
-      await rootBundle.loadString('integration_test/data/app_test_data.json');
-  Map<String, dynamic> json = jsonDecode(appTestData);
-  Map<String, dynamic> iden3Message = json['authIden3Message'];
-  return jsonEncode(iden3Message);
+Future<String> _getAuthenticationIden3MessageFromApi() async {
+  Uuid uuid = const Uuid();
+  String randomUuid = uuid.v1();
+  Uri uri = Uri.parse("https://api-staging.polygonid.com/v1/zk-sign-in");
+  String params = jsonEncode({"loginId": randomUuid});
+  http.Response response = await http.post(
+    uri,
+    headers: {
+      HttpHeaders.acceptHeader: '*/*',
+      HttpHeaders.contentTypeHeader: 'application/json',
+    },
+    body: params,
+  );
+  return response.body;
 }

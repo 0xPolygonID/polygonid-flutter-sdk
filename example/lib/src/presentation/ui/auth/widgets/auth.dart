@@ -67,7 +67,7 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom:16),
+              padding: const EdgeInsets.only(bottom: 16),
               child: Stack(
                 children: [
                   _buildBlocListener(),
@@ -180,7 +180,7 @@ class _AuthScreenState extends State<AuthScreen> {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Text(
-            "Authenticated successfully",
+            CustomStrings.authSuccess,
             style: CustomTextStyles.descriptionTextStyle
                 .copyWith(color: CustomColors.greenSuccess),
           ),
