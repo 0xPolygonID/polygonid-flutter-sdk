@@ -47,7 +47,7 @@ class RemoteClaimDataSource {
               identifier: identifier,
               type: fetchResponse.credential.credentialSubject.type,
               expiration: fetchResponse.credential.expiration,
-              credential: fetchResponse.credential,
+              info: fetchResponse.credential,
               schema: schema,
               vocab: vocab);
         } else {

@@ -42,6 +42,8 @@
   }
 }
 
+
+
 {
   "type": "https://iden3-communication.io/authorization-request/v1",
   "data": {
@@ -60,44 +62,46 @@
   }
 }
 
+
+
 */
 
-import 'dart:convert';
+/// FIXME: potentially a duplicate of [JWZBaseProof]
+class ZKProofEntity {
+  final List<String> a;
+  final List<List<String>> b;
+  final List<String> c;
+  final String protocol;
+  final String? curve;
 
-import '../../../../../proof_generation/data/dtos/zk_proof.dart';
-
-class ProofResponse {
-  final int id;
-  final String circuitId;
-  final ZKProof proof;
-  final List<String> pubSignals;
-
-  ProofResponse({
-    required this.id,
-    required this.circuitId,
-    required this.proof,
-    required this.pubSignals,
-  });
+  ZKProofEntity(
+      {required this.a,
+      required this.b,
+      required this.c,
+      required this.protocol,
+      this.curve});
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [ProofResponse]
-  factory ProofResponse.fromJson(Map<String, dynamic> json) {
-    ZKProof proof = ZKProof.fromJson(json['proof']);
-    List<String> pubSig = List.from(jsonDecode(json['pub_signals']));
+  /// @returns [ZKProof]
+  factory ZKProofEntity.fromJson(Map<String, dynamic> json) {
+    List<String> pia = List.from(json['pi_a']);
+    // List<List<String>> pib = List.from(json['pi_b']);
+    List<List<String>> pib = (json['pi_b'] as List<dynamic>)
+        .map((e) => (e as List<dynamic>).map((e) => e as String).toList())
+        .toList();
+    List<String> pic = List.from(json['pi_c']);
 
-    return ProofResponse(
-        id: json['id'],
-        circuitId: json['circuit_id'],
-        proof: proof,
-        pubSignals: pubSig);
+    return ZKProofEntity(
+      a: pia,
+      b: pib,
+      c: pic,
+      curve: json['curve'],
+      protocol: json['protocol'],
+    );
   }
 
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'circuit_id': circuitId,
-        'proof': proof.toJson(),
-        'pub_signals': pubSignals
-      };
+  Map<String, dynamic> toJson() =>
+      {'pi_a': a, 'pi_b': b, 'pi_c': c, 'curve': curve, 'protocol': protocol};
 }

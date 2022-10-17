@@ -21,7 +21,7 @@ mixin _$ClaimsState {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function() navigateToQrCodeScanner,
-    required TResult Function(Iden3Message iden3message) qrCodeScanned,
+    required TResult Function(Iden3MessageEntity iden3message) qrCodeScanned,
     required TResult Function(List<ClaimModel> claimList) loadedClaims,
     required TResult Function(String message) error,
     required TResult Function(ClaimModel claimModel) navigateToClaimDetail,
@@ -32,7 +32,7 @@ mixin _$ClaimsState {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? qrCodeScanned,
+    TResult Function(Iden3MessageEntity iden3message)? qrCodeScanned,
     TResult Function(List<ClaimModel> claimList)? loadedClaims,
     TResult Function(String message)? error,
     TResult Function(ClaimModel claimModel)? navigateToClaimDetail,
@@ -43,7 +43,7 @@ mixin _$ClaimsState {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? qrCodeScanned,
+    TResult Function(Iden3MessageEntity iden3message)? qrCodeScanned,
     TResult Function(List<ClaimModel> claimList)? loadedClaims,
     TResult Function(String message)? error,
     TResult Function(ClaimModel claimModel)? navigateToClaimDetail,
@@ -152,7 +152,7 @@ class _$InitialClaimsState implements InitialClaimsState {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function() navigateToQrCodeScanner,
-    required TResult Function(Iden3Message iden3message) qrCodeScanned,
+    required TResult Function(Iden3MessageEntity iden3message) qrCodeScanned,
     required TResult Function(List<ClaimModel> claimList) loadedClaims,
     required TResult Function(String message) error,
     required TResult Function(ClaimModel claimModel) navigateToClaimDetail,
@@ -166,7 +166,7 @@ class _$InitialClaimsState implements InitialClaimsState {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? qrCodeScanned,
+    TResult Function(Iden3MessageEntity iden3message)? qrCodeScanned,
     TResult Function(List<ClaimModel> claimList)? loadedClaims,
     TResult Function(String message)? error,
     TResult Function(ClaimModel claimModel)? navigateToClaimDetail,
@@ -180,7 +180,7 @@ class _$InitialClaimsState implements InitialClaimsState {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? qrCodeScanned,
+    TResult Function(Iden3MessageEntity iden3message)? qrCodeScanned,
     TResult Function(List<ClaimModel> claimList)? loadedClaims,
     TResult Function(String message)? error,
     TResult Function(ClaimModel claimModel)? navigateToClaimDetail,
@@ -294,7 +294,7 @@ class _$LoadingDataClaimsState implements LoadingDataClaimsState {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function() navigateToQrCodeScanner,
-    required TResult Function(Iden3Message iden3message) qrCodeScanned,
+    required TResult Function(Iden3MessageEntity iden3message) qrCodeScanned,
     required TResult Function(List<ClaimModel> claimList) loadedClaims,
     required TResult Function(String message) error,
     required TResult Function(ClaimModel claimModel) navigateToClaimDetail,
@@ -308,7 +308,7 @@ class _$LoadingDataClaimsState implements LoadingDataClaimsState {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? qrCodeScanned,
+    TResult Function(Iden3MessageEntity iden3message)? qrCodeScanned,
     TResult Function(List<ClaimModel> claimList)? loadedClaims,
     TResult Function(String message)? error,
     TResult Function(ClaimModel claimModel)? navigateToClaimDetail,
@@ -322,7 +322,7 @@ class _$LoadingDataClaimsState implements LoadingDataClaimsState {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? qrCodeScanned,
+    TResult Function(Iden3MessageEntity iden3message)? qrCodeScanned,
     TResult Function(List<ClaimModel> claimList)? loadedClaims,
     TResult Function(String message)? error,
     TResult Function(ClaimModel claimModel)? navigateToClaimDetail,
@@ -440,7 +440,7 @@ class _$NavigateToQrCodeScannerClaimsState
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function() navigateToQrCodeScanner,
-    required TResult Function(Iden3Message iden3message) qrCodeScanned,
+    required TResult Function(Iden3MessageEntity iden3message) qrCodeScanned,
     required TResult Function(List<ClaimModel> claimList) loadedClaims,
     required TResult Function(String message) error,
     required TResult Function(ClaimModel claimModel) navigateToClaimDetail,
@@ -454,7 +454,7 @@ class _$NavigateToQrCodeScannerClaimsState
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? qrCodeScanned,
+    TResult Function(Iden3MessageEntity iden3message)? qrCodeScanned,
     TResult Function(List<ClaimModel> claimList)? loadedClaims,
     TResult Function(String message)? error,
     TResult Function(ClaimModel claimModel)? navigateToClaimDetail,
@@ -468,7 +468,7 @@ class _$NavigateToQrCodeScannerClaimsState
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? qrCodeScanned,
+    TResult Function(Iden3MessageEntity iden3message)? qrCodeScanned,
     TResult Function(List<ClaimModel> claimList)? loadedClaims,
     TResult Function(String message)? error,
     TResult Function(ClaimModel claimModel)? navigateToClaimDetail,
@@ -543,7 +543,7 @@ abstract class _$$QrCodeScannedClaimsStateCopyWith<$Res> {
   factory _$$QrCodeScannedClaimsStateCopyWith(_$QrCodeScannedClaimsState value,
           $Res Function(_$QrCodeScannedClaimsState) then) =
       __$$QrCodeScannedClaimsStateCopyWithImpl<$Res>;
-  $Res call({Iden3Message iden3message});
+  $Res call({Iden3MessageEntity iden3message});
 }
 
 /// @nodoc
@@ -566,7 +566,7 @@ class __$$QrCodeScannedClaimsStateCopyWithImpl<$Res>
       iden3message == freezed
           ? _value.iden3message
           : iden3message // ignore: cast_nullable_to_non_nullable
-              as Iden3Message,
+              as Iden3MessageEntity,
     ));
   }
 }
@@ -577,7 +577,7 @@ class _$QrCodeScannedClaimsState implements QrCodeScannedClaimsState {
   const _$QrCodeScannedClaimsState(this.iden3message);
 
   @override
-  final Iden3Message iden3message;
+  final Iden3MessageEntity iden3message;
 
   @override
   String toString() {
@@ -610,7 +610,7 @@ class _$QrCodeScannedClaimsState implements QrCodeScannedClaimsState {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function() navigateToQrCodeScanner,
-    required TResult Function(Iden3Message iden3message) qrCodeScanned,
+    required TResult Function(Iden3MessageEntity iden3message) qrCodeScanned,
     required TResult Function(List<ClaimModel> claimList) loadedClaims,
     required TResult Function(String message) error,
     required TResult Function(ClaimModel claimModel) navigateToClaimDetail,
@@ -624,7 +624,7 @@ class _$QrCodeScannedClaimsState implements QrCodeScannedClaimsState {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? qrCodeScanned,
+    TResult Function(Iden3MessageEntity iden3message)? qrCodeScanned,
     TResult Function(List<ClaimModel> claimList)? loadedClaims,
     TResult Function(String message)? error,
     TResult Function(ClaimModel claimModel)? navigateToClaimDetail,
@@ -638,7 +638,7 @@ class _$QrCodeScannedClaimsState implements QrCodeScannedClaimsState {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? qrCodeScanned,
+    TResult Function(Iden3MessageEntity iden3message)? qrCodeScanned,
     TResult Function(List<ClaimModel> claimList)? loadedClaims,
     TResult Function(String message)? error,
     TResult Function(ClaimModel claimModel)? navigateToClaimDetail,
@@ -704,10 +704,10 @@ class _$QrCodeScannedClaimsState implements QrCodeScannedClaimsState {
 }
 
 abstract class QrCodeScannedClaimsState implements ClaimsState {
-  const factory QrCodeScannedClaimsState(final Iden3Message iden3message) =
-      _$QrCodeScannedClaimsState;
+  const factory QrCodeScannedClaimsState(
+      final Iden3MessageEntity iden3message) = _$QrCodeScannedClaimsState;
 
-  Iden3Message get iden3message;
+  Iden3MessageEntity get iden3message;
   @JsonKey(ignore: true)
   _$$QrCodeScannedClaimsStateCopyWith<_$QrCodeScannedClaimsState>
       get copyWith => throw _privateConstructorUsedError;
@@ -788,7 +788,7 @@ class _$LoadedDataClaimsState implements LoadedDataClaimsState {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function() navigateToQrCodeScanner,
-    required TResult Function(Iden3Message iden3message) qrCodeScanned,
+    required TResult Function(Iden3MessageEntity iden3message) qrCodeScanned,
     required TResult Function(List<ClaimModel> claimList) loadedClaims,
     required TResult Function(String message) error,
     required TResult Function(ClaimModel claimModel) navigateToClaimDetail,
@@ -802,7 +802,7 @@ class _$LoadedDataClaimsState implements LoadedDataClaimsState {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? qrCodeScanned,
+    TResult Function(Iden3MessageEntity iden3message)? qrCodeScanned,
     TResult Function(List<ClaimModel> claimList)? loadedClaims,
     TResult Function(String message)? error,
     TResult Function(ClaimModel claimModel)? navigateToClaimDetail,
@@ -816,7 +816,7 @@ class _$LoadedDataClaimsState implements LoadedDataClaimsState {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? qrCodeScanned,
+    TResult Function(Iden3MessageEntity iden3message)? qrCodeScanned,
     TResult Function(List<ClaimModel> claimList)? loadedClaims,
     TResult Function(String message)? error,
     TResult Function(ClaimModel claimModel)? navigateToClaimDetail,
@@ -959,7 +959,7 @@ class _$ErrorClaimsState implements ErrorClaimsState {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function() navigateToQrCodeScanner,
-    required TResult Function(Iden3Message iden3message) qrCodeScanned,
+    required TResult Function(Iden3MessageEntity iden3message) qrCodeScanned,
     required TResult Function(List<ClaimModel> claimList) loadedClaims,
     required TResult Function(String message) error,
     required TResult Function(ClaimModel claimModel) navigateToClaimDetail,
@@ -973,7 +973,7 @@ class _$ErrorClaimsState implements ErrorClaimsState {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? qrCodeScanned,
+    TResult Function(Iden3MessageEntity iden3message)? qrCodeScanned,
     TResult Function(List<ClaimModel> claimList)? loadedClaims,
     TResult Function(String message)? error,
     TResult Function(ClaimModel claimModel)? navigateToClaimDetail,
@@ -987,7 +987,7 @@ class _$ErrorClaimsState implements ErrorClaimsState {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? qrCodeScanned,
+    TResult Function(Iden3MessageEntity iden3message)? qrCodeScanned,
     TResult Function(List<ClaimModel> claimList)? loadedClaims,
     TResult Function(String message)? error,
     TResult Function(ClaimModel claimModel)? navigateToClaimDetail,
@@ -1135,7 +1135,7 @@ class _$NavigateToClaimDetailClaimState
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function() navigateToQrCodeScanner,
-    required TResult Function(Iden3Message iden3message) qrCodeScanned,
+    required TResult Function(Iden3MessageEntity iden3message) qrCodeScanned,
     required TResult Function(List<ClaimModel> claimList) loadedClaims,
     required TResult Function(String message) error,
     required TResult Function(ClaimModel claimModel) navigateToClaimDetail,
@@ -1149,7 +1149,7 @@ class _$NavigateToClaimDetailClaimState
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? qrCodeScanned,
+    TResult Function(Iden3MessageEntity iden3message)? qrCodeScanned,
     TResult Function(List<ClaimModel> claimList)? loadedClaims,
     TResult Function(String message)? error,
     TResult Function(ClaimModel claimModel)? navigateToClaimDetail,
@@ -1163,7 +1163,7 @@ class _$NavigateToClaimDetailClaimState
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? qrCodeScanned,
+    TResult Function(Iden3MessageEntity iden3message)? qrCodeScanned,
     TResult Function(List<ClaimModel> claimList)? loadedClaims,
     TResult Function(String message)? error,
     TResult Function(ClaimModel claimModel)? navigateToClaimDetail,

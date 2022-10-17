@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import 'credential_proofs/credential_proof_dto.dart';
+import 'claim_proofs/claim_proof_dto.dart';
 
-part 'credential_dto.g.dart';
+part 'claim_info_dto.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class CredentialDTO extends Equatable {
+class ClaimInfoDTO extends Equatable {
   final String id;
   final String? expiration;
   final bool? updatable;
@@ -19,9 +19,9 @@ class CredentialDTO extends Equatable {
   final CredentialStatusDTO credentialStatus;
   final CredentialSchemaDTO credentialSchema;
   @JsonKey(name: 'proof')
-  final List<CredentialProofDTO> proofs;
+  final List<ClaimProofDTO> proofs;
 
-  const CredentialDTO(
+  const ClaimInfoDTO(
       this.id,
       this.expiration,
       this.updatable,
@@ -32,10 +32,10 @@ class CredentialDTO extends Equatable {
       this.credentialSchema,
       this.proofs);
 
-  factory CredentialDTO.fromJson(Map<String, dynamic> json) =>
-      _$CredentialDTOFromJson(json);
+  factory ClaimInfoDTO.fromJson(Map<String, dynamic> json) =>
+      _$ClaimInfoDTOFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CredentialDTOToJson(this);
+  Map<String, dynamic> toJson() => _$ClaimInfoDTOToJson(this);
 
   @override
   List<Object?> get props => [

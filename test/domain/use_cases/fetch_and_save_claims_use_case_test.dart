@@ -37,7 +37,7 @@ final claimEntity = ClaimEntity(
     issuer: "",
     identifier: "",
     expiration: "",
-    credential: {},
+    info: {},
     type: "",
     state: ClaimState.active,
     id: "id");

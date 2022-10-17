@@ -1,13 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'credential_dto.dart';
+part of 'claim_info_dto.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-CredentialDTO _$CredentialDTOFromJson(Map<String, dynamic> json) =>
-    CredentialDTO(
+ClaimInfoDTO _$ClaimInfoDTOFromJson(Map<String, dynamic> json) => ClaimInfoDTO(
       json['id'] as String,
       json['expiration'] as String?,
       json['updatable'] as bool?,
@@ -20,11 +19,11 @@ CredentialDTO _$CredentialDTOFromJson(Map<String, dynamic> json) =>
       CredentialSchemaDTO.fromJson(
           json['credentialSchema'] as Map<String, dynamic>),
       (json['proof'] as List<dynamic>)
-          .map((e) => CredentialProofDTO.fromJson(e as Map<String, dynamic>))
+          .map((e) => ClaimProofDTO.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
-Map<String, dynamic> _$CredentialDTOToJson(CredentialDTO instance) =>
+Map<String, dynamic> _$ClaimInfoDTOToJson(ClaimInfoDTO instance) =>
     <String, dynamic>{
       'id': instance.id,
       'expiration': instance.expiration,

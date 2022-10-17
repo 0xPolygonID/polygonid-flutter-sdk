@@ -2,13 +2,14 @@ import 'package:polygonid_flutter_sdk/common/mappers/mapper.dart';
 
 import '../../domain/entities/claim_entity.dart';
 import '../dtos/claim_dto.dart';
-import '../dtos/credential_dto.dart';
+import 'claim_info_mapper.dart';
 import 'claim_state_mapper.dart';
 
 class ClaimMapper extends Mapper<ClaimDTO, ClaimEntity> {
   final ClaimStateMapper _claimStateMapper;
+  final ClaimInfoMapper _claimInfoMapper;
 
-  ClaimMapper(this._claimStateMapper);
+  ClaimMapper(this._claimStateMapper, this._claimInfoMapper);
 
   @override
   ClaimEntity mapFrom(ClaimDTO from) {
@@ -21,13 +22,11 @@ class ClaimMapper extends Mapper<ClaimDTO, ClaimEntity> {
         schema: from.schema,
         vocab: from.vocab,
         type: from.type,
-        credential: from.credential.toJson());
+        info: _claimInfoMapper.mapFrom(from.info));
   }
 
   @override
   ClaimDTO mapTo(ClaimEntity to) {
-    CredentialDTO credential = CredentialDTO.fromJson(to.credential);
-
     return ClaimDTO(
         id: to.id,
         issuer: to.issuer,
@@ -37,6 +36,6 @@ class ClaimMapper extends Mapper<ClaimDTO, ClaimEntity> {
         expiration: to.expiration,
         schema: to.schema,
         vocab: to.vocab,
-        credential: credential);
+        info: _claimInfoMapper.mapTo(to.info));
   }
 }

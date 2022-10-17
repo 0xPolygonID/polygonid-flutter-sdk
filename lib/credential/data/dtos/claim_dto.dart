@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import 'credential_dto.dart';
+import 'claim_info_dto.dart';
 
 part 'claim_dto.g.dart';
 
@@ -11,7 +11,7 @@ class ClaimDTO extends Equatable {
   final String issuer;
   final String identifier;
   final String state;
-  final CredentialDTO credential;
+  final ClaimInfoDTO info;
   final String? expiration;
   final String type;
   final Map<String, dynamic>? schema;
@@ -24,7 +24,7 @@ class ClaimDTO extends Equatable {
       required this.type,
       this.state = '',
       this.expiration,
-      required this.credential,
+      required this.info,
       this.schema,
       this.vocab});
 
@@ -34,5 +34,5 @@ class ClaimDTO extends Equatable {
   Map<String, dynamic> toJson() => _$ClaimDTOToJson(this);
 
   @override
-  List<Object?> get props => [issuer, identifier, state, credential];
+  List<Object?> get props => [issuer, identifier, state, info];
 }

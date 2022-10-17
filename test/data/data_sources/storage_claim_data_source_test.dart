@@ -58,21 +58,21 @@ final mockClaims = [
       identifier: identifiers[0],
       expiration: expirations[0],
       type: types[0],
-      credential: credential),
+      info: credential),
   ClaimDTO(
       id: credential.id,
       issuer: issuers[1],
       identifier: identifiers[1],
       expiration: expirations[1],
       type: types[1],
-      credential: credential),
+      info: credential),
   ClaimDTO(
       id: credential.id,
       issuer: issuers[2],
       identifier: identifiers[2],
       expiration: expirations[2],
       type: types[2],
-      credential: credential)
+      info: credential)
 ];
 final exception = Exception();
 

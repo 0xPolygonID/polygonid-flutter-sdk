@@ -13,8 +13,6 @@ import '../mappers/hex_mapper.dart';
 import '../mappers/identity_dto_mapper.dart';
 import '../mappers/private_key_mapper.dart';
 
-enum SupportedCircuits { mtp, sig }
-
 class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
   final LibIdentityDataSource _libIdentityDataSource;
@@ -23,6 +21,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final HexMapper _hexMapper;
   final PrivateKeyMapper _privateKeyMapper;
   final IdentityDTOMapper _identityDTOMapper;
+
   //final SMTStorageRepository _smtStorageRepository;
 
   IdentityRepositoryImpl(
@@ -147,5 +146,12 @@ class IdentityRepositoryImpl extends IdentityRepository {
         .then((dto) => _walletDataSource.signMessage(
             privateKey: _hexMapper.mapTo(dto.privateKey), message: message))
         .catchError((error) => throw IdentityException(error));
+  }
+
+  @override
+  Future<List<String>> getPublicKeys({required String privateKey}) {
+    return _walletDataSource
+        .createWallet(privateKey: _hexMapper.mapTo(privateKey))
+        .then((wallet) => wallet.publicKey);
   }
 }

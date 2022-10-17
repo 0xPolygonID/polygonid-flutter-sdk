@@ -1,51 +1,49 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'credential_proof_sm_dto.dart';
+part of 'claim_proof_sm_dto.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-CredentialProofSMDTO _$CredentialProofSMDTOFromJson(
-        Map<String, dynamic> json) =>
-    CredentialProofSMDTO(
-      $enumDecode(_$CredentialProofTypeEnumMap, json['@type']),
-      CredentialProofIssuerSMDTO.fromJson(
+ClaimProofSMDTO _$ClaimProofSMDTOFromJson(Map<String, dynamic> json) =>
+    ClaimProofSMDTO(
+      $enumDecode(_$ClaimProofTypeEnumMap, json['@type']),
+      ClaimProofIssuerSMDTO.fromJson(
           json['issuer_data'] as Map<String, dynamic>),
-      CredentialProofMTPDTO.fromJson(json['mtp'] as Map<String, dynamic>),
+      ClaimProofMTPDTO.fromJson(json['mtp'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$CredentialProofSMDTOToJson(
-        CredentialProofSMDTO instance) =>
+Map<String, dynamic> _$ClaimProofSMDTOToJson(ClaimProofSMDTO instance) =>
     <String, dynamic>{
-      '@type': _$CredentialProofTypeEnumMap[instance.type]!,
+      '@type': _$ClaimProofTypeEnumMap[instance.type]!,
       'issuer_data': instance.issuer.toJson(),
       'mtp': instance.mtp.toJson(),
     };
 
-const _$CredentialProofTypeEnumMap = {
-  CredentialProofType.bjj: 'BJJSignature2021',
-  CredentialProofType.sparseMerkle: 'Iden3SparseMerkleProof',
+const _$ClaimProofTypeEnumMap = {
+  ClaimProofType.bjj: 'BJJSignature2021',
+  ClaimProofType.sparseMerkle: 'Iden3SparseMerkleProof',
 };
 
-CredentialProofIssuerSMDTO _$CredentialProofIssuerSMDTOFromJson(
+ClaimProofIssuerSMDTO _$ClaimProofIssuerSMDTOFromJson(
         Map<String, dynamic> json) =>
-    CredentialProofIssuerSMDTO(
+    ClaimProofIssuerSMDTO(
       json['id'] as String,
-      CredentialProofIssuerStateSMDTO.fromJson(
+      ClaimProofIssuerStateSMDTO.fromJson(
           json['state'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$CredentialProofIssuerSMDTOToJson(
-        CredentialProofIssuerSMDTO instance) =>
+Map<String, dynamic> _$ClaimProofIssuerSMDTOToJson(
+        ClaimProofIssuerSMDTO instance) =>
     <String, dynamic>{
       'id': instance.id,
       'state': instance.state.toJson(),
     };
 
-CredentialProofIssuerStateSMDTO _$CredentialProofIssuerStateSMDTOFromJson(
+ClaimProofIssuerStateSMDTO _$ClaimProofIssuerStateSMDTOFromJson(
         Map<String, dynamic> json) =>
-    CredentialProofIssuerStateSMDTO(
+    ClaimProofIssuerStateSMDTO(
       json['claims_tree_root'] as String,
       json['value'] as String,
       json['block_number'] as int,
@@ -55,8 +53,8 @@ CredentialProofIssuerStateSMDTO _$CredentialProofIssuerStateSMDTOFromJson(
       json['tx_id'] as String,
     );
 
-Map<String, dynamic> _$CredentialProofIssuerStateSMDTOToJson(
-        CredentialProofIssuerStateSMDTO instance) =>
+Map<String, dynamic> _$ClaimProofIssuerStateSMDTOToJson(
+        ClaimProofIssuerStateSMDTO instance) =>
     <String, dynamic>{
       'claims_tree_root': instance.treeRoot,
       'value': instance.value,

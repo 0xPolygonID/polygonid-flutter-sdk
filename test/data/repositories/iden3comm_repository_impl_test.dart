@@ -15,7 +15,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/iden3_message.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/iden3_message_mapper.dart';
+import 'package:polygonid_flutter_sdk/sdk/mappers/iden3_message_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/iden3_message_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/iden3comm_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
@@ -82,7 +82,7 @@ final mockAuthResponse = AuthResponse(
   type: "https://iden3-communication.io/authorization/1.0/response",
   body: AuthBodyResponse(
     message: mockAuthRequest.body?.message,
-    scope: [],
+    proofs: [],
     did_doc: null,
   ),
 );

@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-import 'credential_dto.dart';
+import 'claim_info_dto.dart';
 
 part 'fetch_claim_response_dto.g.dart';
 
@@ -26,7 +26,7 @@ class FetchClaimResponseDTO {
   final String from;
   @FetchClaimResponseCredentialConverter()
   @JsonKey(name: 'body')
-  final CredentialDTO credential;
+  final ClaimInfoDTO credential;
 
   FetchClaimResponseDTO(this.type, this.from, this.credential);
 
@@ -35,16 +35,16 @@ class FetchClaimResponseDTO {
 }
 
 class FetchClaimResponseCredentialConverter
-    extends JsonConverter<CredentialDTO, Map<String, dynamic>> {
+    extends JsonConverter<ClaimInfoDTO, Map<String, dynamic>> {
   const FetchClaimResponseCredentialConverter();
 
   @override
-  CredentialDTO fromJson(Map<String, dynamic> json) {
-    return CredentialDTO.fromJson(json['credential']);
+  ClaimInfoDTO fromJson(Map<String, dynamic> json) {
+    return ClaimInfoDTO.fromJson(json['credential']);
   }
 
   @override
-  Map<String, dynamic> toJson(CredentialDTO object) {
+  Map<String, dynamic> toJson(ClaimInfoDTO object) {
     return object.toJson();
   }
 }

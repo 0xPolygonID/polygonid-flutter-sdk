@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/http.dart';
-import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_dto.dart';
-import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_proofs/credential_proof_bjj_dto.dart';
-import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_proofs/credential_proof_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_proofs/claim_proof_bjj_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_proofs/claim_proof_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/revocation_status.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/iden3core/iden3core.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/data/dtos/atomic_query_inputs_param.dart';
@@ -25,15 +25,15 @@ class AtomicQueryInputsWrapper {
   ///
   Future<String?> queryInputsFromSIG(
       {required AtomicQueryInputsParam atomicQueryInputsParam,
-      required CredentialDTO credential}) async {
+      required ClaimInfoDTO credential}) async {
     String? queryInputs;
     if (credential.proofs.isNotEmpty) {
       for (var proof in credential.proofs) {
-        if (proof.type == CredentialProofType.bjj) {
-          CredentialProofBJJDTO proofBJJ = proof as CredentialProofBJJDTO;
+        if (proof.type == ClaimProofType.bjj) {
+          ClaimProofBJJDTO proofBJJ = proof as ClaimProofBJJDTO;
 
-          CredentialProofIssuerBJJDTO issuerBJJ =
-              proofBJJ.issuer as CredentialProofIssuerBJJDTO;
+          ClaimProofIssuerBJJDTO issuerBJJ =
+              proofBJJ.issuer as ClaimProofIssuerBJJDTO;
 
           // revocation status
           final authRes = await get(issuerBJJ.revocationStatus, "");
@@ -100,13 +100,11 @@ class AtomicQueryInputsDataSource {
   ///
   Future<String?> prepareAtomicQueryInputs(
     String challenge,
-    CredentialDTO credential,
+    ClaimInfoDTO claimInfo,
     String circuitId,
-    //String claimType,
     String key,
     List<int> values,
     int operator,
-    String revStatusUrl,
     String pubX,
     String pubY,
     String? signature,
@@ -114,7 +112,7 @@ class AtomicQueryInputsDataSource {
     if (signature == null) return null;
 
     // schema
-    String schemaId = credential.credentialSchema.id;
+    String schemaId = claimInfo.credentialSchema.id;
     String schemaUrl = schemaId;
     if (schemaId.toLowerCase().startsWith("ipfs://")) {
       String fileHash = schemaId.toLowerCase().replaceFirst("ipfs://", "");
@@ -125,7 +123,7 @@ class AtomicQueryInputsDataSource {
     String schema = (res.body);
 
     // revocation status
-    res = await get(revStatusUrl, "");
+    res = await get(claimInfo.credentialStatus.id, "");
     String revStatus = (res.body);
     final RevocationStatus claimRevocationStatus =
         RevocationStatus.fromJson(json.decode(revStatus));
@@ -137,8 +135,8 @@ class AtomicQueryInputsDataSource {
           pubX,
           pubY,
           signature,
-          credential,
-          json.encode(credential.toJson()),
+          claimInfo,
+          json.encode(claimInfo.toJson()),
           schema,
           key,
           values,
@@ -153,8 +151,8 @@ class AtomicQueryInputsDataSource {
           pubX,
           pubY,
           signature,
-          credential,
-          json.encode(credential.toJson()),
+          claimInfo,
+          json.encode(claimInfo.toJson()),
           schema,
           key,
           values,
@@ -163,7 +161,7 @@ class AtomicQueryInputsDataSource {
       // Issuer auth claim revocation status
       queryInputs = await _atomicQueryInputsWrapper.queryInputsFromSIG(
           atomicQueryInputsParam: atomicQueryInputsParam,
-          credential: credential);
+          credential: claimInfo);
     }
 
     return queryInputs;

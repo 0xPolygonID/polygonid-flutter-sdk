@@ -102,6 +102,9 @@ class JWZBaseProof extends Equatable {
 ///     ]
 ///   }
 /// ```
+
+/// FIXME: this is an Entity and part of proof_generation
+/// Move it to Domain and use mapper
 @JsonSerializable(explicitToJson: true)
 class JWZProof extends Equatable with Base64Encoder {
   final JWZBaseProof proof;

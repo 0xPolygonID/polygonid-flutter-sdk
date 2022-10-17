@@ -2,21 +2,21 @@ enum Iden3MessageType { unknown, auth, offer, issuance, contractFunctionCall }
 
 /// Represents an iden3 message.
 class Iden3MessageEntity {
-  final String? id;
-  final String? typ;
+  final String id;
+  final String typ;
   final Iden3MessageType type;
-  final String? thid;
-  final Map<String, dynamic>? body;
-  final String? from;
+  final String thid;
+  final Map<String, dynamic> body;
+  final String from;
   final String? to;
 
   const Iden3MessageEntity(
-      {this.id,
-      this.typ,
+      {required this.id,
+      required this.typ,
       this.type = Iden3MessageType.unknown,
-      this.thid,
-      this.body,
-      this.from,
+      required this.thid,
+      required this.body,
+      required this.from,
       this.to});
 
   @override

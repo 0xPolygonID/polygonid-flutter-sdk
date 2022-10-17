@@ -58,10 +58,6 @@ abstract class DatabaseModule {
 
 @module
 abstract class RepositoriesModule {
-  /*SMTStorageRepository smtStorageRepository(
-          SMTMemoryStorageRepositoryImpl smtStorageRepositoryImpl) =>
-      smtStorageRepositoryImpl;*/
-
   IdentityRepository identityRepository(
           IdentityRepositoryImpl identityRepositoryImpl) =>
       identityRepositoryImpl;

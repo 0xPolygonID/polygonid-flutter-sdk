@@ -16,4 +16,7 @@ abstract class IdentityRepository {
 
   /// TODO: Remove this method when we support multiple identity
   Future<String?> getCurrentIdentifier();
+
+  /// FIXME: remove when [PublicIdentity] is created
+  Future<List<String>> getPublicKeys({required String privateKey});
 }

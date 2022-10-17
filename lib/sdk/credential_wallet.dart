@@ -50,7 +50,7 @@ class CredentialWallet {
   }
 
   /// Update the Claim associated to the [id] in storage
-  /// Be aware only the [ClaimEntity.credential] will be updated
+  /// Be aware only the [ClaimEntity.info] will be updated
   /// and [data] is subject to validation by the data layer
   Future<ClaimEntity> updateClaim({
     required String id,

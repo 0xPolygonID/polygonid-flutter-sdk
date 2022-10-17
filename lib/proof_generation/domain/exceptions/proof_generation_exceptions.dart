@@ -15,3 +15,9 @@ class NullWitnessException implements Exception {
 
   NullWitnessException(this.circuit);
 }
+
+class NullProofException implements Exception {
+  final String? circuit;
+
+  NullProofException(this.circuit);
+}

@@ -42,8 +42,6 @@
   }
 }
 
-
-
 {
   "type": "https://iden3-communication.io/authorization-request/v1",
   "data": {
@@ -62,45 +60,42 @@
   }
 }
 
-
-
 */
 
-class ZKProof {
-  final List<String> a;
-  final List<List<String>> b;
-  final List<String> c;
-  final String protocol;
-  final String? curve;
+import 'dart:convert';
 
-  ZKProof(
-      {required this.a,
-      required this.b,
-      required this.c,
-      required this.protocol,
-      this.curve});
+import 'package:polygonid_flutter_sdk/identity/libs/jwz/jwz_proof.dart';
+
+class ProofEntity extends JWZProof {
+  final String id;
+  final String circuitId;
+
+  ProofEntity({
+    required this.id,
+    required this.circuitId,
+    required JWZBaseProof proof,
+    required List<String> pubSignals,
+  }) : super(proof: proof, pubSignals: pubSignals);
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [ZKProof]
-  factory ZKProof.fromJson(Map<String, dynamic> json) {
-    List<String> pia = List.from(json['pi_a']);
-    // List<List<String>> pib = List.from(json['pi_b']);
-    List<List<String>> pib = (json['pi_b'] as List<dynamic>)
-        .map((e) => (e as List<dynamic>).map((e) => e as String).toList())
-        .toList();
-    List<String> pic = List.from(json['pi_c']);
+  /// @returns [ProofEntity]
+  factory ProofEntity.fromJson(Map<String, dynamic> json) {
+    JWZBaseProof proof = JWZBaseProof.fromJson(json['proof']);
+    List<String> pubSig = List.from(jsonDecode(json['pub_signals']));
 
-    return ZKProof(
-      a: pia,
-      b: pib,
-      c: pic,
-      curve: json['curve'],
-      protocol: json['protocol'],
-    );
+    return ProofEntity(
+        id: json['id'],
+        circuitId: json['circuitId'],
+        proof: proof,
+        pubSignals: pubSig);
   }
 
-  Map<String, dynamic> toJson() =>
-      {'pi_a': a, 'pi_b': b, 'pi_c': c, 'curve': curve, 'protocol': protocol};
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'circuit_id': circuitId,
+        'proof': proof.toJson(),
+        'pub_signals': pubSignals
+      };
 }

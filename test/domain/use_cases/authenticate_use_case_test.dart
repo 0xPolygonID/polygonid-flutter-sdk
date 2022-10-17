@@ -19,7 +19,7 @@ AuthenticateUseCase useCase = AuthenticateUseCase(
 const issuerMessage = "theIssuerMessage";
 const identifier = "theIdentifier";
 AuthenticateParam param =
-    AuthenticateParam(identifier: identifier, authRequest: mockAuthRequest);
+    AuthenticateParam(identifier: identifier, message: mockAuthRequest);
 
 @GenerateMocks([Iden3commRepository, GetProofsUseCase])
 void main() {

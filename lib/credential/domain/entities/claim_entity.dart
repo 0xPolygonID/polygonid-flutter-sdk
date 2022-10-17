@@ -9,7 +9,7 @@ class ClaimEntity {
   final Map<String, dynamic>? schema;
   final Map<String, dynamic>? vocab;
   final String type;
-  final Map<String, dynamic> credential;
+  final Map<String, dynamic> info;
 
   ClaimEntity(
       {required this.id,
@@ -20,12 +20,12 @@ class ClaimEntity {
       this.schema,
       this.vocab,
       required this.type,
-      required this.credential});
+      required this.info});
 
   @override
   String toString() => "[ClaimEntity] {id: $id, "
       "issuer: $issuer, identifier: $identifier, state: $state, "
-      "expiration: $expiration, schema: $schema, vocab: $vocab, type: $type, credential: $credential}";
+      "expiration: $expiration, schema: $schema, vocab: $vocab, type: $type, info: $info}";
 
   @override
   bool operator ==(Object other) =>
@@ -40,7 +40,7 @@ class ClaimEntity {
           schema == other.schema &&
           vocab == other.vocab &&
           type == other.type &&
-          credential.toString() == other.credential.toString();
+          info.toString() == other.info.toString();
 
   @override
   int get hashCode => runtimeType.hashCode;

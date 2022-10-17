@@ -13,7 +13,7 @@ final mockAuthResponse = AuthResponse(
   type: "theType",
   body: AuthBodyResponse(
     message: "theMessage",
-    scope: [],
+    proofs: [],
     did_doc: AuthBodyDidDocResponse(
       context: [],
       id: "theBodyResponseId",

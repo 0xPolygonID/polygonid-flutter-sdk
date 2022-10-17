@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/models/iden3_message.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/models/claim_model.dart';
 
 part 'claims_event.freezed.dart';
@@ -9,7 +9,7 @@ part 'claims_event.freezed.dart';
 @freezed
 class ClaimsEvent with _$ClaimsEvent {
   const factory ClaimsEvent.fetchAndSaveClaims(
-      {required Iden3Message iden3message}) = FetchAndSaveClaimsEvent;
+      {required Iden3MessageEntity iden3message}) = FetchAndSaveClaimsEvent;
 
   const factory ClaimsEvent.getClaims({List<FilterEntity>? filters}) =
       GetClaimsEvent;

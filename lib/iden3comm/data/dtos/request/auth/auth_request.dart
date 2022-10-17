@@ -67,22 +67,27 @@
 import 'auth_body_request.dart';
 
 class AuthRequest {
-  final String? id;
-  final String? typ;
-  final String? type;
-  final String? thid;
-  final AuthBodyRequest? body;
-  final String? from;
+  final String id;
+  final String typ;
+  final String type;
+  final String thid;
+  final AuthBodyRequest body;
+  final String from;
 
-  AuthRequest({this.id, this.typ, this.type, this.thid, this.body, this.from});
+  AuthRequest(
+      {required this.id,
+      required this.typ,
+      required this.type,
+      required this.thid,
+      required this.body,
+      required this.from});
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
   /// @returns [AuthRequest]
   factory AuthRequest.fromJson(Map<String, dynamic> json) {
-    AuthBodyRequest? body =
-        json['body'] != null ? AuthBodyRequest.fromJson(json['body']) : null;
+    AuthBodyRequest body = AuthBodyRequest.fromJson(json['body']);
     return AuthRequest(
       id: json['id'],
       typ: json['typ'],
@@ -99,6 +104,6 @@ class AuthRequest {
         'type': type,
         'thid': thid,
         'from': from,
-        'body': body?.toJson(),
+        'body': body.toJson(),
       };
 }
