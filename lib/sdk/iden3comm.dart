@@ -58,7 +58,7 @@ class Iden3comm {
 
     if (iden3Message.type == Iden3MessageType.auth) {
       AuthRequest authRequest =
-          _authRequestMapper.mapFrom(iden3Message.toString());
+          _authRequestMapper.mapFrom(issuerMessage);
       return _authenticateUseCase.execute(
           param: AuthenticateParam(
               authRequest: authRequest,

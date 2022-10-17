@@ -95,7 +95,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
         add(const GetClaimsEvent());
       }
     } catch (exception) {
-      emit(ClaimsState.error(CustomStrings.iden3messageGenericError));
+      emit(const ClaimsState.error(CustomStrings.iden3messageGenericError));
     }
   }
 
