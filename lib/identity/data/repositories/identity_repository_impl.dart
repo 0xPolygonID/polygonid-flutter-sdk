@@ -157,7 +157,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<List<dynamic>> fetchIdentityState({required String id}) {
+  Future<String> fetchIdentityState({required String id}) {
     return _remoteIdentityDataSource
         .fetchIdentityState(id: id)
         .catchError((error) => throw FetchIdentityStateException(error));

@@ -3,27 +3,23 @@ import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/rhs_node_dto.dart';
 import 'package:web3dart/web3dart.dart';
-import 'package:web_socket_channel/io.dart';
 
 import '../../../common/data/exceptions/network_exceptions.dart';
 import '../../../common/domain/domain_logger.dart';
-import '../../../env/sdk_env.dart';
 import '../../domain/exceptions/identity_exceptions.dart';
+import '../../libs/iden3core/iden3core.dart';
 import '../../libs/rhs/state_contract.dart';
 
 class RemoteIdentityDataSource {
   final Client client;
+  final Web3Client web3Client;
+  final Iden3CoreLib iden3CoreLib;
 
-  RemoteIdentityDataSource(this.client);
+  RemoteIdentityDataSource(this.client, this.web3Client, this.iden3CoreLib);
 
-  Future<List<dynamic>> fetchIdentityState({required String id}) async {
+  Future<String> fetchIdentityState({required String id}) async {
     try {
-      Web3Client web3Client =
-          Web3Client(SdkEnv().infuraUrl, client, socketConnector: () {
-        return IOWebSocketChannel.connect(SdkEnv().infuraRdpUrl).cast<String>();
-      });
-
-      return StateContract(web3Client).getState(id);
+      return StateContract(web3Client, iden3CoreLib).getState(id);
     } catch (error) {
       logger().e('identity state error: $error');
       throw FetchIdentityStateException(error);

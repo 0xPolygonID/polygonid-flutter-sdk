@@ -66,6 +66,7 @@ final circuitData = CircuitDataEntity(circuitId, datFile, zKeyFile);
 const token = "token";
 const url = "theUrl";
 const id = "1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ"; //"theId";
+const state = "theState";
 var exception = Exception();
 const issuerMessage =
     '{"id":"0b78a480-c710-4bd8-a4fd-454b577ca991","typ":"application/iden3comm-plain-json","type":"https://iden3-communication.io/authorization/1.0/request","thid":"0b78a480-c710-4bd8-a4fd-454b577ca991","body":{"callbackUrl":"https://issuer.polygonid.me/api/callback?sessionId=867314","reason":"test flow","scope":[]},"from":"1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ"}';
@@ -412,7 +413,7 @@ void main() {
 
       // Given
       when(remoteIdentityDataSource.fetchIdentityState(id: anyNamed('id')))
-          .thenAnswer((realInvocation) => Future.value([]));
+          .thenAnswer((realInvocation) => Future.value(state));
       //when(rhsNodeMapper.mapFrom(any)).thenReturn(rhsNodeEntities[0]);
     });
 
@@ -420,7 +421,7 @@ void main() {
         "Given parameters, when I call fetchIdentityState, then I expect a RhsNodeEntity to be returned",
         () async {
       // When
-      expect(await repository.fetchIdentityState(id: id), []);
+      expect(await repository.fetchIdentityState(id: id), state);
 
       // Then
       var fetchCaptured = verify(remoteIdentityDataSource.fetchIdentityState(
@@ -451,13 +452,13 @@ void main() {
       });
 
       // Then
-      var fetchCaptured = verify(remoteIdentityDataSource.fetchStateRoots(
-        url: captureAnyNamed('url'),
+      var fetchCaptured = verify(remoteIdentityDataSource.fetchIdentityState(
+        id: captureAnyNamed('id'),
       )).captured;
 
-      expect(fetchCaptured[0], url);
+      expect(fetchCaptured[0], id);
 
-      verifyNever(rhsNodeMapper.mapFrom(captureAny));
+      verifyNever(captureAny);
     });
   });
 

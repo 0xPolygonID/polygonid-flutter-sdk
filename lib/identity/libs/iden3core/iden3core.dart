@@ -883,17 +883,7 @@ class Iden3CoreLib {
 
     // Claim issuer
     // Issuer ID
-    ffi.Pointer<IDENId> issuerIdPtr = malloc<IDENId>();
-    String issuerId = smtProof.issuer.id;
-    ffi.Pointer<ffi.Char> issuerIdStr =
-        issuerId.toNativeUtf8().cast<ffi.Char>();
-    res =
-        _nativeIden3CoreLib.IDENIdFromString(issuerIdPtr, issuerIdStr, status);
-    if (res == 0) {
-      _consumeStatus(status, "error getting issuer's id");
-      //retVal = 1;
-      return "";
-    }
+    ffi.Pointer<IDENId> issuerIdPtr = _getIdFromString(smtProof.issuer.id);
     request.ref.claim.issuer_id = issuerIdPtr.ref;
 
     request.ref.claim.non_rev_proof.tree_state = malloc<IDENTreeState>().ref;
@@ -1215,17 +1205,8 @@ class Iden3CoreLib {
         malloc<IDENCircuitsBJJSignatureProof>().ref;
 
     // CLAIM ISSUER ID
-    ffi.Pointer<IDENId> issuerIdPtr = malloc<IDENId>();
-    String issuerId = signatureProof.issuer.id;
-    ffi.Pointer<ffi.Char> issuerIdStr =
-        issuerId.toNativeUtf8().cast<ffi.Char>();
-    res =
-        _nativeIden3CoreLib.IDENIdFromString(issuerIdPtr, issuerIdStr, status);
-    if (res == 0) {
-      _consumeStatus(status, "error getting issuer's id");
-      //retVal = 1;
-      return "";
-    }
+    ffi.Pointer<IDENId> issuerIdPtr =
+        _getIdFromString(signatureProof.issuer.id);
     //debugger();
 
     request.ref.claim.signature_proof.issuer_id = issuerIdPtr.ref;
@@ -1840,6 +1821,29 @@ class Iden3CoreLib {
     }
 
     return result;
+  }
+
+  ffi.Pointer<IDENId> _getIdFromString(String id) {
+    ffi.Pointer<ffi.Pointer<IDENStatus>> status =
+        malloc<ffi.Pointer<IDENStatus>>();
+    ffi.Pointer<IDENId> idPtr = malloc<IDENId>();
+    ffi.Pointer<ffi.Char> idStr = id.toNativeUtf8().cast<ffi.Char>();
+    int res = _nativeIden3CoreLib.IDENIdFromString(idPtr, idStr, status);
+    if (res == 0) {
+      _consumeStatus(status, "error getting id from string");
+      return nullptr;
+    }
+
+    return idPtr;
+  }
+
+  String getIdFromString(String id) {
+    ffi.Pointer<IDENId> idPtr = _getIdFromString(id);
+    Uint8List idList = Uint8List(31);
+    for (int i = 0; i < 31; i++) {
+      idList[i] = idPtr.ref.data[i];
+    }
+    return bytesToHex(idList);
   }
 
   ffi.Pointer<IDENMerkleTree>? _createCorrectMT() {

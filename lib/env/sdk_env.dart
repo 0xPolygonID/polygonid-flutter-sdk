@@ -11,5 +11,5 @@ abstract class SdkEnv implements SdkEnvFields {
 
   factory SdkEnv() => _instance;
 
-  static const SdkEnv _instance = kDebugMode ? DevEnv() : ProdEnv();
+  static final SdkEnv _instance = kDebugMode ? DevEnv() : ProdEnv();
 }

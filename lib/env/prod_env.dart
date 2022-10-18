@@ -8,7 +8,7 @@ part 'prod_env.g.dart';
 
 @Envied(name: 'Env', path: '.env')
 class ProdEnv implements SdkEnv, SdkEnvFields {
-  const ProdEnv();
+  ProdEnv();
 
   @override
   @EnviedField(varName: 'POLYGONID_ACCESS_MESSAGE', obfuscate: true)

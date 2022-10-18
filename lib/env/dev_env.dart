@@ -8,7 +8,7 @@ part 'dev_env.g.dart';
 
 @Envied(name: 'Env', path: '.env.dev')
 class DevEnv implements SdkEnv, SdkEnvFields {
-  const DevEnv();
+  DevEnv();
 
   @override
   @EnviedField(varName: 'POLYGONID_ACCESS_MESSAGE', obfuscate: true)

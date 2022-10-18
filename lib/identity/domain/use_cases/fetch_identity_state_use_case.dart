@@ -11,15 +11,15 @@ class FetchIdentityStateParam {
 }
 
 class FetchIdentityStateUseCase
-    extends FutureUseCase<FetchIdentityStateParam, List<dynamic>> {
+    extends FutureUseCase<FetchIdentityStateParam, String> {
   final IdentityRepository _identityRepository;
 
   FetchIdentityStateUseCase(this._identityRepository);
 
   @override
-  Future<List<dynamic>> execute(
+  Future<String> execute(
       {required FetchIdentityStateParam param}) async {
-    List<dynamic> issuerState =
+    String issuerState =
         await _identityRepository.fetchIdentityState(id: param.id);
     return issuerState;
   }

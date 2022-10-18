@@ -18,7 +18,7 @@ abstract class IdentityRepository {
   /// TODO: Remove this method when we support multiple identity
   Future<String?> getCurrentIdentifier();
 
-  Future<List<dynamic>> fetchIdentityState({required String id});
+  Future<String> fetchIdentityState({required String id});
 
   Future<RhsNodeEntity> fetchStateRoots({required String url});
 }

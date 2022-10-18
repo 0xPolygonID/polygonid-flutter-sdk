@@ -2,6 +2,7 @@ import 'package:injectable/injectable.dart';
 
 import '../identity/domain/entities/identity_entity.dart';
 import '../identity/domain/use_cases/create_identity_use_case.dart';
+import '../identity/domain/use_cases/fetch_identity_state_use_case.dart';
 import '../identity/domain/use_cases/get_current_identifier_use_case.dart';
 import '../identity/domain/use_cases/get_identity_use_case.dart';
 import '../identity/domain/use_cases/remove_current_identity_use_case.dart';
@@ -14,6 +15,8 @@ class IdentityWallet {
   final SignMessageUseCase _signMessageUseCase;
   final GetCurrentIdentifierUseCase _getCurrentIdentifierUseCase;
   final RemoveCurrentIdentityUseCase _removeCurrentIdentityUseCase;
+  // TODO: remove
+  final FetchIdentityStateUseCase _fetchIdentityStateUseCase;
 
   IdentityWallet(
     this._createIdentityUseCase,
@@ -21,6 +24,7 @@ class IdentityWallet {
     this._signMessageUseCase,
     this._getCurrentIdentifierUseCase,
     this._removeCurrentIdentityUseCase,
+    this._fetchIdentityStateUseCase,
   );
 
   /// Create and store an [IdentityEntity] from a private key.
@@ -71,5 +75,10 @@ class IdentityWallet {
   /// an identity via [createIdentity]).
   Future<void> removeCurrentIdentity() {
     return _removeCurrentIdentityUseCase.execute();
+  }
+
+  Future<String> fetchIdentityState(String id) {
+    return _fetchIdentityStateUseCase.execute(
+        param: FetchIdentityStateParam(id: id));
   }
 }
