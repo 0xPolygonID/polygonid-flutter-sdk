@@ -5,6 +5,7 @@ import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/get_atom
 
 import '../credential/data/dtos/credential_dto.dart';
 import '../proof_generation/domain/entities/circuit_data_entity.dart';
+import '../proof_generation/domain/use_cases/generate_non_rev_proof_use_case.dart';
 import '../proof_generation/domain/use_cases/get_witness_use_case.dart';
 import '../proof_generation/domain/use_cases/prove_use_case.dart';
 
@@ -13,11 +14,15 @@ class ProofGeneration {
   final GetAtomicQueryInputsUseCase _getAtomicQueryInputsUseCase;
   final GetWitnessUseCase _getWitnessUseCase;
   final ProveUseCase _proveUseCase;
+  //final GenerateProofUseCase _generateProofUseCase;
+  final GenerateNonRevProofUseCase _generateNonRevProofUseCase;
 
   ProofGeneration(
     this._getAtomicQueryInputsUseCase,
     this._getWitnessUseCase,
     this._proveUseCase,
+    //this._generateProofUseCase,
+    this._generateNonRevProofUseCase,
   );
 
   Future<Uint8List?> getAtomicQueryInputs(
@@ -48,5 +53,22 @@ class ProofGeneration {
     Uint8List wtnsBytes,
   ) {
     return _proveUseCase.execute(param: ProveParam(circuitData, wtnsBytes));
+  }
+
+  /*Future<void> generateProof(
+      String challenge,
+      String signature,
+      ClaimEntity claim,
+      CircuitDataEntity circuitDataEntity,
+      List<String> bjjPublicKey,
+      Map<String, dynamic> queryParams) {
+    return _generateProofUseCase.execute(
+        param: GenerateProofParam(challenge, signature, claim,
+            circuitDataEntity, bjjPublicKey, queryParams));
+  }*/
+
+  Future<void> generateNonRevProof(String id, String rhsBaseUrl, int revNonce) {
+    return _generateNonRevProofUseCase.execute(
+        param: GenerateNonRevProofParam(id, rhsBaseUrl, revNonce));
   }
 }

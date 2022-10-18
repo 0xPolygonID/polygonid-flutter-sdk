@@ -49,7 +49,8 @@ dev_dependencies:
   json_serializable: ^6.3.1
   mockito: ^5.2.0
   injectable_generator: ^1.5.3
-  build_runner:
+  build_runner: ^2.2.1
+  freezed: ^2.1.1
   envied_generator: ^0.2.3
 
 ffigen:

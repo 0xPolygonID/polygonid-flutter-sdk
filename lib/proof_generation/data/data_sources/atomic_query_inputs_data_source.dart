@@ -36,11 +36,13 @@ class AtomicQueryInputsWrapper {
               proofBJJ.issuer as CredentialProofIssuerBJJDTO;
 
           // revocation status
+          // TODO: replace with RHS
           final authRes = await get(issuerBJJ.revocationStatus, "");
           String authRevStatus = (authRes.body);
           final RevocationStatus authRevocationStatus =
               RevocationStatus.fromJson(json.decode(authRevStatus));
           atomicQueryInputsParam.authRevocationStatus = authRevocationStatus;
+
           queryInputs =
               await compute(_computeAtomicQueryInputs, atomicQueryInputsParam);
           break;
@@ -125,10 +127,12 @@ class AtomicQueryInputsDataSource {
     String schema = (res.body);
 
     // revocation status
+    // TODO: replace with RHS
     res = await get(revStatusUrl, "");
     String revStatus = (res.body);
     final RevocationStatus claimRevocationStatus =
         RevocationStatus.fromJson(json.decode(revStatus));
+
     String? queryInputs;
     if (circuitId == "credentialAtomicQueryMTP") {
       var atomicQueryInputsParam = AtomicQueryInputsParam(

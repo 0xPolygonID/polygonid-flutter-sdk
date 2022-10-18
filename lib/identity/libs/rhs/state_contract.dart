@@ -38,10 +38,12 @@ class StateContract {
           params: transactionParameters);
 
       if (result != null && result.isNotEmpty && result[0] is BigInt) {
-        String resultString =
-            bytesToHex(Uint8ArrayUtils.bigIntToBytes(result[0]));
-        logger().d(resultString);
-        return resultString;
+        if (result[0] != BigInt.zero) {
+          String resultString =
+              bytesToHex(Uint8ArrayUtils.bigIntToBytes(result[0]));
+          logger().d(resultString);
+          return resultString;
+        }
       }
       return "";
     } catch (e) {
