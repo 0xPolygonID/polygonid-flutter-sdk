@@ -13,6 +13,7 @@ import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/mappers/claim_model_mapper.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/models/claim_model.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_event.dart';
+import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
 
 class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
   final ClaimModelMapper _mapper;
@@ -56,42 +57,45 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       return;
     }
 
-    // LOCAL FILES
-    const circuitDatPath = 'assets/auth/auth.dat';
-    const circuitProvingKeyPath = 'assets/auth/auth.zkey';
-    ByteData datFile = await rootBundle.load(circuitDatPath);
-    ByteData zkeyFile = await rootBundle.load(circuitProvingKeyPath);
-    List<Uint8List> circuitFiles = [
-      datFile.buffer.asUint8List(),
-      zkeyFile.buffer.asUint8List(),
-    ];
-    var circuitData =
-        CircuitDataEntity('auth', circuitFiles[0], circuitFiles[1]);
+    try {
+      // LOCAL FILES
+      const circuitDatPath = 'assets/auth/auth.dat';
+      const circuitProvingKeyPath = 'assets/auth/auth.zkey';
+      ByteData datFile = await rootBundle.load(circuitDatPath);
+      ByteData zkeyFile = await rootBundle.load(circuitProvingKeyPath);
+      List<Uint8List> circuitFiles = [
+        datFile.buffer.asUint8List(),
+        zkeyFile.buffer.asUint8List(),
+      ];
+      var circuitData =
+          CircuitDataEntity('auth', circuitFiles[0], circuitFiles[1]);
 
-    String url = messageBody['url'];
-    List<dynamic> credentials = messageBody['credentials'];
+      String url = messageBody['url'];
+      List<dynamic> credentials = messageBody['credentials'];
 
-    List<CredentialRequestEntity> credentialRequestEntityList = [];
-    for (Map<String, dynamic> credential in credentials) {
-      String id = credential['id'];
+      List<CredentialRequestEntity> credentialRequestEntityList = [];
+      for (Map<String, dynamic> credential in credentials) {
+        String id = credential['id'];
 
-      var entity = CredentialRequestEntity(
-        identifier,
-        circuitData,
-        url,
-        id,
-        iden3message.thid!,
-        iden3message.from!,
-      );
+        var entity = CredentialRequestEntity(
+          identifier,
+          circuitData,
+          url,
+          id,
+          iden3message.thid!,
+          iden3message.from!,
+        );
 
-      credentialRequestEntityList.add(entity);
-    }
+        credentialRequestEntityList.add(entity);
+      }
 
-    List<ClaimEntity> claimList = await _polygonIdSdk.credential
-        .fetchAndSaveClaims(credentialRequests: credentialRequestEntityList);
-
-    if (claimList.isNotEmpty) {
-      add(const GetClaimsEvent());
+      List<ClaimEntity> claimList = await _polygonIdSdk.credential
+          .fetchAndSaveClaims(credentialRequests: credentialRequestEntityList);
+      if (claimList.isNotEmpty) {
+        add(const GetClaimsEvent());
+      }
+    } catch (exception) {
+      emit(const ClaimsState.error(CustomStrings.iden3messageGenericError));
     }
   }
 

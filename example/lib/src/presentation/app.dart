@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/navigations/routes.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_colors.dart';
+import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
 
 class App extends StatefulWidget {
   const App({Key? key}) : super(key: key);
@@ -15,7 +16,7 @@ class AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "PolygonID Example App",
+      title: CustomStrings.appTitle,
       initialRoute: Routes.initialPath,
       routes: Routes.getRoutes(context),
       navigatorKey: navigatorKey,
