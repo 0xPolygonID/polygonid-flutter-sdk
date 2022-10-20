@@ -150,6 +150,24 @@ class MockProofRepository extends _i1.Mock implements _i10.ProofRepository {
         )),
       ) as _i4.Future<_i2.CircuitDataEntity>);
   @override
+  _i4.Future<Map<String, dynamic>> nonRevProof(
+    int? revNonce,
+    String? revTreeRootHash,
+    String? rhsBaseUrl,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #nonRevProof,
+          [
+            revNonce,
+            revTreeRootHash,
+            rhsBaseUrl,
+          ],
+        ),
+        returnValue:
+            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i4.Future<Map<String, dynamic>>);
+  @override
   _i4.Future<_i11.Uint8List?> calculateAtomicQueryInputs(
     String? challenge,
     _i12.CredentialDTO? credential,

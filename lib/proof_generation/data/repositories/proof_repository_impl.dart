@@ -8,6 +8,7 @@ import '../../domain/repositories/proof_repository.dart';
 import '../data_sources/atomic_query_inputs_data_source.dart';
 import '../data_sources/local_files_data_source.dart';
 import '../data_sources/prover_lib_data_source.dart';
+import '../data_sources/rhs_data_source.dart';
 import '../data_sources/witness_data_source.dart';
 import '../dtos/witness_param.dart';
 
@@ -18,12 +19,14 @@ class ProofRepositoryImpl extends ProofRepository {
   final ProverLibDataSource _proverLibDataSource;
   final AtomicQueryInputsDataSource _atomicQueryInputsDataSource;
   final LocalFilesDataSource _localFilesDataSource;
+  final RhsDataSource _rhsDataSource;
 
   ProofRepositoryImpl(
     this._witnessDataSource,
     this._proverLibDataSource,
     this._atomicQueryInputsDataSource,
     this._localFilesDataSource,
+    this._rhsDataSource,
   );
 
   static const Map<SupportedCircuits, String> _supportedCircuits = {
@@ -100,6 +103,14 @@ class ProofRepositoryImpl extends ProofRepository {
       CircuitDataEntity circuitData, Uint8List wtnsBytes) async {
     Map<String, dynamic>? proofResult =
         await _proverLibDataSource.prover(circuitData.zKeyFile, wtnsBytes);
+    return proofResult;
+  }
+
+  @override
+  Future<Map<String, dynamic>> nonRevProof(
+      int revNonce, String revTreeRootHash, String rhsBaseUrl) async {
+    Map<String, dynamic> proofResult =
+        await _rhsDataSource.nonRevProof(revNonce, revTreeRootHash, rhsBaseUrl);
     return proofResult;
   }
 }
