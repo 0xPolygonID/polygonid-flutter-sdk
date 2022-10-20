@@ -10,14 +10,17 @@ jobs:
         with:
           flutter-version: '3.3.2'
           channel: 'stable'
-      - name: verify flutter version          
-        run: flutter --version    
+      - name: verify flutter version
+        run: flutter --version
       - name: Install dependencies
         run: flutter packages get
       - name: Format
         run: flutter format --set-exit-if-changed lib test example
       - name: Analyze
         run: flutter analyze lib test example
-      # TODO: fix https://github.com/iden3/polygonid-flutter-sdk/actions/runs/3236865889/jobs/5303229221
-      #- name: Publish dry run
-      #  run: flutter pub publish --dry-run
+      - name: Run tests
+        if: github.ref_name == 'develop' || github.ref_name == 'main'
+        run: flutter test
+      - name: Publish dry run
+        if: github.ref_name == 'main'
+        run: flutter pub publish --dry-run
