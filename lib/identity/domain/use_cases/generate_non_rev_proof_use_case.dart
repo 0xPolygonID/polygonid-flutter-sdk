@@ -1,7 +1,6 @@
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
-import '../../../identity/domain/use_cases/fetch_identity_state_use_case.dart';
-import '../repositories/proof_repository.dart';
+import '../repositories/identity_repository.dart';
 
 class GenerateNonRevProofParam {
   final String id;
@@ -13,17 +12,15 @@ class GenerateNonRevProofParam {
 
 class GenerateNonRevProofUseCase
     extends FutureUseCase<GenerateNonRevProofParam, Map<String, dynamic>> {
-  final FetchIdentityStateUseCase _fetchIdentityStateUseCase;
-  final ProofRepository _proofRepository;
+  final IdentityRepository _identityRepository;
 
-  GenerateNonRevProofUseCase(
-      this._fetchIdentityStateUseCase, this._proofRepository);
+  GenerateNonRevProofUseCase(this._identityRepository);
 
   @override
   Future<Map<String, dynamic>> execute(
       {required GenerateNonRevProofParam param}) async {
     try {
-      Map<String, dynamic> proof = await _proofRepository.nonRevProof(
+      Map<String, dynamic> proof = await _identityRepository.nonRevProof(
           param.revNonce, param.id, param.rhsBaseUrl);
       return proof;
     } catch (error) {

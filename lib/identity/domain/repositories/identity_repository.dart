@@ -21,4 +21,7 @@ abstract class IdentityRepository {
   Future<String> fetchIdentityState({required String id});
 
   Future<RhsNodeEntity> fetchStateRoots({required String url});
+
+  Future<Map<String, dynamic>> nonRevProof(
+      int revNonce, String id, String rhsBaseUrl);
 }

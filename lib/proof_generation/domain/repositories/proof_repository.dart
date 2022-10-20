@@ -6,9 +6,6 @@ import '../entities/circuit_data_entity.dart';
 abstract class ProofRepository {
   Future<CircuitDataEntity> loadCircuitFiles(String circuitId);
 
-  Future<Map<String, dynamic>> nonRevProof(
-      int revNonce, String id, String rhsBaseUrl);
-
   Future<Uint8List?> calculateAtomicQueryInputs(
       String challenge,
       CredentialDTO credential,

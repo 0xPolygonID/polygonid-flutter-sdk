@@ -170,4 +170,12 @@ class IdentityRepositoryImpl extends IdentityRepository {
         .then((dto) => _rhsNodeMapper.mapFrom(dto))
         .catchError((error) => throw FetchStateRootsException(error));
   }
+
+  @override
+  Future<Map<String, dynamic>> nonRevProof(
+      int revNonce, String id, String rhsBaseUrl) {
+    return _remoteIdentityDataSource
+        .nonRevProof(revNonce, id, rhsBaseUrl)
+        .catchError((error) => throw NonRevProofException(error));
+  }
 }

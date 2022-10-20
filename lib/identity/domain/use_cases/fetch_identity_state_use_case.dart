@@ -17,8 +17,7 @@ class FetchIdentityStateUseCase
   FetchIdentityStateUseCase(this._identityRepository);
 
   @override
-  Future<String> execute(
-      {required FetchIdentityStateParam param}) async {
+  Future<String> execute({required FetchIdentityStateParam param}) async {
     String issuerState =
         await _identityRepository.fetchIdentityState(id: param.id);
     return issuerState;

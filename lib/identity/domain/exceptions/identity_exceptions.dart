@@ -19,3 +19,7 @@ class FetchIdentityStateException extends ErrorException {
 class FetchStateRootsException extends ErrorException {
   FetchStateRootsException(error) : super(error);
 }
+
+class NonRevProofException extends ErrorException {
+  NonRevProofException(error) : super(error);
+}

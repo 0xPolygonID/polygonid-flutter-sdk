@@ -293,6 +293,24 @@ class MockRemoteIdentityDataSource extends _i1.Mock
           ),
         )),
       ) as _i11.Future<_i6.RhsNodeDTO>);
+  @override
+  _i11.Future<Map<String, dynamic>> nonRevProof(
+    int? revNonce,
+    String? id,
+    String? rhsBaseUrl,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #nonRevProof,
+          [
+            revNonce,
+            id,
+            rhsBaseUrl,
+          ],
+        ),
+        returnValue:
+            _i11.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i11.Future<Map<String, dynamic>>);
 }
 
 /// A class which mocks [StorageIdentityDataSource].

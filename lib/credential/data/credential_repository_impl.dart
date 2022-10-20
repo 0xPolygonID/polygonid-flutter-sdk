@@ -5,9 +5,11 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.da
 import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 
 import 'data_sources/remote_claim_data_source.dart';
 import 'data_sources/storage_claim_data_source.dart';
+import 'dtos/revocation_status.dart';
 import 'mappers/claim_mapper.dart';
 import 'mappers/credential_request_mapper.dart';
 import 'mappers/filters_mapper.dart';
@@ -16,7 +18,9 @@ import 'mappers/id_filter_mapper.dart';
 class CredentialRepositoryImpl extends CredentialRepository {
   final RemoteClaimDataSource _remoteClaimDataSource;
   final StorageClaimDataSource _storageClaimDataSource;
+  final RemoteIdentityDataSource _remoteIdentityDataSource;
   final CredentialRequestMapper _credentialRequestMapper;
+
   final ClaimMapper _claimMapper;
   final FiltersMapper _filtersMapper;
   final IdFilterMapper _idFilterMapper;
@@ -24,6 +28,7 @@ class CredentialRepositoryImpl extends CredentialRepository {
   CredentialRepositoryImpl(
     this._remoteClaimDataSource,
     this._storageClaimDataSource,
+    this._remoteIdentityDataSource,
     this._credentialRequestMapper,
     this._claimMapper,
     this._filtersMapper,
@@ -104,5 +109,15 @@ class CredentialRepositoryImpl extends CredentialRepository {
     return _remoteClaimDataSource
         .fetchVocab(schema: schema, type: type)
         .catchError((error) => throw FetchVocabException(error));
+  }
+
+  @override
+  Future<RevocationStatus?> getClaimRevocationStatus(
+      {required ClaimEntity claim, bool useRhs = true}) {
+    return _remoteClaimDataSource.getClaimRevocationStatus(
+      _claimMapper.mapTo(claim).credential,
+      _remoteIdentityDataSource,
+      useRhs: useRhs,
+    );
   }
 }
