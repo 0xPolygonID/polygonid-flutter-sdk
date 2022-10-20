@@ -152,7 +152,7 @@ class MockProofRepository extends _i1.Mock implements _i10.ProofRepository {
   @override
   _i4.Future<Map<String, dynamic>> nonRevProof(
     int? revNonce,
-    String? revTreeRootHash,
+    String? id,
     String? rhsBaseUrl,
   ) =>
       (super.noSuchMethod(
@@ -160,7 +160,7 @@ class MockProofRepository extends _i1.Mock implements _i10.ProofRepository {
           #nonRevProof,
           [
             revNonce,
-            revTreeRootHash,
+            id,
             rhsBaseUrl,
           ],
         ),

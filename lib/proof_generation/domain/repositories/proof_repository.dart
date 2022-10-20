@@ -7,7 +7,7 @@ abstract class ProofRepository {
   Future<CircuitDataEntity> loadCircuitFiles(String circuitId);
 
   Future<Map<String, dynamic>> nonRevProof(
-      int revNonce, String revTreeRootHash, String rhsBaseUrl);
+      int revNonce, String id, String rhsBaseUrl);
 
   Future<Uint8List?> calculateAtomicQueryInputs(
       String challenge,

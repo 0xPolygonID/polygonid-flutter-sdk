@@ -181,7 +181,6 @@ class MockIden3CoreLib extends _i1.Mock implements _i3.Iden3CoreLib {
     List<int>? values,
     int? operator,
     _i5.RevocationStatus? revocationStatus,
-    _i5.RevocationStatus? authRevocationStatus,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -198,7 +197,6 @@ class MockIden3CoreLib extends _i1.Mock implements _i3.Iden3CoreLib {
             values,
             operator,
             revocationStatus,
-            authRevocationStatus,
           ],
         ),
         returnValue: '',

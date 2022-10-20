@@ -22,6 +22,8 @@ class ProdEnv implements SdkEnv, SdkEnvFields {
   @override
   @EnviedField(varName: 'INFURA_API_KEY', obfuscate: true)
   final String infuraApiKey = _Env.infuraApiKey;
+  @EnviedField(varName: 'REVERSE_HASH_SERVICE_URL', obfuscate: true)
+  final String reverseHashServiceUrl = _Env.reverseHashServiceUrl;
   @override
   @EnviedField(varName: 'ID_STATE_CONTRACT_ADDR', obfuscate: true)
   final String idStateContractAddress = _Env.idStateContractAddress;
