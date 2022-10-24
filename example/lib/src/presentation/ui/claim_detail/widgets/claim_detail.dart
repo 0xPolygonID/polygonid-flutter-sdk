@@ -119,7 +119,7 @@ class _ClaimDetailScreenState extends State<ClaimDetailScreen> {
                 ClaimDetailEvent.deleteClaim(claimId: widget.claimModel.id));
           },
           style: CustomButtonStyle.primaryButtonStyle,
-          child: Text(
+          child: const Text(
             CustomStrings.deleteClaimButtonCTA,
             style: CustomTextStyles.primaryButtonTextStyle,
           ),

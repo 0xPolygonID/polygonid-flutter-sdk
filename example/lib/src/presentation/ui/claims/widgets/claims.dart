@@ -67,6 +67,8 @@ class _ClaimsScreenState extends State<ClaimsScreen> {
                     _buildTitle(),
                     const SizedBox(height: 6),
                     _buildDescription(),
+                    const SizedBox(height: 6),
+                    _buildError(),
                     const SizedBox(height: 24),
                     _buildClaimList(),
                     const SizedBox(height: 40),
@@ -199,10 +201,14 @@ class _ClaimsScreenState extends State<ClaimsScreen> {
         if (state is LoadedDataClaimsState) {
           List<ClaimModel> claimList = state.claimList;
           List<Widget> claimWidgetList = _buildClaimCardWidgetList(claimList);
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: claimWidgetList,
-          );
+          return claimList.isNotEmpty
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: claimWidgetList,
+                )
+              : const Center(
+                  child: Text(CustomStrings.claimsListNoResult),
+                );
         }
         return const SizedBox.shrink();
       },
@@ -282,6 +288,27 @@ class _ClaimsScreenState extends State<ClaimsScreen> {
         strokeWidth: 2,
         backgroundColor: CustomColors.primaryButton,
       ),
+    );
+  }
+
+  ///
+  Widget _buildError() {
+    return BlocBuilder(
+      bloc: widget._bloc,
+      builder: (BuildContext context, ClaimsState state) {
+        if (state is ErrorClaimsState) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Text(
+              state.message,
+              textAlign: TextAlign.start,
+              style: CustomTextStyles.descriptionTextStyle
+                  .copyWith(color: CustomColors.redError),
+            ),
+          );
+        }
+        return const Text("");
+      },
     );
   }
 }
