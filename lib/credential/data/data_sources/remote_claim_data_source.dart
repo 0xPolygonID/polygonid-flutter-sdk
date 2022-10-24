@@ -32,13 +32,18 @@ class RemoteClaimDataSource {
         FetchClaimResponseDTO fetchResponse =
             FetchClaimResponseDTO.fromJson(json.decode(response.body));
 
+        /// FIXME: should be called in the repo
         //fetch schema
-        Map<String, dynamic>? schema = await fetchSchema(
-            url: fetchResponse.credential.credentialSchema.id);
+        Map<String, dynamic>? schema =
+            await fetchSchema(url: fetchResponse.credential.credentialSchema.id)
+                .catchError((error) => null);
+
+        /// FIXME: should be called in the repo
         //fetch vocab
         Map<String, dynamic>? vocab = await fetchVocab(
-            schema: schema,
-            type: fetchResponse.credential.credentialSubject.type);
+                schema: schema,
+                type: fetchResponse.credential.credentialSubject.type)
+            .catchError((error) => null);
 
         if (fetchResponse.type == FetchClaimResponseType.issuance) {
           return ClaimDTO(

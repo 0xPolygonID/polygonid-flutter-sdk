@@ -13,6 +13,7 @@ JWZBaseProof _$JWZBaseProofFromJson(Map<String, dynamic> json) => JWZBaseProof(
           .toList(),
       piC: (json['pi_c'] as List<dynamic>).map((e) => e as String).toList(),
       protocol: json['protocol'] as String,
+      curve: json['curve'] as String,
     );
 
 Map<String, dynamic> _$JWZBaseProofToJson(JWZBaseProof instance) =>
@@ -21,6 +22,7 @@ Map<String, dynamic> _$JWZBaseProofToJson(JWZBaseProof instance) =>
       'pi_b': instance.piB,
       'pi_c': instance.piC,
       'protocol': instance.protocol,
+      'curve': instance.curve,
     };
 
 JWZProof _$JWZProofFromJson(Map<String, dynamic> json) => JWZProof(

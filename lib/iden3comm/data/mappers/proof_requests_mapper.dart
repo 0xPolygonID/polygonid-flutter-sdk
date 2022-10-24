@@ -40,14 +40,14 @@ class ProofRequestsMapper
         throw UnsupportedIden3MsgTypeException(from.type);
     }
 
-    request.body.scope?.forEach((request) {
-      if (request.circuit_id != null && request.rules != null) {
+    request.body.scope?.forEach((scope) {
+      if (scope.circuit_id != null && scope.rules != null) {
         proofRequests.add(ProofRequestEntity(
-            request.id.toString(),
-            request.circuit_id!,
-            request.optional ?? false,
-            request.rules!.toJson(),
-            _proofQueryParamMapper.mapFrom(request)));
+            scope.id.toString(),
+            scope.circuit_id!,
+            scope.optional ?? false,
+            scope.rules!.toJson(),
+            _proofQueryParamMapper.mapFrom(scope)));
       }
     });
 

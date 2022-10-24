@@ -3,6 +3,7 @@ import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/is_proof_circuit_supported_use_case.dart';
 
 import '../../../identity/domain/entities/identity_entity.dart';
@@ -48,6 +49,8 @@ class GetProofsUseCase
     List<ProofRequestEntity> requests =
         await _proofRepository.getRequests(message: param.message);
 
+    /// We got [ProofRequestEntity], let's find the associated [ClaimEntity]
+    /// and generate [ProofEntity]
     for (ProofRequestEntity request in requests) {
       if (await _isProofCircuitSupported.execute(param: request.circuitId)) {
         // Claims
@@ -77,12 +80,18 @@ class GetProofsUseCase
                   param: GenerateProofParam(challenge, signatureString,
                       authClaim, circuitData, publicKey, request.queryParam))
               .then((proof) => ProofEntity(
-                  id: request.id,
+                  id: int.parse(request.id),
                   circuitId: circuitId,
                   proof: proof.proof,
                   pubSignals: proof.pubSignals)));
         }).catchError((_) {}, test: (error) => error is StateError);
       }
+    }
+
+    /// If we have requests but didn't get any proofs, we throw
+    /// as it could be we didn't find any associated [ClaimEntity]
+    if (requests.isNotEmpty && proofs.isEmpty) {
+      throw ProofsNotFoundException(requests);
     }
 
     return proofs;

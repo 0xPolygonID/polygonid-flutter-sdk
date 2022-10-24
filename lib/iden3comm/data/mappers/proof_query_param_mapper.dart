@@ -33,6 +33,10 @@ class ProofQueryParamMapper
         field = reqEntry.key;
         MapEntry entry = (reqEntry.value as Map).entries.first;
 
+        if (_queryOperators.containsKey(entry.key)) {
+          operator = _queryOperators[entry.key]!;
+        }
+
         if (entry.value is List<dynamic>) {
           values = entry.value.cast<int>();
         } else if (entry.value is int) {
@@ -43,8 +47,6 @@ class ProofQueryParamMapper
       } else {
         throw InvalidProofReqException();
       }
-    } else {
-      throw InvalidProofReqException();
     }
 
     return ProofQueryParamEntity(field, values, operator);

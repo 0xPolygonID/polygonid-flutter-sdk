@@ -81,7 +81,7 @@ class ProofRepositoryImpl extends ProofRepository {
       signature,
     );
 
-    if (res != null) {
+    if (res != null && res.isNotEmpty) {
       Map<String, dynamic>? inputs = json.decode(res);
       Uint8List inputsJsonBytes =
           Uint8ArrayUtils.uint8ListfromString(json.encode(inputs));
@@ -114,8 +114,7 @@ class ProofRepositoryImpl extends ProofRepository {
   }
 
   @override
-  Future<JWZProof> prove(
-      CircuitDataEntity circuitData, Uint8List wtnsBytes) {
+  Future<JWZProof> prove(CircuitDataEntity circuitData, Uint8List wtnsBytes) {
     return _proverLibDataSource
         .prover(circuitData.zKeyFile, wtnsBytes)
         .then((proof) {

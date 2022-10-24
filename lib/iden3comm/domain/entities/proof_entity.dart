@@ -67,15 +67,15 @@ import 'dart:convert';
 import 'package:polygonid_flutter_sdk/identity/libs/jwz/jwz_proof.dart';
 
 class ProofEntity extends JWZProof {
-  final String id;
+  final int id;
   final String circuitId;
 
-  ProofEntity({
-    required this.id,
-    required this.circuitId,
-    required JWZBaseProof proof,
-    required List<String> pubSignals,
-  }) : super(proof: proof, pubSignals: pubSignals);
+  ProofEntity(
+      {required this.id,
+      required this.circuitId,
+      required JWZBaseProof proof,
+      required List<String> pubSignals})
+      : super(proof: proof, pubSignals: pubSignals);
 
   /// Creates an instance from the given json
   ///

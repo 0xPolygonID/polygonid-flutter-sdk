@@ -79,6 +79,8 @@ class ProverLib {
       }
       map['circuitId'] = "auth";
       map['proof'] = json.decode(proofmsg);
+      (map['proof'] as Map<String, dynamic>)
+          .putIfAbsent("curve", () => "bn128");
       map['pub_signals'] = json.decode(publicmsg).cast<String>();
       return map;
     } else if (result == PPROVER_ERROR) {

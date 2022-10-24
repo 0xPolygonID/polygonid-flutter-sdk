@@ -49,12 +49,14 @@ class JWZBaseProof extends Equatable {
   final List<String> piC;
 
   final String protocol;
+  final String curve;
 
   const JWZBaseProof(
       {required this.piA,
       required this.piB,
       required this.piC,
-      required this.protocol});
+      required this.protocol,
+      required this.curve});
 
   factory JWZBaseProof.fromJson(Map<String, dynamic> json) =>
       _$JWZBaseProofFromJson(json);
