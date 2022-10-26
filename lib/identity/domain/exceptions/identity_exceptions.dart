@@ -11,3 +11,15 @@ class UnknownIdentityException implements Exception {
 
   UnknownIdentityException(this.identifier);
 }
+
+class FetchIdentityStateException extends ErrorException {
+  FetchIdentityStateException(error) : super(error);
+}
+
+class FetchStateRootsException extends ErrorException {
+  FetchStateRootsException(error) : super(error);
+}
+
+class NonRevProofException extends ErrorException {
+  NonRevProofException(error) : super(error);
+}

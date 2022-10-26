@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/remote_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
@@ -12,8 +13,10 @@ import 'package:polygonid_flutter_sdk/proof_generation/data/mappers/proof_mapper
 import 'package:polygonid_flutter_sdk/proof_generation/domain/exceptions/proof_generation_exceptions.dart';
 
 import '../../../common/utils/uint8_list_utils.dart';
+import '../../../credential/data/dtos/revocation_status.dart';
 import '../../../iden3comm/data/mappers/proof_request_filters_mapper.dart';
 import '../../../iden3comm/data/mappers/proof_requests_mapper.dart';
+import '../../../identity/data/data_sources/remote_identity_data_source.dart';
 import '../../domain/entities/circuit_data_entity.dart';
 import '../../domain/repositories/proof_repository.dart';
 import '../data_sources/atomic_query_inputs_data_source.dart';
@@ -30,6 +33,8 @@ class ProofRepositoryImpl extends ProofRepository {
   final AtomicQueryInputsDataSource _atomicQueryInputsDataSource;
   final LocalFilesDataSource _localFilesDataSource;
   final ProofCircuitDataSource _proofCircuitDataSource;
+  final RemoteIdentityDataSource _remoteIdentityDataSource;
+  final RemoteClaimDataSource _remoteClaimDataSource;
   final CircuitTypeMapper _circuitTypeMapper;
   final ProofRequestsMapper _proofRequestsMapper;
   final ProofRequestFiltersMapper _proofRequestFiltersMapper;
@@ -44,6 +49,8 @@ class ProofRepositoryImpl extends ProofRepository {
       this._atomicQueryInputsDataSource,
       this._localFilesDataSource,
       this._proofCircuitDataSource,
+      this._remoteIdentityDataSource,
+      this._remoteClaimDataSource,
       this._circuitTypeMapper,
       this._proofRequestsMapper,
       this._proofRequestFiltersMapper,
@@ -69,6 +76,10 @@ class ProofRepositoryImpl extends ProofRepository {
       String pubY,
       String? signature) async {
     ClaimDTO claim = _claimMapper.mapTo(authClaim);
+    // revocation status
+    final RevocationStatus? claimRevocationStatus = await _remoteClaimDataSource
+        .getClaimRevocationStatus(claim.info, _remoteIdentityDataSource);
+
     String? res = await _atomicQueryInputsDataSource.prepareAtomicQueryInputs(
       challenge,
       claim.info,
@@ -76,6 +87,7 @@ class ProofRepositoryImpl extends ProofRepository {
       queryParam.field,
       queryParam.values,
       queryParam.operator,
+      claimRevocationStatus,
       pubX,
       pubY,
       signature,

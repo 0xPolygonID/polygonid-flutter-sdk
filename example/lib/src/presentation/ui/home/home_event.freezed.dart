@@ -24,8 +24,8 @@ mixin _$HomeEvent {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? getIdentifier,
-    TResult Function()? createIdentity,
+    TResult? Function()? getIdentifier,
+    TResult? Function()? createIdentity,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -43,8 +43,8 @@ mixin _$HomeEvent {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(GetIdentifierHomeEvent value)? getIdentifier,
-    TResult Function(CreateIdentityHomeEvent value)? createIdentity,
+    TResult? Function(GetIdentifierHomeEvent value)? getIdentifier,
+    TResult? Function(CreateIdentityHomeEvent value)? createIdentity,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -59,16 +59,18 @@ mixin _$HomeEvent {
 /// @nodoc
 abstract class $HomeEventCopyWith<$Res> {
   factory $HomeEventCopyWith(HomeEvent value, $Res Function(HomeEvent) then) =
-      _$HomeEventCopyWithImpl<$Res>;
+      _$HomeEventCopyWithImpl<$Res, HomeEvent>;
 }
 
 /// @nodoc
-class _$HomeEventCopyWithImpl<$Res> implements $HomeEventCopyWith<$Res> {
+class _$HomeEventCopyWithImpl<$Res, $Val extends HomeEvent>
+    implements $HomeEventCopyWith<$Res> {
   _$HomeEventCopyWithImpl(this._value, this._then);
 
-  final HomeEvent _value;
   // ignore: unused_field
-  final $Res Function(HomeEvent) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 }
 
 /// @nodoc
@@ -80,15 +82,11 @@ abstract class _$$GetIdentifierHomeEventCopyWith<$Res> {
 
 /// @nodoc
 class __$$GetIdentifierHomeEventCopyWithImpl<$Res>
-    extends _$HomeEventCopyWithImpl<$Res>
+    extends _$HomeEventCopyWithImpl<$Res, _$GetIdentifierHomeEvent>
     implements _$$GetIdentifierHomeEventCopyWith<$Res> {
   __$$GetIdentifierHomeEventCopyWithImpl(_$GetIdentifierHomeEvent _value,
       $Res Function(_$GetIdentifierHomeEvent) _then)
-      : super(_value, (v) => _then(v as _$GetIdentifierHomeEvent));
-
-  @override
-  _$GetIdentifierHomeEvent get _value =>
-      super._value as _$GetIdentifierHomeEvent;
+      : super(_value, _then);
 }
 
 /// @nodoc
@@ -122,8 +120,8 @@ class _$GetIdentifierHomeEvent implements GetIdentifierHomeEvent {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? getIdentifier,
-    TResult Function()? createIdentity,
+    TResult? Function()? getIdentifier,
+    TResult? Function()? createIdentity,
   }) {
     return getIdentifier?.call();
   }
@@ -153,8 +151,8 @@ class _$GetIdentifierHomeEvent implements GetIdentifierHomeEvent {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(GetIdentifierHomeEvent value)? getIdentifier,
-    TResult Function(CreateIdentityHomeEvent value)? createIdentity,
+    TResult? Function(GetIdentifierHomeEvent value)? getIdentifier,
+    TResult? Function(CreateIdentityHomeEvent value)? createIdentity,
   }) {
     return getIdentifier?.call(this);
   }
@@ -186,15 +184,11 @@ abstract class _$$CreateIdentityHomeEventCopyWith<$Res> {
 
 /// @nodoc
 class __$$CreateIdentityHomeEventCopyWithImpl<$Res>
-    extends _$HomeEventCopyWithImpl<$Res>
+    extends _$HomeEventCopyWithImpl<$Res, _$CreateIdentityHomeEvent>
     implements _$$CreateIdentityHomeEventCopyWith<$Res> {
   __$$CreateIdentityHomeEventCopyWithImpl(_$CreateIdentityHomeEvent _value,
       $Res Function(_$CreateIdentityHomeEvent) _then)
-      : super(_value, (v) => _then(v as _$CreateIdentityHomeEvent));
-
-  @override
-  _$CreateIdentityHomeEvent get _value =>
-      super._value as _$CreateIdentityHomeEvent;
+      : super(_value, _then);
 }
 
 /// @nodoc
@@ -229,8 +223,8 @@ class _$CreateIdentityHomeEvent implements CreateIdentityHomeEvent {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? getIdentifier,
-    TResult Function()? createIdentity,
+    TResult? Function()? getIdentifier,
+    TResult? Function()? createIdentity,
   }) {
     return createIdentity?.call();
   }
@@ -260,8 +254,8 @@ class _$CreateIdentityHomeEvent implements CreateIdentityHomeEvent {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(GetIdentifierHomeEvent value)? getIdentifier,
-    TResult Function(CreateIdentityHomeEvent value)? createIdentity,
+    TResult? Function(GetIdentifierHomeEvent value)? getIdentifier,
+    TResult? Function(CreateIdentityHomeEvent value)? createIdentity,
   }) {
     return createIdentity?.call(this);
   }

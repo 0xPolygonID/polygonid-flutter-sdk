@@ -6,9 +6,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
+import 'package:web3dart/web3dart.dart';
+import 'package:web_socket_channel/io.dart';
 
 import '../../credential/data/credential_repository_impl.dart';
 import '../../credential/domain/repositories/credential_repository.dart';
+import '../../env/sdk_env.dart';
 import '../../iden3comm/data/repositories/iden3comm_repository_impl.dart';
 import '../../iden3comm/domain/repositories/iden3comm_repository.dart';
 import '../../identity/data/repositories/identity_repository_impl.dart';
@@ -29,6 +32,14 @@ abstract class NetworkModule {
   /// TODO: in the future we should change this client to something with more features
   /// like Dio: https://pub.dev/packages/dio
   Client get client => Client();
+
+  Web3Client get web3Client =>
+      Web3Client(SdkEnv().infuraUrl + SdkEnv().infuraApiKey, client,
+          socketConnector: () {
+        return IOWebSocketChannel.connect(
+                SdkEnv().infuraRdpUrl + SdkEnv().infuraApiKey)
+            .cast<String>();
+      });
 }
 
 @module

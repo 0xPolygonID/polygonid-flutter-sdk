@@ -7,6 +7,8 @@ import 'dart:async' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
     as _i7;
+import 'package:polygonid_flutter_sdk/credential/data/dtos/revocation_status.dart'
+    as _i8;
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
     as _i2;
 import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart'
@@ -113,4 +115,12 @@ class MockCredentialRepository extends _i1.Mock
           returnValue:
               Future<Map<String, dynamic>?>.value()) as _i4
           .Future<Map<String, dynamic>?>);
+  @override
+  _i4.Future<_i8.RevocationStatus?> getClaimRevocationStatus(
+          {_i2.ClaimEntity? claim, bool? useRhs = true}) =>
+      (super.noSuchMethod(
+              Invocation.method(#getClaimRevocationStatus, [],
+                  {#claim: claim, #useRhs: useRhs}),
+              returnValue: Future<_i8.RevocationStatus?>.value())
+          as _i4.Future<_i8.RevocationStatus?>);
 }

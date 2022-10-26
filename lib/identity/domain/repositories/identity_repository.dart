@@ -1,4 +1,5 @@
 import '../entities/identity_entity.dart';
+import '../entities/rhs_node_entity.dart';
 
 abstract class IdentityRepository {
   Future<String> createIdentity({String? privateKey});
@@ -19,4 +20,11 @@ abstract class IdentityRepository {
 
   /// FIXME: remove when [PublicIdentity] is created
   Future<List<String>> getPublicKeys({required String privateKey});
+
+  Future<String> fetchIdentityState({required String id});
+
+  Future<RhsNodeEntity> fetchStateRoots({required String url});
+
+  Future<Map<String, dynamic>> nonRevProof(
+      int revNonce, String id, String rhsBaseUrl);
 }

@@ -102,8 +102,7 @@ class MockIden3CoreLib extends _i1.Mock implements _i3.Iden3CoreLib {
           String? key,
           List<int>? values,
           int? operator,
-          _i5.RevocationStatus? revocationStatus,
-          _i5.RevocationStatus? authRevocationStatus) =>
+          _i5.RevocationStatus? revocationStatus) =>
       (super.noSuchMethod(
           Invocation.method(#prepareAtomicQuerySigInputs, [
             challenge,
@@ -116,9 +115,12 @@ class MockIden3CoreLib extends _i1.Mock implements _i3.Iden3CoreLib {
             key,
             values,
             operator,
-            revocationStatus,
-            authRevocationStatus
+            revocationStatus
           ]),
+          returnValue: '') as String);
+  @override
+  String getIdFromString(String? id) =>
+      (super.noSuchMethod(Invocation.method(#getIdFromString, [id]),
           returnValue: '') as String);
   @override
   _i6.Uint8List hexToBytesOrZero(String? s) =>

@@ -24,7 +24,7 @@ mixin _$ClaimDetailEvent {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String claimId)? deleteClaim,
+    TResult? Function(String claimId)? deleteClaim,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -40,7 +40,7 @@ mixin _$ClaimDetailEvent {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(DeleteClaimEvent value)? deleteClaim,
+    TResult? Function(DeleteClaimEvent value)? deleteClaim,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -59,29 +59,32 @@ mixin _$ClaimDetailEvent {
 abstract class $ClaimDetailEventCopyWith<$Res> {
   factory $ClaimDetailEventCopyWith(
           ClaimDetailEvent value, $Res Function(ClaimDetailEvent) then) =
-      _$ClaimDetailEventCopyWithImpl<$Res>;
+      _$ClaimDetailEventCopyWithImpl<$Res, ClaimDetailEvent>;
+  @useResult
   $Res call({String claimId});
 }
 
 /// @nodoc
-class _$ClaimDetailEventCopyWithImpl<$Res>
+class _$ClaimDetailEventCopyWithImpl<$Res, $Val extends ClaimDetailEvent>
     implements $ClaimDetailEventCopyWith<$Res> {
   _$ClaimDetailEventCopyWithImpl(this._value, this._then);
 
-  final ClaimDetailEvent _value;
   // ignore: unused_field
-  final $Res Function(ClaimDetailEvent) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? claimId = freezed,
+    Object? claimId = null,
   }) {
     return _then(_value.copyWith(
-      claimId: claimId == freezed
+      claimId: null == claimId
           ? _value.claimId
           : claimId // ignore: cast_nullable_to_non_nullable
               as String,
-    ));
+    ) as $Val);
   }
 }
 
@@ -92,26 +95,25 @@ abstract class _$$DeleteClaimEventCopyWith<$Res>
           _$DeleteClaimEvent value, $Res Function(_$DeleteClaimEvent) then) =
       __$$DeleteClaimEventCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({String claimId});
 }
 
 /// @nodoc
 class __$$DeleteClaimEventCopyWithImpl<$Res>
-    extends _$ClaimDetailEventCopyWithImpl<$Res>
+    extends _$ClaimDetailEventCopyWithImpl<$Res, _$DeleteClaimEvent>
     implements _$$DeleteClaimEventCopyWith<$Res> {
   __$$DeleteClaimEventCopyWithImpl(
       _$DeleteClaimEvent _value, $Res Function(_$DeleteClaimEvent) _then)
-      : super(_value, (v) => _then(v as _$DeleteClaimEvent));
+      : super(_value, _then);
 
-  @override
-  _$DeleteClaimEvent get _value => super._value as _$DeleteClaimEvent;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? claimId = freezed,
+    Object? claimId = null,
   }) {
     return _then(_$DeleteClaimEvent(
-      claimId: claimId == freezed
+      claimId: null == claimId
           ? _value.claimId
           : claimId // ignore: cast_nullable_to_non_nullable
               as String,
@@ -137,15 +139,15 @@ class _$DeleteClaimEvent implements DeleteClaimEvent {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$DeleteClaimEvent &&
-            const DeepCollectionEquality().equals(other.claimId, claimId));
+            (identical(other.claimId, claimId) || other.claimId == claimId));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(claimId));
+  int get hashCode => Object.hash(runtimeType, claimId);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$DeleteClaimEventCopyWith<_$DeleteClaimEvent> get copyWith =>
       __$$DeleteClaimEventCopyWithImpl<_$DeleteClaimEvent>(this, _$identity);
 
@@ -160,7 +162,7 @@ class _$DeleteClaimEvent implements DeleteClaimEvent {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String claimId)? deleteClaim,
+    TResult? Function(String claimId)? deleteClaim,
   }) {
     return deleteClaim?.call(claimId);
   }
@@ -188,7 +190,7 @@ class _$DeleteClaimEvent implements DeleteClaimEvent {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(DeleteClaimEvent value)? deleteClaim,
+    TResult? Function(DeleteClaimEvent value)? deleteClaim,
   }) {
     return deleteClaim?.call(this);
   }

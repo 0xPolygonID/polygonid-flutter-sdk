@@ -24,30 +24,8 @@ class AtomicQueryInputsWrapper {
 
   ///
   Future<String?> queryInputsFromSIG(
-      {required AtomicQueryInputsParam atomicQueryInputsParam,
-      required ClaimInfoDTO credential}) async {
-    String? queryInputs;
-    if (credential.proofs.isNotEmpty) {
-      for (var proof in credential.proofs) {
-        if (proof.type == ClaimProofType.bjj) {
-          ClaimProofBJJDTO proofBJJ = proof as ClaimProofBJJDTO;
-
-          ClaimProofIssuerBJJDTO issuerBJJ =
-              proofBJJ.issuer as ClaimProofIssuerBJJDTO;
-
-          // revocation status
-          final authRes = await get(issuerBJJ.revocationStatus, "");
-          String authRevStatus = (authRes.body);
-          final RevocationStatus authRevocationStatus =
-              RevocationStatus.fromJson(json.decode(authRevStatus));
-          atomicQueryInputsParam.authRevocationStatus = authRevocationStatus;
-          queryInputs =
-              await compute(_computeAtomicQueryInputs, atomicQueryInputsParam);
-          break;
-        }
-      }
-    }
-    return queryInputs;
+      AtomicQueryInputsParam atomicQueryInputsParam) async {
+    return await compute(_computeAtomicQueryInputs, atomicQueryInputsParam);
   }
 
   ///
@@ -72,18 +50,18 @@ class AtomicQueryInputsWrapper {
 
       case AtomicQueryInputsType.sig:
         result = _iden3coreLib.prepareAtomicQuerySigInputs(
-            param.challenge,
-            param.pubX,
-            param.pubY,
-            param.signature,
-            param.credential,
-            param.jsonLDDocument,
-            param.schema,
-            param.key,
-            param.values,
-            param.operator,
-            param.revocationStatus,
-            param.authRevocationStatus!);
+          param.challenge,
+          param.pubX,
+          param.pubY,
+          param.signature,
+          param.credential,
+          param.jsonLDDocument,
+          param.schema,
+          param.key,
+          param.values,
+          param.operator,
+          param.revocationStatus,
+        );
         break;
     }
 
@@ -105,6 +83,7 @@ class AtomicQueryInputsDataSource {
     String key,
     List<int> values,
     int operator,
+    RevocationStatus? claimRevocationStatus,
     String pubX,
     String pubY,
     String? signature,
@@ -122,11 +101,6 @@ class AtomicQueryInputsDataSource {
     var res = await get(uri.authority, uri.path);
     String schema = (res.body);
 
-    // revocation status
-    res = await get(claimInfo.credentialStatus.id, "");
-    String revStatus = (res.body);
-    final RevocationStatus claimRevocationStatus =
-        RevocationStatus.fromJson(json.decode(revStatus));
     String? queryInputs;
     if (circuitId == "credentialAtomicQueryMTP") {
       var atomicQueryInputsParam = AtomicQueryInputsParam(
@@ -159,9 +133,8 @@ class AtomicQueryInputsDataSource {
           operator,
           claimRevocationStatus);
       // Issuer auth claim revocation status
-      queryInputs = await _atomicQueryInputsWrapper.queryInputsFromSIG(
-          atomicQueryInputsParam: atomicQueryInputsParam,
-          credential: claimInfo);
+      queryInputs = await _atomicQueryInputsWrapper
+          .queryInputsFromSIG(atomicQueryInputsParam);
     }
 
     return queryInputs;
