@@ -17,6 +17,7 @@ import 'package:polygonid_flutter_sdk/credential/data/mappers/id_filter_mapper.d
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
 import 'package:sembast/sembast.dart';
 
@@ -84,6 +85,8 @@ final filter = Filter.equals("theField", "theValue");
 MockRemoteClaimDataSource remoteClaimDataSource = MockRemoteClaimDataSource();
 MockStorageClaimDataSource storageClaimDataSource =
     MockStorageClaimDataSource();
+MockRemoteIdentityDataSource remoteIdentityDataSource =
+    MockRemoteIdentityDataSource();
 MockCredentialRequestMapper credentialRequestMapper =
     MockCredentialRequestMapper();
 MockClaimMapper claimMapper = MockClaimMapper();
@@ -94,6 +97,7 @@ MockIdFilterMapper idFilterMapper = MockIdFilterMapper();
 CredentialRepositoryImpl repository = CredentialRepositoryImpl(
     remoteClaimDataSource,
     storageClaimDataSource,
+    remoteIdentityDataSource,
     credentialRequestMapper,
     claimMapper,
     filtersMapper,
@@ -102,10 +106,11 @@ CredentialRepositoryImpl repository = CredentialRepositoryImpl(
 @GenerateMocks([
   RemoteClaimDataSource,
   StorageClaimDataSource,
+  RemoteIdentityDataSource,
   CredentialRequestMapper,
   ClaimMapper,
   FiltersMapper,
-  IdFilterMapper
+  IdFilterMapper,
 ])
 void main() {
   group("Fetch claim", () {

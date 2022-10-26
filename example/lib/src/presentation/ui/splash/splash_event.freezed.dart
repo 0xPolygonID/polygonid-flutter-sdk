@@ -23,7 +23,7 @@ mixin _$SplashEvent {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? fakeLoadingEvent,
+    TResult? Function()? fakeLoadingEvent,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -39,7 +39,7 @@ mixin _$SplashEvent {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(FakeLoadingSplashEvent value)? fakeLoadingEvent,
+    TResult? Function(FakeLoadingSplashEvent value)? fakeLoadingEvent,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -54,16 +54,18 @@ mixin _$SplashEvent {
 abstract class $SplashEventCopyWith<$Res> {
   factory $SplashEventCopyWith(
           SplashEvent value, $Res Function(SplashEvent) then) =
-      _$SplashEventCopyWithImpl<$Res>;
+      _$SplashEventCopyWithImpl<$Res, SplashEvent>;
 }
 
 /// @nodoc
-class _$SplashEventCopyWithImpl<$Res> implements $SplashEventCopyWith<$Res> {
+class _$SplashEventCopyWithImpl<$Res, $Val extends SplashEvent>
+    implements $SplashEventCopyWith<$Res> {
   _$SplashEventCopyWithImpl(this._value, this._then);
 
-  final SplashEvent _value;
   // ignore: unused_field
-  final $Res Function(SplashEvent) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 }
 
 /// @nodoc
@@ -75,15 +77,11 @@ abstract class _$$FakeLoadingSplashEventCopyWith<$Res> {
 
 /// @nodoc
 class __$$FakeLoadingSplashEventCopyWithImpl<$Res>
-    extends _$SplashEventCopyWithImpl<$Res>
+    extends _$SplashEventCopyWithImpl<$Res, _$FakeLoadingSplashEvent>
     implements _$$FakeLoadingSplashEventCopyWith<$Res> {
   __$$FakeLoadingSplashEventCopyWithImpl(_$FakeLoadingSplashEvent _value,
       $Res Function(_$FakeLoadingSplashEvent) _then)
-      : super(_value, (v) => _then(v as _$FakeLoadingSplashEvent));
-
-  @override
-  _$FakeLoadingSplashEvent get _value =>
-      super._value as _$FakeLoadingSplashEvent;
+      : super(_value, _then);
 }
 
 /// @nodoc
@@ -116,7 +114,7 @@ class _$FakeLoadingSplashEvent implements FakeLoadingSplashEvent {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? fakeLoadingEvent,
+    TResult? Function()? fakeLoadingEvent,
   }) {
     return fakeLoadingEvent?.call();
   }
@@ -144,7 +142,7 @@ class _$FakeLoadingSplashEvent implements FakeLoadingSplashEvent {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(FakeLoadingSplashEvent value)? fakeLoadingEvent,
+    TResult? Function(FakeLoadingSplashEvent value)? fakeLoadingEvent,
   }) {
     return fakeLoadingEvent?.call(this);
   }

@@ -2,12 +2,17 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 
 import '../../../common/data/exceptions/network_exceptions.dart';
 import '../../../common/domain/domain_logger.dart';
+import '../../../env/sdk_env.dart';
 import '../../domain/exceptions/credential_exceptions.dart';
 import '../dtos/claim_dto.dart';
+import '../dtos/credential_dto.dart';
+import '../dtos/credential_proofs/credential_proof_dto.dart';
 import '../dtos/fetch_claim_response_dto.dart';
+import '../dtos/revocation_status.dart';
 
 class RemoteClaimDataSource {
   final Client client;
@@ -122,6 +127,41 @@ class RemoteClaimDataSource {
     } catch (error) {
       logger().e('vocab error: $error');
       throw FetchVocabException(error);
+    }
+  }
+
+  Future<RevocationStatus?> getClaimRevocationStatus(CredentialDTO credential,
+      RemoteIdentityDataSource _remoteIdentityDataSource,
+      {bool useRhs = true}) async {
+    if (useRhs) {
+      if (credential.proofs.isNotEmpty) {
+        for (var proof in credential.proofs) {
+          if (proof.type == CredentialProofType.bjj) {
+            Map<String, dynamic> issuerNonRevProof =
+                await _remoteIdentityDataSource.nonRevProof(credential.revNonce,
+                    proof.issuer.id, SdkEnv().reverseHashServiceUrl);
+            RevocationStatus revStatus =
+                RevocationStatus.fromJson(issuerNonRevProof);
+            return revStatus;
+          }
+        }
+      }
+      return null;
+    } else {
+      String revStatusUrl = credential.credentialStatus.id;
+      var revStatusUri = Uri.parse(revStatusUrl);
+      var revStatusResponse = await get(revStatusUri, headers: {
+        HttpHeaders.acceptHeader: '*/*',
+        HttpHeaders.contentTypeHeader: 'application/json',
+      });
+      if (revStatusResponse.statusCode == 200) {
+        String revStatus = (revStatusResponse.body);
+        final RevocationStatus claimRevocationStatus =
+            RevocationStatus.fromJson(json.decode(revStatus));
+        return claimRevocationStatus;
+      } else {
+        throw NetworkException(revStatusResponse);
+      }
     }
   }
 }

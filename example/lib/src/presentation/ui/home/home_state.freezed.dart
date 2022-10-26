@@ -27,10 +27,10 @@ mixin _$HomeState {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String? identifier)? initial,
-    TResult Function(String? identifier)? loading,
-    TResult Function(String? identifier)? loaded,
-    TResult Function(String message, String? identifier)? error,
+    TResult? Function(String? identifier)? initial,
+    TResult? Function(String? identifier)? loading,
+    TResult? Function(String? identifier)? loaded,
+    TResult? Function(String message, String? identifier)? error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -52,10 +52,10 @@ mixin _$HomeState {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InitialHomeState value)? initial,
-    TResult Function(LoadingDataHomeState value)? loading,
-    TResult Function(LoadedIdentifierHomeState value)? loaded,
-    TResult Function(ErrorHomeState value)? error,
+    TResult? Function(InitialHomeState value)? initial,
+    TResult? Function(LoadingDataHomeState value)? loading,
+    TResult? Function(LoadedIdentifierHomeState value)? loaded,
+    TResult? Function(ErrorHomeState value)? error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -76,28 +76,32 @@ mixin _$HomeState {
 /// @nodoc
 abstract class $HomeStateCopyWith<$Res> {
   factory $HomeStateCopyWith(HomeState value, $Res Function(HomeState) then) =
-      _$HomeStateCopyWithImpl<$Res>;
+      _$HomeStateCopyWithImpl<$Res, HomeState>;
+  @useResult
   $Res call({String? identifier});
 }
 
 /// @nodoc
-class _$HomeStateCopyWithImpl<$Res> implements $HomeStateCopyWith<$Res> {
+class _$HomeStateCopyWithImpl<$Res, $Val extends HomeState>
+    implements $HomeStateCopyWith<$Res> {
   _$HomeStateCopyWithImpl(this._value, this._then);
 
-  final HomeState _value;
   // ignore: unused_field
-  final $Res Function(HomeState) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? identifier = freezed,
   }) {
     return _then(_value.copyWith(
-      identifier: identifier == freezed
+      identifier: freezed == identifier
           ? _value.identifier
           : identifier // ignore: cast_nullable_to_non_nullable
               as String?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -108,26 +112,25 @@ abstract class _$$InitialHomeStateCopyWith<$Res>
           _$InitialHomeState value, $Res Function(_$InitialHomeState) then) =
       __$$InitialHomeStateCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({String? identifier});
 }
 
 /// @nodoc
 class __$$InitialHomeStateCopyWithImpl<$Res>
-    extends _$HomeStateCopyWithImpl<$Res>
+    extends _$HomeStateCopyWithImpl<$Res, _$InitialHomeState>
     implements _$$InitialHomeStateCopyWith<$Res> {
   __$$InitialHomeStateCopyWithImpl(
       _$InitialHomeState _value, $Res Function(_$InitialHomeState) _then)
-      : super(_value, (v) => _then(v as _$InitialHomeState));
+      : super(_value, _then);
 
-  @override
-  _$InitialHomeState get _value => super._value as _$InitialHomeState;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? identifier = freezed,
   }) {
     return _then(_$InitialHomeState(
-      identifier: identifier == freezed
+      identifier: freezed == identifier
           ? _value.identifier
           : identifier // ignore: cast_nullable_to_non_nullable
               as String?,
@@ -153,16 +156,16 @@ class _$InitialHomeState implements InitialHomeState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$InitialHomeState &&
-            const DeepCollectionEquality()
-                .equals(other.identifier, identifier));
+            (identical(other.identifier, identifier) ||
+                other.identifier == identifier));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(identifier));
+  int get hashCode => Object.hash(runtimeType, identifier);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$InitialHomeStateCopyWith<_$InitialHomeState> get copyWith =>
       __$$InitialHomeStateCopyWithImpl<_$InitialHomeState>(this, _$identity);
 
@@ -180,10 +183,10 @@ class _$InitialHomeState implements InitialHomeState {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String? identifier)? initial,
-    TResult Function(String? identifier)? loading,
-    TResult Function(String? identifier)? loaded,
-    TResult Function(String message, String? identifier)? error,
+    TResult? Function(String? identifier)? initial,
+    TResult? Function(String? identifier)? loading,
+    TResult? Function(String? identifier)? loaded,
+    TResult? Function(String message, String? identifier)? error,
   }) {
     return initial?.call(identifier);
   }
@@ -217,10 +220,10 @@ class _$InitialHomeState implements InitialHomeState {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InitialHomeState value)? initial,
-    TResult Function(LoadingDataHomeState value)? loading,
-    TResult Function(LoadedIdentifierHomeState value)? loaded,
-    TResult Function(ErrorHomeState value)? error,
+    TResult? Function(InitialHomeState value)? initial,
+    TResult? Function(LoadingDataHomeState value)? loading,
+    TResult? Function(LoadedIdentifierHomeState value)? loaded,
+    TResult? Function(ErrorHomeState value)? error,
   }) {
     return initial?.call(this);
   }
@@ -260,26 +263,25 @@ abstract class _$$LoadingDataHomeStateCopyWith<$Res>
           $Res Function(_$LoadingDataHomeState) then) =
       __$$LoadingDataHomeStateCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({String? identifier});
 }
 
 /// @nodoc
 class __$$LoadingDataHomeStateCopyWithImpl<$Res>
-    extends _$HomeStateCopyWithImpl<$Res>
+    extends _$HomeStateCopyWithImpl<$Res, _$LoadingDataHomeState>
     implements _$$LoadingDataHomeStateCopyWith<$Res> {
   __$$LoadingDataHomeStateCopyWithImpl(_$LoadingDataHomeState _value,
       $Res Function(_$LoadingDataHomeState) _then)
-      : super(_value, (v) => _then(v as _$LoadingDataHomeState));
+      : super(_value, _then);
 
-  @override
-  _$LoadingDataHomeState get _value => super._value as _$LoadingDataHomeState;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? identifier = freezed,
   }) {
     return _then(_$LoadingDataHomeState(
-      identifier: identifier == freezed
+      identifier: freezed == identifier
           ? _value.identifier
           : identifier // ignore: cast_nullable_to_non_nullable
               as String?,
@@ -305,16 +307,16 @@ class _$LoadingDataHomeState implements LoadingDataHomeState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$LoadingDataHomeState &&
-            const DeepCollectionEquality()
-                .equals(other.identifier, identifier));
+            (identical(other.identifier, identifier) ||
+                other.identifier == identifier));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(identifier));
+  int get hashCode => Object.hash(runtimeType, identifier);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$LoadingDataHomeStateCopyWith<_$LoadingDataHomeState> get copyWith =>
       __$$LoadingDataHomeStateCopyWithImpl<_$LoadingDataHomeState>(
           this, _$identity);
@@ -333,10 +335,10 @@ class _$LoadingDataHomeState implements LoadingDataHomeState {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String? identifier)? initial,
-    TResult Function(String? identifier)? loading,
-    TResult Function(String? identifier)? loaded,
-    TResult Function(String message, String? identifier)? error,
+    TResult? Function(String? identifier)? initial,
+    TResult? Function(String? identifier)? loading,
+    TResult? Function(String? identifier)? loaded,
+    TResult? Function(String message, String? identifier)? error,
   }) {
     return loading?.call(identifier);
   }
@@ -370,10 +372,10 @@ class _$LoadingDataHomeState implements LoadingDataHomeState {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InitialHomeState value)? initial,
-    TResult Function(LoadingDataHomeState value)? loading,
-    TResult Function(LoadedIdentifierHomeState value)? loaded,
-    TResult Function(ErrorHomeState value)? error,
+    TResult? Function(InitialHomeState value)? initial,
+    TResult? Function(LoadingDataHomeState value)? loading,
+    TResult? Function(LoadedIdentifierHomeState value)? loaded,
+    TResult? Function(ErrorHomeState value)? error,
   }) {
     return loading?.call(this);
   }
@@ -414,27 +416,25 @@ abstract class _$$LoadedIdentifierHomeStateCopyWith<$Res>
           $Res Function(_$LoadedIdentifierHomeState) then) =
       __$$LoadedIdentifierHomeStateCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({String? identifier});
 }
 
 /// @nodoc
 class __$$LoadedIdentifierHomeStateCopyWithImpl<$Res>
-    extends _$HomeStateCopyWithImpl<$Res>
+    extends _$HomeStateCopyWithImpl<$Res, _$LoadedIdentifierHomeState>
     implements _$$LoadedIdentifierHomeStateCopyWith<$Res> {
   __$$LoadedIdentifierHomeStateCopyWithImpl(_$LoadedIdentifierHomeState _value,
       $Res Function(_$LoadedIdentifierHomeState) _then)
-      : super(_value, (v) => _then(v as _$LoadedIdentifierHomeState));
+      : super(_value, _then);
 
-  @override
-  _$LoadedIdentifierHomeState get _value =>
-      super._value as _$LoadedIdentifierHomeState;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? identifier = freezed,
   }) {
     return _then(_$LoadedIdentifierHomeState(
-      identifier: identifier == freezed
+      identifier: freezed == identifier
           ? _value.identifier
           : identifier // ignore: cast_nullable_to_non_nullable
               as String?,
@@ -460,16 +460,16 @@ class _$LoadedIdentifierHomeState implements LoadedIdentifierHomeState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$LoadedIdentifierHomeState &&
-            const DeepCollectionEquality()
-                .equals(other.identifier, identifier));
+            (identical(other.identifier, identifier) ||
+                other.identifier == identifier));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(identifier));
+  int get hashCode => Object.hash(runtimeType, identifier);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$LoadedIdentifierHomeStateCopyWith<_$LoadedIdentifierHomeState>
       get copyWith => __$$LoadedIdentifierHomeStateCopyWithImpl<
           _$LoadedIdentifierHomeState>(this, _$identity);
@@ -488,10 +488,10 @@ class _$LoadedIdentifierHomeState implements LoadedIdentifierHomeState {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String? identifier)? initial,
-    TResult Function(String? identifier)? loading,
-    TResult Function(String? identifier)? loaded,
-    TResult Function(String message, String? identifier)? error,
+    TResult? Function(String? identifier)? initial,
+    TResult? Function(String? identifier)? loading,
+    TResult? Function(String? identifier)? loaded,
+    TResult? Function(String message, String? identifier)? error,
   }) {
     return loaded?.call(identifier);
   }
@@ -525,10 +525,10 @@ class _$LoadedIdentifierHomeState implements LoadedIdentifierHomeState {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InitialHomeState value)? initial,
-    TResult Function(LoadingDataHomeState value)? loading,
-    TResult Function(LoadedIdentifierHomeState value)? loaded,
-    TResult Function(ErrorHomeState value)? error,
+    TResult? Function(InitialHomeState value)? initial,
+    TResult? Function(LoadingDataHomeState value)? loading,
+    TResult? Function(LoadedIdentifierHomeState value)? loaded,
+    TResult? Function(ErrorHomeState value)? error,
   }) {
     return loaded?.call(this);
   }
@@ -568,30 +568,30 @@ abstract class _$$ErrorHomeStateCopyWith<$Res>
           _$ErrorHomeState value, $Res Function(_$ErrorHomeState) then) =
       __$$ErrorHomeStateCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({String message, String? identifier});
 }
 
 /// @nodoc
-class __$$ErrorHomeStateCopyWithImpl<$Res> extends _$HomeStateCopyWithImpl<$Res>
+class __$$ErrorHomeStateCopyWithImpl<$Res>
+    extends _$HomeStateCopyWithImpl<$Res, _$ErrorHomeState>
     implements _$$ErrorHomeStateCopyWith<$Res> {
   __$$ErrorHomeStateCopyWithImpl(
       _$ErrorHomeState _value, $Res Function(_$ErrorHomeState) _then)
-      : super(_value, (v) => _then(v as _$ErrorHomeState));
+      : super(_value, _then);
 
-  @override
-  _$ErrorHomeState get _value => super._value as _$ErrorHomeState;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? message = freezed,
+    Object? message = null,
     Object? identifier = freezed,
   }) {
     return _then(_$ErrorHomeState(
-      message: message == freezed
+      message: null == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
               as String,
-      identifier: identifier == freezed
+      identifier: freezed == identifier
           ? _value.identifier
           : identifier // ignore: cast_nullable_to_non_nullable
               as String?,
@@ -619,19 +619,17 @@ class _$ErrorHomeState implements ErrorHomeState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ErrorHomeState &&
-            const DeepCollectionEquality().equals(other.message, message) &&
-            const DeepCollectionEquality()
-                .equals(other.identifier, identifier));
+            (identical(other.message, message) || other.message == message) &&
+            (identical(other.identifier, identifier) ||
+                other.identifier == identifier));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(message),
-      const DeepCollectionEquality().hash(identifier));
+  int get hashCode => Object.hash(runtimeType, message, identifier);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$ErrorHomeStateCopyWith<_$ErrorHomeState> get copyWith =>
       __$$ErrorHomeStateCopyWithImpl<_$ErrorHomeState>(this, _$identity);
 
@@ -649,10 +647,10 @@ class _$ErrorHomeState implements ErrorHomeState {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String? identifier)? initial,
-    TResult Function(String? identifier)? loading,
-    TResult Function(String? identifier)? loaded,
-    TResult Function(String message, String? identifier)? error,
+    TResult? Function(String? identifier)? initial,
+    TResult? Function(String? identifier)? loading,
+    TResult? Function(String? identifier)? loaded,
+    TResult? Function(String message, String? identifier)? error,
   }) {
     return error?.call(message, identifier);
   }
@@ -686,10 +684,10 @@ class _$ErrorHomeState implements ErrorHomeState {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InitialHomeState value)? initial,
-    TResult Function(LoadingDataHomeState value)? loading,
-    TResult Function(LoadedIdentifierHomeState value)? loaded,
-    TResult Function(ErrorHomeState value)? error,
+    TResult? Function(InitialHomeState value)? initial,
+    TResult? Function(LoadingDataHomeState value)? loading,
+    TResult? Function(LoadedIdentifierHomeState value)? loaded,
+    TResult? Function(ErrorHomeState value)? error,
   }) {
     return error?.call(this);
   }

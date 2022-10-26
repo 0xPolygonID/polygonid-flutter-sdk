@@ -13,11 +13,13 @@ class ProofGeneration {
   final GetAtomicQueryInputsUseCase _getAtomicQueryInputsUseCase;
   final GetWitnessUseCase _getWitnessUseCase;
   final ProveUseCase _proveUseCase;
+  //final GenerateProofUseCase _generateProofUseCase;
 
   ProofGeneration(
     this._getAtomicQueryInputsUseCase,
     this._getWitnessUseCase,
     this._proveUseCase,
+    //this._generateProofUseCase,
   );
 
   Future<Uint8List?> getAtomicQueryInputs(
@@ -49,4 +51,16 @@ class ProofGeneration {
   ) {
     return _proveUseCase.execute(param: ProveParam(circuitData, wtnsBytes));
   }
+
+  /*Future<void> generateProof(
+      String challenge,
+      String signature,
+      ClaimEntity claim,
+      CircuitDataEntity circuitDataEntity,
+      List<String> bjjPublicKey,
+      Map<String, dynamic> queryParams) {
+    return _generateProofUseCase.execute(
+        param: GenerateProofParam(challenge, signature, claim,
+            circuitDataEntity, bjjPublicKey, queryParams));
+  }*/
 }

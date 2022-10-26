@@ -1,8 +1,12 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/remote_claim_data_source.dart';
+
 import '../../../common/utils/uint8_list_utils.dart';
 import '../../../credential/data/dtos/credential_dto.dart';
+import '../../../credential/data/dtos/revocation_status.dart';
+import '../../../identity/data/data_sources/remote_identity_data_source.dart';
 import '../../domain/entities/circuit_data_entity.dart';
 import '../../domain/repositories/proof_repository.dart';
 import '../data_sources/atomic_query_inputs_data_source.dart';
@@ -18,13 +22,16 @@ class ProofRepositoryImpl extends ProofRepository {
   final ProverLibDataSource _proverLibDataSource;
   final AtomicQueryInputsDataSource _atomicQueryInputsDataSource;
   final LocalFilesDataSource _localFilesDataSource;
+  final RemoteIdentityDataSource _remoteIdentityDataSource;
+  final RemoteClaimDataSource _remoteClaimDataSource;
 
   ProofRepositoryImpl(
-    this._witnessDataSource,
-    this._proverLibDataSource,
-    this._atomicQueryInputsDataSource,
-    this._localFilesDataSource,
-  );
+      this._witnessDataSource,
+      this._proverLibDataSource,
+      this._atomicQueryInputsDataSource,
+      this._localFilesDataSource,
+      this._remoteIdentityDataSource,
+      this._remoteClaimDataSource);
 
   static const Map<SupportedCircuits, String> _supportedCircuits = {
     SupportedCircuits.mtp: "credentialAtomicQueryMTP",
@@ -45,22 +52,24 @@ class ProofRepositoryImpl extends ProofRepository {
       String challenge,
       CredentialDTO credential,
       String circuitId,
-      //String claimType,
       String key,
       List<int> values,
       int operator,
       String pubX,
       String pubY,
       String? signature) async {
+    // revocation status
+    final RevocationStatus? claimRevocationStatus = await _remoteClaimDataSource
+        .getClaimRevocationStatus(credential, _remoteIdentityDataSource);
+
     String? res = await _atomicQueryInputsDataSource.prepareAtomicQueryInputs(
       challenge,
       credential,
       circuitId,
-      //claimType,
       key,
       values,
       operator,
-      credential.credentialStatus.id,
+      claimRevocationStatus,
       pubX,
       pubY,
       signature,

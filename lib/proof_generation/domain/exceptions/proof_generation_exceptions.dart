@@ -15,3 +15,7 @@ class NullWitnessException implements Exception {
 
   NullWitnessException(this.circuit);
 }
+
+class GenerateNonRevProofException extends ErrorException {
+  GenerateNonRevProofException(error) : super(error);
+}

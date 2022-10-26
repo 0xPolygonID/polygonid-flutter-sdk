@@ -34,7 +34,7 @@ class GenerateProofUseCase
             param.challenge,
             param.credential,
             param.circuitData.circuitId,
-            param.queryParams['key'],
+            param.queryParams['field'],
             param.queryParams['values'],
             param.queryParams['operator'],
             param.bjjPublicKey[0],
