@@ -83,13 +83,11 @@ class AtomicQueryInputsDataSource {
     String key,
     List<int> values,
     int operator,
-    RevocationStatus? claimRevocationStatus,
+    RevocationStatus claimRevocationStatus,
     String pubX,
     String pubY,
-    String? signature,
+    String signature,
   ) async {
-    if (signature == null) return null;
-
     // schema
     String schemaId = claimInfo.credentialSchema.id;
     String schemaUrl = schemaId;

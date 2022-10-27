@@ -109,14 +109,15 @@ class MockProofRepository extends _i1.Mock implements _i9.ProofRepository {
                   _FakeCircuitDataEntity_0()))
           as _i5.Future<_i2.CircuitDataEntity>);
   @override
-  _i5.Future<_i10.Uint8List?> calculateAtomicQueryInputs(
+  _i5.Future<_i10.Uint8List> calculateAtomicQueryInputs(
           String? challenge,
           _i11.ClaimEntity? authClaim,
           String? circuitId,
           _i12.ProofQueryParamEntity? queryParam,
           String? pubX,
           String? pubY,
-          String? signature) =>
+          String? signature,
+          Map<String, dynamic>? revocationStatus) =>
       (super.noSuchMethod(
               Invocation.method(#calculateAtomicQueryInputs, [
                 challenge,
@@ -125,10 +126,11 @@ class MockProofRepository extends _i1.Mock implements _i9.ProofRepository {
                 queryParam,
                 pubX,
                 pubY,
-                signature
+                signature,
+                revocationStatus
               ]),
-              returnValue: Future<_i10.Uint8List?>.value())
-          as _i5.Future<_i10.Uint8List?>);
+              returnValue: Future<_i10.Uint8List>.value(_i10.Uint8List(0)))
+          as _i5.Future<_i10.Uint8List>);
   @override
   _i5.Future<_i10.Uint8List> calculateWitness(
           _i2.CircuitDataEntity? circuitData,

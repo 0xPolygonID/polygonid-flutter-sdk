@@ -2,17 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 
 import '../../../common/data/exceptions/network_exceptions.dart';
 import '../../../common/domain/domain_logger.dart';
-import '../../../env/sdk_env.dart';
 import '../../domain/exceptions/credential_exceptions.dart';
 import '../dtos/claim_dto.dart';
 import '../dtos/claim_info_dto.dart';
-import '../dtos/claim_proofs/claim_proof_dto.dart';
 import '../dtos/fetch_claim_response_dto.dart';
-import '../dtos/revocation_status.dart';
 
 class RemoteClaimDataSource {
   final Client client;
@@ -135,38 +131,20 @@ class RemoteClaimDataSource {
     }
   }
 
-  Future<RevocationStatus?> getClaimRevocationStatus(ClaimInfoDTO claimInfo,
-      RemoteIdentityDataSource _remoteIdentityDataSource,
-      {bool useRhs = true}) async {
-    if (useRhs) {
-      if (claimInfo.proofs.isNotEmpty) {
-        for (var proof in claimInfo.proofs) {
-          if (proof.type == ClaimProofType.bjj) {
-            Map<String, dynamic> issuerNonRevProof =
-                await _remoteIdentityDataSource.nonRevProof(claimInfo.revNonce,
-                    proof.issuer.id, SdkEnv().reverseHashServiceUrl);
-            RevocationStatus revStatus =
-                RevocationStatus.fromJson(issuerNonRevProof);
-            return revStatus;
-          }
-        }
-      }
-      return null;
+  Future<Map<String, dynamic>> getClaimRevocationStatus(
+      ClaimInfoDTO claimInfo) async {
+    String revStatusUrl = claimInfo.credentialStatus.id;
+    var revStatusUri = Uri.parse(revStatusUrl);
+    var revStatusResponse = await get(revStatusUri, headers: {
+      HttpHeaders.acceptHeader: '*/*',
+      HttpHeaders.contentTypeHeader: 'application/json',
+    });
+    if (revStatusResponse.statusCode == 200) {
+      String revStatus = (revStatusResponse.body);
+
+      return json.decode(revStatus);
     } else {
-      String revStatusUrl = claimInfo.credentialStatus.id;
-      var revStatusUri = Uri.parse(revStatusUrl);
-      var revStatusResponse = await get(revStatusUri, headers: {
-        HttpHeaders.acceptHeader: '*/*',
-        HttpHeaders.contentTypeHeader: 'application/json',
-      });
-      if (revStatusResponse.statusCode == 200) {
-        String revStatus = (revStatusResponse.body);
-        final RevocationStatus claimRevocationStatus =
-            RevocationStatus.fromJson(json.decode(revStatus));
-        return claimRevocationStatus;
-      } else {
-        throw NetworkException(revStatusResponse);
-      }
+      throw NetworkException(revStatusResponse);
     }
   }
 }

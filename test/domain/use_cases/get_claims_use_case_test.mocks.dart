@@ -7,8 +7,6 @@ import 'dart:async' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
     as _i6;
-import 'package:polygonid_flutter_sdk/credential/data/dtos/revocation_status.dart'
-    as _i7;
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
     as _i2;
 import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart'
@@ -99,11 +97,23 @@ class MockCredentialRepository extends _i1.Mock
               Future<Map<String, dynamic>?>.value()) as _i4
           .Future<Map<String, dynamic>?>);
   @override
-  _i4.Future<_i7.RevocationStatus?> getClaimRevocationStatus(
-          {_i2.ClaimEntity? claim, bool? useRhs = true}) =>
+  _i4.Future<Map<String, dynamic>> getRevocationStatus(
+          {_i2.ClaimEntity? claim}) =>
       (super.noSuchMethod(
-              Invocation.method(#getClaimRevocationStatus, [],
-                  {#claim: claim, #useRhs: useRhs}),
-              returnValue: Future<_i7.RevocationStatus?>.value())
-          as _i4.Future<_i7.RevocationStatus?>);
+              Invocation.method(#getRevocationStatus, [], {#claim: claim}),
+              returnValue:
+                  Future<Map<String, dynamic>>.value(<String, dynamic>{}))
+          as _i4.Future<Map<String, dynamic>>);
+  @override
+  _i4.Future<bool> isUsingRHS({_i2.ClaimEntity? claim}) =>
+      (super.noSuchMethod(Invocation.method(#isUsingRHS, [], {#claim: claim}),
+          returnValue: Future<bool>.value(false)) as _i4.Future<bool>);
+  @override
+  _i4.Future<String> getRhsRevocationId({_i2.ClaimEntity? claim}) => (super
+      .noSuchMethod(Invocation.method(#getRhsRevocationId, [], {#claim: claim}),
+          returnValue: Future<String>.value('')) as _i4.Future<String>);
+  @override
+  _i4.Future<int> getRevocationNonce({_i2.ClaimEntity? claim}) => (super
+      .noSuchMethod(Invocation.method(#getRevocationNonce, [], {#claim: claim}),
+          returnValue: Future<int>.value(0)) as _i4.Future<int>);
 }

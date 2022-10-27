@@ -1,3 +1,5 @@
+import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+
 import '../../../common/domain/error_exception.dart';
 
 class ClaimNotFoundException implements Exception {
@@ -40,4 +42,10 @@ class FetchVocabException extends ErrorException {
 
 class UnsupportedSchemaFetchVocabException extends ErrorException {
   UnsupportedSchemaFetchVocabException(error) : super(error);
+}
+
+class NullRevocationStatusException implements Exception {
+  final ClaimEntity claim;
+
+  NullRevocationStatusException(this.claim);
 }
