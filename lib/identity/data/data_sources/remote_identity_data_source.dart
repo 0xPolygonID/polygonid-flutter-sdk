@@ -4,34 +4,15 @@ import 'dart:typed_data';
 import 'package:http/http.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/rhs_node_dto.dart';
 import 'package:web3dart/crypto.dart';
-import 'package:web3dart/web3dart.dart';
 
 import '../../../common/data/exceptions/network_exceptions.dart';
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/utils/uint8_list_utils.dart';
-import '../../../proof_generation/domain/exceptions/proof_generation_exceptions.dart';
 import '../../domain/entities/rhs_node_entity.dart';
 import '../../domain/exceptions/identity_exceptions.dart';
-import '../../libs/iden3core/iden3core.dart';
-import '../../libs/rhs/state_contract.dart';
 import '../mappers/rhs_node_type_mapper.dart';
 
 class RemoteIdentityDataSource {
-  final Client client;
-  final Web3Client web3Client;
-  final Iden3CoreLib iden3CoreLib;
-
-  RemoteIdentityDataSource(this.client, this.web3Client, this.iden3CoreLib);
-
-  Future<String> fetchIdentityState({required String id}) async {
-    try {
-      return StateContract(web3Client, iden3CoreLib).getState(id);
-    } catch (error) {
-      logger().e('identity state error: $error');
-      throw FetchIdentityStateException(error);
-    }
-  }
-
   Future<RhsNodeDTO> fetchStateRoots({required String url}) async {
     try {
       //fetch rhs state and save it
@@ -60,15 +41,9 @@ class RemoteIdentityDataSource {
   Future<Map<String, dynamic>> nonRevProof(
       int revNonce, String id, String rhsBaseUrl) async {
     try {
-      // 1. Fetch identity latest state from the smart contract
-      String idStateHash = await fetchIdentityState(id: id);
-
-      if (idStateHash == "") {
-        throw GenerateNonRevProofException(idStateHash);
-      }
-
+      /// FIXME: this 2 lines should go to a DS and be called in a repo
       // 1. Fetch state roots from RHS
-      RhsNodeDTO rhsNode = await fetchStateRoots(url: rhsBaseUrl + idStateHash);
+      RhsNodeDTO rhsNode = await fetchStateRoots(url: rhsBaseUrl + id);
       RhsNodeType rhsNodeType = RhsNodeTypeMapper().mapFrom(rhsNode.node);
 
       Map<String, dynamic>? issuer;

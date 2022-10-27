@@ -13,14 +13,15 @@ abstract class ProofRepository {
 
   Future<CircuitDataEntity> loadCircuitFiles(String circuitId);
 
-  Future<Uint8List?> calculateAtomicQueryInputs(
+  Future<Uint8List> calculateAtomicQueryInputs(
       String challenge,
       ClaimEntity authClaim,
       String circuitId,
       ProofQueryParamEntity queryParam,
       String pubX,
       String pubY,
-      String? signature);
+      String signature,
+      Map<String, dynamic> revocationStatus);
 
   Future<Uint8List> calculateWitness(
     CircuitDataEntity circuitData,

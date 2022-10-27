@@ -6,7 +6,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_en
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/is_proof_circuit_supported_use_case.dart';
 
-import '../../../identity/domain/entities/identity_entity.dart';
 import '../../../identity/domain/repositories/identity_repository.dart';
 import '../../../identity/domain/use_cases/get_public_key_use_case.dart';
 import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
@@ -43,8 +42,11 @@ class GetProofsUseCase
   Future<List<ProofEntity>> execute({required GetProofsParam param}) async {
     List<ProofEntity> proofs = [];
 
-    IdentityEntity identityEntity =
-        await _identityRepository.getIdentity(identifier: param.identifier);
+    /// TODO: remove when [PublicIdentityEntity] has the bjj pub keys
+    List<String> publicKey = await _identityRepository
+        .getIdentity(identifier: param.identifier)
+        .then((identity) =>
+            _getPublicKeyUseCase.execute(param: identity.privateKey));
 
     List<ProofRequestEntity> requests =
         await _proofRepository.getRequests(message: param.message);
@@ -69,10 +71,6 @@ class GetProofsUseCase
           // Signature
           String signatureString = await _identityRepository.signMessage(
               identifier: param.identifier, message: challenge);
-
-          /// TODO: remove when PublicIdentityEntity has the bjj pub keys
-          List<String> publicKey = await _getPublicKeyUseCase.execute(
-              param: identityEntity.privateKey);
 
           // Generate proof
           proofs.add(await _generateProofUseCase

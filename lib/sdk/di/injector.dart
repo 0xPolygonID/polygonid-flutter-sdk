@@ -1,9 +1,14 @@
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart';
 import 'package:injectable/injectable.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:polygonid_flutter_sdk/common/data/repositories/env_config_repository_impl.dart';
+import 'package:polygonid_flutter_sdk/common/domain/repositories/config_repository.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
+import 'package:polygonid_flutter_sdk/env/dev_env.dart';
+import 'package:polygonid_flutter_sdk/env/prod_env.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:web3dart/web3dart.dart';
@@ -28,16 +33,22 @@ final getItSdk = GetIt.asNewInstance();
 configureInjection() => $initSDKGetIt(getItSdk);
 
 @module
+abstract class Sdk {
+  @lazySingleton
+  SdkEnv get sdkEnv => kDebugMode ? DevEnv() : ProdEnv();
+}
+
+@module
 abstract class NetworkModule {
   /// TODO: in the future we should change this client to something with more features
   /// like Dio: https://pub.dev/packages/dio
   Client get client => Client();
 
-  Web3Client get web3Client =>
-      Web3Client(SdkEnv().infuraUrl + SdkEnv().infuraApiKey, client,
+  Web3Client web3Client(SdkEnv sdkEnv) =>
+      Web3Client(sdkEnv.infuraUrl + sdkEnv.infuraApiKey, client,
           socketConnector: () {
         return IOWebSocketChannel.connect(
-                SdkEnv().infuraRdpUrl + SdkEnv().infuraApiKey)
+                sdkEnv.infuraRdpUrl + sdkEnv.infuraApiKey)
             .cast<String>();
       });
 }
@@ -69,6 +80,10 @@ abstract class DatabaseModule {
 
 @module
 abstract class RepositoriesModule {
+  ConfigRepository configRepository(
+          ConfigRepositoryImpl configRepositoryImpl) =>
+      configRepositoryImpl;
+
   IdentityRepository identityRepository(
           IdentityRepositoryImpl identityRepositoryImpl) =>
       identityRepositoryImpl;
