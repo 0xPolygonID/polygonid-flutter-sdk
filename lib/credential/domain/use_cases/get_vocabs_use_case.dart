@@ -5,8 +5,8 @@ import '../../../common/domain/tuples.dart';
 import '../../../sdk/mappers/schema_info_mapper.dart';
 import '../repositories/credential_repository.dart';
 
-class GetVocabsUseCase
-    extends FutureUseCase<List<Pair<String, String>>, List<Map<String, dynamic>>> {
+class GetVocabsUseCase extends FutureUseCase<List<Pair<String, String>>,
+    List<Map<String, dynamic>>> {
   final CredentialRepository _credentialRepository;
 
   GetVocabsUseCase(this._credentialRepository);
