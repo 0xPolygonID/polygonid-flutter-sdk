@@ -198,12 +198,20 @@ class MockIdentityRepository extends _i1.Mock
             _i5.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
       ) as _i5.Future<Map<String, dynamic>>);
   @override
-  _i5.Future<String> getDidIdentifier({required String? identifier}) =>
+  _i5.Future<String> getDidIdentifier({
+    required String? identifier,
+    required String? networkName,
+    required String? networkEnv,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #getDidIdentifier,
           [],
-          {#identifier: identifier},
+          {
+            #identifier: identifier,
+            #networkName: networkName,
+            #networkEnv: networkEnv,
+          },
         ),
         returnValue: _i5.Future<String>.value(''),
       ) as _i5.Future<String>);

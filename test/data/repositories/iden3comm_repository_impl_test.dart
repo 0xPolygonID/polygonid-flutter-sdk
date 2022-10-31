@@ -19,7 +19,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_response_mappe
 import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/iden3comm_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/jwz_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
@@ -82,7 +81,7 @@ final mockAuthResponse = AuthResponse(
   typ: "application/iden3comm-plain-json",
   type: "https://iden3-communication.io/authorization/1.0/response",
   body: AuthBodyResponse(
-    message: mockAuthRequest.body?.message,
+    message: mockAuthRequest.body.message,
     proofs: [],
     did_doc: null,
   ),
@@ -254,7 +253,7 @@ void main() {
 
           when(remoteIden3commDataSource.authWithToken(
             token: token,
-            url: mockAuthRequest.body?.callbackUrl,
+            url: mockAuthRequest.body.callbackUrl,
           )).thenAnswer(
               (realInvocation) => Future.value(Response("body", 200)));
         },
@@ -265,7 +264,7 @@ void main() {
         () async {
           await expectLater(
             repository.authenticate(
-              url: mockAuthRequest.body!.callbackUrl!,
+              url: mockAuthRequest.body.callbackUrl!,
               authToken: token,
             ),
             completes,
@@ -282,7 +281,7 @@ void main() {
           //
           await expectLater(
             repository.authenticate(
-              url: mockAuthRequest.body!.callbackUrl!,
+              url: mockAuthRequest.body.callbackUrl!,
               authToken: token,
             ),
             throwsA(isA<UnknownApiException>()),

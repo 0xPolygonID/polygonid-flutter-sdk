@@ -188,7 +188,15 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<String> getDidIdentifier({required String identifier}) async {
-    return _libIdentityDataSource.getDidIdentifier(identifier: identifier);
+  Future<String> getDidIdentifier({
+    required String identifier,
+    required String networkName,
+    required String networkEnv,
+  }) async {
+    return _libIdentityDataSource.getDidIdentifier(
+      identifier: identifier,
+      networkName: networkName,
+      networkEnv: networkEnv,
+    );
   }
 }

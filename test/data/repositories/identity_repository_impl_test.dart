@@ -81,7 +81,7 @@ final mockAuthResponse = AuthResponse(
   typ: "application/iden3comm-plain-json",
   type: "https://iden3-communication.io/authorization/1.0/response",
   body: AuthBodyResponse(
-    message: mockAuthRequest.body?.message,
+    message: mockAuthRequest.body.message,
     proofs: [],
     did_doc: null,
   ),

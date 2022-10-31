@@ -446,6 +446,7 @@ _i1.GetIt $initSDKGetIt(
             await get.getAsync<_i77.Iden3commRepository>(),
             await get.getAsync<_i95.GetProofsUseCase>(),
             await get.getAsync<_i86.GetAuthTokenUseCase>(),
+            get<_i14.GetEnvConfigUseCase>(),
             await get.getAsync<_i89.GetDidIdentifierUseCase>(),
           ));
   gh.factoryAsync<_i98.CredentialWallet>(() async => _i98.CredentialWallet(

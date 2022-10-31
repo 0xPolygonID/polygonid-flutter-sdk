@@ -6,6 +6,8 @@
 import 'dart:async' as _i3;
 
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_case.dart'
+    as _i10;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart'
     as _i6;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_entity.dart'
@@ -19,7 +21,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proofs_use_
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
     as _i4;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart'
-    as _i10;
+    as _i11;
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart'
     as _i5;
 
@@ -44,7 +46,7 @@ class MockIden3commRepository extends _i1.Mock
   }
 
   @override
-  _i3.Future<bool> authenticate({
+  _i3.Future<void> authenticate({
     required String? url,
     required String? authToken,
   }) =>
@@ -57,8 +59,9 @@ class MockIden3commRepository extends _i1.Mock
             #authToken: authToken,
           },
         ),
-        returnValue: _i3.Future<bool>.value(false),
-      ) as _i3.Future<bool>);
+        returnValue: _i3.Future<void>.value(),
+        returnValueForMissingStub: _i3.Future<void>.value(),
+      ) as _i3.Future<void>);
   @override
   _i3.Future<String> getAuthToken({
     required _i4.IdentityEntity? identityEntity,
@@ -155,17 +158,39 @@ class MockGetAuthTokenUseCase extends _i1.Mock
       ) as _i3.Future<String>);
 }
 
+/// A class which mocks [GetEnvConfigUseCase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetEnvConfigUseCase extends _i1.Mock
+    implements _i10.GetEnvConfigUseCase {
+  MockGetEnvConfigUseCase() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i3.Future<String> execute({required _i10.PolygonIdConfig? param}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [],
+          {#param: param},
+        ),
+        returnValue: _i3.Future<String>.value(''),
+      ) as _i3.Future<String>);
+}
+
 /// A class which mocks [GetDidIdentifierUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetDidIdentifierUseCase extends _i1.Mock
-    implements _i10.GetDidIdentifierUseCase {
+    implements _i11.GetDidIdentifierUseCase {
   MockGetDidIdentifierUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<String> execute({required String? param}) => (super.noSuchMethod(
+  _i3.Future<String> execute({required _i11.GetDidIdentifierParam? param}) =>
+      (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],

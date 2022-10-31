@@ -10,6 +10,10 @@ class EnvDataSource {
     switch (config) {
       case PolygonIdConfig.polygonIdAccessMessage:
         return _sdkEnv.polygonIdAccessMessage;
+      case PolygonIdConfig.networkName:
+        return _sdkEnv.polygonIdAccessMessage;
+      case PolygonIdConfig.networkEnv:
+        return _sdkEnv.networkEnv;
       case PolygonIdConfig.infuraUrl:
         return _sdkEnv.infuraUrl;
       case PolygonIdConfig.infuraRdpUrl:
@@ -20,6 +24,8 @@ class EnvDataSource {
         return _sdkEnv.reverseHashServiceUrl;
       case PolygonIdConfig.idStateContractAddress:
         return _sdkEnv.idStateContractAddress;
+      case PolygonIdConfig.pushUrl:
+        return _sdkEnv.pushUrl;
     }
   }
 }

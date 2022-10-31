@@ -69,7 +69,7 @@ class MockIden3commRepository extends _i1.Mock
   }
 
   @override
-  _i5.Future<bool> authenticate({
+  _i5.Future<void> authenticate({
     required String? url,
     required String? authToken,
   }) =>
@@ -82,8 +82,9 @@ class MockIden3commRepository extends _i1.Mock
             #authToken: authToken,
           },
         ),
-        returnValue: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
   @override
   _i5.Future<String> getAuthToken({
     required _i6.IdentityEntity? identityEntity,

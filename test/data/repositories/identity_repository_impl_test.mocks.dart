@@ -185,11 +185,20 @@ class MockLibIdentityDataSource extends _i1.Mock
         returnValue: _i9.Future<String>.value(''),
       ) as _i9.Future<String>);
   @override
-  String getDidIdentifier({required String? identifier}) => (super.noSuchMethod(
+  String getDidIdentifier({
+    required String? identifier,
+    required String? networkName,
+    required String? networkEnv,
+  }) =>
+      (super.noSuchMethod(
         Invocation.method(
           #getDidIdentifier,
           [],
-          {#identifier: identifier},
+          {
+            #identifier: identifier,
+            #networkName: networkName,
+            #networkEnv: networkEnv,
+          },
         ),
         returnValue: '',
       ) as String);

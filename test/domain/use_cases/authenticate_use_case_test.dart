@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
@@ -13,11 +14,17 @@ import 'authenticate_use_case_test.mocks.dart';
 MockIden3commRepository iden3commRepository = MockIden3commRepository();
 MockGetProofsUseCase getProofsUseCase = MockGetProofsUseCase();
 MockGetAuthTokenUseCase getAuthTokenUseCase = MockGetAuthTokenUseCase();
+MockGetEnvConfigUseCase getEnvConfigUseCase = MockGetEnvConfigUseCase();
 MockGetDidIdentifierUseCase getDidIdentifierUseCase =
     MockGetDidIdentifierUseCase();
 
-AuthenticateUseCase useCase = AuthenticateUseCase(iden3commRepository,
-    getProofsUseCase, getAuthTokenUseCase, getDidIdentifierUseCase);
+AuthenticateUseCase useCase = AuthenticateUseCase(
+  iden3commRepository,
+  getProofsUseCase,
+  getAuthTokenUseCase,
+  getEnvConfigUseCase,
+  getDidIdentifierUseCase,
+);
 
 const issuerMessage = "theIssuerMessage";
 const identifier = "theIdentifier";
@@ -31,6 +38,7 @@ AuthenticateParam param = AuthenticateParam(
   Iden3commRepository,
   GetProofsUseCase,
   GetAuthTokenUseCase,
+  GetEnvConfigUseCase,
   GetDidIdentifierUseCase
 ])
 void main() {
