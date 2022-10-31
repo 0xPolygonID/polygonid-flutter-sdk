@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:encrypt/encrypt.dart';
 import 'package:http/http.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pointycastle/api.dart';
 import 'package:pointycastle/asymmetric/api.dart';
 import 'package:pointycastle/asymmetric/oaep.dart';
@@ -22,7 +21,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_entity.dar
 import 'package:uuid/uuid.dart';
 
 import '../../../common/domain/domain_logger.dart';
-import '../../../env/sdk_env.dart';
 import '../../../identity/data/data_sources/jwz_data_source.dart';
 import '../../../identity/data/mappers/hex_mapper.dart';
 import '../../../identity/domain/entities/identity_entity.dart';
@@ -91,16 +89,22 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     required String identifier,
     required Iden3MessageEntity message,
     required List<ProofEntity> scope,
+    String? pushUrl,
     String? pushToken,
     String? didIdentifier,
+    String? packageName,
   }) async {
     AuthBodyDidDocResponse? didDocResponse;
-
-    if (pushToken != null &&
+    if (pushUrl != null &&
+        pushUrl.isNotEmpty &&
+        pushToken != null &&
         pushToken.isNotEmpty &&
         didIdentifier != null &&
-        didIdentifier.isNotEmpty) {
-      didDocResponse = await _getDidDocResponse(didIdentifier, pushToken);
+        didIdentifier.isNotEmpty &&
+        packageName != null &&
+        packageName.isNotEmpty) {
+      didDocResponse = await _getDidDocResponse(
+          pushUrl, didIdentifier, pushToken, packageName);
     }
 
     AuthRequest request = _authRequestMapper.mapTo(message);
@@ -120,10 +124,8 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     return _authResponseMapper.mapFrom(authResponse);
   }
 
-  Future<AuthBodyDidDocResponse> _getDidDocResponse(
-      String didIdentifier, String pushToken) async {
-    String serviceEndpoint =
-        SdkEnv().pushUrl; //"https://push.polygonid.me/api/v1";
+  Future<AuthBodyDidDocResponse> _getDidDocResponse(String pushUrl,
+      String didIdentifier, String pushToken, String packageName) async {
     return AuthBodyDidDocResponse(
       context: ["https://www.w3.org/ns/did/v1"],
       id: didIdentifier,
@@ -131,10 +133,11 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
         AuthBodyDidDocServiceResponse(
           id: "$didIdentifier#push",
           type: "push-notification",
-          serviceEndpoint: serviceEndpoint,
+          serviceEndpoint: pushUrl,
           metadata: AuthBodyDidDocServiceMetadataResponse(devices: [
             AuthBodyDidDocServiceMetadataDevicesResponse(
-              ciphertext: await _getPushCipherText(pushToken, serviceEndpoint),
+              ciphertext:
+                  await _getPushCipherText(pushToken, pushUrl, packageName),
               alg: "RSA-OAEP-512",
             )
           ]),
@@ -144,10 +147,9 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   }
 
   Future<String> _getPushCipherText(
-      String pushToken, String serviceEndpoint) async {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      String pushToken, String serviceEndpoint, String packageName) async {
     var pushInfo = {
-      "app_id": packageInfo.packageName, //"com.polygonid.wallet",
+      "app_id": packageName, //"com.polygonid.wallet",
       "pushkey": pushToken,
     };
 

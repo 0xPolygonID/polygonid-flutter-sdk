@@ -108,8 +108,10 @@ class MockIden3commRepository extends _i1.Mock
     required String? identifier,
     required _i7.Iden3MessageEntity? message,
     required List<_i8.ProofEntity>? scope,
+    String? pushUrl,
     String? pushToken,
     String? didIdentifier,
+    String? packageName,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -119,8 +121,10 @@ class MockIden3commRepository extends _i1.Mock
             #identifier: identifier,
             #message: message,
             #scope: scope,
+            #pushUrl: pushUrl,
             #pushToken: pushToken,
             #didIdentifier: didIdentifier,
+            #packageName: packageName,
           },
         ),
         returnValue: _i5.Future<String>.value(''),

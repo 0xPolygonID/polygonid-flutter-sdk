@@ -8,6 +8,8 @@ import 'dart:async' as _i3;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_case.dart'
     as _i10;
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart'
+    as _i11;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart'
     as _i6;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_entity.dart'
@@ -21,7 +23,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proofs_use_
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
     as _i4;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart'
-    as _i11;
+    as _i12;
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart'
     as _i5;
 
@@ -85,8 +87,10 @@ class MockIden3commRepository extends _i1.Mock
     required String? identifier,
     required _i6.Iden3MessageEntity? message,
     required List<_i7.ProofEntity>? scope,
+    String? pushUrl,
     String? pushToken,
     String? didIdentifier,
+    String? packageName,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -96,8 +100,10 @@ class MockIden3commRepository extends _i1.Mock
             #identifier: identifier,
             #message: message,
             #scope: scope,
+            #pushUrl: pushUrl,
             #pushToken: pushToken,
             #didIdentifier: didIdentifier,
+            #packageName: packageName,
           },
         ),
         returnValue: _i3.Future<String>.value(''),
@@ -179,17 +185,37 @@ class MockGetEnvConfigUseCase extends _i1.Mock
       ) as _i3.Future<String>);
 }
 
+/// A class which mocks [GetPackageNameUseCase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetPackageNameUseCase extends _i1.Mock
+    implements _i11.GetPackageNameUseCase {
+  MockGetPackageNameUseCase() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i3.Future<String> execute({dynamic param}) => (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [],
+          {#param: param},
+        ),
+        returnValue: _i3.Future<String>.value(''),
+      ) as _i3.Future<String>);
+}
+
 /// A class which mocks [GetDidIdentifierUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetDidIdentifierUseCase extends _i1.Mock
-    implements _i11.GetDidIdentifierUseCase {
+    implements _i12.GetDidIdentifierUseCase {
   MockGetDidIdentifierUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<String> execute({required _i11.GetDidIdentifierParam? param}) =>
+  _i3.Future<String> execute({required _i12.GetDidIdentifierParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,

@@ -19,8 +19,10 @@ abstract class Iden3commRepository {
     required String identifier,
     required Iden3MessageEntity message,
     required List<ProofEntity> scope,
+    String? pushUrl,
     String? pushToken,
     String? didIdentifier,
+    String? packageName,
   });
 
   Future<String> getAuthCallback({required Iden3MessageEntity message});
