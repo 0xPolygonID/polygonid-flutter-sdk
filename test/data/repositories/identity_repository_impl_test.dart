@@ -9,6 +9,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_requ
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
@@ -118,6 +119,8 @@ Response errorResponse = Response("body", 450);
 // Dependencies
 MockWalletDataSource walletDataSource = MockWalletDataSource();
 MockLibIdentityDataSource libIdentityDataSource = MockLibIdentityDataSource();
+MockLocalIdentityDataSource localIdentityDataSource =
+    MockLocalIdentityDataSource();
 MockRemoteIdentityDataSource remoteIdentityDataSource =
     MockRemoteIdentityDataSource();
 MockStorageIdentityDataSource storageIdentityDataSource =
@@ -135,6 +138,7 @@ MockRPCDataSource rpcDataSource = MockRPCDataSource();
 IdentityRepository repository = IdentityRepositoryImpl(
   walletDataSource,
   libIdentityDataSource,
+  localIdentityDataSource,
   remoteIdentityDataSource,
   storageIdentityDataSource,
   storageKeyValueDataSource,
@@ -149,6 +153,7 @@ IdentityRepository repository = IdentityRepositoryImpl(
 @GenerateMocks([
   WalletDataSource,
   LibIdentityDataSource,
+  LocalIdentityDataSource,
   RemoteIdentityDataSource,
   StorageIdentityDataSource,
   StorageKeyValueDataSource,
