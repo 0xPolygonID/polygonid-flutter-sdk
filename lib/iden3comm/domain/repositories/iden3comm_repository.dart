@@ -5,7 +5,7 @@ import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
 import '../entities/proof_entity.dart';
 
 abstract class Iden3commRepository {
-  Future<bool> authenticate({
+  Future<void> authenticate({
     required String url,
     required String authToken,
   });

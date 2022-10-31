@@ -33,7 +33,7 @@ class Iden3comm {
   /// get CircuitDataEntity #1 by loadCircuitFiles #2
   /// get authToken #4
   /// auth with token #5 TODO rewrite as soon as development is completed
-  Future<bool> authenticate(
+  Future<void> authenticate(
       {required String issuerMessage,
       required String identifier,
       String? pushToken}) {

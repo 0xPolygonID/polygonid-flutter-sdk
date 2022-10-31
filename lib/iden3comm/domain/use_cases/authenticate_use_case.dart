@@ -18,7 +18,7 @@ class AuthenticateParam {
       {required this.message, required this.identifier, this.pushToken});
 }
 
-class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, bool> {
+class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
   final Iden3commRepository _iden3commRepository;
   final GetAuthTokenUseCase _getAuthTokenUseCase;
   final GetProofsUseCase _getProofsUseCase;
@@ -28,7 +28,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, bool> {
       this._getAuthTokenUseCase, this._getDidIdentifierUseCase);
 
   @override
-  Future<bool> execute({required AuthenticateParam param}) async {
+  Future<void> execute({required AuthenticateParam param}) async {
     if (param.message.type == Iden3MessageType.auth) {
       try {
         List<ProofEntity> proofs = await _getProofsUseCase.execute(
@@ -48,7 +48,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, bool> {
         String authToken = await _getAuthTokenUseCase.execute(
             param: GetAuthTokenParam(param.identifier, authResponse));
 
-        return _iden3commRepository
+        _iden3commRepository
             .getAuthCallback(message: param.message)
             .then((url) => _iden3commRepository.authenticate(
                   url: url,

@@ -9,6 +9,7 @@ import 'package:pointycastle/asymmetric/api.dart';
 import 'package:pointycastle/asymmetric/oaep.dart';
 import 'package:pointycastle/asymmetric/rsa.dart';
 import 'package:pointycastle/digests/sha512.dart';
+import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
@@ -20,6 +21,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_en
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_entity.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../common/domain/domain_logger.dart';
 import '../../../env/sdk_env.dart';
 import '../../../identity/data/data_sources/jwz_data_source.dart';
 import '../../../identity/data/mappers/hex_mapper.dart';
@@ -57,13 +59,17 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       this._authRequestMapper);
 
   @override
-  Future<bool> authenticate({
+  Future<void> authenticate({
     required String url,
     required String authToken,
   }) async {
     Response res = await _remoteIden3commDataSource.authWithToken(
         token: authToken, url: url);
-    return res.statusCode == 200;
+    if (res.statusCode != 200) {
+      logger()
+          .d('authenticate Error: code: ${res.statusCode} msg: ${res.body}');
+      throw NetworkException(res);
+    }
   }
 
   @override
@@ -137,7 +143,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     );
   }
 
-  Future<String?> _getPushCipherText(
+  Future<String> _getPushCipherText(
       String pushToken, String serviceEndpoint) async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     var pushInfo = {
@@ -157,7 +163,9 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
           .process(Uint8List.fromList(json.encode(pushInfo).codeUnits));
       return base64.encode(encrypted);
     } else {
-      return null;
+      logger().d(
+          'getPublicKey Error: code: ${publicKeyResponse.statusCode} msg: ${publicKeyResponse.body}');
+      throw NetworkException(publicKeyResponse);
     }
   }
 
