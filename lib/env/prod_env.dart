@@ -14,6 +14,12 @@ class ProdEnv implements SdkEnv, SdkEnvFields {
   @EnviedField(varName: 'POLYGONID_ACCESS_MESSAGE', obfuscate: true)
   final String polygonIdAccessMessage = _Env.polygonIdAccessMessage;
   @override
+  @EnviedField(varName: 'NETWORK_NAME', obfuscate: true)
+  final String networkName = _Env.networkName;
+  @override
+  @EnviedField(varName: 'NETWORK_ENV', obfuscate: true)
+  final String networkEnv = _Env.networkEnv;
+  @override
   @EnviedField(varName: 'INFURA_URL', obfuscate: true)
   final String infuraUrl = _Env.infuraUrl;
   @override
@@ -27,4 +33,7 @@ class ProdEnv implements SdkEnv, SdkEnvFields {
   @override
   @EnviedField(varName: 'ID_STATE_CONTRACT_ADDR', obfuscate: true)
   final String idStateContractAddress = _Env.idStateContractAddress;
+  @override
+  @EnviedField(varName: 'PUSH_URL', obfuscate: true)
+  final String pushUrl = _Env.pushUrl;
 }

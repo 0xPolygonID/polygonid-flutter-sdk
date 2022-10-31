@@ -186,4 +186,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
             .nonRevProof(revNonce, libId, rhsBaseUrl)
             .catchError((error) => throw NonRevProofException(error)));
   }
+
+  @override
+  Future<String> getDidIdentifier({required String identifier}) async {
+    return _libIdentityDataSource.getDidIdentifier(identifier: identifier);
+  }
 }

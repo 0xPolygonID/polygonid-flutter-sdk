@@ -5,6 +5,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/fetch_claim_response_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_info_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_state_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
@@ -39,11 +40,11 @@ final entity = ClaimEntity(
 
 // Dependencies
 MockClaimStateMapper stateMapper = MockClaimStateMapper();
-
+MockClaimInfoMapper infoMapper = MockClaimInfoMapper();
 // Tested instance
-ClaimMapper mapper = ClaimMapper(stateMapper);
+ClaimMapper mapper = ClaimMapper(stateMapper, infoMapper);
 
-@GenerateMocks([ClaimStateMapper])
+@GenerateMocks([ClaimStateMapper, ClaimInfoMapper])
 void main() {
   setUp(() {
     when(stateMapper.mapFrom(any)).thenReturn(ClaimState.active);

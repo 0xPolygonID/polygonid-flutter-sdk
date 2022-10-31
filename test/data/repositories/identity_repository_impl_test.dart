@@ -10,6 +10,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_bod
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_key_value_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
@@ -35,7 +36,7 @@ class FakeWallet extends Fake implements PrivadoIdWallet {
   Uint8List get privateKey => Uint8List(32);
 
   @override
-  dynamic get publicKey => [pubX, pubY];
+  List<String> get publicKey => [pubX, pubY];
 }
 
 const pubX = "thePubX";
@@ -127,6 +128,7 @@ MockHexMapper hexMapper = MockHexMapper();
 MockPrivateKeyMapper privateKeyMapper = MockPrivateKeyMapper();
 MockIdentityDTOMapper identityDTOMapper = MockIdentityDTOMapper();
 MockRhsNodeMapper rhsNodeMapper = MockRhsNodeMapper();
+MockRPCDataSource rpcDataSource = MockRPCDataSource();
 //MockSMTStorageRepository smtStorageRepository = MockSMTStorageRepository();
 
 // Tested instance
@@ -136,6 +138,7 @@ IdentityRepository repository = IdentityRepositoryImpl(
   remoteIdentityDataSource,
   storageIdentityDataSource,
   storageKeyValueDataSource,
+  rpcDataSource,
   hexMapper,
   privateKeyMapper,
   identityDTOMapper,
@@ -149,6 +152,7 @@ IdentityRepository repository = IdentityRepositoryImpl(
   RemoteIdentityDataSource,
   StorageIdentityDataSource,
   StorageKeyValueDataSource,
+  RPCDataSource,
   HexMapper,
   PrivateKeyMapper,
   IdentityDTOMapper,
@@ -409,10 +413,10 @@ void main() {
 
   group("Fetch Identity State", () {
     setUp(() {
-      reset(remoteIdentityDataSource);
+      reset(rpcDataSource);
 
       // Given
-      when(remoteIdentityDataSource.fetchIdentityState(id: anyNamed('id')))
+      when(rpcDataSource.getState(anyNamed('id')))
           .thenAnswer((realInvocation) => Future.value(state));
       //when(rhsNodeMapper.mapFrom(any)).thenReturn(rhsNodeEntities[0]);
     });
@@ -424,9 +428,8 @@ void main() {
       expect(await repository.fetchIdentityState(id: id), state);
 
       // Then
-      var fetchCaptured = verify(remoteIdentityDataSource.fetchIdentityState(
-              id: captureAnyNamed('id')))
-          .captured;
+      var fetchCaptured =
+          verify(rpcDataSource.getState(captureAnyNamed('id'))).captured;
 
       expect(fetchCaptured[0], id);
 
@@ -438,8 +441,8 @@ void main() {
         "Given parameters, when I call fetchStateRoots and an error occurred, then I expect a FetchIdentityStateException to be thrown",
         () async {
       // Given
-      when(remoteIdentityDataSource.fetchIdentityState(
-        id: anyNamed('id'),
+      when(rpcDataSource.getState(
+        anyNamed('id'),
       )).thenAnswer((realInvocation) => Future.error(exception));
 
       // When
@@ -452,8 +455,8 @@ void main() {
       });
 
       // Then
-      var fetchCaptured = verify(remoteIdentityDataSource.fetchIdentityState(
-        id: captureAnyNamed('id'),
+      var fetchCaptured = verify(rpcDataSource.getState(
+        captureAnyNamed('id'),
       )).captured;
 
       expect(fetchCaptured[0], id);

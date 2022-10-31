@@ -1,5 +1,6 @@
 import 'package:fast_base58/fast_base58.dart';
 import 'package:flutter/foundation.dart';
+import 'package:polygonid_flutter_sdk/env/sdk_env.dart';
 import 'package:polygonid_flutter_sdk/identity/data/repositories/smt_memory_storage_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/smt/merkletree.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/exceptions/proof_generation_exceptions.dart';
@@ -10,7 +11,6 @@ import '../../libs/iden3core/iden3core.dart';
 
 class LibIdentityDataSource {
   final Iden3CoreLib _iden3coreLib;
-
   //final SMTStorageRepository _smtStorageRepository;
 
   LibIdentityDataSource(
@@ -28,6 +28,20 @@ class LibIdentityDataSource {
     } catch (e) {
       return Future.error(e);
     }
+  }
+
+  String getDidIdentifier({required String identifier}) {
+    String network = SdkEnv().networkName;
+    String env = "main";
+    switch (SdkEnv().networkEnv) {
+      case "mumbai":
+        env = SdkEnv().networkEnv;
+        break;
+      case "mainnet":
+      default:
+        env = "main";
+    }
+    return "did:iden3:$network:$env:$identifier";
   }
 
   ///
