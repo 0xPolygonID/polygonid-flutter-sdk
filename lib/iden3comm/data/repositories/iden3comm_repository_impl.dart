@@ -8,23 +8,18 @@ import 'package:pointycastle/asymmetric/api.dart';
 import 'package:pointycastle/asymmetric/oaep.dart';
 import 'package:pointycastle/asymmetric/rsa.dart';
 import 'package:pointycastle/digests/sha512.dart';
-import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
-import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/proof_response.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_response_mapper.dart';
-import 'package:sembast/sembast.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../common/domain/tuples.dart';
 import '../../../identity/data/data_sources/jwz_data_source.dart';
 import '../../../identity/data/mappers/hex_mapper.dart';
 import '../../../identity/domain/entities/identity_entity.dart';
@@ -35,7 +30,7 @@ import '../dtos/response/auth/auth_body_did_doc_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_metadata_devices_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_metadata_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_response.dart';
-import '../mappers/proof_response_mapper.dart';
+import '../mappers/auth_request_mapper.dart';
 
 class Iden3commRepositoryImpl extends Iden3commRepository {
   final RemoteIden3commDataSource _remoteIden3commDataSource;
@@ -46,17 +41,18 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   final ClaimMapper _claimMapper;
   final FiltersMapper _filtersMapper;
   final AuthResponseMapper _authResponseMapper;
+  final AuthRequestMapper _authRequestMapper;
 
   Iden3commRepositoryImpl(
-    this._remoteIden3commDataSource,
-    this._jwzDataSource,
-    this._hexMapper,
-    this._proofScopeDataSource,
-    this._storageClaimDataSource,
-    this._claimMapper,
-    this._filtersMapper,
-    this._authResponseMapper,
-  );
+      this._remoteIden3commDataSource,
+      this._jwzDataSource,
+      this._hexMapper,
+      this._proofScopeDataSource,
+      this._storageClaimDataSource,
+      this._claimMapper,
+      this._filtersMapper,
+      this._authResponseMapper,
+      this._authRequestMapper);
 
   @override
   Future<bool> authenticate({
@@ -83,71 +79,31 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   }
 
   @override
-  Future<List<ProofResponse>> getProofResponseList({
-    required List<Pair<ProofScopeRequest, Map<String, dynamic>>> proofs,
-  }) async {
-    List<ProofResponse> proofResponseScopeList = [];
-    if (proofs.isEmpty) {
-      return proofResponseScopeList;
-    }
-
-    for (Pair<ProofScopeRequest, Map<String, dynamic>> proof in proofs) {
-      ProofResponse proofResponse =
-          await _getProofResponse(proof.first, proof.second);
-      proofResponseScopeList.add(proofResponse);
-    }
-
-    return proofResponseScopeList;
-  }
-
-  ///
-  Future<List<ClaimEntity>> _getClaimsFromScope(
-      ProofScopeRequest proofReq) async {
-    List<FilterEntity> filters = _proofScopeDataSource
-        .proofScopeRulesQueryRequestFilters(proofReq.rules!.query!);
-    Filter filter = _filtersMapper.mapTo(filters);
-
-    List<ClaimDTO> claimDtoList =
-        await _storageClaimDataSource.getClaims(filter: filter);
-
-    List<ClaimEntity> claims =
-        claimDtoList.map((claimDTO) => _claimMapper.mapFrom(claimDTO)).toList();
-    return claims;
-  }
-
-  ///
-  Future<ProofResponse> _getProofResponse(
-      ProofScopeRequest proofRequest, Map<String, dynamic>? proofResult) async {
-    proofResult!["circuit_id"] = proofRequest.circuit_id!;
-    proofResult["proof_request_id"] = proofRequest.id!;
-    final zkProofResp = ProofResponseMapper().mapFrom(proofResult);
-    return Future.value(zkProofResp);
-  }
-
-  @override
   Future<String> getAuthResponse({
     required String identifier,
-    required AuthRequest authRequest,
-    required List<ProofResponse> scope,
+    required Iden3MessageEntity message,
+    required List<ProofEntity> scope,
     String? pushToken,
   }) async {
     AuthBodyDidDocResponse? didDocResponse;
+
     if (pushToken != null && pushToken.isNotEmpty) {
       var envAuthResponse = ["main", "mumbai"];
       didDocResponse = await _getDidDocResponse(
           envAuthResponse.first, identifier, pushToken);
     }
 
+    AuthRequest request = _authRequestMapper.mapTo(message);
     AuthResponse authResponse = AuthResponse(
       id: const Uuid().v4(),
-      thid: authRequest.thid,
-      to: authRequest.from!,
+      thid: request.thid,
+      to: request.from,
       from: identifier,
       typ: "application/iden3comm-plain-json",
       type: "https://iden3-communication.io/authorization/1.0/response",
       body: AuthBodyResponse(
-        message: authRequest.body?.message,
-        scope: scope,
+        message: request.body.message,
+        proofs: scope,
         did_doc: didDocResponse,
       ),
     );
@@ -200,23 +156,8 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     }
   }
 
-  /*@override
-  Future<List<Map<String, dynamic>>> getVocabs(
-      {required Iden3Message iden3Message}) async {
-    List<Pair<String, String>> schemaInfos =
-        SchemaInfoMapper().mapFrom(iden3Message);
-
-    List<Map<String, dynamic>> result = [];
-
-    for (Pair<String, String> schemaInfo in schemaInfos) {
-      Map<String, dynamic>? schema =
-          await _credentialRepository.fetchSchema(url: schemaInfo.first);
-      Map<String, dynamic>? vocab = await _credentialRepository.fetchVocab(
-          schema: schema, type: schemaInfo.second);
-      if (vocab != null) {
-        result.add(vocab);
-      }
-    }
-    return result;
-  }*/
+  @override
+  Future<String> getAuthCallback({required Iden3MessageEntity message}) {
+    return Future.value(_authRequestMapper.mapTo(message).body.callbackUrl);
+  }
 }

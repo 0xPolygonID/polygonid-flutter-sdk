@@ -1,31 +1,38 @@
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
+
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
 import '../repositories/identity_repository.dart';
 
-class GenerateNonRevProofParam {
-  final String id;
-  final String rhsBaseUrl;
-  final int revNonce;
-
-  GenerateNonRevProofParam(this.id, this.rhsBaseUrl, this.revNonce);
-}
-
 class GenerateNonRevProofUseCase
-    extends FutureUseCase<GenerateNonRevProofParam, Map<String, dynamic>> {
+    extends FutureUseCase<ClaimEntity, Map<String, dynamic>> {
   final IdentityRepository _identityRepository;
+  final CredentialRepository _credentialRepository;
+  final GetEnvConfigUseCase _getEnvConfigUseCase;
 
-  GenerateNonRevProofUseCase(this._identityRepository);
+  GenerateNonRevProofUseCase(this._identityRepository,
+      this._credentialRepository, this._getEnvConfigUseCase);
 
   @override
-  Future<Map<String, dynamic>> execute(
-      {required GenerateNonRevProofParam param}) async {
-    try {
-      Map<String, dynamic> proof = await _identityRepository.nonRevProof(
-          param.revNonce, param.id, param.rhsBaseUrl);
-      return proof;
-    } catch (error) {
+  Future<Map<String, dynamic>> execute({required ClaimEntity param}) {
+    return Future.wait<dynamic>([
+      _getEnvConfigUseCase.execute(
+          param: PolygonIdConfig.reverseHashServiceUrl),
+      _credentialRepository.getRhsRevocationId(claim: param),
+      _credentialRepository.getRevocationNonce(claim: param),
+    ])
+        .then((values) =>
+            _identityRepository.getNonRevProof(values[2], values[1], values[0]))
+        .then((nonRevProof) {
+      logger().i("[GenerateNonRevProofUseCase] Non rev proof: $nonRevProof");
+
+      return nonRevProof;
+    }).catchError((error) {
       logger().e("[GenerateNonRevProofUseCase] Error: $error");
-      rethrow;
-    }
+
+      throw error;
+    });
   }
 }

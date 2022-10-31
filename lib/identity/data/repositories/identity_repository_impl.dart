@@ -1,4 +1,5 @@
 import 'package:polygonid_flutter_sdk/constants.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
 
 import '../../domain/entities/identity_entity.dart';
 import '../../domain/entities/rhs_node_entity.dart';
@@ -16,19 +17,17 @@ import '../mappers/identity_dto_mapper.dart';
 import '../mappers/private_key_mapper.dart';
 import '../mappers/rhs_node_mapper.dart';
 
-enum SupportedCircuits { mtp, sig }
-
 class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
   final LibIdentityDataSource _libIdentityDataSource;
   final RemoteIdentityDataSource _remoteIdentityDataSource;
   final StorageIdentityDataSource _storageIdentityDataSource;
   final StorageKeyValueDataSource _storageKeyValueDataSource;
+  final RPCDataSource _rpcDataSource;
   final HexMapper _hexMapper;
   final PrivateKeyMapper _privateKeyMapper;
   final IdentityDTOMapper _identityDTOMapper;
   final RhsNodeMapper _rhsNodeMapper;
-  //final SMTStorageRepository _smtStorageRepository;
 
   IdentityRepositoryImpl(
     this._walletDataSource,
@@ -36,6 +35,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._remoteIdentityDataSource,
     this._storageIdentityDataSource,
     this._storageKeyValueDataSource,
+    this._rpcDataSource,
     this._hexMapper,
     this._privateKeyMapper,
     this._identityDTOMapper,
@@ -157,10 +157,17 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
+  Future<List<String>> getPublicKeys({required String privateKey}) {
+    return _walletDataSource
+        .createWallet(privateKey: _hexMapper.mapTo(privateKey))
+        .then((wallet) => wallet.publicKey);
+  }
+
+  @override
   Future<String> fetchIdentityState({required String id}) {
-    return _remoteIdentityDataSource
-        .fetchIdentityState(id: id)
-        .catchError((error) => throw FetchIdentityStateException(error));
+    return _libIdentityDataSource.getId(id).then((libId) => _rpcDataSource
+        .getState(libId)
+        .catchError((error) => throw FetchIdentityStateException(error)));
   }
 
   @override
@@ -172,10 +179,11 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<Map<String, dynamic>> nonRevProof(
+  Future<Map<String, dynamic>> getNonRevProof(
       int revNonce, String id, String rhsBaseUrl) {
-    return _remoteIdentityDataSource
-        .nonRevProof(revNonce, id, rhsBaseUrl)
-        .catchError((error) => throw NonRevProofException(error));
+    return _libIdentityDataSource.getId(id).then((libId) =>
+        _remoteIdentityDataSource
+            .nonRevProof(revNonce, libId, rhsBaseUrl)
+            .catchError((error) => throw NonRevProofException(error)));
   }
 }

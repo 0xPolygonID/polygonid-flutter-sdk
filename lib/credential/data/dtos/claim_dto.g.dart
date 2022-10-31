@@ -13,8 +13,7 @@ ClaimDTO _$ClaimDTOFromJson(Map<String, dynamic> json) => ClaimDTO(
       type: json['type'] as String,
       state: json['state'] as String? ?? '',
       expiration: json['expiration'] as String?,
-      credential:
-          CredentialDTO.fromJson(json['credential'] as Map<String, dynamic>),
+      info: ClaimInfoDTO.fromJson(json['credential'] as Map<String, dynamic>),
       schema: json['schema'] as Map<String, dynamic>?,
       vocab: json['vocab'] as Map<String, dynamic>?,
     );
@@ -24,7 +23,7 @@ Map<String, dynamic> _$ClaimDTOToJson(ClaimDTO instance) => <String, dynamic>{
       'issuer': instance.issuer,
       'identifier': instance.identifier,
       'state': instance.state,
-      'credential': instance.credential.toJson(),
+      'credential': instance.info.toJson(),
       'expiration': instance.expiration,
       'type': instance.type,
       'schema': instance.schema,

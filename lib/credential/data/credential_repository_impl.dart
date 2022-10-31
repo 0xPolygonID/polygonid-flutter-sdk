@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
@@ -9,31 +10,32 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity
 
 import 'data_sources/remote_claim_data_source.dart';
 import 'data_sources/storage_claim_data_source.dart';
-import 'dtos/revocation_status.dart';
+import 'dtos/claim_proofs/claim_proof_dto.dart';
 import 'mappers/claim_mapper.dart';
 import 'mappers/credential_request_mapper.dart';
 import 'mappers/filters_mapper.dart';
 import 'mappers/id_filter_mapper.dart';
+import 'mappers/revocation_status_mapper.dart';
 
 class CredentialRepositoryImpl extends CredentialRepository {
   final RemoteClaimDataSource _remoteClaimDataSource;
   final StorageClaimDataSource _storageClaimDataSource;
   final RemoteIdentityDataSource _remoteIdentityDataSource;
   final CredentialRequestMapper _credentialRequestMapper;
-
   final ClaimMapper _claimMapper;
   final FiltersMapper _filtersMapper;
   final IdFilterMapper _idFilterMapper;
+  final RevocationStatusMapper _revocationStatusMapper;
 
   CredentialRepositoryImpl(
-    this._remoteClaimDataSource,
-    this._storageClaimDataSource,
-    this._remoteIdentityDataSource,
-    this._credentialRequestMapper,
-    this._claimMapper,
-    this._filtersMapper,
-    this._idFilterMapper,
-  );
+      this._remoteClaimDataSource,
+      this._storageClaimDataSource,
+      this._remoteIdentityDataSource,
+      this._credentialRequestMapper,
+      this._claimMapper,
+      this._filtersMapper,
+      this._idFilterMapper,
+      this._revocationStatusMapper);
 
   @override
   Future<ClaimEntity> fetchClaim(
@@ -112,12 +114,35 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<RevocationStatus?> getClaimRevocationStatus(
-      {required ClaimEntity claim, bool useRhs = true}) {
-    return _remoteClaimDataSource.getClaimRevocationStatus(
-      _claimMapper.mapTo(claim).credential,
-      _remoteIdentityDataSource,
-      useRhs: useRhs,
-    );
+  Future<String> getRhsRevocationId({required ClaimEntity claim}) {
+    ClaimDTO claimDTO = _claimMapper.mapTo(claim);
+
+    try {
+      return Future.value(claimDTO.info.proofs
+          .where((proof) => proof.type == ClaimProofType.bjj)
+          .first
+          .issuer
+          .id);
+    } on StateError {}
+
+    throw NullRevocationStatusException(claim);
+  }
+
+  @override
+  Future<Map<String, dynamic>> getRevocationStatus(
+      {required ClaimEntity claim}) {
+    return _remoteClaimDataSource
+        .getClaimRevocationStatus(_claimMapper.mapTo(claim).info);
+  }
+
+  @override
+  Future<bool> isUsingRHS({required ClaimEntity claim}) {
+    return Future.value(true);
+  }
+
+  @override
+  Future<int> getRevocationNonce({required ClaimEntity claim}) {
+    return Future.value(_claimMapper.mapTo(claim))
+        .then((claimDTO) => claimDTO.info.revNonce);
   }
 }

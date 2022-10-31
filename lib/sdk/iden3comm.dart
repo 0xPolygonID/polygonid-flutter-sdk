@@ -1,46 +1,31 @@
-import 'dart:convert';
-
 import 'package:injectable/injectable.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/iden3_message.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proofs_use_case.dart';
 
 import '../credential/domain/use_cases/get_vocabs_use_case.dart';
-import '../iden3comm/data/dtos/request/auth/auth_request.dart';
-import '../iden3comm/data/mappers/iden3_message_mapper.dart';
-import '../iden3comm/data/mappers/iden3_message_type_mapper.dart';
-import '../iden3comm/domain/entities/iden3_message_entity.dart';
-import '../iden3comm/domain/exceptions/iden3comm_exceptions.dart';
-import '../identity/data/mappers/auth_request_mapper.dart';
+import 'mappers/iden3_message_mapper.dart';
+import 'mappers/schema_info_mapper.dart';
 
 @injectable
 class Iden3comm {
   final GetVocabsUseCase _getVocabsFromIden3MsgUseCase;
   final AuthenticateUseCase _authenticateUseCase;
-  final AuthRequestMapper _authRequestMapper;
+  final GetProofsUseCase _getProofsUseCase;
+  final Iden3MessageMapper _iden3messageMapper;
+  final SchemaInfoMapper _schemaInfoMapper;
 
-  Iden3comm(
-    this._getVocabsFromIden3MsgUseCase,
-    this._authenticateUseCase,
-    this._authRequestMapper,
-  );
-
-  /*/// Get a string auth token through an identifier
-  /// The [identifier] is a string returned when creating an identity with [createIdentity]
-  /// and [circuitData] describes data about the used circuit, see [CircuitDataEntity].
-  /// [message] will be fully integrated on the resulting encoded string (follow JWZ standard).
-  /// See [JWZ].
-  Future<String> getAuthToken(
-      {required String identifier, required String message}) {
-    return _getAuthTokenUseCase.execute(
-        param: GetAuthTokenParam(identifier, message));
-  }*/
+  Iden3comm(this._getVocabsFromIden3MsgUseCase, this._authenticateUseCase,
+      this._getProofsUseCase, this._iden3messageMapper, this._schemaInfoMapper);
 
   /// VOCABS
   /// get the vocabulary json-ld files to translate the values of the schemas
   /// to show them to end users in a natural language format in the apps
   Future<List<Map<String, dynamic>>> getVocabsFromIden3Message(
-      {required Iden3Message iden3Message}) {
-    return _getVocabsFromIden3MsgUseCase.execute(param: iden3Message);
+      {required Iden3MessageEntity message}) {
+    return _getVocabsFromIden3MsgUseCase.execute(
+        param: _schemaInfoMapper.mapFrom(message));
   }
 
   ///AUTHENTICATION
@@ -52,19 +37,21 @@ class Iden3comm {
       {required String issuerMessage,
       required String identifier,
       String? pushToken}) {
-    Iden3MessageEntity iden3Message =
-        Iden3MessageMapper(Iden3MessageTypeMapper())
-            .mapFrom(Iden3Message.fromJson(jsonDecode(issuerMessage)));
+    return _authenticateUseCase.execute(
+        param: AuthenticateParam(
+            message: _iden3messageMapper.mapFrom(issuerMessage),
+            identifier: identifier,
+            pushToken: pushToken));
+  }
 
-    if (iden3Message.type == Iden3MessageType.auth) {
-      AuthRequest authRequest = _authRequestMapper.mapFrom(issuerMessage);
-      return _authenticateUseCase.execute(
-          param: AuthenticateParam(
-              authRequest: authRequest,
-              identifier: identifier,
-              pushToken: pushToken));
-    } else {
-      throw UnsupportedIden3MsgTypeException(iden3Message.type);
-    }
+  Future<List<ProofEntity>> getProofs(
+      {required String message,
+      required String identifier,
+      String? challenge}) {
+    return _getProofsUseCase.execute(
+        param: GetProofsParam(
+            message: _iden3messageMapper.mapFrom(message),
+            identifier: identifier,
+            challenge: challenge));
   }
 }

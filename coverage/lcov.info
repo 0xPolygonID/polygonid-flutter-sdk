@@ -20,7 +20,7 @@ DA:44,0
 LF:9
 LH:6
 end_of_record
-SF:lib/data/credential/dtos/credential_dto.dart
+SF:lib/data/credential/dtos/claim_info_dto.dart
 DA:21,0
 DA:32,1
 DA:33,1
@@ -51,7 +51,7 @@ DA:98,0
 LF:27
 LH:17
 end_of_record
-SF:lib/data/credential/dtos/credential_dto.g.dart
+SF:lib/data/credential/dtos/claim_info_dto.g.dart
 DA:9,1
 DA:10,0
 DA:11,1

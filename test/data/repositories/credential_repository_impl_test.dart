@@ -48,20 +48,20 @@ final claimDTOs = [
       issuer: "",
       identifier: "",
       type: '',
-      credential: fetchClaimDTO.credential),
+      info: fetchClaimDTO.credential),
   ClaimDTO(
       id: "id2",
       issuer: "",
       identifier: "",
       type: '',
-      credential: fetchClaimDTO.credential),
+      info: fetchClaimDTO.credential),
 ];
 final claimEntities = [
   ClaimEntity(
       issuer: "",
       identifier: "",
       expiration: "",
-      credential: {},
+      info: {},
       type: "",
       state: ClaimState.active,
       id: "id1"),
@@ -69,7 +69,7 @@ final claimEntities = [
       issuer: "",
       identifier: "",
       expiration: "",
-      credential: {},
+      info: {},
       type: "",
       state: ClaimState.active,
       id: "id2")

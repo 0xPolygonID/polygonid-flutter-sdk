@@ -2,17 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 
 import '../../../common/data/exceptions/network_exceptions.dart';
 import '../../../common/domain/domain_logger.dart';
-import '../../../env/sdk_env.dart';
 import '../../domain/exceptions/credential_exceptions.dart';
 import '../dtos/claim_dto.dart';
-import '../dtos/credential_dto.dart';
-import '../dtos/credential_proofs/credential_proof_dto.dart';
+import '../dtos/claim_info_dto.dart';
 import '../dtos/fetch_claim_response_dto.dart';
-import '../dtos/revocation_status.dart';
 
 class RemoteClaimDataSource {
   final Client client;
@@ -37,13 +33,18 @@ class RemoteClaimDataSource {
         FetchClaimResponseDTO fetchResponse =
             FetchClaimResponseDTO.fromJson(json.decode(response.body));
 
+        /// FIXME: should be called in the repo
         //fetch schema
-        Map<String, dynamic>? schema = await fetchSchema(
-            url: fetchResponse.credential.credentialSchema.id);
+        Map<String, dynamic>? schema =
+            await fetchSchema(url: fetchResponse.credential.credentialSchema.id)
+                .catchError((error) => null);
+
+        /// FIXME: should be called in the repo
         //fetch vocab
         Map<String, dynamic>? vocab = await fetchVocab(
-            schema: schema,
-            type: fetchResponse.credential.credentialSubject.type);
+                schema: schema,
+                type: fetchResponse.credential.credentialSubject.type)
+            .catchError((error) => null);
 
         if (fetchResponse.type == FetchClaimResponseType.issuance) {
           return ClaimDTO(
@@ -52,7 +53,7 @@ class RemoteClaimDataSource {
               identifier: identifier,
               type: fetchResponse.credential.credentialSubject.type,
               expiration: fetchResponse.credential.expiration,
-              credential: fetchResponse.credential,
+              info: fetchResponse.credential,
               schema: schema,
               vocab: vocab);
         } else {
@@ -130,38 +131,20 @@ class RemoteClaimDataSource {
     }
   }
 
-  Future<RevocationStatus?> getClaimRevocationStatus(CredentialDTO credential,
-      RemoteIdentityDataSource _remoteIdentityDataSource,
-      {bool useRhs = true}) async {
-    if (useRhs) {
-      if (credential.proofs.isNotEmpty) {
-        for (var proof in credential.proofs) {
-          if (proof.type == CredentialProofType.bjj) {
-            Map<String, dynamic> issuerNonRevProof =
-                await _remoteIdentityDataSource.nonRevProof(credential.revNonce,
-                    proof.issuer.id, SdkEnv().reverseHashServiceUrl);
-            RevocationStatus revStatus =
-                RevocationStatus.fromJson(issuerNonRevProof);
-            return revStatus;
-          }
-        }
-      }
-      return null;
+  Future<Map<String, dynamic>> getClaimRevocationStatus(
+      ClaimInfoDTO claimInfo) async {
+    String revStatusUrl = claimInfo.credentialStatus.id;
+    var revStatusUri = Uri.parse(revStatusUrl);
+    var revStatusResponse = await get(revStatusUri, headers: {
+      HttpHeaders.acceptHeader: '*/*',
+      HttpHeaders.contentTypeHeader: 'application/json',
+    });
+    if (revStatusResponse.statusCode == 200) {
+      String revStatus = (revStatusResponse.body);
+
+      return json.decode(revStatus);
     } else {
-      String revStatusUrl = credential.credentialStatus.id;
-      var revStatusUri = Uri.parse(revStatusUrl);
-      var revStatusResponse = await get(revStatusUri, headers: {
-        HttpHeaders.acceptHeader: '*/*',
-        HttpHeaders.contentTypeHeader: 'application/json',
-      });
-      if (revStatusResponse.statusCode == 200) {
-        String revStatus = (revStatusResponse.body);
-        final RevocationStatus claimRevocationStatus =
-            RevocationStatus.fromJson(json.decode(revStatus));
-        return claimRevocationStatus;
-      } else {
-        throw NetworkException(revStatusResponse);
-      }
+      throw NetworkException(revStatusResponse);
     }
   }
 }

@@ -82,18 +82,18 @@ class AuthResponse {
   ///
   /// @param [Map<String, dynamic>] json
   /// @returns [AuthResponse]
-  factory AuthResponse.fromJson(Map<String, dynamic> json) {
-    AuthBodyResponse body = AuthBodyResponse.fromJson(json['body']);
-    return AuthResponse(
-      id: json['id'],
-      typ: json['typ'],
-      type: json['type'],
-      thid: json['thid'],
-      from: json['from'],
-      to: json['to'],
-      body: body,
-    );
-  }
+  // factory AuthResponse.fromJson(Map<String, dynamic> json) {
+  //   AuthBodyResponse body = AuthBodyResponse.fromJson(json['body']);
+  //   return AuthResponse(
+  //     id: json['id'],
+  //     typ: json['typ'],
+  //     type: json['type'],
+  //     thid: json['thid'],
+  //     from: json['from'],
+  //     to: json['to'],
+  //     body: body,
+  //   );
+  // }
 
   Map<String, dynamic> toJson() => {
         'id': id,

@@ -9,10 +9,10 @@ import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/revocation_status.dart';
 import 'package:web3dart/crypto.dart';
 
-import '../../../credential/data/dtos/credential_dto.dart';
-import '../../../credential/data/dtos/credential_proofs/credential_proof_bjj_dto.dart';
-import '../../../credential/data/dtos/credential_proofs/credential_proof_dto.dart';
-import '../../../credential/data/dtos/credential_proofs/credential_proof_sm_dto.dart';
+import '../../../credential/data/dtos/claim_info_dto.dart';
+import '../../../credential/data/dtos/claim_proofs/claim_proof_bjj_dto.dart';
+import '../../../credential/data/dtos/claim_proofs/claim_proof_dto.dart';
+import '../../../credential/data/dtos/claim_proofs/claim_proof_sm_dto.dart';
 import '../smt/hash.dart';
 import 'native_iden3core.dart';
 import 'native_iden3core_extension.dart';
@@ -637,18 +637,18 @@ class Iden3CoreLib {
       String pubX,
       String pubY,
       String signature,
-      CredentialDTO credential,
+      ClaimInfoDTO credential,
       String jsonLDDocument,
       String schema,
       String key,
       List<int> values,
       int operator,
       RevocationStatus? revocationStatus) {
-    CredentialProofSMDTO? smtProof;
+    ClaimProofSMDTO? smtProof;
     if (credential.proofs.isNotEmpty) {
       for (var proof in credential.proofs) {
-        if (proof.type == CredentialProofType.sparseMerkle) {
-          smtProof = proof as CredentialProofSMDTO?;
+        if (proof.type == ClaimProofType.sparseMerkle) {
+          smtProof = proof as ClaimProofSMDTO?;
         }
       }
     }
@@ -857,8 +857,8 @@ class Iden3CoreLib {
     // Claim state
     ffi.Pointer<IDENTreeState> issuerState = malloc<IDENTreeState>();
 
-    CredentialProofIssuerStateSMDTO smtProofIssuerState =
-        smtProof.issuer.state as CredentialProofIssuerStateSMDTO;
+    ClaimProofIssuerStateSMDTO smtProofIssuerState =
+        smtProof.issuer.state as ClaimProofIssuerStateSMDTO;
 
     List<int> issuerProofClaimsTreeRootBytes =
         hexToBytes(smtProofIssuerState.treeRoot);
@@ -1045,18 +1045,18 @@ class Iden3CoreLib {
       String pubX,
       String pubY,
       String signature,
-      CredentialDTO credential,
+      ClaimInfoDTO credential,
       String jsonLDDocument,
       String schema,
       String key,
       List<int> values,
       int operator,
       RevocationStatus? revocationStatus) {
-    CredentialProofBJJDTO? signatureProof;
+    ClaimProofBJJDTO? signatureProof;
     if (credential.proofs.isNotEmpty) {
       for (var proof in credential.proofs) {
-        if (proof.type == CredentialProofType.bjj) {
-          signatureProof = proof as CredentialProofBJJDTO?;
+        if (proof.type == ClaimProofType.bjj) {
+          signatureProof = proof as ClaimProofBJJDTO?;
         }
       }
     }
@@ -1228,8 +1228,8 @@ class Iden3CoreLib {
     request.ref.claim.signature_proof.issuer_tree_state =
         malloc<IDENTreeState>().ref;
 
-    CredentialProofIssuerStateDTO sigProofIssuerState =
-        signatureProof.issuer.state; //as CredentialProofIssuerStateDTO;
+    ClaimProofIssuerStateDTO sigProofIssuerState =
+        signatureProof.issuer.state; //as ClaimProofIssuerStateDTO;
     List<int> issuerClaimsTreeRootBytes =
         hexToBytes(sigProofIssuerState.treeRoot);
     for (var i = 0; i < issuerClaimsTreeRootBytes.length; i++) {
@@ -1259,8 +1259,8 @@ class Iden3CoreLib {
     // ISSUER AUTH CLAIM
     ffi.Pointer<ffi.Pointer<IDENClaim>> issuerAuthClaim =
         malloc<ffi.Pointer<IDENClaim>>();
-    CredentialProofIssuerBJJDTO sigProofIssuer =
-        signatureProof.issuer as CredentialProofIssuerBJJDTO;
+    ClaimProofIssuerBJJDTO sigProofIssuer =
+        signatureProof.issuer as ClaimProofIssuerBJJDTO;
     String proofIssuerAuthClaim = json.encode(sigProofIssuer.authClaim);
     ffi.Pointer<ffi.Char> unsafePointerIssuerAuthClaim =
         proofIssuerAuthClaim.toNativeUtf8().cast<ffi.Char>();

@@ -15,7 +15,7 @@ import 'eddsa_babyjub.dart' as eddsaBabyJub;
 /// Perform standard wallet actions
 class PrivadoIdWallet {
   late Uint8List privateKey;
-  dynamic publicKey;
+  late List<String> publicKey;
   dynamic publicKeyHex;
   String? publicKeyCompressed;
   String? publicKeyCompressedHex;

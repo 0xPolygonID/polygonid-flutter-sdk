@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/http.dart';
-import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_proofs/claim_proof_bjj_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_proofs/claim_proof_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/revocation_status.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/iden3core/iden3core.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/data/dtos/atomic_query_inputs_param.dart';
@@ -76,20 +78,18 @@ class AtomicQueryInputsDataSource {
   ///
   Future<String?> prepareAtomicQueryInputs(
     String challenge,
-    CredentialDTO credential,
+    ClaimInfoDTO claimInfo,
     String circuitId,
     String key,
     List<int> values,
     int operator,
-    RevocationStatus? claimRevocationStatus,
+    RevocationStatus claimRevocationStatus,
     String pubX,
     String pubY,
-    String? signature,
+    String signature,
   ) async {
-    if (signature == null) return null;
-
     // schema
-    String schemaId = credential.credentialSchema.id;
+    String schemaId = claimInfo.credentialSchema.id;
     String schemaUrl = schemaId;
     if (schemaId.toLowerCase().startsWith("ipfs://")) {
       String fileHash = schemaId.toLowerCase().replaceFirst("ipfs://", "");
@@ -107,8 +107,8 @@ class AtomicQueryInputsDataSource {
           pubX,
           pubY,
           signature,
-          credential,
-          json.encode(credential.toJson()),
+          claimInfo,
+          json.encode(claimInfo.toJson()),
           schema,
           key,
           values,
@@ -123,8 +123,8 @@ class AtomicQueryInputsDataSource {
           pubX,
           pubY,
           signature,
-          credential,
-          json.encode(credential.toJson()),
+          claimInfo,
+          json.encode(claimInfo.toJson()),
           schema,
           key,
           values,

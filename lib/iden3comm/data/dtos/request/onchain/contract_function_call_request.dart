@@ -40,12 +40,16 @@
 import 'contract_function_call_body_request.dart';
 
 class ContractFunctionCallRequest {
-  final String? id;
-  final String? typ;
-  final String? type;
-  final ContractFunctionCallBodyRequest? body;
+  final String id;
+  final String typ;
+  final String type;
+  final ContractFunctionCallBodyRequest body;
 
-  ContractFunctionCallRequest({this.id, this.typ, this.type, this.body});
+  ContractFunctionCallRequest(
+      {required this.id,
+      required this.typ,
+      required this.type,
+      required this.body});
 
   /// Creates an instance from the given json
   ///
@@ -66,6 +70,6 @@ class ContractFunctionCallRequest {
         'id': id,
         'typ': typ,
         'type': type,
-        'body': body!.toJson(),
+        'body': body.toJson(),
       };
 }

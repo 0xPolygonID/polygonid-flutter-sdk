@@ -1,25 +1,28 @@
 import 'dart:async';
-import 'dart:convert';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
+import 'package:polygonid_flutter_sdk/sdk/mappers/iden3_message_mapper.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/models/iden3_message.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_state.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/mappers/claim_model_mapper.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/models/claim_model.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_event.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
 
 class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
+  final Iden3MessageMapper _iden3messageMapper;
   final ClaimModelMapper _mapper;
   final PolygonIdSdk _polygonIdSdk;
 
   ClaimsBloc(
+    this._iden3messageMapper,
     this._mapper,
     this._polygonIdSdk,
   ) : super(const ClaimsState.initial()) {
@@ -49,7 +52,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
     emit(const ClaimsState.loading());
 
-    Iden3Message iden3message = event.iden3message;
+    Iden3MessageEntity iden3message = event.iden3message;
     Map<String, dynamic>? messageBody = iden3message.body;
 
     if (messageBody == null) {
@@ -82,8 +85,8 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
           circuitData,
           url,
           id,
-          iden3message.thid!,
-          iden3message.from!,
+          iden3message.thid,
+          iden3message.from,
         );
 
         credentialRequestEntityList.add(entity);
@@ -91,6 +94,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
       List<ClaimEntity> claimList = await _polygonIdSdk.credential
           .fetchAndSaveClaims(credentialRequests: credentialRequestEntityList);
+
       if (claimList.isNotEmpty) {
         add(const GetClaimsEvent());
       }
@@ -213,8 +217,8 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     }
 
     try {
-      final Map<String, dynamic> data = jsonDecode(qrCodeResponse!);
-      final Iden3Message iden3message = Iden3Message.fromJson(data);
+      final Iden3MessageEntity iden3message =
+          _iden3messageMapper.mapFrom(qrCodeResponse!);
       emit(ClaimsState.qrCodeScanned(iden3message));
     } catch (error) {
       emit(const ClaimsState.error("Scanned code is not valid"));

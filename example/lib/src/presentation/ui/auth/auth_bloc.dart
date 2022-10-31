@@ -1,15 +1,16 @@
-import 'dart:convert';
-
 import 'package:bloc/bloc.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/sdk/mappers/iden3_message_mapper.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/models/iden3_message.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
+  final Iden3MessageMapper _iden3messageMapper;
   final PolygonIdSdk _polygonIdSdk;
 
-  AuthBloc(this._polygonIdSdk) : super(const AuthState.initial()) {
+  AuthBloc(this._iden3messageMapper, this._polygonIdSdk)
+      : super(const AuthState.initial()) {
     on<ClickScanQrCodeEvent>(_handleClickScanQrCode);
     on<ScanQrCodeResponse>(_handleScanQrCodeResponse);
   }
@@ -30,8 +31,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
 
     try {
-      final Map<String, dynamic> data = jsonDecode(qrCodeResponse);
-      final Iden3Message iden3message = Iden3Message.fromJson(data);
+      final Iden3MessageEntity iden3message =
+          _iden3messageMapper.mapFrom(qrCodeResponse);
       emit(AuthState.loaded(iden3message));
 
       await _authenticate(iden3message: qrCodeResponse, emit: emit);
