@@ -27,7 +27,7 @@ class FakeWallet extends Fake implements PrivadoIdWallet {
   Uint8List get privateKey => walletPrivateKey;
 
   @override
-  dynamic get publicKey => [pubX, pubY];
+  List<String> get publicKey => [pubX, pubY];
 }
 
 const pubX = "thePubX";
@@ -62,7 +62,7 @@ final JWZProof jwzProof = JWZProof(
       ["55", "66", "77", "88"]
     ], piC: [
       "999, 101010, 111111"
-    ], protocol: "theProtocol"),
+    ], protocol: "theProtocol", curve: ''),
     pubSignals: const ["12, 13, 14, 15, 16"]);
 
 final JWZ jwz = JWZ(header: jwzHeader, payload: jwzPayload, proof: jwzProof);

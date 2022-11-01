@@ -35,7 +35,7 @@ ProofScopeDataSource dataSource = ProofScopeDataSource();
 
 void main() {
   group("proof scope data source", () {
-    test(
+    /*test(
       'given a list of proofScopeRequest, when we call filteredProofScopeRequestList, we expect a filtered list of proofScopeRequest to be returned',
       () {
         var filteredList =
@@ -43,7 +43,7 @@ void main() {
         expect(filteredList.length, 1);
         expect(filteredList.first.id, 2);
       },
-    );
+    );*/
 
     //TODO retrieve a valid obj example before testing
     /*test(

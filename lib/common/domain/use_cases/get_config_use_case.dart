@@ -3,11 +3,14 @@ import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 
 enum PolygonIdConfig {
   polygonIdAccessMessage,
+  networkName,
+  networkEnv,
   infuraUrl,
   infuraRdpUrl,
   infuraApiKey,
   reverseHashServiceUrl,
-  idStateContractAddress
+  idStateContractAddress,
+  pushUrl,
 }
 
 class GetEnvConfigUseCase extends FutureUseCase<PolygonIdConfig, String> {

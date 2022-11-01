@@ -14,7 +14,7 @@ class FakeWallet extends Fake implements PrivadoIdWallet {
   Uint8List get privateKey => walletPrivateKey;
 
   @override
-  dynamic get publicKey => [pubX, pubY];
+  List<String> get publicKey => [pubX, pubY];
 }
 
 const pubX = "thePubX";

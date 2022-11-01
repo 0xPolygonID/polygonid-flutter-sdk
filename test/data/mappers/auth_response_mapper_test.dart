@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_did_doc_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_response_mapper.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_response_mapper.dart';
 
 final mockAuthResponse = AuthResponse(
   id: "theId",

@@ -14,16 +14,13 @@ class ProofRequestFiltersMapper
 
   @override
   List<FilterEntity> mapFrom(ProofRequestEntity from) {
-    ProofScopeRulesQueryRequest query =
-        _proofQueryMapper.mapTo(from);
+    ProofScopeRulesQueryRequest query = _proofQueryMapper.mapTo(from);
 
     List<FilterEntity> filters = [
       FilterEntity(
-          name: 'credential.credentialSchema.type',
-          value: query.schema!.type),
+          name: 'credential.credentialSchema.type', value: query.schema!.type),
     ];
-    if (query.allowedIssuers is List &&
-        query.allowedIssuers!.isNotEmpty) {
+    if (query.allowedIssuers is List && query.allowedIssuers!.isNotEmpty) {
       if (query.allowedIssuers![0] != "*") {
         filters.add(FilterEntity(
             operator: FilterOperator.inList,
@@ -38,8 +35,8 @@ class ProofRequestFiltersMapper
       request.forEach((key, map) {
         if (map != null && map is Map) {
           map.forEach((operator, value) {
-            filters.addAll(_getFilterByOperator(key, operator, value,
-                query.schema!.type!));
+            filters.addAll(_getFilterByOperator(
+                key, operator, value, query.schema!.type!));
           });
         }
       });

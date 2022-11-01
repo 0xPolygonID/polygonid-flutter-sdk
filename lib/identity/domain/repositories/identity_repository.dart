@@ -27,4 +27,10 @@ abstract class IdentityRepository {
 
   Future<Map<String, dynamic>> getNonRevProof(
       int revNonce, String id, String rhsBaseUrl);
+
+  Future<String> getDidIdentifier({
+    required String identifier,
+    required String networkName,
+    required String networkEnv,
+  });
 }
