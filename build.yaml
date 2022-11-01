@@ -3,6 +3,7 @@ targets:
     sources:
       include:
         - lib/**
+        - test/**
         - $package$
     builders:
       injectable_generator:injectable_builder:
