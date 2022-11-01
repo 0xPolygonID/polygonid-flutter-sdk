@@ -2194,13 +2194,12 @@ class _$OnClickClaim implements OnClickClaim {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$OnClickClaim &&
-            const DeepCollectionEquality()
-                .equals(other.claimModel, claimModel));
+            (identical(other.claimModel, claimModel) ||
+                other.claimModel == claimModel));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(claimModel));
+  int get hashCode => Object.hash(runtimeType, claimModel);
 
   @JsonKey(ignore: true)
   @override
