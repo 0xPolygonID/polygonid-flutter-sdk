@@ -35,7 +35,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _iden3messageMapper.mapFrom(qrCodeResponse);
       emit(AuthState.loaded(iden3message));
 
-      await _authenticate(iden3message: qrCodeResponse, emit: emit);
+      await _authenticate(iden3message: iden3message, emit: emit);
     } catch (error) {
       emit(const AuthState.error("Scanned code is not valid"));
     }
@@ -43,7 +43,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   ///
   Future<void> _authenticate({
-    required String iden3message,
+    required Iden3MessageEntity iden3message,
     required Emitter<AuthState> emit,
   }) async {
     emit(const AuthState.loading());
@@ -57,7 +57,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     try {
       await _polygonIdSdk.iden3comm.authenticate(
-        issuerMessage: iden3message,
+        message: iden3message,
         identifier: identifier,
       );
 

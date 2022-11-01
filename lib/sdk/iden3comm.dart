@@ -34,24 +34,20 @@ class Iden3comm {
   /// get authToken #4
   /// auth with token #5 TODO rewrite as soon as development is completed
   Future<void> authenticate(
-      {required String issuerMessage,
+      {required Iden3MessageEntity message,
       required String identifier,
       String? pushToken}) {
     return _authenticateUseCase.execute(
         param: AuthenticateParam(
-            message: _iden3messageMapper.mapFrom(issuerMessage),
-            identifier: identifier,
-            pushToken: pushToken));
+            message: message, identifier: identifier, pushToken: pushToken));
   }
 
   Future<List<ProofEntity>> getProofs(
-      {required String message,
+      {required Iden3MessageEntity message,
       required String identifier,
       String? challenge}) {
     return _getProofsUseCase.execute(
         param: GetProofsParam(
-            message: _iden3messageMapper.mapFrom(message),
-            identifier: identifier,
-            challenge: challenge));
+            message: message, identifier: identifier, challenge: challenge));
   }
 }
