@@ -14,6 +14,7 @@ import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart'
 import 'package:polygonid_flutter_sdk/credential/data/mappers/credential_request_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/id_filter_mapper.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
@@ -92,16 +93,20 @@ MockCredentialRequestMapper credentialRequestMapper =
 MockClaimMapper claimMapper = MockClaimMapper();
 MockFiltersMapper filtersMapper = MockFiltersMapper();
 MockIdFilterMapper idFilterMapper = MockIdFilterMapper();
+MockRevocationStatusMapper revocationStatusMapper =
+    MockRevocationStatusMapper();
 
 // Tested instance
 CredentialRepositoryImpl repository = CredentialRepositoryImpl(
-    remoteClaimDataSource,
-    storageClaimDataSource,
-    remoteIdentityDataSource,
-    credentialRequestMapper,
-    claimMapper,
-    filtersMapper,
-    idFilterMapper);
+  remoteClaimDataSource,
+  storageClaimDataSource,
+  remoteIdentityDataSource,
+  credentialRequestMapper,
+  claimMapper,
+  filtersMapper,
+  idFilterMapper,
+  revocationStatusMapper,
+);
 
 @GenerateMocks([
   RemoteClaimDataSource,
@@ -111,6 +116,7 @@ CredentialRepositoryImpl repository = CredentialRepositoryImpl(
   ClaimMapper,
   FiltersMapper,
   IdFilterMapper,
+  RevocationStatusMapper,
 ])
 void main() {
   group("Fetch claim", () {

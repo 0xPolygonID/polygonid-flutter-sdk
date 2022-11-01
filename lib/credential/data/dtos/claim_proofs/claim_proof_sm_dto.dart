@@ -8,8 +8,7 @@ part 'claim_proof_sm_dto.g.dart';
 class ClaimProofSMDTO extends ClaimProofDTO {
   final ClaimProofMTPDTO mtp;
 
-  ClaimProofSMDTO(
-      ClaimProofType type, ClaimProofIssuerSMDTO issuer, this.mtp)
+  ClaimProofSMDTO(ClaimProofType type, ClaimProofIssuerSMDTO issuer, this.mtp)
       : super(type, issuer);
 
   factory ClaimProofSMDTO.fromJson(Map<String, dynamic> json) =>
@@ -52,6 +51,5 @@ class ClaimProofIssuerStateSMDTO extends ClaimProofIssuerStateDTO {
       _$ClaimProofIssuerStateSMDTOFromJson(json);
 
   @override
-  Map<String, dynamic> toJson() =>
-      _$ClaimProofIssuerStateSMDTOToJson(this);
+  Map<String, dynamic> toJson() => _$ClaimProofIssuerStateSMDTOToJson(this);
 }

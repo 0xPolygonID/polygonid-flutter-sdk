@@ -1,7 +1,6 @@
 import 'package:polygonid_flutter_sdk/common/mappers/from_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
 
-
 class Iden3MessageTypeMapper extends FromMapper<String, Iden3MessageType> {
   @override
   Iden3MessageType mapFrom(String from) {

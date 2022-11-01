@@ -7,6 +7,7 @@ import '../../domain/exceptions/identity_exceptions.dart';
 import '../../domain/repositories/identity_repository.dart';
 import '../../libs/bjj/privadoid_wallet.dart';
 import '../data_sources/lib_identity_data_source.dart';
+import '../data_sources/local_identity_data_source.dart';
 import '../data_sources/remote_identity_data_source.dart';
 import '../data_sources/storage_identity_data_source.dart';
 import '../data_sources/storage_key_value_data_source.dart';
@@ -20,6 +21,7 @@ import '../mappers/rhs_node_mapper.dart';
 class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
   final LibIdentityDataSource _libIdentityDataSource;
+  final LocalIdentityDataSource _localIdentityDataSource;
   final RemoteIdentityDataSource _remoteIdentityDataSource;
   final StorageIdentityDataSource _storageIdentityDataSource;
   final StorageKeyValueDataSource _storageKeyValueDataSource;
@@ -32,6 +34,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   IdentityRepositoryImpl(
     this._walletDataSource,
     this._libIdentityDataSource,
+    this._localIdentityDataSource,
     this._remoteIdentityDataSource,
     this._storageIdentityDataSource,
     this._storageKeyValueDataSource,
@@ -185,5 +188,18 @@ class IdentityRepositoryImpl extends IdentityRepository {
         _remoteIdentityDataSource
             .nonRevProof(revNonce, libId, rhsBaseUrl)
             .catchError((error) => throw NonRevProofException(error)));
+  }
+
+  @override
+  Future<String> getDidIdentifier({
+    required String identifier,
+    required String networkName,
+    required String networkEnv,
+  }) async {
+    return _localIdentityDataSource.getDidIdentifier(
+      identifier: identifier,
+      networkName: networkName,
+      networkEnv: networkEnv,
+    );
   }
 }

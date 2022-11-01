@@ -38,7 +38,7 @@ class RPCDataSource {
       if (result != null && result.isNotEmpty && result[0] is BigInt) {
         if (result[0] != BigInt.zero) {
           String resultString =
-          bytesToHex(Uint8ArrayUtils.bigIntToBytes(result[0]));
+              bytesToHex(Uint8ArrayUtils.bigIntToBytes(result[0]));
           logger().d(resultString);
           return resultString;
         }

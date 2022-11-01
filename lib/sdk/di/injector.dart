@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart';
 import 'package:injectable/injectable.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/common/data/repositories/env_config_repository_impl.dart';
@@ -14,6 +15,10 @@ import 'package:sembast/sembast_io.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:web_socket_channel/io.dart';
 
+import '../../common/data/repositories/env_config_repository_impl.dart';
+import '../../common/data/repositories/package_info_repository_impl.dart';
+import '../../common/domain/repositories/config_repository.dart';
+import '../../common/domain/repositories/package_info_repository.dart';
 import '../../credential/data/credential_repository_impl.dart';
 import '../../credential/domain/repositories/credential_repository.dart';
 import '../../env/sdk_env.dart';
@@ -36,6 +41,12 @@ configureInjection() => $initSDKGetIt(getItSdk);
 abstract class Sdk {
   @lazySingleton
   SdkEnv get sdkEnv => kDebugMode ? DevEnv() : ProdEnv();
+}
+
+@module
+abstract class PackageInfoModule {
+  @lazySingleton
+  Future<PackageInfo> get packageInfo async => PackageInfo.fromPlatform();
 }
 
 @module
@@ -80,21 +91,30 @@ abstract class DatabaseModule {
 
 @module
 abstract class RepositoriesModule {
+  // common
   ConfigRepository configRepository(
           ConfigRepositoryImpl configRepositoryImpl) =>
       configRepositoryImpl;
 
+  PackageInfoRepository packageInfoRepository(
+          PackageInfoRepositoryImpl packageInfoRepositoryImpl) =>
+      packageInfoRepositoryImpl;
+
+  // Identity
   IdentityRepository identityRepository(
           IdentityRepositoryImpl identityRepositoryImpl) =>
       identityRepositoryImpl;
 
+  // Credential
   CredentialRepository credentialRepository(
           CredentialRepositoryImpl credentialRepositoryImpl) =>
       credentialRepositoryImpl;
 
+  // Proof
   ProofRepository proofRepository(ProofRepositoryImpl proofRepositoryImpl) =>
       proofRepositoryImpl;
 
+  // Iden3comm
   Iden3commRepository iden3commRepository(
           Iden3commRepositoryImpl iden3commRepositoryImpl) =>
       iden3commRepositoryImpl;

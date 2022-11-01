@@ -66,7 +66,7 @@ void main() {
               headers: captureAnyNamed('headers')))
           .captured;
 
-      expect(captured[0], Uri.parse(mockAuthRequest.body!.callbackUrl!));
+      expect(captured[0], Uri.parse(mockAuthRequest.body.callbackUrl!));
       expect(captured[1], token);
       expect(captured[2], {
         HttpHeaders.acceptHeader: '*/*',
@@ -103,7 +103,7 @@ void main() {
         ),
       ).captured;
 
-      expect(captured[0], Uri.parse(mockAuthRequest.body!.callbackUrl!));
+      expect(captured[0], Uri.parse(mockAuthRequest.body.callbackUrl!));
       expect(captured[1], token);
       expect(captured[2], {
         HttpHeaders.acceptHeader: '*/*',

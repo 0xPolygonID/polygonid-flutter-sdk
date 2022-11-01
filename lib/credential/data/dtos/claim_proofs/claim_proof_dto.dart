@@ -24,8 +24,7 @@ class ClaimProofDTO extends Equatable {
   const ClaimProofDTO(this.type, this.issuer);
 
   factory ClaimProofDTO.fromJson(Map<String, dynamic> json) {
-    ClaimProofType type =
-        $enumDecode(_$ClaimProofTypeEnumMap, json['@type']);
+    ClaimProofType type = $enumDecode(_$ClaimProofTypeEnumMap, json['@type']);
 
     switch (type) {
       case ClaimProofType.bjj:

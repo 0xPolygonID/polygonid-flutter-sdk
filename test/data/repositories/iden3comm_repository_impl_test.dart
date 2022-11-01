@@ -11,21 +11,21 @@ import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart'
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/proof_scope_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/iden3_message.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
-import 'package:polygonid_flutter_sdk/sdk/mappers/iden3_message_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/iden3_message_type_mapper.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_request_mapper.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_response_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/iden3comm_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/jwz_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_response_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
+import 'package:polygonid_flutter_sdk/sdk/mappers/iden3_message_mapper.dart';
+import 'package:polygonid_flutter_sdk/sdk/mappers/iden3_message_type_mapper.dart';
 
 import '../data_sources/storage_identity_data_source_test.dart';
 import 'iden3comm_repository_impl_test.mocks.dart';
@@ -37,7 +37,7 @@ class FakeWallet extends Fake implements PrivadoIdWallet {
   Uint8List get privateKey => Uint8List(32);
 
   @override
-  dynamic get publicKey => [pubX, pubY];
+  List<String> get publicKey => [pubX, pubY];
 }
 
 const pubX = "thePubX";
@@ -71,7 +71,7 @@ const issuerMessage =
     '{"id":"0b78a480-c710-4bd8-a4fd-454b577ca991","typ":"application/iden3comm-plain-json","type":"https://iden3-communication.io/authorization/1.0/request","thid":"0b78a480-c710-4bd8-a4fd-454b577ca991","body":{"callbackUrl":"https://issuer.polygonid.me/api/callback?sessionId=867314","reason":"test flow","scope":[]},"from":"1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ"}';
 final mockAuthRequest = AuthRequest.fromJson(jsonDecode(issuerMessage));
 final mockIden3MessageEntity = Iden3MessageMapper(Iden3MessageTypeMapper())
-    .mapFrom(Iden3Message.fromJson(jsonDecode(issuerMessage)));
+    .mapFrom(jsonDecode(issuerMessage));
 
 final mockAuthResponse = AuthResponse(
   id: "id",
@@ -81,7 +81,7 @@ final mockAuthResponse = AuthResponse(
   typ: "application/iden3comm-plain-json",
   type: "https://iden3-communication.io/authorization/1.0/response",
   body: AuthBodyResponse(
-    message: mockAuthRequest.body?.message,
+    message: mockAuthRequest.body.message,
     proofs: [],
     did_doc: null,
   ),
@@ -100,17 +100,20 @@ MockStorageClaimDataSource storageClaimDataSource =
 MockClaimMapper claimMapper = MockClaimMapper();
 MockFiltersMapper filtersMapper = MockFiltersMapper();
 MockAuthResponseMapper authResponseMapper = MockAuthResponseMapper();
+MockAuthRequestMapper authRequestMapper = MockAuthRequestMapper();
 
 // Tested instance
 Iden3commRepository repository = Iden3commRepositoryImpl(
-    remoteIden3commDataSource,
-    jwzDataSource,
-    hexMapper,
-    proofScopeDataSource,
-    storageClaimDataSource,
-    claimMapper,
-    filtersMapper,
-    authResponseMapper);
+  remoteIden3commDataSource,
+  jwzDataSource,
+  hexMapper,
+  proofScopeDataSource,
+  storageClaimDataSource,
+  claimMapper,
+  filtersMapper,
+  authResponseMapper,
+  authRequestMapper,
+);
 
 @GenerateMocks([
   RemoteIden3commDataSource,
@@ -121,6 +124,7 @@ Iden3commRepository repository = Iden3commRepositoryImpl(
   ClaimMapper,
   FiltersMapper,
   AuthResponseMapper,
+  AuthRequestMapper,
 ])
 void main() {
   group("Get auth token", () {
@@ -249,7 +253,7 @@ void main() {
 
           when(remoteIden3commDataSource.authWithToken(
             token: token,
-            url: mockAuthRequest.body?.callbackUrl,
+            url: mockAuthRequest.body.callbackUrl,
           )).thenAnswer(
               (realInvocation) => Future.value(Response("body", 200)));
         },
@@ -260,7 +264,7 @@ void main() {
         () async {
           await expectLater(
             repository.authenticate(
-              url: mockAuthRequest.body!.callbackUrl!,
+              url: mockAuthRequest.body.callbackUrl!,
               authToken: token,
             ),
             completes,
@@ -277,7 +281,7 @@ void main() {
           //
           await expectLater(
             repository.authenticate(
-              url: mockAuthRequest.body!.callbackUrl!,
+              url: mockAuthRequest.body.callbackUrl!,
               authToken: token,
             ),
             throwsA(isA<UnknownApiException>()),
