@@ -1,10 +1,7 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
-import 'package:polygonid_flutter_sdk/env/sdk_env.dart';
 import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
-
-import '../../libs/rhs/contract_parser.dart';
 
 class RPCDataSource {
   final Web3Client web3Client;
@@ -14,14 +11,11 @@ class RPCDataSource {
   /// Retrieve last state for a given identity.
   ///
   /// @param [id] identity - The base58 identifier string
+  /// @param [stateContract] the ABI contract
   ///
   /// @returns [String] last state committed
-  Future<String> getState(String id) async {
+  Future<String> getState(String id, DeployedContract stateContract) async {
     try {
-      /// FIXME: this should go into another DS
-      final stateContract = await ContractParser.fromAssets(
-          'StateABI.json', SdkEnv().idStateContractAddress, 'State');
-
       final transactionParameters = [
         Uint8ArrayUtils.leBuff2int(hexToBytes(id)),
       ];

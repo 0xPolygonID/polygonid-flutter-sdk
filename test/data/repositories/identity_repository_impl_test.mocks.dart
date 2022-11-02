@@ -468,10 +468,17 @@ class MockRPCDataSource extends _i1.Mock implements _i18.RPCDataSource {
         ),
       ) as _i5.Web3Client);
   @override
-  _i9.Future<String> getState(String? id) => (super.noSuchMethod(
+  _i9.Future<String> getState(
+    String? id,
+    _i5.DeployedContract? stateContract,
+  ) =>
+      (super.noSuchMethod(
         Invocation.method(
           #getState,
-          [id],
+          [
+            id,
+            stateContract,
+          ],
         ),
         returnValue: _i9.Future<String>.value(''),
       ) as _i9.Future<String>);

@@ -1102,13 +1102,12 @@ class _$NavigateToClaimDetailClaimState
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$NavigateToClaimDetailClaimState &&
-            const DeepCollectionEquality()
-                .equals(other.claimModel, claimModel));
+            (identical(other.claimModel, claimModel) ||
+                other.claimModel == claimModel));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(claimModel));
+  int get hashCode => Object.hash(runtimeType, claimModel);
 
   @JsonKey(ignore: true)
   @override
