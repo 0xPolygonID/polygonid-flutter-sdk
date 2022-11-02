@@ -5,6 +5,8 @@ import 'package:injectable/injectable.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:polygonid_flutter_sdk/common/data/repositories/env_config_repository_impl.dart';
+import 'package:polygonid_flutter_sdk/common/domain/repositories/config_repository.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/env/dev_env.dart';
 import 'package:polygonid_flutter_sdk/env/prod_env.dart';

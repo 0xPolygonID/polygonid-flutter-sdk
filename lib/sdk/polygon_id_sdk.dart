@@ -38,7 +38,7 @@ class PolygonIdSdk {
     _ref = PolygonIdSdk._();
     _ref!.identity = await getItSdk.getAsync<IdentityWallet>();
     _ref!.credential = await getItSdk.getAsync<CredentialWallet>();
-    _ref!.proof = getItSdk.get<ProofGeneration>();
+    _ref!.proof = await getItSdk.getAsync<ProofGeneration>();
     _ref!.iden3comm = await getItSdk.getAsync<Iden3comm>();
   }
 
