@@ -19,7 +19,7 @@ import '../../../identity/data/data_sources/remote_identity_data_source.dart';
 import '../../domain/entities/circuit_data_entity.dart';
 import '../../domain/repositories/proof_repository.dart';
 import '../data_sources/atomic_query_inputs_data_source.dart';
-import '../data_sources/local_files_data_source.dart';
+import '../data_sources/local_proof_files_data_source.dart';
 import '../data_sources/proof_circuit_data_source.dart';
 import '../data_sources/prover_lib_data_source.dart';
 import '../data_sources/witness_data_source.dart';
@@ -30,7 +30,7 @@ class ProofRepositoryImpl extends ProofRepository {
   final WitnessDataSource _witnessDataSource;
   final ProverLibDataSource _proverLibDataSource;
   final AtomicQueryInputsDataSource _atomicQueryInputsDataSource;
-  final LocalFilesDataSource _localFilesDataSource;
+  final LocalProofFilesDataSource _localProofFilesDataSource;
   final ProofCircuitDataSource _proofCircuitDataSource;
   final RemoteIdentityDataSource _remoteIdentityDataSource;
   final CircuitTypeMapper _circuitTypeMapper;
@@ -46,7 +46,7 @@ class ProofRepositoryImpl extends ProofRepository {
       this._witnessDataSource,
       this._proverLibDataSource,
       this._atomicQueryInputsDataSource,
-      this._localFilesDataSource,
+      this._localProofFilesDataSource,
       this._proofCircuitDataSource,
       this._remoteIdentityDataSource,
       this._circuitTypeMapper,
@@ -59,7 +59,7 @@ class ProofRepositoryImpl extends ProofRepository {
   @override
   Future<CircuitDataEntity> loadCircuitFiles(String circuitId) async {
     List<Uint8List> circuitFiles =
-        await _localFilesDataSource.loadCircuitFiles(circuitId);
+        await _localProofFilesDataSource.loadCircuitFiles(circuitId);
     CircuitDataEntity circuitDataEntity =
         CircuitDataEntity(circuitId, circuitFiles[0], circuitFiles[1]);
     return circuitDataEntity;

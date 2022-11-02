@@ -10,6 +10,7 @@ import '../../libs/iden3core/iden3core.dart';
 
 class LibIdentityDataSource {
   final Iden3CoreLib _iden3coreLib;
+
   //final SMTStorageRepository _smtStorageRepository;
 
   LibIdentityDataSource(

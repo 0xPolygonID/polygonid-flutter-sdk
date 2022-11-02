@@ -21,7 +21,8 @@ abstract class IdentityRepository {
   /// FIXME: remove when [PublicIdentity] is created
   Future<List<String>> getPublicKeys({required String privateKey});
 
-  Future<String> fetchIdentityState({required String id});
+  Future<String> fetchIdentityState(
+      {required String id, required String contractAddress});
 
   Future<RhsNodeEntity> fetchStateRoots({required String url});
 

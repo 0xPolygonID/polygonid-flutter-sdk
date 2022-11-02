@@ -113,7 +113,6 @@ class CredentialRepositoryImpl extends CredentialRepository {
         .catchError((error) => throw FetchVocabException(error));
   }
 
-  @override
   Future<String> getRhsRevocationId({required ClaimEntity claim}) {
     ClaimDTO claimDTO = _claimMapper.mapTo(claim);
     try {

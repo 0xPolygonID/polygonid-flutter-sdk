@@ -153,12 +153,18 @@ class MockIdentityRepository extends _i1.Mock
         returnValue: _i5.Future<List<String>>.value(<String>[]),
       ) as _i5.Future<List<String>>);
   @override
-  _i5.Future<String> fetchIdentityState({required String? id}) =>
+  _i5.Future<String> fetchIdentityState({
+    required String? id,
+    required String? contractAddress,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #fetchIdentityState,
           [],
-          {#id: id},
+          {
+            #id: id,
+            #contractAddress: contractAddress,
+          },
         ),
         returnValue: _i5.Future<String>.value(''),
       ) as _i5.Future<String>);
