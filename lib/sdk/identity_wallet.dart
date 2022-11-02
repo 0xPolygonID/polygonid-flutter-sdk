@@ -15,6 +15,7 @@ class IdentityWallet {
   final SignMessageUseCase _signMessageUseCase;
   final GetCurrentIdentifierUseCase _getCurrentIdentifierUseCase;
   final RemoveCurrentIdentityUseCase _removeCurrentIdentityUseCase;
+
   // TODO: remove
   final FetchIdentityStateUseCase _fetchIdentityStateUseCase;
 
@@ -78,7 +79,6 @@ class IdentityWallet {
   }
 
   Future<String> fetchIdentityState(String id) {
-    return _fetchIdentityStateUseCase.execute(
-        param: FetchIdentityStateParam(id: id));
+    return _fetchIdentityStateUseCase.execute(param: id);
   }
 }

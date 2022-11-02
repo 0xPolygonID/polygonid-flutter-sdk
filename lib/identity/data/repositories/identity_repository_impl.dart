@@ -7,6 +7,7 @@ import '../../domain/exceptions/identity_exceptions.dart';
 import '../../domain/repositories/identity_repository.dart';
 import '../../libs/bjj/privadoid_wallet.dart';
 import '../data_sources/lib_identity_data_source.dart';
+import '../data_sources/local_contract_files_data_source.dart';
 import '../data_sources/local_identity_data_source.dart';
 import '../data_sources/remote_identity_data_source.dart';
 import '../data_sources/storage_identity_data_source.dart';
@@ -26,6 +27,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final StorageIdentityDataSource _storageIdentityDataSource;
   final StorageKeyValueDataSource _storageKeyValueDataSource;
   final RPCDataSource _rpcDataSource;
+  final LocalContractFilesDataSource _localContractFilesDataSource;
   final HexMapper _hexMapper;
   final PrivateKeyMapper _privateKeyMapper;
   final IdentityDTOMapper _identityDTOMapper;
@@ -39,6 +41,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._storageIdentityDataSource,
     this._storageKeyValueDataSource,
     this._rpcDataSource,
+    this._localContractFilesDataSource,
     this._hexMapper,
     this._privateKeyMapper,
     this._identityDTOMapper,
@@ -167,9 +170,13 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<String> fetchIdentityState({required String id}) {
-    return _libIdentityDataSource.getId(id).then((libId) => _rpcDataSource
-        .getState(libId)
+  Future<String> fetchIdentityState(
+      {required String id, required String contractAddress}) {
+    return Future.wait<dynamic>([
+      _libIdentityDataSource.getId(id),
+      _localContractFilesDataSource.loadStateContract(contractAddress)
+    ]).then((values) => _rpcDataSource
+        .getState(values[0], values[1])
         .catchError((error) => throw FetchIdentityStateException(error)));
   }
 
