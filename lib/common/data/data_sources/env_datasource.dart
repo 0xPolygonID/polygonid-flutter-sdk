@@ -11,7 +11,7 @@ class EnvDataSource {
       case PolygonIdConfig.polygonIdAccessMessage:
         return _sdkEnv.polygonIdAccessMessage;
       case PolygonIdConfig.networkName:
-        return _sdkEnv.polygonIdAccessMessage;
+        return _sdkEnv.networkName;
       case PolygonIdConfig.networkEnv:
         return _sdkEnv.networkEnv;
       case PolygonIdConfig.infuraUrl:

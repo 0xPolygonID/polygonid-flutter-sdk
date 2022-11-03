@@ -38,12 +38,13 @@ class RemoteIdentityDataSource {
     }
   }
 
-  Future<Map<String, dynamic>> nonRevProof(
-      int revNonce, String id, String rhsBaseUrl) async {
+  Future<Map<String, dynamic>> getNonRevocationProof(
+      String identityState, int revNonce, String rhsBaseUrl) async {
     try {
       /// FIXME: this 2 lines should go to a DS and be called in a repo
       // 1. Fetch state roots from RHS
-      RhsNodeDTO rhsNode = await fetchStateRoots(url: rhsBaseUrl + id);
+      RhsNodeDTO rhsNode =
+          await fetchStateRoots(url: rhsBaseUrl + identityState);
       RhsNodeType rhsNodeType = RhsNodeTypeMapper().mapFrom(rhsNode.node);
 
       Map<String, dynamic>? issuer;
