@@ -187,16 +187,16 @@ class MockIdentityRepository extends _i1.Mock
       ) as _i5.Future<_i3.RhsNodeEntity>);
   @override
   _i5.Future<Map<String, dynamic>> getNonRevProof(
+    String? identityState,
     int? revNonce,
-    String? id,
     String? rhsBaseUrl,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
           #getNonRevProof,
           [
+            identityState,
             revNonce,
-            id,
             rhsBaseUrl,
           ],
         ),

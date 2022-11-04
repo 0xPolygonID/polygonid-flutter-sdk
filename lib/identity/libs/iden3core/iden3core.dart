@@ -1853,7 +1853,7 @@ class Iden3CoreLib {
     for (int i = 0; i < 31; i++) {
       idList[i] = idPtr.ref.data[i];
     }
-    return bytesToHex(idList, forcePadLength: 64);
+    return bytesToHex(idList);
   }
 
   ffi.Pointer<IDENMerkleTree>? _createCorrectMT() {

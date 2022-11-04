@@ -1,6 +1,7 @@
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/fetch_identity_state_use_case.dart';
 
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
@@ -11,20 +12,25 @@ class GenerateNonRevProofUseCase
   final IdentityRepository _identityRepository;
   final CredentialRepository _credentialRepository;
   final GetEnvConfigUseCase _getEnvConfigUseCase;
+  final FetchIdentityStateUseCase _fetchIdentityStateUseCase;
 
-  GenerateNonRevProofUseCase(this._identityRepository,
-      this._credentialRepository, this._getEnvConfigUseCase);
+  GenerateNonRevProofUseCase(
+      this._identityRepository,
+      this._credentialRepository,
+      this._getEnvConfigUseCase,
+      this._fetchIdentityStateUseCase);
 
   @override
   Future<Map<String, dynamic>> execute({required ClaimEntity param}) {
-    return Future.wait<dynamic>([
-      _getEnvConfigUseCase.execute(
-          param: PolygonIdConfig.reverseHashServiceUrl),
-      _credentialRepository.getRhsRevocationId(claim: param),
-      _credentialRepository.getRevocationNonce(claim: param),
-    ])
-        .then((values) =>
-            _identityRepository.getNonRevProof(values[2], values[1], values[0]))
+    return _credentialRepository
+        .getRhsRevocationId(claim: param)
+        .then((id) => _fetchIdentityStateUseCase.execute(param: id))
+        .then((identityState) => Future.wait<dynamic>([
+              _credentialRepository.getRevocationNonce(claim: param),
+              _getEnvConfigUseCase.execute(
+                  param: PolygonIdConfig.reverseHashServiceUrl),
+            ]).then((values) => _identityRepository.getNonRevProof(
+                identityState, values[0], values[1])))
         .then((nonRevProof) {
       logger().i("[GenerateNonRevProofUseCase] Non rev proof: $nonRevProof");
 

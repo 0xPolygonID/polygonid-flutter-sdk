@@ -423,6 +423,7 @@ _i1.GetIt $initSDKGetIt(
             await get.getAsync<_i85.IdentityRepository>(),
             await get.getAsync<_i75.CredentialRepository>(),
             get<_i77.GetEnvConfigUseCase>(),
+            await get.getAsync<_i90.FetchIdentityStateUseCase>(),
           ));
   gh.factoryAsync<_i93.GetAuthTokenUseCase>(
       () async => _i93.GetAuthTokenUseCase(

@@ -1,13 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/mappers/iden3_message_mapper.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_event.dart';
@@ -61,18 +59,6 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     }
 
     try {
-      // LOCAL FILES
-      const circuitDatPath = 'assets/auth/auth.dat';
-      const circuitProvingKeyPath = 'assets/auth/auth.zkey';
-      ByteData datFile = await rootBundle.load(circuitDatPath);
-      ByteData zkeyFile = await rootBundle.load(circuitProvingKeyPath);
-      List<Uint8List> circuitFiles = [
-        datFile.buffer.asUint8List(),
-        zkeyFile.buffer.asUint8List(),
-      ];
-      var circuitData =
-          CircuitDataEntity('auth', circuitFiles[0], circuitFiles[1]);
-
       String url = messageBody['url'];
       List<dynamic> credentials = messageBody['credentials'];
 
@@ -82,7 +68,6 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
         var entity = CredentialRequestEntity(
           identifier,
-          circuitData,
           url,
           id,
           iden3message.thid,
