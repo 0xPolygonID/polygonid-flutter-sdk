@@ -7,10 +7,12 @@ import '../repositories/identity_repository.dart';
 
 class CreateIdentityParam {
   final String? secret;
+  final bool isStored;
   final bool replaceStored;
 
   CreateIdentityParam({
     this.secret,
+    this.isStored = true,
     this.replaceStored = false,
   });
 }
@@ -26,31 +28,35 @@ class CreateIdentityUseCase
       {required CreateIdentityParam param}) async {
     PrivateIdentityEntity privateIdentity;
     try {
-      // Check if identity already exists
       privateIdentity = await _identityRepository.createIdentity(
           secret: param.secret, isStored: false);
-      // Get the known [Identity] associated with the identifier
-      IdentityEntity identity = await _identityRepository.getIdentity(
-          identifier: privateIdentity.identifier,
-          privateKey: privateIdentity.privateKey);
+      if (!param.isStored) {
+        return privateIdentity;
+      } else {
+        // Check if identity already exists
+        // Get the known [Identity] associated with the identifier
+        IdentityEntity identity = await _identityRepository.getIdentity(
+            identifier: privateIdentity.identifier,
+            privateKey: privateIdentity.privateKey);
 
-      // Get the list of identities stored in the sdk
-      //List<IdentityEntity> storedIdentities =
-      //await _identityRepository.getIdentities();
+        // Get the list of identities stored in the sdk
+        //List<IdentityEntity> storedIdentities =
+        //await _identityRepository.getIdentities();
 
-      if (identity is PrivateIdentityEntity) {
-        if (param.replaceStored) {
-          await _identityRepository.storeIdentity(
-              identity: privateIdentity,
-              privateKey: privateIdentity.privateKey);
-        } else {
-          throw IdentityAlreadyExistsException(identity.identifier);
+        if (identity is PrivateIdentityEntity) {
+          if (param.replaceStored) {
+            await _identityRepository.storeIdentity(
+                identity: privateIdentity,
+                privateKey: privateIdentity.privateKey);
+          } else {
+            throw IdentityAlreadyExistsException(identity.identifier);
+          }
         }
       }
     } on UnknownIdentityException {
       // If it doesn't exist save the identity
-      privateIdentity =
-          await _identityRepository.createIdentity(secret: param.secret);
+      privateIdentity = await _identityRepository.createIdentity(
+          secret: param.secret, isStored: param.isStored);
     } catch (error) {
       logger().e("[CreateIdentityUseCase] Error: $error");
 

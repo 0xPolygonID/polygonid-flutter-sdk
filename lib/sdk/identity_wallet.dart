@@ -1,11 +1,12 @@
 import 'package:injectable/injectable.dart';
 
-import '../common/domain/tuples.dart';
 import '../identity/domain/entities/identity_entity.dart';
 import '../identity/domain/entities/private_identity_entity.dart';
 import '../identity/domain/use_cases/create_identity_use_case.dart';
 import '../identity/domain/use_cases/fetch_identity_state_use_case.dart';
+import '../identity/domain/use_cases/get_identifier_use_case.dart';
 import '../identity/domain/use_cases/get_identity_use_case.dart';
+import '../identity/domain/use_cases/remove_identity_use_case.dart';
 import '../identity/domain/use_cases/sign_message_use_case.dart';
 
 abstract class PolygonIdSdkIdentity {
@@ -57,6 +58,8 @@ abstract class PolygonIdSdkIdentity {
 class IdentityWallet {
   final CreateIdentityUseCase _createIdentityUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
+  final RemoveIdentityUseCase _removeIdentityUseCase;
+  final GetIdentifierUseCase _getIdentifierUseCase;
   final SignMessageUseCase _signMessageUseCase;
 
   // TODO: remove
@@ -65,6 +68,8 @@ class IdentityWallet {
   IdentityWallet(
     this._createIdentityUseCase,
     this._getIdentityUseCase,
+    this._removeIdentityUseCase,
+    this._getIdentifierUseCase,
     this._signMessageUseCase,
     this._fetchIdentityStateUseCase,
   );
@@ -79,9 +84,16 @@ class IdentityWallet {
   /// in order to be compatible with the SDK. The following rules will be applied:
   /// - If the byte array is not 32 length, it will be padded with 0s.
   /// - If the byte array is longer than 32, an exception will be thrown.
-  Future<PrivateIdentityEntity> createIdentity({String? secret}) async {
+  Future<PrivateIdentityEntity> createIdentity(
+      {String? secret,
+      bool isStored = true,
+      bool replaceStored = false}) async {
     return _createIdentityUseCase.execute(
-        param: CreateIdentityParam(secret: secret));
+        param: CreateIdentityParam(
+      secret: secret,
+      isStored: isStored,
+      replaceStored: replaceStored,
+    ));
   }
 
   /// Get an [IdentityEntity] from a private key.
@@ -100,27 +112,31 @@ class IdentityWallet {
             GetIdentityParam(identifier: identifier, privateKey: privateKey));
   }
 
-  /// Sign a message through an identifier.
-  /// The [identifier] is a string returned when creating an identity with [createIdentity]
+  /// Remove the identity associated with the identifier
+  /// (stored when creating an identity via [createIdentity]).
+  Future<void> removeIdentity(
+      {required String identifier, required String privateKey}) {
+    return _removeIdentityUseCase.execute(
+        param: RemoveIdentityParam(
+            identifier: identifier, privateKey: privateKey));
+  }
+
+  /// Sign a message through a privateKey.
+  /// The [privateKey] is a string
   /// and [message] is the message to sign. Returns a string representing the signature.
   Future<String> sign(
-      {required String identifier, required String message}) async {
+      {required String privateKey, required String message}) async {
     return _signMessageUseCase.execute(
-        param: SignMessageParam(identifier, message));
+        param: SignMessageParam(privateKey, message));
   }
 
-  /// As the SDK support only one identity for the moment, we return the last
-  /// known identifier (stored when creating an identity via [createIdentity]).
-  /*Future<String?> getCurrentIdentifier() {
-    return _getCurrentIdentifierUseCase.execute();
+  /// Returns the identifier from derived from a privateKey
+  Future<String> getIdentifier({required String privateKey}) {
+    return _getIdentifierUseCase.execute(
+        param: GetIdentifierParam(
+      privateKey: privateKey,
+    ));
   }
-
-  /// As the SDK support only one identity for the moment, we remove the identity
-  /// associated with the last known identifier (stored when creating
-  /// an identity via [createIdentity]).
-  Future<void> removeCurrentIdentity() {
-    return _removeCurrentIdentityUseCase.execute();
-  }*/
 
   Future<String> fetchIdentityState(String id) {
     return _fetchIdentityStateUseCase.execute(param: id);
