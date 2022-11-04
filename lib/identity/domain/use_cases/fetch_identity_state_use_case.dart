@@ -15,11 +15,11 @@ class FetchIdentityStateUseCase extends FutureUseCase<String, String> {
   Future<String> execute({required String param}) async {
     return _getEnvConfigUseCase
         .execute(param: PolygonIdConfig.idStateContractAddress)
-        .then((contractAddress) => _identityRepository.fetchIdentityState(
-            id: param, contractAddress: contractAddress))
+        .then((contractAddress) => _identityRepository.getState(
+            identifier: param, contractAddress: contractAddress))
         .then((state) {
-      logger()
-          .i("[FetchIdentityStateUseCase] Fetched state $state for id $param");
+      logger().i(
+          "[FetchIdentityStateUseCase] Fetched state $state for identifier $param");
 
       return state;
     }).catchError((error) {

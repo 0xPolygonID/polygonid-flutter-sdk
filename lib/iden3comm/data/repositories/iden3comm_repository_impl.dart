@@ -23,7 +23,7 @@ import 'package:uuid/uuid.dart';
 import '../../../common/domain/domain_logger.dart';
 import '../../../identity/data/data_sources/jwz_data_source.dart';
 import '../../../identity/data/mappers/hex_mapper.dart';
-import '../../../identity/domain/entities/identity_entity.dart';
+import '../../../identity/domain/entities/private_identity_entity.dart';
 import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
 import '../../domain/repositories/iden3comm_repository.dart';
 import '../data_sources/proof_scope_data_source.dart';
@@ -72,7 +72,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
 
   @override
   Future<String> getAuthToken(
-      {required IdentityEntity identityEntity,
+      {required PrivateIdentityEntity identityEntity,
       required String message,
       required CircuitDataEntity authData}) async {
     return _jwzDataSource.getAuthToken(

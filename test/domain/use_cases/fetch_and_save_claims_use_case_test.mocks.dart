@@ -109,70 +109,117 @@ class MockCredentialRepository extends _i1.Mock
         returnValue: _i4.Future<String>.value(''),
       ) as _i4.Future<String>);
   @override
-  _i4.Future<void> saveClaims({required List<_i2.ClaimEntity>? claims}) =>
+  _i4.Future<void> saveClaims({
+    required List<_i2.ClaimEntity>? claims,
+    required String? identifier,
+    required String? privateKey,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #saveClaims,
           [],
-          {#claims: claims},
+          {
+            #claims: claims,
+            #identifier: identifier,
+            #privateKey: privateKey,
+          },
         ),
         returnValue: _i4.Future<void>.value(),
         returnValueForMissingStub: _i4.Future<void>.value(),
       ) as _i4.Future<void>);
   @override
-  _i4.Future<List<_i2.ClaimEntity>> getClaims(
-          {List<_i7.FilterEntity>? filters}) =>
+  _i4.Future<List<_i2.ClaimEntity>> getClaims({
+    List<_i7.FilterEntity>? filters,
+    required String? identifier,
+    required String? privateKey,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #getClaims,
           [],
-          {#filters: filters},
+          {
+            #filters: filters,
+            #identifier: identifier,
+            #privateKey: privateKey,
+          },
         ),
         returnValue:
             _i4.Future<List<_i2.ClaimEntity>>.value(<_i2.ClaimEntity>[]),
       ) as _i4.Future<List<_i2.ClaimEntity>>);
   @override
-  _i4.Future<_i2.ClaimEntity> getClaim({required String? id}) =>
+  _i4.Future<_i2.ClaimEntity> getClaim({
+    required String? claimId,
+    required String? identifier,
+    required String? privateKey,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #getClaim,
           [],
-          {#id: id},
+          {
+            #claimId: claimId,
+            #identifier: identifier,
+            #privateKey: privateKey,
+          },
         ),
         returnValue: _i4.Future<_i2.ClaimEntity>.value(_FakeClaimEntity_0(
           this,
           Invocation.method(
             #getClaim,
             [],
-            {#id: id},
+            {
+              #claimId: claimId,
+              #identifier: identifier,
+              #privateKey: privateKey,
+            },
           ),
         )),
       ) as _i4.Future<_i2.ClaimEntity>);
   @override
-  _i4.Future<void> removeClaims({required List<String>? ids}) =>
+  _i4.Future<void> removeClaims({
+    required List<String>? claimIds,
+    required String? identifier,
+    required String? privateKey,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #removeClaims,
           [],
-          {#ids: ids},
+          {
+            #claimIds: claimIds,
+            #identifier: identifier,
+            #privateKey: privateKey,
+          },
         ),
         returnValue: _i4.Future<void>.value(),
         returnValueForMissingStub: _i4.Future<void>.value(),
       ) as _i4.Future<void>);
   @override
-  _i4.Future<_i2.ClaimEntity> updateClaim({required _i2.ClaimEntity? claim}) =>
+  _i4.Future<_i2.ClaimEntity> updateClaim({
+    required _i2.ClaimEntity? claim,
+    required String? identifier,
+    required String? privateKey,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #updateClaim,
           [],
-          {#claim: claim},
+          {
+            #claim: claim,
+            #identifier: identifier,
+            #privateKey: privateKey,
+          },
         ),
         returnValue: _i4.Future<_i2.ClaimEntity>.value(_FakeClaimEntity_0(
           this,
           Invocation.method(
             #updateClaim,
             [],
-            {#claim: claim},
+            {
+              #claim: claim,
+              #identifier: identifier,
+              #privateKey: privateKey,
+            },
           ),
         )),
       ) as _i4.Future<_i2.ClaimEntity>);

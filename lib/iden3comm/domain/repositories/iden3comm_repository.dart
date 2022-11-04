@@ -1,6 +1,6 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 
+import '../../../identity/domain/entities/private_identity_entity.dart';
 import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
 import '../entities/proof_entity.dart';
 
@@ -11,7 +11,7 @@ abstract class Iden3commRepository {
   });
 
   Future<String> getAuthToken(
-      {required IdentityEntity identityEntity,
+      {required PrivateIdentityEntity identityEntity,
       required String message,
       required CircuitDataEntity authData});
 

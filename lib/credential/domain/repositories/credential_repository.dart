@@ -11,15 +11,31 @@ abstract class CredentialRepository {
   Future<String> getFetchMessage(
       {required CredentialRequestEntity credentialRequest});
 
-  Future<void> saveClaims({required List<ClaimEntity> claims});
+  Future<void> saveClaims({
+    required List<ClaimEntity> claims,
+    required String identifier,
+    required String privateKey,
+  });
 
-  Future<List<ClaimEntity>> getClaims({List<FilterEntity>? filters});
+  Future<List<ClaimEntity>> getClaims(
+      {List<FilterEntity>? filters,
+      required String identifier,
+      required String privateKey});
 
-  Future<ClaimEntity> getClaim({required String id});
+  Future<ClaimEntity> getClaim(
+      {required String claimId,
+      required String identifier,
+      required String privateKey});
 
-  Future<void> removeClaims({required List<String> ids});
+  Future<void> removeClaims(
+      {required List<String> claimIds,
+      required String identifier,
+      required String privateKey});
 
-  Future<ClaimEntity> updateClaim({required ClaimEntity claim});
+  Future<ClaimEntity> updateClaim(
+      {required ClaimEntity claim,
+      required String identifier,
+      required String privateKey});
 
   Future<Map<String, dynamic>?> fetchSchema({required String url});
 

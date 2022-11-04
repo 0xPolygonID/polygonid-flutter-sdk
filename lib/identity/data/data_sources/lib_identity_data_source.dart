@@ -18,6 +18,16 @@ class LibIdentityDataSource {
     /*this._smtStorageRepository*/
   );
 
+  Future<String> getId(String id) {
+    return Future.value(_iden3coreLib.getIdFromString(id)).then((libId) {
+      if (libId.isEmpty) {
+        throw GenerateNonRevProofException(id);
+      }
+
+      return libId;
+    });
+  }
+
   ///
   Future<String> getIdentifier({required String pubX, required String pubY}) {
     try {
@@ -50,15 +60,5 @@ class LibIdentityDataSource {
     } catch (e) {
       return Future.error(e);
     }
-  }
-
-  Future<String> getId(String id) {
-    return Future.value(_iden3coreLib.getIdFromString(id)).then((libId) {
-      if (libId.isEmpty) {
-        throw GenerateNonRevProofException(id);
-      }
-
-      return libId;
-    });
   }
 }

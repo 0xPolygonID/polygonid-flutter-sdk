@@ -3,15 +3,17 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i5;
+import 'dart:async' as _i6;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
+    as _i3;
+import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart'
     as _i2;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart'
-    as _i3;
-import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart'
     as _i4;
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart'
+    as _i5;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -24,9 +26,9 @@ import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repo
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakeIdentityEntity_0 extends _i1.SmartFake
-    implements _i2.IdentityEntity {
-  _FakeIdentityEntity_0(
+class _FakePrivateIdentityEntity_0 extends _i1.SmartFake
+    implements _i2.PrivateIdentityEntity {
+  _FakePrivateIdentityEntity_0(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -35,8 +37,19 @@ class _FakeIdentityEntity_0 extends _i1.SmartFake
         );
 }
 
-class _FakeRhsNodeEntity_1 extends _i1.SmartFake implements _i3.RhsNodeEntity {
-  _FakeRhsNodeEntity_1(
+class _FakeIdentityEntity_1 extends _i1.SmartFake
+    implements _i3.IdentityEntity {
+  _FakeIdentityEntity_1(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeRhsNodeEntity_2 extends _i1.SmartFake implements _i4.RhsNodeEntity {
+  _FakeRhsNodeEntity_2(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -49,78 +62,120 @@ class _FakeRhsNodeEntity_1 extends _i1.SmartFake implements _i3.RhsNodeEntity {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockIdentityRepository extends _i1.Mock
-    implements _i4.IdentityRepository {
+    implements _i5.IdentityRepository {
   MockIdentityRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i5.Future<String> createIdentity({String? privateKey}) =>
+  _i6.Future<_i2.PrivateIdentityEntity> createIdentity({
+    String? secret,
+    bool? isStored = true,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #createIdentity,
           [],
-          {#privateKey: privateKey},
+          {
+            #secret: secret,
+            #isStored: isStored,
+          },
         ),
-        returnValue: _i5.Future<String>.value(''),
-      ) as _i5.Future<String>);
-  @override
-  _i5.Future<_i2.IdentityEntity> getIdentityFromKey({String? privateKey}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getIdentityFromKey,
-          [],
-          {#privateKey: privateKey},
-        ),
-        returnValue: _i5.Future<_i2.IdentityEntity>.value(_FakeIdentityEntity_0(
+        returnValue: _i6.Future<_i2.PrivateIdentityEntity>.value(
+            _FakePrivateIdentityEntity_0(
           this,
           Invocation.method(
-            #getIdentityFromKey,
+            #createIdentity,
             [],
-            {#privateKey: privateKey},
+            {
+              #secret: secret,
+              #isStored: isStored,
+            },
           ),
         )),
-      ) as _i5.Future<_i2.IdentityEntity>);
+      ) as _i6.Future<_i2.PrivateIdentityEntity>);
   @override
-  _i5.Future<String> getIdentifier({String? privateKey}) => (super.noSuchMethod(
+  _i6.Future<void> storeIdentity({
+    required _i3.IdentityEntity? identity,
+    required String? privateKey,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #storeIdentity,
+          [],
+          {
+            #identity: identity,
+            #privateKey: privateKey,
+          },
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+  @override
+  _i6.Future<void> removeIdentity({
+    required String? identifier,
+    required String? privateKey,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #removeIdentity,
+          [],
+          {
+            #identifier: identifier,
+            #privateKey: privateKey,
+          },
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+  @override
+  _i6.Future<String> getIdentifier({required String? privateKey}) =>
+      (super.noSuchMethod(
         Invocation.method(
           #getIdentifier,
           [],
           {#privateKey: privateKey},
         ),
-        returnValue: _i5.Future<String>.value(''),
-      ) as _i5.Future<String>);
+        returnValue: _i6.Future<String>.value(''),
+      ) as _i6.Future<String>);
   @override
-  _i5.Future<_i2.IdentityEntity> getIdentity({required String? identifier}) =>
+  _i6.Future<_i3.IdentityEntity> getIdentity({
+    required String? identifier,
+    String? privateKey,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #getIdentity,
           [],
-          {#identifier: identifier},
+          {
+            #identifier: identifier,
+            #privateKey: privateKey,
+          },
         ),
-        returnValue: _i5.Future<_i2.IdentityEntity>.value(_FakeIdentityEntity_0(
+        returnValue: _i6.Future<_i3.IdentityEntity>.value(_FakeIdentityEntity_1(
           this,
           Invocation.method(
             #getIdentity,
             [],
-            {#identifier: identifier},
+            {
+              #identifier: identifier,
+              #privateKey: privateKey,
+            },
           ),
         )),
-      ) as _i5.Future<_i2.IdentityEntity>);
+      ) as _i6.Future<_i3.IdentityEntity>);
   @override
-  _i5.Future<void> removeIdentity({required String? identifier}) =>
-      (super.noSuchMethod(
+  _i6.Future<List<_i3.IdentityEntity>> getIdentities() => (super.noSuchMethod(
         Invocation.method(
-          #removeIdentity,
+          #getIdentities,
           [],
-          {#identifier: identifier},
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue:
+            _i6.Future<List<_i3.IdentityEntity>>.value(<_i3.IdentityEntity>[]),
+      ) as _i6.Future<List<_i3.IdentityEntity>>);
   @override
-  _i5.Future<String> signMessage({
-    required String? identifier,
+  _i6.Future<String> signMessage({
+    required String? privateKey,
     required String? message,
   }) =>
       (super.noSuchMethod(
@@ -128,83 +183,14 @@ class MockIdentityRepository extends _i1.Mock
           #signMessage,
           [],
           {
-            #identifier: identifier,
+            #privateKey: privateKey,
             #message: message,
           },
         ),
-        returnValue: _i5.Future<String>.value(''),
-      ) as _i5.Future<String>);
+        returnValue: _i6.Future<String>.value(''),
+      ) as _i6.Future<String>);
   @override
-  _i5.Future<String?> getCurrentIdentifier() => (super.noSuchMethod(
-        Invocation.method(
-          #getCurrentIdentifier,
-          [],
-        ),
-        returnValue: _i5.Future<String?>.value(),
-      ) as _i5.Future<String?>);
-  @override
-  _i5.Future<List<String>> getPublicKeys({required String? privateKey}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getPublicKeys,
-          [],
-          {#privateKey: privateKey},
-        ),
-        returnValue: _i5.Future<List<String>>.value(<String>[]),
-      ) as _i5.Future<List<String>>);
-  @override
-  _i5.Future<String> fetchIdentityState({
-    required String? id,
-    required String? contractAddress,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #fetchIdentityState,
-          [],
-          {
-            #id: id,
-            #contractAddress: contractAddress,
-          },
-        ),
-        returnValue: _i5.Future<String>.value(''),
-      ) as _i5.Future<String>);
-  @override
-  _i5.Future<_i3.RhsNodeEntity> fetchStateRoots({required String? url}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #fetchStateRoots,
-          [],
-          {#url: url},
-        ),
-        returnValue: _i5.Future<_i3.RhsNodeEntity>.value(_FakeRhsNodeEntity_1(
-          this,
-          Invocation.method(
-            #fetchStateRoots,
-            [],
-            {#url: url},
-          ),
-        )),
-      ) as _i5.Future<_i3.RhsNodeEntity>);
-  @override
-  _i5.Future<Map<String, dynamic>> getNonRevProof(
-    int? revNonce,
-    String? id,
-    String? rhsBaseUrl,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getNonRevProof,
-          [
-            revNonce,
-            id,
-            rhsBaseUrl,
-          ],
-        ),
-        returnValue:
-            _i5.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
-      ) as _i5.Future<Map<String, dynamic>>);
-  @override
-  _i5.Future<String> getDidIdentifier({
+  _i6.Future<String> getDidIdentifier({
     required String? identifier,
     required String? networkName,
     required String? networkEnv,
@@ -219,6 +205,57 @@ class MockIdentityRepository extends _i1.Mock
             #networkEnv: networkEnv,
           },
         ),
-        returnValue: _i5.Future<String>.value(''),
-      ) as _i5.Future<String>);
+        returnValue: _i6.Future<String>.value(''),
+      ) as _i6.Future<String>);
+  @override
+  _i6.Future<Map<String, dynamic>> getNonRevProof(
+    int? revNonce,
+    String? id,
+    String? rhsBaseUrl,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getNonRevProof,
+          [
+            revNonce,
+            id,
+            rhsBaseUrl,
+          ],
+        ),
+        returnValue:
+            _i6.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i6.Future<Map<String, dynamic>>);
+  @override
+  _i6.Future<String> getState({
+    required String? identifier,
+    required String? contractAddress,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getState,
+          [],
+          {
+            #identifier: identifier,
+            #contractAddress: contractAddress,
+          },
+        ),
+        returnValue: _i6.Future<String>.value(''),
+      ) as _i6.Future<String>);
+  @override
+  _i6.Future<_i4.RhsNodeEntity> getStateRoots({required String? url}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getStateRoots,
+          [],
+          {#url: url},
+        ),
+        returnValue: _i6.Future<_i4.RhsNodeEntity>.value(_FakeRhsNodeEntity_2(
+          this,
+          Invocation.method(
+            #getStateRoots,
+            [],
+            {#url: url},
+          ),
+        )),
+      ) as _i6.Future<_i4.RhsNodeEntity>);
 }

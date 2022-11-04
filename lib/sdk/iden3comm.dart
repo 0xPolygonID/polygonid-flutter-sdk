@@ -36,18 +36,27 @@ class Iden3comm {
   Future<void> authenticate(
       {required Iden3MessageEntity message,
       required String identifier,
+      required String privateKey,
       String? pushToken}) {
     return _authenticateUseCase.execute(
         param: AuthenticateParam(
-            message: message, identifier: identifier, pushToken: pushToken));
+      message: message,
+      identifier: identifier,
+      privateKey: privateKey,
+      pushToken: pushToken,
+    ));
   }
 
   Future<List<ProofEntity>> getProofs(
       {required Iden3MessageEntity message,
       required String identifier,
+      required String privateKey,
       String? challenge}) {
     return _getProofsUseCase.execute(
         param: GetProofsParam(
-            message: message, identifier: identifier, challenge: challenge));
+            message: message,
+            identifier: identifier,
+            challenge: challenge,
+            privateKey: privateKey));
   }
 }

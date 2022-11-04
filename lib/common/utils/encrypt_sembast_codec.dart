@@ -1,0 +1,91 @@
+import 'dart:convert';
+
+import 'package:encrypt/encrypt.dart';
+import 'package:sembast/sembast.dart';
+
+class _EncryptEncoder extends Converter<Map<String, dynamic>, String> {
+  final String key;
+  final String signature;
+  _EncryptEncoder(this.key, this.signature);
+
+  @override
+  String convert(Map<String, dynamic> input) {
+    String encoded;
+    switch (signature) {
+      case "Salsa20":
+        encoded = Encrypter(Salsa20(Key.fromUtf8(key)))
+            .encrypt(json.encode(input), iv: IV.fromLength(8))
+            .base64;
+        break;
+      case "AES":
+        encoded = Encrypter(AES(Key.fromUtf8(key)))
+            .encrypt(json.encode(input), iv: IV.fromLength(16))
+            .base64;
+        break;
+      case "Fernet":
+        encoded = Encrypter(
+                Fernet(Key.fromUtf8(base64Url.encode(Key.fromUtf8(key).bytes))))
+            .encrypt(json.encode(input), iv: IV.fromLength(16))
+            .base64;
+        break;
+      default:
+        throw FormatException('invalid $signature');
+        break;
+    }
+    return encoded;
+  }
+}
+
+class _EncryptDecoder extends Converter<String, Map<String, dynamic>> {
+  final String key;
+  final String signature;
+  _EncryptDecoder(this.key, this.signature);
+
+  @override
+  Map<String, dynamic> convert(String input) {
+    var decoded;
+    switch (signature) {
+      case "Salsa20":
+        decoded = json.decode(Encrypter(Salsa20(Key.fromUtf8(key)))
+            .decrypt64(input, iv: IV.fromLength(8)));
+        break;
+      case "AES":
+        decoded = json.decode(Encrypter(AES(Key.fromUtf8(key)))
+            .decrypt64(input, iv: IV.fromLength(16)));
+        break;
+      case "Fernet":
+        decoded = json.decode(Encrypter(
+                Fernet(Key.fromUtf8(base64Url.encode(Key.fromUtf8(key).bytes))))
+            .decrypt64(input, iv: IV.fromLength(16)));
+        break;
+      default:
+        break;
+    }
+    if (decoded is Map) {
+      return decoded.cast<String, dynamic>();
+    }
+    throw FormatException('invalid input $input');
+  }
+}
+
+class _EncryptCodec extends Codec<Map<String, dynamic>, String> {
+  final String signature;
+  late _EncryptEncoder _encoder;
+  late _EncryptDecoder _decoder;
+  _EncryptCodec(String password, this.signature) {
+    _encoder = _EncryptEncoder(password, signature);
+    _decoder = _EncryptDecoder(password, signature);
+  }
+
+  @override
+  Converter<String, Map<String, dynamic>> get decoder => _decoder;
+
+  @override
+  Converter<Map<String, dynamic>, String> get encoder => _encoder;
+}
+
+// Salsa20 (16 length key required) or AES (32 length key required)
+SembastCodec getEncryptSembastCodec(
+        {required String password, String signature = "Salsa20"}) =>
+    SembastCodec(
+        signature: signature, codec: _EncryptCodec(password, signature));

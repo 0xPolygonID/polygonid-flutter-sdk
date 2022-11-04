@@ -43,10 +43,29 @@ class MockWalletLibWrapper extends _i1.Mock implements _i3.WalletLibWrapper {
   }
 
   @override
-  _i4.Future<_i2.PrivadoIdWallet> createWallet({_i5.Uint8List? privateKey}) =>
+  _i4.Future<_i2.PrivadoIdWallet> createWallet({_i5.Uint8List? secret}) =>
       (super.noSuchMethod(
         Invocation.method(
           #createWallet,
+          [],
+          {#secret: secret},
+        ),
+        returnValue:
+            _i4.Future<_i2.PrivadoIdWallet>.value(_FakePrivadoIdWallet_0(
+          this,
+          Invocation.method(
+            #createWallet,
+            [],
+            {#secret: secret},
+          ),
+        )),
+      ) as _i4.Future<_i2.PrivadoIdWallet>);
+  @override
+  _i4.Future<_i2.PrivadoIdWallet> getWallet(
+          {required _i5.Uint8List? privateKey}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getWallet,
           [],
           {#privateKey: privateKey},
         ),
@@ -54,7 +73,7 @@ class MockWalletLibWrapper extends _i1.Mock implements _i3.WalletLibWrapper {
             _i4.Future<_i2.PrivadoIdWallet>.value(_FakePrivadoIdWallet_0(
           this,
           Invocation.method(
-            #createWallet,
+            #getWallet,
             [],
             {#privateKey: privateKey},
           ),

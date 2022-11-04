@@ -5,6 +5,7 @@ const STORAGE_VERSION = 1;
 
 /// Database
 const databaseName = "polygonIdSdk.db";
+const claimDatabaseName = "polygonIdSdkClaims-";
 const identityStoreName = "identityStore";
 const claimStoreName = "claimStore";
 const keyValueStoreName = "keyValueStore";

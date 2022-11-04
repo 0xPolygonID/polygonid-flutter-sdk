@@ -19,6 +19,7 @@ import '../../common/data/repositories/env_config_repository_impl.dart';
 import '../../common/data/repositories/package_info_repository_impl.dart';
 import '../../common/domain/repositories/config_repository.dart';
 import '../../common/domain/repositories/package_info_repository.dart';
+import '../../common/utils/encrypt_data.dart';
 import '../../credential/data/credential_repository_impl.dart';
 import '../../credential/domain/repositories/credential_repository.dart';
 import '../../env/sdk_env.dart';
@@ -88,6 +89,26 @@ abstract class DatabaseModule {
   StoreRef<String, dynamic> get keyValueStore =>
       stringMapStoreFactory.store(keyValueStoreName);
 }
+
+/*@module
+abstract class ClaimDatabaseModule {
+  @lazySingleton
+  Future<Database> claimDatabase(
+      {required String identifier, required String privateKey}) async {
+    final dir = await getApplicationDocumentsDirectory();
+    await dir.create(recursive: true);
+    final path = join(dir.path, claimDatabaseName + identifier + '.db');
+    // Initialize the encryption codec with the privateKey
+    var codec = getEncryptSembastCodec(password: privateKey);
+    final database = await databaseFactoryIo.openDatabase(path, codec: codec);
+
+    return database;
+  }
+
+  @Named(claimStoreName)
+  StoreRef<String, Map<String, Object?>> get claimStore =>
+      stringMapStoreFactory.store(claimStoreName);
+}*/
 
 @module
 abstract class RepositoriesModule {

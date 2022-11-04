@@ -264,12 +264,20 @@ class MockStorageClaimDataSource extends _i1.Mock
   }
 
   @override
-  _i8.Future<void> storeClaims({required List<_i4.ClaimDTO>? claims}) =>
+  _i8.Future<void> storeClaims({
+    required List<_i4.ClaimDTO>? claims,
+    required String? identifier,
+    required String? privateKey,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #storeClaims,
           [],
-          {#claims: claims},
+          {
+            #claims: claims,
+            #identifier: identifier,
+            #privateKey: privateKey,
+          },
         ),
         returnValue: _i8.Future<void>.value(),
         returnValueForMissingStub: _i8.Future<void>.value(),
@@ -292,12 +300,20 @@ class MockStorageClaimDataSource extends _i1.Mock
         returnValueForMissingStub: _i8.Future<void>.value(),
       ) as _i8.Future<void>);
   @override
-  _i8.Future<void> removeClaims({required List<String>? ids}) =>
+  _i8.Future<void> removeClaims({
+    required List<String>? claimIds,
+    required String? identifier,
+    required String? privateKey,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #removeClaims,
           [],
-          {#ids: ids},
+          {
+            #claimIds: claimIds,
+            #identifier: identifier,
+            #privateKey: privateKey,
+          },
         ),
         returnValue: _i8.Future<void>.value(),
         returnValueForMissingStub: _i8.Future<void>.value(),
@@ -305,7 +321,7 @@ class MockStorageClaimDataSource extends _i1.Mock
   @override
   _i8.Future<void> removeClaimsTransact({
     required _i5.DatabaseClient? transaction,
-    required List<String>? ids,
+    required List<String>? claimIds,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -313,19 +329,27 @@ class MockStorageClaimDataSource extends _i1.Mock
           [],
           {
             #transaction: transaction,
-            #ids: ids,
+            #claimIds: claimIds,
           },
         ),
         returnValue: _i8.Future<void>.value(),
         returnValueForMissingStub: _i8.Future<void>.value(),
       ) as _i8.Future<void>);
   @override
-  _i8.Future<List<_i4.ClaimDTO>> getClaims({_i5.Filter? filter}) =>
+  _i8.Future<List<_i4.ClaimDTO>> getClaims({
+    _i5.Filter? filter,
+    required String? identifier,
+    required String? privateKey,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #getClaims,
           [],
-          {#filter: filter},
+          {
+            #filter: filter,
+            #identifier: identifier,
+            #privateKey: privateKey,
+          },
         ),
         returnValue: _i8.Future<List<_i4.ClaimDTO>>.value(<_i4.ClaimDTO>[]),
       ) as _i8.Future<List<_i4.ClaimDTO>>);

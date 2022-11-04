@@ -3,15 +3,26 @@ import '../../../common/domain/use_case.dart';
 import '../entities/identity_entity.dart';
 import '../repositories/identity_repository.dart';
 
-class GetIdentityUseCase extends FutureUseCase<String?, IdentityEntity> {
+class GetIdentityParam {
+  final String identifier;
+  final String? privateKey;
+
+  GetIdentityParam({
+    required this.identifier,
+    this.privateKey,
+  });
+}
+
+class GetIdentityUseCase
+    extends FutureUseCase<GetIdentityParam, IdentityEntity> {
   final IdentityRepository _identityRepository;
 
   GetIdentityUseCase(this._identityRepository);
 
   @override
-  Future<IdentityEntity> execute({String? param}) {
+  Future<IdentityEntity> execute({required GetIdentityParam param}) {
     return _identityRepository
-        .getIdentityFromKey(privateKey: param)
+        .getIdentity(identifier: param.identifier, privateKey: param.privateKey)
         .then((identity) {
       logger().i("[GetIdentityUseCase] Identity: $identity");
 

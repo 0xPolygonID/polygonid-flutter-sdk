@@ -7,7 +7,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exce
 import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/is_proof_circuit_supported_use_case.dart';
 
 import '../../../identity/domain/repositories/identity_repository.dart';
-import '../../../identity/domain/use_cases/get_public_key_use_case.dart';
 import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
 import '../../../proof_generation/domain/repositories/proof_repository.dart';
 import '../../../proof_generation/domain/use_cases/generate_proof_use_case.dart';
@@ -15,10 +14,14 @@ import '../../../proof_generation/domain/use_cases/generate_proof_use_case.dart'
 class GetProofsParam {
   final Iden3MessageEntity message;
   final String identifier;
+  final String privateKey;
   final String? challenge;
 
   GetProofsParam(
-      {required this.message, required this.identifier, this.challenge});
+      {required this.message,
+      required this.identifier,
+      required this.privateKey,
+      this.challenge});
 }
 
 class GetProofsUseCase
@@ -27,7 +30,6 @@ class GetProofsUseCase
   final IdentityRepository _identityRepository;
   final GetClaimsUseCase _getClaimsUseCase;
   final GenerateProofUseCase _generateProofUseCase;
-  final GetPublicKeysUseCase _getPublicKeyUseCase;
   final IsProofCircuitSupportedUseCase _isProofCircuitSupported;
 
   GetProofsUseCase(
@@ -35,18 +37,17 @@ class GetProofsUseCase
       this._identityRepository,
       this._getClaimsUseCase,
       this._generateProofUseCase,
-      this._getPublicKeyUseCase,
       this._isProofCircuitSupported);
 
   @override
   Future<List<ProofEntity>> execute({required GetProofsParam param}) async {
     List<ProofEntity> proofs = [];
 
-    /// TODO: remove when [PublicIdentityEntity] has the bjj pub keys
     List<String> publicKey = await _identityRepository
-        .getIdentity(identifier: param.identifier)
-        .then((identity) =>
-            _getPublicKeyUseCase.execute(param: identity.privateKey));
+        .getIdentity(
+          identifier: param.identifier,
+        )
+        .then((identity) => identity.publicKey);
 
     List<ProofRequestEntity> requests =
         await _proofRepository.getRequests(message: param.message);
@@ -58,7 +59,12 @@ class GetProofsUseCase
         // Claims
         await _proofRepository
             .getFilters(request: request)
-            .then((filters) => _getClaimsUseCase.execute(param: filters))
+            .then((filters) => _getClaimsUseCase.execute(
+                    param: GetClaimsParam(
+                  filters: filters,
+                  identifier: param.identifier,
+                  privateKey: param.privateKey,
+                )))
             .then((claims) => claims.first)
             .then((authClaim) async {
           String circuitId = request.circuitId;
@@ -70,7 +76,7 @@ class GetProofsUseCase
 
           // Signature
           String signatureString = await _identityRepository.signMessage(
-              identifier: param.identifier, message: challenge);
+              message: challenge, privateKey: param.privateKey);
 
           // Generate proof
           proofs.add(await _generateProofUseCase

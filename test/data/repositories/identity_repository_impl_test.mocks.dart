@@ -126,10 +126,29 @@ class MockWalletDataSource extends _i1.Mock implements _i8.WalletDataSource {
   }
 
   @override
-  _i9.Future<_i2.PrivadoIdWallet> createWallet({_i10.Uint8List? privateKey}) =>
+  _i9.Future<_i2.PrivadoIdWallet> createWallet({_i10.Uint8List? secret}) =>
       (super.noSuchMethod(
         Invocation.method(
           #createWallet,
+          [],
+          {#secret: secret},
+        ),
+        returnValue:
+            _i9.Future<_i2.PrivadoIdWallet>.value(_FakePrivadoIdWallet_0(
+          this,
+          Invocation.method(
+            #createWallet,
+            [],
+            {#secret: secret},
+          ),
+        )),
+      ) as _i9.Future<_i2.PrivadoIdWallet>);
+  @override
+  _i9.Future<_i2.PrivadoIdWallet> getWallet(
+          {required _i10.Uint8List? privateKey}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getWallet,
           [],
           {#privateKey: privateKey},
         ),
@@ -137,7 +156,7 @@ class MockWalletDataSource extends _i1.Mock implements _i8.WalletDataSource {
             _i9.Future<_i2.PrivadoIdWallet>.value(_FakePrivadoIdWallet_0(
           this,
           Invocation.method(
-            #createWallet,
+            #getWallet,
             [],
             {#privateKey: privateKey},
           ),
@@ -170,6 +189,14 @@ class MockLibIdentityDataSource extends _i1.Mock
     _i1.throwOnMissingStub(this);
   }
 
+  @override
+  _i9.Future<String> getId(String? id) => (super.noSuchMethod(
+        Invocation.method(
+          #getId,
+          [id],
+        ),
+        returnValue: _i9.Future<String>.value(''),
+      ) as _i9.Future<String>);
   @override
   _i9.Future<String> getIdentifier({
     required String? pubX,
@@ -209,14 +236,6 @@ class MockLibIdentityDataSource extends _i1.Mock
         Invocation.method(
           #createSMT,
           [smtStorageRepository],
-        ),
-        returnValue: _i9.Future<String>.value(''),
-      ) as _i9.Future<String>);
-  @override
-  _i9.Future<String> getId(String? id) => (super.noSuchMethod(
-        Invocation.method(
-          #getId,
-          [id],
         ),
         returnValue: _i9.Future<String>.value(''),
       ) as _i9.Future<String>);
@@ -307,19 +326,28 @@ class MockStorageIdentityDataSource extends _i1.Mock
   }
 
   @override
-  _i9.Future<_i4.IdentityDTO> getIdentity({required String? identifier}) =>
+  _i9.Future<_i4.IdentityDTO> getIdentity({
+    required String? identifier,
+    String? privateKey,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #getIdentity,
           [],
-          {#identifier: identifier},
+          {
+            #identifier: identifier,
+            #privateKey: privateKey,
+          },
         ),
         returnValue: _i9.Future<_i4.IdentityDTO>.value(_FakeIdentityDTO_2(
           this,
           Invocation.method(
             #getIdentity,
             [],
-            {#identifier: identifier},
+            {
+              #identifier: identifier,
+              #privateKey: privateKey,
+            },
           ),
         )),
       ) as _i9.Future<_i4.IdentityDTO>);
@@ -541,6 +569,20 @@ class MockIdentityDTOMapper extends _i1.Mock implements _i21.IdentityDTOMapper {
           ),
         ),
       ) as _i6.IdentityEntity);
+  @override
+  _i4.IdentityDTO mapTo(_i6.IdentityEntity? to) => (super.noSuchMethod(
+        Invocation.method(
+          #mapTo,
+          [to],
+        ),
+        returnValue: _FakeIdentityDTO_2(
+          this,
+          Invocation.method(
+            #mapTo,
+            [to],
+          ),
+        ),
+      ) as _i4.IdentityDTO);
 }
 
 /// A class which mocks [RhsNodeMapper].
