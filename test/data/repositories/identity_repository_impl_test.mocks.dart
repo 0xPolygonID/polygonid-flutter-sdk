@@ -297,17 +297,17 @@ class MockRemoteIdentityDataSource extends _i1.Mock
         )),
       ) as _i9.Future<_i3.RhsNodeDTO>);
   @override
-  _i9.Future<Map<String, dynamic>> nonRevProof(
+  _i9.Future<Map<String, dynamic>> getNonRevocationProof(
+    String? identityState,
     int? revNonce,
-    String? id,
     String? rhsBaseUrl,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
-          #nonRevProof,
+          #getNonRevocationProof,
           [
+            identityState,
             revNonce,
-            id,
             rhsBaseUrl,
           ],
         ),

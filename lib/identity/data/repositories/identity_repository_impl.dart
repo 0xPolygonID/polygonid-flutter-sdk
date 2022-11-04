@@ -217,11 +217,10 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
   @override
   Future<Map<String, dynamic>> getNonRevProof(
-      int revNonce, String id, String rhsBaseUrl) {
-    return _libIdentityDataSource.getId(id).then((libId) =>
-        _remoteIdentityDataSource
-            .nonRevProof(revNonce, libId, rhsBaseUrl)
-            .catchError((error) => throw NonRevProofException(error)));
+      String identityState, int revNonce, String rhsBaseUrl) {
+    return _remoteIdentityDataSource
+        .getNonRevocationProof(identityState, revNonce, rhsBaseUrl)
+        .catchError((error) => throw NonRevProofException(error));
   }
 
   @override

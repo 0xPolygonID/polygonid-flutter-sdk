@@ -230,6 +230,10 @@ _i1.GetIt $initSDKGetIt(
             get<Map<_i48.Hash, _i27.Node>>(),
           ));
   gh.lazySingleton<_i49.SdkEnv>(() => sdk.sdkEnv);
+  gh.factory<_i11.StoreRef<String, dynamic>>(
+    () => databaseModule.keyValueStore,
+    instanceName: 'keyValueStore',
+  );
   gh.factory<_i11.StoreRef<String, Map<String, Object?>>>(
     () => databaseModule.claimStore,
     instanceName: 'claimStore',
@@ -237,10 +241,6 @@ _i1.GetIt $initSDKGetIt(
   gh.factory<_i11.StoreRef<String, Map<String, Object?>>>(
     () => databaseModule.identityStore,
     instanceName: 'identityStore',
-  );
-  gh.factory<_i11.StoreRef<String, dynamic>>(
-    () => databaseModule.keyValueStore,
-    instanceName: 'keyValueStore',
   );
   gh.factory<_i50.WalletLibWrapper>(() => _i50.WalletLibWrapper());
   gh.factory<_i51.Web3Client>(
@@ -415,6 +415,7 @@ _i1.GetIt $initSDKGetIt(
             await get.getAsync<_i86.IdentityRepository>(),
             get<_i76.CredentialRepository>(),
             get<_i78.GetEnvConfigUseCase>(),
+            await get.getAsync<_i90.FetchIdentityStateUseCase>(),
           ));
   gh.factoryAsync<_i93.GetAuthTokenUseCase>(
       () async => _i93.GetAuthTokenUseCase(
