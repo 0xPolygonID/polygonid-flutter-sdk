@@ -3,7 +3,6 @@ import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_except
 
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
-import '../../../identity/domain/entities/identity_entity.dart';
 import '../../../identity/domain/repositories/identity_repository.dart';
 import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
 import '../../../proof_generation/domain/repositories/proof_repository.dart';
@@ -31,11 +30,11 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
 
   @override
   Future<String> execute({required GetAuthTokenParam param}) async {
-    CircuitDataEntity authData =
-        await _proofRepository.loadCircuitFiles("auth");
-    IdentityEntity identityEntity = await _identityRepository.getIdentity(
+    var identityEntity = await _identityRepository.getIdentity(
         identifier: param.identifier, privateKey: param.privateKey);
     if (identityEntity is PrivateIdentityEntity) {
+      CircuitDataEntity authData =
+          await _proofRepository.loadCircuitFiles("auth");
       return _iden3commRepository
           .getAuthToken(
               identityEntity: identityEntity,

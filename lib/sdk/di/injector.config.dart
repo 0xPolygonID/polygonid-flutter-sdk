@@ -348,7 +348,7 @@ _i1.GetIt $initSDKGetIt(
             await get.getAsync<_i65.StorageKeyValueDataSource>(),
             get<_i50.WalletDataSource>(),
             get<_i21.LibIdentityDataSource>(),
-            get<_i33.PrivateKeyMapper>(),
+            get<_i14.HexMapper>(),
           ));
   gh.factory<_i75.ConfigRepository>(() =>
       repositoriesModule.configRepository(get<_i71.ConfigRepositoryImpl>()));

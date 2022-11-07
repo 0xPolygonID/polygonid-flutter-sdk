@@ -81,8 +81,7 @@ MockDatabase database = MockDatabase();
 MockClaimStoreRefWrapper storeRefWrapper = MockClaimStoreRefWrapper();
 
 // Tested instance
-StorageClaimDataSource dataSource =
-    StorageClaimDataSource(database, storeRefWrapper);
+StorageClaimDataSource dataSource = StorageClaimDataSource(storeRefWrapper);
 
 @GenerateMocks([sem.Database, ClaimStoreRefWrapper])
 void main() {

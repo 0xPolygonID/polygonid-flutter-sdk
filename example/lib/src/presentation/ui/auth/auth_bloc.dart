@@ -44,10 +44,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ///
   Future<void> _authenticate({
     required Iden3MessageEntity iden3message,
+    required String privateKey,
     required Emitter<AuthState> emit,
   }) async {
     emit(const AuthState.loading());
-    String? identifier = await _polygonIdSdk.identity.getCurrentIdentifier();
+    String? identifier =
+        await _polygonIdSdk.identity.getIdentifier(privateKey: privateKey);
 
     if (identifier == null) {
       emit(const AuthState.error(
@@ -59,6 +61,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await _polygonIdSdk.iden3comm.authenticate(
         message: iden3message,
         identifier: identifier,
+        privateKey: privateKey,
       );
 
       emit(const AuthState.authenticated());

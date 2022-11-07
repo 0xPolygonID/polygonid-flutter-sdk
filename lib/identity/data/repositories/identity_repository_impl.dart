@@ -175,7 +175,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
       {required String identifier, String? privateKey}) {
     return _storageIdentityDataSource
         .getIdentity(identifier: identifier, privateKey: privateKey)
-        .then((dto) => _identityDTOMapper.mapFrom(dto))
+        .then((dto) => dto is PrivateIdentityDTO
+            ? _privateIdentityDTOMapper.mapFrom(dto)
+            : _identityDTOMapper.mapFrom(dto))
         .catchError((error) => throw IdentityException(error),
             test: (error) => error is! UnknownIdentityException);
   }
