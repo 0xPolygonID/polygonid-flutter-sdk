@@ -57,7 +57,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     try {
       await _polygonIdSdk.iden3comm.authenticate(
-        issuerMessage: iden3message,
+        message: _polygonIdSdk.iden3comm.getIden3Message(message: iden3message),
         identifier: identifier,
       );
 
