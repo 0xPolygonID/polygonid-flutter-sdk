@@ -1,4 +1,6 @@
+import 'package:fast_base58/fast_base58.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
+import 'package:web3dart/crypto.dart';
 
 import '../../domain/entities/identity_entity.dart';
 import '../../domain/entities/private_identity_entity.dart';
@@ -205,7 +207,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
     return _localContractFilesDataSource
         .loadStateContract(contractAddress)
         .then((contract) => _rpcDataSource
-            .getState(identifier, contract)
+            .getState(bytesToHex(Base58Decode(identifier)), contract)
             .catchError((error) => throw FetchIdentityStateException(error)));
   }
 
