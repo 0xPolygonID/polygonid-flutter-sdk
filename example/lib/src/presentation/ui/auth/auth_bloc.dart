@@ -32,7 +32,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     try {
       final Iden3MessageEntity iden3message =
-          _iden3messageMapper.mapFrom(qrCodeResponse);
+          _polygonIdSdk.iden3comm.getIden3Message(message: qrCodeResponse);
       emit(AuthState.loaded(iden3message));
 
       await _authenticate(iden3message: iden3message, emit: emit);

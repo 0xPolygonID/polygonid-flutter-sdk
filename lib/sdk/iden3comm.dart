@@ -54,9 +54,14 @@ class Iden3comm {
       String? challenge}) {
     return _getProofsUseCase.execute(
         param: GetProofsParam(
-            message: message,
-            identifier: identifier,
-            challenge: challenge,
-            privateKey: privateKey));
+      message: message,
+      identifier: identifier,
+      challenge: challenge,
+      privateKey: privateKey,
+    ));
+  }
+
+  Iden3MessageEntity getIden3Message({required String message}) {
+    return _iden3messageMapper.mapFrom(message);
   }
 }
