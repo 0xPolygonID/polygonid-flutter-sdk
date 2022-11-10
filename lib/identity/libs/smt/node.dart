@@ -9,6 +9,7 @@ enum NodeType {
   empty,
 }
 
+/// FIXME: mix of object and DS
 @injectable
 class Node {
   NodeType type;

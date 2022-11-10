@@ -21,16 +21,19 @@ class GetIdentityUseCase
 
   @override
   Future<IdentityEntity> execute({required GetIdentityParam param}) {
-    return _identityRepository
-        .getIdentity(identifier: param.identifier, privateKey: param.privateKey)
-        .then((identity) {
-      logger().i("[GetIdentityUseCase] Identity: $identity");
+    return param.privateKey != null
+        ? _identityRepository.getPrivateIdentity(
+            identifier: param.identifier, privateKey: param.privateKey!)
+        : _identityRepository
+            .getIdentity(identifier: param.identifier)
+            .then((identity) {
+            logger().i("[GetIdentityUseCase] Identity: $identity");
 
-      return identity;
-    }).catchError((error) {
-      logger().e("[GetIdentityUseCase] Error: $error");
+            return identity;
+          }).catchError((error) {
+            logger().e("[GetIdentityUseCase] Error: $error");
 
-      throw error;
-    });
+            throw error;
+          });
   }
 }

@@ -51,14 +51,15 @@ class LibIdentityDataSource {
     }
   }
 
-  Future<String> createSMT(SMTStorageRepository smtStorageRepository) {
-    try {
-      return Future.value((MerkleTree(_iden3coreLib, smtStorageRepository, 32)
-              .storage as SMTMemoryStorageRepositoryImpl)
-          .toJson()
-          .toString());
-    } catch (e) {
-      return Future.error(e);
-    }
-  }
+  /// FIXME: no passing repo and lib as params
+  // Future<String> createSMT(SMTStorageRepository smtStorageRepository) {
+  //   try {
+  //     return Future.value((MerkleTree(_iden3coreLib, smtStorageRepository, 32)
+  //             .storage as SMTMemoryStorageRepositoryImpl)
+  //         .toJson()
+  //         .toString());
+  //   } catch (e) {
+  //     return Future.error(e);
+  //   }
+  // }
 }

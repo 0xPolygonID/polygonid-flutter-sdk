@@ -1,6 +1,3 @@
-import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
-
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
 import '../../../identity/domain/repositories/identity_repository.dart';
@@ -30,27 +27,23 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
 
   @override
   Future<String> execute({required GetAuthTokenParam param}) async {
-    var identityEntity = await _identityRepository.getIdentity(
+    var identityEntity = await _identityRepository.getPrivateIdentity(
         identifier: param.identifier, privateKey: param.privateKey);
-    if (identityEntity is PrivateIdentityEntity) {
-      CircuitDataEntity authData =
-          await _proofRepository.loadCircuitFiles("auth");
-      return _iden3commRepository
-          .getAuthToken(
-              identityEntity: identityEntity,
-              message: param.message,
-              authData: authData)
-          .then((token) {
-        logger().i("[GetAuthTokenUseCase] Auth token: $token");
+    CircuitDataEntity authData =
+        await _proofRepository.loadCircuitFiles("auth");
+    return _iden3commRepository
+        .getAuthToken(
+            identityEntity: identityEntity,
+            message: param.message,
+            authData: authData)
+        .then((token) {
+      logger().i("[GetAuthTokenUseCase] Auth token: $token");
 
-        return token;
-      }).catchError((error) {
-        logger().e("[GetAuthTokenUseCase] Error: $error");
+      return token;
+    }).catchError((error) {
+      logger().e("[GetAuthTokenUseCase] Error: $error");
 
-        throw error;
-      });
-    } else {
-      throw InvalidPrivateKeyException(param.privateKey);
-    }
+      throw error;
+    });
   }
 }

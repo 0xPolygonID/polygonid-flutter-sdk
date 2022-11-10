@@ -9,7 +9,6 @@ import 'package:pointycastle/asymmetric/oaep.dart';
 import 'package:pointycastle/asymmetric/rsa.dart';
 import 'package:pointycastle/digests/sha512.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
-import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
@@ -38,10 +37,6 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   final RemoteIden3commDataSource _remoteIden3commDataSource;
   final JWZDataSource _jwzDataSource;
   final HexMapper _hexMapper;
-  final ProofScopeDataSource _proofScopeDataSource;
-  final StorageClaimDataSource _storageClaimDataSource;
-  final ClaimMapper _claimMapper;
-  final FiltersMapper _filtersMapper;
   final AuthResponseMapper _authResponseMapper;
   final AuthRequestMapper _authRequestMapper;
 
@@ -49,10 +44,6 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       this._remoteIden3commDataSource,
       this._jwzDataSource,
       this._hexMapper,
-      this._proofScopeDataSource,
-      this._storageClaimDataSource,
-      this._claimMapper,
-      this._filtersMapper,
       this._authResponseMapper,
       this._authRequestMapper);
 

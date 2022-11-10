@@ -1,5 +1,3 @@
-import '../../data/mappers/iden3_message_type_data_mapper.dart';
-
 enum Iden3MessageType { unknown, auth, offer, issuance, contractFunctionCall }
 
 /// Represents an iden3 message.
@@ -37,16 +35,6 @@ class Iden3MessageEntity {
           body == other.body &&
           from == other.from &&
           to == other.to;
-
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'typ': typ,
-        'type': Iden3MessageTypeDataMapper().mapTo(type),
-        'thid': thid,
-        'body': body,
-        'from': from,
-        'to': to,
-      };
 
   @override
   int get hashCode => runtimeType.hashCode;

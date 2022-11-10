@@ -1,9 +1,9 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_and_save_identity_use_case.dart';
 
 import '../identity/domain/entities/identity_entity.dart';
 import '../identity/domain/entities/private_identity_entity.dart';
-import '../identity/domain/use_cases/create_identity_use_case.dart';
 import '../identity/domain/use_cases/fetch_identity_state_use_case.dart';
 import '../identity/domain/use_cases/get_identifier_use_case.dart';
 import '../identity/domain/use_cases/get_identity_use_case.dart';
@@ -105,8 +105,9 @@ abstract class PolygonIdSdkIdentity {
 
 @injectable
 class Identity implements PolygonIdSdkIdentity {
-  final CreateIdentityUseCase _createIdentityUseCase;
+  final CreateAndSaveIdentityUseCase _createAndSaveIdentityUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
+
   //final GetIdentitiesUseCase _getIdentitiesUseCase;
   final RemoveIdentityUseCase _removeIdentityUseCase;
   final GetIdentifierUseCase _getIdentifierUseCase;
@@ -114,7 +115,7 @@ class Identity implements PolygonIdSdkIdentity {
   final FetchIdentityStateUseCase _fetchIdentityStateUseCase;
 
   Identity(
-    this._createIdentityUseCase,
+    this._createAndSaveIdentityUseCase,
     this._getIdentityUseCase,
     this._removeIdentityUseCase,
     this._getIdentifierUseCase,
@@ -132,12 +133,8 @@ class Identity implements PolygonIdSdkIdentity {
   /// in order to be compatible with the SDK. The following rules will be applied:
   /// - If the byte array is not 32 length, it will be padded with 0s.
   /// - If the byte array is longer than 32, an exception will be thrown.
-  @override
   Future<PrivateIdentityEntity> createIdentity({String? secret}) async {
-    return _createIdentityUseCase.execute(
-        param: CreateIdentityParam(
-      secret: secret,
-    ));
+    return _createAndSaveIdentityUseCase.execute(param: secret);
   }
 
   /// Restores an [IdentityEntity] from a secret and an encrypted backup database
