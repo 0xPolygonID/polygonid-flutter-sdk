@@ -1,16 +1,11 @@
-import 'dart:typed_data';
-
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart';
 import 'package:sembast/sembast.dart';
 
 import '../../domain/exceptions/identity_exceptions.dart';
 import '../dtos/identity_dto.dart';
-import '../dtos/private_identity_dto.dart';
-import 'lib_identity_data_source.dart';
 import 'storage_key_value_data_source.dart';
 
 /// [StoreRef] wrapper
@@ -42,42 +37,17 @@ class StorageIdentityDataSource {
   final IdentityStoreRefWrapper _storeRefWrapper;
   final StorageKeyValueDataSource _storageKeyValueDataSource;
   final WalletDataSource _walletDataSource;
-  final LibIdentityDataSource _libIdentityDataSource;
   final HexMapper _hexMapper;
 
-  StorageIdentityDataSource(
-      this._database,
-      this._storeRefWrapper,
-      this._storageKeyValueDataSource,
-      this._walletDataSource,
-      this._libIdentityDataSource,
-      this._hexMapper);
+  StorageIdentityDataSource(this._database, this._storeRefWrapper,
+      this._storageKeyValueDataSource, this._walletDataSource, this._hexMapper);
 
-  Future<IdentityDTO> getIdentity(
-      {required String identifier, String? privateKey}) {
-    return _storeRefWrapper
-        .get(_database, identifier)
-        .then((storedValue) async {
+  Future<IdentityDTO> getIdentity({required String identifier}) {
+    return _storeRefWrapper.get(_database, identifier).then((storedValue) {
       if (storedValue == null) {
         throw UnknownIdentityException(identifier);
       }
-      Map<String, dynamic> identity = {...storedValue};
-      if (privateKey != null) {
-        Uint8List prvKey = _hexMapper.mapTo(privateKey);
-        PrivadoIdWallet wallet =
-            await _walletDataSource.getWallet(privateKey: prvKey);
-        String identifierFromKey = await _libIdentityDataSource.getIdentifier(
-            pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]);
-        if (identifierFromKey == identifier) {
-          String authClaim = await _libIdentityDataSource.getAuthClaim(
-              pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]);
-          identity['privateKey'] = privateKey;
-          identity['authClaim'] = authClaim;
-          return PrivateIdentityDTO.fromJson(identity);
-        } else {
-          throw InvalidPrivateKeyException(privateKey);
-        }
-      }
+
       return IdentityDTO.fromJson(storedValue);
     });
   }
@@ -113,8 +83,4 @@ class StorageIdentityDataSource {
         key: currentIdentifierKey, database: transaction);
     await _storeRefWrapper.remove(transaction, identifier);
   }
-
-// Future<String?> removeIdentity({required String identifier}) {
-//   return _storeRefWrapper.remove(_database, identifier);
-// }
 }

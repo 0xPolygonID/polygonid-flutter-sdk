@@ -25,7 +25,7 @@ var exception = Exception();
 MockIdentityRepository identityRepository = MockIdentityRepository();
 
 // Tested instance
-CreateIdentityUseCase useCase = CreateIdentityUseCase(identityRepository);
+CreateAndStoreIdentityUseCase useCase = CreateAndStoreIdentityUseCase(identityRepository);
 
 @GenerateMocks([IdentityRepository])
 void main() {

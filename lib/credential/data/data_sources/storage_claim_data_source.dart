@@ -1,11 +1,8 @@
 import 'package:injectable/injectable.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:sembast/sembast.dart';
-import 'package:sembast/sembast_io.dart';
 
-import '../../../common/utils/encrypt_sembast_codec.dart';
 import '../dtos/claim_dto.dart';
 
 /// [StoreRef] wrapper
@@ -39,20 +36,16 @@ class ClaimStoreRefWrapper {
 }
 
 class StorageClaimDataSource {
-  //final Database _claimDatabase;
   final ClaimStoreRefWrapper _storeRefWrapper;
 
-  StorageClaimDataSource(/*this._claimDatabase,*/ this._storeRefWrapper);
+  StorageClaimDataSource(this._storeRefWrapper);
 
-  Future<Database> _claimDatabase(
-      {required String identifier, required String privateKey}) async {
-    final dir = await getApplicationDocumentsDirectory();
-    await dir.create(recursive: true);
-    final path = join(dir.path, claimDatabaseName + identifier + '.db');
-    // Initialize the encryption codec with the privateKey
-    var codec = getEncryptSembastCodec(password: privateKey);
-    final database = await databaseFactoryIo.openDatabase(path, codec: codec);
-    return database;
+  Future<Database> _getDatabase(
+      {required String identifier, required String privateKey}) {
+    return getItSdk.getAsync<Database>(
+        instanceName: claimDatabaseName,
+        param1: identifier,
+        param2: privateKey);
   }
 
   /// Store all claims in a single transaction
@@ -60,15 +53,13 @@ class StorageClaimDataSource {
   Future<void> storeClaims(
       {required List<ClaimDTO> claims,
       required String identifier,
-      required String privateKey}) async {
+      required String privateKey}) {
     // TODO check if identifiers inside each claim are from privateKey
-    Database database =
-        await _claimDatabase(identifier: identifier, privateKey: privateKey);
-    await database.transaction((transaction) =>
-        storeClaimsTransact(transaction: transaction, claims: claims));
-    await database.close();
-    //return _database.transaction((transaction) =>
-    //    storeClaimsTransact(transaction: transaction, claims: claims));
+    return _getDatabase(identifier: identifier, privateKey: privateKey).then(
+        (database) => database
+            .transaction((transaction) =>
+                storeClaimsTransact(transaction: transaction, claims: claims))
+            .whenComplete(() => database.close()));
   }
 
   // For UT purpose
@@ -85,12 +76,12 @@ class StorageClaimDataSource {
   Future<void> removeClaims(
       {required List<String> claimIds,
       required String identifier,
-      required String privateKey}) async {
-    Database database =
-        await _claimDatabase(identifier: identifier, privateKey: privateKey);
-    await database.transaction((transaction) =>
-        removeClaimsTransact(transaction: transaction, claimIds: claimIds));
-    await database.close();
+      required String privateKey}) {
+    return _getDatabase(identifier: identifier, privateKey: privateKey).then(
+        (database) => database
+            .transaction((transaction) => removeClaimsTransact(
+                transaction: transaction, claimIds: claimIds))
+            .whenComplete(() => database.close()));
   }
 
   // For UT purpose
@@ -106,15 +97,13 @@ class StorageClaimDataSource {
   Future<List<ClaimDTO>> getClaims(
       {Filter? filter,
       required String identifier,
-      required String privateKey}) async {
-    Database database =
-        await _claimDatabase(identifier: identifier, privateKey: privateKey);
-    List<ClaimDTO> claims = await _storeRefWrapper
-        .find(database, finder: Finder(filter: filter))
-        .then((snapshots) => snapshots
-            .map((snapshot) => ClaimDTO.fromJson(snapshot.value))
-            .toList());
-    await database.close();
-    return claims;
+      required String privateKey}) {
+    return _getDatabase(identifier: identifier, privateKey: privateKey).then(
+        (database) => _storeRefWrapper
+            .find(database, finder: Finder(filter: filter))
+            .then((snapshots) => snapshots
+                .map((snapshot) => ClaimDTO.fromJson(snapshot.value))
+                .toList())
+            .whenComplete(() => database.close()));
   }
 }

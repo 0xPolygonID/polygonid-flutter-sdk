@@ -1,8 +1,9 @@
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_and_save_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/replace_identity_use_case.dart';
 
 import '../identity/domain/entities/identity_entity.dart';
 import '../identity/domain/entities/private_identity_entity.dart';
-import '../identity/domain/use_cases/create_identity_use_case.dart';
 import '../identity/domain/use_cases/fetch_identity_state_use_case.dart';
 import '../identity/domain/use_cases/get_identifier_use_case.dart';
 import '../identity/domain/use_cases/get_identity_use_case.dart';
@@ -56,7 +57,8 @@ abstract class PolygonIdSdkIdentity {
 
 @injectable
 class IdentityWallet {
-  final CreateIdentityUseCase _createIdentityUseCase;
+  final CreateAndSaveIdentityUseCase _createAndSaveIdentityUseCase;
+  final ReplaceIdentityUseCase _replaceIdentityUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
   final RemoveIdentityUseCase _removeIdentityUseCase;
   final GetIdentifierUseCase _getIdentifierUseCase;
@@ -66,7 +68,8 @@ class IdentityWallet {
   final FetchIdentityStateUseCase _fetchIdentityStateUseCase;
 
   IdentityWallet(
-    this._createIdentityUseCase,
+    this._createAndSaveIdentityUseCase,
+    this._replaceIdentityUseCase,
     this._getIdentityUseCase,
     this._removeIdentityUseCase,
     this._getIdentifierUseCase,
@@ -85,15 +88,10 @@ class IdentityWallet {
   /// - If the byte array is not 32 length, it will be padded with 0s.
   /// - If the byte array is longer than 32, an exception will be thrown.
   Future<PrivateIdentityEntity> createIdentity(
-      {String? secret,
-      bool isStored = true,
-      bool replaceStored = false}) async {
-    return _createIdentityUseCase.execute(
-        param: CreateIdentityParam(
-      secret: secret,
-      isStored: isStored,
-      replaceStored: replaceStored,
-    ));
+      {String? secret, bool replace = false}) async {
+    return replace
+        ? _replaceIdentityUseCase.execute(param: secret)
+        : _createAndSaveIdentityUseCase.execute(param: secret);
   }
 
   /// Get an [IdentityEntity] from a private key.

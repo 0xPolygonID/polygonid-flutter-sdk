@@ -1,28 +1,32 @@
 import 'dart:convert';
 
 import 'package:encrypt/encrypt.dart';
+import 'package:injectable/injectable.dart';
 import 'package:sembast/sembast.dart';
+
+enum EncryptType { salsa20, aes, fernet }
 
 class _EncryptEncoder extends Converter<Map<String, dynamic>, String> {
   final String key;
-  final String signature;
+  final EncryptType signature;
+
   _EncryptEncoder(this.key, this.signature);
 
   @override
   String convert(Map<String, dynamic> input) {
     String encoded;
     switch (signature) {
-      case "Salsa20":
+      case EncryptType.salsa20:
         encoded = Encrypter(Salsa20(Key.fromUtf8(key)))
             .encrypt(json.encode(input), iv: IV.fromLength(8))
             .base64;
         break;
-      case "AES":
+      case EncryptType.aes:
         encoded = Encrypter(AES(Key.fromUtf8(key)))
             .encrypt(json.encode(input), iv: IV.fromLength(16))
             .base64;
         break;
-      case "Fernet":
+      case EncryptType.fernet:
         encoded = Encrypter(
                 Fernet(Key.fromUtf8(base64Url.encode(Key.fromUtf8(key).bytes))))
             .encrypt(json.encode(input), iv: IV.fromLength(16))
@@ -30,7 +34,6 @@ class _EncryptEncoder extends Converter<Map<String, dynamic>, String> {
         break;
       default:
         throw FormatException('invalid $signature');
-        break;
     }
     return encoded;
   }
@@ -38,22 +41,23 @@ class _EncryptEncoder extends Converter<Map<String, dynamic>, String> {
 
 class _EncryptDecoder extends Converter<String, Map<String, dynamic>> {
   final String key;
-  final String signature;
+  final EncryptType signature;
+
   _EncryptDecoder(this.key, this.signature);
 
   @override
   Map<String, dynamic> convert(String input) {
     var decoded;
     switch (signature) {
-      case "Salsa20":
+      case EncryptType.salsa20:
         decoded = json.decode(Encrypter(Salsa20(Key.fromUtf8(key)))
             .decrypt64(input, iv: IV.fromLength(8)));
         break;
-      case "AES":
+      case EncryptType.aes:
         decoded = json.decode(Encrypter(AES(Key.fromUtf8(key)))
             .decrypt64(input, iv: IV.fromLength(16)));
         break;
-      case "Fernet":
+      case EncryptType.fernet:
         decoded = json.decode(Encrypter(
                 Fernet(Key.fromUtf8(base64Url.encode(Key.fromUtf8(key).bytes))))
             .decrypt64(input, iv: IV.fromLength(16)));
@@ -69,9 +73,10 @@ class _EncryptDecoder extends Converter<String, Map<String, dynamic>> {
 }
 
 class _EncryptCodec extends Codec<Map<String, dynamic>, String> {
-  final String signature;
+  final EncryptType signature;
   late _EncryptEncoder _encoder;
   late _EncryptDecoder _decoder;
+
   _EncryptCodec(String password, this.signature) {
     _encoder = _EncryptEncoder(password, signature);
     _decoder = _EncryptDecoder(password, signature);
@@ -86,6 +91,8 @@ class _EncryptCodec extends Codec<Map<String, dynamic>, String> {
 
 // Salsa20 (16 length key required) or AES (32 length key required)
 SembastCodec getEncryptSembastCodec(
-        {required String password, String signature = "Salsa20"}) =>
+        {required String password,
+        EncryptType signature = EncryptType.salsa20}) =>
     SembastCodec(
-        signature: signature, codec: _EncryptCodec(password, signature));
+        signature: signature.toString(),
+        codec: _EncryptCodec(password, signature));

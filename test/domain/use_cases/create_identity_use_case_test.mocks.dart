@@ -68,18 +68,12 @@ class MockIdentityRepository extends _i1.Mock
   }
 
   @override
-  _i6.Future<_i2.PrivateIdentityEntity> createIdentity({
-    String? secret,
-    bool? isStored = true,
-  }) =>
+  _i6.Future<_i2.PrivateIdentityEntity> createIdentity({String? secret}) =>
       (super.noSuchMethod(
         Invocation.method(
           #createIdentity,
           [],
-          {
-            #secret: secret,
-            #isStored: isStored,
-          },
+          {#secret: secret},
         ),
         returnValue: _i6.Future<_i2.PrivateIdentityEntity>.value(
             _FakePrivateIdentityEntity_0(
@@ -87,10 +81,7 @@ class MockIdentityRepository extends _i1.Mock
           Invocation.method(
             #createIdentity,
             [],
-            {
-              #secret: secret,
-              #isStored: isStored,
-            },
+            {#secret: secret},
           ),
         )),
       ) as _i6.Future<_i2.PrivateIdentityEntity>);
@@ -139,23 +130,41 @@ class MockIdentityRepository extends _i1.Mock
         returnValue: _i6.Future<String>.value(''),
       ) as _i6.Future<String>);
   @override
-  _i6.Future<_i3.IdentityEntity> getIdentity({
-    required String? identifier,
-    String? privateKey,
-  }) =>
+  _i6.Future<_i3.IdentityEntity> getIdentity({required String? identifier}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getIdentity,
+          [],
+          {#identifier: identifier},
+        ),
+        returnValue: _i6.Future<_i3.IdentityEntity>.value(_FakeIdentityEntity_1(
+          this,
+          Invocation.method(
+            #getIdentity,
+            [],
+            {#identifier: identifier},
+          ),
+        )),
+      ) as _i6.Future<_i3.IdentityEntity>);
+  @override
+  _i6.Future<_i2.PrivateIdentityEntity> getPrivateIdentity({
+    required String? identifier,
+    required String? privateKey,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getPrivateIdentity,
           [],
           {
             #identifier: identifier,
             #privateKey: privateKey,
           },
         ),
-        returnValue: _i6.Future<_i3.IdentityEntity>.value(_FakeIdentityEntity_1(
+        returnValue: _i6.Future<_i2.PrivateIdentityEntity>.value(
+            _FakePrivateIdentityEntity_0(
           this,
           Invocation.method(
-            #getIdentity,
+            #getPrivateIdentity,
             [],
             {
               #identifier: identifier,
@@ -163,7 +172,7 @@ class MockIdentityRepository extends _i1.Mock
             },
           ),
         )),
-      ) as _i6.Future<_i3.IdentityEntity>);
+      ) as _i6.Future<_i2.PrivateIdentityEntity>);
   @override
   _i6.Future<List<_i3.IdentityEntity>> getIdentities() => (super.noSuchMethod(
         Invocation.method(

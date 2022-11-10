@@ -1,6 +1,4 @@
-import 'package:fast_base58/fast_base58.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
-import 'package:web3dart/crypto.dart';
 
 import '../../domain/entities/identity_entity.dart';
 import '../../domain/entities/private_identity_entity.dart';
@@ -16,12 +14,11 @@ import '../data_sources/storage_identity_data_source.dart';
 import '../data_sources/storage_key_value_data_source.dart';
 import '../data_sources/wallet_data_source.dart';
 import '../dtos/identity_dto.dart';
-import '../dtos/private_identity_dto.dart';
 import '../mappers/hex_mapper.dart';
 import '../mappers/identity_dto_mapper.dart';
-import '../mappers/private_identity_dto_mapper.dart';
 import '../mappers/private_key_mapper.dart';
 import '../mappers/rhs_node_mapper.dart';
+import '../mappers/state_identifier_mapper.dart';
 
 class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
@@ -35,8 +32,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final HexMapper _hexMapper;
   final PrivateKeyMapper _privateKeyMapper;
   final IdentityDTOMapper _identityDTOMapper;
-  final PrivateIdentityDTOMapper _privateIdentityDTOMapper;
   final RhsNodeMapper _rhsNodeMapper;
+  final StateIdentifierMapper _stateIdentifierMapper;
 
   IdentityRepositoryImpl(
     this._walletDataSource,
@@ -50,18 +47,17 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._hexMapper,
     this._privateKeyMapper,
     this._identityDTOMapper,
-    this._privateIdentityDTOMapper,
     this._rhsNodeMapper,
+    this._stateIdentifierMapper,
     //this._smtStorageRepository,
   );
 
   /// Get an IdentityEntity from a String secret
-  /// It will create and store a new [IdentityDTO] if it doesn't exists
+  /// It will create a new [PrivateIdentity]
   ///
   /// @return the associated identifier
   @override
-  Future<PrivateIdentityEntity> createIdentity(
-      {String? secret, bool isStored = true}) async {
+  Future<PrivateIdentityEntity> createIdentity({String? secret}) async {
     try {
       // Create a wallet
       PrivadoIdWallet wallet = await _walletDataSource.createWallet(
@@ -78,26 +74,20 @@ class IdentityRepositoryImpl extends IdentityRepository {
       String state = "";
       //await _libIdentityDataSource.createSMT(_smtStorageRepository);
 
-      PrivateIdentityDTO dto = PrivateIdentityDTO(
-          identifier: identifier,
-          publicKey: wallet.publicKey,
-          state: state,
-          privateKey: _hexMapper.mapFrom(wallet.privateKey),
-          authClaim: authClaim);
-      PrivateIdentityEntity identityEntity =
-          _privateIdentityDTOMapper.mapFrom(dto);
-
-      if (isStored) {
-        await storeIdentity(
-            identity: identityEntity, privateKey: identityEntity.privateKey);
-      }
-
+      PrivateIdentityEntity identityEntity = _identityDTOMapper.mapPrivateFrom(
+          IdentityDTO(
+              identifier: identifier,
+              publicKey: wallet.publicKey,
+              state: state),
+          _hexMapper.mapFrom(wallet.privateKey),
+          authClaim);
       return Future.value(identityEntity);
     } catch (error) {
       throw IdentityException(error);
     }
   }
 
+  @override
   Future<String> getIdentifier({required String privateKey}) async {
     // Create a wallet
     PrivadoIdWallet wallet = PrivadoIdWallet(_hexMapper.mapTo(privateKey));
@@ -127,59 +117,43 @@ class IdentityRepositoryImpl extends IdentityRepository {
     }
   }
 
-  /// Get an [IdentityEntity] from a String
-  ///
-  /// Used for retro compatibility with demo
-  /*@override
-  Future<IdentityEntity> getIdentityFromSecret({String? secret}) {
-    return Future.value(_privateKeyMapper.mapFrom(secret)).then((key) =>
-        _walletDataSource
-            .createWallet(privateKey: key)
-            .then((wallet) => Future.wait([
-                  _libIdentityDataSource.getIdentifier(
-                      pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]),
-                  _libIdentityDataSource.getAuthClaim(
-                      pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]),
-                  Future.value(wallet.publicKey),
-                  //_libIdentityDataSource.createSMT(_smtStorageRepository)
-                ]).then((values) => IdentityEntity(
-                    privateKey: _hexMapper.mapFrom(wallet.privateKey),
-                    identifier: values[0] as String,
-                    authClaim: values[1] as String,
-                    publicKey: wallet.publicKey,
-                    state: '')))
-            .catchError((error) => throw IdentityException(error)));
-  }*/
-
-  /*/// Get an identifier from a publicKey
-  @override
-  Future<String> getIdentifierFromPubKey({List<String> publicKey}) {
-    return Future.value(_privateKeyMapper.mapFrom(secret))
-        .then((key) => // Create a wallet from the private key
-            _walletDataSource.createWallet(privateKey: key))
-        .then((wallet) => // Get the associated identifier
-            _libIdentityDataSource.getIdentifier(
-                pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]));
-  }*/
-
-  /*@override
-  Future<String?> getCurrentIdentifier() {
-    return _storageKeyValueDataSource
-        .get(key: currentIdentifierKey)
-        .then((value) => value == null ? null : value as String);
-  }*/
-
   /// Get an [IdentityEntity] from an identifier
   /// The [IdentityEntity] is the one previously stored and associated to the identifier
   /// Throws an [UnknownIdentityException] if not found.
   @override
-  Future<IdentityEntity> getIdentity(
-      {required String identifier, String? privateKey}) {
+  Future<IdentityEntity> getIdentity({required String identifier}) {
     return _storageIdentityDataSource
-        .getIdentity(identifier: identifier, privateKey: privateKey)
-        .then((dto) => dto is PrivateIdentityDTO
-            ? _privateIdentityDTOMapper.mapFrom(dto)
-            : _identityDTOMapper.mapFrom(dto))
+        .getIdentity(identifier: identifier)
+        .then((dto) => _identityDTOMapper.mapFrom(dto))
+        .catchError((error) => throw IdentityException(error),
+            test: (error) => error is! UnknownIdentityException);
+  }
+
+  /// Get an [PrivateIdentityEntity] from an identifier and a privateKey
+  /// The [PrivateIdentityEntity] is the one previously stored and associated to the identifier
+  /// And we and the private info (privateKey and authClaim)
+  /// Throws an [UnknownIdentityException] if not found.
+  @override
+  Future<PrivateIdentityEntity> getPrivateIdentity(
+      {required String identifier, required String privateKey}) {
+    return _storageIdentityDataSource
+        .getIdentity(identifier: identifier)
+        .then((dto) => _walletDataSource
+            .getWallet(privateKey: _hexMapper.mapTo(privateKey))
+            .then((wallet) => _libIdentityDataSource
+                    .getIdentifier(
+                        pubX: wallet.publicKey[0], pubY: wallet.publicKey[1])
+                    .then((identifierFromKey) {
+                  if (identifierFromKey != identifier) {
+                    throw InvalidPrivateKeyException(privateKey);
+                  }
+
+                  return _libIdentityDataSource
+                      .getAuthClaim(
+                          pubX: wallet.publicKey[0], pubY: wallet.publicKey[1])
+                      .then((authClaim) => _identityDTOMapper.mapPrivateFrom(
+                          dto, privateKey, authClaim));
+                })))
         .catchError((error) => throw IdentityException(error),
             test: (error) => error is! UnknownIdentityException);
   }
@@ -207,7 +181,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
     return _localContractFilesDataSource
         .loadStateContract(contractAddress)
         .then((contract) => _rpcDataSource
-            .getState(bytesToHex(Base58Decode(identifier)), contract)
+            .getState(_stateIdentifierMapper.mapTo(identifier), contract)
             .catchError((error) => throw FetchIdentityStateException(error)));
   }
 
