@@ -58,13 +58,13 @@ abstract class PolygonIdSdkCredential {
 }
 
 @injectable
-class CredentialWallet implements PolygonIdSdkCredential {
+class Credential implements PolygonIdSdkCredential {
   final FetchAndSaveClaimsUseCase _fetchAndSaveClaimsUseCase;
   final GetClaimsUseCase _getClaimsUseCase;
   final RemoveClaimsUseCase _removeClaimsUseCase;
   final UpdateClaimUseCase _updateClaimUseCase;
 
-  CredentialWallet(this._fetchAndSaveClaimsUseCase, this._getClaimsUseCase,
+  Credential(this._fetchAndSaveClaimsUseCase, this._getClaimsUseCase,
       this._removeClaimsUseCase, this._updateClaimUseCase);
 
   /// Fetch a list of [ClaimEntity] and store them

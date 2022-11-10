@@ -130,13 +130,13 @@ import '../../proof_generation/libs/prover/prover.dart' as _i37;
 import '../../proof_generation/libs/witnesscalc/auth/witness_auth.dart' as _i48;
 import '../../proof_generation/libs/witnesscalc/mtp/witness_mtp.dart' as _i50;
 import '../../proof_generation/libs/witnesscalc/sig/witness_sig.dart' as _i51;
-import '../credential_wallet.dart' as _i101;
+import '../credential.dart' as _i101;
 import '../iden3comm.dart' as _i102;
-import '../identity_wallet.dart' as _i95;
+import '../identity.dart' as _i95;
 import '../mappers/iden3_message_mapper.dart' as _i59;
 import '../mappers/iden3_message_type_mapper.dart' as _i18;
 import '../mappers/schema_info_mapper.dart' as _i66;
-import '../proof_generation.dart' as _i99;
+import '../proof.dart' as _i99;
 import 'injector.dart' as _i103; // ignore_for_file: unnecessary_lambdas
 
 // ignore_for_file: lines_longer_than_80_chars
@@ -228,17 +228,17 @@ _i1.GetIt $initSDKGetIt(
   gh.factory<_i43.RhsNodeTypeMapper>(() => _i43.RhsNodeTypeMapper());
   gh.lazySingleton<_i44.SdkEnv>(() => sdk.sdkEnv);
   gh.factory<_i45.StateIdentifierMapper>(() => _i45.StateIdentifierMapper());
-  gh.factory<_i11.StoreRef<String, Map<String, Object?>>>(
-    () => databaseModule.identityStore,
-    instanceName: 'identityStore',
+  gh.factory<_i11.StoreRef<String, dynamic>>(
+    () => databaseModule.keyValueStore,
+    instanceName: 'keyValueStore',
   );
   gh.factory<_i11.StoreRef<String, Map<String, Object?>>>(
     () => databaseModule.claimStore,
     instanceName: 'claimStore',
   );
-  gh.factory<_i11.StoreRef<String, dynamic>>(
-    () => databaseModule.keyValueStore,
-    instanceName: 'keyValueStore',
+  gh.factory<_i11.StoreRef<String, Map<String, Object?>>>(
+    () => databaseModule.identityStore,
+    instanceName: 'identityStore',
   );
   gh.factory<_i46.WalletLibWrapper>(() => _i46.WalletLibWrapper());
   gh.factory<_i47.Web3Client>(
@@ -432,7 +432,7 @@ _i1.GetIt $initSDKGetIt(
       _i93.GetIdentifierUseCase(await get.getAsync<_i82.IdentityRepository>()));
   gh.factoryAsync<_i94.GetIdentityUseCase>(() async =>
       _i94.GetIdentityUseCase(await get.getAsync<_i82.IdentityRepository>()));
-  gh.factoryAsync<_i95.IdentityWallet>(() async => _i95.IdentityWallet(
+  gh.factoryAsync<_i95.Identity>(() async => _i95.Identity(
         await get.getAsync<_i86.CreateAndSaveIdentityUseCase>(),
         await get.getAsync<_i94.GetIdentityUseCase>(),
         await get.getAsync<_i84.RemoveIdentityUseCase>(),
@@ -458,8 +458,8 @@ _i1.GetIt $initSDKGetIt(
         await get.getAsync<_i97.GenerateProofUseCase>(),
         get<_i83.IsProofCircuitSupportedUseCase>(),
       ));
-  gh.factoryAsync<_i99.ProofGeneration>(() async =>
-      _i99.ProofGeneration(await get.getAsync<_i97.GenerateProofUseCase>()));
+  gh.factoryAsync<_i99.Proof>(
+      () async => _i99.Proof(await get.getAsync<_i97.GenerateProofUseCase>()));
   gh.factoryAsync<_i100.AuthenticateUseCase>(
       () async => _i100.AuthenticateUseCase(
             get<_i81.Iden3commRepository>(),
@@ -469,7 +469,7 @@ _i1.GetIt $initSDKGetIt(
             await get.getAsync<_i69.GetPackageNameUseCase>(),
             await get.getAsync<_i92.GetDidIdentifierUseCase>(),
           ));
-  gh.factoryAsync<_i101.CredentialWallet>(() async => _i101.CredentialWallet(
+  gh.factoryAsync<_i101.Credential>(() async => _i101.Credential(
         await get.getAsync<_i96.FetchAndSaveClaimsUseCase>(),
         get<_i73.GetClaimsUseCase>(),
         get<_i79.RemoveClaimsUseCase>(),
