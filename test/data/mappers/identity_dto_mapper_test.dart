@@ -4,20 +4,20 @@ import 'package:polygonid_flutter_sdk/identity/data/mappers/identity_dto_mapper.
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 
 // Data
-const privateKey = "thePrivateKey";
+const publicKey = ["thePubX", "thePubY"];
 const identifier = "theIdentifier";
 const authClaim = "theAuthClaim";
-const smt = "theSmt";
+const state = "theState";
 const mockDTO = IdentityDTO(
-    privateKey: privateKey,
-    identifier: identifier,
-    authClaim: authClaim,
-    smt: smt);
+  identifier: identifier,
+  publicKey: publicKey,
+  state: state,
+);
 const mockEntity = IdentityEntity(
-    privateKey: privateKey,
-    identifier: identifier,
-    authClaim: authClaim,
-    smt: smt);
+  identifier: identifier,
+  publicKey: publicKey,
+  state: state,
+);
 
 // Tested instance
 IdentityDTOMapper mapper = IdentityDTOMapper();

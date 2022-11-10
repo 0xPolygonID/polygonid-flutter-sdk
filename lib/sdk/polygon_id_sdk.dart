@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
-import 'package:polygonid_flutter_sdk/sdk/proof_generation.dart';
 
-import 'credential_wallet.dart';
+import 'credential.dart';
 import 'iden3comm.dart';
-import 'identity_wallet.dart';
+import 'identity.dart';
+import 'proof.dart';
 
 class PolygonIsSdkNotInitializedException implements Exception {
   String message;
@@ -36,15 +36,15 @@ class PolygonIdSdk {
 
     // SDK singleton
     _ref = PolygonIdSdk._();
-    _ref!.identity = await getItSdk.getAsync<IdentityWallet>();
-    _ref!.credential = await getItSdk.getAsync<CredentialWallet>();
-    _ref!.proof = await getItSdk.getAsync<ProofGeneration>();
+    _ref!.identity = await getItSdk.getAsync<Identity>();
+    _ref!.credential = await getItSdk.getAsync<Credential>();
+    _ref!.proof = await getItSdk.getAsync<Proof>();
     _ref!.iden3comm = await getItSdk.getAsync<Iden3comm>();
   }
 
-  late IdentityWallet identity;
-  late CredentialWallet credential;
-  late ProofGeneration proof;
+  late Identity identity;
+  late Credential credential;
+  late Proof proof;
   late Iden3comm iden3comm;
 
   PolygonIdSdk._();

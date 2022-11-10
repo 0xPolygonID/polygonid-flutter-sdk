@@ -8,6 +8,12 @@ class ClaimNotFoundException implements Exception {
   ClaimNotFoundException(this.id);
 }
 
+class ClaimWrongIdentityException implements Exception {
+  final String identifier;
+
+  ClaimWrongIdentityException(this.identifier);
+}
+
 class FetchClaimException extends ErrorException {
   FetchClaimException(error) : super(error);
 }

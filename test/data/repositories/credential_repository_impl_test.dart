@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -19,7 +18,6 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.da
 import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
 import 'package:sembast/sembast.dart';
 
 import '../dtos/fetch_claim_response_dto_test.dart';
@@ -32,13 +30,8 @@ const url = "theUrl";
 const ids = ["theId", "theId1", "theId2"];
 final exception = Exception();
 
-final CredentialRequestEntity requestEntity = CredentialRequestEntity(
-    "",
-    CircuitDataEntity("", Uint8List.fromList([]), Uint8List.fromList([])),
-    url,
-    "",
-    "",
-    "");
+final CredentialRequestEntity requestEntity =
+    CredentialRequestEntity("", url, "", "", "");
 
 /// We assume [FetchClaimResponseDTO] has been tested
 final fetchClaimDTO =

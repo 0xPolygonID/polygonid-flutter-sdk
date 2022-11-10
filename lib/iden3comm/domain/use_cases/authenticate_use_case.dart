@@ -14,10 +14,14 @@ import 'get_proofs_use_case.dart';
 class AuthenticateParam {
   final Iden3MessageEntity message;
   final String identifier;
+  final String privateKey;
   final String? pushToken;
 
   AuthenticateParam(
-      {required this.message, required this.identifier, this.pushToken});
+      {required this.message,
+      required this.identifier,
+      required this.privateKey,
+      this.pushToken});
 }
 
 class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
@@ -43,7 +47,10 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
       try {
         List<ProofEntity> proofs = await _getProofsUseCase.execute(
             param: GetProofsParam(
-                message: param.message, identifier: param.identifier));
+          message: param.message,
+          identifier: param.identifier,
+          privateKey: param.privateKey,
+        ));
 
         String pushUrl =
             await _getEnvConfigUseCase.execute(param: PolygonIdConfig.pushUrl);
@@ -72,7 +79,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
             packageName: packageName);
 
         String authToken = await _getAuthTokenUseCase.execute(
-            param: GetAuthTokenParam(param.identifier, authResponse));
+            param: GetAuthTokenParam(
+                param.identifier, param.privateKey, authResponse));
 
         _iden3commRepository
             .getAuthCallback(message: param.message)

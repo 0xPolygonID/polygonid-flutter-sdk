@@ -49,17 +49,20 @@ class PrivadoIdWallet {
   /// This creates a wallet
   /// Random wallet is created if no private key is provided
   ///
-  /// @param [Uint8List] privateKey - 32 bytes buffer
+  /// @param [Uint8List] secret - 32 bytes buffer
   /// @returns [PrivadoIdWallet] privadoIdWallet - PrivadoIdWallet instance
   static Future<PrivadoIdWallet> createPrivadoIdWallet(
-      {Uint8List? privateKey}) async {
-    Uint8List privateBjjKey = privateKey ?? Uint8List(32);
-    if (privateKey == null) {
-      final prvKey = EthPrivateKey.createRandom(Random.secure());
-      final signature = await prvKey.sign(
-          Uint8ArrayUtils.uint8ListfromString(SdkEnv().polygonIdAccessMessage));
-      privateBjjKey = keccak256(signature);
+      {Uint8List? secret}) async {
+    //Uint8List privateBjjKey = privateKey ?? Uint8List(32);
+    EthPrivateKey prvKey;
+    if (secret == null) {
+      prvKey = EthPrivateKey.createRandom(Random.secure());
+    } else {
+      prvKey = EthPrivateKey(secret);
     }
+    final signature = await prvKey.sign(
+        Uint8ArrayUtils.uint8ListfromString(SdkEnv().polygonIdAccessMessage));
+    Uint8List privateBjjKey = keccak256(signature);
     final bjjWallet = PrivadoIdWallet(privateBjjKey);
     return bjjWallet;
   }

@@ -112,7 +112,7 @@ class JWZDataSource {
   Future<Uint8List> _prepare(Uint8List privateKey, String authClaim,
       Uint8List hash, String circuitId) {
     return _walletDataSource
-        .createWallet(privateKey: privateKey)
+        .getWallet(privateKey: privateKey)
         .then((wallet) async {
       String queryInputs = "";
       String challenge = bytesToInt(hash).toString();

@@ -21,7 +21,7 @@ class FetchStateRootsUseCase
 
   @override
   Future<RhsNodeEntity> execute({required FetchStateRootsParam param}) async {
-    RhsNodeEntity rhsIdentityState = await _identityRepository.fetchStateRoots(
+    RhsNodeEntity rhsIdentityState = await _identityRepository.getStateRoots(
         url: param.rhsBaseUrl + param.idStateHash);
     return rhsIdentityState;
   }

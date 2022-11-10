@@ -7,6 +7,7 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/common/data/repositories/env_config_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/common/domain/repositories/config_repository.dart';
+import 'package:polygonid_flutter_sdk/common/utils/encrypt_sembast_codec.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/env/dev_env.dart';
 import 'package:polygonid_flutter_sdk/env/prod_env.dart';
@@ -15,9 +16,7 @@ import 'package:sembast/sembast_io.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:web_socket_channel/io.dart';
 
-import '../../common/data/repositories/env_config_repository_impl.dart';
 import '../../common/data/repositories/package_info_repository_impl.dart';
-import '../../common/domain/repositories/config_repository.dart';
 import '../../common/domain/repositories/package_info_repository.dart';
 import '../../credential/data/credential_repository_impl.dart';
 import '../../credential/domain/repositories/credential_repository.dart';
@@ -73,6 +72,18 @@ abstract class DatabaseModule {
     final path = join(dir.path, databaseName);
     final database = await databaseFactoryIo.openDatabase(path);
 
+    return database;
+  }
+
+  @Named(claimDatabaseName)
+  Future<Database> claimDatabase(@factoryParam String? identifier,
+      @factoryParam String? privateKey) async {
+    final dir = await getApplicationDocumentsDirectory();
+    await dir.create(recursive: true);
+    final path = join(dir.path, claimDatabasePrefix + identifier! + '.db');
+    // Initialize the encryption codec with the privateKey
+    var codec = getEncryptSembastCodec(password: privateKey!);
+    final database = await databaseFactoryIo.openDatabase(path, codec: codec);
     return database;
   }
 

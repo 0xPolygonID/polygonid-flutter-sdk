@@ -32,10 +32,13 @@ AuthenticateUseCase useCase = AuthenticateUseCase(
 const issuerMessage = "theIssuerMessage";
 const identifier = "theIdentifier";
 const pushToken = "thePushToken";
+const privateKey = "thePrivateKey";
 AuthenticateParam param = AuthenticateParam(
-    message: mockIden3MessageEntity,
-    identifier: identifier,
-    pushToken: pushToken);
+  message: mockIden3MessageEntity,
+  identifier: identifier,
+  pushToken: pushToken,
+  privateKey: privateKey,
+);
 
 @GenerateMocks([
   Iden3commRepository,

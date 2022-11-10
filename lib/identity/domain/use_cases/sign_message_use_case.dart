@@ -3,10 +3,10 @@ import '../../../common/domain/use_case.dart';
 import '../repositories/identity_repository.dart';
 
 class SignMessageParam {
-  final String identifier;
+  final String privateKey;
   final String message;
 
-  SignMessageParam(this.identifier, this.message);
+  SignMessageParam(this.privateKey, this.message);
 }
 
 class SignMessageUseCase extends FutureUseCase<SignMessageParam, String> {
@@ -17,10 +17,10 @@ class SignMessageUseCase extends FutureUseCase<SignMessageParam, String> {
   @override
   Future<String> execute({required SignMessageParam param}) {
     return _identityRepository
-        .signMessage(identifier: param.identifier, message: param.message)
+        .signMessage(privateKey: param.privateKey, message: param.message)
         .then((signature) {
       logger().i(
-          "[SignMessageUseCase] message ${param.message} with identifier ${param.identifier} signed successfully: $signature");
+          "[SignMessageUseCase] message ${param.message} with privateKey ${param.privateKey} signed successfully: $signature");
 
       return signature;
     }).catchError((error) {

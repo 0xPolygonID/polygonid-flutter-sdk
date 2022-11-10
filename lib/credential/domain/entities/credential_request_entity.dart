@@ -1,5 +1,3 @@
-
-
 class CredentialRequestEntity {
   final String identifier;
   final String url;

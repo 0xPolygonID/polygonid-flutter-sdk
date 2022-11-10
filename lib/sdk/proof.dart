@@ -6,11 +6,21 @@ import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/generate
 
 import '../proof_generation/domain/entities/circuit_data_entity.dart';
 
+abstract class PolygonIdSdkProof {
+  Future<JWZProof> prove(
+      {required String challenge,
+      required String signatureString,
+      required ClaimEntity authClaim,
+      required CircuitDataEntity circuitData,
+      required List<String> bjjPublicKey,
+      required ProofQueryParamEntity queryParam});
+}
+
 @injectable
-class ProofGeneration {
+class Proof implements PolygonIdSdkProof {
   final GenerateProofUseCase _proveUseCase;
 
-  ProofGeneration(
+  Proof(
     this._proveUseCase,
   );
 

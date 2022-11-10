@@ -19,7 +19,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_en
     as _i12;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart'
     as _i4;
-import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
+import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart'
     as _i6;
 import 'package:polygonid_flutter_sdk/identity/libs/jwz/jwz_proof.dart' as _i3;
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart'
@@ -87,7 +87,7 @@ class MockIden3commRepository extends _i1.Mock
       ) as _i5.Future<void>);
   @override
   _i5.Future<String> getAuthToken({
-    required _i6.IdentityEntity? identityEntity,
+    required _i6.PrivateIdentityEntity? identityEntity,
     required String? message,
     required _i2.CircuitDataEntity? authData,
   }) =>

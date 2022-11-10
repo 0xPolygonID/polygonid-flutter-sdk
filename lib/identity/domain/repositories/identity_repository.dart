@@ -1,37 +1,40 @@
 import '../entities/identity_entity.dart';
+import '../entities/private_identity_entity.dart';
 import '../entities/rhs_node_entity.dart';
 
 abstract class IdentityRepository {
-  Future<String> createIdentity({String? privateKey});
+  // Identity
+  Future<PrivateIdentityEntity> createIdentity({String? secret});
 
-  Future<IdentityEntity> getIdentityFromKey({String? privateKey});
+  Future<void> storeIdentity(
+      {required IdentityEntity identity, required String privateKey});
 
-  Future<String> getIdentifier({String? privateKey});
+  Future<void> removeIdentity(
+      {required String identifier, required String privateKey});
+
+  Future<String> getIdentifier({required String privateKey});
 
   Future<IdentityEntity> getIdentity({required String identifier});
 
-  Future<void> removeIdentity({required String identifier});
+  Future<PrivateIdentityEntity> getPrivateIdentity(
+      {required String identifier, required String privateKey});
+
+  Future<List<IdentityEntity>> getIdentities();
 
   Future<String> signMessage(
-      {required String identifier, required String message});
+      {required String privateKey, required String message});
 
-  /// TODO: Remove this method when we support multiple identity
-  Future<String?> getCurrentIdentifier();
+  Future<String> getDidIdentifier(
+      {required String identifier,
+      required String networkName,
+      required String networkEnv});
 
-  /// FIXME: remove when [PublicIdentity] is created
-  Future<List<String>> getPublicKeys({required String privateKey});
-
-  Future<String> fetchIdentityState(
-      {required String id, required String contractAddress});
-
-  Future<RhsNodeEntity> fetchStateRoots({required String url});
-
+  // RHS
   Future<Map<String, dynamic>> getNonRevProof(
       String identityState, int revNonce, String rhsBaseUrl);
 
-  Future<String> getDidIdentifier({
-    required String identifier,
-    required String networkName,
-    required String networkEnv,
-  });
+  Future<String> getState(
+      {required String identifier, required String contractAddress});
+
+  Future<RhsNodeEntity> getStateRoots({required String url});
 }

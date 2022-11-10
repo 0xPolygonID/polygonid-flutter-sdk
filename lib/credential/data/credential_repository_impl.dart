@@ -57,43 +57,69 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<void> saveClaims({required List<ClaimEntity> claims}) {
+  Future<void> saveClaims(
+      {required List<ClaimEntity> claims,
+      required String identifier,
+      required String privateKey}) {
     return _storageClaimDataSource
         .storeClaims(
-            claims: claims.map((claim) => _claimMapper.mapTo(claim)).toList())
+            claims: claims.map((claim) => _claimMapper.mapTo(claim)).toList(),
+            identifier: identifier,
+            privateKey: privateKey)
         .catchError((error) => throw SaveClaimException(error));
   }
 
   @override
-  Future<List<ClaimEntity>> getClaims({List<FilterEntity>? filters}) {
+  Future<List<ClaimEntity>> getClaims(
+      {List<FilterEntity>? filters,
+      required String identifier,
+      required String privateKey}) {
     return _storageClaimDataSource
         .getClaims(
-            filter: filters == null ? null : _filtersMapper.mapTo(filters))
+            filter: filters == null ? null : _filtersMapper.mapTo(filters),
+            identifier: identifier,
+            privateKey: privateKey)
         .then((claims) =>
             claims.map((claim) => _claimMapper.mapFrom(claim)).toList())
         .catchError((error) => throw GetClaimsException(error));
   }
 
   @override
-  Future<ClaimEntity> getClaim({required String id}) {
+  Future<ClaimEntity> getClaim(
+      {required String claimId,
+      required String identifier,
+      required String privateKey}) {
     return _storageClaimDataSource
-        .getClaims(filter: _idFilterMapper.mapTo(id))
+        .getClaims(
+            filter: _idFilterMapper.mapTo(claimId),
+            identifier: identifier,
+            privateKey: privateKey)
         .then((claims) => claims.isEmpty
-            ? throw ClaimNotFoundException(id)
+            ? throw ClaimNotFoundException(claimId)
             : _claimMapper.mapFrom(claims.first));
   }
 
   @override
-  Future<void> removeClaims({required List<String> ids}) {
+  Future<void> removeClaims(
+      {required List<String> claimIds,
+      required String identifier,
+      required String privateKey}) {
     return _storageClaimDataSource
-        .removeClaims(ids: ids)
+        .removeClaims(
+            claimIds: claimIds, identifier: identifier, privateKey: privateKey)
         .catchError((error) => throw RemoveClaimsException(error));
   }
 
   @override
-  Future<ClaimEntity> updateClaim({required ClaimEntity claim}) {
+  Future<ClaimEntity> updateClaim(
+      {required ClaimEntity claim,
+      required String identifier,
+      required String privateKey}) {
     return _storageClaimDataSource
-        .storeClaims(claims: [_claimMapper.mapTo(claim)])
+        .storeClaims(
+            claims: [_claimMapper.mapTo(claim)],
+            identifier: identifier,
+            privateKey: privateKey)
         .then((_) => claim)
         .catchError((error) => throw UpdateClaimException(error));
   }

@@ -25,7 +25,7 @@ var exception = Exception();
 MockIdentityRepository identityRepository = MockIdentityRepository();
 
 // Tested instance
-CreateIdentityUseCase useCase = CreateIdentityUseCase(identityRepository);
+CreateAndStoreIdentityUseCase useCase = CreateAndStoreIdentityUseCase(identityRepository);
 
 @GenerateMocks([IdentityRepository])
 void main() {
@@ -33,7 +33,7 @@ void main() {
     // Given
     when(identityRepository.getIdentifier(privateKey: anyNamed('privateKey')))
         .thenAnswer((realInvocation) => Future.value(identifier));
-    when(identityRepository.createIdentity(privateKey: anyNamed('privateKey')))
+    when(identityRepository.createIdentity(secret: anyNamed('secret')))
         .thenAnswer((realInvocation) => Future.value(identifier));
     when(identityRepository.getIdentity(identifier: anyNamed('identifier')))
         .thenAnswer((realInvocation) =>
