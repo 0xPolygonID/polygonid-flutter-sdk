@@ -9,6 +9,7 @@ import 'mappers/iden3_message_mapper.dart';
 import 'mappers/schema_info_mapper.dart';
 
 abstract class PolygonIdSdkIden3comm {
+  /// Returns a [Iden3MessageEntity] from a message string
   Iden3MessageEntity getIden3Message({required String message});
 
   /// get the vocabulary json-ld files to translate the values of the schemas
@@ -44,9 +45,15 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   Iden3comm(this._getVocabsFromIden3MsgUseCase, this._authenticateUseCase,
       this._getProofsUseCase, this._iden3messageMapper, this._schemaInfoMapper);
 
+  @override
+  Iden3MessageEntity getIden3Message({required String message}) {
+    return _iden3messageMapper.mapFrom(message);
+  }
+
   /// VOCABS
   /// get the vocabulary json-ld files to translate the values of the schemas
   /// to show them to end users in a natural language format in the apps
+  @override
   Future<List<Map<String, dynamic>>> getVocabsFromIden3Message(
       {required Iden3MessageEntity message}) {
     return _getVocabsFromIden3MsgUseCase.execute(
@@ -58,6 +65,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   /// get CircuitDataEntity #1 by loadCircuitFiles #2
   /// get authToken #4
   /// auth with token #5 TODO rewrite as soon as development is completed
+  @override
   Future<void> authenticate(
       {required Iden3MessageEntity message,
       required String identifier,
@@ -72,6 +80,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     ));
   }
 
+  @override
   Future<List<ProofEntity>> getProofs(
       {required Iden3MessageEntity message,
       required String identifier,
@@ -84,9 +93,5 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       challenge: challenge,
       privateKey: privateKey,
     ));
-  }
-
-  Iden3MessageEntity getIden3Message({required String message}) {
-    return _iden3messageMapper.mapFrom(message);
   }
 }
