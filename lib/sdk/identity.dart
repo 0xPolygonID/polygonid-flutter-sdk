@@ -40,9 +40,9 @@ abstract class PolygonIdSdkIdentity {
   /// if privateKey is ommited or invalid.
   /// Throws [IdentityException] if an error occurs.
   ///
-  /// Identifier is the unique id of the identity
+  /// The [identifier] is the unique id of the identity
   ///
-  /// Identity private Key is the key used to access all the sensitive info from the identity
+  /// The Identity's [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
   /// using the claims associated to the identity
   ///
@@ -58,45 +58,62 @@ abstract class PolygonIdSdkIdentity {
   /// Throws [IdentityException] if an error occurs.
   Future<List<IdentityEntity>> getIdentities();
 
+  /// Remove the previously stored identity associated with the identifier
+  ///
+  /// the [identifier] is the unique id of the identity
+  ///
+  /// Identity [privateKey] is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
+  /// using the claims associated to the identity
+  ///
+  /// Throws [IdentityException] if an error occurs.
+  Future<void> removeIdentity(
+      {required String identifier, required String privateKey});
+
+  /// Returns the identifier derived from a privateKey
+  ///
+  /// The Identity's [privateKey] is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
+  /// using the claims associated to the identity
+  Future<String> getIdentifier({required String privateKey});
+
+  /// Returns the identity state from an identifier
+  ///
+  /// The [identifier] is the unique id of the identity
+  Future<String> getState(String identifier);
+
+  /// Updates the identity state
+  ///
+  /// The [identifier] is the unique id of the identity
+  ///
+  /// The Identity's [privateKey] is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
+  /// using the claims associated to the identity
+  Future<void> updateState({
+    required String state,
+    required String identifier,
+    required String privateKey,
+  });
+
   /// Sign a message through a identity's private key.
   /// The [privateKey]  is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
   /// using the claims associated to the identity
   /// and [message] is the message to sign. Returns a string representing the signature.
   Future<String> sign({required String privateKey, required String message});
-
-  /// Returns the identifier derived from a privateKey
-  ///
-  /// The [privateKey] is the key used to access all the sensitive info from the identity
-  /// and also to realize operations like generating proofs
-  /// using the claims associated to the identity
-  Future<String> getIdentifier({required String privateKey});
-
-  /// Returns the identity state
-  ///
-  /// The [identifier] is the unique id of the identity
-  Future<String> getState(String identifier);
-
-  Future<void> updateState({
-    required String state,
-    required String identifier,
-    required String privateKey,
-  });
 }
 
 @injectable
-class IdentityWallet implements PolygonIdSdkIdentity {
+class Identity implements PolygonIdSdkIdentity {
   final CreateIdentityUseCase _createIdentityUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
   //final GetIdentitiesUseCase _getIdentitiesUseCase;
   final RemoveIdentityUseCase _removeIdentityUseCase;
   final GetIdentifierUseCase _getIdentifierUseCase;
   final SignMessageUseCase _signMessageUseCase;
-
-  // TODO: remove
   final FetchIdentityStateUseCase _fetchIdentityStateUseCase;
 
-  IdentityWallet(
+  Identity(
     this._createIdentityUseCase,
     this._getIdentityUseCase,
     this._removeIdentityUseCase,
@@ -147,6 +164,7 @@ class IdentityWallet implements PolygonIdSdkIdentity {
   /// in order to be compatible with the SDK. The following rules will be applied:
   /// - If the byte array is not 32 length, it will be padded with 0s.
   /// - If the byte array is longer than 32, an exception will be thrown.
+  @override
   Future<IdentityEntity> getIdentity(
       {required String identifier, String? privateKey}) async {
     return _getIdentityUseCase.execute(
@@ -154,8 +172,25 @@ class IdentityWallet implements PolygonIdSdkIdentity {
             GetIdentityParam(identifier: identifier, privateKey: privateKey));
   }
 
-  /// Remove the identity associated with the identifier
-  /// (stored when creating an identity via [createIdentity]).
+  /// Get a list of public info of [IdentityEntity] associated to the identities stored in the Polygon ID Sdk.
+  /// Return an list of [IdentityEntity].
+  /// Throws [IdentityException] if an error occurs.
+  @override
+  Future<List<IdentityEntity>> getIdentities() {
+    // TODO: implement getIdentities
+    throw UnimplementedError();
+  }
+
+  /// Remove the previously stored identity associated with the identifier
+  ///
+  /// the [identifier] is the unique id of the identity
+  ///
+  /// Identity [privateKey] is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
+  /// using the claims associated to the identity
+  ///
+  /// Throws [IdentityException] if an error occurs.
+  @override
   Future<void> removeIdentity(
       {required String identifier, required String privateKey}) {
     return _removeIdentityUseCase.execute(
@@ -166,6 +201,7 @@ class IdentityWallet implements PolygonIdSdkIdentity {
   /// Sign a message through a identity's private key.
   /// The [privateKey] is a string
   /// and [message] is the message to sign. Returns a string representing the signature.
+  @override
   Future<String> sign(
       {required String privateKey, required String message}) async {
     return _signMessageUseCase.execute(
@@ -173,6 +209,11 @@ class IdentityWallet implements PolygonIdSdkIdentity {
   }
 
   /// Returns the identifier derived from a privateKey
+  ///
+  /// The Identity's [privateKey] is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
+  /// using the claims associated to the identity
+  @override
   Future<String> getIdentifier({required String privateKey}) {
     return _getIdentifierUseCase.execute(
         param: GetIdentifierParam(
@@ -180,16 +221,21 @@ class IdentityWallet implements PolygonIdSdkIdentity {
     ));
   }
 
+  /// Returns the identity state from an identifier
+  ///
+  /// The [identifier] is the unique id of the identity
+  @override
   Future<String> getState(String identifier) {
     return _fetchIdentityStateUseCase.execute(param: identifier);
   }
 
-  @override
-  Future<List<IdentityEntity>> getIdentities() {
-    // TODO: implement getIdentities
-    throw UnimplementedError();
-  }
-
+  /// Updates the identity state
+  ///
+  /// The [identifier] is the unique id of the identity
+  ///
+  /// The Identity's [privateKey] is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
+  /// using the claims associated to the identity
   @override
   Future<void> updateState(
       {required String state,

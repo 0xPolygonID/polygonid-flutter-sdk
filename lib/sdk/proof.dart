@@ -17,10 +17,10 @@ abstract class PolygonIdSdkProof {
 }
 
 @injectable
-class ProofGeneration implements PolygonIdSdkProof {
+class Proof implements PolygonIdSdkProof {
   final GenerateProofUseCase _proveUseCase;
 
-  ProofGeneration(
+  Proof(
     this._proveUseCase,
   );
 
