@@ -68,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.only(bottom: 16),
                 child: Stack(
                   children: [
-                    _buildCreateIdentityButton(),
+                    _buildIdentityActionButton(),
                     _buildNavigateToNextPageButton(),
                   ],
                 ),
@@ -86,31 +86,62 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   ///
-  Widget _buildCreateIdentityButton() {
+  Widget _buildIdentityActionButton() {
     return Align(
       alignment: Alignment.center,
       child: BlocBuilder(
         bloc: widget._bloc,
         builder: (BuildContext context, HomeState state) {
-          bool enabled = (state is! LoadingDataHomeState) &&
-              (state.identifier == null || state.identifier!.isEmpty);
-          return AbsorbPointer(
-            absorbing: !enabled,
-            child: ElevatedButton(
-              key: CustomWidgetsKeys.homeScreenButtonCreateIdentity,
-              onPressed: () {
-                widget._bloc.add(const HomeEvent.createIdentity());
-              },
-              style: enabled
-                  ? CustomButtonStyle.primaryButtonStyle
-                  : CustomButtonStyle.disabledPrimaryButtonStyle,
-              child: const Text(
-                CustomStrings.homeButtonCTA,
-                style: CustomTextStyles.primaryButtonTextStyle,
-              ),
-            ),
-          );
+          bool enabled = state is! LoadingDataHomeState;
+          bool showCreateIdentityButton =
+              state.identifier == null || state.identifier!.isEmpty;
+
+          return showCreateIdentityButton
+              ? _buildCreateIdentityButton(enabled)
+              : _buildRemoveIdentityButton(enabled);
         },
+      ),
+    );
+  }
+
+  ///
+  Widget _buildCreateIdentityButton(bool enabled) {
+    return AbsorbPointer(
+      absorbing: !enabled,
+      child: ElevatedButton(
+        key: CustomWidgetsKeys.homeScreenButtonCreateIdentity,
+        onPressed: () {
+          widget._bloc.add(const HomeEvent.createIdentity());
+        },
+        style: enabled
+            ? CustomButtonStyle.primaryButtonStyle
+            : CustomButtonStyle.disabledPrimaryButtonStyle,
+        child: const Text(
+          CustomStrings.homeButtonCTA,
+          style: CustomTextStyles.primaryButtonTextStyle,
+        ),
+      ),
+    );
+  }
+
+  ///
+  Widget _buildRemoveIdentityButton(bool enabled) {
+    return AbsorbPointer(
+      absorbing: !enabled,
+      child: ElevatedButton(
+        key: CustomWidgetsKeys.homeScreenButtonRemoveIdentity,
+        onPressed: () {
+          widget._bloc.add(const HomeEvent.removeIdentity());
+        },
+        style: enabled
+            ? CustomButtonStyle.outlinedPrimaryButtonStyle
+            : CustomButtonStyle.disabledPrimaryButtonStyle,
+        child: Text(
+          CustomStrings.homeButtonRemoveIdentityCTA,
+          style: CustomTextStyles.primaryButtonTextStyle.copyWith(
+            color: CustomColors.primaryButton,
+          ),
+        ),
       ),
     );
   }

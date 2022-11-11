@@ -10,6 +10,7 @@ class CustomStrings {
   static const String homeIdentifierSectionPrefix = "Identifier:";
   static const String homeIdentifierSectionPlaceHolder = "Not yet created";
   static const String homeButtonCTA = "Create identity";
+  static const String homeButtonRemoveIdentityCTA = "Remove identity";
 
   // AUTH
   static const String authButtonCTA = "Connect";
