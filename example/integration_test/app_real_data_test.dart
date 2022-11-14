@@ -66,6 +66,27 @@ void main() {
         expect(find.text(CustomStrings.homeIdentifierSectionPlaceHolder),
             findsNothing);
 
+        // we expect to be able to remove the identity
+        // so we expect to find the remove button
+        expect(find.byKey(CustomWidgetsKeys.homeScreenButtonRemoveIdentity),
+            findsOneWidget);
+
+        // after tap on "remove identity" button,
+        // we expect not to find identifier
+        await widgetTester
+            .tap(find.byKey(CustomWidgetsKeys.homeScreenButtonRemoveIdentity));
+        await widgetTester.pumpAndSettle(const Duration(seconds: 1));
+        expect(find.text(CustomStrings.homeIdentifierSectionPlaceHolder),
+            findsOneWidget);
+
+        // after tap on "create identity" button,
+        // we expect to find identifier again
+        await widgetTester
+            .tap(find.byKey(CustomWidgetsKeys.homeScreenButtonCreateIdentity));
+        await widgetTester.pumpAndSettle(const Duration(seconds: 1));
+        expect(find.text(CustomStrings.homeIdentifierSectionPlaceHolder),
+            findsNothing);
+
         //  then by clicking on the "next action" button,
         //  we expect to navigate to authentication page
         await widgetTester

@@ -8,11 +8,13 @@ import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_ex
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/mappers/iden3_message_mapper.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
+import 'package:polygonid_flutter_sdk_example/src/data/secure_storage.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_state.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/mappers/claim_model_mapper.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/models/claim_model.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
+import 'package:polygonid_flutter_sdk_example/utils/secure_storage_keys.dart';
 
 class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
   final Iden3MessageMapper _iden3messageMapper;
@@ -40,7 +42,15 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
   ///
   Future<void> _fetchAndSaveClaims(
       FetchAndSaveClaimsEvent event, Emitter<ClaimsState> emit) async {
-    String? identifier = await _polygonIdSdk.identity.getCurrentIdentifier();
+    String? privateKey =
+        await SecureStorage.read(key: SecureStorageKeys.privateKey);
+    if (privateKey == null) {
+      emit(const ClaimsState.error("Private key not found"));
+      return;
+    }
+
+    String? identifier =
+        await _polygonIdSdk.identity.getIdentifier(privateKey: privateKey);
 
     if (identifier == null || identifier.isEmpty) {
       emit(const ClaimsState.error(
@@ -77,8 +87,12 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
         credentialRequestEntityList.add(entity);
       }
 
-      List<ClaimEntity> claimList = await _polygonIdSdk.credential
-          .fetchAndSaveClaims(credentialRequests: credentialRequestEntityList);
+      List<ClaimEntity> claimList =
+          await _polygonIdSdk.credential.fetchAndSaveClaims(
+        credentialRequests: credentialRequestEntityList,
+        identifier: identifier,
+        privateKey: privateKey,
+      );
 
       if (claimList.isNotEmpty) {
         add(const GetClaimsEvent());
@@ -95,9 +109,29 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
     List<FilterEntity>? filters = event.filters;
 
+    String? privateKey =
+        await SecureStorage.read(key: SecureStorageKeys.privateKey);
+
+    if (privateKey == null) {
+      emit(const ClaimsState.error("Private key not found"));
+      return;
+    }
+
+    String? identifier =
+        await _polygonIdSdk.identity.getIdentifier(privateKey: privateKey);
+
+    if (identifier == null || identifier.isEmpty) {
+      emit(const ClaimsState.error(
+          "without an identity is impossible to get claims"));
+      return;
+    }
+
     try {
-      List<ClaimEntity> claimList =
-          await _polygonIdSdk.credential.getClaims(filters: filters);
+      List<ClaimEntity> claimList = await _polygonIdSdk.credential.getClaims(
+        filters: filters,
+        identifier: identifier,
+        privateKey: privateKey,
+      );
 
       List<ClaimModel> claimModelList =
           claimList.map((claimEntity) => _mapper.mapFrom(claimEntity)).toList();
@@ -116,9 +150,30 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
     List<String> ids = event.ids;
 
+    String? privateKey =
+        await SecureStorage.read(key: SecureStorageKeys.privateKey);
+
+    if (privateKey == null) {
+      emit(const ClaimsState.error("Private key not found"));
+      return;
+    }
+
+    String? identifier =
+        await _polygonIdSdk.identity.getIdentifier(privateKey: privateKey);
+
+    if (identifier == null || identifier.isEmpty) {
+      emit(const ClaimsState.error(
+          "without an identity is impossible to get claims"));
+      return;
+    }
+
     try {
       List<ClaimEntity> claimList =
-          await _polygonIdSdk.credential.getClaimsByIds(ids: ids);
+          await _polygonIdSdk.credential.getClaimsByIds(
+        claimIds: ids,
+        identifier: identifier,
+        privateKey: privateKey,
+      );
 
       List<ClaimModel> claimModelList =
           claimList.map((claimEntity) => _mapper.mapFrom(claimEntity)).toList();
@@ -134,8 +189,30 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
   Future<void> _removeClaim(
       RemoveClaimEvent event, Emitter<ClaimsState> emit) async {
     String id = event.id;
+
+    String? privateKey =
+        await SecureStorage.read(key: SecureStorageKeys.privateKey);
+
+    if (privateKey == null) {
+      emit(const ClaimsState.error("Private key not found"));
+      return;
+    }
+
+    String? identifier =
+        await _polygonIdSdk.identity.getIdentifier(privateKey: privateKey);
+
+    if (identifier == null || identifier.isEmpty) {
+      emit(const ClaimsState.error(
+          "without an identity is impossible to remove claim"));
+      return;
+    }
+
     try {
-      await _polygonIdSdk.credential.removeClaim(id: id);
+      await _polygonIdSdk.credential.removeClaim(
+        claimId: id,
+        identifier: identifier,
+        privateKey: privateKey,
+      );
       add(const GetClaimsEvent());
     } on RemoveClaimsException catch (_) {
       emit(const ClaimsState.error("error while removing claim"));
@@ -148,8 +225,29 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
   Future<void> _removeClaims(
       RemoveClaimsEvent event, Emitter<ClaimsState> emit) async {
     List<String> ids = event.ids;
+
+    String? privateKey =
+        await SecureStorage.read(key: SecureStorageKeys.privateKey);
+
+    if (privateKey == null) {
+      emit(const ClaimsState.error("Private key not found"));
+      return;
+    }
+
+    String? identifier =
+        await _polygonIdSdk.identity.getIdentifier(privateKey: privateKey);
+
+    if (identifier == null || identifier.isEmpty) {
+      emit(const ClaimsState.error(
+          "without an identity is impossible to remove claims"));
+      return;
+    }
     try {
-      await _polygonIdSdk.credential.removeClaims(ids: ids);
+      await _polygonIdSdk.credential.removeClaims(
+        claimIds: ids,
+        identifier: identifier,
+        privateKey: privateKey,
+      );
       add(const GetClaimsEvent());
     } on RemoveClaimsException catch (_) {
       emit(const ClaimsState.error("error while removing claims"));
@@ -168,6 +266,20 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     String? expiration = event.expiration;
     String? type = event.type;
     Map<String, dynamic>? data = event.data;
+
+    String? privateKey =
+        await SecureStorage.read(key: SecureStorageKeys.privateKey);
+
+    if (privateKey == null) {
+      emit(const ClaimsState.error("Private key not found"));
+      return;
+    }
+
+    if (identifier == null || identifier.isEmpty) {
+      emit(const ClaimsState.error(
+          "without an identity is impossible to update a claim"));
+      return;
+    }
     try {
       await _polygonIdSdk.credential.updateClaim(
         claimId: id,
@@ -177,6 +289,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
         expiration: expiration,
         type: type,
         data: data,
+        privateKey: privateKey,
       );
 
       add(const GetClaimsEvent());
@@ -232,10 +345,36 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
   Future<void> _removeAllClaims(
       RemoveAllClaimsEvent event, Emitter<ClaimsState> emit) async {
     emit(const ClaimsState.loading());
+
+    String? privateKey =
+        await SecureStorage.read(key: SecureStorageKeys.privateKey);
+
+    if (privateKey == null) {
+      emit(const ClaimsState.error("Private key not found"));
+      return;
+    }
+
+    String? identifier =
+        await _polygonIdSdk.identity.getIdentifier(privateKey: privateKey);
+
+    if (identifier == null || identifier.isEmpty) {
+      emit(const ClaimsState.error(
+          "without an identity is impossible to remove all claims"));
+      return;
+    }
+
     try {
-      List<ClaimEntity> claimList = await _polygonIdSdk.credential.getClaims();
+      List<ClaimEntity> claimList = await _polygonIdSdk.credential.getClaims(
+        identifier: identifier,
+        privateKey: privateKey,
+      );
+
       List<String> claimIds = claimList.map((claim) => claim.id).toList();
-      await _polygonIdSdk.credential.removeClaims(ids: claimIds);
+      await _polygonIdSdk.credential.removeClaims(
+        claimIds: claimIds,
+        identifier: identifier,
+        privateKey: privateKey,
+      );
       add(const GetClaimsEvent());
     } catch (_) {
       emit(const ClaimsState.error("error while removing claims"));
