@@ -67,18 +67,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
       String identifier = await getIdentifier(
           privateKey: (_hexMapper.mapFrom(wallet.privateKey)));
 
-      //String authClaim = await _libIdentityDataSource.getAuthClaim(
-      //    pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]);
-
-      // Generate the smt state
-      String state = "";
-      //await _libIdentityDataSource.createSMT(_smtStorageRepository);
-
       PrivateIdentityEntity identityEntity = _identityDTOMapper.mapPrivateFrom(
           IdentityDTO(identifier: identifier, publicKey: wallet.publicKey),
-          //state: state),
           _hexMapper.mapFrom(wallet.privateKey));
-      //authClaim);
       return Future.value(identityEntity);
     } catch (error) {
       throw IdentityException(error);
