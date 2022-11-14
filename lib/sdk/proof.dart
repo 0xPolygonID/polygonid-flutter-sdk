@@ -12,7 +12,7 @@ abstract class PolygonIdSdkProof {
       required String signatureString,
       required ClaimEntity authClaim,
       required CircuitDataEntity circuitData,
-      required List<String> bjjPublicKey,
+      required List<String> publicKey,
       required ProofQueryParamEntity queryParam});
 }
 
@@ -24,15 +24,16 @@ class Proof implements PolygonIdSdkProof {
     this._proveUseCase,
   );
 
+  @override
   Future<JWZProof> prove(
       {required String challenge,
       required String signatureString,
       required ClaimEntity authClaim,
       required CircuitDataEntity circuitData,
-      required List<String> bjjPublicKey,
+      required List<String> publicKey,
       required ProofQueryParamEntity queryParam}) {
     return _proveUseCase.execute(
         param: GenerateProofParam(challenge, signatureString, authClaim,
-            circuitData, bjjPublicKey, queryParam));
+            circuitData, publicKey, queryParam));
   }
 }
