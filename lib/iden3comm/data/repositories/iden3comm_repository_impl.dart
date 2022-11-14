@@ -63,12 +63,12 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
 
   @override
   Future<String> getAuthToken(
-      {required PrivateIdentityEntity identityEntity,
+      {required PrivateIdentityEntity identity,
       required String message,
       required CircuitDataEntity authData}) async {
     return _jwzDataSource.getAuthToken(
-        privateKey: _hexMapper.mapTo(identityEntity.privateKey),
-        authClaim: identityEntity.authClaim,
+        privateKey: _hexMapper.mapTo(identity.privateKey),
+        authClaim: identity.authClaim,
         message: message,
         circuitId: authData.circuitId,
         datFile: authData.datFile,

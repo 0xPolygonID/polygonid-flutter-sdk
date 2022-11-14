@@ -66,7 +66,7 @@ class MockIden3commRepository extends _i1.Mock
       ) as _i3.Future<void>);
   @override
   _i3.Future<String> getAuthToken({
-    required _i4.PrivateIdentityEntity? identityEntity,
+    required _i4.PrivateIdentityEntity? identity,
     required String? message,
     required _i5.CircuitDataEntity? authData,
   }) =>
@@ -75,7 +75,7 @@ class MockIden3commRepository extends _i1.Mock
           #getAuthToken,
           [],
           {
-            #identityEntity: identityEntity,
+            #identity: identity,
             #message: message,
             #authData: authData,
           },

@@ -111,20 +111,6 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<ClaimEntity> updateClaim(
-      {required ClaimEntity claim,
-      required String identifier,
-      required String privateKey}) {
-    return _storageClaimDataSource
-        .storeClaims(
-            claims: [_claimMapper.mapTo(claim)],
-            identifier: identifier,
-            privateKey: privateKey)
-        .then((_) => claim)
-        .catchError((error) => throw UpdateClaimException(error));
-  }
-
-  @override
   Future<Map<String, dynamic>?> fetchSchema({required String url}) {
     return _remoteClaimDataSource
         .fetchSchema(url: url)

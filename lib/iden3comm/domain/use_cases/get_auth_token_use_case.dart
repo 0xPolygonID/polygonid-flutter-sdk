@@ -33,7 +33,7 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
         await _proofRepository.loadCircuitFiles("auth");
     return _iden3commRepository
         .getAuthToken(
-            identityEntity: identityEntity,
+            identity: identityEntity,
             message: param.message,
             authData: authData)
         .then((token) {

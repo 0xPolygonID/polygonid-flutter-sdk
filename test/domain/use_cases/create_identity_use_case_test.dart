@@ -2,9 +2,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_and_save_identity_use_case.dart';
 
 import 'create_identity_use_case_test.mocks.dart';
 
@@ -14,7 +15,7 @@ const walletPrivateKey = "theWalletPrivateKey";
 const identifier = "theIdentifier";
 const authClaim = "theAuthClaim";
 const smt = "theSmt";
-const mockEntity = IdentityEntity(
+const privateIdentity = PrivateIdentityEntity(
     privateKey: privateKey,
     identifier: identifier,
     authClaim: authClaim,
@@ -25,7 +26,7 @@ var exception = Exception();
 MockIdentityRepository identityRepository = MockIdentityRepository();
 
 // Tested instance
-CreateAndStoreIdentityUseCase useCase = CreateAndStoreIdentityUseCase(identityRepository);
+CreateAndSaveIdentityUseCase useCase = CreateAndSaveIdentityUseCase(identityRepository);
 
 @GenerateMocks([IdentityRepository])
 void main() {
@@ -99,7 +100,7 @@ void main() {
       () async {
     // Given
     when(identityRepository.getIdentity(identifier: anyNamed('identifier')))
-        .thenAnswer((realInvocation) => Future.value(mockEntity));
+        .thenAnswer((realInvocation) => Future.value(privateIdentity));
 
     // When
     expect(await useCase.execute(param: privateKey), identifier);

@@ -3,16 +3,23 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i3;
+import 'dart:async' as _i4;
+import 'dart:typed_data' as _i10;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart'
-    as _i5;
+    as _i6;
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_key_value_data_source.dart'
-    as _i7;
-import 'package:sembast/sembast.dart' as _i2;
-import 'package:sembast/src/api/client.dart' as _i6;
-import 'package:sembast/src/api/transaction.dart' as _i4;
+    as _i8;
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart'
+    as _i9;
+import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart'
+    as _i11;
+import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart'
+    as _i2;
+import 'package:sembast/sembast.dart' as _i3;
+import 'package:sembast/src/api/client.dart' as _i7;
+import 'package:sembast/src/api/transaction.dart' as _i5;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -25,10 +32,21 @@ import 'package:sembast/src/api/transaction.dart' as _i4;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
+class _FakePrivadoIdWallet_0 extends _i1.SmartFake
+    implements _i2.PrivadoIdWallet {
+  _FakePrivadoIdWallet_0(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [Database].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockDatabase extends _i1.Mock implements _i2.Database {
+class MockDatabase extends _i1.Mock implements _i3.Database {
   MockDatabase() {
     _i1.throwOnMissingStub(this);
   }
@@ -44,37 +62,37 @@ class MockDatabase extends _i1.Mock implements _i2.Database {
         returnValue: '',
       ) as String);
   @override
-  _i3.Future<T> transaction<T>(
-          _i3.FutureOr<T> Function(_i4.Transaction)? action) =>
+  _i4.Future<T> transaction<T>(
+          _i4.FutureOr<T> Function(_i5.Transaction)? action) =>
       (super.noSuchMethod(
         Invocation.method(
           #transaction,
           [action],
         ),
-        returnValue: _i3.Future<T>.value(null),
-      ) as _i3.Future<T>);
+        returnValue: _i4.Future<T>.value(null),
+      ) as _i4.Future<T>);
   @override
-  _i3.Future<dynamic> close() => (super.noSuchMethod(
+  _i4.Future<dynamic> close() => (super.noSuchMethod(
         Invocation.method(
           #close,
           [],
         ),
-        returnValue: _i3.Future<dynamic>.value(),
-      ) as _i3.Future<dynamic>);
+        returnValue: _i4.Future<dynamic>.value(),
+      ) as _i4.Future<dynamic>);
 }
 
 /// A class which mocks [IdentityStoreRefWrapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockIdentityStoreRefWrapper extends _i1.Mock
-    implements _i5.IdentityStoreRefWrapper {
+    implements _i6.IdentityStoreRefWrapper {
   MockIdentityStoreRefWrapper() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<Map<String, Object?>?> get(
-    _i6.DatabaseClient? database,
+  _i4.Future<Map<String, Object?>?> get(
+    _i7.DatabaseClient? database,
     String? key,
   ) =>
       (super.noSuchMethod(
@@ -85,11 +103,11 @@ class MockIdentityStoreRefWrapper extends _i1.Mock
             key,
           ],
         ),
-        returnValue: _i3.Future<Map<String, Object?>?>.value(),
-      ) as _i3.Future<Map<String, Object?>?>);
+        returnValue: _i4.Future<Map<String, Object?>?>.value(),
+      ) as _i4.Future<Map<String, Object?>?>);
   @override
-  _i3.Future<Map<String, Object?>> put(
-    _i6.DatabaseClient? database,
+  _i4.Future<Map<String, Object?>> put(
+    _i7.DatabaseClient? database,
     String? key,
     Map<String, Object?>? value, {
     bool? merge,
@@ -105,11 +123,11 @@ class MockIdentityStoreRefWrapper extends _i1.Mock
           {#merge: merge},
         ),
         returnValue:
-            _i3.Future<Map<String, Object?>>.value(<String, Object?>{}),
-      ) as _i3.Future<Map<String, Object?>>);
+            _i4.Future<Map<String, Object?>>.value(<String, Object?>{}),
+      ) as _i4.Future<Map<String, Object?>>);
   @override
-  _i3.Future<String?> remove(
-    _i6.DatabaseClient? database,
+  _i4.Future<String?> remove(
+    _i7.DatabaseClient? database,
     String? identifier,
   ) =>
       (super.noSuchMethod(
@@ -120,23 +138,23 @@ class MockIdentityStoreRefWrapper extends _i1.Mock
             identifier,
           ],
         ),
-        returnValue: _i3.Future<String?>.value(),
-      ) as _i3.Future<String?>);
+        returnValue: _i4.Future<String?>.value(),
+      ) as _i4.Future<String?>);
 }
 
 /// A class which mocks [StorageKeyValueDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockStorageKeyValueDataSource extends _i1.Mock
-    implements _i7.StorageKeyValueDataSource {
+    implements _i8.StorageKeyValueDataSource {
   MockStorageKeyValueDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<dynamic> get({
+  _i4.Future<dynamic> get({
     required String? key,
-    _i6.DatabaseClient? database,
+    _i7.DatabaseClient? database,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -147,13 +165,13 @@ class MockStorageKeyValueDataSource extends _i1.Mock
             #database: database,
           },
         ),
-        returnValue: _i3.Future<dynamic>.value(),
-      ) as _i3.Future<dynamic>);
+        returnValue: _i4.Future<dynamic>.value(),
+      ) as _i4.Future<dynamic>);
   @override
-  _i3.Future<void> store({
+  _i4.Future<void> store({
     required String? key,
     required dynamic value,
-    _i6.DatabaseClient? database,
+    _i7.DatabaseClient? database,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -165,13 +183,13 @@ class MockStorageKeyValueDataSource extends _i1.Mock
             #database: database,
           },
         ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
   @override
-  _i3.Future<String?> remove({
+  _i4.Future<String?> remove({
     required String? key,
-    _i6.DatabaseClient? database,
+    _i7.DatabaseClient? database,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -182,6 +200,95 @@ class MockStorageKeyValueDataSource extends _i1.Mock
             #database: database,
           },
         ),
-        returnValue: _i3.Future<String?>.value(),
-      ) as _i3.Future<String?>);
+        returnValue: _i4.Future<String?>.value(),
+      ) as _i4.Future<String?>);
+}
+
+/// A class which mocks [WalletDataSource].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockWalletDataSource extends _i1.Mock implements _i9.WalletDataSource {
+  MockWalletDataSource() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.Future<_i2.PrivadoIdWallet> createWallet({_i10.Uint8List? secret}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #createWallet,
+          [],
+          {#secret: secret},
+        ),
+        returnValue:
+            _i4.Future<_i2.PrivadoIdWallet>.value(_FakePrivadoIdWallet_0(
+          this,
+          Invocation.method(
+            #createWallet,
+            [],
+            {#secret: secret},
+          ),
+        )),
+      ) as _i4.Future<_i2.PrivadoIdWallet>);
+  @override
+  _i4.Future<_i2.PrivadoIdWallet> getWallet(
+          {required _i10.Uint8List? privateKey}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getWallet,
+          [],
+          {#privateKey: privateKey},
+        ),
+        returnValue:
+            _i4.Future<_i2.PrivadoIdWallet>.value(_FakePrivadoIdWallet_0(
+          this,
+          Invocation.method(
+            #getWallet,
+            [],
+            {#privateKey: privateKey},
+          ),
+        )),
+      ) as _i4.Future<_i2.PrivadoIdWallet>);
+  @override
+  _i4.Future<String> signMessage({
+    required _i10.Uint8List? privateKey,
+    required String? message,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #signMessage,
+          [],
+          {
+            #privateKey: privateKey,
+            #message: message,
+          },
+        ),
+        returnValue: _i4.Future<String>.value(''),
+      ) as _i4.Future<String>);
+}
+
+/// A class which mocks [HexMapper].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockHexMapper extends _i1.Mock implements _i11.HexMapper {
+  MockHexMapper() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  String mapFrom(_i10.Uint8List? from) => (super.noSuchMethod(
+        Invocation.method(
+          #mapFrom,
+          [from],
+        ),
+        returnValue: '',
+      ) as String);
+  @override
+  _i10.Uint8List mapTo(String? to) => (super.noSuchMethod(
+        Invocation.method(
+          #mapTo,
+          [to],
+        ),
+        returnValue: _i10.Uint8List(0),
+      ) as _i10.Uint8List);
 }

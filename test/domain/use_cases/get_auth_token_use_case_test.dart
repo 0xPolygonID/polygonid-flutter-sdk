@@ -38,7 +38,7 @@ void main() {
       () async {
     // Given
     when(iden3commRepository.getAuthToken(
-      identityEntity: anyNamed('identityEntity'),
+      identity: anyNamed('identityEntity'),
       message: anyNamed('message'),
       authData: anyNamed('authData'),
     )).thenAnswer((realInvocation) => Future.value(result));
@@ -48,7 +48,7 @@ void main() {
 
     // Then
     var authCaptured = verify(iden3commRepository.getAuthToken(
-      identityEntity: anyNamed('identityEntity'),
+      identity: anyNamed('identityEntity'),
       message: anyNamed('message'),
       authData: anyNamed('authData'),
     )).captured;
@@ -61,7 +61,7 @@ void main() {
       () async {
     // Given
     when(iden3commRepository.getAuthToken(
-      identityEntity: anyNamed('identityEntity'),
+      identity: anyNamed('identityEntity'),
       message: anyNamed('message'),
       authData: anyNamed('authData'),
     )).thenAnswer((realInvocation) => Future.error(exception));
@@ -71,7 +71,7 @@ void main() {
 
     // Then
     var authCaptured = verify(iden3commRepository.getAuthToken(
-      identityEntity: anyNamed('identityEntity'),
+      identity: anyNamed('identityEntity'),
       message: anyNamed('message'),
       authData: anyNamed('authData'),
     )).captured;

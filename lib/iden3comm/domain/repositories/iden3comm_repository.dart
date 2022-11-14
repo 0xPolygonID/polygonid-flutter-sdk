@@ -11,7 +11,7 @@ abstract class Iden3commRepository {
   });
 
   Future<String> getAuthToken(
-      {required PrivateIdentityEntity identityEntity,
+      {required PrivateIdentityEntity identity,
       required String message,
       required CircuitDataEntity authData});
 

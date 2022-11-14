@@ -4,22 +4,20 @@ import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_key_value_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:sembast/sembast.dart';
 
 import 'storage_identity_data_source_test.mocks.dart';
 
 // Data
-const privateKey = "thePrivateKey";
 const identifier = "theIdentifier";
-const authClaim = "theAuthClaim";
-const smt = "theSmt";
 final mockGet = {
-  'privateKey': privateKey,
   'identifier': identifier,
-  'authClaim': authClaim,
-  'smt': smt,
+  'state': "theSmt",
+  'publicKey': ["pub1", "pub2"]
 };
 
 final identityDTO = IdentityDTO.fromJson(mockGet);
@@ -30,12 +28,20 @@ MockDatabase database = MockDatabase();
 MockIdentityStoreRefWrapper storeRefWrapper = MockIdentityStoreRefWrapper();
 MockStorageKeyValueDataSource storageKeyValueDataSource =
     MockStorageKeyValueDataSource();
+MockWalletDataSource walletDataSource = MockWalletDataSource();
+MockHexMapper hexMapper = MockHexMapper();
 
 // Tested instance
-StorageIdentityDataSource dataSource = StorageIdentityDataSource(
-    database, storeRefWrapper, storageKeyValueDataSource);
+StorageIdentityDataSource dataSource = StorageIdentityDataSource(database,
+    storeRefWrapper, storageKeyValueDataSource, walletDataSource, hexMapper);
 
-@GenerateMocks([Database, IdentityStoreRefWrapper, StorageKeyValueDataSource])
+@GenerateMocks([
+  Database,
+  IdentityStoreRefWrapper,
+  StorageKeyValueDataSource,
+  WalletDataSource,
+  HexMapper
+])
 void main() {
   group("Get identity", () {
     test(

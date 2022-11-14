@@ -21,15 +21,13 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_re
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/jwz_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/mappers/iden3_message_mapper.dart';
 import 'package:polygonid_flutter_sdk/sdk/mappers/iden3_message_type_mapper.dart';
 
-import '../data_sources/storage_identity_data_source_test.dart';
 import 'iden3comm_repository_impl_test.mocks.dart';
-import 'identity_repository_impl_test.dart';
 
 // Data
 class FakeWallet extends Fake implements PrivadoIdWallet {
@@ -44,21 +42,19 @@ const pubX = "thePubX";
 const pubY = "thePubY";
 const privateKey = "thePrivateKey";
 const walletPrivateKey = "theWalletPrivateKey";
-final bjjKey = Uint8List(32);
+final bbjjKey = Uint8List(32);
 final mockWallet = FakeWallet();
 const identifier = "theIdentifier";
 const authClaim = "theAuthClaim";
-const smt = "smt";
-const mockDTO = IdentityDTO(
-    privateKey: privateKey,
+const state = "smt";
+const mockDTO =
+IdentityDTO(identifier: identifier, publicKey: [pubX, pubY], state: state);
+const privateIdentity = PrivateIdentityEntity(
     identifier: identifier,
-    authClaim: authClaim,
-    smt: smt);
-const mockEntity = IdentityEntity(
+    publicKey: [pubX, pubY],
+    state: state,
     privateKey: privateKey,
-    identifier: identifier,
-    authClaim: authClaim,
-    smt: smt);
+    authClaim: authClaim);
 const message = "theMessage";
 const signature = "theSignature";
 const circuitId = "1";
@@ -91,12 +87,12 @@ Response errorResponse = Response("body", 450);
 
 // Dependencies
 MockRemoteIden3commDataSource remoteIden3commDataSource =
-    MockRemoteIden3commDataSource();
+MockRemoteIden3commDataSource();
 MockJWZDataSource jwzDataSource = MockJWZDataSource();
 MockHexMapper hexMapper = MockHexMapper();
 MockProofScopeDataSource proofScopeDataSource = MockProofScopeDataSource();
 MockStorageClaimDataSource storageClaimDataSource =
-    MockStorageClaimDataSource();
+MockStorageClaimDataSource();
 MockClaimMapper claimMapper = MockClaimMapper();
 MockFiltersMapper filtersMapper = MockFiltersMapper();
 MockAuthResponseMapper authResponseMapper = MockAuthResponseMapper();
@@ -107,10 +103,6 @@ Iden3commRepository repository = Iden3commRepositoryImpl(
   remoteIden3commDataSource,
   jwzDataSource,
   hexMapper,
-  proofScopeDataSource,
-  storageClaimDataSource,
-  claimMapper,
-  filtersMapper,
   authResponseMapper,
   authRequestMapper,
 );
@@ -130,124 +122,93 @@ void main() {
   group("Get auth token", () {
     setUp(() {
       // Given
-      when(storageIdentityDataSource.getIdentity(
-              identifier: anyNamed('identifier')))
-          .thenAnswer((realInvocation) => Future.value(identityDTO));
-
-      //when(localFilesDataSource.loadCircuitFiles(any))
-      //   .thenAnswer((realInvocation) => Future.value([datFile, zKeyFile]));
-
       when(jwzDataSource.getAuthToken(
-              privateKey: anyNamed('privateKey'),
-              authClaim: anyNamed('authClaim'),
-              message: anyNamed('message'),
-              circuitId: anyNamed('circuitId'),
-              datFile: anyNamed('datFile'),
-              zKeyFile: anyNamed('zKeyFile')))
+          privateKey: anyNamed('privateKey'),
+          authClaim: anyNamed('authClaim'),
+          message: anyNamed('message'),
+          circuitId: anyNamed('circuitId'),
+          datFile: anyNamed('datFile'),
+          zKeyFile: anyNamed('zKeyFile')))
           .thenAnswer((realInvocation) => Future.value(token));
       when(hexMapper.mapTo(any)).thenAnswer((realInvocation) => bbjjKey);
     });
 
     test(
         "Given an identifier, a circuitData and a message to sign, when I call getAuthToken, then I expect an auth token to be returned as a string",
-        () async {
-      // When
-      expect(
-          await repository.getAuthToken(
-            identityEntity: mockEntity,
-            message: message,
-            authData: circuitData,
-          ),
-          token);
+            () async {
+          // When
+          expect(
+              await repository.getAuthToken(
+                identity: privateIdentity,
+                message: message,
+                authData: circuitData,
+              ),
+              token);
 
-      // Then
-      expect(
-          verify(storageIdentityDataSource.getIdentity(
-                  identifier: captureAnyNamed('identifier')))
-              .captured
-              .first,
-          identifier);
-      expect(verify(hexMapper.mapTo(captureAny)).captured.first,
-          mockDTO.privateKey);
-      var authCaptured = verify(jwzDataSource.getAuthToken(
+          // Then
+          expect(verify(hexMapper.mapTo(captureAny)).captured.first,
+              privateIdentity.privateKey);
+          var authCaptured = verify(jwzDataSource.getAuthToken(
               privateKey: captureAnyNamed('privateKey'),
               authClaim: captureAnyNamed('authClaim'),
               message: captureAnyNamed('message'),
               circuitId: captureAnyNamed('circuitId'),
               datFile: captureAnyNamed('datFile'),
               zKeyFile: captureAnyNamed('zKeyFile')))
-          .captured;
-      expect(authCaptured[0], bbjjKey);
-      expect(authCaptured[1], mockDTO.authClaim);
-      expect(authCaptured[2], message);
-      expect(authCaptured[3], 'auth');
-      expect(authCaptured[4], circuitData.datFile);
-      expect(authCaptured[5], circuitData.zKeyFile);
-    });
+              .captured;
+          expect(authCaptured[0], bbjjKey);
+          expect(authCaptured[1], privateIdentity.authClaim);
+          expect(authCaptured[2], message);
+          expect(authCaptured[3], circuitId);
+          expect(authCaptured[4], circuitData.datFile);
+          expect(authCaptured[5], circuitData.zKeyFile);
+        });
 
     test(
         "Given an identifier, a circuitData and a message to sign, when I call getAuthToken and an error occurred, then I expect an exception to be thrown",
-        () async {
-      // Given
-      when(hexMapper.mapTo(any)).thenThrow(exception);
+            () async {
+          // Given
+          when(hexMapper.mapTo(any)).thenThrow(exception);
 
-      // When
-      await expectLater(
-          repository.getAuthToken(
-            identityEntity: mockEntity,
-            message: message,
-            authData: circuitData,
-          ),
-          throwsA(exception));
+          // When
+          await expectLater(
+              repository.getAuthToken(
+                identity: privateIdentity,
+                message: message,
+                authData: circuitData,
+              ),
+              throwsA(exception));
 
-      // Then
-      expect(
-          verify(storageIdentityDataSource.getIdentity(
-                  identifier: captureAnyNamed('identifier')))
-              .captured
-              .first,
-          identifier);
-      expect(verify(hexMapper.mapTo(captureAny)).captured.first,
-          mockDTO.privateKey);
-      verifyNever(jwzDataSource.getAuthToken(
-          privateKey: captureAnyNamed('privateKey'),
-          authClaim: captureAnyNamed('authClaim'),
-          message: captureAnyNamed('message'),
-          circuitId: captureAnyNamed('circuitId'),
-          datFile: captureAnyNamed('datFile'),
-          zKeyFile: captureAnyNamed('zKeyFile')));
-    });
+          // Then
+          expect(verify(hexMapper.mapTo(captureAny)).captured.first,
+              privateIdentity.privateKey);
+          verifyNever(jwzDataSource.getAuthToken(
+              privateKey: captureAnyNamed('privateKey'),
+              authClaim: captureAnyNamed('authClaim'),
+              message: captureAnyNamed('message'),
+              circuitId: captureAnyNamed('circuitId'),
+              datFile: captureAnyNamed('datFile'),
+              zKeyFile: captureAnyNamed('zKeyFile')));
+        });
   });
 
   group(
     "Authenticate",
-    () {
-      setUp(
         () {
-          reset(storageIdentityDataSource);
-          //reset(localFilesDataSource);
+      setUp(
+            () {
           reset(remoteIden3commDataSource);
-
-          when(storageIdentityDataSource.getIdentity(
-                  identifier: anyNamed('identifier')))
-              .thenAnswer((realInvocation) => Future.value(mockDTO));
-
-          //when(localFilesDataSource.loadCircuitFiles(any)).thenAnswer(
-          //    (realInvocation) => Future.value([Uint8List(32), Uint8List(32)]));
 
           when(authResponseMapper.mapFrom(any))
               .thenAnswer((realInvocation) => "authResponseString");
 
-          when(storageIdentityDataSource.getIdentity(
-                  identifier: anyNamed('identifier')))
-              .thenAnswer((realInvocation) => Future.value(identityDTO));
           when(jwzDataSource.getAuthToken(
-                  privateKey: anyNamed('privateKey'),
-                  authClaim: anyNamed('authClaim'),
-                  message: anyNamed('message'),
-                  circuitId: anyNamed('circuitId'),
-                  datFile: anyNamed('datFile'),
-                  zKeyFile: anyNamed('zKeyFile')))
+              privateKey: anyNamed('privateKey'),
+              authClaim: anyNamed('authClaim'),
+              message: anyNamed('message'),
+              circuitId: anyNamed('circuitId'),
+              datFile: anyNamed('datFile'),
+              zKeyFile: anyNamed('zKeyFile')))
               .thenAnswer((realInvocation) => Future.value(token));
           when(hexMapper.mapTo(any)).thenAnswer((realInvocation) => bbjjKey);
 
@@ -255,13 +216,13 @@ void main() {
             token: token,
             url: mockAuthRequest.body.callbackUrl,
           )).thenAnswer(
-              (realInvocation) => Future.value(Response("body", 200)));
+                  (realInvocation) => Future.value(Response("body", 200)));
         },
       );
 
       test(
         'Given an Identifier and a message (iden3message) when we call Authenticate, we expect that flow ended up without exception',
-        () async {
+            () async {
           await expectLater(
             repository.authenticate(
               url: mockAuthRequest.body.callbackUrl!,
@@ -274,17 +235,18 @@ void main() {
 
       test(
         'Given an Identifier and a message (iden3message) when we call Authenticate, we expect that flow ended up with exception',
-        () async {
-          when(remoteIden3commDataSource.authWithToken(token: any, url: any))
+            () async {
+          when(remoteIden3commDataSource.authWithToken(
+              token: anyNamed('token'), url: anyNamed('url')))
               .thenThrow(UnknownApiException(450));
 
-          //
-          await expectLater(
+            //
+            await expectLater(
             repository.authenticate(
-              url: mockAuthRequest.body.callbackUrl!,
-              authToken: token,
-            ),
-            throwsA(isA<UnknownApiException>()),
+            url: mockAuthRequest.body.callbackUrl!,
+            authToken: token,
+          ),
+          throwsA(isA<UnknownApiException>()),
           );
         },
       );
