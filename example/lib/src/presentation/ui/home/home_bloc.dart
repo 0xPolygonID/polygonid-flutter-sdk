@@ -38,7 +38,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     if (identifier != null) {
       String state = await _polygonIdSdk.identity.getState(identifier);
-      debugPrint("state: $state");
     }
   }
 
