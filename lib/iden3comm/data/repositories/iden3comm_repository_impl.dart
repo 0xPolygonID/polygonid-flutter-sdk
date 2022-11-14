@@ -9,8 +9,6 @@ import 'package:pointycastle/asymmetric/oaep.dart';
 import 'package:pointycastle/asymmetric/rsa.dart';
 import 'package:pointycastle/digests/sha512.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
-import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
-import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
@@ -25,7 +23,6 @@ import '../../../identity/data/mappers/hex_mapper.dart';
 import '../../../identity/domain/entities/private_identity_entity.dart';
 import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
 import '../../domain/repositories/iden3comm_repository.dart';
-import '../data_sources/proof_scope_data_source.dart';
 import '../dtos/response/auth/auth_body_did_doc_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_metadata_devices_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_metadata_response.dart';
@@ -40,12 +37,8 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   final AuthResponseMapper _authResponseMapper;
   final AuthRequestMapper _authRequestMapper;
 
-  Iden3commRepositoryImpl(
-      this._remoteIden3commDataSource,
-      this._jwzDataSource,
-      this._hexMapper,
-      this._authResponseMapper,
-      this._authRequestMapper);
+  Iden3commRepositoryImpl(this._remoteIden3commDataSource, this._jwzDataSource,
+      this._hexMapper, this._authResponseMapper, this._authRequestMapper);
 
   @override
   Future<void> authenticate({
@@ -65,10 +58,11 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   Future<String> getAuthToken(
       {required PrivateIdentityEntity identity,
       required String message,
-      required CircuitDataEntity authData}) async {
+      required CircuitDataEntity authData,
+      required String authClaim}) async {
     return _jwzDataSource.getAuthToken(
         privateKey: _hexMapper.mapTo(identity.privateKey),
-        authClaim: identity.authClaim,
+        authClaim: authClaim,
         message: message,
         circuitId: authData.circuitId,
         datFile: authData.datFile,

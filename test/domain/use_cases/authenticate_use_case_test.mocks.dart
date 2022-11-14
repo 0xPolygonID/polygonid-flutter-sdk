@@ -69,6 +69,7 @@ class MockIden3commRepository extends _i1.Mock
     required _i4.PrivateIdentityEntity? identity,
     required String? message,
     required _i5.CircuitDataEntity? authData,
+    required String? authClaim,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -78,6 +79,7 @@ class MockIden3commRepository extends _i1.Mock
             #identity: identity,
             #message: message,
             #authData: authData,
+            #authClaim: authClaim,
           },
         ),
         returnValue: _i3.Future<String>.value(''),

@@ -170,7 +170,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     Map<String, dynamic>? data = event.data;
     try {
       await _polygonIdSdk.credential.updateClaim(
-        id: id,
+        claimId: id,
         issuer: issuer,
         identifier: identifier,
         state: state,

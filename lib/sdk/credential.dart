@@ -29,7 +29,7 @@ abstract class PolygonIdSdkCredential {
       required String identifier,
       required String privateKey});
 
-  /// Remove Claims from storage from a list of id
+  /// Remove Claims from storage from a list of ids
   Future<void> removeClaims(
       {required List<String> claimIds,
       required String identifier,
@@ -42,11 +42,11 @@ abstract class PolygonIdSdkCredential {
       required String identifier,
       required String privateKey});
 
-  /// Update the Claim associated to the [id] in storage
+  /// Update the Claim associated to the [claimId] in storage
   /// Be aware only the [ClaimEntity.info] will be updated
   /// and [data] is subject to validation by the data layer
   Future<ClaimEntity> updateClaim({
-    required String id,
+    required String claimId,
     String? issuer,
     required String identifier,
     ClaimState? state,
@@ -68,6 +68,7 @@ class Credential implements PolygonIdSdkCredential {
       this._removeClaimsUseCase, this._updateClaimUseCase);
 
   /// Fetch a list of [ClaimEntity] and store them
+  @override
   Future<List<ClaimEntity>> fetchAndSaveClaims(
       {required List<CredentialRequestEntity> credentialRequests,
       required String identifier,
@@ -81,6 +82,7 @@ class Credential implements PolygonIdSdkCredential {
 
   /// Get a list of [ClaimEntity] from storage
   /// The list can be filtered by [filters]
+  @override
   Future<List<ClaimEntity>> getClaims(
       {List<FilterEntity>? filters,
       required String identifier,
@@ -95,6 +97,7 @@ class Credential implements PolygonIdSdkCredential {
 
   /// Get a list of [ClaimEntity] from storage from a list of id
   /// This is a shortcut to [getClaims], using a filter on id
+  @override
   Future<List<ClaimEntity>> getClaimsByIds(
       {required List<String> claimIds,
       required String identifier,
@@ -111,6 +114,7 @@ class Credential implements PolygonIdSdkCredential {
   }
 
   /// Remove Claims from storage from a list of id
+  @override
   Future<void> removeClaims(
       {required List<String> claimIds,
       required String identifier,
@@ -125,6 +129,7 @@ class Credential implements PolygonIdSdkCredential {
 
   /// Remove a Claim from storage by id
   /// This is a shortcut of [removeClaims] with only one id
+  @override
   Future<void> removeClaim(
       {required String claimId,
       required String identifier,
@@ -137,11 +142,12 @@ class Credential implements PolygonIdSdkCredential {
     ));
   }
 
-  /// Update the Claim associated to the [id] in storage
+  /// Update the Claim associated to the [claimId] in storage
   /// Be aware only the [ClaimEntity.info] will be updated
   /// and [data] is subject to validation by the data layer
+  @override
   Future<ClaimEntity> updateClaim({
-    required String id,
+    required String claimId,
     String? issuer,
     required String identifier,
     ClaimState? state,
@@ -152,7 +158,7 @@ class Credential implements PolygonIdSdkCredential {
   }) {
     return _updateClaimUseCase.execute(
         param: UpdateClaimParam(
-            id: id,
+            id: claimId,
             issuer: issuer,
             identifier: identifier,
             state: state,

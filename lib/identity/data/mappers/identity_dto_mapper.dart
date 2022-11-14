@@ -10,7 +10,6 @@ class IdentityDTOMapper extends Mapper<IdentityDTO, IdentityEntity> {
     return IdentityEntity(
       identifier: from.identifier,
       publicKey: from.publicKey,
-      state: from.state,
     );
   }
 
@@ -19,18 +18,17 @@ class IdentityDTOMapper extends Mapper<IdentityDTO, IdentityEntity> {
     return IdentityDTO(
       identifier: to.identifier,
       publicKey: to.publicKey,
-      state: to.state,
     );
   }
 
   PrivateIdentityEntity mapPrivateFrom(
-      IdentityDTO from, String privateKey, String authClaim) {
+    IdentityDTO from,
+    String privateKey,
+  ) {
     return PrivateIdentityEntity(
       identifier: from.identifier,
       publicKey: from.publicKey,
-      state: from.state,
       privateKey: privateKey,
-      authClaim: authClaim,
     );
   }
 }

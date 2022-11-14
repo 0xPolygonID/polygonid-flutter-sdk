@@ -26,7 +26,7 @@ class CreateAndSaveIdentityUseCase
       throw IdentityAlreadyExistsException(identity.identifier);
     } on UnknownIdentityException {
       // If it doesn't exist, we save it
-      _identityRepository.storeIdentity(
+      await _identityRepository.storeIdentity(
           identity: privateIdentity, privateKey: privateIdentity.privateKey);
     } catch (error) {
       logger().e("[CreateAndSaveIdentityUseCase] Error: $error");

@@ -6,8 +6,10 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.da
 import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 
+import '../../identity/domain/entities/private_identity_entity.dart';
 import 'data_sources/remote_claim_data_source.dart';
 import 'data_sources/storage_claim_data_source.dart';
 import 'dtos/claim_proofs/claim_proof_dto.dart';
@@ -21,6 +23,7 @@ class CredentialRepositoryImpl extends CredentialRepository {
   final RemoteClaimDataSource _remoteClaimDataSource;
   final StorageClaimDataSource _storageClaimDataSource;
   final RemoteIdentityDataSource _remoteIdentityDataSource;
+  final LibIdentityDataSource _libIdentityDataSource;
   final CredentialRequestMapper _credentialRequestMapper;
   final ClaimMapper _claimMapper;
   final FiltersMapper _filtersMapper;
@@ -31,6 +34,7 @@ class CredentialRepositoryImpl extends CredentialRepository {
       this._remoteClaimDataSource,
       this._storageClaimDataSource,
       this._remoteIdentityDataSource,
+      this._libIdentityDataSource,
       this._credentialRequestMapper,
       this._claimMapper,
       this._filtersMapper,
@@ -154,5 +158,11 @@ class CredentialRepositoryImpl extends CredentialRepository {
   Future<int> getRevocationNonce({required ClaimEntity claim}) {
     return Future.value(_claimMapper.mapTo(claim))
         .then((claimDTO) => claimDTO.info.revNonce);
+  }
+
+  @override
+  Future<String> getAuthClaim({required PrivateIdentityEntity identity}) {
+    return _libIdentityDataSource.getAuthClaim(
+        pubX: identity.publicKey[0], pubY: identity.publicKey[1]);
   }
 }
