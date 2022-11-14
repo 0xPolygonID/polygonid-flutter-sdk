@@ -21,7 +21,7 @@ Demonstrates how to use the polygonid_flutter_sdk plugin.
 ### PolygonId SDK initialization
 Before you can start using the SDK, you need to initialise it, otherwise a `PolygonIsSdkNotInitializedException` exception will be thrown.  
 For convenience you can initialise it in the main class like that:
-```
+```dart
 import 'package:flutter/material.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 
@@ -34,7 +34,7 @@ Future<void> main() async {
 ### Identity
 #### Create identity
 If not yet created, create an identity via `identity.createIdentity();`
-```
+```dart
 Future<void> createIdentity() async {
   //we get the sdk instance previously initialized
   final sdk = PolygonIdSdk.I;
@@ -46,7 +46,7 @@ Future<void> createIdentity() async {
 
 #### Get identifier
 Get the identifier from previously created identity via `identity.getIdentifier();` by passing as param the `privateKey`.
-```
+```dart
 Future<void> getIdentifier() async {
   String privateKey = privateIdentityEntity.privateKey;
   String identifier = await sdk.identity.getIdentifier(privateKey: privateKey);
@@ -55,7 +55,7 @@ Future<void> getIdentifier() async {
 
 #### Remove identity
 To remove an `identity` call `identity.removeIdentity()`, the `privateKey` and the `identifier` of the `identity` you want to remove are needed.
-```
+```dart
 Future<void> removeIdentity({
   required String privateKey,
   required String identifier,
@@ -72,7 +72,7 @@ After the identity has been created, it can be used to perform an authentication
 
 #### Iden3Message
 Communication between the various actors takes place through `iden3message` object, provided for example by a QR Code, in order to facilitate the translation from `String` to `Iden3message`, it is possible to use this method of the SDK `iden3comm.getIden3Message()`, providing the `String` message as param.
-```
+```dart
 Iden3MessageEntity getIden3MessageFromString(String message){
   return sdk.iden3comm.getIden3Message(message: message);
 }
@@ -80,7 +80,7 @@ Iden3MessageEntity getIden3MessageFromString(String message){
 
 #### Authenticate
 In order to authenticate, you will need to pass the following parameters, `iden3message` related to the authentication request, the `identifier` and the `privateKey`
-```
+```dart
 Future<void> authenticate({
   required Iden3MessageEntity iden3message,
   required String identifier,
@@ -99,7 +99,7 @@ The credential consists of **claims**, to retrieve them from an **Issuer** and s
 
 #### Fetch and Save Claims
 From the **iden3message** obtained from **Issuer**, you can build a `CredentialRequestEntity` object, composed by `identifier`, `url` for the **callback**, `credential id`, **iden3message**'s `thid` and `from` field, then for fetch and save claim you'll need a `CredentialRequestEntity` list, the `identifier` and `privateKey`.
-```
+```dart
 Future<void> fetchAndSaveClaims({
   required Iden3MessageEntity iden3message,
   required String identifier,
@@ -134,7 +134,7 @@ Future<void> fetchAndSaveClaims({
 
 #### Get Claims
 It is possible to retrieve **claims** saved on the sdk through the use of the `credential.getClaims()`, with `filters` as optional param, `identifier` and `privateKey` are mandatory fields.
-```
+```dart
 Future<void> getAllClaims({
   List<FilterEntity>? filters,
   required String identifier,
@@ -150,7 +150,7 @@ Future<void> getAllClaims({
 
 #### Get Claims by id
 If you want to obtain specific **claims** by knowing the **ids**, you can use the sdk method `credential.getClaimsByIds()`, passing the desired `ids`, `identifier` and `privateKey` as parameters.
-```
+```dart
 Future<void> getClaimsByIds({
   required List<String> claimIds,
   required String identifier,
@@ -166,7 +166,7 @@ Future<void> getClaimsByIds({
 
 #### Remove single Claim
 To **remove** a **claim**, simply call the `credential.removeClaim()` with the `id` of the **claim** you want to remove, you must also pass the `identifier` and `privateKey`.
-```
+```dart
 Future<void> removeClaim({
   required String claimId,
   required String identifier,
@@ -182,7 +182,7 @@ Future<void> removeClaim({
 
 #### Remove multiple Claims
 If you want to **remove** a series of **claims**, you have to pass a list of `ids` and call  `credential.removeClaims()`.
-```
+```dart
 Future<void> removeClaims({
   required List<String> claimIds,
   required String identifier,
@@ -202,7 +202,7 @@ It is also possible to **update** a **claim** through `credential.updateClaim()`
 > Update the Claim associated to the [id] in storage  
 > Be aware only the [ClaimEntity.info] will be updated.  
 > and [data] is subject to validation by the data layer
-```
+```dart
 Future<void> updateClaim({
   required String claimId,
   required String identifier,
