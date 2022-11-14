@@ -309,6 +309,7 @@ _i1.GetIt $initSDKGetIt(
         get<_i39.RemoteClaimDataSource>(),
         get<_i55.StorageClaimDataSource>(),
         get<_i41.RemoteIdentityDataSource>(),
+        get<_i21.LibIdentityDataSource>(),
         get<_i10.CredentialRequestMapper>(),
         get<_i54.ClaimMapper>(),
         get<_i13.FiltersMapper>(),
@@ -417,6 +418,7 @@ _i1.GetIt $initSDKGetIt(
       () async => _i90.GetAuthTokenUseCase(
             get<_i81.Iden3commRepository>(),
             get<_i78.ProofRepository>(),
+            get<_i72.CredentialRepository>(),
             await get.getAsync<_i82.IdentityRepository>(),
           ));
   gh.factoryAsync<_i91.GetClaimRevocationStatusUseCase>(

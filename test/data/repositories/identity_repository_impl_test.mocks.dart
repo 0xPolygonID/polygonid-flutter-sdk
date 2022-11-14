@@ -579,7 +579,6 @@ class MockIdentityDTOMapper extends _i1.Mock implements _i21.IdentityDTOMapper {
   _i7.PrivateIdentityEntity mapPrivateFrom(
     _i4.IdentityDTO? from,
     String? privateKey,
-    String? authClaim,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -587,7 +586,6 @@ class MockIdentityDTOMapper extends _i1.Mock implements _i21.IdentityDTOMapper {
           [
             from,
             privateKey,
-            authClaim,
           ],
         ),
         returnValue: _FakePrivateIdentityEntity_5(
@@ -597,7 +595,6 @@ class MockIdentityDTOMapper extends _i1.Mock implements _i21.IdentityDTOMapper {
             [
               from,
               privateKey,
-              authClaim,
             ],
           ),
         ),
