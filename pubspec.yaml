@@ -55,12 +55,20 @@ dev_dependencies:
   envied_generator: ^0.2.3
 
 ffigen:
-  name: NativeIden3CoreLib
-  description: Bindings to `ios/Classes/libiden3core.h`.
-  output: 'lib/identity/libs/iden3core/native_iden3core.dart'
+  name: NativePolygonIdCoreLib
+  description: Bindings to `ios/Classes/libpolygonid.h`.
+  output: 'lib/identity/libs/polygonidcore/native_polygonidcore.dart'
   headers:
     entry-points:
-       - 'ios/Classes/libiden3core.h'
+      - 'ios/Classes/libpolygonid.h'
+
+  #name: NativeIden3CoreLib
+  #description: Bindings to `ios/Classes/libiden3core.h`.
+  #output: 'lib/identity/libs/iden3core/native_iden3core.dart'
+  #headers:
+  #  entry-points:
+  #     - 'ios/Classes/libiden3core.h'
+
 
   # name: WitnessMtpLib
   # description: Bindings to `ios/Classes/witnesscalc_mtp.h`.
@@ -82,12 +90,6 @@ ffigen:
     # headers:
       # entry-points:
        # - 'ios/Classes/prover.h'
-
-
-
-
-
-
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
