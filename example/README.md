@@ -8,7 +8,7 @@ Demonstrates how to use the polygonid_flutter_sdk plugin.
    - [SDK initialization](#polygonid-sdk-initialization)
    - [Identity](#identity)
    - [Authentication](#authentication)
-
+   - [Credential](#credential)
 ## Setup
 
 ### Install
@@ -90,6 +90,139 @@ Future<void> authenticate({
     iden3message: iden3message,
     identifier: identifier,
     privateKey: privateKey,
+  );
+}
+```
+
+### Credential
+The credential consists of **claims**, to retrieve them from an **Issuer** and save them in the **wallet** is possible to use `iden3comm.fetchAndSaveClaims()` method, these **claims** will later be used to **prove** one's **Identity** in a **Verifier**. Saved **claims** can be `updated` or `removed` later.
+
+#### Fetch and Save Claims
+From the **iden3message** obtained from **Issuer**, you can build a `CredentialRequestEntity` object, composed by `identifier`, `url` for the **callback**, `credential id`, **iden3message**'s `thid` and `from` field, then for fetch and save claim you'll need a `CredentialRequestEntity` list, the `identifier` and `privateKey`.
+```
+Future<void> fetchAndSaveClaims({
+  required Iden3MessageEntity iden3message,
+  required String identifier,
+  required String privateKey,
+}) async {
+  Map<String, dynamic>? messageBody = iden3message.body;
+
+  // url for the callback
+  final String callbackUrl = messageBody['url'];
+  // credentials
+  List<dynamic> credentials = messageBody['credentials'];
+  List<CredentialRequestEntity> credentialRequestEntityList =
+      credentials.map((credential) {
+    String credentialId = credential['id'];
+    return CredentialRequestEntity(
+      identifier,
+      callbackUrl,
+      credentialId,
+      iden3message.thid,
+      iden3message.from,
+    );
+  }).toList();
+  
+  await sdk.iden3comm.fetchAndSaveClaims(
+    credentialRequests: credentialRequestEntityList,
+    identifier: identifier,
+    privateKey: privateKey,
+  );
+}
+
+```
+
+#### Get Claims
+It is possible to retrieve **claims** saved on the sdk through the use of the `credential.getClaims()`, with `filters` as optional param, `identifier` and `privateKey` are mandatory fields.
+```
+Future<void> getAllClaims({
+  List<FilterEntity>? filters,
+  required String identifier,
+  required String privateKey,
+}) async {
+  List<ClaimEntity> claimList = await sdk.claim.getAllClaims(
+    filters: filters,
+    identifier: identifier,
+    privateKey: privateKey,
+  );
+}
+```
+
+#### Get Claims by id
+If you want to obtain specific **claims** by knowing the **ids**, you can use the sdk method `credential.getClaimsByIds()`, passing the desired `ids`, `identifier` and `privateKey` as parameters.
+```
+Future<void> getClaimsByIds({
+  required List<String> claimIds,
+  required String identifier,
+  required String privateKey,
+}) async {
+  List<ClaimEntity> claimList = await sdk.credential.getClaimsByIds(
+    claimIds: claimIds,
+    identifier: identifier,
+    privateKey: privateKey,
+  );
+}
+```
+
+#### Remove single Claim
+To **remove** a **claim**, simply call the `credential.removeClaim()` with the `id` of the **claim** you want to remove, you must also pass the `identifier` and `privateKey`.
+```
+Future<void> removeClaim({
+  required String claimId,
+  required String identifier,
+  required String privateKey,
+}) async {
+  await sdk.credential.removeClaim(
+    claimId: claimId,
+    identifier: identifier,
+    privateKey: privateKey,
+  );
+}
+```
+
+#### Remove multiple Claims
+If you want to **remove** a series of **claims**, you have to pass a list of `ids` and call  `credential.removeClaims()`.
+```
+Future<void> removeClaims({
+  required List<String> claimIds,
+  required String identifier,
+  required String privateKey,
+}) async {
+  await sdk.credential.removeClaims(
+    claimIds: claimIds,
+    identifier: identifier,
+    privateKey: privateKey,
+  );
+}
+```
+
+#### Update Claim
+It is also possible to **update** a **claim** through `credential.updateClaim()`.   
+**Attention**: as stated in the documentation of this method, only the `info` field can be updated, in addition a validation is performed from the data layer:
+> Update the Claim associated to the [id] in storage  
+> Be aware only the [ClaimEntity.info] will be updated.  
+> and [data] is subject to validation by the data layer
+```
+Future<void> updateClaim({
+  required String claimId,
+  required String identifier,
+  required String privateKey,
+  String? issuer,
+  ClaimState? state,
+  String? expiration,
+  String? type,
+  Map<String, dynamic>? data,
+}) async {
+  PolygonIdSdk sdk = PolygonIdSdk.I;
+  await sdk.credential.updateClaim(
+    id: claimId,
+    identifier: identifier,
+    privateKey: privateKey,
+    issuer: issuer,
+    state: state,
+    expiration: expiration,
+    type: type,
+    data: data,
   );
 }
 ```
