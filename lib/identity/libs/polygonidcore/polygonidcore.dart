@@ -18,6 +18,27 @@ class PolygonIdCoreLib {
 
   PolygonIdCoreLib();
 
+  String calculateGenesisId(String input) {
+    ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
+    ffi.Pointer<ffi.Pointer<ffi.Char>> response =
+        malloc<ffi.Pointer<ffi.Char>>();
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
+        malloc<ffi.Pointer<PLGNStatus>>();
+    int res =
+        _nativePolygonIdCoreLib.PLGNCalculateGenesisID(response, in1, status);
+    if (res == 0) {
+      _consumeStatus(status, "");
+    }
+    String result = "";
+    ffi.Pointer<ffi.Char> jsonResponse = response.value;
+    ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
+    if (jsonString != ffi.nullptr) {
+      result = jsonString.toDartString();
+    }
+
+    return result;
+  }
+
   String getAuthInputs(String input) {
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<ffi.Char>> response =
@@ -26,6 +47,26 @@ class PolygonIdCoreLib {
         malloc<ffi.Pointer<PLGNStatus>>();
     int res =
         _nativePolygonIdCoreLib.PLGNAuthV2InputsMarshal(response, in1, status);
+    if (res == 0) {
+      _consumeStatus(status, "");
+    }
+    String result = "";
+    ffi.Pointer<ffi.Char> jsonResponse = response.value;
+    ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
+    if (jsonString != ffi.nullptr) {
+      result = jsonString.toDartString();
+    }
+
+    return result;
+  }
+
+  String createClaim(String input) {
+    ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
+    ffi.Pointer<ffi.Pointer<ffi.Char>> response =
+        malloc<ffi.Pointer<ffi.Char>>();
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
+        malloc<ffi.Pointer<PLGNStatus>>();
+    int res = _nativePolygonIdCoreLib.PLGNCreateClaim(response, in1, status);
     if (res == 0) {
       _consumeStatus(status, "");
     }

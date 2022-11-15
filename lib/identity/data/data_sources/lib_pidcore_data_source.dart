@@ -9,6 +9,19 @@ class LibPolygonIdCoreDataSource {
     this._polygonIdCoreLib,
   );
 
+  String calculateGenesisId() {
+    String input = {
+      "claimsTreeRoot":
+          "8174871235721986756013575194888048894328426483724665491825528183806540196001",
+      "blockchain": "polygon",
+      "network": "mumbai"
+    }.toString();
+
+    String output = _polygonIdCoreLib.calculateGenesisId(input);
+    logger().d("calculateGenesisId: $output");
+    return output;
+  }
+
   String getAuthInputs() {
     String input = {
       "id": "tT2t3b685r2dKsjo4MioyKeceFT4mQEYfDd69EY5Y",
@@ -70,6 +83,22 @@ class LibPolygonIdCoreDataSource {
     String output = _polygonIdCoreLib.getAuthInputs(input);
 
     logger().d("getAuthV2Inputs: $output");
+    return output;
+  }
+
+  String createClaim() {
+    String input = {
+      "schema": "ca938857241db9451ea329256b9c06e5",
+      "nonce": "13260572831089785859",
+      "indexSlotA":
+          "15468939102716291673743744296736132867654217747684906302563904432835075522918",
+      "indexSlotB":
+          "10564057289999407626309237453457578977834988122411075958351091519856342060014"
+    }.toString();
+
+    String output = _polygonIdCoreLib.createClaim(input);
+
+    logger().d("createClaim: $output");
     return output;
   }
 }
