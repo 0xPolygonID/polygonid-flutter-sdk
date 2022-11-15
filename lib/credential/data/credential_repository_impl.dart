@@ -22,7 +22,6 @@ import 'mappers/revocation_status_mapper.dart';
 class CredentialRepositoryImpl extends CredentialRepository {
   final RemoteClaimDataSource _remoteClaimDataSource;
   final StorageClaimDataSource _storageClaimDataSource;
-  final RemoteIdentityDataSource _remoteIdentityDataSource;
   final LibIdentityDataSource _libIdentityDataSource;
   final CredentialRequestMapper _credentialRequestMapper;
   final ClaimMapper _claimMapper;
@@ -33,7 +32,6 @@ class CredentialRepositoryImpl extends CredentialRepository {
   CredentialRepositoryImpl(
       this._remoteClaimDataSource,
       this._storageClaimDataSource,
-      this._remoteIdentityDataSource,
       this._libIdentityDataSource,
       this._credentialRequestMapper,
       this._claimMapper,

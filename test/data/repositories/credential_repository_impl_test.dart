@@ -17,6 +17,7 @@ import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 import 'package:sembast/sembast.dart';
 
@@ -80,8 +81,8 @@ final filter = Filter.equals("theField", "theValue");
 MockRemoteClaimDataSource remoteClaimDataSource = MockRemoteClaimDataSource();
 MockStorageClaimDataSource storageClaimDataSource =
     MockStorageClaimDataSource();
-MockRemoteIdentityDataSource remoteIdentityDataSource =
-    MockRemoteIdentityDataSource();
+MockLibIdentityDataSource libIdentityDataSource =
+    MockLibIdentityDataSource();
 MockCredentialRequestMapper credentialRequestMapper =
     MockCredentialRequestMapper();
 MockClaimMapper claimMapper = MockClaimMapper();
@@ -94,7 +95,7 @@ MockRevocationStatusMapper revocationStatusMapper =
 CredentialRepositoryImpl repository = CredentialRepositoryImpl(
   remoteClaimDataSource,
   storageClaimDataSource,
-  remoteIdentityDataSource,
+  libIdentityDataSource,
   credentialRequestMapper,
   claimMapper,
   filtersMapper,
@@ -106,6 +107,7 @@ CredentialRepositoryImpl repository = CredentialRepositoryImpl(
   RemoteClaimDataSource,
   StorageClaimDataSource,
   RemoteIdentityDataSource,
+  LibIdentityDataSource,
   CredentialRequestMapper,
   ClaimMapper,
   FiltersMapper,

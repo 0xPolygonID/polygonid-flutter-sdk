@@ -8,7 +8,7 @@ import 'dart:async' as _i10;
 import 'package:http/http.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
-    as _i18;
+    as _i19;
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/remote_claim_data_source.dart'
     as _i9;
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart'
@@ -22,19 +22,21 @@ import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_fetch_requ
 import 'package:polygonid_flutter_sdk/credential/data/dtos/revocation_status.dart'
     as _i8;
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart'
-    as _i16;
-import 'package:polygonid_flutter_sdk/credential/data/mappers/credential_request_mapper.dart'
-    as _i14;
-import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart'
     as _i17;
+import 'package:polygonid_flutter_sdk/credential/data/mappers/credential_request_mapper.dart'
+    as _i15;
+import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart'
+    as _i18;
 import 'package:polygonid_flutter_sdk/credential/data/mappers/id_filter_mapper.dart'
-    as _i19;
-import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_mapper.dart'
     as _i20;
+import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_mapper.dart'
+    as _i21;
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
     as _i6;
 import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart'
-    as _i15;
+    as _i16;
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart'
+    as _i14;
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart'
     as _i13;
 import 'package:polygonid_flutter_sdk/identity/data/dtos/rhs_node_dto.dart'
@@ -356,17 +358,68 @@ class MockRemoteIdentityDataSource extends _i1.Mock
       ) as _i10.Future<Map<String, dynamic>>);
 }
 
+/// A class which mocks [LibIdentityDataSource].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockLibIdentityDataSource extends _i1.Mock
+    implements _i14.LibIdentityDataSource {
+  MockLibIdentityDataSource() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i10.Future<String> getId(String? id) => (super.noSuchMethod(
+        Invocation.method(
+          #getId,
+          [id],
+        ),
+        returnValue: _i10.Future<String>.value(''),
+      ) as _i10.Future<String>);
+  @override
+  _i10.Future<String> getIdentifier({
+    required String? pubX,
+    required String? pubY,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getIdentifier,
+          [],
+          {
+            #pubX: pubX,
+            #pubY: pubY,
+          },
+        ),
+        returnValue: _i10.Future<String>.value(''),
+      ) as _i10.Future<String>);
+  @override
+  _i10.Future<String> getAuthClaim({
+    required String? pubX,
+    required String? pubY,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getAuthClaim,
+          [],
+          {
+            #pubX: pubX,
+            #pubY: pubY,
+          },
+        ),
+        returnValue: _i10.Future<String>.value(''),
+      ) as _i10.Future<String>);
+}
+
 /// A class which mocks [CredentialRequestMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockCredentialRequestMapper extends _i1.Mock
-    implements _i14.CredentialRequestMapper {
+    implements _i15.CredentialRequestMapper {
   MockCredentialRequestMapper() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i5.CredentialFetchRequest mapTo(_i15.CredentialRequestEntity? to) =>
+  _i5.CredentialFetchRequest mapTo(_i16.CredentialRequestEntity? to) =>
       (super.noSuchMethod(
         Invocation.method(
           #mapTo,
@@ -385,7 +438,7 @@ class MockCredentialRequestMapper extends _i1.Mock
 /// A class which mocks [ClaimMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockClaimMapper extends _i1.Mock implements _i16.ClaimMapper {
+class MockClaimMapper extends _i1.Mock implements _i17.ClaimMapper {
   MockClaimMapper() {
     _i1.throwOnMissingStub(this);
   }
@@ -423,13 +476,13 @@ class MockClaimMapper extends _i1.Mock implements _i16.ClaimMapper {
 /// A class which mocks [FiltersMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockFiltersMapper extends _i1.Mock implements _i17.FiltersMapper {
+class MockFiltersMapper extends _i1.Mock implements _i18.FiltersMapper {
   MockFiltersMapper() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i7.Filter mapTo(List<_i18.FilterEntity>? to) => (super.noSuchMethod(
+  _i7.Filter mapTo(List<_i19.FilterEntity>? to) => (super.noSuchMethod(
         Invocation.method(
           #mapTo,
           [to],
@@ -447,7 +500,7 @@ class MockFiltersMapper extends _i1.Mock implements _i17.FiltersMapper {
 /// A class which mocks [IdFilterMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockIdFilterMapper extends _i1.Mock implements _i19.IdFilterMapper {
+class MockIdFilterMapper extends _i1.Mock implements _i20.IdFilterMapper {
   MockIdFilterMapper() {
     _i1.throwOnMissingStub(this);
   }
@@ -472,7 +525,7 @@ class MockIdFilterMapper extends _i1.Mock implements _i19.IdFilterMapper {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockRevocationStatusMapper extends _i1.Mock
-    implements _i20.RevocationStatusMapper {
+    implements _i21.RevocationStatusMapper {
   MockRevocationStatusMapper() {
     _i1.throwOnMissingStub(this);
   }

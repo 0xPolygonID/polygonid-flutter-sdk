@@ -14,3 +14,9 @@ class ProofsNotFoundException implements Exception {
 
   ProofsNotFoundException(this.proofRequests);
 }
+
+class NullAuthenticateCallbackException implements Exception {
+  final Iden3MessageEntity message;
+
+  NullAuthenticateCallbackException(this.message);
+}
