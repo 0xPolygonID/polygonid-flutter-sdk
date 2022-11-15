@@ -14,7 +14,7 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_requ
     as _i5;
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart'
     as _i3;
-import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
+import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart'
     as _i7;
 
 // ignore_for_file: type=lint
@@ -174,35 +174,6 @@ class MockCredentialRepository extends _i1.Mock
         returnValueForMissingStub: _i4.Future<void>.value(),
       ) as _i4.Future<void>);
   @override
-  _i4.Future<_i2.ClaimEntity> updateClaim({
-    required _i2.ClaimEntity? claim,
-    required String? identifier,
-    required String? privateKey,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #updateClaim,
-          [],
-          {
-            #claim: claim,
-            #identifier: identifier,
-            #privateKey: privateKey,
-          },
-        ),
-        returnValue: _i4.Future<_i2.ClaimEntity>.value(_FakeClaimEntity_0(
-          this,
-          Invocation.method(
-            #updateClaim,
-            [],
-            {
-              #claim: claim,
-              #identifier: identifier,
-              #privateKey: privateKey,
-            },
-          ),
-        )),
-      ) as _i4.Future<_i2.ClaimEntity>);
-  @override
   _i4.Future<Map<String, dynamic>?> fetchSchema({required String? url}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -271,7 +242,8 @@ class MockCredentialRepository extends _i1.Mock
         returnValue: _i4.Future<int>.value(0),
       ) as _i4.Future<int>);
   @override
-  _i4.Future<String> getAuthClaim({required _i7.IdentityEntity? identity}) =>
+  _i4.Future<String> getAuthClaim(
+          {required _i7.PrivateIdentityEntity? identity}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getAuthClaim,

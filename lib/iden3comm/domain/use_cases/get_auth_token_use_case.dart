@@ -37,7 +37,7 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
         await _credentialRepository.getAuthClaim(identity: identityEntity);
     return _iden3commRepository
         .getAuthToken(
-            identityEntity: identityEntity,
+            identity: identityEntity,
             message: param.message,
             authData: authData,
             authClaim: authClaim)

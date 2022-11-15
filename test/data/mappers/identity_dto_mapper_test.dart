@@ -7,17 +7,8 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.d
 const publicKey = ["thePubX", "thePubY"];
 const identifier = "theIdentifier";
 const authClaim = "theAuthClaim";
-const state = "theState";
-const mockDTO = IdentityDTO(
-  identifier: identifier,
-  publicKey: publicKey,
-  state: state,
-);
-const mockEntity = IdentityEntity(
-  identifier: identifier,
-  publicKey: publicKey,
-  state: state,
-);
+const mockDTO = IdentityDTO(identifier: identifier, publicKey: publicKey);
+const mockEntity = IdentityEntity(identifier: identifier, publicKey: publicKey);
 
 // Tested instance
 IdentityDTOMapper mapper = IdentityDTOMapper();

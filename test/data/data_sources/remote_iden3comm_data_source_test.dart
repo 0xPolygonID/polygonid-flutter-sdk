@@ -13,13 +13,14 @@ import 'remote_iden3comm_data_source_test.mocks.dart';
 
 //DATA
 const token = "theToken";
+const url = "theUrl";
 AuthRequest mockAuthRequest = AuthRequest(
     id: "",
     typ: "",
     type: "",
     thid: "",
     body: AuthBodyRequest(
-      callbackUrl: "",
+      callbackUrl: url,
       reason: "",
       message: "",
       scope: [],
@@ -28,7 +29,6 @@ AuthRequest mockAuthRequest = AuthRequest(
     ),
     from: "");
 
-const url = "theUrl";
 MockAuthRequest authRequest = MockAuthRequest();
 Response response = Response("body", 200);
 Response errorResponse = Response("body", 450);

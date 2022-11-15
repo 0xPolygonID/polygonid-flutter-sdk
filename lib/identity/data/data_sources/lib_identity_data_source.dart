@@ -8,9 +8,7 @@ import '../../libs/iden3core/iden3core.dart';
 class LibIdentityDataSource {
   final Iden3CoreLib _iden3coreLib;
 
-  LibIdentityDataSource(
-    this._iden3coreLib,
-  );
+  LibIdentityDataSource(this._iden3coreLib);
 
   Future<String> getId(String id) {
     return Future.value(_iden3coreLib.getIdFromString(id)).then((libId) {
@@ -44,16 +42,4 @@ class LibIdentityDataSource {
       return Future.error(e);
     }
   }
-
-  /// FIXME: no passing repo and lib as params
-  // Future<String> createSMT(SMTStorageRepository smtStorageRepository) {
-  //   try {
-  //     return Future.value((MerkleTree(_iden3coreLib, smtStorageRepository, 32)
-  //             .storage as SMTMemoryStorageRepositoryImpl)
-  //         .toJson()
-  //         .toString());
-  //   } catch (e) {
-  //     return Future.error(e);
-  //   }
-  // }
 }

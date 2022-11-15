@@ -82,12 +82,10 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
             param: GetAuthTokenParam(
                 param.identifier, param.privateKey, authResponse));
 
-        _iden3commRepository
-            .getAuthCallback(message: param.message)
-            .then((url) => _iden3commRepository.authenticate(
-                  url: url,
-                  authToken: authToken,
-                ));
+        return _iden3commRepository.authenticate(
+          message: param.message,
+          authToken: authToken,
+        );
       } catch (error) {
         logger().e("[AuthenticateUseCase] Error: $error");
 

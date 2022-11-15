@@ -308,7 +308,6 @@ _i1.GetIt $initSDKGetIt(
   gh.factory<_i68.CredentialRepositoryImpl>(() => _i68.CredentialRepositoryImpl(
         get<_i39.RemoteClaimDataSource>(),
         get<_i55.StorageClaimDataSource>(),
-        get<_i41.RemoteIdentityDataSource>(),
         get<_i21.LibIdentityDataSource>(),
         get<_i10.CredentialRequestMapper>(),
         get<_i54.ClaimMapper>(),
