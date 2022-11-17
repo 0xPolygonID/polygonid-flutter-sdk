@@ -46,41 +46,41 @@ class StorageIdentityStateDataSource {
   }
 
   Future<NodeDTO> get(
-      {required HashDTO k,
+      {required HashDTO key,
       required String identifier,
       required String privateKey}) {
     return _getDatabase(identifier: identifier, privateKey: privateKey).then(
         (database) => database
-            .transaction(
-                (transaction) => getTransact(transaction: transaction, k: k))
+            .transaction((transaction) =>
+                getTransact(transaction: transaction, key: key))
             .then((snapshot) => NodeDTO.fromJson(snapshot!))
             .whenComplete(() => database.close()));
   }
 
   // For UT purpose
   Future<Map<String, Object?>?> getTransact(
-      {required DatabaseClient transaction, required HashDTO k}) async {
-    return _storeRefWrapper.get(transaction, k.toString());
+      {required DatabaseClient transaction, required HashDTO key}) async {
+    return _storeRefWrapper.get(transaction, key.toString());
   }
 
   Future<void> put(
-      {required HashDTO k,
-      required NodeDTO n,
+      {required HashDTO hash,
+      required NodeDTO node,
       required String identifier,
       required String privateKey}) {
     return _getDatabase(identifier: identifier, privateKey: privateKey).then(
         (database) => database
             .transaction((transaction) =>
-                putTransact(transaction: transaction, k: k, n: n))
+                putTransact(transaction: transaction, hash: hash, node: node))
             .whenComplete(() => database.close()));
   }
 
   // For UT purpose
   Future<void> putTransact(
       {required DatabaseClient transaction,
-      required HashDTO k,
-      required NodeDTO n}) async {
-    await _storeRefWrapper.put(transaction, k.toString(), n.toJson());
+      required HashDTO hash,
+      required NodeDTO node}) async {
+    await _storeRefWrapper.put(transaction, hash.toString(), node.toJson());
   }
 
   Future<HashDTO> getRoot(
@@ -89,7 +89,7 @@ class StorageIdentityStateDataSource {
         (database) => database
             .transaction(
                 (transaction) => getRootTransact(transaction: transaction))
-            .then((snapshot) => HashDTO.fromHex(snapshot!["root"] as String))
+            .then((snapshot) => HashDTO.fromJson(snapshot!))
             .whenComplete(() => database.close()));
   }
 
@@ -100,19 +100,19 @@ class StorageIdentityStateDataSource {
   }
 
   Future<void> setRoot(
-      {required HashDTO r,
+      {required HashDTO root,
       required String identifier,
       required String privateKey}) {
     return _getDatabase(identifier: identifier, privateKey: privateKey).then(
         (database) => database
             .transaction((transaction) =>
-                setRootTransact(transaction: transaction, r: r))
+                setRootTransact(transaction: transaction, root: root))
             .whenComplete(() => database.close()));
   }
 
   // For UT purpose
   Future<void> setRootTransact(
-      {required DatabaseClient transaction, required HashDTO r}) async {
-    await _storeRefWrapper.put(transaction, "root", {"root": r.toString()});
+      {required DatabaseClient transaction, required HashDTO root}) async {
+    await _storeRefWrapper.put(transaction, "root", root.toJson());
   }
 }

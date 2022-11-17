@@ -9,10 +9,10 @@ class LibPolygonIdCoreDataSource {
     this._polygonIdCoreLib,
   );
 
-  String calculateGenesisId() {
+  String calculateGenesisId(String claimsTreeRoot) {
     String input = {
-      "claimsTreeRoot":
-          "8174871235721986756013575194888048894328426483724665491825528183806540196001",
+      "claimsTreeRoot": claimsTreeRoot,
+      //"8174871235721986756013575194888048894328426483724665491825528183806540196001",
       "blockchain": "polygon",
       "network": "mumbai"
     }.toString();

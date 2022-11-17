@@ -77,6 +77,21 @@ class MockIden3CoreLib extends _i1.Mock implements _i3.Iden3CoreLib {
         returnValue: <String, String>{},
       ) as Map<String, String>);
   @override
+  String generateClaimsTreeRoot(
+    String? pubX,
+    String? pubY,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #generateClaimsTreeRoot,
+          [
+            pubX,
+            pubY,
+          ],
+        ),
+        returnValue: '',
+      ) as String);
+  @override
   String getMerkleTreeRoot(
     String? pubX,
     String? pubY,

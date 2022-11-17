@@ -1,8 +1,5 @@
-import 'package:fast_base58/fast_base58.dart';
-import 'package:flutter/foundation.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/exceptions/proof_generation_exceptions.dart';
 
-import '../../../common/utils/hex_utils.dart';
 import '../../libs/iden3core/iden3core.dart';
 import '../dtos/hash_dto.dart';
 import '../dtos/node_dto.dart';
@@ -25,12 +22,15 @@ class LibIdentityDataSource {
   }
 
   ///
-  Future<String> getIdentifier({required String pubX, required String pubY}) {
+  Future<String> getClaimsTreeRoot(
+      {required String pubX, required String pubY}) {
     try {
-      Map<String, String> map = _iden3coreLib.generateIdentity(pubX, pubY);
-      Uint8List hex = HexUtils.hexToBytes(map['id']!);
+      String claimsTreeRoot = _iden3coreLib.generateClaimsTreeRoot(pubX, pubY);
+      return Future.value(claimsTreeRoot);
+      /*Uint8List hex = HexUtils.hexToBytes(claimsTreeRoot);
 
-      return Future.value(Base58Encode(hex));
+
+      return Future.value(Base58Encode(hex));*/
     } catch (e) {
       return Future.error(e);
     }

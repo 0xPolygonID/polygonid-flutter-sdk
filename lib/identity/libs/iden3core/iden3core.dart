@@ -118,6 +118,36 @@ class Iden3CoreLib {
     return map;
   }
 
+  String generateClaimsTreeRoot(String pubX, String pubY) {
+    // ID - ALL GOOD
+    String userRevNonce = "15930428023331155902";
+
+    ffi.Pointer<ffi.Pointer<IDENClaim>> authClaim =
+        malloc<ffi.Pointer<IDENClaim>>();
+    ffi.Pointer<ffi.Pointer<IDENMerkleTreeHash>> claimsTreeRoot =
+        malloc<ffi.Pointer<IDENMerkleTreeHash>>();
+    int res = _generateClaimsTreeRoot(claimsTreeRoot, pubX, pubY, userRevNonce);
+    assert(res == 0);
+
+    var result = "";
+    for (int i = 0; i < 32; i++) {
+      result = result +
+          claimsTreeRoot.value.ref.data[i].toRadixString(16).padLeft(2, '0');
+    }
+    if (kDebugMode) {
+      print(result);
+    }
+    //_nativeIden3CoreLib.IDENFreeMerkleTree(userAuthClaimsTree.value);
+    //_nativeIden3CoreLib.IDENFreeClaim(authClaim.value);
+
+    /*Map<String, String> map = {};
+    map['id'] = result.toString();
+    map['authClaim'] = authClaim.value.ref.toJson().toString();
+
+    return map;*/
+    return result;
+  }
+
   String getMerkleTreeRoot(String pubX, String pubY) {
     // TODO schemaHash hardcoded
     final schemaHash = [
@@ -1827,6 +1857,57 @@ class Iden3CoreLib {
         id, claimsTreeRoot.ref, status);
     if (res == 0) {
       _consumeStatus(status, "unable to calculate genesis ID");
+      result = 1;
+      return result;
+    }
+
+    return result;
+  }
+
+  /// Allocate new IDENClaim & IDENMerkleTree. Caller must free those object.
+  ///
+  /// Return 0 on success.
+  int _generateClaimsTreeRoot(
+      ffi.Pointer<ffi.Pointer<IDENMerkleTreeHash>> claimsTreeRoot,
+      String authClaimKeyX,
+      String authClaimKeyY,
+      String authClaimRevNonce) {
+    ffi.Pointer<ffi.Pointer<IDENClaim>> claim =
+        malloc<ffi.Pointer<IDENClaim>>();
+    ffi.Pointer<ffi.Pointer<IDENMerkleTree>> claimsTree =
+        malloc<ffi.Pointer<IDENMerkleTree>>();
+    int result = 0;
+    ffi.Pointer<ffi.Pointer<IDENStatus>> status =
+        malloc<ffi.Pointer<IDENStatus>>();
+    int res = _nativeIden3CoreLib.IDENNewMerkleTree(claimsTree, 32, status);
+    if (res == 0) {
+      _consumeStatus(status, "can't create merkle tree");
+      result = 1;
+      return result;
+    }
+
+    bool ok = _makeAuthClaim(
+        claim, authClaimKeyX, authClaimKeyY, authClaimRevNonce, status);
+    if (!ok) {
+      _consumeStatus(status, "can't create auth claim");
+      result = 1;
+      return result;
+    }
+
+    res = _nativeIden3CoreLib.IDENMerkleTreeAddClaim(
+        claimsTree.value, claim.value, status);
+    if (res == 0) {
+      _consumeStatus(status, "can't add claim to merkle tree");
+      result = 1;
+      return result;
+    }
+
+    //ffi.Pointer<IDENMerkleTreeHash> claimsTreeRoot =
+    //malloc<IDENMerkleTreeHash>();
+    res = _nativeIden3CoreLib.IDENMerkleTreeRoot(
+        claimsTreeRoot.value, claimsTree.value, status);
+    if (res == 0) {
+      _consumeStatus(status, "unable to calculate claim's tree root");
       result = 1;
       return result;
     }

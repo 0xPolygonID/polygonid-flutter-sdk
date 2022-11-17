@@ -1,9 +1,23 @@
-import '../../libs/smt/hash.dart';
-import '../../libs/smt/node.dart';
+import '../entities/hash_entity.dart';
+import '../entities/node_entity.dart';
 
 abstract class SMTStorageRepository {
-  Node get(Hash k);
-  void put(Hash k, Node n);
-  Hash getRoot();
-  void setRoot(Hash r);
+  Future<NodeEntity> get(
+      {required HashEntity hash,
+      required String identifier,
+      required String privateKey});
+
+  Future<void> put(
+      {required HashEntity hash,
+      required NodeEntity node,
+      required String identifier,
+      required String privateKey});
+
+  Future<HashEntity> getRoot(
+      {required String identifier, required String privateKey});
+
+  Future<void> setRoot(
+      {required HashEntity root,
+      required String identifier,
+      required String privateKey});
 }

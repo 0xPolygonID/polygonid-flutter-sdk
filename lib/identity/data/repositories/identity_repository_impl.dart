@@ -1,3 +1,4 @@
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
 
 import '../../domain/entities/identity_entity.dart';
@@ -22,6 +23,7 @@ import '../mappers/state_identifier_mapper.dart';
 class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
   final LibIdentityDataSource _libIdentityDataSource;
+  final LibPolygonIdCoreDataSource _libPolygonIdCoreDataSource;
   final LocalIdentityDataSource _localIdentityDataSource;
   final RemoteIdentityDataSource _remoteIdentityDataSource;
   final StorageIdentityDataSource _storageIdentityDataSource;
@@ -36,6 +38,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   IdentityRepositoryImpl(
     this._walletDataSource,
     this._libIdentityDataSource,
+    this._libPolygonIdCoreDataSource,
     this._localIdentityDataSource,
     this._remoteIdentityDataSource,
     this._storageIdentityDataSource,
@@ -78,11 +81,14 @@ class IdentityRepositoryImpl extends IdentityRepository {
     // Create a wallet
     PrivadoIdWallet wallet = PrivadoIdWallet(_hexMapper.mapTo(privateKey));
 
-    // Get the associated identifier
-    String identifier = await _libIdentityDataSource.getIdentifier(
+    // Get the associated claimsTreeRoot
+    String claimsTreeRoot = await _libIdentityDataSource.getClaimsTreeRoot(
         pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]);
 
-    return identifier;
+    String genesisId =
+        _libPolygonIdCoreDataSource.calculateGenesisId(claimsTreeRoot);
+
+    return genesisId;
   }
 
   @override
@@ -127,8 +133,10 @@ class IdentityRepositoryImpl extends IdentityRepository {
         .then((dto) => _walletDataSource
             .getWallet(privateKey: _hexMapper.mapTo(privateKey))
             .then((wallet) => _libIdentityDataSource
-                    .getIdentifier(
+                    .getClaimsTreeRoot(
                         pubX: wallet.publicKey[0], pubY: wallet.publicKey[1])
+                    .then((claimsTreeRoot) => _libPolygonIdCoreDataSource
+                        .calculateGenesisId(claimsTreeRoot))
                     .then((identifierFromKey) {
                   if (identifierFromKey != identifier) {
                     throw InvalidPrivateKeyException(privateKey);
