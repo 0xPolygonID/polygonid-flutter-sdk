@@ -1,12 +1,9 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 import 'package:sembast/sembast.dart';
 
 import '../../domain/exceptions/identity_exceptions.dart';
 import '../dtos/identity_dto.dart';
-import 'storage_key_value_data_source.dart';
 
 /// [StoreRef] wrapper
 /// Delegates all call to [IdentityStoreRefWrapper._store]
@@ -35,12 +32,8 @@ class IdentityStoreRefWrapper {
 class StorageIdentityDataSource {
   final Database _database;
   final IdentityStoreRefWrapper _storeRefWrapper;
-  final StorageKeyValueDataSource _storageKeyValueDataSource;
-  final WalletDataSource _walletDataSource;
-  final HexMapper _hexMapper;
 
-  StorageIdentityDataSource(this._database, this._storeRefWrapper,
-      this._storageKeyValueDataSource, this._walletDataSource, this._hexMapper);
+  StorageIdentityDataSource(this._database, this._storeRefWrapper);
 
   Future<IdentityDTO> getIdentity({required String identifier}) {
     return _storeRefWrapper.get(_database, identifier).then((storedValue) {
@@ -64,11 +57,7 @@ class StorageIdentityDataSource {
       {required DatabaseClient transaction,
       required String identifier,
       required IdentityDTO identity}) async {
-    await _storageKeyValueDataSource.remove(
-        key: currentIdentifierKey, database: transaction);
     await _storeRefWrapper.put(transaction, identifier, identity.toJson());
-    await _storageKeyValueDataSource.store(
-        key: currentIdentifierKey, value: identifier, database: transaction);
   }
 
   Future<void> removeIdentity({required String identifier}) {
@@ -79,8 +68,6 @@ class StorageIdentityDataSource {
   // For UT purpose
   Future<void> removeIdentityTransact(
       {required DatabaseClient transaction, required String identifier}) async {
-    await _storageKeyValueDataSource.remove(
-        key: currentIdentifierKey, database: transaction);
     await _storeRefWrapper.remove(transaction, identifier);
   }
 }

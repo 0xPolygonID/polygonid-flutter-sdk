@@ -11,7 +11,6 @@ import '../data_sources/local_contract_files_data_source.dart';
 import '../data_sources/local_identity_data_source.dart';
 import '../data_sources/remote_identity_data_source.dart';
 import '../data_sources/storage_identity_data_source.dart';
-import '../data_sources/storage_key_value_data_source.dart';
 import '../data_sources/wallet_data_source.dart';
 import '../dtos/identity_dto.dart';
 import '../mappers/hex_mapper.dart';
@@ -26,7 +25,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final LocalIdentityDataSource _localIdentityDataSource;
   final RemoteIdentityDataSource _remoteIdentityDataSource;
   final StorageIdentityDataSource _storageIdentityDataSource;
-  final StorageKeyValueDataSource _storageKeyValueDataSource;
   final RPCDataSource _rpcDataSource;
   final LocalContractFilesDataSource _localContractFilesDataSource;
   final HexMapper _hexMapper;
@@ -41,7 +39,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._localIdentityDataSource,
     this._remoteIdentityDataSource,
     this._storageIdentityDataSource,
-    this._storageKeyValueDataSource,
     this._rpcDataSource,
     this._localContractFilesDataSource,
     this._hexMapper,

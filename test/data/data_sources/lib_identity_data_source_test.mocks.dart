@@ -10,9 +10,9 @@ import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart'
     as _i4;
 import 'package:polygonid_flutter_sdk/credential/data/dtos/revocation_status.dart'
     as _i5;
+import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart' as _i2;
 import 'package:polygonid_flutter_sdk/identity/libs/iden3core/iden3core.dart'
     as _i3;
-import 'package:polygonid_flutter_sdk/identity/libs/smt/hash.dart' as _i2;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -25,8 +25,8 @@ import 'package:polygonid_flutter_sdk/identity/libs/smt/hash.dart' as _i2;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakeHash_0 extends _i1.SmartFake implements _i2.Hash {
-  _FakeHash_0(
+class _FakeHashDTO_0 extends _i1.SmartFake implements _i2.HashDTO {
+  _FakeHashDTO_0(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -218,19 +218,19 @@ class MockIden3CoreLib extends _i1.Mock implements _i3.Iden3CoreLib {
         returnValue: _i6.Uint8List(0),
       ) as _i6.Uint8List);
   @override
-  _i2.Hash poseidonHashHashes(List<_i2.Hash>? hs) => (super.noSuchMethod(
+  _i2.HashDTO poseidonHashHashes(List<_i2.HashDTO>? hs) => (super.noSuchMethod(
         Invocation.method(
           #poseidonHashHashes,
           [hs],
         ),
-        returnValue: _FakeHash_0(
+        returnValue: _FakeHashDTO_0(
           this,
           Invocation.method(
             #poseidonHashHashes,
             [hs],
           ),
         ),
-      ) as _i2.Hash);
+      ) as _i2.HashDTO);
   @override
   BigInt poseidonHashInts(List<BigInt>? bis) => (super.noSuchMethod(
         Invocation.method(

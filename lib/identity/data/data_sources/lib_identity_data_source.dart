@@ -4,6 +4,8 @@ import 'package:polygonid_flutter_sdk/proof_generation/domain/exceptions/proof_g
 
 import '../../../common/utils/hex_utils.dart';
 import '../../libs/iden3core/iden3core.dart';
+import '../dtos/hash_dto.dart';
+import '../dtos/node_dto.dart';
 
 class LibIdentityDataSource {
   final Iden3CoreLib _iden3coreLib;
@@ -42,6 +44,22 @@ class LibIdentityDataSource {
       return Future.value(authClaim);
     } catch (e) {
       return Future.error(e);
+    }
+  }
+
+  HashDTO getNodeHash(NodeDTO node) {
+    switch (node.type) {
+      case NodeTypeDTO.leaf:
+        return _iden3coreLib.poseidonHashHashes([
+          node.children[0],
+          node.children[1],
+          HashDTO.fromBigInt(BigInt.one)
+        ]);
+      case NodeTypeDTO.middle:
+        return _iden3coreLib
+            .poseidonHashHashes(node.children /*[node.childL, node.childR]*/);
+      default:
+        return HashDTO.zero();
     }
   }
 

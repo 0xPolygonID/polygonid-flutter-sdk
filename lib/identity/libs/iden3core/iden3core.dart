@@ -13,7 +13,8 @@ import '../../../credential/data/dtos/claim_info_dto.dart';
 import '../../../credential/data/dtos/claim_proofs/claim_proof_bjj_dto.dart';
 import '../../../credential/data/dtos/claim_proofs/claim_proof_dto.dart';
 import '../../../credential/data/dtos/claim_proofs/claim_proof_sm_dto.dart';
-import '../smt/hash.dart';
+import '../../data/dtos/hash_dto.dart';
+import '../../data/mappers/hex_mapper.dart';
 import 'native_iden3core.dart';
 import 'native_iden3core_extension.dart';
 
@@ -2014,9 +2015,9 @@ class Iden3CoreLib {
 
   // SMT
 
-  Hash poseidonHashHashes(List<Hash> hs) {
+  HashDTO poseidonHashHashes(List<HashDTO> hs) {
     if (hs.isEmpty) {
-      return Hash.zero();
+      return HashDTO.zero();
     }
 
     Pointer<Pointer<IDENBigInt>> ints = malloc<Pointer<IDENBigInt>>(hs.length);
@@ -2097,20 +2098,20 @@ class Iden3CoreLib {
     }
   }
 
-  Hash _hashFromIdenBigInt(Pointer<IDENBigInt> v) {
+  HashDTO _hashFromIdenBigInt(Pointer<IDENBigInt> v) {
     if (v.ref.data_len == 0) {
-      return Hash.zero();
+      return HashDTO.zero();
     }
     if (v.ref.data_len > 32) {
       throw ArgumentError("value is too big");
     }
 
-    final h = Hash.zero();
+    final h = Uint8List(32);
     for (int i = 0; i < v.ref.data_len; i++) {
-      h.data[i] = v.ref.data[i];
+      h[i] = v.ref.data[i];
     }
-
-    return h;
+    final result = HashDTO(data: HexMapper().mapFrom(h));
+    return result;
   }
 
   BigInt _bigIntFromIdenBigInt(Pointer<IDENBigInt> v) {

@@ -41,11 +41,11 @@ class Node {
     if (_key == null) {
       switch (type) {
         case NodeType.leaf:
-          _key = _iden3coreLib.poseidonHashHashes(
-              [entry![0], entry![1], Hash.fromBigInt(BigInt.one)]);
+          //_key = _iden3coreLib.poseidonHashHashes(
+          //    [entry![0], entry![1], Hash.fromBigInt(BigInt.one)]);
           break;
         case NodeType.middle:
-          _key = _iden3coreLib.poseidonHashHashes([childL!, childR!]);
+          //_key = _iden3coreLib.poseidonHashHashes([childL!, childR!]);
           break;
         default:
           _key = Hash.zero();

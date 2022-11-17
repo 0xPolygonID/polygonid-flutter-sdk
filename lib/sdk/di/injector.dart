@@ -75,12 +75,12 @@ abstract class DatabaseModule {
     return database;
   }
 
-  @Named(claimDatabaseName)
-  Future<Database> claimDatabase(@factoryParam String? identifier,
+  @Named(identityDatabaseName)
+  Future<Database> identityDatabase(@factoryParam String? identifier,
       @factoryParam String? privateKey) async {
     final dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
-    final path = join(dir.path, claimDatabasePrefix + identifier! + '.db');
+    final path = join(dir.path, identityDatabasePrefix + identifier! + '.db');
     // Initialize the encryption codec with the privateKey
     var codec = getEncryptSembastCodec(password: privateKey!);
     final database = await databaseFactoryIo.openDatabase(path, codec: codec);
@@ -94,10 +94,6 @@ abstract class DatabaseModule {
   @Named(claimStoreName)
   StoreRef<String, Map<String, Object?>> get claimStore =>
       stringMapStoreFactory.store(claimStoreName);
-
-  @Named(keyValueStoreName)
-  StoreRef<String, dynamic> get keyValueStore =>
-      stringMapStoreFactory.store(keyValueStoreName);
 }
 
 @module

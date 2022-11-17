@@ -43,7 +43,7 @@ class StorageClaimDataSource {
   Future<Database> _getDatabase(
       {required String identifier, required String privateKey}) {
     return getItSdk.getAsync<Database>(
-        instanceName: claimDatabaseName,
+        instanceName: identityDatabaseName,
         param1: identifier,
         param2: privateKey);
   }
