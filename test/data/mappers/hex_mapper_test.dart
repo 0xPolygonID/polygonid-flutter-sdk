@@ -11,19 +11,17 @@ const convertedKey = "746865507269766174654b6579";
 HexMapper mapper = HexMapper();
 
 void main() {
-  group("Map from", () {
-    test(
-        "Given a Uint8List, when I call mapFrom, then I expect a String to be returned",
-        () {
-      // When
-      expect(mapper.mapFrom(privateKey), convertedKey);
-    });
+  test(
+      "Given a Uint8List, when I call mapFrom, then I expect a String to be returned",
+      () {
+    // When
+    expect(mapper.mapFrom(privateKey), convertedKey);
+  });
 
-    test(
-        "Given a hex String, when I call mapTo, then I expect Uint8List to be returned",
-        () {
-      // When
-      expect(mapper.mapTo(convertedKey), privateKey);
-    });
+  test(
+      "Given a hex String, when I call mapTo, then I expect Uint8List to be returned",
+      () {
+    // When
+    expect(mapper.mapTo(convertedKey), privateKey);
   });
 }

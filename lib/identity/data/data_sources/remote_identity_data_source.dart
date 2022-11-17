@@ -12,6 +12,7 @@ import '../../domain/entities/rhs_node_entity.dart';
 import '../../domain/exceptions/identity_exceptions.dart';
 import '../mappers/rhs_node_type_mapper.dart';
 
+/// FIXME: inject http client (for source and UT mocking)
 class RemoteIdentityDataSource {
   Future<RhsNodeDTO> fetchStateRoots({required String url}) async {
     try {
