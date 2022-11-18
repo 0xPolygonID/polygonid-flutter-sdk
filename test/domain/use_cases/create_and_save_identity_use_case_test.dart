@@ -29,8 +29,6 @@ CreateAndSaveIdentityUseCase useCase =
 void main() {
   setUp(() {
     // Given
-    when(identityRepository.getIdentifier(privateKey: anyNamed('privateKey')))
-        .thenAnswer((realInvocation) => Future.value(identifier));
     when(identityRepository.createIdentity(secret: anyNamed('secret')))
         .thenAnswer((realInvocation) => Future.value(privateIdentity));
     when(identityRepository.getIdentity(identifier: anyNamed('identifier')))

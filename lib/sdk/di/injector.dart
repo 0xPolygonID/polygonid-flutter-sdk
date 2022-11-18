@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart';
 import 'package:injectable/injectable.dart';
@@ -43,9 +44,12 @@ abstract class Sdk {
 }
 
 @module
-abstract class PackageInfoModule {
+abstract class PlatformModule {
   @lazySingleton
   Future<PackageInfo> get packageInfo async => PackageInfo.fromPlatform();
+
+  @lazySingleton
+  AssetBundle get assetBundle => rootBundle;
 }
 
 @module

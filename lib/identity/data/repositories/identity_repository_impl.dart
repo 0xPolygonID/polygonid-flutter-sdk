@@ -8,12 +8,11 @@ import '../../domain/repositories/identity_repository.dart';
 import '../../libs/bjj/privadoid_wallet.dart';
 import '../data_sources/lib_identity_data_source.dart';
 import '../data_sources/local_contract_files_data_source.dart';
-import '../data_sources/local_identity_data_source.dart';
 import '../data_sources/remote_identity_data_source.dart';
 import '../data_sources/storage_identity_data_source.dart';
-import '../data_sources/storage_key_value_data_source.dart';
 import '../data_sources/wallet_data_source.dart';
 import '../dtos/identity_dto.dart';
+import '../mappers/did_mapper.dart';
 import '../mappers/hex_mapper.dart';
 import '../mappers/identity_dto_mapper.dart';
 import '../mappers/private_key_mapper.dart';
@@ -23,10 +22,8 @@ import '../mappers/state_identifier_mapper.dart';
 class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
   final LibIdentityDataSource _libIdentityDataSource;
-  final LocalIdentityDataSource _localIdentityDataSource;
   final RemoteIdentityDataSource _remoteIdentityDataSource;
   final StorageIdentityDataSource _storageIdentityDataSource;
-  final StorageKeyValueDataSource _storageKeyValueDataSource;
   final RPCDataSource _rpcDataSource;
   final LocalContractFilesDataSource _localContractFilesDataSource;
   final HexMapper _hexMapper;
@@ -34,14 +31,13 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final IdentityDTOMapper _identityDTOMapper;
   final RhsNodeMapper _rhsNodeMapper;
   final StateIdentifierMapper _stateIdentifierMapper;
+  final DidMapper _didMapper;
 
   IdentityRepositoryImpl(
     this._walletDataSource,
     this._libIdentityDataSource,
-    this._localIdentityDataSource,
     this._remoteIdentityDataSource,
     this._storageIdentityDataSource,
-    this._storageKeyValueDataSource,
     this._rpcDataSource,
     this._localContractFilesDataSource,
     this._hexMapper,
@@ -49,10 +45,10 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._identityDTOMapper,
     this._rhsNodeMapper,
     this._stateIdentifierMapper,
-    //this._smtStorageRepository,
+    this._didMapper,
   );
 
-  /// Get an IdentityEntity from a String secret
+  /// Get a [PrivateIdentityEntity] from a String secret
   /// It will create a new [PrivateIdentity]
   ///
   /// @return the associated identifier
@@ -72,14 +68,15 @@ class IdentityRepositoryImpl extends IdentityRepository {
           _hexMapper.mapFrom(wallet.privateKey));
       return Future.value(identityEntity);
     } catch (error) {
-      throw IdentityException(error);
+      return Future.error(IdentityException(error));
     }
   }
 
   @override
   Future<String> getIdentifier({required String privateKey}) async {
     // Create a wallet
-    PrivadoIdWallet wallet = PrivadoIdWallet(_hexMapper.mapTo(privateKey));
+    PrivadoIdWallet wallet = await _walletDataSource.createWallet(
+        secret: _privateKeyMapper.mapFrom(privateKey));
 
     // Get the associated identifier
     String identifier = await _libIdentityDataSource.getIdentifier(
@@ -102,7 +99,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
         throw InvalidPrivateKeyException(privateKey);
       }
     } catch (error) {
-      throw IdentityException(error);
+      return Future.error(IdentityException(error));
     }
   }
 
@@ -139,7 +136,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
                   return _identityDTOMapper.mapPrivateFrom(dto, privateKey);
                 })))
-        .catchError((error) => throw IdentityException(error),
+        .catchError((error) =>
+    throw IdentityException(error),
             test: (error) => error is! UnknownIdentityException);
   }
 
@@ -180,9 +178,11 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
   @override
   Future<Map<String, dynamic>> getNonRevProof(
-      String identityState, int revNonce, String rhsBaseUrl) {
+      {required String identityState,
+      required int nonce,
+      required String baseUrl}) {
     return _remoteIdentityDataSource
-        .getNonRevocationProof(identityState, revNonce, rhsBaseUrl)
+        .getNonRevocationProof(identityState, nonce, baseUrl)
         .catchError((error) => throw NonRevProofException(error));
   }
 
@@ -191,12 +191,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
     required String identifier,
     required String networkName,
     required String networkEnv,
-  }) async {
-    return _localIdentityDataSource.getDidIdentifier(
-      identifier: identifier,
-      networkName: networkName,
-      networkEnv: networkEnv,
-    );
+  }) {
+    return Future.value(
+        _didMapper.mapTo(DidMapperParam(identifier, networkName, networkEnv)));
   }
 
   @override
