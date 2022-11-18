@@ -28,6 +28,7 @@ class _SignWidgetState extends State<SignWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      key: CustomWidgetsKeys.signWidget,
       margin: const EdgeInsets.symmetric(horizontal: 12),
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(

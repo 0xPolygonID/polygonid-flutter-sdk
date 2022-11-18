@@ -18,4 +18,5 @@ class CustomWidgetsKeys {
   /// SIGN SCREEN
   static const Key signScreenButtonSignMessage =
       Key("signScreenButtonSignMessage");
+  static const Key signWidget = Key("signWidget");
 }

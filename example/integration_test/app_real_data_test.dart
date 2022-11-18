@@ -56,6 +56,7 @@ void main() {
         expect(find.byKey(const ValueKey('identifier')), findsOneWidget);
         expect(find.text(CustomStrings.homeIdentifierSectionPlaceHolder),
             findsOneWidget);
+        expect(find.byKey(CustomWidgetsKeys.signWidget), findsNothing);
         await widgetTester.pumpAndSettle();
 
         // after tap on "create identity" button,
@@ -65,6 +66,7 @@ void main() {
         await widgetTester.pumpAndSettle(const Duration(seconds: 1));
         expect(find.text(CustomStrings.homeIdentifierSectionPlaceHolder),
             findsNothing);
+        expect(find.byKey(CustomWidgetsKeys.signWidget), findsOneWidget);
 
         // we expect to be able to remove the identity
         // so we expect to find the remove button
@@ -78,6 +80,7 @@ void main() {
         await widgetTester.pumpAndSettle(const Duration(seconds: 1));
         expect(find.text(CustomStrings.homeIdentifierSectionPlaceHolder),
             findsOneWidget);
+        expect(find.byKey(CustomWidgetsKeys.signWidget), findsNothing);
 
         // after tap on "create identity" button,
         // we expect to find identifier again
@@ -86,6 +89,7 @@ void main() {
         await widgetTester.pumpAndSettle(const Duration(seconds: 1));
         expect(find.text(CustomStrings.homeIdentifierSectionPlaceHolder),
             findsNothing);
+        expect(find.byKey(CustomWidgetsKeys.signWidget), findsOneWidget);
 
         //  then by clicking on the "next action" button,
         //  we expect to navigate to authentication page
