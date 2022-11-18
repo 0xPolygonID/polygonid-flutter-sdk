@@ -5,8 +5,12 @@ import 'package:web3dart/contracts.dart';
 import 'package:web3dart/credentials.dart';
 
 class LocalContractFilesDataSource {
+  final AssetBundle _assetBundle;
+
+  LocalContractFilesDataSource(this._assetBundle);
+
   Future<DeployedContract> loadStateContract(String address) {
-    return rootBundle
+    return _assetBundle
         .loadString('packages/polygonid_flutter_sdk/lib/assets/StateABI.json')
         .then((json) => DeployedContract(
             ContractAbi.fromJson(jsonEncode(jsonDecode(json)["abi"]), 'State'),

@@ -30,7 +30,9 @@ class GenerateNonRevProofUseCase
               _getEnvConfigUseCase.execute(
                   param: PolygonIdConfig.reverseHashServiceUrl),
             ]).then((values) => _identityRepository.getNonRevProof(
-                identityState, values[0], values[1])))
+                identityState: identityState,
+                nonce: values[0],
+                baseUrl: values[1])))
         .then((nonRevProof) {
       logger().i("[GenerateNonRevProofUseCase] Non rev proof: $nonRevProof");
 

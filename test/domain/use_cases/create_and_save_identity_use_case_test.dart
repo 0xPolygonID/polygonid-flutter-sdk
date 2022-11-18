@@ -29,8 +29,6 @@ CreateAndSaveIdentityUseCase useCase =
 void main() {
   setUp(() {
     // Given
-    when(identityRepository.getIdentifier(privateKey: anyNamed('privateKey')))
-        .thenAnswer((realInvocation) => Future.value(identifier));
     when(identityRepository.createIdentity(secret: anyNamed('secret')))
         .thenAnswer((realInvocation) => Future.value(privateIdentity));
     when(identityRepository.getIdentity(identifier: anyNamed('identifier')))
@@ -101,7 +99,10 @@ void main() {
         .thenAnswer((realInvocation) => Future.value(privateIdentity));
 
     // When
-    await useCase.execute(param: privateKey).then((_) => null).catchError((error) {
+    await useCase
+        .execute(param: privateKey)
+        .then((_) => null)
+        .catchError((error) {
       expect(error, isA<IdentityAlreadyExistsException>());
       expect(error.identifier, privateIdentity.identifier);
     });
@@ -137,13 +138,13 @@ void main() {
     // Then
     expect(
         verify(identityRepository.createIdentity(
-            secret: captureAnyNamed('secret')))
+                secret: captureAnyNamed('secret')))
             .captured
             .first,
         privateKey);
     expect(
         verify(identityRepository.getIdentity(
-            identifier: captureAnyNamed('identifier')))
+                identifier: captureAnyNamed('identifier')))
             .captured
             .first,
         identifier);
