@@ -7,6 +7,7 @@ import 'package:polygonid_flutter_sdk_example/src/presentation/ui/common/widgets
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_state.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/sign/widgets/sign.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_button_style.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_colors.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
@@ -37,11 +38,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
+      //appBar: _buildAppBar(),
       backgroundColor: CustomColors.background,
       body: SafeArea(
         child: SizedBox(
-          width: MediaQuery.of(context).size.width,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -59,6 +59,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       _buildIdentifierSection(),
                       const SizedBox(height: 24),
                       _buildErrorSection(),
+                      const SizedBox(height: 24),
+                      _buildSignMessageSection(),
                       const SizedBox(height: 48),
                     ],
                   ),
@@ -260,6 +262,20 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
       ),
+    );
+  }
+
+  ///
+  Widget _buildSignMessageSection() {
+    return BlocBuilder(
+      bloc: widget._bloc,
+      builder: (BuildContext context, HomeState state) {
+        if (state.identifier == null || state.identifier!.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        return SignWidget();
+      },
+      buildWhen: (_, currentState) => currentState is LoadedIdentifierHomeState,
     );
   }
 }
