@@ -42,7 +42,8 @@ void main() {
       var offerRequestMapped = offerRequestMapper.mapTo(iden3MessageEntity);
       expect(offerRequestMapped.id, "1");
       expect(offerRequestMapped.typ, "theTyp");
-      expect(offerRequestMapped.type, "https://iden3-communication.io/authorization/1.0/request");
+      expect(offerRequestMapped.type,
+          "https://iden3-communication.io/authorization/1.0/request");
       expect(offerRequestMapped.thid, "theThid");
       expect(offerRequestMapped.from, "theFrom");
       expect(offerRequestMapped.body!.url, "offerUrl");

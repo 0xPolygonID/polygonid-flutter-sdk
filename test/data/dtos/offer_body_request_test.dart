@@ -22,7 +22,8 @@ void main() {
       var offerBodyRequest = OfferBodyRequest.fromJson(json);
       expect(offerBodyRequest.url, "offerUrl");
       expect(offerBodyRequest.credentials![0].id, "credentialsId");
-      expect(offerBodyRequest.credentials![0].description, "credentialsDescription");
+      expect(offerBodyRequest.credentials![0].description,
+          "credentialsDescription");
     });
     test("toJson", () {
       var offerBodyRequest = OfferBodyRequest.fromJson(json);

@@ -227,7 +227,8 @@ ProofRequestEntity mockProofRequestEntityNINCountry = ProofRequestEntity(
   proofQueryParamEntity,
 );
 
-ProofRequestEntity mockProofRequestEntityNotSupportedOperator = ProofRequestEntity(
+ProofRequestEntity mockProofRequestEntityNotSupportedOperator =
+    ProofRequestEntity(
   "1",
   "credentialAtomicQuerySig",
   false,
@@ -255,7 +256,7 @@ main() {
 
     test("From ProofRequestEntity to List<FilterEntity> GT operator", () {
       List<FilterEntity> filters =
-      proofRequestFiltersMapper.mapFrom(mockProofRequestEntityGT);
+          proofRequestFiltersMapper.mapFrom(mockProofRequestEntityGT);
       expect(filters.length, 2);
       expect(filters[0].name, "credential.credentialSchema.type");
       expect(filters[0].value, "KYCAgeCredential");
@@ -263,7 +264,7 @@ main() {
 
     test("From ProofRequestEntity to List<FilterEntity> EQ", () {
       List<FilterEntity> filters =
-      proofRequestFiltersMapper.mapFrom(mockProofRequestEntityEQ);
+          proofRequestFiltersMapper.mapFrom(mockProofRequestEntityEQ);
       expect(filters.length, 2);
       expect(filters[0].name, "credential.credentialSchema.type");
       expect(filters[0].value, "KYCAgeCredential");
@@ -271,7 +272,7 @@ main() {
 
     test("From ProofRequestEntity to List<FilterEntity> IN", () {
       List<FilterEntity> filters =
-      proofRequestFiltersMapper.mapFrom(mockProofRequestEntityIN);
+          proofRequestFiltersMapper.mapFrom(mockProofRequestEntityIN);
       expect(filters.length, 3);
       expect(filters[0].name, "credential.credentialSchema.type");
       expect(filters[0].value, "KYCAgeCredential");
@@ -279,23 +280,26 @@ main() {
 
     test("From ProofRequestEntity to List<FilterEntity> NIN", () {
       List<FilterEntity> filters =
-      proofRequestFiltersMapper.mapFrom(mockProofRequestEntityNIN);
+          proofRequestFiltersMapper.mapFrom(mockProofRequestEntityNIN);
       expect(filters.length, 2);
       expect(filters[0].name, "credential.credentialSchema.type");
       expect(filters[0].value, "KYCAgeCredential");
     });
 
-    test("From ProofRequestEntity to List<FilterEntity> NIN Country of residence", () {
+    test(
+        "From ProofRequestEntity to List<FilterEntity> NIN Country of residence",
+        () {
       List<FilterEntity> filters =
-      proofRequestFiltersMapper.mapFrom(mockProofRequestEntityNINCountry);
+          proofRequestFiltersMapper.mapFrom(mockProofRequestEntityNINCountry);
       expect(filters.length, 2);
       expect(filters[0].name, "credential.credentialSchema.type");
       expect(filters[0].value, "CountryOfResidenceCredential");
     });
 
-    test("From ProofRequestEntity to List<FilterEntity> Not supported operator", () {
-      List<FilterEntity> filters =
-      proofRequestFiltersMapper.mapFrom(mockProofRequestEntityNotSupportedOperator);
+    test("From ProofRequestEntity to List<FilterEntity> Not supported operator",
+        () {
+      List<FilterEntity> filters = proofRequestFiltersMapper
+          .mapFrom(mockProofRequestEntityNotSupportedOperator);
       expect(filters.length, 1);
       expect(filters[0].name, "credential.credentialSchema.type");
       expect(filters[0].value, "CountryOfResidenceCredential");

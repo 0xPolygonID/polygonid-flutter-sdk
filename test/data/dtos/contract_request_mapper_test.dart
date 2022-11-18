@@ -56,36 +56,49 @@ var json = jsonDecode(data);
 final contractRequest = ContractFunctionCallRequest.fromJson(json);
 
 Iden3MessageMapper iden3messageMapper =
-Iden3MessageMapper(Iden3MessageTypeMapper());
+    Iden3MessageMapper(Iden3MessageTypeMapper());
 // Tested instance
 ContractRequestMapper contractRequestMapper =
     ContractRequestMapper(Iden3MessageTypeDataMapper());
-
 
 void main() {
   group("ContractRequestMapper", () {
     test("toMapper", () {
       Iden3MessageEntity iden3message = iden3messageMapper.mapFrom(data);
-      ContractFunctionCallRequest mapTo = contractRequestMapper.mapTo(iden3message);
+      ContractFunctionCallRequest mapTo =
+          contractRequestMapper.mapTo(iden3message);
       expect(mapTo.id, contractRequest.id);
       expect(mapTo.typ, contractRequest.typ);
       expect(mapTo.type, contractRequest.type);
-      expect(mapTo.body.transactionData.contractAddress, contractRequest.body.transactionData.contractAddress);
-      expect(mapTo.body.transactionData.methodId, contractRequest.body.transactionData.methodId);
-      expect(mapTo.body.transactionData.chainId, contractRequest.body.transactionData.chainId);
-      expect(mapTo.body.transactionData.network, contractRequest.body.transactionData.network);
+      expect(mapTo.body.transactionData.contractAddress,
+          contractRequest.body.transactionData.contractAddress);
+      expect(mapTo.body.transactionData.methodId,
+          contractRequest.body.transactionData.methodId);
+      expect(mapTo.body.transactionData.chainId,
+          contractRequest.body.transactionData.chainId);
+      expect(mapTo.body.transactionData.network,
+          contractRequest.body.transactionData.network);
       expect(mapTo.body.reason, contractRequest.body.reason);
       expect(mapTo.body.scope?.length, contractRequest.body.scope?.length);
       expect(mapTo.body.scope?[0].id, contractRequest.body.scope?[0].id);
-      expect(mapTo.body.scope?[0].circuit_id, contractRequest.body.scope?[0].circuit_id);
-      expect(mapTo.body.scope?[0].optional, contractRequest.body.scope?[0].optional);
-      expect(mapTo.body.scope?[0].rules?.audience, contractRequest.body.scope?[0].rules?.audience);
-      expect(mapTo.body.scope?[0].rules?.challenge, contractRequest.body.scope?[0].rules?.challenge);
-      expect(mapTo.body.scope?[0].rules?.query?.allowedIssuers?.length, contractRequest.body.scope?[0].rules?.query?.allowedIssuers?.length);
-      expect(mapTo.body.scope?[0].rules?.query?.challenge, contractRequest.body.scope?[0].rules?.query?.challenge);
-      expect(mapTo.body.scope?[0].rules?.query?.schema?.type, contractRequest.body.scope?[0].rules?.query?.schema?.type);
-      expect(mapTo.body.scope?[0].rules?.query?.schema?.url, contractRequest.body.scope?[0].rules?.query?.schema?.url);
-      expect(mapTo.body.scope?[0].rules?.query?.req?.length, contractRequest.body.scope?[0].rules?.query?.req?.length);
+      expect(mapTo.body.scope?[0].circuit_id,
+          contractRequest.body.scope?[0].circuit_id);
+      expect(mapTo.body.scope?[0].optional,
+          contractRequest.body.scope?[0].optional);
+      expect(mapTo.body.scope?[0].rules?.audience,
+          contractRequest.body.scope?[0].rules?.audience);
+      expect(mapTo.body.scope?[0].rules?.challenge,
+          contractRequest.body.scope?[0].rules?.challenge);
+      expect(mapTo.body.scope?[0].rules?.query?.allowedIssuers?.length,
+          contractRequest.body.scope?[0].rules?.query?.allowedIssuers?.length);
+      expect(mapTo.body.scope?[0].rules?.query?.challenge,
+          contractRequest.body.scope?[0].rules?.query?.challenge);
+      expect(mapTo.body.scope?[0].rules?.query?.schema?.type,
+          contractRequest.body.scope?[0].rules?.query?.schema?.type);
+      expect(mapTo.body.scope?[0].rules?.query?.schema?.url,
+          contractRequest.body.scope?[0].rules?.query?.schema?.url);
+      expect(mapTo.body.scope?[0].rules?.query?.req?.length,
+          contractRequest.body.scope?[0].rules?.query?.req?.length);
     });
   });
 }

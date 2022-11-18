@@ -2,10 +2,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/iden3_message_type_data_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
 
-String authType ="https://iden3-communication.io/authorization/1.0/request";
-String offerType ="https://iden3-communication.io/credentials/1.0/offer";
-String issuanceType ="https://iden3-communication.io/credentials/1.0/issuance-response";
-String contractFunctionCallType ="https://iden3-communication.io/proofs/1.0/contract-invoke-request";
+String authType = "https://iden3-communication.io/authorization/1.0/request";
+String offerType = "https://iden3-communication.io/credentials/1.0/offer";
+String issuanceType =
+    "https://iden3-communication.io/credentials/1.0/issuance-response";
+String contractFunctionCallType =
+    "https://iden3-communication.io/proofs/1.0/contract-invoke-request";
 String otherType = "";
 
 // Tested instance

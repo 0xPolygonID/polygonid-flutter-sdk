@@ -16,7 +16,8 @@ void main() {
       var authBodyCredentialsRequest =
           AuthBodyCredentialsRequest.fromJson(json);
       expect(authBodyCredentialsRequest.id, "27887");
-      expect(authBodyCredentialsRequest.description, "Authenticating with iden3");
+      expect(
+          authBodyCredentialsRequest.description, "Authenticating with iden3");
     });
     test("toJson", () {
       var authBodyCredentialsRequest =

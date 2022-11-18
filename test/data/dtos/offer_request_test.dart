@@ -33,7 +33,8 @@ void main() {
       expect(offerRequest.from, "theFrom");
       expect(offerRequest.body!.url, "offerUrl");
       expect(offerRequest.body!.credentials![0].id, "credentialsId");
-      expect(offerRequest.body!.credentials![0].description, "credentialsDescription");
+      expect(offerRequest.body!.credentials![0].description,
+          "credentialsDescription");
     });
     test("toJson", () {
       var offerRequest = OfferRequest.fromJson(json);

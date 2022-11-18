@@ -81,8 +81,7 @@ final filter = Filter.equals("theField", "theValue");
 MockRemoteClaimDataSource remoteClaimDataSource = MockRemoteClaimDataSource();
 MockStorageClaimDataSource storageClaimDataSource =
     MockStorageClaimDataSource();
-MockLibIdentityDataSource libIdentityDataSource =
-    MockLibIdentityDataSource();
+MockLibIdentityDataSource libIdentityDataSource = MockLibIdentityDataSource();
 MockCredentialRequestMapper credentialRequestMapper =
     MockCredentialRequestMapper();
 MockClaimMapper claimMapper = MockClaimMapper();

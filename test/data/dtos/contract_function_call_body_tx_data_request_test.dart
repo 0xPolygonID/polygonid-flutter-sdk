@@ -15,14 +15,17 @@ var json = jsonDecode(data);
 void main() {
   group("ContractFunctionCallBodyTxDataRequest", () {
     test("fromJson", () {
-      var contractFunctionCallBodyTxDataRequest = ContractFunctionCallBodyTxDataRequest.fromJson(json);
-      expect(contractFunctionCallBodyTxDataRequest.contractAddress, "0x0000000000000000000000000000000000000000");
+      var contractFunctionCallBodyTxDataRequest =
+          ContractFunctionCallBodyTxDataRequest.fromJson(json);
+      expect(contractFunctionCallBodyTxDataRequest.contractAddress,
+          "0x0000000000000000000000000000000000000000");
       expect(contractFunctionCallBodyTxDataRequest.methodId, "0x00000000");
       expect(contractFunctionCallBodyTxDataRequest.chainId, 1);
       expect(contractFunctionCallBodyTxDataRequest.network, "mainnet");
     });
     test("toJson", () {
-      var contractFunctionCallBodyTxDataRequest = ContractFunctionCallBodyTxDataRequest.fromJson(json);
+      var contractFunctionCallBodyTxDataRequest =
+          ContractFunctionCallBodyTxDataRequest.fromJson(json);
       expect(contractFunctionCallBodyTxDataRequest.toJson(), json);
     });
   });

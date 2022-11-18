@@ -34,7 +34,7 @@ ProofScopeRequest mockProofScopeRequestNOOP = ProofScopeRequest(
       schema: ProofScopeRulesQuerySchemaRequest(
         type: "KYCAgeCredential",
         url:
-        "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
+            "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
       ),
       allowedIssuers: ["*"],
       req: {
@@ -54,7 +54,7 @@ ProofScopeRequest mockProofScopeRequestEQ = ProofScopeRequest(
       schema: ProofScopeRulesQuerySchemaRequest(
         type: "KYCAgeCredential",
         url:
-        "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
+            "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
       ),
       allowedIssuers: ["*"],
       req: {
@@ -74,7 +74,7 @@ ProofScopeRequest mockProofScopeRequestGT = ProofScopeRequest(
       schema: ProofScopeRulesQuerySchemaRequest(
         type: "KYCAgeCredential",
         url:
-        "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
+            "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
       ),
       allowedIssuers: ["*"],
       req: {
@@ -94,12 +94,12 @@ ProofScopeRequest mockProofScopeRequestIN = ProofScopeRequest(
       schema: ProofScopeRulesQuerySchemaRequest(
         type: "KYCAgeCredential",
         url:
-        "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
+            "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
       ),
       allowedIssuers: ["*"],
       req: {
         "birthday": {
-          "\$in": [19900202,19900205],
+          "\$in": [19900202, 19900205],
         },
       },
     ),
@@ -114,12 +114,12 @@ ProofScopeRequest mockProofScopeRequestNIN = ProofScopeRequest(
       schema: ProofScopeRulesQuerySchemaRequest(
         type: "KYCAgeCredential",
         url:
-        "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
+            "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
       ),
       allowedIssuers: ["*"],
       req: {
         "birthday": {
-          "\$nin": [19900202,19900205],
+          "\$nin": [19900202, 19900205],
         },
       },
     ),
@@ -134,7 +134,7 @@ ProofScopeRequest mockProofScopeRequestNoReq = ProofScopeRequest(
       schema: ProofScopeRulesQuerySchemaRequest(
         type: "KYCAgeCredential",
         url:
-        "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
+            "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
       ),
       allowedIssuers: ["*"],
     ),
@@ -148,7 +148,7 @@ void main() {
   group("getFieldOperatorAndValues", () {
     test(
       'given a proofScopeRequest with NOOP query operator, when we call getFieldOperatorAndValues, we expect a Map with the field, operator and values',
-          () {
+      () {
         // Arrange
         final expected = {
           "field": "birthday",
@@ -158,7 +158,7 @@ void main() {
 
         // Act
         final actual =
-        dataSource.getFieldOperatorAndValues(mockProofScopeRequestNOOP);
+            dataSource.getFieldOperatorAndValues(mockProofScopeRequestNOOP);
 
         // Assert
         expect(actual, expected);
@@ -167,7 +167,7 @@ void main() {
 
     test(
       'given a proofScopeRequest with EQ query operator, when we call getFieldOperatorAndValues, we expect a Map with the field, operator and values',
-          () {
+      () {
         // Arrange
         final expected = {
           "field": "birthday",
@@ -177,7 +177,7 @@ void main() {
 
         // Act
         final actual =
-        dataSource.getFieldOperatorAndValues(mockProofScopeRequestEQ);
+            dataSource.getFieldOperatorAndValues(mockProofScopeRequestEQ);
 
         // Assert
         expect(actual, expected);
@@ -205,17 +205,17 @@ void main() {
 
     test(
       'given a proofScopeRequest with IN query operator, when we call getFieldOperatorAndValues, we expect a Map with the field, operator and values',
-          () {
+      () {
         // Arrange
         final expected = {
           "field": "birthday",
-          "values": [19900202,19900205],
+          "values": [19900202, 19900205],
           "operator": 4,
         };
 
         // Act
         final actual =
-        dataSource.getFieldOperatorAndValues(mockProofScopeRequestIN);
+            dataSource.getFieldOperatorAndValues(mockProofScopeRequestIN);
 
         // Assert
         expect(actual, expected);
@@ -224,17 +224,17 @@ void main() {
 
     test(
       'given a proofScopeRequest with NIN query operator, when we call getFieldOperatorAndValues, we expect a Map with the field, operator and values',
-          () {
+      () {
         // Arrange
         final expected = {
           "field": "birthday",
-          "values": [19900202,19900205],
+          "values": [19900202, 19900205],
           "operator": 5,
         };
 
         // Act
         final actual =
-        dataSource.getFieldOperatorAndValues(mockProofScopeRequestNIN);
+            dataSource.getFieldOperatorAndValues(mockProofScopeRequestNIN);
 
         // Assert
         expect(actual, expected);
@@ -243,7 +243,7 @@ void main() {
 
     test(
       'given a proofScopeRequest without req field, when we call getFieldOperatorAndValues, we expect a Map with the field, operator and values',
-          () {
+      () {
         // Arrange
         final expected = {
           "field": "",
@@ -253,7 +253,7 @@ void main() {
 
         // Act
         final actual =
-        dataSource.getFieldOperatorAndValues(mockProofScopeRequestNoReq);
+            dataSource.getFieldOperatorAndValues(mockProofScopeRequestNoReq);
 
         // Assert
         expect(actual, expected);

@@ -18,6 +18,7 @@ import 'package:polygonid_flutter_sdk/sdk/mappers/iden3_message_mapper.dart';
 import 'package:polygonid_flutter_sdk/sdk/mappers/iden3_message_type_mapper.dart';
 
 import 'proof_requests_mapper_test.mocks.dart';
+
 String authRequestData = '''
 {
   "id": "a4ba573f-885f-48e1-98ce-b7dfdb47c42b",
@@ -96,14 +97,17 @@ String contractRequestData = '''
 }
 ''';
 AuthRequest mockAuthRequest = AuthRequest.fromJson(jsonDecode(authRequestData));
-ContractFunctionCallRequest mockContractCallRequest = ContractFunctionCallRequest.fromJson(jsonDecode(contractRequestData));
+ContractFunctionCallRequest mockContractCallRequest =
+    ContractFunctionCallRequest.fromJson(jsonDecode(contractRequestData));
 
 Iden3MessageMapper iden3messageMapper =
     Iden3MessageMapper(Iden3MessageTypeMapper());
 
 // Dependencies
-AuthRequestMapper authRequestMapper = AuthRequestMapper(Iden3MessageTypeDataMapper());
-ContractRequestMapper contractRequestMapper = ContractRequestMapper(Iden3MessageTypeDataMapper());
+AuthRequestMapper authRequestMapper =
+    AuthRequestMapper(Iden3MessageTypeDataMapper());
+ContractRequestMapper contractRequestMapper =
+    ContractRequestMapper(Iden3MessageTypeDataMapper());
 ProofQueryParamMapper proofQueryParamMapper = ProofQueryParamMapper();
 // Mock Dependencies
 MockFetchRequestMapper fetchRequestMapper = MockFetchRequestMapper();
@@ -127,29 +131,53 @@ ProofRequestsMapper proofRequestsMapper = ProofRequestsMapper(
 main() {
   group("ProofRequestsMapper", () {
     test("mapFrom authRequest", () {
-      Iden3MessageEntity iden3message = iden3messageMapper.mapFrom(authRequestData);
+      Iden3MessageEntity iden3message =
+          iden3messageMapper.mapFrom(authRequestData);
 
-      List<ProofRequestEntity> result = proofRequestsMapper.mapFrom(iden3message);
+      List<ProofRequestEntity> result =
+          proofRequestsMapper.mapFrom(iden3message);
       expect(result[0].id, "${mockAuthRequest.body.scope?[0].id}");
       expect(result[0].circuitId, mockAuthRequest.body.scope?[0].circuit_id);
-      expect(result[0].info,mockAuthRequest.body.scope?[0].rules?.toJson());
+      expect(result[0].info, mockAuthRequest.body.scope?[0].rules?.toJson());
       expect(result[0].optional, false);
-      expect(result[0].queryParam.field,proofQueryParamMapper.mapFrom(mockAuthRequest.body.scope![0]).field);
-      expect(result[0].queryParam.operator,proofQueryParamMapper.mapFrom(mockAuthRequest.body.scope![0]).operator);
-      expect(result[0].queryParam.values,proofQueryParamMapper.mapFrom(mockAuthRequest.body.scope![0]).values);
+      expect(result[0].queryParam.field,
+          proofQueryParamMapper.mapFrom(mockAuthRequest.body.scope![0]).field);
+      expect(
+          result[0].queryParam.operator,
+          proofQueryParamMapper
+              .mapFrom(mockAuthRequest.body.scope![0])
+              .operator);
+      expect(result[0].queryParam.values,
+          proofQueryParamMapper.mapFrom(mockAuthRequest.body.scope![0]).values);
     });
 
-    test("mapFrom contractRequest",(){
-      Iden3MessageEntity iden3message = iden3messageMapper.mapFrom(contractRequestData);
+    test("mapFrom contractRequest", () {
+      Iden3MessageEntity iden3message =
+          iden3messageMapper.mapFrom(contractRequestData);
 
-      List<ProofRequestEntity> result = proofRequestsMapper.mapFrom(iden3message);
+      List<ProofRequestEntity> result =
+          proofRequestsMapper.mapFrom(iden3message);
       expect(result[0].id, "${mockContractCallRequest.body.scope?[0].id}");
-      expect(result[0].circuitId, mockContractCallRequest.body.scope?[0].circuit_id);
-      expect(result[0].info,mockContractCallRequest.body.scope?[0].rules?.toJson());
+      expect(result[0].circuitId,
+          mockContractCallRequest.body.scope?[0].circuit_id);
+      expect(result[0].info,
+          mockContractCallRequest.body.scope?[0].rules?.toJson());
       expect(result[0].optional, false);
-      expect(result[0].queryParam.field,proofQueryParamMapper.mapFrom(mockContractCallRequest.body.scope![0]).field);
-      expect(result[0].queryParam.operator,proofQueryParamMapper.mapFrom(mockContractCallRequest.body.scope![0]).operator);
-      expect(result[0].queryParam.values,proofQueryParamMapper.mapFrom(mockContractCallRequest.body.scope![0]).values);
+      expect(
+          result[0].queryParam.field,
+          proofQueryParamMapper
+              .mapFrom(mockContractCallRequest.body.scope![0])
+              .field);
+      expect(
+          result[0].queryParam.operator,
+          proofQueryParamMapper
+              .mapFrom(mockContractCallRequest.body.scope![0])
+              .operator);
+      expect(
+          result[0].queryParam.values,
+          proofQueryParamMapper
+              .mapFrom(mockContractCallRequest.body.scope![0])
+              .values);
     });
   });
 }
