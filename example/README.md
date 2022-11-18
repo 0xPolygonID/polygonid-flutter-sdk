@@ -69,7 +69,7 @@ Future<void> removeIdentity({
 
 #### Sign a message
 To sign a message with your `privateKey` call `identity.sign()`, with the `message` and `privateKey`. (The `message` String must be an Hex or a Int otherwise an Exception will be thrown)
-A `signature` containing a `BigInt64` is returned as a String.
+A `signature` containing a `BigInt` is returned as a String.
 ```dart
 Future<void> signMessage({
   required String privateKey,
