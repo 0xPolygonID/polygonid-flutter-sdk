@@ -384,19 +384,20 @@ class MockIdentityRepository extends _i1.Mock
         returnValue: _i8.Future<String>.value(''),
       ) as _i8.Future<String>);
   @override
-  _i8.Future<Map<String, dynamic>> getNonRevProof(
-    String? identityState,
-    int? revNonce,
-    String? rhsBaseUrl,
-  ) =>
+  _i8.Future<Map<String, dynamic>> getNonRevProof({
+    required String? identityState,
+    required int? nonce,
+    required String? baseUrl,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #getNonRevProof,
-          [
-            identityState,
-            revNonce,
-            rhsBaseUrl,
-          ],
+          [],
+          {
+            #identityState: identityState,
+            #nonce: nonce,
+            #baseUrl: baseUrl,
+          },
         ),
         returnValue:
             _i8.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
