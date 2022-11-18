@@ -136,8 +136,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
                   return _identityDTOMapper.mapPrivateFrom(dto, privateKey);
                 })))
-        .catchError((error) =>
-    throw IdentityException(error),
+        .catchError((error) => throw IdentityException(error),
             test: (error) => error is! UnknownIdentityException);
   }
 

@@ -86,7 +86,7 @@ class OfferBodyRequest {
 
   Map<String, dynamic> toJson() => {
         'url': url,
-        'credentials': credentials,
+        'credentials': credentials?.map((item) => item.toJson()).toList(),
       };
 }
 

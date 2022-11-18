@@ -232,13 +232,13 @@ _i1.GetIt $initSDKGetIt(
     () => databaseModule.claimStore,
     instanceName: 'claimStore',
   );
-  gh.factory<_i12.StoreRef<String, dynamic>>(
-    () => databaseModule.keyValueStore,
-    instanceName: 'keyValueStore',
-  );
   gh.factory<_i12.StoreRef<String, Map<String, Object?>>>(
     () => databaseModule.identityStore,
     instanceName: 'identityStore',
+  );
+  gh.factory<_i12.StoreRef<String, dynamic>>(
+    () => databaseModule.keyValueStore,
+    instanceName: 'keyValueStore',
   );
   gh.factory<_i47.WalletLibWrapper>(() => _i47.WalletLibWrapper());
   gh.factory<_i48.Web3Client>(
