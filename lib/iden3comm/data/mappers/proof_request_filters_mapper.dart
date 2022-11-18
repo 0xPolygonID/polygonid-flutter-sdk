@@ -80,7 +80,7 @@ class ProofRequestFiltersMapper
         ];
       case '\$nin':
         if (schema == "KYCAgeCredential" || schema == "AgeCredential") {
-          List<int> excluded = value as List<int>;
+          List<int> excluded = List<int>.from(value);
           excluded.sort((a, b) => a.compareTo(b));
           FilterEntity lower = FilterEntity(
               operator: FilterOperator.lesser,
