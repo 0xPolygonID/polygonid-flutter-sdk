@@ -213,6 +213,9 @@ void main() {
       when(walletDataSource.createWallet(secret: anyNamed('secret')))
           .thenAnswer((realInvocation) => Future.value(mockWallet));
 
+      when(walletDataSource.getWallet(privateKey: anyNamed('privateKey')))
+          .thenAnswer((realInvocation) => Future.value(mockWallet));
+
       when(libIdentityDataSource.getIdentifier(
               pubX: anyNamed('pubX'), pubY: anyNamed('pubY')))
           .thenAnswer((realInvocation) => Future.value(identifier));
@@ -222,6 +225,9 @@ void main() {
 
       when(hexMapper.mapFrom(any))
           .thenAnswer((realInvocation) => walletPrivateKey);
+
+      when(hexMapper.mapTo(any))
+          .thenAnswer((realInvocation) => mockWallet.privateKey);
 
       when(storageIdentityDataSource.getIdentity(
               identifier: anyNamed('identifier')))
