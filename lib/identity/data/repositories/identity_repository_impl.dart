@@ -75,8 +75,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   @override
   Future<String> getIdentifier({required String privateKey}) async {
     // Create a wallet
-    PrivadoIdWallet wallet = await _walletDataSource.createWallet(
-        secret: _hexMapper.mapTo(privateKey));
+    PrivadoIdWallet wallet = PrivadoIdWallet(_hexMapper.mapTo(privateKey));
 
     // Get the associated identifier
     String identifier = await _libIdentityDataSource.getIdentifier(
