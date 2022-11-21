@@ -1,9 +1,4 @@
-import '../iden3core/iden3core.dart';
-import 'hash.dart';
-import 'node.dart';
-import 'smt_utils.dart';
-
-class Proof {
+/*class Proof {
   Iden3CoreLib _iden3coreLib;
   bool existence;
   List<Hash> siblings;
@@ -46,4 +41,4 @@ class Proof {
     final proofTreeRoot = root(node);
     return proofTreeRoot == treeRoot;
   }
-}
+}*/

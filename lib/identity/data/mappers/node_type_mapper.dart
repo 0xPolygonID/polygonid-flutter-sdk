@@ -1,21 +1,35 @@
-import '../../../common/mappers/from_mapper.dart';
+import '../../../common/mappers/mapper.dart';
 import '../../domain/entities/node_entity.dart';
 import '../dtos/node_dto.dart';
 
-class NodeTypeMapper extends FromMapper<NodeDTO, NodeType> {
+class NodeTypeMapper extends Mapper<NodeTypeDTO, NodeType> {
   @override
-  NodeType mapFrom(NodeDTO from) {
-    if (from.children.length == 3) {
-      if (from.children[2].data ==
-          "0100000000000000000000000000000000000000000000000000000000000000") {
-        return NodeType.leaf;
-      } else {
+  NodeType mapFrom(NodeTypeDTO from) {
+    switch (from) {
+      case NodeTypeDTO.state:
         return NodeType.state;
-      }
-    } else if (from.children.length == 2) {
-      return NodeType.middle;
-    } else {
-      return NodeType.unknown;
+      case NodeTypeDTO.leaf:
+        return NodeType.leaf;
+      case NodeTypeDTO.middle:
+        return NodeType.middle;
+      case NodeTypeDTO.unknown:
+      default:
+        return NodeType.unknown;
+    }
+  }
+
+  @override
+  NodeTypeDTO mapTo(NodeType to) {
+    switch (to) {
+      case NodeType.state:
+        return NodeTypeDTO.state;
+      case NodeType.leaf:
+        return NodeTypeDTO.leaf;
+      case NodeType.middle:
+        return NodeTypeDTO.middle;
+      case NodeType.unknown:
+      default:
+        return NodeTypeDTO.unknown;
     }
   }
 }

@@ -19,6 +19,10 @@ class HashDTO extends Equatable {
 
   HashDTO.zero() : data = HexMapper().mapFrom(Uint8List(32));
 
+  HashDTO.one()
+      : data =
+            "0100000000000000000000000000000000000000000000000000000000000000";
+
   HashDTO.fromUint8List(this.data) {
     assert(data.length == 32);
   }
@@ -69,6 +73,11 @@ class HashDTO extends Equatable {
       throw ArgumentError("n must be in range [0, ${data.length * 8}]");
     }
     return HexMapper().mapTo(data)[n ~/ 8] & (1 << (n % 8)) != 0;
+  }
+
+  // TestBit tests whether the bit n in bitmap is 1.
+  bool _testBit(Uint8List byte, int n) {
+    return byte[n ~/ 8] & (1 << (n % 8)) != 0;
   }
 
   @override

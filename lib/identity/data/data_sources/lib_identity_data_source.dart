@@ -55,12 +55,16 @@ class LibIdentityDataSource {
           node.children[1],
           HashDTO.fromBigInt(BigInt.one)
         ]);
+      case NodeTypeDTO.state:
       case NodeTypeDTO.middle:
-        return _iden3coreLib
-            .poseidonHashHashes(node.children /*[node.childL, node.childR]*/);
+        return _iden3coreLib.poseidonHashHashes(node.children);
       default:
         return HashDTO.zero();
     }
+  }
+
+  HashDTO getNodeKey(List<HashDTO> children) {
+    return _iden3coreLib.poseidonHashHashes(children);
   }
 
   /// FIXME: no passing repo and lib as params

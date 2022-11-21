@@ -10,8 +10,19 @@ NodeDTO _$NodeDTOFromJson(Map<String, dynamic> json) => NodeDTO(
       children: (json['children'] as List<dynamic>)
           .map((e) => HashDTO.fromJson(e as Map<String, dynamic>))
           .toList(),
+      hash: HashDTO.fromJson(json['hash'] as Map<String, dynamic>),
+      type: $enumDecode(_$NodeTypeDTOEnumMap, json['type']),
     );
 
 Map<String, dynamic> _$NodeDTOToJson(NodeDTO instance) => <String, dynamic>{
+      'hash': instance.hash,
       'children': instance.children,
+      'type': _$NodeTypeDTOEnumMap[instance.type]!,
     };
+
+const _$NodeTypeDTOEnumMap = {
+  NodeTypeDTO.middle: 'middle',
+  NodeTypeDTO.leaf: 'leaf',
+  NodeTypeDTO.state: 'state',
+  NodeTypeDTO.unknown: 'unknown',
+};

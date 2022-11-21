@@ -34,7 +34,6 @@ class DevEnv implements SdkEnv, SdkEnvFields {
   @override
   @EnviedField(varName: 'ID_STATE_CONTRACT_ADDR', obfuscate: true)
   final String idStateContractAddress = _Env.idStateContractAddress;
-
   @override
   @EnviedField(varName: 'PUSH_URL', obfuscate: true)
   final String pushUrl = _Env.pushUrl;

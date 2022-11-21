@@ -75,6 +75,11 @@ abstract class DatabaseModule {
     return database;
   }
 
+  // Identity
+  @Named(identityStoreName)
+  StoreRef<String, Map<String, Object?>> get identityStore =>
+      stringMapStoreFactory.store(identityStoreName);
+
   @Named(identityDatabaseName)
   Future<Database> identityDatabase(@factoryParam String? identifier,
       @factoryParam String? privateKey) async {
@@ -87,13 +92,29 @@ abstract class DatabaseModule {
     return database;
   }
 
-  @Named(identityStoreName)
-  StoreRef<String, Map<String, Object?>> get identityStore =>
-      stringMapStoreFactory.store(identityStoreName);
+  // Identity
+  @Named(claimsTreeStoreName)
+  StoreRef<String, Map<String, Object?>> get claimsTreeStore =>
+      stringMapStoreFactory.store(claimsTreeStoreName);
 
+  @Named(revocationTreeStoreName)
+  StoreRef<String, Map<String, Object?>> get revocationTreeStore =>
+      stringMapStoreFactory.store(revocationTreeStoreName);
+
+  @Named(rootsTreeStoreName)
+  StoreRef<String, Map<String, Object?>> get rootsTreeStore =>
+      stringMapStoreFactory.store(rootsTreeStoreName);
+
+  // Credential
   @Named(claimStoreName)
   StoreRef<String, Map<String, Object?>> get claimStore =>
       stringMapStoreFactory.store(claimStoreName);
+
+  // TODO: uncomment when implementing connections
+  // Iden3comm (interactions or connections?)
+  //@Named(interactionStoreName)
+  //StoreRef<String, Map<String, Object?>> get interactionStore =>
+  //    stringMapStoreFactory.store(interactionStoreName);
 }
 
 @module

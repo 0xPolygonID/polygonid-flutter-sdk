@@ -8,7 +8,8 @@ part 'node_dto.g.dart';
 enum NodeTypeDTO {
   middle,
   leaf,
-  empty,
+  state,
+  unknown,
 }
 
 //"node": {
@@ -20,30 +21,21 @@ enum NodeTypeDTO {
 //"hash": "c2cf7856100eaa0e5da6c167ecef46ed909d686901bb6807e0db13097c04f811" // Identity state
 //}
 
-/// Represents an identity DTO.
+/// 3 types of nodes:
+///
+/// - State node: [Claims Tree root, Revocation Tree root, Roots Tree root]
+/// - Middle node: [leftNode, rightNode]
+/// - Leaf node: [key, value, 1]
+
+/// Represents a node DTO.
 @JsonSerializable()
 class NodeDTO extends Equatable {
-  //final NodeTypeDTO type;
-  //final HashDTO childL; // left child of a middle node.
-  //final HashDTO childR; // right child of a middle node.
-
-  //final HashDTO hash;
+  final HashDTO hash;
   final List<HashDTO> children;
+  final NodeTypeDTO type;
 
-  NodeTypeDTO get type {
-    return NodeTypeDTO.empty;
-  }
-
-  const NodeDTO({required this.children});
-  //{required this.type, required this.childL, required this.childR});
-
-  /*NodeDTO.leaf(HashDTO k, HashDTO v) : type = NodeTypeDTO.leaf {
-    entry = List<HashDTO>.from([k, v]);
-  }
-
-  NodeDTO.middle(this.childL, this.childR) : type = NodeTypeDTO.middle;
-
-  NodeDTO.empty() : type = NodeTypeDTO.empty;*/
+  const NodeDTO(
+      {required this.children, required this.hash, required this.type});
 
   factory NodeDTO.fromJson(Map<String, dynamic> json) =>
       _$NodeDTOFromJson(json);
@@ -51,5 +43,5 @@ class NodeDTO extends Equatable {
   Map<String, dynamic> toJson() => _$NodeDTOToJson(this);
 
   @override
-  List<Object?> get props => [type, children];
+  List<Object?> get props => [hash, children, type];
 }
