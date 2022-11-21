@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 
 // Data
 String data = '''{
@@ -72,8 +72,8 @@ void main() {
     setUp(() {});
 
     test("Serializable", () {
-      CredentialDTO dto = CredentialDTO.fromJson(json);
-      Map<String, dynamic> toJson = dto.toJson();
+      ClaimInfoDTO dto = ClaimInfoDTO.fromJson(json);
+      dto.toJson();
     });
   });
 }

@@ -1,12 +1,12 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:web3dart/credentials.dart';
 import 'package:web3dart/crypto.dart';
 
 import '../../../common/utils/hex_utils.dart';
 import '../../../common/utils/uint8_list_utils.dart';
+import '../../../env/sdk_env.dart';
 import 'eddsa_babyjub.dart' as eddsaBabyJub;
 
 // TODO: move impl to a DS and transform this class to an entity
@@ -15,7 +15,7 @@ import 'eddsa_babyjub.dart' as eddsaBabyJub;
 /// Perform standard wallet actions
 class PrivadoIdWallet {
   late Uint8List privateKey;
-  dynamic publicKey;
+  late List<String> publicKey;
   dynamic publicKeyHex;
   String? publicKeyCompressed;
   String? publicKeyCompressedHex;
@@ -49,19 +49,22 @@ class PrivadoIdWallet {
   /// This creates a wallet
   /// Random wallet is created if no private key is provided
   ///
-  /// @param [Uint8List] privateKey - 32 bytes buffer
+  /// @param [Uint8List] secret - 32 bytes buffer
   /// @returns [PrivadoIdWallet] privadoIdWallet - PrivadoIdWallet instance
   static Future<PrivadoIdWallet> createPrivadoIdWallet(
-      {Uint8List? privateKey}) async {
-    Uint8List privateBjjKey = privateKey ?? Uint8List(32);
-    if (privateKey == null) {
-      final prvKey = EthPrivateKey.createRandom(Random.secure());
-      final signature = await prvKey.sign(Uint8ArrayUtils.uint8ListfromString(
-          PRIVADOID_ACCOUNT_ACCESS_MESSAGE));
-      privateBjjKey = keccak256(signature);
+      {Uint8List? secret}) async {
+    //Uint8List privateBjjKey = privateKey ?? Uint8List(32);
+    EthPrivateKey prvKey;
+    if (secret == null) {
+      prvKey = EthPrivateKey.createRandom(Random.secure());
+    } else {
+      prvKey = EthPrivateKey(secret);
     }
-    final privadoIdWallet = PrivadoIdWallet(privateBjjKey);
-    return privadoIdWallet;
+    final signature = await prvKey.sign(
+        Uint8ArrayUtils.uint8ListfromString(SdkEnv().polygonIdAccessMessage));
+    Uint8List privateBjjKey = keccak256(signature);
+    final bjjWallet = PrivadoIdWallet(privateBjjKey);
+    return bjjWallet;
   }
 
   /// Hash message with poseidon

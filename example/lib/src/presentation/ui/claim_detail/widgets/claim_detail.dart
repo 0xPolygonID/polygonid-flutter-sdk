@@ -115,11 +115,11 @@ class _ClaimDetailScreenState extends State<ClaimDetailScreen> {
         alignment: Alignment.center,
         child: ElevatedButton(
           onPressed: () {
-            widget._bloc
-                .add(ClaimDetailEvent.deleteClaim(claimId: widget.claimModel.id));
+            widget._bloc.add(
+                ClaimDetailEvent.deleteClaim(claimId: widget.claimModel.id));
           },
           style: CustomButtonStyle.primaryButtonStyle,
-          child: Text(
+          child: const Text(
             CustomStrings.deleteClaimButtonCTA,
             style: CustomTextStyles.primaryButtonTextStyle,
           ),

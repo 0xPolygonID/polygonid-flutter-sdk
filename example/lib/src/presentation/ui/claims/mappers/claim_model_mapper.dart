@@ -21,7 +21,7 @@ class ClaimModelMapper implements FromMapper<ClaimEntity, ClaimModel> {
   @override
   ClaimModel mapFrom(ClaimEntity from) {
     String type = from.type;
-    Map<String, dynamic> subject = from.credential['credentialSubject'];
+    Map<String, dynamic> subject = from.info['credentialSubject'];
 
     // Name
     String name = ClaimUtils.separateByCamelCaseString(type);
@@ -44,8 +44,8 @@ class ClaimModelMapper implements FromMapper<ClaimEntity, ClaimModel> {
     // Creation date and proof name
     String creationDate = "None";
     String proofType = 'BJJ Signature';
-    if (from.credential['proof'].isNotEmpty) {
-      for (var proof in from.credential['proof']) {
+    if (from.info['proof'].isNotEmpty) {
+      for (var proof in from.info['proof']) {
         if (proof['@type'] == "Iden3SparseMerkleProof") {
           creationDate = DateFormat("d MMM yyyy").format(
               DateTime.fromMillisecondsSinceEpoch(
@@ -69,7 +69,7 @@ class ClaimModelMapper implements FromMapper<ClaimEntity, ClaimModel> {
             (from.vocab!['properties'] as Map<String, dynamic>)
                 .containsKey(key)) {
           Map<String, dynamic> vocabProperty =
-          (from.vocab!['properties'] as Map<String, dynamic>)[key];
+              (from.vocab!['properties'] as Map<String, dynamic>)[key];
           if (vocabProperty.containsKey("display")) {
             claimTitle = vocabProperty["display"];
           }

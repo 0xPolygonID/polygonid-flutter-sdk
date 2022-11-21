@@ -5,6 +5,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/witness_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/data/dtos/witness_param.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/mappers/circuit_type_mapper.dart';
 
 import 'witness_data_source_test.mocks.dart';
 
@@ -40,7 +41,10 @@ main() {
       test(
         'Given a WitnessParam obj (wasm, json), when called computeWitnessAuth, we expect a Uint8List to be returned',
         () async {
-          expect(await dataSource.computeWitnessAuth(param), mockResponse);
+          expect(
+              await dataSource.computeWitness(
+                  param: param, type: CircuitType.auth),
+              mockResponse);
 
           WitnessParam captured =
               verify(witnessIsolatesWrapper.computeWitnessAuth(captureAny))
@@ -53,8 +57,11 @@ main() {
 
       test(
         'Given a WitnessParam obj (wasm, json), when called computeWitnessMtp, we expect a Uint8List to be returned',
-            () async {
-          expect(await dataSource.computeWitnessMtp(param), mockResponse);
+        () async {
+          expect(
+              await dataSource.computeWitness(
+                  param: param, type: CircuitType.mtp),
+              mockResponse);
 
           WitnessParam captured =
               verify(witnessIsolatesWrapper.computeWitnessMtp(captureAny))
@@ -67,8 +74,11 @@ main() {
 
       test(
         'Given a WitnessParam obj (wasm, json), when called computeWitnessSig, we expect a Uint8List to be returned',
-            () async {
-          expect(await dataSource.computeWitnessSig(param), mockResponse);
+        () async {
+          expect(
+              await dataSource.computeWitness(
+                  param: param, type: CircuitType.sig),
+              mockResponse);
 
           WitnessParam captured =
               verify(witnessIsolatesWrapper.computeWitnessSig(captureAny))

@@ -1,5 +1,3 @@
-import 'package:json_annotation/json_annotation.dart';
-
 import 'mtp_node_aux.dart';
 
 // @JsonSerializable()
@@ -9,8 +7,6 @@ class RevocationStatusMtp {
   final bool? existence;
   final List<dynamic>? siblings;
   final NodeAux? nodeAux;
-
-  // TODO: add NodeAux
 
   RevocationStatusMtp({this.type, this.existence, this.siblings, this.nodeAux});
 

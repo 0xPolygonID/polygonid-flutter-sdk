@@ -24,8 +24,8 @@ mixin _$AuthEvent {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? clickScanQrCode,
-    TResult Function(String? response)? onScanQrCodeResponse,
+    TResult? Function()? clickScanQrCode,
+    TResult? Function(String? response)? onScanQrCodeResponse,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -43,8 +43,8 @@ mixin _$AuthEvent {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
-    TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult? Function(ClickScanQrCodeEvent value)? clickScanQrCode,
+    TResult? Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -59,16 +59,18 @@ mixin _$AuthEvent {
 /// @nodoc
 abstract class $AuthEventCopyWith<$Res> {
   factory $AuthEventCopyWith(AuthEvent value, $Res Function(AuthEvent) then) =
-      _$AuthEventCopyWithImpl<$Res>;
+      _$AuthEventCopyWithImpl<$Res, AuthEvent>;
 }
 
 /// @nodoc
-class _$AuthEventCopyWithImpl<$Res> implements $AuthEventCopyWith<$Res> {
+class _$AuthEventCopyWithImpl<$Res, $Val extends AuthEvent>
+    implements $AuthEventCopyWith<$Res> {
   _$AuthEventCopyWithImpl(this._value, this._then);
 
-  final AuthEvent _value;
   // ignore: unused_field
-  final $Res Function(AuthEvent) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 }
 
 /// @nodoc
@@ -80,14 +82,11 @@ abstract class _$$ClickScanQrCodeEventCopyWith<$Res> {
 
 /// @nodoc
 class __$$ClickScanQrCodeEventCopyWithImpl<$Res>
-    extends _$AuthEventCopyWithImpl<$Res>
+    extends _$AuthEventCopyWithImpl<$Res, _$ClickScanQrCodeEvent>
     implements _$$ClickScanQrCodeEventCopyWith<$Res> {
   __$$ClickScanQrCodeEventCopyWithImpl(_$ClickScanQrCodeEvent _value,
       $Res Function(_$ClickScanQrCodeEvent) _then)
-      : super(_value, (v) => _then(v as _$ClickScanQrCodeEvent));
-
-  @override
-  _$ClickScanQrCodeEvent get _value => super._value as _$ClickScanQrCodeEvent;
+      : super(_value, _then);
 }
 
 /// @nodoc
@@ -121,8 +120,8 @@ class _$ClickScanQrCodeEvent implements ClickScanQrCodeEvent {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? clickScanQrCode,
-    TResult Function(String? response)? onScanQrCodeResponse,
+    TResult? Function()? clickScanQrCode,
+    TResult? Function(String? response)? onScanQrCodeResponse,
   }) {
     return clickScanQrCode?.call();
   }
@@ -152,8 +151,8 @@ class _$ClickScanQrCodeEvent implements ClickScanQrCodeEvent {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
-    TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult? Function(ClickScanQrCodeEvent value)? clickScanQrCode,
+    TResult? Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
   }) {
     return clickScanQrCode?.call(this);
   }
@@ -181,26 +180,25 @@ abstract class _$$ScanQrCodeResponseCopyWith<$Res> {
   factory _$$ScanQrCodeResponseCopyWith(_$ScanQrCodeResponse value,
           $Res Function(_$ScanQrCodeResponse) then) =
       __$$ScanQrCodeResponseCopyWithImpl<$Res>;
+  @useResult
   $Res call({String? response});
 }
 
 /// @nodoc
 class __$$ScanQrCodeResponseCopyWithImpl<$Res>
-    extends _$AuthEventCopyWithImpl<$Res>
+    extends _$AuthEventCopyWithImpl<$Res, _$ScanQrCodeResponse>
     implements _$$ScanQrCodeResponseCopyWith<$Res> {
   __$$ScanQrCodeResponseCopyWithImpl(
       _$ScanQrCodeResponse _value, $Res Function(_$ScanQrCodeResponse) _then)
-      : super(_value, (v) => _then(v as _$ScanQrCodeResponse));
+      : super(_value, _then);
 
-  @override
-  _$ScanQrCodeResponse get _value => super._value as _$ScanQrCodeResponse;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? response = freezed,
   }) {
     return _then(_$ScanQrCodeResponse(
-      response == freezed
+      freezed == response
           ? _value.response
           : response // ignore: cast_nullable_to_non_nullable
               as String?,
@@ -226,15 +224,16 @@ class _$ScanQrCodeResponse implements ScanQrCodeResponse {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ScanQrCodeResponse &&
-            const DeepCollectionEquality().equals(other.response, response));
+            (identical(other.response, response) ||
+                other.response == response));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(response));
+  int get hashCode => Object.hash(runtimeType, response);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$ScanQrCodeResponseCopyWith<_$ScanQrCodeResponse> get copyWith =>
       __$$ScanQrCodeResponseCopyWithImpl<_$ScanQrCodeResponse>(
           this, _$identity);
@@ -251,8 +250,8 @@ class _$ScanQrCodeResponse implements ScanQrCodeResponse {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? clickScanQrCode,
-    TResult Function(String? response)? onScanQrCodeResponse,
+    TResult? Function()? clickScanQrCode,
+    TResult? Function(String? response)? onScanQrCodeResponse,
   }) {
     return onScanQrCodeResponse?.call(response);
   }
@@ -282,8 +281,8 @@ class _$ScanQrCodeResponse implements ScanQrCodeResponse {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(ClickScanQrCodeEvent value)? clickScanQrCode,
-    TResult Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
+    TResult? Function(ClickScanQrCodeEvent value)? clickScanQrCode,
+    TResult? Function(ScanQrCodeResponse value)? onScanQrCodeResponse,
   }) {
     return onScanQrCodeResponse?.call(this);
   }

@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/models/claim_model.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_colors.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_dimensions.dart';
+import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_text_styles.dart';
 import 'package:polygonid_flutter_sdk_example/utils/image_resources.dart';
 
@@ -13,7 +14,8 @@ class ClaimCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double cardHeight = MediaQuery.of(context).size.width * CustomDimensions.claimCardHeightRatio;
+    double cardHeight = MediaQuery.of(context).size.width *
+        CustomDimensions.claimCardHeightRatio;
     return SizedBox(
       height: cardHeight,
       child: Stack(
@@ -84,7 +86,7 @@ class ClaimCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Issuer',
+                      CustomStrings.claimCardIssuerLabel,
                       textAlign: TextAlign.center,
                       style: CustomTextStyles.claimCardIssuerTextStyle,
                     ),

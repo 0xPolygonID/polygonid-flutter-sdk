@@ -5,6 +5,8 @@ import 'package:polygonid_flutter_sdk/proof_generation/libs/witnesscalc/auth/wit
 import 'package:polygonid_flutter_sdk/proof_generation/libs/witnesscalc/mtp/witness_mtp.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/libs/witnesscalc/sig/witness_sig.dart';
 
+import '../mappers/circuit_type_mapper.dart';
+
 @injectable
 class WitnessIsolatesWrapper {
   Future<Uint8List?> computeWitnessAuth(WitnessParam param) =>
@@ -46,18 +48,17 @@ class WitnessDataSource {
 
   WitnessDataSource(this._witnessIsolatesWrapper);
 
-  ///
-  Future<Uint8List?> computeWitnessAuth(WitnessParam param) async {
-    return _witnessIsolatesWrapper.computeWitnessAuth(param);
-  }
-
-  ///
-  Future<Uint8List?> computeWitnessMtp(WitnessParam param) async {
-    return _witnessIsolatesWrapper.computeWitnessMtp(param);
-  }
-
-  ///
-  Future<Uint8List?> computeWitnessSig(WitnessParam param) async {
-    return _witnessIsolatesWrapper.computeWitnessSig(param);
+  Future<Uint8List?> computeWitness(
+      {required CircuitType type, required WitnessParam param}) {
+    switch (type) {
+      case CircuitType.auth:
+        return _witnessIsolatesWrapper.computeWitnessAuth(param);
+      case CircuitType.mtp:
+        return _witnessIsolatesWrapper.computeWitnessMtp(param);
+      case CircuitType.sig:
+        return _witnessIsolatesWrapper.computeWitnessSig(param);
+      default:
+        return Future.value(null);
+    }
   }
 }

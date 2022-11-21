@@ -21,19 +21,19 @@ mixin _$AuthState {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function() navigateToQrCodeScanner,
-    required TResult Function(Iden3Message iden3message) loaded,
+    required TResult Function(Iden3MessageEntity iden3message) loaded,
     required TResult Function(String message) error,
     required TResult Function() authenticated,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? loaded,
-    TResult Function(String message)? error,
-    TResult Function()? authenticated,
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function()? navigateToQrCodeScanner,
+    TResult? Function(Iden3MessageEntity iden3message)? loaded,
+    TResult? Function(String message)? error,
+    TResult? Function()? authenticated,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -41,7 +41,7 @@ mixin _$AuthState {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? loaded,
+    TResult Function(Iden3MessageEntity iden3message)? loaded,
     TResult Function(String message)? error,
     TResult Function()? authenticated,
     required TResult orElse(),
@@ -60,13 +60,13 @@ mixin _$AuthState {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InitAuthState value)? initial,
-    TResult Function(LoadingAuthState value)? loading,
-    TResult Function(NavigateToQrCodeScannerAuthState value)?
+    TResult? Function(InitAuthState value)? initial,
+    TResult? Function(LoadingAuthState value)? loading,
+    TResult? Function(NavigateToQrCodeScannerAuthState value)?
         navigateToQrCodeScanner,
-    TResult Function(LoadedAuthState value)? loaded,
-    TResult Function(ErrorAuthState value)? error,
-    TResult Function(AuthenticatedAuthState value)? authenticated,
+    TResult? Function(LoadedAuthState value)? loaded,
+    TResult? Function(ErrorAuthState value)? error,
+    TResult? Function(AuthenticatedAuthState value)? authenticated,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -86,16 +86,18 @@ mixin _$AuthState {
 /// @nodoc
 abstract class $AuthStateCopyWith<$Res> {
   factory $AuthStateCopyWith(AuthState value, $Res Function(AuthState) then) =
-      _$AuthStateCopyWithImpl<$Res>;
+      _$AuthStateCopyWithImpl<$Res, AuthState>;
 }
 
 /// @nodoc
-class _$AuthStateCopyWithImpl<$Res> implements $AuthStateCopyWith<$Res> {
+class _$AuthStateCopyWithImpl<$Res, $Val extends AuthState>
+    implements $AuthStateCopyWith<$Res> {
   _$AuthStateCopyWithImpl(this._value, this._then);
 
-  final AuthState _value;
   // ignore: unused_field
-  final $Res Function(AuthState) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 }
 
 /// @nodoc
@@ -106,14 +108,12 @@ abstract class _$$InitAuthStateCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$InitAuthStateCopyWithImpl<$Res> extends _$AuthStateCopyWithImpl<$Res>
+class __$$InitAuthStateCopyWithImpl<$Res>
+    extends _$AuthStateCopyWithImpl<$Res, _$InitAuthState>
     implements _$$InitAuthStateCopyWith<$Res> {
   __$$InitAuthStateCopyWithImpl(
       _$InitAuthState _value, $Res Function(_$InitAuthState) _then)
-      : super(_value, (v) => _then(v as _$InitAuthState));
-
-  @override
-  _$InitAuthState get _value => super._value as _$InitAuthState;
+      : super(_value, _then);
 }
 
 /// @nodoc
@@ -141,7 +141,7 @@ class _$InitAuthState implements InitAuthState {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function() navigateToQrCodeScanner,
-    required TResult Function(Iden3Message iden3message) loaded,
+    required TResult Function(Iden3MessageEntity iden3message) loaded,
     required TResult Function(String message) error,
     required TResult Function() authenticated,
   }) {
@@ -151,12 +151,12 @@ class _$InitAuthState implements InitAuthState {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? loaded,
-    TResult Function(String message)? error,
-    TResult Function()? authenticated,
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function()? navigateToQrCodeScanner,
+    TResult? Function(Iden3MessageEntity iden3message)? loaded,
+    TResult? Function(String message)? error,
+    TResult? Function()? authenticated,
   }) {
     return initial?.call();
   }
@@ -167,7 +167,7 @@ class _$InitAuthState implements InitAuthState {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? loaded,
+    TResult Function(Iden3MessageEntity iden3message)? loaded,
     TResult Function(String message)? error,
     TResult Function()? authenticated,
     required TResult orElse(),
@@ -195,13 +195,13 @@ class _$InitAuthState implements InitAuthState {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InitAuthState value)? initial,
-    TResult Function(LoadingAuthState value)? loading,
-    TResult Function(NavigateToQrCodeScannerAuthState value)?
+    TResult? Function(InitAuthState value)? initial,
+    TResult? Function(LoadingAuthState value)? loading,
+    TResult? Function(NavigateToQrCodeScannerAuthState value)?
         navigateToQrCodeScanner,
-    TResult Function(LoadedAuthState value)? loaded,
-    TResult Function(ErrorAuthState value)? error,
-    TResult Function(AuthenticatedAuthState value)? authenticated,
+    TResult? Function(LoadedAuthState value)? loaded,
+    TResult? Function(ErrorAuthState value)? error,
+    TResult? Function(AuthenticatedAuthState value)? authenticated,
   }) {
     return initial?.call(this);
   }
@@ -238,14 +238,11 @@ abstract class _$$LoadingAuthStateCopyWith<$Res> {
 
 /// @nodoc
 class __$$LoadingAuthStateCopyWithImpl<$Res>
-    extends _$AuthStateCopyWithImpl<$Res>
+    extends _$AuthStateCopyWithImpl<$Res, _$LoadingAuthState>
     implements _$$LoadingAuthStateCopyWith<$Res> {
   __$$LoadingAuthStateCopyWithImpl(
       _$LoadingAuthState _value, $Res Function(_$LoadingAuthState) _then)
-      : super(_value, (v) => _then(v as _$LoadingAuthState));
-
-  @override
-  _$LoadingAuthState get _value => super._value as _$LoadingAuthState;
+      : super(_value, _then);
 }
 
 /// @nodoc
@@ -273,7 +270,7 @@ class _$LoadingAuthState implements LoadingAuthState {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function() navigateToQrCodeScanner,
-    required TResult Function(Iden3Message iden3message) loaded,
+    required TResult Function(Iden3MessageEntity iden3message) loaded,
     required TResult Function(String message) error,
     required TResult Function() authenticated,
   }) {
@@ -283,12 +280,12 @@ class _$LoadingAuthState implements LoadingAuthState {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? loaded,
-    TResult Function(String message)? error,
-    TResult Function()? authenticated,
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function()? navigateToQrCodeScanner,
+    TResult? Function(Iden3MessageEntity iden3message)? loaded,
+    TResult? Function(String message)? error,
+    TResult? Function()? authenticated,
   }) {
     return loading?.call();
   }
@@ -299,7 +296,7 @@ class _$LoadingAuthState implements LoadingAuthState {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? loaded,
+    TResult Function(Iden3MessageEntity iden3message)? loaded,
     TResult Function(String message)? error,
     TResult Function()? authenticated,
     required TResult orElse(),
@@ -327,13 +324,13 @@ class _$LoadingAuthState implements LoadingAuthState {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InitAuthState value)? initial,
-    TResult Function(LoadingAuthState value)? loading,
-    TResult Function(NavigateToQrCodeScannerAuthState value)?
+    TResult? Function(InitAuthState value)? initial,
+    TResult? Function(LoadingAuthState value)? loading,
+    TResult? Function(NavigateToQrCodeScannerAuthState value)?
         navigateToQrCodeScanner,
-    TResult Function(LoadedAuthState value)? loaded,
-    TResult Function(ErrorAuthState value)? error,
-    TResult Function(AuthenticatedAuthState value)? authenticated,
+    TResult? Function(LoadedAuthState value)? loaded,
+    TResult? Function(ErrorAuthState value)? error,
+    TResult? Function(AuthenticatedAuthState value)? authenticated,
   }) {
     return loading?.call(this);
   }
@@ -371,16 +368,12 @@ abstract class _$$NavigateToQrCodeScannerAuthStateCopyWith<$Res> {
 
 /// @nodoc
 class __$$NavigateToQrCodeScannerAuthStateCopyWithImpl<$Res>
-    extends _$AuthStateCopyWithImpl<$Res>
+    extends _$AuthStateCopyWithImpl<$Res, _$NavigateToQrCodeScannerAuthState>
     implements _$$NavigateToQrCodeScannerAuthStateCopyWith<$Res> {
   __$$NavigateToQrCodeScannerAuthStateCopyWithImpl(
       _$NavigateToQrCodeScannerAuthState _value,
       $Res Function(_$NavigateToQrCodeScannerAuthState) _then)
-      : super(_value, (v) => _then(v as _$NavigateToQrCodeScannerAuthState));
-
-  @override
-  _$NavigateToQrCodeScannerAuthState get _value =>
-      super._value as _$NavigateToQrCodeScannerAuthState;
+      : super(_value, _then);
 }
 
 /// @nodoc
@@ -410,7 +403,7 @@ class _$NavigateToQrCodeScannerAuthState
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function() navigateToQrCodeScanner,
-    required TResult Function(Iden3Message iden3message) loaded,
+    required TResult Function(Iden3MessageEntity iden3message) loaded,
     required TResult Function(String message) error,
     required TResult Function() authenticated,
   }) {
@@ -420,12 +413,12 @@ class _$NavigateToQrCodeScannerAuthState
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? loaded,
-    TResult Function(String message)? error,
-    TResult Function()? authenticated,
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function()? navigateToQrCodeScanner,
+    TResult? Function(Iden3MessageEntity iden3message)? loaded,
+    TResult? Function(String message)? error,
+    TResult? Function()? authenticated,
   }) {
     return navigateToQrCodeScanner?.call();
   }
@@ -436,7 +429,7 @@ class _$NavigateToQrCodeScannerAuthState
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? loaded,
+    TResult Function(Iden3MessageEntity iden3message)? loaded,
     TResult Function(String message)? error,
     TResult Function()? authenticated,
     required TResult orElse(),
@@ -464,13 +457,13 @@ class _$NavigateToQrCodeScannerAuthState
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InitAuthState value)? initial,
-    TResult Function(LoadingAuthState value)? loading,
-    TResult Function(NavigateToQrCodeScannerAuthState value)?
+    TResult? Function(InitAuthState value)? initial,
+    TResult? Function(LoadingAuthState value)? loading,
+    TResult? Function(NavigateToQrCodeScannerAuthState value)?
         navigateToQrCodeScanner,
-    TResult Function(LoadedAuthState value)? loaded,
-    TResult Function(ErrorAuthState value)? error,
-    TResult Function(AuthenticatedAuthState value)? authenticated,
+    TResult? Function(LoadedAuthState value)? loaded,
+    TResult? Function(ErrorAuthState value)? error,
+    TResult? Function(AuthenticatedAuthState value)? authenticated,
   }) {
     return navigateToQrCodeScanner?.call(this);
   }
@@ -504,29 +497,28 @@ abstract class _$$LoadedAuthStateCopyWith<$Res> {
   factory _$$LoadedAuthStateCopyWith(
           _$LoadedAuthState value, $Res Function(_$LoadedAuthState) then) =
       __$$LoadedAuthStateCopyWithImpl<$Res>;
-  $Res call({Iden3Message iden3message});
+  @useResult
+  $Res call({Iden3MessageEntity iden3message});
 }
 
 /// @nodoc
 class __$$LoadedAuthStateCopyWithImpl<$Res>
-    extends _$AuthStateCopyWithImpl<$Res>
+    extends _$AuthStateCopyWithImpl<$Res, _$LoadedAuthState>
     implements _$$LoadedAuthStateCopyWith<$Res> {
   __$$LoadedAuthStateCopyWithImpl(
       _$LoadedAuthState _value, $Res Function(_$LoadedAuthState) _then)
-      : super(_value, (v) => _then(v as _$LoadedAuthState));
+      : super(_value, _then);
 
-  @override
-  _$LoadedAuthState get _value => super._value as _$LoadedAuthState;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? iden3message = freezed,
+    Object? iden3message = null,
   }) {
     return _then(_$LoadedAuthState(
-      iden3message == freezed
+      null == iden3message
           ? _value.iden3message
           : iden3message // ignore: cast_nullable_to_non_nullable
-              as Iden3Message,
+              as Iden3MessageEntity,
     ));
   }
 }
@@ -537,7 +529,7 @@ class _$LoadedAuthState implements LoadedAuthState {
   const _$LoadedAuthState(this.iden3message);
 
   @override
-  final Iden3Message iden3message;
+  final Iden3MessageEntity iden3message;
 
   @override
   String toString() {
@@ -549,16 +541,16 @@ class _$LoadedAuthState implements LoadedAuthState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$LoadedAuthState &&
-            const DeepCollectionEquality()
-                .equals(other.iden3message, iden3message));
+            (identical(other.iden3message, iden3message) ||
+                other.iden3message == iden3message));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, const DeepCollectionEquality().hash(iden3message));
+  int get hashCode => Object.hash(runtimeType, iden3message);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$LoadedAuthStateCopyWith<_$LoadedAuthState> get copyWith =>
       __$$LoadedAuthStateCopyWithImpl<_$LoadedAuthState>(this, _$identity);
 
@@ -568,7 +560,7 @@ class _$LoadedAuthState implements LoadedAuthState {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function() navigateToQrCodeScanner,
-    required TResult Function(Iden3Message iden3message) loaded,
+    required TResult Function(Iden3MessageEntity iden3message) loaded,
     required TResult Function(String message) error,
     required TResult Function() authenticated,
   }) {
@@ -578,12 +570,12 @@ class _$LoadedAuthState implements LoadedAuthState {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? loaded,
-    TResult Function(String message)? error,
-    TResult Function()? authenticated,
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function()? navigateToQrCodeScanner,
+    TResult? Function(Iden3MessageEntity iden3message)? loaded,
+    TResult? Function(String message)? error,
+    TResult? Function()? authenticated,
   }) {
     return loaded?.call(iden3message);
   }
@@ -594,7 +586,7 @@ class _$LoadedAuthState implements LoadedAuthState {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? loaded,
+    TResult Function(Iden3MessageEntity iden3message)? loaded,
     TResult Function(String message)? error,
     TResult Function()? authenticated,
     required TResult orElse(),
@@ -622,13 +614,13 @@ class _$LoadedAuthState implements LoadedAuthState {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InitAuthState value)? initial,
-    TResult Function(LoadingAuthState value)? loading,
-    TResult Function(NavigateToQrCodeScannerAuthState value)?
+    TResult? Function(InitAuthState value)? initial,
+    TResult? Function(LoadingAuthState value)? loading,
+    TResult? Function(NavigateToQrCodeScannerAuthState value)?
         navigateToQrCodeScanner,
-    TResult Function(LoadedAuthState value)? loaded,
-    TResult Function(ErrorAuthState value)? error,
-    TResult Function(AuthenticatedAuthState value)? authenticated,
+    TResult? Function(LoadedAuthState value)? loaded,
+    TResult? Function(ErrorAuthState value)? error,
+    TResult? Function(AuthenticatedAuthState value)? authenticated,
   }) {
     return loaded?.call(this);
   }
@@ -653,10 +645,10 @@ class _$LoadedAuthState implements LoadedAuthState {
 }
 
 abstract class LoadedAuthState implements AuthState {
-  const factory LoadedAuthState(final Iden3Message iden3message) =
+  const factory LoadedAuthState(final Iden3MessageEntity iden3message) =
       _$LoadedAuthState;
 
-  Iden3Message get iden3message;
+  Iden3MessageEntity get iden3message;
   @JsonKey(ignore: true)
   _$$LoadedAuthStateCopyWith<_$LoadedAuthState> get copyWith =>
       throw _privateConstructorUsedError;
@@ -667,25 +659,25 @@ abstract class _$$ErrorAuthStateCopyWith<$Res> {
   factory _$$ErrorAuthStateCopyWith(
           _$ErrorAuthState value, $Res Function(_$ErrorAuthState) then) =
       __$$ErrorAuthStateCopyWithImpl<$Res>;
+  @useResult
   $Res call({String message});
 }
 
 /// @nodoc
-class __$$ErrorAuthStateCopyWithImpl<$Res> extends _$AuthStateCopyWithImpl<$Res>
+class __$$ErrorAuthStateCopyWithImpl<$Res>
+    extends _$AuthStateCopyWithImpl<$Res, _$ErrorAuthState>
     implements _$$ErrorAuthStateCopyWith<$Res> {
   __$$ErrorAuthStateCopyWithImpl(
       _$ErrorAuthState _value, $Res Function(_$ErrorAuthState) _then)
-      : super(_value, (v) => _then(v as _$ErrorAuthState));
+      : super(_value, _then);
 
-  @override
-  _$ErrorAuthState get _value => super._value as _$ErrorAuthState;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? message = freezed,
+    Object? message = null,
   }) {
     return _then(_$ErrorAuthState(
-      message == freezed
+      null == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
               as String,
@@ -711,15 +703,15 @@ class _$ErrorAuthState implements ErrorAuthState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ErrorAuthState &&
-            const DeepCollectionEquality().equals(other.message, message));
+            (identical(other.message, message) || other.message == message));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(message));
+  int get hashCode => Object.hash(runtimeType, message);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$ErrorAuthStateCopyWith<_$ErrorAuthState> get copyWith =>
       __$$ErrorAuthStateCopyWithImpl<_$ErrorAuthState>(this, _$identity);
 
@@ -729,7 +721,7 @@ class _$ErrorAuthState implements ErrorAuthState {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function() navigateToQrCodeScanner,
-    required TResult Function(Iden3Message iden3message) loaded,
+    required TResult Function(Iden3MessageEntity iden3message) loaded,
     required TResult Function(String message) error,
     required TResult Function() authenticated,
   }) {
@@ -739,12 +731,12 @@ class _$ErrorAuthState implements ErrorAuthState {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? loaded,
-    TResult Function(String message)? error,
-    TResult Function()? authenticated,
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function()? navigateToQrCodeScanner,
+    TResult? Function(Iden3MessageEntity iden3message)? loaded,
+    TResult? Function(String message)? error,
+    TResult? Function()? authenticated,
   }) {
     return error?.call(message);
   }
@@ -755,7 +747,7 @@ class _$ErrorAuthState implements ErrorAuthState {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? loaded,
+    TResult Function(Iden3MessageEntity iden3message)? loaded,
     TResult Function(String message)? error,
     TResult Function()? authenticated,
     required TResult orElse(),
@@ -783,13 +775,13 @@ class _$ErrorAuthState implements ErrorAuthState {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InitAuthState value)? initial,
-    TResult Function(LoadingAuthState value)? loading,
-    TResult Function(NavigateToQrCodeScannerAuthState value)?
+    TResult? Function(InitAuthState value)? initial,
+    TResult? Function(LoadingAuthState value)? loading,
+    TResult? Function(NavigateToQrCodeScannerAuthState value)?
         navigateToQrCodeScanner,
-    TResult Function(LoadedAuthState value)? loaded,
-    TResult Function(ErrorAuthState value)? error,
-    TResult Function(AuthenticatedAuthState value)? authenticated,
+    TResult? Function(LoadedAuthState value)? loaded,
+    TResult? Function(ErrorAuthState value)? error,
+    TResult? Function(AuthenticatedAuthState value)? authenticated,
   }) {
     return error?.call(this);
   }
@@ -831,15 +823,11 @@ abstract class _$$AuthenticatedAuthStateCopyWith<$Res> {
 
 /// @nodoc
 class __$$AuthenticatedAuthStateCopyWithImpl<$Res>
-    extends _$AuthStateCopyWithImpl<$Res>
+    extends _$AuthStateCopyWithImpl<$Res, _$AuthenticatedAuthState>
     implements _$$AuthenticatedAuthStateCopyWith<$Res> {
   __$$AuthenticatedAuthStateCopyWithImpl(_$AuthenticatedAuthState _value,
       $Res Function(_$AuthenticatedAuthState) _then)
-      : super(_value, (v) => _then(v as _$AuthenticatedAuthState));
-
-  @override
-  _$AuthenticatedAuthState get _value =>
-      super._value as _$AuthenticatedAuthState;
+      : super(_value, _then);
 }
 
 /// @nodoc
@@ -867,7 +855,7 @@ class _$AuthenticatedAuthState implements AuthenticatedAuthState {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function() navigateToQrCodeScanner,
-    required TResult Function(Iden3Message iden3message) loaded,
+    required TResult Function(Iden3MessageEntity iden3message) loaded,
     required TResult Function(String message) error,
     required TResult Function() authenticated,
   }) {
@@ -877,12 +865,12 @@ class _$AuthenticatedAuthState implements AuthenticatedAuthState {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? loaded,
-    TResult Function(String message)? error,
-    TResult Function()? authenticated,
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function()? navigateToQrCodeScanner,
+    TResult? Function(Iden3MessageEntity iden3message)? loaded,
+    TResult? Function(String message)? error,
+    TResult? Function()? authenticated,
   }) {
     return authenticated?.call();
   }
@@ -893,7 +881,7 @@ class _$AuthenticatedAuthState implements AuthenticatedAuthState {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? navigateToQrCodeScanner,
-    TResult Function(Iden3Message iden3message)? loaded,
+    TResult Function(Iden3MessageEntity iden3message)? loaded,
     TResult Function(String message)? error,
     TResult Function()? authenticated,
     required TResult orElse(),
@@ -921,13 +909,13 @@ class _$AuthenticatedAuthState implements AuthenticatedAuthState {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InitAuthState value)? initial,
-    TResult Function(LoadingAuthState value)? loading,
-    TResult Function(NavigateToQrCodeScannerAuthState value)?
+    TResult? Function(InitAuthState value)? initial,
+    TResult? Function(LoadingAuthState value)? loading,
+    TResult? Function(NavigateToQrCodeScannerAuthState value)?
         navigateToQrCodeScanner,
-    TResult Function(LoadedAuthState value)? loaded,
-    TResult Function(ErrorAuthState value)? error,
-    TResult Function(AuthenticatedAuthState value)? authenticated,
+    TResult? Function(LoadedAuthState value)? loaded,
+    TResult? Function(ErrorAuthState value)? error,
+    TResult? Function(AuthenticatedAuthState value)? authenticated,
   }) {
     return authenticated?.call(this);
   }

@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/fetch_claim_response_dto.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:sembast/sembast.dart' as sem;
 
 import '../dtos/fetch_claim_response_dto_test.dart';
@@ -35,6 +37,7 @@ class FakeRecordSnapshot
 }
 
 // Data
+const privateKey = "thePrivateKey";
 const issuers = ["theIssuer", "theIssuer1", "theIssuer2"];
 const identifiers = ["theIdentifier", "theIdentifier1", "theIdentifier2"];
 const ids = ["theId", "theId1", "theId2"];
@@ -58,21 +61,21 @@ final mockClaims = [
       identifier: identifiers[0],
       expiration: expirations[0],
       type: types[0],
-      credential: credential),
+      info: credential),
   ClaimDTO(
       id: credential.id,
       issuer: issuers[1],
       identifier: identifiers[1],
       expiration: expirations[1],
       type: types[1],
-      credential: credential),
+      info: credential),
   ClaimDTO(
       id: credential.id,
       issuer: issuers[2],
       identifier: identifiers[2],
       expiration: expirations[2],
       type: types[2],
-      credential: credential)
+      info: credential)
 ];
 final exception = Exception();
 
@@ -81,11 +84,22 @@ MockDatabase database = MockDatabase();
 MockClaimStoreRefWrapper storeRefWrapper = MockClaimStoreRefWrapper();
 
 // Tested instance
-StorageClaimDataSource dataSource =
-    StorageClaimDataSource(database, storeRefWrapper);
+StorageClaimDataSource dataSource = StorageClaimDataSource(storeRefWrapper);
 
 @GenerateMocks([sem.Database, ClaimStoreRefWrapper])
 void main() {
+  setUp(() {
+    if (getItSdk.isRegistered<sem.Database>(instanceName: claimDatabaseName)) {
+      getItSdk.unregister<sem.Database>(instanceName: claimDatabaseName);
+    }
+
+    getItSdk.registerFactoryParamAsync<sem.Database, String, String>(
+        (_, __) => Future.value(database),
+        instanceName: claimDatabaseName);
+
+    when(database.close()).thenAnswer((realInvocation) => Future.value(null));
+  });
+
   group("Store claims", () {
     test(
         "Given a list of claims, when I call storeClaims, then I expect the claims to be saved in storage",
@@ -147,7 +161,10 @@ void main() {
           .thenAnswer((realInvocation) => Future.value(snapshots));
 
       // When
-      expect(await dataSource.getClaims(), isA<List<ClaimDTO>>());
+      expect(
+          await dataSource.getClaims(
+              identifier: identifiers[0], privateKey: privateKey),
+          isA<List<ClaimDTO>>());
 
       // Then
       var storeCaptured = verify(storeRefWrapper.find(captureAny,
@@ -166,7 +183,12 @@ void main() {
           .thenAnswer((realInvocation) => Future.value(snapshots));
 
       // When
-      expect(await dataSource.getClaims(filter: filter), isA<List<ClaimDTO>>());
+      expect(
+          await dataSource.getClaims(
+              filter: filter,
+              identifier: identifiers[0],
+              privateKey: privateKey),
+          isA<List<ClaimDTO>>());
 
       // Then
       var storeCaptured = verify(storeRefWrapper.find(captureAny,
@@ -187,7 +209,11 @@ void main() {
 
       // When
       await expectLater(
-          dataSource.getClaims(filter: filter), throwsA(exception));
+          dataSource.getClaims(
+              filter: filter,
+              identifier: identifiers[0],
+              privateKey: privateKey),
+          throwsA(exception));
 
       // Then
       var storeCaptured = verify(storeRefWrapper.find(captureAny,
@@ -210,7 +236,7 @@ void main() {
 
       // When
       await expectLater(
-          dataSource.removeClaimsTransact(transaction: database, ids: ids),
+          dataSource.removeClaimsTransact(transaction: database, claimIds: ids),
           completes);
 
       // Then
@@ -234,7 +260,7 @@ void main() {
 
       // When
       await expectLater(
-          dataSource.removeClaimsTransact(transaction: database, ids: ids),
+          dataSource.removeClaimsTransact(transaction: database, claimIds: ids),
           throwsA(exception));
 
       // Then

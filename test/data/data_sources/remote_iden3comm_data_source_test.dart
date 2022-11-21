@@ -13,13 +13,14 @@ import 'remote_iden3comm_data_source_test.mocks.dart';
 
 //DATA
 const token = "theToken";
+const url = "theUrl";
 AuthRequest mockAuthRequest = AuthRequest(
     id: "",
     typ: "",
     type: "",
     thid: "",
     body: AuthBodyRequest(
-      callbackUrl: "",
+      callbackUrl: url,
       reason: "",
       message: "",
       scope: [],
@@ -28,7 +29,6 @@ AuthRequest mockAuthRequest = AuthRequest(
     ),
     from: "");
 
-const url = "theUrl";
 MockAuthRequest authRequest = MockAuthRequest();
 Response response = Response("body", 200);
 Response errorResponse = Response("body", 450);
@@ -56,7 +56,7 @@ void main() {
 
       //
       expect(
-        await dataSource.authWithToken(token, mockAuthRequest),
+        await dataSource.authWithToken(token: token, url: url),
         response,
       );
 
@@ -66,7 +66,7 @@ void main() {
               headers: captureAnyNamed('headers')))
           .captured;
 
-      expect(captured[0], Uri.parse(mockAuthRequest.body!.callbackUrl!));
+      expect(captured[0], Uri.parse(mockAuthRequest.body.callbackUrl!));
       expect(captured[1], token);
       expect(captured[2], {
         HttpHeaders.acceptHeader: '*/*',
@@ -90,7 +90,7 @@ void main() {
 
       //
       await expectLater(
-        dataSource.authWithToken(token, mockAuthRequest),
+        dataSource.authWithToken(token: token, url: url),
         throwsA(isA<UnknownApiException>()),
       );
 
@@ -103,7 +103,7 @@ void main() {
         ),
       ).captured;
 
-      expect(captured[0], Uri.parse(mockAuthRequest.body!.callbackUrl!));
+      expect(captured[0], Uri.parse(mockAuthRequest.body.callbackUrl!));
       expect(captured[1], token);
       expect(captured[2], {
         HttpHeaders.acceptHeader: '*/*',

@@ -26,10 +26,10 @@ mixin _$ClaimDetailState {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function()? claimDeleted,
-    TResult Function(String message)? error,
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function()? claimDeleted,
+    TResult? Function(String message)? error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -51,10 +51,10 @@ mixin _$ClaimDetailState {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InitialClaimDetailState value)? initial,
-    TResult Function(LoadingClaimDetailState value)? loading,
-    TResult Function(ClaimDeletedClaimDetailState value)? claimDeleted,
-    TResult Function(ErrorClaimDetailState value)? error,
+    TResult? Function(InitialClaimDetailState value)? initial,
+    TResult? Function(LoadingClaimDetailState value)? loading,
+    TResult? Function(ClaimDeletedClaimDetailState value)? claimDeleted,
+    TResult? Function(ErrorClaimDetailState value)? error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -72,17 +72,18 @@ mixin _$ClaimDetailState {
 abstract class $ClaimDetailStateCopyWith<$Res> {
   factory $ClaimDetailStateCopyWith(
           ClaimDetailState value, $Res Function(ClaimDetailState) then) =
-      _$ClaimDetailStateCopyWithImpl<$Res>;
+      _$ClaimDetailStateCopyWithImpl<$Res, ClaimDetailState>;
 }
 
 /// @nodoc
-class _$ClaimDetailStateCopyWithImpl<$Res>
+class _$ClaimDetailStateCopyWithImpl<$Res, $Val extends ClaimDetailState>
     implements $ClaimDetailStateCopyWith<$Res> {
   _$ClaimDetailStateCopyWithImpl(this._value, this._then);
 
-  final ClaimDetailState _value;
   // ignore: unused_field
-  final $Res Function(ClaimDetailState) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 }
 
 /// @nodoc
@@ -94,15 +95,11 @@ abstract class _$$InitialClaimDetailStateCopyWith<$Res> {
 
 /// @nodoc
 class __$$InitialClaimDetailStateCopyWithImpl<$Res>
-    extends _$ClaimDetailStateCopyWithImpl<$Res>
+    extends _$ClaimDetailStateCopyWithImpl<$Res, _$InitialClaimDetailState>
     implements _$$InitialClaimDetailStateCopyWith<$Res> {
   __$$InitialClaimDetailStateCopyWithImpl(_$InitialClaimDetailState _value,
       $Res Function(_$InitialClaimDetailState) _then)
-      : super(_value, (v) => _then(v as _$InitialClaimDetailState));
-
-  @override
-  _$InitialClaimDetailState get _value =>
-      super._value as _$InitialClaimDetailState;
+      : super(_value, _then);
 }
 
 /// @nodoc
@@ -139,10 +136,10 @@ class _$InitialClaimDetailState implements InitialClaimDetailState {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function()? claimDeleted,
-    TResult Function(String message)? error,
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function()? claimDeleted,
+    TResult? Function(String message)? error,
   }) {
     return initial?.call();
   }
@@ -176,10 +173,10 @@ class _$InitialClaimDetailState implements InitialClaimDetailState {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InitialClaimDetailState value)? initial,
-    TResult Function(LoadingClaimDetailState value)? loading,
-    TResult Function(ClaimDeletedClaimDetailState value)? claimDeleted,
-    TResult Function(ErrorClaimDetailState value)? error,
+    TResult? Function(InitialClaimDetailState value)? initial,
+    TResult? Function(LoadingClaimDetailState value)? loading,
+    TResult? Function(ClaimDeletedClaimDetailState value)? claimDeleted,
+    TResult? Function(ErrorClaimDetailState value)? error,
   }) {
     return initial?.call(this);
   }
@@ -213,15 +210,11 @@ abstract class _$$LoadingClaimDetailStateCopyWith<$Res> {
 
 /// @nodoc
 class __$$LoadingClaimDetailStateCopyWithImpl<$Res>
-    extends _$ClaimDetailStateCopyWithImpl<$Res>
+    extends _$ClaimDetailStateCopyWithImpl<$Res, _$LoadingClaimDetailState>
     implements _$$LoadingClaimDetailStateCopyWith<$Res> {
   __$$LoadingClaimDetailStateCopyWithImpl(_$LoadingClaimDetailState _value,
       $Res Function(_$LoadingClaimDetailState) _then)
-      : super(_value, (v) => _then(v as _$LoadingClaimDetailState));
-
-  @override
-  _$LoadingClaimDetailState get _value =>
-      super._value as _$LoadingClaimDetailState;
+      : super(_value, _then);
 }
 
 /// @nodoc
@@ -258,10 +251,10 @@ class _$LoadingClaimDetailState implements LoadingClaimDetailState {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function()? claimDeleted,
-    TResult Function(String message)? error,
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function()? claimDeleted,
+    TResult? Function(String message)? error,
   }) {
     return loading?.call();
   }
@@ -295,10 +288,10 @@ class _$LoadingClaimDetailState implements LoadingClaimDetailState {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InitialClaimDetailState value)? initial,
-    TResult Function(LoadingClaimDetailState value)? loading,
-    TResult Function(ClaimDeletedClaimDetailState value)? claimDeleted,
-    TResult Function(ErrorClaimDetailState value)? error,
+    TResult? Function(InitialClaimDetailState value)? initial,
+    TResult? Function(LoadingClaimDetailState value)? loading,
+    TResult? Function(ClaimDeletedClaimDetailState value)? claimDeleted,
+    TResult? Function(ErrorClaimDetailState value)? error,
   }) {
     return loading?.call(this);
   }
@@ -333,16 +326,12 @@ abstract class _$$ClaimDeletedClaimDetailStateCopyWith<$Res> {
 
 /// @nodoc
 class __$$ClaimDeletedClaimDetailStateCopyWithImpl<$Res>
-    extends _$ClaimDetailStateCopyWithImpl<$Res>
+    extends _$ClaimDetailStateCopyWithImpl<$Res, _$ClaimDeletedClaimDetailState>
     implements _$$ClaimDeletedClaimDetailStateCopyWith<$Res> {
   __$$ClaimDeletedClaimDetailStateCopyWithImpl(
       _$ClaimDeletedClaimDetailState _value,
       $Res Function(_$ClaimDeletedClaimDetailState) _then)
-      : super(_value, (v) => _then(v as _$ClaimDeletedClaimDetailState));
-
-  @override
-  _$ClaimDeletedClaimDetailState get _value =>
-      super._value as _$ClaimDeletedClaimDetailState;
+      : super(_value, _then);
 }
 
 /// @nodoc
@@ -379,10 +368,10 @@ class _$ClaimDeletedClaimDetailState implements ClaimDeletedClaimDetailState {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function()? claimDeleted,
-    TResult Function(String message)? error,
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function()? claimDeleted,
+    TResult? Function(String message)? error,
   }) {
     return claimDeleted?.call();
   }
@@ -416,10 +405,10 @@ class _$ClaimDeletedClaimDetailState implements ClaimDeletedClaimDetailState {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InitialClaimDetailState value)? initial,
-    TResult Function(LoadingClaimDetailState value)? loading,
-    TResult Function(ClaimDeletedClaimDetailState value)? claimDeleted,
-    TResult Function(ErrorClaimDetailState value)? error,
+    TResult? Function(InitialClaimDetailState value)? initial,
+    TResult? Function(LoadingClaimDetailState value)? loading,
+    TResult? Function(ClaimDeletedClaimDetailState value)? claimDeleted,
+    TResult? Function(ErrorClaimDetailState value)? error,
   }) {
     return claimDeleted?.call(this);
   }
@@ -449,26 +438,25 @@ abstract class _$$ErrorClaimDetailStateCopyWith<$Res> {
   factory _$$ErrorClaimDetailStateCopyWith(_$ErrorClaimDetailState value,
           $Res Function(_$ErrorClaimDetailState) then) =
       __$$ErrorClaimDetailStateCopyWithImpl<$Res>;
+  @useResult
   $Res call({String message});
 }
 
 /// @nodoc
 class __$$ErrorClaimDetailStateCopyWithImpl<$Res>
-    extends _$ClaimDetailStateCopyWithImpl<$Res>
+    extends _$ClaimDetailStateCopyWithImpl<$Res, _$ErrorClaimDetailState>
     implements _$$ErrorClaimDetailStateCopyWith<$Res> {
   __$$ErrorClaimDetailStateCopyWithImpl(_$ErrorClaimDetailState _value,
       $Res Function(_$ErrorClaimDetailState) _then)
-      : super(_value, (v) => _then(v as _$ErrorClaimDetailState));
+      : super(_value, _then);
 
-  @override
-  _$ErrorClaimDetailState get _value => super._value as _$ErrorClaimDetailState;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? message = freezed,
+    Object? message = null,
   }) {
     return _then(_$ErrorClaimDetailState(
-      message == freezed
+      null == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
               as String,
@@ -494,15 +482,15 @@ class _$ErrorClaimDetailState implements ErrorClaimDetailState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ErrorClaimDetailState &&
-            const DeepCollectionEquality().equals(other.message, message));
+            (identical(other.message, message) || other.message == message));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(message));
+  int get hashCode => Object.hash(runtimeType, message);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$ErrorClaimDetailStateCopyWith<_$ErrorClaimDetailState> get copyWith =>
       __$$ErrorClaimDetailStateCopyWithImpl<_$ErrorClaimDetailState>(
           this, _$identity);
@@ -521,10 +509,10 @@ class _$ErrorClaimDetailState implements ErrorClaimDetailState {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function()? claimDeleted,
-    TResult Function(String message)? error,
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function()? claimDeleted,
+    TResult? Function(String message)? error,
   }) {
     return error?.call(message);
   }
@@ -558,10 +546,10 @@ class _$ErrorClaimDetailState implements ErrorClaimDetailState {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InitialClaimDetailState value)? initial,
-    TResult Function(LoadingClaimDetailState value)? loading,
-    TResult Function(ClaimDeletedClaimDetailState value)? claimDeleted,
-    TResult Function(ErrorClaimDetailState value)? error,
+    TResult? Function(InitialClaimDetailState value)? initial,
+    TResult? Function(LoadingClaimDetailState value)? loading,
+    TResult? Function(ClaimDeletedClaimDetailState value)? claimDeleted,
+    TResult? Function(ErrorClaimDetailState value)? error,
   }) {
     return error?.call(this);
   }

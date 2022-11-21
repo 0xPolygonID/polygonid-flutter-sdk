@@ -14,7 +14,7 @@ class FakeWallet extends Fake implements PrivadoIdWallet {
   Uint8List get privateKey => walletPrivateKey;
 
   @override
-  dynamic get publicKey => [pubX, pubY];
+  List<String> get publicKey => [pubX, pubY];
 }
 
 const pubX = "thePubX";
@@ -38,17 +38,17 @@ void main() {
         "Given a private key, when I call createWallet, then I expect an PrivadoIdWallet to be returned",
         () async {
       // Given
-      when(walletLibWrapper.createWallet(privateKey: anyNamed('privateKey')))
+      when(walletLibWrapper.createWallet(secret: anyNamed('secret')))
           .thenAnswer((realInvocation) => Future.value(mockWallet));
 
       // When
-      expect(await dataSource.createWallet(privateKey: walletPrivateKey),
-          mockWallet);
+      expect(
+          await dataSource.createWallet(secret: walletPrivateKey), mockWallet);
 
       // Then
       expect(
           verify(walletLibWrapper.createWallet(
-                  privateKey: captureAnyNamed('privateKey')))
+                  secret: captureAnyNamed('secret')))
               .captured
               .first,
           walletPrivateKey);
@@ -58,17 +58,17 @@ void main() {
         "Given a private key, when I call createWallet and an error occured, then I expect an exception to be thrown",
         () async {
       // Given
-      when(walletLibWrapper.createWallet(privateKey: anyNamed('privateKey')))
+      when(walletLibWrapper.createWallet(secret: anyNamed('secret')))
           .thenAnswer((realInvocation) => Future.error(exception));
 
       // When
-      await expectLater(dataSource.createWallet(privateKey: walletPrivateKey),
+      await expectLater(dataSource.createWallet(secret: walletPrivateKey),
           throwsA(exception));
 
       // Then
       expect(
           verify(walletLibWrapper.createWallet(
-                  privateKey: captureAnyNamed('privateKey')))
+                  secret: captureAnyNamed('secret')))
               .captured
               .first,
           walletPrivateKey);
@@ -77,7 +77,7 @@ void main() {
 
   group("Sign message", () {
     setUp(() {
-      when(walletLibWrapper.createWallet(privateKey: anyNamed('privateKey')))
+      when(walletLibWrapper.createWallet(secret: anyNamed('secret')))
           .thenAnswer((realInvocation) => Future.value(mockWallet));
     });
 

@@ -7,10 +7,12 @@ import 'package:polygonid_flutter_sdk_example/src/presentation/ui/common/widgets
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_state.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/sign/widgets/sign.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_button_style.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_colors.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_text_styles.dart';
+import 'package:polygonid_flutter_sdk_example/utils/custom_widgets_keys.dart';
 import 'package:polygonid_flutter_sdk_example/utils/image_resources.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -36,11 +38,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
       backgroundColor: CustomColors.background,
       body: SafeArea(
         child: SizedBox(
-          width: MediaQuery.of(context).size.width,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -58,6 +58,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       _buildIdentifierSection(),
                       const SizedBox(height: 24),
                       _buildErrorSection(),
+                      const SizedBox(height: 24),
+                      _buildSignMessageSection(),
                       const SizedBox(height: 48),
                     ],
                   ),
@@ -67,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.only(bottom: 16),
                 child: Stack(
                   children: [
-                    _buildCreateIdentityButton(),
+                    _buildIdentityActionButton(),
                     _buildNavigateToNextPageButton(),
                   ],
                 ),
@@ -85,30 +87,62 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   ///
-  Widget _buildCreateIdentityButton() {
+  Widget _buildIdentityActionButton() {
     return Align(
       alignment: Alignment.center,
       child: BlocBuilder(
         bloc: widget._bloc,
         builder: (BuildContext context, HomeState state) {
-          bool enabled = (state is! LoadingDataHomeState) &&
-              (state.identifier == null || state.identifier!.isEmpty);
-          return AbsorbPointer(
-            absorbing: !enabled,
-            child: ElevatedButton(
-              onPressed: () {
-                widget._bloc.add(const HomeEvent.createIdentity());
-              },
-              style: enabled
-                  ? CustomButtonStyle.primaryButtonStyle
-                  : CustomButtonStyle.disabledPrimaryButtonStyle,
-              child: const Text(
-                CustomStrings.homeButtonCTA,
-                style: CustomTextStyles.primaryButtonTextStyle,
-              ),
-            ),
-          );
+          bool enabled = state is! LoadingDataHomeState;
+          bool showCreateIdentityButton =
+              state.identifier == null || state.identifier!.isEmpty;
+
+          return showCreateIdentityButton
+              ? _buildCreateIdentityButton(enabled)
+              : _buildRemoveIdentityButton(enabled);
         },
+      ),
+    );
+  }
+
+  ///
+  Widget _buildCreateIdentityButton(bool enabled) {
+    return AbsorbPointer(
+      absorbing: !enabled,
+      child: ElevatedButton(
+        key: CustomWidgetsKeys.homeScreenButtonCreateIdentity,
+        onPressed: () {
+          widget._bloc.add(const HomeEvent.createIdentity());
+        },
+        style: enabled
+            ? CustomButtonStyle.primaryButtonStyle
+            : CustomButtonStyle.disabledPrimaryButtonStyle,
+        child: const Text(
+          CustomStrings.homeButtonCTA,
+          style: CustomTextStyles.primaryButtonTextStyle,
+        ),
+      ),
+    );
+  }
+
+  ///
+  Widget _buildRemoveIdentityButton(bool enabled) {
+    return AbsorbPointer(
+      absorbing: !enabled,
+      child: ElevatedButton(
+        key: CustomWidgetsKeys.homeScreenButtonRemoveIdentity,
+        onPressed: () {
+          widget._bloc.add(const HomeEvent.removeIdentity());
+        },
+        style: enabled
+            ? CustomButtonStyle.outlinedPrimaryButtonStyle
+            : CustomButtonStyle.disabledPrimaryButtonStyle,
+        child: Text(
+          CustomStrings.homeButtonRemoveIdentityCTA,
+          style: CustomTextStyles.primaryButtonTextStyle.copyWith(
+            color: CustomColors.primaryButton,
+          ),
+        ),
       ),
     );
   }
@@ -118,14 +152,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return SvgPicture.asset(
       ImageResources.logo,
       width: 120,
-    );
-  }
-
-  ///
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      elevation: 0.0,
-      backgroundColor: CustomColors.background,
     );
   }
 
@@ -218,6 +244,7 @@ class _HomeScreenState extends State<HomeScreen> {
             bool enabled = (state is! LoadingDataHomeState) &&
                 (state.identifier != null && state.identifier!.isNotEmpty);
             return ButtonNextAction(
+              key: CustomWidgetsKeys.homeScreenButtonNextAction,
               enabled: enabled,
               onPressed: () {
                 Navigator.pushNamed(context, Routes.authPath);
@@ -226,6 +253,20 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
       ),
+    );
+  }
+
+  ///
+  Widget _buildSignMessageSection() {
+    return BlocBuilder(
+      bloc: widget._bloc,
+      builder: (BuildContext context, HomeState state) {
+        if (state.identifier == null || state.identifier!.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        return SignWidget();
+      },
+      buildWhen: (_, currentState) => currentState is LoadedIdentifierHomeState,
     );
   }
 }

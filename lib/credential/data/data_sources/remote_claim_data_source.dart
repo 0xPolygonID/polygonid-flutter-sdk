@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 
 import '../../../common/data/exceptions/network_exceptions.dart';
 import '../../../common/domain/domain_logger.dart';
 import '../../domain/exceptions/credential_exceptions.dart';
 import '../dtos/claim_dto.dart';
+import '../dtos/claim_info_dto.dart';
 import '../dtos/fetch_claim_response_dto.dart';
 
 class RemoteClaimDataSource {
@@ -33,13 +33,18 @@ class RemoteClaimDataSource {
         FetchClaimResponseDTO fetchResponse =
             FetchClaimResponseDTO.fromJson(json.decode(response.body));
 
+        /// FIXME: should be called in the repo
         //fetch schema
-        Map<String, dynamic>? schema = await _fetchSchema(
-            url: fetchResponse.credential.credentialSchema.id);
+        Map<String, dynamic>? schema =
+            await fetchSchema(url: fetchResponse.credential.credentialSchema.id)
+                .catchError((error) => null);
+
+        /// FIXME: should be called in the repo
         //fetch vocab
-        Map<String, dynamic>? vocab = await _fetchVocab(
-            schema: schema,
-            type: fetchResponse.credential.credentialSubject.type);
+        Map<String, dynamic>? vocab = await fetchVocab(
+                schema: schema,
+                type: fetchResponse.credential.credentialSubject.type)
+            .catchError((error) => null);
 
         if (fetchResponse.type == FetchClaimResponseType.issuance) {
           return ClaimDTO(
@@ -48,20 +53,21 @@ class RemoteClaimDataSource {
               identifier: identifier,
               type: fetchResponse.credential.credentialSubject.type,
               expiration: fetchResponse.credential.expiration,
-              credential: fetchResponse.credential,
+              info: fetchResponse.credential,
               schema: schema,
               vocab: vocab);
         } else {
           throw UnsupportedFetchClaimTypeException(response);
         }
       } else {
-        logger().d('fetchClaim Error: code: ${response.statusCode} msg: ${response.body}');
+        logger().d(
+            'fetchClaim Error: code: ${response.statusCode} msg: ${response.body}');
         throw NetworkException(response);
       }
     });
   }
 
-  Future<Map<String, dynamic>?> _fetchSchema({required String url}) async {
+  Future<Map<String, dynamic>?> fetchSchema({required String url}) async {
     try {
       //fetch schema and save it
       String schemaId = url;
@@ -76,15 +82,16 @@ class RemoteClaimDataSource {
         Map<String, dynamic>? schema = json.decode(schemaResponse.body);
         logger().d('schema: $schema');
         return schema;
+      } else {
+        throw NetworkException(schemaResponse);
       }
-      return null;
-    } catch (e) {
-      logger().e('schema error: $e');
-      return null;
+    } catch (error) {
+      logger().e('schema error: $error');
+      throw FetchSchemaException(error);
     }
   }
 
-  Future<Map<String, dynamic>?> _fetchVocab(
+  Future<Map<String, dynamic>?> fetchVocab(
       {required Map<String, dynamic>? schema, required String type}) async {
     try {
       // fetch vocab from schema
@@ -95,35 +102,49 @@ class RemoteClaimDataSource {
         schemaContext = schema['@context'];
       }
 
-      if (schemaContext != null) {
-        if (schemaContext[type]["@context"]["poly-vocab"] != null) {
-          String vocabId = schemaContext[type]["@context"]["poly-vocab"];
-          String vocabUrl = vocabId;
-          if (vocabId.toLowerCase().startsWith("ipfs://")) {
-            String vocabHash =
-                vocabId.toLowerCase().replaceFirst("ipfs://", "");
-            vocabUrl = "https://ipfs.io/ipfs/$vocabHash";
-          }
-          var vocabUri = Uri.parse(vocabUrl);
-          var vocabResponse = await get(vocabUri, headers: {
-            HttpHeaders.acceptHeader: '*/*',
-            HttpHeaders.contentTypeHeader: 'application/json',
-          });
-          if (vocabResponse.statusCode == 200) {
-            Map<String, dynamic>? vocab = json.decode(vocabResponse.body);
-            if (kDebugMode) {
-              print('vocab: $vocab');
-            }
-            return vocab;
-          }
+      if (schemaContext != null &&
+          schemaContext[type]["@context"]["poly-vocab"] != null) {
+        String vocabId = schemaContext[type]["@context"]["poly-vocab"];
+        String vocabUrl = vocabId;
+        if (vocabId.toLowerCase().startsWith("ipfs://")) {
+          String vocabHash = vocabId.toLowerCase().replaceFirst("ipfs://", "");
+          vocabUrl = "https://ipfs.io/ipfs/$vocabHash";
         }
+        var vocabUri = Uri.parse(vocabUrl);
+        var vocabResponse = await get(vocabUri, headers: {
+          HttpHeaders.acceptHeader: '*/*',
+          HttpHeaders.contentTypeHeader: 'application/json',
+        });
+        if (vocabResponse.statusCode == 200) {
+          Map<String, dynamic>? vocab = json.decode(vocabResponse.body);
+          logger().d('vocab: $vocab');
+          return vocab;
+        } else {
+          throw NetworkException(vocabResponse);
+        }
+      } else {
+        throw UnsupportedSchemaFetchVocabException(schema);
       }
-      return null;
-    } catch (e) {
-      if (kDebugMode) {
-        print('vocab error: $e');
-      }
-      return null;
+    } catch (error) {
+      logger().e('vocab error: $error');
+      throw FetchVocabException(error);
+    }
+  }
+
+  Future<Map<String, dynamic>> getClaimRevocationStatus(
+      ClaimInfoDTO claimInfo) async {
+    String revStatusUrl = claimInfo.credentialStatus.id;
+    var revStatusUri = Uri.parse(revStatusUrl);
+    var revStatusResponse = await get(revStatusUri, headers: {
+      HttpHeaders.acceptHeader: '*/*',
+      HttpHeaders.contentTypeHeader: 'application/json',
+    });
+    if (revStatusResponse.statusCode == 200) {
+      String revStatus = (revStatusResponse.body);
+
+      return json.decode(revStatus);
+    } else {
+      throw NetworkException(revStatusResponse);
     }
   }
 }

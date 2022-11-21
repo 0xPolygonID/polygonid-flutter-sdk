@@ -1,10 +1,7 @@
-import 'dart:typed_data';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/credential_fetch_request.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/credential_request_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
 
 // Data
 const id = "theId";
@@ -17,13 +14,8 @@ const type = "https://iden3-communication.io/credentials/1.0/fetch-request";
 const bodyId = "theBodyId";
 final body = CredentialFetchRequestBody(id: bodyId);
 
-final CredentialRequestEntity requestEntity = CredentialRequestEntity(
-    identifier,
-    CircuitDataEntity(id, Uint8List.fromList([]), Uint8List.fromList([])),
-    "",
-    id,
-    thid,
-    from);
+final CredentialRequestEntity requestEntity =
+    CredentialRequestEntity(identifier, "", id, thid, from);
 
 // Tested instance
 CredentialRequestMapper mapper = CredentialRequestMapper();

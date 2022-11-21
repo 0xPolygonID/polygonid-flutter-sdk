@@ -10,6 +10,7 @@ import 'package:polygonid_flutter_sdk_example/utils/custom_button_style.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_colors.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_text_styles.dart';
+import 'package:polygonid_flutter_sdk_example/utils/custom_widgets_keys.dart';
 
 class AuthScreen extends StatefulWidget {
   final AuthBloc _bloc;
@@ -66,7 +67,7 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom:16),
+              padding: const EdgeInsets.only(bottom: 16),
               child: Stack(
                 children: [
                   _buildBlocListener(),
@@ -86,6 +87,7 @@ class _AuthScreenState extends State<AuthScreen> {
     return Align(
       alignment: Alignment.center,
       child: ElevatedButton(
+        key: CustomWidgetsKeys.authScreenButtonConnect,
         onPressed: () {
           widget._bloc.add(const AuthEvent.clickScanQrCode());
         },
@@ -117,6 +119,7 @@ class _AuthScreenState extends State<AuthScreen> {
       child: Align(
         alignment: Alignment.centerRight,
         child: ButtonNextAction(
+          key: CustomWidgetsKeys.authScreenButtonNextAction,
           enabled: true,
           onPressed: () {
             Navigator.pushNamed(context, Routes.claimsPath);
@@ -177,7 +180,7 @@ class _AuthScreenState extends State<AuthScreen> {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Text(
-            "Authenticated successfully",
+            CustomStrings.authSuccess,
             style: CustomTextStyles.descriptionTextStyle
                 .copyWith(color: CustomColors.greenSuccess),
           ),

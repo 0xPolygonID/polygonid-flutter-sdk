@@ -1,9 +1,17 @@
+import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+
 import '../../../common/domain/error_exception.dart';
 
 class ClaimNotFoundException implements Exception {
   final String id;
 
   ClaimNotFoundException(this.id);
+}
+
+class ClaimWrongIdentityException implements Exception {
+  final String identifier;
+
+  ClaimWrongIdentityException(this.identifier);
 }
 
 class FetchClaimException extends ErrorException {
@@ -28,4 +36,22 @@ class RemoveClaimsException extends ErrorException {
 
 class UpdateClaimException extends ErrorException {
   UpdateClaimException(error) : super(error);
+}
+
+class FetchSchemaException extends ErrorException {
+  FetchSchemaException(error) : super(error);
+}
+
+class FetchVocabException extends ErrorException {
+  FetchVocabException(error) : super(error);
+}
+
+class UnsupportedSchemaFetchVocabException extends ErrorException {
+  UnsupportedSchemaFetchVocabException(error) : super(error);
+}
+
+class NullRevocationStatusException implements Exception {
+  final ClaimEntity claim;
+
+  NullRevocationStatusException(this.claim);
 }
