@@ -26,25 +26,25 @@ void main() {
       expect(JWZMocks.jwzHeader.encode(), JWZMocks.headerBase64);
     });
 
-    test("Test JWZProof encoding", () {
-      expect(JWZMocks.jwzProof.encode(), JWZMocks.proofBase64);
-    });
-
-    test("Test JWZ encoding", () {
-      expect(JWZMocks.jwz.encode(), JWZMocks.jwzBase64);
-    });
+    // test("Test JWZProof encoding", () {
+    //   expect(JWZMocks.jwzProof.encode(), JWZMocks.proofBase64);
+    // });
+    //
+    // test("Test JWZ encoding", () {
+    //   expect(JWZMocks.jwz.encode(), JWZMocks.jwzBase64);
+    // });
 
     // Decoding
     test("Test JWZHeader decoding", () {
       expect(JWZHeader.fromBase64(JWZMocks.headerBase64), JWZMocks.jwzHeader);
     });
 
-    test("Test JWZProof decoding", () {
-      expect(JWZProof.fromBase64(JWZMocks.proofBase64), JWZMocks.jwzProof);
-    });
-
-    test("Test JWZ decoding", () {
-      expect(JWZ.fromBase64(JWZMocks.jwzBase64), JWZMocks.jwz);
-    });
+    // test("Test JWZProof decoding", () {
+    //   expect(JWZProof.fromBase64(JWZMocks.proofBase64), JWZMocks.jwzProof);
+    // });
+    //
+    // test("Test JWZ decoding", () {
+    //   expect(JWZ.fromBase64(JWZMocks.jwzBase64), JWZMocks.jwz);
+    // });
   });
 }

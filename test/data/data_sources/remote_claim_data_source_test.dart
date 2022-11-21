@@ -32,7 +32,7 @@ final claim = ClaimDTO(
     identifier: identifier,
     expiration: fetchClaimDTO.credential.expiration,
     type: fetchClaimDTO.credential.credentialSubject.type,
-    credential: fetchClaimDTO.credential);
+    info: fetchClaimDTO.credential);
 final exception = Exception();
 
 // Dependencies

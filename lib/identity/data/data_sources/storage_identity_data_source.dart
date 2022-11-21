@@ -1,5 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 import 'package:sembast/sembast.dart';
 
 import '../../domain/exceptions/identity_exceptions.dart';
@@ -34,9 +36,11 @@ class StorageIdentityDataSource {
   final Database _database;
   final IdentityStoreRefWrapper _storeRefWrapper;
   final StorageKeyValueDataSource _storageKeyValueDataSource;
+  final WalletDataSource _walletDataSource;
+  final HexMapper _hexMapper;
 
-  StorageIdentityDataSource(
-      this._database, this._storeRefWrapper, this._storageKeyValueDataSource);
+  StorageIdentityDataSource(this._database, this._storeRefWrapper,
+      this._storageKeyValueDataSource, this._walletDataSource, this._hexMapper);
 
   Future<IdentityDTO> getIdentity({required String identifier}) {
     return _storeRefWrapper.get(_database, identifier).then((storedValue) {
@@ -56,8 +60,6 @@ class StorageIdentityDataSource {
         transaction: transaction, identifier: identifier, identity: identity));
   }
 
-  /// TODO: remove when we support multiple identity
-  // For UT purpose
   Future<void> storeIdentityTransact(
       {required DatabaseClient transaction,
       required String identifier,
@@ -69,10 +71,6 @@ class StorageIdentityDataSource {
         key: currentIdentifierKey, value: identifier, database: transaction);
   }
 
-  /// As we support only one identity at the moment, we need to maintain
-  /// the stored current identifier up to date
-  ///
-  /// TODO: remove when we support multiple identity
   Future<void> removeIdentity({required String identifier}) {
     return _database.transaction((transaction) => removeIdentityTransact(
         transaction: transaction, identifier: identifier));
@@ -85,8 +83,4 @@ class StorageIdentityDataSource {
         key: currentIdentifierKey, database: transaction);
     await _storeRefWrapper.remove(transaction, identifier);
   }
-
-// Future<String?> removeIdentity({required String identifier}) {
-//   return _storeRefWrapper.remove(_database, identifier);
-// }
 }

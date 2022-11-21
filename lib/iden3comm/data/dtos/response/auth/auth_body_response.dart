@@ -64,37 +64,37 @@
 
 */
 
-import '../proof_response.dart';
+import '../../../../domain/entities/proof_entity.dart';
 import 'auth_body_did_doc_response.dart';
 
 class AuthBodyResponse {
   final AuthBodyDidDocResponse? did_doc;
   final String? message;
-  final List<ProofResponse>? scope;
+  final List<ProofEntity>? proofs;
 
-  AuthBodyResponse({this.did_doc, this.message, this.scope});
+  AuthBodyResponse({this.did_doc, required this.message, required this.proofs});
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
   /// @returns [AuthBodyResponse]
-  factory AuthBodyResponse.fromJson(Map<String, dynamic> json) {
-    AuthBodyDidDocResponse? didDoc = json['did_doc'] != null
-        ? AuthBodyDidDocResponse.fromJson(json['did_doc'])
-        : null;
-    List<ProofResponse>? scope = (json['scope'] as List?)
-        ?.map((item) => ProofResponse.fromJson(item))
-        .toList();
-    return AuthBodyResponse(
-      did_doc: didDoc,
-      message: json['message'],
-      scope: scope,
-    );
-  }
+  // factory AuthBodyResponse.fromJson(Map<String, dynamic> json) {
+  //   AuthBodyDidDocResponse? didDoc = json['did_doc'] != null
+  //       ? AuthBodyDidDocResponse.fromJson(json['did_doc'])
+  //       : null;
+  //   List<ProofEntity> scope = (json['scope'] as List)
+  //       .map((item) => ProofEntity.fromJson(item))
+  //       .toList();
+  //   return AuthBodyResponse(
+  //     did_doc: didDoc,
+  //     message: json['message'],
+  //     proofs: scope,
+  //   );
+  // }
 
   Map<String, dynamic> toJson() => {
         'did_doc': did_doc,
         'message': message,
-        'scope': scope,
+        'scope': proofs?.map((scope) => scope.toJson()).toList(),
       };
 }

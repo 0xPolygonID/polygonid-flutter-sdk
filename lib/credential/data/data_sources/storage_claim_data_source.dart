@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:sembast/sembast.dart';
 
 import '../dtos/claim_dto.dart';
@@ -35,16 +36,30 @@ class ClaimStoreRefWrapper {
 }
 
 class StorageClaimDataSource {
-  final Database _database;
   final ClaimStoreRefWrapper _storeRefWrapper;
 
-  StorageClaimDataSource(this._database, this._storeRefWrapper);
+  StorageClaimDataSource(this._storeRefWrapper);
+
+  Future<Database> _getDatabase(
+      {required String identifier, required String privateKey}) {
+    return getItSdk.getAsync<Database>(
+        instanceName: claimDatabaseName,
+        param1: identifier,
+        param2: privateKey);
+  }
 
   /// Store all claims in a single transaction
   /// If one storing fails, they will all be reverted
-  Future<void> storeClaims({required List<ClaimDTO> claims}) {
-    return _database.transaction((transaction) =>
-        storeClaimsTransact(transaction: transaction, claims: claims));
+  Future<void> storeClaims(
+      {required List<ClaimDTO> claims,
+      required String identifier,
+      required String privateKey}) {
+    // TODO check if identifiers inside each claim are from privateKey
+    return _getDatabase(identifier: identifier, privateKey: privateKey).then(
+        (database) => database
+            .transaction((transaction) =>
+                storeClaimsTransact(transaction: transaction, claims: claims))
+            .whenComplete(() => database.close()));
   }
 
   // For UT purpose
@@ -58,24 +73,37 @@ class StorageClaimDataSource {
 
   /// Remove all claims in a single transaction
   /// If one removing fails, they will all be reverted
-  Future<void> removeClaims({required List<String> ids}) {
-    return _database.transaction((transaction) =>
-        removeClaimsTransact(transaction: transaction, ids: ids));
+  Future<void> removeClaims(
+      {required List<String> claimIds,
+      required String identifier,
+      required String privateKey}) {
+    return _getDatabase(identifier: identifier, privateKey: privateKey).then(
+        (database) => database
+            .transaction((transaction) => removeClaimsTransact(
+                transaction: transaction, claimIds: claimIds))
+            .whenComplete(() => database.close()));
   }
 
   // For UT purpose
   Future<void> removeClaimsTransact(
-      {required DatabaseClient transaction, required List<String> ids}) async {
-    for (String id in ids) {
-      await _storeRefWrapper.remove(transaction, id);
+      {required DatabaseClient transaction,
+      required List<String> claimIds}) async {
+    for (String claimId in claimIds) {
+      // TODO check if identifiers inside each claim are from privateKey
+      await _storeRefWrapper.remove(transaction, claimId);
     }
   }
 
-  Future<List<ClaimDTO>> getClaims({Filter? filter}) {
-    return _storeRefWrapper
-        .find(_database, finder: Finder(filter: filter))
-        .then((snapshots) => snapshots
-            .map((snapshot) => ClaimDTO.fromJson(snapshot.value))
-            .toList());
+  Future<List<ClaimDTO>> getClaims(
+      {Filter? filter,
+      required String identifier,
+      required String privateKey}) {
+    return _getDatabase(identifier: identifier, privateKey: privateKey).then(
+        (database) => _storeRefWrapper
+            .find(database, finder: Finder(filter: filter))
+            .then((snapshots) => snapshots
+                .map((snapshot) => ClaimDTO.fromJson(snapshot.value))
+                .toList())
+            .whenComplete(() => database.close()));
   }
 }

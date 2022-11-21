@@ -1,15 +1,19 @@
-import 'package:polygonid_flutter_sdk_example/src/common/bloc/bloc.dart';
+import 'dart:async';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/splash_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/splash_state.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_dimensions.dart';
 
-class SplashBloc extends Bloc<SplashState> {
-  SplashBloc() {
-    changeState(SplashState.init());
+class SplashBloc extends Bloc<SplashEvent, SplashState> {
+  SplashBloc() : super(SplashState.init()) {
+    on<FakeLoadingSplashEvent>(onFakeLoadingSplashEvent);
   }
 
   /// Simulation of a possible loading time
-  Future<void> fakeLoading() async {
+  Future<void> onFakeLoadingSplashEvent(
+      FakeLoadingSplashEvent event, Emitter<SplashState> emit) async {
     await Future.delayed(CustomDimensions.splashDuration);
-    changeState(SplashState.waitingTimeEnded());
+    emit(SplashState.waitingTimeEnded());
   }
 }

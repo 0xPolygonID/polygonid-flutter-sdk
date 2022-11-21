@@ -2,15 +2,31 @@ import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
 import '../repositories/credential_repository.dart';
 
-class RemoveClaimsUseCase extends FutureUseCase<List<String>, void> {
+class RemoveClaimsParam {
+  final List<String> claimIds;
+  final String identifier;
+  final String privateKey;
+
+  RemoveClaimsParam({
+    required this.claimIds,
+    required this.identifier,
+    required this.privateKey,
+  });
+}
+
+class RemoveClaimsUseCase extends FutureUseCase<RemoveClaimsParam, void> {
   final CredentialRepository _credentialRepository;
 
   RemoveClaimsUseCase(this._credentialRepository);
 
   @override
-  Future<void> execute({required List<String> param}) async {
+  Future<void> execute({required RemoveClaimsParam param}) async {
     return _credentialRepository
-        .removeClaims(ids: param)
+        .removeClaims(
+          claimIds: param.claimIds,
+          identifier: param.identifier,
+          privateKey: param.privateKey,
+        )
         .then((_) => logger().i(
             "[RemoveClaimsUseCase] Claims with those ids have been removed: $param"))
         .catchError((error) {

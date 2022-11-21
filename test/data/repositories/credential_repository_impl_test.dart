@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -14,10 +13,12 @@ import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart'
 import 'package:polygonid_flutter_sdk/credential/data/mappers/credential_request_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/id_filter_mapper.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 import 'package:sembast/sembast.dart';
 
 import '../dtos/fetch_claim_response_dto_test.dart';
@@ -25,18 +26,14 @@ import 'credential_repository_impl_test.mocks.dart';
 
 // Data
 const identifier = "theIdentifier";
+const privateKey = "thePrivateKey";
 const token = "theToken";
 const url = "theUrl";
 const ids = ["theId", "theId1", "theId2"];
 final exception = Exception();
 
-final CredentialRequestEntity requestEntity = CredentialRequestEntity(
-    "",
-    CircuitDataEntity("", Uint8List.fromList([]), Uint8List.fromList([])),
-    url,
-    "",
-    "",
-    "");
+final CredentialRequestEntity requestEntity =
+    CredentialRequestEntity("", url, "", "", "");
 
 /// We assume [FetchClaimResponseDTO] has been tested
 final fetchClaimDTO =
@@ -47,20 +44,20 @@ final claimDTOs = [
       issuer: "",
       identifier: "",
       type: '',
-      credential: fetchClaimDTO.credential),
+      info: fetchClaimDTO.credential),
   ClaimDTO(
       id: "id2",
       issuer: "",
       identifier: "",
       type: '',
-      credential: fetchClaimDTO.credential),
+      info: fetchClaimDTO.credential),
 ];
 final claimEntities = [
   ClaimEntity(
       issuer: "",
       identifier: "",
       expiration: "",
-      credential: {},
+      info: {},
       type: "",
       state: ClaimState.active,
       id: "id1"),
@@ -68,7 +65,7 @@ final claimEntities = [
       issuer: "",
       identifier: "",
       expiration: "",
-      credential: {},
+      info: {},
       type: "",
       state: ClaimState.active,
       id: "id2")
@@ -84,28 +81,37 @@ final filter = Filter.equals("theField", "theValue");
 MockRemoteClaimDataSource remoteClaimDataSource = MockRemoteClaimDataSource();
 MockStorageClaimDataSource storageClaimDataSource =
     MockStorageClaimDataSource();
+MockLibIdentityDataSource libIdentityDataSource = MockLibIdentityDataSource();
 MockCredentialRequestMapper credentialRequestMapper =
     MockCredentialRequestMapper();
 MockClaimMapper claimMapper = MockClaimMapper();
 MockFiltersMapper filtersMapper = MockFiltersMapper();
 MockIdFilterMapper idFilterMapper = MockIdFilterMapper();
+MockRevocationStatusMapper revocationStatusMapper =
+    MockRevocationStatusMapper();
 
 // Tested instance
 CredentialRepositoryImpl repository = CredentialRepositoryImpl(
-    remoteClaimDataSource,
-    storageClaimDataSource,
-    credentialRequestMapper,
-    claimMapper,
-    filtersMapper,
-    idFilterMapper);
+  remoteClaimDataSource,
+  storageClaimDataSource,
+  libIdentityDataSource,
+  credentialRequestMapper,
+  claimMapper,
+  filtersMapper,
+  idFilterMapper,
+  revocationStatusMapper,
+);
 
 @GenerateMocks([
   RemoteClaimDataSource,
   StorageClaimDataSource,
+  RemoteIdentityDataSource,
+  LibIdentityDataSource,
   CredentialRequestMapper,
   ClaimMapper,
   FiltersMapper,
-  IdFilterMapper
+  IdFilterMapper,
+  RevocationStatusMapper,
 ])
 void main() {
   group("Fetch claim", () {
@@ -188,7 +194,10 @@ void main() {
   group("Save claims", () {
     setUp(() {
       // Given
-      when(storageClaimDataSource.storeClaims(claims: anyNamed('claims')))
+      when(storageClaimDataSource.storeClaims(
+              identifier: anyNamed('identifier'),
+              privateKey: anyNamed('privateKey'),
+              claims: anyNamed('claims')))
           .thenAnswer((realInvocation) => Future.value());
       when(claimMapper.mapTo(any)).thenReturn(claimDTOs[0]);
     });
@@ -198,15 +207,21 @@ void main() {
         () async {
       // When
       await expectLater(
-          repository.saveClaims(claims: claimEntities), completes);
+          repository.saveClaims(
+              identifier: identifier,
+              privateKey: privateKey,
+              claims: claimEntities),
+          completes);
 
       // Then
-      expect(
-          verify(storageClaimDataSource.storeClaims(
-                  claims: captureAnyNamed('claims')))
-              .captured
-              .first,
-          [claimDTOs[0], claimDTOs[0]]);
+      var captureStore = verify(storageClaimDataSource.storeClaims(
+              identifier: captureAnyNamed('identifier'),
+              privateKey: captureAnyNamed('privateKey'),
+              claims: captureAnyNamed('claims')))
+          .captured;
+      expect(captureStore[0], identifier);
+      expect(captureStore[1], privateKey);
+      expect(captureStore[2], [claimDTOs[0], claimDTOs[0]]);
 
       var mapperVerify = verify(claimMapper.mapTo(captureAny));
       expect(mapperVerify.callCount, claimEntities.length);
@@ -219,12 +234,18 @@ void main() {
         "Given a list of ClaimEntity, when I call saveClaims and an error occurred, then I expect a SaveClaimException to be thrown",
         () async {
       // Given
-      when(storageClaimDataSource.storeClaims(claims: anyNamed('claims')))
+      when(storageClaimDataSource.storeClaims(
+              identifier: anyNamed('identifier'),
+              privateKey: anyNamed('privateKey'),
+              claims: anyNamed('claims')))
           .thenAnswer((realInvocation) => Future.error(exception));
 
       // When
       await repository
-          .saveClaims(claims: claimEntities)
+          .saveClaims(
+              identifier: identifier,
+              privateKey: privateKey,
+              claims: claimEntities)
           .then((_) => expect(true, false))
           .catchError((error) {
         expect(error, isA<SaveClaimException>());
@@ -232,12 +253,14 @@ void main() {
       });
 
       // Then
-      expect(
-          verify(storageClaimDataSource.storeClaims(
-                  claims: captureAnyNamed('claims')))
-              .captured
-              .first,
-          [claimDTOs[0], claimDTOs[0]]);
+      var captureStore = verify(storageClaimDataSource.storeClaims(
+              identifier: captureAnyNamed('identifier'),
+              privateKey: captureAnyNamed('privateKey'),
+              claims: captureAnyNamed('claims')))
+          .captured;
+      expect(captureStore[0], identifier);
+      expect(captureStore[1], privateKey);
+      expect(captureStore[2], [claimDTOs[0], claimDTOs[0]]);
 
       verify(claimMapper.mapTo(captureAny));
     });
@@ -246,7 +269,10 @@ void main() {
   group("Get claims", () {
     setUp(() {
       // Given
-      when(storageClaimDataSource.getClaims(filter: anyNamed('filter')))
+      when(storageClaimDataSource.getClaims(
+              identifier: anyNamed('identifier'),
+              privateKey: anyNamed('privateKey'),
+              filter: anyNamed('filter')))
           .thenAnswer((realInvocation) => Future.value(claimDTOs));
       when(claimMapper.mapFrom(any)).thenReturn(claimEntities[0]);
       when(filtersMapper.mapTo(any)).thenReturn(filter);
@@ -257,10 +283,20 @@ void main() {
         () async {
       // When
       expect(
-          await repository.getClaims(), [claimEntities[0], claimEntities[0]]);
+          await repository.getClaims(
+            identifier: identifier,
+            privateKey: privateKey,
+          ),
+          [claimEntities[0], claimEntities[0]]);
 
       // Then
-      verify(storageClaimDataSource.getClaims());
+      var captureGet = verify(storageClaimDataSource.getClaims(
+              identifier: captureAnyNamed('identifier'),
+              privateKey: captureAnyNamed('privateKey')))
+          .captured;
+      expect(captureGet[0], identifier);
+      expect(captureGet[1], privateKey);
+
       verifyNever(filtersMapper.mapTo(captureAny));
 
       var mapperVerify = verify(claimMapper.mapFrom(captureAny));
@@ -274,16 +310,21 @@ void main() {
         "Given a list of FilterEntity, when I call getClaims, then I expect a list of ClaimEntity to be returned",
         () async {
       // When
-      expect(await repository.getClaims(filters: filters),
+      expect(
+          await repository.getClaims(
+              identifier: identifier, privateKey: privateKey, filters: filters),
           [claimEntities[0], claimEntities[0]]);
 
       // Then
-      expect(
-          verify(storageClaimDataSource.getClaims(
-                  filter: captureAnyNamed("filter")))
-              .captured
-              .first,
-          filter);
+      var captureGet = verify(storageClaimDataSource.getClaims(
+              identifier: captureAnyNamed('identifier'),
+              privateKey: captureAnyNamed('privateKey'),
+              filter: captureAnyNamed('filter')))
+          .captured;
+      expect(captureGet[0], identifier);
+      expect(captureGet[1], privateKey);
+      expect(captureGet[2], filter);
+
       expect(verify(filtersMapper.mapTo(captureAny)).captured.first, filters);
 
       var mapperVerify = verify(claimMapper.mapFrom(captureAny));
@@ -297,12 +338,16 @@ void main() {
         "Given a list of FilterEntity, when I call getClaims and an error occurred, then I expect an exception to be thrown",
         () async {
       // Given
-      when(storageClaimDataSource.getClaims(filter: anyNamed('filter')))
+      when(storageClaimDataSource.getClaims(
+              identifier: anyNamed('identifier'),
+              privateKey: anyNamed('privateKey'),
+              filter: anyNamed('filter')))
           .thenAnswer((realInvocation) => Future.error(exception));
 
       // When
       await repository
-          .getClaims(filters: filters)
+          .getClaims(
+              identifier: identifier, privateKey: privateKey, filters: filters)
           .then((_) => expect(true, false))
           .catchError((error) {
         expect(error, isA<GetClaimsException>());
@@ -310,12 +355,15 @@ void main() {
       });
 
       // Then
-      expect(
-          verify(storageClaimDataSource.getClaims(
-                  filter: captureAnyNamed("filter")))
-              .captured
-              .first,
-          filter);
+      var captureGet = verify(storageClaimDataSource.getClaims(
+              identifier: captureAnyNamed('identifier'),
+              privateKey: captureAnyNamed('privateKey'),
+              filter: captureAnyNamed('filter')))
+          .captured;
+      expect(captureGet[0], identifier);
+      expect(captureGet[1], privateKey);
+      expect(captureGet[2], filter);
+
       expect(verify(filtersMapper.mapTo(captureAny)).captured.first, filters);
 
       verifyNever(claimMapper.mapFrom(captureAny));
@@ -325,7 +373,10 @@ void main() {
   group("Get claim", () {
     setUp(() {
       // Given
-      when(storageClaimDataSource.getClaims(filter: anyNamed('filter')))
+      when(storageClaimDataSource.getClaims(
+              identifier: anyNamed('identifier'),
+              privateKey: anyNamed('privateKey'),
+              filter: anyNamed('filter')))
           .thenAnswer((realInvocation) => Future.value([claimDTOs[0]]));
       when(claimMapper.mapFrom(any)).thenReturn(claimEntities[0]);
       when(idFilterMapper.mapTo(any)).thenReturn(filter);
@@ -335,16 +386,23 @@ void main() {
         "Given an id, when I call getClaim, then I expect a ClaimEntity to be returned",
         () async {
       // When
-      expect(await repository.getClaim(id: ids[0]), claimEntities[0]);
+      expect(
+          await repository.getClaim(
+              identifier: identifier, privateKey: privateKey, claimId: ids[0]),
+          claimEntities[0]);
 
       // Then
       expect(verify(idFilterMapper.mapTo(captureAny)).captured.first, ids[0]);
-      expect(
-          verify(storageClaimDataSource.getClaims(
-                  filter: captureAnyNamed('filter')))
-              .captured
-              .first,
-          filter);
+
+      var captureGet = verify(storageClaimDataSource.getClaims(
+              identifier: captureAnyNamed('identifier'),
+              privateKey: captureAnyNamed('privateKey'),
+              filter: captureAnyNamed('filter')))
+          .captured;
+      expect(captureGet[0], identifier);
+      expect(captureGet[1], privateKey);
+      expect(captureGet[2], filter);
+
       expect(
           verify(claimMapper.mapFrom(captureAny)).captured.first, claimDTOs[0]);
     });
@@ -353,11 +411,15 @@ void main() {
         "Given an id, when I call getClaim and no claim are found, then I expect a ClaimNotFoundException to be thrown",
         () async {
       // Given
-      when(storageClaimDataSource.getClaims(filter: anyNamed('filter')))
+      when(storageClaimDataSource.getClaims(
+              identifier: anyNamed('identifier'),
+              privateKey: anyNamed('privateKey'),
+              filter: anyNamed('filter')))
           .thenAnswer((realInvocation) => Future.value([]));
       // When
       await repository
-          .getClaim(id: ids[0])
+          .getClaim(
+              identifier: identifier, privateKey: privateKey, claimId: ids[0])
           .then((value) => expect(true, false))
           .catchError((error) {
         expect(error, isA<ClaimNotFoundException>());
@@ -366,12 +428,15 @@ void main() {
 
       // Then
       expect(verify(idFilterMapper.mapTo(captureAny)).captured.first, ids[0]);
-      expect(
-          verify(storageClaimDataSource.getClaims(
-                  filter: captureAnyNamed('filter')))
-              .captured
-              .first,
-          filter);
+
+      var captureGet = verify(storageClaimDataSource.getClaims(
+              identifier: captureAnyNamed('identifier'),
+              privateKey: captureAnyNamed('privateKey'),
+              filter: captureAnyNamed('filter')))
+          .captured;
+      expect(captureGet[0], identifier);
+      expect(captureGet[1], privateKey);
+      expect(captureGet[2], filter);
 
       verifyNever(claimMapper.mapFrom(captureAny));
     });
@@ -380,19 +445,28 @@ void main() {
         "Given an id, when I call getClaim and an error occurred, then I expect an exception to be thrown",
         () async {
       // Given
-      when(storageClaimDataSource.getClaims(filter: anyNamed('filter')))
+      when(storageClaimDataSource.getClaims(
+              identifier: anyNamed('identifier'),
+              privateKey: anyNamed('privateKey'),
+              filter: anyNamed('filter')))
           .thenAnswer((realInvocation) => Future.error(exception));
       // When
-      await expectLater(repository.getClaim(id: ids[0]), throwsA(exception));
+      await expectLater(
+          repository.getClaim(
+              identifier: identifier, privateKey: privateKey, claimId: ids[0]),
+          throwsA(exception));
 
       // Then
       expect(verify(idFilterMapper.mapTo(captureAny)).captured.first, ids[0]);
-      expect(
-          verify(storageClaimDataSource.getClaims(
-                  filter: captureAnyNamed('filter')))
-              .captured
-              .first,
-          filter);
+
+      var captureGet = verify(storageClaimDataSource.getClaims(
+              identifier: captureAnyNamed('identifier'),
+              privateKey: captureAnyNamed('privateKey'),
+              filter: captureAnyNamed('filter')))
+          .captured;
+      expect(captureGet[0], identifier);
+      expect(captureGet[1], privateKey);
+      expect(captureGet[2], filter);
 
       verifyNever(claimMapper.mapFrom(captureAny));
     });
@@ -401,7 +475,10 @@ void main() {
   group("Remove claims", () {
     setUp(() {
       // Given
-      when(storageClaimDataSource.removeClaims(ids: anyNamed('ids')))
+      when(storageClaimDataSource.removeClaims(
+              identifier: anyNamed('identifier'),
+              privateKey: anyNamed('privateKey'),
+              claimIds: anyNamed('claimIds')))
           .thenAnswer((realInvocation) => Future.value());
     });
 
@@ -409,27 +486,36 @@ void main() {
         "Given a list of ids, when I call removeClaims, then I expect the process to completes",
         () async {
       // When
-      await expectLater(repository.removeClaims(ids: ids), completes);
+      await expectLater(
+          repository.removeClaims(
+              identifier: identifier, privateKey: privateKey, claimIds: ids),
+          completes);
 
       // Then
-      expect(
-          verify(storageClaimDataSource.removeClaims(
-                  ids: captureAnyNamed('ids')))
-              .captured
-              .first,
-          ids);
+      var captureRemove = verify(storageClaimDataSource.removeClaims(
+              identifier: captureAnyNamed('identifier'),
+              privateKey: captureAnyNamed('privateKey'),
+              claimIds: captureAnyNamed('claimIds')))
+          .captured;
+      expect(captureRemove[0], identifier);
+      expect(captureRemove[1], privateKey);
+      expect(captureRemove[2], ids);
     });
 
     test(
         "Given a list of ids, when I call removeClaims and an error occurred, then I expect a RemoveClaimsException exception to be thrown",
         () async {
       // Given
-      when(storageClaimDataSource.removeClaims(ids: anyNamed('ids')))
+      when(storageClaimDataSource.removeClaims(
+              identifier: anyNamed('identifier'),
+              privateKey: anyNamed('privateKey'),
+              claimIds: anyNamed('claimIds')))
           .thenAnswer((realInvocation) => Future.error(exception));
 
       // When
       await repository
-          .removeClaims(ids: ids)
+          .removeClaims(
+              identifier: identifier, privateKey: privateKey, claimIds: ids)
           .then((_) => expect(true, false))
           .catchError((error) {
         expect(error, isA<RemoveClaimsException>());
@@ -437,66 +523,14 @@ void main() {
       });
 
       // Then
-      expect(
-          verify(storageClaimDataSource.removeClaims(
-                  ids: captureAnyNamed('ids')))
-              .captured
-              .first,
-          ids);
-    });
-  });
-
-  group("Update claim", () {
-    setUp(() {
-      // Given
-      when(claimMapper.mapTo(any)).thenReturn(claimDTOs[0]);
-      when(storageClaimDataSource.storeClaims(claims: anyNamed('claims')))
-          .thenAnswer((realInvocation) => Future.value());
-    });
-
-    test(
-        "Given a claim, when I call updateClaim, then I expect the process to completes and the claim to be returned",
-        () async {
-      // When
-      expect(await repository.updateClaim(claim: claimEntities[0]),
-          claimEntities[0]);
-
-      // Then
-      expect(verify(claimMapper.mapTo(captureAny)).captured.first,
-          claimEntities[0]);
-      expect(
-          verify(storageClaimDataSource.storeClaims(
-                  claims: captureAnyNamed('claims')))
-              .captured
-              .first,
-          [claimDTOs[0]]);
-    });
-
-    test(
-        "Given a claim, when I call updateClaim and an error occurred, then I expect a UpdateClaimException to be thrown",
-        () async {
-      // Given
-      when(storageClaimDataSource.storeClaims(claims: anyNamed('claims')))
-          .thenAnswer((realInvocation) => Future.error(exception));
-
-      // When
-      await repository
-          .updateClaim(claim: claimEntities[0])
-          .then((value) => expect(true, false))
-          .catchError((error) {
-        expect(error, isA<UpdateClaimException>());
-        expect(error.error, exception);
-      });
-
-      // Then
-      expect(verify(claimMapper.mapTo(captureAny)).captured.first,
-          claimEntities[0]);
-      expect(
-          verify(storageClaimDataSource.storeClaims(
-                  claims: captureAnyNamed('claims')))
-              .captured
-              .first,
-          [claimDTOs[0]]);
+      var captureRemove = verify(storageClaimDataSource.removeClaims(
+              identifier: captureAnyNamed('identifier'),
+              privateKey: captureAnyNamed('privateKey'),
+              claimIds: captureAnyNamed('claimIds')))
+          .captured;
+      expect(captureRemove[0], identifier);
+      expect(captureRemove[1], privateKey);
+      expect(captureRemove[2], ids);
     });
   });
 }

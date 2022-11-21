@@ -3,12 +3,14 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 
 import 'get_claims_use_case_test.mocks.dart';
 
 // Data
+const identifier = "theIdentifier";
+const privateKey = "thePrivateKey";
 final filters = [
   FilterEntity(name: "theName", value: "theValue"),
   FilterEntity(
@@ -18,12 +20,16 @@ final filters = [
       name: "theName2",
       value: ["theValue2", "theValue3"])
 ];
+final GetClaimsParam param =
+    GetClaimsParam(identifier: identifier, privateKey: privateKey);
+final GetClaimsParam paramFilters = GetClaimsParam(
+    identifier: identifier, privateKey: privateKey, filters: filters);
 final claimEntities = [
   ClaimEntity(
       issuer: "",
       identifier: "",
       expiration: "",
-      credential: {},
+      info: {},
       type: "",
       state: ClaimState.active,
       id: "id1"),
@@ -31,7 +37,7 @@ final claimEntities = [
       issuer: "",
       identifier: "",
       expiration: "",
-      credential: {},
+      info: {},
       type: "",
       state: ClaimState.pending,
       id: "id2"),
@@ -39,7 +45,7 @@ final claimEntities = [
       issuer: "",
       identifier: "",
       expiration: "",
-      credential: {},
+      info: {},
       type: "",
       state: ClaimState.revoked,
       id: "id3")
@@ -59,52 +65,70 @@ void main() {
       reset(credentialRepository);
 
       // Given
-      when(credentialRepository.getClaims(filters: anyNamed("filters")))
+      when(credentialRepository.getClaims(
+              identifier: anyNamed('identifier'),
+              privateKey: anyNamed('privateKey'),
+              filters: anyNamed("filters")))
           .thenAnswer((realInvocation) => Future.value(claimEntities));
     });
 
     test(
-        "Given nothing, when I call execute, then I expect a list of ClaimEntity to be returned",
+        "Given no filters, when I call execute, then I expect a list of ClaimEntity to be returned",
         () async {
       // When
-      expect(await useCase.execute(), claimEntities);
+      expect(await useCase.execute(param: param), claimEntities);
 
       // Then
-      verify(credentialRepository.getClaims());
+      var capturedGet = verify(credentialRepository.getClaims(
+              identifier: captureAnyNamed('identifier'),
+              privateKey: captureAnyNamed('privateKey'),
+              filters: captureAnyNamed('filters')))
+          .captured;
+      expect(capturedGet[0], identifier);
+      expect(capturedGet[1], privateKey);
+      expect(capturedGet[2], null);
     });
 
     test(
         "Given a list of FilterEntity, when I call execute, then I expect a list of ClaimEntity to be returned",
         () async {
       // When
-      expect(await useCase.execute(param: filters), claimEntities);
+      expect(await useCase.execute(param: paramFilters), claimEntities);
 
       // Then
-      expect(
-          verify(credentialRepository.getClaims(
-                  filters: captureAnyNamed("filters")))
-              .captured
-              .first,
-          filters);
+      var capturedGet = verify(credentialRepository.getClaims(
+              identifier: captureAnyNamed('identifier'),
+              privateKey: captureAnyNamed('privateKey'),
+              filters: captureAnyNamed('filters')))
+          .captured;
+      expect(capturedGet[0], identifier);
+      expect(capturedGet[1], privateKey);
+      expect(capturedGet[2], filters);
     });
 
     test(
         "Given a list of FilterEntity, when I call execute and an error occurred, then I expect an exception to be thrown",
         () async {
       // Given
-      when(credentialRepository.getClaims(filters: anyNamed("filters")))
+      when(credentialRepository.getClaims(
+              identifier: captureAnyNamed('identifier'),
+              privateKey: captureAnyNamed('privateKey'),
+              filters: anyNamed("filters")))
           .thenAnswer((realInvocation) => Future.error(exception));
 
       // When
-      await expectLater(useCase.execute(param: filters), throwsA(exception));
+      await expectLater(
+          useCase.execute(param: paramFilters), throwsA(exception));
 
       // Then
-      expect(
-          verify(credentialRepository.getClaims(
-                  filters: captureAnyNamed("filters")))
-              .captured
-              .first,
-          filters);
+      var capturedGet = verify(credentialRepository.getClaims(
+              identifier: captureAnyNamed('identifier'),
+              privateKey: captureAnyNamed('privateKey'),
+              filters: captureAnyNamed('filters')))
+          .captured;
+      expect(capturedGet[0], identifier);
+      expect(capturedGet[1], privateKey);
+      expect(capturedGet[2], filters);
     });
   });
 }

@@ -1,19 +1,30 @@
-import 'dart:typed_data';
-
 import 'package:fast_base58/fast_base58.dart';
-import 'package:polygonid_flutter_sdk/identity/data/repositories/smt_memory_storage_repository_impl.dart';
-import 'package:polygonid_flutter_sdk/identity/libs/smt/merkletree.dart';
+import 'package:flutter/foundation.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/domain/exceptions/proof_generation_exceptions.dart';
 
 import '../../../common/utils/hex_utils.dart';
-import '../../domain/repositories/smt_storage_repository.dart';
 import '../../libs/iden3core/iden3core.dart';
 
 class LibIdentityDataSource {
   final Iden3CoreLib _iden3coreLib;
-  //final SMTStorageRepository _smtStorageRepository;
 
-  LibIdentityDataSource(this._iden3coreLib, /*this._smtStorageRepository*/);
+  LibIdentityDataSource(this._iden3coreLib);
 
+  Future<String> getId(String id) {
+    try {
+      String libId = _iden3coreLib.getIdFromString(id);
+
+      if (libId.isEmpty) {
+        throw GenerateNonRevProofException(id);
+      }
+
+      return Future.value(libId);
+    } catch (e) {
+      return Future.error(e);
+    }
+  }
+
+  ///
   Future<String> getIdentifier({required String pubX, required String pubY}) {
     try {
       Map<String, String> map = _iden3coreLib.generateIdentity(pubX, pubY);
@@ -25,22 +36,12 @@ class LibIdentityDataSource {
     }
   }
 
+  ///
   Future<String> getAuthClaim({required String pubX, required String pubY}) {
     try {
       String authClaim = _iden3coreLib.getAuthClaim(pubX, pubY);
 
       return Future.value(authClaim);
-    } catch (e) {
-      return Future.error(e);
-    }
-  }
-
-  Future<String> createSMT(SMTStorageRepository smtStorageRepository) {
-    try {
-      return Future.value((MerkleTree(_iden3coreLib, smtStorageRepository, 32)
-              .storage as SMTMemoryStorageRepositoryImpl)
-          .toJson()
-          .toString());
     } catch (e) {
       return Future.error(e);
     }

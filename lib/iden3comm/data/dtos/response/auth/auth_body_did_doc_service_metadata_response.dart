@@ -56,6 +56,6 @@ class AuthBodyDidDocServiceMetadataResponse {
   }
 
   Map<String, dynamic> toJson() => {
-        'devices': devices,
+        'devices': devices?.map((item) => item.toJson()).toList(),
       };
 }

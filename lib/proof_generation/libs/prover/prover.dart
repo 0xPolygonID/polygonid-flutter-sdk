@@ -73,13 +73,14 @@ class ProverLib {
       String publicmsg = jsonString2.toDartString();
 
       if (kDebugMode) {
-        print("$result: ${result.toString()}");
         print("Proof: $proofmsg");
-        print("Public: $publicmsg.");
+        print("Public: $publicmsg");
         print("Time: $time");
       }
       map['circuitId'] = "auth";
       map['proof'] = json.decode(proofmsg);
+      (map['proof'] as Map<String, dynamic>)
+          .putIfAbsent("curve", () => "bn128");
       map['pub_signals'] = json.decode(publicmsg).cast<String>();
       return map;
     } else if (result == PPROVER_ERROR) {

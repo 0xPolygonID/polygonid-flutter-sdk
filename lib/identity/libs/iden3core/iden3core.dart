@@ -9,10 +9,10 @@ import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/revocation_status.dart';
 import 'package:web3dart/crypto.dart';
 
-import '../../../credential/data/dtos/credential_dto.dart';
-import '../../../credential/data/dtos/credential_proofs/credential_proof_bjj_dto.dart';
-import '../../../credential/data/dtos/credential_proofs/credential_proof_dto.dart';
-import '../../../credential/data/dtos/credential_proofs/credential_proof_sm_dto.dart';
+import '../../../credential/data/dtos/claim_info_dto.dart';
+import '../../../credential/data/dtos/claim_proofs/claim_proof_bjj_dto.dart';
+import '../../../credential/data/dtos/claim_proofs/claim_proof_dto.dart';
+import '../../../credential/data/dtos/claim_proofs/claim_proof_sm_dto.dart';
 import '../smt/hash.dart';
 import 'native_iden3core.dart';
 import 'native_iden3core_extension.dart';
@@ -637,19 +637,18 @@ class Iden3CoreLib {
       String pubX,
       String pubY,
       String signature,
-      CredentialDTO credential,
+      ClaimInfoDTO credential,
       String jsonLDDocument,
       String schema,
-      String claimType,
       String key,
       List<int> values,
       int operator,
-      RevocationStatus revocationStatus) {
-    CredentialProofSMDTO? smtProof;
+      RevocationStatus? revocationStatus) {
+    ClaimProofSMDTO? smtProof;
     if (credential.proofs.isNotEmpty) {
       for (var proof in credential.proofs) {
-        if (proof.type == CredentialProofType.sparseMerkle) {
-          smtProof = proof as CredentialProofSMDTO?;
+        if (proof.type == ClaimProofType.sparseMerkle) {
+          smtProof = proof as ClaimProofSMDTO?;
         }
       }
     }
@@ -664,6 +663,7 @@ class Iden3CoreLib {
         DateTime.now().millisecondsSinceEpoch ~/ 1000;
     int res = 0;
     // QUERY - ALL GOOD
+    String claimType = credential.credentialSchema.type;
     request.ref.query.slot_index = _getFieldSlotIndex(schema, claimType, key);
     ffi.Pointer<ffi.Pointer<IDENBigInt>> valuesPtr =
         malloc<ffi.Pointer<IDENBigInt>>(values.length);
@@ -857,8 +857,8 @@ class Iden3CoreLib {
     // Claim state
     ffi.Pointer<IDENTreeState> issuerState = malloc<IDENTreeState>();
 
-    CredentialProofIssuerStateSMDTO smtProofIssuerState =
-        smtProof.issuer.state as CredentialProofIssuerStateSMDTO;
+    ClaimProofIssuerStateSMDTO smtProofIssuerState =
+        smtProof.issuer.state as ClaimProofIssuerStateSMDTO;
 
     List<int> issuerProofClaimsTreeRootBytes =
         hexToBytes(smtProofIssuerState.treeRoot);
@@ -883,51 +883,45 @@ class Iden3CoreLib {
 
     // Claim issuer
     // Issuer ID
-    ffi.Pointer<IDENId> issuerIdPtr = malloc<IDENId>();
-    String issuerId = smtProof.issuer.id;
-    ffi.Pointer<ffi.Char> issuerIdStr =
-        issuerId.toNativeUtf8().cast<ffi.Char>();
-    res =
-        _nativeIden3CoreLib.IDENIdFromString(issuerIdPtr, issuerIdStr, status);
-    if (res == 0) {
-      _consumeStatus(status, "error getting issuer's id");
-      //retVal = 1;
-      return "";
-    }
+    ffi.Pointer<IDENId> issuerIdPtr = _getIdFromString(smtProof.issuer.id);
     request.ref.claim.issuer_id = issuerIdPtr.ref;
 
     request.ref.claim.non_rev_proof.tree_state = malloc<IDENTreeState>().ref;
-    List<int> issuerClaimsRevStatusTreeRootBytes =
-        hexToBytes(revocationStatus.issuer!.claimsTreeRoot!);
-    for (var i = 0; i < issuerClaimsRevStatusTreeRootBytes.length; i++) {
-      request.ref.claim.non_rev_proof.tree_state.claims_root.data[i] =
-          issuerClaimsRevStatusTreeRootBytes[i];
-    }
-    List<int> issuerRevStatusStateBytes =
-        hexToBytes(revocationStatus.issuer!.state!);
-    for (var i = 0; i < issuerRevStatusStateBytes.length; i++) {
-      request.ref.claim.non_rev_proof.tree_state.state.data[i] =
-          issuerRevStatusStateBytes[i];
-    }
+    if (revocationStatus != null) {
+      List<int> issuerClaimsRevStatusTreeRootBytes =
+          hexToBytes(revocationStatus.issuer!.claimsTreeRoot!);
+      for (var i = 0; i < issuerClaimsRevStatusTreeRootBytes.length; i++) {
+        request.ref.claim.non_rev_proof.tree_state.claims_root.data[i] =
+            issuerClaimsRevStatusTreeRootBytes[i];
+      }
+      List<int> issuerRevStatusStateBytes =
+          hexToBytes(revocationStatus.issuer!.state!);
+      for (var i = 0; i < issuerRevStatusStateBytes.length; i++) {
+        request.ref.claim.non_rev_proof.tree_state.state.data[i] =
+            issuerRevStatusStateBytes[i];
+      }
 
-    List<int> issuerRevStatusRevRootBytes =
-        hexToBytes(revocationStatus.issuer!.revocationTreeRoot!);
-    for (var i = 0; i < 32; i++) {
-      request.ref.claim.non_rev_proof.tree_state.revocation_root.data[i] =
-          issuerRevStatusRevRootBytes[i];
-    }
+      List<int> issuerRevStatusRevRootBytes =
+          hexToBytes(revocationStatus.issuer!.revocationTreeRoot!);
+      for (var i = 0; i < 32; i++) {
+        request.ref.claim.non_rev_proof.tree_state.revocation_root.data[i] =
+            issuerRevStatusRevRootBytes[i];
+      }
 
-    List<int> issuerRevStatusRevRoRBytes =
-        hexToBytes(revocationStatus.issuer!.rootOfRoots!);
-    for (var i = 0; i < 32; i++) {
-      request.ref.claim.non_rev_proof.tree_state.root_of_roots.data[i] =
-          issuerRevStatusRevRoRBytes[i];
+      List<int> issuerRevStatusRevRoRBytes =
+          hexToBytes(revocationStatus.issuer!.rootOfRoots!);
+      for (var i = 0; i < 32; i++) {
+        request.ref.claim.non_rev_proof.tree_state.root_of_roots.data[i] =
+            issuerRevStatusRevRoRBytes[i];
+      }
     }
 
     // claim revocation status proof
     ffi.Pointer<IDENProof> claimNonRevProof = malloc<IDENProof>();
-    claimNonRevProof.ref.existence = revocationStatus.mtp!.existence!;
-    if (revocationStatus.mtp!.siblings != null &&
+    claimNonRevProof.ref.existence =
+        revocationStatus != null ? revocationStatus.mtp!.existence! : false;
+    if (revocationStatus != null &&
+        revocationStatus.mtp!.siblings != null &&
         revocationStatus.mtp!.siblings!.isNotEmpty) {
       claimNonRevProof.ref.siblings = malloc<ffi.Pointer<ffi.UnsignedChar>>(
           revocationStatus.mtp!.siblings!.length);
@@ -947,7 +941,9 @@ class Iden3CoreLib {
     claimNonRevProof.ref.auxNodeKey = ffi.nullptr;
     claimNonRevProof.ref.auxNodeValue = ffi.nullptr;
 
-    if (revocationStatus.mtp != null && revocationStatus.mtp!.nodeAux != null) {
+    if (revocationStatus != null &&
+        revocationStatus.mtp != null &&
+        revocationStatus.mtp!.nodeAux != null) {
       // ffi.Pointer<ffi.UnsignedChar> unsafePointerNodeAuxKey =
       // revocationStatus.mtp!.nodeAux!.key!.toString().toNativeUtf8().cast<ffi.UnsignedChar>();
       // ffi.Pointer<ffi.Pointer<IDENBigInt>> nodeAuxKeyInt = malloc<ffi.Pointer<IDENBigInt>>();
@@ -1049,20 +1045,18 @@ class Iden3CoreLib {
       String pubX,
       String pubY,
       String signature,
-      CredentialDTO credential,
+      ClaimInfoDTO credential,
       String jsonLDDocument,
       String schema,
-      String claimType,
       String key,
       List<int> values,
       int operator,
-      RevocationStatus revocationStatus,
-      RevocationStatus authRevocationStatus) {
-    CredentialProofBJJDTO? signatureProof;
+      RevocationStatus? revocationStatus) {
+    ClaimProofBJJDTO? signatureProof;
     if (credential.proofs.isNotEmpty) {
       for (var proof in credential.proofs) {
-        if (proof.type == CredentialProofType.bjj) {
-          signatureProof = proof as CredentialProofBJJDTO?;
+        if (proof.type == ClaimProofType.bjj) {
+          signatureProof = proof as ClaimProofBJJDTO?;
         }
       }
     }
@@ -1078,6 +1072,7 @@ class Iden3CoreLib {
         DateTime.now().millisecondsSinceEpoch ~/ 1000;
     int res = 0;
     // QUERY - ALL GOOD
+    String claimType = credential.credentialSchema.type;
     request.ref.query.slot_index = _getFieldSlotIndex(schema, claimType, key);
     ffi.Pointer<ffi.Pointer<IDENBigInt>> valuesPtr =
         malloc<ffi.Pointer<IDENBigInt>>(values.length);
@@ -1215,17 +1210,8 @@ class Iden3CoreLib {
         malloc<IDENCircuitsBJJSignatureProof>().ref;
 
     // CLAIM ISSUER ID
-    ffi.Pointer<IDENId> issuerIdPtr = malloc<IDENId>();
-    String issuerId = signatureProof.issuer.id;
-    ffi.Pointer<ffi.Char> issuerIdStr =
-        issuerId.toNativeUtf8().cast<ffi.Char>();
-    res =
-        _nativeIden3CoreLib.IDENIdFromString(issuerIdPtr, issuerIdStr, status);
-    if (res == 0) {
-      _consumeStatus(status, "error getting issuer's id");
-      //retVal = 1;
-      return "";
-    }
+    ffi.Pointer<IDENId> issuerIdPtr =
+        _getIdFromString(signatureProof.issuer.id);
     //debugger();
 
     request.ref.claim.signature_proof.issuer_id = issuerIdPtr.ref;
@@ -1242,8 +1228,8 @@ class Iden3CoreLib {
     request.ref.claim.signature_proof.issuer_tree_state =
         malloc<IDENTreeState>().ref;
 
-    CredentialProofIssuerStateDTO sigProofIssuerState =
-        signatureProof.issuer.state; //as CredentialProofIssuerStateDTO;
+    ClaimProofIssuerStateDTO sigProofIssuerState =
+        signatureProof.issuer.state; //as ClaimProofIssuerStateDTO;
     List<int> issuerClaimsTreeRootBytes =
         hexToBytes(sigProofIssuerState.treeRoot);
     for (var i = 0; i < issuerClaimsTreeRootBytes.length; i++) {
@@ -1273,8 +1259,8 @@ class Iden3CoreLib {
     // ISSUER AUTH CLAIM
     ffi.Pointer<ffi.Pointer<IDENClaim>> issuerAuthClaim =
         malloc<ffi.Pointer<IDENClaim>>();
-    CredentialProofIssuerBJJDTO sigProofIssuer =
-        signatureProof.issuer as CredentialProofIssuerBJJDTO;
+    ClaimProofIssuerBJJDTO sigProofIssuer =
+        signatureProof.issuer as ClaimProofIssuerBJJDTO;
     String proofIssuerAuthClaim = json.encode(sigProofIssuer.authClaim);
     ffi.Pointer<ffi.Char> unsafePointerIssuerAuthClaim =
         proofIssuerAuthClaim.toNativeUtf8().cast<ffi.Char>();
@@ -1308,7 +1294,9 @@ class Iden3CoreLib {
     issuerAuthClaimMTP.ref.auxNodeKey = ffi.nullptr;
     issuerAuthClaimMTP.ref.auxNodeValue = ffi.nullptr;
 
-    if (revocationStatus.mtp != null && revocationStatus.mtp!.nodeAux != null) {
+    if (revocationStatus != null &&
+        revocationStatus.mtp != null &&
+        revocationStatus.mtp!.nodeAux != null) {
       // ffi.Pointer<ffi.UnsignedChar> unsafePointerNodeAuxKey = revocationStatus
       //    .mtp!.nodeAux!.key!
       //    .toString()
@@ -1348,35 +1336,37 @@ class Iden3CoreLib {
     // ISSUER CLAIM REV STATUS STATE
     request.ref.claim.signature_proof.issuer_auth_non_rev_proof.tree_state =
         malloc<IDENTreeState>().ref;
-    List<int> issuerAuthClaimsRevStatusTreeRootBytes =
-        hexToBytes(authRevocationStatus.issuer!.claimsTreeRoot!);
-    for (var i = 0; i < issuerAuthClaimsRevStatusTreeRootBytes.length; i++) {
-      request.ref.claim.signature_proof.issuer_auth_non_rev_proof.tree_state
-          .claims_root.data[i] = issuerAuthClaimsRevStatusTreeRootBytes[i];
-    }
-    List<int> issuerAuthRevStatusStateBytes =
-        hexToBytesOrZero(authRevocationStatus.issuer!.state!);
-    for (var i = 0; i < issuerAuthRevStatusStateBytes.length; i++) {
-      request.ref.claim.signature_proof.issuer_auth_non_rev_proof.tree_state
-          .state.data[i] = issuerAuthRevStatusStateBytes[i];
-    }
+    if (revocationStatus != null) {
+      List<int> issuerAuthClaimsRevStatusTreeRootBytes =
+          hexToBytes(revocationStatus.issuer!.claimsTreeRoot!);
+      for (var i = 0; i < issuerAuthClaimsRevStatusTreeRootBytes.length; i++) {
+        request.ref.claim.signature_proof.issuer_auth_non_rev_proof.tree_state
+            .claims_root.data[i] = issuerAuthClaimsRevStatusTreeRootBytes[i];
+      }
+      List<int> issuerAuthRevStatusStateBytes =
+          hexToBytesOrZero(revocationStatus.issuer!.state!);
+      for (var i = 0; i < issuerAuthRevStatusStateBytes.length; i++) {
+        request.ref.claim.signature_proof.issuer_auth_non_rev_proof.tree_state
+            .state.data[i] = issuerAuthRevStatusStateBytes[i];
+      }
 
-    List<int> issuerRevStatusRoRBytes =
-        hexToBytes(authRevocationStatus.issuer!.rootOfRoots!);
-    for (var i = 0; i < 32; i++) {
-      request.ref.claim.signature_proof.issuer_auth_non_rev_proof.tree_state
-          .root_of_roots.data[i] = issuerRevStatusRoRBytes[i];
-    }
-    List<int> authRevStatusRevRootBytes =
-        hexToBytes(authRevocationStatus.issuer!.revocationTreeRoot!);
-    for (var i = 0; i < 32; i++) {
-      request.ref.claim.signature_proof.issuer_auth_non_rev_proof.tree_state
-          .revocation_root.data[i] = authRevStatusRevRootBytes[i];
-    }
+      List<int> issuerRevStatusRoRBytes =
+          hexToBytes(revocationStatus.issuer!.rootOfRoots!);
+      for (var i = 0; i < 32; i++) {
+        request.ref.claim.signature_proof.issuer_auth_non_rev_proof.tree_state
+            .root_of_roots.data[i] = issuerRevStatusRoRBytes[i];
+      }
+      List<int> authRevStatusRevRootBytes =
+          hexToBytes(revocationStatus.issuer!.revocationTreeRoot!);
+      for (var i = 0; i < 32; i++) {
+        request.ref.claim.signature_proof.issuer_auth_non_rev_proof.tree_state
+            .revocation_root.data[i] = authRevStatusRevRootBytes[i];
+      }
 
-    //TODO: review
-    request.ref.claim.signature_proof.issuer_auth_non_rev_proof.proof =
-        _parseMTPjson(jsonEncode(authRevocationStatus.mtp?.toJson()))!;
+      //TODO: review
+      request.ref.claim.signature_proof.issuer_auth_non_rev_proof.proof =
+          _parseMTPjson(jsonEncode(revocationStatus.mtp?.toJson()))!;
+    }
 
     request.ref.claim.core_claim = _parseClaim(jsonLDDocument, schema)!;
 
@@ -1403,44 +1393,45 @@ class Iden3CoreLib {
         ffi.nullptr;
 
     if (kDebugMode) {
-      print(revocationStatus.toJson());
+      print(revocationStatus?.toJson());
     }
 
     // claim revocation status should be taken from revocationStatus.
     // - first we call for revocation status on the issuer service
     // - fill non_rev_proof for claim
-
     request.ref.claim.non_rev_proof.tree_state = malloc<IDENTreeState>().ref;
-    List<int> issuerClaimsRevStatusTreeRootBytes =
-        hexToBytes(revocationStatus.issuer!.claimsTreeRoot!);
-    for (var i = 0; i < issuerClaimsRevStatusTreeRootBytes.length; i++) {
-      request.ref.claim.non_rev_proof.tree_state.claims_root.data[i] =
-          issuerClaimsRevStatusTreeRootBytes[i];
-    }
-    List<int> issuerRevStatusStateBytes =
-        hexToBytes(revocationStatus.issuer!.state!);
-    for (var i = 0; i < issuerRevStatusStateBytes.length; i++) {
-      request.ref.claim.non_rev_proof.tree_state.state.data[i] =
-          issuerRevStatusStateBytes[i];
-    }
+    if (revocationStatus != null) {
+      List<int> issuerClaimsRevStatusTreeRootBytes =
+          hexToBytes(revocationStatus.issuer!.claimsTreeRoot!);
+      for (var i = 0; i < issuerClaimsRevStatusTreeRootBytes.length; i++) {
+        request.ref.claim.non_rev_proof.tree_state.claims_root.data[i] =
+            issuerClaimsRevStatusTreeRootBytes[i];
+      }
+      List<int> issuerRevStatusStateBytes =
+          hexToBytes(revocationStatus.issuer!.state!);
+      for (var i = 0; i < issuerRevStatusStateBytes.length; i++) {
+        request.ref.claim.non_rev_proof.tree_state.state.data[i] =
+            issuerRevStatusStateBytes[i];
+      }
 
-    List<int> issuerRevStatusRevRootBytes =
-        hexToBytes(revocationStatus.issuer!.revocationTreeRoot!);
-    for (var i = 0; i < 32; i++) {
-      request.ref.claim.non_rev_proof.tree_state.revocation_root.data[i] =
-          issuerRevStatusRevRootBytes[i];
-    }
+      List<int> issuerRevStatusRevRootBytes =
+          hexToBytes(revocationStatus.issuer!.revocationTreeRoot!);
+      for (var i = 0; i < 32; i++) {
+        request.ref.claim.non_rev_proof.tree_state.revocation_root.data[i] =
+            issuerRevStatusRevRootBytes[i];
+      }
 
-    List<int> issuerRevStatusRevRoRBytes =
-        hexToBytes(revocationStatus.issuer!.rootOfRoots!);
-    for (var i = 0; i < 32; i++) {
-      request.ref.claim.non_rev_proof.tree_state.root_of_roots.data[i] =
-          issuerRevStatusRevRoRBytes[i];
-    }
+      List<int> issuerRevStatusRevRoRBytes =
+          hexToBytes(revocationStatus.issuer!.rootOfRoots!);
+      for (var i = 0; i < 32; i++) {
+        request.ref.claim.non_rev_proof.tree_state.root_of_roots.data[i] =
+            issuerRevStatusRevRoRBytes[i];
+      }
 
-    // claim revocation status proof
-    request.ref.claim.non_rev_proof.proof =
-        _parseMTPjson(jsonEncode(revocationStatus.mtp?.toJson()))!;
+      // claim revocation status proof
+      request.ref.claim.non_rev_proof.proof =
+          _parseMTPjson(jsonEncode(revocationStatus.mtp?.toJson()))!;
+    }
 
     request.ref.claim.proof = ffi.nullptr;
     // RESULT
@@ -1450,7 +1441,7 @@ class Iden3CoreLib {
     }
     //debugger();
     if (kDebugMode) {
-      print(request.ref.id.toString());
+      print(request.ref.id.data.toString());
     }
     ffi.Pointer<ffi.Pointer<ffi.Char>> response =
         malloc<ffi.Pointer<ffi.Char>>();
@@ -1840,6 +1831,29 @@ class Iden3CoreLib {
     }
 
     return result;
+  }
+
+  ffi.Pointer<IDENId> _getIdFromString(String id) {
+    ffi.Pointer<ffi.Pointer<IDENStatus>> status =
+        malloc<ffi.Pointer<IDENStatus>>();
+    ffi.Pointer<IDENId> idPtr = malloc<IDENId>();
+    ffi.Pointer<ffi.Char> idStr = id.toNativeUtf8().cast<ffi.Char>();
+    int res = _nativeIden3CoreLib.IDENIdFromString(idPtr, idStr, status);
+    if (res == 0) {
+      _consumeStatus(status, "error getting id from string");
+      return nullptr;
+    }
+
+    return idPtr;
+  }
+
+  String getIdFromString(String id) {
+    ffi.Pointer<IDENId> idPtr = _getIdFromString(id);
+    Uint8List idList = Uint8List(31);
+    for (int i = 0; i < 31; i++) {
+      idList[i] = idPtr.ref.data[i];
+    }
+    return bytesToHex(idList);
   }
 
   ffi.Pointer<IDENMerkleTree>? _createCorrectMT() {

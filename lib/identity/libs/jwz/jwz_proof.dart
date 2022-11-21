@@ -49,12 +49,14 @@ class JWZBaseProof extends Equatable {
   final List<String> piC;
 
   final String protocol;
+  final String curve;
 
   const JWZBaseProof(
       {required this.piA,
       required this.piB,
       required this.piC,
-      required this.protocol});
+      required this.protocol,
+      required this.curve});
 
   factory JWZBaseProof.fromJson(Map<String, dynamic> json) =>
       _$JWZBaseProofFromJson(json);
@@ -102,6 +104,9 @@ class JWZBaseProof extends Equatable {
 ///     ]
 ///   }
 /// ```
+
+/// FIXME: this is an Entity and part of proof_generation
+/// Move it to Domain and use mapper
 @JsonSerializable(explicitToJson: true)
 class JWZProof extends Equatable with Base64Encoder {
   final JWZBaseProof proof;
