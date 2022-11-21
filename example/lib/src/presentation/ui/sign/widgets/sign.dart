@@ -77,7 +77,6 @@ class _SignWidgetState extends State<SignWidget> {
         _buildSignature(),
         const SizedBox(height: 12),
         _buildErrorSection(),
-
       ],
     );
   }

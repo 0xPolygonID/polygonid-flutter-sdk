@@ -38,7 +38,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //appBar: _buildAppBar(),
       backgroundColor: CustomColors.background,
       body: SafeArea(
         child: SizedBox(
@@ -153,14 +152,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return SvgPicture.asset(
       ImageResources.logo,
       width: 120,
-    );
-  }
-
-  ///
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      elevation: 0.0,
-      backgroundColor: CustomColors.background,
     );
   }
 

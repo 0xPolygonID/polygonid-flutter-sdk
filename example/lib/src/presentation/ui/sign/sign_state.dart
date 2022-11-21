@@ -10,5 +10,6 @@ class SignState with _$SignState {
 
   const factory SignState.loaded({String? signature}) = LoadedSignState;
 
-  const factory SignState.error({required String message,String? signature}) = ErrorSignState;
+  const factory SignState.error({required String message, String? signature}) =
+      ErrorSignState;
 }

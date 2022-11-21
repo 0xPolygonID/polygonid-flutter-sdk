@@ -33,20 +33,18 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final StateIdentifierMapper _stateIdentifierMapper;
   final DidMapper _didMapper;
 
-  IdentityRepositoryImpl(
-    this._walletDataSource,
-    this._libIdentityDataSource,
-    this._remoteIdentityDataSource,
-    this._storageIdentityDataSource,
-    this._rpcDataSource,
-    this._localContractFilesDataSource,
-    this._hexMapper,
-    this._privateKeyMapper,
-    this._identityDTOMapper,
-    this._rhsNodeMapper,
-    this._stateIdentifierMapper,
-    this._didMapper,
-  );
+  IdentityRepositoryImpl(this._walletDataSource,
+      this._libIdentityDataSource,
+      this._remoteIdentityDataSource,
+      this._storageIdentityDataSource,
+      this._rpcDataSource,
+      this._localContractFilesDataSource,
+      this._hexMapper,
+      this._privateKeyMapper,
+      this._identityDTOMapper,
+      this._rhsNodeMapper,
+      this._stateIdentifierMapper,
+      this._didMapper,);
 
   /// Get a [PrivateIdentityEntity] from a String secret
   /// It will create a new [PrivateIdentity]
@@ -75,7 +73,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
   @override
   Future<String> getIdentifier({required String privateKey}) async {
     // Create a wallet
-    PrivadoIdWallet wallet = PrivadoIdWallet(_hexMapper.mapTo(privateKey));
+    PrivadoIdWallet wallet = await _walletDataSource.getWallet(
+        privateKey: _hexMapper.mapTo(privateKey));
 
     // Get the associated identifier
     String identifier = await _libIdentityDataSource.getIdentifier(
@@ -111,7 +110,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
         .getIdentity(identifier: identifier)
         .then((dto) => _identityDTOMapper.mapFrom(dto))
         .catchError((error) => throw IdentityException(error),
-            test: (error) => error is! UnknownIdentityException);
+        test: (error) => error is! UnknownIdentityException);
   }
 
   /// Get an [PrivateIdentityEntity] from an identifier and a privateKey
@@ -123,20 +122,22 @@ class IdentityRepositoryImpl extends IdentityRepository {
       {required String identifier, required String privateKey}) {
     return _storageIdentityDataSource
         .getIdentity(identifier: identifier)
-        .then((dto) => _walletDataSource
+        .then((dto) =>
+        _walletDataSource
             .getWallet(privateKey: _hexMapper.mapTo(privateKey))
-            .then((wallet) => _libIdentityDataSource
-                    .getIdentifier(
-                        pubX: wallet.publicKey[0], pubY: wallet.publicKey[1])
-                    .then((identifierFromKey) {
-                  if (identifierFromKey != identifier) {
-                    throw InvalidPrivateKeyException(privateKey);
-                  }
+            .then((wallet) =>
+            _libIdentityDataSource
+                .getIdentifier(
+                pubX: wallet.publicKey[0], pubY: wallet.publicKey[1])
+                .then((identifierFromKey) {
+              if (identifierFromKey != identifier) {
+                throw InvalidPrivateKeyException(privateKey);
+              }
 
-                  return _identityDTOMapper.mapPrivateFrom(dto, privateKey);
-                })))
+              return _identityDTOMapper.mapPrivateFrom(dto, privateKey);
+            })))
         .catchError((error) => throw IdentityException(error),
-            test: (error) => error is! UnknownIdentityException);
+        test: (error) => error is! UnknownIdentityException);
   }
 
   @override
@@ -161,7 +162,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
       {required String identifier, required String contractAddress}) {
     return _localContractFilesDataSource
         .loadStateContract(contractAddress)
-        .then((contract) => _rpcDataSource
+        .then((contract) =>
+        _rpcDataSource
             .getState(_stateIdentifierMapper.mapTo(identifier), contract)
             .catchError((error) => throw FetchIdentityStateException(error)));
   }
@@ -175,10 +177,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<Map<String, dynamic>> getNonRevProof(
-      {required String identityState,
-      required int nonce,
-      required String baseUrl}) {
+  Future<Map<String, dynamic>> getNonRevProof({required String identityState,
+    required int nonce,
+    required String baseUrl}) {
     return _remoteIdentityDataSource
         .getNonRevocationProof(identityState, nonce, baseUrl)
         .catchError((error) => throw NonRevProofException(error));
