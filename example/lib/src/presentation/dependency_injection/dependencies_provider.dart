@@ -9,6 +9,7 @@ import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/mappers
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/mappers/claim_model_state_mapper.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/mappers/proof_model_type_mapper.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_bloc.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/sign/sign_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/splash_bloc.dart';
 
 final getIt = GetIt.instance;
@@ -22,6 +23,7 @@ Future<void> init() async {
   registerClaimsDependencies();
   registerAuthDependencies();
   registerMappers();
+  registerSignDependencies();
 }
 
 ///
@@ -62,4 +64,9 @@ void registerMappers() {
   getIt.registerFactory(() => ProofModelTypeMapper());
   getIt.registerFactory(() => Iden3MessageTypeMapper());
   getIt.registerFactory(() => Iden3MessageMapper(getIt()));
+}
+
+///
+void registerSignDependencies() {
+  getIt.registerFactory(() => SignBloc(getIt()));
 }

@@ -16,6 +16,7 @@ class AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      useInheritedMediaQuery: true,
       title: CustomStrings.appTitle,
       initialRoute: Routes.initialPath,
       routes: Routes.getRoutes(context),

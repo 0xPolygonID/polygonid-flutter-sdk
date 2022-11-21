@@ -6,12 +6,12 @@ import '../entities/proof_entity.dart';
 
 abstract class Iden3commRepository {
   Future<void> authenticate({
-    required String url,
+    required Iden3MessageEntity message,
     required String authToken,
   });
 
   Future<String> getAuthToken(
-      {required PrivateIdentityEntity identityEntity,
+      {required PrivateIdentityEntity identity,
       required String message,
       required CircuitDataEntity authData,
       required String authClaim});
@@ -25,6 +25,4 @@ abstract class Iden3commRepository {
     String? didIdentifier,
     String? packageName,
   });
-
-  Future<String> getAuthCallback({required Iden3MessageEntity message});
 }

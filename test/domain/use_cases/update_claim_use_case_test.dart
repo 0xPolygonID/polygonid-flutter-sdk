@@ -12,6 +12,7 @@ const id = "theId";
 const issuer = "theIssuer";
 const otherIssuer = "theOtherIssuer";
 const identifier = "theIdentifier";
+const privateKey = "thePrivateKey";
 const state = ClaimState.active;
 const expiration = "theExpiration";
 const otherExpiration = "theOtherExpiration";
@@ -21,7 +22,12 @@ const otherData = {"some": "otherData"};
 final exception = Exception();
 
 final UpdateClaimParam param = UpdateClaimParam(
-    id: id, issuer: otherIssuer, expiration: otherExpiration, data: otherData);
+    id: id,
+    identifier: identifier,
+    privateKey: privateKey,
+    issuer: otherIssuer,
+    expiration: otherExpiration,
+    data: otherData);
 
 final claimEntity = ClaimEntity(
     issuer: issuer,
@@ -54,10 +60,16 @@ void main() {
       reset(credentialRepository);
 
       // Given
-      when(credentialRepository.getClaim(id: anyNamed('id')))
+      when(credentialRepository.getClaim(
+              identifier: anyNamed('identifier'),
+              privateKey: anyNamed('privateKey'),
+              claimId: anyNamed('claimId')))
           .thenAnswer((realInvocation) => Future.value(claimEntity));
-      when(credentialRepository.updateClaim(claim: anyNamed('claim')))
-          .thenAnswer((realInvocation) => Future.value(otherClaimEntity));
+      when(credentialRepository.saveClaims(
+              identifier: anyNamed('identifier'),
+              privateKey: anyNamed('privateKey'),
+              claims: anyNamed('claims')))
+          .thenAnswer((realInvocation) => Future.value(null));
     });
 
     test(
@@ -67,37 +79,52 @@ void main() {
       expect(await useCase.execute(param: param), otherClaimEntity);
 
       // Then
-      expect(
-          verify(credentialRepository.getClaim(id: captureAnyNamed('id')))
-              .captured
-              .first,
-          id);
-      expect(
-          verify(credentialRepository.updateClaim(
-                  claim: captureAnyNamed('claim')))
-              .captured
-              .first,
-          otherClaimEntity);
+      var capturedGet = verify(credentialRepository.getClaim(
+              identifier: captureAnyNamed('identifier'),
+              privateKey: captureAnyNamed('privateKey'),
+              claimId: captureAnyNamed('claimId')))
+          .captured;
+      expect(capturedGet[0], identifier);
+      expect(capturedGet[1], privateKey);
+      expect(capturedGet[2], id);
+
+      var capturedSave = verify(credentialRepository.saveClaims(
+              identifier: captureAnyNamed('identifier'),
+              privateKey: captureAnyNamed('privateKey'),
+              claims: captureAnyNamed('claims')))
+          .captured;
+      expect(capturedSave[0], identifier);
+      expect(capturedSave[1], privateKey);
+      expect(capturedSave[2], [otherClaimEntity]);
     });
 
     test(
         "Given an UpdateClaimParam, when I call execute and an error occurred, then I expect an exception to be thrown",
         () async {
       // Given
-      when(credentialRepository.getClaim(id: anyNamed('id')))
+      when(credentialRepository.getClaim(
+              identifier: anyNamed('identifier'),
+              privateKey: anyNamed('privateKey'),
+              claimId: anyNamed('claimId')))
           .thenAnswer((realInvocation) => Future.error(exception));
 
       // When
       await expectLater(useCase.execute(param: param), throwsA(exception));
 
       // Then
-      expect(
-          verify(credentialRepository.getClaim(id: captureAnyNamed('id')))
-              .captured
-              .first,
-          id);
-      verifyNever(
-          credentialRepository.updateClaim(claim: captureAnyNamed('claim')));
+      var capturedGet = verify(credentialRepository.getClaim(
+              identifier: captureAnyNamed('identifier'),
+              privateKey: captureAnyNamed('privateKey'),
+              claimId: captureAnyNamed('claimId')))
+          .captured;
+      expect(capturedGet[0], identifier);
+      expect(capturedGet[1], privateKey);
+      expect(capturedGet[2], id);
+
+      verifyNever(credentialRepository.saveClaims(
+          identifier: captureAnyNamed('identifier'),
+          privateKey: captureAnyNamed('privateKey'),
+          claims: captureAnyNamed('claims')));
     });
   });
 }

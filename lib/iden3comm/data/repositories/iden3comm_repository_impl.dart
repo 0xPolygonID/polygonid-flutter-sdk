@@ -22,6 +22,7 @@ import '../../../identity/data/data_sources/jwz_data_source.dart';
 import '../../../identity/data/mappers/hex_mapper.dart';
 import '../../../identity/domain/entities/private_identity_entity.dart';
 import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
+import '../../domain/exceptions/iden3comm_exceptions.dart';
 import '../../domain/repositories/iden3comm_repository.dart';
 import '../dtos/response/auth/auth_body_did_doc_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_metadata_devices_response.dart';
@@ -42,9 +43,21 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
 
   @override
   Future<void> authenticate({
-    required String url,
+    required Iden3MessageEntity message,
     required String authToken,
   }) async {
+    String? url;
+
+    try {
+      url = _authRequestMapper.mapTo(message).body.callbackUrl;
+    } catch (_) {
+      url = null;
+    }
+
+    if (url == null || url.isEmpty) {
+      throw NullAuthenticateCallbackException(message);
+    }
+
     Response res = await _remoteIden3commDataSource.authWithToken(
         token: authToken, url: url);
     if (res.statusCode != 200) {
@@ -56,13 +69,13 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
 
   @override
   Future<String> getAuthToken(
-      {required PrivateIdentityEntity identityEntity,
+      {required PrivateIdentityEntity identity,
       required String message,
       required CircuitDataEntity authData,
       required String authClaim}) async {
     return _jwzDataSource.getAuthToken(
-        privateKey: _hexMapper.mapTo(identityEntity.privateKey),
-        authClaim: authClaim, //identityEntity.authClaim,
+        privateKey: _hexMapper.mapTo(identity.privateKey),
+        authClaim: authClaim,
         message: message,
         circuitId: authData.circuitId,
         datFile: authData.datFile,
@@ -154,10 +167,5 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
           'getPublicKey Error: code: ${publicKeyResponse.statusCode} msg: ${publicKeyResponse.body}');
       throw NetworkException(publicKeyResponse);
     }
-  }
-
-  @override
-  Future<String> getAuthCallback({required Iden3MessageEntity message}) {
-    return Future.value(_authRequestMapper.mapTo(message).body.callbackUrl);
   }
 }

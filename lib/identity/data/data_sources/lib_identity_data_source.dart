@@ -7,18 +7,20 @@ import '../dtos/node_dto.dart';
 class LibIdentityDataSource {
   final Iden3CoreLib _iden3coreLib;
 
-  LibIdentityDataSource(
-    this._iden3coreLib,
-  );
+  LibIdentityDataSource(this._iden3coreLib);
 
   Future<String> getId(String id) {
-    return Future.value(_iden3coreLib.getIdFromString(id)).then((libId) {
+    try {
+      String libId = _iden3coreLib.getIdFromString(id);
+
       if (libId.isEmpty) {
         throw GenerateNonRevProofException(id);
       }
 
-      return libId;
-    });
+      return Future.value(libId);
+    } catch (e) {
+      return Future.error(e);
+    }
   }
 
   ///

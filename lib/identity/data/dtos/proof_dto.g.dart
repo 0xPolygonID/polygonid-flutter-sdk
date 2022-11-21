@@ -11,7 +11,9 @@ ProofDTO _$ProofDTOFromJson(Map<String, dynamic> json) => ProofDTO(
       siblings: (json['siblings'] as List<dynamic>)
           .map((e) => HashDTO.fromJson(e as Map<String, dynamic>))
           .toList(),
-      nodeAux: json['node_aux'],
+      nodeAux: json['node_aux'] == null
+          ? null
+          : NodeAuxDTO.fromJson(json['node_aux'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$ProofDTOToJson(ProofDTO instance) => <String, dynamic>{

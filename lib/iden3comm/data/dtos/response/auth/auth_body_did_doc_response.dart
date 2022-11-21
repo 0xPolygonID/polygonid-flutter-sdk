@@ -37,6 +37,7 @@ import 'auth_body_did_doc_service_response.dart';
 class AuthBodyDidDocResponse {
   final List<String>? context;
   final String? id;
+
   /*final List<String>? authentication;
   final List<String>? keyAgreement;*/
   final List<AuthBodyDidDocServiceResponse>? service;
@@ -79,6 +80,6 @@ class AuthBodyDidDocResponse {
             authentication,
         'keyAgreement':
             keyAgreement,*/
-        'service': service,
+        'service': service?.map((item) => item.toJson()).toList(),
       };
 }

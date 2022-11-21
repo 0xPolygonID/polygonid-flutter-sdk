@@ -70,6 +70,6 @@ class ContractFunctionCallBodyRequest {
   Map<String, dynamic> toJson() => {
         'transaction_data': transactionData.toJson(),
         'reason': reason,
-        'scope': scope,
+        'scope': scope?.map((item) => item.toJson()).toList(),
       };
 }

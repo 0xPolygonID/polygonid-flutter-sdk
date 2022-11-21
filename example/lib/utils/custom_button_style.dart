@@ -16,6 +16,18 @@ class CustomButtonStyle {
     ),
   );
 
+  static ButtonStyle primaryButtonStyleSmall = ElevatedButton.styleFrom(
+    elevation: 0,
+    enableFeedback: false,
+    padding:
+        const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 12.0, left: 12.0),
+    backgroundColor: CustomColors.primaryButton,
+    shadowColor: CustomColors.transparent,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(6),
+    ),
+  );
+
   static ButtonStyle outlinedPrimaryButtonStyle = ElevatedButton.styleFrom(
     elevation: 0,
     enableFeedback: false,

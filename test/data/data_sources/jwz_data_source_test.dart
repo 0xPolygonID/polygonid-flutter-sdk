@@ -87,7 +87,7 @@ void main() {
       reset(jwzIsolatesWrapper);
 
       // Given
-      when(walletDataSource.createWallet(secret: anyNamed('secret')))
+      when(walletDataSource.getWallet(privateKey: anyNamed('privateKey')))
           .thenAnswer((realInvocation) => Future.value(mockWallet));
       when(walletDataSource.signMessage(
               privateKey: anyNamed('privateKey'), message: anyNamed('message')))
@@ -114,8 +114,8 @@ void main() {
 
       // Then
       expect(
-          verify(walletDataSource.createWallet(
-                  secret: captureAnyNamed('secret')))
+          verify(walletDataSource.getWallet(
+                  privateKey: captureAnyNamed('privateKey')))
               .captured
               .first,
           privateKey);
@@ -160,8 +160,8 @@ void main() {
 
       // Then
       expect(
-          verify(walletDataSource.createWallet(
-                  secret: captureAnyNamed('secret')))
+          verify(walletDataSource.getWallet(
+                  privateKey: captureAnyNamed('privateKey')))
               .captured
               .first,
           privateKey);
@@ -205,8 +205,8 @@ void main() {
 
       // Then
       expect(
-          verify(walletDataSource.createWallet(
-                  secret: captureAnyNamed('secret')))
+          verify(walletDataSource.getWallet(
+                  privateKey: captureAnyNamed('privateKey')))
               .captured
               .first,
           privateKey);

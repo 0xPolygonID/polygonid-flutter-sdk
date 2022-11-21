@@ -11,7 +11,7 @@ import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_cas
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart'
     as _i11;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart'
-    as _i6;
+    as _i4;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_entity.dart'
     as _i7;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart'
@@ -21,11 +21,11 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proofs_use_case.dart'
     as _i8;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart'
-    as _i4;
+    as _i5;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart'
     as _i12;
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart'
-    as _i5;
+    as _i6;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -49,7 +49,7 @@ class MockIden3commRepository extends _i1.Mock
 
   @override
   _i3.Future<void> authenticate({
-    required String? url,
+    required _i4.Iden3MessageEntity? message,
     required String? authToken,
   }) =>
       (super.noSuchMethod(
@@ -57,7 +57,7 @@ class MockIden3commRepository extends _i1.Mock
           #authenticate,
           [],
           {
-            #url: url,
+            #message: message,
             #authToken: authToken,
           },
         ),
@@ -66,9 +66,9 @@ class MockIden3commRepository extends _i1.Mock
       ) as _i3.Future<void>);
   @override
   _i3.Future<String> getAuthToken({
-    required _i4.PrivateIdentityEntity? identityEntity,
+    required _i5.PrivateIdentityEntity? identity,
     required String? message,
-    required _i5.CircuitDataEntity? authData,
+    required _i6.CircuitDataEntity? authData,
     required String? authClaim,
   }) =>
       (super.noSuchMethod(
@@ -76,7 +76,7 @@ class MockIden3commRepository extends _i1.Mock
           #getAuthToken,
           [],
           {
-            #identityEntity: identityEntity,
+            #identity: identity,
             #message: message,
             #authData: authData,
             #authClaim: authClaim,
@@ -87,7 +87,7 @@ class MockIden3commRepository extends _i1.Mock
   @override
   _i3.Future<String> getAuthResponse({
     required String? identifier,
-    required _i6.Iden3MessageEntity? message,
+    required _i4.Iden3MessageEntity? message,
     required List<_i7.ProofEntity>? scope,
     String? pushUrl,
     String? pushToken,
@@ -107,17 +107,6 @@ class MockIden3commRepository extends _i1.Mock
             #didIdentifier: didIdentifier,
             #packageName: packageName,
           },
-        ),
-        returnValue: _i3.Future<String>.value(''),
-      ) as _i3.Future<String>);
-  @override
-  _i3.Future<String> getAuthCallback(
-          {required _i6.Iden3MessageEntity? message}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getAuthCallback,
-          [],
-          {#message: message},
         ),
         returnValue: _i3.Future<String>.value(''),
       ) as _i3.Future<String>);
