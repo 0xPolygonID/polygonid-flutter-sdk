@@ -28,6 +28,40 @@ dependencies:
         ref: branchPathName
 ```
 
+# Env variables
+
+### Required:
+
+**POLYGONID_ACCESS_MESSAGE** - Access message used for creating identities. <br />
+**INFURA_URL** - Infura base url. <br />
+**INFURA_RDP_URL** - Infura base rdp url. <br />
+**INFURA_API_KEY** - Infura api key. <br />
+**REVERSE_HASH_SERVICE_URL** - Reverse has service url. <br />
+**ID_STATE_CONTRACT_ADDR** - Identity state smart contract address. <br />
+
+### Not required:
+
+**PUSH_URL** - Polygon push gateway server base url. <br />
+
+# Deploy and check
+### Deploy
+1. Clone this repository.
+2. Generate `.env` and `.env.dev` files in the root folder of the project.
+3. Add required env variables (example):
+   ```bash
+    export POLYGONID_ACCESS_MESSAGE="access_message"
+    export INFURA_URL="https://polygon-mainnet.infura.io/v3/"
+    export INFURA_RDP_URL="wss://polygon-mainnet.infura.io/v3/"
+    export INFURA_API_KEY="secret"
+    export REVERSE_HASH_SERVICE_URL="rhs_url"
+    export ID_STATE_CONTRACT_ADDR="sc_address"
+    export PUSH_URL="push_url"
+   ```
+4. run `build_runner` to generate `.g.dart` files:
+```bash
+flutter pub run build_runner build --delete-conflicting-outputs
+```
+
 ## Features and bugs
 
 Please file feature requests and bugs at the [issue tracker][tracker].
