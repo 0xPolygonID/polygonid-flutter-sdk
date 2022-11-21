@@ -36,6 +36,9 @@ class CustomStrings {
   static const String deleteAllClaimsButtonCTA = "Remove all claims";
   static const String claimCardIssuerLabel = "Issuer:";
 
+  // SIGN
+  static const String signMessageResultPlaceHolder = "Message not yet signed";
+
   // ERROR
   static const String genericError = "A generic error occurred, try again";
   static const String iden3messageGenericError = "Error in the readed message";
