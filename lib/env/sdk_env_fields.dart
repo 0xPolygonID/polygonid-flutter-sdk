@@ -1,6 +1,5 @@
 /// Both DevEnv and Env must implement all these values
 abstract class SdkEnvFields {
-  abstract final String polygonIdAccessMessage;
   abstract final String networkName;
   abstract final String networkEnv;
   abstract final String infuraUrl;

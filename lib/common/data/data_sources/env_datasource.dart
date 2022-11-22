@@ -8,8 +8,6 @@ class EnvDataSource {
 
   String getConfig({required PolygonIdConfig config}) {
     switch (config) {
-      case PolygonIdConfig.polygonIdAccessMessage:
-        return _sdkEnv.polygonIdAccessMessage;
       case PolygonIdConfig.networkName:
         return _sdkEnv.networkName;
       case PolygonIdConfig.networkEnv:

@@ -11,9 +11,6 @@ class ProdEnv implements SdkEnv, SdkEnvFields {
   ProdEnv();
 
   @override
-  @EnviedField(varName: 'POLYGONID_ACCESS_MESSAGE', obfuscate: true)
-  final String polygonIdAccessMessage = _Env.polygonIdAccessMessage;
-  @override
   @EnviedField(varName: 'NETWORK_NAME', obfuscate: true)
   final String networkName = _Env.networkName;
   @override

@@ -1,12 +1,12 @@
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:web3dart/credentials.dart';
 import 'package:web3dart/crypto.dart';
 
 import '../../../common/utils/hex_utils.dart';
 import '../../../common/utils/uint8_list_utils.dart';
-import '../../../env/sdk_env.dart';
 import 'eddsa_babyjub.dart' as eddsaBabyJub;
 
 // TODO: move impl to a DS and transform this class to an entity
@@ -60,8 +60,8 @@ class PrivadoIdWallet {
     } else {
       prvKey = EthPrivateKey(secret);
     }
-    final signature = await prvKey.sign(
-        Uint8ArrayUtils.uint8ListfromString(SdkEnv().polygonIdAccessMessage));
+    final signature = await prvKey
+        .sign(Uint8ArrayUtils.uint8ListfromString(POLYGONID_ACCESS_MESSAGE));
     Uint8List privateBjjKey = keccak256(signature);
     final bjjWallet = PrivadoIdWallet(privateBjjKey);
     return bjjWallet;
