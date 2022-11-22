@@ -234,42 +234,22 @@ pub extern fn poseidon_hash(input: *const c_char) -> *mut c_char {
 }
 
 #[no_mangle]
-//pub extern fn hash_poseidon(tx_compressed_data: *const c_char, to_eth_addr: *const c_char, to_bjj_ay: *const c_char, rq_txcompressed_data_v2: *const c_char, rq_to_eth_addr: *const c_char, rq_to_bjj_ay: *const c_char) -> *mut c_char {
+pub extern fn poseidon_hash2(input: *const *const c_char) -> *mut c_char {
+    let mut hm_input : Vec<Fr> = Vec::new();
+
+    for element in input {
+        let element_str = unsafe { CStr::from_ptr(element) }.to_str().unwrap();
+        let b0: Fr = Fr::from_str(element_str).unwrap();
+        hm_input.push(b0.clone());
+    }
+
+    let poseidon = Poseidon::new();
+    let hm = poseidon.hash(hm_input).unwrap();
+    return CString::new(to_hex(&hm).as_str()).unwrap().into_raw();
+}
+
+#[no_mangle]
 pub extern fn hash_poseidon(claims_tree: *const c_char, revocation_tree: *const c_char, roots_tree_root: *const c_char) -> *mut c_char {
-    //let claims_tree_str = unsafe { CStr::from_ptr(claims_tree) }.to_str().unwrap();
-    //let claims_tree_bigint = match claims_tree_str.parse::<i32>() {
-    //        Ok(n) => BigInt::from(n),
-    //        Err(e) => BigInt::zero(),
-    //    };
-    //let b0: Fr = Fr::from_str(
-    //                &claims_tree_bigint.to_string(),
-    //            ).unwrap();
-
-    //let revocation_tree_str = unsafe { CStr::from_ptr(revocation_tree) }.to_str().unwrap();
-    //let revocation_tree_bigint = match revocation_tree_str.parse::<i32>() {
-    //            Ok(n) => BigInt::from(n),
-    //            Err(e) => BigInt::zero(),
-    //        };
-    //let b1: Fr = Fr::from_str(
-    //                &revocation_tree_bigint.to_string(),
-    //                ).unwrap();
-
-    //let roots_tree_root_str = unsafe { CStr::from_ptr(roots_tree_root) }.to_str().unwrap();
-    //    let roots_tree_root_bigint = match roots_tree_root_str.parse::<i32>() {
-    //                Ok(n) => BigInt::from(n),
-    //                Err(e) => BigInt::zero(),
-    //            };
-    //    let b2: Fr = Fr::from_str(
-    //                    &roots_tree_root_bigint.to_string(),
-    //                    ).unwrap();
-
-     //let x: Fr = Fr::from_str(
-     //            "4648350302718598839424502774166524253703556728225603109003078358379460427828",
-     //        ).unwrap();
-     //let x: Fr = Fr::from_str(
-     //                 "23520646440406697341854711669252473191475099932451150382882460752222516889098").unwrap();
-     //let y: Fr = Fr::zero();
-     //let z: Fr = Fr::zero();
 
     let claims_tree_str = unsafe { CStr::from_ptr(claims_tree) }.to_str().unwrap();
     let b0: Fr = Fr::from_str(claims_tree_str).unwrap();
@@ -280,43 +260,7 @@ pub extern fn hash_poseidon(claims_tree: *const c_char, revocation_tree: *const 
     let roots_tree_root_str = unsafe { CStr::from_ptr(roots_tree_root) }.to_str().unwrap();
     let b2: Fr = Fr::from_str(roots_tree_root_str).unwrap();
 
-    //if to_eth_addr.is_null() {
-    //    let to_eth_addr_str = unsafe { CStr::from_ptr(to_eth_addr) }.to_str().unwrap();
-    //    let b1: Fr = Fr::from_str(to_eth_addr_str).unwrap();
-    //    let mut b1_input = vec![b1.clone()];
-    //    hm_input.append(&mut b1_input);
-    //}
-
-    //if to_bjj_ay.is_null() {
-    //    let to_bjj_ay_str = unsafe { CStr::from_ptr(to_bjj_ay) }.to_str().unwrap();
-    //    let b2: Fr = Fr::from_str(to_bjj_ay_str).unwrap();
-    //    let mut b2_input = vec![b2.clone()];
-    //    hm_input.append(&mut b2_input);
-    //}
-
-    //if rq_txcompressed_data_v2.is_null() {
-    //    let rq_txcompressed_data_v2_str = unsafe { CStr::from_ptr(rq_txcompressed_data_v2) }.to_str().unwrap();
-    //    let b3: Fr = Fr::from_str(rq_txcompressed_data_v2_str).unwrap();
-    //    let mut b3_input = vec![b3.clone()];
-    //    hm_input.append(&mut b3_input);
-    //}
-
-    //if rq_to_eth_addr.is_null() {
-    //    let rq_to_eth_addr_str = unsafe { CStr::from_ptr(rq_to_eth_addr) }.to_str().unwrap();
-    //    let b4: Fr = Fr::from_str(rq_to_eth_addr_str).unwrap();
-    //    let mut b4_input = vec![b4.clone()];
-    //    hm_input.append(&mut b4_input);
-    //}
-
-    //if rq_to_bjj_ay.is_null() {
-    //    let rq_to_bjj_ay_str = unsafe { CStr::from_ptr(rq_to_bjj_ay) }.to_str().unwrap();
-    //    let b5: Fr = Fr::from_str(rq_to_bjj_ay_str).unwrap();
-    //    let mut b5_input = vec![b5.clone()];
-    //    hm_input.append(&mut b5_input);
-    //}
-
     let hm_input = vec![b0.clone(), b1.clone(), b2.clone()];
-    //let hm_input = vec![x.clone(), y.clone(), z.clone()];
     let poseidon = Poseidon::new();
     let hm = poseidon.hash(hm_input).unwrap();
     return CString::new(to_hex(&hm).as_str()).unwrap().into_raw();
