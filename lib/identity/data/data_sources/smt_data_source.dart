@@ -423,4 +423,47 @@ class SMTDataSource {
     }
     throw SMTKeyNotFound();
   }
+
+  Future<HashDTO> getProofTreeRoot(
+      {required ProofDTO proof, required NodeDTO node}) async {
+    assert(node.type == NodeTypeDTO.leaf);
+    HashDTO midKey;
+    if (proof.existence) {
+      midKey = node.hash;
+    } else {
+      if (proof.nodeAux == null) {
+        midKey = HashDTO.zero();
+      } else {
+        if (node.children[0] == HashDTO(data: proof.nodeAux!.key)) {
+          throw Exception(
+              "Non-existence proof being checked against hIndex equal to nodeAux");
+        }
+        midKey = HashDTO(data: proof.nodeAux!.key);
+      }
+    }
+
+    final path = _getPath(proof.siblings.length, node.children[0]);
+
+    for (int level = proof.siblings.length - 1; level >= 0; level--) {
+      late final List<HashDTO> newNodeChildren;
+      if (path[level]) {
+        newNodeChildren = [proof.siblings[level], midKey];
+      } else {
+        newNodeChildren = [midKey, proof.siblings[level]];
+      }
+      final nodeHashData = await _libBabyjubjubDataSource
+          .hashPoseidon(newNodeChildren.map((dto) => dto.data).toList());
+      midKey = HashDTO(data: nodeHashData);
+    }
+
+    return Future.value(midKey);
+  }
+
+  Future<bool> verifyProof(
+      {required ProofDTO proof,
+      required NodeDTO node,
+      required HashDTO treeRoot}) async {
+    return getProofTreeRoot(proof: proof, node: node)
+        .then((proofTreeRoot) => proofTreeRoot == treeRoot);
+  }
 }

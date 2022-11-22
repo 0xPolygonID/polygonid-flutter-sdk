@@ -123,4 +123,22 @@ class SMTRepositoryImpl implements SMTRepository {
             privateKey: privateKey)
         .then((dto) => _proofMapper.mapFrom(dto));
   }
+
+  Future<HashEntity> getProofTreeRoot(
+      {required ProofEntity proof, required NodeEntity node}) async {
+    return _smtDataSource
+        .getProofTreeRoot(
+            proof: _proofMapper.mapTo(proof), node: _nodeMapper.mapTo(node))
+        .then((dto) => _hashMapper.mapFrom(dto));
+  }
+
+  Future<bool> verifyProof(
+      {required ProofEntity proof,
+      required NodeEntity node,
+      required HashEntity treeRoot}) async {
+    return _smtDataSource.verifyProof(
+        proof: _proofMapper.mapTo(proof),
+        node: _nodeMapper.mapTo(node),
+        treeRoot: _hashMapper.mapTo(treeRoot));
+  }
 }
