@@ -3,6 +3,7 @@
 pub mod eddsa;
 
 use poseidon_rs::Poseidon;
+use std::ptr;
 pub type Fr = poseidon_rs::Fr;
 
 #[macro_use]
@@ -237,10 +238,18 @@ pub extern fn poseidon_hash(input: *const c_char) -> *mut c_char {
 pub extern fn poseidon_hash2(input: *const *const c_char) -> *mut c_char {
     let mut hm_input : Vec<Fr> = Vec::new();
 
-    for element in input {
-        let element_str = unsafe { CStr::from_ptr(element) }.to_str().unwrap();
-        let b0: Fr = Fr::from_str(element_str).unwrap();
-        hm_input.push(b0.clone());
+    let member_ptr_arr: *const *const c_char  = input;
+
+    for i in 0 .. {
+        if member_ptr_arr == ptr::null() {
+           continue;
+       }
+       let input_str = match unsafe { CStr::from_ptr(*(input.offset(i))) }.to_str() {
+          Err(_) => break,
+          Ok(string) => string,
+       };
+       let b0: Fr = Fr::from_str(input_str).unwrap();
+       hm_input.push(b0.clone());
     }
 
     let poseidon = Poseidon::new();
