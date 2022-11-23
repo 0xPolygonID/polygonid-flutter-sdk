@@ -4,6 +4,7 @@
 // import '../../libs/smt/node.dart';
 //
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_smt_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 
@@ -18,6 +19,7 @@ import '../mappers/proof_mapper.dart';
 
 class SMTRepositoryImpl implements SMTRepository {
   final SMTDataSource _smtDataSource;
+  final StorageSMTDataSource _storageSMTDataSource;
   final LibIdentityDataSource _libIdentityDataSource;
   final NodeMapper _nodeMapper;
   final HashMapper _hashMapper;
@@ -25,6 +27,7 @@ class SMTRepositoryImpl implements SMTRepository {
 
   SMTRepositoryImpl(
     this._smtDataSource,
+    this._storageSMTDataSource,
     this._libIdentityDataSource,
     this._nodeMapper,
     this._hashMapper,
@@ -60,7 +63,7 @@ class SMTRepositoryImpl implements SMTRepository {
       required String storeName,
       required String identifier,
       required String privateKey}) {
-    return _smtDataSource
+    return _storageSMTDataSource
         .getNode(
             key: _hashMapper.mapTo(hash),
             storeName: storeName,
@@ -74,7 +77,7 @@ class SMTRepositoryImpl implements SMTRepository {
       {required String storeName,
       required String identifier,
       required String privateKey}) {
-    return _smtDataSource
+    return _storageSMTDataSource
         .getRoot(
             storeName: storeName,
             identifier: identifier,
@@ -89,7 +92,7 @@ class SMTRepositoryImpl implements SMTRepository {
       required String storeName,
       required String identifier,
       required String privateKey}) {
-    return _smtDataSource.addNode(
+    return _storageSMTDataSource.addNode(
         key: _hashMapper.mapTo(hash),
         node: _nodeMapper.mapTo(node),
         storeName: storeName,
@@ -103,7 +106,7 @@ class SMTRepositoryImpl implements SMTRepository {
       required String storeName,
       required String identifier,
       required String privateKey}) {
-    return _smtDataSource.setRoot(
+    return _storageSMTDataSource.setRoot(
         root: _hashMapper.mapTo(root),
         storeName: storeName,
         identifier: identifier,

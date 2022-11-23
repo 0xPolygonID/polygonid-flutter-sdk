@@ -1614,8 +1614,8 @@ class Iden3CoreLib {
 
   bool _makeAuthClaim(
       ffi.Pointer<ffi.Pointer<IDENClaim>> claim,
-      String privKeyXHex,
-      String privKeyYHex,
+      String pubKeyX,
+      String pubKeyY,
       String revNonce,
       ffi.Pointer<ffi.Pointer<IDENStatus>> status) {
     final schemaHash = [
@@ -1654,7 +1654,7 @@ class Iden3CoreLib {
     }
 
     ffi.Pointer<ffi.Char> unsafePointerX =
-        privKeyXHex.toNativeUtf8().cast<ffi.Char>();
+        pubKeyX.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> keyX =
         malloc<ffi.Pointer<IDENBigInt>>();
     res =
@@ -1665,7 +1665,7 @@ class Iden3CoreLib {
     }
 
     ffi.Pointer<ffi.Char> unsafePointerY =
-        privKeyYHex.toNativeUtf8().cast<ffi.Char>();
+        pubKeyY.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<IDENBigInt>> keyY =
         malloc<ffi.Pointer<IDENBigInt>>();
     res =

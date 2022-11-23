@@ -1,5 +1,8 @@
+import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/smt_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/node_dto.dart';
 
 import '../../domain/entities/identity_entity.dart';
 import '../../domain/entities/private_identity_entity.dart';
@@ -12,6 +15,7 @@ import '../data_sources/local_contract_files_data_source.dart';
 import '../data_sources/remote_identity_data_source.dart';
 import '../data_sources/storage_identity_data_source.dart';
 import '../data_sources/wallet_data_source.dart';
+import '../dtos/hash_dto.dart';
 import '../dtos/identity_dto.dart';
 import '../mappers/did_mapper.dart';
 import '../mappers/hex_mapper.dart';
@@ -24,6 +28,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
   final LibIdentityDataSource _libIdentityDataSource;
   final LibPolygonIdCoreDataSource _libPolygonIdCoreDataSource;
+  final SMTDataSource _smtDataSource;
   final RemoteIdentityDataSource _remoteIdentityDataSource;
   final StorageIdentityDataSource _storageIdentityDataSource;
   final RPCDataSource _rpcDataSource;
@@ -39,6 +44,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._walletDataSource,
     this._libIdentityDataSource,
     this._libPolygonIdCoreDataSource,
+    this._smtDataSource,
     this._remoteIdentityDataSource,
     this._storageIdentityDataSource,
     this._rpcDataSource,
@@ -82,11 +88,30 @@ class IdentityRepositoryImpl extends IdentityRepository {
         privateKey: _hexMapper.mapTo(privateKey));
 
     // Get the associated claimsTreeRoot
-    String claimsTreeRoot = await _libIdentityDataSource.getClaimsTreeRoot(
-        pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]);
+    //String claimsTreeRoot = await _libIdentityDataSource.getClaimsTreeRoot(
+    //    pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]);
+
+    String authClaimSchema = "ca938857241db9451ea329256b9c06e5";
+    String authClaimNonce = "13260572831089785859";
+    String authClaim = _libPolygonIdCoreDataSource.issueClaim(
+        schema: authClaimSchema,
+        nonce: authClaimNonce,
+        pubX: wallet.publicKey[0],
+        pubY: wallet.publicKey[1]);
+
+    _smtDataSource.createMerkleTree(claimsTreeStoreName);
+
+    NodeDTO authClaimNode =
+        NodeDTO(children: children, hash: hash, type: NodeTypeDTO.leaf);
+
+    HashDTO claimsTreeRoot = await _smtDataSource.addLeaf(
+        newNodeLeaf: authClaimNode,
+        storeName: claimsTreeStoreName,
+        identifier: identifier,
+        privateKey: privateKey);
 
     String genesisId =
-        _libPolygonIdCoreDataSource.calculateGenesisId(claimsTreeRoot);
+        _libPolygonIdCoreDataSource.calculateGenesisId(claimsTreeRoot.data);
 
     return genesisId;
   }

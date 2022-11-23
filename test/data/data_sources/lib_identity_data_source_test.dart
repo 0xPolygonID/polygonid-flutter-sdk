@@ -72,7 +72,7 @@ void main() {
     });
   });
 
-  group("Get identifier", () {
+  /*group("Get identifier", () {
     test(
         "Given a pubX and a pubY, when I call getIdentifier, then I expect an identifier to be returned",
         () async {
@@ -107,7 +107,7 @@ void main() {
       expect(captured[0], pubX);
       expect(captured[1], pubY);
     });
-  });
+  });*/
 
   group("Get auth claim", () {
     test(

@@ -1,12 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_key_value_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:sembast/sembast.dart';
 
@@ -26,22 +22,12 @@ final exception = Exception();
 // Dependencies
 MockDatabase database = MockDatabase();
 MockIdentityStoreRefWrapper storeRefWrapper = MockIdentityStoreRefWrapper();
-MockStorageKeyValueDataSource storageKeyValueDataSource =
-    MockStorageKeyValueDataSource();
-MockWalletDataSource walletDataSource = MockWalletDataSource();
-MockHexMapper hexMapper = MockHexMapper();
 
 // Tested instance
-StorageIdentityDataSource dataSource = StorageIdentityDataSource(database,
-    storeRefWrapper, storageKeyValueDataSource, walletDataSource, hexMapper);
+StorageIdentityDataSource dataSource =
+    StorageIdentityDataSource(database, storeRefWrapper);
 
-@GenerateMocks([
-  Database,
-  IdentityStoreRefWrapper,
-  StorageKeyValueDataSource,
-  WalletDataSource,
-  HexMapper
-])
+@GenerateMocks([Database, IdentityStoreRefWrapper])
 void main() {
   group("Get identity", () {
     test(
@@ -104,17 +90,6 @@ void main() {
   });
 
   group("Store identity", () {
-    setUp(() {
-      when(storageKeyValueDataSource.remove(
-              key: anyNamed('key'), database: anyNamed('database')))
-          .thenAnswer((realInvocation) => Future.value(identifier));
-      when(storageKeyValueDataSource.store(
-              key: anyNamed('key'),
-              value: anyNamed('value'),
-              database: anyNamed('database')))
-          .thenAnswer((realInvocation) => Future.value(null));
-    });
-
     test(
         "Given an identifier and an identity, when I call storeIdentity, then I expect the process to be completed",
         () async {
@@ -137,22 +112,6 @@ void main() {
       expect(capturedPut[0], database);
       expect(capturedPut[1], identifier);
       expect(capturedPut[2], identityDTO.toJson());
-
-      var capturedRemove = verify(storageKeyValueDataSource.remove(
-              key: captureAnyNamed('key'),
-              database: captureAnyNamed('database')))
-          .captured;
-      expect(capturedRemove[0], currentIdentifierKey);
-      expect(capturedRemove[1], database);
-
-      var capturedStore = verify(storageKeyValueDataSource.store(
-              key: captureAnyNamed('key'),
-              value: captureAnyNamed('value'),
-              database: captureAnyNamed('database')))
-          .captured;
-      expect(capturedStore[0], currentIdentifierKey);
-      expect(capturedStore[1], identifier);
-      expect(capturedStore[2], database);
     });
 
     test(
@@ -177,28 +136,10 @@ void main() {
       expect(captured[0], database);
       expect(captured[1], identifier);
       expect(captured[2], identityDTO.toJson());
-
-      var capturedRemove = verify(storageKeyValueDataSource.remove(
-              key: captureAnyNamed('key'),
-              database: captureAnyNamed('database')))
-          .captured;
-      expect(capturedRemove[0], currentIdentifierKey);
-      expect(capturedRemove[1], database);
-
-      verifyNever(storageKeyValueDataSource.store(
-          key: captureAnyNamed('key'),
-          value: captureAnyNamed('value'),
-          database: captureAnyNamed('database')));
     });
   });
 
   group("Remove identity", () {
-    setUp(() {
-      when(storageKeyValueDataSource.remove(
-              key: anyNamed('key'), database: anyNamed('database')))
-          .thenAnswer((realInvocation) => Future.value());
-    });
-
     test(
         "Given an identifier, when I call removeIdentityTransact, then I expect the process to be completed",
         () async {
@@ -213,13 +154,6 @@ void main() {
           completes);
 
       // Then
-      var capturedKeyValue = verify(storageKeyValueDataSource.remove(
-              key: captureAnyNamed('key'),
-              database: captureAnyNamed('database')))
-          .captured;
-      expect(capturedKeyValue[0], currentIdentifierKey);
-      expect(capturedKeyValue[1], database);
-
       var capturedStore =
           verify(storeRefWrapper.remove(captureAny, captureAny)).captured;
       expect(capturedStore[0], database);
@@ -230,9 +164,6 @@ void main() {
         "Given an identifier, when I call removeIdentity and an error occurred, then I expect an exception to be thrown",
         () async {
       // Given
-      when(storageKeyValueDataSource.remove(
-              key: anyNamed('key'), database: anyNamed('database')))
-          .thenAnswer((realInvocation) => Future.error(exception));
 
       // When
       await expectLater(
@@ -241,13 +172,6 @@ void main() {
           throwsA(exception));
 
       // Then
-      var capturedKeyValue = verify(storageKeyValueDataSource.remove(
-              key: captureAnyNamed('key'),
-              database: captureAnyNamed('database')))
-          .captured;
-      expect(capturedKeyValue[0], currentIdentifierKey);
-      expect(capturedKeyValue[1], database);
-
       verifyNever(storeRefWrapper.remove(captureAny, captureAny));
     });
   });

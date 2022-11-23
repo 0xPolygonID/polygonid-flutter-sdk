@@ -14,7 +14,9 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/node_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/rhs_node_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/did_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
@@ -88,15 +90,17 @@ final mockAuthResponse = AuthResponse(
 );
 final rhsNodeDTOs = [
   const RhsNodeDTO(
-      node: RhsNodeItemDTO(
+      node: NodeDTO(
         children: [],
-        hash: '',
+        hash: HashDTO(data: ''),
+        type: NodeTypeDTO.leaf,
       ),
       status: ''),
   const RhsNodeDTO(
-      node: RhsNodeItemDTO(
+      node: NodeDTO(
         children: [],
-        hash: '',
+        hash: HashDTO(data: ''),
+        type: NodeTypeDTO.leaf,
       ),
       status: ''),
 ];

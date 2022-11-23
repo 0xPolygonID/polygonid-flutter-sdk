@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/node_dto.dart';
 
 /*### get node
 GET http://ec2-34-247-165-109.eu-west-1.compute.amazonaws.com:9999/node/c2cf7856100eaa0e5da6c167ecef46ed909d686901bb6807e0db13097c04f811
@@ -21,7 +22,8 @@ part 'rhs_node_dto.g.dart';
 /// Represents an Reverse Hash Service Node DTO.
 @JsonSerializable()
 class RhsNodeDTO extends Equatable {
-  final RhsNodeItemDTO node;
+  //final RhsNodeItemDTO node;
+  final NodeDTO node;
   final String status;
 
   const RhsNodeDTO({
@@ -38,7 +40,7 @@ class RhsNodeDTO extends Equatable {
   List<Object?> get props => [node, status];
 }
 
-@JsonSerializable()
+/*@JsonSerializable()
 class RhsNodeItemDTO extends Equatable {
   final List<String> children;
   final String hash;
@@ -52,4 +54,4 @@ class RhsNodeItemDTO extends Equatable {
 
   @override
   List<Object?> get props => [children, hash];
-}
+}*/

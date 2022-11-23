@@ -86,14 +86,21 @@ class LibPolygonIdCoreDataSource {
     return output;
   }
 
-  String createClaim() {
+  /// - schema - schema hash hex string
+  /// - nonce - nonce as big int string
+  String issueClaim(
+      {required String schema,
+      required String nonce,
+      required String pubX,
+      required String pubY}) {
+    //String revNonce = "15930428023331155902";
     String input = {
-      "schema": "ca938857241db9451ea329256b9c06e5",
-      "nonce": "13260572831089785859",
-      "indexSlotA":
-          "15468939102716291673743744296736132867654217747684906302563904432835075522918",
-      "indexSlotB":
-          "10564057289999407626309237453457578977834988122411075958351091519856342060014"
+      "schema": schema, //"ca938857241db9451ea329256b9c06e5",
+      "nonce": nonce, //"13260572831089785859",
+      "indexSlotA": pubX,
+      //"15468939102716291673743744296736132867654217747684906302563904432835075522918",
+      "indexSlotB": pubY,
+      //"10564057289999407626309237453457578977834988122411075958351091519856342060014"
     }.toString();
 
     String output = _polygonIdCoreLib.createClaim(input);

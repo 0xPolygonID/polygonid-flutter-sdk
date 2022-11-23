@@ -89,13 +89,14 @@ StorageClaimDataSource dataSource = StorageClaimDataSource(storeRefWrapper);
 @GenerateMocks([sem.Database, ClaimStoreRefWrapper])
 void main() {
   setUp(() {
-    if (getItSdk.isRegistered<sem.Database>(instanceName: claimDatabaseName)) {
-      getItSdk.unregister<sem.Database>(instanceName: claimDatabaseName);
+    if (getItSdk.isRegistered<sem.Database>(
+        instanceName: identityDatabaseName)) {
+      getItSdk.unregister<sem.Database>(instanceName: identityDatabaseName);
     }
 
     getItSdk.registerFactoryParamAsync<sem.Database, String, String>(
         (_, __) => Future.value(database),
-        instanceName: claimDatabaseName);
+        instanceName: identityDatabaseName);
 
     when(database.close()).thenAnswer((realInvocation) => Future.value(null));
   });

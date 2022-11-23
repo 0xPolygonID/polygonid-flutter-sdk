@@ -52,7 +52,7 @@ class RemoteIdentityDataSource {
       String revTreeRootHash =
           "0000000000000000000000000000000000000000000000000000000000000000";
       if (rhsNodeType == RhsNodeType.state) {
-        revTreeRootHash = rhsNode.node.children[1];
+        revTreeRootHash = rhsNode.node.children[1].data;
         issuer = {
           "state": rhsNode.node.hash,
           "root_of_roots": rhsNode.node.children[2],
@@ -77,30 +77,30 @@ class RemoteIdentityDataSource {
 
           if (nodeType == RhsNodeType.middle) {
             if (_testBit(key, depth)) {
-              nextKey = revNode.node.children[1];
+              nextKey = revNode.node.children[1].data;
               siblings.add(Uint8ArrayUtils.leBuff2int(
-                      hexToBytes(revNode.node.children[0]))
+                      hexToBytes(revNode.node.children[0].data))
                   .toString());
             } else {
-              nextKey = revNode.node.children[0];
+              nextKey = revNode.node.children[0].data;
               siblings.add(Uint8ArrayUtils.leBuff2int(
-                      hexToBytes(revNode.node.children[1]))
+                      hexToBytes(revNode.node.children[1].data))
                   .toString());
             }
           } else if (nodeType == RhsNodeType.leaf) {
             if (Uint8ArrayUtils.leBuff2int(key) ==
                 Uint8ArrayUtils.leBuff2int(
-                    hexToBytes(revNode.node.children[0]))) {
+                    hexToBytes(revNode.node.children[0].data))) {
               exists = true;
               return _mkProof(issuer, exists, siblings, null);
             }
             // We found a leaf whose entry didn't match hIndex
             Map<String, String> nodeAux = {
               "key": Uint8ArrayUtils.leBuff2int(
-                      hexToBytes(revNode.node.children[0]))
+                      hexToBytes(revNode.node.children[0].data))
                   .toString(),
               "value": Uint8ArrayUtils.leBuff2int(
-                      hexToBytes(revNode.node.children[1]))
+                      hexToBytes(revNode.node.children[1].data))
                   .toString(),
             };
             return _mkProof(issuer, exists, siblings, nodeAux);
