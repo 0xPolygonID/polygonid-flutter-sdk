@@ -40,7 +40,8 @@ void main() {
 
       //
       expect(
-        await dataSource.authWithToken(token: CommonMocks.token, url: CommonMocks.url),
+        await dataSource.authWithToken(
+            token: CommonMocks.token, url: CommonMocks.url),
         response,
       );
 
@@ -50,7 +51,8 @@ void main() {
               headers: captureAnyNamed('headers')))
           .captured;
 
-      expect(captured[0], Uri.parse(Iden3commMocks.authRequest.body.callbackUrl!));
+      expect(
+          captured[0], Uri.parse(Iden3commMocks.authRequest.body.callbackUrl!));
       expect(captured[1], CommonMocks.token);
       expect(captured[2], {
         HttpHeaders.acceptHeader: '*/*',
@@ -74,7 +76,8 @@ void main() {
 
       //
       await expectLater(
-        dataSource.authWithToken(token: CommonMocks.token, url: CommonMocks.url),
+        dataSource.authWithToken(
+            token: CommonMocks.token, url: CommonMocks.url),
         throwsA(isA<UnknownApiException>()),
       );
 
@@ -87,7 +90,8 @@ void main() {
         ),
       ).captured;
 
-      expect(captured[0], Uri.parse(Iden3commMocks.authRequest.body.callbackUrl!));
+      expect(
+          captured[0], Uri.parse(Iden3commMocks.authRequest.body.callbackUrl!));
       expect(captured[1], CommonMocks.token);
       expect(captured[2], {
         HttpHeaders.acceptHeader: '*/*',
