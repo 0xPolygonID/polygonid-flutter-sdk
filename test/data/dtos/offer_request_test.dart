@@ -1,26 +1,12 @@
 import 'dart:convert';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/offer/offer_request.dart';
 
-String data = '''
-{
-  "id": "1",
-  "typ": "theTyp",
-  "type": "theType",
-  "thid": "theThid",
-  "from": "theFrom",
-  "body": {
-    "url": "offerUrl",
-    "credentials": [
-      {
-        "id": "credentialsId",
-        "description": "credentialsDescription"
-      }
-    ]
-  }
-}
-''';
-var json = jsonDecode(data);
+import 'package:flutter_test/flutter_test.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_request.dart';
+
+import '../../common/iden3com_mocks.dart';
+
+var json = jsonDecode(Iden3commMocks.offerRequestJson);
 
 void main() {
   group("OfferRequest", () {
@@ -28,17 +14,13 @@ void main() {
       var offerRequest = OfferRequest.fromJson(json);
       expect(offerRequest.id, "1");
       expect(offerRequest.typ, "theTyp");
-      expect(offerRequest.type, "theType");
+      expect(offerRequest.type, Iden3MessageType.offer);
       expect(offerRequest.thid, "theThid");
       expect(offerRequest.from, "theFrom");
-      expect(offerRequest.body!.url, "offerUrl");
-      expect(offerRequest.body!.credentials![0].id, "credentialsId");
-      expect(offerRequest.body!.credentials![0].description,
+      expect(offerRequest.body.url, "offerUrl");
+      expect(offerRequest.body.credentials![0].id, "credentialsId");
+      expect(offerRequest.body.credentials![0].description,
           "credentialsDescription");
-    });
-    test("toJson", () {
-      var offerRequest = OfferRequest.fromJson(json);
-      expect(offerRequest.toJson(), json);
     });
   });
 }

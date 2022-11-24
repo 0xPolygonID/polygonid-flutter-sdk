@@ -12,9 +12,11 @@ import 'package:http/src/client.dart' as _i5;
 import 'package:http/src/response.dart' as _i2;
 import 'package:http/src/streamed_response.dart' as _i3;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_body_request.dart'
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart'
+    as _i11;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_body_request.dart'
     as _i4;
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart'
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_request.dart'
     as _i10;
 
 // ignore_for_file: type=lint
@@ -285,30 +287,6 @@ class MockClient extends _i1.Mock implements _i5.Client {
 /// See the documentation for Mockito's code generation for more information.
 class MockAuthRequest extends _i1.Mock implements _i10.AuthRequest {
   @override
-  String get id => (super.noSuchMethod(
-        Invocation.getter(#id),
-        returnValue: '',
-        returnValueForMissingStub: '',
-      ) as String);
-  @override
-  String get typ => (super.noSuchMethod(
-        Invocation.getter(#typ),
-        returnValue: '',
-        returnValueForMissingStub: '',
-      ) as String);
-  @override
-  String get type => (super.noSuchMethod(
-        Invocation.getter(#type),
-        returnValue: '',
-        returnValueForMissingStub: '',
-      ) as String);
-  @override
-  String get thid => (super.noSuchMethod(
-        Invocation.getter(#thid),
-        returnValue: '',
-        returnValueForMissingStub: '',
-      ) as String);
-  @override
   _i4.AuthBodyRequest get body => (super.noSuchMethod(
         Invocation.getter(#body),
         returnValue: _FakeAuthBodyRequest_2(
@@ -321,18 +299,33 @@ class MockAuthRequest extends _i1.Mock implements _i10.AuthRequest {
         ),
       ) as _i4.AuthBodyRequest);
   @override
+  String get id => (super.noSuchMethod(
+        Invocation.getter(#id),
+        returnValue: '',
+        returnValueForMissingStub: '',
+      ) as String);
+  @override
+  String get typ => (super.noSuchMethod(
+        Invocation.getter(#typ),
+        returnValue: '',
+        returnValueForMissingStub: '',
+      ) as String);
+  @override
+  _i11.Iden3MessageType get type => (super.noSuchMethod(
+        Invocation.getter(#type),
+        returnValue: _i11.Iden3MessageType.unknown,
+        returnValueForMissingStub: _i11.Iden3MessageType.unknown,
+      ) as _i11.Iden3MessageType);
+  @override
+  String get thid => (super.noSuchMethod(
+        Invocation.getter(#thid),
+        returnValue: '',
+        returnValueForMissingStub: '',
+      ) as String);
+  @override
   String get from => (super.noSuchMethod(
         Invocation.getter(#from),
         returnValue: '',
         returnValueForMissingStub: '',
       ) as String);
-  @override
-  Map<String, dynamic> toJson() => (super.noSuchMethod(
-        Invocation.method(
-          #toJson,
-          [],
-        ),
-        returnValue: <String, dynamic>{},
-        returnValueForMissingStub: <String, dynamic>{},
-      ) as Map<String, dynamic>);
 }

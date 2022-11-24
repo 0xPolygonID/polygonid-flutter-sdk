@@ -6,7 +6,7 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.da
 import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/sdk/mappers/iden3_message_mapper.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_body_request.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/data/secure_storage.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_event.dart';
@@ -17,12 +17,10 @@ import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
 import 'package:polygonid_flutter_sdk_example/utils/secure_storage_keys.dart';
 
 class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
-  final Iden3MessageMapper _iden3messageMapper;
   final ClaimModelMapper _mapper;
   final PolygonIdSdk _polygonIdSdk;
 
   ClaimsBloc(
-    this._iden3messageMapper,
     this._mapper,
     this._polygonIdSdk,
   ) : super(const ClaimsState.initial()) {
@@ -61,7 +59,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     emit(const ClaimsState.loading());
 
     Iden3MessageEntity iden3message = event.iden3message;
-    Map<String, dynamic>? messageBody = iden3message.body;
+    var messageBody = iden3message.body;
 
     if (messageBody == null) {
       emit(const ClaimsState.error("error in the readed message"));
@@ -69,12 +67,12 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     }
 
     try {
-      String url = messageBody['url'];
-      List<dynamic> credentials = messageBody['credentials'];
+      String url = messageBody.url;
+      var credentials = messageBody.credentials;
 
       List<CredentialRequestEntity> credentialRequestEntityList = [];
-      for (Map<String, dynamic> credential in credentials) {
-        String id = credential['id'];
+      for (CredentialOfferData credential in credentials) {
+        String id = credential.id;
 
         var entity = CredentialRequestEntity(
           identifier,
@@ -307,16 +305,16 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
   }
 
   ///
-  void _handleScanQrCodeResponse(
-      ScanQrCodeResponse event, Emitter<ClaimsState> emit) {
+  Future<void> _handleScanQrCodeResponse(
+      ScanQrCodeResponse event, Emitter<ClaimsState> emit) async {
     String? qrCodeResponse = event.response;
     if (qrCodeResponse == null || qrCodeResponse.isEmpty) {
       emit(const ClaimsState.error("no qr code scanned"));
     }
 
     try {
-      final Iden3MessageEntity iden3message =
-          _iden3messageMapper.mapFrom(qrCodeResponse!);
+      final Iden3MessageEntity iden3message = await _polygonIdSdk.iden3comm
+          .getIden3Message(message: qrCodeResponse!);
       emit(ClaimsState.qrCodeScanned(iden3message));
     } catch (error) {
       emit(const ClaimsState.error("Scanned code is not valid"));

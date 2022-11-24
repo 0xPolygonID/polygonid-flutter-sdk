@@ -1,16 +1,11 @@
 import 'dart:convert';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/onchain/contract_function_call_body_tx_data_request.dart';
 
-String data = '''
-{
-  "contract_address": "0x0000000000000000000000000000000000000000",
-  "method_id": "0x00000000",
-  "chain_id": 1,
-  "network": "mainnet"
-}
-''';
-var json = jsonDecode(data);
+import 'package:flutter_test/flutter_test.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/onchain/contract_function_call_body_tx_data_request.dart';
+
+import '../../common/iden3com_mocks.dart';
+
+var json = jsonDecode(Iden3commMocks.contractFunctionCallRequestBodyTxJson);
 
 void main() {
   group("ContractFunctionCallBodyTxDataRequest", () {

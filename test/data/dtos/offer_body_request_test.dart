@@ -1,20 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/offer/offer_body_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_body_request.dart';
 
-String data = '''
-{
-    "url": "offerUrl",
-    "credentials": [
-      {
-        "id": "credentialsId",
-        "description": "credentialsDescription"
-      }
-    ]
-}
-''';
-var json = jsonDecode(data);
+import '../../common/iden3com_mocks.dart';
+
+var json = jsonDecode(Iden3commMocks.offerRequestBodyJson);
 
 void main() {
   group("OfferBodyRequest", () {

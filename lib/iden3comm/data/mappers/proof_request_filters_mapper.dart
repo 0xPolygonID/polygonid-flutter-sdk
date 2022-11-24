@@ -1,20 +1,15 @@
 import 'package:country_code/country_code.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/mappers/from_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/proof_query_mapper.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_rules_query_request.dart';
 
 import '../../domain/entities/proof_request_entity.dart';
-import '../dtos/request/auth/proof_scope_rules_query_request.dart';
 
 class ProofRequestFiltersMapper
     extends FromMapper<ProofRequestEntity, List<FilterEntity>> {
-  final ProofQueryMapper _proofQueryMapper;
-
-  ProofRequestFiltersMapper(this._proofQueryMapper);
-
   @override
   List<FilterEntity> mapFrom(ProofRequestEntity from) {
-    ProofScopeRulesQueryRequest query = _proofQueryMapper.mapTo(from);
+    ProofScopeRulesQueryRequest query = from.scope.rules.query;
 
     List<FilterEntity> filters = [
       FilterEntity(

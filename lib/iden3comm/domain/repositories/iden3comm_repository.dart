@@ -1,4 +1,4 @@
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_request.dart';
 
 import '../../../identity/domain/entities/private_identity_entity.dart';
 import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
@@ -6,7 +6,7 @@ import '../entities/proof_entity.dart';
 
 abstract class Iden3commRepository {
   Future<void> authenticate({
-    required Iden3MessageEntity message,
+    required AuthRequest request,
     required String authToken,
   });
 
@@ -18,7 +18,7 @@ abstract class Iden3commRepository {
 
   Future<String> getAuthResponse({
     required String identifier,
-    required Iden3MessageEntity message,
+    required AuthRequest request,
     required List<ProofEntity> scope,
     String? pushUrl,
     String? pushToken,

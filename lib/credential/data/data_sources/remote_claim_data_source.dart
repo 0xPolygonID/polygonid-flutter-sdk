@@ -35,16 +35,24 @@ class RemoteClaimDataSource {
 
         /// FIXME: should be called in the repo
         //fetch schema
-        Map<String, dynamic>? schema =
-            await fetchSchema(url: fetchResponse.credential.credentialSchema.id)
-                .catchError((error) => null);
+        Map<String, dynamic>? schema;
+
+        try {
+          schema = await fetchSchema(
+              url: fetchResponse.credential.credentialSchema.id);
+        } catch (_) {}
 
         /// FIXME: should be called in the repo
         //fetch vocab
-        Map<String, dynamic>? vocab = await fetchVocab(
+        Map<String, dynamic>? vocab;
+
+        if (schema != null) {
+          try {
+            vocab = await fetchVocab(
                 schema: schema,
-                type: fetchResponse.credential.credentialSubject.type)
-            .catchError((error) => null);
+                type: fetchResponse.credential.credentialSubject.type);
+          } catch (_) {}
+        }
 
         if (fetchResponse.type == FetchClaimResponseType.issuance) {
           return ClaimDTO(
@@ -67,7 +75,7 @@ class RemoteClaimDataSource {
     });
   }
 
-  Future<Map<String, dynamic>?> fetchSchema({required String url}) async {
+  Future<Map<String, dynamic>> fetchSchema({required String url}) async {
     try {
       //fetch schema and save it
       String schemaId = url;
@@ -79,8 +87,9 @@ class RemoteClaimDataSource {
       var schemaUri = Uri.parse(schemaUrl);
       var schemaResponse = await get(schemaUri);
       if (schemaResponse.statusCode == 200) {
-        Map<String, dynamic>? schema = json.decode(schemaResponse.body);
+        Map<String, dynamic> schema = json.decode(schemaResponse.body);
         logger().d('schema: $schema');
+
         return schema;
       } else {
         throw NetworkException(schemaResponse);
@@ -91,12 +100,12 @@ class RemoteClaimDataSource {
     }
   }
 
-  Future<Map<String, dynamic>?> fetchVocab(
-      {required Map<String, dynamic>? schema, required String type}) async {
+  Future<Map<String, dynamic>> fetchVocab(
+      {required Map<String, dynamic> schema, required String type}) async {
     try {
       // fetch vocab from schema
       Map<String, dynamic>? schemaContext;
-      if (schema!['@context'] is List) {
+      if (schema['@context'] is List) {
         schemaContext = schema['@context'].first;
       } else if (schema['@context'] is Map) {
         schemaContext = schema['@context'];
@@ -116,8 +125,9 @@ class RemoteClaimDataSource {
           HttpHeaders.contentTypeHeader: 'application/json',
         });
         if (vocabResponse.statusCode == 200) {
-          Map<String, dynamic>? vocab = json.decode(vocabResponse.body);
+          Map<String, dynamic> vocab = json.decode(vocabResponse.body);
           logger().d('vocab: $vocab');
+
           return vocab;
         } else {
           throw NetworkException(vocabResponse);
