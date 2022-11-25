@@ -68,11 +68,11 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_en
 
 import 'offer_body_request.dart';
 
-class OfferRequest extends Iden3MessageEntity {
+class OfferIden3MessageEntity extends Iden3MessageEntity {
   @override
   final OfferBodyRequest body;
 
-  OfferRequest(
+  OfferIden3MessageEntity(
       {required String id,
       required String typ,
       required String thid,
@@ -88,10 +88,10 @@ class OfferRequest extends Iden3MessageEntity {
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [OfferRequest]
-  factory OfferRequest.fromJson(Map<String, dynamic> json) {
+  /// @returns [OfferIden3MessageEntity]
+  factory OfferIden3MessageEntity.fromJson(Map<String, dynamic> json) {
     OfferBodyRequest body = OfferBodyRequest.fromJson(json['body']);
-    return OfferRequest(
+    return OfferIden3MessageEntity(
       id: json['id'],
       typ: json['typ'],
       thid: json['thid'],
@@ -102,12 +102,12 @@ class OfferRequest extends Iden3MessageEntity {
 
   @override
   String toString() =>
-      "[OfferRequest] {id: $id, typ: $typ, type: $type, thid: $thid, body: $body, from: $from}";
+      "[OfferIden3MessageEntity] {id: $id, typ: $typ, type: $type, thid: $thid, body: $body, from: $from}";
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is OfferRequest &&
+      other is OfferIden3MessageEntity &&
           runtimeType == other.runtimeType &&
           id == other.id &&
           typ == other.typ &&

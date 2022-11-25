@@ -63,6 +63,7 @@ void main() {
   test(
     'Given a Iden3MessageEntity with an unsupported type, when I call execute, I expect a list of UnsupportedIden3MsgTypeException to be thrown',
     () async {
+      // When
       await useCase
           .execute(param: Iden3commMocks.fetchRequest)
           .then((_) => expect(true, false))

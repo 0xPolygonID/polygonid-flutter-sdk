@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/onchain/contract_function_call_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/onchain/contract_iden3_message_entity.dart';
 
 import '../../common/iden3com_mocks.dart';
 
@@ -12,7 +12,7 @@ void main() {
   group("ContractFunctionCallRequest", () {
     test("fromJson", () {
       var contractFunctionCallRequest =
-          ContractFunctionCallRequest.fromJson(json);
+          ContractIden3MessageEntity.fromJson(json);
       expect(contractFunctionCallRequest.id, "theId");
       expect(contractFunctionCallRequest.typ, "theTyp");
       expect(contractFunctionCallRequest.type,

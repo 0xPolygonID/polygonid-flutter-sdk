@@ -1,17 +1,17 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_request.dart';
 
 import '../../../common/domain/use_cases/get_config_use_case.dart';
 import '../../../identity/domain/use_cases/get_did_identifier_use_case.dart';
 import '../entities/proof_entity.dart';
+import '../entities/request/auth/auth_iden3_message_entity.dart';
 import '../repositories/iden3comm_repository.dart';
 import 'get_auth_token_use_case.dart';
 import 'get_proofs_use_case.dart';
 
 class AuthenticateParam {
-  final AuthRequest message;
+  final AuthIden3MessageEntity message;
   final String identifier;
   final String privateKey;
   final String? pushToken;

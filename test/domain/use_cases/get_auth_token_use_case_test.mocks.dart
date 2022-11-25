@@ -19,7 +19,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_entity.dar
     as _i11;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart'
     as _i17;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_request.dart'
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart'
     as _i10;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart'
     as _i8;
@@ -122,7 +122,7 @@ class MockIden3commRepository extends _i1.Mock
 
   @override
   _i9.Future<void> authenticate({
-    required _i10.AuthRequest? request,
+    required _i10.AuthIden3MessageEntity? request,
     required String? authToken,
   }) =>
       (super.noSuchMethod(
@@ -160,7 +160,7 @@ class MockIden3commRepository extends _i1.Mock
   @override
   _i9.Future<String> getAuthResponse({
     required String? identifier,
-    required _i10.AuthRequest? request,
+    required _i10.AuthIden3MessageEntity? request,
     required List<_i11.ProofEntity>? scope,
     String? pushUrl,
     String? pushToken,

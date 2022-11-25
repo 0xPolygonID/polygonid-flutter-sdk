@@ -68,12 +68,12 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_en
 
 import 'fetch_body_request.dart';
 
-class FetchRequest extends Iden3MessageEntity {
+class FetchIden3MessageEntity extends Iden3MessageEntity {
   @override
   final FetchBodyRequest body;
   final String to;
 
-  FetchRequest(
+  FetchIden3MessageEntity(
       {required String id,
       required String typ,
       required String thid,
@@ -90,11 +90,11 @@ class FetchRequest extends Iden3MessageEntity {
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [FetchRequest]
-  factory FetchRequest.fromJson(Map<String, dynamic> json) {
+  /// @returns [FetchIden3MessageEntity]
+  factory FetchIden3MessageEntity.fromJson(Map<String, dynamic> json) {
     FetchBodyRequest body = FetchBodyRequest.fromJson(json['body']);
 
-    return FetchRequest(
+    return FetchIden3MessageEntity(
       id: json['id'],
       typ: json['typ'],
       thid: json['thid'],
@@ -106,12 +106,12 @@ class FetchRequest extends Iden3MessageEntity {
 
   @override
   String toString() =>
-      "[FetchRequest] {id: $id, typ: $typ, type: $type, thid: $thid, body: $body, from: $from, to: $to}";
+      "[FetchIden3MessageEntity] {id: $id, typ: $typ, type: $type, thid: $thid, body: $body, from: $from, to: $to}";
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is FetchRequest &&
+      other is FetchIden3MessageEntity &&
           runtimeType == other.runtimeType &&
           id == other.id &&
           typ == other.typ &&

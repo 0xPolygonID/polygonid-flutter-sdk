@@ -14,8 +14,8 @@ class GetVocabsUseCase
   @override
   Future<List<Map<String, dynamic>>> execute(
       {required Iden3MessageEntity param}) async {
-    if (param.type != Iden3MessageType.auth ||
-        param.type != Iden3MessageType.contractFunctionCall) {
+    if (![Iden3MessageType.auth, Iden3MessageType.contractFunctionCall]
+        .contains(param.type)) {
       return Future.error(UnsupportedIden3MsgTypeException(param.type));
     }
 
@@ -29,9 +29,15 @@ class GetVocabsUseCase
           schemaUrl.isNotEmpty &&
           schemaType != null &&
           schemaType.isNotEmpty) {
-        result.add(await _credentialRepository.fetchSchema(url: schemaUrl).then(
-            (schema) => _credentialRepository.fetchVocab(
-                schema: schema, type: schemaType)));
+        Map<String, dynamic> vocab = await _credentialRepository
+            .fetchSchema(url: schemaUrl)
+            .then((schema) => _credentialRepository.fetchVocab(
+                schema: schema, type: schemaType))
+            .catchError((error) => <String, dynamic>{});
+
+        if (vocab.isNotEmpty) {
+          result.add(vocab);
+        }
       }
     }
 

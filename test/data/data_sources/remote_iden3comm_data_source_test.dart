@@ -6,7 +6,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
 
 import '../../common/common_mocks.dart';
 import '../../common/iden3com_mocks.dart';
@@ -23,7 +23,6 @@ MockClient client = MockClient();
 RemoteIden3commDataSource dataSource = RemoteIden3commDataSource(client);
 
 @GenerateMocks([Client])
-@GenerateNiceMocks([MockSpec<AuthRequest>()])
 void main() {
   group("Auhtenticate with token", () {
     test(

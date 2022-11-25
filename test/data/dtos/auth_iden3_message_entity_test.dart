@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
 
 import '../../common/common_mocks.dart';
 import '../../common/iden3com_mocks.dart';
@@ -10,11 +10,11 @@ import '../../common/iden3com_mocks.dart';
 var json = jsonDecode(Iden3commMocks.authRequestJson);
 
 void main() {
-  group("AuthRequest", () {
+  group("AuthIden3MessageEntity", () {
     test(
       "fromJson",
       () {
-        var authRequest = AuthRequest.fromJson(json);
+        var authRequest = AuthIden3MessageEntity.fromJson(json);
         expect(authRequest.id, "4dd6479b-99b6-405c-ba9e-c7b18d251a5e");
         expect(authRequest.thid, "4dd6479b-99b6-405c-ba9e-c7b18d251a5e");
         expect(authRequest.from, "1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ");

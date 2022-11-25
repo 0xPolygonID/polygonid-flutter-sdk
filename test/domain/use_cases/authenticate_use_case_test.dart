@@ -5,7 +5,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
@@ -32,10 +32,10 @@ AuthenticateUseCase useCase = AuthenticateUseCase(
 );
 
 // Data
-/// We assume [AuthRequest.fromJson] has been tested
+/// We assume [AuthIden3MessageEntity.fromJson] has been tested
 const issuerMessage =
     '{"id":"06da1153-59a1-4ed9-9d31-c86b5596a48e","thid":"06da1153-59a1-4ed9-9d31-c86b5596a48e","from":"1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ","typ":"application/iden3comm-plain-json","type":"https://iden3-communication.io/authorization/1.0/request","body":{"reason":"test flow","message":"","callbackUrl":"https://verifier.polygonid.me/api/callback?sessionId=483898","scope":[]}}';
-final authRequest = AuthRequest.fromJson(jsonDecode(issuerMessage));
+final authRequest = AuthIden3MessageEntity.fromJson(jsonDecode(issuerMessage));
 const identifier = "theIdentifier";
 const pushToken = "thePushToken";
 const privateKey = "thePrivateKey";

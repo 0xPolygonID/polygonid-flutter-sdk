@@ -68,11 +68,11 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_en
 
 import 'auth_body_request.dart';
 
-class AuthRequest extends Iden3MessageEntity {
+class AuthIden3MessageEntity extends Iden3MessageEntity {
   @override
   final AuthBodyRequest body;
 
-  AuthRequest(
+  AuthIden3MessageEntity(
       {required String id,
       required String typ,
       required String thid,
@@ -88,11 +88,11 @@ class AuthRequest extends Iden3MessageEntity {
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [AuthRequest]
-  factory AuthRequest.fromJson(Map<String, dynamic> json) {
+  /// @returns [AuthIden3MessageEntity]
+  factory AuthIden3MessageEntity.fromJson(Map<String, dynamic> json) {
     AuthBodyRequest body = AuthBodyRequest.fromJson(json['body']);
 
-    return AuthRequest(
+    return AuthIden3MessageEntity(
       id: json['id'],
       typ: json['typ'],
       thid: json['thid'],
@@ -103,12 +103,12 @@ class AuthRequest extends Iden3MessageEntity {
 
   @override
   String toString() =>
-      "[AuthRequest] {id: $id, typ: $typ, type: $type, thid: $thid, body: $body, from: $from}";
+      "[AuthIden3MessageEntity] {id: $id, typ: $typ, type: $type, thid: $thid, body: $body, from: $from}";
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is AuthRequest &&
+      other is AuthIden3MessageEntity &&
           runtimeType == other.runtimeType &&
           id == other.id &&
           typ == other.typ &&

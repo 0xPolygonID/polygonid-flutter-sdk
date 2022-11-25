@@ -72,7 +72,7 @@ class FetchBodyRequest {
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [FetchRequest]
+  /// @returns [FetchBodyRequest]
   factory FetchBodyRequest.fromJson(Map<String, dynamic> json) {
     return FetchBodyRequest(
       id: json['id'],

@@ -13,7 +13,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3co
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../common/domain/domain_logger.dart';
@@ -40,7 +40,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
 
   @override
   Future<void> authenticate({
-    required AuthRequest request,
+    required AuthIden3MessageEntity request,
     required String authToken,
   }) async {
     String? url = request.body.callbackUrl;
@@ -76,7 +76,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   @override
   Future<String> getAuthResponse({
     required String identifier,
-    required AuthRequest request,
+    required AuthIden3MessageEntity request,
     required List<ProofEntity> scope,
     String? pushUrl,
     String? pushToken,

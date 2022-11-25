@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/fetch/fetch_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/fetch/fetch_riden3_message_entity.dart';
 
 import '../../common/iden3com_mocks.dart';
 
@@ -13,9 +13,9 @@ const String to = "theTo";
 const String id = "theId";
 
 void main() {
-  group("FetchRequest", () {
+  group("FetchIden3MessageEntity", () {
     test("fromJson", () {
-      var fetchRequest = FetchRequest.fromJson(json);
+      var fetchRequest = FetchIden3MessageEntity.fromJson(json);
       expect(fetchRequest.id, "4dd6479b-99b6-405c-ba9e-c7b18d251a5e");
       expect(fetchRequest.typ, "application/iden3comm-plain-json");
       expect(fetchRequest.type, Iden3MessageType.issuance);

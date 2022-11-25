@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/fetch/fetch_request.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_request.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/onchain/contract_function_call_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/fetch/fetch_riden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/onchain/contract_iden3_message_entity.dart';
 
 import 'common_mocks.dart';
 
@@ -69,7 +69,7 @@ class Iden3commMocks {
   static ProofScopeRequest otherProofScopeRequest =
       ProofScopeRequest.fromJson(jsonDecode(otherProofScopeRequestJson));
 
-  /// [AuthRequest]
+  /// [AuthIden3MessageEntity]
   static String authRequestBodyJson = '''
   {
   "reason": "test flow",
@@ -99,10 +99,10 @@ class Iden3commMocks {
 }
 ''';
 
-  static AuthRequest authRequest =
-      AuthRequest.fromJson(jsonDecode(authRequestJson));
+  static AuthIden3MessageEntity authRequest =
+      AuthIden3MessageEntity.fromJson(jsonDecode(authRequestJson));
 
-  /// [FetchRequest]
+  /// [FetchIden3MessageEntity]
   static String fetchRequestBodyJson = '''
   {
     "id": "fe4d9b5e-7b7e-4b9e-8c5a-1b5b4b4e4e4e"
@@ -120,10 +120,10 @@ class Iden3commMocks {
   "body": $fetchRequestBodyJson
 }
 ''';
-  static FetchRequest fetchRequest =
-      FetchRequest.fromJson(jsonDecode(fetchRequestJson));
+  static FetchIden3MessageEntity fetchRequest =
+      FetchIden3MessageEntity.fromJson(jsonDecode(fetchRequestJson));
 
-  /// [OfferRequest]
+  /// [OfferIden3MessageEntity]
   static String offerRequestBodyJson = '''
   {
       "url": "offerUrl",
@@ -145,8 +145,8 @@ class Iden3commMocks {
   "body": $offerRequestBodyJson
 }
 ''';
-  static OfferRequest offerRequest =
-      OfferRequest.fromJson(jsonDecode(offerRequestJson));
+  static OfferIden3MessageEntity offerRequest =
+      OfferIden3MessageEntity.fromJson(jsonDecode(offerRequestJson));
 
   /// [ContractFunctionCallRequest]
   static String contractFunctionCallRequestBodyTxJson = '''
@@ -176,7 +176,7 @@ class Iden3commMocks {
 }
 ''';
 
-  static ContractFunctionCallRequest contractFunctionCallRequest =
-      ContractFunctionCallRequest.fromJson(
+  static ContractIden3MessageEntity contractFunctionCallRequest =
+      ContractIden3MessageEntity.fromJson(
           jsonDecode(contractFunctionCallRequestJson));
 }

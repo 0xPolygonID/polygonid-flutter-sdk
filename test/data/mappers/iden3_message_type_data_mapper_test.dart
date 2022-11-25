@@ -27,7 +27,7 @@ void main() {
       final result = mapper.mapTo(Iden3MessageType.issuance);
       expect(result, issuanceType);
     });
-    test('should return the correct type for contractFunctionCall', () {
+    test('should return the correct type for contract', () {
       final result = mapper.mapTo(Iden3MessageType.contractFunctionCall);
       expect(result, contractFunctionCallType);
     });

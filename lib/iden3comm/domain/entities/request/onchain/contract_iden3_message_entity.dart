@@ -41,11 +41,11 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_en
 
 import 'contract_function_call_body_request.dart';
 
-class ContractFunctionCallRequest extends Iden3MessageEntity {
+class ContractIden3MessageEntity extends Iden3MessageEntity {
   @override
   final ContractFunctionCallBodyRequest body;
 
-  ContractFunctionCallRequest(
+  ContractIden3MessageEntity(
       {required String id, required String typ, required this.body})
       : super(
             from: '',
@@ -57,11 +57,11 @@ class ContractFunctionCallRequest extends Iden3MessageEntity {
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [ContractFunctionCallRequest]
-  factory ContractFunctionCallRequest.fromJson(Map<String, dynamic> json) {
+  /// @returns [ContractIden3MessageEntity]
+  factory ContractIden3MessageEntity.fromJson(Map<String, dynamic> json) {
     ContractFunctionCallBodyRequest body =
         ContractFunctionCallBodyRequest.fromJson(json['body']);
-    return ContractFunctionCallRequest(
+    return ContractIden3MessageEntity(
       id: json['id'],
       typ: json['typ'],
       body: body,
@@ -70,12 +70,12 @@ class ContractFunctionCallRequest extends Iden3MessageEntity {
 
   @override
   String toString() =>
-      "[ContractFunctionCallRequest] {id: $id, typ: $typ, type: $type, thid: $thid, body: $body, from: $from}";
+      "[ContractIden3MessageEntity] {id: $id, typ: $typ, type: $type, thid: $thid, body: $body, from: $from}";
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ContractFunctionCallRequest &&
+      other is ContractIden3MessageEntity &&
           runtimeType == other.runtimeType &&
           id == other.id &&
           typ == other.typ &&

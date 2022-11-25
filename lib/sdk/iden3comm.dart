@@ -1,7 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart';
@@ -70,7 +70,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       required String identifier,
       required String privateKey,
       String? pushToken}) {
-    if (message is! AuthRequest) {
+    if (message is! AuthIden3MessageEntity) {
       throw InvalidIden3MsgTypeException(Iden3MessageType.auth, message.type);
     }
 
