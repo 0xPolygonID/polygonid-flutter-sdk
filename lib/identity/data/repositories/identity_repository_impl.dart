@@ -6,7 +6,6 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_dat
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/smt_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
-import 'package:web3dart/crypto.dart';
 
 import '../../domain/entities/identity_entity.dart';
 import '../../domain/entities/private_identity_entity.dart';
@@ -120,10 +119,10 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
       String hashIndex =
           await _libBabyJubJubDataSource.hashPoseidon(children.sublist(0, 4));
-      HashDTO hIndex = HashDTO(data: hexToInt(hashIndex).toString());
+      HashDTO hIndex = HashDTO(data: hashIndex);
       String hashValue =
           await _libBabyJubJubDataSource.hashPoseidon(children.sublist(4));
-      HashDTO hValue = HashDTO(data: hexToInt(hashValue).toString());
+      HashDTO hValue = HashDTO(data: hashValue);
 
       final claimDTO = IdentityClaimDTO(
           children: childrenHash, hashIndex: hIndex, hashValue: hValue);
