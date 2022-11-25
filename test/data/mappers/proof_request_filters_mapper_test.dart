@@ -2,13 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/proof_scope_request.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/proof_scope_rules_query_request.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/proof_scope_rules_request.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/proof_query_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/proof_query_param_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/proof_request_filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_rules_query_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_rules_request.dart';
 
 String mockQueryRequestLT = '''
 {
@@ -152,97 +150,110 @@ ProofScopeRequest proofScopeRequest = ProofScopeRequest(
     query: ProofScopeRulesQueryRequest.fromJson(jsonDecode(mockQueryRequestLT)),
   ),
 );
-ProofQueryParamMapper proofQueryParamMapper = ProofQueryParamMapper();
 ProofQueryParamEntity proofQueryParamEntity =
-    proofQueryParamMapper.mapFrom(proofScopeRequest);
+    ProofQueryParamEntity("theField", [0, 1, 2], 4);
 ProofRequestEntity mockProofRequestEntityLT = ProofRequestEntity(
-  "1",
-  "credentialAtomicQuerySig",
-  false,
-  {
-    "audience": "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b",
-    "challenge": 74657374,
-    "query": jsonDecode(mockQueryRequestLT),
-  },
+  ProofScopeRequest(
+    id: 1,
+    circuit_id: "credentialAtomicQuerySig",
+    rules: ProofScopeRulesRequest(
+      audience: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
+      challenge: 74657374,
+      query:
+          ProofScopeRulesQueryRequest.fromJson(jsonDecode(mockQueryRequestLT)),
+    ),
+  ),
   proofQueryParamEntity,
 );
 
 ProofRequestEntity mockProofRequestEntityGT = ProofRequestEntity(
-  "1",
-  "credentialAtomicQuerySig",
-  false,
-  {
-    "audience": "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b",
-    "challenge": 74657374,
-    "query": jsonDecode(mockQueryRequestGT),
-  },
+  ProofScopeRequest(
+    id: 1,
+    circuit_id: "credentialAtomicQuerySig",
+    rules: ProofScopeRulesRequest(
+      audience: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
+      challenge: 74657374,
+      query:
+          ProofScopeRulesQueryRequest.fromJson(jsonDecode(mockQueryRequestGT)),
+    ),
+  ),
   proofQueryParamEntity,
 );
 
 ProofRequestEntity mockProofRequestEntityEQ = ProofRequestEntity(
-  "1",
-  "credentialAtomicQuerySig",
-  false,
-  {
-    "audience": "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b",
-    "challenge": 74657374,
-    "query": jsonDecode(mockQueryRequestEQ),
-  },
+  ProofScopeRequest(
+    id: 1,
+    circuit_id: "credentialAtomicQuerySig",
+    rules: ProofScopeRulesRequest(
+      audience: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
+      challenge: 74657374,
+      query:
+          ProofScopeRulesQueryRequest.fromJson(jsonDecode(mockQueryRequestEQ)),
+    ),
+  ),
   proofQueryParamEntity,
 );
 
 ProofRequestEntity mockProofRequestEntityIN = ProofRequestEntity(
-  "1",
-  "credentialAtomicQuerySig",
-  false,
-  {
-    "audience": "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b",
-    "challenge": 74657374,
-    "query": jsonDecode(mockQueryRequestIN),
-  },
+  ProofScopeRequest(
+    id: 1,
+    circuit_id: "credentialAtomicQuerySig",
+    rules: ProofScopeRulesRequest(
+      audience: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
+      challenge: 74657374,
+      query:
+          ProofScopeRulesQueryRequest.fromJson(jsonDecode(mockQueryRequestIN)),
+    ),
+  ),
   proofQueryParamEntity,
 );
 
 ProofRequestEntity mockProofRequestEntityNIN = ProofRequestEntity(
-  "1",
-  "credentialAtomicQuerySig",
-  false,
-  {
-    "audience": "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b",
-    "challenge": 74657374,
-    "query": jsonDecode(mockQueryRequestNIN),
-  },
+  ProofScopeRequest(
+    id: 1,
+    circuit_id: "credentialAtomicQuerySig",
+    rules: ProofScopeRulesRequest(
+      audience: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
+      challenge: 74657374,
+      query:
+          ProofScopeRulesQueryRequest.fromJson(jsonDecode(mockQueryRequestNIN)),
+    ),
+  ),
   proofQueryParamEntity,
 );
 
 ProofRequestEntity mockProofRequestEntityNINCountry = ProofRequestEntity(
-  "1",
-  "credentialAtomicQuerySig",
-  false,
-  {
-    "audience": "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b",
-    "challenge": 74657374,
-    "query": jsonDecode(mockQueryRequestNINCountry),
-  },
+  ProofScopeRequest(
+    id: 1,
+    circuit_id: "credentialAtomicQuerySig",
+    rules: ProofScopeRulesRequest(
+      audience: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
+      challenge: 74657374,
+      query: ProofScopeRulesQueryRequest.fromJson(
+          jsonDecode(mockQueryRequestNINCountry)),
+    ),
+  ),
   proofQueryParamEntity,
 );
 
 ProofRequestEntity mockProofRequestEntityNotSupportedOperator =
     ProofRequestEntity(
-  "1",
-  "credentialAtomicQuerySig",
-  false,
-  {
-    "audience": "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b",
-    "challenge": 74657374,
-    "query": jsonDecode(mockQueryRequestNotSupportedOperator),
-  },
+  ProofScopeRequest(
+    id: 1,
+    circuit_id: "credentialAtomicQuerySig",
+    rules: ProofScopeRulesRequest(
+      audience: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
+      challenge: 74657374,
+      query: ProofScopeRulesQueryRequest.fromJson(
+          jsonDecode(mockQueryRequestNotSupportedOperator)),
+    ),
+  ),
   proofQueryParamEntity,
 );
 
 // Tested instance
 ProofRequestFiltersMapper proofRequestFiltersMapper =
-    ProofRequestFiltersMapper(ProofQueryMapper());
+    ProofRequestFiltersMapper();
 
 main() {
   group("ProofRequestFiltersMapper", () {

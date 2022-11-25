@@ -1,15 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proofs_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
-import 'package:polygonid_flutter_sdk/sdk/mappers/iden3_message_mapper.dart';
-import 'package:polygonid_flutter_sdk/sdk/mappers/iden3_message_type_mapper.dart';
 
 import 'authenticate_use_case_test.mocks.dart';
 
@@ -31,15 +32,10 @@ AuthenticateUseCase useCase = AuthenticateUseCase(
 );
 
 // Data
-/// I assume [Iden3MessageMapper] has been tested
+/// We assume [AuthIden3MessageEntity.fromJson] has been tested
 const issuerMessage =
     '{"id":"06da1153-59a1-4ed9-9d31-c86b5596a48e","thid":"06da1153-59a1-4ed9-9d31-c86b5596a48e","from":"1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ","typ":"application/iden3comm-plain-json","type":"https://iden3-communication.io/authorization/1.0/request","body":{"reason":"test flow","message":"","callbackUrl":"https://verifier.polygonid.me/api/callback?sessionId=483898","scope":[]}}';
-final iden3Message =
-    Iden3MessageMapper(Iden3MessageTypeMapper()).mapFrom(issuerMessage);
-const wrongIssuerMessage =
-    '{"id":"06da1153-59a1-4ed9-9d31-c86b5596a48e","thid":"06da1153-59a1-4ed9-9d31-c86b5596a48e","from":"1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ","typ":"application/iden3comm-plain-json","type":"https://iden3-communication.io/authorization/1.0/request","body":{"reason":"test flow","message":"","scope":[]}}';
-final wrongIden3Message =
-    Iden3MessageMapper(Iden3MessageTypeMapper()).mapFrom(issuerMessage);
+final authRequest = AuthIden3MessageEntity.fromJson(jsonDecode(issuerMessage));
 const identifier = "theIdentifier";
 const pushToken = "thePushToken";
 const privateKey = "thePrivateKey";
@@ -50,14 +46,9 @@ const authResponse = "theAuthResponse";
 const authToken = "theAuthToken";
 const url = "theUrl";
 final exception = Exception();
+
 AuthenticateParam param = AuthenticateParam(
-  message: iden3Message,
-  identifier: identifier,
-  pushToken: pushToken,
-  privateKey: privateKey,
-);
-AuthenticateParam wrongParam = AuthenticateParam(
-  message: wrongIden3Message,
+  message: authRequest,
   identifier: identifier,
   pushToken: pushToken,
   privateKey: privateKey,
@@ -93,7 +84,7 @@ void main() {
 
         when(iden3commRepository.getAuthResponse(
                 identifier: anyNamed('identifier'),
-                message: anyNamed('message'),
+                request: anyNamed('request'),
                 scope: anyNamed('scope'),
                 pushUrl: anyNamed('pushUrl'),
                 pushToken: anyNamed('pushToken'),
@@ -105,7 +96,7 @@ void main() {
             .thenAnswer((realInvocation) => Future.value(authToken));
 
         when(iden3commRepository.authenticate(
-          message: anyNamed('message'),
+          request: anyNamed('request'),
           authToken: anyNamed('authToken'),
         )).thenAnswer((realInvocation) => Future.value());
       });
@@ -121,7 +112,7 @@ void main() {
               verify(getProofsUseCase.execute(param: captureAnyNamed('param')))
                   .captured
                   .first;
-          expect(capturedProofs.message, iden3Message);
+          expect(capturedProofs.message, authRequest);
           expect(capturedProofs.identifier, identifier);
           expect(capturedProofs.privateKey, privateKey);
 
@@ -145,7 +136,7 @@ void main() {
 
           var capturedAuthResponse = verify(iden3commRepository.getAuthResponse(
                   identifier: captureAnyNamed('identifier'),
-                  message: captureAnyNamed('message'),
+                  request: captureAnyNamed('request'),
                   scope: captureAnyNamed('scope'),
                   pushUrl: captureAnyNamed('pushUrl'),
                   pushToken: captureAnyNamed('pushToken'),
@@ -153,7 +144,7 @@ void main() {
                   packageName: captureAnyNamed('packageName')))
               .captured;
           expect(capturedAuthResponse[0], identifier);
-          expect(capturedAuthResponse[1], iden3Message);
+          expect(capturedAuthResponse[1], authRequest);
           expect(capturedAuthResponse[2], []);
           expect(capturedAuthResponse[3], config);
           expect(capturedAuthResponse[4], pushToken);
@@ -169,10 +160,10 @@ void main() {
           expect(capturedAuthToken.message, authResponse);
 
           var capturedAuthenticate = verify(iden3commRepository.authenticate(
-            message: captureAnyNamed('message'),
+            request: captureAnyNamed('request'),
             authToken: captureAnyNamed('authToken'),
           )).captured;
-          expect(capturedAuthenticate[0], iden3Message);
+          expect(capturedAuthenticate[0], authRequest);
           expect(capturedAuthenticate[1], authToken);
         },
       );
@@ -183,7 +174,7 @@ void main() {
           // Given
           when(iden3commRepository.getAuthResponse(
                   identifier: anyNamed('identifier'),
-                  message: anyNamed('message'),
+                  request: anyNamed('request'),
                   scope: anyNamed('scope'),
                   pushUrl: anyNamed('pushUrl'),
                   pushToken: anyNamed('pushToken'),
@@ -199,7 +190,7 @@ void main() {
               verify(getProofsUseCase.execute(param: captureAnyNamed('param')))
                   .captured
                   .first;
-          expect(capturedProofs.message, iden3Message);
+          expect(capturedProofs.message, authRequest);
           expect(capturedProofs.identifier, identifier);
           expect(capturedProofs.privateKey, privateKey);
 
@@ -223,7 +214,7 @@ void main() {
 
           var capturedAuthResponse = verify(iden3commRepository.getAuthResponse(
                   identifier: captureAnyNamed('identifier'),
-                  message: captureAnyNamed('message'),
+                  request: captureAnyNamed('request'),
                   scope: captureAnyNamed('scope'),
                   pushUrl: captureAnyNamed('pushUrl'),
                   pushToken: captureAnyNamed('pushToken'),
@@ -231,7 +222,7 @@ void main() {
                   packageName: captureAnyNamed('packageName')))
               .captured;
           expect(capturedAuthResponse[0], identifier);
-          expect(capturedAuthResponse[1], iden3Message);
+          expect(capturedAuthResponse[1], authRequest);
           expect(capturedAuthResponse[2], []);
           expect(capturedAuthResponse[3], config);
           expect(capturedAuthResponse[4], pushToken);
@@ -242,7 +233,7 @@ void main() {
               getAuthTokenUseCase.execute(param: captureAnyNamed('param')));
 
           verifyNever(iden3commRepository.authenticate(
-            message: captureAnyNamed('message'),
+            request: captureAnyNamed('request'),
             authToken: captureAnyNamed('authToken'),
           ));
         },

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_body_credentials_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_body_credentials_request.dart';
 
 String data = '''
 {

@@ -33,10 +33,10 @@ abstract class CredentialRepository {
       required String identifier,
       required String privateKey});
 
-  Future<Map<String, dynamic>?> fetchSchema({required String url});
+  Future<Map<String, dynamic>> fetchSchema({required String url});
 
-  Future<Map<String, dynamic>?> fetchVocab(
-      {required Map<String, dynamic>? schema, required String type});
+  Future<Map<String, dynamic>> fetchVocab(
+      {required Map<String, dynamic> schema, required String type});
 
   Future<Map<String, dynamic>> getRevocationStatus(
       {required ClaimEntity claim});

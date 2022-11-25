@@ -173,17 +173,18 @@ class MockRemoteClaimDataSource extends _i1.Mock
         )),
       ) as _i10.Future<_i3.ClaimDTO>);
   @override
-  _i10.Future<Map<String, dynamic>?> fetchSchema({required String? url}) =>
+  _i10.Future<Map<String, dynamic>> fetchSchema({required String? url}) =>
       (super.noSuchMethod(
         Invocation.method(
           #fetchSchema,
           [],
           {#url: url},
         ),
-        returnValue: _i10.Future<Map<String, dynamic>?>.value(),
-      ) as _i10.Future<Map<String, dynamic>?>);
+        returnValue:
+            _i10.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i10.Future<Map<String, dynamic>>);
   @override
-  _i10.Future<Map<String, dynamic>?> fetchVocab({
+  _i10.Future<Map<String, dynamic>> fetchVocab({
     required Map<String, dynamic>? schema,
     required String? type,
   }) =>
@@ -196,8 +197,9 @@ class MockRemoteClaimDataSource extends _i1.Mock
             #type: type,
           },
         ),
-        returnValue: _i10.Future<Map<String, dynamic>?>.value(),
-      ) as _i10.Future<Map<String, dynamic>?>);
+        returnValue:
+            _i10.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i10.Future<Map<String, dynamic>>);
   @override
   _i10.Future<Map<String, dynamic>> getClaimRevocationStatus(
           _i11.ClaimInfoDTO? claimInfo) =>
