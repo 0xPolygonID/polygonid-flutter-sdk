@@ -10,17 +10,16 @@ import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/fetch_claim_response_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
-import 'package:polygonid_flutter_sdk/credential/data/mappers/credential_request_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/id_filter_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 import 'package:sembast/sembast.dart';
 
+import '../../common/iden3com_mocks.dart';
 import '../dtos/fetch_claim_response_dto_test.dart';
 import 'credential_repository_impl_test.mocks.dart';
 
@@ -31,9 +30,6 @@ const token = "theToken";
 const url = "theUrl";
 const ids = ["theId", "theId1", "theId2"];
 final exception = Exception();
-
-final CredentialRequestEntity requestEntity =
-    CredentialRequestEntity("", url, "", "", "");
 
 /// We assume [FetchClaimResponseDTO] has been tested
 final fetchClaimDTO =
@@ -82,8 +78,6 @@ MockRemoteClaimDataSource remoteClaimDataSource = MockRemoteClaimDataSource();
 MockStorageClaimDataSource storageClaimDataSource =
     MockStorageClaimDataSource();
 MockLibIdentityDataSource libIdentityDataSource = MockLibIdentityDataSource();
-MockCredentialRequestMapper credentialRequestMapper =
-    MockCredentialRequestMapper();
 MockClaimMapper claimMapper = MockClaimMapper();
 MockFiltersMapper filtersMapper = MockFiltersMapper();
 MockIdFilterMapper idFilterMapper = MockIdFilterMapper();
@@ -95,7 +89,6 @@ CredentialRepositoryImpl repository = CredentialRepositoryImpl(
   remoteClaimDataSource,
   storageClaimDataSource,
   libIdentityDataSource,
-  credentialRequestMapper,
   claimMapper,
   filtersMapper,
   idFilterMapper,
@@ -107,7 +100,6 @@ CredentialRepositoryImpl repository = CredentialRepositoryImpl(
   StorageClaimDataSource,
   RemoteIdentityDataSource,
   LibIdentityDataSource,
-  CredentialRequestMapper,
   ClaimMapper,
   FiltersMapper,
   IdFilterMapper,
@@ -136,7 +128,7 @@ void main() {
           await repository.fetchClaim(
               identifier: identifier,
               token: token,
-              credentialRequest: requestEntity),
+              message: Iden3commMocks.offerRequest),
           claimEntities[0]);
 
       // Then
@@ -147,7 +139,7 @@ void main() {
           .captured;
 
       expect(fetchCaptured[0], token);
-      expect(fetchCaptured[1], url);
+      expect(fetchCaptured[1], Iden3commMocks.offerUrl);
       expect(fetchCaptured[2], identifier);
 
       expect(
@@ -169,7 +161,7 @@ void main() {
           .fetchClaim(
               identifier: identifier,
               token: token,
-              credentialRequest: requestEntity)
+              message: Iden3commMocks.offerRequest)
           .then((_) => expect(true, false))
           .catchError((error) {
         expect(error, isA<FetchClaimException>());
@@ -184,7 +176,7 @@ void main() {
           .captured;
 
       expect(fetchCaptured[0], token);
-      expect(fetchCaptured[1], url);
+      expect(fetchCaptured[1], Iden3commMocks.offerUrl);
       expect(fetchCaptured[2], identifier);
 
       verifyNever(claimMapper.mapFrom(captureAny));

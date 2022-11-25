@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/fetch/fetch_riden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/fetch/fetch_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/onchain/contract_iden3_message_entity.dart';
 
@@ -113,7 +113,7 @@ class Iden3commMocks {
 {
   "id": "4dd6479b-99b6-405c-ba9e-c7b18d251a5e",
   "typ": "application/iden3comm-plain-json",
-  "type": "https://iden3-communication.io/authorization/1.0/request",
+  "type": "https://iden3-communication.io/credentials/1.0/fetch-request",
   "thid": "4dd6479b-99b6-405c-ba9e-c7b18d251a5e",
   "from": "1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ",
   "to": "1244GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ",
@@ -124,13 +124,19 @@ class Iden3commMocks {
       FetchIden3MessageEntity.fromJson(jsonDecode(fetchRequestJson));
 
   /// [OfferIden3MessageEntity]
+  static String offerUrl = "theOfferUrl";
+
   static String offerRequestBodyJson = '''
   {
-      "url": "offerUrl",
+      "url": "$offerUrl",
       "credentials": [
         {
-          "id": "credentialsId",
-          "description": "credentialsDescription"
+          "id": "claimId",
+          "description": "claimDescription"
+        },
+        {
+          "id": "otherClaimId",
+          "description": "otherClaimDescription"
         }
       ]
   }

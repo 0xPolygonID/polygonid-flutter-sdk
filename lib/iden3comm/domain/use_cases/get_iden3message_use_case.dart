@@ -3,7 +3,7 @@ import 'dart:convert';
 import '../../../common/domain/use_case.dart';
 import '../entities/iden3_message_entity.dart';
 import '../entities/request/auth/auth_iden3_message_entity.dart';
-import '../entities/request/fetch/fetch_riden3_message_entity.dart';
+import '../entities/request/fetch/fetch_iden3_message_entity.dart';
 import '../entities/request/offer/offer_iden3_message_entity.dart';
 import '../entities/request/onchain/contract_iden3_message_entity.dart';
 import '../exceptions/iden3comm_exceptions.dart';

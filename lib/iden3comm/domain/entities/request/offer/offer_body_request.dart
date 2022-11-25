@@ -67,18 +67,18 @@
 import 'package:flutter/foundation.dart';
 
 class OfferBodyRequest {
-  final String? url;
-  final List<CredentialOfferData>? credentials;
+  final String url;
+  final List<CredentialOfferData> credentials;
 
-  OfferBodyRequest({this.url, this.credentials});
+  OfferBodyRequest({required this.url, required this.credentials});
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
   /// @returns [OfferBodyRequest]
   factory OfferBodyRequest.fromJson(Map<String, dynamic> json) {
-    List<CredentialOfferData>? credentials = (json['credentials'] as List?)
-        ?.map((item) => CredentialOfferData.fromJson(item))
+    List<CredentialOfferData> credentials = (json['credentials'] as List)
+        .map((item) => CredentialOfferData.fromJson(item))
         .toList();
     return OfferBodyRequest(
       url: json['url'],
@@ -88,7 +88,7 @@ class OfferBodyRequest {
 
   Map<String, dynamic> toJson() => {
         'url': url,
-        'credentials': credentials?.map((item) => item.toJson()).toList(),
+        'credentials': credentials.map((item) => item.toJson()).toList(),
       };
 
   @override

@@ -15,7 +15,7 @@ void main() {
           ContractIden3MessageEntity.fromJson(json);
       expect(contractFunctionCallRequest.id, "theId");
       expect(contractFunctionCallRequest.typ, "theTyp");
-      expect(contractFunctionCallRequest.type,
+      expect(contractFunctionCallRequest.messageType,
           Iden3MessageType.contractFunctionCall);
       expect(contractFunctionCallRequest.body.transactionData.contractAddress,
           "0x0000000000000000000000000000000000000000");

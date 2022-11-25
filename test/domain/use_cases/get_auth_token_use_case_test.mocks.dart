@@ -11,8 +11,6 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
     as _i14;
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
     as _i2;
-import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart'
-    as _i13;
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart'
     as _i12;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_entity.dart'
@@ -21,6 +19,8 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_en
     as _i17;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart'
     as _i10;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart'
+    as _i13;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart'
     as _i8;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
@@ -198,7 +198,7 @@ class MockCredentialRepository extends _i1.Mock
   _i9.Future<_i2.ClaimEntity> fetchClaim({
     required String? identifier,
     required String? token,
-    required _i13.CredentialRequestEntity? credentialRequest,
+    required _i13.OfferIden3MessageEntity? message,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -207,7 +207,7 @@ class MockCredentialRepository extends _i1.Mock
           {
             #identifier: identifier,
             #token: token,
-            #credentialRequest: credentialRequest,
+            #message: message,
           },
         ),
         returnValue: _i9.Future<_i2.ClaimEntity>.value(_FakeClaimEntity_0(
@@ -218,22 +218,11 @@ class MockCredentialRepository extends _i1.Mock
             {
               #identifier: identifier,
               #token: token,
-              #credentialRequest: credentialRequest,
+              #message: message,
             },
           ),
         )),
       ) as _i9.Future<_i2.ClaimEntity>);
-  @override
-  _i9.Future<String> getFetchMessage(
-          {required _i13.CredentialRequestEntity? credentialRequest}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getFetchMessage,
-          [],
-          {#credentialRequest: credentialRequest},
-        ),
-        returnValue: _i9.Future<String>.value(''),
-      ) as _i9.Future<String>);
   @override
   _i9.Future<void> saveClaims({
     required List<_i2.ClaimEntity>? claims,

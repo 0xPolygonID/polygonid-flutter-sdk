@@ -15,8 +15,8 @@ class GetVocabsUseCase
   Future<List<Map<String, dynamic>>> execute(
       {required Iden3MessageEntity param}) async {
     if (![Iden3MessageType.auth, Iden3MessageType.contractFunctionCall]
-        .contains(param.type)) {
-      return Future.error(UnsupportedIden3MsgTypeException(param.type));
+        .contains(param.messageType)) {
+      return Future.error(UnsupportedIden3MsgTypeException(param.messageType));
     }
 
     List<Map<String, dynamic>> result = [];

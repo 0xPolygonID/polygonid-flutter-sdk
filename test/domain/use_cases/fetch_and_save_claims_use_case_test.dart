@@ -2,25 +2,22 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/fetch_and_save_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_fetch_requests_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 
+import '../../common/common_mocks.dart';
+import '../../common/iden3com_mocks.dart';
 import 'fetch_and_save_claims_use_case_test.mocks.dart';
 
 // Data
-const privateKey = "thePrivateKey";
-const identifier = "theIdentifier";
-const message = "theMessage";
-const token = "theToken";
-const url = "theUrl";
 final exception = Exception();
 
 final requests = [
-  CredentialRequestEntity(identifier, url, "id1", "", ""),
-  CredentialRequestEntity(identifier, url, "id2", "", ""),
-  CredentialRequestEntity(identifier, url, "id3", "", "")
+  "theRequest",
+  "theOtherRequest",
+  "theThirdRequest",
 ];
 
 final claimEntity = ClaimEntity(
@@ -35,17 +32,22 @@ final claimEntity = ClaimEntity(
 final result = [claimEntity, claimEntity, claimEntity];
 
 final param = FetchAndSaveClaimsParam(
-    requests: requests, identifier: identifier, privateKey: privateKey);
+    message: Iden3commMocks.offerRequest,
+    identifier: CommonMocks.identifier,
+    privateKey: CommonMocks.privateKey);
 
 // Dependencies
+MockGetFetchRequestsUseCase getFetchRequestsUseCase =
+    MockGetFetchRequestsUseCase();
 MockGetAuthTokenUseCase getAuthTokenUseCase = MockGetAuthTokenUseCase();
 MockCredentialRepository credentialRepository = MockCredentialRepository();
 
 // Tested instance
-FetchAndSaveClaimsUseCase useCase =
-    FetchAndSaveClaimsUseCase(getAuthTokenUseCase, credentialRepository);
+FetchAndSaveClaimsUseCase useCase = FetchAndSaveClaimsUseCase(
+    getFetchRequestsUseCase, getAuthTokenUseCase, credentialRepository);
 
-@GenerateMocks([GetAuthTokenUseCase, CredentialRepository])
+@GenerateMocks(
+    [GetFetchRequestsUseCase, GetAuthTokenUseCase, CredentialRepository])
 void main() {
   group("Fetch and save claims", () {
     setUp(() {
@@ -53,15 +55,14 @@ void main() {
       reset(getAuthTokenUseCase);
 
       // Given
-      when(credentialRepository.getFetchMessage(
-              credentialRequest: anyNamed('credentialRequest')))
-          .thenAnswer((realInvocation) => Future.value(message));
+      when(getFetchRequestsUseCase.execute(param: anyNamed('param')))
+          .thenAnswer((realInvocation) => Future.value(requests));
       when(getAuthTokenUseCase.execute(param: anyNamed('param')))
-          .thenAnswer((realInvocation) => Future.value(token));
+          .thenAnswer((realInvocation) => Future.value(CommonMocks.token));
       when(credentialRepository.fetchClaim(
               identifier: anyNamed('identifier'),
               token: anyNamed('token'),
-              credentialRequest: anyNamed('credentialRequest')))
+              message: anyNamed('message')))
           .thenAnswer((realInvocation) => Future.value(claimEntity));
       when(credentialRepository.saveClaims(
               identifier: anyNamed('identifier'),
@@ -71,47 +72,48 @@ void main() {
     });
 
     test(
-        "Given a list of CredentialRequestEntity, when I call execute, then I expect a list of ClaimEntity to be returned",
+        "Given a FetchAndSaveClaimsParam, when I call execute, then I expect a list of ClaimEntity to be returned",
         () async {
       // When
       expect(await useCase.execute(param: param), result);
 
       // Then
-      var messageVerify = verify(credentialRepository.getFetchMessage(
-          credentialRequest: captureAnyNamed('credentialRequest')));
+      var fetchMessageCaptures = verify(
+              getFetchRequestsUseCase.execute(param: captureAnyNamed('param')))
+          .captured
+          .first;
 
-      expect(messageVerify.callCount, requests.length);
-      for (int i = 0; i < requests.length; i++) {
-        expect(messageVerify.captured[i], requests[i]);
-      }
+      expect(fetchMessageCaptures.message, param.message);
+      expect(fetchMessageCaptures.identifier, param.identifier);
 
       var authVerify =
           verify(getAuthTokenUseCase.execute(param: captureAnyNamed('param')));
 
       expect(authVerify.callCount, requests.length);
       for (int i = 0; i < requests.length; i++) {
-        expect(authVerify.captured[i].identifier, requests[i].identifier);
-        expect(authVerify.captured[i].message, message);
+        expect(authVerify.captured[i].identifier, param.identifier);
+        expect(authVerify.captured[i].privateKey, param.privateKey);
+        expect(authVerify.captured[i].message, requests[i]);
       }
 
       var fetchVerify = verify(credentialRepository.fetchClaim(
           identifier: captureAnyNamed('identifier'),
           token: captureAnyNamed('token'),
-          credentialRequest: captureAnyNamed('credentialRequest')));
+          message: captureAnyNamed('message')));
 
       expect(fetchVerify.callCount, requests.length);
       int j = 0;
       for (int i = 0; i < requests.length * 3; i += 3) {
-        expect(fetchVerify.captured[i], requests[j].identifier);
-        expect(fetchVerify.captured[i + 1], token);
-        expect(fetchVerify.captured[i + 2], requests[j]);
+        expect(fetchVerify.captured[i], param.identifier);
+        expect(fetchVerify.captured[i + 1], CommonMocks.token);
+        expect(fetchVerify.captured[i + 2], param.message);
         j++;
       }
 
       expect(
           verify(credentialRepository.saveClaims(
-                  identifier: identifier,
-                  privateKey: privateKey,
+                  identifier: CommonMocks.identifier,
+                  privateKey: CommonMocks.privateKey,
                   claims: captureAnyNamed('claims')))
               .captured
               .first,
@@ -119,53 +121,48 @@ void main() {
     });
 
     test(
-        "Given a list of CredentialRequestEntity, when I call execute and an error occurred, then I expect an exception to be thrown",
+        "Given a FetchAndSaveClaimsParam, when I call execute and an error occurred, then I expect an exception to be thrown",
         () async {
       // Given
       when(credentialRepository.fetchClaim(
               identifier: anyNamed('identifier'),
               token: anyNamed('token'),
-              credentialRequest: anyNamed('credentialRequest')))
+              message: anyNamed('message')))
           .thenAnswer((realInvocation) => Future.error(exception));
-
       // When
       await expectLater(useCase.execute(param: param), throwsA(exception));
 
       // Then
-      var messageVerify = verify(credentialRepository.getFetchMessage(
-          credentialRequest: captureAnyNamed('credentialRequest')));
+      var fetchMessageCaptures = verify(
+              getFetchRequestsUseCase.execute(param: captureAnyNamed('param')))
+          .captured
+          .first;
 
-      expect(messageVerify.callCount, requests.length);
-      for (int i = 0; i < requests.length; i++) {
-        expect(messageVerify.captured[i], requests[i]);
-      }
+      expect(fetchMessageCaptures.message, param.message);
+      expect(fetchMessageCaptures.identifier, param.identifier);
 
       var authVerify =
           verify(getAuthTokenUseCase.execute(param: captureAnyNamed('param')));
 
-      expect(authVerify.callCount, requests.length);
-      for (int i = 0; i < requests.length; i++) {
-        expect(authVerify.captured[i].identifier, requests[i].identifier);
-        expect(authVerify.captured[i].message, message);
-      }
+      expect(authVerify.callCount, 1);
+      expect(authVerify.captured[0].identifier, param.identifier);
+      expect(authVerify.captured[0].privateKey, param.privateKey);
+      expect(authVerify.captured[0].message, requests[0]);
 
       var fetchVerify = verify(credentialRepository.fetchClaim(
           identifier: captureAnyNamed('identifier'),
           token: captureAnyNamed('token'),
-          credentialRequest: captureAnyNamed('credentialRequest')));
+          message: captureAnyNamed('message')));
 
-      expect(fetchVerify.callCount, requests.length);
-      int j = 0;
-      for (int i = 0; i < requests.length * 3; i += 3) {
-        expect(fetchVerify.captured[i], requests[j].identifier);
-        expect(fetchVerify.captured[i + 1], token);
-        expect(fetchVerify.captured[i + 2], requests[j]);
-        j++;
-      }
+      expect(fetchVerify.callCount, 1);
+
+      expect(fetchVerify.captured[0], param.identifier);
+      expect(fetchVerify.captured[1], CommonMocks.token);
+      expect(fetchVerify.captured[2], param.message);
 
       verifyNever(credentialRepository.saveClaims(
-          identifier: identifier,
-          privateKey: privateKey,
+          identifier: CommonMocks.identifier,
+          privateKey: CommonMocks.privateKey,
           claims: captureAnyNamed('claims')));
     });
   });

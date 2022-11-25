@@ -76,6 +76,7 @@ class FetchIden3MessageEntity extends Iden3MessageEntity {
   FetchIden3MessageEntity(
       {required String id,
       required String typ,
+      required String type,
       required String thid,
       required String from,
       required this.body,
@@ -83,9 +84,10 @@ class FetchIden3MessageEntity extends Iden3MessageEntity {
       : super(
             from: from,
             id: id,
-            type: Iden3MessageType.issuance,
+            messageType: Iden3MessageType.issuance,
             thid: thid,
-            typ: typ);
+            typ: typ,
+            type: type);
 
   /// Creates an instance from the given json
   ///
@@ -97,6 +99,7 @@ class FetchIden3MessageEntity extends Iden3MessageEntity {
     return FetchIden3MessageEntity(
       id: json['id'],
       typ: json['typ'],
+      type: json['type'],
       thid: json['thid'],
       from: json['from'],
       to: json['to'],
@@ -105,21 +108,20 @@ class FetchIden3MessageEntity extends Iden3MessageEntity {
   }
 
   @override
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> result = super.toJson();
+    result.putIfAbsent('to', () => to);
+
+    return result;
+  }
+
+  @override
   String toString() =>
-      "[FetchIden3MessageEntity] {id: $id, typ: $typ, type: $type, thid: $thid, body: $body, from: $from, to: $to}";
+      "[FetchIden3MessageEntity] {${super.toString()}, to: $to}";
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is FetchIden3MessageEntity &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          typ == other.typ &&
-          type == other.type &&
-          thid == other.thid &&
-          body == other.body &&
-          from == other.from &&
-          to == other.to;
+      super == other && other is FetchIden3MessageEntity && to == other.to;
 
   @override
   int get hashCode => runtimeType.hashCode;

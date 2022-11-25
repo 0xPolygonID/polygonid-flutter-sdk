@@ -46,13 +46,17 @@ class ContractIden3MessageEntity extends Iden3MessageEntity {
   final ContractFunctionCallBodyRequest body;
 
   ContractIden3MessageEntity(
-      {required String id, required String typ, required this.body})
+      {required String id,
+      required String typ,
+      required String type,
+      required this.body})
       : super(
             from: '',
             id: id,
-            type: Iden3MessageType.contractFunctionCall,
+            messageType: Iden3MessageType.contractFunctionCall,
             thid: '',
-            typ: typ);
+            typ: typ,
+            type: type);
 
   /// Creates an instance from the given json
   ///
@@ -64,25 +68,17 @@ class ContractIden3MessageEntity extends Iden3MessageEntity {
     return ContractIden3MessageEntity(
       id: json['id'],
       typ: json['typ'],
+      type: json['type'],
       body: body,
     );
   }
 
   @override
-  String toString() =>
-      "[ContractIden3MessageEntity] {id: $id, typ: $typ, type: $type, thid: $thid, body: $body, from: $from}";
+  String toString() => "[ContractIden3MessageEntity] {${super.toString()}";
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ContractIden3MessageEntity &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          typ == other.typ &&
-          type == other.type &&
-          thid == other.thid &&
-          body == other.body &&
-          from == other.from;
+      super == other && other is ContractIden3MessageEntity;
 
   @override
   int get hashCode => runtimeType.hashCode;

@@ -7,17 +7,19 @@ import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
-    as _i7;
+    as _i8;
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
     as _i2;
-import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart'
-    as _i6;
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart'
-    as _i5;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart'
+    as _i6;
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_fetch_requests_use_case.dart'
     as _i3;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart'
+    as _i7;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart'
+    as _i5;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart'
-    as _i8;
+    as _i9;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -40,17 +42,39 @@ class _FakeClaimEntity_0 extends _i1.SmartFake implements _i2.ClaimEntity {
         );
 }
 
+/// A class which mocks [GetFetchRequestsUseCase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetFetchRequestsUseCase extends _i1.Mock
+    implements _i3.GetFetchRequestsUseCase {
+  MockGetFetchRequestsUseCase() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.Future<List<String>> execute(
+          {required _i3.GetFetchRequestsParam? param}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [],
+          {#param: param},
+        ),
+        returnValue: _i4.Future<List<String>>.value(<String>[]),
+      ) as _i4.Future<List<String>>);
+}
+
 /// A class which mocks [GetAuthTokenUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetAuthTokenUseCase extends _i1.Mock
-    implements _i3.GetAuthTokenUseCase {
+    implements _i5.GetAuthTokenUseCase {
   MockGetAuthTokenUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.Future<String> execute({required _i3.GetAuthTokenParam? param}) =>
+  _i4.Future<String> execute({required _i5.GetAuthTokenParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -65,7 +89,7 @@ class MockGetAuthTokenUseCase extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockCredentialRepository extends _i1.Mock
-    implements _i5.CredentialRepository {
+    implements _i6.CredentialRepository {
   MockCredentialRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -74,7 +98,7 @@ class MockCredentialRepository extends _i1.Mock
   _i4.Future<_i2.ClaimEntity> fetchClaim({
     required String? identifier,
     required String? token,
-    required _i6.CredentialRequestEntity? credentialRequest,
+    required _i7.OfferIden3MessageEntity? message,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -83,7 +107,7 @@ class MockCredentialRepository extends _i1.Mock
           {
             #identifier: identifier,
             #token: token,
-            #credentialRequest: credentialRequest,
+            #message: message,
           },
         ),
         returnValue: _i4.Future<_i2.ClaimEntity>.value(_FakeClaimEntity_0(
@@ -94,22 +118,11 @@ class MockCredentialRepository extends _i1.Mock
             {
               #identifier: identifier,
               #token: token,
-              #credentialRequest: credentialRequest,
+              #message: message,
             },
           ),
         )),
       ) as _i4.Future<_i2.ClaimEntity>);
-  @override
-  _i4.Future<String> getFetchMessage(
-          {required _i6.CredentialRequestEntity? credentialRequest}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getFetchMessage,
-          [],
-          {#credentialRequest: credentialRequest},
-        ),
-        returnValue: _i4.Future<String>.value(''),
-      ) as _i4.Future<String>);
   @override
   _i4.Future<void> saveClaims({
     required List<_i2.ClaimEntity>? claims,
@@ -131,7 +144,7 @@ class MockCredentialRepository extends _i1.Mock
       ) as _i4.Future<void>);
   @override
   _i4.Future<List<_i2.ClaimEntity>> getClaims({
-    List<_i7.FilterEntity>? filters,
+    List<_i8.FilterEntity>? filters,
     required String? identifier,
     required String? privateKey,
   }) =>
@@ -268,7 +281,7 @@ class MockCredentialRepository extends _i1.Mock
       ) as _i4.Future<int>);
   @override
   _i4.Future<String> getAuthClaim(
-          {required _i8.PrivateIdentityEntity? identity}) =>
+          {required _i9.PrivateIdentityEntity? identity}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getAuthClaim,

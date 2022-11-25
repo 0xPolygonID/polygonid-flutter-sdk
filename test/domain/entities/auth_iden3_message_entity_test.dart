@@ -19,7 +19,7 @@ void main() {
         expect(authRequest.thid, "4dd6479b-99b6-405c-ba9e-c7b18d251a5e");
         expect(authRequest.from, "1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ");
         expect(authRequest.typ, "application/iden3comm-plain-json");
-        expect(authRequest.type, Iden3MessageType.auth);
+        expect(authRequest.messageType, Iden3MessageType.auth);
         expect(authRequest.body.reason, "test flow");
         expect(authRequest.body.message, "");
         expect(authRequest.body.callbackUrl, CommonMocks.url);
