@@ -56,8 +56,10 @@ class BabyjubjubLib {
         .asFunction();
 
     _poseidonHashHashes = _nativeBabyjubjubLib
-        .lookup<NativeFunction<Pointer<Utf8> Function(Pointer<Pointer<Utf8>>)>>(
-            "hash_poseidon2")
+        .lookup<
+            NativeFunction<
+                Pointer<Utf8> Function(Pointer<Utf8>, Pointer<Utf8>,
+                    Pointer<Utf8>, Pointer<Utf8>)>>("poseidon_hash4")
         .asFunction();
 
     _signPoseidon = _nativeBabyjubjubLib
@@ -189,18 +191,26 @@ class BabyjubjubLib {
   }
 
   // circomlib.poseidon -> hashPoseidon2
-  late Pointer<Utf8> Function(Pointer<Pointer<Utf8>>) _poseidonHashHashes;
-  String poseidonHashHashes(List<String> children) {
+  late Pointer<Utf8> Function(
+          Pointer<Utf8>, Pointer<Utf8>, Pointer<Utf8>, Pointer<Utf8>)
+      _poseidonHashHashes;
+  String poseidonHashHashes(
+      String input1, String input2, String input3, String input4) {
     //if (lib == null) return "ERROR: The library is not initialized"
 
-    Pointer<Pointer<Utf8>> input = malloc<Pointer<Utf8>>(children.length);
+    /*Pointer<Pointer<Utf8>> input = malloc<Pointer<Utf8>>(children.length);
     for (int i = 0; i < children.length; i++) {
       final ptr = children[i].toNativeUtf8();
       input[i] = ptr;
-    }
+    }*/
+
+    final ptr1 = input1.toNativeUtf8();
+    final ptr2 = input2.toNativeUtf8();
+    final ptr3 = input3.toNativeUtf8();
+    final ptr4 = input4.toNativeUtf8();
 
     try {
-      final resultPtr = _poseidonHashHashes(input);
+      final resultPtr = _poseidonHashHashes(ptr1, ptr2, ptr3, ptr4);
       String resultString = resultPtr.toDartString();
       resultString = resultString.replaceAll("Fr(", "");
       resultString = resultString.replaceAll(")", "");

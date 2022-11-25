@@ -3,6 +3,7 @@ import 'package:sembast/sembast.dart';
 
 import '../../../constants.dart';
 import '../../../sdk/di/injector.dart';
+import '../../domain/exceptions/smt_exceptions.dart';
 import '../dtos/hash_dto.dart';
 import '../dtos/node_dto.dart';
 
@@ -11,29 +12,34 @@ import '../dtos/node_dto.dart';
 /// Needed for UT for mocking extension methods
 @injectable
 class IdentitySMTStoreRefWrapper {
-  Future<StoreRef<String, Map<String, Object?>>> _getStore(
-      {required String storeName}) {
+  final Map<String, StoreRef<String, Map<String, Object?>>> _store;
+
+  IdentitySMTStoreRefWrapper(@Named(securedStoreName) this._store);
+  /*Future<StoreRef<String, Map<String, Object?>>> _getStore(
+      { required String storeName}) {
     return getItSdk.getAsync<StoreRef<String, Map<String, Object?>>>(
         instanceName: storeName);
-  }
+  }*/
 
   Future<Map<String, Object?>?> get(
       DatabaseClient database, String storeName, String key) {
-    return _getStore(storeName: storeName)
-        .then((store) => store.record(key).get(database));
+    return //_getStore(storeName: storeName)
+        _store[storeName]!.record(key).get(database);
   }
 
   Future<Map<String, Object?>> put(DatabaseClient database, String storeName,
       String key, Map<String, Object?> value,
       {bool? merge}) {
-    return _getStore(storeName: storeName)
-        .then((store) => store.record(key).put(database, value, merge: merge));
+    return _store[storeName]!.record(key).put(database, value, merge: merge);
   }
 
   Future<String?> remove(
       DatabaseClient database, String storeName, String identifier) {
-    return _getStore(storeName: storeName)
-        .then((store) => store.record(identifier).delete(database));
+    return _store[storeName]!.record(identifier).delete(database);
+  }
+
+  Future<int> removeAll(DatabaseClient database, String storeName) {
+    return _store[storeName]!.delete(database);
   }
 }
 
@@ -50,17 +56,11 @@ class StorageSMTDataSource {
         param2: privateKey);
   }
 
-  Future<void> createSMT(
-      {required String storeName,
-      required String identifier,
-      required String privateKey}) {
-    _getDatabase(identifier: identifier, privateKey: privateKey).then(
-        (database) => database
-            .transaction((transaction) => getTransact(
-                storeName: storeName, transaction: transaction, key: key))
-            .then((snapshot) => NodeDTO.fromJson(snapshot!))
-            .whenComplete(() => database.close()));
-  }
+  /*Future</*StoreRef<String, Map<String, Object?>>*/IdentitySMTStoreRefWrapper> _getStore(
+      {required String storeName}) {
+    return getItSdk.getAsync<StoreRef<String, Map<String, Object?>>>(
+        instanceName: storeName);
+  }*/
 
   Future<NodeDTO> getNode(
       {required HashDTO key,
@@ -80,7 +80,6 @@ class StorageSMTDataSource {
       {required String storeName,
       required DatabaseClient transaction,
       required HashDTO key}) async {
-    _storeRefWrapper.remove(transaction, storeName, identifier)
     return _storeRefWrapper.get(transaction, storeName, key.toString());
   }
 
@@ -118,14 +117,20 @@ class StorageSMTDataSource {
         (database) => database
             .transaction((transaction) =>
                 getRootTransact(transaction: transaction, storeName: storeName))
-            .then((snapshot) => HashDTO.fromJson(snapshot!))
             .whenComplete(() => database.close()));
   }
 
   // For UT purpose
-  Future<Map<String, Object?>?> getRootTransact(
+  Future<HashDTO> getRootTransact(
       {required DatabaseClient transaction, required String storeName}) async {
-    return _storeRefWrapper.get(transaction, storeName, "root");
+    return _storeRefWrapper
+        .get(transaction, storeName, "root")
+        .then((storedValue) {
+      if (storedValue == null) {
+        throw SMTNotFoundException(storeName);
+      }
+      return HashDTO.fromJson(storedValue);
+    });
   }
 
   Future<void> setRoot(
@@ -154,8 +159,8 @@ class StorageSMTDataSource {
       required String privateKey}) {
     return _getDatabase(identifier: identifier, privateKey: privateKey).then(
         (database) => database
-            .transaction((transaction) =>
-                getRootTransact(transaction: transaction, storeName: storeName))
+            .transaction((transaction) => getMaxLevelsTransact(
+                transaction: transaction, storeName: storeName))
             .then((snapshot) => snapshot!["maxLevels"] as int)
             .whenComplete(() => database.close()));
   }
@@ -187,5 +192,22 @@ class StorageSMTDataSource {
       required int maxLevels}) async {
     await _storeRefWrapper
         .put(transaction, storeName, "maxLevels", {"maxLevels": maxLevels});
+  }
+
+  Future<void> removeSMT(
+      {required String storeName,
+      required String identifier,
+      required String privateKey}) {
+    return _getDatabase(identifier: identifier, privateKey: privateKey).then(
+        (database) => database
+            .transaction((transaction) => removeSMTTransact(
+                transaction: transaction, storeName: storeName))
+            .whenComplete(() => database.close()));
+  }
+
+  // For UT purpose
+  Future<void> removeSMTTransact(
+      {required DatabaseClient transaction, required String storeName}) async {
+    await _storeRefWrapper.removeAll(transaction, storeName);
   }
 }

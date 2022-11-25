@@ -8,10 +8,13 @@ import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/smt_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
@@ -150,6 +153,9 @@ final DeployedContract contract = DeployedContract(
 // Dependencies
 MockWalletDataSource walletDataSource = MockWalletDataSource();
 MockLibIdentityDataSource libIdentityDataSource = MockLibIdentityDataSource();
+MockLibBabyJubJubDataSource libBabyJubJubDataSource = MockLibBabyJubJubDataSource();
+MockLibPolygonIdCoreDataSource libPolygonIdCoreDataSource = MockLibPolygonIdCoreDataSource();
+MockSMTDataSource smtDataSource = MockSMTDataSource();
 MockRemoteIdentityDataSource remoteIdentityDataSource =
     MockRemoteIdentityDataSource();
 MockStorageIdentityDataSource storageIdentityDataSource =
@@ -168,6 +174,9 @@ MockDidMapper didMapper = MockDidMapper();
 IdentityRepository repository = IdentityRepositoryImpl(
   walletDataSource,
   libIdentityDataSource,
+  libBabyJubJubDataSource,
+  libPolygonIdCoreDataSource,
+  smtDataSource,
   remoteIdentityDataSource,
   storageIdentityDataSource,
   rpcDataSource,
@@ -183,6 +192,9 @@ IdentityRepository repository = IdentityRepositoryImpl(
 @GenerateMocks([
   WalletDataSource,
   LibIdentityDataSource,
+  LibBabyJubJubDataSource,
+  LibPolygonIdCoreDataSource,
+  SMTDataSource,
   RemoteIdentityDataSource,
   StorageIdentityDataSource,
   RPCDataSource,

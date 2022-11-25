@@ -7,7 +7,8 @@ class LibBabyJubJubDataSource {
 
   Future<String> hashPoseidon(List<String> children) {
     try {
-      String hash = _babyjubjubLib.poseidonHashHashes(children);
+      String hash = _babyjubjubLib.poseidonHashHashes(
+          children[0], children[1], children[2], children[3]);
       return Future.value(hash);
     } catch (e) {
       return Future.error(e);

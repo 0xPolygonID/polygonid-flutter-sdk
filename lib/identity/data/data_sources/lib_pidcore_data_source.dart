@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 
 import '../../libs/polygonidcore/polygonidcore.dart';
@@ -10,12 +12,12 @@ class LibPolygonIdCoreDataSource {
   );
 
   String calculateGenesisId(String claimsTreeRoot) {
-    String input = {
+    String input = jsonEncode({
       "claimsTreeRoot": claimsTreeRoot,
       //"8174871235721986756013575194888048894328426483724665491825528183806540196001",
       "blockchain": "polygon",
       "network": "mumbai"
-    }.toString();
+    });
 
     String output = _polygonIdCoreLib.calculateGenesisId(input);
     logger().d("calculateGenesisId: $output");
@@ -23,7 +25,7 @@ class LibPolygonIdCoreDataSource {
   }
 
   String getAuthInputs() {
-    String input = {
+    String input = jsonEncode({
       "id": "tT2t3b685r2dKsjo4MioyKeceFT4mQEYfDd69EY5Y",
       "nonce": "0",
       "authClaim": {
@@ -78,7 +80,7 @@ class LibPolygonIdCoreDataSource {
       "signature":
           "fccc15d7aed2bf4f5d7dbe55c81087970344d13e5d9f348e61965ac364f41d29b366b52bc0820c603877352054833da083f5595c29c881ccd8ee47aa639aa103",
       "challenge": "10"
-    }.toString();
+    });
 
     String output = _polygonIdCoreLib.getAuthInputs(input);
 
@@ -94,14 +96,14 @@ class LibPolygonIdCoreDataSource {
       required String pubX,
       required String pubY}) {
     //String revNonce = "15930428023331155902";
-    String input = {
+    String input = jsonEncode({
       "schema": schema, //"ca938857241db9451ea329256b9c06e5",
       "nonce": nonce, //"13260572831089785859",
       "indexSlotA": pubX,
       //"15468939102716291673743744296736132867654217747684906302563904432835075522918",
       "indexSlotB": pubY,
       //"10564057289999407626309237453457578977834988122411075958351091519856342060014"
-    }.toString();
+    });
 
     String output = _polygonIdCoreLib.createClaim(input);
 

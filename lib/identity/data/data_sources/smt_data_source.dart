@@ -18,6 +18,33 @@ class SMTDataSource {
   SMTDataSource(this._hexMapper, this._libBabyjubjubDataSource,
       this._storageSMTDataSource);
 
+  Future<void> createSMT(
+      {required int maxLevels,
+      required String storeName,
+      required String identifier,
+      required String privateKey}) async {
+    await _storageSMTDataSource
+        .getRoot(
+            storeName: storeName,
+            identifier: identifier,
+            privateKey: privateKey)
+        .then((root) async => await _storageSMTDataSource.removeSMT(
+            storeName: storeName,
+            identifier: identifier,
+            privateKey: privateKey))
+        .catchError((error) {});
+    await _storageSMTDataSource.setRoot(
+        root: HashDTO.zero(),
+        storeName: storeName,
+        identifier: identifier,
+        privateKey: privateKey);
+    await _storageSMTDataSource.setMaxLevels(
+        maxLevels: maxLevels,
+        storeName: storeName,
+        identifier: identifier,
+        privateKey: privateKey);
+  }
+
   Future<HashDTO> addLeaf(
       {required NodeDTO newNodeLeaf,
       required String storeName,
@@ -63,7 +90,7 @@ class SMTDataSource {
         // trying to add
         final newLeafKey = newLeaf.children[0];
         if (newLeafKey == nKey) {
-          throw SMTEntryIndexAlreadyExists();
+          throw SMTEntryIndexAlreadyExistsException();
         }
         final pathOldLeaf = _getPath(maxLevels, nKey);
         // We need to push newLeaf down until its path diverges from
@@ -101,7 +128,7 @@ class SMTDataSource {
         }
         return _addNode(newNodeMiddle, storeName, identifier, privateKey);
       default:
-        throw SMTInvalidNodeFound();
+        throw SMTInvalidNodeFoundException();
     }
   }
 
@@ -121,12 +148,12 @@ class SMTDataSource {
           storeName: storeName,
           identifier: identifier,
           privateKey: privateKey);
-    } on SMTNotFound {
+    } on SMTNotFoundException {
       nodeFound = false;
     }
 
     if (nodeFound) {
-      throw SMTNodeKeyAlreadyExists();
+      throw SMTNodeKeyAlreadyExistsException();
     }
 
     _storageSMTDataSource.addNode(
@@ -153,7 +180,7 @@ class SMTDataSource {
     int maxLevels = await _storageSMTDataSource.getMaxLevels(
         storeName: storeName, identifier: identifier, privateKey: privateKey);
     if (level > maxLevels - 2) {
-      throw SMTReachedMaxLevel();
+      throw SMTReachedMaxLevelException();
     }
 
     if (pathNewLeaf[level] == pathOldLeaf[level]) {
@@ -250,10 +277,10 @@ class SMTDataSource {
 
           continue;
         default:
-          throw SMTInvalidNodeFound();
+          throw SMTInvalidNodeFoundException();
       }
     }
-    throw SMTKeyNotFound();
+    throw SMTKeyNotFoundException();
   }
 
   Future<HashDTO> getProofTreeRoot(

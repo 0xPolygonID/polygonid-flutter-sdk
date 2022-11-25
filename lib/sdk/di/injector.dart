@@ -96,8 +96,23 @@ abstract class DatabaseModule {
     return database;
   }
 
+  // Secured store
+  @Named(securedStoreName)
+  Map<String, StoreRef<String, Map<String, Object?>>> get securedStore {
+    Map<String, StoreRef<String, Map<String, Object?>>> result = {};
+    //result[identityStoreName] = stringMapStoreFactory.store(identityStoreName);
+    result[claimsTreeStoreName] =
+        stringMapStoreFactory.store(claimsTreeStoreName);
+    result[revocationTreeStoreName] =
+        stringMapStoreFactory.store(revocationTreeStoreName);
+    result[rootsTreeStoreName] =
+        stringMapStoreFactory.store(rootsTreeStoreName);
+    //result[claimStoreName] = stringMapStoreFactory.store(claimStoreName);
+    return result;
+  }
+
   // Identity
-  @Named(claimsTreeStoreName)
+  /*@Named(claimsTreeStoreName)
   StoreRef<String, Map<String, Object?>> get claimsTreeStore =>
       stringMapStoreFactory.store(claimsTreeStoreName);
 
@@ -107,7 +122,7 @@ abstract class DatabaseModule {
 
   @Named(rootsTreeStoreName)
   StoreRef<String, Map<String, Object?>> get rootsTreeStore =>
-      stringMapStoreFactory.store(rootsTreeStoreName);
+      stringMapStoreFactory.store(rootsTreeStoreName);*/
 
   // Credential
   @Named(claimStoreName)

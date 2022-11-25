@@ -34,6 +34,23 @@ class SMTRepositoryImpl implements SMTRepository {
     this._proofMapper,
   );
 
+  /*/// NewMerkleTree loads a new MerkleTree. If in the storage already exists one
+  /// will open that one, if not, will create a new one.
+  Future<MerkleTreeEntity> getMerkleTree(
+      {required int maxLevels,
+      required String storeName,
+      required String identifier,
+      required String privateKey}) async {
+    getRoot(
+            storeName: storeName,
+            identifier: identifier,
+            privateKey: privateKey)
+        .then((root) => null)
+        .catchError((error) {
+          setRoot(root: _hashMapper.mapFrom(HashDTO.zero()), storeName: storeName, identifier: identifier, privateKey: privateKey)
+    });
+  }*/
+
   @override
   Future<HashEntity> addLeaf(
       {required HashEntity key,
