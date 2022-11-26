@@ -106,8 +106,8 @@ class SMTDataSource {
           final nextKey = await _addLeaf(newLeaf, node.children[1], level + 1,
               path, storeName, identifier, privateKey);
           final newNodeChildren = [node.children[0], nextKey];
-          final nodeHashData = await _libBabyjubjubDataSource
-              .hashPoseidon(newNodeChildren.map((dto) => dto.data).toList());
+          final nodeHashData = await _libBabyjubjubDataSource.hashPoseidon2(
+              node.children[0].data, nextKey.data);
           final nodeHash = HashDTO(data: nodeHashData);
           newNodeMiddle = NodeDTO(
               children: newNodeChildren,
@@ -118,8 +118,8 @@ class SMTDataSource {
           final nextKey = await _addLeaf(newLeaf, node.children[0], level + 1,
               path, storeName, identifier, privateKey);
           final newNodeChildren = [nextKey, node.children[1]];
-          final nodeHashData = await _libBabyjubjubDataSource
-              .hashPoseidon(newNodeChildren.map((dto) => dto.data).toList());
+          final nodeHashData = await _libBabyjubjubDataSource.hashPoseidon2(
+              nextKey.data, node.children[1].data);
           final nodeHash = HashDTO(data: nodeHashData);
           newNodeMiddle = NodeDTO(
               children: newNodeChildren,
@@ -195,8 +195,8 @@ class SMTDataSource {
         // go left
         newNodeChildren = [nextKey, HashDTO.zero()];
       }
-      final nodeHashData = await _libBabyjubjubDataSource
-          .hashPoseidon(newNodeChildren.map((dto) => dto.data).toList());
+      final nodeHashData = await _libBabyjubjubDataSource.hashPoseidon2(
+          newNodeChildren[0].data, newNodeChildren[1].data);
       final nodeHash = HashDTO(data: nodeHashData);
       final NodeDTO newNodeMiddle = NodeDTO(
           children: newNodeChildren, hash: nodeHash, type: NodeTypeDTO.middle);
@@ -211,8 +211,8 @@ class SMTDataSource {
     } else {
       newNodeChildren = [newLeafKey, oldLeafKey];
     }
-    final nodeHashData = await _libBabyjubjubDataSource
-        .hashPoseidon(newNodeChildren.map((dto) => dto.data).toList());
+    final nodeHashData = await _libBabyjubjubDataSource.hashPoseidon2(
+        newNodeChildren[0].data, newNodeChildren[1].data);
     final nodeHash = HashDTO(data: nodeHashData);
     final NodeDTO newNodeMiddle = NodeDTO(
         children: newNodeChildren, hash: nodeHash, type: NodeTypeDTO.middle);
@@ -310,8 +310,8 @@ class SMTDataSource {
       } else {
         newNodeChildren = [midKey, proof.siblings[level]];
       }
-      final nodeHashData = await _libBabyjubjubDataSource
-          .hashPoseidon(newNodeChildren.map((dto) => dto.data).toList());
+      final nodeHashData = await _libBabyjubjubDataSource.hashPoseidon2(
+          newNodeChildren[0].data, newNodeChildren[1].data);
       midKey = HashDTO(data: nodeHashData);
     }
 

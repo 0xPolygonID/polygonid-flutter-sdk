@@ -228,39 +228,50 @@ pub extern fn poseidon_hash(input: *const c_char) -> *mut c_char {
     let b0: Fr = Fr::from_str(input_str).unwrap();
 
     let hm_input = vec![b0.clone()];
-    //let hm_input = vec![x.clone(), y.clone(), z.clone()];
     let poseidon = Poseidon::new();
     let hm = poseidon.hash(hm_input).unwrap();
-    return CString::new(to_hex(&hm).as_str()).unwrap().into_raw();
+    let hm_big = BigInt::parse_bytes(to_hex(&hm).as_bytes(), 16).unwrap();
+    let mut result_string: String = "".to_owned();
+    result_string.push_str(&hm_big.to_string());
+    return CString::new(result_string.as_str()).unwrap().into_raw();
 }
 
 #[no_mangle]
-pub extern fn poseidon_hash2(input: *const *const c_char, count: *const isize) -> *mut c_char {
-    let mut hm_input : Vec<Fr> = Vec::new();
+pub extern fn poseidon_hash2(in1: *const c_char, in2: *const c_char) -> *mut c_char {
+    let in1_str = unsafe { CStr::from_ptr(in1) }.to_str().unwrap();
+    let b1: Fr = Fr::from_str(in1_str).unwrap();
 
-    let member_ptr_arr: *const *const c_char = input;
+    let in2_str = unsafe { CStr::from_ptr(in2) }.to_str().unwrap();
+    let b2: Fr = Fr::from_str(in2_str).unwrap();
 
-    if member_ptr_arr == ptr::null() {
-       return CString::new("".to_owned()).unwrap().into_raw();
-    }
-    let mut len = 0;
-    unsafe {
-        len = *(count);
-    }
-
-    for i in 0..len {
-
-       let input_str = match unsafe { CStr::from_ptr(*(input.offset(i))) }.to_str() {
-          Err(_) => break,
-          Ok(string) => string,
-       };
-       let b0: Fr = Fr::from_str(input_str).unwrap();
-       hm_input.push(b0.clone());
-    }
-
+    let hm_input = vec![b1.clone(), b2.clone()];
     let poseidon = Poseidon::new();
     let hm = poseidon.hash(hm_input).unwrap();
-    return CString::new(to_hex(&hm).as_str()).unwrap().into_raw();
+    let hm_big = BigInt::parse_bytes(to_hex(&hm).as_bytes(), 16).unwrap();
+    let mut result_string: String = "".to_owned();
+    result_string.push_str(&hm_big.to_string());
+    return CString::new(result_string.as_str()).unwrap().into_raw();
+}
+
+#[no_mangle]
+pub extern fn poseidon_hash3(in1: *const c_char, in2: *const c_char, in3: *const c_char) -> *mut c_char {
+    let in1_str = unsafe { CStr::from_ptr(in1) }.to_str().unwrap();
+    let b1: Fr = Fr::from_str(in1_str).unwrap();
+
+    let in2_str = unsafe { CStr::from_ptr(in2) }.to_str().unwrap();
+    let b2: Fr = Fr::from_str(in2_str).unwrap();
+
+    let in3_str = unsafe { CStr::from_ptr(in3) }.to_str().unwrap();
+    let b3: Fr = Fr::from_str(in3_str).unwrap();
+
+    let hm_input = vec![b1.clone(), b2.clone(), b3.clone()];
+    let poseidon = Poseidon::new();
+    let hm = poseidon.hash(hm_input).unwrap();
+
+    let hm_big = BigInt::parse_bytes(to_hex(&hm).as_bytes(), 16).unwrap();
+    let mut result_string: String = "".to_owned();
+    result_string.push_str(&hm_big.to_string());
+    return CString::new(result_string.as_str()).unwrap().into_raw();
 }
 
 #[no_mangle]

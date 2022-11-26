@@ -71,9 +71,10 @@ class IdentityRepositoryImpl extends IdentityRepository {
   Future<PrivateIdentityEntity> createIdentity({String? secret}) async {
     try {
       // Create a wallet
-      /*PrivadoIdWallet wallet = await _walletDataSource.createWallet(
-          secret: _privateKeyMapper.mapFrom(
-              "28156abe7fe2fd433dc9df969286b96666489bac508612d0e16593e944c4f69f"));*/
+      //PrivadoIdWallet wallet = await _walletDataSource.createWallet(
+      //secret: _privateKeyMapper.mapFrom(
+      //    "28156abe7fe2fd433dc9df969286b96666489bac508612d0e16593e944c4f69f")*/
+      //);
       PrivadoIdWallet wallet = await _walletDataSource.getWallet(
           privateKey: _hexMapper.mapTo(
               "28156abe7fe2fd433dc9df969286b96666489bac508612d0e16593e944c4f69f"));
@@ -117,18 +118,18 @@ class IdentityRepositoryImpl extends IdentityRepository {
       List<HashDTO> childrenHash =
           children.map((bigInt) => HashDTO(data: bigInt)).toList();
 
-      String hashIndex =
-          await _libBabyJubJubDataSource.hashPoseidon(children.sublist(0, 4));
+      String hashIndex = await _libBabyJubJubDataSource.hashPoseidon4(
+          children[0], children[1], children[2], children[3]);
       HashDTO hIndex = HashDTO(data: hashIndex);
-      String hashValue =
-          await _libBabyJubJubDataSource.hashPoseidon(children.sublist(4));
+      String hashValue = await _libBabyJubJubDataSource.hashPoseidon4(
+          children[4], children[5], children[6], children[7]);
       HashDTO hValue = HashDTO(data: hashValue);
 
       final claimDTO = IdentityClaimDTO(
           children: childrenHash, hashIndex: hIndex, hashValue: hValue);
 
-      String hashClaimNode = await _libBabyJubJubDataSource.hashPoseidon(
-          [hIndex.data.toString(), hValue.data.toString(), HashDTO.one().data]);
+      String hashClaimNode = await _libBabyJubJubDataSource.hashPoseidon3(
+          hIndex.data, hValue.data, "1");
 
       /*String authClaimHIndex =
           await _libBabyJubJubDataSource.hashPoseidon(children);
@@ -136,7 +137,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
           await _libBabyJubJubDataSource.hashPoseidon(children);*/
 
       NodeDTO authClaimNode = NodeDTO(
-          children: [hIndex, hValue, HashDTO.one()],
+          children: [hIndex, hValue, HashDTO(data: "1")],
           hash: HashDTO(data: hashClaimNode),
           type: NodeTypeDTO.leaf);
 

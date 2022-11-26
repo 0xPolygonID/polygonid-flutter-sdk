@@ -13,19 +13,17 @@ final _q = BigInt.parse(
 /// Represents an identity state hash DTO.
 @JsonSerializable()
 class HashDTO extends Equatable {
-  final String data;
+  final String data; // hex string 64 chars - big int string 77 chars
 
   const HashDTO({required this.data});
 
-  HashDTO.zero() : data = HexMapper().mapFrom(Uint8List(32));
+  HashDTO.zero() : data = "0";
 
-  HashDTO.one()
-      : data =
-            "0100000000000000000000000000000000000000000000000000000000000000";
+  HashDTO.one() : data = "1";
 
-  HashDTO.fromUint8List(this.data) {
+  /*HashDTO.fromUint8List(this.data) {
     assert(data.length == 32);
-  }
+  }*/
 
   HashDTO.fromBigInt(BigInt i) : data = HexMapper().mapFrom(Uint8List(32)) {
     Uint8List dataBytes = Uint8List(32);
