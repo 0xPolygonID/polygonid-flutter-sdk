@@ -9,6 +9,7 @@ enum NodeTypeDTO {
   middle,
   leaf,
   state,
+  empty,
   unknown,
 }
 
@@ -28,7 +29,7 @@ enum NodeTypeDTO {
 /// - Leaf node: [key, value, 1]
 
 /// Represents a node DTO.
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class NodeDTO extends Equatable {
   final HashDTO hash;
   final List<HashDTO> children;

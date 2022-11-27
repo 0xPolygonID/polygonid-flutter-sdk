@@ -14,7 +14,6 @@ import '../../../credential/data/dtos/claim_proofs/claim_proof_bjj_dto.dart';
 import '../../../credential/data/dtos/claim_proofs/claim_proof_dto.dart';
 import '../../../credential/data/dtos/claim_proofs/claim_proof_sm_dto.dart';
 import '../../data/dtos/hash_dto.dart';
-import '../../data/mappers/hex_mapper.dart';
 import 'native_iden3core.dart';
 import 'native_iden3core_extension.dart';
 
@@ -2191,7 +2190,7 @@ class Iden3CoreLib {
     for (int i = 0; i < v.ref.data_len; i++) {
       h[i] = v.ref.data[i];
     }
-    final result = HashDTO(data: HexMapper().mapFrom(h));
+    final result = HashDTO(data: h);
     return result;
   }
 

@@ -1,31 +1,29 @@
 import 'dart:typed_data';
 
-import 'package:convert/convert.dart' as convert;
 import 'package:equatable/equatable.dart';
-import 'package:json_annotation/json_annotation.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 
-part 'hash_dto.g.dart';
+import '../../../common/utils/uint8_list_utils.dart';
+
+//part 'hash_dto.g.dart';
 
 final _q = BigInt.parse(
     "21888242871839275222246405745257275088548364400416034343698204186575808495617");
 
 /// Represents an identity state hash DTO.
-@JsonSerializable()
+//@JsonSerializable(explicitToJson: true)
 class HashDTO extends Equatable {
-  final String data; // hex string 64 chars - big int string 77 chars
+  final Uint8List data; // hex string 64 chars - big int string 77 chars
 
   const HashDTO({required this.data});
 
-  HashDTO.zero() : data = "0";
+  HashDTO.zero() : data = Uint8List(32);
 
-  HashDTO.one() : data = "1";
-
-  /*HashDTO.fromUint8List(this.data) {
+  HashDTO.fromUint8List(this.data) {
     assert(data.length == 32);
-  }*/
+  }
 
-  HashDTO.fromBigInt(BigInt i) : data = HexMapper().mapFrom(Uint8List(32)) {
+  HashDTO.fromBigInt(BigInt i) : data = Uint8List(32) {
     Uint8List dataBytes = Uint8List(32);
     if (i < BigInt.from(0)) {
       throw ArgumentError("BigInt must be positive");
@@ -38,30 +36,34 @@ class HashDTO extends Equatable {
     int bytes = (i.bitLength + 7) >> 3;
     final b = BigInt.from(256);
     for (int j = 0; j < bytes; j++) {
-      HexMapper().mapTo(data)[j] = i.remainder(b).toInt();
+      data[j] = i.remainder(b).toInt();
       i = i >> 8;
     }
   }
 
-  HashDTO.fromHex(String h) : data = HexMapper().mapFrom(Uint8List(32)) {
+  HashDTO.fromHex(String h) : data = Uint8List(32) {
     if (h.length != 64) {
       throw ArgumentError("Hex string must be 64 characters long");
     }
-    convert.hex.decode(h).asMap().forEach((i, b) {
-      HexMapper().mapTo(data)[i] = b;
+    HexMapper().mapTo(h).asMap().forEach((i, b) {
+      data[i] = b;
     });
   }
 
-  factory HashDTO.fromJson(Map<String, dynamic> json) =>
-      _$HashDTOFromJson(json);
+  factory HashDTO.fromJson(Map<String, dynamic> json) => HashDTO(
+        data: Uint8ArrayUtils.bigIntToBytes(BigInt.parse(json["data"])),
+      );
+  //_$HashDTOFromJson(json);
 
-  Map<String, dynamic> toJson() => _$HashDTOToJson(this);
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'data': Uint8ArrayUtils.bytesToBigInt(data).toString(),
+      };
 
   BigInt toBigInt() {
     final b = BigInt.from(256);
     BigInt i = BigInt.from(0);
-    for (int j = HexMapper().mapTo(data).length - 1; j >= 0; j--) {
-      i = i * b + BigInt.from(HexMapper().mapTo(data)[j]);
+    for (int j = data.length - 1; j >= 0; j--) {
+      i = i * b + BigInt.from(data[j]);
     }
     return i;
   }
@@ -70,7 +72,7 @@ class HashDTO extends Equatable {
     if (n < 0 || n >= data.length * 8) {
       throw ArgumentError("n must be in range [0, ${data.length * 8}]");
     }
-    return HexMapper().mapTo(data)[n ~/ 8] & (1 << (n % 8)) != 0;
+    return data[n ~/ 8] & (1 << (n % 8)) != 0;
   }
 
   // TestBit tests whether the bit n in bitmap is 1.
@@ -92,7 +94,12 @@ class HashDTO extends Equatable {
   }
 
   @override
-  int get hashCode => Object.hashAll(HexMapper().mapTo(data));
+  String toString() {
+    return Uint8ArrayUtils.leBuff2int(data).toString();
+  }
+
+  @override
+  int get hashCode => Object.hashAll(data);
 
   @override
   List<Object?> get props => [data];

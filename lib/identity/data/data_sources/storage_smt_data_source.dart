@@ -62,11 +62,20 @@ class StorageSMTDataSource {
         instanceName: storeName);
   }*/
 
+  // getNode gets a node by key from the SMT.  Empty nodes are not stored in the
+  // tree; they are all the same and assumed to always exist.
   Future<NodeDTO> getNode(
       {required HashDTO key,
       required String storeName,
       required String identifier,
       required String privateKey}) {
+    if ((BigInt.parse(key.toString())) == BigInt.zero) {
+      return Future.value(NodeDTO(
+        children: [],
+        hash: HashDTO.fromBigInt(BigInt.zero),
+        type: NodeTypeDTO.empty,
+      ));
+    }
     return _getDatabase(identifier: identifier, privateKey: privateKey).then(
         (database) => database
             .transaction((transaction) => getTransact(

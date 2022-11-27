@@ -52,7 +52,7 @@ class RemoteIdentityDataSource {
       String revTreeRootHash =
           "0000000000000000000000000000000000000000000000000000000000000000";
       if (rhsNodeType == RhsNodeType.state) {
-        revTreeRootHash = rhsNode.node.children[1].data;
+        revTreeRootHash = rhsNode.node.children[1].toString();
         issuer = {
           "state": rhsNode.node.hash,
           "root_of_roots": rhsNode.node.children[2],
@@ -77,30 +77,30 @@ class RemoteIdentityDataSource {
 
           if (nodeType == RhsNodeType.middle) {
             if (_testBit(key, depth)) {
-              nextKey = revNode.node.children[1].data;
+              nextKey = revNode.node.children[1].toString();
               siblings.add(Uint8ArrayUtils.leBuff2int(
-                      hexToBytes(revNode.node.children[0].data))
+                      hexToBytes(revNode.node.children[0].toString()))
                   .toString());
             } else {
-              nextKey = revNode.node.children[0].data;
+              nextKey = revNode.node.children[0].toString();
               siblings.add(Uint8ArrayUtils.leBuff2int(
-                      hexToBytes(revNode.node.children[1].data))
+                      hexToBytes(revNode.node.children[1].toString()))
                   .toString());
             }
           } else if (nodeType == RhsNodeType.leaf) {
             if (Uint8ArrayUtils.leBuff2int(key) ==
                 Uint8ArrayUtils.leBuff2int(
-                    hexToBytes(revNode.node.children[0].data))) {
+                    hexToBytes(revNode.node.children[0].toString()))) {
               exists = true;
               return _mkProof(issuer, exists, siblings, null);
             }
             // We found a leaf whose entry didn't match hIndex
             Map<String, String> nodeAux = {
               "key": Uint8ArrayUtils.leBuff2int(
-                      hexToBytes(revNode.node.children[0].data))
+                      hexToBytes(revNode.node.children[0].toString()))
                   .toString(),
               "value": Uint8ArrayUtils.leBuff2int(
-                      hexToBytes(revNode.node.children[1].data))
+                      hexToBytes(revNode.node.children[1].toString()))
                   .toString(),
             };
             return _mkProof(issuer, exists, siblings, nodeAux);

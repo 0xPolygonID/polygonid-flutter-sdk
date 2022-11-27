@@ -322,11 +322,61 @@ class MockLibBabyJubJubDataSource extends _i1.Mock
   }
 
   @override
-  _i12.Future<String> hashPoseidon(List<String>? children) =>
-      (super.noSuchMethod(
+  _i12.Future<String> hashPoseidon(String? input1) => (super.noSuchMethod(
         Invocation.method(
           #hashPoseidon,
-          [children],
+          [input1],
+        ),
+        returnValue: _i12.Future<String>.value(''),
+      ) as _i12.Future<String>);
+  @override
+  _i12.Future<String> hashPoseidon2(
+    String? input1,
+    String? input2,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #hashPoseidon2,
+          [
+            input1,
+            input2,
+          ],
+        ),
+        returnValue: _i12.Future<String>.value(''),
+      ) as _i12.Future<String>);
+  @override
+  _i12.Future<String> hashPoseidon3(
+    String? input1,
+    String? input2,
+    String? input3,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #hashPoseidon3,
+          [
+            input1,
+            input2,
+            input3,
+          ],
+        ),
+        returnValue: _i12.Future<String>.value(''),
+      ) as _i12.Future<String>);
+  @override
+  _i12.Future<String> hashPoseidon4(
+    String? input1,
+    String? input2,
+    String? input3,
+    String? input4,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #hashPoseidon4,
+          [
+            input1,
+            input2,
+            input3,
+            input4,
+          ],
         ),
         returnValue: _i12.Future<String>.value(''),
       ) as _i12.Future<String>);

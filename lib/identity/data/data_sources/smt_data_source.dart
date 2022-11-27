@@ -74,7 +74,7 @@ class SMTDataSource {
       throw ArgumentError("level must be less than maxLevels");
     }
 
-    logger().i("add leaf under key $key at level $level");
+    logger().i("add leaf under key ${key.data} at level $level");
 
     final node = await _storageSMTDataSource.getNode(
         key: key,
@@ -82,9 +82,10 @@ class SMTDataSource {
         identifier: identifier,
         privateKey: privateKey);
     switch (node.type) {
-      case NodeTypeDTO.state:
+      case NodeTypeDTO.empty:
         return _addNode(newLeaf, storeName, identifier, privateKey);
       case NodeTypeDTO.leaf:
+      case NodeTypeDTO.state: //???
         final nKey = node.children[0];
         // Check if leaf node found contains the leaf node we are
         // trying to add
@@ -107,8 +108,8 @@ class SMTDataSource {
               path, storeName, identifier, privateKey);
           final newNodeChildren = [node.children[0], nextKey];
           final nodeHashData = await _libBabyjubjubDataSource.hashPoseidon2(
-              node.children[0].data, nextKey.data);
-          final nodeHash = HashDTO(data: nodeHashData);
+              node.children[0].toString(), nextKey.toString());
+          final nodeHash = HashDTO.fromBigInt(BigInt.parse(nodeHashData));
           newNodeMiddle = NodeDTO(
               children: newNodeChildren,
               hash: nodeHash,
@@ -119,8 +120,8 @@ class SMTDataSource {
               path, storeName, identifier, privateKey);
           final newNodeChildren = [nextKey, node.children[1]];
           final nodeHashData = await _libBabyjubjubDataSource.hashPoseidon2(
-              nextKey.data, node.children[1].data);
-          final nodeHash = HashDTO(data: nodeHashData);
+              nextKey.toString(), node.children[1].toString());
+          final nodeHash = HashDTO.fromBigInt(BigInt.parse(nodeHashData));
           newNodeMiddle = NodeDTO(
               children: newNodeChildren,
               hash: nodeHash,
@@ -132,31 +133,34 @@ class SMTDataSource {
     }
   }
 
-  HashDTO _addNode(
-      NodeDTO node, String storeName, String identifier, String privateKey) {
+  Future<HashDTO> _addNode(NodeDTO node, String storeName, String identifier,
+      String privateKey) async {
     // print("add node $n");
 
     final key = node.hash;
-    if (node.type == NodeTypeDTO.state) {
+    if (node.type == NodeTypeDTO.empty) {
       return key;
     }
 
-    bool nodeFound = true;
-    try {
-      _storageSMTDataSource.getNode(
-          key: key,
-          storeName: storeName,
-          identifier: identifier,
-          privateKey: privateKey);
-    } on SMTNotFoundException {
+    //bool nodeFound = true;
+    //try {
+    bool nodeFound = await _storageSMTDataSource
+        .getNode(
+            key: key,
+            storeName: storeName,
+            identifier: identifier,
+            privateKey: privateKey)
+        .then((node) => node.type != NodeTypeDTO.empty)
+        .catchError((error) => false);
+    /*} on SMTNotFoundException {
       nodeFound = false;
-    }
+    }*/
 
     if (nodeFound) {
       throw SMTNodeKeyAlreadyExistsException();
     }
 
-    _storageSMTDataSource.addNode(
+    await _storageSMTDataSource.addNode(
         key: key,
         node: node,
         storeName: storeName,
@@ -196,8 +200,8 @@ class SMTDataSource {
         newNodeChildren = [nextKey, HashDTO.zero()];
       }
       final nodeHashData = await _libBabyjubjubDataSource.hashPoseidon2(
-          newNodeChildren[0].data, newNodeChildren[1].data);
-      final nodeHash = HashDTO(data: nodeHashData);
+          newNodeChildren[0].toString(), newNodeChildren[1].toString());
+      final nodeHash = HashDTO.fromBigInt(BigInt.parse(nodeHashData));
       final NodeDTO newNodeMiddle = NodeDTO(
           children: newNodeChildren, hash: nodeHash, type: NodeTypeDTO.middle);
       return _addNode(newNodeMiddle, storeName, identifier, privateKey);
@@ -212,8 +216,8 @@ class SMTDataSource {
       newNodeChildren = [newLeafKey, oldLeafKey];
     }
     final nodeHashData = await _libBabyjubjubDataSource.hashPoseidon2(
-        newNodeChildren[0].data, newNodeChildren[1].data);
-    final nodeHash = HashDTO(data: nodeHashData);
+        newNodeChildren[0].toString(), newNodeChildren[1].toString());
+    final nodeHash = HashDTO.fromBigInt(BigInt.parse(nodeHashData));
     final NodeDTO newNodeMiddle = NodeDTO(
         children: newNodeChildren, hash: nodeHash, type: NodeTypeDTO.middle);
     _addNode(newLeaf, storeName, identifier, privateKey);
@@ -260,10 +264,10 @@ class SMTDataSource {
               siblings: siblings,
               nodeAux: NodeAuxDTO(
                 key: Uint8ArrayUtils.bytesToBigInt(
-                        _hexMapper.mapTo(node.children[0].data))
+                        _hexMapper.mapTo(node.children[0].toString()))
                     .toString(),
                 value: Uint8ArrayUtils.bytesToBigInt(
-                        _hexMapper.mapTo(node.children[1].data))
+                        _hexMapper.mapTo(node.children[1].toString()))
                     .toString(),
               ));
         case NodeTypeDTO.middle:
@@ -293,11 +297,12 @@ class SMTDataSource {
       if (proof.nodeAux == null) {
         midKey = HashDTO.zero();
       } else {
-        if (node.children[0] == HashDTO(data: proof.nodeAux!.key)) {
+        if (node.children[0] ==
+            HashDTO.fromBigInt(BigInt.parse(proof.nodeAux!.key))) {
           throw Exception(
               "Non-existence proof being checked against hIndex equal to nodeAux");
         }
-        midKey = HashDTO(data: proof.nodeAux!.key);
+        midKey = HashDTO.fromBigInt(BigInt.parse(proof.nodeAux!.key));
       }
     }
 
@@ -311,8 +316,8 @@ class SMTDataSource {
         newNodeChildren = [midKey, proof.siblings[level]];
       }
       final nodeHashData = await _libBabyjubjubDataSource.hashPoseidon2(
-          newNodeChildren[0].data, newNodeChildren[1].data);
-      midKey = HashDTO(data: nodeHashData);
+          newNodeChildren[0].toString(), newNodeChildren[1].toString());
+      midKey = HashDTO.fromBigInt(BigInt.parse(nodeHashData));
     }
 
     return Future.value(midKey);

@@ -15,8 +15,8 @@ NodeDTO _$NodeDTOFromJson(Map<String, dynamic> json) => NodeDTO(
     );
 
 Map<String, dynamic> _$NodeDTOToJson(NodeDTO instance) => <String, dynamic>{
-      'hash': instance.hash,
-      'children': instance.children,
+      'hash': instance.hash.toJson(),
+      'children': instance.children.map((e) => e.toJson()).toList(),
       'type': _$NodeTypeDTOEnumMap[instance.type]!,
     };
 
@@ -24,5 +24,6 @@ const _$NodeTypeDTOEnumMap = {
   NodeTypeDTO.middle: 'middle',
   NodeTypeDTO.leaf: 'leaf',
   NodeTypeDTO.state: 'state',
+  NodeTypeDTO.empty: 'empty',
   NodeTypeDTO.unknown: 'unknown',
 };

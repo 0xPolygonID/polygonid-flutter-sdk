@@ -296,7 +296,6 @@ pub extern fn poseidon_hash4(in1: *const c_char, in2: *const c_char, in3: *const
     let mut result_string: String = "".to_owned();
     result_string.push_str(&hm_big.to_string());
     return CString::new(result_string.as_str()).unwrap().into_raw();
-    //return CString::new(to_hex(&hm).as_str()).unwrap().into_raw();
 }
 
 #[no_mangle]

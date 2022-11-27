@@ -39,6 +39,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final RPCDataSource _rpcDataSource;
   final LocalContractFilesDataSource _localContractFilesDataSource;
   final HexMapper _hexMapper;
+  //final BigIntMapper _bigIntMapper;
   final PrivateKeyMapper _privateKeyMapper;
   final IdentityDTOMapper _identityDTOMapper;
   final RhsNodeMapper _rhsNodeMapper;
@@ -83,6 +84,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
       String dbIdentifier = wallet.publicKeyBase64!;
       String privateKey = _hexMapper.mapFrom(wallet.privateKey);
 
+      String signature = await _walletDataSource.signMessage(
+          privateKey: wallet.privateKey, message: "10");
+
       // initialize merkle trees
       await _smtDataSource.createSMT(
           maxLevels: 32,
@@ -107,7 +111,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
       //    pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]);
 
       String authClaimSchema = "ca938857241db9451ea329256b9c06e5";
-      String authClaimNonce = "13260572831089785859";
+      String authClaimNonce = "15930428023331155902";
       String authClaim = _libPolygonIdCoreDataSource.issueClaim(
           schema: authClaimSchema,
           nonce: authClaimNonce,
@@ -115,21 +119,38 @@ class IdentityRepositoryImpl extends IdentityRepository {
           pubY: wallet.publicKey[1]);
 
       List<String> children = List.from(jsonDecode(authClaim));
-      List<HashDTO> childrenHash =
-          children.map((bigInt) => HashDTO(data: bigInt)).toList();
+      List<HashDTO> childrenHash = children
+          .map((bigInt) => HashDTO.fromBigInt(BigInt.parse(bigInt)))
+          .toList();
 
       String hashIndex = await _libBabyJubJubDataSource.hashPoseidon4(
-          children[0], children[1], children[2], children[3]);
-      HashDTO hIndex = HashDTO(data: hashIndex);
+          HashDTO.fromBigInt(BigInt.parse(children[0])).toString(),
+          HashDTO.fromBigInt(BigInt.parse(children[1])).toString(),
+          HashDTO.fromBigInt(BigInt.parse(children[2])).toString(),
+          HashDTO.fromBigInt(BigInt.parse(children[3])).toString());
+      HashDTO hIndex = HashDTO.fromBigInt(BigInt.parse(hashIndex));
       String hashValue = await _libBabyJubJubDataSource.hashPoseidon4(
-          children[4], children[5], children[6], children[7]);
-      HashDTO hValue = HashDTO(data: hashValue);
+          HashDTO.fromBigInt(BigInt.parse(children[4])).toString(),
+          HashDTO.fromBigInt(BigInt.parse(children[5])).toString(),
+          HashDTO.fromBigInt(BigInt.parse(children[6])).toString(),
+          HashDTO.fromBigInt(BigInt.parse(children[7])).toString());
+      HashDTO hValue = HashDTO.fromBigInt(BigInt.parse(hashValue));
 
       final claimDTO = IdentityClaimDTO(
           children: childrenHash, hashIndex: hIndex, hashValue: hValue);
 
       String hashClaimNode = await _libBabyJubJubDataSource.hashPoseidon3(
-          hIndex.data, hValue.data, "1");
+          hashIndex, hashValue, BigInt.one.toString());
+
+      String hashClaimNode2 = await _libBabyJubJubDataSource.hashPoseidon3(
+          hIndex.toString(), hValue.toString(), BigInt.one.toString());
+
+      //  "claimsTreeRoot": "8174871235721986756013575194888048894328426483724665491825528183806540196001",
+      // 	"blockchain": "polygon",
+      // 	"network": "mumbai"
+
+      String exampleOneOne = await _libBabyJubJubDataSource.hashPoseidon3(
+          BigInt.one.toString(), BigInt.one.toString(), BigInt.one.toString());
 
       /*String authClaimHIndex =
           await _libBabyJubJubDataSource.hashPoseidon(children);
@@ -137,8 +158,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
           await _libBabyJubJubDataSource.hashPoseidon(children);*/
 
       NodeDTO authClaimNode = NodeDTO(
-          children: [hIndex, hValue, HashDTO(data: "1")],
-          hash: HashDTO(data: hashClaimNode),
+          children: [hIndex, hValue, HashDTO.fromBigInt(BigInt.one)],
+          hash: HashDTO.fromBigInt(BigInt.parse(hashClaimNode)),
           type: NodeTypeDTO.leaf);
 
       HashDTO claimsTreeRoot = await _smtDataSource.addLeaf(
@@ -149,7 +170,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
       // Get the genesis id
       String genesisId =
-          await getGenesisId(claimsTreeRoot: claimsTreeRoot.data);
+          await getGenesisId(claimsTreeRoot: claimsTreeRoot.toString());
 
       PrivateIdentityEntity identityEntity = _identityDTOMapper.mapPrivateFrom(
           IdentityDTO(identifier: "genesisId", publicKey: wallet.publicKey),

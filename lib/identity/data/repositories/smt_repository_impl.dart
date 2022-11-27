@@ -60,7 +60,7 @@ class SMTRepositoryImpl implements SMTRepository {
       required String privateKey}) async {
     final keyHash = _hashMapper.mapTo(key);
     final valueHash = _hashMapper.mapTo(value);
-    final oneHash = HashDTO.one();
+    final oneHash = HashDTO.fromBigInt(BigInt.one);
     final newNodeChildren = [keyHash, valueHash, oneHash];
     final nodeHash = _libIdentityDataSource.getNodeKey(newNodeChildren);
     final newNodeLeaf = NodeDTO(

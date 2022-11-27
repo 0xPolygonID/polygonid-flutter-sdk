@@ -55,7 +55,7 @@ class LibIdentityDataSource {
         return _iden3coreLib.poseidonHashHashes([
           node.children[0],
           node.children[1],
-          HashDTO.fromBigInt(BigInt.one)
+          HashDTO.fromBigInt(BigInt.one),
         ]);
       case NodeTypeDTO.state:
       case NodeTypeDTO.middle:
