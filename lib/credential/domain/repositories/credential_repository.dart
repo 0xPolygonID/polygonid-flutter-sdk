@@ -1,16 +1,14 @@
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
+
 import '../../../common/domain/entities/filter_entity.dart';
 import '../../../identity/domain/entities/private_identity_entity.dart';
 import '../entities/claim_entity.dart';
-import '../entities/credential_request_entity.dart';
 
 abstract class CredentialRepository {
   Future<ClaimEntity> fetchClaim(
       {required String identifier,
       required String token,
-      required CredentialRequestEntity credentialRequest});
-
-  Future<String> getFetchMessage(
-      {required CredentialRequestEntity credentialRequest});
+      required OfferIden3MessageEntity message});
 
   Future<void> saveClaims({
     required List<ClaimEntity> claims,

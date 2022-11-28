@@ -14,13 +14,12 @@ void main() {
       var offerRequest = OfferIden3MessageEntity.fromJson(json);
       expect(offerRequest.id, "1");
       expect(offerRequest.typ, "theTyp");
-      expect(offerRequest.type, Iden3MessageType.offer);
+      expect(offerRequest.messageType, Iden3MessageType.offer);
       expect(offerRequest.thid, "theThid");
       expect(offerRequest.from, "theFrom");
-      expect(offerRequest.body.url, "offerUrl");
-      expect(offerRequest.body.credentials![0].id, "credentialsId");
-      expect(offerRequest.body.credentials![0].description,
-          "credentialsDescription");
+      expect(offerRequest.body.url, Iden3commMocks.offerUrl);
+      expect(offerRequest.body.credentials[0].id, "claimId");
+      expect(offerRequest.body.credentials[0].description, "claimDescription");
     });
   });
 }

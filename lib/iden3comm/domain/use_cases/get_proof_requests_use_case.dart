@@ -16,8 +16,8 @@ class GetProofRequestsUseCase
     List<ProofRequestEntity> proofRequests = [];
 
     if (![Iden3MessageType.auth, Iden3MessageType.contractFunctionCall]
-        .contains(param.type)) {
-      return Future.error(UnsupportedIden3MsgTypeException(param.type));
+        .contains(param.messageType)) {
+      return Future.error(UnsupportedIden3MsgTypeException(param.messageType));
     }
 
     await param.body.scope?.forEach((scope) async {

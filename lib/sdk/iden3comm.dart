@@ -71,7 +71,8 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       required String privateKey,
       String? pushToken}) {
     if (message is! AuthIden3MessageEntity) {
-      throw InvalidIden3MsgTypeException(Iden3MessageType.auth, message.type);
+      throw InvalidIden3MsgTypeException(
+          Iden3MessageType.auth, message.messageType);
     }
 
     return _authenticateUseCase.execute(

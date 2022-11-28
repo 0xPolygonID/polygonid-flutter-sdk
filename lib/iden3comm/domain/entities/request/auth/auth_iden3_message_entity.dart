@@ -75,13 +75,15 @@ class AuthIden3MessageEntity extends Iden3MessageEntity {
   AuthIden3MessageEntity(
       {required String id,
       required String typ,
+      required String type,
       required String thid,
       required String from,
       required this.body})
       : super(
             from: from,
             id: id,
-            type: Iden3MessageType.auth,
+            type: type,
+            messageType: Iden3MessageType.auth,
             thid: thid,
             typ: typ);
 
@@ -95,6 +97,7 @@ class AuthIden3MessageEntity extends Iden3MessageEntity {
     return AuthIden3MessageEntity(
       id: json['id'],
       typ: json['typ'],
+      type: json['type'],
       thid: json['thid'],
       from: json['from'],
       body: body,
@@ -102,20 +105,11 @@ class AuthIden3MessageEntity extends Iden3MessageEntity {
   }
 
   @override
-  String toString() =>
-      "[AuthIden3MessageEntity] {id: $id, typ: $typ, type: $type, thid: $thid, body: $body, from: $from}";
+  String toString() => "[AuthIden3MessageEntity] {${super.toString()}}";
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is AuthIden3MessageEntity &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          typ == other.typ &&
-          type == other.type &&
-          thid == other.thid &&
-          body == other.body &&
-          from == other.from;
+      super == other && other is AuthIden3MessageEntity;
 
   @override
   int get hashCode => runtimeType.hashCode;

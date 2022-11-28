@@ -4,7 +4,8 @@ enum Iden3MessageType { unknown, auth, offer, issuance, contractFunctionCall }
 abstract class Iden3MessageEntity {
   final String id;
   final String typ;
-  final Iden3MessageType type;
+  final String type;
+  final Iden3MessageType messageType;
   final String thid;
   abstract final body;
   final String from;
@@ -12,13 +13,24 @@ abstract class Iden3MessageEntity {
   const Iden3MessageEntity(
       {required this.id,
       required this.typ,
-      this.type = Iden3MessageType.unknown,
+      required this.type,
+      this.messageType = Iden3MessageType.unknown,
       required this.thid,
       required this.from});
 
   @override
   String toString() =>
-      "[Iden3MessageEntity] {id: $id, typ: $typ, type: $type, thid: $thid, body: $body, from: $from}";
+      "[Iden3MessageEntity] {id: $id, typ: $typ, type: $type, messageType: $messageType, thid: $thid, body: $body, from: $from}";
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'typ': typ,
+        'type': type,
+        'thid': thid,
+        'body': body.toJson(),
+        'from': from
+      };
 
   @override
   bool operator ==(Object other) =>
@@ -28,6 +40,7 @@ abstract class Iden3MessageEntity {
           id == other.id &&
           typ == other.typ &&
           type == other.type &&
+          messageType == other.messageType &&
           thid == other.thid &&
           body == other.body &&
           from == other.from;

@@ -3,10 +3,9 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_body_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/data/secure_storage.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_event.dart';
@@ -59,35 +58,16 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     emit(const ClaimsState.loading());
 
     Iden3MessageEntity iden3message = event.iden3message;
-    var messageBody = iden3message.body;
 
-    if (messageBody == null) {
-      emit(const ClaimsState.error("error in the readed message"));
+    if (event.iden3message.messageType != Iden3MessageType.offer) {
+      emit(const ClaimsState.error("Read message is not of type offer"));
       return;
     }
 
     try {
-      String url = messageBody.url;
-      var credentials = messageBody.credentials;
-
-      List<CredentialRequestEntity> credentialRequestEntityList = [];
-      for (CredentialOfferData credential in credentials) {
-        String id = credential.id;
-
-        var entity = CredentialRequestEntity(
-          identifier,
-          url,
-          id,
-          iden3message.thid,
-          iden3message.from,
-        );
-
-        credentialRequestEntityList.add(entity);
-      }
-
       List<ClaimEntity> claimList =
           await _polygonIdSdk.credential.fetchAndSaveClaims(
-        credentialRequests: credentialRequestEntityList,
+        message: event.iden3message as OfferIden3MessageEntity,
         identifier: identifier,
         privateKey: privateKey,
       );

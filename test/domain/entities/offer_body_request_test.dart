@@ -11,10 +11,9 @@ void main() {
   group("OfferBodyRequest", () {
     test("fromJson", () {
       var offerBodyRequest = OfferBodyRequest.fromJson(json);
-      expect(offerBodyRequest.url, "offerUrl");
-      expect(offerBodyRequest.credentials![0].id, "credentialsId");
-      expect(offerBodyRequest.credentials![0].description,
-          "credentialsDescription");
+      expect(offerBodyRequest.url, Iden3commMocks.offerUrl);
+      expect(offerBodyRequest.credentials[0].id, "claimId");
+      expect(offerBodyRequest.credentials[0].description, "claimDescription");
     });
     test("toJson", () {
       var offerBodyRequest = OfferBodyRequest.fromJson(json);

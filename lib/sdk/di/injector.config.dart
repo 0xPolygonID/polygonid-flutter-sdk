@@ -10,7 +10,7 @@ import 'package:get_it/get_it.dart' as _i1;
 import 'package:http/http.dart' as _i9;
 import 'package:injectable/injectable.dart' as _i2;
 import 'package:package_info_plus/package_info_plus.dart' as _i30;
-import 'package:sembast/sembast.dart' as _i11;
+import 'package:sembast/sembast.dart' as _i10;
 import 'package:web3dart/web3dart.dart' as _i47;
 
 import '../../common/data/data_sources/env_datasource.dart' as _i55;
@@ -30,9 +30,8 @@ import '../../credential/data/data_sources/storage_claim_data_source.dart'
 import '../../credential/data/mappers/claim_info_mapper.dart' as _i7;
 import '../../credential/data/mappers/claim_mapper.dart' as _i53;
 import '../../credential/data/mappers/claim_state_mapper.dart' as _i8;
-import '../../credential/data/mappers/credential_request_mapper.dart' as _i10;
-import '../../credential/data/mappers/filter_mapper.dart' as _i13;
-import '../../credential/data/mappers/filters_mapper.dart' as _i14;
+import '../../credential/data/mappers/filter_mapper.dart' as _i12;
+import '../../credential/data/mappers/filters_mapper.dart' as _i13;
 import '../../credential/data/mappers/id_filter_mapper.dart' as _i20;
 import '../../credential/data/mappers/revocation_status_mapper.dart' as _i42;
 import '../../credential/domain/repositories/credential_repository.dart'
@@ -42,6 +41,8 @@ import '../../credential/domain/use_cases/fetch_and_save_claims_use_case.dart'
 import '../../credential/domain/use_cases/get_claim_revocation_status_use_case.dart'
     as _i85;
 import '../../credential/domain/use_cases/get_claims_use_case.dart' as _i67;
+import '../../credential/domain/use_cases/get_fetch_requests_use_case.dart'
+    as _i14;
 import '../../credential/domain/use_cases/get_vocabs_use_case.dart' as _i69;
 import '../../credential/domain/use_cases/remove_claims_use_case.dart' as _i73;
 import '../../credential/domain/use_cases/update_claim_use_case.dart' as _i74;
@@ -77,7 +78,7 @@ import '../../identity/data/data_sources/storage_identity_data_source.dart'
 import '../../identity/data/data_sources/storage_key_value_data_source.dart'
     as _i57;
 import '../../identity/data/data_sources/wallet_data_source.dart' as _i46;
-import '../../identity/data/mappers/did_mapper.dart' as _i12;
+import '../../identity/data/mappers/did_mapper.dart' as _i11;
 import '../../identity/data/mappers/hex_mapper.dart' as _i19;
 import '../../identity/data/mappers/identity_dto_mapper.dart' as _i24;
 import '../../identity/data/mappers/private_key_mapper.dart' as _i33;
@@ -158,9 +159,7 @@ _i1.GetIt $initSDKGetIt(
   gh.factory<_i7.ClaimInfoMapper>(() => _i7.ClaimInfoMapper());
   gh.factory<_i8.ClaimStateMapper>(() => _i8.ClaimStateMapper());
   gh.factory<_i9.Client>(() => networkModule.client);
-  gh.factory<_i10.CredentialRequestMapper>(
-      () => _i10.CredentialRequestMapper());
-  gh.factoryParamAsync<_i11.Database, String?, String?>(
+  gh.factoryParamAsync<_i10.Database, String?, String?>(
     (
       identifier,
       privateKey,
@@ -171,11 +170,13 @@ _i1.GetIt $initSDKGetIt(
     ),
     instanceName: 'polygonIdSdkClaims',
   );
-  gh.lazySingletonAsync<_i11.Database>(() => databaseModule.database());
-  gh.factory<_i12.DidMapper>(() => _i12.DidMapper());
-  gh.factory<_i13.FilterMapper>(() => _i13.FilterMapper());
-  gh.factory<_i14.FiltersMapper>(
-      () => _i14.FiltersMapper(get<_i13.FilterMapper>()));
+  gh.lazySingletonAsync<_i10.Database>(() => databaseModule.database());
+  gh.factory<_i11.DidMapper>(() => _i11.DidMapper());
+  gh.factory<_i12.FilterMapper>(() => _i12.FilterMapper());
+  gh.factory<_i13.FiltersMapper>(
+      () => _i13.FiltersMapper(get<_i12.FilterMapper>()));
+  gh.factory<_i14.GetFetchRequestsUseCase>(
+      () => _i14.GetFetchRequestsUseCase());
   gh.factory<_i15.GetIden3MessageTypeUseCase>(
       () => _i15.GetIden3MessageTypeUseCase());
   gh.factory<_i16.GetIden3MessageUseCase>(() =>
@@ -224,15 +225,15 @@ _i1.GetIt $initSDKGetIt(
   gh.factory<_i43.RhsNodeTypeMapper>(() => _i43.RhsNodeTypeMapper());
   gh.lazySingleton<_i44.SdkEnv>(() => sdk.sdkEnv);
   gh.factory<_i45.StateIdentifierMapper>(() => _i45.StateIdentifierMapper());
-  gh.factory<_i11.StoreRef<String, Map<String, Object?>>>(
-    () => databaseModule.identityStore,
-    instanceName: 'identityStore',
-  );
-  gh.factory<_i11.StoreRef<String, Map<String, Object?>>>(
+  gh.factory<_i10.StoreRef<String, Map<String, Object?>>>(
     () => databaseModule.claimStore,
     instanceName: 'claimStore',
   );
-  gh.factory<_i11.StoreRef<String, dynamic>>(
+  gh.factory<_i10.StoreRef<String, Map<String, Object?>>>(
+    () => databaseModule.identityStore,
+    instanceName: 'identityStore',
+  );
+  gh.factory<_i10.StoreRef<String, dynamic>>(
     () => databaseModule.keyValueStore,
     instanceName: 'keyValueStore',
   );
@@ -250,14 +251,14 @@ _i1.GetIt $initSDKGetIt(
         get<_i7.ClaimInfoMapper>(),
       ));
   gh.factory<_i54.ClaimStoreRefWrapper>(() => _i54.ClaimStoreRefWrapper(
-      get<_i11.StoreRef<String, Map<String, Object?>>>(
+      get<_i10.StoreRef<String, Map<String, Object?>>>(
           instanceName: 'claimStore')));
   gh.factory<_i55.EnvDataSource>(() => _i55.EnvDataSource(get<_i44.SdkEnv>()));
   gh.factory<_i56.IdentityStoreRefWrapper>(() => _i56.IdentityStoreRefWrapper(
-      get<_i11.StoreRef<String, Map<String, Object?>>>(
+      get<_i10.StoreRef<String, Map<String, Object?>>>(
           instanceName: 'identityStore')));
   gh.factory<_i57.KeyValueStoreRefWrapper>(() => _i57.KeyValueStoreRefWrapper(
-      get<_i11.StoreRef<String, dynamic>>(instanceName: 'keyValueStore')));
+      get<_i10.StoreRef<String, dynamic>>(instanceName: 'keyValueStore')));
   gh.factoryAsync<_i58.PackageInfoRepository>(() async =>
       repositoriesModule.packageInfoRepository(
           await get.getAsync<_i32.PackageInfoRepositoryImpl>()));
@@ -271,7 +272,7 @@ _i1.GetIt $initSDKGetIt(
       () => _i54.StorageClaimDataSource(get<_i54.ClaimStoreRefWrapper>()));
   gh.factoryAsync<_i57.StorageKeyValueDataSource>(
       () async => _i57.StorageKeyValueDataSource(
-            await get.getAsync<_i11.Database>(),
+            await get.getAsync<_i10.Database>(),
             get<_i57.KeyValueStoreRefWrapper>(),
           ));
   gh.factory<_i46.WalletDataSource>(
@@ -286,9 +287,8 @@ _i1.GetIt $initSDKGetIt(
         get<_i39.RemoteClaimDataSource>(),
         get<_i54.StorageClaimDataSource>(),
         get<_i26.LibIdentityDataSource>(),
-        get<_i10.CredentialRequestMapper>(),
         get<_i53.ClaimMapper>(),
-        get<_i14.FiltersMapper>(),
+        get<_i13.FiltersMapper>(),
         get<_i20.IdFilterMapper>(),
         get<_i42.RevocationStatusMapper>(),
       ));
@@ -315,7 +315,7 @@ _i1.GetIt $initSDKGetIt(
       ));
   gh.factoryAsync<_i56.StorageIdentityDataSource>(
       () async => _i56.StorageIdentityDataSource(
-            await get.getAsync<_i11.Database>(),
+            await get.getAsync<_i10.Database>(),
             get<_i56.IdentityStoreRefWrapper>(),
             await get.getAsync<_i57.StorageKeyValueDataSource>(),
             get<_i46.WalletDataSource>(),
@@ -350,7 +350,7 @@ _i1.GetIt $initSDKGetIt(
             get<_i24.IdentityDTOMapper>(),
             get<_i60.RhsNodeMapper>(),
             get<_i45.StateIdentifierMapper>(),
-            get<_i12.DidMapper>(),
+            get<_i11.DidMapper>(),
           ));
   gh.factory<_i72.ProofRepository>(() =>
       repositoriesModule.proofRepository(get<_i64.ProofRepositoryImpl>()));
@@ -417,6 +417,7 @@ _i1.GetIt $initSDKGetIt(
       ));
   gh.factoryAsync<_i90.FetchAndSaveClaimsUseCase>(
       () async => _i90.FetchAndSaveClaimsUseCase(
+            get<_i14.GetFetchRequestsUseCase>(),
             await get.getAsync<_i84.GetAuthTokenUseCase>(),
             get<_i66.CredentialRepository>(),
           ));

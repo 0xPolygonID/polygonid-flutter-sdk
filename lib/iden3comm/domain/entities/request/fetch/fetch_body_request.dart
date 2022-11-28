@@ -65,9 +65,9 @@
 */
 
 class FetchBodyRequest {
-  final String? id;
+  final String id;
 
-  FetchBodyRequest({this.id});
+  FetchBodyRequest({required this.id});
 
   /// Creates an instance from the given json
   ///
@@ -79,6 +79,7 @@ class FetchBodyRequest {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() => {
         'id': id,
       };
