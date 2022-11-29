@@ -1,4 +1,3 @@
-import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_smt_data_source.dart';
 
 import '../../../common/domain/domain_logger.dart';
@@ -55,8 +54,13 @@ class SMTDataSource {
     final root = await _storageSMTDataSource.getRoot(
         storeName: storeName, identifier: identifier, privateKey: privateKey);
     final path = _getPath(maxLevels, newNodeLeaf.children[0]);
-    final newRoot =
-        _addLeaf(newNodeLeaf, root, 0, path, storeName, identifier, privateKey);
+    final newRoot = await _addLeaf(
+        newNodeLeaf, root, 0, path, storeName, identifier, privateKey);
+    await _storageSMTDataSource.setRoot(
+        root: newRoot,
+        storeName: storeName,
+        identifier: identifier,
+        privateKey: privateKey);
     return newRoot;
   }
 
@@ -220,7 +224,7 @@ class SMTDataSource {
     final nodeHash = HashDTO.fromBigInt(BigInt.parse(nodeHashData));
     final NodeDTO newNodeMiddle = NodeDTO(
         children: newNodeChildren, hash: nodeHash, type: NodeTypeDTO.middle);
-    _addNode(newLeaf, storeName, identifier, privateKey);
+    await _addNode(newLeaf, storeName, identifier, privateKey);
     return _addNode(newNodeMiddle, storeName, identifier, privateKey);
   }
 
@@ -252,7 +256,7 @@ class SMTDataSource {
           privateKey: privateKey);
 
       switch (node.type) {
-        case NodeTypeDTO.state:
+        case NodeTypeDTO.empty:
           return ProofDTO(existence: false, siblings: siblings);
         case NodeTypeDTO.leaf:
           if (node.children[0] == key) {
@@ -263,12 +267,8 @@ class SMTDataSource {
               existence: false,
               siblings: siblings,
               nodeAux: NodeAuxDTO(
-                key: Uint8ArrayUtils.bytesToBigInt(
-                        _hexMapper.mapTo(node.children[0].toString()))
-                    .toString(),
-                value: Uint8ArrayUtils.bytesToBigInt(
-                        _hexMapper.mapTo(node.children[1].toString()))
-                    .toString(),
+                key: node.children[0].toString(),
+                value: node.children[1].toString(),
               ));
         case NodeTypeDTO.middle:
           if (path[depth]) {
@@ -276,9 +276,8 @@ class SMTDataSource {
             siblings.add(node.children[0]);
           } else {
             nextKey = node.children[0];
+            siblings.add(node.children[1]);
           }
-          siblings.add(node.children[1]);
-
           continue;
         default:
           throw SMTInvalidNodeFoundException();

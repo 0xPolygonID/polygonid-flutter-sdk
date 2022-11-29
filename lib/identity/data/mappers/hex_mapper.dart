@@ -6,7 +6,7 @@ import 'package:web3dart/crypto.dart';
 class HexMapper extends Mapper<Uint8List, String> {
   @override
   String mapFrom(Uint8List from) {
-    return bytesToHex(from);
+    return bytesToHex(from).isNotEmpty ? bytesToHex(from) : "0";
   }
 
   @override

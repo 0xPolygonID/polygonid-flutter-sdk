@@ -50,13 +50,12 @@ class HashDTO extends Equatable {
     });
   }
 
-  factory HashDTO.fromJson(Map<String, dynamic> json) => HashDTO(
-        data: Uint8ArrayUtils.bigIntToBytes(BigInt.parse(json["data"])),
-      );
+  factory HashDTO.fromJson(Map<String, dynamic> json) =>
+      HashDTO.fromBigInt(BigInt.parse(json["data"]));
   //_$HashDTOFromJson(json);
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'data': Uint8ArrayUtils.bytesToBigInt(data).toString(),
+        'data': toBigInt().toString(),
       };
 
   BigInt toBigInt() {
@@ -77,7 +76,7 @@ class HashDTO extends Equatable {
 
   // TestBit tests whether the bit n in bitmap is 1.
   bool _testBit(Uint8List byte, int n) {
-    return byte[n ~/ 8] & (1 << (n % 8)) != 0;
+    return data[n ~/ 8] & (1 << (n % 8)) != 0;
   }
 
   @override
@@ -95,7 +94,7 @@ class HashDTO extends Equatable {
 
   @override
   String toString() {
-    return Uint8ArrayUtils.leBuff2int(data).toString();
+    return Uint8ArrayUtils.bytesToBigInt(data).toString();
   }
 
   @override

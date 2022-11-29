@@ -11,12 +11,13 @@ class LibPolygonIdCoreDataSource {
     this._polygonIdCoreLib,
   );
 
-  String calculateGenesisId(String claimsTreeRoot) {
+  String calculateGenesisId(
+      String claimsTreeRoot, String blockchain, String network) {
     String input = jsonEncode({
       "claimsTreeRoot": claimsTreeRoot,
       //"8174871235721986756013575194888048894328426483724665491825528183806540196001",
-      "blockchain": "polygon",
-      "network": "mumbai"
+      "blockchain": blockchain, //"polygon",
+      "network": network, //"mumbai"
     });
 
     String output = _polygonIdCoreLib.calculateGenesisId(input);
@@ -24,13 +25,23 @@ class LibPolygonIdCoreDataSource {
     return output;
   }
 
-  String getAuthInputs() {
+  String getAuthInputs({
+    required String id,
+    required int profileNonce,
+    required List<String> authClaim,
+    required Map<String, dynamic> incProof,
+    required Map<String, dynamic> nonRevProof,
+    required Map<String, dynamic> treeState,
+    required String challenge,
+    required String signature,
+  }) {
     String input = jsonEncode({
-      "id": "tT2t3b685r2dKsjo4MioyKeceFT4mQEYfDd69EY5Y",
-      "nonce": "0",
+      "id": id, //"tT2t3b685r2dKsjo4MioyKeceFT4mQEYfDd69EY5Y",
+      "nonce": profileNonce.toString(), //"0",
       "authClaim": {
         "issuerId": null,
-        "claim": [
+        "claim": authClaim,
+        /*[
           "304427537360709784173770334266246861770",
           "0",
           "17640206035128972995519606214765283372613874593503528180869261482403155458945",
@@ -39,28 +50,30 @@ class LibPolygonIdCoreDataSource {
           "0",
           "0",
           "0"
-        ],
+        ],*/
         "incProof": {
           "proof": {"existence": true, "siblings": []},
-          "treeState": {
+          "treeState":
+              treeState, /*{
             "state":
                 "18656147546666944484453899241916469544090258810192803949522794490493271005313",
             "claimsRoot":
                 "9763429684850732628215303952870004997159843236039795272605841029866455670219",
             "revocationRoot": "0",
             "rootOfRoots": "0"
-          }
+          }*/
         },
         "nonRevProof": {
-          "proof": {"existence": false, "siblings": []},
-          "treeState": {
+          "proof": nonRevProof, //{"existence": false, "siblings": []},
+          "treeState":
+              treeState, /*{
             "state":
                 "18656147546666944484453899241916469544090258810192803949522794490493271005313",
             "claimsRoot":
                 "9763429684850732628215303952870004997159843236039795272605841029866455670219",
             "revocationRoot": "0",
             "rootOfRoots": "0"
-          }
+          }*/
         }
       },
       "gistProof": {
@@ -78,8 +91,8 @@ class LibPolygonIdCoreDataSource {
         }
       },
       "signature":
-          "fccc15d7aed2bf4f5d7dbe55c81087970344d13e5d9f348e61965ac364f41d29b366b52bc0820c603877352054833da083f5595c29c881ccd8ee47aa639aa103",
-      "challenge": "10"
+          signature, //"fccc15d7aed2bf4f5d7dbe55c81087970344d13e5d9f348e61965ac364f41d29b366b52bc0820c603877352054833da083f5595c29c881ccd8ee47aa639aa103",
+      "challenge": challenge, //"10"
     });
 
     String output = _polygonIdCoreLib.getAuthInputs(input);
