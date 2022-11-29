@@ -7,5 +7,6 @@ abstract class SdkEnvFields {
   abstract final String infuraApiKey;
   abstract final String reverseHashServiceUrl;
   abstract final String idStateContractAddress;
+  abstract final String gistProofContractAddress;
   abstract final String pushUrl;
 }

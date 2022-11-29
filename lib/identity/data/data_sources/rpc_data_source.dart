@@ -46,4 +46,43 @@ class RPCDataSource {
 
   ContractFunction _getState(DeployedContract contract) =>
       contract.function('getState');
+
+  /// Retrieve gist proof.
+  ///
+  /// @param [id] identity - The id as bigint
+  /// @param [gistContract] the ABI contract
+  ///
+  /// @returns [String] gist proof
+  Future<String> getGistProof(String id, DeployedContract gistContract) async {
+    try {
+      final transactionParameters = [
+        BigInt.parse(id),
+      ];
+
+      logger().d(transactionParameters);
+
+      List<dynamic> result;
+
+      result = await web3Client.call(
+          contract: gistContract,
+          function: _getGistProof(gistContract),
+          params: transactionParameters);
+
+      if (result != null && result.isNotEmpty) {
+        if (result[0] != BigInt.zero) {
+          String resultString =
+              bytesToHex(Uint8ArrayUtils.bigIntToBytes(result[0]));
+          logger().d(resultString);
+          return resultString;
+        }
+      }
+      return "";
+    } catch (e) {
+      logger().e(e.toString());
+      rethrow;
+    }
+  }
+
+  ContractFunction _getGistProof(DeployedContract contract) =>
+      contract.function('getGISTProof');
 }

@@ -325,6 +325,12 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
       Map<String, dynamic> genesis = jsonDecode(genesisId);
 
+      String gistProof = await getGistProof(
+        identifier:
+            "21051438350758615910194871316894294942737671344817514009731719137348227585", //genesis["id"] as big int
+        contractAddress: "0x9ede2dc3FF3F434f3d28e17E467385e7667d8573",
+      );
+
       String authInputs = _libPolygonIdCoreDataSource.getAuthInputs(
           id: genesis["id"],
           profileNonce: 0,
@@ -451,6 +457,16 @@ class IdentityRepositoryImpl extends IdentityRepository {
         .loadStateContract(contractAddress)
         .then((contract) => _rpcDataSource
             .getState(_stateIdentifierMapper.mapTo(identifier), contract)
+            .catchError((error) => throw FetchIdentityStateException(error)));
+  }
+
+  Future<String> getGistProof(
+      {required String identifier, required String contractAddress}) {
+    return _localContractFilesDataSource.loadGistContract(contractAddress).then(
+        (contract) => _rpcDataSource
+            .getGistProof(
+                identifier /*_stateIdentifierMapper.mapTo(identifier)*/,
+                contract)
             .catchError((error) => throw FetchIdentityStateException(error)));
   }
 

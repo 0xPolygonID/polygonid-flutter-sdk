@@ -22,6 +22,8 @@ class EnvDataSource {
         return _sdkEnv.reverseHashServiceUrl;
       case PolygonIdConfig.idStateContractAddress:
         return _sdkEnv.idStateContractAddress;
+      case PolygonIdConfig.gistProofContractAddress:
+        return _sdkEnv.gistProofContractAddress;
       case PolygonIdConfig.pushUrl:
         return _sdkEnv.pushUrl;
     }

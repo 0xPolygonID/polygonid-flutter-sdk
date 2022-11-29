@@ -392,18 +392,47 @@ class MockLibPolygonIdCoreDataSource extends _i1.Mock
   }
 
   @override
-  String calculateGenesisId(String? claimsTreeRoot) => (super.noSuchMethod(
+  String calculateGenesisId(
+    String? claimsTreeRoot,
+    String? blockchain,
+    String? network,
+  ) =>
+      (super.noSuchMethod(
         Invocation.method(
           #calculateGenesisId,
-          [claimsTreeRoot],
+          [
+            claimsTreeRoot,
+            blockchain,
+            network,
+          ],
         ),
         returnValue: '',
       ) as String);
   @override
-  String getAuthInputs() => (super.noSuchMethod(
+  String getAuthInputs({
+    required String? id,
+    required int? profileNonce,
+    required List<String>? authClaim,
+    required Map<String, dynamic>? incProof,
+    required Map<String, dynamic>? nonRevProof,
+    required Map<String, dynamic>? treeState,
+    required String? challenge,
+    required String? signature,
+  }) =>
+      (super.noSuchMethod(
         Invocation.method(
           #getAuthInputs,
           [],
+          {
+            #id: id,
+            #profileNonce: profileNonce,
+            #authClaim: authClaim,
+            #incProof: incProof,
+            #nonRevProof: nonRevProof,
+            #treeState: treeState,
+            #challenge: challenge,
+            #signature: signature,
+          },
         ),
         returnValue: '',
       ) as String);
@@ -737,6 +766,21 @@ class MockRPCDataSource extends _i1.Mock implements _i22.RPCDataSource {
         ),
         returnValue: _i12.Future<String>.value(''),
       ) as _i12.Future<String>);
+  @override
+  _i12.Future<String> getGistProof(
+    String? id,
+    _i7.DeployedContract? stateContract,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getGistProof,
+          [
+            id,
+            stateContract,
+          ],
+        ),
+        returnValue: _i12.Future<String>.value(''),
+      ) as _i12.Future<String>);
 }
 
 /// A class which mocks [LocalContractFilesDataSource].
@@ -760,6 +804,22 @@ class MockLocalContractFilesDataSource extends _i1.Mock
           this,
           Invocation.method(
             #loadStateContract,
+            [address],
+          ),
+        )),
+      ) as _i12.Future<_i7.DeployedContract>);
+  @override
+  _i12.Future<_i7.DeployedContract> loadGistContract(String? address) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #loadGistContract,
+          [address],
+        ),
+        returnValue:
+            _i12.Future<_i7.DeployedContract>.value(_FakeDeployedContract_6(
+          this,
+          Invocation.method(
+            #loadGistContract,
             [address],
           ),
         )),

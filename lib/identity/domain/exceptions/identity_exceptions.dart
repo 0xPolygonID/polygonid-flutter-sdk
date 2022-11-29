@@ -35,3 +35,7 @@ class FetchStateRootsException extends ErrorException {
 class NonRevProofException extends ErrorException {
   NonRevProofException(error) : super(error);
 }
+
+class GetGistProofException extends ErrorException {
+  GetGistProofException(error) : super(error);
+}

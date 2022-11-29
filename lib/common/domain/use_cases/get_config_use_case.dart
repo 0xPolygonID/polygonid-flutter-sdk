@@ -9,6 +9,7 @@ enum PolygonIdConfig {
   infuraApiKey,
   reverseHashServiceUrl,
   idStateContractAddress,
+  gistProofContractAddress,
   pushUrl,
 }
 

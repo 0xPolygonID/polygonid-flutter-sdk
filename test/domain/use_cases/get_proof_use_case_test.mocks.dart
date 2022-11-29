@@ -419,6 +419,22 @@ class MockIdentityRepository extends _i1.Mock
         returnValue: _i8.Future<String>.value(''),
       ) as _i8.Future<String>);
   @override
+  _i8.Future<String> getGistProof({
+    required String? identifier,
+    required String? contractAddress,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getGistProof,
+          [],
+          {
+            #identifier: identifier,
+            #contractAddress: contractAddress,
+          },
+        ),
+        returnValue: _i8.Future<String>.value(''),
+      ) as _i8.Future<String>);
+  @override
   _i8.Future<_i6.RhsNodeEntity> getStateRoots({required String? url}) =>
       (super.noSuchMethod(
         Invocation.method(

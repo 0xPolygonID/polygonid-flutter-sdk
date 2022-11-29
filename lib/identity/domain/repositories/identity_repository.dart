@@ -38,5 +38,8 @@ abstract class IdentityRepository {
   Future<String> getState(
       {required String identifier, required String contractAddress});
 
+  Future<String> getGistProof(
+      {required String identifier, required String contractAddress});
+
   Future<RhsNodeEntity> getStateRoots({required String url});
 }
