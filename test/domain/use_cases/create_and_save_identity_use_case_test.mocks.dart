@@ -6,6 +6,8 @@
 import 'dart:async' as _i6;
 
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_case.dart'
+    as _i7;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
     as _i3;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart'
@@ -68,12 +70,18 @@ class MockIdentityRepository extends _i1.Mock
   }
 
   @override
-  _i6.Future<_i2.PrivateIdentityEntity> createIdentity({String? secret}) =>
+  _i6.Future<_i2.PrivateIdentityEntity> createIdentity({
+    String? secret,
+    required String? accessMessage,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #createIdentity,
           [],
-          {#secret: secret},
+          {
+            #secret: secret,
+            #accessMessage: accessMessage,
+          },
         ),
         returnValue: _i6.Future<_i2.PrivateIdentityEntity>.value(
             _FakePrivateIdentityEntity_0(
@@ -81,7 +89,10 @@ class MockIdentityRepository extends _i1.Mock
           Invocation.method(
             #createIdentity,
             [],
-            {#secret: secret},
+            {
+              #secret: secret,
+              #accessMessage: accessMessage,
+            },
           ),
         )),
       ) as _i6.Future<_i2.PrivateIdentityEntity>);
@@ -268,4 +279,25 @@ class MockIdentityRepository extends _i1.Mock
           ),
         )),
       ) as _i6.Future<_i4.RhsNodeEntity>);
+}
+
+/// A class which mocks [GetEnvConfigUseCase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetEnvConfigUseCase extends _i1.Mock
+    implements _i7.GetEnvConfigUseCase {
+  MockGetEnvConfigUseCase() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i6.Future<String> execute({required _i7.PolygonIdConfig? param}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [],
+          {#param: param},
+        ),
+        returnValue: _i6.Future<String>.value(''),
+      ) as _i6.Future<String>);
 }

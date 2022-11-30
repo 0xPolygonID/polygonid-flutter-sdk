@@ -6,7 +6,6 @@ import 'package:web3dart/crypto.dart';
 
 import '../../../common/utils/hex_utils.dart';
 import '../../../common/utils/uint8_list_utils.dart';
-import '../../../env/sdk_env.dart';
 import 'eddsa_babyjub.dart' as eddsaBabyJub;
 
 // TODO: move impl to a DS and transform this class to an entity
@@ -52,16 +51,15 @@ class PrivadoIdWallet {
   /// @param [Uint8List] secret - 32 bytes buffer
   /// @returns [PrivadoIdWallet] privadoIdWallet - PrivadoIdWallet instance
   static Future<PrivadoIdWallet> createPrivadoIdWallet(
-      {Uint8List? secret}) async {
-    //Uint8List privateBjjKey = privateKey ?? Uint8List(32);
+      {Uint8List? secret, required String accessMessage}) async {
     EthPrivateKey prvKey;
     if (secret == null) {
       prvKey = EthPrivateKey.createRandom(Random.secure());
     } else {
       prvKey = EthPrivateKey(secret);
     }
-    final signature = await prvKey.sign(
-        Uint8ArrayUtils.uint8ListfromString(SdkEnv().polygonIdAccessMessage));
+    final signature =
+        await prvKey.sign(Uint8ArrayUtils.uint8ListfromString(accessMessage));
     Uint8List privateBjjKey = keccak256(signature);
     final bjjWallet = PrivadoIdWallet(privateBjjKey);
     return bjjWallet;
