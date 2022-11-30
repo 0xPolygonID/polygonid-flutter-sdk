@@ -6,6 +6,7 @@ import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart';
 
+import '../../common/common_mocks.dart';
 import 'wallet_data_source_test.mocks.dart';
 
 // Data
@@ -14,14 +15,11 @@ class FakeWallet extends Fake implements PrivadoIdWallet {
   Uint8List get privateKey => walletPrivateKey;
 
   @override
-  List<String> get publicKey => [pubX, pubY];
+  List<String> get publicKey => CommonMocks.pubKeys;
 }
 
-const pubX = "thePubX";
-const pubY = "thePubY";
-const message = "theMessage";
-const signature = "theSignature";
-final walletPrivateKey = Uint8List.fromList("thePrivateKey".codeUnits);
+final walletPrivateKey =
+    Uint8List.fromList(CommonMocks.walletPrivateKey.codeUnits);
 var mockWallet = FakeWallet();
 var exception = Exception();
 
@@ -38,37 +36,46 @@ void main() {
         "Given a private key, when I call createWallet, then I expect an PrivadoIdWallet to be returned",
         () async {
       // Given
-      when(walletLibWrapper.createWallet(secret: anyNamed('secret')))
+      when(walletLibWrapper.createWallet(
+              secret: anyNamed('secret'),
+              accessMessage: anyNamed('accessMessage')))
           .thenAnswer((realInvocation) => Future.value(mockWallet));
 
       // When
       expect(
-          await dataSource.createWallet(secret: walletPrivateKey), mockWallet);
+          await dataSource.createWallet(
+              secret: walletPrivateKey, accessMessage: CommonMocks.config),
+          mockWallet);
 
       // Then
-      expect(
-          verify(walletLibWrapper.createWallet(
-                  secret: captureAnyNamed('secret')))
-              .captured
-              .first,
-          walletPrivateKey);
+      var createCaptured = verify(walletLibWrapper.createWallet(
+              secret: captureAnyNamed('secret'),
+              accessMessage: captureAnyNamed('accessMessage')))
+          .captured;
+      expect(createCaptured[0], walletPrivateKey);
+      expect(createCaptured[1], CommonMocks.config);
     });
 
     test(
         "Given a private key, when I call createWallet and an error occured, then I expect an exception to be thrown",
         () async {
       // Given
-      when(walletLibWrapper.createWallet(secret: anyNamed('secret')))
+      when(walletLibWrapper.createWallet(
+              secret: anyNamed('secret'),
+              accessMessage: anyNamed('accessMessage')))
           .thenAnswer((realInvocation) => Future.error(exception));
 
       // When
-      await expectLater(dataSource.createWallet(secret: walletPrivateKey),
+      await expectLater(
+          dataSource.createWallet(
+              secret: walletPrivateKey, accessMessage: CommonMocks.config),
           throwsA(exception));
 
       // Then
       expect(
           verify(walletLibWrapper.createWallet(
-                  secret: captureAnyNamed('secret')))
+                  secret: captureAnyNamed('secret'),
+                  accessMessage: anyNamed('accessMessage')))
               .captured
               .first,
           walletPrivateKey);
@@ -77,7 +84,9 @@ void main() {
 
   group("Sign message", () {
     setUp(() {
-      when(walletLibWrapper.createWallet(secret: anyNamed('secret')))
+      when(walletLibWrapper.createWallet(
+              secret: anyNamed('secret'),
+              accessMessage: anyNamed('accessMessage')))
           .thenAnswer((realInvocation) => Future.value(mockWallet));
     });
 
@@ -87,13 +96,13 @@ void main() {
       // Given
       when(walletLibWrapper.signMessage(
               privateKey: anyNamed("privateKey"), message: anyNamed('message')))
-          .thenAnswer((realInvocation) => Future.value(signature));
+          .thenAnswer((realInvocation) => Future.value(CommonMocks.signature));
 
       // When
       expect(
           await dataSource.signMessage(
-              privateKey: walletPrivateKey, message: message),
-          signature);
+              privateKey: walletPrivateKey, message: CommonMocks.message),
+          CommonMocks.signature);
 
       // Then
       var capturedSign = verify(walletLibWrapper.signMessage(
@@ -101,7 +110,7 @@ void main() {
               message: captureAnyNamed('message')))
           .captured;
       expect(capturedSign[0], walletPrivateKey);
-      expect(capturedSign[1], message);
+      expect(capturedSign[1], CommonMocks.message);
     });
 
     test(
@@ -115,7 +124,7 @@ void main() {
       // When
       await expectLater(
           dataSource.signMessage(
-              privateKey: walletPrivateKey, message: message),
+              privateKey: walletPrivateKey, message: CommonMocks.message),
           throwsA(exception));
 
       // Then
@@ -124,7 +133,7 @@ void main() {
               message: captureAnyNamed('message')))
           .captured;
       expect(capturedSign[0], walletPrivateKey);
-      expect(capturedSign[1], message);
+      expect(capturedSign[1], CommonMocks.message);
     });
   });
 }

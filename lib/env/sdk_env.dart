@@ -1,11 +1,12 @@
-import 'dev_env.dart';
-import 'prod_env.dart';
-import 'sdk_env_fields.dart';
-
-abstract class SdkEnv implements SdkEnvFields {
-  static const kDebugMode = true;
-
-  factory SdkEnv() => _instance;
-
-  static final SdkEnv _instance = kDebugMode ? DevEnv() : ProdEnv();
+/// Both DevEnv and Env must implement all these values
+abstract class SdkEnv {
+  abstract final String polygonIdAccessMessage;
+  abstract final String networkName;
+  abstract final String networkEnv;
+  abstract final String infuraUrl;
+  abstract final String infuraRdpUrl;
+  abstract final String infuraApiKey;
+  abstract final String reverseHashServiceUrl;
+  abstract final String idStateContractAddress;
+  abstract final String pushUrl;
 }

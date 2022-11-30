@@ -40,8 +40,22 @@ class CredentialRepositoryImpl extends CredentialRepository {
       required OfferIden3MessageEntity message}) {
     return _remoteClaimDataSource
         .fetchClaim(token: token, url: message.body.url, identifier: identifier)
-        .then((dto) => _claimMapper.mapFrom(dto))
-        .catchError((error) => throw FetchClaimException(error));
+        .then((dto) {
+      /// Error in fetching schema and vocab are not blocking
+      return _remoteClaimDataSource
+          .fetchSchema(url: dto.info.credentialSchema.id)
+          .then((schema) => _remoteClaimDataSource
+                  .fetchVocab(
+                      schema: schema, type: dto.info.credentialSubject.type)
+                  .then((vocab) {
+                dto.schema = schema;
+                dto.vocab = vocab;
+
+                return dto;
+              }))
+          .catchError((_) => dto)
+          .then((value) => _claimMapper.mapFrom(dto));
+    }).catchError((error) => throw FetchClaimException(error));
   }
 
   @override

@@ -1,67 +1,73 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_and_save_identity_use_case.dart';
 
+import '../../common/common_mocks.dart';
 import 'create_and_save_identity_use_case_test.mocks.dart';
 
 // Data
-const privateKey = "thePrivateKey";
-const walletPrivateKey = "theWalletPrivateKey";
-const identifier = "theIdentifier";
-const pubKeys = ["pubX", "pubY"];
-const smt = "theSmt";
-const privateIdentity = PrivateIdentityEntity(
-    privateKey: privateKey, identifier: identifier, publicKey: pubKeys);
+final privateIdentity = PrivateIdentityEntity(
+    privateKey: CommonMocks.privateKey,
+    identifier: CommonMocks.identifier,
+    publicKey: CommonMocks.pubKeys);
 var exception = Exception();
 
 // Dependencies
 MockIdentityRepository identityRepository = MockIdentityRepository();
+MockGetEnvConfigUseCase getEnvConfigUseCase = MockGetEnvConfigUseCase();
 
 // Tested instance
 CreateAndSaveIdentityUseCase useCase =
-    CreateAndSaveIdentityUseCase(identityRepository);
+    CreateAndSaveIdentityUseCase(identityRepository, getEnvConfigUseCase);
 
-@GenerateMocks([IdentityRepository])
+@GenerateMocks([IdentityRepository, GetEnvConfigUseCase])
 void main() {
   setUp(() {
     // Given
-    when(identityRepository.createIdentity(secret: anyNamed('secret')))
+    when(getEnvConfigUseCase.execute(param: anyNamed('param')))
+        .thenAnswer((realInvocation) => Future.value(CommonMocks.config));
+    when(identityRepository.createIdentity(
+            secret: anyNamed('secret'),
+            accessMessage: anyNamed('accessMessage')))
         .thenAnswer((realInvocation) => Future.value(privateIdentity));
     when(identityRepository.getIdentity(identifier: anyNamed('identifier')))
         .thenAnswer((realInvocation) =>
-            Future.error(UnknownIdentityException(identifier)));
+            Future.error(UnknownIdentityException(CommonMocks.identifier)));
   });
 
   test(
       "Given a private key which is not already associated with an identity, when I call execute, then I expect an identity to be returned",
       () async {
     // When
-    expect(await useCase.execute(param: privateKey), privateIdentity);
+    expect(
+        await useCase.execute(param: CommonMocks.privateKey), privateIdentity);
 
     // Then
-    expect(
-        verify(identityRepository.createIdentity(
-                secret: captureAnyNamed('secret')))
-            .captured
-            .first,
-        privateKey);
+    var configCaptured = verify(identityRepository.createIdentity(
+            secret: captureAnyNamed('secret'),
+            accessMessage: captureAnyNamed('accessMessage')))
+        .captured;
+    expect(configCaptured[0], CommonMocks.privateKey);
+    expect(configCaptured[1], CommonMocks.config);
+
     expect(
         verify(identityRepository.getIdentity(
                 identifier: captureAnyNamed('identifier')))
             .captured
             .first,
-        identifier);
+        CommonMocks.identifier);
 
     var capturedStore = verify(identityRepository.storeIdentity(
             identity: captureAnyNamed('identity'),
             privateKey: captureAnyNamed('privateKey')))
         .captured;
     expect(capturedStore[0], privateIdentity);
-    expect(capturedStore[1], privateKey);
+    expect(capturedStore[1], CommonMocks.privateKey);
   });
 
   test(
@@ -71,24 +77,26 @@ void main() {
     expect(await useCase.execute(param: null), privateIdentity);
 
     // Then
-    expect(
-        verify(identityRepository.createIdentity(
-                secret: captureAnyNamed('secret')))
-            .captured
-            .first,
-        null);
+    var configCaptured = verify(identityRepository.createIdentity(
+            secret: captureAnyNamed('secret'),
+            accessMessage: captureAnyNamed('accessMessage')))
+        .captured;
+    expect(configCaptured[0], null);
+    expect(configCaptured[1], CommonMocks.config);
+
     expect(
         verify(identityRepository.getIdentity(
                 identifier: captureAnyNamed('identifier')))
             .captured
             .first,
-        identifier);
+        CommonMocks.identifier);
+
     var capturedStore = verify(identityRepository.storeIdentity(
             identity: captureAnyNamed('identity'),
             privateKey: captureAnyNamed('privateKey')))
         .captured;
     expect(capturedStore[0], privateIdentity);
-    expect(capturedStore[1], privateKey);
+    expect(capturedStore[1], CommonMocks.privateKey);
   });
 
   test(
@@ -100,7 +108,7 @@ void main() {
 
     // When
     await useCase
-        .execute(param: privateKey)
+        .execute(param: CommonMocks.privateKey)
         .then((_) => null)
         .catchError((error) {
       expect(error, isA<IdentityAlreadyExistsException>());
@@ -108,18 +116,20 @@ void main() {
     });
 
     // Then
-    expect(
-        verify(identityRepository.createIdentity(
-                secret: captureAnyNamed('secret')))
-            .captured
-            .first,
-        privateKey);
+    var configCaptured = verify(identityRepository.createIdentity(
+            secret: captureAnyNamed('secret'),
+            accessMessage: captureAnyNamed('accessMessage')))
+        .captured;
+    expect(configCaptured[0], CommonMocks.privateKey);
+    expect(configCaptured[1], CommonMocks.config);
+
     expect(
         verify(identityRepository.getIdentity(
                 identifier: captureAnyNamed('identifier')))
             .captured
             .first,
-        identifier);
+        CommonMocks.identifier);
+
     verifyNever(identityRepository.storeIdentity(
         identity: captureAnyNamed('identity'),
         privateKey: captureAnyNamed('privateKey')));
@@ -133,21 +143,24 @@ void main() {
         .thenAnswer((realInvocation) => Future.error(exception));
 
     // When
-    await expectLater(useCase.execute(param: privateKey), throwsA(exception));
+    await expectLater(
+        useCase.execute(param: CommonMocks.privateKey), throwsA(exception));
 
     // Then
-    expect(
-        verify(identityRepository.createIdentity(
-                secret: captureAnyNamed('secret')))
-            .captured
-            .first,
-        privateKey);
+    var configCaptured = verify(identityRepository.createIdentity(
+            secret: captureAnyNamed('secret'),
+            accessMessage: captureAnyNamed('accessMessage')))
+        .captured;
+    expect(configCaptured[0], CommonMocks.privateKey);
+    expect(configCaptured[1], CommonMocks.config);
+
     expect(
         verify(identityRepository.getIdentity(
                 identifier: captureAnyNamed('identifier')))
             .captured
             .first,
-        identifier);
+        CommonMocks.identifier);
+
     verifyNever(identityRepository.storeIdentity(
         identity: captureAnyNamed('identity'),
         privateKey: captureAnyNamed('privateKey')));

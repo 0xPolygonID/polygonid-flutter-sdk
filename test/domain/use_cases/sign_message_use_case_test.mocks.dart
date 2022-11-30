@@ -68,12 +68,18 @@ class MockIdentityRepository extends _i1.Mock
   }
 
   @override
-  _i6.Future<_i2.PrivateIdentityEntity> createIdentity({String? secret}) =>
+  _i6.Future<_i2.PrivateIdentityEntity> createIdentity({
+    String? secret,
+    required String? accessMessage,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #createIdentity,
           [],
-          {#secret: secret},
+          {
+            #secret: secret,
+            #accessMessage: accessMessage,
+          },
         ),
         returnValue: _i6.Future<_i2.PrivateIdentityEntity>.value(
             _FakePrivateIdentityEntity_0(
@@ -81,7 +87,10 @@ class MockIdentityRepository extends _i1.Mock
           Invocation.method(
             #createIdentity,
             [],
-            {#secret: secret},
+            {
+              #secret: secret,
+              #accessMessage: accessMessage,
+            },
           ),
         )),
       ) as _i6.Future<_i2.PrivateIdentityEntity>);

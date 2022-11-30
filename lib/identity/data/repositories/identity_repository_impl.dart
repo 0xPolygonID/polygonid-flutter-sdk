@@ -53,11 +53,13 @@ class IdentityRepositoryImpl extends IdentityRepository {
   ///
   /// @return the associated identifier
   @override
-  Future<PrivateIdentityEntity> createIdentity({String? secret}) async {
+  Future<PrivateIdentityEntity> createIdentity(
+      {String? secret, required String accessMessage}) async {
     try {
       // Create a wallet
       PrivadoIdWallet wallet = await _walletDataSource.createWallet(
-          secret: _privateKeyMapper.mapFrom(secret));
+          secret: _privateKeyMapper.mapFrom(secret),
+          accessMessage: accessMessage);
 
       // Get the associated identifier
       String identifier = await getIdentifier(
