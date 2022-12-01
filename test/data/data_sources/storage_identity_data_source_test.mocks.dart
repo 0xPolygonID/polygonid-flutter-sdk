@@ -213,12 +213,18 @@ class MockWalletDataSource extends _i1.Mock implements _i9.WalletDataSource {
   }
 
   @override
-  _i4.Future<_i2.PrivadoIdWallet> createWallet({_i10.Uint8List? secret}) =>
+  _i4.Future<_i2.PrivadoIdWallet> createWallet({
+    _i10.Uint8List? secret,
+    required String? accessMessage,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #createWallet,
           [],
-          {#secret: secret},
+          {
+            #secret: secret,
+            #accessMessage: accessMessage,
+          },
         ),
         returnValue:
             _i4.Future<_i2.PrivadoIdWallet>.value(_FakePrivadoIdWallet_0(
@@ -226,7 +232,10 @@ class MockWalletDataSource extends _i1.Mock implements _i9.WalletDataSource {
           Invocation.method(
             #createWallet,
             [],
-            {#secret: secret},
+            {
+              #secret: secret,
+              #accessMessage: accessMessage,
+            },
           ),
         )),
       ) as _i4.Future<_i2.PrivadoIdWallet>);

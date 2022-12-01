@@ -11,16 +11,16 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
     as _i14;
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
     as _i2;
-import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart'
-    as _i13;
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart'
     as _i12;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart'
-    as _i10;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_entity.dart'
     as _i11;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart'
     as _i17;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart'
+    as _i10;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart'
+    as _i13;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart'
     as _i8;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
@@ -122,7 +122,7 @@ class MockIden3commRepository extends _i1.Mock
 
   @override
   _i9.Future<void> authenticate({
-    required _i10.Iden3MessageEntity? message,
+    required _i10.AuthIden3MessageEntity? request,
     required String? authToken,
   }) =>
       (super.noSuchMethod(
@@ -130,7 +130,7 @@ class MockIden3commRepository extends _i1.Mock
           #authenticate,
           [],
           {
-            #message: message,
+            #request: request,
             #authToken: authToken,
           },
         ),
@@ -160,7 +160,7 @@ class MockIden3commRepository extends _i1.Mock
   @override
   _i9.Future<String> getAuthResponse({
     required String? identifier,
-    required _i10.Iden3MessageEntity? message,
+    required _i10.AuthIden3MessageEntity? request,
     required List<_i11.ProofEntity>? scope,
     String? pushUrl,
     String? pushToken,
@@ -173,7 +173,7 @@ class MockIden3commRepository extends _i1.Mock
           [],
           {
             #identifier: identifier,
-            #message: message,
+            #request: request,
             #scope: scope,
             #pushUrl: pushUrl,
             #pushToken: pushToken,
@@ -198,7 +198,7 @@ class MockCredentialRepository extends _i1.Mock
   _i9.Future<_i2.ClaimEntity> fetchClaim({
     required String? identifier,
     required String? token,
-    required _i13.CredentialRequestEntity? credentialRequest,
+    required _i13.OfferIden3MessageEntity? message,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -207,7 +207,7 @@ class MockCredentialRepository extends _i1.Mock
           {
             #identifier: identifier,
             #token: token,
-            #credentialRequest: credentialRequest,
+            #message: message,
           },
         ),
         returnValue: _i9.Future<_i2.ClaimEntity>.value(_FakeClaimEntity_0(
@@ -218,22 +218,11 @@ class MockCredentialRepository extends _i1.Mock
             {
               #identifier: identifier,
               #token: token,
-              #credentialRequest: credentialRequest,
+              #message: message,
             },
           ),
         )),
       ) as _i9.Future<_i2.ClaimEntity>);
-  @override
-  _i9.Future<String> getFetchMessage(
-          {required _i13.CredentialRequestEntity? credentialRequest}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getFetchMessage,
-          [],
-          {#credentialRequest: credentialRequest},
-        ),
-        returnValue: _i9.Future<String>.value(''),
-      ) as _i9.Future<String>);
   @override
   _i9.Future<void> saveClaims({
     required List<_i2.ClaimEntity>? claims,
@@ -321,17 +310,18 @@ class MockCredentialRepository extends _i1.Mock
         returnValueForMissingStub: _i9.Future<void>.value(),
       ) as _i9.Future<void>);
   @override
-  _i9.Future<Map<String, dynamic>?> fetchSchema({required String? url}) =>
+  _i9.Future<Map<String, dynamic>> fetchSchema({required String? url}) =>
       (super.noSuchMethod(
         Invocation.method(
           #fetchSchema,
           [],
           {#url: url},
         ),
-        returnValue: _i9.Future<Map<String, dynamic>?>.value(),
-      ) as _i9.Future<Map<String, dynamic>?>);
+        returnValue:
+            _i9.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i9.Future<Map<String, dynamic>>);
   @override
-  _i9.Future<Map<String, dynamic>?> fetchVocab({
+  _i9.Future<Map<String, dynamic>> fetchVocab({
     required Map<String, dynamic>? schema,
     required String? type,
   }) =>
@@ -344,8 +334,9 @@ class MockCredentialRepository extends _i1.Mock
             #type: type,
           },
         ),
-        returnValue: _i9.Future<Map<String, dynamic>?>.value(),
-      ) as _i9.Future<Map<String, dynamic>?>);
+        returnValue:
+            _i9.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i9.Future<Map<String, dynamic>>);
   @override
   _i9.Future<Map<String, dynamic>> getRevocationStatus(
           {required _i2.ClaimEntity? claim}) =>
@@ -513,18 +504,6 @@ class MockProofRepository extends _i1.Mock implements _i15.ProofRepository {
         returnValue:
             _i9.Future<List<_i14.FilterEntity>>.value(<_i14.FilterEntity>[]),
       ) as _i9.Future<List<_i14.FilterEntity>>);
-  @override
-  _i9.Future<List<_i17.ProofRequestEntity>> getRequests(
-          {required _i10.Iden3MessageEntity? message}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getRequests,
-          [],
-          {#message: message},
-        ),
-        returnValue: _i9.Future<List<_i17.ProofRequestEntity>>.value(
-            <_i17.ProofRequestEntity>[]),
-      ) as _i9.Future<List<_i17.ProofRequestEntity>>);
 }
 
 /// A class which mocks [IdentityRepository].
@@ -537,12 +516,18 @@ class MockIdentityRepository extends _i1.Mock
   }
 
   @override
-  _i9.Future<_i5.PrivateIdentityEntity> createIdentity({String? secret}) =>
+  _i9.Future<_i5.PrivateIdentityEntity> createIdentity({
+    String? secret,
+    required String? accessMessage,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #createIdentity,
           [],
-          {#secret: secret},
+          {
+            #secret: secret,
+            #accessMessage: accessMessage,
+          },
         ),
         returnValue: _i9.Future<_i5.PrivateIdentityEntity>.value(
             _FakePrivateIdentityEntity_3(
@@ -550,7 +535,10 @@ class MockIdentityRepository extends _i1.Mock
           Invocation.method(
             #createIdentity,
             [],
-            {#secret: secret},
+            {
+              #secret: secret,
+              #accessMessage: accessMessage,
+            },
           ),
         )),
       ) as _i9.Future<_i5.PrivateIdentityEntity>);

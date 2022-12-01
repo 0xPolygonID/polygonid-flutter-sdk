@@ -10,6 +10,7 @@ import '../../../identity/domain/repositories/identity_repository.dart';
 import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
 import '../../../proof_generation/domain/repositories/proof_repository.dart';
 import '../../../proof_generation/domain/use_cases/generate_proof_use_case.dart';
+import 'get_proof_requests_use_case.dart';
 
 class GetProofsParam {
   final Iden3MessageEntity message;
@@ -31,17 +32,22 @@ class GetProofsUseCase
   final GetClaimsUseCase _getClaimsUseCase;
   final GenerateProofUseCase _generateProofUseCase;
   final IsProofCircuitSupportedUseCase _isProofCircuitSupported;
+  final GetProofRequestsUseCase _getProofRequestsUseCase;
 
   GetProofsUseCase(
       this._proofRepository,
       this._identityRepository,
       this._getClaimsUseCase,
       this._generateProofUseCase,
-      this._isProofCircuitSupported);
+      this._isProofCircuitSupported,
+      this._getProofRequestsUseCase);
 
   @override
   Future<List<ProofEntity>> execute({required GetProofsParam param}) async {
     List<ProofEntity> proofs = [];
+
+    List<ProofRequestEntity> requests =
+        await _getProofRequestsUseCase.execute(param: param.message);
 
     List<String> publicKey = await _identityRepository
         .getIdentity(
@@ -49,13 +55,11 @@ class GetProofsUseCase
         )
         .then((identity) => identity.publicKey);
 
-    List<ProofRequestEntity> requests =
-        await _proofRepository.getRequests(message: param.message);
-
     /// We got [ProofRequestEntity], let's find the associated [ClaimEntity]
     /// and generate [ProofEntity]
     for (ProofRequestEntity request in requests) {
-      if (await _isProofCircuitSupported.execute(param: request.circuitId)) {
+      if (await _isProofCircuitSupported.execute(
+          param: request.scope.circuit_id)) {
         // Claims
         await _proofRepository
             .getFilters(request: request)
@@ -67,12 +71,12 @@ class GetProofsUseCase
                 )))
             .then((claims) => claims.first)
             .then((authClaim) async {
-          String circuitId = request.circuitId;
+          String circuitId = request.scope.circuit_id;
           CircuitDataEntity circuitData =
               await _proofRepository.loadCircuitFiles(circuitId);
 
           // Challenge
-          String challenge = param.challenge ?? request.id;
+          String challenge = param.challenge ?? request.scope.id.toString();
 
           // Signature
           String signatureString = await _identityRepository.signMessage(
@@ -84,7 +88,7 @@ class GetProofsUseCase
                   param: GenerateProofParam(challenge, signatureString,
                       authClaim, circuitData, publicKey, request.queryParam))
               .then((proof) => ProofEntity(
-                  id: int.parse(request.id),
+                  id: request.scope.id,
                   circuitId: circuitId,
                   proof: proof.proof,
                   pubSignals: proof.pubSignals)));

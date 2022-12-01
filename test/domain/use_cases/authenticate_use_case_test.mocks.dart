@@ -10,10 +10,10 @@ import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_cas
     as _i10;
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart'
     as _i11;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart'
-    as _i4;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_entity.dart'
     as _i7;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart'
+    as _i4;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart'
     as _i2;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart'
@@ -49,7 +49,7 @@ class MockIden3commRepository extends _i1.Mock
 
   @override
   _i3.Future<void> authenticate({
-    required _i4.Iden3MessageEntity? message,
+    required _i4.AuthIden3MessageEntity? request,
     required String? authToken,
   }) =>
       (super.noSuchMethod(
@@ -57,7 +57,7 @@ class MockIden3commRepository extends _i1.Mock
           #authenticate,
           [],
           {
-            #message: message,
+            #request: request,
             #authToken: authToken,
           },
         ),
@@ -87,7 +87,7 @@ class MockIden3commRepository extends _i1.Mock
   @override
   _i3.Future<String> getAuthResponse({
     required String? identifier,
-    required _i4.Iden3MessageEntity? message,
+    required _i4.AuthIden3MessageEntity? request,
     required List<_i7.ProofEntity>? scope,
     String? pushUrl,
     String? pushToken,
@@ -100,7 +100,7 @@ class MockIden3commRepository extends _i1.Mock
           [],
           {
             #identifier: identifier,
-            #message: message,
+            #request: request,
             #scope: scope,
             #pushUrl: pushUrl,
             #pushToken: pushToken,

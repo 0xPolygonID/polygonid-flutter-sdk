@@ -8,9 +8,11 @@ import '../../libs/bjj/privadoid_wallet.dart';
 
 @injectable
 class WalletLibWrapper {
-  Future<PrivadoIdWallet> createWallet({Uint8List? secret}) {
+  Future<PrivadoIdWallet> createWallet(
+      {Uint8List? secret, required String accessMessage}) {
     try {
-      return PrivadoIdWallet.createPrivadoIdWallet(secret: secret);
+      return PrivadoIdWallet.createPrivadoIdWallet(
+          secret: secret, accessMessage: accessMessage);
     } catch (e) {
       return Future.error(e);
     }
@@ -52,8 +54,10 @@ class WalletDataSource {
 
   WalletDataSource(this._walletLibWrapper);
 
-  Future<PrivadoIdWallet> createWallet({Uint8List? secret}) {
-    return _walletLibWrapper.createWallet(secret: secret);
+  Future<PrivadoIdWallet> createWallet(
+      {Uint8List? secret, required String accessMessage}) {
+    return _walletLibWrapper.createWallet(
+        secret: secret, accessMessage: accessMessage);
   }
 
   Future<PrivadoIdWallet> getWallet({required Uint8List privateKey}) {

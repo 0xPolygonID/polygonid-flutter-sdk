@@ -1,11 +1,9 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
@@ -32,6 +30,8 @@ import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
 import 'package:web3dart/web3dart.dart';
 
+import '../../common/common_mocks.dart';
+import '../../common/iden3com_mocks.dart';
 import 'identity_repository_impl_test.mocks.dart';
 
 // Data
@@ -40,48 +40,34 @@ class FakeWallet extends Fake implements PrivadoIdWallet {
   Uint8List get privateKey => Uint8List(32);
 
   @override
-  List<String> get publicKey => [pubX, pubY];
+  List<String> get publicKey => CommonMocks.pubKeys;
 }
 
-const pubX = "thePubX";
-const pubY = "thePubY";
-const pubKeys = [pubX, pubY];
-const privateKey = "thePrivateKey";
-const walletPrivateKey = "theWalletPrivateKey";
 final bbjjKey = Uint8List(32);
 final mockWallet = FakeWallet();
-const identifier = "theIdentifier";
 const otherIdentifier = "theOtherIdentifier";
-const smt = "smt";
-const mockDTO = IdentityDTO(identifier: identifier, publicKey: pubKeys);
-const mockEntity = IdentityEntity(identifier: identifier, publicKey: pubKeys);
-const privateIdentity = PrivateIdentityEntity(
-    identifier: identifier, publicKey: pubKeys, privateKey: walletPrivateKey);
-const message = "theMessage";
-const signature = "theSignature";
-const circuitId = "1";
+final mockDTO = IdentityDTO(
+    identifier: CommonMocks.identifier, publicKey: CommonMocks.pubKeys);
+final mockEntity = IdentityEntity(
+    identifier: CommonMocks.identifier, publicKey: CommonMocks.pubKeys);
+final privateIdentity = PrivateIdentityEntity(
+    identifier: CommonMocks.identifier,
+    publicKey: CommonMocks.pubKeys,
+    privateKey: CommonMocks.walletPrivateKey);
 final datFile = Uint8List(32);
 final zKeyFile = Uint8List(32);
-final circuitData = CircuitDataEntity(circuitId, datFile, zKeyFile);
-const token = "token";
-const url = "theUrl";
-const id = "1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ"; //"theId";
-const state = "theState";
-const nonce = 1;
+final circuitData = CircuitDataEntity(CommonMocks.circuitId, datFile, zKeyFile);
 var exception = Exception();
-const issuerMessage =
-    '{"id":"0b78a480-c710-4bd8-a4fd-454b577ca991","typ":"application/iden3comm-plain-json","type":"https://iden3-communication.io/authorization/1.0/request","thid":"0b78a480-c710-4bd8-a4fd-454b577ca991","body":{"callbackUrl":"https://issuer.polygonid.me/api/callback?sessionId=867314","reason":"test flow","scope":[]},"from":"1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ"}';
-final mockAuthRequest = AuthRequest.fromJson(jsonDecode(issuerMessage));
 
 final mockAuthResponse = AuthResponse(
   id: "id",
-  thid: mockAuthRequest.thid,
-  to: mockAuthRequest.from,
-  from: identifier,
+  thid: Iden3commMocks.authRequest.thid,
+  to: Iden3commMocks.authRequest.from,
+  from: CommonMocks.identifier,
   typ: "application/iden3comm-plain-json",
   type: "https://iden3-communication.io/authorization/1.0/response",
   body: AuthBodyResponse(
-    message: mockAuthRequest.body.message,
+    message: Iden3commMocks.authRequest.body.message,
     proofs: [],
     did_doc: null,
   ),
@@ -210,7 +196,9 @@ void main() {
       when(privateKeyMapper.mapFrom(any))
           .thenAnswer((realInvocation) => bbjjKey);
 
-      when(walletDataSource.createWallet(secret: anyNamed('secret')))
+      when(walletDataSource.createWallet(
+              secret: anyNamed('secret'),
+              accessMessage: anyNamed('accessMessage')))
           .thenAnswer((realInvocation) => Future.value(mockWallet));
 
       when(walletDataSource.getWallet(privateKey: anyNamed('privateKey')))
@@ -218,13 +206,13 @@ void main() {
 
       when(libIdentityDataSource.getIdentifier(
               pubX: anyNamed('pubX'), pubY: anyNamed('pubY')))
-          .thenAnswer((realInvocation) => Future.value(identifier));
+          .thenAnswer((realInvocation) => Future.value(CommonMocks.identifier));
 
       when(identityDTOMapper.mapPrivateFrom(any, any))
           .thenAnswer((realInvocation) => privateIdentity);
 
       when(hexMapper.mapFrom(any))
-          .thenAnswer((realInvocation) => walletPrivateKey);
+          .thenAnswer((realInvocation) => CommonMocks.walletPrivateKey);
 
       when(hexMapper.mapTo(any))
           .thenAnswer((realInvocation) => mockWallet.privateKey);
@@ -232,7 +220,7 @@ void main() {
       when(storageIdentityDataSource.getIdentity(
               identifier: anyNamed('identifier')))
           .thenAnswer((realInvocation) =>
-              Future.error(UnknownIdentityException(identifier)));
+              Future.error(UnknownIdentityException(CommonMocks.identifier)));
 
       when(identityDTOMapper.mapFrom(any))
           .thenAnswer((realInvocation) => mockEntity);
@@ -243,26 +231,30 @@ void main() {
         () async {
       // When
       expect(
-          await repository.createIdentity(secret: privateKey), privateIdentity);
+          await repository.createIdentity(
+              secret: CommonMocks.privateKey,
+              accessMessage: CommonMocks.config),
+          privateIdentity);
 
       // Then
-      expect(
-          verify(walletDataSource.createWallet(
-                  secret: captureAnyNamed('secret')))
-              .captured
-              .first,
-          bbjjKey);
+      var createCaptured = verify(walletDataSource.createWallet(
+              secret: captureAnyNamed('secret'),
+              accessMessage: captureAnyNamed('accessMessage')))
+          .captured;
+      expect(createCaptured[0], bbjjKey);
+      expect(createCaptured[1], CommonMocks.config);
+
       var identifierCaptured = verify(libIdentityDataSource.getIdentifier(
               pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')))
           .captured;
-      expect(identifierCaptured[0], pubX);
-      expect(identifierCaptured[1], pubY);
+      expect(identifierCaptured[0], CommonMocks.pubX);
+      expect(identifierCaptured[1], CommonMocks.pubY);
 
       var identityMapperCaptured =
           verify(identityDTOMapper.mapPrivateFrom(captureAny, captureAny))
               .captured;
       expect(identityMapperCaptured[0], mockDTO);
-      expect(identityMapperCaptured[1], walletPrivateKey);
+      expect(identityMapperCaptured[1], CommonMocks.walletPrivateKey);
 
       var hexMapperVerify = verify(hexMapper.mapFrom(captureAny));
       expect(hexMapperVerify.callCount, 2);
@@ -274,26 +266,30 @@ void main() {
         "Given a private key which is null, when I call createIdentity, then I expect a PrivateIdentityEntity to be returned",
         () async {
       // When
-      expect(await repository.createIdentity(secret: null), privateIdentity);
+      expect(
+          await repository.createIdentity(
+              secret: null, accessMessage: CommonMocks.config),
+          privateIdentity);
 
       // Then
-      expect(
-          verify(walletDataSource.createWallet(
-                  secret: captureAnyNamed('secret')))
-              .captured
-              .first,
-          bbjjKey);
+      var createCaptured = verify(walletDataSource.createWallet(
+              secret: captureAnyNamed('secret'),
+              accessMessage: captureAnyNamed('accessMessage')))
+          .captured;
+      expect(createCaptured[0], bbjjKey);
+      expect(createCaptured[1], CommonMocks.config);
+
       var identifierCaptured = verify(libIdentityDataSource.getIdentifier(
               pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')))
           .captured;
-      expect(identifierCaptured[0], pubX);
-      expect(identifierCaptured[1], pubY);
+      expect(identifierCaptured[0], CommonMocks.pubX);
+      expect(identifierCaptured[1], CommonMocks.pubY);
 
       var identityMapperCaptured =
           verify(identityDTOMapper.mapPrivateFrom(captureAny, captureAny))
               .captured;
       expect(identityMapperCaptured[0], mockDTO);
-      expect(identityMapperCaptured[1], walletPrivateKey);
+      expect(identityMapperCaptured[1], CommonMocks.walletPrivateKey);
 
       var hexMapperVerify = verify(hexMapper.mapFrom(captureAny));
       expect(hexMapperVerify.callCount, 2);
@@ -311,7 +307,8 @@ void main() {
 
       // When
       await repository
-          .createIdentity(secret: privateKey)
+          .createIdentity(
+              secret: CommonMocks.privateKey, accessMessage: CommonMocks.config)
           .then((_) => expect(true, false))
           .catchError((error) {
         expect(error, isA<IdentityException>());
@@ -319,17 +316,18 @@ void main() {
       });
 
       // Then
-      expect(
-          verify(walletDataSource.createWallet(
-                  secret: captureAnyNamed('secret')))
-              .captured
-              .first,
-          bbjjKey);
+      var createCaptured = verify(walletDataSource.createWallet(
+              secret: captureAnyNamed('secret'),
+              accessMessage: captureAnyNamed('accessMessage')))
+          .captured;
+      expect(createCaptured[0], bbjjKey);
+      expect(createCaptured[1], CommonMocks.config);
+
       var identifierCaptured = verify(libIdentityDataSource.getIdentifier(
               pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')))
           .captured;
-      expect(identifierCaptured[0], pubX);
-      expect(identifierCaptured[1], pubY);
+      expect(identifierCaptured[0], CommonMocks.pubX);
+      expect(identifierCaptured[1], CommonMocks.pubY);
 
       verifyNever(identityDTOMapper.mapPrivateFrom(captureAny, captureAny));
 
@@ -357,7 +355,8 @@ void main() {
         "Given an identifier, when I call getIdentity, then I expect a IdentityEntity to be returned",
         () async {
       // When
-      expect(await repository.getIdentity(identifier: identifier), mockEntity);
+      expect(await repository.getIdentity(identifier: CommonMocks.identifier),
+          mockEntity);
 
       // Then
       expect(
@@ -365,7 +364,7 @@ void main() {
                   identifier: captureAnyNamed('identifier')))
               .captured
               .first,
-          identifier);
+          CommonMocks.identifier);
 
       expect(verify(identityDTOMapper.mapFrom(captureAny)).captured.first,
           mockDTO);
@@ -381,7 +380,7 @@ void main() {
 
       // When
       await repository
-          .getIdentity(identifier: identifier)
+          .getIdentity(identifier: CommonMocks.identifier)
           .then((_) => null)
           .catchError((error) {
         expect(error, isA<IdentityException>());
@@ -394,7 +393,7 @@ void main() {
                   identifier: captureAnyNamed('identifier')))
               .captured
               .first,
-          identifier);
+          CommonMocks.identifier);
 
       verifyNever(identityDTOMapper.mapFrom(captureAny));
     });
@@ -406,15 +405,15 @@ void main() {
       when(storageIdentityDataSource.getIdentity(
               identifier: anyNamed('identifier')))
           .thenAnswer((realInvocation) =>
-              Future.error(UnknownIdentityException(identifier)));
+              Future.error(UnknownIdentityException(CommonMocks.identifier)));
 
       // When
       await repository
-          .getIdentity(identifier: identifier)
+          .getIdentity(identifier: CommonMocks.identifier)
           .then((_) => null)
           .catchError((error) {
         expect(error, isA<UnknownIdentityException>());
-        expect(error.identifier, identifier);
+        expect(error.identifier, CommonMocks.identifier);
       });
 
       // Then
@@ -423,7 +422,7 @@ void main() {
                   identifier: captureAnyNamed('identifier')))
               .captured
               .first,
-          identifier);
+          CommonMocks.identifier);
 
       verifyNever(identityDTOMapper.mapFrom(captureAny));
     });
@@ -443,7 +442,7 @@ void main() {
 
       when(libIdentityDataSource.getIdentifier(
               pubX: anyNamed('pubX'), pubY: anyNamed('pubY')))
-          .thenAnswer((realInvocation) => Future.value(identifier));
+          .thenAnswer((realInvocation) => Future.value(CommonMocks.identifier));
 
       when(identityDTOMapper.mapPrivateFrom(any, any))
           .thenAnswer((realInvocation) => privateIdentity);
@@ -461,7 +460,8 @@ void main() {
       // When
       expect(
           await repository.getPrivateIdentity(
-              identifier: identifier, privateKey: privateKey),
+              identifier: CommonMocks.identifier,
+              privateKey: CommonMocks.privateKey),
           privateIdentity);
 
       // Then
@@ -470,15 +470,16 @@ void main() {
                   identifier: captureAnyNamed('identifier')))
               .captured
               .first,
-          identifier);
+          CommonMocks.identifier);
 
-      expect(verify(hexMapper.mapTo(captureAny)).captured.first, privateKey);
+      expect(verify(hexMapper.mapTo(captureAny)).captured.first,
+          CommonMocks.privateKey);
 
       var identifierCaptured = verify(libIdentityDataSource.getIdentifier(
               pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')))
           .captured;
-      expect(identifierCaptured[0], pubX);
-      expect(identifierCaptured[1], pubY);
+      expect(identifierCaptured[0], CommonMocks.pubX);
+      expect(identifierCaptured[1], CommonMocks.pubY);
 
       expect(
           verify(walletDataSource.getWallet(
@@ -491,7 +492,7 @@ void main() {
           verify(identityDTOMapper.mapPrivateFrom(captureAny, captureAny))
               .captured;
       expect(captureDTOMapper[0], mockDTO);
-      expect(captureDTOMapper[1], privateKey);
+      expect(captureDTOMapper[1], CommonMocks.privateKey);
     });
 
     test(
@@ -505,7 +506,9 @@ void main() {
       // When
 
       await repository
-          .getPrivateIdentity(identifier: identifier, privateKey: privateKey)
+          .getPrivateIdentity(
+              identifier: CommonMocks.identifier,
+              privateKey: CommonMocks.privateKey)
           .then((_) => expect(true, false))
           .catchError((error) {
         expect(error, isA<IdentityException>());
@@ -518,15 +521,16 @@ void main() {
                   identifier: captureAnyNamed('identifier')))
               .captured
               .first,
-          identifier);
+          CommonMocks.identifier);
 
-      expect(verify(hexMapper.mapTo(captureAny)).captured.first, privateKey);
+      expect(verify(hexMapper.mapTo(captureAny)).captured.first,
+          CommonMocks.privateKey);
 
       var identifierCaptured = verify(libIdentityDataSource.getIdentifier(
               pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')))
           .captured;
-      expect(identifierCaptured[0], pubX);
-      expect(identifierCaptured[1], pubY);
+      expect(identifierCaptured[0], CommonMocks.pubX);
+      expect(identifierCaptured[1], CommonMocks.pubY);
 
       expect(
           verify(walletDataSource.getWallet(
@@ -548,12 +552,14 @@ void main() {
 
       // When
       await repository
-          .getPrivateIdentity(identifier: identifier, privateKey: privateKey)
+          .getPrivateIdentity(
+              identifier: CommonMocks.identifier,
+              privateKey: CommonMocks.privateKey)
           .then((_) => expect(true, false))
           .catchError((error) {
         expect(error, isA<IdentityException>());
         expect(error.error, isA<InvalidPrivateKeyException>());
-        expect(error.error.privateKey, privateKey);
+        expect(error.error.privateKey, CommonMocks.privateKey);
       });
 
       // Then
@@ -562,15 +568,16 @@ void main() {
                   identifier: captureAnyNamed('identifier')))
               .captured
               .first,
-          identifier);
+          CommonMocks.identifier);
 
-      expect(verify(hexMapper.mapTo(captureAny)).captured.first, privateKey);
+      expect(verify(hexMapper.mapTo(captureAny)).captured.first,
+          CommonMocks.privateKey);
 
       var identifierCaptured = verify(libIdentityDataSource.getIdentifier(
               pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')))
           .captured;
-      expect(identifierCaptured[0], pubX);
-      expect(identifierCaptured[1], pubY);
+      expect(identifierCaptured[0], CommonMocks.pubX);
+      expect(identifierCaptured[1], CommonMocks.pubY);
 
       expect(
           verify(walletDataSource.getWallet(
@@ -591,7 +598,7 @@ void main() {
       // Given
       when(walletDataSource.signMessage(
               privateKey: anyNamed('privateKey'), message: anyNamed('message')))
-          .thenAnswer((realInvocation) => Future.value(signature));
+          .thenAnswer((realInvocation) => Future.value(CommonMocks.signature));
       when(hexMapper.mapTo(any)).thenAnswer((realInvocation) => bbjjKey);
     });
 
@@ -601,17 +608,18 @@ void main() {
       // When
       expect(
           await repository.signMessage(
-              privateKey: privateKey, message: message),
-          signature);
+              privateKey: CommonMocks.privateKey, message: CommonMocks.message),
+          CommonMocks.signature);
 
       // Then
-      expect(verify(hexMapper.mapTo(captureAny)).captured.first, privateKey);
+      expect(verify(hexMapper.mapTo(captureAny)).captured.first,
+          CommonMocks.privateKey);
       var signCaptured = verify(walletDataSource.signMessage(
               privateKey: captureAnyNamed('privateKey'),
               message: captureAnyNamed('message')))
           .captured;
       expect(signCaptured[0], bbjjKey);
-      expect(signCaptured[1], message);
+      expect(signCaptured[1], CommonMocks.message);
     });
 
     test(
@@ -624,7 +632,8 @@ void main() {
 
       // When
       await repository
-          .signMessage(privateKey: privateKey, message: message)
+          .signMessage(
+              privateKey: CommonMocks.privateKey, message: CommonMocks.message)
           .then((_) => null)
           .catchError((error) {
         expect(error, isA<IdentityException>());
@@ -632,13 +641,14 @@ void main() {
       });
 
       // Then
-      expect(verify(hexMapper.mapTo(captureAny)).captured.first, privateKey);
+      expect(verify(hexMapper.mapTo(captureAny)).captured.first,
+          CommonMocks.privateKey);
       var signCaptured = verify(walletDataSource.signMessage(
               privateKey: captureAnyNamed('privateKey'),
               message: captureAnyNamed('message')))
           .captured;
       expect(signCaptured[0], bbjjKey);
-      expect(signCaptured[1], message);
+      expect(signCaptured[1], CommonMocks.message);
     });
   });
 
@@ -654,7 +664,8 @@ void main() {
       // When
       await expectLater(
           repository.removeIdentity(
-              privateKey: privateKey, identifier: identifier),
+              privateKey: CommonMocks.privateKey,
+              identifier: CommonMocks.identifier),
           completes);
 
       // Then
@@ -663,7 +674,7 @@ void main() {
                   identifier: captureAnyNamed('identifier')))
               .captured
               .first,
-          identifier);
+          CommonMocks.identifier);
     });
 
     test(
@@ -677,7 +688,8 @@ void main() {
       // When
       await expectLater(
           repository.removeIdentity(
-              privateKey: privateKey, identifier: identifier),
+              privateKey: CommonMocks.privateKey,
+              identifier: CommonMocks.identifier),
           throwsA(exception));
 
       // Then
@@ -686,7 +698,7 @@ void main() {
                   identifier: captureAnyNamed('identifier')))
               .captured
               .first,
-          identifier);
+          CommonMocks.identifier);
     });
   });
 
@@ -697,9 +709,10 @@ void main() {
       // Given
       when(localContractFilesDataSource.loadStateContract(any))
           .thenAnswer((realInvocation) => Future.value(contract));
-      when(stateIdentifierMapper.mapTo(any)).thenAnswer((realInvocation) => id);
+      when(stateIdentifierMapper.mapTo(any))
+          .thenAnswer((realInvocation) => CommonMocks.id);
       when(rpcDataSource.getState(any, any))
-          .thenAnswer((realInvocation) => Future.value(state));
+          .thenAnswer((realInvocation) => Future.value(CommonMocks.state));
     });
 
     test(
@@ -708,8 +721,8 @@ void main() {
       // When
       expect(
           await repository.getState(
-              identifier: identifier, contractAddress: address),
-          state);
+              identifier: CommonMocks.identifier, contractAddress: address),
+          CommonMocks.state);
 
       // Then
       expect(
@@ -718,11 +731,11 @@ void main() {
               .first,
           address);
       expect(verify(stateIdentifierMapper.mapTo(captureAny)).captured.first,
-          identifier);
+          CommonMocks.identifier);
       var getStateCaptured =
           verify(rpcDataSource.getState(captureAny, captureAny)).captured;
 
-      expect(getStateCaptured[0], id);
+      expect(getStateCaptured[0], CommonMocks.id);
       expect(getStateCaptured[1], contract);
     });
 
@@ -735,7 +748,8 @@ void main() {
 
       // When
       await repository
-          .getState(identifier: identifier, contractAddress: address)
+          .getState(
+              identifier: CommonMocks.identifier, contractAddress: address)
           .then((_) => expect(true, false))
           .catchError((error) {
         expect(error, isA<FetchIdentityStateException>());
@@ -749,11 +763,11 @@ void main() {
               .first,
           address);
       expect(verify(stateIdentifierMapper.mapTo(captureAny)).captured.first,
-          identifier);
+          CommonMocks.identifier);
       var getStateCaptured =
           verify(rpcDataSource.getState(captureAny, captureAny)).captured;
 
-      expect(getStateCaptured[0], id);
+      expect(getStateCaptured[0], CommonMocks.id);
       expect(getStateCaptured[1], contract);
     });
   });
@@ -773,14 +787,15 @@ void main() {
         "Given parameters, when I call fetchStateRoots, then I expect a RhsNodeEntity to be returned",
         () async {
       // When
-      expect(await repository.getStateRoots(url: url), rhsNodeEntities[0]);
+      expect(await repository.getStateRoots(url: CommonMocks.url),
+          rhsNodeEntities[0]);
 
       // Then
       var fetchCaptured = verify(remoteIdentityDataSource.fetchStateRoots(
               url: captureAnyNamed('url')))
           .captured;
 
-      expect(fetchCaptured[0], url);
+      expect(fetchCaptured[0], CommonMocks.url);
 
       expect(verify(rhsNodeMapper.mapFrom(captureAny)).captured.first,
           rhsNodeDTOs[0]);
@@ -796,7 +811,7 @@ void main() {
 
       // When
       await repository
-          .getStateRoots(url: url)
+          .getStateRoots(url: CommonMocks.url)
           .then((_) => expect(true, false))
           .catchError((error) {
         expect(error, isA<FetchStateRootsException>());
@@ -808,7 +823,7 @@ void main() {
         url: captureAnyNamed('url'),
       )).captured;
 
-      expect(fetchCaptured[0], url);
+      expect(fetchCaptured[0], CommonMocks.url);
 
       verifyNever(rhsNodeMapper.mapFrom(captureAny));
     });
@@ -825,7 +840,9 @@ void main() {
       // When
       expect(
           await repository.getNonRevProof(
-              identityState: state, nonce: nonce, baseUrl: url),
+              identityState: CommonMocks.state,
+              nonce: CommonMocks.nonce,
+              baseUrl: CommonMocks.url),
           nonRev);
 
       // Then
@@ -833,9 +850,9 @@ void main() {
               captureAny, captureAny, captureAny))
           .captured;
 
-      expect(fetchCaptured[0], state);
-      expect(fetchCaptured[1], nonce);
-      expect(fetchCaptured[2], url);
+      expect(fetchCaptured[0], CommonMocks.state);
+      expect(fetchCaptured[1], CommonMocks.nonce);
+      expect(fetchCaptured[2], CommonMocks.url);
     });
 
     test(
@@ -847,7 +864,10 @@ void main() {
 
       // When
       await repository
-          .getNonRevProof(identityState: state, nonce: nonce, baseUrl: url)
+          .getNonRevProof(
+              identityState: CommonMocks.state,
+              nonce: CommonMocks.nonce,
+              baseUrl: CommonMocks.url)
           .then((_) => expect(true, false))
           .catchError((error) {
         expect(error, isA<NonRevProofException>());
@@ -859,9 +879,9 @@ void main() {
               captureAny, captureAny, captureAny))
           .captured;
 
-      expect(fetchCaptured[0], state);
-      expect(fetchCaptured[1], nonce);
-      expect(fetchCaptured[2], url);
+      expect(fetchCaptured[0], CommonMocks.state);
+      expect(fetchCaptured[1], CommonMocks.nonce);
+      expect(fetchCaptured[2], CommonMocks.url);
     });
   });
 }

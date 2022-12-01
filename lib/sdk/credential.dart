@@ -1,8 +1,8 @@
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
 
 import '../common/domain/entities/filter_entity.dart';
 import '../credential/domain/entities/claim_entity.dart';
-import '../credential/domain/entities/credential_request_entity.dart';
 import '../credential/domain/use_cases/fetch_and_save_claims_use_case.dart';
 import '../credential/domain/use_cases/get_claims_use_case.dart';
 import '../credential/domain/use_cases/remove_claims_use_case.dart';
@@ -11,7 +11,7 @@ import '../credential/domain/use_cases/update_claim_use_case.dart';
 abstract class PolygonIdSdkCredential {
   /// Fetch a list of [ClaimEntity] and store them
   Future<List<ClaimEntity>> fetchAndSaveClaims(
-      {required List<CredentialRequestEntity> credentialRequests,
+      {required OfferIden3MessageEntity message,
       required String identifier,
       required String privateKey});
 
@@ -70,14 +70,12 @@ class Credential implements PolygonIdSdkCredential {
   /// Fetch a list of [ClaimEntity] and store them
   @override
   Future<List<ClaimEntity>> fetchAndSaveClaims(
-      {required List<CredentialRequestEntity> credentialRequests,
+      {required OfferIden3MessageEntity message,
       required String identifier,
       required String privateKey}) {
     return _fetchAndSaveClaimsUseCase.execute(
         param: FetchAndSaveClaimsParam(
-            requests: credentialRequests,
-            identifier: identifier,
-            privateKey: privateKey));
+            message: message, identifier: identifier, privateKey: privateKey));
   }
 
   /// Get a list of [ClaimEntity] from storage

@@ -6,7 +6,6 @@ import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/jwz/jwz_proof.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/data/mappers/proof_mapper.dart';
@@ -14,7 +13,6 @@ import 'package:polygonid_flutter_sdk/proof_generation/domain/exceptions/proof_g
 
 import '../../../common/utils/uint8_list_utils.dart';
 import '../../../iden3comm/data/mappers/proof_request_filters_mapper.dart';
-import '../../../iden3comm/data/mappers/proof_requests_mapper.dart';
 import '../../../identity/data/data_sources/remote_identity_data_source.dart';
 import '../../domain/entities/circuit_data_entity.dart';
 import '../../domain/repositories/proof_repository.dart';
@@ -34,7 +32,6 @@ class ProofRepositoryImpl extends ProofRepository {
   final ProofCircuitDataSource _proofCircuitDataSource;
   final RemoteIdentityDataSource _remoteIdentityDataSource;
   final CircuitTypeMapper _circuitTypeMapper;
-  final ProofRequestsMapper _proofRequestsMapper;
   final ProofRequestFiltersMapper _proofRequestFiltersMapper;
   final ProofMapper _proofMapper;
 
@@ -50,7 +47,6 @@ class ProofRepositoryImpl extends ProofRepository {
       this._proofCircuitDataSource,
       this._remoteIdentityDataSource,
       this._circuitTypeMapper,
-      this._proofRequestsMapper,
       this._proofRequestFiltersMapper,
       this._proofMapper,
       this._claimMapper,
@@ -143,11 +139,5 @@ class ProofRepositoryImpl extends ProofRepository {
   @override
   Future<List<FilterEntity>> getFilters({required ProofRequestEntity request}) {
     return Future.value(_proofRequestFiltersMapper.mapFrom(request));
-  }
-
-  @override
-  Future<List<ProofRequestEntity>> getRequests(
-      {required Iden3MessageEntity message}) {
-    return Future.value(_proofRequestsMapper.mapFrom(message));
   }
 }

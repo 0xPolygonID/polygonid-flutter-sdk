@@ -10,10 +10,10 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
     as _i6;
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
     as _i2;
-import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart'
-    as _i5;
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart'
     as _i3;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart'
+    as _i5;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart'
     as _i7;
 
@@ -51,7 +51,7 @@ class MockCredentialRepository extends _i1.Mock
   _i4.Future<_i2.ClaimEntity> fetchClaim({
     required String? identifier,
     required String? token,
-    required _i5.CredentialRequestEntity? credentialRequest,
+    required _i5.OfferIden3MessageEntity? message,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -60,7 +60,7 @@ class MockCredentialRepository extends _i1.Mock
           {
             #identifier: identifier,
             #token: token,
-            #credentialRequest: credentialRequest,
+            #message: message,
           },
         ),
         returnValue: _i4.Future<_i2.ClaimEntity>.value(_FakeClaimEntity_0(
@@ -71,22 +71,11 @@ class MockCredentialRepository extends _i1.Mock
             {
               #identifier: identifier,
               #token: token,
-              #credentialRequest: credentialRequest,
+              #message: message,
             },
           ),
         )),
       ) as _i4.Future<_i2.ClaimEntity>);
-  @override
-  _i4.Future<String> getFetchMessage(
-          {required _i5.CredentialRequestEntity? credentialRequest}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getFetchMessage,
-          [],
-          {#credentialRequest: credentialRequest},
-        ),
-        returnValue: _i4.Future<String>.value(''),
-      ) as _i4.Future<String>);
   @override
   _i4.Future<void> saveClaims({
     required List<_i2.ClaimEntity>? claims,
@@ -174,17 +163,18 @@ class MockCredentialRepository extends _i1.Mock
         returnValueForMissingStub: _i4.Future<void>.value(),
       ) as _i4.Future<void>);
   @override
-  _i4.Future<Map<String, dynamic>?> fetchSchema({required String? url}) =>
+  _i4.Future<Map<String, dynamic>> fetchSchema({required String? url}) =>
       (super.noSuchMethod(
         Invocation.method(
           #fetchSchema,
           [],
           {#url: url},
         ),
-        returnValue: _i4.Future<Map<String, dynamic>?>.value(),
-      ) as _i4.Future<Map<String, dynamic>?>);
+        returnValue:
+            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i4.Future<Map<String, dynamic>>);
   @override
-  _i4.Future<Map<String, dynamic>?> fetchVocab({
+  _i4.Future<Map<String, dynamic>> fetchVocab({
     required Map<String, dynamic>? schema,
     required String? type,
   }) =>
@@ -197,8 +187,9 @@ class MockCredentialRepository extends _i1.Mock
             #type: type,
           },
         ),
-        returnValue: _i4.Future<Map<String, dynamic>?>.value(),
-      ) as _i4.Future<Map<String, dynamic>?>);
+        returnValue:
+            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i4.Future<Map<String, dynamic>>);
   @override
   _i4.Future<Map<String, dynamic>> getRevocationStatus(
           {required _i2.ClaimEntity? claim}) =>
