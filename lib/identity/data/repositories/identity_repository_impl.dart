@@ -216,142 +216,26 @@ class IdentityRepositoryImpl extends IdentityRepository {
   ///
   /// @return the associated identifier
   @override
-  Future<PrivateIdentityEntity> createIdentity({String? secret}) async {
+  Future<PrivateIdentityEntity> createIdentity(
+      {required blockchain, required network, String? secret}) async {
     try {
       // Create a wallet
-      //PrivadoIdWallet wallet = await _walletDataSource.createWallet(
-      //secret: _privateKeyMapper.mapFrom(
-      //    "28156abe7fe2fd433dc9df969286b96666489bac508612d0e16593e944c4f69f")*/
-      //);
-      PrivadoIdWallet wallet = await _walletDataSource.getWallet(
-          privateKey: _hexMapper.mapTo(
-              "28156abe7fe2fd433dc9df969286b96666489bac508612d0e16593e944c4f69f"));
-      //user "28156abe7fe2fd433dc9df969286b96666489bac508612d0e16593e944c4f69f"));
-      //issuer "21a5e7321d0e2f3ca1cc6504396e6594a2211544b08c206847cdee96f832421a"
-      String dbIdentifier = wallet.publicKeyBase64!;
+      PrivadoIdWallet wallet = await _walletDataSource.createWallet(
+          secret: _privateKeyMapper.mapFrom(secret));
+
+      String did = await getDidIdentifier(
+        blockchain: blockchain,
+        network: network,
+        publicKey: wallet.publicKey,
+      );
+
       String privateKey = _hexMapper.mapFrom(wallet.privateKey);
 
-      String challenge = "10";
-      String signature = await _walletDataSource.signMessage(
-          privateKey: wallet.privateKey, message: challenge);
-
-      // initialize merkle trees
-      await _smtDataSource.createSMT(
-          maxLevels: 32,
-          storeName: claimsTreeStoreName,
-          identifier: dbIdentifier,
-          privateKey: privateKey);
-
-      await _smtDataSource.createSMT(
-          maxLevels: 32,
-          storeName: revocationTreeStoreName,
-          identifier: dbIdentifier,
-          privateKey: privateKey);
-
-      await _smtDataSource.createSMT(
-          maxLevels: 32,
-          storeName: rootsTreeStoreName,
-          identifier: dbIdentifier,
-          privateKey: privateKey);
-
-      // Get the associated claimsTreeRoot
-      //String claimsTreeRoot = await _libIdentityDataSource.getClaimsTreeRoot(
-      //    pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]);
-
-      String authClaimSchema = "ca938857241db9451ea329256b9c06e5";
-      String authClaimNonce = "15930428023331155902";
-      String authClaim = _libPolygonIdCoreDataSource.issueClaim(
-          schema: authClaimSchema,
-          nonce: authClaimNonce,
-          pubX: wallet.publicKey[0],
-          pubY: wallet.publicKey[1]);
-      List<String> children = List.from(jsonDecode(authClaim));
-      String hashIndex = await _libBabyJubJubDataSource.hashPoseidon4(
-        children[0],
-        children[1],
-        children[2],
-        children[3],
-      );
-      String hashValue = await _libBabyJubJubDataSource.hashPoseidon4(
-        children[4],
-        children[5],
-        children[6],
-        children[7],
-      );
-      String hashClaimNode = await _libBabyJubJubDataSource.hashPoseidon3(
-          hashIndex, hashValue, BigInt.one.toString());
-      NodeDTO authClaimNode = NodeDTO(
-          children: [
-            HashDTO.fromBigInt(BigInt.parse(hashIndex)),
-            HashDTO.fromBigInt(BigInt.parse(hashValue)),
-            HashDTO.fromBigInt(BigInt.one),
-          ],
-          hash: HashDTO.fromBigInt(BigInt.parse(hashClaimNode)),
-          type: NodeTypeDTO.leaf);
-      HashDTO claimsTreeRoot = await _smtDataSource.addLeaf(
-          newNodeLeaf: authClaimNode,
-          storeName: claimsTreeStoreName,
-          identifier: dbIdentifier,
-          privateKey: privateKey);
-
-      ProofDTO proof = await _smtDataSource.generateProof(
-          key: HashDTO.fromBigInt(BigInt.parse(hashIndex)),
-          storeName: claimsTreeStoreName,
-          identifier: dbIdentifier,
-          privateKey: privateKey);
-
-      ProofDTO nonRevProof = await _smtDataSource.generateProof(
-          key: HashDTO.fromBigInt(BigInt.parse(hashIndex)),
-          storeName: revocationTreeStoreName,
-          identifier: dbIdentifier,
-          privateKey: privateKey);
-
-      // hash of clatr, revtr, rootr
-      String genesisState = await _libBabyJubJubDataSource.hashPoseidon3(
-          hashClaimNode, BigInt.zero.toString(), BigInt.zero.toString());
-
-      Map<String, dynamic> treeState = {};
-      treeState["state"] = genesisState;
-      treeState["claimsRoot"] = hashClaimNode;
-      treeState["revocationRoot"] = BigInt.zero.toString();
-      treeState["rootOfRoots"] = BigInt.zero.toString();
-      // Get the genesis id
-
-      String genesisId = await getGenesisId(
-        claimsTreeRoot: claimsTreeRoot.toString(),
-        blockchain: "polygon",
-        network: "mumbai",
-      );
-
-      Map<String, dynamic> genesis = jsonDecode(genesisId);
-
-      String gistProof = await getGistProof(
-        identifier:
-            "21051438350758615910194871316894294942737671344817514009731719137348227585", //genesis["id"] as big int
-        contractAddress: "0x9ede2dc3FF3F434f3d28e17E467385e7667d8573",
-      );
-
-      String authInputs = _libPolygonIdCoreDataSource.getAuthInputs(
-          id: genesis["id"],
-          profileNonce: 0,
-          authClaim: children,
-          incProof: {
-            "existence": proof.existence,
-            "siblings":
-                proof.siblings.map((hashDTO) => hashDTO.toString()).toList()
-          },
-          nonRevProof: {
-            "existence": nonRevProof.existence,
-            "siblings": nonRevProof.siblings
-                .map((hashDTO) => hashDTO.toString())
-                .toList()
-          },
-          treeState: treeState,
-          challenge: challenge,
-          signature: signature);
+      Map<String, dynamic> treeState = await _createIdentityState(
+          did: did, privateKey: privateKey, publicKey: wallet.publicKey);
 
       PrivateIdentityEntity identityEntity = _identityDTOMapper.mapPrivateFrom(
-          IdentityDTO(identifier: genesisId, publicKey: wallet.publicKey),
+          IdentityDTO(did: did, publicKey: wallet.publicKey),
           _hexMapper.mapFrom(wallet.privateKey));
       return Future.value(identityEntity);
     } catch (error) {
@@ -359,31 +243,205 @@ class IdentityRepositoryImpl extends IdentityRepository {
     }
   }
 
-  @override
-  Future<String> getGenesisId({
-    required String claimsTreeRoot,
-    required String blockchain,
-    required String network,
+  Future<Map<String, dynamic>> _createIdentityState(
+      {required String did,
+      required String privateKey,
+      required List<String> publicKey}) async {
+    // 1. initialize merkle trees
+    await _smtDataSource.createSMT(
+        maxLevels: 32,
+        storeName: claimsTreeStoreName,
+        identifier: did,
+        privateKey: privateKey);
+
+    await _smtDataSource.createSMT(
+        maxLevels: 32,
+        storeName: revocationTreeStoreName,
+        identifier: did,
+        privateKey: privateKey);
+
+    await _smtDataSource.createSMT(
+        maxLevels: 32,
+        storeName: rootsTreeStoreName,
+        identifier: did,
+        privateKey: privateKey);
+
+    // 2. add authClaim to claims tree
+    NodeDTO authClaimNode = await _getAuthClaim(publicKey: publicKey);
+
+    HashDTO claimsTreeRoot = await _smtDataSource.addLeaf(
+        newNodeLeaf: authClaimNode,
+        storeName: claimsTreeStoreName,
+        identifier: did,
+        privateKey: privateKey);
+
+    // hash of clatr, revtr, rootr
+    String genesisState = await _libBabyJubJubDataSource.hashPoseidon3(
+        claimsTreeRoot.toString(),
+        BigInt.zero.toString(),
+        BigInt.zero.toString());
+
+    Map<String, dynamic> treeState = {};
+    treeState["state"] = genesisState;
+    treeState["claimsRoot"] = claimsTreeRoot.toString();
+    treeState["revocationRoot"] = BigInt.zero.toString();
+    treeState["rootOfRoots"] = BigInt.zero.toString();
+    return treeState;
+  }
+
+  Future<Map<String, dynamic>> _getGenesisState(
+      {required List<String> publicKey}) async {
+    NodeDTO authClaimNode = await _getAuthClaim(publicKey: publicKey);
+    HashDTO claimsTreeRoot = authClaimNode.hash;
+
+    // hash of clatr, revtr, rootr
+    String genesisState = await _libBabyJubJubDataSource.hashPoseidon3(
+        claimsTreeRoot.toString(),
+        BigInt.zero.toString(),
+        BigInt.zero.toString());
+
+    Map<String, dynamic> treeState = {};
+    treeState["state"] = genesisState;
+    treeState["claimsRoot"] = claimsTreeRoot.toString();
+    treeState["revocationRoot"] = BigInt.zero.toString();
+    treeState["rootOfRoots"] = BigInt.zero.toString();
+    return treeState;
+  }
+
+  Future<Map<String, dynamic>> _getLatestState({
+    required String did,
+    required String privateKey,
   }) async {
-    // Create a wallet
-    //PrivadoIdWallet wallet = await _walletDataSource.getWallet(
-    //    privateKey: _hexMapper.mapTo(privateKey));
+    HashDTO claimsTreeRoot = await _smtDataSource.getRoot(
+        storeName: claimsTreeStoreName,
+        identifier: did,
+        privateKey: privateKey);
 
-    String genesisId = _libPolygonIdCoreDataSource.calculateGenesisId(
-        claimsTreeRoot, blockchain, network);
+    HashDTO revocationTreeRoot = await _smtDataSource.getRoot(
+        storeName: revocationTreeStoreName,
+        identifier: did,
+        privateKey: privateKey);
 
-    return genesisId;
+    HashDTO rootsTreeRoot = await _smtDataSource.getRoot(
+        storeName: rootsTreeStoreName, identifier: did, privateKey: privateKey);
+
+    // hash of clatr, revtr, rootr
+    String state = await _libBabyJubJubDataSource.hashPoseidon3(
+        claimsTreeRoot.toString(),
+        revocationTreeRoot.toString(),
+        rootsTreeRoot.toString());
+
+    // TODO: convert to dto
+    Map<String, dynamic> treeState = {};
+    treeState["state"] = state;
+    treeState["claimsRoot"] = claimsTreeRoot.toString();
+    treeState["revocationRoot"] = revocationTreeRoot.toString();
+    treeState["rootOfRoots"] = rootsTreeRoot.toString();
+    return treeState;
+  }
+
+  Future<String> _getAuthInputs({
+    required NodeDTO authClaim,
+    required String challenge,
+    required String did,
+    required String privateKey,
+  }) async {
+    String challenge = "10";
+    String signature = await _walletDataSource.signMessage(
+        privateKey: _privateKeyMapper.mapFrom(privateKey)!, message: challenge);
+
+    ProofDTO proof = await _smtDataSource.generateProof(
+        key: authClaim
+            .hash, //authClaim.children[0]??? //HashDTO.fromBigInt(BigInt.parse(hashIndex)),
+        storeName: claimsTreeStoreName,
+        identifier: did,
+        privateKey: privateKey);
+
+    ProofDTO nonRevProof = await _smtDataSource.generateProof(
+        key: authClaim.hash,
+        storeName: revocationTreeStoreName,
+        identifier: did,
+        privateKey: privateKey);
+
+    // hash of clatr, revtr, rootr
+    Map<String, dynamic> treeState =
+        await _getLatestState(did: did, privateKey: privateKey);
+
+    String gistProof = await getGistProof(
+      identifier:
+          "21051438350758615910194871316894294942737671344817514009731719137348227585", //genesis["id"] as big int
+      contractAddress: "0x9ede2dc3FF3F434f3d28e17E467385e7667d8573",
+    );
+
+    String authInputs = _libPolygonIdCoreDataSource.getAuthInputs(
+        id: did,
+        profileNonce: 0,
+        authClaim:
+            authClaim.children.map((hashDTO) => hashDTO.toString()).toList(),
+        incProof: {
+          "existence": proof.existence,
+          "siblings":
+              proof.siblings.map((hashDTO) => hashDTO.toString()).toList()
+        },
+        nonRevProof: {
+          "existence": nonRevProof.existence,
+          "siblings":
+              nonRevProof.siblings.map((hashDTO) => hashDTO.toString()).toList()
+        },
+        treeState: treeState,
+        challenge: challenge,
+        signature: signature);
+    return authInputs;
+  }
+
+  Future<NodeDTO> _getAuthClaim({required List<String> publicKey}) async {
+    String authClaimSchema = "ca938857241db9451ea329256b9c06e5";
+    String authClaimNonce = "15930428023331155902";
+    String authClaim = _libPolygonIdCoreDataSource.issueClaim(
+      schema: authClaimSchema,
+      nonce: authClaimNonce,
+      publicKey: publicKey,
+    );
+    List<String> children = List.from(jsonDecode(authClaim));
+    String hashIndex = await _libBabyJubJubDataSource.hashPoseidon4(
+      children[0],
+      children[1],
+      children[2],
+      children[3],
+    );
+    String hashValue = await _libBabyJubJubDataSource.hashPoseidon4(
+      children[4],
+      children[5],
+      children[6],
+      children[7],
+    );
+    String hashClaimNode = await _libBabyJubJubDataSource.hashPoseidon3(
+        hashIndex, hashValue, BigInt.one.toString());
+    NodeDTO authClaimNode = NodeDTO(
+        children: [
+          HashDTO.fromBigInt(BigInt.parse(hashIndex)),
+          HashDTO.fromBigInt(BigInt.parse(hashValue)),
+          HashDTO.fromBigInt(BigInt.one),
+        ],
+        hash: HashDTO.fromBigInt(BigInt.parse(hashClaimNode)),
+        type: NodeTypeDTO.leaf);
+    return authClaimNode;
   }
 
   @override
   Future<void> storeIdentity(
       {required IdentityEntity identity, required String privateKey}) async {
     try {
-      String identifier = await getIdentifier(privateKey: privateKey);
-      if (identifier == identity.identifier) {
+      var didMap = _didMapper.mapFrom(identity.did);
+      PrivadoIdWallet wallet = await _walletDataSource.getWallet(
+          privateKey: _hexMapper.mapTo(privateKey));
+      String did = await getDidIdentifier(
+          publicKey: wallet.publicKey,
+          blockchain: didMap.blockchain,
+          network: didMap.network);
+      if (did == identity.did) {
         IdentityDTO dto = _identityDTOMapper.mapTo(identity);
-        await _storageIdentityDataSource.storeIdentity(
-            identifier: identifier, identity: dto);
+        await _storageIdentityDataSource.storeIdentity(did: did, identity: dto);
         IdentityEntity identityEntity = _identityDTOMapper.mapFrom(dto);
       } else {
         throw InvalidPrivateKeyException(privateKey);
@@ -397,9 +455,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
   /// The [IdentityEntity] is the one previously stored and associated to the identifier
   /// Throws an [UnknownIdentityException] if not found.
   @override
-  Future<IdentityEntity> getIdentity({required String identifier}) {
+  Future<IdentityEntity> getIdentity({required String did}) {
     return _storageIdentityDataSource
-        .getIdentity(identifier: identifier)
+        .getIdentity(did: did)
         .then((dto) => _identityDTOMapper.mapFrom(dto))
         .catchError((error) => throw IdentityException(error),
             test: (error) => error is! UnknownIdentityException);
@@ -411,19 +469,21 @@ class IdentityRepositoryImpl extends IdentityRepository {
   /// Throws an [UnknownIdentityException] if not found.
   @override
   Future<PrivateIdentityEntity> getPrivateIdentity(
-      {required String identifier, required String privateKey}) {
+      {required String did, required String privateKey}) {
     return _storageIdentityDataSource
-        .getIdentity(identifier: identifier)
+        .getIdentity(did: did)
         .then((dto) => _walletDataSource
             .getWallet(privateKey: _hexMapper.mapTo(privateKey))
-            .then((wallet) => _libIdentityDataSource
-                    .getClaimsTreeRoot(
-                        pubX: wallet.publicKey[0], pubY: wallet.publicKey[1])
-                    .then((claimsTreeRoot) =>
-                        _libPolygonIdCoreDataSource.calculateGenesisId(
-                            claimsTreeRoot, "polygon", "mumbai"))
-                    .then((identifierFromKey) {
-                  if (identifierFromKey != identifier) {
+            .then((wallet) => _getGenesisState(publicKey: wallet.publicKey)
+                    .then((genesisState) {
+                  var didMap = _didMapper.mapFrom(did);
+                  return _libPolygonIdCoreDataSource.calculateGenesisId(
+                    genesisState["claimsRoot"],
+                    didMap.blockchain,
+                    didMap.network,
+                  );
+                }).then((didFromKey) {
+                  if (didFromKey != did) {
                     throw InvalidPrivateKeyException(privateKey);
                   }
 
@@ -436,7 +496,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   @override
   Future<void> removeIdentity(
       {required String identifier, required String privateKey}) {
-    return _storageIdentityDataSource.removeIdentity(identifier: identifier);
+    return _storageIdentityDataSource.removeIdentity(did: identifier);
   }
 
   /// Sign a message through a privateKey
@@ -490,23 +550,24 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
   @override
   Future<String> getDidIdentifier({
-    required String identifier,
-    required String networkName,
-    required String networkEnv,
-  }) {
-    return Future.value(
-        _didMapper.mapTo(DidMapperParam(identifier, networkName, networkEnv)));
+    required List<String> publicKey,
+    required String blockchain,
+    required String network,
+  }) async {
+    Map<String, dynamic> treeState =
+        await _getGenesisState(publicKey: publicKey);
+    // Get the genesis id
+    String genesisId = _libPolygonIdCoreDataSource.calculateGenesisId(
+        treeState["claimsRoot"], blockchain, network);
+
+    Map<String, dynamic> genesis = jsonDecode(genesisId);
+
+    return Future.value(genesis["did"]);
   }
 
   @override
   Future<List<IdentityEntity>> getIdentities() {
     // TODO: implement getIdentities
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<String> getIdentifier({required String privateKey}) {
-    // TODO: implement getIdentifier
     throw UnimplementedError();
   }
 }

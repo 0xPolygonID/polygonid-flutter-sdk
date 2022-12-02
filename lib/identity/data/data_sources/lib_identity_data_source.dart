@@ -1,15 +1,11 @@
-import 'package:polygonid_flutter_sdk/proof_generation/domain/exceptions/proof_generation_exceptions.dart';
-
 import '../../libs/iden3core/iden3core.dart';
-import '../dtos/hash_dto.dart';
-import '../dtos/node_dto.dart';
 
 class LibIdentityDataSource {
   final Iden3CoreLib _iden3coreLib;
 
   LibIdentityDataSource(this._iden3coreLib);
 
-  Future<String> getId(String id) {
+  /*Future<String> getId(String id) {
     try {
       String libId = _iden3coreLib.getIdFromString(id);
 
@@ -21,10 +17,10 @@ class LibIdentityDataSource {
     } catch (e) {
       return Future.error(e);
     }
-  }
+  }*/
 
   ///
-  Future<String> getClaimsTreeRoot(
+  /*Future<String> getClaimsTreeRoot(
       {required String pubX, required String pubY}) {
     try {
       String claimsTreeRoot = _iden3coreLib.generateClaimsTreeRoot(pubX, pubY);
@@ -36,10 +32,10 @@ class LibIdentityDataSource {
     } catch (e) {
       return Future.error(e);
     }
-  }
+  }*/
 
   ///
-  Future<String> getAuthClaim({required String pubX, required String pubY}) {
+  /*Future<String> getAuthClaim({required String pubX, required String pubY}) {
     try {
       String authClaim = _iden3coreLib.getAuthClaim(pubX, pubY);
 
@@ -47,9 +43,9 @@ class LibIdentityDataSource {
     } catch (e) {
       return Future.error(e);
     }
-  }
+  }*/
 
-  HashDTO getNodeHash(NodeDTO node) {
+  /*HashDTO getNodeHash(NodeDTO node) {
     switch (node.type) {
       case NodeTypeDTO.leaf:
         return _iden3coreLib.poseidonHashHashes([
@@ -67,7 +63,7 @@ class LibIdentityDataSource {
 
   HashDTO getNodeKey(List<HashDTO> children) {
     return _iden3coreLib.poseidonHashHashes(children);
-  }
+  }*/
 
   /// FIXME: no passing repo and lib as params
   // Future<String> createSMT(SMTStorageRepository smtStorageRepository) {

@@ -1,5 +1,5 @@
 import '../../../common/domain/entities/filter_entity.dart';
-import '../../../identity/domain/entities/private_identity_entity.dart';
+import '../../../identity/domain/entities/identity_entity.dart';
 import '../entities/claim_entity.dart';
 import '../entities/credential_request_entity.dart';
 
@@ -47,5 +47,5 @@ abstract class CredentialRepository {
 
   Future<int> getRevocationNonce({required ClaimEntity claim});
 
-  Future<String> getAuthClaim({required PrivateIdentityEntity identity});
+  Future<String> getAuthClaim({required IdentityEntity identity});
 }

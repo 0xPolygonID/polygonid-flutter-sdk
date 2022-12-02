@@ -54,16 +54,16 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
 
         String pushUrl =
             await _getEnvConfigUseCase.execute(param: PolygonIdConfig.pushUrl);
-        String networkName = await _getEnvConfigUseCase.execute(
+        String blockchain = await _getEnvConfigUseCase.execute(
             param: PolygonIdConfig.networkName);
-        String networkEnv = await _getEnvConfigUseCase.execute(
+        String network = await _getEnvConfigUseCase.execute(
             param: PolygonIdConfig.networkEnv);
 
         String didIdentifier = await _getDidIdentifierUseCase.execute(
           param: GetDidIdentifierParam(
-            identifier: param.identifier,
-            networkName: networkName,
-            networkEnv: networkEnv,
+            publicKey: param.identifier,
+            blockchain: blockchain,
+            network: network,
           ),
         );
 

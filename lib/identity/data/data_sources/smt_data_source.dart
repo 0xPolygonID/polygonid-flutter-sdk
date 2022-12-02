@@ -44,6 +44,14 @@ class SMTDataSource {
         privateKey: privateKey);
   }
 
+  Future<HashDTO> getRoot(
+      {required String storeName,
+      required String identifier,
+      required String privateKey}) async {
+    return _storageSMTDataSource.getRoot(
+        storeName: storeName, identifier: identifier, privateKey: privateKey);
+  }
+
   Future<HashDTO> addLeaf(
       {required NodeDTO newNodeLeaf,
       required String storeName,

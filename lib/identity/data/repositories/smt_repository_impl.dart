@@ -3,7 +3,7 @@
 // import '../../libs/smt/hash.dart';
 // import '../../libs/smt/node.dart';
 //
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_smt_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
@@ -20,7 +20,7 @@ import '../mappers/proof_mapper.dart';
 class SMTRepositoryImpl implements SMTRepository {
   final SMTDataSource _smtDataSource;
   final StorageSMTDataSource _storageSMTDataSource;
-  final LibIdentityDataSource _libIdentityDataSource;
+  final LibBabyJubJubDataSource _libBabyJubJubDataSource;
   final NodeMapper _nodeMapper;
   final HashMapper _hashMapper;
   final ProofMapper _proofMapper;
@@ -28,7 +28,7 @@ class SMTRepositoryImpl implements SMTRepository {
   SMTRepositoryImpl(
     this._smtDataSource,
     this._storageSMTDataSource,
-    this._libIdentityDataSource,
+    this._libBabyJubJubDataSource,
     this._nodeMapper,
     this._hashMapper,
     this._proofMapper,
@@ -62,7 +62,9 @@ class SMTRepositoryImpl implements SMTRepository {
     final valueHash = _hashMapper.mapTo(value);
     final oneHash = HashDTO.fromBigInt(BigInt.one);
     final newNodeChildren = [keyHash, valueHash, oneHash];
-    final nodeHash = _libIdentityDataSource.getNodeKey(newNodeChildren);
+    String nodeHashString = await _libBabyJubJubDataSource.hashPoseidon3(
+        keyHash.toString(), valueHash.toString(), BigInt.one.toString());
+    HashDTO nodeHash = HashDTO.fromBigInt(BigInt.parse(nodeHashString));
     final newNodeLeaf = NodeDTO(
         hash: nodeHash, children: newNodeChildren, type: NodeTypeDTO.leaf);
     return _smtDataSource

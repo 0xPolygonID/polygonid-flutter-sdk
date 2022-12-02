@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:web3dart/crypto.dart';
@@ -68,13 +70,21 @@ class RPCDataSource {
           function: _getGistProof(gistContract),
           params: transactionParameters);
 
-      if (result != null && result.isNotEmpty) {
-        if (result[0] != BigInt.zero) {
-          String resultString =
-              bytesToHex(Uint8ArrayUtils.bigIntToBytes(result[0]));
-          logger().d(resultString);
-          return resultString;
-        }
+      if (result != null && result.isNotEmpty && result.length == 8) {
+        final String resultString = jsonEncode({
+          "root": result[0].toString(),
+          "siblings": (result[1] as List<BigInt>)
+              .map((bigInt) => bigInt.toString())
+              .toList(),
+          "oldKey": result[2].toString(),
+          "oldValue": result[3].toString(),
+          "isOld0": result[4] == true ? "1" : "0",
+          "key": result[5].toString(),
+          "value": result[6].toString(),
+          "func": result[7].toString(),
+        });
+        logger().d(resultString);
+        return resultString;
       }
       return "";
     } catch (e) {

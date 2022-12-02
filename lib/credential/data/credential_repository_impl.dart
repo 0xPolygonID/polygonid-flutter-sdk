@@ -6,10 +6,13 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.da
 import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 
-import '../../identity/domain/entities/private_identity_entity.dart';
+import '../../identity/data/dtos/hash_dto.dart';
+import '../../identity/data/dtos/node_dto.dart';
+import '../../identity/domain/entities/identity_entity.dart';
+import 'data_sources/lib_pidcore_credential_data_source.dart';
 import 'data_sources/remote_claim_data_source.dart';
 import 'data_sources/storage_claim_data_source.dart';
 import 'dtos/claim_proofs/claim_proof_dto.dart';
@@ -22,7 +25,9 @@ import 'mappers/revocation_status_mapper.dart';
 class CredentialRepositoryImpl extends CredentialRepository {
   final RemoteClaimDataSource _remoteClaimDataSource;
   final StorageClaimDataSource _storageClaimDataSource;
-  final LibIdentityDataSource _libIdentityDataSource;
+  final LibPolygonIdCoreCredentialDataSource
+      _libPolygonIdCoreCredentialDataSource;
+  final LibBabyJubJubDataSource _libBabyJubJubDataSource;
   final CredentialRequestMapper _credentialRequestMapper;
   final ClaimMapper _claimMapper;
   final FiltersMapper _filtersMapper;
@@ -32,7 +37,8 @@ class CredentialRepositoryImpl extends CredentialRepository {
   CredentialRepositoryImpl(
       this._remoteClaimDataSource,
       this._storageClaimDataSource,
-      this._libIdentityDataSource,
+      this._libPolygonIdCoreCredentialDataSource,
+      this._libBabyJubJubDataSource,
       this._credentialRequestMapper,
       this._claimMapper,
       this._filtersMapper,
@@ -159,8 +165,41 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<String> getAuthClaim({required PrivateIdentityEntity identity}) {
-    return _libIdentityDataSource.getAuthClaim(
-        pubX: identity.publicKey[0], pubY: identity.publicKey[1]);
+  Future<NodeEntity> getAuthClaimNode(
+      {required IdentityEntity identity}) async {
+    //return _libPolygonIdCoreClaimDataSource.getAuthClaim(
+    //    pubX: identity.publicKey[0], pubY: identity.publicKey[1]);
+
+    String authClaimSchema = "ca938857241db9451ea329256b9c06e5";
+    String authClaimNonce = "15930428023331155902";
+    String authClaim = _libPolygonIdCoreCredentialDataSource.issueAuthClaim(
+      schema: authClaimSchema,
+      nonce: authClaimNonce,
+      publicKey: identity.publicKey,
+    );
+    List<String> children = List.from(jsonDecode(authClaim));
+    String hashIndex = await _libBabyJubJubDataSource.hashPoseidon4(
+      children[0],
+      children[1],
+      children[2],
+      children[3],
+    );
+    String hashValue = await _libBabyJubJubDataSource.hashPoseidon4(
+      children[4],
+      children[5],
+      children[6],
+      children[7],
+    );
+    String hashClaimNode = await _libBabyJubJubDataSource.hashPoseidon3(
+        hashIndex, hashValue, BigInt.one.toString());
+    NodeDTO authClaimNode = NodeDTO(
+        children: [
+          HashDTO.fromBigInt(BigInt.parse(hashIndex)),
+          HashDTO.fromBigInt(BigInt.parse(hashValue)),
+          HashDTO.fromBigInt(BigInt.one),
+        ],
+        hash: HashDTO.fromBigInt(BigInt.parse(hashClaimNode)),
+        type: NodeTypeDTO.leaf);
+    return authClaimNode;
   }
 }

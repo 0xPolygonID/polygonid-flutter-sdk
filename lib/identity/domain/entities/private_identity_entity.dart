@@ -5,21 +5,21 @@ class PrivateIdentityEntity extends IdentityEntity {
   final String privateKey;
 
   const PrivateIdentityEntity({
-    required String identifier,
+    required String did,
     required List<String> publicKey,
     required this.privateKey,
-  }) : super(identifier: identifier, publicKey: publicKey);
+  }) : super(did: did, publicKey: publicKey);
 
   @override
   String toString() =>
-      "[PrivateIdentityEntity] {identifier: $identifier, publicKey: $publicKey, privateKey: $privateKey}";
+      "[PrivateIdentityEntity] {did: $did, publicKey: $publicKey, privateKey: $privateKey}";
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is PrivateIdentityEntity &&
           runtimeType == other.runtimeType &&
-          identifier == other.identifier &&
+          did == other.did &&
           publicKey == other.publicKey &&
           privateKey == other.privateKey;
 

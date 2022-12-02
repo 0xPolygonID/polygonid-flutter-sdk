@@ -35,10 +35,10 @@ class StorageIdentityDataSource {
 
   StorageIdentityDataSource(this._database, this._storeRefWrapper);
 
-  Future<IdentityDTO> getIdentity({required String identifier}) {
-    return _storeRefWrapper.get(_database, identifier).then((storedValue) {
+  Future<IdentityDTO> getIdentity({required String did}) {
+    return _storeRefWrapper.get(_database, did).then((storedValue) {
       if (storedValue == null) {
-        throw UnknownIdentityException(identifier);
+        throw UnknownIdentityException(did);
       }
 
       return IdentityDTO.fromJson(storedValue);
@@ -48,26 +48,26 @@ class StorageIdentityDataSource {
   /// As we support only one identity at the moment, we need to maintain
   /// the stored current identifier up to date
   Future<void> storeIdentity(
-      {required String identifier, required IdentityDTO identity}) {
+      {required String did, required IdentityDTO identity}) {
     return _database.transaction((transaction) => storeIdentityTransact(
-        transaction: transaction, identifier: identifier, identity: identity));
+        transaction: transaction, did: did, identity: identity));
   }
 
   Future<void> storeIdentityTransact(
       {required DatabaseClient transaction,
-      required String identifier,
+      required String did,
       required IdentityDTO identity}) async {
-    await _storeRefWrapper.put(transaction, identifier, identity.toJson());
+    await _storeRefWrapper.put(transaction, did, identity.toJson());
   }
 
-  Future<void> removeIdentity({required String identifier}) {
-    return _database.transaction((transaction) => removeIdentityTransact(
-        transaction: transaction, identifier: identifier));
+  Future<void> removeIdentity({required String did}) {
+    return _database.transaction((transaction) =>
+        removeIdentityTransact(transaction: transaction, did: did));
   }
 
   // For UT purpose
   Future<void> removeIdentityTransact(
-      {required DatabaseClient transaction, required String identifier}) async {
-    await _storeRefWrapper.remove(transaction, identifier);
+      {required DatabaseClient transaction, required String did}) async {
+    await _storeRefWrapper.remove(transaction, did);
   }
 }

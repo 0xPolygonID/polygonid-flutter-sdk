@@ -8,7 +8,7 @@ class IdentityDTOMapper extends Mapper<IdentityDTO, IdentityEntity> {
   @override
   IdentityEntity mapFrom(IdentityDTO from) {
     return IdentityEntity(
-      identifier: from.identifier,
+      did: from.did,
       publicKey: from.publicKey,
     );
   }
@@ -16,7 +16,7 @@ class IdentityDTOMapper extends Mapper<IdentityDTO, IdentityEntity> {
   @override
   IdentityDTO mapTo(IdentityEntity to) {
     return IdentityDTO(
-      identifier: to.identifier,
+      did: to.did,
       publicKey: to.publicKey,
     );
   }
@@ -26,7 +26,7 @@ class IdentityDTOMapper extends Mapper<IdentityDTO, IdentityEntity> {
     String privateKey,
   ) {
     return PrivateIdentityEntity(
-      identifier: from.identifier,
+      did: from.did,
       publicKey: from.publicKey,
       privateKey: privateKey,
     );

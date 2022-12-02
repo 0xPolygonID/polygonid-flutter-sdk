@@ -1,29 +1,14 @@
 import 'dart:convert';
 
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/libs/polygonidcore/pidcore_iden3comm.dart';
 
-import '../../libs/polygonidcore/polygonidcore.dart';
+class LibPolygonIdCoreIden3commDataSource {
+  final PolygonIdCoreIden3comm _polygonIdCoreIden3comm;
 
-class LibPolygonIdCoreDataSource {
-  final PolygonIdCoreLib _polygonIdCoreLib;
-
-  LibPolygonIdCoreDataSource(
-    this._polygonIdCoreLib,
+  LibPolygonIdCoreIden3commDataSource(
+    this._polygonIdCoreIden3comm,
   );
-
-  String calculateGenesisId(
-      String claimsTreeRoot, String blockchain, String network) {
-    String input = jsonEncode({
-      "claimsTreeRoot": claimsTreeRoot,
-      //"8174871235721986756013575194888048894328426483724665491825528183806540196001",
-      "blockchain": blockchain, //"polygon",
-      "network": network, //"mumbai"
-    });
-
-    String output = _polygonIdCoreLib.calculateGenesisId(input);
-    logger().d("calculateGenesisId: $output");
-    return output;
-  }
 
   String getAuthInputs({
     required String id,
@@ -95,29 +80,9 @@ class LibPolygonIdCoreDataSource {
       "challenge": challenge, //"10"
     });
 
-    String output = _polygonIdCoreLib.getAuthInputs(input);
+    String output = _polygonIdCoreIden3comm.getAuthInputs(input);
 
     logger().d("getAuthV2Inputs: $output");
-    return output;
-  }
-
-  /// - schema - schema hash hex string
-  /// - nonce - nonce as big int string
-  String issueClaim(
-      {required String schema,
-      required String nonce,
-      required String pubX,
-      required String pubY}) {
-    String input = jsonEncode({
-      "schema": schema, //"ca938857241db9451ea329256b9c06e5",
-      "nonce": nonce, //"15930428023331155902",
-      "indexSlotA": pubX,
-      "indexSlotB": pubY,
-    });
-
-    String output = _polygonIdCoreLib.createClaim(input);
-
-    logger().d("createClaim: $output");
     return output;
   }
 }
