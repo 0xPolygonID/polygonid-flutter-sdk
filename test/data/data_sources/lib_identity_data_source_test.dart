@@ -20,11 +20,13 @@ var exception = Exception();
 
 // Dependencies
 MockIden3CoreLib coreLib = MockIden3CoreLib();
+MockIden3LibIsolatesWrapper libIsolatesWrapper = MockIden3LibIsolatesWrapper();
 
 // Tested instance
-LibIdentityDataSource dataSource = LibIdentityDataSource(coreLib);
+LibIdentityDataSource dataSource =
+    LibIdentityDataSource(coreLib, libIsolatesWrapper);
 
-@GenerateMocks([Iden3CoreLib])
+@GenerateMocks([Iden3CoreLib, Iden3LibIsolatesWrapper])
 void main() {
   group("Get the id", () {
     test("Given an id, when I call getId, then I expect an id to be returned",

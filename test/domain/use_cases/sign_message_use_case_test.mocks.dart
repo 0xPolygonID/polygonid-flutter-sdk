@@ -4,6 +4,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i6;
+import 'dart:typed_data' as _i7;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
@@ -277,4 +278,34 @@ class MockIdentityRepository extends _i1.Mock
           ),
         )),
       ) as _i6.Future<_i4.RhsNodeEntity>);
+  @override
+  _i6.Future<String> getChallenge({required String? message}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getChallenge,
+          [],
+          {#message: message},
+        ),
+        returnValue: _i6.Future<String>.value(''),
+      ) as _i6.Future<String>);
+  @override
+  _i6.Future<_i7.Uint8List> getAuthInputs({
+    required String? challenge,
+    required String? authClaim,
+    required _i3.IdentityEntity? identity,
+    required String? signature,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getAuthInputs,
+          [],
+          {
+            #challenge: challenge,
+            #authClaim: authClaim,
+            #identity: identity,
+            #signature: signature,
+          },
+        ),
+        returnValue: _i6.Future<_i7.Uint8List>.value(_i7.Uint8List(0)),
+      ) as _i6.Future<_i7.Uint8List>);
 }

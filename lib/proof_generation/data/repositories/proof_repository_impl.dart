@@ -7,8 +7,9 @@ import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart'
 import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/libs/jwz/jwz_proof.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/data/mappers/proof_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/jwz/jwz.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/jwz/jwz_proof.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/exceptions/proof_generation_exceptions.dart';
 
 import '../../../common/utils/uint8_list_utils.dart';
@@ -23,6 +24,7 @@ import '../data_sources/prover_lib_data_source.dart';
 import '../data_sources/witness_data_source.dart';
 import '../dtos/witness_param.dart';
 import '../mappers/circuit_type_mapper.dart';
+import '../mappers/jwz_mapper.dart';
 
 class ProofRepositoryImpl extends ProofRepository {
   final WitnessDataSource _witnessDataSource;
@@ -34,23 +36,26 @@ class ProofRepositoryImpl extends ProofRepository {
   final CircuitTypeMapper _circuitTypeMapper;
   final ProofRequestFiltersMapper _proofRequestFiltersMapper;
   final ProofMapper _proofMapper;
+  final JWZMapper _jwzMapper;
 
   // FIXME: those mappers shouldn't be used here as they are part of Credential
   final ClaimMapper _claimMapper;
   final RevocationStatusMapper _revocationStatusMapper;
 
   ProofRepositoryImpl(
-      this._witnessDataSource,
-      this._proverLibDataSource,
-      this._atomicQueryInputsDataSource,
-      this._localProofFilesDataSource,
-      this._proofCircuitDataSource,
-      this._remoteIdentityDataSource,
-      this._circuitTypeMapper,
-      this._proofRequestFiltersMapper,
-      this._proofMapper,
-      this._claimMapper,
-      this._revocationStatusMapper);
+    this._witnessDataSource,
+    this._proverLibDataSource,
+    this._atomicQueryInputsDataSource,
+    this._localProofFilesDataSource,
+    this._proofCircuitDataSource,
+    this._remoteIdentityDataSource,
+    this._circuitTypeMapper,
+    this._proofRequestFiltersMapper,
+    this._proofMapper,
+    this._claimMapper,
+    this._revocationStatusMapper,
+    this._jwzMapper,
+  );
 
   @override
   Future<CircuitDataEntity> loadCircuitFiles(String circuitId) async {
@@ -120,7 +125,7 @@ class ProofRepositoryImpl extends ProofRepository {
   @override
   Future<JWZProof> prove(CircuitDataEntity circuitData, Uint8List wtnsBytes) {
     return _proverLibDataSource
-        .prover(circuitData.zKeyFile, wtnsBytes)
+        .prove(circuitData.zKeyFile, wtnsBytes)
         .then((proof) {
       if (proof == null) {
         throw NullProofException(circuitData.circuitId);
@@ -139,5 +144,10 @@ class ProofRepositoryImpl extends ProofRepository {
   @override
   Future<List<FilterEntity>> getFilters({required ProofRequestEntity request}) {
     return Future.value(_proofRequestFiltersMapper.mapFrom(request));
+  }
+
+  @override
+  Future<String> encodeJWZ({required JWZEntity jwz}) {
+    return Future.value(_jwzMapper.mapFrom(jwz));
   }
 }

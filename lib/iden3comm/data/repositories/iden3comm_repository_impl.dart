@@ -17,10 +17,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/aut
 import 'package:uuid/uuid.dart';
 
 import '../../../common/domain/domain_logger.dart';
-import '../../../identity/data/data_sources/jwz_data_source.dart';
 import '../../../identity/data/mappers/hex_mapper.dart';
-import '../../../identity/domain/entities/private_identity_entity.dart';
-import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
 import '../../domain/exceptions/iden3comm_exceptions.dart';
 import '../../domain/repositories/iden3comm_repository.dart';
 import '../dtos/response/auth/auth_body_did_doc_response.dart';
@@ -31,12 +28,11 @@ import '../mappers/auth_response_mapper.dart';
 
 class Iden3commRepositoryImpl extends Iden3commRepository {
   final RemoteIden3commDataSource _remoteIden3commDataSource;
-  final JWZDataSource _jwzDataSource;
   final HexMapper _hexMapper;
   final AuthResponseMapper _authResponseMapper;
 
-  Iden3commRepositoryImpl(this._remoteIden3commDataSource, this._jwzDataSource,
-      this._hexMapper, this._authResponseMapper);
+  Iden3commRepositoryImpl(this._remoteIden3commDataSource, this._hexMapper,
+      this._authResponseMapper);
 
   @override
   Future<void> authenticate({
@@ -56,21 +52,6 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
           .d('authenticate Error: code: ${res.statusCode} msg: ${res.body}');
       throw NetworkException(res);
     }
-  }
-
-  @override
-  Future<String> getAuthToken(
-      {required PrivateIdentityEntity identity,
-      required String message,
-      required CircuitDataEntity authData,
-      required String authClaim}) async {
-    return _jwzDataSource.getAuthToken(
-        privateKey: _hexMapper.mapTo(identity.privateKey),
-        authClaim: authClaim,
-        message: message,
-        circuitId: authData.circuitId,
-        datFile: authData.datFile,
-        zKeyFile: authData.zKeyFile);
   }
 
   @override

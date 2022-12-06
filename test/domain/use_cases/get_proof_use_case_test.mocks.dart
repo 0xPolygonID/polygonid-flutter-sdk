@@ -12,13 +12,13 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
     as _i10;
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart'
-    as _i14;
+    as _i15;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart'
-    as _i18;
+    as _i19;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart'
     as _i11;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart'
-    as _i17;
+    as _i18;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
     as _i5;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart'
@@ -26,16 +26,19 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_
 import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart'
     as _i6;
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart'
-    as _i13;
-import 'package:polygonid_flutter_sdk/identity/libs/jwz/jwz_proof.dart' as _i3;
+    as _i14;
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart'
     as _i2;
+import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/jwz/jwz.dart'
+    as _i13;
+import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/jwz/jwz_proof.dart'
+    as _i3;
 import 'package:polygonid_flutter_sdk/proof_generation/domain/repositories/proof_repository.dart'
     as _i7;
 import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/generate_proof_use_case.dart'
-    as _i15;
-import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/is_proof_circuit_supported_use_case.dart'
     as _i16;
+import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/is_proof_circuit_supported_use_case.dart'
+    as _i17;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -213,13 +216,23 @@ class MockProofRepository extends _i1.Mock implements _i7.ProofRepository {
         returnValue:
             _i8.Future<List<_i12.FilterEntity>>.value(<_i12.FilterEntity>[]),
       ) as _i8.Future<List<_i12.FilterEntity>>);
+  @override
+  _i8.Future<String> encodeJWZ({required _i13.JWZEntity? jwz}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #encodeJWZ,
+          [],
+          {#jwz: jwz},
+        ),
+        returnValue: _i8.Future<String>.value(''),
+      ) as _i8.Future<String>);
 }
 
 /// A class which mocks [IdentityRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockIdentityRepository extends _i1.Mock
-    implements _i13.IdentityRepository {
+    implements _i14.IdentityRepository {
   MockIdentityRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -434,19 +447,49 @@ class MockIdentityRepository extends _i1.Mock
           ),
         )),
       ) as _i8.Future<_i6.RhsNodeEntity>);
+  @override
+  _i8.Future<String> getChallenge({required String? message}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getChallenge,
+          [],
+          {#message: message},
+        ),
+        returnValue: _i8.Future<String>.value(''),
+      ) as _i8.Future<String>);
+  @override
+  _i8.Future<_i9.Uint8List> getAuthInputs({
+    required String? challenge,
+    required String? authClaim,
+    required _i5.IdentityEntity? identity,
+    required String? signature,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getAuthInputs,
+          [],
+          {
+            #challenge: challenge,
+            #authClaim: authClaim,
+            #identity: identity,
+            #signature: signature,
+          },
+        ),
+        returnValue: _i8.Future<_i9.Uint8List>.value(_i9.Uint8List(0)),
+      ) as _i8.Future<_i9.Uint8List>);
 }
 
 /// A class which mocks [GetClaimsUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockGetClaimsUseCase extends _i1.Mock implements _i14.GetClaimsUseCase {
+class MockGetClaimsUseCase extends _i1.Mock implements _i15.GetClaimsUseCase {
   MockGetClaimsUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
   _i8.Future<List<_i10.ClaimEntity>> execute(
-          {required _i14.GetClaimsParam? param}) =>
+          {required _i15.GetClaimsParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -462,13 +505,13 @@ class MockGetClaimsUseCase extends _i1.Mock implements _i14.GetClaimsUseCase {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGenerateProofUseCase extends _i1.Mock
-    implements _i15.GenerateProofUseCase {
+    implements _i16.GenerateProofUseCase {
   MockGenerateProofUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i8.Future<_i3.JWZProof> execute({required _i15.GenerateProofParam? param}) =>
+  _i8.Future<_i3.JWZProof> execute({required _i16.GenerateProofParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -490,7 +533,7 @@ class MockGenerateProofUseCase extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockIsProofCircuitSupportedUseCase extends _i1.Mock
-    implements _i16.IsProofCircuitSupportedUseCase {
+    implements _i17.IsProofCircuitSupportedUseCase {
   MockIsProofCircuitSupportedUseCase() {
     _i1.throwOnMissingStub(this);
   }
@@ -510,14 +553,14 @@ class MockIsProofCircuitSupportedUseCase extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetProofRequestsUseCase extends _i1.Mock
-    implements _i17.GetProofRequestsUseCase {
+    implements _i18.GetProofRequestsUseCase {
   MockGetProofRequestsUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
   _i8.Future<List<_i11.ProofRequestEntity>> execute(
-          {required _i18.Iden3MessageEntity? param}) =>
+          {required _i19.Iden3MessageEntity? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
