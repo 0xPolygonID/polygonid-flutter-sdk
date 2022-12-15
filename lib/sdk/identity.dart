@@ -1,6 +1,20 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:path/path.dart';
+import 'package:encrypt/encrypt.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:polygonid_flutter_sdk/common/utils/encrypt_sembast_codec.dart';
+import 'package:sembast/sembast_io.dart';
+import 'package:sembast/utils/database_utils.dart';
+import 'package:web3dart/crypto.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_and_save_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
+import 'package:sembast/sembast.dart';
+import 'package:sembast/utils/sembast_import_export.dart';
 
 import '../identity/domain/entities/identity_entity.dart';
 import '../identity/domain/entities/private_identity_entity.dart';
@@ -151,6 +165,65 @@ class Identity implements PolygonIdSdkIdentity {
       {required String secret, required String encryptedIdentityDb}) {
     // TODO: implement restoreIdentity
     throw UnknownIdentityException("");
+  }
+
+  /// Export encrypted database
+  /// DIRTY WAY!!!
+  /// TODO @emuroni refactor asap
+  Future<String> exportEncryptedSembastDb(
+      {required String identifier, required String privateKey}) async {
+    Database db = await getItSdk.getAsync<Database>(
+      instanceName: claimDatabaseName,
+      param1: identifier,
+      param2: privateKey,
+    );
+
+    // encrypt sembast db
+    Map<String, Object?> exportableDb = await exportDatabase(db);
+
+    // encrypt json with secret usinc HMAC
+    String json = jsonEncode(exportableDb);
+    Uint8List uint8list = hexToBytes(privateKey);
+    final iv = IV.fromLength(16);
+    final key = Key.fromBase16(privateKey);
+    final encrypter = Encrypter(AES(key));
+    final encrypted = encrypter.encrypt(json, iv: iv);
+
+    return encrypted.base64;
+  }
+
+  /// Import encrypted database, decrypt and save it
+  /// DIRTY WAY !!!
+  /// TODO @emuroni refactor asap
+  Future<void> importEncryptedSembastDb({
+    required String identifier,
+    required String privateKey,
+    required String encryptedDb,
+  }) async {
+    Database db = await getItSdk.getAsync<Database>(
+      instanceName: claimDatabaseName,
+      param1: identifier,
+      param2: privateKey,
+    );
+
+    // decrypt json with secret usinc HMAC
+    final iv = IV.fromLength(16);
+    final key = Key.fromBase16(privateKey);
+    final encrypter = Encrypter(AES(key));
+    final decrypted = encrypter.decrypt64(encryptedDb, iv: iv);
+
+    // decrypt sembast db
+    Map<String, Object?> decryptedDbMap = jsonDecode(decrypted);
+    final dir = await getApplicationDocumentsDirectory();
+    await dir.create(recursive: true);
+    final path = join(dir.path, claimDatabasePrefix + identifier + '.db');
+    var codec = getEncryptSembastCodec(password: privateKey);
+    var importedDb = await importDatabase(
+      decryptedDbMap,
+      databaseFactoryIo,
+      path,
+      codec: codec,
+    );
   }
 
   /// Gets an [IdentityEntity] from an identifier.
