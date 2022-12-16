@@ -40,7 +40,7 @@ configureInjection() => $initSDKGetIt(getItSdk);
 @module
 abstract class Sdk {
   @lazySingleton
-  SdkEnv get sdkEnv => kDebugMode ? DevEnv() : ProdEnv();
+  SdkEnv get sdkEnv => DevEnv();
 }
 
 @module

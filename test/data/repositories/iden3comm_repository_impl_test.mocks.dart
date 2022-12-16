@@ -274,6 +274,44 @@ class MockStorageClaimDataSource extends _i1.Mock
         ),
         returnValue: _i4.Future<List<_i9.ClaimDTO>>.value(<_i9.ClaimDTO>[]),
       ) as _i4.Future<List<_i9.ClaimDTO>>);
+  @override
+  _i4.Future<Map<String, Object?>> getClaimsDb({
+    required String? identifier,
+    required String? privateKey,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getClaimsDb,
+          [],
+          {
+            #identifier: identifier,
+            #privateKey: privateKey,
+          },
+        ),
+        returnValue:
+            _i4.Future<Map<String, Object?>>.value(<String, Object?>{}),
+      ) as _i4.Future<Map<String, Object?>>);
+  @override
+  _i4.Future<void> saveClaimsDb({
+    required Map<String, Object?>? exportableDb,
+    required _i10.DatabaseFactory? databaseFactory,
+    required String? destinationPath,
+    required _i10.SembastCodec? codec,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #saveClaimsDb,
+          [],
+          {
+            #exportableDb: exportableDb,
+            #databaseFactory: databaseFactory,
+            #destinationPath: destinationPath,
+            #codec: codec,
+          },
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 }
 
 /// A class which mocks [AuthResponseMapper].

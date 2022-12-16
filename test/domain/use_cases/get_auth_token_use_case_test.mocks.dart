@@ -390,6 +390,41 @@ class MockCredentialRepository extends _i1.Mock
         ),
         returnValue: _i9.Future<String>.value(''),
       ) as _i9.Future<String>);
+  @override
+  _i9.Future<String> exportEncryptedClaimsDb({
+    required String? identifier,
+    required String? privateKey,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #exportEncryptedClaimsDb,
+          [],
+          {
+            #identifier: identifier,
+            #privateKey: privateKey,
+          },
+        ),
+        returnValue: _i9.Future<String>.value(''),
+      ) as _i9.Future<String>);
+  @override
+  _i9.Future<void> importEncryptedClaimsDb({
+    required String? identifier,
+    required String? privateKey,
+    required String? encryptedDb,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #importEncryptedClaimsDb,
+          [],
+          {
+            #identifier: identifier,
+            #privateKey: privateKey,
+            #encryptedDb: encryptedDb,
+          },
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
 }
 
 /// A class which mocks [ProofRepository].

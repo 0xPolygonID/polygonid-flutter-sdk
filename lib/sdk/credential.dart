@@ -1,4 +1,6 @@
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/export_encrypted_claims_db_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/import_encrypted_claims_db_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
 
 import '../common/domain/entities/filter_entity.dart';
@@ -55,6 +57,19 @@ abstract class PolygonIdSdkCredential {
     Map<String, dynamic>? data,
     required String privateKey,
   });
+
+  /// Export encrypted claims database
+  Future<String> exportEncryptedClaimsDb({
+    required String identifier,
+    required String privateKey,
+  });
+
+  /// Import encrypted claims database
+  Future<void> importEncryptedClaimsDb({
+    required String identifier,
+    required String privateKey,
+    required String encryptedDb,
+  });
 }
 
 @injectable
@@ -63,9 +78,17 @@ class Credential implements PolygonIdSdkCredential {
   final GetClaimsUseCase _getClaimsUseCase;
   final RemoveClaimsUseCase _removeClaimsUseCase;
   final UpdateClaimUseCase _updateClaimUseCase;
+  final ExportEncryptedClaimsDbUseCase _exportEncryptedClaimsDbUseCase;
+  final ImportEncryptedClaimsDbUseCase _importEncryptedClaimsDbUseCase;
 
-  Credential(this._fetchAndSaveClaimsUseCase, this._getClaimsUseCase,
-      this._removeClaimsUseCase, this._updateClaimUseCase);
+  Credential(
+    this._fetchAndSaveClaimsUseCase,
+    this._getClaimsUseCase,
+    this._removeClaimsUseCase,
+    this._updateClaimUseCase,
+    this._exportEncryptedClaimsDbUseCase,
+    this._importEncryptedClaimsDbUseCase,
+  );
 
   /// Fetch a list of [ClaimEntity] and store them
   @override
@@ -164,5 +187,31 @@ class Credential implements PolygonIdSdkCredential {
             type: type,
             data: data,
             privateKey: privateKey));
+  }
+
+  @override
+  Future<String> exportEncryptedClaimsDb({
+    required String identifier,
+    required String privateKey,
+  }) {
+    return _exportEncryptedClaimsDbUseCase.execute(
+        param: ExportEncryptedClaimsDbParam(
+      privateKey: privateKey,
+      identifier: identifier,
+    ));
+  }
+
+  @override
+  Future<void> importEncryptedClaimsDb({
+    required String identifier,
+    required String privateKey,
+    required String encryptedDb,
+  }) {
+    return _importEncryptedClaimsDbUseCase.execute(
+        param: ImportEncryptedClaimsDbParam(
+      privateKey: privateKey,
+      identifier: identifier,
+      encryptedClaimsDb: encryptedDb,
+    ));
   }
 }

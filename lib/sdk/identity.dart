@@ -167,65 +167,6 @@ class Identity implements PolygonIdSdkIdentity {
     throw UnknownIdentityException("");
   }
 
-  /// Export encrypted database
-  /// DIRTY WAY!!!
-  /// TODO @emuroni refactor asap
-  Future<String> exportEncryptedSembastDb(
-      {required String identifier, required String privateKey}) async {
-    Database db = await getItSdk.getAsync<Database>(
-      instanceName: claimDatabaseName,
-      param1: identifier,
-      param2: privateKey,
-    );
-
-    // encrypt sembast db
-    Map<String, Object?> exportableDb = await exportDatabase(db);
-
-    // encrypt json with secret usinc HMAC
-    String json = jsonEncode(exportableDb);
-    Uint8List uint8list = hexToBytes(privateKey);
-    final iv = IV.fromLength(16);
-    final key = Key.fromBase16(privateKey);
-    final encrypter = Encrypter(AES(key));
-    final encrypted = encrypter.encrypt(json, iv: iv);
-
-    return encrypted.base64;
-  }
-
-  /// Import encrypted database, decrypt and save it
-  /// DIRTY WAY !!!
-  /// TODO @emuroni refactor asap
-  Future<void> importEncryptedSembastDb({
-    required String identifier,
-    required String privateKey,
-    required String encryptedDb,
-  }) async {
-    Database db = await getItSdk.getAsync<Database>(
-      instanceName: claimDatabaseName,
-      param1: identifier,
-      param2: privateKey,
-    );
-
-    // decrypt json with secret usinc HMAC
-    final iv = IV.fromLength(16);
-    final key = Key.fromBase16(privateKey);
-    final encrypter = Encrypter(AES(key));
-    final decrypted = encrypter.decrypt64(encryptedDb, iv: iv);
-
-    // decrypt sembast db
-    Map<String, Object?> decryptedDbMap = jsonDecode(decrypted);
-    final dir = await getApplicationDocumentsDirectory();
-    await dir.create(recursive: true);
-    final path = join(dir.path, claimDatabasePrefix + identifier + '.db');
-    var codec = getEncryptSembastCodec(password: privateKey);
-    var importedDb = await importDatabase(
-      decryptedDbMap,
-      databaseFactoryIo,
-      path,
-      codec: codec,
-    );
-  }
-
   /// Gets an [IdentityEntity] from an identifier.
   /// Returns an identity as a [PrivateIdentityEntity] or [IdentityEntity] if privateKey is ommited or invalid.
   /// Throws [IdentityException] if an error occurs.

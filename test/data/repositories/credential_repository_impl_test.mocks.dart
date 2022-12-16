@@ -9,6 +9,10 @@ import 'package:http/http.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
     as _i16;
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/db_destination_path_data_source.dart'
+    as _i20;
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/encryption_db_data_source.dart'
+    as _i19;
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/remote_claim_data_source.dart'
     as _i8;
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart'
@@ -295,6 +299,44 @@ class MockStorageClaimDataSource extends _i1.Mock
         ),
         returnValue: _i9.Future<List<_i3.ClaimDTO>>.value(<_i3.ClaimDTO>[]),
       ) as _i9.Future<List<_i3.ClaimDTO>>);
+  @override
+  _i9.Future<Map<String, Object?>> getClaimsDb({
+    required String? identifier,
+    required String? privateKey,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getClaimsDb,
+          [],
+          {
+            #identifier: identifier,
+            #privateKey: privateKey,
+          },
+        ),
+        returnValue:
+            _i9.Future<Map<String, Object?>>.value(<String, Object?>{}),
+      ) as _i9.Future<Map<String, Object?>>);
+  @override
+  _i9.Future<void> saveClaimsDb({
+    required Map<String, Object?>? exportableDb,
+    required _i6.DatabaseFactory? databaseFactory,
+    required String? destinationPath,
+    required _i6.SembastCodec? codec,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #saveClaimsDb,
+          [],
+          {
+            #exportableDb: exportableDb,
+            #databaseFactory: databaseFactory,
+            #destinationPath: destinationPath,
+            #codec: codec,
+          },
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
 }
 
 /// A class which mocks [RemoteIdentityDataSource].
@@ -512,4 +554,68 @@ class MockRevocationStatusMapper extends _i1.Mock
           ),
         ),
       ) as _i7.RevocationStatus);
+}
+
+/// A class which mocks [EncryptionDbDataSource].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockEncryptionDbDataSource extends _i1.Mock
+    implements _i19.EncryptionDbDataSource {
+  MockEncryptionDbDataSource() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  Map<String, Object?> decryptData({
+    required String? encryptedData,
+    required String? privateKey,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #decryptData,
+          [],
+          {
+            #encryptedData: encryptedData,
+            #privateKey: privateKey,
+          },
+        ),
+        returnValue: <String, Object?>{},
+      ) as Map<String, Object?>);
+  @override
+  String encryptData({
+    required Map<String, Object?>? data,
+    required String? privateKey,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #encryptData,
+          [],
+          {
+            #data: data,
+            #privateKey: privateKey,
+          },
+        ),
+        returnValue: '',
+      ) as String);
+}
+
+/// A class which mocks [DestinationPathDataSource].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockDestinationPathDataSource extends _i1.Mock
+    implements _i20.DestinationPathDataSource {
+  MockDestinationPathDataSource() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i9.Future<String> getDestinationPath({required String? identifier}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getDestinationPath,
+          [],
+          {#identifier: identifier},
+        ),
+        returnValue: _i9.Future<String>.value(''),
+      ) as _i9.Future<String>);
 }

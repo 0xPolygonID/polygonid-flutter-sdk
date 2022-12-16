@@ -46,4 +46,15 @@ abstract class CredentialRepository {
   Future<int> getRevocationNonce({required ClaimEntity claim});
 
   Future<String> getAuthClaim({required PrivateIdentityEntity identity});
+
+  Future<String> exportEncryptedClaimsDb({
+    required String identifier,
+    required String privateKey,
+  });
+
+  Future<void> importEncryptedClaimsDb({
+    required String identifier,
+    required String privateKey,
+    required String encryptedDb,
+  });
 }
