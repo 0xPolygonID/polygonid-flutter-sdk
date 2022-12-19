@@ -634,7 +634,8 @@ void main() {
               privateKey: anyNamed('privateKey')))
           .thenAnswer((realInvocation) => mockDb);
 
-      when(destinationPathDataSource.getDestinationPath(identifier: anyNamed('identifier')))
+      when(destinationPathDataSource.getDestinationPath(
+              identifier: anyNamed('identifier')))
           .thenAnswer((realInvocation) => Future.value(destinationPath));
 
       when(storageClaimDataSource.saveClaimsDb(

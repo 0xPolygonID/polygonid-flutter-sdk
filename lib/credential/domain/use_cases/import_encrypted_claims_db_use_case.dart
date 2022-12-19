@@ -15,7 +15,8 @@ class ImportEncryptedClaimsDbParam {
 }
 
 /// Use case to import the encrypted claims database
-class ImportEncryptedClaimsDbUseCase extends FutureUseCase<ImportEncryptedClaimsDbParam, void> {
+class ImportEncryptedClaimsDbUseCase
+    extends FutureUseCase<ImportEncryptedClaimsDbParam, void> {
   final CredentialRepository _credentialRepository;
 
   ImportEncryptedClaimsDbUseCase(this._credentialRepository);
