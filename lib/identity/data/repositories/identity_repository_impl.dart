@@ -2,10 +2,11 @@ import 'dart:convert';
 
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/smt_data_source.dart';
 
+import '../../../credential/data/data_sources/lib_pidcore_credential_data_source.dart';
+import '../../../iden3comm/data/data_sources/lib_pidcore_iden3comm_data_source.dart';
 import '../../domain/entities/identity_entity.dart';
 import '../../domain/entities/private_identity_entity.dart';
 import '../../domain/entities/rhs_node_entity.dart';
@@ -13,6 +14,7 @@ import '../../domain/exceptions/identity_exceptions.dart';
 import '../../domain/repositories/identity_repository.dart';
 import '../../libs/bjj/privadoid_wallet.dart';
 import '../data_sources/lib_identity_data_source.dart';
+import '../data_sources/lib_pidcore_identity_data_source.dart';
 import '../data_sources/local_contract_files_data_source.dart';
 import '../data_sources/remote_identity_data_source.dart';
 import '../data_sources/storage_identity_data_source.dart';
@@ -32,7 +34,12 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
   final LibIdentityDataSource _libIdentityDataSource;
   final LibBabyJubJubDataSource _libBabyJubJubDataSource;
-  final LibPolygonIdCoreDataSource _libPolygonIdCoreDataSource;
+  final LibPolygonIdCoreIdentityDataSource _libPolygonIdCoreIdentityDataSource;
+  final LibPolygonIdCoreCredentialDataSource
+      _libPolygonIdCoreCredentialDataSource;
+  final LibPolygonIdCoreIden3commDataSource
+      _libPolygonIdCoreIden3commDataSource;
+
   final SMTDataSource _smtDataSource;
   final RemoteIdentityDataSource _remoteIdentityDataSource;
   final StorageIdentityDataSource _storageIdentityDataSource;
@@ -50,7 +57,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._walletDataSource,
     this._libIdentityDataSource,
     this._libBabyJubJubDataSource,
-    this._libPolygonIdCoreDataSource,
+    this._libPolygonIdCoreIdentityDataSource,
+    this._libPolygonIdCoreCredentialDataSource,
+    this._libPolygonIdCoreIden3commDataSource,
     this._smtDataSource,
     this._remoteIdentityDataSource,
     this._storageIdentityDataSource,
@@ -217,11 +226,15 @@ class IdentityRepositoryImpl extends IdentityRepository {
   /// @return the associated identifier
   @override
   Future<PrivateIdentityEntity> createIdentity(
-      {required blockchain, required network, String? secret}) async {
+      {required blockchain,
+      required network,
+      String? secret,
+      required String accessMessage}) async {
     try {
       // Create a wallet
       PrivadoIdWallet wallet = await _walletDataSource.createWallet(
-          secret: _privateKeyMapper.mapFrom(secret));
+          secret: _privateKeyMapper.mapFrom(secret),
+          accessMessage: accessMessage);
 
       String did = await getDidIdentifier(
         blockchain: blockchain,
@@ -373,7 +386,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
       contractAddress: "0x9ede2dc3FF3F434f3d28e17E467385e7667d8573",
     );
 
-    String authInputs = _libPolygonIdCoreDataSource.getAuthInputs(
+    String authInputs = _libPolygonIdCoreIden3commDataSource.getAuthInputs(
         id: did,
         profileNonce: 0,
         authClaim:
@@ -397,7 +410,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   Future<NodeDTO> _getAuthClaim({required List<String> publicKey}) async {
     String authClaimSchema = "ca938857241db9451ea329256b9c06e5";
     String authClaimNonce = "15930428023331155902";
-    String authClaim = _libPolygonIdCoreDataSource.issueClaim(
+    String authClaim = _libPolygonIdCoreCredentialDataSource.issueAuthClaim(
       schema: authClaimSchema,
       nonce: authClaimNonce,
       publicKey: publicKey,
@@ -477,7 +490,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
             .then((wallet) => _getGenesisState(publicKey: wallet.publicKey)
                     .then((genesisState) {
                   var didMap = _didMapper.mapFrom(did);
-                  return _libPolygonIdCoreDataSource.calculateGenesisId(
+                  return _libPolygonIdCoreIdentityDataSource.calculateGenesisId(
                     genesisState["claimsRoot"],
                     didMap.blockchain,
                     didMap.network,
@@ -557,7 +570,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
     Map<String, dynamic> treeState =
         await _getGenesisState(publicKey: publicKey);
     // Get the genesis id
-    String genesisId = _libPolygonIdCoreDataSource.calculateGenesisId(
+    String genesisId = _libPolygonIdCoreIdentityDataSource.calculateGenesisId(
         treeState["claimsRoot"], blockchain, network);
 
     Map<String, dynamic> genesis = jsonDecode(genesisId);

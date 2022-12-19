@@ -7,17 +7,12 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
-import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
-import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/proof_scope_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_request_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_response_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/iden3comm_repository_impl.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/jwz_data_source.dart';
@@ -27,8 +22,6 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.d
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
-import 'package:polygonid_flutter_sdk/sdk/mappers/iden3_message_mapper.dart';
-import 'package:polygonid_flutter_sdk/sdk/mappers/iden3_message_type_mapper.dart';
 
 import 'iden3comm_repository_impl_test.mocks.dart';
 
@@ -75,7 +68,7 @@ final circuitData = CircuitDataEntity(circuitId, datFile, zKeyFile);
 const token = "token";
 var exception = Exception();
 
-/// We assume [AuthRequest.fromJson] has been tested
+/// We assume [AuthIden3MessageEntity.fromJson] has been tested
 const issuerMessage = '''{
     "id":"0b78a480-c710-4bd8-a4fd-454b577ca991",
     "typ":"application/iden3comm-plain-json",
@@ -84,12 +77,12 @@ const issuerMessage = '''{
     "body":{"callbackUrl":"https://issuer.polygonid.me/api/callback?sessionId=867314","reason":"test flow","scope":[]},
     "from":"1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ"
     }''';
-final mockAuthRequest = AuthRequest.fromJson(jsonDecode(issuerMessage));
-final mockIden3MessageEntity =
-    Iden3MessageMapper(Iden3MessageTypeMapper()).mapFrom(issuerMessage);
+final mockAuthRequest =
+    AuthIden3MessageEntity.fromJson(jsonDecode(issuerMessage));
 const wrongIssuerMessage =
     '{"id":"06da1153-59a1-4ed9-9d31-c86b5596a48e","thid":"06da1153-59a1-4ed9-9d31-c86b5596a48e","from":"1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ","typ":"application/iden3comm-plain-json","type":"https://iden3-communication.io/authorization/1.0/request","body":{"reason":"test flow","message":"","scope":[]}}';
-final wrongAuthRequest = AuthRequest.fromJson(jsonDecode(wrongIssuerMessage));
+final wrongAuthRequest =
+    AuthIden3MessageEntity.fromJson(jsonDecode(wrongIssuerMessage));
 
 final mockAuthResponse = AuthResponse(
   id: "id",
@@ -118,33 +111,20 @@ MockRemoteIden3commDataSource remoteIden3commDataSource =
     MockRemoteIden3commDataSource();
 MockJWZDataSource jwzDataSource = MockJWZDataSource();
 MockHexMapper hexMapper = MockHexMapper();
-MockProofScopeDataSource proofScopeDataSource = MockProofScopeDataSource();
 MockStorageClaimDataSource storageClaimDataSource =
     MockStorageClaimDataSource();
-MockClaimMapper claimMapper = MockClaimMapper();
-MockFiltersMapper filtersMapper = MockFiltersMapper();
 MockAuthResponseMapper authResponseMapper = MockAuthResponseMapper();
-MockAuthRequestMapper authRequestMapper = MockAuthRequestMapper();
 
 // Tested instance
 Iden3commRepository repository = Iden3commRepositoryImpl(
-  remoteIden3commDataSource,
-  jwzDataSource,
-  hexMapper,
-  authResponseMapper,
-  authRequestMapper,
-);
+    remoteIden3commDataSource, jwzDataSource, hexMapper, authResponseMapper);
 
 @GenerateMocks([
   RemoteIden3commDataSource,
   JWZDataSource,
   HexMapper,
-  ProofScopeDataSource,
   StorageClaimDataSource,
-  ClaimMapper,
-  FiltersMapper,
-  AuthResponseMapper,
-  AuthRequestMapper,
+  AuthResponseMapper
 ])
 void main() {
   group("Get auth token", () {
@@ -231,9 +211,6 @@ void main() {
         () {
           reset(remoteIden3commDataSource);
 
-          when(authRequestMapper.mapTo(any))
-              .thenAnswer((realInvocation) => mockAuthRequest);
-
           when(authResponseMapper.mapFrom(any))
               .thenAnswer((realInvocation) => "authResponseString");
 
@@ -260,7 +237,7 @@ void main() {
         () async {
           await expectLater(
             repository.authenticate(
-              message: mockIden3MessageEntity,
+              request: mockAuthRequest,
               authToken: token,
             ),
             completes,
@@ -278,7 +255,7 @@ void main() {
           //
           await expectLater(
             repository.authenticate(
-              message: mockIden3MessageEntity,
+              request: mockAuthRequest,
               authToken: token,
             ),
             throwsA(isA<UnknownApiException>()),
@@ -289,17 +266,15 @@ void main() {
       test(
         'Given an Identifier and a message without callback (iden3message) when we call Authenticate and an error is thrown, we expect that flow ended up with a NullAuthenticateCallbackException',
         () async {
-          when(authRequestMapper.mapTo(any))
-              .thenAnswer((realInvocation) => wrongAuthRequest);
           await repository
               .authenticate(
-                message: mockIden3MessageEntity,
+                request: wrongAuthRequest,
                 authToken: token,
               )
               .then((_) => expect(true, false))
               .catchError((error) {
             expect(error, isA<NullAuthenticateCallbackException>());
-            expect(error.message, mockIden3MessageEntity);
+            expect(error.authRequest, wrongAuthRequest);
           });
         },
       );
@@ -312,7 +287,7 @@ void main() {
             .thenAnswer((realInvocation) => Future.value(errorResponse));
         expect(
             repository.authenticate(
-              message: mockIden3MessageEntity,
+              request: mockAuthRequest,
               authToken: token,
             ),
             throwsA(isA<NetworkException>()));
@@ -322,10 +297,8 @@ void main() {
 
   group("Get Auth Response", () {
     setUp(() {
-      reset(authRequestMapper);
       reset(authResponseMapper);
 
-      when(authRequestMapper.mapTo(any)).thenReturn(mockAuthRequest);
       when(authResponseMapper.mapFrom(any)).thenReturn(authResponse);
     });
 
@@ -336,7 +309,7 @@ void main() {
       expect(
         await repository.getAuthResponse(
           identifier: identifier,
-          message: mockIden3MessageEntity,
+          request: mockAuthRequest,
           pushUrl: pushUrl,
           scope: [],
           pushToken: pushToken,
@@ -347,9 +320,11 @@ void main() {
       );
 
       // Then
-      Iden3MessageEntity authRequestMapperCaptured =
-          verify(authRequestMapper.mapTo(captureAny)).captured.first;
-      expect(authRequestMapperCaptured.id, mockAuthRequest.id);
+      AuthResponse authResponseMapperCaptured =
+          verify(authResponseMapper.mapFrom(captureAny)).captured.first;
+      expect(authResponseMapperCaptured.thid, mockAuthRequest.thid);
+      expect(authResponseMapperCaptured.to, mockAuthRequest.from);
+      expect(authResponseMapperCaptured.from, identifier);
     });
   });
 }

@@ -1,16 +1,17 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proofs_use_case.dart';
 
 import '../credential/domain/use_cases/get_vocabs_use_case.dart';
-import 'mappers/iden3_message_mapper.dart';
-import 'mappers/schema_info_mapper.dart';
 
 abstract class PolygonIdSdkIden3comm {
   /// Returns a [Iden3MessageEntity] from a message string
-  Iden3MessageEntity getIden3Message({required String message});
+  Future<Iden3MessageEntity> getIden3Message({required String message});
 
   /// get the vocabulary json-ld files to translate the values of the schemas
   /// to show them to end users in a natural language format in the apps
@@ -39,15 +40,14 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   final GetVocabsUseCase _getVocabsFromIden3MsgUseCase;
   final AuthenticateUseCase _authenticateUseCase;
   final GetProofsUseCase _getProofsUseCase;
-  final Iden3MessageMapper _iden3messageMapper;
-  final SchemaInfoMapper _schemaInfoMapper;
+  final GetIden3MessageUseCase _getIden3MessageUseCase;
 
   Iden3comm(this._getVocabsFromIden3MsgUseCase, this._authenticateUseCase,
-      this._getProofsUseCase, this._iden3messageMapper, this._schemaInfoMapper);
+      this._getProofsUseCase, this._getIden3MessageUseCase);
 
   @override
-  Iden3MessageEntity getIden3Message({required String message}) {
-    return _iden3messageMapper.mapFrom(message);
+  Future<Iden3MessageEntity> getIden3Message({required String message}) {
+    return _getIden3MessageUseCase.execute(param: message);
   }
 
   /// VOCABS
@@ -56,8 +56,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   @override
   Future<List<Map<String, dynamic>>> getVocabsFromIden3Message(
       {required Iden3MessageEntity message}) {
-    return _getVocabsFromIden3MsgUseCase.execute(
-        param: _schemaInfoMapper.mapFrom(message));
+    return _getVocabsFromIden3MsgUseCase.execute(param: message);
   }
 
   ///AUTHENTICATION
@@ -71,6 +70,11 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       required String identifier,
       required String privateKey,
       String? pushToken}) {
+    if (message is! AuthIden3MessageEntity) {
+      throw InvalidIden3MsgTypeException(
+          Iden3MessageType.auth, message.messageType);
+    }
+
     return _authenticateUseCase.execute(
         param: AuthenticateParam(
       message: message,

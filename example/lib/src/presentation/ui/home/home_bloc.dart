@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
@@ -51,7 +50,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           await _polygonIdSdk.identity.createIdentity();
       await SecureStorage.write(
           key: SecureStorageKeys.privateKey, value: identity.privateKey);
-      emit(HomeState.loaded(identifier: identity.identifier));
+      emit(HomeState.loaded(identifier: identity.did));
     } on IdentityException catch (identityException) {
       emit(HomeState.error(message: identityException.error));
     } catch (_) {

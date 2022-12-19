@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:web3dart/credentials.dart';
 import 'package:web3dart/crypto.dart';
 
@@ -52,16 +51,15 @@ class PrivadoIdWallet {
   /// @param [Uint8List] secret - 32 bytes buffer
   /// @returns [PrivadoIdWallet] privadoIdWallet - PrivadoIdWallet instance
   static Future<PrivadoIdWallet> createPrivadoIdWallet(
-      {Uint8List? secret}) async {
-    //Uint8List privateBjjKey = privateKey ?? Uint8List(32);
+      {Uint8List? secret, required String accessMessage}) async {
     EthPrivateKey prvKey;
     if (secret == null) {
       prvKey = EthPrivateKey.createRandom(Random.secure());
     } else {
       prvKey = EthPrivateKey(secret);
     }
-    final signature = await prvKey
-        .sign(Uint8ArrayUtils.uint8ListfromString(POLYGONID_ACCESS_MESSAGE));
+    final signature =
+        await prvKey.sign(Uint8ArrayUtils.uint8ListfromString(accessMessage));
     Uint8List privateBjjKey = keccak256(signature);
     final bjjWallet = PrivadoIdWallet(privateBjjKey);
     return bjjWallet;

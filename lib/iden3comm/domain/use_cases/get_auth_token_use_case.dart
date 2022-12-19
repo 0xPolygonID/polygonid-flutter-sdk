@@ -30,7 +30,7 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
   @override
   Future<String> execute({required GetAuthTokenParam param}) async {
     var identityEntity = await _identityRepository.getPrivateIdentity(
-        identifier: param.identifier, privateKey: param.privateKey);
+        did: param.identifier, privateKey: param.privateKey);
     CircuitDataEntity authData =
         await _proofRepository.loadCircuitFiles("auth");
     String authClaim =

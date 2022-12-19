@@ -10,30 +10,23 @@ import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/fetch_claim_response_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
-import 'package:polygonid_flutter_sdk/credential/data/mappers/credential_request_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/id_filter_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 import 'package:sembast/sembast.dart';
 
+import '../../common/common_mocks.dart';
+import '../../common/iden3com_mocks.dart';
 import '../dtos/fetch_claim_response_dto_test.dart';
 import 'credential_repository_impl_test.mocks.dart';
 
-// Data
-const identifier = "theIdentifier";
-const privateKey = "thePrivateKey";
-const token = "theToken";
-const url = "theUrl";
+// Data®
 const ids = ["theId", "theId1", "theId2"];
 final exception = Exception();
-
-final CredentialRequestEntity requestEntity =
-    CredentialRequestEntity("", url, "", "", "");
 
 /// We assume [FetchClaimResponseDTO] has been tested
 final fetchClaimDTO =
@@ -82,8 +75,6 @@ MockRemoteClaimDataSource remoteClaimDataSource = MockRemoteClaimDataSource();
 MockStorageClaimDataSource storageClaimDataSource =
     MockStorageClaimDataSource();
 MockLibIdentityDataSource libIdentityDataSource = MockLibIdentityDataSource();
-MockCredentialRequestMapper credentialRequestMapper =
-    MockCredentialRequestMapper();
 MockClaimMapper claimMapper = MockClaimMapper();
 MockFiltersMapper filtersMapper = MockFiltersMapper();
 MockIdFilterMapper idFilterMapper = MockIdFilterMapper();
@@ -95,7 +86,6 @@ CredentialRepositoryImpl repository = CredentialRepositoryImpl(
   remoteClaimDataSource,
   storageClaimDataSource,
   libIdentityDataSource,
-  credentialRequestMapper,
   claimMapper,
   filtersMapper,
   idFilterMapper,
@@ -107,7 +97,6 @@ CredentialRepositoryImpl repository = CredentialRepositoryImpl(
   StorageClaimDataSource,
   RemoteIdentityDataSource,
   LibIdentityDataSource,
-  CredentialRequestMapper,
   ClaimMapper,
   FiltersMapper,
   IdFilterMapper,
@@ -120,6 +109,11 @@ void main() {
       reset(claimMapper);
 
       // Given
+      when(remoteClaimDataSource.fetchSchema(url: anyNamed('url')))
+          .thenAnswer((realInvocation) => Future.value(CommonMocks.aMap));
+      when(remoteClaimDataSource.fetchVocab(
+              schema: anyNamed('schema'), type: anyNamed('type')))
+          .thenAnswer((realInvocation) => Future.value(CommonMocks.aMap));
       when(remoteClaimDataSource.fetchClaim(
               token: anyNamed('token'),
               url: anyNamed('url'),
@@ -134,9 +128,9 @@ void main() {
       // When
       expect(
           await repository.fetchClaim(
-              identifier: identifier,
-              token: token,
-              credentialRequest: requestEntity),
+              identifier: CommonMocks.identifier,
+              token: CommonMocks.token,
+              message: Iden3commMocks.offerRequest),
           claimEntities[0]);
 
       // Then
@@ -146,9 +140,9 @@ void main() {
               identifier: captureAnyNamed('identifier')))
           .captured;
 
-      expect(fetchCaptured[0], token);
-      expect(fetchCaptured[1], url);
-      expect(fetchCaptured[2], identifier);
+      expect(fetchCaptured[0], CommonMocks.token);
+      expect(fetchCaptured[1], Iden3commMocks.offerUrl);
+      expect(fetchCaptured[2], CommonMocks.identifier);
 
       expect(
           verify(claimMapper.mapFrom(captureAny)).captured.first, claimDTOs[0]);
@@ -167,9 +161,9 @@ void main() {
       // When
       await repository
           .fetchClaim(
-              identifier: identifier,
-              token: token,
-              credentialRequest: requestEntity)
+              identifier: CommonMocks.identifier,
+              token: CommonMocks.token,
+              message: Iden3commMocks.offerRequest)
           .then((_) => expect(true, false))
           .catchError((error) {
         expect(error, isA<FetchClaimException>());
@@ -183,11 +177,41 @@ void main() {
               identifier: captureAnyNamed('identifier')))
           .captured;
 
-      expect(fetchCaptured[0], token);
-      expect(fetchCaptured[1], url);
-      expect(fetchCaptured[2], identifier);
+      expect(fetchCaptured[0], CommonMocks.token);
+      expect(fetchCaptured[1], Iden3commMocks.offerUrl);
+      expect(fetchCaptured[2], CommonMocks.identifier);
 
       verifyNever(claimMapper.mapFrom(captureAny));
+    });
+
+    test(
+        "Given parameters, when I call fetchClaim and an error occurred during fetchVocab, then I expect a ClaimEntity to be returned",
+        () async {
+      // Given
+      when(remoteClaimDataSource.fetchVocab(
+              schema: anyNamed('schema'), type: anyNamed('type')))
+          .thenAnswer((realInvocation) => Future.error(exception));
+
+      // When
+      expect(
+          await repository.fetchClaim(
+              identifier: CommonMocks.identifier,
+              token: CommonMocks.token,
+              message: Iden3commMocks.offerRequest),
+          claimEntities[0]);
+
+      // Then
+      var fetchCaptured = verify(remoteClaimDataSource.fetchClaim(
+              token: captureAnyNamed('token'),
+              url: captureAnyNamed('url'),
+              identifier: captureAnyNamed('identifier')))
+          .captured;
+      expect(fetchCaptured[0], CommonMocks.token);
+      expect(fetchCaptured[1], Iden3commMocks.offerUrl);
+      expect(fetchCaptured[2], CommonMocks.identifier);
+
+      expect(
+          verify(claimMapper.mapFrom(captureAny)).captured.first, claimDTOs[0]);
     });
   });
 
@@ -208,8 +232,8 @@ void main() {
       // When
       await expectLater(
           repository.saveClaims(
-              identifier: identifier,
-              privateKey: privateKey,
+              identifier: CommonMocks.identifier,
+              privateKey: CommonMocks.privateKey,
               claims: claimEntities),
           completes);
 
@@ -219,8 +243,8 @@ void main() {
               privateKey: captureAnyNamed('privateKey'),
               claims: captureAnyNamed('claims')))
           .captured;
-      expect(captureStore[0], identifier);
-      expect(captureStore[1], privateKey);
+      expect(captureStore[0], CommonMocks.identifier);
+      expect(captureStore[1], CommonMocks.privateKey);
       expect(captureStore[2], [claimDTOs[0], claimDTOs[0]]);
 
       var mapperVerify = verify(claimMapper.mapTo(captureAny));
@@ -243,8 +267,8 @@ void main() {
       // When
       await repository
           .saveClaims(
-              identifier: identifier,
-              privateKey: privateKey,
+              identifier: CommonMocks.identifier,
+              privateKey: CommonMocks.privateKey,
               claims: claimEntities)
           .then((_) => expect(true, false))
           .catchError((error) {
@@ -258,8 +282,8 @@ void main() {
               privateKey: captureAnyNamed('privateKey'),
               claims: captureAnyNamed('claims')))
           .captured;
-      expect(captureStore[0], identifier);
-      expect(captureStore[1], privateKey);
+      expect(captureStore[0], CommonMocks.identifier);
+      expect(captureStore[1], CommonMocks.privateKey);
       expect(captureStore[2], [claimDTOs[0], claimDTOs[0]]);
 
       verify(claimMapper.mapTo(captureAny));
@@ -284,8 +308,8 @@ void main() {
       // When
       expect(
           await repository.getClaims(
-            identifier: identifier,
-            privateKey: privateKey,
+            identifier: CommonMocks.identifier,
+            privateKey: CommonMocks.privateKey,
           ),
           [claimEntities[0], claimEntities[0]]);
 
@@ -294,8 +318,8 @@ void main() {
               identifier: captureAnyNamed('identifier'),
               privateKey: captureAnyNamed('privateKey')))
           .captured;
-      expect(captureGet[0], identifier);
-      expect(captureGet[1], privateKey);
+      expect(captureGet[0], CommonMocks.identifier);
+      expect(captureGet[1], CommonMocks.privateKey);
 
       verifyNever(filtersMapper.mapTo(captureAny));
 
@@ -312,7 +336,9 @@ void main() {
       // When
       expect(
           await repository.getClaims(
-              identifier: identifier, privateKey: privateKey, filters: filters),
+              identifier: CommonMocks.identifier,
+              privateKey: CommonMocks.privateKey,
+              filters: filters),
           [claimEntities[0], claimEntities[0]]);
 
       // Then
@@ -321,8 +347,8 @@ void main() {
               privateKey: captureAnyNamed('privateKey'),
               filter: captureAnyNamed('filter')))
           .captured;
-      expect(captureGet[0], identifier);
-      expect(captureGet[1], privateKey);
+      expect(captureGet[0], CommonMocks.identifier);
+      expect(captureGet[1], CommonMocks.privateKey);
       expect(captureGet[2], filter);
 
       expect(verify(filtersMapper.mapTo(captureAny)).captured.first, filters);
@@ -347,7 +373,9 @@ void main() {
       // When
       await repository
           .getClaims(
-              identifier: identifier, privateKey: privateKey, filters: filters)
+              identifier: CommonMocks.identifier,
+              privateKey: CommonMocks.privateKey,
+              filters: filters)
           .then((_) => expect(true, false))
           .catchError((error) {
         expect(error, isA<GetClaimsException>());
@@ -360,8 +388,8 @@ void main() {
               privateKey: captureAnyNamed('privateKey'),
               filter: captureAnyNamed('filter')))
           .captured;
-      expect(captureGet[0], identifier);
-      expect(captureGet[1], privateKey);
+      expect(captureGet[0], CommonMocks.identifier);
+      expect(captureGet[1], CommonMocks.privateKey);
       expect(captureGet[2], filter);
 
       expect(verify(filtersMapper.mapTo(captureAny)).captured.first, filters);
@@ -388,7 +416,9 @@ void main() {
       // When
       expect(
           await repository.getClaim(
-              identifier: identifier, privateKey: privateKey, claimId: ids[0]),
+              identifier: CommonMocks.identifier,
+              privateKey: CommonMocks.privateKey,
+              claimId: ids[0]),
           claimEntities[0]);
 
       // Then
@@ -399,8 +429,8 @@ void main() {
               privateKey: captureAnyNamed('privateKey'),
               filter: captureAnyNamed('filter')))
           .captured;
-      expect(captureGet[0], identifier);
-      expect(captureGet[1], privateKey);
+      expect(captureGet[0], CommonMocks.identifier);
+      expect(captureGet[1], CommonMocks.privateKey);
       expect(captureGet[2], filter);
 
       expect(
@@ -419,7 +449,9 @@ void main() {
       // When
       await repository
           .getClaim(
-              identifier: identifier, privateKey: privateKey, claimId: ids[0])
+              identifier: CommonMocks.identifier,
+              privateKey: CommonMocks.privateKey,
+              claimId: ids[0])
           .then((value) => expect(true, false))
           .catchError((error) {
         expect(error, isA<ClaimNotFoundException>());
@@ -434,8 +466,8 @@ void main() {
               privateKey: captureAnyNamed('privateKey'),
               filter: captureAnyNamed('filter')))
           .captured;
-      expect(captureGet[0], identifier);
-      expect(captureGet[1], privateKey);
+      expect(captureGet[0], CommonMocks.identifier);
+      expect(captureGet[1], CommonMocks.privateKey);
       expect(captureGet[2], filter);
 
       verifyNever(claimMapper.mapFrom(captureAny));
@@ -453,7 +485,9 @@ void main() {
       // When
       await expectLater(
           repository.getClaim(
-              identifier: identifier, privateKey: privateKey, claimId: ids[0]),
+              identifier: CommonMocks.identifier,
+              privateKey: CommonMocks.privateKey,
+              claimId: ids[0]),
           throwsA(exception));
 
       // Then
@@ -464,8 +498,8 @@ void main() {
               privateKey: captureAnyNamed('privateKey'),
               filter: captureAnyNamed('filter')))
           .captured;
-      expect(captureGet[0], identifier);
-      expect(captureGet[1], privateKey);
+      expect(captureGet[0], CommonMocks.identifier);
+      expect(captureGet[1], CommonMocks.privateKey);
       expect(captureGet[2], filter);
 
       verifyNever(claimMapper.mapFrom(captureAny));
@@ -488,7 +522,9 @@ void main() {
       // When
       await expectLater(
           repository.removeClaims(
-              identifier: identifier, privateKey: privateKey, claimIds: ids),
+              identifier: CommonMocks.identifier,
+              privateKey: CommonMocks.privateKey,
+              claimIds: ids),
           completes);
 
       // Then
@@ -497,8 +533,8 @@ void main() {
               privateKey: captureAnyNamed('privateKey'),
               claimIds: captureAnyNamed('claimIds')))
           .captured;
-      expect(captureRemove[0], identifier);
-      expect(captureRemove[1], privateKey);
+      expect(captureRemove[0], CommonMocks.identifier);
+      expect(captureRemove[1], CommonMocks.privateKey);
       expect(captureRemove[2], ids);
     });
 
@@ -515,7 +551,9 @@ void main() {
       // When
       await repository
           .removeClaims(
-              identifier: identifier, privateKey: privateKey, claimIds: ids)
+              identifier: CommonMocks.identifier,
+              privateKey: CommonMocks.privateKey,
+              claimIds: ids)
           .then((_) => expect(true, false))
           .catchError((error) {
         expect(error, isA<RemoveClaimsException>());
@@ -528,8 +566,8 @@ void main() {
               privateKey: captureAnyNamed('privateKey'),
               claimIds: captureAnyNamed('claimIds')))
           .captured;
-      expect(captureRemove[0], identifier);
-      expect(captureRemove[1], privateKey);
+      expect(captureRemove[0], CommonMocks.identifier);
+      expect(captureRemove[1], CommonMocks.privateKey);
       expect(captureRemove[2], ids);
     });
   });

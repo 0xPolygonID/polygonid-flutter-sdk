@@ -3,14 +3,16 @@ import 'dart:convert';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 
 import '../../identity/data/dtos/hash_dto.dart';
 import '../../identity/data/dtos/node_dto.dart';
+import '../../identity/data/mappers/node_mapper.dart';
 import '../../identity/domain/entities/identity_entity.dart';
 import 'data_sources/lib_pidcore_credential_data_source.dart';
 import 'data_sources/remote_claim_data_source.dart';
@@ -29,9 +31,11 @@ class CredentialRepositoryImpl extends CredentialRepository {
       _libPolygonIdCoreCredentialDataSource;
   final LibBabyJubJubDataSource _libBabyJubJubDataSource;
   final CredentialRequestMapper _credentialRequestMapper;
+  final LibIdentityDataSource _libIdentityDataSource;
   final ClaimMapper _claimMapper;
   final FiltersMapper _filtersMapper;
   final IdFilterMapper _idFilterMapper;
+  final NodeMapper _nodeMapper;
   final RevocationStatusMapper _revocationStatusMapper;
 
   CredentialRepositoryImpl(
@@ -40,28 +44,36 @@ class CredentialRepositoryImpl extends CredentialRepository {
       this._libPolygonIdCoreCredentialDataSource,
       this._libBabyJubJubDataSource,
       this._credentialRequestMapper,
+      this._libIdentityDataSource,
       this._claimMapper,
       this._filtersMapper,
       this._idFilterMapper,
+      this._nodeMapper,
       this._revocationStatusMapper);
 
   @override
   Future<ClaimEntity> fetchClaim(
       {required String identifier,
       required String token,
-      required CredentialRequestEntity credentialRequest}) {
+      required OfferIden3MessageEntity message}) {
     return _remoteClaimDataSource
-        .fetchClaim(
-            token: token, url: credentialRequest.url, identifier: identifier)
-        .then((dto) => _claimMapper.mapFrom(dto))
-        .catchError((error) => throw FetchClaimException(error));
-  }
+        .fetchClaim(token: token, url: message.body.url, identifier: identifier)
+        .then((dto) {
+      /// Error in fetching schema and vocab are not blocking
+      return _remoteClaimDataSource
+          .fetchSchema(url: dto.info.credentialSchema.id)
+          .then((schema) => _remoteClaimDataSource
+                  .fetchVocab(
+                      schema: schema, type: dto.info.credentialSubject.type)
+                  .then((vocab) {
+                dto.schema = schema;
+                dto.vocab = vocab;
 
-  @override
-  Future<String> getFetchMessage(
-      {required CredentialRequestEntity credentialRequest}) {
-    return Future.value(
-        jsonEncode(_credentialRequestMapper.mapTo(credentialRequest)));
+                return dto;
+              }))
+          .catchError((_) => dto)
+          .then((value) => _claimMapper.mapFrom(dto));
+    }).catchError((error) => throw FetchClaimException(error));
   }
 
   @override
@@ -119,15 +131,15 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<Map<String, dynamic>?> fetchSchema({required String url}) {
+  Future<Map<String, dynamic>> fetchSchema({required String url}) {
     return _remoteClaimDataSource
         .fetchSchema(url: url)
         .catchError((error) => throw FetchSchemaException(error));
   }
 
   @override
-  Future<Map<String, dynamic>?> fetchVocab(
-      {required Map<String, dynamic>? schema, required String type}) {
+  Future<Map<String, dynamic>> fetchVocab(
+      {required Map<String, dynamic> schema, required String type}) {
     return _remoteClaimDataSource
         .fetchVocab(schema: schema, type: type)
         .catchError((error) => throw FetchVocabException(error));
@@ -200,6 +212,6 @@ class CredentialRepositoryImpl extends CredentialRepository {
         ],
         hash: HashDTO.fromBigInt(BigInt.parse(hashClaimNode)),
         type: NodeTypeDTO.leaf);
-    return authClaimNode;
+    return Future.value(_nodeMapper.mapFrom(authClaimNode));
   }
 }

@@ -33,19 +33,6 @@ class RemoteClaimDataSource {
         FetchClaimResponseDTO fetchResponse =
             FetchClaimResponseDTO.fromJson(json.decode(response.body));
 
-        /// FIXME: should be called in the repo
-        //fetch schema
-        Map<String, dynamic>? schema =
-            await fetchSchema(url: fetchResponse.credential.credentialSchema.id)
-                .catchError((error) => null);
-
-        /// FIXME: should be called in the repo
-        //fetch vocab
-        Map<String, dynamic>? vocab = await fetchVocab(
-                schema: schema,
-                type: fetchResponse.credential.credentialSubject.type)
-            .catchError((error) => null);
-
         if (fetchResponse.type == FetchClaimResponseType.issuance) {
           return ClaimDTO(
               id: fetchResponse.credential.id,
@@ -53,9 +40,7 @@ class RemoteClaimDataSource {
               identifier: identifier,
               type: fetchResponse.credential.credentialSubject.type,
               expiration: fetchResponse.credential.expiration,
-              info: fetchResponse.credential,
-              schema: schema,
-              vocab: vocab);
+              info: fetchResponse.credential);
         } else {
           throw UnsupportedFetchClaimTypeException(response);
         }
@@ -67,20 +52,21 @@ class RemoteClaimDataSource {
     });
   }
 
-  Future<Map<String, dynamic>?> fetchSchema({required String url}) async {
+  Future<Map<String, dynamic>> fetchSchema({required String url}) async {
     try {
-      //fetch schema and save it
-      String schemaId = url;
-      String schemaUrl = schemaId;
-      if (schemaId.toLowerCase().startsWith("ipfs://")) {
-        String fileHash = schemaId.toLowerCase().replaceFirst("ipfs://", "");
+      String schemaUrl = url;
+
+      if (schemaUrl.toLowerCase().startsWith("ipfs://")) {
+        String fileHash = schemaUrl.toLowerCase().replaceFirst("ipfs://", "");
         schemaUrl = "https://ipfs.io/ipfs/$fileHash";
       }
+
       var schemaUri = Uri.parse(schemaUrl);
       var schemaResponse = await get(schemaUri);
       if (schemaResponse.statusCode == 200) {
-        Map<String, dynamic>? schema = json.decode(schemaResponse.body);
+        Map<String, dynamic> schema = json.decode(schemaResponse.body);
         logger().d('schema: $schema');
+
         return schema;
       } else {
         throw NetworkException(schemaResponse);
@@ -91,12 +77,11 @@ class RemoteClaimDataSource {
     }
   }
 
-  Future<Map<String, dynamic>?> fetchVocab(
-      {required Map<String, dynamic>? schema, required String type}) async {
+  Future<Map<String, dynamic>> fetchVocab(
+      {required Map<String, dynamic> schema, required String type}) async {
     try {
-      // fetch vocab from schema
       Map<String, dynamic>? schemaContext;
-      if (schema!['@context'] is List) {
+      if (schema['@context'] is List) {
         schemaContext = schema['@context'].first;
       } else if (schema['@context'] is Map) {
         schemaContext = schema['@context'];
@@ -116,8 +101,9 @@ class RemoteClaimDataSource {
           HttpHeaders.contentTypeHeader: 'application/json',
         });
         if (vocabResponse.statusCode == 200) {
-          Map<String, dynamic>? vocab = json.decode(vocabResponse.body);
+          Map<String, dynamic> vocab = json.decode(vocabResponse.body);
           logger().d('vocab: $vocab');
+
           return vocab;
         } else {
           throw NetworkException(vocabResponse);

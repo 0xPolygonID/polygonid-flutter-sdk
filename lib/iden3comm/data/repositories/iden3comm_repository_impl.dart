@@ -10,11 +10,10 @@ import 'package:pointycastle/asymmetric/rsa.dart';
 import 'package:pointycastle/digests/sha512.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/request/auth/auth_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../common/domain/domain_logger.dart';
@@ -28,7 +27,6 @@ import '../dtos/response/auth/auth_body_did_doc_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_metadata_devices_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_metadata_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_response.dart';
-import '../mappers/auth_request_mapper.dart';
 import '../mappers/auth_response_mapper.dart';
 
 class Iden3commRepositoryImpl extends Iden3commRepository {
@@ -36,26 +34,19 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   final JWZDataSource _jwzDataSource;
   final HexMapper _hexMapper;
   final AuthResponseMapper _authResponseMapper;
-  final AuthRequestMapper _authRequestMapper;
 
   Iden3commRepositoryImpl(this._remoteIden3commDataSource, this._jwzDataSource,
-      this._hexMapper, this._authResponseMapper, this._authRequestMapper);
+      this._hexMapper, this._authResponseMapper);
 
   @override
   Future<void> authenticate({
-    required Iden3MessageEntity message,
+    required AuthIden3MessageEntity request,
     required String authToken,
   }) async {
-    String? url;
-
-    try {
-      url = _authRequestMapper.mapTo(message).body.callbackUrl;
-    } catch (_) {
-      url = null;
-    }
+    String? url = request.body.callbackUrl;
 
     if (url == null || url.isEmpty) {
-      throw NullAuthenticateCallbackException(message);
+      throw NullAuthenticateCallbackException(request);
     }
 
     Response res = await _remoteIden3commDataSource.authWithToken(
@@ -85,7 +76,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   @override
   Future<String> getAuthResponse({
     required String identifier,
-    required Iden3MessageEntity message,
+    required AuthIden3MessageEntity request,
     required List<ProofEntity> scope,
     String? pushUrl,
     String? pushToken,
@@ -105,7 +96,6 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
           pushUrl, didIdentifier, pushToken, packageName);
     }
 
-    AuthRequest request = _authRequestMapper.mapTo(message);
     AuthResponse authResponse = AuthResponse(
       id: const Uuid().v4(),
       thid: request.thid,

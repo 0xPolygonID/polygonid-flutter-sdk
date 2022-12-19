@@ -1,13 +1,11 @@
-// lib/env/env.dart
 import 'package:envied/envied.dart';
 
 import 'sdk_env.dart';
-import 'sdk_env_fields.dart';
 
 part 'dev_env.g.dart';
 
 @Envied(name: 'Env', path: '.env.dev')
-class DevEnv implements SdkEnv, SdkEnvFields {
+class DevEnv implements SdkEnv {
   DevEnv();
 
   @override

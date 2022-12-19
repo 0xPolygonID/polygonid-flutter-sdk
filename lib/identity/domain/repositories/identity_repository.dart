@@ -4,8 +4,12 @@ import '../entities/rhs_node_entity.dart';
 
 abstract class IdentityRepository {
   // Identity
-  Future<PrivateIdentityEntity> createIdentity(
-      {required blockchain, required network, String? secret});
+  Future<PrivateIdentityEntity> createIdentity({
+    required blockchain,
+    required network,
+    String? secret,
+    required String accessMessage,
+  });
 
   Future<void> storeIdentity(
       {required IdentityEntity identity, required String privateKey});
@@ -13,10 +17,10 @@ abstract class IdentityRepository {
   Future<void> removeIdentity(
       {required String identifier, required String privateKey});
 
-  Future<IdentityEntity> getIdentity({required String identifier});
+  Future<IdentityEntity> getIdentity({required String did});
 
   Future<PrivateIdentityEntity> getPrivateIdentity(
-      {required String identifier, required String privateKey});
+      {required String did, required String privateKey});
 
   Future<List<IdentityEntity>> getIdentities();
 

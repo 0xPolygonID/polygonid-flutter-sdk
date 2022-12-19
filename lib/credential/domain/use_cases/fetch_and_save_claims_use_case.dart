@@ -1,18 +1,18 @@
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
 import '../../../credential/domain/repositories/credential_repository.dart';
+import '../../../iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
 import '../../../iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import '../entities/claim_entity.dart';
-import '../entities/credential_request_entity.dart';
-import '../exceptions/credential_exceptions.dart';
+import 'get_fetch_requests_use_case.dart';
 
 class FetchAndSaveClaimsParam {
-  final List<CredentialRequestEntity> requests;
+  final OfferIden3MessageEntity message;
   final String identifier;
   final String privateKey;
 
   FetchAndSaveClaimsParam({
-    required this.requests,
+    required this.message,
     required this.identifier,
     required this.privateKey,
   });
@@ -20,39 +20,41 @@ class FetchAndSaveClaimsParam {
 
 class FetchAndSaveClaimsUseCase
     extends FutureUseCase<FetchAndSaveClaimsParam, List<ClaimEntity>> {
+  final GetFetchRequestsUseCase _getFetchRequestsUseCase;
   final GetAuthTokenUseCase _getAuthTokenUseCase;
   final CredentialRepository _credentialRepository;
 
-  FetchAndSaveClaimsUseCase(
+  FetchAndSaveClaimsUseCase(this._getFetchRequestsUseCase,
       this._getAuthTokenUseCase, this._credentialRepository);
 
   @override
-  Future<List<ClaimEntity>> execute(
-      {required FetchAndSaveClaimsParam param}) async {
-    /// For each [CredentialRequestEntity]
-    /// Get the corresponding message
-    /// With the message, get the auth token
+  Future<List<ClaimEntity>> execute({required FetchAndSaveClaimsParam param}) {
+    /// Get the corresponding fetch request from [OfferIden3MessageEntity]
+    /// For each, get the auth token
     /// With the auth token, fetch the [ClaimEntity]
     /// Then save the list of [ClaimEntity]
-    return Future.wait(param.requests.map((request) {
-      if (request.identifier == param.identifier) {
-        return _credentialRepository
-            .getFetchMessage(credentialRequest: request)
-            .then((message) => _getAuthTokenUseCase
+    return _getFetchRequestsUseCase
+        .execute(param: GetFetchRequestsParam(param.message, param.identifier))
+        .then((requests) async {
+          List<ClaimEntity> claims = [];
+
+          for (String request in requests) {
+            await _getAuthTokenUseCase
                 .execute(
                     param: GetAuthTokenParam(
                   param.identifier,
                   param.privateKey,
-                  message,
+                  request,
                 ))
                 .then((token) => _credentialRepository.fetchClaim(
-                    identifier: request.identifier,
+                    identifier: param.identifier,
                     token: token,
-                    credentialRequest: request)));
-      } else {
-        throw ClaimWrongIdentityException(request.identifier);
-      }
-    }).toList())
+                    message: param.message))
+                .then((claim) => claims.add(claim));
+          }
+
+          return claims;
+        })
         .then((claims) => _credentialRepository
                 .saveClaims(
               claims: claims,
@@ -66,8 +68,8 @@ class FetchAndSaveClaimsUseCase
               return claims;
             }))
         .catchError((error) {
-      logger().e("[FetchAndSaveCredentialUseCase] Error: $error");
-      throw error;
-    });
+          logger().e("[FetchAndSaveCredentialUseCase] Error: $error");
+          throw error;
+        });
   }
 }

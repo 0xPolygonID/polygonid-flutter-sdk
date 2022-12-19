@@ -68,12 +68,22 @@ class MockIdentityRepository extends _i1.Mock
   }
 
   @override
-  _i6.Future<_i2.PrivateIdentityEntity> createIdentity({String? secret}) =>
+  _i6.Future<_i2.PrivateIdentityEntity> createIdentity({
+    required dynamic blockchain,
+    required dynamic network,
+    String? secret,
+    required String? accessMessage,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #createIdentity,
           [],
-          {#secret: secret},
+          {
+            #blockchain: blockchain,
+            #network: network,
+            #secret: secret,
+            #accessMessage: accessMessage,
+          },
         ),
         returnValue: _i6.Future<_i2.PrivateIdentityEntity>.value(
             _FakePrivateIdentityEntity_0(
@@ -81,7 +91,12 @@ class MockIdentityRepository extends _i1.Mock
           Invocation.method(
             #createIdentity,
             [],
-            {#secret: secret},
+            {
+              #blockchain: blockchain,
+              #network: network,
+              #secret: secret,
+              #accessMessage: accessMessage,
+            },
           ),
         )),
       ) as _i6.Future<_i2.PrivateIdentityEntity>);
@@ -120,35 +135,25 @@ class MockIdentityRepository extends _i1.Mock
         returnValueForMissingStub: _i6.Future<void>.value(),
       ) as _i6.Future<void>);
   @override
-  _i6.Future<String> getIdentifier({required String? privateKey}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getIdentifier,
-          [],
-          {#privateKey: privateKey},
-        ),
-        returnValue: _i6.Future<String>.value(''),
-      ) as _i6.Future<String>);
-  @override
-  _i6.Future<_i3.IdentityEntity> getIdentity({required String? identifier}) =>
+  _i6.Future<_i3.IdentityEntity> getIdentity({required String? did}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getIdentity,
           [],
-          {#identifier: identifier},
+          {#did: did},
         ),
         returnValue: _i6.Future<_i3.IdentityEntity>.value(_FakeIdentityEntity_1(
           this,
           Invocation.method(
             #getIdentity,
             [],
-            {#identifier: identifier},
+            {#did: did},
           ),
         )),
       ) as _i6.Future<_i3.IdentityEntity>);
   @override
   _i6.Future<_i2.PrivateIdentityEntity> getPrivateIdentity({
-    required String? identifier,
+    required String? did,
     required String? privateKey,
   }) =>
       (super.noSuchMethod(
@@ -156,7 +161,7 @@ class MockIdentityRepository extends _i1.Mock
           #getPrivateIdentity,
           [],
           {
-            #identifier: identifier,
+            #did: did,
             #privateKey: privateKey,
           },
         ),
@@ -167,7 +172,7 @@ class MockIdentityRepository extends _i1.Mock
             #getPrivateIdentity,
             [],
             {
-              #identifier: identifier,
+              #did: did,
               #privateKey: privateKey,
             },
           ),
@@ -200,18 +205,18 @@ class MockIdentityRepository extends _i1.Mock
       ) as _i6.Future<String>);
   @override
   _i6.Future<String> getDidIdentifier({
-    required String? identifier,
-    required String? networkName,
-    required String? networkEnv,
+    required List<String>? publicKey,
+    required String? blockchain,
+    required String? network,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
           #getDidIdentifier,
           [],
           {
-            #identifier: identifier,
-            #networkName: networkName,
-            #networkEnv: networkEnv,
+            #publicKey: publicKey,
+            #blockchain: blockchain,
+            #network: network,
           },
         ),
         returnValue: _i6.Future<String>.value(''),

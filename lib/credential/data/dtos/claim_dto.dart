@@ -15,10 +15,10 @@ class ClaimDTO extends Equatable {
   final ClaimInfoDTO info;
   final String? expiration;
   final String type;
-  final Map<String, dynamic>? schema;
-  final Map<String, dynamic>? vocab;
+  Map<String, dynamic>? schema;
+  Map<String, dynamic>? vocab;
 
-  const ClaimDTO(
+  ClaimDTO(
       {required this.id,
       required this.issuer,
       required this.identifier,

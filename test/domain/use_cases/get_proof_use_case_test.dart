@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -6,17 +5,10 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_request_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/contract_request_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/fetch_request_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/iden3_message_type_data_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/offer_request_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/proof_query_param_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/proof_requests_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proofs_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
@@ -25,10 +17,9 @@ import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_d
 import 'package:polygonid_flutter_sdk/proof_generation/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/generate_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/is_proof_circuit_supported_use_case.dart';
-import 'package:polygonid_flutter_sdk/sdk/mappers/iden3_message_mapper.dart';
-import 'package:polygonid_flutter_sdk/sdk/mappers/iden3_message_type_mapper.dart';
-import 'package:polygonid_flutter_sdk/sdk/proof.dart';
 
+import '../../common/common_mocks.dart';
+import '../../common/iden3com_mocks.dart';
 import 'get_proof_use_case_test.mocks.dart';
 
 // Data
@@ -43,47 +34,6 @@ const privateIdentityEntity = PrivateIdentityEntity(
   publicKey: publicKeys,
   privateKey: privateKey,
 );
-
-String proofRequestData = '''
-{
-  "id": "c811849d-6bfb-4d85-936e-3d9759c7f105",
-  "typ": "application/iden3comm-plain-json",
-  "type": "https://iden3-communication.io/proofs/1.0/contract-invoke-request",
-  "thid": "c811849d-6bfb-4d85-936e-3d9759c7f105",
-  "from": "1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ",
-  "body": {
-    "transaction_data": {
-      "contract_address": "0x516D8DBece16890d0670Dfd3Cb1740FcdF375B10",
-      "method_id": "b68967e2",
-      "chain_id": 80001,
-      "network": "polygon-mumbai"
-    },
-    "reason": "airdrop participation",
-    "scope": [
-      {
-        "id": 1,
-        "circuit_id": "credentialAtomicQueryMTP",
-        "rules": {
-          "query": {
-            "allowed_issuers": [
-              "*"
-            ],
-            "req": {
-              "birthday": {
-                "\$lt": 20000101
-              }
-            },
-            "schema": {
-              "url": "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
-              "type": "KYCAgeCredential"
-            }
-          }
-        }
-      }
-    ]
-  }
-}
-''';
 
 ClaimEntity mockClaimEntity = ClaimEntity(
   id: "1",
@@ -167,8 +117,8 @@ JWZProof mockJwzProof = JWZProof(
 
 List<ProofEntity> result = [
   ProofEntity(
-    id: int.parse(proofRequestList[0].id),
-    circuitId: proofRequestList[0].circuitId,
+    id: proofRequestList[0].scope.id,
+    circuitId: proofRequestList[0].scope.circuit_id,
     proof: mockJwzProof.proof,
     pubSignals: mockJwzProof.pubSignals,
   )
@@ -180,31 +130,22 @@ GetClaimsParam mockGetClaimsParam = GetClaimsParam(
   privateKey: privateKey,
 );
 
-Iden3MessageEntity iden3messageEntity =
-    Iden3MessageMapper(Iden3MessageTypeMapper()).mapFrom(proofRequestData);
-ProofRequestsMapper proofRequestsMapper = ProofRequestsMapper(
-  AuthRequestMapper(Iden3MessageTypeDataMapper()),
-  FetchRequestMapper(Iden3MessageTypeDataMapper()),
-  OfferRequestMapper(Iden3MessageTypeDataMapper()),
-  ContractRequestMapper(Iden3MessageTypeDataMapper()),
-  ProofQueryParamMapper(),
-);
-
-List<ProofRequestEntity> proofRequestList =
-    proofRequestsMapper.mapFrom(iden3messageEntity);
+List<ProofRequestEntity> proofRequestList = [
+  ProofRequestEntity(Iden3commMocks.proofScopeRequest,
+      ProofQueryParamEntity('theField', [0, 1, 2], 3))
+];
 
 GetProofsParam param = GetProofsParam(
-  message: iden3messageEntity,
+  message: Iden3commMocks.authRequest,
   identifier: identifier,
   privateKey: privateKey,
   challenge: challenge,
 );
-const circuitId = "credentialAtomicQueryMTP";
 final datFile = Uint8List(32);
 final zKeyFile = Uint8List(32);
-final circuitData = CircuitDataEntity(circuitId, datFile, zKeyFile);
+final circuitData = CircuitDataEntity(CommonMocks.circuitId, datFile, zKeyFile);
 CircuitDataEntity mockCircuitDataEntity = CircuitDataEntity(
-  circuitId,
+  CommonMocks.circuitId,
   datFile,
   zKeyFile,
 );
@@ -220,15 +161,17 @@ MockGetClaimsUseCase getClaimsUseCase = MockGetClaimsUseCase();
 MockGenerateProofUseCase generateProofUseCase = MockGenerateProofUseCase();
 MockIsProofCircuitSupportedUseCase isProofCircuitSupportedUseCase =
     MockIsProofCircuitSupportedUseCase();
+MockGetProofRequestsUseCase getProofRequestsUseCase =
+    MockGetProofRequestsUseCase();
 
 // Tested instance
 GetProofsUseCase useCase = GetProofsUseCase(
-  proofRepository,
-  identityRepository,
-  getClaimsUseCase,
-  generateProofUseCase,
-  isProofCircuitSupportedUseCase,
-);
+    proofRepository,
+    identityRepository,
+    getClaimsUseCase,
+    generateProofUseCase,
+    isProofCircuitSupportedUseCase,
+    getProofRequestsUseCase);
 
 @GenerateMocks([
   ProofRepository,
@@ -236,6 +179,7 @@ GetProofsUseCase useCase = GetProofsUseCase(
   GetClaimsUseCase,
   GenerateProofUseCase,
   IsProofCircuitSupportedUseCase,
+  GetProofRequestsUseCase
 ])
 main() {
   test(
@@ -245,7 +189,7 @@ main() {
     when(identityRepository.getIdentity(identifier: anyNamed('identifier')))
         .thenAnswer((realInvocation) => Future.value(privateIdentityEntity));
 
-    when(proofRepository.getRequests(message: anyNamed('message')))
+    when(getProofRequestsUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value(proofRequestList));
 
     when(isProofCircuitSupportedUseCase.execute(param: anyNamed('param')))
@@ -277,14 +221,14 @@ main() {
     expect(getIdentityCaptured[0], identifier);
 
     var getRequestsCaptured =
-        verify(proofRepository.getRequests(message: captureAnyNamed('message')))
+        verify(getProofRequestsUseCase.execute(param: captureAnyNamed('param')))
             .captured;
-    expect(getRequestsCaptured[0], iden3messageEntity);
+    expect(getRequestsCaptured[0], Iden3commMocks.authRequest);
 
     var isFilterSupportedCaptured = verify(isProofCircuitSupportedUseCase
             .execute(param: captureAnyNamed('param')))
         .captured;
-    expect(isFilterSupportedCaptured[0], circuitId);
+    expect(isFilterSupportedCaptured[0], CommonMocks.circuitId);
 
     var getFiltersCaptured =
         verify(proofRepository.getFilters(request: captureAnyNamed('request')))
@@ -300,7 +244,7 @@ main() {
 
     var loadCircuitFilesCaptured =
         verify(proofRepository.loadCircuitFiles(captureAny)).captured;
-    expect(loadCircuitFilesCaptured[0], circuitId);
+    expect(loadCircuitFilesCaptured[0], CommonMocks.circuitId);
 
     var signMessageCaptured = verify(identityRepository.signMessage(
             privateKey: captureAnyNamed('privateKey'),

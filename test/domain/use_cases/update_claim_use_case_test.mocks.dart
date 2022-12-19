@@ -3,19 +3,21 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i4;
+import 'dart:async' as _i5;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
-    as _i6;
+    as _i7;
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
     as _i2;
-import 'package:polygonid_flutter_sdk/credential/domain/entities/credential_request_entity.dart'
-    as _i5;
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart'
+    as _i4;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart'
+    as _i6;
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
+    as _i8;
+import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart'
     as _i3;
-import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart'
-    as _i7;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -38,20 +40,30 @@ class _FakeClaimEntity_0 extends _i1.SmartFake implements _i2.ClaimEntity {
         );
 }
 
+class _FakeNodeEntity_1 extends _i1.SmartFake implements _i3.NodeEntity {
+  _FakeNodeEntity_1(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [CredentialRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockCredentialRepository extends _i1.Mock
-    implements _i3.CredentialRepository {
+    implements _i4.CredentialRepository {
   MockCredentialRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.Future<_i2.ClaimEntity> fetchClaim({
+  _i5.Future<_i2.ClaimEntity> fetchClaim({
     required String? identifier,
     required String? token,
-    required _i5.CredentialRequestEntity? credentialRequest,
+    required _i6.OfferIden3MessageEntity? message,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -60,10 +72,10 @@ class MockCredentialRepository extends _i1.Mock
           {
             #identifier: identifier,
             #token: token,
-            #credentialRequest: credentialRequest,
+            #message: message,
           },
         ),
-        returnValue: _i4.Future<_i2.ClaimEntity>.value(_FakeClaimEntity_0(
+        returnValue: _i5.Future<_i2.ClaimEntity>.value(_FakeClaimEntity_0(
           this,
           Invocation.method(
             #fetchClaim,
@@ -71,24 +83,13 @@ class MockCredentialRepository extends _i1.Mock
             {
               #identifier: identifier,
               #token: token,
-              #credentialRequest: credentialRequest,
+              #message: message,
             },
           ),
         )),
-      ) as _i4.Future<_i2.ClaimEntity>);
+      ) as _i5.Future<_i2.ClaimEntity>);
   @override
-  _i4.Future<String> getFetchMessage(
-          {required _i5.CredentialRequestEntity? credentialRequest}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getFetchMessage,
-          [],
-          {#credentialRequest: credentialRequest},
-        ),
-        returnValue: _i4.Future<String>.value(''),
-      ) as _i4.Future<String>);
-  @override
-  _i4.Future<void> saveClaims({
+  _i5.Future<void> saveClaims({
     required List<_i2.ClaimEntity>? claims,
     required String? identifier,
     required String? privateKey,
@@ -103,12 +104,12 @@ class MockCredentialRepository extends _i1.Mock
             #privateKey: privateKey,
           },
         ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
   @override
-  _i4.Future<List<_i2.ClaimEntity>> getClaims({
-    List<_i6.FilterEntity>? filters,
+  _i5.Future<List<_i2.ClaimEntity>> getClaims({
+    List<_i7.FilterEntity>? filters,
     required String? identifier,
     required String? privateKey,
   }) =>
@@ -123,10 +124,10 @@ class MockCredentialRepository extends _i1.Mock
           },
         ),
         returnValue:
-            _i4.Future<List<_i2.ClaimEntity>>.value(<_i2.ClaimEntity>[]),
-      ) as _i4.Future<List<_i2.ClaimEntity>>);
+            _i5.Future<List<_i2.ClaimEntity>>.value(<_i2.ClaimEntity>[]),
+      ) as _i5.Future<List<_i2.ClaimEntity>>);
   @override
-  _i4.Future<_i2.ClaimEntity> getClaim({
+  _i5.Future<_i2.ClaimEntity> getClaim({
     required String? claimId,
     required String? identifier,
     required String? privateKey,
@@ -141,7 +142,7 @@ class MockCredentialRepository extends _i1.Mock
             #privateKey: privateKey,
           },
         ),
-        returnValue: _i4.Future<_i2.ClaimEntity>.value(_FakeClaimEntity_0(
+        returnValue: _i5.Future<_i2.ClaimEntity>.value(_FakeClaimEntity_0(
           this,
           Invocation.method(
             #getClaim,
@@ -153,9 +154,9 @@ class MockCredentialRepository extends _i1.Mock
             },
           ),
         )),
-      ) as _i4.Future<_i2.ClaimEntity>);
+      ) as _i5.Future<_i2.ClaimEntity>);
   @override
-  _i4.Future<void> removeClaims({
+  _i5.Future<void> removeClaims({
     required List<String>? claimIds,
     required String? identifier,
     required String? privateKey,
@@ -170,21 +171,22 @@ class MockCredentialRepository extends _i1.Mock
             #privateKey: privateKey,
           },
         ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
   @override
-  _i4.Future<Map<String, dynamic>?> fetchSchema({required String? url}) =>
+  _i5.Future<Map<String, dynamic>> fetchSchema({required String? url}) =>
       (super.noSuchMethod(
         Invocation.method(
           #fetchSchema,
           [],
           {#url: url},
         ),
-        returnValue: _i4.Future<Map<String, dynamic>?>.value(),
-      ) as _i4.Future<Map<String, dynamic>?>);
+        returnValue:
+            _i5.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i5.Future<Map<String, dynamic>>);
   @override
-  _i4.Future<Map<String, dynamic>?> fetchVocab({
+  _i5.Future<Map<String, dynamic>> fetchVocab({
     required Map<String, dynamic>? schema,
     required String? type,
   }) =>
@@ -197,10 +199,11 @@ class MockCredentialRepository extends _i1.Mock
             #type: type,
           },
         ),
-        returnValue: _i4.Future<Map<String, dynamic>?>.value(),
-      ) as _i4.Future<Map<String, dynamic>?>);
+        returnValue:
+            _i5.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i5.Future<Map<String, dynamic>>);
   @override
-  _i4.Future<Map<String, dynamic>> getRevocationStatus(
+  _i5.Future<Map<String, dynamic>> getRevocationStatus(
           {required _i2.ClaimEntity? claim}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -209,47 +212,54 @@ class MockCredentialRepository extends _i1.Mock
           {#claim: claim},
         ),
         returnValue:
-            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
-      ) as _i4.Future<Map<String, dynamic>>);
+            _i5.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i5.Future<Map<String, dynamic>>);
   @override
-  _i4.Future<bool> isUsingRHS({required _i2.ClaimEntity? claim}) =>
+  _i5.Future<bool> isUsingRHS({required _i2.ClaimEntity? claim}) =>
       (super.noSuchMethod(
         Invocation.method(
           #isUsingRHS,
           [],
           {#claim: claim},
         ),
-        returnValue: _i4.Future<bool>.value(false),
-      ) as _i4.Future<bool>);
+        returnValue: _i5.Future<bool>.value(false),
+      ) as _i5.Future<bool>);
   @override
-  _i4.Future<String> getRhsRevocationId({required _i2.ClaimEntity? claim}) =>
+  _i5.Future<String> getRhsRevocationId({required _i2.ClaimEntity? claim}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getRhsRevocationId,
           [],
           {#claim: claim},
         ),
-        returnValue: _i4.Future<String>.value(''),
-      ) as _i4.Future<String>);
+        returnValue: _i5.Future<String>.value(''),
+      ) as _i5.Future<String>);
   @override
-  _i4.Future<int> getRevocationNonce({required _i2.ClaimEntity? claim}) =>
+  _i5.Future<int> getRevocationNonce({required _i2.ClaimEntity? claim}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getRevocationNonce,
           [],
           {#claim: claim},
         ),
-        returnValue: _i4.Future<int>.value(0),
-      ) as _i4.Future<int>);
+        returnValue: _i5.Future<int>.value(0),
+      ) as _i5.Future<int>);
   @override
-  _i4.Future<String> getAuthClaim(
-          {required _i7.PrivateIdentityEntity? identity}) =>
+  _i5.Future<_i3.NodeEntity> getAuthClaimNode(
+          {required _i8.IdentityEntity? identity}) =>
       (super.noSuchMethod(
         Invocation.method(
-          #getAuthClaim,
+          #getAuthClaimNode,
           [],
           {#identity: identity},
         ),
-        returnValue: _i4.Future<String>.value(''),
-      ) as _i4.Future<String>);
+        returnValue: _i5.Future<_i3.NodeEntity>.value(_FakeNodeEntity_1(
+          this,
+          Invocation.method(
+            #getAuthClaimNode,
+            [],
+            {#identity: identity},
+          ),
+        )),
+      ) as _i5.Future<_i3.NodeEntity>);
 }
