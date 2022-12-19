@@ -1,13 +1,13 @@
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 
-/// Param required to import the encrypted claims database
-class ImportEncryptedClaimsDbParam {
+/// Param required to import the claims database
+class ImportClaimsParam {
   final String privateKey;
   final String identifier;
   final String encryptedClaimsDb;
 
-  ImportEncryptedClaimsDbParam({
+  ImportClaimsParam({
     required this.privateKey,
     required this.identifier,
     required this.encryptedClaimsDb,
@@ -15,15 +15,15 @@ class ImportEncryptedClaimsDbParam {
 }
 
 /// Use case to import the encrypted claims database
-class ImportEncryptedClaimsDbUseCase
-    extends FutureUseCase<ImportEncryptedClaimsDbParam, void> {
+class ImportClaimsUseCase
+    extends FutureUseCase<ImportClaimsParam, void> {
   final CredentialRepository _credentialRepository;
 
-  ImportEncryptedClaimsDbUseCase(this._credentialRepository);
+  ImportClaimsUseCase(this._credentialRepository);
 
   @override
-  Future<void> execute({required ImportEncryptedClaimsDbParam param}) {
-    return _credentialRepository.importEncryptedClaimsDb(
+  Future<void> execute({required ImportClaimsParam param}) {
+    return _credentialRepository.importClaims(
       identifier: param.identifier,
       privateKey: param.privateKey,
       encryptedDb: param.encryptedClaimsDb,

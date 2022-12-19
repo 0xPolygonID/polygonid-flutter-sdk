@@ -47,12 +47,12 @@ abstract class CredentialRepository {
 
   Future<String> getAuthClaim({required PrivateIdentityEntity identity});
 
-  Future<String> exportEncryptedClaimsDb({
+  Future<String> exportClaims({
     required String identifier,
     required String privateKey,
   });
 
-  Future<void> importEncryptedClaimsDb({
+  Future<void> importClaims({
     required String identifier,
     required String privateKey,
     required String encryptedDb,

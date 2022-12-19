@@ -391,13 +391,13 @@ class MockCredentialRepository extends _i1.Mock
         returnValue: _i9.Future<String>.value(''),
       ) as _i9.Future<String>);
   @override
-  _i9.Future<String> exportEncryptedClaimsDb({
+  _i9.Future<String> exportClaims({
     required String? identifier,
     required String? privateKey,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
-          #exportEncryptedClaimsDb,
+          #exportClaims,
           [],
           {
             #identifier: identifier,
@@ -407,14 +407,14 @@ class MockCredentialRepository extends _i1.Mock
         returnValue: _i9.Future<String>.value(''),
       ) as _i9.Future<String>);
   @override
-  _i9.Future<void> importEncryptedClaimsDb({
+  _i9.Future<void> importClaims({
     required String? identifier,
     required String? privateKey,
     required String? encryptedDb,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
-          #importEncryptedClaimsDb,
+          #importClaims,
           [],
           {
             #identifier: identifier,

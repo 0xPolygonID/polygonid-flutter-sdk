@@ -1,3 +1,4 @@
+import 'package:encrypt/encrypt.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -9,8 +10,10 @@ import 'package:polygonid_flutter_sdk/credential/data/data_sources/remote_claim_
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_proofs/claim_proof_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/encryption_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/id_filter_mapper.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/initialization_vector_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/encryption_db_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
@@ -20,6 +23,8 @@ import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
+import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 
 class CredentialRepositoryImpl extends CredentialRepository {
@@ -32,6 +37,8 @@ class CredentialRepositoryImpl extends CredentialRepository {
   final RevocationStatusMapper _revocationStatusMapper;
   final EncryptionDbDataSource _encryptionDbDataSource;
   final DestinationPathDataSource _destinationPathDataSource;
+  final InitializationVectorMapper _initializationVectorMapper;
+  final EncryptionKeyMapper _encryptionKeyMapper;
 
   CredentialRepositoryImpl(
     this._remoteClaimDataSource,
@@ -43,6 +50,8 @@ class CredentialRepositoryImpl extends CredentialRepository {
     this._revocationStatusMapper,
     this._encryptionDbDataSource,
     this._destinationPathDataSource,
+    this._initializationVectorMapper,
+    this._encryptionKeyMapper,
   );
 
   @override
@@ -177,33 +186,43 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<String> exportEncryptedClaimsDb(
+  Future<String> exportClaims(
       {required String identifier, required String privateKey}) async {
     Map<String, Object?> exportableDb = await _storageClaimDataSource
         .getClaimsDb(identifier: identifier, privateKey: privateKey);
+
+    IV iv = _initializationVectorMapper.mapFrom(16);
+    Key key = _encryptionKeyMapper.mapFrom(privateKey);
+
     return _encryptionDbDataSource.encryptData(
-        data: exportableDb, privateKey: privateKey);
+      data: exportableDb,
+      key: key,
+      iv: iv,
+    );
   }
 
   @override
-  Future<void> importEncryptedClaimsDb(
+  Future<void> importClaims(
       {required String identifier,
       required String privateKey,
       required String encryptedDb}) async {
+    IV iv = _initializationVectorMapper.mapFrom(16);
+    Key key = _encryptionKeyMapper.mapFrom(privateKey);
+
     Map<String, Object?> decryptedDb = _encryptionDbDataSource.decryptData(
-        encryptedData: encryptedDb, privateKey: privateKey);
+      encryptedData: encryptedDb,
+      key: key,
+      iv: iv,
+    );
 
     String destinationPath = await _destinationPathDataSource
         .getDestinationPath(identifier: identifier);
-
-    //TODO this need to be a DS to get codec? @Flavien
-    var codec = getEncryptSembastCodec(password: privateKey);
 
     return _storageClaimDataSource.saveClaimsDb(
       exportableDb: decryptedDb,
       databaseFactory: databaseFactoryIo,
       destinationPath: destinationPath,
-      codec: codec,
+      privateKey: privateKey,
     );
   }
 }

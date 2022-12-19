@@ -296,7 +296,7 @@ class MockStorageClaimDataSource extends _i1.Mock
     required Map<String, Object?>? exportableDb,
     required _i10.DatabaseFactory? databaseFactory,
     required String? destinationPath,
-    required _i10.SembastCodec? codec,
+    required String? privateKey,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -306,7 +306,7 @@ class MockStorageClaimDataSource extends _i1.Mock
             #exportableDb: exportableDb,
             #databaseFactory: databaseFactory,
             #destinationPath: destinationPath,
-            #codec: codec,
+            #privateKey: privateKey,
           },
         ),
         returnValue: _i4.Future<void>.value(),

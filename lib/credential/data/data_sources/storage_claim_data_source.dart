@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/utils/encrypt_sembast_codec.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:sembast/sembast.dart';
@@ -125,8 +126,13 @@ class StorageClaimDataSource {
     required Map<String, Object?> exportableDb,
     required DatabaseFactory databaseFactory,
     required String destinationPath,
-    required SembastCodec codec,
+    required String privateKey,
   }) async {
+    SembastCodec codec = getItSdk.get<SembastCodec>(
+      instanceName: sembastCodecName,
+      param1: privateKey,
+    );
+
     await importDatabase(
       exportableDb,
       databaseFactory,
