@@ -3,6 +3,7 @@ import 'identity_entity.dart';
 /// Represents a private identity.
 class PrivateIdentityEntity extends IdentityEntity {
   final String privateKey;
+  //final Map<int, String> profiles;
 
   const PrivateIdentityEntity({
     required String did,

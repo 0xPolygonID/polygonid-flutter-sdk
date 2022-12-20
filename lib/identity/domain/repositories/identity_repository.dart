@@ -28,7 +28,7 @@ abstract class IdentityRepository {
       {required String privateKey, required String message});
 
   Future<String> getDidIdentifier({
-    required List<String> publicKey,
+    required String privateKey,
     required String blockchain,
     required String network,
   });

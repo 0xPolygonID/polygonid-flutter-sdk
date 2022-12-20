@@ -78,7 +78,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     return _authenticateUseCase.execute(
         param: AuthenticateParam(
       message: message,
-      identifier: identifier,
+      did: identifier,
       privateKey: privateKey,
       pushToken: pushToken,
     ));

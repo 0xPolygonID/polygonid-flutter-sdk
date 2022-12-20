@@ -235,14 +235,13 @@ class IdentityRepositoryImpl extends IdentityRepository {
       PrivadoIdWallet wallet = await _walletDataSource.createWallet(
           secret: _privateKeyMapper.mapFrom(secret),
           accessMessage: accessMessage);
+      String privateKey = _hexMapper.mapFrom(wallet.privateKey);
 
       String did = await getDidIdentifier(
         blockchain: blockchain,
         network: network,
-        publicKey: wallet.publicKey,
+        privateKey: privateKey,
       );
-
-      String privateKey = _hexMapper.mapFrom(wallet.privateKey);
 
       Map<String, dynamic> treeState = await _createIdentityState(
           did: did, privateKey: privateKey, publicKey: wallet.publicKey);
@@ -449,7 +448,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
       PrivadoIdWallet wallet = await _walletDataSource.getWallet(
           privateKey: _hexMapper.mapTo(privateKey));
       String did = await getDidIdentifier(
-          publicKey: wallet.publicKey,
+          privateKey: privateKey,
           blockchain: didMap.blockchain,
           network: didMap.network);
       if (did == identity.did) {
@@ -563,19 +562,23 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
   @override
   Future<String> getDidIdentifier({
-    required List<String> publicKey,
+    required String privateKey,
     required String blockchain,
     required String network,
   }) async {
-    Map<String, dynamic> treeState =
-        await _getGenesisState(publicKey: publicKey);
-    // Get the genesis id
-    String genesisId = _libPolygonIdCoreIdentityDataSource.calculateGenesisId(
-        treeState["claimsRoot"], blockchain, network);
+    return _walletDataSource
+        .getWallet(privateKey: _hexMapper.mapTo(privateKey))
+        .then((wallet) =>
+            _getGenesisState(publicKey: wallet.publicKey).then((genesisState) {
+              // Get the genesis id
+              String genesisId =
+                  _libPolygonIdCoreIdentityDataSource.calculateGenesisId(
+                      genesisState["claimsRoot"], blockchain, network);
 
-    Map<String, dynamic> genesis = jsonDecode(genesisId);
+              Map<String, dynamic> genesis = jsonDecode(genesisId);
 
-    return Future.value(genesis["did"]);
+              return Future.value(genesis["did"]);
+            }));
   }
 
   @override

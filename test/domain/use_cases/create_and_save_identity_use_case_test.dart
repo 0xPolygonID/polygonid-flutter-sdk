@@ -13,7 +13,7 @@ import 'create_and_save_identity_use_case_test.mocks.dart';
 // Data
 final privateIdentity = PrivateIdentityEntity(
     privateKey: CommonMocks.privateKey,
-    identifier: CommonMocks.identifier,
+    did: CommonMocks.identifier,
     publicKey: CommonMocks.pubKeys);
 var exception = Exception();
 

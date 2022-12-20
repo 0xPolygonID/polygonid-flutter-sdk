@@ -19,7 +19,6 @@ import 'data_sources/remote_claim_data_source.dart';
 import 'data_sources/storage_claim_data_source.dart';
 import 'dtos/claim_proofs/claim_proof_dto.dart';
 import 'mappers/claim_mapper.dart';
-import 'mappers/credential_request_mapper.dart';
 import 'mappers/filters_mapper.dart';
 import 'mappers/id_filter_mapper.dart';
 import 'mappers/revocation_status_mapper.dart';
@@ -30,7 +29,6 @@ class CredentialRepositoryImpl extends CredentialRepository {
   final LibPolygonIdCoreCredentialDataSource
       _libPolygonIdCoreCredentialDataSource;
   final LibBabyJubJubDataSource _libBabyJubJubDataSource;
-  final CredentialRequestMapper _credentialRequestMapper;
   final LibIdentityDataSource _libIdentityDataSource;
   final ClaimMapper _claimMapper;
   final FiltersMapper _filtersMapper;
@@ -43,7 +41,6 @@ class CredentialRepositoryImpl extends CredentialRepository {
       this._storageClaimDataSource,
       this._libPolygonIdCoreCredentialDataSource,
       this._libBabyJubJubDataSource,
-      this._credentialRequestMapper,
       this._libIdentityDataSource,
       this._claimMapper,
       this._filtersMapper,
@@ -176,12 +173,7 @@ class CredentialRepositoryImpl extends CredentialRepository {
         .then((claimDTO) => claimDTO.info.revNonce);
   }
 
-  @override
-  Future<NodeEntity> getAuthClaimNode(
-      {required IdentityEntity identity}) async {
-    //return _libPolygonIdCoreClaimDataSource.getAuthClaim(
-    //    pubX: identity.publicKey[0], pubY: identity.publicKey[1]);
-
+  Future<String> getAuthClaim({required IdentityEntity identity}) {
     String authClaimSchema = "ca938857241db9451ea329256b9c06e5";
     String authClaimNonce = "15930428023331155902";
     String authClaim = _libPolygonIdCoreCredentialDataSource.issueAuthClaim(
@@ -189,6 +181,14 @@ class CredentialRepositoryImpl extends CredentialRepository {
       nonce: authClaimNonce,
       publicKey: identity.publicKey,
     );
+
+    return Future.value(authClaim);
+  }
+
+  @override
+  Future<NodeEntity> getAuthClaimNode(
+      {required IdentityEntity identity}) async {
+    String authClaim = await getAuthClaim(identity: identity);
     List<String> children = List.from(jsonDecode(authClaim));
     String hashIndex = await _libBabyJubJubDataSource.hashPoseidon4(
       children[0],

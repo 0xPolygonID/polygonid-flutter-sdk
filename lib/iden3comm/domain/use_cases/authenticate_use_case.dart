@@ -12,13 +12,13 @@ import 'get_proofs_use_case.dart';
 
 class AuthenticateParam {
   final AuthIden3MessageEntity message;
-  final String identifier;
+  final String did;
   final String privateKey;
   final String? pushToken;
 
   AuthenticateParam(
       {required this.message,
-      required this.identifier,
+      required this.did,
       required this.privateKey,
       this.pushToken});
 }
@@ -46,7 +46,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
       List<ProofEntity> proofs = await _getProofsUseCase.execute(
           param: GetProofsParam(
         message: param.message,
-        identifier: param.identifier,
+        identifier: param.did,
         privateKey: param.privateKey,
       ));
 
@@ -59,7 +59,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
 
       String didIdentifier = await _getDidIdentifierUseCase.execute(
         param: GetDidIdentifierParam(
-          publicKey: param.publicKey,
+          privateKey: param.privateKey,
           blockchain: blockchain,
           network: network,
         ),
@@ -68,7 +68,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
       String packageName = await _getPackageNameUseCase.execute();
 
       String authResponse = await _iden3commRepository.getAuthResponse(
-          identifier: param.identifier,
+          identifier: param.did,
           request: param.message,
           scope: proofs,
           pushUrl: pushUrl,
@@ -77,8 +77,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
           packageName: packageName);
 
       String authToken = await _getAuthTokenUseCase.execute(
-          param: GetAuthTokenParam(
-              param.identifier, param.privateKey, authResponse));
+          param: GetAuthTokenParam(param.did, param.privateKey, authResponse));
 
       return _iden3commRepository.authenticate(
         request: param.message,

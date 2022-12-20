@@ -23,9 +23,9 @@ class GetIdentityUseCase
   Future<IdentityEntity> execute({required GetIdentityParam param}) {
     return param.privateKey != null
         ? _identityRepository.getPrivateIdentity(
-            identifier: param.identifier, privateKey: param.privateKey!)
+            did: param.identifier, privateKey: param.privateKey!)
         : _identityRepository
-            .getIdentity(identifier: param.identifier)
+            .getIdentity(did: param.identifier)
             .then((identity) {
             logger().i("[GetIdentityUseCase] Identity: $identity");
 

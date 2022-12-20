@@ -392,6 +392,16 @@ class MockCredentialRepository extends _i1.Mock
         returnValue: _i10.Future<int>.value(0),
       ) as _i10.Future<int>);
   @override
+  _i10.Future<String> getAuthClaim({required _i7.IdentityEntity? identity}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getAuthClaim,
+          [],
+          {#identity: identity},
+        ),
+        returnValue: _i10.Future<String>.value(''),
+      ) as _i10.Future<String>);
+  @override
   _i10.Future<_i3.NodeEntity> getAuthClaimNode(
           {required _i7.IdentityEntity? identity}) =>
       (super.noSuchMethod(
@@ -673,7 +683,7 @@ class MockIdentityRepository extends _i1.Mock
       ) as _i10.Future<String>);
   @override
   _i10.Future<String> getDidIdentifier({
-    required List<String>? publicKey,
+    required String? privateKey,
     required String? blockchain,
     required String? network,
   }) =>
@@ -682,7 +692,7 @@ class MockIdentityRepository extends _i1.Mock
           #getDidIdentifier,
           [],
           {
-            #publicKey: publicKey,
+            #privateKey: privateKey,
             #blockchain: blockchain,
             #network: network,
           },

@@ -3,12 +3,12 @@ import '../../../common/domain/use_case.dart';
 import '../repositories/identity_repository.dart';
 
 class GetDidIdentifierParam {
-  final List<String> publicKey;
+  final String privateKey;
   final String blockchain;
   final String network;
 
   GetDidIdentifierParam({
-    required this.publicKey,
+    required this.privateKey,
     required this.blockchain,
     required this.network,
   });
@@ -24,13 +24,13 @@ class GetDidIdentifierUseCase
   Future<String> execute({required GetDidIdentifierParam param}) {
     return _identityRepository
         .getDidIdentifier(
-            publicKey: param.publicKey,
+            privateKey: param.privateKey,
             blockchain: param.blockchain,
             network: param.network)
-        .then((didIdentifier) {
-      logger().i("[GetDidIdentifierUseCase] DID identifier: $didIdentifier");
+        .then((did) {
+      logger().i("[GetDidIdentifierUseCase] did: $did");
 
-      return didIdentifier;
+      return did;
     }).catchError((error) {
       logger().e("[GetDidIdentifierUseCase] Error: $error");
 

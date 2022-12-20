@@ -245,6 +245,16 @@ class MockCredentialRepository extends _i1.Mock
         returnValue: _i5.Future<int>.value(0),
       ) as _i5.Future<int>);
   @override
+  _i5.Future<String> getAuthClaim({required _i8.IdentityEntity? identity}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getAuthClaim,
+          [],
+          {#identity: identity},
+        ),
+        returnValue: _i5.Future<String>.value(''),
+      ) as _i5.Future<String>);
+  @override
   _i5.Future<_i3.NodeEntity> getAuthClaimNode(
           {required _i8.IdentityEntity? identity}) =>
       (super.noSuchMethod(

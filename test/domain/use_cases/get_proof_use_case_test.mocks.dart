@@ -362,7 +362,7 @@ class MockIdentityRepository extends _i1.Mock
       ) as _i8.Future<String>);
   @override
   _i8.Future<String> getDidIdentifier({
-    required List<String>? publicKey,
+    required String? privateKey,
     required String? blockchain,
     required String? network,
   }) =>
@@ -371,7 +371,7 @@ class MockIdentityRepository extends _i1.Mock
           #getDidIdentifier,
           [],
           {
-            #publicKey: publicKey,
+            #privateKey: privateKey,
             #blockchain: blockchain,
             #network: network,
           },

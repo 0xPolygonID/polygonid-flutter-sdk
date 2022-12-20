@@ -46,5 +46,7 @@ abstract class CredentialRepository {
 
   Future<int> getRevocationNonce({required ClaimEntity claim});
 
+  Future<String> getAuthClaim({required IdentityEntity identity});
+
   Future<NodeEntity> getAuthClaimNode({required IdentityEntity identity});
 }

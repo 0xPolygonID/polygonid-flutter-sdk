@@ -2,13 +2,26 @@ import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_cas
 
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
+import '../../../constants.dart';
 import '../entities/identity_entity.dart';
 import '../entities/private_identity_entity.dart';
 import '../exceptions/identity_exceptions.dart';
 import '../repositories/identity_repository.dart';
 
+class CreateAndSaveIdentityParam {
+  final String? secret;
+  final String blockchain;
+  final String network;
+
+  CreateAndSaveIdentityParam({
+    this.secret,
+    required this.blockchain,
+    required this.network,
+  });
+}
+
 class CreateAndSaveIdentityUseCase
-    extends FutureUseCase<String?, IdentityEntity> {
+    extends FutureUseCase<CreateAndSaveIdentityParam, IdentityEntity> {
   final IdentityRepository _identityRepository;
   final GetEnvConfigUseCase _getEnvConfigUseCase;
 
@@ -16,12 +29,16 @@ class CreateAndSaveIdentityUseCase
       this._identityRepository, this._getEnvConfigUseCase);
 
   @override
-  Future<PrivateIdentityEntity> execute({required String? param}) async {
+  Future<PrivateIdentityEntity> execute(
+      {required CreateAndSaveIdentityParam param}) async {
     // Create the [PrivateIdentityEntity] with the secret
-    PrivateIdentityEntity privateIdentity = await _getEnvConfigUseCase
-        .execute(param: PolygonIdConfig.polygonIdAccessMessage)
-        .then((accessMessage) => _identityRepository.createIdentity(
-            secret: param, accessMessage: accessMessage));
+    String accessMessage = POLYGONID_ACCESS_MESSAGE;
+    PrivateIdentityEntity privateIdentity =
+        await _identityRepository.createIdentity(
+            secret: param.secret,
+            accessMessage: accessMessage,
+            blockchain: param.blockchain,
+            network: param.network);
 
     // Check if identity is already stored (already created)
     try {
@@ -41,7 +58,7 @@ class CreateAndSaveIdentityUseCase
     }
 
     logger().i(
-        "[CreateAndSaveIdentityUseCase] Identity created and saved with identifier: ${privateIdentity.identifier}, for key $param");
+        "[CreateAndSaveIdentityUseCase] Identity created and saved with did: ${privateIdentity.did}, for key ${param.secret}");
     return privateIdentity;
   }
 }

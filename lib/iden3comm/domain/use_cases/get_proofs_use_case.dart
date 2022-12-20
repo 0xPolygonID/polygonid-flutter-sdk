@@ -50,9 +50,7 @@ class GetProofsUseCase
         await _getProofRequestsUseCase.execute(param: param.message);
 
     List<String> publicKey = await _identityRepository
-        .getIdentity(
-          identifier: param.identifier,
-        )
+        .getIdentity(did: param.identifier)
         .then((identity) => identity.publicKey);
 
     /// We got [ProofRequestEntity], let's find the associated [ClaimEntity]
