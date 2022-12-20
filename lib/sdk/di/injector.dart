@@ -81,18 +81,18 @@ abstract class DatabaseModule {
   }
 
   @Named(claimDatabaseName)
-  Future<Database> claimDatabase(@factoryParam String? identifier,
-      @factoryParam String? privateKey) async {
+  Future<Database> claimDatabase(
+    SembastCodec codec,
+    @factoryParam String? identifier,
+    @factoryParam String? privateKey,
+  ) async {
     final dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
     final path = join(dir.path, claimDatabasePrefix + identifier! + '.db');
-    // Initialize the encryption codec with the privateKey
-    var codec = getCodec(privateKey!);
     final database = await databaseFactoryIo.openDatabase(path, codec: codec);
     return database;
   }
 
-  @Named(sembastCodecName)
   SembastCodec getCodec(@factoryParam String privateKey) {
     return getEncryptSembastCodec(password: privateKey);
   }

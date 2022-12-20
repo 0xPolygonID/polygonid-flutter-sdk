@@ -128,10 +128,7 @@ class StorageClaimDataSource {
     required String destinationPath,
     required String privateKey,
   }) async {
-    SembastCodec codec = getItSdk.get<SembastCodec>(
-      instanceName: sembastCodecName,
-      param1: privateKey,
-    );
+    SembastCodec codec = getItSdk.get<SembastCodec>(param1: privateKey);
 
     await importDatabase(
       exportableDb,

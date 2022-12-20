@@ -27,13 +27,11 @@ import 'package:polygonid_flutter_sdk/credential/data/dtos/revocation_status.dar
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart'
     as _i16;
 import 'package:polygonid_flutter_sdk/credential/data/mappers/encryption_key_mapper.dart'
-    as _i24;
+    as _i23;
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart'
     as _i17;
 import 'package:polygonid_flutter_sdk/credential/data/mappers/id_filter_mapper.dart'
     as _i19;
-import 'package:polygonid_flutter_sdk/credential/data/mappers/initialization_vector_mapper.dart'
-    as _i23;
 import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_mapper.dart'
     as _i20;
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
@@ -119,8 +117,8 @@ class _FakeRevocationStatus_5 extends _i1.SmartFake
         );
 }
 
-class _FakeIV_6 extends _i1.SmartFake implements _i8.IV {
-  _FakeIV_6(
+class _FakeKey_6 extends _i1.SmartFake implements _i8.Key {
+  _FakeKey_6(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -129,19 +127,9 @@ class _FakeIV_6 extends _i1.SmartFake implements _i8.IV {
         );
 }
 
-class _FakeKey_7 extends _i1.SmartFake implements _i8.Key {
-  _FakeKey_7(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-}
-
-class _FakeJsonEncodableCodec_8 extends _i1.SmartFake
+class _FakeJsonEncodableCodec_7 extends _i1.SmartFake
     implements _i9.JsonEncodableCodec {
-  _FakeJsonEncodableCodec_8(
+  _FakeJsonEncodableCodec_7(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -661,36 +649,11 @@ class MockDestinationPathDataSource extends _i1.Mock
       ) as _i11.Future<String>);
 }
 
-/// A class which mocks [InitializationVectorMapper].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockInitializationVectorMapper extends _i1.Mock
-    implements _i23.InitializationVectorMapper {
-  MockInitializationVectorMapper() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  _i8.IV mapFrom(int? from) => (super.noSuchMethod(
-        Invocation.method(
-          #mapFrom,
-          [from],
-        ),
-        returnValue: _FakeIV_6(
-          this,
-          Invocation.method(
-            #mapFrom,
-            [from],
-          ),
-        ),
-      ) as _i8.IV);
-}
-
 /// A class which mocks [EncryptionKeyMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockEncryptionKeyMapper extends _i1.Mock
-    implements _i24.EncryptionKeyMapper {
+    implements _i23.EncryptionKeyMapper {
   MockEncryptionKeyMapper() {
     _i1.throwOnMissingStub(this);
   }
@@ -701,7 +664,7 @@ class MockEncryptionKeyMapper extends _i1.Mock
           #mapFrom,
           [from],
         ),
-        returnValue: _FakeKey_7(
+        returnValue: _FakeKey_6(
           this,
           Invocation.method(
             #mapFrom,
@@ -722,7 +685,7 @@ class MockSembastCodec extends _i1.Mock implements _i6.SembastCodec {
   @override
   _i9.JsonEncodableCodec get jsonEncodableCodec => (super.noSuchMethod(
         Invocation.getter(#jsonEncodableCodec),
-        returnValue: _FakeJsonEncodableCodec_8(
+        returnValue: _FakeJsonEncodableCodec_7(
           this,
           Invocation.getter(#jsonEncodableCodec),
         ),

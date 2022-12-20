@@ -13,7 +13,6 @@ import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart'
 import 'package:polygonid_flutter_sdk/credential/data/mappers/encryption_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/id_filter_mapper.dart';
-import 'package:polygonid_flutter_sdk/credential/data/mappers/initialization_vector_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/encryption_db_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
@@ -37,7 +36,6 @@ class CredentialRepositoryImpl extends CredentialRepository {
   final RevocationStatusMapper _revocationStatusMapper;
   final EncryptionDbDataSource _encryptionDbDataSource;
   final DestinationPathDataSource _destinationPathDataSource;
-  final InitializationVectorMapper _initializationVectorMapper;
   final EncryptionKeyMapper _encryptionKeyMapper;
 
   CredentialRepositoryImpl(
@@ -50,7 +48,6 @@ class CredentialRepositoryImpl extends CredentialRepository {
     this._revocationStatusMapper,
     this._encryptionDbDataSource,
     this._destinationPathDataSource,
-    this._initializationVectorMapper,
     this._encryptionKeyMapper,
   );
 
@@ -191,13 +188,12 @@ class CredentialRepositoryImpl extends CredentialRepository {
     Map<String, Object?> exportableDb = await _storageClaimDataSource
         .getClaimsDb(identifier: identifier, privateKey: privateKey);
 
-    IV iv = _initializationVectorMapper.mapFrom(16);
     Key key = _encryptionKeyMapper.mapFrom(privateKey);
 
     return _encryptionDbDataSource.encryptData(
       data: exportableDb,
       key: key,
-      iv: iv,
+      iv: IV.fromLength(16),
     );
   }
 
@@ -206,13 +202,12 @@ class CredentialRepositoryImpl extends CredentialRepository {
       {required String identifier,
       required String privateKey,
       required String encryptedDb}) async {
-    IV iv = _initializationVectorMapper.mapFrom(16);
     Key key = _encryptionKeyMapper.mapFrom(privateKey);
 
     Map<String, Object?> decryptedDb = _encryptionDbDataSource.decryptData(
       encryptedData: encryptedDb,
       key: key,
-      iv: iv,
+      iv: IV.fromLength(16),
     );
 
     String destinationPath = await _destinationPathDataSource

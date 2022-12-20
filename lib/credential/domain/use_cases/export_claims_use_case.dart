@@ -13,8 +13,7 @@ class ExportClaimsParam {
 }
 
 /// Use case to export the claims database
-class ExportClaimsUseCase
-    extends FutureUseCase<ExportClaimsParam, String> {
+class ExportClaimsUseCase extends FutureUseCase<ExportClaimsParam, String> {
   final CredentialRepository _credentialRepository;
 
   ExportClaimsUseCase(this._credentialRepository);

@@ -18,7 +18,6 @@ import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart'
 import 'package:polygonid_flutter_sdk/credential/data/mappers/encryption_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/id_filter_mapper.dart';
-import 'package:polygonid_flutter_sdk/credential/data/mappers/initialization_vector_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
@@ -102,8 +101,6 @@ MockEncryptionDbDataSource encryptionDbDataSource =
     MockEncryptionDbDataSource();
 MockDestinationPathDataSource destinationPathDataSource =
     MockDestinationPathDataSource();
-MockInitializationVectorMapper initializationVectorMapper =
-    MockInitializationVectorMapper();
 MockEncryptionKeyMapper encryptionKeyMapper = MockEncryptionKeyMapper();
 MockSembastCodec sembastCodec = MockSembastCodec();
 
@@ -118,7 +115,6 @@ CredentialRepositoryImpl repository = CredentialRepositoryImpl(
   revocationStatusMapper,
   encryptionDbDataSource,
   destinationPathDataSource,
-  initializationVectorMapper,
   encryptionKeyMapper,
 );
 
@@ -133,7 +129,6 @@ CredentialRepositoryImpl repository = CredentialRepositoryImpl(
   RevocationStatusMapper,
   EncryptionDbDataSource,
   DestinationPathDataSource,
-  InitializationVectorMapper,
   EncryptionKeyMapper,
   SembastCodec,
 ])
@@ -624,9 +619,6 @@ void main() {
               privateKey: anyNamed('privateKey')))
           .thenAnswer((realInvocation) => Future.value(mockDb));
 
-      when(initializationVectorMapper.mapFrom(any))
-          .thenAnswer((realInvocation) => mockIv);
-
       when(encryptionKeyMapper.mapFrom(any))
           .thenAnswer((realInvocation) => encryptionKey);
 
@@ -654,10 +646,6 @@ void main() {
       expect(captureGet[0], CommonMocks.identifier);
       expect(captureGet[1], CommonMocks.privateKey);
 
-      var captureInitializationVectorMapper =
-          verify(initializationVectorMapper.mapFrom(captureAny)).captured;
-      expect(captureInitializationVectorMapper[0], 16);
-
       var captureEncryptionKeyMapper =
           verify(encryptionKeyMapper.mapFrom(captureAny)).captured;
       expect(captureEncryptionKeyMapper[0], CommonMocks.privateKey);
@@ -669,7 +657,6 @@ void main() {
       )).captured;
       expect(captureEncrypt[0], mockDb);
       expect(captureEncrypt[1], encryptionKey);
-      expect(captureEncrypt[2], mockIv);
     });
   });
 
@@ -680,9 +667,6 @@ void main() {
         key: anyNamed('key'),
         iv: anyNamed('iv'),
       )).thenAnswer((realInvocation) => mockDb);
-
-      when(initializationVectorMapper.mapFrom(any))
-          .thenAnswer((realInvocation) => mockIv);
 
       when(encryptionKeyMapper.mapFrom(any))
           .thenAnswer((realInvocation) => encryptionKey);
