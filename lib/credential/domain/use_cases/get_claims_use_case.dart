@@ -27,7 +27,7 @@ class GetClaimsUseCase
     return _credentialRepository
         .getClaims(
             filters: param.filters,
-            identifier: param.identifier,
+            did: param.identifier,
             privateKey: param.privateKey)
         .then((claims) {
       logger().i("[GetClaimsUseCase] Claims: $claims");

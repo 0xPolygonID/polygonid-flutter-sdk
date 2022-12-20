@@ -94,6 +94,14 @@ extern "C" {
 extern GoUint8 PLGNAuthV2InputsMarshal(char** jsonResponse, char* in, PLGNStatus** status);
 extern GoUint8 PLGNCalculateGenesisID(char** jsonResponse, char* in, PLGNStatus** status);
 extern GoUint8 PLGNCreateClaim(char** jsonResponse, char* in, PLGNStatus** status);
+
+// PLGNIDToInt returns the ID as a big int string
+// Input should be a valid JSON object: string enclosed by double quotes.
+// Output is a valid JSON object to: string enclosed by double quotes.
+//
+extern GoUint8 PLGNIDToInt(char** jsonResponse, char* in, PLGNStatus** status);
+extern GoUint8 PLGNProofFromSmartContract(char** jsonResponse, char* in, PLGNStatus** status);
+extern GoUint8 PLGNProfileID(char** jsonResponse, char* in, PLGNStatus** status);
 extern void PLGNFreeStatus(PLGNStatus* status);
 
 #ifdef __cplusplus

@@ -10,6 +10,7 @@ class IdentityDTOMapper extends Mapper<IdentityDTO, IdentityEntity> {
     return IdentityEntity(
       did: from.did,
       publicKey: from.publicKey,
+      profiles: from.profiles,
     );
   }
 
@@ -18,6 +19,7 @@ class IdentityDTOMapper extends Mapper<IdentityDTO, IdentityEntity> {
     return IdentityDTO(
       did: to.did,
       publicKey: to.publicKey,
+      profiles: to.profiles,
     );
   }
 
@@ -28,6 +30,7 @@ class IdentityDTOMapper extends Mapper<IdentityDTO, IdentityEntity> {
     return PrivateIdentityEntity(
       did: from.did,
       publicKey: from.publicKey,
+      profiles: from.profiles,
       privateKey: privateKey,
     );
   }

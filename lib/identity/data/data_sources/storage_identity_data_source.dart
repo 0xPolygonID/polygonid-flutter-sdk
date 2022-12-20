@@ -45,8 +45,6 @@ class StorageIdentityDataSource {
     });
   }
 
-  /// As we support only one identity at the moment, we need to maintain
-  /// the stored current identifier up to date
   Future<void> storeIdentity(
       {required String did, required IdentityDTO identity}) {
     return _database.transaction((transaction) => storeIdentityTransact(

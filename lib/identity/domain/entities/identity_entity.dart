@@ -2,14 +2,17 @@
 class IdentityEntity {
   final String did;
   final List<String> publicKey;
+  final List<int>? profiles;
 
   const IdentityEntity({
     required this.did,
     required this.publicKey,
+    this.profiles,
   });
 
   @override
-  String toString() => "[IdentityEntity] {did: $did, publicKey: $publicKey}";
+  String toString() =>
+      "[IdentityEntity] {did: $did, publicKey: $publicKey, profiles: $profiles}";
 
   @override
   bool operator ==(Object other) =>
@@ -17,7 +20,8 @@ class IdentityEntity {
       other is IdentityEntity &&
           runtimeType == other.runtimeType &&
           did == other.did &&
-          publicKey == other.publicKey;
+          publicKey == other.publicKey &&
+          profiles == other.profiles;
 
   @override
   int get hashCode => runtimeType.hashCode;

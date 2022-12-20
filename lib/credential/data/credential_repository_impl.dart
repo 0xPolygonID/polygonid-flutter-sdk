@@ -76,12 +76,12 @@ class CredentialRepositoryImpl extends CredentialRepository {
   @override
   Future<void> saveClaims(
       {required List<ClaimEntity> claims,
-      required String identifier,
+      required String did,
       required String privateKey}) {
     return _storageClaimDataSource
         .storeClaims(
             claims: claims.map((claim) => _claimMapper.mapTo(claim)).toList(),
-            identifier: identifier,
+            did: did,
             privateKey: privateKey)
         .catchError((error) => throw SaveClaimException(error));
   }
@@ -89,12 +89,12 @@ class CredentialRepositoryImpl extends CredentialRepository {
   @override
   Future<List<ClaimEntity>> getClaims(
       {List<FilterEntity>? filters,
-      required String identifier,
+      required String did,
       required String privateKey}) {
     return _storageClaimDataSource
         .getClaims(
             filter: filters == null ? null : _filtersMapper.mapTo(filters),
-            identifier: identifier,
+            did: did,
             privateKey: privateKey)
         .then((claims) =>
             claims.map((claim) => _claimMapper.mapFrom(claim)).toList())
@@ -104,12 +104,12 @@ class CredentialRepositoryImpl extends CredentialRepository {
   @override
   Future<ClaimEntity> getClaim(
       {required String claimId,
-      required String identifier,
+      required String did,
       required String privateKey}) {
     return _storageClaimDataSource
         .getClaims(
             filter: _idFilterMapper.mapTo(claimId),
-            identifier: identifier,
+            did: did,
             privateKey: privateKey)
         .then((claims) => claims.isEmpty
             ? throw ClaimNotFoundException(claimId)
@@ -119,11 +119,10 @@ class CredentialRepositoryImpl extends CredentialRepository {
   @override
   Future<void> removeClaims(
       {required List<String> claimIds,
-      required String identifier,
+      required String did,
       required String privateKey}) {
     return _storageClaimDataSource
-        .removeClaims(
-            claimIds: claimIds, identifier: identifier, privateKey: privateKey)
+        .removeClaims(claimIds: claimIds, did: did, privateKey: privateKey)
         .catchError((error) => throw RemoveClaimsException(error));
   }
 

@@ -38,7 +38,7 @@ class UpdateClaimUseCase extends FutureUseCase<UpdateClaimParam, ClaimEntity> {
     return _credentialRepository
         .getClaim(
             claimId: param.id,
-            identifier: param.identifier,
+            did: param.identifier,
             privateKey: param.privateKey)
         .then((claim) => ClaimEntity(
             id: param.id,
@@ -50,7 +50,7 @@ class UpdateClaimUseCase extends FutureUseCase<UpdateClaimParam, ClaimEntity> {
             info: param.data ?? claim.info))
         .then((updated) => _credentialRepository.saveClaims(
             claims: [updated],
-            identifier: param.identifier,
+            did: param.identifier,
             privateKey: param.privateKey).then((_) => updated))
         .then((claim) {
       logger().i(

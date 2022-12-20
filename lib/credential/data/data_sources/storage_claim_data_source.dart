@@ -41,22 +41,20 @@ class StorageClaimDataSource {
   StorageClaimDataSource(this._storeRefWrapper);
 
   Future<Database> _getDatabase(
-      {required String identifier, required String privateKey}) {
+      {required String did, required String privateKey}) {
     return getItSdk.getAsync<Database>(
-        instanceName: identityDatabaseName,
-        param1: identifier,
-        param2: privateKey);
+        instanceName: identityDatabaseName, param1: did, param2: privateKey);
   }
 
   /// Store all claims in a single transaction
   /// If one storing fails, they will all be reverted
   Future<void> storeClaims(
       {required List<ClaimDTO> claims,
-      required String identifier,
+      required String did,
       required String privateKey}) {
     // TODO check if identifiers inside each claim are from privateKey
-    return _getDatabase(identifier: identifier, privateKey: privateKey).then(
-        (database) => database
+    return _getDatabase(did: did, privateKey: privateKey).then((database) =>
+        database
             .transaction((transaction) =>
                 storeClaimsTransact(transaction: transaction, claims: claims))
             .whenComplete(() => database.close()));
@@ -75,10 +73,10 @@ class StorageClaimDataSource {
   /// If one removing fails, they will all be reverted
   Future<void> removeClaims(
       {required List<String> claimIds,
-      required String identifier,
+      required String did,
       required String privateKey}) {
-    return _getDatabase(identifier: identifier, privateKey: privateKey).then(
-        (database) => database
+    return _getDatabase(did: did, privateKey: privateKey).then((database) =>
+        database
             .transaction((transaction) => removeClaimsTransact(
                 transaction: transaction, claimIds: claimIds))
             .whenComplete(() => database.close()));
@@ -95,11 +93,9 @@ class StorageClaimDataSource {
   }
 
   Future<List<ClaimDTO>> getClaims(
-      {Filter? filter,
-      required String identifier,
-      required String privateKey}) {
-    return _getDatabase(identifier: identifier, privateKey: privateKey).then(
-        (database) => _storeRefWrapper
+      {Filter? filter, required String did, required String privateKey}) {
+    return _getDatabase(did: did, privateKey: privateKey).then((database) =>
+        _storeRefWrapper
             .find(database, finder: Finder(filter: filter))
             .then((snapshots) => snapshots
                 .map((snapshot) => ClaimDTO.fromJson(snapshot.value))

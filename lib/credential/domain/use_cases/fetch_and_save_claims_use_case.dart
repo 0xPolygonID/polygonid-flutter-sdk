@@ -58,7 +58,7 @@ class FetchAndSaveClaimsUseCase
         .then((claims) => _credentialRepository
                 .saveClaims(
               claims: claims,
-              identifier: param.identifier,
+              did: param.identifier,
               privateKey: param.privateKey,
             )
                 .then((_) {

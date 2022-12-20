@@ -3,17 +3,17 @@ import 'identity_entity.dart';
 /// Represents a private identity.
 class PrivateIdentityEntity extends IdentityEntity {
   final String privateKey;
-  //final Map<int, String> profiles;
 
   const PrivateIdentityEntity({
     required String did,
     required List<String> publicKey,
+    List<int>? profiles,
     required this.privateKey,
-  }) : super(did: did, publicKey: publicKey);
+  }) : super(did: did, publicKey: publicKey, profiles: profiles);
 
   @override
   String toString() =>
-      "[PrivateIdentityEntity] {did: $did, publicKey: $publicKey, privateKey: $privateKey}";
+      "[PrivateIdentityEntity] {did: $did, publicKey: $publicKey, profiles: $profiles, privateKey: $privateKey}";
 
   @override
   bool operator ==(Object other) =>
@@ -22,6 +22,7 @@ class PrivateIdentityEntity extends IdentityEntity {
           runtimeType == other.runtimeType &&
           did == other.did &&
           publicKey == other.publicKey &&
+          profiles == other.profiles &&
           privateKey == other.privateKey;
 
   @override

@@ -24,7 +24,7 @@ class RemoveClaimsUseCase extends FutureUseCase<RemoveClaimsParam, void> {
     return _credentialRepository
         .removeClaims(
           claimIds: param.claimIds,
-          identifier: param.identifier,
+          did: param.identifier,
           privateKey: param.privateKey,
         )
         .then((_) => logger().i(

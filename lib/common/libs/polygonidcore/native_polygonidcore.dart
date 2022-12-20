@@ -2130,6 +2130,74 @@ class NativePolygonIdCoreLib {
       int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
 
+  int PLGNIDToInt(
+    ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
+    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNIDToInt(
+      jsonResponse,
+      in1,
+      status,
+    );
+  }
+
+  late final _PLGNIDToIntPtr = _lookup<
+      ffi.NativeFunction<
+          GoUint8 Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNIDToInt');
+  late final _PLGNIDToInt = _PLGNIDToIntPtr.asFunction<
+      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+
+  int PLGNProofFromSmartContract(
+    ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
+    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNProofFromSmartContract(
+      jsonResponse,
+      in1,
+      status,
+    );
+  }
+
+  late final _PLGNProofFromSmartContractPtr = _lookup<
+          ffi.NativeFunction<
+              GoUint8 Function(
+                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
+      'PLGNProofFromSmartContract');
+  late final _PLGNProofFromSmartContract =
+      _PLGNProofFromSmartContractPtr.asFunction<
+          int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+
+  int PLGNProfileID(
+    ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
+    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNProfileID(
+      jsonResponse,
+      in1,
+      status,
+    );
+  }
+
+  late final _PLGNProfileIDPtr = _lookup<
+      ffi.NativeFunction<
+          GoUint8 Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNProfileID');
+  late final _PLGNProfileID = _PLGNProfileIDPtr.asFunction<
+      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+
   void PLGNFreeStatus(
     ffi.Pointer<PLGNStatus> status,
   ) {
@@ -3615,6 +3683,8 @@ const int __MAC_12_3 = 120300;
 
 const int __MAC_13_0 = 130000;
 
+const int __MAC_13_1 = 130100;
+
 const int __IPHONE_2_0 = 20000;
 
 const int __IPHONE_2_1 = 20100;
@@ -3739,6 +3809,8 @@ const int __IPHONE_16_0 = 160000;
 
 const int __IPHONE_16_1 = 160100;
 
+const int __IPHONE_16_2 = 160200;
+
 const int __TVOS_9_0 = 90000;
 
 const int __TVOS_9_1 = 90100;
@@ -3809,6 +3881,8 @@ const int __TVOS_16_0 = 160000;
 
 const int __TVOS_16_1 = 160100;
 
+const int __TVOS_16_2 = 160200;
+
 const int __WATCHOS_1_0 = 10000;
 
 const int __WATCHOS_2_0 = 20000;
@@ -3874,6 +3948,8 @@ const int __WATCHOS_8_5 = 80500;
 const int __WATCHOS_9_0 = 90000;
 
 const int __WATCHOS_9_1 = 90100;
+
+const int __WATCHOS_9_2 = 90200;
 
 const int MAC_OS_X_VERSION_10_0 = 1000;
 
@@ -3953,7 +4029,7 @@ const int __DRIVERKIT_21_0 = 210000;
 
 const int __MAC_OS_X_VERSION_MIN_REQUIRED = 130000;
 
-const int __MAC_OS_X_VERSION_MAX_ALLOWED = 130000;
+const int __MAC_OS_X_VERSION_MAX_ALLOWED = 130100;
 
 const int __ENABLE_LEGACY_MAC_AVAILABILITY = 1;
 

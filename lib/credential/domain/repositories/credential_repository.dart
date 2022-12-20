@@ -13,23 +13,23 @@ abstract class CredentialRepository {
 
   Future<void> saveClaims({
     required List<ClaimEntity> claims,
-    required String identifier,
+    required String did,
     required String privateKey,
   });
 
   Future<List<ClaimEntity>> getClaims(
       {List<FilterEntity>? filters,
-      required String identifier,
+      required String did,
       required String privateKey});
 
   Future<ClaimEntity> getClaim(
       {required String claimId,
-      required String identifier,
+      required String did,
       required String privateKey});
 
   Future<void> removeClaims(
       {required List<String> claimIds,
-      required String identifier,
+      required String did,
       required String privateKey});
 
   Future<Map<String, dynamic>> fetchSchema({required String url});
