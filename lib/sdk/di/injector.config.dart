@@ -168,6 +168,17 @@ _i1.GetIt $initSDKGetIt(
   gh.factory<_i9.Client>(() => networkModule.client);
   gh.factory<_i10.CreatePathWrapper>(() => _i10.CreatePathWrapper());
   gh.lazySingletonAsync<_i11.Database>(() => databaseModule.database());
+  gh.factoryParamAsync<_i11.Database, String?, String?>(
+    (
+      identifier,
+      privateKey,
+    ) =>
+        databaseModule.claimDatabase(
+      identifier,
+      privateKey,
+    ),
+    instanceName: 'polygonIdSdkClaims',
+  );
   gh.factory<_i10.DestinationPathDataSource>(
       () => _i10.DestinationPathDataSource(get<_i10.CreatePathWrapper>()));
   gh.factory<_i12.DidMapper>(() => _i12.DidMapper());
@@ -265,18 +276,6 @@ _i1.GetIt $initSDKGetIt(
   gh.factory<_i57.ClaimStoreRefWrapper>(() => _i57.ClaimStoreRefWrapper(
       get<_i11.StoreRef<String, Map<String, Object?>>>(
           instanceName: 'claimStore')));
-  gh.factoryParamAsync<_i11.Database, String?, String?>(
-    (
-      identifier,
-      privateKey,
-    ) =>
-        databaseModule.claimDatabase(
-      get<_i11.SembastCodec>(),
-      identifier,
-      privateKey,
-    ),
-    instanceName: 'polygonIdSdkClaims',
-  );
   gh.factory<_i58.EnvDataSource>(() => _i58.EnvDataSource(get<_i47.SdkEnv>()));
   gh.factory<_i59.IdentityStoreRefWrapper>(() => _i59.IdentityStoreRefWrapper(
       get<_i11.StoreRef<String, Map<String, Object?>>>(

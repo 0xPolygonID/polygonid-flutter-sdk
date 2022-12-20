@@ -82,13 +82,15 @@ abstract class DatabaseModule {
 
   @Named(claimDatabaseName)
   Future<Database> claimDatabase(
-    SembastCodec codec,
     @factoryParam String? identifier,
     @factoryParam String? privateKey,
   ) async {
     final dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
     final path = join(dir.path, claimDatabasePrefix + identifier! + '.db');
+
+    final codec = getItSdk.get<SembastCodec>(param1: privateKey);
+
     final database = await databaseFactoryIo.openDatabase(path, codec: codec);
     return database;
   }
