@@ -623,8 +623,9 @@ void main() {
           .thenAnswer((realInvocation) => encryptionKey);
 
       when(encryptionDbDataSource.encryptData(
-              data: anyNamed('data'), key: anyNamed('key'), iv: anyNamed('iv')))
-          .thenAnswer((realInvocation) => encryptedDb);
+        data: anyNamed('data'),
+        key: anyNamed('key'),
+      )).thenAnswer((realInvocation) => encryptedDb);
     });
 
     test(
@@ -653,7 +654,6 @@ void main() {
       var captureEncrypt = verify(encryptionDbDataSource.encryptData(
         data: captureAnyNamed('data'),
         key: captureAnyNamed('key'),
-        iv: captureAnyNamed('iv'),
       )).captured;
       expect(captureEncrypt[0], mockDb);
       expect(captureEncrypt[1], encryptionKey);
@@ -665,7 +665,6 @@ void main() {
       when(encryptionDbDataSource.decryptData(
         encryptedData: anyNamed('encryptedData'),
         key: anyNamed('key'),
-        iv: anyNamed('iv'),
       )).thenAnswer((realInvocation) => mockDb);
 
       when(encryptionKeyMapper.mapFrom(any))

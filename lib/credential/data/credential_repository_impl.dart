@@ -193,7 +193,6 @@ class CredentialRepositoryImpl extends CredentialRepository {
     return _encryptionDbDataSource.encryptData(
       data: exportableDb,
       key: key,
-      iv: IV.fromLength(16),
     );
   }
 
@@ -207,7 +206,6 @@ class CredentialRepositoryImpl extends CredentialRepository {
     Map<String, Object?> decryptedDb = _encryptionDbDataSource.decryptData(
       encryptedData: encryptedDb,
       key: key,
-      iv: IV.fromLength(16),
     );
 
     String destinationPath = await _destinationPathDataSource

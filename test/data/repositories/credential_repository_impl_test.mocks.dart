@@ -594,7 +594,6 @@ class MockEncryptionDbDataSource extends _i1.Mock
   Map<String, Object?> decryptData({
     required String? encryptedData,
     required _i8.Key? key,
-    required _i8.IV? iv,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -603,7 +602,6 @@ class MockEncryptionDbDataSource extends _i1.Mock
           {
             #encryptedData: encryptedData,
             #key: key,
-            #iv: iv,
           },
         ),
         returnValue: <String, Object?>{},
@@ -612,7 +610,6 @@ class MockEncryptionDbDataSource extends _i1.Mock
   String encryptData({
     required Map<String, Object?>? data,
     required _i8.Key? key,
-    required _i8.IV? iv,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -621,7 +618,6 @@ class MockEncryptionDbDataSource extends _i1.Mock
           {
             #data: data,
             #key: key,
-            #iv: iv,
           },
         ),
         returnValue: '',

@@ -10,14 +10,13 @@ class EncryptionDbDataSource {
   Map<String, Object?> decryptData({
     required String encryptedData,
     required Key key,
-    required IV iv,
   }) {
     final encrypter = getItSdk.get<Encrypter>(
       instanceName: 'encryptAES',
       param1: key,
     );
 
-    final decrypted = encrypter.decrypt64(encryptedData, iv: iv);
+    final decrypted = encrypter.decrypt64(encryptedData, iv: IV.fromLength(16));
 
     Map<String, Object?> decryptedDbMap = jsonDecode(decrypted);
     return decryptedDbMap;
@@ -28,7 +27,6 @@ class EncryptionDbDataSource {
   String encryptData({
     required Map<String, Object?> data,
     required Key key,
-    required IV iv,
   }) {
     String json = jsonEncode(data);
 
@@ -37,7 +35,7 @@ class EncryptionDbDataSource {
       param1: key,
     );
 
-    final encrypted = encrypter.encrypt(json, iv: iv);
+    final encrypted = encrypter.encrypt(json, iv: IV.fromLength(16));
 
     return encrypted.base64;
   }
