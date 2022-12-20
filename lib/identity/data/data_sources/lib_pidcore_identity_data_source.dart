@@ -24,4 +24,23 @@ class LibPolygonIdCoreIdentityDataSource {
     logger().d("calculateGenesisId: $output");
     return output;
   }
+
+  String calculateProfileId(String genesisDid, int profileNonce) {
+    String input = jsonEncode({
+      "genesisDID":
+          genesisDid, //"did:iden3:polygon:mumbai:wwc17vYCJV4iqVRQu9U99CpG5KtHFbXRxE16fH3Kp",
+      "nonce": profileNonce.toString(), // "10"
+    });
+
+    String output = _polygonIdCoreIdentity.calculateProfileId(input);
+    logger().d("calculateProfileId: $output");
+    // {"profileDID":"did:iden3:polygon:mumbai:x42d3rxWAC6mGS8AmCVWFUz7Tnndm2QCy1KzksG2R"}
+    return output;
+  }
+
+  String genesisIdToBigInt(String genesisId) {
+    String output = _polygonIdCoreIdentity.convertIdToBigInt(genesisId);
+    logger().d("genesisIdToBigInt: $output");
+    return output;
+  }
 }

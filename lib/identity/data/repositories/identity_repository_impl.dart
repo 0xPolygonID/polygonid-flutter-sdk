@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:core';
 
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
@@ -7,6 +8,7 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/smt_data_source
 
 import '../../../credential/data/data_sources/lib_pidcore_credential_data_source.dart';
 import '../../../iden3comm/data/data_sources/lib_pidcore_iden3comm_data_source.dart';
+import '../../../proof_generation/data/data_sources/lib_pidcore_proof_data_source.dart';
 import '../../domain/entities/identity_entity.dart';
 import '../../domain/entities/private_identity_entity.dart';
 import '../../domain/entities/rhs_node_entity.dart';
@@ -39,6 +41,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
       _libPolygonIdCoreCredentialDataSource;
   final LibPolygonIdCoreIden3commDataSource
       _libPolygonIdCoreIden3commDataSource;
+  final LibPolygonIdCoreProofDataSource _libPolygonIdCoreProofDataSource;
 
   final SMTDataSource _smtDataSource;
   final RemoteIdentityDataSource _remoteIdentityDataSource;
@@ -60,6 +63,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._libPolygonIdCoreIdentityDataSource,
     this._libPolygonIdCoreCredentialDataSource,
     this._libPolygonIdCoreIden3commDataSource,
+    this._libPolygonIdCoreProofDataSource,
     this._smtDataSource,
     this._remoteIdentityDataSource,
     this._storageIdentityDataSource,
@@ -379,11 +383,18 @@ class IdentityRepositoryImpl extends IdentityRepository {
     Map<String, dynamic> treeState =
         await _getLatestState(did: did, privateKey: privateKey);
 
-    String gistProof = await getGistProof(
+    var didMap = _didMapper.mapFrom(did);
+    String idBigInt = _libPolygonIdCoreIdentityDataSource
+        .genesisIdToBigInt(didMap.identifier);
+
+    String gistProofSC = await getGistProof(
       identifier:
-          "21051438350758615910194871316894294942737671344817514009731719137348227585", //genesis["id"] as big int
-      contractAddress: "0x9ede2dc3FF3F434f3d28e17E467385e7667d8573",
+          idBigInt, // "21051438350758615910194871316894294942737671344817514009731719137348227585", //genesis["id"] as big int
+      contractAddress: "0x6811f4b44354C29993f8088c4D38B61018C5338d",
     );
+
+    String gistProof =
+        _libPolygonIdCoreProofDataSource.proofFromSC(gistProofSC);
 
     String authInputs = _libPolygonIdCoreIden3commDataSource.getAuthInputs(
         id: did,
@@ -400,6 +411,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
           "siblings":
               nonRevProof.siblings.map((hashDTO) => hashDTO.toString()).toList()
         },
+        gistProof: jsonDecode(gistProof),
         treeState: treeState,
         challenge: challenge,
         signature: signature);

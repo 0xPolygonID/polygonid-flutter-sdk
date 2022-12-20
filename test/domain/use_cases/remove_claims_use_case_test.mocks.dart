@@ -91,7 +91,7 @@ class MockCredentialRepository extends _i1.Mock
   @override
   _i5.Future<void> saveClaims({
     required List<_i2.ClaimEntity>? claims,
-    required String? identifier,
+    required String? did,
     required String? privateKey,
   }) =>
       (super.noSuchMethod(
@@ -100,7 +100,7 @@ class MockCredentialRepository extends _i1.Mock
           [],
           {
             #claims: claims,
-            #identifier: identifier,
+            #did: did,
             #privateKey: privateKey,
           },
         ),
@@ -110,7 +110,7 @@ class MockCredentialRepository extends _i1.Mock
   @override
   _i5.Future<List<_i2.ClaimEntity>> getClaims({
     List<_i7.FilterEntity>? filters,
-    required String? identifier,
+    required String? did,
     required String? privateKey,
   }) =>
       (super.noSuchMethod(
@@ -119,7 +119,7 @@ class MockCredentialRepository extends _i1.Mock
           [],
           {
             #filters: filters,
-            #identifier: identifier,
+            #did: did,
             #privateKey: privateKey,
           },
         ),
@@ -129,7 +129,7 @@ class MockCredentialRepository extends _i1.Mock
   @override
   _i5.Future<_i2.ClaimEntity> getClaim({
     required String? claimId,
-    required String? identifier,
+    required String? did,
     required String? privateKey,
   }) =>
       (super.noSuchMethod(
@@ -138,7 +138,7 @@ class MockCredentialRepository extends _i1.Mock
           [],
           {
             #claimId: claimId,
-            #identifier: identifier,
+            #did: did,
             #privateKey: privateKey,
           },
         ),
@@ -149,7 +149,7 @@ class MockCredentialRepository extends _i1.Mock
             [],
             {
               #claimId: claimId,
-              #identifier: identifier,
+              #did: did,
               #privateKey: privateKey,
             },
           ),
@@ -158,7 +158,7 @@ class MockCredentialRepository extends _i1.Mock
   @override
   _i5.Future<void> removeClaims({
     required List<String>? claimIds,
-    required String? identifier,
+    required String? did,
     required String? privateKey,
   }) =>
       (super.noSuchMethod(
@@ -167,7 +167,7 @@ class MockCredentialRepository extends _i1.Mock
           [],
           {
             #claimIds: claimIds,
-            #identifier: identifier,
+            #did: did,
             #privateKey: privateKey,
           },
         ),

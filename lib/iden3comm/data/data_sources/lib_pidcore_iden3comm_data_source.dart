@@ -16,6 +16,7 @@ class LibPolygonIdCoreIden3commDataSource {
     required List<String> authClaim,
     required Map<String, dynamic> incProof,
     required Map<String, dynamic> nonRevProof,
+    required Map<String, dynamic> gistProof,
     required Map<String, dynamic> treeState,
     required String challenge,
     required String signature,
@@ -61,7 +62,8 @@ class LibPolygonIdCoreIden3commDataSource {
           }*/
         }
       },
-      "gistProof": {
+      "gistProof": gistProof,
+      /*{
         "root":
             "4924303677736085224554833340748086265406229626627819375177261957522622163007",
         "proof": {
@@ -74,7 +76,7 @@ class LibPolygonIdCoreIden3commDataSource {
                 "6317996369756476782464660619835940615734517981889733696047139451453239145426"
           }
         }
-      },
+      },*/
       "signature":
           signature, //"fccc15d7aed2bf4f5d7dbe55c81087970344d13e5d9f348e61965ac364f41d29b366b52bc0820c603877352054833da083f5595c29c881ccd8ee47aa639aa103",
       "challenge": challenge, //"10"

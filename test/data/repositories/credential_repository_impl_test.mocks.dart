@@ -208,7 +208,7 @@ class MockStorageClaimDataSource extends _i1.Mock
   @override
   _i9.Future<void> storeClaims({
     required List<_i3.ClaimDTO>? claims,
-    required String? identifier,
+    required String? did,
     required String? privateKey,
   }) =>
       (super.noSuchMethod(
@@ -217,7 +217,7 @@ class MockStorageClaimDataSource extends _i1.Mock
           [],
           {
             #claims: claims,
-            #identifier: identifier,
+            #did: did,
             #privateKey: privateKey,
           },
         ),
@@ -244,7 +244,7 @@ class MockStorageClaimDataSource extends _i1.Mock
   @override
   _i9.Future<void> removeClaims({
     required List<String>? claimIds,
-    required String? identifier,
+    required String? did,
     required String? privateKey,
   }) =>
       (super.noSuchMethod(
@@ -253,7 +253,7 @@ class MockStorageClaimDataSource extends _i1.Mock
           [],
           {
             #claimIds: claimIds,
-            #identifier: identifier,
+            #did: did,
             #privateKey: privateKey,
           },
         ),
@@ -280,7 +280,7 @@ class MockStorageClaimDataSource extends _i1.Mock
   @override
   _i9.Future<List<_i3.ClaimDTO>> getClaims({
     _i6.Filter? filter,
-    required String? identifier,
+    required String? did,
     required String? privateKey,
   }) =>
       (super.noSuchMethod(
@@ -289,7 +289,7 @@ class MockStorageClaimDataSource extends _i1.Mock
           [],
           {
             #filter: filter,
-            #identifier: identifier,
+            #did: did,
             #privateKey: privateKey,
           },
         ),
