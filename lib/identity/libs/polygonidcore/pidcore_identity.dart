@@ -53,7 +53,7 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
 
   /// PLGNIDToInt returns the ID as a big int string
   /// Input should be a valid JSON object: string enclosed by double quotes.
-  /// Output is a valid JSON object to: string enclosed by double quotes.
+  /// Output is a valid JSON object too: string enclosed by double quotes.
   String convertIdToBigInt(String input) {
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<ffi.Char>> response =

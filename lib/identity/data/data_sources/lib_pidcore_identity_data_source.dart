@@ -39,8 +39,10 @@ class LibPolygonIdCoreIdentityDataSource {
   }
 
   String genesisIdToBigInt(String genesisId) {
-    String output = _polygonIdCoreIdentity.convertIdToBigInt(genesisId);
-    logger().d("genesisIdToBigInt: $output");
-    return output;
+    String input = jsonEncode(genesisId);
+    String output = _polygonIdCoreIdentity.convertIdToBigInt(input);
+    String idAsInt = jsonDecode(output);
+    logger().d("genesisIdToBigInt: $idAsInt");
+    return idAsInt;
   }
 }
