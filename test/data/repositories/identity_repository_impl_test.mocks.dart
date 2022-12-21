@@ -7,6 +7,8 @@ import 'dart:async' as _i10;
 import 'dart:typed_data' as _i11;
 
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/babyjubjub_lib_data_source.dart'
+    as _i18;
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart'
     as _i12;
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart'
@@ -23,18 +25,24 @@ import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart'
     as _i4;
 import 'package:polygonid_flutter_sdk/identity/data/dtos/rhs_node_dto.dart'
     as _i3;
+import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_inputs_mapper.dart'
+    as _i26;
 import 'package:polygonid_flutter_sdk/identity/data/mappers/did_mapper.dart'
-    as _i23;
+    as _i24;
+import 'package:polygonid_flutter_sdk/identity/data/mappers/hash_mapper.dart'
+    as _i25;
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart'
-    as _i18;
-import 'package:polygonid_flutter_sdk/identity/data/mappers/identity_dto_mapper.dart'
-    as _i20;
-import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key_mapper.dart'
     as _i19;
-import 'package:polygonid_flutter_sdk/identity/data/mappers/rhs_node_mapper.dart'
+import 'package:polygonid_flutter_sdk/identity/data/mappers/identity_dto_mapper.dart'
     as _i21;
-import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart'
+import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key_mapper.dart'
+    as _i20;
+import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart'
+    as _i27;
+import 'package:polygonid_flutter_sdk/identity/data/mappers/rhs_node_mapper.dart'
     as _i22;
+import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart'
+    as _i23;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
     as _i6;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart'
@@ -262,6 +270,25 @@ class MockLibIdentityDataSource extends _i1.Mock
         ),
         returnValue: _i10.Future<String>.value(''),
       ) as _i10.Future<String>);
+  @override
+  _i10.Future<String> getAuthInputs(
+    String? challenge,
+    String? authClaim,
+    List<String>? publicKey,
+    String? signature,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getAuthInputs,
+          [
+            challenge,
+            authClaim,
+            publicKey,
+            signature,
+          ],
+        ),
+        returnValue: _i10.Future<String>.value(''),
+      ) as _i10.Future<String>);
 }
 
 /// A class which mocks [RemoteIdentityDataSource].
@@ -462,10 +489,29 @@ class MockLocalContractFilesDataSource extends _i1.Mock
       ) as _i10.Future<_i5.DeployedContract>);
 }
 
+/// A class which mocks [BabyjubjubLibDataSource].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockBabyjubjubLibDataSource extends _i1.Mock
+    implements _i18.BabyjubjubLibDataSource {
+  MockBabyjubjubLibDataSource() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i10.Future<String> getPoseidonHash(String? input) => (super.noSuchMethod(
+        Invocation.method(
+          #getPoseidonHash,
+          [input],
+        ),
+        returnValue: _i10.Future<String>.value(''),
+      ) as _i10.Future<String>);
+}
+
 /// A class which mocks [HexMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockHexMapper extends _i1.Mock implements _i18.HexMapper {
+class MockHexMapper extends _i1.Mock implements _i19.HexMapper {
   MockHexMapper() {
     _i1.throwOnMissingStub(this);
   }
@@ -491,7 +537,7 @@ class MockHexMapper extends _i1.Mock implements _i18.HexMapper {
 /// A class which mocks [PrivateKeyMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockPrivateKeyMapper extends _i1.Mock implements _i19.PrivateKeyMapper {
+class MockPrivateKeyMapper extends _i1.Mock implements _i20.PrivateKeyMapper {
   MockPrivateKeyMapper() {
     _i1.throwOnMissingStub(this);
   }
@@ -500,7 +546,7 @@ class MockPrivateKeyMapper extends _i1.Mock implements _i19.PrivateKeyMapper {
 /// A class which mocks [IdentityDTOMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockIdentityDTOMapper extends _i1.Mock implements _i20.IdentityDTOMapper {
+class MockIdentityDTOMapper extends _i1.Mock implements _i21.IdentityDTOMapper {
   MockIdentityDTOMapper() {
     _i1.throwOnMissingStub(this);
   }
@@ -562,7 +608,7 @@ class MockIdentityDTOMapper extends _i1.Mock implements _i20.IdentityDTOMapper {
 /// A class which mocks [RhsNodeMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockRhsNodeMapper extends _i1.Mock implements _i21.RhsNodeMapper {
+class MockRhsNodeMapper extends _i1.Mock implements _i22.RhsNodeMapper {
   MockRhsNodeMapper() {
     _i1.throwOnMissingStub(this);
   }
@@ -601,7 +647,7 @@ class MockRhsNodeMapper extends _i1.Mock implements _i21.RhsNodeMapper {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockStateIdentifierMapper extends _i1.Mock
-    implements _i22.StateIdentifierMapper {
+    implements _i23.StateIdentifierMapper {
   MockStateIdentifierMapper() {
     _i1.throwOnMissingStub(this);
   }
@@ -619,16 +665,70 @@ class MockStateIdentifierMapper extends _i1.Mock
 /// A class which mocks [DidMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockDidMapper extends _i1.Mock implements _i23.DidMapper {
+class MockDidMapper extends _i1.Mock implements _i24.DidMapper {
   MockDidMapper() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  String mapTo(_i23.DidMapperParam? to) => (super.noSuchMethod(
+  String mapTo(_i24.DidMapperParam? to) => (super.noSuchMethod(
         Invocation.method(
           #mapTo,
           [to],
+        ),
+        returnValue: '',
+      ) as String);
+}
+
+/// A class which mocks [HashMapper].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockHashMapper extends _i1.Mock implements _i25.HashMapper {
+  MockHashMapper() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  String mapFrom(String? from) => (super.noSuchMethod(
+        Invocation.method(
+          #mapFrom,
+          [from],
+        ),
+        returnValue: '',
+      ) as String);
+}
+
+/// A class which mocks [AuthInputsMapper].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockAuthInputsMapper extends _i1.Mock implements _i26.AuthInputsMapper {
+  MockAuthInputsMapper() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i11.Uint8List mapFrom(String? from) => (super.noSuchMethod(
+        Invocation.method(
+          #mapFrom,
+          [from],
+        ),
+        returnValue: _i11.Uint8List(0),
+      ) as _i11.Uint8List);
+}
+
+/// A class which mocks [QMapper].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockQMapper extends _i1.Mock implements _i27.QMapper {
+  MockQMapper() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  String mapFrom(String? from) => (super.noSuchMethod(
+        Invocation.method(
+          #mapFrom,
+          [from],
         ),
         returnValue: '',
       ) as String);

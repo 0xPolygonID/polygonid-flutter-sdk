@@ -14,7 +14,7 @@ import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_
     as _i3;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart'
     as _i5;
-import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart'
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
     as _i7;
 
 // ignore_for_file: type=lint
@@ -233,8 +233,7 @@ class MockCredentialRepository extends _i1.Mock
         returnValue: _i4.Future<int>.value(0),
       ) as _i4.Future<int>);
   @override
-  _i4.Future<String> getAuthClaim(
-          {required _i7.PrivateIdentityEntity? identity}) =>
+  _i4.Future<String> getAuthClaim({required _i7.IdentityEntity? identity}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getAuthClaim,

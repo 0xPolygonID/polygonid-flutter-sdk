@@ -1,3 +1,7 @@
+import 'dart:typed_data';
+
+import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/babyjubjub_lib_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
 
 import '../../domain/entities/identity_entity.dart';
@@ -12,7 +16,9 @@ import '../data_sources/remote_identity_data_source.dart';
 import '../data_sources/storage_identity_data_source.dart';
 import '../data_sources/wallet_data_source.dart';
 import '../dtos/identity_dto.dart';
+import '../mappers/auth_inputs_mapper.dart';
 import '../mappers/did_mapper.dart';
+import '../mappers/hash_mapper.dart';
 import '../mappers/hex_mapper.dart';
 import '../mappers/identity_dto_mapper.dart';
 import '../mappers/private_key_mapper.dart';
@@ -26,12 +32,16 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final StorageIdentityDataSource _storageIdentityDataSource;
   final RPCDataSource _rpcDataSource;
   final LocalContractFilesDataSource _localContractFilesDataSource;
+  final BabyjubjubLibDataSource _babyjubjubLibDataSource;
   final HexMapper _hexMapper;
   final PrivateKeyMapper _privateKeyMapper;
   final IdentityDTOMapper _identityDTOMapper;
   final RhsNodeMapper _rhsNodeMapper;
   final StateIdentifierMapper _stateIdentifierMapper;
   final DidMapper _didMapper;
+  final HashMapper _hashMapper;
+  final AuthInputsMapper _authInputsMapper;
+  final QMapper _qMapper;
 
   IdentityRepositoryImpl(
     this._walletDataSource,
@@ -40,12 +50,16 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._storageIdentityDataSource,
     this._rpcDataSource,
     this._localContractFilesDataSource,
+    this._babyjubjubLibDataSource,
     this._hexMapper,
     this._privateKeyMapper,
     this._identityDTOMapper,
     this._rhsNodeMapper,
     this._stateIdentifierMapper,
     this._didMapper,
+    this._hashMapper,
+    this._authInputsMapper,
+    this._qMapper,
   );
 
   /// Get a [PrivateIdentityEntity] from a String secret
@@ -201,5 +215,23 @@ class IdentityRepositoryImpl extends IdentityRepository {
   Future<List<IdentityEntity>> getIdentities() {
     // TODO: implement getIdentities
     throw UnimplementedError();
+  }
+
+  @override
+  Future<String> getChallenge({required String message}) {
+    return Future.value(_qMapper.mapFrom(message))
+        .then((q) => _babyjubjubLibDataSource.getPoseidonHash(q))
+        .then((hash) => _hashMapper.mapFrom(hash));
+  }
+
+  @override
+  Future<Uint8List> getAuthInputs(
+      {required String challenge,
+      required String authClaim,
+      required IdentityEntity identity,
+      required String signature}) {
+    return _libIdentityDataSource
+        .getAuthInputs(challenge, authClaim, identity.publicKey, signature)
+        .then((inputs) => _authInputsMapper.mapFrom(inputs));
   }
 }
