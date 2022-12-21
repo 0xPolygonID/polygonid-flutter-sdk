@@ -16,8 +16,11 @@ class JWZMapper extends FromMapper<JWZEntity, String> {
       throw NullJWZPayloadException();
     }
 
-    return "${Base64Util.encode64(jsonEncode(from.header))}"
-        ".${Base64Util.encode64(from.payload!.payload)}"
-        "${from.proof != null ? ".${Base64Util.encode64(jsonEncode(from.proof))}" : ""}";
+    String header = Base64Util.encode64(jsonEncode(from.header));
+    String payload = Base64Util.encode64(from.payload!.payload);
+    String proof =
+        from.proof != null ? Base64Util.encode64(jsonEncode(from.proof)) : "";
+
+    return "$header$payload$proof";
   }
 }
