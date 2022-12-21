@@ -242,4 +242,39 @@ class MockCredentialRepository extends _i1.Mock
         ),
         returnValue: _i4.Future<String>.value(''),
       ) as _i4.Future<String>);
+  @override
+  _i4.Future<String> exportClaims({
+    required String? identifier,
+    required String? privateKey,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #exportClaims,
+          [],
+          {
+            #identifier: identifier,
+            #privateKey: privateKey,
+          },
+        ),
+        returnValue: _i4.Future<String>.value(''),
+      ) as _i4.Future<String>);
+  @override
+  _i4.Future<void> importClaims({
+    required String? identifier,
+    required String? privateKey,
+    required String? encryptedDb,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #importClaims,
+          [],
+          {
+            #identifier: identifier,
+            #privateKey: privateKey,
+            #encryptedDb: encryptedDb,
+          },
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 }

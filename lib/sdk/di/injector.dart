@@ -1,3 +1,4 @@
+import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -17,18 +18,18 @@ import 'package:sembast/sembast_io.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:web_socket_channel/io.dart';
 
-import '../../common/data/repositories/package_info_repository_impl.dart';
-import '../../common/domain/repositories/package_info_repository.dart';
-import '../../credential/data/credential_repository_impl.dart';
-import '../../credential/domain/repositories/credential_repository.dart';
-import '../../env/sdk_env.dart';
-import '../../iden3comm/data/repositories/iden3comm_repository_impl.dart';
-import '../../iden3comm/domain/repositories/iden3comm_repository.dart';
-import '../../identity/data/repositories/identity_repository_impl.dart';
-import '../../identity/domain/repositories/identity_repository.dart';
-import '../../proof_generation/data/repositories/proof_repository_impl.dart';
-import '../../proof_generation/domain/repositories/proof_repository.dart';
-import 'injector.config.dart';
+import 'package:polygonid_flutter_sdk/common/data/repositories/package_info_repository_impl.dart';
+import 'package:polygonid_flutter_sdk/common/domain/repositories/package_info_repository.dart';
+import 'package:polygonid_flutter_sdk/credential/data/credential_repository_impl.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
+import 'package:polygonid_flutter_sdk/env/sdk_env.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/iden3comm_repository_impl.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/data/repositories/identity_repository_impl.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/data/repositories/proof_repository_impl.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/domain/repositories/proof_repository.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.config.dart';
 
 final getItSdk = GetIt.asNewInstance();
 
@@ -80,15 +81,22 @@ abstract class DatabaseModule {
   }
 
   @Named(claimDatabaseName)
-  Future<Database> claimDatabase(@factoryParam String? identifier,
-      @factoryParam String? privateKey) async {
+  Future<Database> claimDatabase(
+    @factoryParam String? identifier,
+    @factoryParam String? privateKey,
+  ) async {
     final dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
     final path = join(dir.path, claimDatabasePrefix + identifier! + '.db');
-    // Initialize the encryption codec with the privateKey
-    var codec = getEncryptSembastCodec(password: privateKey!);
+
+    final codec = getItSdk.get<SembastCodec>(param1: privateKey);
+
     final database = await databaseFactoryIo.openDatabase(path, codec: codec);
     return database;
+  }
+
+  SembastCodec getCodec(@factoryParam String privateKey) {
+    return getEncryptSembastCodec(password: privateKey);
   }
 
   @Named(identityStoreName)
@@ -133,4 +141,13 @@ abstract class RepositoriesModule {
   Iden3commRepository iden3commRepository(
           Iden3commRepositoryImpl iden3commRepositoryImpl) =>
       iden3commRepositoryImpl;
+}
+
+@module
+abstract class EncryptionModule {
+  @Named('encryptAES')
+  @factoryMethod
+  encrypt.Encrypter encryptAES(@factoryParam encrypt.Key key) {
+    return encrypt.Encrypter(encrypt.AES(key));
+  }
 }

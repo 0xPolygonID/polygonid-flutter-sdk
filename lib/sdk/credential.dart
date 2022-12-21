@@ -1,12 +1,14 @@
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/export_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/import_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
 
-import '../common/domain/entities/filter_entity.dart';
-import '../credential/domain/entities/claim_entity.dart';
-import '../credential/domain/use_cases/fetch_and_save_claims_use_case.dart';
-import '../credential/domain/use_cases/get_claims_use_case.dart';
-import '../credential/domain/use_cases/remove_claims_use_case.dart';
-import '../credential/domain/use_cases/update_claim_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/fetch_and_save_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/update_claim_use_case.dart';
 
 abstract class PolygonIdSdkCredential {
   /// Fetch a list of [ClaimEntity] and store them
@@ -55,6 +57,19 @@ abstract class PolygonIdSdkCredential {
     Map<String, dynamic>? data,
     required String privateKey,
   });
+
+  /// Export encrypted claims database
+  Future<String> exportEncryptedClaimsDb({
+    required String identifier,
+    required String privateKey,
+  });
+
+  /// Import encrypted claims database
+  Future<void> importEncryptedClaimsDb({
+    required String identifier,
+    required String privateKey,
+    required String encryptedDb,
+  });
 }
 
 @injectable
@@ -63,9 +78,17 @@ class Credential implements PolygonIdSdkCredential {
   final GetClaimsUseCase _getClaimsUseCase;
   final RemoveClaimsUseCase _removeClaimsUseCase;
   final UpdateClaimUseCase _updateClaimUseCase;
+  final ExportClaimsUseCase _exportEncryptedClaimsDbUseCase;
+  final ImportClaimsUseCase _importEncryptedClaimsDbUseCase;
 
-  Credential(this._fetchAndSaveClaimsUseCase, this._getClaimsUseCase,
-      this._removeClaimsUseCase, this._updateClaimUseCase);
+  Credential(
+    this._fetchAndSaveClaimsUseCase,
+    this._getClaimsUseCase,
+    this._removeClaimsUseCase,
+    this._updateClaimUseCase,
+    this._exportEncryptedClaimsDbUseCase,
+    this._importEncryptedClaimsDbUseCase,
+  );
 
   /// Fetch a list of [ClaimEntity] and store them
   @override
@@ -164,5 +187,31 @@ class Credential implements PolygonIdSdkCredential {
             type: type,
             data: data,
             privateKey: privateKey));
+  }
+
+  @override
+  Future<String> exportEncryptedClaimsDb({
+    required String identifier,
+    required String privateKey,
+  }) {
+    return _exportEncryptedClaimsDbUseCase.execute(
+        param: ExportClaimsParam(
+      privateKey: privateKey,
+      identifier: identifier,
+    ));
+  }
+
+  @override
+  Future<void> importEncryptedClaimsDb({
+    required String identifier,
+    required String privateKey,
+    required String encryptedDb,
+  }) {
+    return _importEncryptedClaimsDbUseCase.execute(
+        param: ImportClaimsParam(
+      privateKey: privateKey,
+      identifier: identifier,
+      encryptedClaimsDb: encryptedDb,
+    ));
   }
 }

@@ -1,6 +1,20 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:path/path.dart';
+import 'package:encrypt/encrypt.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:polygonid_flutter_sdk/common/utils/encrypt_sembast_codec.dart';
+import 'package:sembast/sembast_io.dart';
+import 'package:sembast/utils/database_utils.dart';
+import 'package:web3dart/crypto.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_and_save_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
+import 'package:sembast/sembast.dart';
+import 'package:sembast/utils/sembast_import_export.dart';
 
 import '../identity/domain/entities/identity_entity.dart';
 import '../identity/domain/entities/private_identity_entity.dart';

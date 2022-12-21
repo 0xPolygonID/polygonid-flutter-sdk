@@ -11,3 +11,4 @@ const identityStoreName = "identityStore";
 const claimStoreName = "claimStore";
 const keyValueStoreName = "keyValueStore";
 const currentIdentifierKey = "currentIdentifier";
+const sembastCodecName = "sembastCodec";
