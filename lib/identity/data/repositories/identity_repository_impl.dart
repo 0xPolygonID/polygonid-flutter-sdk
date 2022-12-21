@@ -284,6 +284,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
     // 2. add authClaim to claims tree
     NodeDTO authClaimNode = await _getAuthClaim(publicKey: publicKey);
+    List<String> authClaimChildren =
+        await _getAuthClaimChildren(publicKey: publicKey);
 
     HashDTO claimsTreeRoot = await _smtDataSource.addLeaf(
         newNodeLeaf: authClaimNode,
@@ -296,6 +298,13 @@ class IdentityRepositoryImpl extends IdentityRepository {
         claimsTreeRoot.toString(),
         BigInt.zero.toString(),
         BigInt.zero.toString());
+
+    String authInputs = await _getAuthInputs(
+        authClaim: authClaimNode,
+        authClaimChildren: authClaimChildren,
+        challenge: "10",
+        did: did,
+        privateKey: privateKey);
 
     Map<String, dynamic> treeState = {};
     treeState["state"] = genesisState;
@@ -358,13 +367,14 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
   Future<String> _getAuthInputs({
     required NodeDTO authClaim,
+    required List<String> authClaimChildren,
     required String challenge,
     required String did,
     required String privateKey,
   }) async {
     String challenge = "10";
     String signature = await _walletDataSource.signMessage(
-        privateKey: _privateKeyMapper.mapFrom(privateKey)!, message: challenge);
+        privateKey: _hexMapper.mapTo(privateKey), message: challenge);
 
     ProofDTO proof = await _smtDataSource.generateProof(
         key: authClaim
@@ -397,10 +407,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
         _libPolygonIdCoreProofDataSource.proofFromSC(gistProofSC);
 
     String authInputs = _libPolygonIdCoreIden3commDataSource.getAuthInputs(
-        id: did,
+        did: did,
         profileNonce: 0,
-        authClaim:
-            authClaim.children.map((hashDTO) => hashDTO.toString()).toList(),
+        authClaim: authClaimChildren,
         incProof: {
           "existence": proof.existence,
           "siblings":
@@ -418,7 +427,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
     return authInputs;
   }
 
-  Future<NodeDTO> _getAuthClaim({required List<String> publicKey}) async {
+  Future<List<String>> _getAuthClaimChildren(
+      {required List<String> publicKey}) async {
     String authClaimSchema = "ca938857241db9451ea329256b9c06e5";
     String authClaimNonce = "15930428023331155902";
     String authClaim = _libPolygonIdCoreCredentialDataSource.issueAuthClaim(
@@ -427,6 +437,11 @@ class IdentityRepositoryImpl extends IdentityRepository {
       publicKey: publicKey,
     );
     List<String> children = List.from(jsonDecode(authClaim));
+    return children;
+  }
+
+  Future<NodeDTO> _getAuthClaim({required List<String> publicKey}) async {
+    List<String> children = await _getAuthClaimChildren(publicKey: publicKey);
     String hashIndex = await _libBabyJubJubDataSource.hashPoseidon4(
       children[0],
       children[1],

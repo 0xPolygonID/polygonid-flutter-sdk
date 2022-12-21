@@ -10,7 +10,7 @@ class LibPolygonIdCoreProofDataSource {
   );
 
   String proofFromSC(String input) {
-    /*String input = jsonEncode({
+    /*{
       "root":
           "17039823904837071705763545555283546217751326723169195059364451777353741017328",
       "siblings": [
@@ -54,7 +54,7 @@ class LibPolygonIdCoreProofDataSource {
           "13625694351531357880063798347796487002182037278253017013343168668336623401886",
       "value": "0",
       "fnc": "1"
-    });*/
+    }*/
 
     String output = _polygonIdCoreProof.proofFromSmartContract(input);
     logger().d("proofFromSmartContract: $output");
