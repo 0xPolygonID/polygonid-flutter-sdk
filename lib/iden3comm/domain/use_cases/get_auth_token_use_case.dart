@@ -1,10 +1,14 @@
+import 'dart:typed_data';
+
+import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/get_jwz_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_auth_challenge_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_auth_inputs_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/load_circuit_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/prove_use_case.dart';
+
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
-import '../../../credential/domain/repositories/credential_repository.dart';
-import '../../../identity/domain/repositories/identity_repository.dart';
 import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
-import '../../../proof_generation/domain/repositories/proof_repository.dart';
-import '../repositories/iden3comm_repository.dart';
 
 class GetAuthTokenParam {
   final String identifier;
@@ -19,30 +23,37 @@ class GetAuthTokenParam {
 }
 
 class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
-  final Iden3commRepository _iden3commRepository;
-  final CredentialRepository _credentialRepository;
-  final ProofRepository _proofRepository;
-  final IdentityRepository _identityRepository;
+  final LoadCircuitUseCase _loadCircuitUseCase;
+  final GetJWZUseCase _getJWZUseCase;
+  final GetAuthChallengeUseCase _getAuthChallengeUseCase;
+  final GetAuthInputsUseCase _getAuthInputsUseCase;
+  final ProveUseCase _proveUseCase;
 
-  GetAuthTokenUseCase(this._iden3commRepository, this._proofRepository,
-      this._credentialRepository, this._identityRepository);
+  GetAuthTokenUseCase(
+      this._loadCircuitUseCase,
+      this._getJWZUseCase,
+      this._getAuthChallengeUseCase,
+      this._getAuthInputsUseCase,
+      this._proveUseCase);
 
   @override
-  Future<String> execute({required GetAuthTokenParam param}) async {
-    var identityEntity = await _identityRepository.getPrivateIdentity(
-        identifier: param.identifier, privateKey: param.privateKey);
-    CircuitDataEntity authData =
-        await _proofRepository.loadCircuitFiles("auth");
-    String authClaim =
-        await _credentialRepository.getAuthClaim(identity: identityEntity);
-    return _iden3commRepository
-        .getAuthToken(
-            identity: identityEntity,
-            message: param.message,
-            authData: authData,
-            authClaim: authClaim)
+  Future<String> execute({required GetAuthTokenParam param}) {
+    return _getJWZUseCase
+        .execute(param: GetJWZParam(message: param.message))
+        .then((encoded) => _getAuthChallengeUseCase.execute(param: encoded))
+        .then((challenge) => Future.wait([
+              _getAuthInputsUseCase.execute(
+                  param: GetAuthInputsParam(
+                      challenge, param.identifier, param.privateKey)),
+              _loadCircuitUseCase.execute(param: "auth")
+            ]))
+        .then((values) => _proveUseCase.execute(
+            param: ProveParam(
+                values[0] as Uint8List, values[1] as CircuitDataEntity)))
+        .then((proof) => _getJWZUseCase.execute(
+            param: GetJWZParam(message: param.message, proof: proof)))
         .then((token) {
-      logger().i("[GetAuthTokenUseCase] Auth token: $token");
+      logger().i("[GetAuthTokenUseCase] Message $param Auth token: $token");
 
       return token;
     }).catchError((error) {

@@ -4,10 +4,11 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i6;
+import 'dart:typed_data' as _i7;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_case.dart'
-    as _i7;
+    as _i8;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
     as _i3;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart'
@@ -279,19 +280,49 @@ class MockIdentityRepository extends _i1.Mock
           ),
         )),
       ) as _i6.Future<_i4.RhsNodeEntity>);
+  @override
+  _i6.Future<String> getChallenge({required String? message}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getChallenge,
+          [],
+          {#message: message},
+        ),
+        returnValue: _i6.Future<String>.value(''),
+      ) as _i6.Future<String>);
+  @override
+  _i6.Future<_i7.Uint8List> getAuthInputs({
+    required String? challenge,
+    required String? authClaim,
+    required _i3.IdentityEntity? identity,
+    required String? signature,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getAuthInputs,
+          [],
+          {
+            #challenge: challenge,
+            #authClaim: authClaim,
+            #identity: identity,
+            #signature: signature,
+          },
+        ),
+        returnValue: _i6.Future<_i7.Uint8List>.value(_i7.Uint8List(0)),
+      ) as _i6.Future<_i7.Uint8List>);
 }
 
 /// A class which mocks [GetEnvConfigUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetEnvConfigUseCase extends _i1.Mock
-    implements _i7.GetEnvConfigUseCase {
+    implements _i8.GetEnvConfigUseCase {
   MockGetEnvConfigUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i6.Future<String> execute({required _i7.PolygonIdConfig? param}) =>
+  _i6.Future<String> execute({required _i8.PolygonIdConfig? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,

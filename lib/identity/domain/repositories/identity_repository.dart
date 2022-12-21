@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import '../entities/identity_entity.dart';
 import '../entities/private_identity_entity.dart';
 import '../entities/rhs_node_entity.dart';
@@ -25,6 +27,7 @@ abstract class IdentityRepository {
   Future<String> signMessage(
       {required String privateKey, required String message});
 
+  // TODO: move this to an UC
   Future<String> getDidIdentifier(
       {required String identifier,
       required String networkName,
@@ -40,4 +43,12 @@ abstract class IdentityRepository {
       {required String identifier, required String contractAddress});
 
   Future<RhsNodeEntity> getStateRoots({required String url});
+
+  Future<String> getChallenge({required String message});
+
+  Future<Uint8List> getAuthInputs(
+      {required String challenge,
+      required String authClaim,
+      required IdentityEntity identity,
+      required String signature});
 }

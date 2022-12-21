@@ -21,7 +21,7 @@ import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_ex
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
@@ -177,7 +177,7 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<String> getAuthClaim({required PrivateIdentityEntity identity}) {
+  Future<String> getAuthClaim({required IdentityEntity identity}) {
     return _libIdentityDataSource.getAuthClaim(
         pubX: identity.publicKey[0], pubY: identity.publicKey[1]);
   }

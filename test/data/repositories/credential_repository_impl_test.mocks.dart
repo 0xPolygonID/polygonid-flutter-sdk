@@ -459,6 +459,25 @@ class MockLibIdentityDataSource extends _i1.Mock
         ),
         returnValue: _i11.Future<String>.value(''),
       ) as _i11.Future<String>);
+  @override
+  _i11.Future<String> getAuthInputs(
+    String? challenge,
+    String? authClaim,
+    List<String>? publicKey,
+    String? signature,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getAuthInputs,
+          [
+            challenge,
+            authClaim,
+            publicKey,
+            signature,
+          ],
+        ),
+        returnValue: _i11.Future<String>.value(''),
+      ) as _i11.Future<String>);
 }
 
 /// A class which mocks [ClaimMapper].

@@ -3,6 +3,7 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'dart:async' as _i8;
 import 'dart:typed_data' as _i6;
 
 import 'package:mockito/mockito.dart' as _i1;
@@ -10,6 +11,8 @@ import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart'
     as _i4;
 import 'package:polygonid_flutter_sdk/credential/data/dtos/revocation_status.dart'
     as _i5;
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart'
+    as _i7;
 import 'package:polygonid_flutter_sdk/identity/libs/iden3core/iden3core.dart'
     as _i3;
 import 'package:polygonid_flutter_sdk/identity/libs/smt/hash.dart' as _i2;
@@ -245,4 +248,36 @@ class MockIden3CoreLib extends _i1.Mock implements _i3.Iden3CoreLib {
           ),
         ),
       ) as BigInt);
+}
+
+/// A class which mocks [Iden3LibIsolatesWrapper].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockIden3LibIsolatesWrapper extends _i1.Mock
+    implements _i7.Iden3LibIsolatesWrapper {
+  MockIden3LibIsolatesWrapper() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i8.Future<String> computeAuthInputs(
+    String? challenge,
+    String? authClaim,
+    String? pubX,
+    String? pubY,
+    String? signature,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #computeAuthInputs,
+          [
+            challenge,
+            authClaim,
+            pubX,
+            pubY,
+            signature,
+          ],
+        ),
+        returnValue: _i8.Future<String>.value(''),
+      ) as _i8.Future<String>);
 }

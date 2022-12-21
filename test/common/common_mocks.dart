@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 class CommonMocks {
   static String id = "theId";
   static String identifier = "theIdentifier";
@@ -8,6 +10,8 @@ class CommonMocks {
   static List<String> pubKeys = [pubX, pubY];
   static String message = "theMessage";
   static String signature = "theSignature";
+  static String challenge = "theChallenge";
+  static String authClaim = "theAuthClaim";
   static String state = "theState";
   static String thid = "theThid";
   static String to = "theTo";
@@ -25,4 +29,7 @@ class CommonMocks {
     'the': {'very': 'nice map'},
     'yep': 4
   };
+  static Uint8List aBytes = Uint8List(32);
+  static String hash = "theHash";
+  static Exception exception = Exception(message);
 }
