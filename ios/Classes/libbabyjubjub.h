@@ -12,7 +12,11 @@ char *prv2pub(const char *private_key);
 
 char *poseidon_hash(const char *input);
 
-char *poseidon_hash2(const char *const *input);
+char *poseidon_hash2(const char *in1, const char *in2);
+
+char *poseidon_hash3(const char *in1, const char *in2, const char *in3);
+
+char *poseidon_hash4(const char *in1, const char *in2, const char *in3, const char *in4);
 
 char *hash_poseidon(const char *claims_tree,
                     const char *revocation_tree,
