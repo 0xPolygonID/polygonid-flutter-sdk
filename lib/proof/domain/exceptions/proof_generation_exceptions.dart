@@ -25,3 +25,7 @@ class NullProofException implements Exception {
 
   NullProofException(this.circuit);
 }
+
+class FetchGistProofException extends ErrorException {
+  FetchGistProofException(error) : super(error);
+}

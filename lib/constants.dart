@@ -183,6 +183,8 @@ final String POLYGONID_ACCESS_MESSAGE = String.fromCharCodes(
       .map((i) => _envieddataaccessMessage[i] ^ _enviedkeyaccessMessage[i])
       .toList(growable: false),
 );
+
+const AUTH_CLAIM_SCHEMA = "ca938857241db9451ea329256b9c06e5";
 const API_VERSION = 'v1';
 
 const STORAGE_VERSION_KEY = 'privadoIdStorageVersion';

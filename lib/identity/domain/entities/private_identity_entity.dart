@@ -7,7 +7,7 @@ class PrivateIdentityEntity extends IdentityEntity {
   const PrivateIdentityEntity({
     required String did,
     required List<String> publicKey,
-    List<int>? profiles,
+    required Map<int, String> profiles,
     required this.privateKey,
   }) : super(did: did, publicKey: publicKey, profiles: profiles);
 

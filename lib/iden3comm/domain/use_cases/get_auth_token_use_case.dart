@@ -1,18 +1,27 @@
+import 'dart:convert';
+
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
+import '../../../constants.dart';
 import '../../../credential/domain/repositories/credential_repository.dart';
+import '../../../identity/data/mappers/did_mapper.dart';
+import '../../../identity/domain/entities/node_entity.dart';
+import '../../../identity/domain/entities/proof_entity.dart';
 import '../../../identity/domain/repositories/identity_repository.dart';
-import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
-import '../../../proof_generation/domain/repositories/proof_repository.dart';
+import '../../../identity/domain/repositories/smt_repository.dart';
+import '../../../proof/domain/entities/circuit_data_entity.dart';
+import '../../../proof/domain/repositories/proof_repository.dart';
 import '../repositories/iden3comm_repository.dart';
 
 class GetAuthTokenParam {
-  final String identifier;
+  final String did;
+  final int profileNonce;
   final String privateKey;
   final String message;
 
   GetAuthTokenParam(
-    this.identifier,
+    this.did,
+    this.profileNonce,
     this.privateKey,
     this.message,
   );
@@ -23,24 +32,63 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
   final CredentialRepository _credentialRepository;
   final ProofRepository _proofRepository;
   final IdentityRepository _identityRepository;
+  final SMTRepository _smtRepository;
+  final DidMapper _didMapper;
 
-  GetAuthTokenUseCase(this._iden3commRepository, this._proofRepository,
-      this._credentialRepository, this._identityRepository);
+  GetAuthTokenUseCase(
+      this._iden3commRepository,
+      this._proofRepository,
+      this._credentialRepository,
+      this._identityRepository,
+      this._smtRepository,
+      this._didMapper);
 
   @override
   Future<String> execute({required GetAuthTokenParam param}) async {
     var identityEntity = await _identityRepository.getPrivateIdentity(
-        did: param.identifier, privateKey: param.privateKey);
+        did: param.did, privateKey: param.privateKey);
+
     CircuitDataEntity authData =
         await _proofRepository.loadCircuitFiles("auth");
-    String authClaim =
-        await _credentialRepository.getAuthClaim(identity: identityEntity);
+    List<String> authClaimChildren = await _credentialRepository.getAuthClaim(
+        publicKey: identityEntity.publicKey);
+    NodeEntity authClaimNode =
+        await _identityRepository.getAuthClaimNode(children: authClaimChildren);
+
+    ProofEntity incProof = await _smtRepository.generateProof(
+        key: authClaimNode.hash,
+        storeName: claimsTreeStoreName,
+        identifier: param.did,
+        privateKey: param.privateKey);
+
+    ProofEntity nonRevProof = await _smtRepository.generateProof(
+        key: authClaimNode.hash,
+        storeName: revocationTreeStoreName,
+        identifier: param.did,
+        privateKey: param.privateKey);
+
+    // hash of clatr, revtr, rootr
+    Map<String, dynamic> treeState = await _identityRepository.getLatestState(
+        did: param.did, privateKey: param.privateKey);
+
+    var didMap = _didMapper.mapFrom(param.did);
+    String idBigInt =
+        await _identityRepository.convertIdToBigInt(id: didMap.identifier);
+
+    String gistProof = await _proofRepository.getGistProof(idAsInt: idBigInt);
+
     return _iden3commRepository
         .getAuthToken(
-            identity: identityEntity,
-            message: param.message,
-            authData: authData,
-            authClaim: authClaim)
+      identity: identityEntity,
+      profileNonce: param.profileNonce,
+      authClaim: authClaimChildren,
+      authData: authData,
+      incProof: incProof,
+      nonRevProof: nonRevProof,
+      gistProof: jsonDecode(gistProof),
+      treeState: treeState,
+      message: param.message,
+    )
         .then((token) {
       logger().i("[GetAuthTokenUseCase] Auth token: $token");
 

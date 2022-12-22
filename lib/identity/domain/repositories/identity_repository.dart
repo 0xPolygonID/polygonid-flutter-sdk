@@ -1,4 +1,5 @@
 import '../entities/identity_entity.dart';
+import '../entities/node_entity.dart';
 import '../entities/private_identity_entity.dart';
 import '../entities/rhs_node_entity.dart';
 
@@ -42,8 +43,14 @@ abstract class IdentityRepository {
   Future<String> getState(
       {required String identifier, required String contractAddress});
 
-  Future<String> getGistProof(
-      {required String identifier, required String contractAddress});
+  Future<String> convertIdToBigInt({required String id});
 
   Future<RhsNodeEntity> getStateRoots({required String url});
+
+  Future<Map<String, dynamic>> getLatestState({
+    required String did,
+    required String privateKey,
+  });
+
+  Future<NodeEntity> getAuthClaimNode({required List<String> children});
 }

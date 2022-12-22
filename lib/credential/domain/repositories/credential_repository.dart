@@ -1,8 +1,6 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
 
 import '../../../common/domain/entities/filter_entity.dart';
-import '../../../identity/domain/entities/identity_entity.dart';
-import '../../../identity/domain/entities/node_entity.dart';
 import '../entities/claim_entity.dart';
 
 abstract class CredentialRepository {
@@ -46,7 +44,5 @@ abstract class CredentialRepository {
 
   Future<int> getRevocationNonce({required ClaimEntity claim});
 
-  Future<String> getAuthClaim({required IdentityEntity identity});
-
-  Future<NodeEntity> getAuthClaimNode({required IdentityEntity identity});
+  Future<List<String>> getAuthClaim({required List<String> publicKey});
 }

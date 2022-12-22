@@ -1,15 +1,15 @@
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/is_proof_circuit_supported_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
 
 import '../../../identity/domain/repositories/identity_repository.dart';
-import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
-import '../../../proof_generation/domain/repositories/proof_repository.dart';
-import '../../../proof_generation/domain/use_cases/generate_proof_use_case.dart';
+import '../../../proof/domain/entities/circuit_data_entity.dart';
+import '../../../proof/domain/repositories/proof_repository.dart';
+import '../../../proof/domain/use_cases/generate_proof_use_case.dart';
 import 'get_proof_requests_use_case.dart';
 
 class GetProofsParam {
@@ -26,7 +26,7 @@ class GetProofsParam {
 }
 
 class GetProofsUseCase
-    extends FutureUseCase<GetProofsParam, List<ProofEntity>> {
+    extends FutureUseCase<GetProofsParam, List<JWZProofEntity>> {
   final ProofRepository _proofRepository;
   final IdentityRepository _identityRepository;
   final GetClaimsUseCase _getClaimsUseCase;
@@ -43,8 +43,8 @@ class GetProofsUseCase
       this._getProofRequestsUseCase);
 
   @override
-  Future<List<ProofEntity>> execute({required GetProofsParam param}) async {
-    List<ProofEntity> proofs = [];
+  Future<List<JWZProofEntity>> execute({required GetProofsParam param}) async {
+    List<JWZProofEntity> proofs = [];
 
     List<ProofRequestEntity> requests =
         await _getProofRequestsUseCase.execute(param: param.message);
@@ -85,7 +85,7 @@ class GetProofsUseCase
               .execute(
                   param: GenerateProofParam(challenge, signatureString,
                       authClaim, circuitData, publicKey, request.queryParam))
-              .then((proof) => ProofEntity(
+              .then((proof) => JWZProofEntity(
                   id: request.scope.id,
                   circuitId: circuitId,
                   proof: proof.proof,

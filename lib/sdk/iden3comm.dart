@@ -1,6 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart';
@@ -18,7 +18,7 @@ abstract class PolygonIdSdkIden3comm {
   Future<List<Map<String, dynamic>>> getVocabsFromIden3Message(
       {required Iden3MessageEntity message});
 
-  Future<List<ProofEntity>> getProofs(
+  Future<List<JWZProofEntity>> getProofs(
       {required Iden3MessageEntity message,
       required String identifier,
       required String privateKey,
@@ -85,7 +85,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }
 
   @override
-  Future<List<ProofEntity>> getProofs(
+  Future<List<JWZProofEntity>> getProofs(
       {required Iden3MessageEntity message,
       required String identifier,
       required String privateKey,

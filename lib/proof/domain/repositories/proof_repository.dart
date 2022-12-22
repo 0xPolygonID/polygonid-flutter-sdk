@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/jwz/jwz_proof.dart';
 
@@ -31,4 +30,6 @@ abstract class ProofRepository {
   Future<JWZProof> prove(CircuitDataEntity circuitData, Uint8List wtnsBytes);
 
   Future<List<FilterEntity>> getFilters({required ProofRequestEntity request});
+
+  Future<String> getGistProof({required String idAsInt});
 }

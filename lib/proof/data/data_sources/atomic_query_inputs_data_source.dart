@@ -1,23 +1,13 @@
-import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:polygonid_flutter_sdk/common/http.dart';
-import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
-import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_proofs/claim_proof_bjj_dto.dart';
-import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_proofs/claim_proof_dto.dart';
-import 'package:polygonid_flutter_sdk/credential/data/dtos/revocation_status.dart';
-import 'package:polygonid_flutter_sdk/identity/libs/iden3core/iden3core.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/data/dtos/atomic_query_inputs_param.dart';
 
 @injectable
 class AtomicQueryInputsWrapper {
-  final Iden3CoreLib _iden3coreLib;
+  //final Iden3CoreLib _iden3coreLib;
 
-  AtomicQueryInputsWrapper(this._iden3coreLib);
+  //AtomicQueryInputsWrapper(this._iden3coreLib);
 
   ///
-  Future<String?> queryInputsFromMTP(
+  /*Future<String?> queryInputsFromMTP(
       AtomicQueryInputsParam atomicQueryInputsParam) async {
     return await compute(_computeAtomicQueryInputs, atomicQueryInputsParam);
   }
@@ -136,5 +126,5 @@ class AtomicQueryInputsDataSource {
     }
 
     return queryInputs;
-  }
+  }*/
 }

@@ -13,7 +13,7 @@ class LibPolygonIdCoreCredentialDataSource {
 
   /// - schema - schema hash hex string
   /// - nonce - nonce as big int string
-  String issueAuthClaim({
+  String issueClaim({
     required String schema,
     required String nonce,
     required List<String> publicKey,

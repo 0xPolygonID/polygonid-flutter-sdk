@@ -1,5 +1,6 @@
 import '../entities/hash_entity.dart';
 import '../entities/node_entity.dart';
+import '../entities/proof_entity.dart';
 
 abstract class SMTRepository {
   Future<void> addLeaf(
@@ -29,6 +30,12 @@ abstract class SMTRepository {
 
   Future<void> setRoot(
       {required HashEntity root,
+      required String storeName,
+      required String identifier,
+      required String privateKey});
+
+  Future<ProofEntity> generateProof(
+      {required HashEntity key,
       required String storeName,
       required String identifier,
       required String privateKey});

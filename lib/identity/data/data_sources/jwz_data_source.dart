@@ -8,14 +8,16 @@ import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj.dart';
 import 'package:web3dart/crypto.dart';
 
 import '../../../common/utils/uint8_list_utils.dart';
-import '../../../proof_generation/libs/prover/prover.dart';
-import '../../../proof_generation/libs/witnesscalc/auth/witness_auth.dart';
+import '../../../proof/data/data_sources/prepare_inputs_data_source.dart';
+import '../../../proof/libs/prover/prover.dart';
+import '../../../proof/libs/witnesscalc/auth/witness_auth.dart';
 import '../../libs/iden3core/iden3core.dart';
 import '../../libs/jwz/jwz.dart';
 import '../../libs/jwz/jwz_exceptions.dart';
 import '../../libs/jwz/jwz_header.dart';
 import '../../libs/jwz/jwz_proof.dart';
 import '../../libs/jwz/jwz_token.dart';
+import '../dtos/proof_dto.dart';
 import 'wallet_data_source.dart';
 
 class AuthInputsIsolateParam {
@@ -40,11 +42,11 @@ class CalculateProofIsolateParam {
 /// For UT purpose, we wrap the isolate call into a separate class
 @injectable
 class JWZIsolatesWrapper {
-  Future<String> computeAuthInputs(String challenge, String authClaim,
+  /*Future<String> computeAuthInputs(String challenge, String authClaim,
       String pubX, String pubY, String signature) {
     return compute(_computeAuthInputs,
         AuthInputsIsolateParam(challenge, authClaim, pubX, pubY, signature));
-  }
+  }*/
 
   Future<Map<String, dynamic>?> computeCalculateProof(
       Uint8List inputs, Uint8List provingKey, Uint8List wasm) {
@@ -56,12 +58,12 @@ class JWZIsolatesWrapper {
 /// Isolates have to be top level methods or statics
 
 /// As this is running is a separate thread, we cannot inject [Iden3CoreLib]
-Future<String> _computeAuthInputs(AuthInputsIsolateParam param) {
-  final iden3coreLib = Iden3CoreLib();
+/*Future<String> _computeAuthInputs(AuthInputsIsolateParam param) {
+  final prepare = PrepareInputsDataSource();
 
-  return Future.value(iden3coreLib.prepareAuthInputs(param.challenge,
+  return Future.value(polygonIdCoreProof.prepareAuthInputs(param.challenge,
       param.authClaim, param.pubX, param.pubY, param.signature));
-}
+}*/
 
 /// As this is running is a separate thread, we cannot inject [Iden3CoreLib]
 Future<Map<String, dynamic>?> _computeCalculateProof(
@@ -78,14 +80,21 @@ Future<Map<String, dynamic>?> _computeCalculateProof(
 class JWZDataSource {
   final BabyjubjubLib _babyjubjubLib;
   final WalletDataSource _walletDataSource;
+  final PrepareInputsDataSource _prepareInputsDataSource;
   final JWZIsolatesWrapper _jwzIsolateWrapper;
 
-  JWZDataSource(
-      this._babyjubjubLib, this._walletDataSource, this._jwzIsolateWrapper);
+  JWZDataSource(this._babyjubjubLib, this._walletDataSource,
+      this._prepareInputsDataSource, this._jwzIsolateWrapper);
 
   Future<String> getAuthToken(
       {required Uint8List privateKey,
-      required String authClaim,
+      required String did,
+      required int profileNonce,
+      required List<String> authClaim,
+      required ProofDTO incProof,
+      required ProofDTO nonRevProof,
+      required ProofDTO gistProof,
+      required Map<String, dynamic> treeState,
       required String message,
       required String circuitId,
       required Uint8List datFile,
@@ -98,8 +107,12 @@ class JWZDataSource {
             alg: "groth16"),
         payload: JWZPayload(payload: message));
 
-    Uint8List prepared =
-        await _prepare(privateKey, authClaim, _getHash(jwz), circuitId);
+    String challenge = bytesToInt(_getHash(jwz)).toString();
+    String signature = await _walletDataSource.signMessage(
+        privateKey: privateKey, message: challenge);
+
+    Uint8List prepared = await _prepare(did, profileNonce, authClaim, incProof,
+        nonRevProof, gistProof, treeState, challenge, signature, circuitId);
 
     jwz.proof = await _prove(prepared, zKeyFile, datFile);
 
@@ -109,24 +122,34 @@ class JWZDataSource {
   }
 
   /// Prepare inputs
-  Future<Uint8List> _prepare(Uint8List privateKey, String authClaim,
-      Uint8List hash, String circuitId) {
-    return _walletDataSource
-        .getWallet(privateKey: privateKey)
-        .then((wallet) async {
-      String queryInputs = "";
-      String challenge = bytesToInt(hash).toString();
+  Future<Uint8List> _prepare(
+      /*Uint8List privateKey,*/ String did,
+      int profileNonce,
+      List<String> authClaim,
+      ProofDTO incProof,
+      ProofDTO nonRevProof,
+      ProofDTO gistProof,
+      Map<String, dynamic> treeState,
+      String challenge,
+      String signature,
+      /*Uint8List hash,*/ String circuitId) async {
+    String? inputs = "";
+    if (circuitId == "auth") {
+      inputs = await _prepareInputsDataSource.prepareAuthInputs(
+          did: did,
+          profileNonce: profileNonce,
+          authClaim: authClaim,
+          incProof: incProof,
+          nonRevProof: nonRevProof,
+          gistProof: gistProof,
+          treeState: treeState,
+          challenge: challenge,
+          signature: signature);
+      //queryInputs = await _jwzIsolateWrapper.computeAuthInputs(challenge,
+      //    authClaim, wallet.publicKey[0], wallet.publicKey[1], signature);
+    }
 
-      String signature = await _walletDataSource.signMessage(
-          privateKey: privateKey, message: challenge);
-
-      if (circuitId == "auth") {
-        queryInputs = await _jwzIsolateWrapper.computeAuthInputs(challenge,
-            authClaim, wallet.publicKey[0], wallet.publicKey[1], signature);
-      }
-
-      return Uint8ArrayUtils.uint8ListfromString(queryInputs);
-    });
+    return Uint8ArrayUtils.uint8ListfromString(inputs!);
   }
 
   Uint8List _getHash(JWZ jwz) {

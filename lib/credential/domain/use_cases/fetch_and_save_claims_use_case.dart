@@ -43,6 +43,7 @@ class FetchAndSaveClaimsUseCase
                 .execute(
                     param: GetAuthTokenParam(
                   param.identifier,
+                  0,
                   param.privateKey,
                   request,
                 ))

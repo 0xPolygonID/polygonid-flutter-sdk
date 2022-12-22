@@ -8,10 +8,10 @@ part 'identity_dto.g.dart';
 class IdentityDTO extends Equatable {
   final String did;
   final List<String> publicKey;
-  final List<int>? profiles;
+  final Map<int, String> profiles;
 
   const IdentityDTO(
-      {required this.did, required this.publicKey, this.profiles});
+      {required this.did, required this.publicKey, required this.profiles});
 
   factory IdentityDTO.fromJson(Map<String, dynamic> json) =>
       _$IdentityDTOFromJson(json);

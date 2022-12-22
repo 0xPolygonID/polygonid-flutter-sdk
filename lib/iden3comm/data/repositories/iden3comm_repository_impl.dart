@@ -12,17 +12,20 @@ import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/proof_mapper.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../common/domain/domain_logger.dart';
 import '../../../identity/data/data_sources/jwz_data_source.dart';
 import '../../../identity/data/mappers/hex_mapper.dart';
 import '../../../identity/domain/entities/private_identity_entity.dart';
-import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
+import '../../../identity/domain/entities/proof_entity.dart';
+import '../../../proof/domain/entities/circuit_data_entity.dart';
+import '../../domain/entities/jwz_proof_entity.dart';
 import '../../domain/exceptions/iden3comm_exceptions.dart';
 import '../../domain/repositories/iden3comm_repository.dart';
+import '../data_sources/lib_pidcore_iden3comm_data_source.dart';
 import '../dtos/response/auth/auth_body_did_doc_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_metadata_devices_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_metadata_response.dart';
@@ -31,12 +34,20 @@ import '../mappers/auth_response_mapper.dart';
 
 class Iden3commRepositoryImpl extends Iden3commRepository {
   final RemoteIden3commDataSource _remoteIden3commDataSource;
+  final LibPolygonIdCoreIden3commDataSource
+      _libPolygonIdCoreIden3commDataSource;
   final JWZDataSource _jwzDataSource;
   final HexMapper _hexMapper;
+  final ProofMapper _proofMapper;
   final AuthResponseMapper _authResponseMapper;
 
-  Iden3commRepositoryImpl(this._remoteIden3commDataSource, this._jwzDataSource,
-      this._hexMapper, this._authResponseMapper);
+  Iden3commRepositoryImpl(
+      this._remoteIden3commDataSource,
+      this._libPolygonIdCoreIden3commDataSource,
+      this._jwzDataSource,
+      this._hexMapper,
+      this._proofMapper,
+      this._authResponseMapper);
 
   @override
   Future<void> authenticate({
@@ -59,25 +70,38 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   }
 
   @override
-  Future<String> getAuthToken(
-      {required PrivateIdentityEntity identity,
-      required String message,
-      required CircuitDataEntity authData,
-      required String authClaim}) async {
+  Future<String> getAuthToken({
+    required PrivateIdentityEntity identity,
+    required int profileNonce,
+    required List<String> authClaim,
+    required CircuitDataEntity authData,
+    required ProofEntity incProof,
+    required ProofEntity nonRevProof,
+    required ProofEntity gistProof,
+    required Map<String, dynamic> treeState,
+    required String message,
+  }) async {
     return _jwzDataSource.getAuthToken(
-        privateKey: _hexMapper.mapTo(identity.privateKey),
-        authClaim: authClaim,
-        message: message,
-        circuitId: authData.circuitId,
-        datFile: authData.datFile,
-        zKeyFile: authData.zKeyFile);
+      privateKey: _hexMapper.mapTo(identity.privateKey),
+      did: identity.profiles[profileNonce] ?? identity.did,
+      profileNonce: profileNonce,
+      authClaim: authClaim,
+      incProof: _proofMapper.mapTo(incProof),
+      nonRevProof: _proofMapper.mapTo(nonRevProof),
+      gistProof: _proofMapper.mapTo(gistProof),
+      treeState: treeState,
+      message: message,
+      circuitId: authData.circuitId,
+      datFile: authData.datFile,
+      zKeyFile: authData.zKeyFile,
+    );
   }
 
   @override
   Future<String> getAuthResponse({
     required String identifier,
     required AuthIden3MessageEntity request,
-    required List<ProofEntity> scope,
+    required List<JWZProofEntity> scope,
     String? pushUrl,
     String? pushToken,
     String? didIdentifier,

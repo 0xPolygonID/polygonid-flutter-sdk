@@ -1,6 +1,7 @@
 import '../../../identity/domain/entities/private_identity_entity.dart';
-import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
-import '../entities/proof_entity.dart';
+import '../../../identity/domain/entities/proof_entity.dart';
+import '../../../proof/domain/entities/circuit_data_entity.dart';
+import '../entities/jwz_proof_entity.dart';
 import '../entities/request/auth/auth_iden3_message_entity.dart';
 
 abstract class Iden3commRepository {
@@ -9,16 +10,22 @@ abstract class Iden3commRepository {
     required String authToken,
   });
 
-  Future<String> getAuthToken(
-      {required PrivateIdentityEntity identity,
-      required String message,
-      required CircuitDataEntity authData,
-      required String authClaim});
+  Future<String> getAuthToken({
+    required PrivateIdentityEntity identity,
+    required int profileNonce,
+    required List<String> authClaim,
+    required CircuitDataEntity authData,
+    required ProofEntity incProof,
+    required ProofEntity nonRevProof,
+    required ProofEntity gistProof,
+    required Map<String, dynamic> treeState,
+    required String message,
+  });
 
   Future<String> getAuthResponse({
     required String identifier,
     required AuthIden3MessageEntity request,
-    required List<ProofEntity> scope,
+    required List<JWZProofEntity> scope,
     String? pushUrl,
     String? pushToken,
     String? didIdentifier,

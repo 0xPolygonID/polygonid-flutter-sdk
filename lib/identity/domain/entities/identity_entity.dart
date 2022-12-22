@@ -2,12 +2,12 @@
 class IdentityEntity {
   final String did;
   final List<String> publicKey;
-  final List<int>? profiles;
+  final Map<int, String> profiles;
 
   const IdentityEntity({
     required this.did,
     required this.publicKey,
-    this.profiles,
+    required this.profiles,
   });
 
   @override

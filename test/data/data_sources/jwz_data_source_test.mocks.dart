@@ -118,27 +118,6 @@ class MockJWZIsolatesWrapper extends _i1.Mock
   }
 
   @override
-  _i4.Future<String> computeAuthInputs(
-    String? challenge,
-    String? authClaim,
-    String? pubX,
-    String? pubY,
-    String? signature,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #computeAuthInputs,
-          [
-            challenge,
-            authClaim,
-            pubX,
-            pubY,
-            signature,
-          ],
-        ),
-        returnValue: _i4.Future<String>.value(''),
-      ) as _i4.Future<String>);
-  @override
   _i4.Future<Map<String, dynamic>?> computeCalculateProof(
     _i5.Uint8List? inputs,
     _i5.Uint8List? provingKey,

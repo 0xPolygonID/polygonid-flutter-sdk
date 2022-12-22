@@ -1,11 +1,7 @@
-import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
-
-import '../../../credential/data/dtos/revocation_status.dart';
-
-enum AtomicQueryInputsType { mtp, sig }
+//enum AtomicQueryInputsType { /*mtp, sig }
 
 class AtomicQueryInputsParam {
-  final AtomicQueryInputsType type;
+  /*final AtomicQueryInputsType type;
   final String challenge;
   final String pubX;
   final String pubY;
@@ -31,5 +27,5 @@ class AtomicQueryInputsParam {
     this.values,
     this.operator,
     this.revocationStatus,
-  );
+  );*/
 }

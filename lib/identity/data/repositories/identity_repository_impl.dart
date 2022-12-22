@@ -7,9 +7,11 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/smt_data_source.dart';
 
 import '../../../credential/data/data_sources/lib_pidcore_credential_data_source.dart';
+import '../../../credential/data/data_sources/local_claim_data_source.dart';
 import '../../../iden3comm/data/data_sources/lib_pidcore_iden3comm_data_source.dart';
-import '../../../proof_generation/data/data_sources/lib_pidcore_proof_data_source.dart';
+import '../../../proof/data/data_sources/lib_pidcore_proof_data_source.dart';
 import '../../domain/entities/identity_entity.dart';
+import '../../domain/entities/node_entity.dart';
 import '../../domain/entities/private_identity_entity.dart';
 import '../../domain/entities/rhs_node_entity.dart';
 import '../../domain/exceptions/identity_exceptions.dart';
@@ -28,6 +30,7 @@ import '../dtos/proof_dto.dart';
 import '../mappers/did_mapper.dart';
 import '../mappers/hex_mapper.dart';
 import '../mappers/identity_dto_mapper.dart';
+import '../mappers/node_mapper.dart';
 import '../mappers/private_key_mapper.dart';
 import '../mappers/rhs_node_mapper.dart';
 import '../mappers/state_identifier_mapper.dart';
@@ -48,11 +51,13 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final StorageIdentityDataSource _storageIdentityDataSource;
   final RPCDataSource _rpcDataSource;
   final LocalContractFilesDataSource _localContractFilesDataSource;
+  final LocalClaimDataSource _localClaimDataSource;
   final HexMapper _hexMapper;
   //final BigIntMapper _bigIntMapper;
   final PrivateKeyMapper _privateKeyMapper;
   final IdentityDTOMapper _identityDTOMapper;
   final RhsNodeMapper _rhsNodeMapper;
+  final NodeMapper _nodeMapper;
   final StateIdentifierMapper _stateIdentifierMapper;
   final DidMapper _didMapper;
 
@@ -69,10 +74,12 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._storageIdentityDataSource,
     this._rpcDataSource,
     this._localContractFilesDataSource,
+    this._localClaimDataSource,
     this._hexMapper,
     this._privateKeyMapper,
     this._identityDTOMapper,
     this._rhsNodeMapper,
+    this._nodeMapper,
     this._stateIdentifierMapper,
     this._didMapper,
   );
@@ -251,7 +258,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
           did: did, privateKey: privateKey, publicKey: wallet.publicKey);
 
       PrivateIdentityEntity identityEntity = _identityDTOMapper.mapPrivateFrom(
-          IdentityDTO(did: did, publicKey: wallet.publicKey),
+          IdentityDTO(
+              did: did, publicKey: wallet.publicKey, profiles: {0: did}),
           _hexMapper.mapFrom(wallet.privateKey));
       return Future.value(identityEntity);
     } catch (error) {
@@ -283,12 +291,15 @@ class IdentityRepositoryImpl extends IdentityRepository {
         privateKey: privateKey);
 
     // 2. add authClaim to claims tree
-    NodeDTO authClaimNode = await _getAuthClaim(publicKey: publicKey);
     List<String> authClaimChildren =
-        await _getAuthClaimChildren(publicKey: publicKey);
+        await _localClaimDataSource.getAuthClaim(publicKey: publicKey);
+    NodeEntity authClaimNode =
+        await getAuthClaimNode(children: authClaimChildren);
+    /*List<String> authClaimChildren =
+        await _getAuthClaimChildren(publicKey: publicKey);*/
 
     HashDTO claimsTreeRoot = await _smtDataSource.addLeaf(
-        newNodeLeaf: authClaimNode,
+        newNodeLeaf: _nodeMapper.mapTo(authClaimNode),
         storeName: claimsTreeStoreName,
         identifier: did,
         privateKey: privateKey);
@@ -298,13 +309,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
         claimsTreeRoot.toString(),
         BigInt.zero.toString(),
         BigInt.zero.toString());
-
-    String authInputs = await _getAuthInputs(
-        authClaim: authClaimNode,
-        authClaimChildren: authClaimChildren,
-        challenge: "10",
-        did: did,
-        privateKey: privateKey);
 
     Map<String, dynamic> treeState = {};
     treeState["state"] = genesisState;
@@ -316,8 +320,11 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
   Future<Map<String, dynamic>> _getGenesisState(
       {required List<String> publicKey}) async {
-    NodeDTO authClaimNode = await _getAuthClaim(publicKey: publicKey);
-    HashDTO claimsTreeRoot = authClaimNode.hash;
+    List<String> authClaimChildren =
+        await _localClaimDataSource.getAuthClaim(publicKey: publicKey);
+    NodeEntity authClaimNode =
+        await getAuthClaimNode(children: authClaimChildren);
+    HashDTO claimsTreeRoot = _nodeMapper.mapTo(authClaimNode).hash;
 
     // hash of clatr, revtr, rootr
     String genesisState = await _libBabyJubJubDataSource.hashPoseidon3(
@@ -333,7 +340,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
     return treeState;
   }
 
-  Future<Map<String, dynamic>> _getLatestState({
+  @override
+  Future<Map<String, dynamic>> getLatestState({
     required String did,
     required String privateKey,
   }) async {
@@ -365,7 +373,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
     return treeState;
   }
 
-  Future<String> _getAuthInputs({
+  /*Future<String> _getAuthInputs({
     required NodeDTO authClaim,
     required List<String> authClaimChildren,
     required String challenge,
@@ -391,7 +399,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
     // hash of clatr, revtr, rootr
     Map<String, dynamic> treeState =
-        await _getLatestState(did: did, privateKey: privateKey);
+        await getLatestState(did: did, privateKey: privateKey);
 
     var didMap = _didMapper.mapFrom(did);
     String idBigInt = _libPolygonIdCoreIdentityDataSource
@@ -425,23 +433,10 @@ class IdentityRepositoryImpl extends IdentityRepository {
         challenge: challenge,
         signature: signature);
     return authInputs;
-  }
+  }*/
 
-  Future<List<String>> _getAuthClaimChildren(
-      {required List<String> publicKey}) async {
-    String authClaimSchema = "ca938857241db9451ea329256b9c06e5";
-    String authClaimNonce = "15930428023331155902";
-    String authClaim = _libPolygonIdCoreCredentialDataSource.issueAuthClaim(
-      schema: authClaimSchema,
-      nonce: authClaimNonce,
-      publicKey: publicKey,
-    );
-    List<String> children = List.from(jsonDecode(authClaim));
-    return children;
-  }
-
-  Future<NodeDTO> _getAuthClaim({required List<String> publicKey}) async {
-    List<String> children = await _getAuthClaimChildren(publicKey: publicKey);
+  @override
+  Future<NodeEntity> getAuthClaimNode({required List<String> children}) async {
     String hashIndex = await _libBabyJubJubDataSource.hashPoseidon4(
       children[0],
       children[1],
@@ -464,7 +459,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
         ],
         hash: HashDTO.fromBigInt(BigInt.parse(hashClaimNode)),
         type: NodeTypeDTO.leaf);
-    return authClaimNode;
+    return _nodeMapper.mapFrom(authClaimNode);
   }
 
   @override
@@ -559,16 +554,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
             .catchError((error) => throw FetchIdentityStateException(error)));
   }
 
-  Future<String> getGistProof(
-      {required String identifier, required String contractAddress}) {
-    return _localContractFilesDataSource.loadGistContract(contractAddress).then(
-        (contract) => _rpcDataSource
-            .getGistProof(
-                identifier /*_stateIdentifierMapper.mapTo(identifier)*/,
-                contract)
-            .catchError((error) => throw FetchIdentityStateException(error)));
-  }
-
   @override
   Future<RhsNodeEntity> getStateRoots({required String url}) {
     return _remoteIdentityDataSource
@@ -606,6 +591,12 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
               return Future.value(genesis["did"]);
             }));
+  }
+
+  @override
+  Future<String> convertIdToBigInt({required String id}) {
+    String idBigInt = _libPolygonIdCoreIdentityDataSource.genesisIdToBigInt(id);
+    return Future.value(idBigInt);
   }
 
   @override

@@ -132,6 +132,7 @@ class SMTRepositoryImpl implements SMTRepository {
         privateKey: privateKey);
   }
 
+  @override
   Future<ProofEntity> generateProof(
       {required HashEntity key,
       required String storeName,

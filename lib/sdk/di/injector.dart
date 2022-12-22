@@ -26,8 +26,8 @@ import '../../iden3comm/data/repositories/iden3comm_repository_impl.dart';
 import '../../iden3comm/domain/repositories/iden3comm_repository.dart';
 import '../../identity/data/repositories/identity_repository_impl.dart';
 import '../../identity/domain/repositories/identity_repository.dart';
-import '../../proof_generation/data/repositories/proof_repository_impl.dart';
-import '../../proof_generation/domain/repositories/proof_repository.dart';
+import '../../proof/data/repositories/proof_repository_impl.dart';
+import '../../proof/domain/repositories/proof_repository.dart';
 import 'injector.config.dart';
 
 final getItSdk = GetIt.asNewInstance();
