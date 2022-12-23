@@ -32,8 +32,8 @@ class ClaimDetailBloc extends Bloc<ClaimDetailEvent, ClaimDetailState> {
         return;
       }
 
-      String? identifier =
-          await _polygonIdSdk.identity.getIdentifier(privateKey: privateKey);
+      String? identifier = await _polygonIdSdk.identity.getDidIdentifier(
+          privateKey: privateKey, blockchain: 'polygon', network: 'mumbai');
 
       if (identifier != null) {
         await _polygonIdSdk.credential.removeClaims(

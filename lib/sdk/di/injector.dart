@@ -25,7 +25,9 @@ import '../../env/sdk_env.dart';
 import '../../iden3comm/data/repositories/iden3comm_repository_impl.dart';
 import '../../iden3comm/domain/repositories/iden3comm_repository.dart';
 import '../../identity/data/repositories/identity_repository_impl.dart';
+import '../../identity/data/repositories/smt_repository_impl.dart';
 import '../../identity/domain/repositories/identity_repository.dart';
+import '../../identity/domain/repositories/smt_repository.dart';
 import '../../proof/data/repositories/proof_repository_impl.dart';
 import '../../proof/domain/repositories/proof_repository.dart';
 import 'injector.config.dart';
@@ -151,6 +153,9 @@ abstract class RepositoriesModule {
   IdentityRepository identityRepository(
           IdentityRepositoryImpl identityRepositoryImpl) =>
       identityRepositoryImpl;
+
+  SMTRepository smtRepository(SMTRepositoryImpl smtRepositoryImpl) =>
+      smtRepositoryImpl;
 
   // Credential
   CredentialRepository credentialRepository(

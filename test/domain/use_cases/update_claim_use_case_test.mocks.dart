@@ -47,8 +47,8 @@ class MockCredentialRepository extends _i1.Mock
 
   @override
   _i4.Future<_i2.ClaimEntity> fetchClaim({
-    required String? identifier,
-    required String? token,
+    required String? did,
+    required String? authToken,
     required _i5.OfferIden3MessageEntity? message,
   }) =>
       (super.noSuchMethod(
@@ -56,8 +56,8 @@ class MockCredentialRepository extends _i1.Mock
           #fetchClaim,
           [],
           {
-            #identifier: identifier,
-            #token: token,
+            #did: did,
+            #authToken: authToken,
             #message: message,
           },
         ),
@@ -67,8 +67,8 @@ class MockCredentialRepository extends _i1.Mock
             #fetchClaim,
             [],
             {
-              #identifier: identifier,
-              #token: token,
+              #did: did,
+              #authToken: authToken,
               #message: message,
             },
           ),
