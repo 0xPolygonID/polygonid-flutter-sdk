@@ -184,7 +184,7 @@ final String POLYGONID_ACCESS_MESSAGE = String.fromCharCodes(
       .toList(growable: false),
 );
 
-const AUTH_CLAIM_SCHEMA = "ca938857241db9451ea329256b9c06e5";
+const AUTH_CLAIM_SCHEMA = "cca3371a6cb1b715004407e325bd993c";
 const API_VERSION = 'v1';
 
 const STORAGE_VERSION_KEY = 'privadoIdStorageVersion';

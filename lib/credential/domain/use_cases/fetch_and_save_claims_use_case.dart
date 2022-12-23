@@ -48,8 +48,8 @@ class FetchAndSaveClaimsUseCase
                   request,
                 ))
                 .then((token) => _credentialRepository.fetchClaim(
-                    identifier: param.identifier,
-                    token: token,
+                    did: param.identifier,
+                    authToken: token,
                     message: param.message))
                 .then((claim) => claims.add(claim));
           }

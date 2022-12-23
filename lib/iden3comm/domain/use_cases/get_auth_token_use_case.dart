@@ -49,7 +49,7 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
         did: param.did, privateKey: param.privateKey);
 
     CircuitDataEntity authData =
-        await _proofRepository.loadCircuitFiles("auth");
+        await _proofRepository.loadCircuitFiles("authV2");
     List<String> authClaimChildren = await _credentialRepository.getAuthClaim(
         publicKey: identityEntity.publicKey);
     NodeEntity authClaimNode =

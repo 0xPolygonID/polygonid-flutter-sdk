@@ -5,8 +5,8 @@ import '../entities/claim_entity.dart';
 
 abstract class CredentialRepository {
   Future<ClaimEntity> fetchClaim(
-      {required String identifier,
-      required String token,
+      {required String did,
+      required String authToken,
       required OfferIden3MessageEntity message});
 
   Future<void> saveClaims({

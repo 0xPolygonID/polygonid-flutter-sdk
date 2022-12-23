@@ -47,11 +47,11 @@ class CredentialRepositoryImpl extends CredentialRepository {
 
   @override
   Future<ClaimEntity> fetchClaim(
-      {required String identifier,
-      required String token,
+      {required String did,
+      required String authToken,
       required OfferIden3MessageEntity message}) {
     return _remoteClaimDataSource
-        .fetchClaim(token: token, url: message.body.url, identifier: identifier)
+        .fetchClaim(token: authToken, url: message.body.url, identifier: did)
         .then((dto) {
       /// Error in fetching schema and vocab are not blocking
       return _remoteClaimDataSource
