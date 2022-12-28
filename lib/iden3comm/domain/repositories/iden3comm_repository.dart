@@ -1,6 +1,7 @@
 import '../../../identity/domain/entities/private_identity_entity.dart';
-import '../../../identity/domain/entities/proof_entity.dart';
 import '../../../proof/domain/entities/circuit_data_entity.dart';
+import '../../../proof/domain/entities/gist_proof_entity.dart';
+import '../../../proof/domain/entities/proof_entity.dart';
 import '../entities/jwz_proof_entity.dart';
 import '../entities/request/auth/auth_iden3_message_entity.dart';
 
@@ -17,7 +18,7 @@ abstract class Iden3commRepository {
     required CircuitDataEntity authData,
     required ProofEntity incProof,
     required ProofEntity nonRevProof,
-    required ProofEntity gistProof,
+    required GistProofEntity gistProof,
     required Map<String, dynamic> treeState,
     required String message,
   });

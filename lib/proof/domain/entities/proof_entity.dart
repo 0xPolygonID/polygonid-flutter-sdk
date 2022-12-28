@@ -1,5 +1,5 @@
-import 'hash_entity.dart';
-import 'node_entity.dart';
+import '../../../identity/domain/entities/hash_entity.dart';
+import '../../../identity/domain/entities/node_entity.dart';
 
 class ProofEntity {
   final bool existence;

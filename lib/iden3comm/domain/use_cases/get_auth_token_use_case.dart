@@ -1,16 +1,16 @@
-import 'dart:convert';
-
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
 import '../../../constants.dart';
 import '../../../credential/domain/repositories/credential_repository.dart';
 import '../../../identity/data/mappers/did_mapper.dart';
 import '../../../identity/domain/entities/node_entity.dart';
-import '../../../identity/domain/entities/proof_entity.dart';
 import '../../../identity/domain/repositories/identity_repository.dart';
 import '../../../identity/domain/repositories/smt_repository.dart';
 import '../../../proof/domain/entities/circuit_data_entity.dart';
+import '../../../proof/domain/entities/gist_proof_entity.dart';
+import '../../../proof/domain/entities/proof_entity.dart';
 import '../../../proof/domain/repositories/proof_repository.dart';
+import '../../../proof/domain/use_cases/get_gist_proof_use_case.dart';
 import '../repositories/iden3comm_repository.dart';
 
 class GetAuthTokenParam {
@@ -34,6 +34,7 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
   final IdentityRepository _identityRepository;
   final SMTRepository _smtRepository;
   final DidMapper _didMapper;
+  final GetGistProofUseCase _getGistProofUseCase;
 
   GetAuthTokenUseCase(
       this._iden3commRepository,
@@ -41,7 +42,8 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
       this._credentialRepository,
       this._identityRepository,
       this._smtRepository,
-      this._didMapper);
+      this._didMapper,
+      this._getGistProofUseCase);
 
   @override
   Future<String> execute({required GetAuthTokenParam param}) async {
@@ -75,7 +77,8 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
     String idBigInt =
         await _identityRepository.convertIdToBigInt(id: didMap.identifier);
 
-    String gistProof = await _proofRepository.getGistProof(idAsInt: idBigInt);
+    GistProofEntity gistProof =
+        await _getGistProofUseCase.execute(param: idBigInt);
 
     return _iden3commRepository
         .getAuthToken(
@@ -85,7 +88,7 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
       authData: authData,
       incProof: incProof,
       nonRevProof: nonRevProof,
-      gistProof: jsonDecode(gistProof),
+      gistProof: gistProof,
       treeState: treeState,
       message: param.message,
     )

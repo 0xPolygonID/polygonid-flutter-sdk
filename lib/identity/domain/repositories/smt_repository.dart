@@ -1,6 +1,6 @@
+import '../../../proof/domain/entities/proof_entity.dart';
 import '../entities/hash_entity.dart';
 import '../entities/node_entity.dart';
-import '../entities/proof_entity.dart';
 
 abstract class SMTRepository {
   Future<void> addLeaf(

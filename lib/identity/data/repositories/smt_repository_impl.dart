@@ -8,14 +8,14 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_smt_dat
 import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 
-import '../../domain/entities/proof_entity.dart';
+import '../../../proof/data/mappers/proof_mapper.dart';
+import '../../../proof/domain/entities/proof_entity.dart';
 import '../../domain/repositories/smt_repository.dart';
 import '../data_sources/smt_data_source.dart';
 import '../dtos/hash_dto.dart';
 import '../dtos/node_dto.dart';
 import '../mappers/hash_mapper.dart';
 import '../mappers/node_mapper.dart';
-import '../mappers/proof_mapper.dart';
 
 class SMTRepositoryImpl implements SMTRepository {
   final SMTDataSource _smtDataSource;

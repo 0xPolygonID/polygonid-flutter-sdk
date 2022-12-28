@@ -6,6 +6,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_en
 import 'package:polygonid_flutter_sdk/identity/libs/jwz/jwz_proof.dart';
 
 import '../entities/circuit_data_entity.dart';
+import '../entities/gist_proof_entity.dart';
 
 abstract class ProofRepository {
   Future<bool> isCircuitSupported({required String circuitId});
@@ -31,5 +32,6 @@ abstract class ProofRepository {
 
   Future<List<FilterEntity>> getFilters({required ProofRequestEntity request});
 
-  Future<String> getGistProof({required String idAsInt});
+  Future<GistProofEntity> getGistProof(
+      {required String idAsInt, required String contractAddress});
 }

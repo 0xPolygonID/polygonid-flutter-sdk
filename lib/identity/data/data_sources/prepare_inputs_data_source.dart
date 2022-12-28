@@ -3,15 +3,17 @@ import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/revocation_status.dart';
 
-import '../../../identity/data/dtos/proof_dto.dart';
-import '../dtos/prepare_inputs_param.dart';
-import 'lib_pidcore_proof_data_source.dart';
+import '../../../iden3comm/data/data_sources/lib_pidcore_iden3comm_data_source.dart';
+import '../../../proof/data/dtos/gist_proof_dto.dart';
+import '../../../proof/data/dtos/prepare_inputs_param.dart';
+import '../../../proof/data/dtos/proof_dto.dart';
 
 @injectable
 class PrepareInputsWrapper {
-  final LibPolygonIdCoreProofDataSource _libPolygonIdCoreProofDataSource;
+  final LibPolygonIdCoreIden3commDataSource
+      _libPolygonIdCoreIden3commDataSource;
 
-  PrepareInputsWrapper(this._libPolygonIdCoreProofDataSource);
+  PrepareInputsWrapper(this._libPolygonIdCoreIden3commDataSource);
 
   Future<String?> authInputs(PrepareInputsParam prepareInputsParam) async {
     return await compute(_computePrepareInputs, prepareInputsParam);
@@ -36,8 +38,7 @@ class PrepareInputsWrapper {
     //switch (param.type) {
     //  case PrepareInputsType.auth:
     // TODO:
-    result = "" as Future<
-        String>; /*prepareAuthInputs(
+    result = _prepareAuthInputs(
       did: param.did,
       profileNonce: param.profileNonce,
       authClaim: param.authClaim,
@@ -47,7 +48,7 @@ class PrepareInputsWrapper {
       treeState: param.treeState,
       challenge: param.challenge,
       signature: param.signature,
-    );*/
+    );
     /*  break;
       case PrepareInputsType.mtp:
         /*result = _iden3coreLib.prepareAtomicQueryMTPInputs(
@@ -81,6 +82,45 @@ class PrepareInputsWrapper {
     }*/
 
     return result;
+  }
+
+  Future<String> _prepareAuthInputs(
+      {required String did,
+      required int profileNonce,
+      required List<String> authClaim,
+      required ProofDTO incProof,
+      required ProofDTO nonRevProof,
+      required GistProofDTO gistProof,
+      required Map<String, dynamic> treeState,
+      required String challenge,
+      required String signature}) async {
+    String authInputs = _libPolygonIdCoreIden3commDataSource.getAuthInputs(
+        did: did,
+        profileNonce: profileNonce,
+        authClaim: authClaim,
+        incProof: {
+          "existence": incProof.existence,
+          "siblings":
+              incProof.siblings.map((hashDTO) => hashDTO.toString()).toList()
+        },
+        nonRevProof: {
+          "existence": nonRevProof.existence,
+          "siblings":
+              nonRevProof.siblings.map((hashDTO) => hashDTO.toString()).toList()
+        },
+        gistProof: {
+          "root": gistProof.root,
+          "proof": {
+            "existence": gistProof.proof.existence,
+            "siblings": gistProof.proof.siblings
+                .map((hashDTO) => hashDTO.toString())
+                .toList()
+          }
+        },
+        treeState: treeState,
+        challenge: challenge,
+        signature: signature);
+    return Future.value(authInputs);
   }
 }
 
@@ -129,7 +169,7 @@ class PrepareInputsDataSource {
       required List<String> authClaim,
       required ProofDTO incProof,
       required ProofDTO nonRevProof,
-      required ProofDTO gistProof,
+      required GistProofDTO gistProof,
       required Map<String, dynamic> treeState,
       required String challenge,
       required String signature}) async {
@@ -145,8 +185,7 @@ class PrepareInputsDataSource {
       challenge,
       signature,
     );
-    String? authInputs =
-        await _prepareInputsWrapper.authInputs(authInputsParam);
+    var authInputs = _prepareInputsWrapper.authInputs(authInputsParam);
     return authInputs;
   }
 

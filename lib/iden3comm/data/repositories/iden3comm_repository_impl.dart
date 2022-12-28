@@ -13,15 +13,17 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3co
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/proof_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/data/mappers/proof_mapper.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../common/domain/domain_logger.dart';
 import '../../../identity/data/data_sources/jwz_data_source.dart';
 import '../../../identity/data/mappers/hex_mapper.dart';
 import '../../../identity/domain/entities/private_identity_entity.dart';
-import '../../../identity/domain/entities/proof_entity.dart';
+import '../../../proof/data/mappers/gist_proof_mapper.dart';
 import '../../../proof/domain/entities/circuit_data_entity.dart';
+import '../../../proof/domain/entities/gist_proof_entity.dart';
+import '../../../proof/domain/entities/proof_entity.dart';
 import '../../domain/entities/jwz_proof_entity.dart';
 import '../../domain/exceptions/iden3comm_exceptions.dart';
 import '../../domain/repositories/iden3comm_repository.dart';
@@ -39,6 +41,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   final JWZDataSource _jwzDataSource;
   final HexMapper _hexMapper;
   final ProofMapper _proofMapper;
+  final GistProofMapper _gistProofMapper;
   final AuthResponseMapper _authResponseMapper;
 
   Iden3commRepositoryImpl(
@@ -47,6 +50,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       this._jwzDataSource,
       this._hexMapper,
       this._proofMapper,
+      this._gistProofMapper,
       this._authResponseMapper);
 
   @override
@@ -77,7 +81,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     required CircuitDataEntity authData,
     required ProofEntity incProof,
     required ProofEntity nonRevProof,
-    required ProofEntity gistProof,
+    required GistProofEntity gistProof,
     required Map<String, dynamic> treeState,
     required String message,
   }) async {
@@ -88,7 +92,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       authClaim: authClaim,
       incProof: _proofMapper.mapTo(incProof),
       nonRevProof: _proofMapper.mapTo(nonRevProof),
-      gistProof: _proofMapper.mapTo(gistProof),
+      gistProof: _gistProofMapper.mapTo(gistProof),
       treeState: treeState,
       message: message,
       circuitId: authData.circuitId,

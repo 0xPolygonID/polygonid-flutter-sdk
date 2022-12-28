@@ -8,7 +8,8 @@ import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj.dart';
 import 'package:web3dart/crypto.dart';
 
 import '../../../common/utils/uint8_list_utils.dart';
-import '../../../proof/data/data_sources/prepare_inputs_data_source.dart';
+import '../../../proof/data/dtos/gist_proof_dto.dart';
+import '../../../proof/data/dtos/proof_dto.dart';
 import '../../../proof/libs/prover/prover.dart';
 import '../../../proof/libs/witnesscalc/auth/witness_auth.dart';
 import '../../libs/iden3core/iden3core.dart';
@@ -17,7 +18,7 @@ import '../../libs/jwz/jwz_exceptions.dart';
 import '../../libs/jwz/jwz_header.dart';
 import '../../libs/jwz/jwz_proof.dart';
 import '../../libs/jwz/jwz_token.dart';
-import '../dtos/proof_dto.dart';
+import 'prepare_inputs_data_source.dart';
 import 'wallet_data_source.dart';
 
 class AuthInputsIsolateParam {
@@ -93,7 +94,7 @@ class JWZDataSource {
       required List<String> authClaim,
       required ProofDTO incProof,
       required ProofDTO nonRevProof,
-      required ProofDTO gistProof,
+      required GistProofDTO gistProof,
       required Map<String, dynamic> treeState,
       required String message,
       required String circuitId,
@@ -128,13 +129,13 @@ class JWZDataSource {
       List<String> authClaim,
       ProofDTO incProof,
       ProofDTO nonRevProof,
-      ProofDTO gistProof,
+      GistProofDTO gistProof,
       Map<String, dynamic> treeState,
       String challenge,
       String signature,
       /*Uint8List hash,*/ String circuitId) async {
     String? inputs = "";
-    if (circuitId == "auth") {
+    if (circuitId == "authV2") {
       inputs = await _prepareInputsDataSource.prepareAuthInputs(
           did: did,
           profileNonce: profileNonce,
@@ -176,7 +177,7 @@ class JWZDataSource {
     // Poseidon hash
     String hashed = _babyjubjubLib.poseidonHash(q.toString());
 
-    return hexToBytes(hashed);
+    return intToBytes(BigInt.parse(hashed));
   }
 
   /// Calculate proof

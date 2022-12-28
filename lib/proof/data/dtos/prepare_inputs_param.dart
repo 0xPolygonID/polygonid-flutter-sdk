@@ -1,4 +1,5 @@
-import '../../../identity/data/dtos/proof_dto.dart';
+import 'gist_proof_dto.dart';
+import 'proof_dto.dart';
 
 enum PrepareInputsType { auth, mtp, sig }
 
@@ -9,7 +10,7 @@ class PrepareInputsParam {
   final List<String> authClaim;
   final ProofDTO incProof;
   final ProofDTO nonRevProof;
-  final ProofDTO gistProof;
+  final GistProofDTO gistProof;
   final Map<String, dynamic> treeState;
   final String challenge;
   final String signature;

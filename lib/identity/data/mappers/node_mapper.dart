@@ -21,7 +21,8 @@ class NodeMapper extends Mapper<NodeDTO, NodeEntity> {
     return NodeEntity(
         hash: _hashMapper.mapFrom(from.hash),
         children: from.children.map((dto) => _hashMapper.mapFrom(dto)).toList(),
-        nodeType: _nodeTypeMapper.mapFrom(_nodeTypeDTOMapper.mapFrom(from)));
+        nodeType: _nodeTypeMapper
+            .mapFrom(/*_nodeTypeDTOMapper.mapFrom(*/ from.type /*)*/));
   }
 
   @override
@@ -30,6 +31,7 @@ class NodeMapper extends Mapper<NodeDTO, NodeEntity> {
         hash: _hashMapper.mapTo(to.hash),
         children:
             to.children.map((entity) => _hashMapper.mapTo(entity)).toList(),
-        type: _nodeTypeMapper.mapTo(_nodeTypeEntityMapper.mapFrom(to)));
+        type: _nodeTypeMapper
+            .mapTo(/*_nodeTypeEntityMapper.mapFrom(*/ to.nodeType /*)*/));
   }
 }

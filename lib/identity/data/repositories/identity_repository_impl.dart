@@ -10,6 +10,7 @@ import '../../../credential/data/data_sources/lib_pidcore_credential_data_source
 import '../../../credential/data/data_sources/local_claim_data_source.dart';
 import '../../../iden3comm/data/data_sources/lib_pidcore_iden3comm_data_source.dart';
 import '../../../proof/data/data_sources/lib_pidcore_proof_data_source.dart';
+import '../../../proof/data/dtos/proof_dto.dart';
 import '../../domain/entities/identity_entity.dart';
 import '../../domain/entities/node_entity.dart';
 import '../../domain/entities/private_identity_entity.dart';
@@ -26,7 +27,6 @@ import '../data_sources/wallet_data_source.dart';
 import '../dtos/hash_dto.dart';
 import '../dtos/identity_dto.dart';
 import '../dtos/node_dto.dart';
-import '../dtos/proof_dto.dart';
 import '../mappers/did_mapper.dart';
 import '../mappers/hex_mapper.dart';
 import '../mappers/identity_dto_mapper.dart';
@@ -243,9 +243,12 @@ class IdentityRepositoryImpl extends IdentityRepository {
       required String accessMessage}) async {
     try {
       // Create a wallet
-      PrivadoIdWallet wallet = await _walletDataSource.createWallet(
+      PrivadoIdWallet wallet = await _walletDataSource.getWallet(
+          privateKey: _hexMapper.mapTo(
+              "28156abe7fe2fd433dc9df969286b96666489bac508612d0e16593e944c4f69f"));
+      /*PrivadoIdWallet wallet = await _walletDataSource.createWallet(
           secret: _privateKeyMapper.mapFrom(secret),
-          accessMessage: accessMessage);
+          accessMessage: accessMessage);*/
       String privateKey = _hexMapper.mapFrom(wallet.privateKey);
 
       String did = await getDidIdentifier(
@@ -504,27 +507,20 @@ class IdentityRepositoryImpl extends IdentityRepository {
   @override
   Future<PrivateIdentityEntity> getPrivateIdentity(
       {required String did, required String privateKey}) {
-    return _storageIdentityDataSource
-        .getIdentity(did: did)
-        .then((dto) => _walletDataSource
-            .getWallet(privateKey: _hexMapper.mapTo(privateKey))
-            .then((wallet) => _getGenesisState(publicKey: wallet.publicKey)
-                    .then((genesisState) {
-                  var didMap = _didMapper.mapFrom(did);
-                  return _libPolygonIdCoreIdentityDataSource.calculateGenesisId(
-                    genesisState["claimsRoot"],
-                    didMap.blockchain,
-                    didMap.network,
-                  );
-                }).then((didFromKey) {
-                  if (didFromKey != did) {
-                    throw InvalidPrivateKeyException(privateKey);
-                  }
+    var didMap = _didMapper.mapFrom(did);
+    return _storageIdentityDataSource.getIdentity(did: did).then((dto) async {
+      var didFromKey = await getDidIdentifier(
+          privateKey: privateKey,
+          blockchain: didMap.blockchain,
+          network: didMap.network);
 
-                  return _identityDTOMapper.mapPrivateFrom(dto, privateKey);
-                })))
-        .catchError((error) => throw IdentityException(error),
-            test: (error) => error is! UnknownIdentityException);
+      if (didFromKey != did) {
+        throw InvalidPrivateKeyException(privateKey);
+      }
+
+      return _identityDTOMapper.mapPrivateFrom(dto, privateKey);
+    }).catchError((error) => throw IdentityException(error),
+        test: (error) => error is! UnknownIdentityException);
   }
 
   @override
