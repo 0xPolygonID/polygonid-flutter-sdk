@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/jwz_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/prepare_inputs_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart';
@@ -73,13 +74,15 @@ var exception = Exception();
 // Dependencies
 FakeBabyjubjub bjj = FakeBabyjubjub();
 MockWalletDataSource walletDataSource = MockWalletDataSource();
+MockPrepareInputsDataSource prepareInputsDataSource =
+    MockPrepareInputsDataSource();
 MockJWZIsolatesWrapper jwzIsolatesWrapper = MockJWZIsolatesWrapper();
 
 // Tested instance
-JWZDataSource dataSource =
-    JWZDataSource(bjj, walletDataSource, jwzIsolatesWrapper);
+JWZDataSource dataSource = JWZDataSource(
+    bjj, walletDataSource, prepareInputsDataSource, jwzIsolatesWrapper);
 
-@GenerateMocks([WalletDataSource, JWZIsolatesWrapper])
+@GenerateMocks([WalletDataSource, PrepareInputsDataSource, JWZIsolatesWrapper])
 void main() {
   group("Get auth token", () {
     setUp(() {

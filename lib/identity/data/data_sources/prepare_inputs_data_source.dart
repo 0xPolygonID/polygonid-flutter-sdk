@@ -94,29 +94,52 @@ class PrepareInputsWrapper {
       required Map<String, dynamic> treeState,
       required String challenge,
       required String signature}) async {
+    Map<String, dynamic> incProofParam = {
+      "existence": incProof.existence,
+      "siblings":
+          incProof.siblings.map((hashDTO) => hashDTO.toString()).toList()
+    };
+    if (incProof.nodeAux != null) {
+      incProofParam["node_aux"] = {
+        "key": incProof.nodeAux!.key,
+        "value": incProof.nodeAux!.value
+      };
+    }
+
+    Map<String, dynamic> nonRevProofParam = {
+      "existence": nonRevProof.existence,
+      "siblings":
+          nonRevProof.siblings.map((hashDTO) => hashDTO.toString()).toList()
+    };
+    if (nonRevProof.nodeAux != null) {
+      nonRevProofParam["node_aux"] = {
+        "key": nonRevProof.nodeAux!.key,
+        "value": nonRevProof.nodeAux!.value
+      };
+    }
+
+    Map<String, dynamic> gistProofParam = {
+      "root": gistProof.root,
+      "proof": {
+        "existence": gistProof.proof.existence,
+        "siblings": gistProof.proof.siblings
+            .map((hashDTO) => hashDTO.toString())
+            .toList()
+      }
+    };
+    if (gistProof.proof.nodeAux != null) {
+      gistProofParam["proof"]["node_aux"] = {
+        "key": gistProof.proof.nodeAux!.key,
+        "value": gistProof.proof.nodeAux!.value
+      };
+    }
     String authInputs = _libPolygonIdCoreIden3commDataSource.getAuthInputs(
         did: did,
         profileNonce: profileNonce,
         authClaim: authClaim,
-        incProof: {
-          "existence": incProof.existence,
-          "siblings":
-              incProof.siblings.map((hashDTO) => hashDTO.toString()).toList()
-        },
-        nonRevProof: {
-          "existence": nonRevProof.existence,
-          "siblings":
-              nonRevProof.siblings.map((hashDTO) => hashDTO.toString()).toList()
-        },
-        gistProof: {
-          "root": gistProof.root,
-          "proof": {
-            "existence": gistProof.proof.existence,
-            "siblings": gistProof.proof.siblings
-                .map((hashDTO) => hashDTO.toString())
-                .toList()
-          }
-        },
+        incProof: incProofParam,
+        nonRevProof: nonRevProofParam,
+        gistProof: gistProofParam,
         treeState: treeState,
         challenge: challenge,
         signature: signature);

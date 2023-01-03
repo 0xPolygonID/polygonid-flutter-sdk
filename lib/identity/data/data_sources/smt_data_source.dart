@@ -1,10 +1,10 @@
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_smt_data_source.dart';
 
 import '../../../common/domain/domain_logger.dart';
+import '../../../proof/data/dtos/node_aux_dto.dart';
 import '../../../proof/data/dtos/proof_dto.dart';
 import '../../domain/exceptions/smt_exceptions.dart';
 import '../dtos/hash_dto.dart';
-import '../dtos/node_aux_dto.dart';
 import '../dtos/node_dto.dart';
 import '../mappers/hex_mapper.dart';
 import 'lib_babyjubjub_data_source.dart';

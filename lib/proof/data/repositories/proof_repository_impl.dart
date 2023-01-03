@@ -17,7 +17,6 @@ import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_e
 import '../../../common/utils/uint8_list_utils.dart';
 import '../../../iden3comm/data/mappers/proof_request_filters_mapper.dart';
 import '../../../identity/data/data_sources/remote_identity_data_source.dart';
-import '../../../identity/data/dtos/node_aux_dto.dart';
 import '../../domain/entities/circuit_data_entity.dart';
 import '../../domain/entities/gist_proof_entity.dart';
 import '../../domain/repositories/proof_repository.dart';
@@ -26,6 +25,7 @@ import '../data_sources/proof_circuit_data_source.dart';
 import '../data_sources/prover_lib_data_source.dart';
 import '../data_sources/witness_data_source.dart';
 import '../dtos/gist_proof_dto.dart';
+import '../dtos/node_aux_dto.dart';
 import '../dtos/proof_dto.dart';
 import '../dtos/witness_param.dart';
 import '../mappers/circuit_type_mapper.dart';

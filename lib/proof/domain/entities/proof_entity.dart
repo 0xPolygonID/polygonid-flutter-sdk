@@ -1,10 +1,10 @@
 import '../../../identity/domain/entities/hash_entity.dart';
-import '../../../identity/domain/entities/node_entity.dart';
+import 'node_aux_entity.dart';
 
 class ProofEntity {
   final bool existence;
   final List<HashEntity> siblings;
-  final NodeEntity? nodeAux;
+  final NodeAuxEntity? nodeAux;
 
   ProofEntity({required this.existence, required this.siblings, this.nodeAux});
 

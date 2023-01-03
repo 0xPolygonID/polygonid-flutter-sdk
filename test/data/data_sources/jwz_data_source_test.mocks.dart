@@ -7,12 +7,21 @@ import 'dart:async' as _i4;
 import 'dart:typed_data' as _i5;
 
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart'
+    as _i9;
+import 'package:polygonid_flutter_sdk/credential/data/dtos/revocation_status.dart'
+    as _i10;
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/jwz_data_source.dart'
+    as _i11;
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/prepare_inputs_data_source.dart'
     as _i6;
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart'
     as _i3;
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart'
     as _i2;
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_proof_dto.dart'
+    as _i8;
+import 'package:polygonid_flutter_sdk/proof/data/dtos/proof_dto.dart' as _i7;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -108,11 +117,83 @@ class MockWalletDataSource extends _i1.Mock implements _i3.WalletDataSource {
       ) as _i4.Future<String>);
 }
 
+/// A class which mocks [PrepareInputsDataSource].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockPrepareInputsDataSource extends _i1.Mock
+    implements _i6.PrepareInputsDataSource {
+  MockPrepareInputsDataSource() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.Future<String?> prepareAuthInputs({
+    required String? did,
+    required int? profileNonce,
+    required List<String>? authClaim,
+    required _i7.ProofDTO? incProof,
+    required _i7.ProofDTO? nonRevProof,
+    required _i8.GistProofDTO? gistProof,
+    required Map<String, dynamic>? treeState,
+    required String? challenge,
+    required String? signature,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #prepareAuthInputs,
+          [],
+          {
+            #did: did,
+            #profileNonce: profileNonce,
+            #authClaim: authClaim,
+            #incProof: incProof,
+            #nonRevProof: nonRevProof,
+            #gistProof: gistProof,
+            #treeState: treeState,
+            #challenge: challenge,
+            #signature: signature,
+          },
+        ),
+        returnValue: _i4.Future<String?>.value(),
+      ) as _i4.Future<String?>);
+  @override
+  _i4.Future<String?> prepareAtomicQueryInputs(
+    String? challenge,
+    _i9.ClaimInfoDTO? claimInfo,
+    String? circuitId,
+    String? key,
+    List<int>? values,
+    int? operator,
+    _i10.RevocationStatus? claimRevocationStatus,
+    String? pubX,
+    String? pubY,
+    String? signature,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #prepareAtomicQueryInputs,
+          [
+            challenge,
+            claimInfo,
+            circuitId,
+            key,
+            values,
+            operator,
+            claimRevocationStatus,
+            pubX,
+            pubY,
+            signature,
+          ],
+        ),
+        returnValue: _i4.Future<String?>.value(),
+      ) as _i4.Future<String?>);
+}
+
 /// A class which mocks [JWZIsolatesWrapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockJWZIsolatesWrapper extends _i1.Mock
-    implements _i6.JWZIsolatesWrapper {
+    implements _i11.JWZIsolatesWrapper {
   MockJWZIsolatesWrapper() {
     _i1.throwOnMissingStub(this);
   }

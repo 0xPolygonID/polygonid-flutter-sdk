@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import '../../../identity/data/dtos/hash_dto.dart';
-import '../../../identity/data/dtos/node_aux_dto.dart';
+import 'node_aux_dto.dart';
 
 part 'proof_dto.g.dart';
 
