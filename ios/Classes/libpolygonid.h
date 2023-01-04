@@ -22,6 +22,7 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 #line 3 "polygonid.go"
 
 #include <stdlib.h>
+#include <string.h>
 
 typedef enum
 {
@@ -102,6 +103,8 @@ extern GoUint8 PLGNCreateClaim(char** jsonResponse, char* in, PLGNStatus** statu
 extern GoUint8 PLGNIDToInt(char** jsonResponse, char* in, PLGNStatus** status);
 extern GoUint8 PLGNProofFromSmartContract(char** jsonResponse, char* in, PLGNStatus** status);
 extern GoUint8 PLGNProfileID(char** jsonResponse, char* in, PLGNStatus** status);
+extern GoUint8 PLGNSigV2Inputs(char** jsonResponse, char* in, PLGNStatus** status);
+extern GoUint8 PLGNMtpV2Inputs(char** jsonResponse, char* in, PLGNStatus** status);
 extern void PLGNFreeStatus(PLGNStatus* status);
 
 #ifdef __cplusplus

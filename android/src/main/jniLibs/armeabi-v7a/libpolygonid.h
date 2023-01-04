@@ -22,6 +22,7 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 #line 3 "polygonid.go"
 
 #include <stdlib.h>
+#include <string.h>
 
 typedef enum
 {
@@ -55,8 +56,8 @@ typedef int GoInt32;
 typedef unsigned int GoUint32;
 typedef long long GoInt64;
 typedef unsigned long long GoUint64;
-typedef GoInt32 GoInt;
-typedef GoUint32 GoUint;
+typedef GoInt64 GoInt;
+typedef GoUint64 GoUint;
 typedef size_t GoUintptr;
 typedef float GoFloat32;
 typedef double GoFloat64;
@@ -73,7 +74,7 @@ typedef double _Complex GoComplex128;
   static assertion to make sure the file is being used on architecture
   at least with matching size of GoInt.
 */
-typedef char _check_for_32_bit_pointer_matching_GoInt[sizeof(void*)==32/8 ? 1:-1];
+typedef char _check_for_64_bit_pointer_matching_GoInt[sizeof(void*)==64/8 ? 1:-1];
 
 #ifndef GO_CGO_GOSTRING_TYPEDEF
 typedef _GoString_ GoString;
@@ -102,6 +103,8 @@ extern GoUint8 PLGNCreateClaim(char** jsonResponse, char* in, PLGNStatus** statu
 extern GoUint8 PLGNIDToInt(char** jsonResponse, char* in, PLGNStatus** status);
 extern GoUint8 PLGNProofFromSmartContract(char** jsonResponse, char* in, PLGNStatus** status);
 extern GoUint8 PLGNProfileID(char** jsonResponse, char* in, PLGNStatus** status);
+extern GoUint8 PLGNSigV2Inputs(char** jsonResponse, char* in, PLGNStatus** status);
+extern GoUint8 PLGNMtpV2Inputs(char** jsonResponse, char* in, PLGNStatus** status);
 extern void PLGNFreeStatus(PLGNStatus* status);
 
 #ifdef __cplusplus

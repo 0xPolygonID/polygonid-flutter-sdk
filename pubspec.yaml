@@ -57,7 +57,7 @@ dev_dependencies:
 ffigen:
   name: NativePolygonIdCoreLib
   description: Bindings to `ios/Classes/libpolygonid.h`.
-  output: 'lib/identity/libs/polygonidcore/native_polygonidcore.dart'
+  output: 'lib/common/libs/polygonidcore/native_polygonidcore.dart'
   headers:
     entry-points:
       - 'ios/Classes/libpolygonid.h'
