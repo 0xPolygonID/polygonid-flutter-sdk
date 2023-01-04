@@ -76,15 +76,15 @@ class RPCDataSource {
           result[0].length == 8) {
         final String resultString = jsonEncode({
           "root": result[0][0].toString(),
+          "existence": result[0][2].toString() == "0" ? false : true,
           "siblings": (result[0][1] as List)
               .map((bigInt) => bigInt.toString())
               .toList(),
-          "oldKey": result[0][2].toString(),
-          "oldValue": result[0][3].toString(),
-          "isOld0": result[0][4],
-          "key": result[0][5].toString(),
-          "value": result[0][6].toString(),
-          "fnc": result[0][7].toString(),
+          "index": result[0][3].toString(),
+          "value": result[0][7].toString(),
+          "auxExistence": result[0][5].toString() == "0" ? false : true,
+          "auxIndex": result[0][6].toString(),
+          "auxValue": result[0][7].toString(),
         });
         logger().d(resultString);
         return resultString;
