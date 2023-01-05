@@ -3,6 +3,8 @@ include: package:flutter_lints/flutter.yaml
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
 analyzer:
+  exclude:
+    - '**/*.g.dart'
   errors:
     non_constant_identifier_names: ignore
     constant_identifier_names: ignore
