@@ -203,7 +203,7 @@ class ProofRepositoryImpl extends ProofRepository {
 
   Future<String> _getGistProofSC(
       {required String identifier, required String contractAddress}) {
-    return _localContractFilesDataSource.loadGistContract(contractAddress).then(
+    return _localContractFilesDataSource.loadStateContract(contractAddress).then(
         (contract) => _rpcDataSource
             .getGistProof(
                 identifier /*_stateIdentifierMapper.mapTo(identifier)*/,
