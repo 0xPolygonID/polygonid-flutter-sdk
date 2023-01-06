@@ -5,7 +5,6 @@ import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_ex
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
 
 import '../../identity/data/mappers/node_mapper.dart';
 import 'data_sources/lib_pidcore_credential_data_source.dart';
@@ -24,7 +23,6 @@ class CredentialRepositoryImpl extends CredentialRepository {
   final LibPolygonIdCoreCredentialDataSource
       _libPolygonIdCoreCredentialDataSource;
   final LibBabyJubJubDataSource _libBabyJubJubDataSource;
-  final LibIdentityDataSource _libIdentityDataSource;
   final LocalClaimDataSource _localClaimDataSource;
   final ClaimMapper _claimMapper;
   final FiltersMapper _filtersMapper;
@@ -37,7 +35,6 @@ class CredentialRepositoryImpl extends CredentialRepository {
       this._storageClaimDataSource,
       this._libPolygonIdCoreCredentialDataSource,
       this._libBabyJubJubDataSource,
-      this._libIdentityDataSource,
       this._localClaimDataSource,
       this._claimMapper,
       this._filtersMapper,

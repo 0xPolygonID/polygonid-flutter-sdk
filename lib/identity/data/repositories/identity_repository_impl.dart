@@ -18,7 +18,6 @@ import '../../domain/entities/rhs_node_entity.dart';
 import '../../domain/exceptions/identity_exceptions.dart';
 import '../../domain/repositories/identity_repository.dart';
 import '../../libs/bjj/privadoid_wallet.dart';
-import '../data_sources/lib_identity_data_source.dart';
 import '../data_sources/lib_pidcore_identity_data_source.dart';
 import '../data_sources/local_contract_files_data_source.dart';
 import '../data_sources/remote_identity_data_source.dart';
@@ -37,7 +36,6 @@ import '../mappers/state_identifier_mapper.dart';
 
 class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
-  final LibIdentityDataSource _libIdentityDataSource;
   final LibBabyJubJubDataSource _libBabyJubJubDataSource;
   final LibPolygonIdCoreIdentityDataSource _libPolygonIdCoreIdentityDataSource;
   final LibPolygonIdCoreCredentialDataSource
@@ -63,7 +61,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
   IdentityRepositoryImpl(
     this._walletDataSource,
-    this._libIdentityDataSource,
     this._libBabyJubJubDataSource,
     this._libPolygonIdCoreIdentityDataSource,
     this._libPolygonIdCoreCredentialDataSource,
