@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/utils/big_int_extension.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj.dart';
+import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/auth_v2/witness_auth.dart';
 import 'package:web3dart/crypto.dart';
 
 import '../../../common/utils/uint8_list_utils.dart';
@@ -69,7 +70,7 @@ class JWZIsolatesWrapper {
 /// As this is running is a separate thread, we cannot inject [Iden3CoreLib]
 Future<Map<String, dynamic>?> _computeCalculateProof(
     CalculateProofIsolateParam param) async {
-  final witnessAuthLib = WitnessAuthLib();
+  final witnessAuthLib = WitnessAuthV2Lib();
   final proverLib = ProverLib();
 
   final Uint8List? wtnsBytes =
@@ -102,7 +103,7 @@ class JWZDataSource {
       required Uint8List zKeyFile}) async {
     JWZ jwz = JWZ(
         header: JWZHeader(
-            circuitId: "auth",
+            circuitId: "authV2",
             crit: const ["circuitId"],
             typ: "application/iden3-zkp-json",
             alg: "groth16"),
