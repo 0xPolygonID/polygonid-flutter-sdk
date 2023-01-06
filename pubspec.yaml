@@ -62,14 +62,6 @@ ffigen:
     entry-points:
       - 'ios/Classes/libpolygonid.h'
 
-  #name: NativeIden3CoreLib
-  #description: Bindings to `ios/Classes/libiden3core.h`.
-  #output: 'lib/identity/libs/iden3core/native_iden3core.dart'
-  #headers:
-  #  entry-points:
-  #     - 'ios/Classes/libiden3core.h'
-
-
   # name: WitnessMtpLib
   # description: Bindings to `ios/Classes/witnesscalc_mtp.h`.
   # output: 'lib/libs/generated_bindings_witness_mtp.dart'
