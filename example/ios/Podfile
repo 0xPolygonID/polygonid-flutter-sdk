@@ -50,7 +50,7 @@ post_install do |installer|
          target.build_configurations.each do |config|
                          xcconfig_path = config.base_configuration_reference.real_path
                          xcconfig = File.read(xcconfig_path)
-                         new_xcconfig = xcconfig.sub('OTHER_LDFLAGS = $(inherited)', 'OTHER_LDFLAGS = $(inherited) -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/librapidsnark.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libwitnesscalc.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libwitnesscalc_mtp.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libwitnesscalc_sig.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libgmp.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libiden3core.a"')
+                         new_xcconfig = xcconfig.sub('OTHER_LDFLAGS = $(inherited)', 'OTHER_LDFLAGS = $(inherited) -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/librapidsnark.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libwitnesscalc.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libwitnesscalc_mtp.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libwitnesscalc_sig.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libgmp.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libpolygonid.a"')
                          File.open(xcconfig_path, "w") { |file| file << new_xcconfig }
             end
         end

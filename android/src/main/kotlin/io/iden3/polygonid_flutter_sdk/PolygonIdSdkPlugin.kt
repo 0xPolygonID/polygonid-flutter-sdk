@@ -12,7 +12,7 @@ import io.flutter.plugin.common.MethodChannel.Result
 class PolygonIdSdkPlugin: FlutterPlugin, MethodCallHandler {
 
   init {
-//    System.loadLibrary("iden3core")
+    System.loadLibrary("polygonid")
     System.loadLibrary("gmp")
     System.loadLibrary("witnesscalc")
     System.loadLibrary("rapidsnark")

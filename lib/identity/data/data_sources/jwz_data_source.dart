@@ -13,7 +13,6 @@ import '../../../proof/data/dtos/gist_proof_dto.dart';
 import '../../../proof/data/dtos/proof_dto.dart';
 import '../../../proof/libs/prover/prover.dart';
 import '../../../proof/libs/witnesscalc/auth/witness_auth.dart';
-import '../../libs/iden3core/iden3core.dart';
 import '../../libs/jwz/jwz.dart';
 import '../../libs/jwz/jwz_exceptions.dart';
 import '../../libs/jwz/jwz_header.dart';
