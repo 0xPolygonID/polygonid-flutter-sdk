@@ -79,17 +79,17 @@ class RPCDataSource {
           result[0].length == 8) {
         // moved first 0 element from siblings to last position
         var siblings =
-            (result[0][1] as List).map((bigInt) => bigInt.toString()).toList();
-        final String first = siblings.removeAt(0);
-        siblings.add(first);
+            (result[0][2] as List).map((bigInt) => bigInt.toString()).toList();
+        // final String first = siblings.removeAt(0);
+        // siblings.add(first);
 
         final String resultString = jsonEncode({
           "root": result[0][0].toString(),
-          "existence": result[0][2].toString() == "0" ? false : true,
+          "existence": result[0][1].toString() == "true"?true:false,
           "siblings": siblings,
           "index": result[0][3].toString(),
-          "value": result[0][7].toString(),
-          "auxExistence": result[0][5].toString() == "0" ? false : true,
+          "value": result[0][4].toString(),
+          "auxExistence": result[0][5].toString() == "true"?true:false,
           "auxIndex": result[0][6].toString(),
           "auxValue": result[0][7].toString(),
         });
