@@ -25,13 +25,13 @@ class DidMapper extends Mapper<String, DidMapperParam> {
         env = "main";
     }
 
-    return "did:iden3:${to.blockchain}:$env:${to.identifier}";
+    return "did:polygonID:${to.blockchain}:$env:${to.identifier}";
   }
 
   @override
   DidMapperParam mapFrom(String from) {
     List<String> splits = from.split(":");
-    if (splits.length == 5 && splits[0] == "did" && splits[1] == "iden3") {
+    if (splits.length == 5 && splits[0] == "did" && splits[1] == "polygonid") {
       return DidMapperParam(
           blockchain: splits[2], network: splits[3], identifier: splits[4]);
     } else {
