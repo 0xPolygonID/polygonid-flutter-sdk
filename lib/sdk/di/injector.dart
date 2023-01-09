@@ -1,3 +1,4 @@
+import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -93,7 +94,7 @@ abstract class DatabaseModule {
     await dir.create(recursive: true);
     final path = join(dir.path, identityDatabasePrefix + identifier! + '.db');
     // Initialize the encryption codec with the privateKey
-    var codec = getEncryptSembastCodec(password: privateKey!);
+    var codec = getCodec(privateKey!);
     final database = await databaseFactoryIo.openDatabase(path, codec: codec);
     return database;
   }
@@ -111,6 +112,10 @@ abstract class DatabaseModule {
         stringMapStoreFactory.store(rootsTreeStoreName);
     //result[claimStoreName] = stringMapStoreFactory.store(claimStoreName);
     return result;
+  }
+
+  SembastCodec getCodec(@factoryParam String privateKey) {
+    return getEncryptSembastCodec(password: privateKey);
   }
 
   // Identity
@@ -170,4 +175,13 @@ abstract class RepositoriesModule {
   Iden3commRepository iden3commRepository(
           Iden3commRepositoryImpl iden3commRepositoryImpl) =>
       iden3commRepositoryImpl;
+}
+
+@module
+abstract class EncryptionModule {
+  @Named('encryptAES')
+  @factoryMethod
+  encrypt.Encrypter encryptAES(@factoryParam encrypt.Key key) {
+    return encrypt.Encrypter(encrypt.AES(key));
+  }
 }

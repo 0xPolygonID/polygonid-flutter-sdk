@@ -1,21 +1,14 @@
-import 'package:polygonid_flutter_sdk/common/mappers/mapper.dart';
+import 'package:polygonid_flutter_sdk/common/mappers/from_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
+import 'package:web3dart/crypto.dart';
 
-import '../../../common/utils/uint8_list_utils.dart';
-import '../../domain/entities/hash_entity.dart';
-import '../dtos/hash_dto.dart';
+class HashMapper extends FromMapper<String, String> {
+  final HexMapper _hexMapper;
 
-class HashMapper extends Mapper<HashDTO, HashEntity> {
-  @override
-  HashEntity mapFrom(HashDTO from) {
-    return HashEntity(
-      data: Uint8ArrayUtils.bytesToBigInt(from.data).toString(),
-    );
-  }
+  HashMapper(this._hexMapper);
 
   @override
-  HashDTO mapTo(HashEntity to) {
-    return HashDTO(
-      data: Uint8ArrayUtils.bigIntToBytes(BigInt.parse(to.data)),
-    );
+  String mapFrom(String from) {
+    return bytesToInt(_hexMapper.mapTo(from)).toString();
   }
 }

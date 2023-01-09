@@ -10,8 +10,10 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_en
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/libs/jwz/jwz_proof.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/lib_pidcore_proof_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/mappers/proof_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 
 import '../../../common/utils/uint8_list_utils.dart';
@@ -30,8 +32,8 @@ import '../dtos/proof_dto.dart';
 import '../dtos/witness_param.dart';
 import '../mappers/circuit_type_mapper.dart';
 import '../mappers/gist_proof_mapper.dart';
+import '../mappers/jwz_mapper.dart';
 import '../mappers/jwz_proof_mapper.dart';
-import '../mappers/proof_mapper.dart';
 
 class ProofRepositoryImpl extends ProofRepository {
   final WitnessDataSource _witnessDataSource;
@@ -48,6 +50,7 @@ class ProofRepositoryImpl extends ProofRepository {
   final JWZProofMapper _jwzProofMapper;
   final RPCDataSource _rpcDataSource;
   final LocalContractFilesDataSource _localContractFilesDataSource;
+  final JWZMapper _jwzMapper;
 
   // FIXME: those mappers shouldn't be used here as they are part of Credential
   final ClaimMapper _claimMapper;
@@ -70,6 +73,7 @@ class ProofRepositoryImpl extends ProofRepository {
     this._rpcDataSource,
     this._localContractFilesDataSource,
     this._revocationStatusMapper,
+    this._jwzMapper,
   );
 
   @override
@@ -141,7 +145,7 @@ class ProofRepositoryImpl extends ProofRepository {
   @override
   Future<JWZProof> prove(CircuitDataEntity circuitData, Uint8List wtnsBytes) {
     return _proverLibDataSource
-        .prover(circuitData.zKeyFile, wtnsBytes)
+        .prove(circuitData.zKeyFile, wtnsBytes)
         .then((proof) {
       if (proof == null) {
         throw NullProofException(circuitData.circuitId);
@@ -203,11 +207,16 @@ class ProofRepositoryImpl extends ProofRepository {
 
   Future<String> _getGistProofSC(
       {required String identifier, required String contractAddress}) {
-    return _localContractFilesDataSource.loadStateContract(contractAddress).then(
-        (contract) => _rpcDataSource
+    return _localContractFilesDataSource
+        .loadStateContract(contractAddress)
+        .then((contract) => _rpcDataSource
             .getGistProof(
                 identifier /*_stateIdentifierMapper.mapTo(identifier)*/,
                 contract)
             .catchError((error) => throw FetchGistProofException(error)));
+  }
+
+  Future<String> encodeJWZ({required JWZEntity jwz}) {
+    return Future.value(_jwzMapper.mapFrom(jwz));
   }
 }

@@ -2,6 +2,7 @@ import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:sembast/sembast.dart';
+import 'package:sembast/utils/sembast_import_export.dart';
 
 import '../dtos/claim_dto.dart';
 
@@ -101,5 +102,34 @@ class StorageClaimDataSource {
                 .map((snapshot) => ClaimDTO.fromJson(snapshot.value))
                 .toList())
             .whenComplete(() => database.close()));
+  }
+
+  /// Export entire claims database
+  Future<Map<String, Object?>> getClaimsDb(
+      {required String identifier, required String privateKey}) async {
+    Database db = await _getDatabase(
+      did: identifier,
+      privateKey: privateKey,
+    );
+
+    Map<String, Object?> exportableDb = await exportDatabase(db);
+    return exportableDb;
+  }
+
+  /// Import entire claims database
+  Future<void> saveClaimsDb({
+    required Map<String, Object?> exportableDb,
+    required DatabaseFactory databaseFactory,
+    required String destinationPath,
+    required String privateKey,
+  }) async {
+    SembastCodec codec = getItSdk.get<SembastCodec>(param1: privateKey);
+
+    await importDatabase(
+      exportableDb,
+      databaseFactory,
+      destinationPath,
+      codec: codec,
+    );
   }
 }

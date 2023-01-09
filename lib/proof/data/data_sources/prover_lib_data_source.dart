@@ -23,7 +23,7 @@ class ProverLibDataSource {
   ProverLibDataSource(this._proverLibWrapper);
 
   ///
-  Future<Map<String, dynamic>?> prover(
+  Future<Map<String, dynamic>?> prove(
       Uint8List zKeyBytes, Uint8List wtnsBytes) async {
     return _proverLibWrapper.prover(zKeyBytes, wtnsBytes);
   }

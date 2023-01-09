@@ -332,6 +332,16 @@ class MockIdentityRepository extends _i1.Mock
           ),
         )),
       ) as _i7.Future<_i5.NodeEntity>);
+  @override
+  _i7.Future<String> getChallenge({required String? message}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getChallenge,
+          [],
+          {#message: message},
+        ),
+        returnValue: _i7.Future<String>.value(''),
+      ) as _i7.Future<String>);
 }
 
 /// A class which mocks [GetEnvConfigUseCase].

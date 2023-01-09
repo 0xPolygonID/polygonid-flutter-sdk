@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
@@ -8,16 +9,16 @@ import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/auth_v2/witness_auth.dart';
 import 'package:web3dart/crypto.dart';
 
+import '../../../common/utils/base_64.dart';
 import '../../../common/utils/uint8_list_utils.dart';
 import '../../../proof/data/dtos/gist_proof_dto.dart';
 import '../../../proof/data/dtos/proof_dto.dart';
+import '../../../proof/domain/entities/jwz/jwz.dart';
+import '../../../proof/domain/entities/jwz/jwz_exceptions.dart';
+import '../../../proof/domain/entities/jwz/jwz_header.dart';
+import '../../../proof/domain/entities/jwz/jwz_proof.dart';
 import '../../../proof/libs/prover/prover.dart';
 import '../../../proof/libs/witnesscalc/auth/witness_auth.dart';
-import '../../libs/jwz/jwz.dart';
-import '../../libs/jwz/jwz_exceptions.dart';
-import '../../libs/jwz/jwz_header.dart';
-import '../../libs/jwz/jwz_proof.dart';
-import '../../libs/jwz/jwz_token.dart';
 import 'prepare_inputs_data_source.dart';
 import 'wallet_data_source.dart';
 
@@ -100,7 +101,7 @@ class JWZDataSource {
       required String circuitId,
       required Uint8List datFile,
       required Uint8List zKeyFile}) async {
-    JWZ jwz = JWZ(
+    JWZEntity jwz = JWZEntity(
         header: JWZHeader(
             circuitId: "authV2",
             crit: const ["circuitId"],
@@ -153,7 +154,7 @@ class JWZDataSource {
     return Uint8ArrayUtils.uint8ListfromString(inputs!);
   }
 
-  Uint8List _getHash(JWZ jwz) {
+  Uint8List _getHash(JWZEntity jwz) {
     if (jwz.header == null) {
       throw NullJWZHeaderException();
     }
@@ -165,7 +166,7 @@ class JWZDataSource {
     // Sha256
     Uint8List sha = Uint8List.fromList(sha256
         .convert(Uint8ArrayUtils.uint8ListfromString(
-            "${jwz.header!.encode()}.${jwz.payload!.encode()}"))
+            "${Base64Util.encode64(jsonEncode(jwz.header!))}.${Base64Util.encode64(jsonEncode(jwz.payload!))}"))
         .bytes);
 
     // Endianness

@@ -32,7 +32,7 @@ main() {
     test(
       'Given a zkeyBytes and WtnsBytes, when call prover, we expect a Map to be returned',
       () async {
-        expect(await dataSource.prover(zKey, wtns), mockProverRes);
+        expect(await dataSource.prove(zKey, wtns), mockProverRes);
 
         var captured =
             verify(proverLibWrapper.prover(captureAny, captureAny)).captured;

@@ -1,21 +1,26 @@
+import 'package:encrypt/encrypt.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/db_destination_path_data_source.dart';
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/encryption_db_data_source.dart';
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/remote_claim_data_source.dart';
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_proofs/claim_proof_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/encryption_key_mapper.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/id_filter_mapper.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
+import 'package:sembast/sembast_io.dart';
 
 import '../../identity/data/mappers/node_mapper.dart';
 import 'data_sources/lib_pidcore_credential_data_source.dart';
 import 'data_sources/local_claim_data_source.dart';
-import 'data_sources/remote_claim_data_source.dart';
-import 'data_sources/storage_claim_data_source.dart';
-import 'dtos/claim_proofs/claim_proof_dto.dart';
-import 'mappers/claim_mapper.dart';
-import 'mappers/filters_mapper.dart';
-import 'mappers/id_filter_mapper.dart';
-import 'mappers/revocation_status_mapper.dart';
 
 class CredentialRepositoryImpl extends CredentialRepository {
   final RemoteClaimDataSource _remoteClaimDataSource;
@@ -29,6 +34,9 @@ class CredentialRepositoryImpl extends CredentialRepository {
   final IdFilterMapper _idFilterMapper;
   final NodeMapper _nodeMapper;
   final RevocationStatusMapper _revocationStatusMapper;
+  final EncryptionDbDataSource _encryptionDbDataSource;
+  final DestinationPathDataSource _destinationPathDataSource;
+  final EncryptionKeyMapper _encryptionKeyMapper;
 
   CredentialRepositoryImpl(
       this._remoteClaimDataSource,
@@ -39,6 +47,9 @@ class CredentialRepositoryImpl extends CredentialRepository {
       this._claimMapper,
       this._filtersMapper,
       this._idFilterMapper,
+      this._encryptionDbDataSource,
+      this._destinationPathDataSource,
+      this._encryptionKeyMapper,
       this._nodeMapper,
       this._revocationStatusMapper);
 
@@ -169,5 +180,42 @@ class CredentialRepositoryImpl extends CredentialRepository {
   @override
   Future<List<String>> getAuthClaim({required List<String> publicKey}) {
     return _localClaimDataSource.getAuthClaim(publicKey: publicKey);
+  }
+
+  @override
+  Future<String> exportClaims(
+      {required String identifier, required String privateKey}) async {
+    Map<String, Object?> exportableDb = await _storageClaimDataSource
+        .getClaimsDb(identifier: identifier, privateKey: privateKey);
+
+    Key key = _encryptionKeyMapper.mapFrom(privateKey);
+
+    return _encryptionDbDataSource.encryptData(
+      data: exportableDb,
+      key: key,
+    );
+  }
+
+  @override
+  Future<void> importClaims(
+      {required String identifier,
+      required String privateKey,
+      required String encryptedDb}) async {
+    Key key = _encryptionKeyMapper.mapFrom(privateKey);
+
+    Map<String, Object?> decryptedDb = _encryptionDbDataSource.decryptData(
+      encryptedData: encryptedDb,
+      key: key,
+    );
+
+    String destinationPath = await _destinationPathDataSource
+        .getDestinationPath(identifier: identifier);
+
+    return _storageClaimDataSource.saveClaimsDb(
+      exportableDb: decryptedDb,
+      databaseFactory: databaseFactoryIo,
+      destinationPath: destinationPath,
+      privateKey: privateKey,
+    );
   }
 }

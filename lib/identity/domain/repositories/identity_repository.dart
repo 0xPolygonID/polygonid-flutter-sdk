@@ -53,4 +53,7 @@ abstract class IdentityRepository {
   });
 
   Future<NodeEntity> getAuthClaimNode({required List<String> children});
+
+  // TODO: move to iden3comm
+  Future<String> getChallenge({required String message});
 }

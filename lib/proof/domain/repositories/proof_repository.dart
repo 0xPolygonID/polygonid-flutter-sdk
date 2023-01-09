@@ -3,10 +3,11 @@ import 'dart:typed_data';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/libs/jwz/jwz_proof.dart';
 
 import '../entities/circuit_data_entity.dart';
 import '../entities/gist_proof_entity.dart';
+import '../entities/jwz/jwz.dart';
+import '../entities/jwz/jwz_proof.dart';
 
 abstract class ProofRepository {
   Future<bool> isCircuitSupported({required String circuitId});
@@ -34,4 +35,6 @@ abstract class ProofRepository {
 
   Future<GistProofEntity> getGistProof(
       {required String idAsInt, required String contractAddress});
+
+  Future<String> encodeJWZ({required JWZEntity jwz});
 }

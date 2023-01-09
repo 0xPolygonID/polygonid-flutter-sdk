@@ -1,11 +1,11 @@
 import '../../../common/mappers/mapper.dart';
-import '../../../identity/data/mappers/hash_mapper.dart';
+import '../../../identity/data/mappers/node_hash_mapper.dart';
 import '../../domain/entities/proof_entity.dart';
 import '../dtos/proof_dto.dart';
 import 'node_aux_mapper.dart';
 
 class ProofMapper extends Mapper<ProofDTO, ProofEntity> {
-  final HashMapper _hashMapper;
+  final NodeHashMapper _hashMapper;
   final NodeAuxMapper _nodeAuxMapper;
 
   ProofMapper(this._hashMapper, this._nodeAuxMapper);

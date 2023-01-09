@@ -93,7 +93,7 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
       message: param.message,
     )
         .then((token) {
-      logger().i("[GetAuthTokenUseCase] Auth token: $token");
+      logger().i("[GetAuthTokenUseCase] Message $param Auth token: $token");
 
       return token;
     }).catchError((error) {

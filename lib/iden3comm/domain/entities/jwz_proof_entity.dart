@@ -64,7 +64,7 @@
 
 import 'dart:convert';
 
-import 'package:polygonid_flutter_sdk/identity/libs/jwz/jwz_proof.dart';
+import '../../../proof/domain/entities/jwz/jwz_proof.dart';
 
 class JWZProofEntity extends JWZProof {
   final int id;

@@ -14,7 +14,7 @@ import '../../domain/repositories/smt_repository.dart';
 import '../data_sources/smt_data_source.dart';
 import '../dtos/hash_dto.dart';
 import '../dtos/node_dto.dart';
-import '../mappers/hash_mapper.dart';
+import '../mappers/node_hash_mapper.dart';
 import '../mappers/node_mapper.dart';
 
 class SMTRepositoryImpl implements SMTRepository {
@@ -22,7 +22,7 @@ class SMTRepositoryImpl implements SMTRepository {
   final StorageSMTDataSource _storageSMTDataSource;
   final LibBabyJubJubDataSource _libBabyJubJubDataSource;
   final NodeMapper _nodeMapper;
-  final HashMapper _hashMapper;
+  final NodeHashMapper _hashMapper;
   final ProofMapper _proofMapper;
 
   SMTRepositoryImpl(

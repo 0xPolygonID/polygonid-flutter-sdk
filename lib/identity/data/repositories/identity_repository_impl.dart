@@ -5,6 +5,7 @@ import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/smt_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
 
 import '../../../credential/data/data_sources/lib_pidcore_credential_data_source.dart';
 import '../../../credential/data/data_sources/local_claim_data_source.dart';
@@ -26,7 +27,9 @@ import '../data_sources/wallet_data_source.dart';
 import '../dtos/hash_dto.dart';
 import '../dtos/identity_dto.dart';
 import '../dtos/node_dto.dart';
+import '../mappers/auth_inputs_mapper.dart';
 import '../mappers/did_mapper.dart';
+import '../mappers/hash_mapper.dart';
 import '../mappers/hex_mapper.dart';
 import '../mappers/identity_dto_mapper.dart';
 import '../mappers/node_mapper.dart';
@@ -49,6 +52,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final StorageIdentityDataSource _storageIdentityDataSource;
   final RPCDataSource _rpcDataSource;
   final LocalContractFilesDataSource _localContractFilesDataSource;
+
   final LocalClaimDataSource _localClaimDataSource;
   final HexMapper _hexMapper;
   //final BigIntMapper _bigIntMapper;
@@ -58,6 +62,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final NodeMapper _nodeMapper;
   final StateIdentifierMapper _stateIdentifierMapper;
   final DidMapper _didMapper;
+  final HashMapper _hashMapper;
+  final AuthInputsMapper _authInputsMapper;
+  final QMapper _qMapper;
 
   IdentityRepositoryImpl(
     this._walletDataSource,
@@ -79,6 +86,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._nodeMapper,
     this._stateIdentifierMapper,
     this._didMapper,
+    this._hashMapper,
+    this._authInputsMapper,
+    this._qMapper,
   );
 
   /// https://go.dev/play/p/L3No4mMLwJv
@@ -240,12 +250,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
       required String accessMessage}) async {
     try {
       // Create a wallet
-      PrivadoIdWallet wallet = await _walletDataSource.getWallet(
-          privateKey: _hexMapper.mapTo(
-              "28156abe7fe2fd433dc9df969286b96666489bac508612d0e16593e944c4f69f"));
-      /*PrivadoIdWallet wallet = await _walletDataSource.createWallet(
+      PrivadoIdWallet wallet = await _walletDataSource.createWallet(
           secret: _privateKeyMapper.mapFrom(secret),
-          accessMessage: accessMessage);*/
+          accessMessage: accessMessage);
       String privateKey = _hexMapper.mapFrom(wallet.privateKey);
 
       String did = await getDidIdentifier(
@@ -596,5 +603,12 @@ class IdentityRepositoryImpl extends IdentityRepository {
   Future<List<IdentityEntity>> getIdentities() {
     // TODO: implement getIdentities
     throw UnimplementedError();
+  }
+
+  @override
+  Future<String> getChallenge({required String message}) {
+    return Future.value(_qMapper.mapFrom(message))
+        .then((q) => _libBabyJubJubDataSource.hashPoseidon(q))
+        .then((hash) => _hashMapper.mapFrom(hash));
   }
 }

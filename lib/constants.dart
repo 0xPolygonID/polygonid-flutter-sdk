@@ -202,6 +202,9 @@ const securedStoreName = "securedStore";
 const identityDatabaseName = "polygonIdSdkIdentity";
 const identityDatabasePrefix = "polygonIdSdkIdentity-";
 
+/// Claim Database
+const claimDatabasePrefix = "polygonIdSdkClaim-";
+
 /// Identity state
 const claimsTreeStoreName = "claimsTreeStore";
 const revocationTreeStoreName = "revocationTreeStore";
@@ -209,3 +212,5 @@ const rootsTreeStoreName = "rootsTreeStore";
 
 /// Credential
 const claimStoreName = "claimStore";
+
+const sembastCodecName = "sembastCodec";
