@@ -64,13 +64,13 @@
 
 */
 
-import '../../../../domain/entities/proof_entity.dart';
+import '../../../../domain/entities/jwz_proof_entity.dart';
 import 'auth_body_did_doc_response.dart';
 
 class AuthBodyResponse {
   final AuthBodyDidDocResponse? did_doc;
   final String? message;
-  final List<ProofEntity>? proofs;
+  final List<JWZProofEntity>? proofs;
 
   AuthBodyResponse({this.did_doc, required this.message, required this.proofs});
 

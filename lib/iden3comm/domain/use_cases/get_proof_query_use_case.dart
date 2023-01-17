@@ -20,8 +20,9 @@ class GetProofQueryUseCase
     int operator = 0;
     List<int> values = [];
 
-    if (param.rules.query.req != null && param.rules.query.req!.length == 1) {
-      MapEntry reqEntry = param.rules.query.req!.entries.first;
+    if (param.query.credentialSubject != null &&
+        param.query.credentialSubject!.length == 1) {
+      MapEntry reqEntry = param.query.credentialSubject!.entries.first;
 
       if (reqEntry.value != null &&
           reqEntry.value is Map &&

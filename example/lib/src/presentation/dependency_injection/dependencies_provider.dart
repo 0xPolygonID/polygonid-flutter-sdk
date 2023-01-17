@@ -32,10 +32,8 @@ Future<void> init() async {
 Future<void> registerProviders() async {
   await PolygonIdSdk.init();
   getIt.registerLazySingleton<PolygonIdSdk>(() => PolygonIdSdk.I);
-
-  getIt.registerLazySingleton(() => Logger());
+  getIt.registerLazySingleton<Logger>(() => Logger());
   getIt.registerLazySingleton<DomainLogger>(() => AppLogger(getIt()));
-
   Domain.logger = getIt<DomainLogger>();
 }
 

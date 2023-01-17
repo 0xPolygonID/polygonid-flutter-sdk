@@ -13,7 +13,7 @@ const exportedClaims = "theExportedClaims";
 
 ExportClaimsParam param = ExportClaimsParam(
   privateKey: privateKey,
-  identifier: identifier,
+  did: identifier,
 );
 
 MockCredentialRepository mockCredentialRepository = MockCredentialRepository();
@@ -27,7 +27,7 @@ void main() {
     //
     setUp(() {
       when(mockCredentialRepository.exportClaims(
-        identifier: anyNamed('identifier'),
+        did: anyNamed('identifier'),
         privateKey: anyNamed('privateKey'),
       )).thenAnswer((_) async => exportedClaims);
     });
@@ -44,7 +44,7 @@ void main() {
 
       // Verify
       var captured = verify(mockCredentialRepository.exportClaims(
-        identifier: captureAnyNamed('identifier'),
+        did: captureAnyNamed('identifier'),
         privateKey: captureAnyNamed('privateKey'),
       )).captured;
 

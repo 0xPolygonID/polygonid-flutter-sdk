@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/prover_lib_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/prover_lib_data_source.dart';
 
 import 'prover_lib_data_source_test.mocks.dart';
 

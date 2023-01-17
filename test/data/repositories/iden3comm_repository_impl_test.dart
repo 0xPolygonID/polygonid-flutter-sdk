@@ -20,7 +20,7 @@ import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 
 import '../../common/common_mocks.dart';
 import 'iden3comm_repository_impl_test.mocks.dart';
@@ -194,7 +194,7 @@ void main() {
       // When
       expect(
         await repository.getAuthResponse(
-          identifier: identifier,
+          did: identifier,
           request: mockAuthRequest,
           pushUrl: pushUrl,
           scope: [],

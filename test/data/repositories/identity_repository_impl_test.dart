@@ -15,7 +15,7 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identit
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/rhs_node_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/auth_inputs_mapper.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_inputs_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/did_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hash_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
@@ -48,8 +48,8 @@ class FakeWallet extends Fake implements PrivadoIdWallet {
 final bbjjKey = Uint8List(32);
 final mockWallet = FakeWallet();
 const otherIdentifier = "theOtherIdentifier";
-final mockDTO = IdentityDTO(
-    identifier: CommonMocks.identifier, publicKey: CommonMocks.pubKeys);
+final mockDTO =
+    IdentityDTO(did: CommonMocks.identifier, publicKey: CommonMocks.pubKeys);
 
 final mockAuthResponse = AuthResponse(
   id: "id",
@@ -176,7 +176,7 @@ IdentityRepository repository = IdentityRepositoryImpl(
   RhsNodeMapper,
   StateIdentifierMapper,
   DidMapper,
-  HashMapper,
+  PoseidonHashMapper,
   AuthInputsMapper,
   QMapper
 ])
@@ -221,8 +221,7 @@ void main() {
       when(hexMapper.mapTo(any))
           .thenAnswer((realInvocation) => mockWallet.privateKey);
 
-      when(storageIdentityDataSource.getIdentity(
-              identifier: anyNamed('identifier')))
+      when(storageIdentityDataSource.getIdentity(did: anyNamed('identifier')))
           .thenAnswer((realInvocation) =>
               Future.error(UnknownIdentityException(CommonMocks.identifier)));
 
@@ -350,8 +349,7 @@ void main() {
       when(identityDTOMapper.mapFrom(any))
           .thenAnswer((realInvocation) => IdentityMocks.identity);
 
-      when(storageIdentityDataSource.getIdentity(
-              identifier: anyNamed('identifier')))
+      when(storageIdentityDataSource.getIdentity(did: anyNamed('identifier')))
           .thenAnswer((realInvocation) => Future.value(mockDTO));
     });
 
@@ -359,13 +357,13 @@ void main() {
         "Given an identifier, when I call getIdentity, then I expect a IdentityEntity to be returned",
         () async {
       // When
-      expect(await repository.getIdentity(identifier: CommonMocks.identifier),
+      expect(await repository.getIdentity(did: CommonMocks.identifier),
           IdentityMocks.identity);
 
       // Then
       expect(
           verify(storageIdentityDataSource.getIdentity(
-                  identifier: captureAnyNamed('identifier')))
+                  did: captureAnyNamed('identifier')))
               .captured
               .first,
           CommonMocks.identifier);
@@ -378,13 +376,12 @@ void main() {
         "Given an identifier, when I call getIdentity and an error occurred, then I expect a IdentityException to be thrown",
         () async {
       // Given
-      when(storageIdentityDataSource.getIdentity(
-              identifier: anyNamed('identifier')))
+      when(storageIdentityDataSource.getIdentity(did: anyNamed('identifier')))
           .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
       // When
       await repository
-          .getIdentity(identifier: CommonMocks.identifier)
+          .getIdentity(did: CommonMocks.identifier)
           .then((_) => null)
           .catchError((error) {
         expect(error, isA<IdentityException>());
@@ -394,7 +391,7 @@ void main() {
       // Then
       expect(
           verify(storageIdentityDataSource.getIdentity(
-                  identifier: captureAnyNamed('identifier')))
+                  did: captureAnyNamed('identifier')))
               .captured
               .first,
           CommonMocks.identifier);
@@ -406,24 +403,23 @@ void main() {
         "Given an identifier, when I call getIdentity and the identity doesn't exist, then I expect a UnknownIdentityException to be thrown",
         () async {
       // Given
-      when(storageIdentityDataSource.getIdentity(
-              identifier: anyNamed('identifier')))
+      when(storageIdentityDataSource.getIdentity(did: anyNamed('identifier')))
           .thenAnswer((realInvocation) =>
               Future.error(UnknownIdentityException(CommonMocks.identifier)));
 
       // When
       await repository
-          .getIdentity(identifier: CommonMocks.identifier)
+          .getIdentity(did: CommonMocks.identifier)
           .then((_) => null)
           .catchError((error) {
         expect(error, isA<UnknownIdentityException>());
-        expect(error.identifier, CommonMocks.identifier);
+        expect(error.did, CommonMocks.identifier);
       });
 
       // Then
       expect(
           verify(storageIdentityDataSource.getIdentity(
-                  identifier: captureAnyNamed('identifier')))
+                  did: captureAnyNamed('identifier')))
               .captured
               .first,
           CommonMocks.identifier);
@@ -451,8 +447,7 @@ void main() {
       when(identityDTOMapper.mapPrivateFrom(any, any))
           .thenAnswer((realInvocation) => IdentityMocks.privateIdentity);
 
-      when(storageIdentityDataSource.getIdentity(
-              identifier: anyNamed('identifier')))
+      when(storageIdentityDataSource.getIdentity(did: anyNamed('identifier')))
           .thenAnswer((realInvocation) => Future.value(mockDTO));
 
       when(hexMapper.mapTo(any)).thenAnswer((realInvocation) => bbjjKey);
@@ -464,14 +459,13 @@ void main() {
       // When
       expect(
           await repository.getPrivateIdentity(
-              identifier: CommonMocks.identifier,
-              privateKey: CommonMocks.privateKey),
+              did: CommonMocks.identifier, privateKey: CommonMocks.privateKey),
           IdentityMocks.privateIdentity);
 
       // Then
       expect(
           verify(storageIdentityDataSource.getIdentity(
-                  identifier: captureAnyNamed('identifier')))
+                  did: captureAnyNamed('identifier')))
               .captured
               .first,
           CommonMocks.identifier);
@@ -511,8 +505,7 @@ void main() {
 
       await repository
           .getPrivateIdentity(
-              identifier: CommonMocks.identifier,
-              privateKey: CommonMocks.privateKey)
+              did: CommonMocks.identifier, privateKey: CommonMocks.privateKey)
           .then((_) => expect(true, false))
           .catchError((error) {
         expect(error, isA<IdentityException>());
@@ -522,7 +515,7 @@ void main() {
       // Then
       expect(
           verify(storageIdentityDataSource.getIdentity(
-                  identifier: captureAnyNamed('identifier')))
+                  did: captureAnyNamed('identifier')))
               .captured
               .first,
           CommonMocks.identifier);
@@ -557,8 +550,7 @@ void main() {
       // When
       await repository
           .getPrivateIdentity(
-              identifier: CommonMocks.identifier,
-              privateKey: CommonMocks.privateKey)
+              did: CommonMocks.identifier, privateKey: CommonMocks.privateKey)
           .then((_) => expect(true, false))
           .catchError((error) {
         expect(error, isA<IdentityException>());
@@ -569,7 +561,7 @@ void main() {
       // Then
       expect(
           verify(storageIdentityDataSource.getIdentity(
-                  identifier: captureAnyNamed('identifier')))
+                  did: captureAnyNamed('identifier')))
               .captured
               .first,
           CommonMocks.identifier);
@@ -662,20 +654,19 @@ void main() {
         () async {
       // Given
       when(storageIdentityDataSource.removeIdentity(
-              identifier: anyNamed('identifier')))
+              did: anyNamed('identifier')))
           .thenAnswer((realInvocation) => Future.value());
 
       // When
       await expectLater(
           repository.removeIdentity(
-              privateKey: CommonMocks.privateKey,
-              identifier: CommonMocks.identifier),
+              privateKey: CommonMocks.privateKey, did: CommonMocks.identifier),
           completes);
 
       // Then
       expect(
           verify(storageIdentityDataSource.removeIdentity(
-                  identifier: captureAnyNamed('identifier')))
+                  did: captureAnyNamed('identifier')))
               .captured
               .first,
           CommonMocks.identifier);
@@ -686,20 +677,19 @@ void main() {
         () async {
       // Given
       when(storageIdentityDataSource.removeIdentity(
-              identifier: anyNamed('identifier')))
+              did: anyNamed('identifier')))
           .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
       // When
       await expectLater(
           repository.removeIdentity(
-              privateKey: CommonMocks.privateKey,
-              identifier: CommonMocks.identifier),
+              privateKey: CommonMocks.privateKey, did: CommonMocks.identifier),
           throwsA(CommonMocks.exception));
 
       // Then
       expect(
           verify(storageIdentityDataSource.removeIdentity(
-                  identifier: captureAnyNamed('identifier')))
+                  did: captureAnyNamed('identifier')))
               .captured
               .first,
           CommonMocks.identifier);

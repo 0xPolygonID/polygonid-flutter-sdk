@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/jwz/jwz.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/jwz/jwz_header.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/jwz/jwz_proof.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_header.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart';
 
 import 'common_mocks.dart';
 

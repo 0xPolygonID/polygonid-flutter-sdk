@@ -4,12 +4,12 @@ import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_
 /// Param required to import the claims database
 class ImportClaimsParam {
   final String privateKey;
-  final String identifier;
+  final String did;
   final String encryptedClaimsDb;
 
   ImportClaimsParam({
     required this.privateKey,
-    required this.identifier,
+    required this.did,
     required this.encryptedClaimsDb,
   });
 }
@@ -23,7 +23,7 @@ class ImportClaimsUseCase extends FutureUseCase<ImportClaimsParam, void> {
   @override
   Future<void> execute({required ImportClaimsParam param}) {
     return _credentialRepository.importClaims(
-      identifier: param.identifier,
+      did: param.did,
       privateKey: param.privateKey,
       encryptedDb: param.encryptedClaimsDb,
     );

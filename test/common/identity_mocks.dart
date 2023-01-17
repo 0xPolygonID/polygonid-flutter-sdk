@@ -5,10 +5,10 @@ import 'common_mocks.dart';
 
 class IdentityMocks {
   static IdentityEntity identity = IdentityEntity(
-      identifier: CommonMocks.identifier, publicKey: CommonMocks.pubKeys);
+      did: CommonMocks.identifier, publicKey: CommonMocks.pubKeys);
 
   static PrivateIdentityEntity privateIdentity = PrivateIdentityEntity(
-      identifier: CommonMocks.identifier,
+      did: CommonMocks.identifier,
       publicKey: CommonMocks.pubKeys,
       privateKey: CommonMocks.walletPrivateKey);
 }

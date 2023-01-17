@@ -40,22 +40,14 @@ final fetchClaimDTO =
     FetchClaimResponseDTO.fromJson(jsonDecode(mockFetchClaim));
 final claimDTOs = [
   ClaimDTO(
-      id: "id1",
-      issuer: "",
-      identifier: "",
-      type: '',
-      info: fetchClaimDTO.credential),
+      id: "id1", issuer: "", did: "", type: '', info: fetchClaimDTO.credential),
   ClaimDTO(
-      id: "id2",
-      issuer: "",
-      identifier: "",
-      type: '',
-      info: fetchClaimDTO.credential),
+      id: "id2", issuer: "", did: "", type: '', info: fetchClaimDTO.credential),
 ];
 final claimEntities = [
   ClaimEntity(
       issuer: "",
-      identifier: "",
+      did: "",
       expiration: "",
       info: {},
       type: "",
@@ -63,7 +55,7 @@ final claimEntities = [
       id: "id1"),
   ClaimEntity(
       issuer: "",
-      identifier: "",
+      did: "",
       expiration: "",
       info: {},
       type: "",
@@ -157,7 +149,7 @@ void main() {
       when(remoteClaimDataSource.fetchClaim(
               token: anyNamed('token'),
               url: anyNamed('url'),
-              identifier: anyNamed('identifier')))
+              did: anyNamed('identifier')))
           .thenAnswer((realInvocation) => Future.value(claimDTOs[0]));
       when(claimMapper.mapFrom(any)).thenReturn(claimEntities[0]);
     });
@@ -168,7 +160,7 @@ void main() {
       // When
       expect(
           await repository.fetchClaim(
-              identifier: CommonMocks.identifier,
+              did: CommonMocks.identifier,
               token: CommonMocks.token,
               message: Iden3commMocks.offerRequest),
           claimEntities[0]);
@@ -177,7 +169,7 @@ void main() {
       var fetchCaptured = verify(remoteClaimDataSource.fetchClaim(
               token: captureAnyNamed('token'),
               url: captureAnyNamed('url'),
-              identifier: captureAnyNamed('identifier')))
+              did: captureAnyNamed('identifier')))
           .captured;
 
       expect(fetchCaptured[0], CommonMocks.token);
@@ -195,13 +187,13 @@ void main() {
       when(remoteClaimDataSource.fetchClaim(
               token: anyNamed('token'),
               url: anyNamed('url'),
-              identifier: anyNamed('identifier')))
+              did: anyNamed('identifier')))
           .thenAnswer((realInvocation) => Future.error(exception));
 
       // When
       await repository
           .fetchClaim(
-              identifier: CommonMocks.identifier,
+              did: CommonMocks.identifier,
               token: CommonMocks.token,
               message: Iden3commMocks.offerRequest)
           .then((_) => expect(true, false))
@@ -214,7 +206,7 @@ void main() {
       var fetchCaptured = verify(remoteClaimDataSource.fetchClaim(
               token: captureAnyNamed('token'),
               url: captureAnyNamed('url'),
-              identifier: captureAnyNamed('identifier')))
+              did: captureAnyNamed('identifier')))
           .captured;
 
       expect(fetchCaptured[0], CommonMocks.token);
@@ -235,7 +227,7 @@ void main() {
       // When
       expect(
           await repository.fetchClaim(
-              identifier: CommonMocks.identifier,
+              did: CommonMocks.identifier,
               token: CommonMocks.token,
               message: Iden3commMocks.offerRequest),
           claimEntities[0]);
@@ -244,7 +236,7 @@ void main() {
       var fetchCaptured = verify(remoteClaimDataSource.fetchClaim(
               token: captureAnyNamed('token'),
               url: captureAnyNamed('url'),
-              identifier: captureAnyNamed('identifier')))
+              did: captureAnyNamed('identifier')))
           .captured;
       expect(fetchCaptured[0], CommonMocks.token);
       expect(fetchCaptured[1], Iden3commMocks.offerUrl);
@@ -259,7 +251,7 @@ void main() {
     setUp(() {
       // Given
       when(storageClaimDataSource.storeClaims(
-              identifier: anyNamed('identifier'),
+              did: anyNamed('identifier'),
               privateKey: anyNamed('privateKey'),
               claims: anyNamed('claims')))
           .thenAnswer((realInvocation) => Future.value());
@@ -272,14 +264,14 @@ void main() {
       // When
       await expectLater(
           repository.saveClaims(
-              identifier: CommonMocks.identifier,
+              did: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               claims: claimEntities),
           completes);
 
       // Then
       var captureStore = verify(storageClaimDataSource.storeClaims(
-              identifier: captureAnyNamed('identifier'),
+              did: captureAnyNamed('identifier'),
               privateKey: captureAnyNamed('privateKey'),
               claims: captureAnyNamed('claims')))
           .captured;
@@ -299,7 +291,7 @@ void main() {
         () async {
       // Given
       when(storageClaimDataSource.storeClaims(
-              identifier: anyNamed('identifier'),
+              did: anyNamed('identifier'),
               privateKey: anyNamed('privateKey'),
               claims: anyNamed('claims')))
           .thenAnswer((realInvocation) => Future.error(exception));
@@ -307,7 +299,7 @@ void main() {
       // When
       await repository
           .saveClaims(
-              identifier: CommonMocks.identifier,
+              did: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               claims: claimEntities)
           .then((_) => expect(true, false))
@@ -318,7 +310,7 @@ void main() {
 
       // Then
       var captureStore = verify(storageClaimDataSource.storeClaims(
-              identifier: captureAnyNamed('identifier'),
+              did: captureAnyNamed('identifier'),
               privateKey: captureAnyNamed('privateKey'),
               claims: captureAnyNamed('claims')))
           .captured;
@@ -334,7 +326,7 @@ void main() {
     setUp(() {
       // Given
       when(storageClaimDataSource.getClaims(
-              identifier: anyNamed('identifier'),
+              did: anyNamed('identifier'),
               privateKey: anyNamed('privateKey'),
               filter: anyNamed('filter')))
           .thenAnswer((realInvocation) => Future.value(claimDTOs));
@@ -348,14 +340,14 @@ void main() {
       // When
       expect(
           await repository.getClaims(
-            identifier: CommonMocks.identifier,
+            did: CommonMocks.identifier,
             privateKey: CommonMocks.privateKey,
           ),
           [claimEntities[0], claimEntities[0]]);
 
       // Then
       var captureGet = verify(storageClaimDataSource.getClaims(
-              identifier: captureAnyNamed('identifier'),
+              did: captureAnyNamed('identifier'),
               privateKey: captureAnyNamed('privateKey')))
           .captured;
       expect(captureGet[0], CommonMocks.identifier);
@@ -376,14 +368,14 @@ void main() {
       // When
       expect(
           await repository.getClaims(
-              identifier: CommonMocks.identifier,
+              did: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               filters: filters),
           [claimEntities[0], claimEntities[0]]);
 
       // Then
       var captureGet = verify(storageClaimDataSource.getClaims(
-              identifier: captureAnyNamed('identifier'),
+              did: captureAnyNamed('identifier'),
               privateKey: captureAnyNamed('privateKey'),
               filter: captureAnyNamed('filter')))
           .captured;
@@ -405,7 +397,7 @@ void main() {
         () async {
       // Given
       when(storageClaimDataSource.getClaims(
-              identifier: anyNamed('identifier'),
+              did: anyNamed('identifier'),
               privateKey: anyNamed('privateKey'),
               filter: anyNamed('filter')))
           .thenAnswer((realInvocation) => Future.error(exception));
@@ -413,7 +405,7 @@ void main() {
       // When
       await repository
           .getClaims(
-              identifier: CommonMocks.identifier,
+              did: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               filters: filters)
           .then((_) => expect(true, false))
@@ -424,7 +416,7 @@ void main() {
 
       // Then
       var captureGet = verify(storageClaimDataSource.getClaims(
-              identifier: captureAnyNamed('identifier'),
+              did: captureAnyNamed('identifier'),
               privateKey: captureAnyNamed('privateKey'),
               filter: captureAnyNamed('filter')))
           .captured;
@@ -442,7 +434,7 @@ void main() {
     setUp(() {
       // Given
       when(storageClaimDataSource.getClaims(
-              identifier: anyNamed('identifier'),
+              did: anyNamed('identifier'),
               privateKey: anyNamed('privateKey'),
               filter: anyNamed('filter')))
           .thenAnswer((realInvocation) => Future.value([claimDTOs[0]]));
@@ -456,7 +448,7 @@ void main() {
       // When
       expect(
           await repository.getClaim(
-              identifier: CommonMocks.identifier,
+              did: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               claimId: ids[0]),
           claimEntities[0]);
@@ -465,7 +457,7 @@ void main() {
       expect(verify(idFilterMapper.mapTo(captureAny)).captured.first, ids[0]);
 
       var captureGet = verify(storageClaimDataSource.getClaims(
-              identifier: captureAnyNamed('identifier'),
+              did: captureAnyNamed('identifier'),
               privateKey: captureAnyNamed('privateKey'),
               filter: captureAnyNamed('filter')))
           .captured;
@@ -482,14 +474,14 @@ void main() {
         () async {
       // Given
       when(storageClaimDataSource.getClaims(
-              identifier: anyNamed('identifier'),
+              did: anyNamed('identifier'),
               privateKey: anyNamed('privateKey'),
               filter: anyNamed('filter')))
           .thenAnswer((realInvocation) => Future.value([]));
       // When
       await repository
           .getClaim(
-              identifier: CommonMocks.identifier,
+              did: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               claimId: ids[0])
           .then((value) => expect(true, false))
@@ -502,7 +494,7 @@ void main() {
       expect(verify(idFilterMapper.mapTo(captureAny)).captured.first, ids[0]);
 
       var captureGet = verify(storageClaimDataSource.getClaims(
-              identifier: captureAnyNamed('identifier'),
+              did: captureAnyNamed('identifier'),
               privateKey: captureAnyNamed('privateKey'),
               filter: captureAnyNamed('filter')))
           .captured;
@@ -518,14 +510,14 @@ void main() {
         () async {
       // Given
       when(storageClaimDataSource.getClaims(
-              identifier: anyNamed('identifier'),
+              did: anyNamed('identifier'),
               privateKey: anyNamed('privateKey'),
               filter: anyNamed('filter')))
           .thenAnswer((realInvocation) => Future.error(exception));
       // When
       await expectLater(
           repository.getClaim(
-              identifier: CommonMocks.identifier,
+              did: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               claimId: ids[0]),
           throwsA(exception));
@@ -534,7 +526,7 @@ void main() {
       expect(verify(idFilterMapper.mapTo(captureAny)).captured.first, ids[0]);
 
       var captureGet = verify(storageClaimDataSource.getClaims(
-              identifier: captureAnyNamed('identifier'),
+              did: captureAnyNamed('identifier'),
               privateKey: captureAnyNamed('privateKey'),
               filter: captureAnyNamed('filter')))
           .captured;
@@ -550,7 +542,7 @@ void main() {
     setUp(() {
       // Given
       when(storageClaimDataSource.removeClaims(
-              identifier: anyNamed('identifier'),
+              did: anyNamed('identifier'),
               privateKey: anyNamed('privateKey'),
               claimIds: anyNamed('claimIds')))
           .thenAnswer((realInvocation) => Future.value());
@@ -562,14 +554,14 @@ void main() {
       // When
       await expectLater(
           repository.removeClaims(
-              identifier: CommonMocks.identifier,
+              did: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               claimIds: ids),
           completes);
 
       // Then
       var captureRemove = verify(storageClaimDataSource.removeClaims(
-              identifier: captureAnyNamed('identifier'),
+              did: captureAnyNamed('identifier'),
               privateKey: captureAnyNamed('privateKey'),
               claimIds: captureAnyNamed('claimIds')))
           .captured;
@@ -583,7 +575,7 @@ void main() {
         () async {
       // Given
       when(storageClaimDataSource.removeClaims(
-              identifier: anyNamed('identifier'),
+              did: anyNamed('identifier'),
               privateKey: anyNamed('privateKey'),
               claimIds: anyNamed('claimIds')))
           .thenAnswer((realInvocation) => Future.error(exception));
@@ -591,7 +583,7 @@ void main() {
       // When
       await repository
           .removeClaims(
-              identifier: CommonMocks.identifier,
+              did: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               claimIds: ids)
           .then((_) => expect(true, false))
@@ -602,7 +594,7 @@ void main() {
 
       // Then
       var captureRemove = verify(storageClaimDataSource.removeClaims(
-              identifier: captureAnyNamed('identifier'),
+              did: captureAnyNamed('identifier'),
               privateKey: captureAnyNamed('privateKey'),
               claimIds: captureAnyNamed('claimIds')))
           .captured;
@@ -615,8 +607,7 @@ void main() {
   group("Encrypt db", () {
     setUp(() {
       when(storageClaimDataSource.getClaimsDb(
-              identifier: anyNamed('identifier'),
-              privateKey: anyNamed('privateKey')))
+              did: anyNamed('identifier'), privateKey: anyNamed('privateKey')))
           .thenAnswer((realInvocation) => Future.value(mockDb));
 
       when(encryptionKeyMapper.mapFrom(any))
@@ -634,14 +625,13 @@ void main() {
       // When
       expect(
         await repository.exportClaims(
-            identifier: CommonMocks.identifier,
-            privateKey: CommonMocks.privateKey),
+            did: CommonMocks.identifier, privateKey: CommonMocks.privateKey),
         encryptedDb,
       );
 
       // Then
       var captureGet = verify(storageClaimDataSource.getClaimsDb(
-              identifier: captureAnyNamed('identifier'),
+              did: captureAnyNamed('identifier'),
               privateKey: captureAnyNamed('privateKey')))
           .captured;
       expect(captureGet[0], CommonMocks.identifier);
@@ -671,7 +661,7 @@ void main() {
           .thenAnswer((realInvocation) => encryptionKey);
 
       when(destinationPathDataSource.getDestinationPath(
-              identifier: anyNamed('identifier')))
+              did: anyNamed('identifier')))
           .thenAnswer((realInvocation) => Future.value(destinationPath));
 
       when(storageClaimDataSource.saveClaimsDb(
@@ -690,7 +680,7 @@ void main() {
         repository.importClaims(
             encryptedDb: encryptedDb,
             privateKey: CommonMocks.privateKey,
-            identifier: CommonMocks.identifier),
+            did: CommonMocks.identifier),
         completes,
       );
     });

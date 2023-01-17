@@ -1,25 +1,22 @@
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 
+import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
 
-class GetAuthClaimUseCase extends FutureUseCase<IdentityEntity, String> {
+class GetAuthClaimUseCase extends FutureUseCase<List<String>, List<String>> {
   final CredentialRepository _credentialRepository;
 
   GetAuthClaimUseCase(this._credentialRepository);
 
   @override
-  Future<String> execute({required IdentityEntity param}) {
+  Future<List<String>> execute({required List<String> param}) async {
     return _credentialRepository
-        .getAuthClaim(identity: param)
+        .getAuthClaim(publicKey: param)
         .then((authClaim) {
-      logger().i("[GetAuthClaimUseCase] AuthClaim: $authClaim");
-
+      logger().i("[GetAuthClaimUseCase] auth claim: $authClaim");
       return authClaim;
     }).catchError((error) {
       logger().e("[GetAuthClaimUseCase] Error: $error");
-
       throw error;
     });
   }

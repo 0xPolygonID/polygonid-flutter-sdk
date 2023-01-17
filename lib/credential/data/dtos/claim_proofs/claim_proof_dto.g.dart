@@ -10,8 +10,9 @@ Map<String, dynamic> _$ClaimProofDTOToJson(ClaimProofDTO instance) =>
     <String, dynamic>{
       'stringify': instance.stringify,
       'hashCode': instance.hashCode,
-      '@type': _$ClaimProofTypeEnumMap[instance.type]!,
-      'issuer_data': instance.issuer.toJson(),
+      'type': _$ClaimProofTypeEnumMap[instance.type]!,
+      'issuerData': instance.issuer.toJson(),
+      'coreClaim': instance.coreClaim,
       'props': instance.props,
     };
 
@@ -32,17 +33,44 @@ Map<String, dynamic> _$ClaimProofMTPDTOToJson(ClaimProofMTPDTO instance) =>
       'siblings': instance.siblings,
     };
 
+ClaimProofIssuerCredStatusDTO _$ClaimProofIssuerCredStatusDTOFromJson(
+        Map<String, dynamic> json) =>
+    ClaimProofIssuerCredStatusDTO(
+      json['id'] as String,
+      json['revocationNonce'] as int?,
+      $enumDecode(_$ClaimProofIssuerCredStatusTypeEnumMap, json['type']),
+      json['statusIssuer'] == null
+          ? null
+          : ClaimProofIssuerCredStatusDTO.fromJson(
+              json['statusIssuer'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$ClaimProofIssuerCredStatusDTOToJson(
+        ClaimProofIssuerCredStatusDTO instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'revocationNonce': instance.revocationNonce,
+      'type': _$ClaimProofIssuerCredStatusTypeEnumMap[instance.type]!,
+      'statusIssuer': instance.statusIssuer?.toJson(),
+    };
+
+const _$ClaimProofIssuerCredStatusTypeEnumMap = {
+  ClaimProofIssuerCredStatusType.reverseSparseMerkleTreeProof:
+      'Iden3ReverseSparseMerkleTreeProof',
+  ClaimProofIssuerCredStatusType.sparseMerkleTreeProof: 'SparseMerkleTreeProof',
+};
+
 ClaimProofIssuerStateDTO _$ClaimProofIssuerStateDTOFromJson(
         Map<String, dynamic> json) =>
     ClaimProofIssuerStateDTO(
-      json['claims_tree_root'] as String,
+      json['claimsTreeRoot'] as String,
       json['value'] as String,
     );
 
 Map<String, dynamic> _$ClaimProofIssuerStateDTOToJson(
         ClaimProofIssuerStateDTO instance) =>
     <String, dynamic>{
-      'claims_tree_root': instance.treeRoot,
+      'claimsTreeRoot': instance.treeRoot,
       'value': instance.value,
     };
 

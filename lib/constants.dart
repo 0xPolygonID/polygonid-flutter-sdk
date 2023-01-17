@@ -1,3 +1,190 @@
+const List<int> _enviedkeyaccessMessage = [
+  3062739047,
+  562173792,
+  3682346671,
+  3197932441,
+  633954874,
+  1384068317,
+  7155102,
+  603945736,
+  4148590067,
+  101904248,
+  4012612404,
+  2318603331,
+  3407770544,
+  195091332,
+  715795537,
+  1099583061,
+  1413788925,
+  282283961,
+  2768189116,
+  2348979087,
+  4121141179,
+  37434054,
+  478250878,
+  1579862680,
+  1474136368,
+  3316177984,
+  487431882,
+  1789076081,
+  3040219926,
+  85742232,
+  43879974,
+  140106663,
+  3234139091,
+  17839426,
+  252980125,
+  885062041,
+  3410170114,
+  3900724501,
+  2307485065,
+  3395375626,
+  663600672,
+  1605092394,
+  3391568523,
+  2032454012,
+  3898622987,
+  1380978986,
+  3166975006,
+  3655661411,
+  3270529570,
+  882169991,
+  1254761924,
+  2617879906,
+  524156367,
+  651786678,
+  3460538463,
+  3416530218,
+  1650517821,
+  1506068313,
+  1882813636,
+  2646652599,
+  1633865462,
+  3145159597,
+  2637239129,
+  4133741966,
+  3333179538,
+  3902421277,
+  2318813212,
+  1207510287,
+  1643915391,
+  1041562149,
+  2343570388,
+  1022648976,
+  1382610583,
+  366143673,
+  3547779120,
+  2412936781,
+  398341684,
+  985623953,
+  2475799951,
+  1336222338,
+  2134040814,
+  1732887107,
+  458103828,
+  1009671270,
+  1733240078,
+  1301538515,
+  962219107,
+  3719805963
+];
+const List<int> _envieddataaccessMessage = [
+  3062738999,
+  562173714,
+  3682346694,
+  3197932527,
+  633954907,
+  1384068281,
+  7155185,
+  603945793,
+  4148589975,
+  101904216,
+  4012612437,
+  2318603296,
+  3407770579,
+  195091435,
+  715795492,
+  1099583035,
+  1413788809,
+  282283929,
+  2768189149,
+  2348979180,
+  4121141208,
+  37434019,
+  478250765,
+  1579862763,
+  1474136350,
+  3316177948,
+  487431844,
+  1789076013,
+  3040220024,
+  85742283,
+  43880015,
+  140106688,
+  3234139069,
+  17839458,
+  252980201,
+  885062129,
+  3410170219,
+  3900724582,
+  2307485097,
+  3395375719,
+  663600709,
+  1605092441,
+  3391568632,
+  2032453917,
+  3898623084,
+  1380979023,
+  3166975038,
+  3655661322,
+  3270529604,
+  882170023,
+  1254761917,
+  2617879821,
+  524156346,
+  651786646,
+  3460538430,
+  3416530264,
+  1650517848,
+  1506068345,
+  1882813613,
+  2646652633,
+  1633865430,
+  3145159628,
+  2637239161,
+  4133742074,
+  3333179616,
+  3902421352,
+  2318813295,
+  1207510395,
+  1643915290,
+  1041562177,
+  2343570420,
+  1022649073,
+  1382610663,
+  366143689,
+  3547779164,
+  2412936740,
+  398341719,
+  985624048,
+  2475800059,
+  1336222443,
+  2134040705,
+  1732887085,
+  458103860,
+  1009671177,
+  1733240160,
+  1301538495,
+  962219034,
+  3719805989
+];
+final String POLYGONID_ACCESS_MESSAGE = String.fromCharCodes(
+  List.generate(_envieddataaccessMessage.length, (i) => i, growable: false)
+      .map((i) => _envieddataaccessMessage[i] ^ _enviedkeyaccessMessage[i])
+      .toList(growable: false),
+);
+
+const AUTH_CLAIM_SCHEMA = "cca3371a6cb1b715004407e325bd993c";
 const API_VERSION = 'v1';
 
 const STORAGE_VERSION_KEY = 'privadoIdStorageVersion';
@@ -5,10 +192,24 @@ const STORAGE_VERSION = 1;
 
 /// Database
 const databaseName = "polygonIdSdk.db";
-const claimDatabaseName = "polygonIdSdkClaims";
-const claimDatabasePrefix = "polygonIdSdkClaims-";
-const identityStoreName = "identityStore";
-const claimStoreName = "claimStore";
+const sembastCodecName = "sembastCodec";
+const securedStoreName = "securedStore";
+
+/// Key value Database
 const keyValueStoreName = "keyValueStore";
 const currentIdentifierKey = "currentIdentifier";
-const sembastCodecName = "sembastCodec";
+
+/// Identity Database
+const identityStoreName = "identityStore";
+const identityDatabaseName = "polygonIdSdkIdentity";
+const identityDatabasePrefix = "polygonIdSdkIdentity-";
+
+/// Identity state
+const claimsTreeStoreName = "claimsTreeStore";
+const revocationTreeStoreName = "revocationTreeStore";
+const rootsTreeStoreName = "rootsTreeStore";
+
+/// Credential
+const claimDatabaseName = "polygonIdSdkClaims";
+const claimDatabasePrefix = "polygonIdSdkClaims-";
+const claimStoreName = "claimStore";

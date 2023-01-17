@@ -3,7 +3,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_auth_claim_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_auth_inputs_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/sign_message_use_case.dart';
 
@@ -57,7 +57,7 @@ void main() {
           verify(getIdentityUseCase.execute(param: captureAnyNamed("param")))
               .captured
               .first;
-      expect(capturedIdentity.identifier, param.identifier);
+      expect(capturedIdentity.did, param.did);
       expect(capturedIdentity.privateKey, param.privateKey);
 
       var capturedSign =
@@ -96,7 +96,7 @@ void main() {
           verify(getIdentityUseCase.execute(param: captureAnyNamed("param")))
               .captured
               .first;
-      expect(capturedIdentity.identifier, param.identifier);
+      expect(capturedIdentity.did, param.did);
       expect(capturedIdentity.privateKey, param.privateKey);
 
       var capturedSign =

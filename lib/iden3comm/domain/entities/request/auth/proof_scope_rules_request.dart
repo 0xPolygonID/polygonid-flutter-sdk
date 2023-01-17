@@ -66,12 +66,12 @@
 
 */
 
-import 'proof_scope_rules_query_request.dart';
+import 'proof_scope_query_request.dart';
 
 class ProofScopeRulesRequest {
   final String audience;
   final int challenge;
-  final ProofScopeRulesQueryRequest query;
+  final ProofScopeQueryRequest query;
 
   ProofScopeRulesRequest(
       {required this.audience, required this.challenge, required this.query});
@@ -84,7 +84,7 @@ class ProofScopeRulesRequest {
     return ProofScopeRulesRequest(
       audience: json['audience'] ?? "",
       challenge: json['challenge'] ?? -1,
-      query: ProofScopeRulesQueryRequest.fromJson(json['query']),
+      query: ProofScopeQueryRequest.fromJson(json['query']),
     );
   }
 

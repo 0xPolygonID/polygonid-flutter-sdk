@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/repositories/proof_repository.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/get_jwz_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/use_cases/get_jwz_use_case.dart';
 
 import '../../common/common_mocks.dart';
 import '../../common/proof_mocks.dart';

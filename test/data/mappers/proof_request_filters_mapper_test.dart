@@ -144,7 +144,7 @@ String mockQueryRequestNotSupportedOperator = '''
 ProofScopeRequest proofScopeRequest = ProofScopeRequest(
   id: 1,
   circuit_id: "credentialAtomicQuerySig",
-  rules: ProofScopeRulesRequest(
+  query: ProofScopeRulesRequest(
     audience: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
     challenge: 74657374,
     query: ProofScopeRulesQueryRequest.fromJson(jsonDecode(mockQueryRequestLT)),
@@ -156,7 +156,7 @@ ProofRequestEntity mockProofRequestEntityLT = ProofRequestEntity(
   ProofScopeRequest(
     id: 1,
     circuit_id: "credentialAtomicQuerySig",
-    rules: ProofScopeRulesRequest(
+    query: ProofScopeRulesRequest(
       audience: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
       challenge: 74657374,
       query:
@@ -170,7 +170,7 @@ ProofRequestEntity mockProofRequestEntityGT = ProofRequestEntity(
   ProofScopeRequest(
     id: 1,
     circuit_id: "credentialAtomicQuerySig",
-    rules: ProofScopeRulesRequest(
+    query: ProofScopeRulesRequest(
       audience: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
       challenge: 74657374,
       query:
@@ -184,7 +184,7 @@ ProofRequestEntity mockProofRequestEntityEQ = ProofRequestEntity(
   ProofScopeRequest(
     id: 1,
     circuit_id: "credentialAtomicQuerySig",
-    rules: ProofScopeRulesRequest(
+    query: ProofScopeRulesRequest(
       audience: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
       challenge: 74657374,
       query:
@@ -198,7 +198,7 @@ ProofRequestEntity mockProofRequestEntityIN = ProofRequestEntity(
   ProofScopeRequest(
     id: 1,
     circuit_id: "credentialAtomicQuerySig",
-    rules: ProofScopeRulesRequest(
+    query: ProofScopeRulesRequest(
       audience: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
       challenge: 74657374,
       query:
@@ -212,7 +212,7 @@ ProofRequestEntity mockProofRequestEntityNIN = ProofRequestEntity(
   ProofScopeRequest(
     id: 1,
     circuit_id: "credentialAtomicQuerySig",
-    rules: ProofScopeRulesRequest(
+    query: ProofScopeRulesRequest(
       audience: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
       challenge: 74657374,
       query:
@@ -226,7 +226,7 @@ ProofRequestEntity mockProofRequestEntityNINCountry = ProofRequestEntity(
   ProofScopeRequest(
     id: 1,
     circuit_id: "credentialAtomicQuerySig",
-    rules: ProofScopeRulesRequest(
+    query: ProofScopeRulesRequest(
       audience: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
       challenge: 74657374,
       query: ProofScopeRulesQueryRequest.fromJson(
@@ -241,7 +241,7 @@ ProofRequestEntity mockProofRequestEntityNotSupportedOperator =
   ProofScopeRequest(
     id: 1,
     circuit_id: "credentialAtomicQuerySig",
-    rules: ProofScopeRulesRequest(
+    query: ProofScopeRulesRequest(
       audience: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
       challenge: 74657374,
       query: ProofScopeRulesQueryRequest.fromJson(

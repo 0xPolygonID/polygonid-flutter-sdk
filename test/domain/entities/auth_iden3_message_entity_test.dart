@@ -27,14 +27,14 @@ void main() {
         expect(
             authRequest.body.scope?[0].circuit_id, "credentialAtomicQuerySig");
         expect(authRequest.body.scope?[0].optional, false);
-        expect(authRequest.body.scope?[0].rules.audience,
+        expect(authRequest.body.scope?[0].query.audience,
             "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b");
-        expect(authRequest.body.scope?[0].rules.challenge, 748916);
-        expect(authRequest.body.scope?[0].rules.query.allowedIssuers?[0], "*");
-        expect(authRequest.body.scope?[0].rules.query.challenge, 123456);
-        expect(authRequest.body.scope?[0].rules.query.schema?.type,
+        expect(authRequest.body.scope?[0].query.challenge, 748916);
+        expect(authRequest.body.scope?[0].query.query.allowedIssuers?[0], "*");
+        expect(authRequest.body.scope?[0].query.query.challenge, 123456);
+        expect(authRequest.body.scope?[0].query.query.schema?.type,
             "KYCAgeCredential");
-        expect(authRequest.body.scope?[0].rules.query.schema?.url,
+        expect(authRequest.body.scope?[0].query.query.schema?.url,
             "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld");
         expect(authRequest.body.url, "theUrl");
         expect(authRequest.body.credentials?[0].id, "27887");

@@ -1,7 +1,5 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 import 'package:sembast/sembast.dart';
 
 import '../../domain/exceptions/identity_exceptions.dart';
@@ -27,8 +25,8 @@ class IdentityStoreRefWrapper {
     return _store.record(key).put(database, value, merge: merge);
   }
 
-  Future<String?> remove(DatabaseClient database, String identifier) {
-    return _store.record(identifier).delete(database);
+  Future<String?> remove(DatabaseClient database, String did) {
+    return _store.record(did).delete(database);
   }
 }
 
@@ -36,16 +34,14 @@ class StorageIdentityDataSource {
   final Database _database;
   final IdentityStoreRefWrapper _storeRefWrapper;
   final StorageKeyValueDataSource _storageKeyValueDataSource;
-  final WalletDataSource _walletDataSource;
-  final HexMapper _hexMapper;
 
-  StorageIdentityDataSource(this._database, this._storeRefWrapper,
-      this._storageKeyValueDataSource, this._walletDataSource, this._hexMapper);
+  StorageIdentityDataSource(
+      this._database, this._storeRefWrapper, this._storageKeyValueDataSource);
 
-  Future<IdentityDTO> getIdentity({required String identifier}) {
-    return _storeRefWrapper.get(_database, identifier).then((storedValue) {
+  Future<IdentityDTO> getIdentity({required String did}) {
+    return _storeRefWrapper.get(_database, did).then((storedValue) {
       if (storedValue == null) {
-        throw UnknownIdentityException(identifier);
+        throw UnknownIdentityException(did);
       }
 
       return IdentityDTO.fromJson(storedValue);
@@ -53,34 +49,34 @@ class StorageIdentityDataSource {
   }
 
   /// As we support only one identity at the moment, we need to maintain
-  /// the stored current identifier up to date
+  /// the stored current did up to date
   Future<void> storeIdentity(
-      {required String identifier, required IdentityDTO identity}) {
+      {required String did, required IdentityDTO identity}) {
     return _database.transaction((transaction) => storeIdentityTransact(
-        transaction: transaction, identifier: identifier, identity: identity));
+        transaction: transaction, did: did, identity: identity));
   }
 
   Future<void> storeIdentityTransact(
       {required DatabaseClient transaction,
-      required String identifier,
+      required String did,
       required IdentityDTO identity}) async {
     await _storageKeyValueDataSource.remove(
         key: currentIdentifierKey, database: transaction);
-    await _storeRefWrapper.put(transaction, identifier, identity.toJson());
+    await _storeRefWrapper.put(transaction, did, identity.toJson());
     await _storageKeyValueDataSource.store(
-        key: currentIdentifierKey, value: identifier, database: transaction);
+        key: currentIdentifierKey, value: did, database: transaction);
   }
 
-  Future<void> removeIdentity({required String identifier}) {
-    return _database.transaction((transaction) => removeIdentityTransact(
-        transaction: transaction, identifier: identifier));
+  Future<void> removeIdentity({required String did}) {
+    return _database.transaction((transaction) =>
+        removeIdentityTransact(transaction: transaction, did: did));
   }
 
   // For UT purpose
   Future<void> removeIdentityTransact(
-      {required DatabaseClient transaction, required String identifier}) async {
+      {required DatabaseClient transaction, required String did}) async {
     await _storageKeyValueDataSource.remove(
         key: currentIdentifierKey, database: transaction);
-    await _storeRefWrapper.remove(transaction, identifier);
+    await _storeRefWrapper.remove(transaction, did);
   }
 }

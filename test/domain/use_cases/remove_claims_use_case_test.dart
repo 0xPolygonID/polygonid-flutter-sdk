@@ -10,8 +10,8 @@ import 'get_claims_use_case_test.mocks.dart';
 const identifier = "theIdentifier";
 const privateKey = "thePrivateKey";
 const ids = ["theId", "theId1", "theId2"];
-final param = RemoveClaimsParam(
-    claimIds: ids, identifier: identifier, privateKey: privateKey);
+final param =
+    RemoveClaimsParam(claimIds: ids, did: identifier, privateKey: privateKey);
 final exception = Exception();
 
 // Dependencies
@@ -28,7 +28,7 @@ void main() {
 
       // Given
       when(credentialRepository.removeClaims(
-              identifier: identifier,
+              did: identifier,
               privateKey: privateKey,
               claimIds: anyNamed("claimIds")))
           .thenAnswer((realInvocation) => Future.value());
@@ -42,7 +42,7 @@ void main() {
 
       // Then
       var capturedRemove = verify(credentialRepository.removeClaims(
-              identifier: captureAnyNamed('identifier'),
+              did: captureAnyNamed('identifier'),
               privateKey: captureAnyNamed('privateKey'),
               claimIds: captureAnyNamed('claimIds')))
           .captured;
@@ -56,7 +56,7 @@ void main() {
         () async {
       // Given
       when(credentialRepository.removeClaims(
-              identifier: identifier,
+              did: identifier,
               privateKey: privateKey,
               claimIds: anyNamed("claimIds")))
           .thenAnswer((realInvocation) => Future.error(exception));
@@ -66,7 +66,7 @@ void main() {
 
       // Then
       var capturedRemove = verify(credentialRepository.removeClaims(
-              identifier: captureAnyNamed('identifier'),
+              did: captureAnyNamed('identifier'),
               privateKey: captureAnyNamed('privateKey'),
               claimIds: captureAnyNamed('claimIds')))
           .captured;

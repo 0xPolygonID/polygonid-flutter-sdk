@@ -1,93 +1,93 @@
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/is_proof_circuit_supported_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
 
 import '../../../identity/domain/repositories/identity_repository.dart';
-import '../../../proof_generation/domain/entities/circuit_data_entity.dart';
-import '../../../proof_generation/domain/repositories/proof_repository.dart';
-import '../../../proof_generation/domain/use_cases/generate_proof_use_case.dart';
+import '../../../proof/domain/entities/circuit_data_entity.dart';
+import '../../../proof/domain/repositories/proof_repository.dart';
+import '../../../proof/domain/use_cases/generate_proof_use_case.dart';
 import 'get_proof_requests_use_case.dart';
 
 class GetProofsParam {
   final Iden3MessageEntity message;
-  final String identifier;
+  final String did;
+  final int profileNonce;
   final String privateKey;
-  final String? challenge;
 
   GetProofsParam(
       {required this.message,
-      required this.identifier,
-      required this.privateKey,
-      this.challenge});
+      required this.did,
+      required this.profileNonce,
+      required this.privateKey});
 }
 
 class GetProofsUseCase
-    extends FutureUseCase<GetProofsParam, List<ProofEntity>> {
+    extends FutureUseCase<GetProofsParam, List<JWZProofEntity>> {
   final ProofRepository _proofRepository;
   final IdentityRepository _identityRepository;
   final GetClaimsUseCase _getClaimsUseCase;
   final GenerateProofUseCase _generateProofUseCase;
   final IsProofCircuitSupportedUseCase _isProofCircuitSupported;
   final GetProofRequestsUseCase _getProofRequestsUseCase;
+  final GetDidUseCase _getDidUseCase;
 
   GetProofsUseCase(
-      this._proofRepository,
-      this._identityRepository,
-      this._getClaimsUseCase,
-      this._generateProofUseCase,
-      this._isProofCircuitSupported,
-      this._getProofRequestsUseCase);
+    this._proofRepository,
+    this._identityRepository,
+    this._getClaimsUseCase,
+    this._generateProofUseCase,
+    this._isProofCircuitSupported,
+    this._getProofRequestsUseCase,
+    this._getDidUseCase,
+  );
 
   @override
-  Future<List<ProofEntity>> execute({required GetProofsParam param}) async {
-    List<ProofEntity> proofs = [];
+  Future<List<JWZProofEntity>> execute({required GetProofsParam param}) async {
+    List<JWZProofEntity> proofs = [];
 
     List<ProofRequestEntity> requests =
         await _getProofRequestsUseCase.execute(param: param.message);
 
     List<String> publicKey = await _identityRepository
         .getIdentity(
-          identifier: param.identifier,
+          did: param.did,
         )
         .then((identity) => identity.publicKey);
+
+    DidEntity did = await _getDidUseCase.execute(param: param.did);
 
     /// We got [ProofRequestEntity], let's find the associated [ClaimEntity]
     /// and generate [ProofEntity]
     for (ProofRequestEntity request in requests) {
       if (await _isProofCircuitSupported.execute(
-          param: request.scope.circuit_id)) {
+          param: request.scope.circuitId)) {
         // Claims
         await _proofRepository
             .getFilters(request: request)
             .then((filters) => _getClaimsUseCase.execute(
                     param: GetClaimsParam(
                   filters: filters,
-                  identifier: param.identifier,
+                  did: param.did,
                   privateKey: param.privateKey,
                 )))
             .then((claims) => claims.first)
             .then((authClaim) async {
-          String circuitId = request.scope.circuit_id;
+          String circuitId = request.scope.circuitId;
           CircuitDataEntity circuitData =
               await _proofRepository.loadCircuitFiles(circuitId);
-
-          // Challenge
-          String challenge = param.challenge ?? request.scope.id.toString();
-
-          // Signature
-          String signatureString = await _identityRepository.signMessage(
-              message: challenge, privateKey: param.privateKey);
 
           // Generate proof
           proofs.add(await _generateProofUseCase
               .execute(
-                  param: GenerateProofParam(challenge, signatureString,
-                      authClaim, circuitData, publicKey, request.queryParam))
-              .then((proof) => ProofEntity(
+                  param: GenerateProofParam(did.identifier, param.profileNonce,
+                      0, authClaim, request.scope, circuitData))
+              .then((proof) => JWZProofEntity(
                   id: request.scope.id,
                   circuitId: circuitId,
                   proof: proof.proof,

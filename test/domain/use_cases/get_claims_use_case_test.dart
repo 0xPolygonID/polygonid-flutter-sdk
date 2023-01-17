@@ -21,13 +21,13 @@ final filters = [
       value: ["theValue2", "theValue3"])
 ];
 final GetClaimsParam param =
-    GetClaimsParam(identifier: identifier, privateKey: privateKey);
-final GetClaimsParam paramFilters = GetClaimsParam(
-    identifier: identifier, privateKey: privateKey, filters: filters);
+    GetClaimsParam(did: identifier, privateKey: privateKey);
+final GetClaimsParam paramFilters =
+    GetClaimsParam(did: identifier, privateKey: privateKey, filters: filters);
 final claimEntities = [
   ClaimEntity(
       issuer: "",
-      identifier: "",
+      did: "",
       expiration: "",
       info: {},
       type: "",
@@ -35,7 +35,7 @@ final claimEntities = [
       id: "id1"),
   ClaimEntity(
       issuer: "",
-      identifier: "",
+      did: "",
       expiration: "",
       info: {},
       type: "",
@@ -43,7 +43,7 @@ final claimEntities = [
       id: "id2"),
   ClaimEntity(
       issuer: "",
-      identifier: "",
+      did: "",
       expiration: "",
       info: {},
       type: "",
@@ -66,7 +66,7 @@ void main() {
 
       // Given
       when(credentialRepository.getClaims(
-              identifier: anyNamed('identifier'),
+              did: anyNamed('identifier'),
               privateKey: anyNamed('privateKey'),
               filters: anyNamed("filters")))
           .thenAnswer((realInvocation) => Future.value(claimEntities));
@@ -80,7 +80,7 @@ void main() {
 
       // Then
       var capturedGet = verify(credentialRepository.getClaims(
-              identifier: captureAnyNamed('identifier'),
+              did: captureAnyNamed('identifier'),
               privateKey: captureAnyNamed('privateKey'),
               filters: captureAnyNamed('filters')))
           .captured;
@@ -97,7 +97,7 @@ void main() {
 
       // Then
       var capturedGet = verify(credentialRepository.getClaims(
-              identifier: captureAnyNamed('identifier'),
+              did: captureAnyNamed('identifier'),
               privateKey: captureAnyNamed('privateKey'),
               filters: captureAnyNamed('filters')))
           .captured;
@@ -111,7 +111,7 @@ void main() {
         () async {
       // Given
       when(credentialRepository.getClaims(
-              identifier: captureAnyNamed('identifier'),
+              did: captureAnyNamed('identifier'),
               privateKey: captureAnyNamed('privateKey'),
               filters: anyNamed("filters")))
           .thenAnswer((realInvocation) => Future.error(exception));
@@ -122,7 +122,7 @@ void main() {
 
       // Then
       var capturedGet = verify(credentialRepository.getClaims(
-              identifier: captureAnyNamed('identifier'),
+              did: captureAnyNamed('identifier'),
               privateKey: captureAnyNamed('privateKey'),
               filters: captureAnyNamed('filters')))
           .captured;

@@ -1,8 +1,13 @@
-import 'dart:typed_data';
+import 'dart:convert';
 
-import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/babyjubjub_lib_data_source.dart';
+import 'package:polygonid_flutter_sdk/constants.dart';
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/local_claim_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/smt_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 
 import '../../domain/entities/identity_entity.dart';
 import '../../domain/entities/private_identity_entity.dart';
@@ -10,55 +15,64 @@ import '../../domain/entities/rhs_node_entity.dart';
 import '../../domain/exceptions/identity_exceptions.dart';
 import '../../domain/repositories/identity_repository.dart';
 import '../../libs/bjj/privadoid_wallet.dart';
-import '../data_sources/lib_identity_data_source.dart';
+import '../data_sources/lib_pidcore_identity_data_source.dart';
 import '../data_sources/local_contract_files_data_source.dart';
 import '../data_sources/remote_identity_data_source.dart';
 import '../data_sources/storage_identity_data_source.dart';
 import '../data_sources/wallet_data_source.dart';
+import '../dtos/hash_dto.dart';
 import '../dtos/identity_dto.dart';
-import '../mappers/auth_inputs_mapper.dart';
+import '../dtos/node_dto.dart';
 import '../mappers/did_mapper.dart';
 import '../mappers/hash_mapper.dart';
 import '../mappers/hex_mapper.dart';
 import '../mappers/identity_dto_mapper.dart';
+import '../mappers/node_mapper.dart';
+import '../mappers/poseidon_hash_mapper.dart';
 import '../mappers/private_key_mapper.dart';
 import '../mappers/rhs_node_mapper.dart';
 import '../mappers/state_identifier_mapper.dart';
 
 class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
-  final LibIdentityDataSource _libIdentityDataSource;
   final RemoteIdentityDataSource _remoteIdentityDataSource;
   final StorageIdentityDataSource _storageIdentityDataSource;
   final RPCDataSource _rpcDataSource;
   final LocalContractFilesDataSource _localContractFilesDataSource;
-  final BabyjubjubLibDataSource _babyjubjubLibDataSource;
+  final LocalClaimDataSource _localClaimDataSource;
+  final LibBabyJubJubDataSource _libBabyJubJubDataSource;
+  final LibPolygonIdCoreIdentityDataSource _libPolygonIdCoreIdentityDataSource;
+  final SMTDataSource _smtDataSource;
   final HexMapper _hexMapper;
   final PrivateKeyMapper _privateKeyMapper;
   final IdentityDTOMapper _identityDTOMapper;
   final RhsNodeMapper _rhsNodeMapper;
   final StateIdentifierMapper _stateIdentifierMapper;
+  final NodeMapper _nodeMapper;
   final DidMapper _didMapper;
+  final PoseidonHashMapper _poseidonHashMapper;
   final HashMapper _hashMapper;
-  final AuthInputsMapper _authInputsMapper;
   final QMapper _qMapper;
 
   IdentityRepositoryImpl(
     this._walletDataSource,
-    this._libIdentityDataSource,
     this._remoteIdentityDataSource,
     this._storageIdentityDataSource,
     this._rpcDataSource,
     this._localContractFilesDataSource,
-    this._babyjubjubLibDataSource,
+    this._localClaimDataSource,
+    this._libBabyJubJubDataSource,
+    this._libPolygonIdCoreIdentityDataSource,
+    this._smtDataSource,
     this._hexMapper,
     this._privateKeyMapper,
     this._identityDTOMapper,
     this._rhsNodeMapper,
     this._stateIdentifierMapper,
+    this._nodeMapper,
     this._didMapper,
+    this._poseidonHashMapper,
     this._hashMapper,
-    this._authInputsMapper,
     this._qMapper,
   );
 
@@ -68,19 +82,28 @@ class IdentityRepositoryImpl extends IdentityRepository {
   /// @return the associated identifier
   @override
   Future<PrivateIdentityEntity> createIdentity(
-      {String? secret, required String accessMessage}) async {
+      {required blockchain,
+      required network,
+      String? secret,
+      required String accessMessage}) async {
     try {
-      // Create a wallet
       PrivadoIdWallet wallet = await _walletDataSource.createWallet(
           secret: _privateKeyMapper.mapFrom(secret),
           accessMessage: accessMessage);
+      String privateKey = _hexMapper.mapFrom(wallet.privateKey);
 
-      // Get the associated identifier
-      String identifier = await getIdentifier(
-          privateKey: (_hexMapper.mapFrom(wallet.privateKey)));
+      String did = await getDidIdentifier(
+        blockchain: blockchain,
+        network: network,
+        privateKey: privateKey,
+      );
+
+      Map<String, dynamic> treeState = await _createIdentityState(
+          did: did, privateKey: privateKey, publicKey: wallet.publicKey);
 
       PrivateIdentityEntity identityEntity = _identityDTOMapper.mapPrivateFrom(
-          IdentityDTO(identifier: identifier, publicKey: wallet.publicKey),
+          IdentityDTO(
+              did: did, publicKey: wallet.publicKey, profiles: {0: did}),
           _hexMapper.mapFrom(wallet.privateKey));
       return Future.value(identityEntity);
     } catch (error) {
@@ -88,78 +111,182 @@ class IdentityRepositoryImpl extends IdentityRepository {
     }
   }
 
-  @override
-  Future<String> getIdentifier({required String privateKey}) async {
-    // Create a wallet
-    PrivadoIdWallet wallet = await _walletDataSource.getWallet(
-        privateKey: _hexMapper.mapTo(privateKey));
+  Future<Map<String, dynamic>> _createIdentityState(
+      {required String did,
+      required String privateKey,
+      required List<String> publicKey}) async {
+    // 1. initialize merkle trees
+    await _smtDataSource.createSMT(
+        maxLevels: 32,
+        storeName: claimsTreeStoreName,
+        did: did,
+        privateKey: privateKey);
 
-    // Get the associated identifier
-    String identifier = await _libIdentityDataSource.getIdentifier(
-        pubX: wallet.publicKey[0], pubY: wallet.publicKey[1]);
+    await _smtDataSource.createSMT(
+        maxLevels: 32,
+        storeName: revocationTreeStoreName,
+        did: did,
+        privateKey: privateKey);
 
-    return identifier;
+    await _smtDataSource.createSMT(
+        maxLevels: 32,
+        storeName: rootsTreeStoreName,
+        did: did,
+        privateKey: privateKey);
+
+    // 2. add authClaim to claims tree
+    List<String> authClaimChildren =
+        await _localClaimDataSource.getAuthClaim(publicKey: publicKey);
+    NodeEntity authClaimNode =
+        await getAuthClaimNode(children: authClaimChildren);
+    /*List<String> authClaimChildren =
+        await _getAuthClaimChildren(publicKey: publicKey);*/
+
+    HashDTO claimsTreeRoot = await _smtDataSource.addLeaf(
+        newNodeLeaf: _nodeMapper.mapTo(authClaimNode),
+        storeName: claimsTreeStoreName,
+        did: did,
+        privateKey: privateKey);
+
+    // hash of clatr, revtr, rootr
+    String genesisState = await _libBabyJubJubDataSource.hashPoseidon3(
+        claimsTreeRoot.toString(),
+        BigInt.zero.toString(),
+        BigInt.zero.toString());
+
+    Map<String, dynamic> treeState = {};
+    treeState["state"] = genesisState;
+    treeState["claimsRoot"] = claimsTreeRoot.toString();
+    treeState["revocationRoot"] = BigInt.zero.toString();
+    treeState["rootOfRoots"] = BigInt.zero.toString();
+    return treeState;
+  }
+
+  Future<Map<String, dynamic>> _getGenesisState(
+      {required List<String> publicKey}) async {
+    List<String> authClaimChildren =
+        await _localClaimDataSource.getAuthClaim(publicKey: publicKey);
+    NodeEntity authClaimNode =
+        await getAuthClaimNode(children: authClaimChildren);
+    HashDTO claimsTreeRoot = _nodeMapper.mapTo(authClaimNode).hash;
+
+    // hash of clatr, revtr, rootr
+    String genesisState = await _libBabyJubJubDataSource.hashPoseidon3(
+        claimsTreeRoot.toString(),
+        BigInt.zero.toString(),
+        BigInt.zero.toString());
+
+    Map<String, dynamic> treeState = {};
+    treeState["state"] = genesisState;
+    treeState["claimsRoot"] = claimsTreeRoot.toString();
+    treeState["revocationRoot"] = BigInt.zero.toString();
+    treeState["rootOfRoots"] = BigInt.zero.toString();
+    return treeState;
   }
 
   @override
-  Future<void> storeIdentity(
-      {required IdentityEntity identity, required String privateKey}) async {
-    try {
-      String identifier = await getIdentifier(privateKey: privateKey);
-      if (identifier == identity.identifier) {
-        IdentityDTO dto = _identityDTOMapper.mapTo(identity);
-        await _storageIdentityDataSource.storeIdentity(
-            identifier: identifier, identity: dto);
-        IdentityEntity identityEntity = _identityDTOMapper.mapFrom(dto);
-      } else {
-        throw InvalidPrivateKeyException(privateKey);
-      }
-    } catch (error) {
-      return Future.error(IdentityException(error));
-    }
+  Future<Map<String, dynamic>> getLatestState({
+    required String did,
+    required String privateKey,
+  }) async {
+    HashDTO claimsTreeRoot = await _smtDataSource.getRoot(
+        storeName: claimsTreeStoreName, did: did, privateKey: privateKey);
+
+    HashDTO revocationTreeRoot = await _smtDataSource.getRoot(
+        storeName: revocationTreeStoreName, did: did, privateKey: privateKey);
+
+    HashDTO rootsTreeRoot = await _smtDataSource.getRoot(
+        storeName: rootsTreeStoreName, did: did, privateKey: privateKey);
+
+    // hash of clatr, revtr, rootr
+    String state = await _libBabyJubJubDataSource.hashPoseidon3(
+        claimsTreeRoot.toString(),
+        revocationTreeRoot.toString(),
+        rootsTreeRoot.toString());
+
+    // TODO: convert to dto
+    Map<String, dynamic> treeState = {};
+    treeState["state"] = state;
+    treeState["claimsRoot"] = claimsTreeRoot.toString();
+    treeState["revocationRoot"] = revocationTreeRoot.toString();
+    treeState["rootOfRoots"] = rootsTreeRoot.toString();
+    return treeState;
+  }
+
+  @override
+  Future<NodeEntity> getAuthClaimNode({required List<String> children}) async {
+    String hashIndex = await _libBabyJubJubDataSource.hashPoseidon4(
+      children[0],
+      children[1],
+      children[2],
+      children[3],
+    );
+    String hashValue = await _libBabyJubJubDataSource.hashPoseidon4(
+      children[4],
+      children[5],
+      children[6],
+      children[7],
+    );
+    String hashClaimNode = await _libBabyJubJubDataSource.hashPoseidon3(
+        hashIndex, hashValue, BigInt.one.toString());
+    NodeDTO authClaimNode = NodeDTO(
+        children: [
+          HashDTO.fromBigInt(BigInt.parse(hashIndex)),
+          HashDTO.fromBigInt(BigInt.parse(hashValue)),
+          HashDTO.fromBigInt(BigInt.one),
+        ],
+        hash: HashDTO.fromBigInt(BigInt.parse(hashClaimNode)),
+        type: NodeTypeDTO.leaf);
+    return _nodeMapper.mapFrom(authClaimNode);
+  }
+
+  @override
+  Future<void> storeIdentity({required IdentityEntity identity}) {
+    return Future.value(_identityDTOMapper.mapTo(identity)).then((dto) =>
+        _storageIdentityDataSource
+            .storeIdentity(did: identity.did, identity: dto)
+            .catchError((error) => throw IdentityException(error)));
   }
 
   /// Get an [IdentityEntity] from an identifier
   /// The [IdentityEntity] is the one previously stored and associated to the identifier
   /// Throws an [UnknownIdentityException] if not found.
   @override
-  Future<IdentityEntity> getIdentity({required String identifier}) {
+  Future<IdentityEntity> getIdentity({required String did}) {
     return _storageIdentityDataSource
-        .getIdentity(identifier: identifier)
+        .getIdentity(did: did)
         .then((dto) => _identityDTOMapper.mapFrom(dto))
         .catchError((error) => throw IdentityException(error),
             test: (error) => error is! UnknownIdentityException);
   }
 
-  /// Get an [PrivateIdentityEntity] from an identifier and a privateKey
+  /// Get an [PrivateIdentityEntity] from an [DidEntity] and a privateKey
   /// The [PrivateIdentityEntity] is the one previously stored and associated to the identifier
   /// And we and the private info (privateKey and authClaim)
   /// Throws an [UnknownIdentityException] if not found.
   @override
   Future<PrivateIdentityEntity> getPrivateIdentity(
-      {required String identifier, required String privateKey}) {
+      {required DidEntity did, required String privateKey}) {
     return _storageIdentityDataSource
-        .getIdentity(identifier: identifier)
-        .then((dto) => _walletDataSource
-            .getWallet(privateKey: _hexMapper.mapTo(privateKey))
-            .then((wallet) => _libIdentityDataSource
-                    .getIdentifier(
-                        pubX: wallet.publicKey[0], pubY: wallet.publicKey[1])
-                    .then((identifierFromKey) {
-                  if (identifierFromKey != identifier) {
-                    throw InvalidPrivateKeyException(privateKey);
-                  }
+        .getIdentity(did: did.did)
+        .then((dto) async {
+      var didFromKey = await getDidIdentifier(
+          privateKey: privateKey,
+          blockchain: did.blockchain,
+          network: did.network);
 
-                  return _identityDTOMapper.mapPrivateFrom(dto, privateKey);
-                })))
-        .catchError((error) => throw IdentityException(error),
+      if (didFromKey != did.did) {
+        throw InvalidPrivateKeyException(privateKey);
+      }
+
+      return _identityDTOMapper.mapPrivateFrom(dto, privateKey);
+    }).catchError((error) => throw IdentityException(error),
             test: (error) => error is! UnknownIdentityException);
   }
 
   @override
-  Future<void> removeIdentity(
-      {required String identifier, required String privateKey}) {
-    return _storageIdentityDataSource.removeIdentity(identifier: identifier);
+  Future<void> removeIdentity({required String did}) {
+    return _storageIdentityDataSource.removeIdentity(did: did);
   }
 
   /// Sign a message through a privateKey
@@ -203,12 +330,23 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
   @override
   Future<String> getDidIdentifier({
-    required String identifier,
-    required String networkName,
-    required String networkEnv,
+    required String privateKey,
+    required String blockchain,
+    required String network,
   }) {
-    return Future.value(
-        _didMapper.mapTo(DidMapperParam(identifier, networkName, networkEnv)));
+    return _walletDataSource
+        .getWallet(privateKey: _hexMapper.mapTo(privateKey))
+        .then((wallet) =>
+            _getGenesisState(publicKey: wallet.publicKey).then((genesisState) {
+              // Get the genesis id
+              String genesisId =
+                  _libPolygonIdCoreIdentityDataSource.calculateGenesisId(
+                      genesisState["claimsRoot"], blockchain, network);
+
+              Map<String, dynamic> genesis = jsonDecode(genesisId);
+
+              return Future.value(genesis["did"]);
+            }));
   }
 
   @override
@@ -220,18 +358,12 @@ class IdentityRepositoryImpl extends IdentityRepository {
   @override
   Future<String> getChallenge({required String message}) {
     return Future.value(_qMapper.mapFrom(message))
-        .then((q) => _babyjubjubLibDataSource.getPoseidonHash(q))
-        .then((hash) => _hashMapper.mapFrom(hash));
+        .then((q) => _libBabyJubJubDataSource.hashPoseidon(q));
   }
 
   @override
-  Future<Uint8List> getAuthInputs(
-      {required String challenge,
-      required String authClaim,
-      required IdentityEntity identity,
-      required String signature}) {
-    return _libIdentityDataSource
-        .getAuthInputs(challenge, authClaim, identity.publicKey, signature)
-        .then((inputs) => _authInputsMapper.mapFrom(inputs));
+  Future<String> convertIdToBigInt({required String id}) {
+    String idBigInt = _libPolygonIdCoreIdentityDataSource.genesisIdToBigInt(id);
+    return Future.value(idBigInt);
   }
 }

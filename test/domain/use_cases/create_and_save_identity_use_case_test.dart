@@ -13,7 +13,7 @@ import 'create_and_save_identity_use_case_test.mocks.dart';
 // Data
 final privateIdentity = PrivateIdentityEntity(
     privateKey: CommonMocks.privateKey,
-    identifier: CommonMocks.identifier,
+    did: CommonMocks.identifier,
     publicKey: CommonMocks.pubKeys);
 var exception = Exception();
 
@@ -35,7 +35,7 @@ void main() {
             secret: anyNamed('secret'),
             accessMessage: anyNamed('accessMessage')))
         .thenAnswer((realInvocation) => Future.value(privateIdentity));
-    when(identityRepository.getIdentity(identifier: anyNamed('identifier')))
+    when(identityRepository.getIdentity(did: anyNamed('identifier')))
         .thenAnswer((realInvocation) =>
             Future.error(UnknownIdentityException(CommonMocks.identifier)));
   });
@@ -57,7 +57,7 @@ void main() {
 
     expect(
         verify(identityRepository.getIdentity(
-                identifier: captureAnyNamed('identifier')))
+                did: captureAnyNamed('identifier')))
             .captured
             .first,
         CommonMocks.identifier);
@@ -86,7 +86,7 @@ void main() {
 
     expect(
         verify(identityRepository.getIdentity(
-                identifier: captureAnyNamed('identifier')))
+                did: captureAnyNamed('identifier')))
             .captured
             .first,
         CommonMocks.identifier);
@@ -103,7 +103,7 @@ void main() {
       "Given a private key and with an associated identity, when I call execute, then I expect an IdentityAlreadyExistsException to be thrown",
       () async {
     // Given
-    when(identityRepository.getIdentity(identifier: anyNamed('identifier')))
+    when(identityRepository.getIdentity(did: anyNamed('identifier')))
         .thenAnswer((realInvocation) => Future.value(privateIdentity));
 
     // When
@@ -112,7 +112,7 @@ void main() {
         .then((_) => null)
         .catchError((error) {
       expect(error, isA<IdentityAlreadyExistsException>());
-      expect(error.identifier, privateIdentity.identifier);
+      expect(error.did, privateIdentity.did);
     });
 
     // Then
@@ -125,7 +125,7 @@ void main() {
 
     expect(
         verify(identityRepository.getIdentity(
-                identifier: captureAnyNamed('identifier')))
+                did: captureAnyNamed('identifier')))
             .captured
             .first,
         CommonMocks.identifier);
@@ -139,7 +139,7 @@ void main() {
       "Given a private key, when I call execute and an error occured, then I expect an exception to be thrown",
       () async {
     // Given
-    when(identityRepository.getIdentity(identifier: anyNamed('identifier')))
+    when(identityRepository.getIdentity(did: anyNamed('identifier')))
         .thenAnswer((realInvocation) => Future.error(exception));
 
     // When
@@ -156,7 +156,7 @@ void main() {
 
     expect(
         verify(identityRepository.getIdentity(
-                identifier: captureAnyNamed('identifier')))
+                did: captureAnyNamed('identifier')))
             .captured
             .first,
         CommonMocks.identifier);

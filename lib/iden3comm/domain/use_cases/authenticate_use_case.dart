@@ -4,7 +4,7 @@ import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_u
 
 import '../../../common/domain/use_cases/get_config_use_case.dart';
 import '../../../identity/domain/use_cases/get_did_identifier_use_case.dart';
-import '../entities/proof_entity.dart';
+import '../entities/jwz_proof_entity.dart';
 import '../entities/request/auth/auth_iden3_message_entity.dart';
 import '../repositories/iden3comm_repository.dart';
 import 'get_auth_token_use_case.dart';
@@ -12,13 +12,15 @@ import 'get_proofs_use_case.dart';
 
 class AuthenticateParam {
   final AuthIden3MessageEntity message;
-  final String identifier;
+  final String did;
+  int profileNonce;
   final String privateKey;
   final String? pushToken;
 
   AuthenticateParam(
       {required this.message,
-      required this.identifier,
+      required this.did,
+      this.profileNonce = 0,
       required this.privateKey,
       this.pushToken});
 }
@@ -43,32 +45,33 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
   @override
   Future<void> execute({required AuthenticateParam param}) async {
     try {
-      List<ProofEntity> proofs = await _getProofsUseCase.execute(
+      List<JWZProofEntity> proofs = await _getProofsUseCase.execute(
           param: GetProofsParam(
         message: param.message,
-        identifier: param.identifier,
+        did: param.did,
+        profileNonce: param.profileNonce,
         privateKey: param.privateKey,
       ));
 
       String pushUrl =
           await _getEnvConfigUseCase.execute(param: PolygonIdConfig.pushUrl);
-      String networkName = await _getEnvConfigUseCase.execute(
+      String blockchain = await _getEnvConfigUseCase.execute(
           param: PolygonIdConfig.networkName);
-      String networkEnv =
+      String network =
           await _getEnvConfigUseCase.execute(param: PolygonIdConfig.networkEnv);
 
       String didIdentifier = await _getDidIdentifierUseCase.execute(
         param: GetDidIdentifierParam(
-          identifier: param.identifier,
-          networkName: networkName,
-          networkEnv: networkEnv,
+          privateKey: param.privateKey,
+          blockchain: blockchain,
+          network: network,
         ),
       );
 
       String packageName = await _getPackageNameUseCase.execute();
 
       String authResponse = await _iden3commRepository.getAuthResponse(
-          identifier: param.identifier,
+          did: param.did,
           request: param.message,
           scope: proofs,
           pushUrl: pushUrl,
@@ -78,7 +81,9 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
 
       String authToken = await _getAuthTokenUseCase.execute(
           param: GetAuthTokenParam(
-              param.identifier, param.privateKey, authResponse));
+              did: param.did,
+              privateKey: param.privateKey,
+              message: authResponse));
 
       return _iden3commRepository.authenticate(
         request: param.message,

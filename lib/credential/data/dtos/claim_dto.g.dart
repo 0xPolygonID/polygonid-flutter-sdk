@@ -9,7 +9,7 @@ part of 'claim_dto.dart';
 ClaimDTO _$ClaimDTOFromJson(Map<String, dynamic> json) => ClaimDTO(
       id: json['id'] as String,
       issuer: json['issuer'] as String,
-      identifier: json['identifier'] as String,
+      did: json['did'] as String,
       type: json['type'] as String,
       state: json['state'] as String? ?? '',
       expiration: json['expiration'] as String?,
@@ -21,7 +21,7 @@ ClaimDTO _$ClaimDTOFromJson(Map<String, dynamic> json) => ClaimDTO(
 Map<String, dynamic> _$ClaimDTOToJson(ClaimDTO instance) => <String, dynamic>{
       'id': instance.id,
       'issuer': instance.issuer,
-      'identifier': instance.identifier,
+      'did': instance.did,
       'state': instance.state,
       'credential': instance.info.toJson(),
       'expiration': instance.expiration,

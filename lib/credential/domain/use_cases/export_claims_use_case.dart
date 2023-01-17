@@ -4,11 +4,11 @@ import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_
 /// Param required to export the claims database
 class ExportClaimsParam {
   final String privateKey;
-  final String identifier;
+  final String did;
 
   ExportClaimsParam({
     required this.privateKey,
-    required this.identifier,
+    required this.did,
   });
 }
 
@@ -21,7 +21,7 @@ class ExportClaimsUseCase extends FutureUseCase<ExportClaimsParam, String> {
   @override
   Future<String> execute({required ExportClaimsParam param}) {
     return _credentialRepository.exportClaims(
-      identifier: param.identifier,
+      did: param.did,
       privateKey: param.privateKey,
     );
   }

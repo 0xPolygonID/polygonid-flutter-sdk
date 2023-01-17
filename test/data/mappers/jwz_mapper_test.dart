@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/data/mappers/jwz_mapper.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/jwz/jwz.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/jwz/jwz_exceptions.dart';
+import 'package:polygonid_flutter_sdk/proof/data/mappers/jwz_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_exceptions.dart';
 
 import '../../common/common_mocks.dart';
 import '../../common/proof_mocks.dart';

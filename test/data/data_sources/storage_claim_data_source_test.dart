@@ -58,21 +58,21 @@ final mockClaims = [
   ClaimDTO(
       id: credential.id,
       issuer: issuers[0],
-      identifier: identifiers[0],
+      did: identifiers[0],
       expiration: expirations[0],
       type: types[0],
       info: credential),
   ClaimDTO(
       id: credential.id,
       issuer: issuers[1],
-      identifier: identifiers[1],
+      did: identifiers[1],
       expiration: expirations[1],
       type: types[1],
       info: credential),
   ClaimDTO(
       id: credential.id,
       issuer: issuers[2],
-      identifier: identifiers[2],
+      did: identifiers[2],
       expiration: expirations[2],
       type: types[2],
       info: credential)
@@ -163,7 +163,7 @@ void main() {
       // When
       expect(
           await dataSource.getClaims(
-              identifier: identifiers[0], privateKey: privateKey),
+              did: identifiers[0], privateKey: privateKey),
           isA<List<ClaimDTO>>());
 
       // Then
@@ -185,9 +185,7 @@ void main() {
       // When
       expect(
           await dataSource.getClaims(
-              filter: filter,
-              identifier: identifiers[0],
-              privateKey: privateKey),
+              filter: filter, did: identifiers[0], privateKey: privateKey),
           isA<List<ClaimDTO>>());
 
       // Then
@@ -210,9 +208,7 @@ void main() {
       // When
       await expectLater(
           dataSource.getClaims(
-              filter: filter,
-              identifier: identifiers[0],
-              privateKey: privateKey),
+              filter: filter, did: identifiers[0], privateKey: privateKey),
           throwsA(exception));
 
       // Then

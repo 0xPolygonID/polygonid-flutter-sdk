@@ -11,7 +11,7 @@ class LocalContractFilesDataSource {
 
   Future<DeployedContract> loadStateContract(String address) {
     return _assetBundle
-        .loadString('packages/polygonid_flutter_sdk/lib/assets/StateABI.json')
+        .loadString('packages/polygonid_flutter_sdk/lib/assets/state.abi.json')
         .then((json) => DeployedContract(
             ContractAbi.fromJson(jsonEncode(jsonDecode(json)["abi"]), 'State'),
             EthereumAddress.fromHex(address)));
