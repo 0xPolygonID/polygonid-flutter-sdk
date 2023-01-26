@@ -52,7 +52,7 @@ void main() {
           .thenAnswer((realInvocation) => Future.value(mockGet));
 
       // When
-      expect(await dataSource.getIdentity(identifier: identifier), identityDTO);
+      expect(await dataSource.getIdentity(did: identifier), identityDTO);
 
       // Then
       var captured =
@@ -70,11 +70,11 @@ void main() {
 
       // When
       await dataSource
-          .getIdentity(identifier: identifier)
+          .getIdentity(did: identifier)
           .then((_) => expect(true, false)) // Be sure we don't succeed
           .catchError((error) {
         expect(error, isA<UnknownIdentityException>());
-        expect(error.identifier, identifier);
+        expect(error.did, identifier);
       });
 
       // Then
@@ -93,7 +93,7 @@ void main() {
 
       // When
       await expectLater(
-          dataSource.getIdentity(identifier: identifier), throwsA(exception));
+          dataSource.getIdentity(did: identifier), throwsA(exception));
 
       // Then
       var captured =
@@ -125,9 +125,7 @@ void main() {
       // When
       await expectLater(
           dataSource.storeIdentityTransact(
-              transaction: database,
-              identifier: identifier,
-              identity: identityDTO),
+              transaction: database, did: identifier, identity: identityDTO),
           completes);
 
       // Then
@@ -165,9 +163,7 @@ void main() {
       // When
       await expectLater(
           dataSource.storeIdentityTransact(
-              transaction: database,
-              identifier: identifier,
-              identity: identityDTO),
+              transaction: database, did: identifier, identity: identityDTO),
           throwsA(exception));
 
       // Then
@@ -209,7 +205,7 @@ void main() {
       // When
       await expectLater(
           dataSource.removeIdentityTransact(
-              transaction: database, identifier: identifier),
+              transaction: database, did: identifier),
           completes);
 
       // Then
@@ -237,7 +233,7 @@ void main() {
       // When
       await expectLater(
           dataSource.removeIdentityTransact(
-              transaction: database, identifier: identifier),
+              transaction: database, did: identifier),
           throwsA(exception));
 
       // Then

@@ -10,7 +10,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_query
 ProofScopeRequest mockProofScopeRequestLT = ProofScopeRequest(
   id: 1,
   circuit_id: "credentialAtomicQuerySig",
-  rules: ProofScopeRulesRequest(
+  query: ProofScopeRulesRequest(
     query: ProofScopeRulesQueryRequest(
       schema: ProofScopeRulesQuerySchemaRequest(
         type: "KYCAgeCredential",
@@ -32,7 +32,7 @@ ProofScopeRequest mockProofScopeRequestLT = ProofScopeRequest(
 ProofScopeRequest mockProofScopeRequestNOOP = ProofScopeRequest(
   id: 1,
   circuit_id: "credentialAtomicQuerySig",
-  rules: ProofScopeRulesRequest(
+  query: ProofScopeRulesRequest(
     query: ProofScopeRulesQueryRequest(
       schema: ProofScopeRulesQuerySchemaRequest(
         type: "KYCAgeCredential",
@@ -54,7 +54,7 @@ ProofScopeRequest mockProofScopeRequestNOOP = ProofScopeRequest(
 ProofScopeRequest mockProofScopeRequestEQ = ProofScopeRequest(
   id: 1,
   circuit_id: "credentialAtomicQuerySig",
-  rules: ProofScopeRulesRequest(
+  query: ProofScopeRulesRequest(
     query: ProofScopeRulesQueryRequest(
       schema: ProofScopeRulesQuerySchemaRequest(
         type: "KYCAgeCredential",
@@ -76,7 +76,7 @@ ProofScopeRequest mockProofScopeRequestEQ = ProofScopeRequest(
 ProofScopeRequest mockProofScopeRequestGT = ProofScopeRequest(
   id: 1,
   circuit_id: "credentialAtomicQuerySig",
-  rules: ProofScopeRulesRequest(
+  query: ProofScopeRulesRequest(
     query: ProofScopeRulesQueryRequest(
       schema: ProofScopeRulesQuerySchemaRequest(
         type: "KYCAgeCredential",
@@ -98,7 +98,7 @@ ProofScopeRequest mockProofScopeRequestGT = ProofScopeRequest(
 ProofScopeRequest mockProofScopeRequestIN = ProofScopeRequest(
   id: 1,
   circuit_id: "credentialAtomicQuerySig",
-  rules: ProofScopeRulesRequest(
+  query: ProofScopeRulesRequest(
     query: ProofScopeRulesQueryRequest(
       schema: ProofScopeRulesQuerySchemaRequest(
         type: "KYCAgeCredential",
@@ -120,7 +120,7 @@ ProofScopeRequest mockProofScopeRequestIN = ProofScopeRequest(
 ProofScopeRequest mockProofScopeRequestNIN = ProofScopeRequest(
   id: 1,
   circuit_id: "credentialAtomicQuerySig",
-  rules: ProofScopeRulesRequest(
+  query: ProofScopeRulesRequest(
     query: ProofScopeRulesQueryRequest(
       schema: ProofScopeRulesQuerySchemaRequest(
         type: "KYCAgeCredential",
@@ -142,7 +142,7 @@ ProofScopeRequest mockProofScopeRequestNIN = ProofScopeRequest(
 ProofScopeRequest mockProofScopeRequestNoReq = ProofScopeRequest(
   id: 1,
   circuit_id: "credentialAtomicQuerySig",
-  rules: ProofScopeRulesRequest(
+  query: ProofScopeRulesRequest(
     query: ProofScopeRulesQueryRequest(
       schema: ProofScopeRulesQuerySchemaRequest(
         type: "KYCAgeCredential",
@@ -159,7 +159,7 @@ ProofScopeRequest mockProofScopeRequestNoReq = ProofScopeRequest(
 ProofScopeRequest mockProofScopeRequestTooMany = ProofScopeRequest(
   id: 1,
   circuit_id: "credentialAtomicQuerySig",
-  rules: ProofScopeRulesRequest(
+  query: ProofScopeRulesRequest(
     query: ProofScopeRulesQueryRequest(
       schema: ProofScopeRulesQuerySchemaRequest(
         type: "KYCAgeCredential",
@@ -184,7 +184,7 @@ ProofScopeRequest mockProofScopeRequestTooMany = ProofScopeRequest(
 ProofScopeRequest mockProofScopeRequestInvalid = ProofScopeRequest(
   id: 1,
   circuit_id: "credentialAtomicQuerySig",
-  rules: ProofScopeRulesRequest(
+  query: ProofScopeRulesRequest(
     query: ProofScopeRulesQueryRequest(
       schema: ProofScopeRulesQuerySchemaRequest(
         type: "KYCAgeCredential",

@@ -7,7 +7,6 @@ import '../../../common/data/exceptions/network_exceptions.dart';
 import '../../../common/domain/domain_logger.dart';
 import '../../domain/exceptions/credential_exceptions.dart';
 import '../dtos/claim_dto.dart';
-import '../dtos/claim_info_dto.dart';
 import '../dtos/fetch_claim_response_dto.dart';
 
 class RemoteClaimDataSource {
@@ -16,9 +15,7 @@ class RemoteClaimDataSource {
   RemoteClaimDataSource(this.client);
 
   Future<ClaimDTO> fetchClaim(
-      {required String token,
-      required String url,
-      required String identifier}) {
+      {required String token, required String url, required String did}) {
     return Future.value(Uri.parse(url))
         .then((uri) => client.post(
               uri,
@@ -37,9 +34,10 @@ class RemoteClaimDataSource {
           return ClaimDTO(
               id: fetchResponse.credential.id,
               issuer: fetchResponse.from,
-              identifier: identifier,
+              did: did,
               type: fetchResponse.credential.credentialSubject.type,
-              expiration: fetchResponse.credential.expiration,
+              expiration: fetchResponse.credential.expirationDate,
+              // TODO expiration??
               info: fetchResponse.credential);
         } else {
           throw UnsupportedFetchClaimTypeException(response);
@@ -118,8 +116,7 @@ class RemoteClaimDataSource {
   }
 
   Future<Map<String, dynamic>> getClaimRevocationStatus(
-      ClaimInfoDTO claimInfo) async {
-    String revStatusUrl = claimInfo.credentialStatus.id;
+      String revStatusUrl) async {
     var revStatusUri = Uri.parse(revStatusUrl);
     var revStatusResponse = await get(revStatusUri, headers: {
       HttpHeaders.acceptHeader: '*/*',

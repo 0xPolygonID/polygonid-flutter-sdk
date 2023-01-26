@@ -12,27 +12,46 @@ import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../common/domain/domain_logger.dart';
 import '../../../identity/data/mappers/hex_mapper.dart';
 import '../../domain/exceptions/iden3comm_exceptions.dart';
 import '../../domain/repositories/iden3comm_repository.dart';
+import '../data_sources/lib_pidcore_iden3comm_data_source.dart';
 import '../dtos/response/auth/auth_body_did_doc_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_metadata_devices_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_metadata_response.dart';
 import '../dtos/response/auth/auth_body_did_doc_service_response.dart';
+import '../mappers/auth_inputs_mapper.dart';
+import '../mappers/auth_proof_mapper.dart';
 import '../mappers/auth_response_mapper.dart';
+import '../mappers/gist_proof_mapper.dart';
 
 class Iden3commRepositoryImpl extends Iden3commRepository {
   final RemoteIden3commDataSource _remoteIden3commDataSource;
+  final LibPolygonIdCoreIden3commDataSource
+      _libPolygonIdCoreIden3commDataSource;
   final HexMapper _hexMapper;
   final AuthResponseMapper _authResponseMapper;
+  final AuthInputsMapper _authInputsMapper;
+  final AuthProofMapper _authProofMapper;
+  final GistProofMapper _gistProofMapper;
 
-  Iden3commRepositoryImpl(this._remoteIden3commDataSource, this._hexMapper,
-      this._authResponseMapper);
+  Iden3commRepositoryImpl(
+    this._remoteIden3commDataSource,
+    this._libPolygonIdCoreIden3commDataSource,
+    this._hexMapper,
+    this._authResponseMapper,
+    this._authInputsMapper,
+    this._authProofMapper,
+    this._gistProofMapper,
+  );
 
   @override
   Future<void> authenticate({
@@ -56,9 +75,9 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
 
   @override
   Future<String> getAuthResponse({
-    required String identifier,
+    required String did,
     required AuthIden3MessageEntity request,
-    required List<ProofEntity> scope,
+    required List<JWZProofEntity> scope,
     String? pushUrl,
     String? pushToken,
     String? didIdentifier,
@@ -81,7 +100,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       id: const Uuid().v4(),
       thid: request.thid,
       to: request.from,
-      from: identifier,
+      from: did,
       typ: "application/iden3comm-plain-json",
       type: "https://iden3-communication.io/authorization/1.0/response",
       body: AuthBodyResponse(
@@ -138,5 +157,30 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
           'getPublicKey Error: code: ${publicKeyResponse.statusCode} msg: ${publicKeyResponse.body}');
       throw NetworkException(publicKeyResponse);
     }
+  }
+
+  @override
+  Future<Uint8List> getAuthInputs(
+      {required String did,
+      required int profileNonce,
+      required String challenge,
+      required List<String> authClaim,
+      required IdentityEntity identity,
+      required String signature,
+      required ProofEntity incProof,
+      required ProofEntity nonRevProof,
+      required GistProofEntity gistProof,
+      required Map<String, dynamic> treeState}) {
+    return Future.value(_libPolygonIdCoreIden3commDataSource.getAuthInputs(
+            did: did,
+            profileNonce: profileNonce,
+            authClaim: authClaim,
+            incProof: _authProofMapper.mapTo(incProof),
+            nonRevProof: _authProofMapper.mapTo(nonRevProof),
+            gistProof: _gistProofMapper.mapTo(gistProof),
+            treeState: treeState,
+            challenge: challenge,
+            signature: signature))
+        .then((inputs) => _authInputsMapper.mapFrom(inputs));
   }
 }

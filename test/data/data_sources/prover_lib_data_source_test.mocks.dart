@@ -7,7 +7,7 @@ import 'dart:async' as _i3;
 import 'dart:typed_data' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/prover_lib_data_source.dart'
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/prover_lib_data_source.dart'
     as _i2;
 
 // ignore_for_file: type=lint
@@ -31,6 +31,7 @@ class MockProverLibWrapper extends _i1.Mock implements _i2.ProverLibWrapper {
 
   @override
   _i3.Future<Map<String, dynamic>?> prover(
+    String? circuitId,
     _i4.Uint8List? zKeyBytes,
     _i4.Uint8List? wtnsBytes,
   ) =>
@@ -38,6 +39,7 @@ class MockProverLibWrapper extends _i1.Mock implements _i2.ProverLibWrapper {
         Invocation.method(
           #prover,
           [
+            circuitId,
             zKeyBytes,
             wtnsBytes,
           ],

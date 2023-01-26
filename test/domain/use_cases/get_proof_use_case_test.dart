@@ -12,10 +12,10 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_reque
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proofs_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/repositories/proof_repository.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/generate_proof_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/is_proof_circuit_supported_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/use_cases/generate_proof_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
 
 import '../../common/common_mocks.dart';
 import '../../common/iden3com_mocks.dart';
@@ -30,7 +30,7 @@ const message = "theMessage";
 const challenge = "theChallenge";
 
 const privateIdentityEntity = PrivateIdentityEntity(
-  identifier: identifier,
+  did: identifier,
   publicKey: publicKeys,
   privateKey: privateKey,
 );
@@ -38,14 +38,14 @@ const privateIdentityEntity = PrivateIdentityEntity(
 ClaimEntity mockClaimEntity = ClaimEntity(
   id: "1",
   issuer: "theIssuer",
-  identifier: identifier,
+  did: identifier,
   state: ClaimState.active,
   type: "theType",
   info: {},
 );
 
-List<ProofEntity> result = [
-  ProofEntity(
+List<JWZProofEntity> result = [
+  JWZProofEntity(
     id: proofRequestList[0].scope.id,
     circuitId: proofRequestList[0].scope.circuit_id,
     proof: ProofMocks.jwzProof.proof,
@@ -55,7 +55,7 @@ List<ProofEntity> result = [
 
 GetClaimsParam mockGetClaimsParam = GetClaimsParam(
   filters: [],
-  identifier: identifier,
+  did: identifier,
   privateKey: privateKey,
 );
 
@@ -66,7 +66,7 @@ List<ProofRequestEntity> proofRequestList = [
 
 GetProofsParam param = GetProofsParam(
   message: Iden3commMocks.authRequest,
-  identifier: identifier,
+  did: identifier,
   privateKey: privateKey,
   challenge: challenge,
 );
@@ -115,7 +115,7 @@ main() {
       "given GetProofsParam as param, when call execute, then expect a list of ProofEntity to be returned",
       () async {
     //Given
-    when(identityRepository.getIdentity(identifier: anyNamed('identifier')))
+    when(identityRepository.getIdentity(did: anyNamed('identifier')))
         .thenAnswer((realInvocation) => Future.value(privateIdentityEntity));
 
     when(getProofRequestsUseCase.execute(param: anyNamed('param')))
@@ -144,8 +144,8 @@ main() {
     expect(await useCase.execute(param: param), result);
 
     // Then
-    var getIdentityCaptured = verify(identityRepository.getIdentity(
-            identifier: captureAnyNamed('identifier')))
+    var getIdentityCaptured = verify(
+            identityRepository.getIdentity(did: captureAnyNamed('identifier')))
         .captured;
     expect(getIdentityCaptured[0], identifier);
 
@@ -167,7 +167,7 @@ main() {
     var getClaimsCaptured =
         verify(getClaimsUseCase.execute(param: captureAnyNamed('param')))
             .captured;
-    expect(getClaimsCaptured[0].identifier, mockGetClaimsParam.identifier);
+    expect(getClaimsCaptured[0].did, mockGetClaimsParam.did);
     expect(getClaimsCaptured[0].privateKey, mockGetClaimsParam.privateKey);
     expect(getClaimsCaptured[0].filters, mockGetClaimsParam.filters);
 

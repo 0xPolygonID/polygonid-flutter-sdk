@@ -59,10 +59,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required Emitter<AuthState> emit,
   }) async {
     emit(const AuthState.loading());
-    String? identifier =
-        await _polygonIdSdk.identity.getIdentifier(privateKey: privateKey);
+    String? did = await _polygonIdSdk.identity.getDidIdentifier(
+        privateKey: privateKey, blockchain: 'polygon', network: 'mumbai');
 
-    if (identifier == null) {
+    if (did == null) {
       emit(const AuthState.error(
           "an identity is needed before trying to authenticate"));
       return;
@@ -71,7 +71,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       await _polygonIdSdk.iden3comm.authenticate(
         message: iden3message,
-        identifier: identifier,
+        did: did,
         privateKey: privateKey,
       );
 

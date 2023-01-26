@@ -151,7 +151,7 @@ class MockStorageClaimDataSource extends _i1.Mock
   @override
   _i4.Future<void> storeClaims({
     required List<_i8.ClaimDTO>? claims,
-    required String? identifier,
+    required String? did,
     required String? privateKey,
   }) =>
       (super.noSuchMethod(
@@ -160,7 +160,7 @@ class MockStorageClaimDataSource extends _i1.Mock
           [],
           {
             #claims: claims,
-            #identifier: identifier,
+            #did: did,
             #privateKey: privateKey,
           },
         ),
@@ -187,7 +187,7 @@ class MockStorageClaimDataSource extends _i1.Mock
   @override
   _i4.Future<void> removeClaims({
     required List<String>? claimIds,
-    required String? identifier,
+    required String? did,
     required String? privateKey,
   }) =>
       (super.noSuchMethod(
@@ -196,7 +196,7 @@ class MockStorageClaimDataSource extends _i1.Mock
           [],
           {
             #claimIds: claimIds,
-            #identifier: identifier,
+            #did: did,
             #privateKey: privateKey,
           },
         ),
@@ -223,7 +223,7 @@ class MockStorageClaimDataSource extends _i1.Mock
   @override
   _i4.Future<List<_i8.ClaimDTO>> getClaims({
     _i9.Filter? filter,
-    required String? identifier,
+    required String? did,
     required String? privateKey,
   }) =>
       (super.noSuchMethod(
@@ -232,7 +232,7 @@ class MockStorageClaimDataSource extends _i1.Mock
           [],
           {
             #filter: filter,
-            #identifier: identifier,
+            #did: did,
             #privateKey: privateKey,
           },
         ),
@@ -240,7 +240,7 @@ class MockStorageClaimDataSource extends _i1.Mock
       ) as _i4.Future<List<_i8.ClaimDTO>>);
   @override
   _i4.Future<Map<String, Object?>> getClaimsDb({
-    required String? identifier,
+    required String? did,
     required String? privateKey,
   }) =>
       (super.noSuchMethod(
@@ -248,7 +248,7 @@ class MockStorageClaimDataSource extends _i1.Mock
           #getClaimsDb,
           [],
           {
-            #identifier: identifier,
+            #did: did,
             #privateKey: privateKey,
           },
         ),

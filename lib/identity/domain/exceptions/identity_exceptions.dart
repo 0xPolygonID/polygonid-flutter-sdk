@@ -7,15 +7,15 @@ class IdentityException extends ErrorException {
 class TooLongPrivateKeyException implements Exception {}
 
 class IdentityAlreadyExistsException implements Exception {
-  final String identifier;
+  final String did;
 
-  IdentityAlreadyExistsException(this.identifier);
+  IdentityAlreadyExistsException(this.did);
 }
 
 class UnknownIdentityException implements Exception {
-  final String identifier;
+  final String did;
 
-  UnknownIdentityException(this.identifier);
+  UnknownIdentityException(this.did);
 }
 
 class InvalidPrivateKeyException implements Exception {

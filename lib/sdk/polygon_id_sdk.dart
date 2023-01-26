@@ -38,7 +38,7 @@ class PolygonIdSdk {
     _ref = PolygonIdSdk._();
     _ref!.identity = await getItSdk.getAsync<Identity>();
     _ref!.credential = await getItSdk.getAsync<Credential>();
-    _ref!.proof = await getItSdk.getAsync<Proof>();
+    _ref!.proof = getItSdk.get<Proof>();
     _ref!.iden3comm = await getItSdk.getAsync<Iden3comm>();
   }
 

@@ -3,7 +3,7 @@ enum ClaimState { active, expired, pending, revoked }
 class ClaimEntity {
   final String id;
   final String issuer;
-  final String identifier;
+  final String did;
   final ClaimState state;
   final String? expiration;
   final Map<String, dynamic>? schema;
@@ -14,7 +14,7 @@ class ClaimEntity {
   ClaimEntity(
       {required this.id,
       required this.issuer,
-      required this.identifier,
+      required this.did,
       required this.state,
       this.expiration,
       this.schema,
@@ -24,7 +24,7 @@ class ClaimEntity {
 
   @override
   String toString() => "[ClaimEntity] {id: $id, "
-      "issuer: $issuer, identifier: $identifier, state: $state, "
+      "issuer: $issuer, did: $did, state: $state, "
       "expiration: $expiration, schema: $schema, vocab: $vocab, type: $type, info: $info}";
 
   @override
@@ -34,7 +34,7 @@ class ClaimEntity {
           runtimeType == other.runtimeType &&
           id == other.id &&
           issuer == other.issuer &&
-          identifier == other.identifier &&
+          did == other.did &&
           state == other.state &&
           expiration == other.expiration &&
           schema == other.schema &&

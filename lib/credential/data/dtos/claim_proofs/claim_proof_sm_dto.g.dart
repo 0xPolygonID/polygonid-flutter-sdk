@@ -8,16 +8,18 @@ part of 'claim_proof_sm_dto.dart';
 
 ClaimProofSMDTO _$ClaimProofSMDTOFromJson(Map<String, dynamic> json) =>
     ClaimProofSMDTO(
-      $enumDecode(_$ClaimProofTypeEnumMap, json['@type']),
+      $enumDecode(_$ClaimProofTypeEnumMap, json['type']),
       ClaimProofIssuerSMDTO.fromJson(
-          json['issuer_data'] as Map<String, dynamic>),
+          json['issuerData'] as Map<String, dynamic>),
+      json['coreClaim'] as String,
       ClaimProofMTPDTO.fromJson(json['mtp'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$ClaimProofSMDTOToJson(ClaimProofSMDTO instance) =>
     <String, dynamic>{
-      '@type': _$ClaimProofTypeEnumMap[instance.type]!,
-      'issuer_data': instance.issuer.toJson(),
+      'type': _$ClaimProofTypeEnumMap[instance.type]!,
+      'issuerData': instance.issuer.toJson(),
+      'coreClaim': instance.coreClaim,
       'mtp': instance.mtp.toJson(),
     };
 
@@ -44,23 +46,23 @@ Map<String, dynamic> _$ClaimProofIssuerSMDTOToJson(
 ClaimProofIssuerStateSMDTO _$ClaimProofIssuerStateSMDTOFromJson(
         Map<String, dynamic> json) =>
     ClaimProofIssuerStateSMDTO(
-      json['claims_tree_root'] as String,
+      json['claimsTreeRoot'] as String,
       json['value'] as String,
-      json['block_number'] as int,
-      json['block_timestamp'] as int,
-      json['revocation_tree_root'] as String,
-      json['root_of_roots'] as String,
-      json['tx_id'] as String,
+      json['blockNumber'] as int,
+      json['blockTimestamp'] as int,
+      json['revocationTreeRoot'] as String,
+      json['rootOfRoots'] as String,
+      json['txId'] as String,
     );
 
 Map<String, dynamic> _$ClaimProofIssuerStateSMDTOToJson(
         ClaimProofIssuerStateSMDTO instance) =>
     <String, dynamic>{
-      'claims_tree_root': instance.treeRoot,
+      'claimsTreeRoot': instance.treeRoot,
       'value': instance.value,
-      'block_number': instance.number,
-      'block_timestamp': instance.timestamp,
-      'revocation_tree_root': instance.revocationTree,
-      'root_of_roots': instance.root,
-      'tx_id': instance.tx,
+      'blockNumber': instance.number,
+      'blockTimestamp': instance.timestamp,
+      'revocationTreeRoot': instance.revocationTree,
+      'rootOfRoots': instance.root,
+      'txId': instance.tx,
     };

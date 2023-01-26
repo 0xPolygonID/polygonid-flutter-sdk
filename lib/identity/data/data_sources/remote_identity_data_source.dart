@@ -10,6 +10,9 @@ import '../../../common/domain/domain_logger.dart';
 import '../../../common/utils/uint8_list_utils.dart';
 import '../../domain/entities/rhs_node_entity.dart';
 import '../../domain/exceptions/identity_exceptions.dart';
+import '../dtos/hash_dto.dart';
+import '../dtos/node_dto.dart';
+import '../mappers/node_type_dto_mapper.dart';
 import '../mappers/rhs_node_type_mapper.dart';
 
 /// FIXME: inject http client (for source and UT mocking)
@@ -26,8 +29,17 @@ class RemoteIdentityDataSource {
       var rhsUri = Uri.parse(rhsUrl);
       var rhsResponse = await get(rhsUri);
       if (rhsResponse.statusCode == 200) {
-        Map<String, dynamic>? rhsNode = json.decode(rhsResponse.body);
-        RhsNodeDTO rhsNodeResponse = RhsNodeDTO.fromJson(rhsNode!);
+        Map<String, dynamic> rhsNode = json.decode(rhsResponse.body);
+        rhsNode['node']['children'] =
+            (rhsNode['node']['children'] as List<dynamic>)
+                .map((e) => HashDTO.fromHex(e as String).toJson())
+                .toList();
+        rhsNode['node']['hash'] =
+            HashDTO.fromHex((rhsNode['node']['hash'] as String)).toJson();
+        rhsNode['node']['type'] = "unknown";
+        rhsNode['node']['type'] =
+            NodeTypeDTOMapper().mapFrom(NodeDTO.fromJson(rhsNode['node'])).name;
+        RhsNodeDTO rhsNodeResponse = RhsNodeDTO.fromJson(rhsNode);
         logger().d('rhs node: ${rhsNodeResponse.toString()}');
         return rhsNodeResponse;
       } else {
@@ -45,19 +57,19 @@ class RemoteIdentityDataSource {
       /// FIXME: this 2 lines should go to a DS and be called in a repo
       // 1. Fetch state roots from RHS
       RhsNodeDTO rhsNode =
-          await fetchStateRoots(url: rhsBaseUrl + identityState);
+          await fetchStateRoots(url: rhsBaseUrl + "/" + identityState);
       RhsNodeType rhsNodeType = RhsNodeTypeMapper().mapFrom(rhsNode.node);
 
       Map<String, dynamic>? issuer;
       String revTreeRootHash =
           "0000000000000000000000000000000000000000000000000000000000000000";
       if (rhsNodeType == RhsNodeType.state) {
-        revTreeRootHash = rhsNode.node.children[1];
+        revTreeRootHash = rhsNode.node.children[1].toString();
         issuer = {
           "state": rhsNode.node.hash,
-          "root_of_roots": rhsNode.node.children[2],
-          "claims_tree_root": rhsNode.node.children[0],
-          "revocation_tree_root": rhsNode.node.children[1],
+          "rootOfRoots": rhsNode.node.children[2],
+          "claimsTreeRoot": rhsNode.node.children[0],
+          "revocationTreeRoot": rhsNode.node.children[1],
         };
       }
 
@@ -70,37 +82,39 @@ class RemoteIdentityDataSource {
 
       for (int depth = 0; depth < (key.length * 8); depth++) {
         if (nextKey !=
-            "0000000000000000000000000000000000000000000000000000000000000000") {
+                "0000000000000000000000000000000000000000000000000000000000000000" &&
+            nextKey != "0") {
           // rev root is not empty
-          RhsNodeDTO revNode = await fetchStateRoots(url: rhsBaseUrl + nextKey);
+          RhsNodeDTO revNode =
+              await fetchStateRoots(url: rhsBaseUrl + "/" + nextKey);
           RhsNodeType nodeType = RhsNodeTypeMapper().mapFrom(revNode.node);
 
           if (nodeType == RhsNodeType.middle) {
             if (_testBit(key, depth)) {
-              nextKey = revNode.node.children[1];
+              nextKey = revNode.node.children[1].toString();
               siblings.add(Uint8ArrayUtils.leBuff2int(
-                      hexToBytes(revNode.node.children[0]))
+                      hexToBytes(revNode.node.children[0].toString()))
                   .toString());
             } else {
-              nextKey = revNode.node.children[0];
+              nextKey = revNode.node.children[0].toString();
               siblings.add(Uint8ArrayUtils.leBuff2int(
-                      hexToBytes(revNode.node.children[1]))
+                      hexToBytes(revNode.node.children[1].toString()))
                   .toString());
             }
           } else if (nodeType == RhsNodeType.leaf) {
             if (Uint8ArrayUtils.leBuff2int(key) ==
                 Uint8ArrayUtils.leBuff2int(
-                    hexToBytes(revNode.node.children[0]))) {
+                    hexToBytes(revNode.node.children[0].toString()))) {
               exists = true;
               return _mkProof(issuer, exists, siblings, null);
             }
             // We found a leaf whose entry didn't match hIndex
             Map<String, String> nodeAux = {
               "key": Uint8ArrayUtils.leBuff2int(
-                      hexToBytes(revNode.node.children[0]))
+                      hexToBytes(revNode.node.children[0].toString()))
                   .toString(),
               "value": Uint8ArrayUtils.leBuff2int(
-                      hexToBytes(revNode.node.children[1]))
+                      hexToBytes(revNode.node.children[1].toString()))
                   .toString(),
             };
             return _mkProof(issuer, exists, siblings, nodeAux);

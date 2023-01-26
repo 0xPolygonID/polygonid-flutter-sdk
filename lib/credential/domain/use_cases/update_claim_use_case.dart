@@ -6,7 +6,7 @@ import '../repositories/credential_repository.dart';
 class UpdateClaimParam {
   final String id;
   final String? issuer;
-  final String identifier;
+  final String did;
   final ClaimState? state;
   final String? expiration;
   final String? type;
@@ -16,7 +16,7 @@ class UpdateClaimParam {
   UpdateClaimParam({
     required this.id,
     this.issuer,
-    required this.identifier,
+    required this.did,
     this.state,
     this.expiration,
     this.type,
@@ -37,20 +37,18 @@ class UpdateClaimUseCase extends FutureUseCase<UpdateClaimParam, ClaimEntity> {
     /// then update in storage
     return _credentialRepository
         .getClaim(
-            claimId: param.id,
-            identifier: param.identifier,
-            privateKey: param.privateKey)
+            claimId: param.id, did: param.did, privateKey: param.privateKey)
         .then((claim) => ClaimEntity(
             id: param.id,
             issuer: param.issuer ?? claim.issuer,
-            identifier: param.identifier,
+            did: param.did,
             state: param.state ?? claim.state,
             expiration: param.expiration ?? claim.expiration,
             type: param.type ?? claim.type,
             info: param.data ?? claim.info))
         .then((updated) => _credentialRepository.saveClaims(
             claims: [updated],
-            identifier: param.identifier,
+            did: param.did,
             privateKey: param.privateKey).then((_) => updated))
         .then((claim) {
       logger().i(

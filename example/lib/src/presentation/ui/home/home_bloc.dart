@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
@@ -10,6 +9,8 @@ import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_even
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_state.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
 import 'package:polygonid_flutter_sdk_example/utils/secure_storage_keys.dart';
+
+import '../../../../utils/blockchain_resources.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final PolygonIdSdk _polygonIdSdk;
@@ -32,13 +33,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(const HomeState.error(message: "no private key found"));
       return;
     }
-    String? identifier =
-        await _polygonIdSdk.identity.getIdentifier(privateKey: privateKey);
+    String? identifier = await _polygonIdSdk.identity.getDidIdentifier(
+        privateKey: privateKey,
+        blockchain: BlockchainResources.blockchain,
+        network: BlockchainResources.network);
     emit(HomeState.loaded(identifier: identifier));
 
-    if (identifier != null) {
-      String state = await _polygonIdSdk.identity.getState(identifier);
-    }
+    // FIXME: crashing and not used
+    // if (identifier != null) {
+    //   String state = await _polygonIdSdk.identity.getState(identifier);
+    // }
   }
 
   ///
@@ -48,10 +52,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     try {
       PrivateIdentityEntity identity =
-          await _polygonIdSdk.identity.createIdentity();
+          await _polygonIdSdk.identity.createIdentity(
+        blockchain: BlockchainResources.blockchain,
+        network: BlockchainResources.network,
+      );
       await SecureStorage.write(
           key: SecureStorageKeys.privateKey, value: identity.privateKey);
-      emit(HomeState.loaded(identifier: identity.identifier));
+      emit(HomeState.loaded(identifier: identity.did));
     } on IdentityException catch (identityException) {
       emit(HomeState.error(message: identityException.error));
     } catch (_) {
@@ -72,10 +79,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       return;
     }
 
-    String? identifier =
-        await _polygonIdSdk.identity.getIdentifier(privateKey: privateKey);
+    String? did = await _polygonIdSdk.identity.getDidIdentifier(
+      privateKey: privateKey,
+      blockchain: BlockchainResources.blockchain,
+      network: BlockchainResources.network,
+    );
 
-    if (identifier == null) {
+    if (did == null) {
       emit(const HomeState.error(
           message: "cannot delete identity without identifier"));
       return;
@@ -83,7 +93,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     try {
       await _polygonIdSdk.identity
-          .removeIdentity(identifier: identifier, privateKey: privateKey);
+          .removeIdentity(did: did, privateKey: privateKey);
       await SecureStorage.delete(key: SecureStorageKeys.privateKey);
       emit(const HomeState.loaded());
     } on IdentityException catch (identityException) {

@@ -7,19 +7,19 @@ import 'dart:async' as _i5;
 import 'dart:typed_data' as _i9;
 
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs_use_case.dart'
+    as _i8;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_auth_challenge_use_case.dart'
     as _i7;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_auth_inputs_use_case.dart'
-    as _i8;
-import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart'
+import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart'
     as _i2;
-import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/jwz/jwz_proof.dart'
+import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart'
     as _i3;
-import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/get_jwz_use_case.dart'
+import 'package:polygonid_flutter_sdk/proof/domain/use_cases/get_jwz_use_case.dart'
     as _i6;
-import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/load_circuit_use_case.dart'
+import 'package:polygonid_flutter_sdk/proof/domain/use_cases/load_circuit_use_case.dart'
     as _i4;
-import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/prove_use_case.dart'
+import 'package:polygonid_flutter_sdk/proof/domain/use_cases/prove_use_case.dart'
     as _i10;
 
 // ignore_for_file: type=lint

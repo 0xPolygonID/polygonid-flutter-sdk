@@ -8,8 +8,6 @@ class EnvDataSource {
 
   String getConfig({required PolygonIdConfig config}) {
     switch (config) {
-      case PolygonIdConfig.polygonIdAccessMessage:
-        return _sdkEnv.polygonIdAccessMessage;
       case PolygonIdConfig.networkName:
         return _sdkEnv.networkName;
       case PolygonIdConfig.networkEnv:
@@ -20,8 +18,6 @@ class EnvDataSource {
         return _sdkEnv.infuraRdpUrl;
       case PolygonIdConfig.infuraApiKey:
         return _sdkEnv.infuraApiKey;
-      case PolygonIdConfig.reverseHashServiceUrl:
-        return _sdkEnv.reverseHashServiceUrl;
       case PolygonIdConfig.idStateContractAddress:
         return _sdkEnv.idStateContractAddress;
       case PolygonIdConfig.pushUrl:

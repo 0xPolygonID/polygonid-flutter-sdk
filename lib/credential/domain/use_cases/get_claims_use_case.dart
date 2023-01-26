@@ -6,12 +6,12 @@ import '../repositories/credential_repository.dart';
 
 class GetClaimsParam {
   final List<FilterEntity>? filters;
-  final String identifier;
+  final String did;
   final String privateKey;
 
   GetClaimsParam({
     this.filters,
-    required this.identifier,
+    required this.did,
     required this.privateKey,
   });
 }
@@ -27,7 +27,7 @@ class GetClaimsUseCase
     return _credentialRepository
         .getClaims(
             filters: param.filters,
-            identifier: param.identifier,
+            did: param.did,
             privateKey: param.privateKey)
         .then((claims) {
       logger().i("[GetClaimsUseCase] Claims: $claims");

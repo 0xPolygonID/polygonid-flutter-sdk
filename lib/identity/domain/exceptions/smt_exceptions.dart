@@ -1,11 +1,15 @@
-class SMTNotFound implements Exception {}
+class SMTNotFoundException implements Exception {
+  final String storeName;
 
-class SMTNodeKeyAlreadyExists implements Exception {}
+  SMTNotFoundException(this.storeName);
+}
 
-class SMTEntryIndexAlreadyExists implements Exception {}
+class SMTNodeKeyAlreadyExistsException implements Exception {}
 
-class SMTReachedMaxLevel implements Exception {}
+class SMTEntryIndexAlreadyExistsException implements Exception {}
 
-class SMTInvalidNodeFound implements Exception {}
+class SMTReachedMaxLevelException implements Exception {}
 
-class SMTKeyNotFound implements Exception {}
+class SMTInvalidNodeFoundException implements Exception {}
+
+class SMTKeyNotFoundException implements Exception {}

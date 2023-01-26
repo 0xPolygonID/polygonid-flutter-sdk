@@ -32,7 +32,7 @@ void main() {
           expect(entity.type, type);
           expect(entity.thid, param.message.thid);
           expect(entity.body.id, claimIds[i]);
-          expect(entity.from, param.identifier);
+          expect(entity.from, param.did);
           expect(entity.to, param.message.from);
         }
       });

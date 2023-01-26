@@ -1,4 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_case.dart';
+import 'package:polygonid_flutter_sdk/constants.dart';
 
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
@@ -6,34 +7,71 @@ import '../entities/identity_entity.dart';
 import '../entities/private_identity_entity.dart';
 import '../exceptions/identity_exceptions.dart';
 import '../repositories/identity_repository.dart';
+import 'get_did_identifier_use_case.dart';
+import 'get_did_use_case.dart';
+
+class CreateAndSaveIdentityParam {
+  final String? secret;
+  final String blockchain;
+  final String network;
+
+  CreateAndSaveIdentityParam({
+    this.secret,
+    required this.blockchain,
+    required this.network,
+  });
+}
 
 class CreateAndSaveIdentityUseCase
-    extends FutureUseCase<String?, IdentityEntity> {
+    extends FutureUseCase<CreateAndSaveIdentityParam, IdentityEntity> {
   final IdentityRepository _identityRepository;
   final GetEnvConfigUseCase _getEnvConfigUseCase;
+  final GetDidUseCase _getDidUseCase;
+  final GetDidIdentifierUseCase _getDidIdentifierUseCase;
 
   CreateAndSaveIdentityUseCase(
-      this._identityRepository, this._getEnvConfigUseCase);
+      this._identityRepository,
+      this._getEnvConfigUseCase,
+      this._getDidUseCase,
+      this._getDidIdentifierUseCase);
 
   @override
-  Future<PrivateIdentityEntity> execute({required String? param}) async {
+  Future<PrivateIdentityEntity> execute(
+      {required CreateAndSaveIdentityParam param}) async {
     // Create the [PrivateIdentityEntity] with the secret
-    PrivateIdentityEntity privateIdentity = await _getEnvConfigUseCase
-        .execute(param: PolygonIdConfig.polygonIdAccessMessage)
-        .then((accessMessage) => _identityRepository.createIdentity(
-            secret: param, accessMessage: accessMessage));
+    String accessMessage = POLYGONID_ACCESS_MESSAGE;
+
+    PrivateIdentityEntity privateIdentity =
+        await _identityRepository.createIdentity(
+            secret: param.secret,
+            accessMessage: accessMessage,
+            blockchain: param.blockchain,
+            network: param.network);
 
     // Check if identity is already stored (already created)
     try {
-      IdentityEntity identity = await _identityRepository.getIdentity(
-          identifier: privateIdentity.identifier);
+      IdentityEntity identity =
+          await _identityRepository.getIdentity(did: privateIdentity.did);
 
       // If there is already one, we throw
-      throw IdentityAlreadyExistsException(identity.identifier);
+      throw IdentityAlreadyExistsException(identity.did);
     } on UnknownIdentityException {
+      /// TODO: does this check make sense?
+      // Check if the dids are the same
+      String didIdentifier = await _getDidUseCase
+          .execute(param: privateIdentity.did)
+          .then((did) => _getDidIdentifierUseCase.execute(
+              param: GetDidIdentifierParam(
+                  privateKey: privateIdentity.privateKey,
+                  blockchain: did.blockchain,
+                  network: did.network)));
+
+      if (privateIdentity.did != didIdentifier) {
+        throw InvalidPrivateKeyException(privateIdentity.privateKey);
+      }
+
       // If it doesn't exist, we save it
-      await _identityRepository.storeIdentity(
-          identity: privateIdentity, privateKey: privateIdentity.privateKey);
+      await _identityRepository.storeIdentity(identity: privateIdentity);
     } catch (error) {
       logger().e("[CreateAndSaveIdentityUseCase] Error: $error");
 
@@ -41,7 +79,7 @@ class CreateAndSaveIdentityUseCase
     }
 
     logger().i(
-        "[CreateAndSaveIdentityUseCase] Identity created and saved with identifier: ${privateIdentity.identifier}, for key $param");
+        "[CreateAndSaveIdentityUseCase] Identity created and saved with did: ${privateIdentity.did}, for key $param");
     return privateIdentity;
   }
 }

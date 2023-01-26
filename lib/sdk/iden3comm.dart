@@ -1,6 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart';
@@ -18,11 +18,12 @@ abstract class PolygonIdSdkIden3comm {
   Future<List<Map<String, dynamic>>> getVocabsFromIden3Message(
       {required Iden3MessageEntity message});
 
-  Future<List<ProofEntity>> getProofs(
-      {required Iden3MessageEntity message,
-      required String identifier,
-      required String privateKey,
-      String? challenge});
+  Future<List<JWZProofEntity>> getProofs({
+    required Iden3MessageEntity message,
+    required String did,
+    int? profileNonce,
+    required String privateKey,
+  });
 
   /// get iden3message from qr code and transform it as string "message" #3 through getIden3Message(message)
   /// get CircuitDataEntity #1 by loadCircuitFiles #2
@@ -30,7 +31,8 @@ abstract class PolygonIdSdkIden3comm {
   /// auth with token #5 TODO rewrite as soon as development is completed
   Future<void> authenticate(
       {required Iden3MessageEntity message,
-      required String identifier,
+      required String did,
+      int? profileNonce,
       required String privateKey,
       String? pushToken});
 }
@@ -67,7 +69,8 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   @override
   Future<void> authenticate(
       {required Iden3MessageEntity message,
-      required String identifier,
+      required String did,
+      int? profileNonce,
       required String privateKey,
       String? pushToken}) {
     if (message is! AuthIden3MessageEntity) {
@@ -78,23 +81,24 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     return _authenticateUseCase.execute(
         param: AuthenticateParam(
       message: message,
-      identifier: identifier,
+      did: did,
+      profileNonce: profileNonce ?? 0,
       privateKey: privateKey,
       pushToken: pushToken,
     ));
   }
 
   @override
-  Future<List<ProofEntity>> getProofs(
+  Future<List<JWZProofEntity>> getProofs(
       {required Iden3MessageEntity message,
-      required String identifier,
-      required String privateKey,
-      String? challenge}) {
+      required String did,
+      int? profileNonce,
+      required String privateKey}) {
     return _getProofsUseCase.execute(
         param: GetProofsParam(
       message: message,
-      identifier: identifier,
-      challenge: challenge,
+      did: did,
+      profileNonce: profileNonce ?? 0,
       privateKey: privateKey,
     ));
   }

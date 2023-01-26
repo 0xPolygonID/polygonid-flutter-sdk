@@ -9,15 +9,15 @@ const publicKey = ["thePubX", "thePubY"];
 const identifier = "theIdentifier";
 const privateKey = "thePrivateKey";
 const privateIdentity = PrivateIdentityEntity(
-    identifier: identifier, publicKey: publicKey, privateKey: privateKey);
+    did: identifier, publicKey: publicKey, privateKey: privateKey);
 const authClaim = "theAuthClaim";
 const state = "theState";
 const mockDTO = IdentityDTO(
-  identifier: identifier,
+  did: identifier,
   publicKey: publicKey,
 );
 const mockEntity = IdentityEntity(
-  identifier: identifier,
+  did: identifier,
   publicKey: publicKey,
 );
 

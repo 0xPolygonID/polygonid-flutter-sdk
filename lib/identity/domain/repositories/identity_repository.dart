@@ -1,37 +1,41 @@
 import 'dart:typed_data';
 
+import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
+
+import '../../../proof/domain/entities/proof_entity.dart';
 import '../entities/identity_entity.dart';
+import '../entities/node_entity.dart';
 import '../entities/private_identity_entity.dart';
 import '../entities/rhs_node_entity.dart';
 
 abstract class IdentityRepository {
   // Identity
   Future<PrivateIdentityEntity> createIdentity(
-      {String? secret, required String accessMessage});
+      {required blockchain,
+      required network,
+      String? secret,
+      required String accessMessage});
 
-  Future<void> storeIdentity(
-      {required IdentityEntity identity, required String privateKey});
+  Future<void> storeIdentity({required IdentityEntity identity});
 
-  Future<void> removeIdentity(
-      {required String identifier, required String privateKey});
+  Future<void> removeIdentity({required String did});
 
-  Future<String> getIdentifier({required String privateKey});
-
-  Future<IdentityEntity> getIdentity({required String identifier});
+  Future<IdentityEntity> getIdentity({required String did});
 
   Future<PrivateIdentityEntity> getPrivateIdentity(
-      {required String identifier, required String privateKey});
+      {required DidEntity did, required String privateKey});
 
   Future<List<IdentityEntity>> getIdentities();
 
   Future<String> signMessage(
       {required String privateKey, required String message});
 
-  // TODO: move this to an UC
-  Future<String> getDidIdentifier(
-      {required String identifier,
-      required String networkName,
-      required String networkEnv});
+  Future<String> getDidIdentifier({
+    required String privateKey,
+    required String blockchain,
+    required String network,
+  });
 
   // RHS
   Future<Map<String, dynamic>> getNonRevProof(
@@ -46,9 +50,12 @@ abstract class IdentityRepository {
 
   Future<String> getChallenge({required String message});
 
-  Future<Uint8List> getAuthInputs(
-      {required String challenge,
-      required String authClaim,
-      required IdentityEntity identity,
-      required String signature});
+  Future<NodeEntity> getAuthClaimNode({required List<String> children});
+
+  Future<Map<String, dynamic>> getLatestState({
+    required String did,
+    required String privateKey,
+  });
+
+  Future<String> convertIdToBigInt({required String id});
 }

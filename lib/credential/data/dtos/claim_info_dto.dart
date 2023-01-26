@@ -10,44 +10,49 @@ part 'claim_info_dto.g.dart';
 @JsonSerializable(explicitToJson: true)
 class ClaimInfoDTO extends Equatable {
   final String id;
-  final String? expiration;
-  final bool? updatable;
-  final int version;
-  @JsonKey(name: 'rev_nonce')
-  final int revNonce;
+  @JsonKey(name: '@context')
+  final List<String> context;
+  final List<String> type;
+  final String? expirationDate;
+  final String issuanceDate;
   final CredentialSubjectDTO credentialSubject;
   final CredentialStatusDTO credentialStatus;
+  final String issuer;
   final CredentialSchemaDTO credentialSchema;
   @JsonKey(name: 'proof')
   final List<ClaimProofDTO> proofs;
 
   const ClaimInfoDTO(
-      this.id,
-      this.expiration,
-      this.updatable,
-      this.version,
-      this.revNonce,
-      this.credentialSubject,
-      this.credentialStatus,
-      this.credentialSchema,
-      this.proofs);
+    this.id,
+    this.context,
+    this.type,
+    this.expirationDate,
+    this.issuanceDate,
+    this.credentialSubject,
+    this.credentialStatus,
+    this.issuer,
+    this.credentialSchema,
+    this.proofs,
+  );
 
   factory ClaimInfoDTO.fromJson(Map<String, dynamic> json) =>
       _$ClaimInfoDTOFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ClaimInfoDTOToJson(this);
+  Map<String, dynamic> toJson() => _$ClaimInfoDTOToJson(this)
+    ..removeWhere((dynamic key, dynamic value) => key == null || value == null);
 
   @override
   List<Object?> get props => [
         id,
-        expiration,
-        updatable,
-        version,
-        revNonce,
+        context,
+        type,
+        expirationDate,
+        issuanceDate,
         credentialSubject,
         credentialStatus,
+        issuer,
         credentialSchema,
-        proofs
+        proofs,
       ];
 }
 
@@ -86,25 +91,37 @@ class CredentialSubjectDTO extends Equatable {
   List<Object?> get props => [id, type, data];
 }
 
-@JsonSerializable()
+@JsonEnum()
+enum CredentialStatusType {
+  @JsonValue("Iden3ReverseSparseMerkleTreeProof")
+  reverseSparseMerkleTreeProof,
+  @JsonValue("SparseMerkleTreeProof")
+  sparseMerkleTreeProof
+}
+
+@JsonSerializable(explicitToJson: true)
 class CredentialStatusDTO extends Equatable {
   final String id;
-  final String type;
+  final int? revocationNonce;
+  @JsonKey(name: 'type')
+  final CredentialStatusType type;
+  final CredentialStatusDTO? statusIssuer;
 
-  const CredentialStatusDTO(this.id, this.type);
+  const CredentialStatusDTO(
+      this.id, this.revocationNonce, this.type, this.statusIssuer);
 
   factory CredentialStatusDTO.fromJson(Map<String, dynamic> json) =>
       _$CredentialStatusDTOFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CredentialStatusDTOToJson(this);
+  Map<String, dynamic> toJson() => _$CredentialStatusDTOToJson(this)
+    ..removeWhere((dynamic key, dynamic value) => key == null || value == null);
 
   @override
-  List<Object?> get props => [id, type];
+  List<Object?> get props => [id, revocationNonce, type, statusIssuer];
 }
 
 @JsonSerializable()
 class CredentialSchemaDTO extends Equatable {
-  @JsonKey(name: '@id')
   final String id;
   final String type;
 

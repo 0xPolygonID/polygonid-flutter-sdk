@@ -12,7 +12,7 @@ const claimsToBeImported = "theClaimsToBeImported";
 
 ImportClaimsParam param = ImportClaimsParam(
   privateKey: privateKey,
-  identifier: identifier,
+  did: identifier,
   encryptedClaimsDb: claimsToBeImported,
 );
 
@@ -27,7 +27,7 @@ void main() {
     //
     setUp(() {
       when(credentialRepository.importClaims(
-        identifier: anyNamed('identifier'),
+        did: anyNamed('identifier'),
         privateKey: anyNamed('privateKey'),
         encryptedDb: anyNamed('encryptedDb'),
       )).thenAnswer((_) => Future.value());
@@ -42,7 +42,7 @@ void main() {
 
       // Verify
       var captured = verify(credentialRepository.importClaims(
-        identifier: captureAnyNamed('identifier'),
+        did: captureAnyNamed('identifier'),
         privateKey: captureAnyNamed('privateKey'),
         encryptedDb: captureAnyNamed('encryptedDb'),
       )).captured;

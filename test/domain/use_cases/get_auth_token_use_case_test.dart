@@ -4,10 +4,10 @@ import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_auth_challenge_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_auth_inputs_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/get_jwz_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/load_circuit_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/use_cases/prove_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/use_cases/get_jwz_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/use_cases/load_circuit_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/use_cases/prove_use_case.dart';
 
 import '../../common/common_mocks.dart';
 import '../../common/proof_mocks.dart';
@@ -20,7 +20,7 @@ const privateKey = "thePrivateKey";
 const authClaim = "theAuthClaim";
 const pubKeys = ["pubX", "pubY"];
 const privateIdentity = PrivateIdentityEntity(
-    privateKey: privateKey, identifier: identifier, publicKey: pubKeys);
+    privateKey: privateKey, did: identifier, publicKey: pubKeys);
 const circuitId = "1";
 
 final param = GetAuthTokenParam(identifier, privateKey, message);
@@ -86,7 +86,7 @@ void main() {
         verify(getAuthInputsUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(captureAuthInputs.identifier, CommonMocks.identifier);
+    expect(captureAuthInputs.did, CommonMocks.identifier);
     expect(captureAuthInputs.privateKey, CommonMocks.privateKey);
 
     expect(
@@ -131,7 +131,7 @@ void main() {
         verify(getAuthInputsUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(captureAuthInputs.identifier, CommonMocks.identifier);
+    expect(captureAuthInputs.did, CommonMocks.identifier);
     expect(captureAuthInputs.privateKey, CommonMocks.privateKey);
 
     expect(

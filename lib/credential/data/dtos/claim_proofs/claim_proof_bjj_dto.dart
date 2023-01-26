@@ -8,9 +8,9 @@ part 'claim_proof_bjj_dto.g.dart';
 class ClaimProofBJJDTO extends ClaimProofDTO {
   final String signature;
 
-  const ClaimProofBJJDTO(
-      ClaimProofType type, ClaimProofIssuerDTO issuer, this.signature)
-      : super(type, issuer);
+  const ClaimProofBJJDTO(ClaimProofType type, ClaimProofIssuerDTO issuer,
+      String coreClaim, this.signature)
+      : super(type, issuer, coreClaim);
 
   factory ClaimProofBJJDTO.fromJson(Map<String, dynamic> json) =>
       _$ClaimProofBJJDTOFromJson(json);
@@ -21,14 +21,12 @@ class ClaimProofBJJDTO extends ClaimProofDTO {
 
 @JsonSerializable(explicitToJson: true)
 class ClaimProofIssuerBJJDTO extends ClaimProofIssuerDTO {
-  @JsonKey(name: 'auth_claim')
-  final List<String> authClaim;
+  final String authCoreClaim;
   final ClaimProofMTPDTO mtp;
-  @JsonKey(name: 'revocation_status')
-  final String revocationStatus;
+  final ClaimProofIssuerCredStatusDTO credentialStatus;
 
   ClaimProofIssuerBJJDTO(String id, ClaimProofIssuerStateDTO state,
-      this.authClaim, this.mtp, this.revocationStatus)
+      this.authCoreClaim, this.mtp, this.credentialStatus)
       : super(id, state);
 
   factory ClaimProofIssuerBJJDTO.fromJson(Map<String, dynamic> json) =>

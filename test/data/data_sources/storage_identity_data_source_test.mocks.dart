@@ -128,14 +128,14 @@ class MockIdentityStoreRefWrapper extends _i1.Mock
   @override
   _i4.Future<String?> remove(
     _i7.DatabaseClient? database,
-    String? identifier,
+    String? did,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
           #remove,
           [
             database,
-            identifier,
+            did,
           ],
         ),
         returnValue: _i4.Future<String?>.value(),

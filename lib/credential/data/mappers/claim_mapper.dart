@@ -16,7 +16,7 @@ class ClaimMapper extends Mapper<ClaimDTO, ClaimEntity> {
     return ClaimEntity(
         id: from.id,
         issuer: from.issuer,
-        identifier: from.identifier,
+        did: from.did,
         state: _claimStateMapper.mapFrom(from.state),
         expiration: from.expiration,
         schema: from.schema,
@@ -30,7 +30,7 @@ class ClaimMapper extends Mapper<ClaimDTO, ClaimEntity> {
     return ClaimDTO(
         id: to.id,
         issuer: to.issuer,
-        identifier: to.identifier,
+        did: to.did,
         state: _claimStateMapper.mapTo(to.state),
         type: to.type,
         expiration: to.expiration,

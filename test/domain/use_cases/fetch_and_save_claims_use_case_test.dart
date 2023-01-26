@@ -22,7 +22,7 @@ final requests = [
 
 final claimEntity = ClaimEntity(
     issuer: "",
-    identifier: "",
+    did: "",
     expiration: "",
     info: {},
     type: "",
@@ -33,7 +33,7 @@ final result = [claimEntity, claimEntity, claimEntity];
 
 final param = FetchAndSaveClaimsParam(
     message: Iden3commMocks.offerRequest,
-    identifier: CommonMocks.identifier,
+    did: CommonMocks.identifier,
     privateKey: CommonMocks.privateKey);
 
 // Dependencies
@@ -60,12 +60,12 @@ void main() {
       when(getAuthTokenUseCase.execute(param: anyNamed('param')))
           .thenAnswer((realInvocation) => Future.value(CommonMocks.token));
       when(credentialRepository.fetchClaim(
-              identifier: anyNamed('identifier'),
+              did: anyNamed('identifier'),
               token: anyNamed('token'),
               message: anyNamed('message')))
           .thenAnswer((realInvocation) => Future.value(claimEntity));
       when(credentialRepository.saveClaims(
-              identifier: anyNamed('identifier'),
+              did: anyNamed('identifier'),
               privateKey: anyNamed('privateKey'),
               claims: anyNamed('claims')))
           .thenAnswer((realInvocation) => Future.value());
@@ -84,27 +84,27 @@ void main() {
           .first;
 
       expect(fetchMessageCaptures.message, param.message);
-      expect(fetchMessageCaptures.identifier, param.identifier);
+      expect(fetchMessageCaptures.did, param.did);
 
       var authVerify =
           verify(getAuthTokenUseCase.execute(param: captureAnyNamed('param')));
 
       expect(authVerify.callCount, requests.length);
       for (int i = 0; i < requests.length; i++) {
-        expect(authVerify.captured[i].identifier, param.identifier);
+        expect(authVerify.captured[i].did, param.did);
         expect(authVerify.captured[i].privateKey, param.privateKey);
         expect(authVerify.captured[i].message, requests[i]);
       }
 
       var fetchVerify = verify(credentialRepository.fetchClaim(
-          identifier: captureAnyNamed('identifier'),
+          did: captureAnyNamed('identifier'),
           token: captureAnyNamed('token'),
           message: captureAnyNamed('message')));
 
       expect(fetchVerify.callCount, requests.length);
       int j = 0;
       for (int i = 0; i < requests.length * 3; i += 3) {
-        expect(fetchVerify.captured[i], param.identifier);
+        expect(fetchVerify.captured[i], param.did);
         expect(fetchVerify.captured[i + 1], CommonMocks.token);
         expect(fetchVerify.captured[i + 2], param.message);
         j++;
@@ -112,7 +112,7 @@ void main() {
 
       expect(
           verify(credentialRepository.saveClaims(
-                  identifier: CommonMocks.identifier,
+                  did: CommonMocks.identifier,
                   privateKey: CommonMocks.privateKey,
                   claims: captureAnyNamed('claims')))
               .captured
@@ -125,7 +125,7 @@ void main() {
         () async {
       // Given
       when(credentialRepository.fetchClaim(
-              identifier: anyNamed('identifier'),
+              did: anyNamed('identifier'),
               token: anyNamed('token'),
               message: anyNamed('message')))
           .thenAnswer((realInvocation) => Future.error(exception));
@@ -139,29 +139,29 @@ void main() {
           .first;
 
       expect(fetchMessageCaptures.message, param.message);
-      expect(fetchMessageCaptures.identifier, param.identifier);
+      expect(fetchMessageCaptures.did, param.did);
 
       var authVerify =
           verify(getAuthTokenUseCase.execute(param: captureAnyNamed('param')));
 
       expect(authVerify.callCount, 1);
-      expect(authVerify.captured[0].identifier, param.identifier);
+      expect(authVerify.captured[0].did, param.did);
       expect(authVerify.captured[0].privateKey, param.privateKey);
       expect(authVerify.captured[0].message, requests[0]);
 
       var fetchVerify = verify(credentialRepository.fetchClaim(
-          identifier: captureAnyNamed('identifier'),
+          did: captureAnyNamed('identifier'),
           token: captureAnyNamed('token'),
           message: captureAnyNamed('message')));
 
       expect(fetchVerify.callCount, 1);
 
-      expect(fetchVerify.captured[0], param.identifier);
+      expect(fetchVerify.captured[0], param.did);
       expect(fetchVerify.captured[1], CommonMocks.token);
       expect(fetchVerify.captured[2], param.message);
 
       verifyNever(credentialRepository.saveClaims(
-          identifier: CommonMocks.identifier,
+          did: CommonMocks.identifier,
           privateKey: CommonMocks.privateKey,
           claims: captureAnyNamed('claims')));
     });

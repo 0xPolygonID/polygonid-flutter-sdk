@@ -1,7 +1,7 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'claims_event.dart';
 
@@ -28,7 +28,7 @@ mixin _$ClaimsEvent {
     required TResult Function(
             String id,
             String? issuer,
-            String? identifier,
+            String? did,
             ClaimState? state,
             String? expiration,
             String? type,
@@ -48,14 +48,8 @@ mixin _$ClaimsEvent {
     TResult? Function(String id)? removeClaim,
     TResult? Function(List<String> ids)? removeClaims,
     TResult? Function()? removeAllClaims,
-    TResult? Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult? Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult? Function()? clickScanQrCode,
     TResult? Function(String? response)? onScanQrCodeResponse,
@@ -71,14 +65,8 @@ mixin _$ClaimsEvent {
     TResult Function(String id)? removeClaim,
     TResult Function(List<String> ids)? removeClaims,
     TResult Function()? removeAllClaims,
-    TResult Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
@@ -232,7 +220,7 @@ class _$FetchAndSaveClaimsEvent implements FetchAndSaveClaimsEvent {
     required TResult Function(
             String id,
             String? issuer,
-            String? identifier,
+            String? did,
             ClaimState? state,
             String? expiration,
             String? type,
@@ -255,14 +243,8 @@ class _$FetchAndSaveClaimsEvent implements FetchAndSaveClaimsEvent {
     TResult? Function(String id)? removeClaim,
     TResult? Function(List<String> ids)? removeClaims,
     TResult? Function()? removeAllClaims,
-    TResult? Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult? Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult? Function()? clickScanQrCode,
     TResult? Function(String? response)? onScanQrCodeResponse,
@@ -281,14 +263,8 @@ class _$FetchAndSaveClaimsEvent implements FetchAndSaveClaimsEvent {
     TResult Function(String id)? removeClaim,
     TResult Function(List<String> ids)? removeClaims,
     TResult Function()? removeAllClaims,
-    TResult Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
@@ -417,6 +393,7 @@ class _$GetClaimsEvent implements GetClaimsEvent {
   List<FilterEntity>? get filters {
     final value = _filters;
     if (value == null) return null;
+    if (_filters is EqualUnmodifiableListView) return _filters;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(value);
   }
@@ -457,7 +434,7 @@ class _$GetClaimsEvent implements GetClaimsEvent {
     required TResult Function(
             String id,
             String? issuer,
-            String? identifier,
+            String? did,
             ClaimState? state,
             String? expiration,
             String? type,
@@ -480,14 +457,8 @@ class _$GetClaimsEvent implements GetClaimsEvent {
     TResult? Function(String id)? removeClaim,
     TResult? Function(List<String> ids)? removeClaims,
     TResult? Function()? removeAllClaims,
-    TResult? Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult? Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult? Function()? clickScanQrCode,
     TResult? Function(String? response)? onScanQrCodeResponse,
@@ -506,14 +477,8 @@ class _$GetClaimsEvent implements GetClaimsEvent {
     TResult Function(String id)? removeClaim,
     TResult Function(List<String> ids)? removeClaims,
     TResult Function()? removeAllClaims,
-    TResult Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
@@ -638,6 +603,7 @@ class _$GetClaimsByIdsEvent implements GetClaimsByIdsEvent {
   final List<String> _ids;
   @override
   List<String> get ids {
+    if (_ids is EqualUnmodifiableListView) return _ids;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_ids);
   }
@@ -679,7 +645,7 @@ class _$GetClaimsByIdsEvent implements GetClaimsByIdsEvent {
     required TResult Function(
             String id,
             String? issuer,
-            String? identifier,
+            String? did,
             ClaimState? state,
             String? expiration,
             String? type,
@@ -702,14 +668,8 @@ class _$GetClaimsByIdsEvent implements GetClaimsByIdsEvent {
     TResult? Function(String id)? removeClaim,
     TResult? Function(List<String> ids)? removeClaims,
     TResult? Function()? removeAllClaims,
-    TResult? Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult? Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult? Function()? clickScanQrCode,
     TResult? Function(String? response)? onScanQrCodeResponse,
@@ -728,14 +688,8 @@ class _$GetClaimsByIdsEvent implements GetClaimsByIdsEvent {
     TResult Function(String id)? removeClaim,
     TResult Function(List<String> ids)? removeClaims,
     TResult Function()? removeAllClaims,
-    TResult Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
@@ -895,7 +849,7 @@ class _$RemoveClaimEvent implements RemoveClaimEvent {
     required TResult Function(
             String id,
             String? issuer,
-            String? identifier,
+            String? did,
             ClaimState? state,
             String? expiration,
             String? type,
@@ -918,14 +872,8 @@ class _$RemoveClaimEvent implements RemoveClaimEvent {
     TResult? Function(String id)? removeClaim,
     TResult? Function(List<String> ids)? removeClaims,
     TResult? Function()? removeAllClaims,
-    TResult? Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult? Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult? Function()? clickScanQrCode,
     TResult? Function(String? response)? onScanQrCodeResponse,
@@ -944,14 +892,8 @@ class _$RemoveClaimEvent implements RemoveClaimEvent {
     TResult Function(String id)? removeClaim,
     TResult Function(List<String> ids)? removeClaims,
     TResult Function()? removeAllClaims,
-    TResult Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
@@ -1076,6 +1018,7 @@ class _$RemoveClaimsEvent implements RemoveClaimsEvent {
   final List<String> _ids;
   @override
   List<String> get ids {
+    if (_ids is EqualUnmodifiableListView) return _ids;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_ids);
   }
@@ -1116,7 +1059,7 @@ class _$RemoveClaimsEvent implements RemoveClaimsEvent {
     required TResult Function(
             String id,
             String? issuer,
-            String? identifier,
+            String? did,
             ClaimState? state,
             String? expiration,
             String? type,
@@ -1139,14 +1082,8 @@ class _$RemoveClaimsEvent implements RemoveClaimsEvent {
     TResult? Function(String id)? removeClaim,
     TResult? Function(List<String> ids)? removeClaims,
     TResult? Function()? removeAllClaims,
-    TResult? Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult? Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult? Function()? clickScanQrCode,
     TResult? Function(String? response)? onScanQrCodeResponse,
@@ -1165,14 +1102,8 @@ class _$RemoveClaimsEvent implements RemoveClaimsEvent {
     TResult Function(String id)? removeClaim,
     TResult Function(List<String> ids)? removeClaims,
     TResult Function()? removeAllClaims,
-    TResult Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
@@ -1306,7 +1237,7 @@ class _$RemoveAllClaimsEvent implements RemoveAllClaimsEvent {
     required TResult Function(
             String id,
             String? issuer,
-            String? identifier,
+            String? did,
             ClaimState? state,
             String? expiration,
             String? type,
@@ -1329,14 +1260,8 @@ class _$RemoveAllClaimsEvent implements RemoveAllClaimsEvent {
     TResult? Function(String id)? removeClaim,
     TResult? Function(List<String> ids)? removeClaims,
     TResult? Function()? removeAllClaims,
-    TResult? Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult? Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult? Function()? clickScanQrCode,
     TResult? Function(String? response)? onScanQrCodeResponse,
@@ -1355,14 +1280,8 @@ class _$RemoveAllClaimsEvent implements RemoveAllClaimsEvent {
     TResult Function(String id)? removeClaim,
     TResult Function(List<String> ids)? removeClaims,
     TResult Function()? removeAllClaims,
-    TResult Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
@@ -1451,7 +1370,7 @@ abstract class _$$UpdateClaimEventCopyWith<$Res> {
   $Res call(
       {String id,
       String? issuer,
-      String? identifier,
+      String? did,
       ClaimState? state,
       String? expiration,
       String? type,
@@ -1471,7 +1390,7 @@ class __$$UpdateClaimEventCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? issuer = freezed,
-    Object? identifier = freezed,
+    Object? did = freezed,
     Object? state = freezed,
     Object? expiration = freezed,
     Object? type = freezed,
@@ -1486,9 +1405,9 @@ class __$$UpdateClaimEventCopyWithImpl<$Res>
           ? _value.issuer
           : issuer // ignore: cast_nullable_to_non_nullable
               as String?,
-      identifier: freezed == identifier
-          ? _value.identifier
-          : identifier // ignore: cast_nullable_to_non_nullable
+      did: freezed == did
+          ? _value.did
+          : did // ignore: cast_nullable_to_non_nullable
               as String?,
       state: freezed == state
           ? _value.state
@@ -1516,7 +1435,7 @@ class _$UpdateClaimEvent implements UpdateClaimEvent {
   const _$UpdateClaimEvent(
       {required this.id,
       this.issuer,
-      this.identifier,
+      this.did,
       this.state,
       this.expiration,
       this.type,
@@ -1528,7 +1447,7 @@ class _$UpdateClaimEvent implements UpdateClaimEvent {
   @override
   final String? issuer;
   @override
-  final String? identifier;
+  final String? did;
   @override
   final ClaimState? state;
   @override
@@ -1540,13 +1459,14 @@ class _$UpdateClaimEvent implements UpdateClaimEvent {
   Map<String, dynamic>? get data {
     final value = _data;
     if (value == null) return null;
+    if (_data is EqualUnmodifiableMapView) return _data;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableMapView(value);
   }
 
   @override
   String toString() {
-    return 'ClaimsEvent.updateClaim(id: $id, issuer: $issuer, identifier: $identifier, state: $state, expiration: $expiration, type: $type, data: $data)';
+    return 'ClaimsEvent.updateClaim(id: $id, issuer: $issuer, did: $did, state: $state, expiration: $expiration, type: $type, data: $data)';
   }
 
   @override
@@ -1556,8 +1476,7 @@ class _$UpdateClaimEvent implements UpdateClaimEvent {
             other is _$UpdateClaimEvent &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.issuer, issuer) || other.issuer == issuer) &&
-            (identical(other.identifier, identifier) ||
-                other.identifier == identifier) &&
+            (identical(other.did, did) || other.did == did) &&
             (identical(other.state, state) || other.state == state) &&
             (identical(other.expiration, expiration) ||
                 other.expiration == expiration) &&
@@ -1566,7 +1485,7 @@ class _$UpdateClaimEvent implements UpdateClaimEvent {
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, issuer, identifier, state,
+  int get hashCode => Object.hash(runtimeType, id, issuer, did, state,
       expiration, type, const DeepCollectionEquality().hash(_data));
 
   @JsonKey(ignore: true)
@@ -1588,7 +1507,7 @@ class _$UpdateClaimEvent implements UpdateClaimEvent {
     required TResult Function(
             String id,
             String? issuer,
-            String? identifier,
+            String? did,
             ClaimState? state,
             String? expiration,
             String? type,
@@ -1599,7 +1518,7 @@ class _$UpdateClaimEvent implements UpdateClaimEvent {
     required TResult Function(ClaimModel claimModel) onClickClaim,
     required TResult Function(bool? removed) onClaimDetailRemoveResponse,
   }) {
-    return updateClaim(id, issuer, identifier, state, expiration, type, data);
+    return updateClaim(id, issuer, did, state, expiration, type, data);
   }
 
   @override
@@ -1611,22 +1530,15 @@ class _$UpdateClaimEvent implements UpdateClaimEvent {
     TResult? Function(String id)? removeClaim,
     TResult? Function(List<String> ids)? removeClaims,
     TResult? Function()? removeAllClaims,
-    TResult? Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult? Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult? Function()? clickScanQrCode,
     TResult? Function(String? response)? onScanQrCodeResponse,
     TResult? Function(ClaimModel claimModel)? onClickClaim,
     TResult? Function(bool? removed)? onClaimDetailRemoveResponse,
   }) {
-    return updateClaim?.call(
-        id, issuer, identifier, state, expiration, type, data);
+    return updateClaim?.call(id, issuer, did, state, expiration, type, data);
   }
 
   @override
@@ -1638,14 +1550,8 @@ class _$UpdateClaimEvent implements UpdateClaimEvent {
     TResult Function(String id)? removeClaim,
     TResult Function(List<String> ids)? removeClaims,
     TResult Function()? removeAllClaims,
-    TResult Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
@@ -1654,7 +1560,7 @@ class _$UpdateClaimEvent implements UpdateClaimEvent {
     required TResult orElse(),
   }) {
     if (updateClaim != null) {
-      return updateClaim(id, issuer, identifier, state, expiration, type, data);
+      return updateClaim(id, issuer, did, state, expiration, type, data);
     }
     return orElse();
   }
@@ -1725,7 +1631,7 @@ abstract class UpdateClaimEvent implements ClaimsEvent {
   const factory UpdateClaimEvent(
       {required final String id,
       final String? issuer,
-      final String? identifier,
+      final String? did,
       final ClaimState? state,
       final String? expiration,
       final String? type,
@@ -1733,7 +1639,7 @@ abstract class UpdateClaimEvent implements ClaimsEvent {
 
   String get id;
   String? get issuer;
-  String? get identifier;
+  String? get did;
   ClaimState? get state;
   String? get expiration;
   String? get type;
@@ -1791,7 +1697,7 @@ class _$ClickScanQrCodeEvent implements ClickScanQrCodeEvent {
     required TResult Function(
             String id,
             String? issuer,
-            String? identifier,
+            String? did,
             ClaimState? state,
             String? expiration,
             String? type,
@@ -1814,14 +1720,8 @@ class _$ClickScanQrCodeEvent implements ClickScanQrCodeEvent {
     TResult? Function(String id)? removeClaim,
     TResult? Function(List<String> ids)? removeClaims,
     TResult? Function()? removeAllClaims,
-    TResult? Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult? Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult? Function()? clickScanQrCode,
     TResult? Function(String? response)? onScanQrCodeResponse,
@@ -1840,14 +1740,8 @@ class _$ClickScanQrCodeEvent implements ClickScanQrCodeEvent {
     TResult Function(String id)? removeClaim,
     TResult Function(List<String> ids)? removeClaims,
     TResult Function()? removeAllClaims,
-    TResult Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
@@ -2003,7 +1897,7 @@ class _$ScanQrCodeResponse implements ScanQrCodeResponse {
     required TResult Function(
             String id,
             String? issuer,
-            String? identifier,
+            String? did,
             ClaimState? state,
             String? expiration,
             String? type,
@@ -2026,14 +1920,8 @@ class _$ScanQrCodeResponse implements ScanQrCodeResponse {
     TResult? Function(String id)? removeClaim,
     TResult? Function(List<String> ids)? removeClaims,
     TResult? Function()? removeAllClaims,
-    TResult? Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult? Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult? Function()? clickScanQrCode,
     TResult? Function(String? response)? onScanQrCodeResponse,
@@ -2052,14 +1940,8 @@ class _$ScanQrCodeResponse implements ScanQrCodeResponse {
     TResult Function(String id)? removeClaim,
     TResult Function(List<String> ids)? removeClaims,
     TResult Function()? removeAllClaims,
-    TResult Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
@@ -2220,7 +2102,7 @@ class _$OnClickClaim implements OnClickClaim {
     required TResult Function(
             String id,
             String? issuer,
-            String? identifier,
+            String? did,
             ClaimState? state,
             String? expiration,
             String? type,
@@ -2243,14 +2125,8 @@ class _$OnClickClaim implements OnClickClaim {
     TResult? Function(String id)? removeClaim,
     TResult? Function(List<String> ids)? removeClaims,
     TResult? Function()? removeAllClaims,
-    TResult? Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult? Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult? Function()? clickScanQrCode,
     TResult? Function(String? response)? onScanQrCodeResponse,
@@ -2269,14 +2145,8 @@ class _$OnClickClaim implements OnClickClaim {
     TResult Function(String id)? removeClaim,
     TResult Function(List<String> ids)? removeClaims,
     TResult Function()? removeAllClaims,
-    TResult Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,
@@ -2438,7 +2308,7 @@ class _$OnClaimDetailRemoveResponse implements OnClaimDetailRemoveResponse {
     required TResult Function(
             String id,
             String? issuer,
-            String? identifier,
+            String? did,
             ClaimState? state,
             String? expiration,
             String? type,
@@ -2461,14 +2331,8 @@ class _$OnClaimDetailRemoveResponse implements OnClaimDetailRemoveResponse {
     TResult? Function(String id)? removeClaim,
     TResult? Function(List<String> ids)? removeClaims,
     TResult? Function()? removeAllClaims,
-    TResult? Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult? Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult? Function()? clickScanQrCode,
     TResult? Function(String? response)? onScanQrCodeResponse,
@@ -2487,14 +2351,8 @@ class _$OnClaimDetailRemoveResponse implements OnClaimDetailRemoveResponse {
     TResult Function(String id)? removeClaim,
     TResult Function(List<String> ids)? removeClaims,
     TResult Function()? removeAllClaims,
-    TResult Function(
-            String id,
-            String? issuer,
-            String? identifier,
-            ClaimState? state,
-            String? expiration,
-            String? type,
-            Map<String, dynamic>? data)?
+    TResult Function(String id, String? issuer, String? did, ClaimState? state,
+            String? expiration, String? type, Map<String, dynamic>? data)?
         updateClaim,
     TResult Function()? clickScanQrCode,
     TResult Function(String? response)? onScanQrCodeResponse,

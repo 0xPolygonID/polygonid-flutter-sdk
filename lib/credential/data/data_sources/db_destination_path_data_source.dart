@@ -19,11 +19,11 @@ class DestinationPathDataSource {
   DestinationPathDataSource(this._createPathWrapper);
 
   /// Returns the destination path of the db
-  Future<String> getDestinationPath({required String identifier}) async {
+  Future<String> getDestinationPath({required String did}) async {
     String path = await _createPath();
     final destinationPath = join(
       path,
-      claimDatabasePrefix + identifier + '.db',
+      claimDatabasePrefix + did + '.db',
     );
     return destinationPath;
   }
