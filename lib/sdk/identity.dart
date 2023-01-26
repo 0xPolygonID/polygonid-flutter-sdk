@@ -4,6 +4,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_and_save_
 
 import '../identity/domain/entities/identity_entity.dart';
 import '../identity/domain/entities/private_identity_entity.dart';
+import '../identity/domain/use_cases/check_identity_validity_use_case.dart';
 import '../identity/domain/use_cases/fetch_identity_state_use_case.dart';
 import '../identity/domain/use_cases/get_did_identifier_use_case.dart';
 import '../identity/domain/use_cases/get_identity_use_case.dart';
@@ -70,7 +71,7 @@ abstract class PolygonIdSdkIdentity {
   Future<void> removeIdentity(
       {required String did, required String privateKey});
 
-  /// Returns the identifier derived from a publicKey
+  /// Returns the identifier derived from a privateKey
   ///
   /// The Identity's [publicKey]
   Future<String> getDidIdentifier({
@@ -116,6 +117,7 @@ abstract class PolygonIdSdkIdentity {
 
 @injectable
 class Identity implements PolygonIdSdkIdentity {
+  final CheckIdentityValidityUseCase _checkIdentityValidityUseCase;
   final CreateAndSaveIdentityUseCase _createAndSaveIdentityUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
 
@@ -126,13 +128,21 @@ class Identity implements PolygonIdSdkIdentity {
   final FetchIdentityStateUseCase _fetchIdentityStateUseCase;
 
   Identity(
-    this._createAndSaveIdentityUseCase,
-    this._getIdentityUseCase,
-    this._removeIdentityUseCase,
-    this._getDidIdentifierUseCase,
-    this._signMessageUseCase,
-    this._fetchIdentityStateUseCase,
+      this._checkIdentityValidityUseCase,
+      this._createAndSaveIdentityUseCase,
+      this._getIdentityUseCase,
+      this._removeIdentityUseCase,
+      this._getDidIdentifierUseCase,
+      this._signMessageUseCase,
+      this._fetchIdentityStateUseCase,
   );
+
+  Future<void> checkIdentityValidity(
+      {required String secret, required blockchain, required network}) async {
+    return _checkIdentityValidityUseCase.execute(
+        param: CheckIdentityValidityParam(
+          secret: secret, blockchain: blockchain, network: network));
+  }
 
   /// Creates and store an [IdentityEntity] from a secret
   /// if it doesn't exist already in the Polygon ID Sdk.

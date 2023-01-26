@@ -76,6 +76,24 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._qMapper,
   );
 
+  Future<void> checkIdentityValidity(
+      {required blockchain,
+        required network,
+        String? secret,
+        required String accessMessage}) async {
+    // Create a wallet
+    PrivadoIdWallet wallet = await _walletDataSource.createWallet(
+        secret: _privateKeyMapper.mapFrom(secret),
+        accessMessage: accessMessage);
+    String privateKey = _hexMapper.mapFrom(wallet.privateKey);
+
+    String did = await getDidIdentifier(
+      blockchain: blockchain,
+      network: network,
+      privateKey: privateKey,
+    );
+  }
+
   /// Get a [PrivateIdentityEntity] from a String secret
   /// It will create a new [PrivateIdentity]
   ///

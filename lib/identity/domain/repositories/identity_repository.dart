@@ -11,13 +11,22 @@ import '../entities/rhs_node_entity.dart';
 
 abstract class IdentityRepository {
   // Identity
-  Future<PrivateIdentityEntity> createIdentity(
-      {required blockchain,
-      required network,
-      String? secret,
-      required String accessMessage});
+  Future<void> checkIdentityValidity({
+    required String secret,
+    required String accessMessage,
+    required blockchain,
+    required network,
+  });
 
-  Future<void> storeIdentity({required IdentityEntity identity});
+  Future<PrivateIdentityEntity> createIdentity({
+    String? secret,
+    required String accessMessage,
+    required blockchain,
+    required network,
+  });
+
+  Future<void> storeIdentity(
+      {required IdentityEntity identity});
 
   Future<void> removeIdentity({required String did});
 
@@ -46,6 +55,8 @@ abstract class IdentityRepository {
   Future<String> getState(
       {required String identifier, required String contractAddress});
 
+  Future<String> convertIdToBigInt({required String id});
+
   Future<RhsNodeEntity> getStateRoots({required String url});
 
   Future<String> getChallenge({required String message});
@@ -56,6 +67,4 @@ abstract class IdentityRepository {
     required String did,
     required String privateKey,
   });
-
-  Future<String> convertIdToBigInt({required String id});
 }
