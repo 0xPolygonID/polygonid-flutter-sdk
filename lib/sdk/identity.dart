@@ -128,20 +128,20 @@ class Identity implements PolygonIdSdkIdentity {
   final FetchIdentityStateUseCase _fetchIdentityStateUseCase;
 
   Identity(
-      this._checkIdentityValidityUseCase,
-      this._createAndSaveIdentityUseCase,
-      this._getIdentityUseCase,
-      this._removeIdentityUseCase,
-      this._getDidIdentifierUseCase,
-      this._signMessageUseCase,
-      this._fetchIdentityStateUseCase,
+    this._checkIdentityValidityUseCase,
+    this._createAndSaveIdentityUseCase,
+    this._getIdentityUseCase,
+    this._removeIdentityUseCase,
+    this._getDidIdentifierUseCase,
+    this._signMessageUseCase,
+    this._fetchIdentityStateUseCase,
   );
 
   Future<void> checkIdentityValidity(
       {required String secret, required blockchain, required network}) async {
     return _checkIdentityValidityUseCase.execute(
         param: CheckIdentityValidityParam(
-          secret: secret, blockchain: blockchain, network: network));
+            secret: secret, blockchain: blockchain, network: network));
   }
 
   /// Creates and store an [IdentityEntity] from a secret

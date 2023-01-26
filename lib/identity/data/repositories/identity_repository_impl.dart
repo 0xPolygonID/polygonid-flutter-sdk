@@ -78,9 +78,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
   Future<void> checkIdentityValidity(
       {required blockchain,
-        required network,
-        String? secret,
-        required String accessMessage}) async {
+      required network,
+      String? secret,
+      required String accessMessage}) async {
     // Create a wallet
     PrivadoIdWallet wallet = await _walletDataSource.createWallet(
         secret: _privateKeyMapper.mapFrom(secret),

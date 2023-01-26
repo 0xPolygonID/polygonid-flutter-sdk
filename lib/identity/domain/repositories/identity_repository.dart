@@ -25,8 +25,7 @@ abstract class IdentityRepository {
     required network,
   });
 
-  Future<void> storeIdentity(
-      {required IdentityEntity identity});
+  Future<void> storeIdentity({required IdentityEntity identity});
 
   Future<void> removeIdentity({required String did});
 
