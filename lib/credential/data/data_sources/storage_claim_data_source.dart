@@ -27,14 +27,15 @@ class ClaimStoreRefWrapper {
     return _store[claimStoreName]!.record(key).get(database);
   }
 
-  Future<Map<String, Object?>> put(DatabaseClient database,
-      String key, Map<String, Object?> value,
+  Future<Map<String, Object?>> put(
+      DatabaseClient database, String key, Map<String, Object?> value,
       {bool? merge}) {
-    return _store[claimStoreName]!.record(key).put(database, value, merge: merge);
+    return _store[claimStoreName]!
+        .record(key)
+        .put(database, value, merge: merge);
   }
 
-  Future<String?> remove(
-      DatabaseClient database, String identifier) {
+  Future<String?> remove(DatabaseClient database, String identifier) {
     return _store[claimStoreName]!.record(identifier).delete(database);
   }
 
@@ -93,7 +94,7 @@ class StorageClaimDataSource {
   // For UT purpose
   Future<void> removeClaimsTransact(
       {required DatabaseClient transaction,
-        required List<String> claimIds}) async {
+      required List<String> claimIds}) async {
     for (String claimId in claimIds) {
       // TODO check if identifiers inside each claim are from privateKey
       await _storeRefWrapper.remove(transaction, claimId);
@@ -103,19 +104,18 @@ class StorageClaimDataSource {
   /// Remove all claims in a single transaction
   /// If one removing fails, they will all be reverted
   Future<void> removeAllClaims(
-      { required String did,
-        required String privateKey}) {
+      {required String did, required String privateKey}) {
     return _getDatabase(did: did, privateKey: privateKey).then((database) =>
         database
-            .transaction((transaction) => removeAllClaimsTransact(
-            transaction: transaction))
+            .transaction((transaction) =>
+                removeAllClaimsTransact(transaction: transaction))
             .whenComplete(() => database.close()));
   }
 
   // For UT purpose
   Future<void> removeAllClaimsTransact(
       {required DatabaseClient transaction}) async {
-      await _storeRefWrapper.removeAll(transaction);
+    await _storeRefWrapper.removeAll(transaction);
   }
 
   Future<List<ClaimDTO>> getClaims(
@@ -127,34 +127,5 @@ class StorageClaimDataSource {
                 .map((snapshot) => ClaimDTO.fromJson(snapshot.value))
                 .toList())
             .whenComplete(() => database.close()));
-  }
-
-  /// Export entire claims database
-  Future<Map<String, Object?>> getClaimsDb(
-      {required String did, required String privateKey}) async {
-    Database db = await _getDatabase(
-      did: did,
-      privateKey: privateKey,
-    );
-
-    Map<String, Object?> exportableDb = await exportDatabase(db);
-    return exportableDb;
-  }
-
-  /// Import entire claims database
-  Future<void> saveClaimsDb({
-    required Map<String, Object?> exportableDb,
-    required DatabaseFactory databaseFactory,
-    required String destinationPath,
-    required String privateKey,
-  }) async {
-    SembastCodec codec = getItSdk.get<SembastCodec>(param1: privateKey);
-
-    await importDatabase(
-      exportableDb,
-      databaseFactory,
-      destinationPath,
-      codec: codec,
-    );
   }
 }

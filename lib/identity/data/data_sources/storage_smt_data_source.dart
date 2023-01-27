@@ -45,10 +45,7 @@ class StorageSMTDataSource {
   Future<Database> _getDatabase(
       {required String did, required String privateKey}) {
     return getItSdk.getAsync<Database>(
-
-        instanceName: identityDatabaseName,
-        param1: did,
-        param2: privateKey);
+        instanceName: identityDatabaseName, param1: did, param2: privateKey);
   }
 
   // getNode gets a node by key from the SMT.  Empty nodes are not stored in the

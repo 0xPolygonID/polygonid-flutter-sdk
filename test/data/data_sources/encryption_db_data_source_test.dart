@@ -5,7 +5,7 @@ import 'package:encrypt/encrypt.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/credential/data/data_sources/encryption_db_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 import 'encryption_db_data_source_test.mocks.dart';

@@ -564,6 +564,41 @@ class MockIdentityRepository extends _i1.Mock
         returnValue:
             _i10.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
       ) as _i10.Future<Map<String, dynamic>>);
+  @override
+  _i10.Future<String> exportIdentity({
+    required String? did,
+    required String? privateKey,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #exportIdentity,
+          [],
+          {
+            #did: did,
+            #privateKey: privateKey,
+          },
+        ),
+        returnValue: _i10.Future<String>.value(''),
+      ) as _i10.Future<String>);
+  @override
+  _i10.Future<void> importIdentity({
+    required String? did,
+    required String? privateKey,
+    required String? encryptedDb,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #importIdentity,
+          [],
+          {
+            #did: did,
+            #privateKey: privateKey,
+            #encryptedDb: encryptedDb,
+          },
+        ),
+        returnValue: _i10.Future<void>.value(),
+        returnValueForMissingStub: _i10.Future<void>.value(),
+      ) as _i10.Future<void>);
 }
 
 /// A class which mocks [GetClaimsUseCase].

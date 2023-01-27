@@ -18,7 +18,6 @@ abstract class IdentityRepository {
     required network,
   });
 
-
   Future<PrivateIdentityEntity> createIdentity({
     String? secret,
     required String accessMessage,
@@ -67,5 +66,16 @@ abstract class IdentityRepository {
   Future<Map<String, dynamic>> getLatestState({
     required String did,
     required String privateKey,
+  });
+
+  Future<String> exportIdentity({
+    required String did,
+    required String privateKey,
+  });
+
+  Future<void> importIdentity({
+    required String did,
+    required String privateKey,
+    required String encryptedDb,
   });
 }

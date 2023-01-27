@@ -1,13 +1,13 @@
 import 'package:encrypt/encrypt.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
-import 'package:polygonid_flutter_sdk/credential/data/data_sources/db_destination_path_data_source.dart';
-import 'package:polygonid_flutter_sdk/credential/data/data_sources/encryption_db_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/remote_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_proofs/claim_proof_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
-import 'package:polygonid_flutter_sdk/credential/data/mappers/encryption_key_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/encryption_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/id_filter_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_mapper.dart';
@@ -128,8 +128,7 @@ class CredentialRepositoryImpl extends CredentialRepository {
 
   @override
   Future<void> removeAllClaims(
-      { required String did,
-        required String privateKey}) {
+      {required String did, required String privateKey}) {
     return _storageClaimDataSource
         .removeAllClaims(did: did, privateKey: privateKey)
         .catchError((error) => throw RemoveClaimsException(error));
@@ -216,43 +215,6 @@ class CredentialRepositoryImpl extends CredentialRepository {
     } catch (error) {
       throw NullRevocationStatusException(claim);
     }
-  }
-
-  @override
-  Future<String> exportClaims(
-      {required String did, required String privateKey}) async {
-    Map<String, Object?> exportableDb = await _storageClaimDataSource
-        .getClaimsDb(did: did, privateKey: privateKey);
-
-    Key key = _encryptionKeyMapper.mapFrom(privateKey);
-
-    return _encryptionDbDataSource.encryptData(
-      data: exportableDb,
-      key: key,
-    );
-  }
-
-  @override
-  Future<void> importClaims(
-      {required String did,
-      required String privateKey,
-      required String encryptedDb}) async {
-    Key key = _encryptionKeyMapper.mapFrom(privateKey);
-
-    Map<String, Object?> decryptedDb = _encryptionDbDataSource.decryptData(
-      encryptedData: encryptedDb,
-      key: key,
-    );
-
-    String destinationPath =
-        await _destinationPathDataSource.getDestinationPath(did: did);
-
-    return _storageClaimDataSource.saveClaimsDb(
-      exportableDb: decryptedDb,
-      databaseFactory: databaseFactoryIo,
-      destinationPath: destinationPath,
-      privateKey: privateKey,
-    );
   }
 
   @override

@@ -119,7 +119,6 @@ abstract class DatabaseModule {
   //StoreRef<String, Map<String, Object?>> get interactionStore =>
   //    stringMapStoreFactory.store(interactionStoreName);
 
-
   SembastCodec getCodec(@factoryParam String privateKey) {
     return getEncryptSembastCodec(password: privateKey);
   }

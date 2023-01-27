@@ -3,7 +3,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/export_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/export_claims_use_case.dart';
 
 import 'export_claims_use_case_test.mocks.dart';
 

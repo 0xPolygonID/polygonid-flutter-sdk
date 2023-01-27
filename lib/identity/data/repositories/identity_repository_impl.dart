@@ -1,37 +1,42 @@
 import 'dart:convert';
 
+import 'package:encrypt/encrypt.dart';
+import 'package:sembast/sembast_io.dart';
+
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/local_claim_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/smt_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/node_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/did_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/encryption_key_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/hash_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/identity_dto_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/node_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/poseidon_hash_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/rhs_node_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
-
-import '../../domain/entities/identity_entity.dart';
-import '../../domain/entities/private_identity_entity.dart';
-import '../../domain/entities/rhs_node_entity.dart';
-import '../../domain/exceptions/identity_exceptions.dart';
-import '../../domain/repositories/identity_repository.dart';
-import '../../libs/bjj/privadoid_wallet.dart';
-import '../data_sources/lib_pidcore_identity_data_source.dart';
-import '../data_sources/local_contract_files_data_source.dart';
-import '../data_sources/remote_identity_data_source.dart';
-import '../data_sources/storage_identity_data_source.dart';
-import '../data_sources/wallet_data_source.dart';
-import '../dtos/hash_dto.dart';
-import '../dtos/identity_dto.dart';
-import '../dtos/node_dto.dart';
-import '../mappers/did_mapper.dart';
-import '../mappers/hash_mapper.dart';
-import '../mappers/hex_mapper.dart';
-import '../mappers/identity_dto_mapper.dart';
-import '../mappers/node_mapper.dart';
-import '../mappers/poseidon_hash_mapper.dart';
-import '../mappers/private_key_mapper.dart';
-import '../mappers/rhs_node_mapper.dart';
-import '../mappers/state_identifier_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart';
 
 class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
@@ -53,6 +58,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final PoseidonHashMapper _poseidonHashMapper;
   final HashMapper _hashMapper;
   final QMapper _qMapper;
+  final EncryptionKeyMapper _encryptionKeyMapper;
+  final EncryptionDbDataSource _encryptionDbDataSource;
+  final DestinationPathDataSource _destinationPathDataSource;
 
   IdentityRepositoryImpl(
     this._walletDataSource,
@@ -74,13 +82,17 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._poseidonHashMapper,
     this._hashMapper,
     this._qMapper,
+    this._encryptionKeyMapper,
+    this._encryptionDbDataSource,
+    this._destinationPathDataSource,
   );
 
-  Future<void> checkIdentityValidity(
-      {required String secret,
-        required String accessMessage, required blockchain,
-      required network,
-      }) async {
+  Future<void> checkIdentityValidity({
+    required String secret,
+    required String accessMessage,
+    required blockchain,
+    required network,
+  }) async {
     // Create a wallet
     PrivadoIdWallet wallet = await _walletDataSource.createWallet(
         secret: _privateKeyMapper.mapFrom(secret),
@@ -306,9 +318,12 @@ class IdentityRepositoryImpl extends IdentityRepository {
   Future<void> removeIdentity(
       {required String did, required String privateKey}) async {
     // remove smt
-    await _smtDataSource.removeSMT(storeName: claimsTreeStoreName, did: did, privateKey: privateKey);
-    await _smtDataSource.removeSMT(storeName: revocationTreeStoreName, did: did, privateKey: privateKey);
-    await _smtDataSource.removeSMT(storeName: rootsTreeStoreName, did: did, privateKey: privateKey);
+    await _smtDataSource.removeSMT(
+        storeName: claimsTreeStoreName, did: did, privateKey: privateKey);
+    await _smtDataSource.removeSMT(
+        storeName: revocationTreeStoreName, did: did, privateKey: privateKey);
+    await _smtDataSource.removeSMT(
+        storeName: rootsTreeStoreName, did: did, privateKey: privateKey);
     // remove identity
     return _storageIdentityDataSource.removeIdentity(did: did);
   }
@@ -389,5 +404,45 @@ class IdentityRepositoryImpl extends IdentityRepository {
   Future<String> convertIdToBigInt({required String id}) {
     String idBigInt = _libPolygonIdCoreIdentityDataSource.genesisIdToBigInt(id);
     return Future.value(idBigInt);
+  }
+
+  @override
+  Future<String> exportIdentity({
+    required String did,
+    required String privateKey,
+  }) async {
+    Map<String, Object?> exportableDb = await _storageIdentityDataSource
+        .getIdentityDb(did: did, privateKey: privateKey);
+
+    Key key = _encryptionKeyMapper.mapFrom(privateKey);
+
+    return _encryptionDbDataSource.encryptData(
+      data: exportableDb,
+      key: key,
+    );
+  }
+
+  @override
+  Future<void> importIdentity({
+    required String did,
+    required String privateKey,
+    required String encryptedDb,
+  }) async {
+    Key key = _encryptionKeyMapper.mapFrom(privateKey);
+
+    Map<String, Object?> decryptedDb = _encryptionDbDataSource.decryptData(
+      encryptedData: encryptedDb,
+      key: key,
+    );
+
+    String destinationPath =
+        await _destinationPathDataSource.getDestinationPath(did: did);
+
+    return _storageIdentityDataSource.saveIdentityDb(
+      exportableDb: decryptedDb,
+      databaseFactory: databaseFactoryIo,
+      destinationPath: destinationPath,
+      privateKey: privateKey,
+    );
   }
 }

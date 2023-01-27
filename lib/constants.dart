@@ -194,7 +194,6 @@ const STORAGE_VERSION = 1;
 const databaseName = "polygonIdSdk.db";
 const sembastCodecName = "sembastCodec";
 
-
 /// Key value Database
 const keyValueStoreName = "keyValueStore";
 
@@ -202,7 +201,6 @@ const keyValueStoreName = "keyValueStore";
 const identityStoreName = "identityStore";
 const identityDatabaseName = "polygonIdSdkIdentity";
 const identityDatabasePrefix = "polygonIdSdkIdentity-";
-
 
 /// Identity secured Database
 const securedStoreName = "securedStore";

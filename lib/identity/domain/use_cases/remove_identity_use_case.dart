@@ -23,17 +23,21 @@ class RemoveIdentityUseCase extends FutureUseCase<RemoveIdentityParam, void> {
 
   @override
   Future<void> execute({required RemoveIdentityParam param}) {
-    return _removeAllClaimsUseCase.execute(param: RemoveAllClaimsParam(did: param.did,
-        privateKey: param.privateKey))
-        .then((value) => _identityRepository.removeIdentity(did: param.did,
-        privateKey: param.privateKey)
+    return _removeAllClaimsUseCase
+        .execute(
+            param: RemoveAllClaimsParam(
+                did: param.did, privateKey: param.privateKey))
+        .then((value) => _identityRepository
+                .removeIdentity(did: param.did, privateKey: param.privateKey)
+                .catchError((error) {
+              logger().e("[RemoveIdentityUseCase] Error: $error");
+
+              throw error;
+            }))
         .catchError((error) {
       logger().e("[RemoveIdentityUseCase] Error: $error");
 
       throw error;
-    })).catchError((error) {
-      logger().e("[RemoveIdentityUseCase] Error: $error");
-
-      throw error;});
+    });
   }
 }

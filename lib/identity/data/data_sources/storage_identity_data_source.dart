@@ -1,10 +1,12 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:sembast/sembast.dart';
+import 'package:sembast/utils/sembast_import_export.dart';
 
-import '../../domain/exceptions/identity_exceptions.dart';
-import '../dtos/identity_dto.dart';
-import 'storage_key_value_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_key_value_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 
 /// [StoreRef] wrapper
 /// Delegates all call to [IdentityStoreRefWrapper._store]
@@ -74,5 +76,45 @@ class StorageIdentityDataSource {
   Future<void> removeIdentityTransact(
       {required DatabaseClient transaction, required String did}) async {
     await _storeRefWrapper.remove(transaction, did);
+  }
+
+  /// Export identity database
+  Future<Map<String, Object?>> getIdentityDb(
+      {required String did, required String privateKey}) async {
+    Database db = await _getDatabase(
+      did: did,
+      privateKey: privateKey,
+    );
+
+    Map<String, Object?> exportableDb = await exportDatabase(db);
+    return exportableDb;
+  }
+
+  /// Import entire claims database
+  Future<void> saveIdentityDb({
+    required Map<String, Object?> exportableDb,
+    required DatabaseFactory databaseFactory,
+    required String destinationPath,
+    required String privateKey,
+  }) async {
+    SembastCodec codec = getItSdk.get<SembastCodec>(param1: privateKey);
+
+    await importDatabase(
+      exportableDb,
+      databaseFactory,
+      destinationPath,
+      codec: codec,
+    );
+  }
+
+  Future<Database> _getDatabase({
+    required String did,
+    required String privateKey,
+  }) {
+    return getItSdk.getAsync<Database>(
+      instanceName: identityDatabaseName,
+      param1: did,
+      param2: privateKey,
+    );
   }
 }

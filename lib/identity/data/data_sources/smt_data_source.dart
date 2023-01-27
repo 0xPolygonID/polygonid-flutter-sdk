@@ -39,13 +39,12 @@ class SMTDataSource {
         privateKey: privateKey);
   }
 
-  Future<void> removeSMT({required String storeName,
+  Future<void> removeSMT(
+      {required String storeName,
       required String did,
       required String privateKey}) async {
     return _storageSMTDataSource.removeSMT(
-        storeName: storeName,
-        did: did,
-        privateKey: privateKey);
+        storeName: storeName, did: did, privateKey: privateKey);
   }
 
   Future<HashDTO> getRoot(

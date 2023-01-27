@@ -24,8 +24,8 @@ class RemoveAllClaimsUseCase extends FutureUseCase<RemoveAllClaimsParam, void> {
           did: param.did,
           privateKey: param.privateKey,
         )
-        .then((_) => logger().i(
-            "[RemoveAllClaimsUseCase] Claims have been removed: $param"))
+        .then((_) => logger()
+            .i("[RemoveAllClaimsUseCase] Claims have been removed: $param"))
         .catchError((error) {
       logger().e("[RemoveAllClaimsUseCase] Error: $error");
       throw error;

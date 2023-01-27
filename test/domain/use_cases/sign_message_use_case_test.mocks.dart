@@ -357,4 +357,39 @@ class MockIdentityRepository extends _i1.Mock
         returnValue:
             _i7.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
       ) as _i7.Future<Map<String, dynamic>>);
+  @override
+  _i7.Future<String> exportIdentity({
+    required String? did,
+    required String? privateKey,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #exportIdentity,
+          [],
+          {
+            #did: did,
+            #privateKey: privateKey,
+          },
+        ),
+        returnValue: _i7.Future<String>.value(''),
+      ) as _i7.Future<String>);
+  @override
+  _i7.Future<void> importIdentity({
+    required String? did,
+    required String? privateKey,
+    required String? encryptedDb,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #importIdentity,
+          [],
+          {
+            #did: did,
+            #privateKey: privateKey,
+            #encryptedDb: encryptedDb,
+          },
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 }
