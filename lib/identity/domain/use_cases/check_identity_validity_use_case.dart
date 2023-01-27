@@ -28,15 +28,17 @@ class CheckIdentityValidityUseCase
   CheckIdentityValidityUseCase(this._identityRepository);
 
   @override
-  Future<void> execute({required CheckIdentityValidityParam param}) async {
+  Future<void> execute(
+      {required CheckIdentityValidityParam param}) async {
     try {
       String accessMessage = POLYGONID_ACCESS_MESSAGE;
       await _identityRepository.checkIdentityValidity(
-          secret: param.secret,
-          accessMessage: accessMessage,
-          blockchain: param.blockchain,
-          network: param.network);
-      logger().i("[CheckIdentityValidityUseCase] Identity is valid");
+              secret: param.secret,
+              accessMessage: accessMessage,
+              blockchain: param.blockchain,
+              network: param.network);
+      logger().i(
+          "[CheckIdentityValidityUseCase] Identity is valid");
     } catch (error) {
       logger().e("[CheckValidIdentityUseCase] Error: $error");
       rethrow;

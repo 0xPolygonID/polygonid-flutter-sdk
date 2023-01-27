@@ -18,6 +18,7 @@ abstract class IdentityRepository {
     required network,
   });
 
+
   Future<PrivateIdentityEntity> createIdentity({
     String? secret,
     required String accessMessage,
@@ -27,7 +28,8 @@ abstract class IdentityRepository {
 
   Future<void> storeIdentity({required IdentityEntity identity});
 
-  Future<void> removeIdentity({required String did});
+  Future<void> removeIdentity(
+      {required String did, required String privateKey});
 
   Future<IdentityEntity> getIdentity({required String did});
 

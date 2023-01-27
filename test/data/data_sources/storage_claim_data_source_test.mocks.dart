@@ -123,16 +123,25 @@ class MockClaimStoreRefWrapper extends _i1.Mock
   @override
   _i3.Future<String?> remove(
     _i6.DatabaseClient? database,
-    String? key,
+    String? identifier,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
           #remove,
           [
             database,
-            key,
+            identifier,
           ],
         ),
         returnValue: _i3.Future<String?>.value(),
       ) as _i3.Future<String?>);
+  @override
+  _i3.Future<int> removeAll(_i6.DatabaseClient? database) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #removeAll,
+          [database],
+        ),
+        returnValue: _i3.Future<int>.value(0),
+      ) as _i3.Future<int>);
 }

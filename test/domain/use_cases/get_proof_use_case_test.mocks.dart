@@ -353,12 +353,18 @@ class MockIdentityRepository extends _i1.Mock
         returnValueForMissingStub: _i10.Future<void>.value(),
       ) as _i10.Future<void>);
   @override
-  _i10.Future<void> removeIdentity({required String? did}) =>
+  _i10.Future<void> removeIdentity({
+    required String? did,
+    required String? privateKey,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #removeIdentity,
           [],
-          {#did: did},
+          {
+            #did: did,
+            #privateKey: privateKey,
+          },
         ),
         returnValue: _i10.Future<void>.value(),
         returnValueForMissingStub: _i10.Future<void>.value(),

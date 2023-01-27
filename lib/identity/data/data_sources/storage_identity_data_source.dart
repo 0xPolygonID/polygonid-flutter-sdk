@@ -60,14 +60,12 @@ class StorageIdentityDataSource {
       {required DatabaseClient transaction,
       required String did,
       required IdentityDTO identity}) async {
-    await _storageKeyValueDataSource.remove(
-        key: currentIdentifierKey, database: transaction);
     await _storeRefWrapper.put(transaction, did, identity.toJson());
-    await _storageKeyValueDataSource.store(
-        key: currentIdentifierKey, value: did, database: transaction);
   }
 
   Future<void> removeIdentity({required String did}) {
+    // TODO: get privateKey from param and obtain publicKey
+    //  from identity and encrypt/decrypt a msg to allow removing the identity
     return _database.transaction((transaction) =>
         removeIdentityTransact(transaction: transaction, did: did));
   }
@@ -75,8 +73,6 @@ class StorageIdentityDataSource {
   // For UT purpose
   Future<void> removeIdentityTransact(
       {required DatabaseClient transaction, required String did}) async {
-    await _storageKeyValueDataSource.remove(
-        key: currentIdentifierKey, database: transaction);
     await _storeRefWrapper.remove(transaction, did);
   }
 }

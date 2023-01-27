@@ -77,10 +77,10 @@ class IdentityRepositoryImpl extends IdentityRepository {
   );
 
   Future<void> checkIdentityValidity(
-      {required blockchain,
+      {required String secret,
+        required String accessMessage, required blockchain,
       required network,
-      String? secret,
-      required String accessMessage}) async {
+      }) async {
     // Create a wallet
     PrivadoIdWallet wallet = await _walletDataSource.createWallet(
         secret: _privateKeyMapper.mapFrom(secret),
@@ -303,7 +303,13 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<void> removeIdentity({required String did}) {
+  Future<void> removeIdentity(
+      {required String did, required String privateKey}) async {
+    // remove smt
+    await _smtDataSource.removeSMT(storeName: claimsTreeStoreName, did: did, privateKey: privateKey);
+    await _smtDataSource.removeSMT(storeName: revocationTreeStoreName, did: did, privateKey: privateKey);
+    await _smtDataSource.removeSMT(storeName: rootsTreeStoreName, did: did, privateKey: privateKey);
+    // remove identity
     return _storageIdentityDataSource.removeIdentity(did: did);
   }
 

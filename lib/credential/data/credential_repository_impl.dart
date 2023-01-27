@@ -127,6 +127,15 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
+  Future<void> removeAllClaims(
+      { required String did,
+        required String privateKey}) {
+    return _storageClaimDataSource
+        .removeAllClaims(did: did, privateKey: privateKey)
+        .catchError((error) => throw RemoveClaimsException(error));
+  }
+
+  @override
   Future<Map<String, dynamic>> fetchSchema({required String url}) {
     return _remoteClaimDataSource
         .fetchSchema(url: url)

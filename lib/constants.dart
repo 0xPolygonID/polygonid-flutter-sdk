@@ -193,16 +193,19 @@ const STORAGE_VERSION = 1;
 /// Database
 const databaseName = "polygonIdSdk.db";
 const sembastCodecName = "sembastCodec";
-const securedStoreName = "securedStore";
+
 
 /// Key value Database
 const keyValueStoreName = "keyValueStore";
-const currentIdentifierKey = "currentIdentifier";
 
 /// Identity Database
 const identityStoreName = "identityStore";
 const identityDatabaseName = "polygonIdSdkIdentity";
 const identityDatabasePrefix = "polygonIdSdkIdentity-";
+
+
+/// Identity secured Database
+const securedStoreName = "securedStore";
 
 /// Identity state
 const claimsTreeStoreName = "claimsTreeStore";
@@ -210,6 +213,4 @@ const revocationTreeStoreName = "revocationTreeStore";
 const rootsTreeStoreName = "rootsTreeStore";
 
 /// Credential
-const claimDatabaseName = "polygonIdSdkClaims";
-const claimDatabasePrefix = "polygonIdSdkClaims-";
 const claimStoreName = "claimStore";

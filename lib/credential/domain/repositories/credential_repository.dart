@@ -31,6 +31,10 @@ abstract class CredentialRepository {
       required String did,
       required String privateKey});
 
+  Future<void> removeAllClaims(
+      { required String did,
+        required String privateKey});
+
   Future<Map<String, dynamic>> fetchSchema({required String url});
 
   Future<Map<String, dynamic>> fetchVocab(

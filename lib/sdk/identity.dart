@@ -135,7 +135,7 @@ class Identity implements PolygonIdSdkIdentity {
     this._getDidIdentifierUseCase,
     this._signMessageUseCase,
     this._fetchIdentityStateUseCase,
-  );
+);
 
   Future<void> checkIdentityValidity(
       {required String secret, required blockchain, required network}) async {
@@ -213,7 +213,8 @@ class Identity implements PolygonIdSdkIdentity {
   @override
   Future<void> removeIdentity(
       {required String did, required String privateKey}) {
-    return _removeIdentityUseCase.execute(param: did);
+    return _removeIdentityUseCase.execute(
+        param: RemoveIdentityParam(did: did, privateKey: privateKey));
   }
 
   /// Sign a message through a identity's private key.
