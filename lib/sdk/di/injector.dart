@@ -81,26 +81,6 @@ abstract class DatabaseModule {
     return database;
   }
 
-  // Credential
-  @Named(claimStoreName)
-  StoreRef<String, Map<String, Object?>> get claimStore =>
-      stringMapStoreFactory.store(claimStoreName);
-
-  @Named(claimDatabaseName)
-  Future<Database> claimDatabase(
-    @factoryParam String? identifier,
-    @factoryParam String? privateKey,
-  ) async {
-    final dir = await getApplicationDocumentsDirectory();
-    await dir.create(recursive: true);
-    final path = join(dir.path, claimDatabasePrefix + identifier! + '.db');
-
-    final codec = getItSdk.get<SembastCodec>(param1: privateKey);
-
-    final database = await databaseFactoryIo.openDatabase(path, codec: codec);
-    return database;
-  }
-
   // Identity
   @Named(identityStoreName)
   StoreRef<String, Map<String, Object?>> get identityStore =>
@@ -129,9 +109,15 @@ abstract class DatabaseModule {
         stringMapStoreFactory.store(revocationTreeStoreName);
     result[rootsTreeStoreName] =
         stringMapStoreFactory.store(rootsTreeStoreName);
-    //result[claimStoreName] = stringMapStoreFactory.store(claimStoreName);
+    result[claimStoreName] = stringMapStoreFactory.store(claimStoreName);
     return result;
   }
+
+  // TODO: uncomment when implementing connections
+  // Iden3comm (interactions or connections?)
+  //@Named(interactionStoreName)
+  //StoreRef<String, Map<String, Object?>> get interactionStore =>
+  //    stringMapStoreFactory.store(interactionStoreName);
 
   SembastCodec getCodec(@factoryParam String privateKey) {
     return getEncryptSembastCodec(password: privateKey);

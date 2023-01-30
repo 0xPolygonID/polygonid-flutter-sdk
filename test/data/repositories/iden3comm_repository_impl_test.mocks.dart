@@ -221,6 +221,35 @@ class MockStorageClaimDataSource extends _i1.Mock
         returnValueForMissingStub: _i4.Future<void>.value(),
       ) as _i4.Future<void>);
   @override
+  _i4.Future<void> removeAllClaims({
+    required String? did,
+    required String? privateKey,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #removeAllClaims,
+          [],
+          {
+            #did: did,
+            #privateKey: privateKey,
+          },
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+  @override
+  _i4.Future<void> removeAllClaimsTransact(
+          {required _i9.DatabaseClient? transaction}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #removeAllClaimsTransact,
+          [],
+          {#transaction: transaction},
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+  @override
   _i4.Future<List<_i8.ClaimDTO>> getClaims({
     _i9.Filter? filter,
     required String? did,

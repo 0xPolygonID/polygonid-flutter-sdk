@@ -1,9 +1,12 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_and_save_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/export_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/import_claims_use_case.dart';
 
 import '../identity/domain/entities/identity_entity.dart';
 import '../identity/domain/entities/private_identity_entity.dart';
+import '../identity/domain/use_cases/check_identity_validity_use_case.dart';
 import '../identity/domain/use_cases/fetch_identity_state_use_case.dart';
 import '../identity/domain/use_cases/get_did_identifier_use_case.dart';
 import '../identity/domain/use_cases/get_identity_use_case.dart';
@@ -70,7 +73,7 @@ abstract class PolygonIdSdkIdentity {
   Future<void> removeIdentity(
       {required String did, required String privateKey});
 
-  /// Returns the identifier derived from a publicKey
+  /// Returns the identifier derived from a privateKey
   ///
   /// The Identity's [publicKey]
   Future<String> getDidIdentifier({
@@ -112,10 +115,24 @@ abstract class PolygonIdSdkIdentity {
       {required String privateKey, required int profileNonce});
 
   Future<List<int>> getProfiles({required String privateKey});
+
+  /// Export encrypted identity database
+  Future<String> exportEncryptedIdentityDb({
+    required String did,
+    required String privateKey,
+  });
+
+  /// Import encrypted claims database
+  Future<void> importEncryptedIdentityDb({
+    required String did,
+    required String privateKey,
+    required String encryptedDb,
+  });
 }
 
 @injectable
 class Identity implements PolygonIdSdkIdentity {
+  final CheckIdentityValidityUseCase _checkIdentityValidityUseCase;
   final CreateAndSaveIdentityUseCase _createAndSaveIdentityUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
 
@@ -124,15 +141,27 @@ class Identity implements PolygonIdSdkIdentity {
   final GetDidIdentifierUseCase _getDidIdentifierUseCase;
   final SignMessageUseCase _signMessageUseCase;
   final FetchIdentityStateUseCase _fetchIdentityStateUseCase;
+  final ExportIdentityUseCase _exportIdentityUseCase;
+  final ImportIdentityUseCase _importIdentityUseCase;
 
   Identity(
+    this._checkIdentityValidityUseCase,
     this._createAndSaveIdentityUseCase,
     this._getIdentityUseCase,
     this._removeIdentityUseCase,
     this._getDidIdentifierUseCase,
     this._signMessageUseCase,
     this._fetchIdentityStateUseCase,
+    this._exportIdentityUseCase,
+    this._importIdentityUseCase,
   );
+
+  Future<void> checkIdentityValidity(
+      {required String secret, required blockchain, required network}) async {
+    return _checkIdentityValidityUseCase.execute(
+        param: CheckIdentityValidityParam(
+            secret: secret, blockchain: blockchain, network: network));
+  }
 
   /// Creates and store an [IdentityEntity] from a secret
   /// if it doesn't exist already in the Polygon ID Sdk.
@@ -203,7 +232,8 @@ class Identity implements PolygonIdSdkIdentity {
   @override
   Future<void> removeIdentity(
       {required String did, required String privateKey}) {
-    return _removeIdentityUseCase.execute(param: did);
+    return _removeIdentityUseCase.execute(
+        param: RemoveIdentityParam(did: did, privateKey: privateKey));
   }
 
   /// Sign a message through a identity's private key.
@@ -275,5 +305,31 @@ class Identity implements PolygonIdSdkIdentity {
       {required String privateKey, required int profileNonce}) {
     // TODO: implement removeProfile
     throw UnimplementedError();
+  }
+
+  @override
+  Future<String> exportEncryptedIdentityDb({
+    required String did,
+    required String privateKey,
+  }) {
+    return _exportIdentityUseCase.execute(
+        param: ExportIdentityParam(
+      privateKey: privateKey,
+      did: did,
+    ));
+  }
+
+  @override
+  Future<void> importEncryptedIdentityDb({
+    required String did,
+    required String privateKey,
+    required String encryptedDb,
+  }) {
+    return _importIdentityUseCase.execute(
+        param: ImportIdentityParam(
+      privateKey: privateKey,
+      did: did,
+      encryptedClaimsDb: encryptedDb,
+    ));
   }
 }

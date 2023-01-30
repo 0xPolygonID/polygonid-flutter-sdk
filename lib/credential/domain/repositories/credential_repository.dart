@@ -31,6 +31,9 @@ abstract class CredentialRepository {
       required String did,
       required String privateKey});
 
+  Future<void> removeAllClaims(
+      {required String did, required String privateKey});
+
   Future<Map<String, dynamic>> fetchSchema({required String url});
 
   Future<Map<String, dynamic>> fetchVocab(
@@ -52,15 +55,4 @@ abstract class CredentialRepository {
       {required ClaimEntity claim, required bool rhs});
 
   Future<List<String>> getAuthClaim({required List<String> publicKey});
-
-  Future<String> exportClaims({
-    required String did,
-    required String privateKey,
-  });
-
-  Future<void> importClaims({
-    required String did,
-    required String privateKey,
-    required String encryptedDb,
-  });
 }

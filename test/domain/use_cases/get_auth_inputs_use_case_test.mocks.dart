@@ -159,21 +159,42 @@ class MockIdentityRepository extends _i1.Mock
   }
 
   @override
-  _i7.Future<_i3.PrivateIdentityEntity> createIdentity({
+  _i7.Future<void> checkIdentityValidity({
+    required String? secret,
+    required String? accessMessage,
     required dynamic blockchain,
     required dynamic network,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #checkIdentityValidity,
+          [],
+          {
+            #secret: secret,
+            #accessMessage: accessMessage,
+            #blockchain: blockchain,
+            #network: network,
+          },
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+  @override
+  _i7.Future<_i3.PrivateIdentityEntity> createIdentity({
     String? secret,
     required String? accessMessage,
+    required dynamic blockchain,
+    required dynamic network,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
           #createIdentity,
           [],
           {
-            #blockchain: blockchain,
-            #network: network,
             #secret: secret,
             #accessMessage: accessMessage,
+            #blockchain: blockchain,
+            #network: network,
           },
         ),
         returnValue: _i7.Future<_i3.PrivateIdentityEntity>.value(
@@ -183,10 +204,10 @@ class MockIdentityRepository extends _i1.Mock
             #createIdentity,
             [],
             {
-              #blockchain: blockchain,
-              #network: network,
               #secret: secret,
               #accessMessage: accessMessage,
+              #blockchain: blockchain,
+              #network: network,
             },
           ),
         )),
@@ -203,12 +224,18 @@ class MockIdentityRepository extends _i1.Mock
         returnValueForMissingStub: _i7.Future<void>.value(),
       ) as _i7.Future<void>);
   @override
-  _i7.Future<void> removeIdentity({required String? did}) =>
+  _i7.Future<void> removeIdentity({
+    required String? did,
+    required String? privateKey,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #removeIdentity,
           [],
-          {#did: did},
+          {
+            #did: did,
+            #privateKey: privateKey,
+          },
         ),
         returnValue: _i7.Future<void>.value(),
         returnValueForMissingStub: _i7.Future<void>.value(),
@@ -336,6 +363,16 @@ class MockIdentityRepository extends _i1.Mock
         returnValue: _i7.Future<String>.value(''),
       ) as _i7.Future<String>);
   @override
+  _i7.Future<String> convertIdToBigInt({required String? id}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #convertIdToBigInt,
+          [],
+          {#id: id},
+        ),
+        returnValue: _i7.Future<String>.value(''),
+      ) as _i7.Future<String>);
+  @override
   _i7.Future<_i4.RhsNodeEntity> getStateRoots({required String? url}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -398,13 +435,38 @@ class MockIdentityRepository extends _i1.Mock
             _i7.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
       ) as _i7.Future<Map<String, dynamic>>);
   @override
-  _i7.Future<String> convertIdToBigInt({required String? id}) =>
+  _i7.Future<String> exportIdentity({
+    required String? did,
+    required String? privateKey,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
-          #convertIdToBigInt,
+          #exportIdentity,
           [],
-          {#id: id},
+          {
+            #did: did,
+            #privateKey: privateKey,
+          },
         ),
         returnValue: _i7.Future<String>.value(''),
       ) as _i7.Future<String>);
+  @override
+  _i7.Future<void> importIdentity({
+    required String? did,
+    required String? privateKey,
+    required String? encryptedDb,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #importIdentity,
+          [],
+          {
+            #did: did,
+            #privateKey: privateKey,
+            #encryptedDb: encryptedDb,
+          },
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 }

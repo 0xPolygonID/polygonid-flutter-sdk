@@ -208,6 +208,23 @@ class MockCredentialRepository extends _i1.Mock
         returnValueForMissingStub: _i4.Future<void>.value(),
       ) as _i4.Future<void>);
   @override
+  _i4.Future<void> removeAllClaims({
+    required String? did,
+    required String? privateKey,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #removeAllClaims,
+          [],
+          {
+            #did: did,
+            #privateKey: privateKey,
+          },
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+  @override
   _i4.Future<Map<String, dynamic>> fetchSchema({required String? url}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -319,39 +336,4 @@ class MockCredentialRepository extends _i1.Mock
         ),
         returnValue: _i4.Future<List<String>>.value(<String>[]),
       ) as _i4.Future<List<String>>);
-  @override
-  _i4.Future<String> exportClaims({
-    required String? did,
-    required String? privateKey,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #exportClaims,
-          [],
-          {
-            #did: did,
-            #privateKey: privateKey,
-          },
-        ),
-        returnValue: _i4.Future<String>.value(''),
-      ) as _i4.Future<String>);
-  @override
-  _i4.Future<void> importClaims({
-    required String? did,
-    required String? privateKey,
-    required String? encryptedDb,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #importClaims,
-          [],
-          {
-            #did: did,
-            #privateKey: privateKey,
-            #encryptedDb: encryptedDb,
-          },
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
 }

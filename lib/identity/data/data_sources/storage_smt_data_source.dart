@@ -8,23 +8,17 @@ import '../dtos/hash_dto.dart';
 import '../dtos/node_dto.dart';
 
 /// [StoreRef] wrapper
-/// Delegates all call to [IdentitySMTStoreRefWrapper._getStore]
+/// Delegates all call to [IdentitySMTStoreRefWrapper._store]
 /// Needed for UT for mocking extension methods
 @injectable
 class IdentitySMTStoreRefWrapper {
   final Map<String, StoreRef<String, Map<String, Object?>>> _store;
 
   IdentitySMTStoreRefWrapper(@Named(securedStoreName) this._store);
-  /*Future<StoreRef<String, Map<String, Object?>>> _getStore(
-      { required String storeName}) {
-    return getItSdk.getAsync<StoreRef<String, Map<String, Object?>>>(
-        instanceName: storeName);
-  }*/
 
   Future<Map<String, Object?>?> get(
       DatabaseClient database, String storeName, String key) {
-    return //_getStore(storeName: storeName)
-        _store[storeName]!.record(key).get(database);
+    return _store[storeName]!.record(key).get(database);
   }
 
   Future<Map<String, Object?>> put(DatabaseClient database, String storeName,
@@ -53,12 +47,6 @@ class StorageSMTDataSource {
     return getItSdk.getAsync<Database>(
         instanceName: identityDatabaseName, param1: did, param2: privateKey);
   }
-
-  /*Future</*StoreRef<String, Map<String, Object?>>*/IdentitySMTStoreRefWrapper> _getStore(
-      {required String storeName}) {
-    return getItSdk.getAsync<StoreRef<String, Map<String, Object?>>>(
-        instanceName: storeName);
-  }*/
 
   // getNode gets a node by key from the SMT.  Empty nodes are not stored in the
   // tree; they are all the same and assumed to always exist.

@@ -23,7 +23,7 @@ class DestinationPathDataSource {
     String path = await _createPath();
     final destinationPath = join(
       path,
-      claimDatabasePrefix + did + '.db',
+      identityDatabasePrefix + did + '.db',
     );
     return destinationPath;
   }
