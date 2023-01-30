@@ -55,39 +55,33 @@ dev_dependencies:
   envied_generator: ^0.2.3
 
 ffigen:
-  name: NativeIden3CoreLib
-  description: Bindings to `ios/Classes/libiden3core.h`.
-  output: 'lib/identity/libs/iden3core/native_iden3core.dart'
+  name: NativePolygonIdCoreLib
+  description: Bindings to `ios/Classes/libpolygonid.h`.
+  output: 'lib/common/libs/polygonidcore/native_polygonidcore.dart'
   headers:
     entry-points:
-       - 'ios/Classes/libiden3core.h'
+      - 'ios/Classes/libpolygonid.h'
 
-  # name: WitnessMtpLib
-  # description: Bindings to `ios/Classes/witnesscalc_mtp.h`.
-  # output: 'lib/libs/generated_bindings_witness_mtp.dart'
-  # headers:
-  #  entry-points:
-  #    - 'ios/Classes/witnesscalc_mtp.h'
-  # name: WitnessLib
-  # description: Bindings to `ios/Classes/witnesscalc.h`.
-  # output: 'lib/libs/generated_bindings_witness.dart'
-  # headers:
-  #  entry-points:
-   #   - 'ios/Classes/witnesscalc.h'
-
-
-  # name: ProverLib
-  # description: Bindings to `ios/Classes/prover.h`.
-  # output: 'lib/libs/generated_bindings_prover.dart'
-    # headers:
-      # entry-points:
-       # - 'ios/Classes/prover.h'
+        # name: WitnessMtpLib
+        # description: Bindings to `ios/Classes/witnesscalc_mtp.h`.
+        # output: 'lib/libs/generated_bindings_witness_mtp.dart'
+        # headers:
+        #  entry-points:
+        #    - 'ios/Classes/witnesscalc_mtp.h'
+        # name: WitnessLib
+        # description: Bindings to `ios/Classes/witnesscalc.h`.
+        # output: 'lib/libs/generated_bindings_witness.dart'
+        # headers:
+        #  entry-points:
+        #   - 'ios/Classes/witnesscalc.h'
 
 
-
-
-
-
+        # name: ProverLib
+        # description: Bindings to `ios/Classes/prover.h`.
+        # output: 'lib/libs/generated_bindings_prover.dart'
+        # headers:
+        # entry-points:
+      # - 'ios/Classes/prover.h'
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
