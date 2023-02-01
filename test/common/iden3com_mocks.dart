@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/fetch/fetch_iden3_message_entity.dart';
@@ -7,30 +9,24 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/of
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/onchain/contract_iden3_message_entity.dart';
 
 import 'common_mocks.dart';
+import 'proof_mocks.dart';
 
 class Iden3commMocks {
   /// [ProofScopeRequest]
   static String proofScopeRequestJson = '''
     {
       "id": 1,
-      "circuit_id": "${CommonMocks.circuitId}",
+      "circuitId": "${CommonMocks.circuitId}",
       "optional": false,
-      "rules": {
-        "audience": "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
-        "challenge": 748916,
-        "query": {
-          "allowedIssuers": [
-            "*"
-          ],
-          "challenge": 123456,
-          "schema": {
-            "type": "KYCAgeCredential",
-            "url": "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld"
-          },
-          "req": {
-            "birthday": {
-              "\$lt": 20000101
-            }
+      "query": {
+        "allowedIssuers": [
+          "*"
+        ],
+        "context": "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld",
+        "type": "KYCAgeCredential",
+        "credentialSubject": {
+          "birthday": {
+            "\$lt": 20000101
           }
         }
       }
@@ -39,24 +35,17 @@ class Iden3commMocks {
   static String otherProofScopeRequestJson = '''
     {
       "id": 1,
-      "circuit_id": "${CommonMocks.circuitId}",
+      "circuitId": "${CommonMocks.circuitId}",
       "optional": false,
-      "rules": {
-        "audience": "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
-        "challenge": 748916,
-        "query": {
-          "allowedIssuers": [
-            "*"
-          ],
-          "challenge": 123456,
-          "schema": {
-            "type": "KYCCountryOfResidenceCredential",
-            "url": "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld"
-          },
-          "req": {
-            "city": {
-              "\$in": [208, 400]
-            }
+      "query": {
+        "allowedIssuers": [
+          "*"
+        ],
+        "context": "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld",
+        "type": "KYCCountryOfResidenceCredential",
+        "credentialSubject": {
+          "city": {
+            "\$in": [208, 400]
           }
         }
       }
@@ -78,7 +67,7 @@ class Iden3commMocks {
   "scope": [
     $proofScopeRequestJson, $otherProofScopeRequestJson
   ],
-  "url": "theUrl",
+  "url": "${CommonMocks.url}",
   "credentials": [
     {
       "id": "27887",
@@ -92,7 +81,7 @@ class Iden3commMocks {
 {
   "id": "4dd6479b-99b6-405c-ba9e-c7b18d251a5e",
   "thid": "4dd6479b-99b6-405c-ba9e-c7b18d251a5e",
-  "from": "1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ",
+  "from": "${CommonMocks.did}",
   "typ": "application/iden3comm-plain-json",
   "type": "https://iden3-communication.io/authorization/1.0/request",
   "body": $authRequestBodyJson
@@ -185,4 +174,18 @@ class Iden3commMocks {
   static ContractIden3MessageEntity contractFunctionCallRequest =
       ContractIden3MessageEntity.fromJson(
           jsonDecode(contractFunctionCallRequestJson));
+
+  static List<ProofRequestEntity> proofRequestList = [
+    ProofRequestEntity(Iden3commMocks.proofScopeRequest,
+        ProofQueryParamEntity(CommonMocks.field, CommonMocks.intValues, 3)),
+    ProofRequestEntity(Iden3commMocks.proofScopeRequest,
+        ProofQueryParamEntity(CommonMocks.field, CommonMocks.intValues, 2)),
+  ];
+
+  static JWZProofEntity jwzProof = JWZProofEntity(
+    id: proofRequestList[0].scope.id,
+    circuitId: proofRequestList[0].scope.circuitId,
+    proof: ProofMocks.jwzProof.proof,
+    pubSignals: ProofMocks.jwzProof.pubSignals,
+  );
 }

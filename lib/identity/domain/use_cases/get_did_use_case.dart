@@ -26,7 +26,12 @@ class GetDidUseCase extends FutureUseCase<String, DidEntity> {
     List<String> splits = param.split(":");
 
     if (splits.length == 5 && splits[0] == "did" && splits[1] == "polygonid") {
-      var did = DidEntity(param, splits[4], splits[2], splits[3]);
+      var did = DidEntity(
+        did: param,
+        identifier: splits[4],
+        blockchain: splits[2],
+        network: splits[3],
+      );
       logger().i("[GetDidUseCase] DID: $did");
 
       return Future.value(did);

@@ -1,5 +1,5 @@
+import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_case.dart';
-import 'package:polygonid_flutter_sdk/constants.dart';
 
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
@@ -24,27 +24,26 @@ class CreateAndSaveIdentityParam {
 
 class CreateAndSaveIdentityUseCase
     extends FutureUseCase<CreateAndSaveIdentityParam, IdentityEntity> {
+  final String _accessMessage;
   final IdentityRepository _identityRepository;
-  final GetEnvConfigUseCase _getEnvConfigUseCase;
   final GetDidUseCase _getDidUseCase;
   final GetDidIdentifierUseCase _getDidIdentifierUseCase;
 
   CreateAndSaveIdentityUseCase(
-      this._identityRepository,
-      this._getEnvConfigUseCase,
-      this._getDidUseCase,
-      this._getDidIdentifierUseCase);
+    @Named('accessMessage') this._accessMessage,
+    this._identityRepository,
+    this._getDidUseCase,
+    this._getDidIdentifierUseCase,
+  );
 
   @override
   Future<PrivateIdentityEntity> execute(
       {required CreateAndSaveIdentityParam param}) async {
     // Create the [PrivateIdentityEntity] with the secret
-    String accessMessage = POLYGONID_ACCESS_MESSAGE;
-
     PrivateIdentityEntity privateIdentity =
         await _identityRepository.createIdentity(
             secret: param.secret,
-            accessMessage: accessMessage,
+            accessMessage: _accessMessage,
             blockchain: param.blockchain,
             network: param.network);
 

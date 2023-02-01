@@ -2,7 +2,7 @@ import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_and_save_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/export_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/import_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/import_identity_use_case.dart';
 
 import '../identity/domain/entities/identity_entity.dart';
 import '../identity/domain/entities/private_identity_entity.dart';
@@ -329,7 +329,7 @@ class Identity implements PolygonIdSdkIdentity {
         param: ImportIdentityParam(
       privateKey: privateKey,
       did: did,
-      encryptedClaimsDb: encryptedDb,
+      encryptedDb: encryptedDb,
     ));
   }
 }

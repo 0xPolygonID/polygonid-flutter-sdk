@@ -42,7 +42,7 @@ void main() {
 
       // Then
       var capturedRemove = verify(credentialRepository.removeClaims(
-              did: captureAnyNamed('identifier'),
+              did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey'),
               claimIds: captureAnyNamed('claimIds')))
           .captured;
@@ -66,7 +66,7 @@ void main() {
 
       // Then
       var capturedRemove = verify(credentialRepository.removeClaims(
-              did: captureAnyNamed('identifier'),
+              did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey'),
               claimIds: captureAnyNamed('claimIds')))
           .captured;

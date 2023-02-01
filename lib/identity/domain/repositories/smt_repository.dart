@@ -34,6 +34,7 @@ abstract class SMTRepository {
       required String did,
       required String privateKey});
 
+  /// TODO: use this through an UC
   Future<ProofEntity> generateProof(
       {required HashEntity key,
       required String storeName,

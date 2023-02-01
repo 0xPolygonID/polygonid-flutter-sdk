@@ -1,12 +1,10 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/utils/sembast_import_export.dart';
-
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_key_value_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 
 /// [StoreRef] wrapper
 /// Delegates all call to [IdentityStoreRefWrapper._store]
@@ -35,10 +33,8 @@ class IdentityStoreRefWrapper {
 class StorageIdentityDataSource {
   final Database _database;
   final IdentityStoreRefWrapper _storeRefWrapper;
-  final StorageKeyValueDataSource _storageKeyValueDataSource;
 
-  StorageIdentityDataSource(
-      this._database, this._storeRefWrapper, this._storageKeyValueDataSource);
+  StorageIdentityDataSource(this._database, this._storeRefWrapper);
 
   Future<IdentityDTO> getIdentity({required String did}) {
     return _storeRefWrapper.get(_database, did).then((storedValue) {

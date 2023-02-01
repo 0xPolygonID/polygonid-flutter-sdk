@@ -4,7 +4,12 @@ class DidEntity {
   final String blockchain;
   final String network;
 
-  DidEntity(this.did, this.identifier, this.blockchain, this.network);
+  DidEntity({
+    required this.did,
+    required this.identifier,
+    required this.blockchain,
+    required this.network,
+  });
 
   @override
   String toString() =>

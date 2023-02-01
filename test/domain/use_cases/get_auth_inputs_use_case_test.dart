@@ -2,33 +2,51 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_auth_claim_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/sign_message_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/use_cases/get_gist_proof_use_case.dart';
 
 import '../../common/common_mocks.dart';
 import '../../common/identity_mocks.dart';
+import '../../common/proof_mocks.dart';
 import 'get_auth_inputs_use_case_test.mocks.dart';
 
 MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
 MockGetAuthClaimUseCase getAuthClaimUseCase = MockGetAuthClaimUseCase();
 MockSignMessageUseCase signMessageUseCase = MockSignMessageUseCase();
+MockGetGistProofUseCase getGistProofUseCase = MockGetGistProofUseCase();
+MockIden3commRepository iden3commRepository = MockIden3commRepository();
 MockIdentityRepository identityRepository = MockIdentityRepository();
+MockSMTRepository smtRepository = MockSMTRepository();
 
 // Data
-GetAuthInputsParam param = GetAuthInputsParam(
-    CommonMocks.challenge, CommonMocks.identifier, CommonMocks.privateKey);
+GetAuthInputsParam param = GetAuthInputsParam(CommonMocks.challenge,
+    CommonMocks.did, CommonMocks.nonce, CommonMocks.privateKey);
+var claims = [CommonMocks.authClaim, CommonMocks.authClaim];
 
 // Tested instance
-GetAuthInputsUseCase useCase = GetAuthInputsUseCase(getIdentityUseCase,
-    getAuthClaimUseCase, signMessageUseCase, identityRepository);
+GetAuthInputsUseCase useCase = GetAuthInputsUseCase(
+  getIdentityUseCase,
+  getAuthClaimUseCase,
+  signMessageUseCase,
+  getGistProofUseCase,
+  iden3commRepository,
+  identityRepository,
+  smtRepository,
+);
 
 @GenerateMocks([
   GetIdentityUseCase,
   GetAuthClaimUseCase,
   SignMessageUseCase,
-  IdentityRepository
+  GetGistProofUseCase,
+  Iden3commRepository,
+  IdentityRepository,
+  SMTRepository,
 ])
 void main() {
   setUp(() {
@@ -37,13 +55,34 @@ void main() {
     when(signMessageUseCase.execute(param: anyNamed("param")))
         .thenAnswer((realInvocation) => Future.value(CommonMocks.signature));
     when(getAuthClaimUseCase.execute(param: anyNamed("param")))
-        .thenAnswer((realInvocation) => Future.value(CommonMocks.authClaim));
-    when(identityRepository.getAuthInputs(
+        .thenAnswer((realInvocation) => Future.value(claims));
+    when(iden3commRepository.getAuthInputs(
+            did: anyNamed('did'),
+            profileNonce: anyNamed('profileNonce'),
             challenge: anyNamed("challenge"),
             authClaim: anyNamed("authClaim"),
             identity: anyNamed("identity"),
-            signature: anyNamed("signature")))
+            signature: anyNamed("signature"),
+            incProof: anyNamed('incProof'),
+            nonRevProof: anyNamed('nonRevProof'),
+            gistProof: anyNamed('gistProof'),
+            treeState: anyNamed('treeState')))
         .thenAnswer((realInvocation) => Future.value(CommonMocks.aBytes));
+    when(getAuthClaimUseCase.execute(param: anyNamed('param')))
+        .thenAnswer((realInvocation) => Future.value(claims));
+    when(identityRepository.getAuthClaimNode(children: anyNamed('children')))
+        .thenAnswer((realInvocation) => Future.value(IdentityMocks.node));
+    when(smtRepository.generateProof(
+            key: anyNamed('key'),
+            storeName: anyNamed('storeName'),
+            did: anyNamed('did'),
+            privateKey: anyNamed('privateKey')))
+        .thenAnswer((realInvocation) => Future.value(ProofMocks.proof));
+    when(identityRepository.getLatestState(
+            did: anyNamed('did'), privateKey: anyNamed('privateKey')))
+        .thenAnswer((realInvocation) => Future.value(CommonMocks.aMap));
+    when(getGistProofUseCase.execute(param: anyNamed('param')))
+        .thenAnswer((realInvocation) => Future.value(ProofMocks.gistProof));
   });
 
   test(
@@ -67,16 +106,28 @@ void main() {
       expect(capturedSign.privateKey, param.privateKey);
       expect(capturedSign.message, CommonMocks.challenge);
 
-      var capturedAuthInputs = verify(identityRepository.getAuthInputs(
+      var capturedAuthInputs = verify(iden3commRepository.getAuthInputs(
+              did: captureAnyNamed('did'),
+              profileNonce: captureAnyNamed('profileNonce'),
               challenge: captureAnyNamed("challenge"),
               authClaim: captureAnyNamed("authClaim"),
               identity: captureAnyNamed("identity"),
-              signature: captureAnyNamed("signature")))
+              signature: captureAnyNamed("signature"),
+              incProof: captureAnyNamed('incProof'),
+              nonRevProof: captureAnyNamed('nonRevProof'),
+              gistProof: captureAnyNamed('gistProof'),
+              treeState: captureAnyNamed('treeState')))
           .captured;
-      expect(capturedAuthInputs[0], CommonMocks.challenge);
-      expect(capturedAuthInputs[1], CommonMocks.authClaim);
-      expect(capturedAuthInputs[2], IdentityMocks.identity);
-      expect(capturedAuthInputs[3], CommonMocks.signature);
+      expect(capturedAuthInputs[0], CommonMocks.profiles[0]);
+      expect(capturedAuthInputs[1], CommonMocks.nonce);
+      expect(capturedAuthInputs[2], CommonMocks.challenge);
+      expect(capturedAuthInputs[3], claims);
+      expect(capturedAuthInputs[4], IdentityMocks.identity);
+      expect(capturedAuthInputs[5], CommonMocks.signature);
+      expect(capturedAuthInputs[6], ProofMocks.proof);
+      expect(capturedAuthInputs[7], ProofMocks.proof);
+      expect(capturedAuthInputs[8], ProofMocks.gistProof);
+      expect(capturedAuthInputs[9], CommonMocks.aMap);
     },
   );
 
@@ -84,7 +135,8 @@ void main() {
     'Given a param, when I call execute and an error occurred, then I expect an exception to be thrown',
     () async {
       // Given
-      when(getAuthClaimUseCase.execute(param: anyNamed("param")))
+      when(identityRepository.getLatestState(
+              did: anyNamed('did'), privateKey: anyNamed('privateKey')))
           .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
       // When
@@ -99,18 +151,19 @@ void main() {
       expect(capturedIdentity.did, param.did);
       expect(capturedIdentity.privateKey, param.privateKey);
 
-      var capturedSign =
-          verify(signMessageUseCase.execute(param: captureAnyNamed("param")))
-              .captured
-              .first;
-      expect(capturedSign.privateKey, param.privateKey);
-      expect(capturedSign.message, CommonMocks.challenge);
+      verifyNever(signMessageUseCase.execute(param: captureAnyNamed("param")));
 
-      verifyNever(identityRepository.getAuthInputs(
+      verifyNever(iden3commRepository.getAuthInputs(
+          did: captureAnyNamed('did'),
+          profileNonce: captureAnyNamed('profileNonce'),
           challenge: captureAnyNamed("challenge"),
           authClaim: captureAnyNamed("authClaim"),
           identity: captureAnyNamed("identity"),
-          signature: captureAnyNamed("signature")));
+          signature: captureAnyNamed("signature"),
+          incProof: captureAnyNamed('incProof'),
+          nonRevProof: captureAnyNamed('nonRevProof'),
+          gistProof: captureAnyNamed('gistProof'),
+          treeState: captureAnyNamed('treeState')));
     },
   );
 }

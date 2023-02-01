@@ -26,23 +26,20 @@ void main() {
           contractFunctionCallRequest.body.transactionData.network, "mainnet");
       expect(contractFunctionCallRequest.body.reason, "theTransactionReason");
       expect(contractFunctionCallRequest.body.scope![0].id, 1);
-      expect(contractFunctionCallRequest.body.scope![0].circuit_id,
+      expect(contractFunctionCallRequest.body.scope![0].circuitId,
           "credentialAtomicQuerySig");
-      expect(contractFunctionCallRequest.body.scope![0].query.audience,
-          "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b");
-      expect(
-          contractFunctionCallRequest.body.scope![0].query.challenge, 748916);
+      /// TODO: is there no challenge anymore?
+      // expect(
+      //     contractFunctionCallRequest.body.scope![0].query.challenge, 748916);
       expect(
           contractFunctionCallRequest
-              .body.scope![0].query.query.allowedIssuers![0],
+              .body.scope![0].query.allowedIssuers![0],
           "*");
-      expect(contractFunctionCallRequest.body.scope![0].query.query.challenge,
-          123456);
       expect(
-          contractFunctionCallRequest.body.scope![0].query.query.schema?.type,
+          contractFunctionCallRequest.body.scope![0].query.type,
           "KYCAgeCredential");
-      expect(contractFunctionCallRequest.body.scope![0].query.query.schema?.url,
-          "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld");
+      expect(contractFunctionCallRequest.body.scope![0].query.context,
+          "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld");
     });
   });
 }
