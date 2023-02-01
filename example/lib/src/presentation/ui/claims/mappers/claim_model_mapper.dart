@@ -28,10 +28,6 @@ class ClaimModelMapper implements FromMapper<ClaimEntity, ClaimModel> {
 
     // Issuer
     String issuer = from.issuer;
-    if (issuer == "1126ZbqjDTumLRJ5A9aExczKg8V33LiVZH4vWuc36W") {
-      // Polygon Verify Prod
-      issuer = "Polygon Verify";
-    }
 
     // Expiration
     String expiration = 'None';
