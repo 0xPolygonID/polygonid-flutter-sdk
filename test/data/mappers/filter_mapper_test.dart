@@ -4,14 +4,15 @@ import 'package:polygonid_flutter_sdk/credential/data/mappers/filter_mapper.dart
 import 'package:sembast/sembast.dart';
 
 // Data
-const names = ["name", "name1", "name2", "name3", "name4", "name5"];
+const names = ["name", "name1", "name2", "name3", "name4", "name5", "name6"];
 const values = [
   "value",
   "value1",
   "value2",
   "value3",
   "value4",
-  ["value5", "value6", "value7"]
+  ["value5", "value6", "value7"],
+  "value8",
 ];
 final filterEntities = [
   FilterEntity(
@@ -26,6 +27,8 @@ final filterEntities = [
       operator: FilterOperator.lesserEqual, name: names[4], value: values[4]),
   FilterEntity(
       operator: FilterOperator.inList, name: names[5], value: values[5]),
+  FilterEntity(
+      operator: FilterOperator.nonEqual, name: names[6], value: values[6]),
 ];
 final filters = [
   Filter.equals(names[0], values[0]),
@@ -34,6 +37,7 @@ final filters = [
   Filter.greaterThanOrEquals(names[3], values[3]),
   Filter.lessThanOrEquals(names[4], values[4]),
   Filter.inList(names[5], values[5] as List<Object>),
+  Filter.notEquals(names[6], values[6]),
 ];
 
 // Tested instance

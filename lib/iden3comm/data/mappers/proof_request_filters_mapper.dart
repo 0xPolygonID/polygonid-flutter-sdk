@@ -107,7 +107,12 @@ class ProofRequestFiltersMapper
           ];
         }
         break;
-
+      case '\$ne':
+        return [
+          FilterEntity(
+              operator: FilterOperator.nonEqual,
+              name: 'credential.credentialSubject.$field', value: value)
+        ];
       default:
         break;
     }

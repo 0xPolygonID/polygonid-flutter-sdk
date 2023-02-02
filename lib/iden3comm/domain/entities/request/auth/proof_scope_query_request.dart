@@ -107,6 +107,7 @@ class ProofScopeQueryRequest {
   final String? context;
   final String? type;
   final int? challenge;
+  final bool? skipClaimRevocationCheck;
   final Map<String, dynamic>? credentialSubject;
   //final ProofScopeRulesQuerySchemaRequest? schema;
 
@@ -116,6 +117,7 @@ class ProofScopeQueryRequest {
     this.type,
     this.challenge,
     this.credentialSubject,
+    this.skipClaimRevocationCheck,
     /*this.schema*/
   });
 
@@ -133,6 +135,7 @@ class ProofScopeQueryRequest {
         type: json['type'],
         challenge: json['challenge'],
         credentialSubject: json['credentialSubject'],
+        skipClaimRevocationCheck: json['skipClaimRevocationCheck'],
       );
       //schema: schema);
     } else {
@@ -146,13 +149,14 @@ class ProofScopeQueryRequest {
         'type': type,
         'challenge': challenge,
         'credentialSubject': credentialSubject,
+        'skipClaimRevocationCheck': skipClaimRevocationCheck,
         //'schema': schema!.toJson()
       }..removeWhere(
           (dynamic key, dynamic value) => key == null || value == null);
 
   @override
   String toString() =>
-      "[ProofScopeRulesQueryRequest] {allowedIssuers: $allowedIssuers, challenge: $challenge, credentialSubject: $credentialSubject, context: $context, type: $type}";
+      "[ProofScopeRulesQueryRequest] {allowedIssuers: $allowedIssuers, challenge: $challenge, credentialSubject: $credentialSubject, context: $context, type: $type, skipClaimRevocationCheck: $skipClaimRevocationCheck}";
 
   @override
   bool operator ==(Object other) =>
@@ -163,6 +167,7 @@ class ProofScopeQueryRequest {
           challenge == other.challenge &&
           context == other.context &&
           type == other.type &&
+          skipClaimRevocationCheck == other.skipClaimRevocationCheck &&
           const DeepCollectionEquality()
               .equals(credentialSubject, other.credentialSubject);
 
