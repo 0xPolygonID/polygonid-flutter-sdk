@@ -57,7 +57,7 @@ class StorageSMTDataSource {
       required String privateKey}) {
     if ((BigInt.parse(key.toString())) == BigInt.zero) {
       return Future.value(NodeDTO(
-        children: [],
+        children: const [],
         hash: HashDTO.fromBigInt(BigInt.zero),
         type: NodeTypeDTO.empty,
       ));
