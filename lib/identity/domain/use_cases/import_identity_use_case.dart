@@ -5,12 +5,12 @@ import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repo
 class ImportIdentityParam {
   final String privateKey;
   final String did;
-  final String encryptedClaimsDb;
+  final String encryptedDb;
 
   ImportIdentityParam({
     required this.privateKey,
     required this.did,
-    required this.encryptedClaimsDb,
+    required this.encryptedDb,
   });
 }
 
@@ -25,7 +25,7 @@ class ImportIdentityUseCase extends FutureUseCase<ImportIdentityParam, void> {
     return _identityRepository.importIdentity(
       did: param.did,
       privateKey: param.privateKey,
-      encryptedDb: param.encryptedClaimsDb,
+      encryptedDb: param.encryptedDb,
     );
   }
 }

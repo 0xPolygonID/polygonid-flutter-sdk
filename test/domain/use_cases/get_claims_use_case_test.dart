@@ -66,7 +66,7 @@ void main() {
 
       // Given
       when(credentialRepository.getClaims(
-              did: anyNamed('identifier'),
+              did: anyNamed('did'),
               privateKey: anyNamed('privateKey'),
               filters: anyNamed("filters")))
           .thenAnswer((realInvocation) => Future.value(claimEntities));
@@ -80,7 +80,7 @@ void main() {
 
       // Then
       var capturedGet = verify(credentialRepository.getClaims(
-              did: captureAnyNamed('identifier'),
+              did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey'),
               filters: captureAnyNamed('filters')))
           .captured;
@@ -97,7 +97,7 @@ void main() {
 
       // Then
       var capturedGet = verify(credentialRepository.getClaims(
-              did: captureAnyNamed('identifier'),
+              did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey'),
               filters: captureAnyNamed('filters')))
           .captured;
@@ -111,7 +111,7 @@ void main() {
         () async {
       // Given
       when(credentialRepository.getClaims(
-              did: captureAnyNamed('identifier'),
+              did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey'),
               filters: anyNamed("filters")))
           .thenAnswer((realInvocation) => Future.error(exception));
@@ -122,7 +122,7 @@ void main() {
 
       // Then
       var capturedGet = verify(credentialRepository.getClaims(
-              did: captureAnyNamed('identifier'),
+              did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey'),
               filters: captureAnyNamed('filters')))
           .captured;

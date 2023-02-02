@@ -83,7 +83,7 @@ void main() {
             .thenAnswer((realInvocation) => Future.value(package));
 
         when(iden3commRepository.getAuthResponse(
-                did: anyNamed('identifier'),
+                did: anyNamed('did'),
                 request: anyNamed('request'),
                 scope: anyNamed('scope'),
                 pushUrl: anyNamed('pushUrl'),
@@ -128,14 +128,14 @@ void main() {
                   param: captureAnyNamed('param')))
               .captured
               .first;
-          expect(capturedDid.did, identifier);
-          expect(capturedDid.networkName, config);
-          expect(capturedDid.networkEnv, config);
+          expect(capturedDid.privateKey, privateKey);
+          expect(capturedDid.blockchain, config);
+          expect(capturedDid.network, config);
 
           verify(getPackageNameUseCase.execute());
 
           var capturedAuthResponse = verify(iden3commRepository.getAuthResponse(
-                  did: captureAnyNamed('identifier'),
+                  did: captureAnyNamed('did'),
                   request: captureAnyNamed('request'),
                   scope: captureAnyNamed('scope'),
                   pushUrl: captureAnyNamed('pushUrl'),
@@ -173,7 +173,7 @@ void main() {
         () async {
           // Given
           when(iden3commRepository.getAuthResponse(
-                  did: anyNamed('identifier'),
+                  did: anyNamed('did'),
                   request: anyNamed('request'),
                   scope: anyNamed('scope'),
                   pushUrl: anyNamed('pushUrl'),
@@ -206,14 +206,14 @@ void main() {
                   param: captureAnyNamed('param')))
               .captured
               .first;
-          expect(capturedDid.did, identifier);
-          expect(capturedDid.networkName, config);
-          expect(capturedDid.networkEnv, config);
+          expect(capturedDid.privateKey, privateKey);
+          expect(capturedDid.blockchain, config);
+          expect(capturedDid.network, config);
 
           verify(getPackageNameUseCase.execute());
 
           var capturedAuthResponse = verify(iden3commRepository.getAuthResponse(
-                  did: captureAnyNamed('identifier'),
+                  did: captureAnyNamed('did'),
                   request: captureAnyNamed('request'),
                   scope: captureAnyNamed('scope'),
                   pushUrl: captureAnyNamed('pushUrl'),

@@ -26,14 +26,14 @@ final dto = ClaimDTO(
   id: fetchClaimDTO.credential.id,
   issuer: fetchClaimDTO.from,
   did: identifier,
-  expiration: fetchClaimDTO.credential.expiration,
+  expiration: fetchClaimDTO.credential.expirationDate,
   type: fetchClaimDTO.credential.credentialSubject.type,
   info: fetchClaimDTO.credential,
 );
 final entity = ClaimEntity(
     issuer: fetchClaimDTO.from,
     did: identifier,
-    expiration: fetchClaimDTO.credential.expiration,
+    expiration: fetchClaimDTO.credential.expirationDate,
     info: info,
     type: fetchClaimDTO.credential.credentialSubject.type,
     state: ClaimState.active,

@@ -43,6 +43,9 @@ configureInjection() => $initSDKGetIt(getItSdk);
 abstract class Sdk {
   @lazySingleton
   SdkEnv get sdkEnv => kDebugMode ? DevEnv() : ProdEnv();
+
+  @Named('accessMessage')
+  String get accessMessage => POLYGONID_ACCESS_MESSAGE;
 }
 
 @module

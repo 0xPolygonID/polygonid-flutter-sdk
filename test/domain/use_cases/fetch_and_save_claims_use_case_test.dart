@@ -60,12 +60,12 @@ void main() {
       when(getAuthTokenUseCase.execute(param: anyNamed('param')))
           .thenAnswer((realInvocation) => Future.value(CommonMocks.token));
       when(credentialRepository.fetchClaim(
-              did: anyNamed('identifier'),
+              did: anyNamed('did'),
               token: anyNamed('token'),
               message: anyNamed('message')))
           .thenAnswer((realInvocation) => Future.value(claimEntity));
       when(credentialRepository.saveClaims(
-              did: anyNamed('identifier'),
+              did: anyNamed('did'),
               privateKey: anyNamed('privateKey'),
               claims: anyNamed('claims')))
           .thenAnswer((realInvocation) => Future.value());
@@ -97,7 +97,7 @@ void main() {
       }
 
       var fetchVerify = verify(credentialRepository.fetchClaim(
-          did: captureAnyNamed('identifier'),
+          did: captureAnyNamed('did'),
           token: captureAnyNamed('token'),
           message: captureAnyNamed('message')));
 
@@ -125,7 +125,7 @@ void main() {
         () async {
       // Given
       when(credentialRepository.fetchClaim(
-              did: anyNamed('identifier'),
+              did: anyNamed('did'),
               token: anyNamed('token'),
               message: anyNamed('message')))
           .thenAnswer((realInvocation) => Future.error(exception));
@@ -150,7 +150,7 @@ void main() {
       expect(authVerify.captured[0].message, requests[0]);
 
       var fetchVerify = verify(credentialRepository.fetchClaim(
-          did: captureAnyNamed('identifier'),
+          did: captureAnyNamed('did'),
           token: captureAnyNamed('token'),
           message: captureAnyNamed('message')));
 

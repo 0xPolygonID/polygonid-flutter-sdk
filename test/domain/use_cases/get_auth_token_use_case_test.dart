@@ -1,10 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_auth_challenge_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_auth_challenge_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/get_jwz_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/load_circuit_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/prove_use_case.dart';
@@ -14,16 +13,10 @@ import '../../common/proof_mocks.dart';
 import 'get_auth_token_use_case_test.mocks.dart';
 
 // Data
-const message = "theMessage";
-const identifier = "theIdentifier";
-const privateKey = "thePrivateKey";
-const authClaim = "theAuthClaim";
-const pubKeys = ["pubX", "pubY"];
-const privateIdentity = PrivateIdentityEntity(
-    privateKey: privateKey, did: identifier, publicKey: pubKeys);
-const circuitId = "1";
-
-final param = GetAuthTokenParam(identifier, privateKey, message);
+final param = GetAuthTokenParam(
+    did: CommonMocks.did,
+    privateKey: CommonMocks.privateKey,
+    message: CommonMocks.message);
 const result = "token";
 var exception = Exception();
 
@@ -86,14 +79,14 @@ void main() {
         verify(getAuthInputsUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(captureAuthInputs.did, CommonMocks.identifier);
+    expect(captureAuthInputs.did, CommonMocks.did);
     expect(captureAuthInputs.privateKey, CommonMocks.privateKey);
 
     expect(
         verify(loadCircuitUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first,
-        "auth");
+        "authV2");
 
     var captureProve =
         verify(proveUseCase.execute(param: captureAnyNamed('param')))
@@ -131,14 +124,14 @@ void main() {
         verify(getAuthInputsUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(captureAuthInputs.did, CommonMocks.identifier);
+    expect(captureAuthInputs.did, CommonMocks.did);
     expect(captureAuthInputs.privateKey, CommonMocks.privateKey);
 
     expect(
         verify(loadCircuitUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first,
-        "auth");
+        "authV2");
 
     var captureProve =
         verify(proveUseCase.execute(param: captureAnyNamed('param')))

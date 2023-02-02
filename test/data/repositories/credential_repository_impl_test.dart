@@ -8,21 +8,21 @@ import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/data/credential_repository_impl.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/local_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/remote_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/fetch_claim_response_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/encryption_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/id_filter_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/encryption_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:sembast/sembast.dart';
 
@@ -83,58 +83,30 @@ IV mockIv = IV(Uint8List.fromList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]));
 MockRemoteClaimDataSource remoteClaimDataSource = MockRemoteClaimDataSource();
 MockStorageClaimDataSource storageClaimDataSource =
     MockStorageClaimDataSource();
-MockLibIdentityDataSource libIdentityDataSource = MockLibIdentityDataSource();
+MockLocalClaimDataSource localClaimDataSource = MockLocalClaimDataSource();
 MockClaimMapper claimMapper = MockClaimMapper();
 MockFiltersMapper filtersMapper = MockFiltersMapper();
 MockIdFilterMapper idFilterMapper = MockIdFilterMapper();
-MockRevocationStatusMapper revocationStatusMapper =
-    MockRevocationStatusMapper();
-MockEncryptionDbDataSource encryptionDbDataSource =
-    MockEncryptionDbDataSource();
-MockDestinationPathDataSource destinationPathDataSource =
-    MockDestinationPathDataSource();
-MockEncryptionKeyMapper encryptionKeyMapper = MockEncryptionKeyMapper();
-MockSembastCodec sembastCodec = MockSembastCodec();
 
 // Tested instance
 CredentialRepositoryImpl repository = CredentialRepositoryImpl(
   remoteClaimDataSource,
   storageClaimDataSource,
-  libIdentityDataSource,
+  localClaimDataSource,
   claimMapper,
   filtersMapper,
   idFilterMapper,
-  revocationStatusMapper,
-  encryptionDbDataSource,
-  destinationPathDataSource,
-  encryptionKeyMapper,
 );
 
 @GenerateMocks([
   RemoteClaimDataSource,
   StorageClaimDataSource,
-  RemoteIdentityDataSource,
-  LibIdentityDataSource,
+  LocalClaimDataSource,
   ClaimMapper,
   FiltersMapper,
   IdFilterMapper,
-  RevocationStatusMapper,
-  EncryptionDbDataSource,
-  DestinationPathDataSource,
-  EncryptionKeyMapper,
-  SembastCodec,
 ])
 void main() {
-  setUp(() {
-    if (getItSdk.isRegistered<SembastCodec>(instanceName: sembastCodecName)) {
-      getItSdk.unregister<SembastCodec>(instanceName: sembastCodecName);
-    }
-
-    getItSdk.registerFactoryParamAsync<SembastCodec, String, String>(
-        (_, __) => Future.value(sembastCodec),
-        instanceName: sembastCodecName);
-  });
-
   group("Fetch claim", () {
     setUp(() {
       reset(remoteClaimDataSource);
@@ -149,7 +121,7 @@ void main() {
       when(remoteClaimDataSource.fetchClaim(
               token: anyNamed('token'),
               url: anyNamed('url'),
-              did: anyNamed('identifier')))
+              did: anyNamed('did')))
           .thenAnswer((realInvocation) => Future.value(claimDTOs[0]));
       when(claimMapper.mapFrom(any)).thenReturn(claimEntities[0]);
     });
@@ -169,7 +141,7 @@ void main() {
       var fetchCaptured = verify(remoteClaimDataSource.fetchClaim(
               token: captureAnyNamed('token'),
               url: captureAnyNamed('url'),
-              did: captureAnyNamed('identifier')))
+              did: captureAnyNamed('did')))
           .captured;
 
       expect(fetchCaptured[0], CommonMocks.token);
@@ -187,7 +159,7 @@ void main() {
       when(remoteClaimDataSource.fetchClaim(
               token: anyNamed('token'),
               url: anyNamed('url'),
-              did: anyNamed('identifier')))
+              did: anyNamed('did')))
           .thenAnswer((realInvocation) => Future.error(exception));
 
       // When
@@ -206,7 +178,7 @@ void main() {
       var fetchCaptured = verify(remoteClaimDataSource.fetchClaim(
               token: captureAnyNamed('token'),
               url: captureAnyNamed('url'),
-              did: captureAnyNamed('identifier')))
+              did: captureAnyNamed('did')))
           .captured;
 
       expect(fetchCaptured[0], CommonMocks.token);
@@ -236,7 +208,7 @@ void main() {
       var fetchCaptured = verify(remoteClaimDataSource.fetchClaim(
               token: captureAnyNamed('token'),
               url: captureAnyNamed('url'),
-              did: captureAnyNamed('identifier')))
+              did: captureAnyNamed('did')))
           .captured;
       expect(fetchCaptured[0], CommonMocks.token);
       expect(fetchCaptured[1], Iden3commMocks.offerUrl);
@@ -251,7 +223,7 @@ void main() {
     setUp(() {
       // Given
       when(storageClaimDataSource.storeClaims(
-              did: anyNamed('identifier'),
+              did: anyNamed('did'),
               privateKey: anyNamed('privateKey'),
               claims: anyNamed('claims')))
           .thenAnswer((realInvocation) => Future.value());
@@ -271,7 +243,7 @@ void main() {
 
       // Then
       var captureStore = verify(storageClaimDataSource.storeClaims(
-              did: captureAnyNamed('identifier'),
+              did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey'),
               claims: captureAnyNamed('claims')))
           .captured;
@@ -291,7 +263,7 @@ void main() {
         () async {
       // Given
       when(storageClaimDataSource.storeClaims(
-              did: anyNamed('identifier'),
+              did: anyNamed('did'),
               privateKey: anyNamed('privateKey'),
               claims: anyNamed('claims')))
           .thenAnswer((realInvocation) => Future.error(exception));
@@ -310,7 +282,7 @@ void main() {
 
       // Then
       var captureStore = verify(storageClaimDataSource.storeClaims(
-              did: captureAnyNamed('identifier'),
+              did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey'),
               claims: captureAnyNamed('claims')))
           .captured;
@@ -326,7 +298,7 @@ void main() {
     setUp(() {
       // Given
       when(storageClaimDataSource.getClaims(
-              did: anyNamed('identifier'),
+              did: anyNamed('did'),
               privateKey: anyNamed('privateKey'),
               filter: anyNamed('filter')))
           .thenAnswer((realInvocation) => Future.value(claimDTOs));
@@ -347,7 +319,7 @@ void main() {
 
       // Then
       var captureGet = verify(storageClaimDataSource.getClaims(
-              did: captureAnyNamed('identifier'),
+              did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey')))
           .captured;
       expect(captureGet[0], CommonMocks.identifier);
@@ -375,7 +347,7 @@ void main() {
 
       // Then
       var captureGet = verify(storageClaimDataSource.getClaims(
-              did: captureAnyNamed('identifier'),
+              did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey'),
               filter: captureAnyNamed('filter')))
           .captured;
@@ -397,7 +369,7 @@ void main() {
         () async {
       // Given
       when(storageClaimDataSource.getClaims(
-              did: anyNamed('identifier'),
+              did: anyNamed('did'),
               privateKey: anyNamed('privateKey'),
               filter: anyNamed('filter')))
           .thenAnswer((realInvocation) => Future.error(exception));
@@ -416,7 +388,7 @@ void main() {
 
       // Then
       var captureGet = verify(storageClaimDataSource.getClaims(
-              did: captureAnyNamed('identifier'),
+              did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey'),
               filter: captureAnyNamed('filter')))
           .captured;
@@ -434,7 +406,7 @@ void main() {
     setUp(() {
       // Given
       when(storageClaimDataSource.getClaims(
-              did: anyNamed('identifier'),
+              did: anyNamed('did'),
               privateKey: anyNamed('privateKey'),
               filter: anyNamed('filter')))
           .thenAnswer((realInvocation) => Future.value([claimDTOs[0]]));
@@ -457,7 +429,7 @@ void main() {
       expect(verify(idFilterMapper.mapTo(captureAny)).captured.first, ids[0]);
 
       var captureGet = verify(storageClaimDataSource.getClaims(
-              did: captureAnyNamed('identifier'),
+              did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey'),
               filter: captureAnyNamed('filter')))
           .captured;
@@ -474,7 +446,7 @@ void main() {
         () async {
       // Given
       when(storageClaimDataSource.getClaims(
-              did: anyNamed('identifier'),
+              did: anyNamed('did'),
               privateKey: anyNamed('privateKey'),
               filter: anyNamed('filter')))
           .thenAnswer((realInvocation) => Future.value([]));
@@ -494,7 +466,7 @@ void main() {
       expect(verify(idFilterMapper.mapTo(captureAny)).captured.first, ids[0]);
 
       var captureGet = verify(storageClaimDataSource.getClaims(
-              did: captureAnyNamed('identifier'),
+              did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey'),
               filter: captureAnyNamed('filter')))
           .captured;
@@ -510,7 +482,7 @@ void main() {
         () async {
       // Given
       when(storageClaimDataSource.getClaims(
-              did: anyNamed('identifier'),
+              did: anyNamed('did'),
               privateKey: anyNamed('privateKey'),
               filter: anyNamed('filter')))
           .thenAnswer((realInvocation) => Future.error(exception));
@@ -526,7 +498,7 @@ void main() {
       expect(verify(idFilterMapper.mapTo(captureAny)).captured.first, ids[0]);
 
       var captureGet = verify(storageClaimDataSource.getClaims(
-              did: captureAnyNamed('identifier'),
+              did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey'),
               filter: captureAnyNamed('filter')))
           .captured;
@@ -542,7 +514,7 @@ void main() {
     setUp(() {
       // Given
       when(storageClaimDataSource.removeClaims(
-              did: anyNamed('identifier'),
+              did: anyNamed('did'),
               privateKey: anyNamed('privateKey'),
               claimIds: anyNamed('claimIds')))
           .thenAnswer((realInvocation) => Future.value());
@@ -561,7 +533,7 @@ void main() {
 
       // Then
       var captureRemove = verify(storageClaimDataSource.removeClaims(
-              did: captureAnyNamed('identifier'),
+              did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey'),
               claimIds: captureAnyNamed('claimIds')))
           .captured;
@@ -575,7 +547,7 @@ void main() {
         () async {
       // Given
       when(storageClaimDataSource.removeClaims(
-              did: anyNamed('identifier'),
+              did: anyNamed('did'),
               privateKey: anyNamed('privateKey'),
               claimIds: anyNamed('claimIds')))
           .thenAnswer((realInvocation) => Future.error(exception));
@@ -594,7 +566,7 @@ void main() {
 
       // Then
       var captureRemove = verify(storageClaimDataSource.removeClaims(
-              did: captureAnyNamed('identifier'),
+              did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey'),
               claimIds: captureAnyNamed('claimIds')))
           .captured;
@@ -604,85 +576,85 @@ void main() {
     });
   });
 
-  group("Encrypt db", () {
-    setUp(() {
-      when(storageClaimDataSource.getClaimsDb(
-              did: anyNamed('identifier'), privateKey: anyNamed('privateKey')))
-          .thenAnswer((realInvocation) => Future.value(mockDb));
-
-      when(encryptionKeyMapper.mapFrom(any))
-          .thenAnswer((realInvocation) => encryptionKey);
-
-      when(encryptionDbDataSource.encryptData(
-        data: anyNamed('data'),
-        key: anyNamed('key'),
-      )).thenAnswer((realInvocation) => encryptedDb);
-    });
-
-    test(
-        "Given an identifier and a privateKey as param, when I call exportEncryptedClaimsDb, then I expect the process to completes",
-        () async {
-      // When
-      expect(
-        await repository.exportClaims(
-            did: CommonMocks.identifier, privateKey: CommonMocks.privateKey),
-        encryptedDb,
-      );
-
-      // Then
-      var captureGet = verify(storageClaimDataSource.getClaimsDb(
-              did: captureAnyNamed('identifier'),
-              privateKey: captureAnyNamed('privateKey')))
-          .captured;
-      expect(captureGet[0], CommonMocks.identifier);
-      expect(captureGet[1], CommonMocks.privateKey);
-
-      var captureEncryptionKeyMapper =
-          verify(encryptionKeyMapper.mapFrom(captureAny)).captured;
-      expect(captureEncryptionKeyMapper[0], CommonMocks.privateKey);
-
-      var captureEncrypt = verify(encryptionDbDataSource.encryptData(
-        data: captureAnyNamed('data'),
-        key: captureAnyNamed('key'),
-      )).captured;
-      expect(captureEncrypt[0], mockDb);
-      expect(captureEncrypt[1], encryptionKey);
-    });
-  });
-
-  group("Decrypt an imported encrypted claims db", () {
-    setUp(() {
-      when(encryptionDbDataSource.decryptData(
-        encryptedData: anyNamed('encryptedData'),
-        key: anyNamed('key'),
-      )).thenAnswer((realInvocation) => mockDb);
-
-      when(encryptionKeyMapper.mapFrom(any))
-          .thenAnswer((realInvocation) => encryptionKey);
-
-      when(destinationPathDataSource.getDestinationPath(
-              did: anyNamed('identifier')))
-          .thenAnswer((realInvocation) => Future.value(destinationPath));
-
-      when(storageClaimDataSource.saveClaimsDb(
-        exportableDb: anyNamed('exportableDb'),
-        databaseFactory: anyNamed('databaseFactory'),
-        destinationPath: anyNamed('destinationPath'),
-        privateKey: anyNamed('privateKey'),
-      )).thenAnswer((realInvocation) => Future.value());
-    });
-
-    test(
-        "Given an encrypted db, a privateKey and an identinfier, when I call importEncryptedClaimsDb, then I expect the process to completes",
-        () {
-      // When
-      expect(
-        repository.importClaims(
-            encryptedDb: encryptedDb,
-            privateKey: CommonMocks.privateKey,
-            did: CommonMocks.identifier),
-        completes,
-      );
-    });
-  });
+  // group("Encrypt db", () {
+  //   setUp(() {
+  //     when(storageClaimDataSource.getClaimsDb(
+  //             did: anyNamed('did'), privateKey: anyNamed('privateKey')))
+  //         .thenAnswer((realInvocation) => Future.value(mockDb));
+  //
+  //     when(encryptionKeyMapper.mapFrom(any))
+  //         .thenAnswer((realInvocation) => encryptionKey);
+  //
+  //     when(encryptionDbDataSource.encryptData(
+  //       data: anyNamed('data'),
+  //       key: anyNamed('key'),
+  //     )).thenAnswer((realInvocation) => encryptedDb);
+  //   });
+  //
+  //   test(
+  //       "Given an identifier and a privateKey as param, when I call exportEncryptedClaimsDb, then I expect the process to completes",
+  //       () async {
+  //     // When
+  //     expect(
+  //       await repository.exportClaims(
+  //           did: CommonMocks.identifier, privateKey: CommonMocks.privateKey),
+  //       encryptedDb,
+  //     );
+  //
+  //     // Then
+  //     var captureGet = verify(storageClaimDataSource.getClaimsDb(
+  //             did: captureAnyNamed('did'),
+  //             privateKey: captureAnyNamed('privateKey')))
+  //         .captured;
+  //     expect(captureGet[0], CommonMocks.identifier);
+  //     expect(captureGet[1], CommonMocks.privateKey);
+  //
+  //     var captureEncryptionKeyMapper =
+  //         verify(encryptionKeyMapper.mapFrom(captureAny)).captured;
+  //     expect(captureEncryptionKeyMapper[0], CommonMocks.privateKey);
+  //
+  //     var captureEncrypt = verify(encryptionDbDataSource.encryptData(
+  //       data: captureAnyNamed('data'),
+  //       key: captureAnyNamed('key'),
+  //     )).captured;
+  //     expect(captureEncrypt[0], mockDb);
+  //     expect(captureEncrypt[1], encryptionKey);
+  //   });
+  // });
+  //
+  // group("Decrypt an imported encrypted claims db", () {
+  //   setUp(() {
+  //     when(encryptionDbDataSource.decryptData(
+  //       encryptedData: anyNamed('encryptedData'),
+  //       key: anyNamed('key'),
+  //     )).thenAnswer((realInvocation) => mockDb);
+  //
+  //     when(encryptionKeyMapper.mapFrom(any))
+  //         .thenAnswer((realInvocation) => encryptionKey);
+  //
+  //     when(destinationPathDataSource.getDestinationPath(
+  //             did: anyNamed('did')))
+  //         .thenAnswer((realInvocation) => Future.value(destinationPath));
+  //
+  //     when(storageClaimDataSource.saveClaimsDb(
+  //       exportableDb: anyNamed('exportableDb'),
+  //       databaseFactory: anyNamed('databaseFactory'),
+  //       destinationPath: anyNamed('destinationPath'),
+  //       privateKey: anyNamed('privateKey'),
+  //     )).thenAnswer((realInvocation) => Future.value());
+  //   });
+  //
+  //   test(
+  //       "Given an encrypted db, a privateKey and an identinfier, when I call importEncryptedClaimsDb, then I expect the process to completes",
+  //       () {
+  //     // When
+  //     expect(
+  //       repository.importClaims(
+  //           encryptedDb: encryptedDb,
+  //           privateKey: CommonMocks.privateKey,
+  //           did: CommonMocks.identifier),
+  //       completes,
+  //     );
+  //   });
+  // });
 }

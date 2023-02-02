@@ -1,33 +1,33 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/import_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/import_identity_use_case.dart';
 
-import 'import_claims_use_case_test.mocks.dart';
+import 'import_identity_use_case_test.mocks.dart';
 
 const privateKey = "thePrivateKey";
 const identifier = "theIdentifier";
-const claimsToBeImported = "theClaimsToBeImported";
+const encrypted = "theIdentityToBeImported";
 
-ImportClaimsParam param = ImportClaimsParam(
+ImportIdentityParam param = ImportIdentityParam(
   privateKey: privateKey,
   did: identifier,
-  encryptedClaimsDb: claimsToBeImported,
+  encryptedDb: encrypted,
 );
 
-MockCredentialRepository credentialRepository = MockCredentialRepository();
+MockIdentityRepository identityRepository = MockIdentityRepository();
 
 // Tested instance
-ImportClaimsUseCase useCase = ImportClaimsUseCase(credentialRepository);
+ImportIdentityUseCase useCase = ImportIdentityUseCase(identityRepository);
 
-@GenerateMocks([CredentialRepository])
+@GenerateMocks([IdentityRepository])
 void main() {
   group("Import claims", () {
     //
     setUp(() {
-      when(credentialRepository.importClaims(
-        did: anyNamed('identifier'),
+      when(identityRepository.importIdentity(
+        did: anyNamed('did'),
         privateKey: anyNamed('privateKey'),
         encryptedDb: anyNamed('encryptedDb'),
       )).thenAnswer((_) => Future.value());
@@ -41,15 +41,15 @@ void main() {
       expect(useCase.execute(param: param), completes);
 
       // Verify
-      var captured = verify(credentialRepository.importClaims(
-        did: captureAnyNamed('identifier'),
+      var captured = verify(identityRepository.importIdentity(
+        did: captureAnyNamed('did'),
         privateKey: captureAnyNamed('privateKey'),
         encryptedDb: captureAnyNamed('encryptedDb'),
       )).captured;
 
       expect(captured[0], identifier);
       expect(captured[1], privateKey);
-      expect(captured[2], claimsToBeImported);
+      expect(captured[2], encrypted);
     });
   });
 }

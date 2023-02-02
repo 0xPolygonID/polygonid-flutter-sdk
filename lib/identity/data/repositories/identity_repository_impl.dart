@@ -1,30 +1,25 @@
 import 'dart:convert';
 
 import 'package:encrypt/encrypt.dart';
-import 'package:sembast/sembast_io.dart';
-
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/local_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/smt_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/smt_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/node_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/did_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/encryption_key_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/hash_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/identity_dto_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/node_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/poseidon_hash_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/rhs_node_mapper.dart';
@@ -37,6 +32,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.d
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart';
+import 'package:sembast/sembast_io.dart';
 
 class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
@@ -48,19 +44,16 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final LibBabyJubJubDataSource _libBabyJubJubDataSource;
   final LibPolygonIdCoreIdentityDataSource _libPolygonIdCoreIdentityDataSource;
   final SMTDataSource _smtDataSource;
+  final EncryptionDbDataSource _encryptionDbDataSource;
+  final DestinationPathDataSource _destinationPathDataSource;
   final HexMapper _hexMapper;
   final PrivateKeyMapper _privateKeyMapper;
   final IdentityDTOMapper _identityDTOMapper;
   final RhsNodeMapper _rhsNodeMapper;
   final StateIdentifierMapper _stateIdentifierMapper;
   final NodeMapper _nodeMapper;
-  final DidMapper _didMapper;
-  final PoseidonHashMapper _poseidonHashMapper;
-  final HashMapper _hashMapper;
   final QMapper _qMapper;
   final EncryptionKeyMapper _encryptionKeyMapper;
-  final EncryptionDbDataSource _encryptionDbDataSource;
-  final DestinationPathDataSource _destinationPathDataSource;
 
   IdentityRepositoryImpl(
     this._walletDataSource,
@@ -72,19 +65,16 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._libBabyJubJubDataSource,
     this._libPolygonIdCoreIdentityDataSource,
     this._smtDataSource,
+    this._encryptionDbDataSource,
+    this._destinationPathDataSource,
     this._hexMapper,
     this._privateKeyMapper,
     this._identityDTOMapper,
     this._rhsNodeMapper,
     this._stateIdentifierMapper,
     this._nodeMapper,
-    this._didMapper,
-    this._poseidonHashMapper,
-    this._hashMapper,
     this._qMapper,
     this._encryptionKeyMapper,
-    this._encryptionDbDataSource,
-    this._destinationPathDataSource,
   );
 
   Future<void> checkIdentityValidity({

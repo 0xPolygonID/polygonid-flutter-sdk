@@ -1,13 +1,9 @@
-import 'package:encrypt/encrypt.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/remote_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_proofs/claim_proof_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/encryption_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/id_filter_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_mapper.dart';
@@ -15,7 +11,9 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.da
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
-import 'package:sembast/sembast_io.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/encryption_key_mapper.dart';
 
 import 'data_sources/local_claim_data_source.dart';
 import 'dtos/claim_info_dto.dart';
@@ -23,29 +21,18 @@ import 'dtos/claim_info_dto.dart';
 class CredentialRepositoryImpl extends CredentialRepository {
   final RemoteClaimDataSource _remoteClaimDataSource;
   final StorageClaimDataSource _storageClaimDataSource;
-
-  // final LibIdentityDataSource _libIdentityDataSource;
+  final LocalClaimDataSource _localClaimDataSource;
   final ClaimMapper _claimMapper;
   final FiltersMapper _filtersMapper;
   final IdFilterMapper _idFilterMapper;
-  final RevocationStatusMapper _revocationStatusMapper;
-  final EncryptionDbDataSource _encryptionDbDataSource;
-  final DestinationPathDataSource _destinationPathDataSource;
-  final LocalClaimDataSource _localClaimDataSource;
-  final EncryptionKeyMapper _encryptionKeyMapper;
 
   CredentialRepositoryImpl(
     this._remoteClaimDataSource,
     this._storageClaimDataSource,
-    // this._libIdentityDataSource,
+    this._localClaimDataSource,
     this._claimMapper,
     this._filtersMapper,
     this._idFilterMapper,
-    this._revocationStatusMapper,
-    this._encryptionDbDataSource,
-    this._destinationPathDataSource,
-    this._localClaimDataSource,
-    this._encryptionKeyMapper,
   );
 
   @override

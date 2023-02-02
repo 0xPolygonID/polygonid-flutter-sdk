@@ -37,7 +37,6 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   final RemoteIden3commDataSource _remoteIden3commDataSource;
   final LibPolygonIdCoreIden3commDataSource
       _libPolygonIdCoreIden3commDataSource;
-  final HexMapper _hexMapper;
   final AuthResponseMapper _authResponseMapper;
   final AuthInputsMapper _authInputsMapper;
   final AuthProofMapper _authProofMapper;
@@ -46,7 +45,6 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   Iden3commRepositoryImpl(
     this._remoteIden3commDataSource,
     this._libPolygonIdCoreIden3commDataSource,
-    this._hexMapper,
     this._authResponseMapper,
     this._authInputsMapper,
     this._authProofMapper,
