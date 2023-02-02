@@ -12,6 +12,7 @@ class GetProofQueryUseCase
     "\$gt": 3,
     "\$in": 4,
     "\$nin": 5,
+    "\$ne": 6
   };
 
   @override
