@@ -111,7 +111,8 @@ class ProofRequestFiltersMapper
         return [
           FilterEntity(
               operator: FilterOperator.nonEqual,
-              name: 'credential.credentialSubject.$field', value: value)
+              name: 'credential.credentialSubject.$field',
+              value: value)
         ];
       default:
         break;

@@ -22,9 +22,7 @@ void main() {
       expect(contractFunctionCallBodyRequest.scope![0].id, 1);
       expect(contractFunctionCallBodyRequest.scope![0].circuitId,
           "credentialAtomicQuerySig");
-      expect(
-          contractFunctionCallBodyRequest
-              .scope![0].query.allowedIssuers![0],
+      expect(contractFunctionCallBodyRequest.scope![0].query.allowedIssuers![0],
           "*");
       expect(contractFunctionCallBodyRequest.scope![0].query.type,
           "KYCAgeCredential");
