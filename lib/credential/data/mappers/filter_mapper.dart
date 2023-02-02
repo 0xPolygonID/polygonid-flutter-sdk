@@ -23,6 +23,8 @@ class FilterMapper extends ToMapper<Filter, FilterEntity> {
         return Filter.or((to.value as List<FilterEntity>)
             .map((filter) => mapTo(filter))
             .toList());
+      case FilterOperator.nonEqual:
+        return Filter.notEquals(to.name, to.value);
     }
   }
 }
