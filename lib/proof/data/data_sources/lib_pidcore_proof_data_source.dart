@@ -28,10 +28,18 @@ class LibPolygonIdCoreWrapper {
         result =
             _polygonIdCoreProof.getMTProofInputs(jsonEncode(param.toJson()));
         break;
-
       case AtomicQueryInputsType.sig:
         result =
             _polygonIdCoreProof.getSigProofInputs(jsonEncode(param.toJson()));
+        break;
+      case AtomicQueryInputsType.mtponchain:
+        result =
+            _polygonIdCoreProof.getMTPOnchainProofInputs(jsonEncode(param.toJson()));
+        break;
+        break;
+      case AtomicQueryInputsType.sigonchain:
+        result =
+            _polygonIdCoreProof.getSigOnchainProofInputs(jsonEncode(param.toJson()));
         break;
     }
 
@@ -114,8 +122,12 @@ class LibPolygonIdCoreProofDataSource {
 
     if (request.circuitId == "credentialAtomicQueryMTPV2") {
       type = AtomicQueryInputsType.mtp;
+    } else if (request.circuitId == "credentialAtomicQueryMTPV2Onchain") {
+      type = AtomicQueryInputsType.mtponchain;
     } else if (request.circuitId == "credentialAtomicQuerySigV2") {
       type = AtomicQueryInputsType.sig;
+    } else if (request.circuitId == "credentialAtomicQuerySigV2Onchain") {
+      type = AtomicQueryInputsType.sigonchain;
     }
 
     return _libPolygonIdCoreWrapper.getProofInputs(AtomicQueryInputsParam(
