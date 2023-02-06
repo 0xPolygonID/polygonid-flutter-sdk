@@ -42,7 +42,7 @@ class AtomicQueryInputsParam {
         "authClaim": authClaim,
         "authClaimIncMtp": incProof,
         "authClaimNonRevMtp": nonRevProof,
-        "gistProof": gistProof?.toJson(),
+        "gistProof": gistProof,
         "treeState": treeState,
         "challenge": challenge,
         "signature": signature,
