@@ -3172,7 +3172,7 @@ class NativePolygonIdCoreLib {
       int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
 
-  int   PLGNProofFromSmartContract(
+  int PLGNProofFromSmartContract(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
     ffi.Pointer<ffi.Char> in1,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
@@ -3218,13 +3218,13 @@ class NativePolygonIdCoreLib {
       int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
 
-  int PLGNSigV2Inputs2(
+  int PLGNAtomicQuerySigV2Inputs(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
     ffi.Pointer<ffi.Char> in1,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNSigV2Inputs2(
+    return _PLGNAtomicQuerySigV2Inputs(
       jsonResponse,
       in1,
       cfg,
@@ -3232,16 +3232,21 @@ class NativePolygonIdCoreLib {
     );
   }
 
-  late final _PLGNSigV2Inputs2Ptr = _lookup<
-      ffi.NativeFunction<
-          GoUint8 Function(
+  late final _PLGNAtomicQuerySigV2InputsPtr = _lookup<
+          ffi.NativeFunction<
+              GoUint8 Function(
+                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
+      'PLGNAtomicQuerySigV2Inputs');
+  late final _PLGNAtomicQuerySigV2Inputs =
+      _PLGNAtomicQuerySigV2InputsPtr.asFunction<
+          int Function(
               ffi.Pointer<ffi.Pointer<ffi.Char>>,
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNSigV2Inputs2');
-  late final _PLGNSigV2Inputs2 = _PLGNSigV2Inputs2Ptr.asFunction<
-      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
 
   int PLGNSigV2Inputs(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
@@ -3265,13 +3270,13 @@ class NativePolygonIdCoreLib {
       int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
 
-  int PLGNMtpV2Inputs2(
+  int PLGNAtomicQueryMtpV2Inputs(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
     ffi.Pointer<ffi.Char> in1,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNMtpV2Inputs2(
+    return _PLGNAtomicQueryMtpV2Inputs(
       jsonResponse,
       in1,
       cfg,
@@ -3279,16 +3284,21 @@ class NativePolygonIdCoreLib {
     );
   }
 
-  late final _PLGNMtpV2Inputs2Ptr = _lookup<
-      ffi.NativeFunction<
-          GoUint8 Function(
+  late final _PLGNAtomicQueryMtpV2InputsPtr = _lookup<
+          ffi.NativeFunction<
+              GoUint8 Function(
+                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
+      'PLGNAtomicQueryMtpV2Inputs');
+  late final _PLGNAtomicQueryMtpV2Inputs =
+      _PLGNAtomicQueryMtpV2InputsPtr.asFunction<
+          int Function(
               ffi.Pointer<ffi.Pointer<ffi.Char>>,
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNMtpV2Inputs2');
-  late final _PLGNMtpV2Inputs2 = _PLGNMtpV2Inputs2Ptr.asFunction<
-      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
 
   int PLGNMtpV2Inputs(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
@@ -3315,11 +3325,13 @@ class NativePolygonIdCoreLib {
   int PLGNAtomicQuerySigV2OnChainInputs(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
     ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
     return _PLGNAtomicQuerySigV2OnChainInputs(
       jsonResponse,
       in1,
+      cfg,
       status,
     );
   }
@@ -3329,36 +3341,46 @@ class NativePolygonIdCoreLib {
               GoUint8 Function(
                   ffi.Pointer<ffi.Pointer<ffi.Char>>,
                   ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Char>,
                   ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
       'PLGNAtomicQuerySigV2OnChainInputs');
   late final _PLGNAtomicQuerySigV2OnChainInputs =
       _PLGNAtomicQuerySigV2OnChainInputsPtr.asFunction<
-          int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+          int Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
 
-  int PLGNAtomicQueryMTPV2OnChainInputs(
+  int PLGNAtomicQueryMtpV2OnChainInputs(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
     ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNAtomicQueryMTPV2OnChainInputs(
+    return _PLGNAtomicQueryMtpV2OnChainInputs(
       jsonResponse,
       in1,
+      cfg,
       status,
     );
   }
 
-  late final _PLGNAtomicQueryMTPV2OnChainInputsPtr = _lookup<
+  late final _PLGNAtomicQueryMtpV2OnChainInputsPtr = _lookup<
           ffi.NativeFunction<
               GoUint8 Function(
                   ffi.Pointer<ffi.Pointer<ffi.Char>>,
                   ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Char>,
                   ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
-      'PLGNAtomicQueryMTPV2OnChainInputs');
-  late final _PLGNAtomicQueryMTPV2OnChainInputs =
-      _PLGNAtomicQueryMTPV2OnChainInputsPtr.asFunction<
-          int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+      'PLGNAtomicQueryMtpV2OnChainInputs');
+  late final _PLGNAtomicQueryMtpV2OnChainInputs =
+      _PLGNAtomicQueryMtpV2OnChainInputsPtr.asFunction<
+          int Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
 
   void PLGNFreeStatus(
     ffi.Pointer<PLGNStatus> status,
