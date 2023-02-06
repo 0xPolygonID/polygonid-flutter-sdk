@@ -15,6 +15,12 @@ class CircuitTypeMapper extends ToMapper<CircuitType, String> {
       case "credentialAtomicQuerySigV2":
         return CircuitType.sig;
 
+      case "credentialAtomicQueryMTPV2Onchain":
+        return CircuitType.mtp;
+
+      case "credentialAtomicQuerySigV2Onchain":
+        return CircuitType.sig;
+
       default:
         return CircuitType.unknown;
     }
