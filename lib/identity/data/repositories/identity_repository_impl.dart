@@ -120,19 +120,19 @@ class IdentityRepositoryImpl extends IdentityRepository {
       required List<String> authClaim}) async {
     // 1. initialize merkle trees
     await _smtDataSource.createSMT(
-        maxLevels: 32,
+        maxLevels: 40,
         storeName: claimsTreeStoreName,
         did: did,
         privateKey: privateKey);
 
     await _smtDataSource.createSMT(
-        maxLevels: 32,
+        maxLevels: 40,
         storeName: revocationTreeStoreName,
         did: did,
         privateKey: privateKey);
 
     await _smtDataSource.createSMT(
-        maxLevels: 32,
+        maxLevels: 40,
         storeName: rootsTreeStoreName,
         did: did,
         privateKey: privateKey);

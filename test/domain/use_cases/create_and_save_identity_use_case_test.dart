@@ -130,8 +130,8 @@ void main() {
       "Given a private key and with an associated identity, when I call execute, then I expect an IdentityAlreadyExistsException to be thrown",
       () async {
     // Given
-    when(identityRepository.getIdentity(did: anyNamed('did')))
-        .thenAnswer((realInvocation) => Future.value(IdentityMocks.privateIdentity));
+    when(identityRepository.getIdentity(did: anyNamed('did'))).thenAnswer(
+        (realInvocation) => Future.value(IdentityMocks.privateIdentity));
 
     // When
     await useCase
