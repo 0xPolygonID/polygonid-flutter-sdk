@@ -104,8 +104,8 @@ extern GoUint8 PLGNIDToInt(char** jsonResponse, char* in, PLGNStatus** status);
 extern GoUint8 PLGNProofFromSmartContract(char** jsonResponse, char* in, PLGNStatus** status);
 extern GoUint8 PLGNProfileID(char** jsonResponse, char* in, PLGNStatus** status);
 
-// PLGNSigV2Inputs2 returns the inputs for the Sig circuit v2 with
-// optional selective disclosure.
+// PLGNAtomicQuerySigV2Inputs returns the inputs for the
+// credentialAtomicQuerySigV2 with optional selective disclosure.
 //
 // Additional configuration may be required for Reverse Hash Service
 // revocation validation. In other case cfg may be nil.
@@ -118,18 +118,18 @@ extern GoUint8 PLGNProfileID(char** jsonResponse, char* in, PLGNStatus** status)
 //	 "reverseHashServiceUrl": "http://localhost:8003"
 //	}
 //
-extern GoUint8 PLGNSigV2Inputs2(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+extern GoUint8 PLGNAtomicQuerySigV2Inputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 
 // PLGNSigV2Inputs returns the inputs for the Sig circuit v2 with
 // optional selective disclosure.
 //
 // Deprecated: Does not support Reverse Hash Service credential status
-// validation! Use PLGNSigV2Inputs2 method with configuration instead.
+// validation! Use PLGNAtomicQuerySigV2Inputs method with configuration instead.
 //
 extern GoUint8 PLGNSigV2Inputs(char** jsonResponse, char* in, PLGNStatus** status);
 
-// PLGNMtpV2Inputs2 returns the inputs for the MTP circuit v2 with
-// optional selective disclosure.
+// PLGNAtomicQueryMtpV2Inputs returns the inputs for the
+// credentialAtomicQueryMTPV2 with optional selective disclosure.
 //
 // Additional configuration may be required for Reverse Hash Service
 // revocation validation. In other case cfg may be nil.
@@ -142,17 +142,47 @@ extern GoUint8 PLGNSigV2Inputs(char** jsonResponse, char* in, PLGNStatus** statu
 //	  "reverseHashServiceUrl": "http://localhost:8003"
 //	}
 //
-extern GoUint8 PLGNMtpV2Inputs2(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+extern GoUint8 PLGNAtomicQueryMtpV2Inputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 
 // PLGNMtpV2Inputs returns the inputs for the MTP circuit v2 with
 // optional selective disclosure.
 //
 // Deprecated: Does not support Reverse Hash Service credential status
-// validation! Use PLGNMtpV2Inputs2 method with configuration instead.
+// validation! Use PLGNAtomicQueryMtpV2Inputs method with configuration instead.
 //
 extern GoUint8 PLGNMtpV2Inputs(char** jsonResponse, char* in, PLGNStatus** status);
-extern GoUint8 PLGNAtomicQuerySigV2OnChainInputs(char** jsonResponse, char* in, PLGNStatus** status);
-extern GoUint8 PLGNAtomicQueryMTPV2OnChainInputs(char** jsonResponse, char* in, PLGNStatus** status);
+
+// PLGNAtomicQuerySigV2OnChainInputs returns the inputs for the
+// credentialAtomicQuerySigV2OnChain circuit with optional selective disclosure.
+//
+// Additional configuration may be required for Reverse Hash Service
+// revocation validation. In other case cfg may be nil.
+//
+// Sample configuration:
+//
+//	{
+//	  "ethereumUrl": "http://localhost:8545",
+//	  "stateContractAddr": "0xEA9aF2088B4a9770fC32A12fD42E61BDD317E655",
+//	  "reverseHashServiceUrl": "http://localhost:8003"
+//	}
+//
+extern GoUint8 PLGNAtomicQuerySigV2OnChainInputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
+// PLGNAtomicQueryMtpV2OnChainInputs returns the inputs for the
+// credentialAtomicQueryMTPV2OnChain circuit with optional selective disclosure.
+//
+// Additional configuration may be required for Reverse Hash Service
+// revocation validation. In other case cfg may be nil.
+//
+// Sample configuration:
+//
+//	{
+//	  "ethereumUrl": "http://localhost:8545",
+//	  "stateContractAddr": "0xEA9aF2088B4a9770fC32A12fD42E61BDD317E655",
+//	  "reverseHashServiceUrl": "http://localhost:8003"
+//	}
+//
+extern GoUint8 PLGNAtomicQueryMtpV2OnChainInputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern void PLGNFreeStatus(PLGNStatus* status);
 
 #ifdef __cplusplus
