@@ -12,7 +12,7 @@ class AtomicQueryInputsParam {
   final List<String>? authClaim;
   final Map<String, dynamic>? incProof;
   final Map<String, dynamic>? nonRevProof;
-  final GistProofDTO? gistProof;
+  final Map<String, dynamic>? gistProof;
   final Map<String, dynamic>? treeState;
   final String? challenge;
   final String? signature;

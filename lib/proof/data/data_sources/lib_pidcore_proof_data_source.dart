@@ -120,7 +120,7 @@ class LibPolygonIdCoreProofDataSource {
     Map<String, dynamic>? incProof,
     Map<String, dynamic>? nonRevProof,
     Map<String, dynamic>? treeState,
-    GistProofDTO? gistProof,
+    Map<String, dynamic>? gistProof,
     String? challenge,
     String? signature,
     required ClaimInfoDTO credential,

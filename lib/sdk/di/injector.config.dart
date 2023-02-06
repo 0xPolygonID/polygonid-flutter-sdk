@@ -440,6 +440,7 @@ _i1.GetIt $initSDKGetIt(
         get<_i50.ProofRequestFiltersMapper>(),
         get<_i69.AuthProofMapper>(),
         get<_i74.GistProofMapper>(),
+        get<_i73.GistProofMapper>(),
       ));
   gh.factory<_i92.SMTDataSource>(() => _i92.SMTDataSource(
         get<_i25.HexMapper>(),

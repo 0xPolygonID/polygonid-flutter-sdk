@@ -14,7 +14,6 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_dto.dart';
-import 'package:polygonid_flutter_sdk/proof/data/mappers/gist_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/jwz_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz.dart';
@@ -22,6 +21,8 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 
 import '../../../common/utils/uint8_list_utils.dart';
+import '../../../iden3comm/data/mappers/gist_proof_mapper.dart' as iden3GistProofMapper;
+import '../mappers/gist_proof_mapper.dart';
 import '../../../identity/data/data_sources/remote_identity_data_source.dart';
 import '../../domain/entities/circuit_data_entity.dart';
 import '../../domain/entities/proof_entity.dart';
@@ -52,6 +53,7 @@ class ProofRepositoryImpl extends ProofRepository {
   final ProofRequestFiltersMapper _proofRequestFiltersMapper;
   final AuthProofMapper _authProofMapper;
   final GistProofMapper _gistProofMapper;
+  final iden3GistProofMapper.GistProofMapper _iden3GistProofMapper;
 
   // FIXME: those mappers shouldn't be used here as they are part of Credential
   final ClaimMapper _claimMapper;
@@ -74,6 +76,7 @@ class ProofRepositoryImpl extends ProofRepository {
     this._proofRequestFiltersMapper,
     this._authProofMapper,
     this._gistProofMapper,
+      this._iden3GistProofMapper,
   );
 
   @override
@@ -100,9 +103,9 @@ class ProofRepositoryImpl extends ProofRepository {
       String? challenge,
       String? signature}) async {
     ClaimDTO credentialDto = _claimMapper.mapTo(claim);
-    GistProofDTO? gistProofDto;
+    Map<String,dynamic>? gistProofMap;
     if (gistProof != null) {
-      gistProofDto = _gistProofMapper.mapTo(gistProof);
+      gistProofMap = _iden3GistProofMapper.mapTo(gistProof);
     }
     Map<String,dynamic>? incProofMap;
     if (incProof != null) {
@@ -122,7 +125,7 @@ class ProofRepositoryImpl extends ProofRepository {
         authClaim: authClaim,
         incProof: incProofMap,
         nonRevProof: nonRevProofMap,
-        gistProof: gistProofDto,
+        gistProof: gistProofMap,
         treeState: treeState,
         challenge: challenge,
         signature: signature,
@@ -131,11 +134,18 @@ class ProofRepositoryImpl extends ProofRepository {
         );
 
     if (res != null && res.isNotEmpty) {
-      Map<String, dynamic> inputs = json.decode(res);
-      Uint8List inputsJsonBytes =
-          Uint8ArrayUtils.uint8ListfromString(json.encode(inputs["inputs"]));
-
-      return inputsJsonBytes;
+      Uint8List inputsJsonBytes;
+      dynamic inputsJson = json.decode(res);
+      if (inputsJson is Map<String,dynamic>) {
+        Map<String, dynamic> inputs = json.decode(res);
+        Uint8List inputsJsonBytes =
+        Uint8ArrayUtils.uint8ListfromString(json.encode(inputs["inputs"]));
+        return inputsJsonBytes;
+      } else if (inputsJson is String) {
+        Uint8List inputsJsonBytes =
+        Uint8ArrayUtils.uint8ListfromString(inputsJson);
+        return inputsJsonBytes;
+      }
     }
 
     throw NullAtomicQueryInputsException(id);
