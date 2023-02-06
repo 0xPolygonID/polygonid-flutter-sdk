@@ -1,28 +1,19 @@
-import 'dart:typed_data';
-
-import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
-
-import '../../../proof/domain/entities/proof_entity.dart';
 import '../entities/identity_entity.dart';
 import '../entities/node_entity.dart';
-import '../entities/private_identity_entity.dart';
 import '../entities/rhs_node_entity.dart';
 
 abstract class IdentityRepository {
-  // Identity
-  Future<void> checkIdentityValidity({
-    required String secret,
+  Future<String> getPrivateKey({
     required String accessMessage,
-    required blockchain,
-    required network,
+    required String? secret,
   });
 
-  Future<PrivateIdentityEntity> createIdentity({
-    String? secret,
-    required String accessMessage,
-    required blockchain,
-    required network,
+  Future<List<String>> getPublicKeys({required privateKey});
+
+  Future<IdentityEntity> createIdentity({
+    required String didIdentifier,
+    required String privateKey,
+    required List<String> authClaim,
   });
 
   Future<void> storeIdentity({required IdentityEntity identity});
@@ -32,18 +23,18 @@ abstract class IdentityRepository {
 
   Future<IdentityEntity> getIdentity({required String did});
 
-  Future<PrivateIdentityEntity> getPrivateIdentity(
-      {required DidEntity did, required String privateKey});
-
   Future<List<IdentityEntity>> getIdentities();
 
-  Future<String> signMessage(
-      {required String privateKey, required String message});
+  Future<String> signMessage({
+    required String privateKey,
+    required String message,
+  });
 
   Future<String> getDidIdentifier({
     required String privateKey,
     required String blockchain,
     required String network,
+    required List<String> authClaim,
   });
 
   // RHS

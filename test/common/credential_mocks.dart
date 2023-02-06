@@ -13,6 +13,8 @@ import 'common_mocks.dart';
 import 'identity_mocks.dart';
 
 class CredentialMocks {
+  static List<String> authClaim = ["good", "auth", "claim"];
+
   static ClaimEntity claim = ClaimEntity(
     id: CommonMocks.id,
     issuer: CommonMocks.issuer,

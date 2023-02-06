@@ -3,44 +3,40 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i10;
-import 'dart:typed_data' as _i16;
+import 'dart:async' as _i9;
+import 'dart:typed_data' as _i15;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_auth_claim_use_case.dart'
-    as _i11;
+    as _i10;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart'
-    as _i17;
+    as _i16;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart'
-    as _i15;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart'
     as _i14;
-import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart'
-    as _i19;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart'
+    as _i13;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart'
-    as _i7;
+    as _i6;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
     as _i2;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart'
-    as _i6;
-import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart'
-    as _i4;
-import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart'
     as _i5;
+import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart'
+    as _i4;
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart'
-    as _i18;
+    as _i17;
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart'
-    as _i20;
+    as _i18;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_use_case.dart'
-    as _i9;
+    as _i8;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/sign_message_use_case.dart'
-    as _i12;
+    as _i11;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart'
     as _i3;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart'
-    as _i8;
+    as _i7;
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/get_gist_proof_use_case.dart'
-    as _i13;
+    as _i12;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -75,9 +71,8 @@ class _FakeGistProofEntity_1 extends _i1.SmartFake
         );
 }
 
-class _FakePrivateIdentityEntity_2 extends _i1.SmartFake
-    implements _i4.PrivateIdentityEntity {
-  _FakePrivateIdentityEntity_2(
+class _FakeRhsNodeEntity_2 extends _i1.SmartFake implements _i4.RhsNodeEntity {
+  _FakeRhsNodeEntity_2(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -86,8 +81,8 @@ class _FakePrivateIdentityEntity_2 extends _i1.SmartFake
         );
 }
 
-class _FakeRhsNodeEntity_3 extends _i1.SmartFake implements _i5.RhsNodeEntity {
-  _FakeRhsNodeEntity_3(
+class _FakeNodeEntity_3 extends _i1.SmartFake implements _i5.NodeEntity {
+  _FakeNodeEntity_3(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -96,8 +91,8 @@ class _FakeRhsNodeEntity_3 extends _i1.SmartFake implements _i5.RhsNodeEntity {
         );
 }
 
-class _FakeNodeEntity_4 extends _i1.SmartFake implements _i6.NodeEntity {
-  _FakeNodeEntity_4(
+class _FakeHashEntity_4 extends _i1.SmartFake implements _i6.HashEntity {
+  _FakeHashEntity_4(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -106,18 +101,8 @@ class _FakeNodeEntity_4 extends _i1.SmartFake implements _i6.NodeEntity {
         );
 }
 
-class _FakeHashEntity_5 extends _i1.SmartFake implements _i7.HashEntity {
-  _FakeHashEntity_5(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-}
-
-class _FakeProofEntity_6 extends _i1.SmartFake implements _i8.ProofEntity {
-  _FakeProofEntity_6(
+class _FakeProofEntity_5 extends _i1.SmartFake implements _i7.ProofEntity {
+  _FakeProofEntity_5(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -130,22 +115,21 @@ class _FakeProofEntity_6 extends _i1.SmartFake implements _i8.ProofEntity {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetIdentityUseCase extends _i1.Mock
-    implements _i9.GetIdentityUseCase {
+    implements _i8.GetIdentityUseCase {
   MockGetIdentityUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i10.Future<_i2.IdentityEntity> execute(
-          {required _i9.GetIdentityParam? param}) =>
+  _i9.Future<_i2.IdentityEntity> execute(
+          {required _i8.GetIdentityParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
           {#param: param},
         ),
-        returnValue:
-            _i10.Future<_i2.IdentityEntity>.value(_FakeIdentityEntity_0(
+        returnValue: _i9.Future<_i2.IdentityEntity>.value(_FakeIdentityEntity_0(
           this,
           Invocation.method(
             #execute,
@@ -153,62 +137,62 @@ class MockGetIdentityUseCase extends _i1.Mock
             {#param: param},
           ),
         )),
-      ) as _i10.Future<_i2.IdentityEntity>);
+      ) as _i9.Future<_i2.IdentityEntity>);
 }
 
 /// A class which mocks [GetAuthClaimUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetAuthClaimUseCase extends _i1.Mock
-    implements _i11.GetAuthClaimUseCase {
+    implements _i10.GetAuthClaimUseCase {
   MockGetAuthClaimUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i10.Future<List<String>> execute({required List<String>? param}) =>
+  _i9.Future<List<String>> execute({required List<String>? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
           {#param: param},
         ),
-        returnValue: _i10.Future<List<String>>.value(<String>[]),
-      ) as _i10.Future<List<String>>);
+        returnValue: _i9.Future<List<String>>.value(<String>[]),
+      ) as _i9.Future<List<String>>);
 }
 
 /// A class which mocks [SignMessageUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockSignMessageUseCase extends _i1.Mock
-    implements _i12.SignMessageUseCase {
+    implements _i11.SignMessageUseCase {
   MockSignMessageUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i10.Future<String> execute({required _i12.SignMessageParam? param}) =>
+  _i9.Future<String> execute({required _i11.SignMessageParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
           {#param: param},
         ),
-        returnValue: _i10.Future<String>.value(''),
-      ) as _i10.Future<String>);
+        returnValue: _i9.Future<String>.value(''),
+      ) as _i9.Future<String>);
 }
 
 /// A class which mocks [GetGistProofUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetGistProofUseCase extends _i1.Mock
-    implements _i13.GetGistProofUseCase {
+    implements _i12.GetGistProofUseCase {
   MockGetGistProofUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i10.Future<_i3.GistProofEntity> execute({required String? param}) =>
+  _i9.Future<_i3.GistProofEntity> execute({required String? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -216,7 +200,7 @@ class MockGetGistProofUseCase extends _i1.Mock
           {#param: param},
         ),
         returnValue:
-            _i10.Future<_i3.GistProofEntity>.value(_FakeGistProofEntity_1(
+            _i9.Future<_i3.GistProofEntity>.value(_FakeGistProofEntity_1(
           this,
           Invocation.method(
             #execute,
@@ -224,21 +208,21 @@ class MockGetGistProofUseCase extends _i1.Mock
             {#param: param},
           ),
         )),
-      ) as _i10.Future<_i3.GistProofEntity>);
+      ) as _i9.Future<_i3.GistProofEntity>);
 }
 
 /// A class which mocks [Iden3commRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockIden3commRepository extends _i1.Mock
-    implements _i14.Iden3commRepository {
+    implements _i13.Iden3commRepository {
   MockIden3commRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i10.Future<void> authenticate({
-    required _i15.AuthIden3MessageEntity? request,
+  _i9.Future<void> authenticate({
+    required _i14.AuthIden3MessageEntity? request,
     required String? authToken,
   }) =>
       (super.noSuchMethod(
@@ -250,19 +234,19 @@ class MockIden3commRepository extends _i1.Mock
             #authToken: authToken,
           },
         ),
-        returnValue: _i10.Future<void>.value(),
-        returnValueForMissingStub: _i10.Future<void>.value(),
-      ) as _i10.Future<void>);
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
   @override
-  _i10.Future<_i16.Uint8List> getAuthInputs({
+  _i9.Future<_i15.Uint8List> getAuthInputs({
     required String? did,
     required int? profileNonce,
     required String? challenge,
     required List<String>? authClaim,
     required _i2.IdentityEntity? identity,
     required String? signature,
-    required _i8.ProofEntity? incProof,
-    required _i8.ProofEntity? nonRevProof,
+    required _i7.ProofEntity? incProof,
+    required _i7.ProofEntity? nonRevProof,
     required _i3.GistProofEntity? gistProof,
     required Map<String, dynamic>? treeState,
   }) =>
@@ -283,13 +267,13 @@ class MockIden3commRepository extends _i1.Mock
             #treeState: treeState,
           },
         ),
-        returnValue: _i10.Future<_i16.Uint8List>.value(_i16.Uint8List(0)),
-      ) as _i10.Future<_i16.Uint8List>);
+        returnValue: _i9.Future<_i15.Uint8List>.value(_i15.Uint8List(0)),
+      ) as _i9.Future<_i15.Uint8List>);
   @override
-  _i10.Future<String> getAuthResponse({
+  _i9.Future<String> getAuthResponse({
     required String? did,
-    required _i15.AuthIden3MessageEntity? request,
-    required List<_i17.JWZProofEntity>? scope,
+    required _i14.AuthIden3MessageEntity? request,
+    required List<_i16.JWZProofEntity>? scope,
     String? pushUrl,
     String? pushToken,
     String? didIdentifier,
@@ -309,86 +293,87 @@ class MockIden3commRepository extends _i1.Mock
             #packageName: packageName,
           },
         ),
-        returnValue: _i10.Future<String>.value(''),
-      ) as _i10.Future<String>);
+        returnValue: _i9.Future<String>.value(''),
+      ) as _i9.Future<String>);
 }
 
 /// A class which mocks [IdentityRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockIdentityRepository extends _i1.Mock
-    implements _i18.IdentityRepository {
+    implements _i17.IdentityRepository {
   MockIdentityRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i10.Future<void> checkIdentityValidity({
-    required String? secret,
+  _i9.Future<String> getPrivateKey({
     required String? accessMessage,
-    required dynamic blockchain,
-    required dynamic network,
+    required String? secret,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
-          #checkIdentityValidity,
+          #getPrivateKey,
           [],
           {
-            #secret: secret,
             #accessMessage: accessMessage,
-            #blockchain: blockchain,
-            #network: network,
+            #secret: secret,
           },
         ),
-        returnValue: _i10.Future<void>.value(),
-        returnValueForMissingStub: _i10.Future<void>.value(),
-      ) as _i10.Future<void>);
+        returnValue: _i9.Future<String>.value(''),
+      ) as _i9.Future<String>);
   @override
-  _i10.Future<_i4.PrivateIdentityEntity> createIdentity({
-    String? secret,
-    required String? accessMessage,
-    required dynamic blockchain,
-    required dynamic network,
+  _i9.Future<List<String>> getPublicKeys({required dynamic privateKey}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getPublicKeys,
+          [],
+          {#privateKey: privateKey},
+        ),
+        returnValue: _i9.Future<List<String>>.value(<String>[]),
+      ) as _i9.Future<List<String>>);
+  @override
+  _i9.Future<_i2.IdentityEntity> createIdentity({
+    required String? didIdentifier,
+    required String? privateKey,
+    required List<String>? authClaim,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
           #createIdentity,
           [],
           {
-            #secret: secret,
-            #accessMessage: accessMessage,
-            #blockchain: blockchain,
-            #network: network,
+            #didIdentifier: didIdentifier,
+            #privateKey: privateKey,
+            #authClaim: authClaim,
           },
         ),
-        returnValue: _i10.Future<_i4.PrivateIdentityEntity>.value(
-            _FakePrivateIdentityEntity_2(
+        returnValue: _i9.Future<_i2.IdentityEntity>.value(_FakeIdentityEntity_0(
           this,
           Invocation.method(
             #createIdentity,
             [],
             {
-              #secret: secret,
-              #accessMessage: accessMessage,
-              #blockchain: blockchain,
-              #network: network,
+              #didIdentifier: didIdentifier,
+              #privateKey: privateKey,
+              #authClaim: authClaim,
             },
           ),
         )),
-      ) as _i10.Future<_i4.PrivateIdentityEntity>);
+      ) as _i9.Future<_i2.IdentityEntity>);
   @override
-  _i10.Future<void> storeIdentity({required _i2.IdentityEntity? identity}) =>
+  _i9.Future<void> storeIdentity({required _i2.IdentityEntity? identity}) =>
       (super.noSuchMethod(
         Invocation.method(
           #storeIdentity,
           [],
           {#identity: identity},
         ),
-        returnValue: _i10.Future<void>.value(),
-        returnValueForMissingStub: _i10.Future<void>.value(),
-      ) as _i10.Future<void>);
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
   @override
-  _i10.Future<void> removeIdentity({
+  _i9.Future<void> removeIdentity({
     required String? did,
     required String? privateKey,
   }) =>
@@ -401,19 +386,18 @@ class MockIdentityRepository extends _i1.Mock
             #privateKey: privateKey,
           },
         ),
-        returnValue: _i10.Future<void>.value(),
-        returnValueForMissingStub: _i10.Future<void>.value(),
-      ) as _i10.Future<void>);
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
   @override
-  _i10.Future<_i2.IdentityEntity> getIdentity({required String? did}) =>
+  _i9.Future<_i2.IdentityEntity> getIdentity({required String? did}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getIdentity,
           [],
           {#did: did},
         ),
-        returnValue:
-            _i10.Future<_i2.IdentityEntity>.value(_FakeIdentityEntity_0(
+        returnValue: _i9.Future<_i2.IdentityEntity>.value(_FakeIdentityEntity_0(
           this,
           Invocation.method(
             #getIdentity,
@@ -421,45 +405,18 @@ class MockIdentityRepository extends _i1.Mock
             {#did: did},
           ),
         )),
-      ) as _i10.Future<_i2.IdentityEntity>);
+      ) as _i9.Future<_i2.IdentityEntity>);
   @override
-  _i10.Future<_i4.PrivateIdentityEntity> getPrivateIdentity({
-    required _i19.DidEntity? did,
-    required String? privateKey,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getPrivateIdentity,
-          [],
-          {
-            #did: did,
-            #privateKey: privateKey,
-          },
-        ),
-        returnValue: _i10.Future<_i4.PrivateIdentityEntity>.value(
-            _FakePrivateIdentityEntity_2(
-          this,
-          Invocation.method(
-            #getPrivateIdentity,
-            [],
-            {
-              #did: did,
-              #privateKey: privateKey,
-            },
-          ),
-        )),
-      ) as _i10.Future<_i4.PrivateIdentityEntity>);
-  @override
-  _i10.Future<List<_i2.IdentityEntity>> getIdentities() => (super.noSuchMethod(
+  _i9.Future<List<_i2.IdentityEntity>> getIdentities() => (super.noSuchMethod(
         Invocation.method(
           #getIdentities,
           [],
         ),
         returnValue:
-            _i10.Future<List<_i2.IdentityEntity>>.value(<_i2.IdentityEntity>[]),
-      ) as _i10.Future<List<_i2.IdentityEntity>>);
+            _i9.Future<List<_i2.IdentityEntity>>.value(<_i2.IdentityEntity>[]),
+      ) as _i9.Future<List<_i2.IdentityEntity>>);
   @override
-  _i10.Future<String> signMessage({
+  _i9.Future<String> signMessage({
     required String? privateKey,
     required String? message,
   }) =>
@@ -472,13 +429,14 @@ class MockIdentityRepository extends _i1.Mock
             #message: message,
           },
         ),
-        returnValue: _i10.Future<String>.value(''),
-      ) as _i10.Future<String>);
+        returnValue: _i9.Future<String>.value(''),
+      ) as _i9.Future<String>);
   @override
-  _i10.Future<String> getDidIdentifier({
+  _i9.Future<String> getDidIdentifier({
     required String? privateKey,
     required String? blockchain,
     required String? network,
+    required List<String>? authClaim,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -488,12 +446,13 @@ class MockIdentityRepository extends _i1.Mock
             #privateKey: privateKey,
             #blockchain: blockchain,
             #network: network,
+            #authClaim: authClaim,
           },
         ),
-        returnValue: _i10.Future<String>.value(''),
-      ) as _i10.Future<String>);
+        returnValue: _i9.Future<String>.value(''),
+      ) as _i9.Future<String>);
   @override
-  _i10.Future<Map<String, dynamic>> getNonRevProof({
+  _i9.Future<Map<String, dynamic>> getNonRevProof({
     required String? identityState,
     required int? nonce,
     required String? baseUrl,
@@ -509,10 +468,10 @@ class MockIdentityRepository extends _i1.Mock
           },
         ),
         returnValue:
-            _i10.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
-      ) as _i10.Future<Map<String, dynamic>>);
+            _i9.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i9.Future<Map<String, dynamic>>);
   @override
-  _i10.Future<String> getState({
+  _i9.Future<String> getState({
     required String? identifier,
     required String? contractAddress,
   }) =>
@@ -525,27 +484,27 @@ class MockIdentityRepository extends _i1.Mock
             #contractAddress: contractAddress,
           },
         ),
-        returnValue: _i10.Future<String>.value(''),
-      ) as _i10.Future<String>);
+        returnValue: _i9.Future<String>.value(''),
+      ) as _i9.Future<String>);
   @override
-  _i10.Future<String> convertIdToBigInt({required String? id}) =>
+  _i9.Future<String> convertIdToBigInt({required String? id}) =>
       (super.noSuchMethod(
         Invocation.method(
           #convertIdToBigInt,
           [],
           {#id: id},
         ),
-        returnValue: _i10.Future<String>.value(''),
-      ) as _i10.Future<String>);
+        returnValue: _i9.Future<String>.value(''),
+      ) as _i9.Future<String>);
   @override
-  _i10.Future<_i5.RhsNodeEntity> getStateRoots({required String? url}) =>
+  _i9.Future<_i4.RhsNodeEntity> getStateRoots({required String? url}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getStateRoots,
           [],
           {#url: url},
         ),
-        returnValue: _i10.Future<_i5.RhsNodeEntity>.value(_FakeRhsNodeEntity_3(
+        returnValue: _i9.Future<_i4.RhsNodeEntity>.value(_FakeRhsNodeEntity_2(
           this,
           Invocation.method(
             #getStateRoots,
@@ -553,19 +512,19 @@ class MockIdentityRepository extends _i1.Mock
             {#url: url},
           ),
         )),
-      ) as _i10.Future<_i5.RhsNodeEntity>);
+      ) as _i9.Future<_i4.RhsNodeEntity>);
   @override
-  _i10.Future<String> getChallenge({required String? message}) =>
+  _i9.Future<String> getChallenge({required String? message}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getChallenge,
           [],
           {#message: message},
         ),
-        returnValue: _i10.Future<String>.value(''),
-      ) as _i10.Future<String>);
+        returnValue: _i9.Future<String>.value(''),
+      ) as _i9.Future<String>);
   @override
-  _i10.Future<_i6.NodeEntity> getAuthClaimNode(
+  _i9.Future<_i5.NodeEntity> getAuthClaimNode(
           {required List<String>? children}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -573,7 +532,7 @@ class MockIdentityRepository extends _i1.Mock
           [],
           {#children: children},
         ),
-        returnValue: _i10.Future<_i6.NodeEntity>.value(_FakeNodeEntity_4(
+        returnValue: _i9.Future<_i5.NodeEntity>.value(_FakeNodeEntity_3(
           this,
           Invocation.method(
             #getAuthClaimNode,
@@ -581,9 +540,9 @@ class MockIdentityRepository extends _i1.Mock
             {#children: children},
           ),
         )),
-      ) as _i10.Future<_i6.NodeEntity>);
+      ) as _i9.Future<_i5.NodeEntity>);
   @override
-  _i10.Future<Map<String, dynamic>> getLatestState({
+  _i9.Future<Map<String, dynamic>> getLatestState({
     required String? did,
     required String? privateKey,
   }) =>
@@ -597,10 +556,10 @@ class MockIdentityRepository extends _i1.Mock
           },
         ),
         returnValue:
-            _i10.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
-      ) as _i10.Future<Map<String, dynamic>>);
+            _i9.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i9.Future<Map<String, dynamic>>);
   @override
-  _i10.Future<String> exportIdentity({
+  _i9.Future<String> exportIdentity({
     required String? did,
     required String? privateKey,
   }) =>
@@ -613,10 +572,10 @@ class MockIdentityRepository extends _i1.Mock
             #privateKey: privateKey,
           },
         ),
-        returnValue: _i10.Future<String>.value(''),
-      ) as _i10.Future<String>);
+        returnValue: _i9.Future<String>.value(''),
+      ) as _i9.Future<String>);
   @override
-  _i10.Future<void> importIdentity({
+  _i9.Future<void> importIdentity({
     required String? did,
     required String? privateKey,
     required String? encryptedDb,
@@ -631,23 +590,23 @@ class MockIdentityRepository extends _i1.Mock
             #encryptedDb: encryptedDb,
           },
         ),
-        returnValue: _i10.Future<void>.value(),
-        returnValueForMissingStub: _i10.Future<void>.value(),
-      ) as _i10.Future<void>);
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
 }
 
 /// A class which mocks [SMTRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockSMTRepository extends _i1.Mock implements _i20.SMTRepository {
+class MockSMTRepository extends _i1.Mock implements _i18.SMTRepository {
   MockSMTRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i10.Future<void> addLeaf({
-    required _i7.HashEntity? key,
-    required _i7.HashEntity? value,
+  _i9.Future<void> addLeaf({
+    required _i6.HashEntity? key,
+    required _i6.HashEntity? value,
     required String? storeName,
     required String? did,
     required String? privateKey,
@@ -664,12 +623,12 @@ class MockSMTRepository extends _i1.Mock implements _i20.SMTRepository {
             #privateKey: privateKey,
           },
         ),
-        returnValue: _i10.Future<void>.value(),
-        returnValueForMissingStub: _i10.Future<void>.value(),
-      ) as _i10.Future<void>);
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
   @override
-  _i10.Future<_i6.NodeEntity> getNode({
-    required _i7.HashEntity? hash,
+  _i9.Future<_i5.NodeEntity> getNode({
+    required _i6.HashEntity? hash,
     required String? storeName,
     required String? did,
     required String? privateKey,
@@ -685,7 +644,7 @@ class MockSMTRepository extends _i1.Mock implements _i20.SMTRepository {
             #privateKey: privateKey,
           },
         ),
-        returnValue: _i10.Future<_i6.NodeEntity>.value(_FakeNodeEntity_4(
+        returnValue: _i9.Future<_i5.NodeEntity>.value(_FakeNodeEntity_3(
           this,
           Invocation.method(
             #getNode,
@@ -698,11 +657,11 @@ class MockSMTRepository extends _i1.Mock implements _i20.SMTRepository {
             },
           ),
         )),
-      ) as _i10.Future<_i6.NodeEntity>);
+      ) as _i9.Future<_i5.NodeEntity>);
   @override
-  _i10.Future<void> addNode({
-    required _i7.HashEntity? hash,
-    required _i6.NodeEntity? node,
+  _i9.Future<void> addNode({
+    required _i6.HashEntity? hash,
+    required _i5.NodeEntity? node,
     required String? storeName,
     required String? did,
     required String? privateKey,
@@ -719,11 +678,11 @@ class MockSMTRepository extends _i1.Mock implements _i20.SMTRepository {
             #privateKey: privateKey,
           },
         ),
-        returnValue: _i10.Future<void>.value(),
-        returnValueForMissingStub: _i10.Future<void>.value(),
-      ) as _i10.Future<void>);
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
   @override
-  _i10.Future<_i7.HashEntity> getRoot({
+  _i9.Future<_i6.HashEntity> getRoot({
     required String? storeName,
     required String? did,
     required String? privateKey,
@@ -738,7 +697,7 @@ class MockSMTRepository extends _i1.Mock implements _i20.SMTRepository {
             #privateKey: privateKey,
           },
         ),
-        returnValue: _i10.Future<_i7.HashEntity>.value(_FakeHashEntity_5(
+        returnValue: _i9.Future<_i6.HashEntity>.value(_FakeHashEntity_4(
           this,
           Invocation.method(
             #getRoot,
@@ -750,10 +709,10 @@ class MockSMTRepository extends _i1.Mock implements _i20.SMTRepository {
             },
           ),
         )),
-      ) as _i10.Future<_i7.HashEntity>);
+      ) as _i9.Future<_i6.HashEntity>);
   @override
-  _i10.Future<void> setRoot({
-    required _i7.HashEntity? root,
+  _i9.Future<void> setRoot({
+    required _i6.HashEntity? root,
     required String? storeName,
     required String? did,
     required String? privateKey,
@@ -769,12 +728,12 @@ class MockSMTRepository extends _i1.Mock implements _i20.SMTRepository {
             #privateKey: privateKey,
           },
         ),
-        returnValue: _i10.Future<void>.value(),
-        returnValueForMissingStub: _i10.Future<void>.value(),
-      ) as _i10.Future<void>);
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
   @override
-  _i10.Future<_i8.ProofEntity> generateProof({
-    required _i7.HashEntity? key,
+  _i9.Future<_i7.ProofEntity> generateProof({
+    required _i6.HashEntity? key,
     required String? storeName,
     required String? did,
     required String? privateKey,
@@ -790,7 +749,7 @@ class MockSMTRepository extends _i1.Mock implements _i20.SMTRepository {
             #privateKey: privateKey,
           },
         ),
-        returnValue: _i10.Future<_i8.ProofEntity>.value(_FakeProofEntity_6(
+        returnValue: _i9.Future<_i7.ProofEntity>.value(_FakeProofEntity_5(
           this,
           Invocation.method(
             #generateProof,
@@ -803,5 +762,5 @@ class MockSMTRepository extends _i1.Mock implements _i20.SMTRepository {
             },
           ),
         )),
-      ) as _i10.Future<_i8.ProofEntity>);
+      ) as _i9.Future<_i7.ProofEntity>);
 }
