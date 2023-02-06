@@ -47,15 +47,16 @@ class ContractIden3MessageEntity extends Iden3MessageEntity {
 
   ContractIden3MessageEntity(
       {required String id,
-      required String typ,
+        String? typ,
       required String type,
+        String? thid,
       required this.body})
       : super(
             from: '',
             id: id,
             messageType: Iden3MessageType.contractFunctionCall,
-            thid: '',
-            typ: typ,
+            thid: thid ?? '',
+            typ: typ ?? '',
             type: type);
 
   /// Creates an instance from the given json
@@ -67,8 +68,9 @@ class ContractIden3MessageEntity extends Iden3MessageEntity {
         ContractFunctionCallBodyRequest.fromJson(json['body']);
     return ContractIden3MessageEntity(
       id: json['id'],
-      typ: json['typ'],
+      typ: json['typ'] ?? '',
       type: json['type'],
+      thid: json['thid'] ?? '',
       body: body,
     );
   }

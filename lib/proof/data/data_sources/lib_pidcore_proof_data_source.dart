@@ -5,6 +5,7 @@ import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_proof_dto.dart';
 
 import '../../libs/polygonidcore/pidcore_proof.dart';
 import '../dtos/atomic_query_inputs_param.dart';
@@ -111,26 +112,46 @@ class LibPolygonIdCoreProofDataSource {
     return output;
   }
 
-  Future<String> getProofInputs(
-    String id,
-    int profileNonce,
-    int claimSubjectProfileNonce,
-    ClaimInfoDTO claimInfo,
-    ProofScopeRequest request,
+  Future<String> getProofInputs({
+    required String id,
+    required int profileNonce,
+    required int claimSubjectProfileNonce,
+    List<String>? authClaim,
+    Map<String, dynamic>? incProof,
+    Map<String, dynamic>? nonRevProof,
+    Map<String, dynamic>? treeState,
+    GistProofDTO? gistProof,
+    String? challenge,
+    String? signature,
+    required ClaimInfoDTO credential,
+    required ProofScopeRequest request,
+
+  }
   ) {
     AtomicQueryInputsType type = AtomicQueryInputsType.mtp;
 
     if (request.circuitId == "credentialAtomicQueryMTPV2") {
       type = AtomicQueryInputsType.mtp;
-    } else if (request.circuitId == "credentialAtomicQueryMTPV2Onchain") {
+    } else if (request.circuitId == "credentialAtomicQueryMTPV2OnChain") {
       type = AtomicQueryInputsType.mtponchain;
     } else if (request.circuitId == "credentialAtomicQuerySigV2") {
       type = AtomicQueryInputsType.sig;
-    } else if (request.circuitId == "credentialAtomicQuerySigV2Onchain") {
+    } else if (request.circuitId == "credentialAtomicQuerySigV2OnChain") {
       type = AtomicQueryInputsType.sigonchain;
     }
 
     return _libPolygonIdCoreWrapper.getProofInputs(AtomicQueryInputsParam(
-        type, id, profileNonce, claimSubjectProfileNonce, claimInfo, request));
+        type: type,
+      id: id,
+      profileNonce: profileNonce,
+      claimSubjectProfileNonce: claimSubjectProfileNonce,
+      authClaim: authClaim,
+      incProof: incProof,
+      nonRevProof: nonRevProof,
+      treeState: treeState,
+      gistProof: gistProof,
+      challenge: challenge,
+      signature: signature,
+      credential: credential, request: request, ));
   }
 }

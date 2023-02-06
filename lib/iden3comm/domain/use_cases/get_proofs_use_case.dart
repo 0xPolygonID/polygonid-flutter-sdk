@@ -19,12 +19,14 @@ class GetProofsParam {
   final String did;
   final int profileNonce;
   final String privateKey;
+  final String? challenge;
 
   GetProofsParam(
       {required this.message,
       required this.did,
       required this.profileNonce,
-      required this.privateKey});
+      required this.privateKey,
+      this.challenge});
 }
 
 class GetProofsUseCase
@@ -35,7 +37,6 @@ class GetProofsUseCase
   final GenerateProofUseCase _generateProofUseCase;
   final IsProofCircuitSupportedUseCase _isProofCircuitSupported;
   final GetProofRequestsUseCase _getProofRequestsUseCase;
-  final GetDidUseCase _getDidUseCase;
 
   GetProofsUseCase(
     this._proofRepository,
@@ -44,7 +45,6 @@ class GetProofsUseCase
     this._generateProofUseCase,
     this._isProofCircuitSupported,
     this._getProofRequestsUseCase,
-    this._getDidUseCase,
   );
 
   @override
@@ -59,8 +59,6 @@ class GetProofsUseCase
           did: param.did,
         )
         .then((identity) => identity.publicKey);
-
-    DidEntity did = await _getDidUseCase.execute(param: param.did);
 
     /// We got [ProofRequestEntity], let's find the associated [ClaimEntity]
     /// and generate [ProofEntity]
@@ -77,16 +75,23 @@ class GetProofsUseCase
                   privateKey: param.privateKey,
                 )))
             .then((claims) => claims.first)
-            .then((authClaim) async {
+            .then((credential) async {
           String circuitId = request.scope.circuitId;
           CircuitDataEntity circuitData =
               await _proofRepository.loadCircuitFiles(circuitId);
 
+          String? challenge;
+          String? privKey;
+          if (circuitId == "credentialAtomicQuerySigV2OnChain" || circuitId == "credentialAtomicQueryMTPV2OnChain") {
+            privKey = param.privateKey;
+            challenge = param.challenge;
+          }
+
           // Generate proof
           proofs.add(await _generateProofUseCase
               .execute(
-                  param: GenerateProofParam(did.identifier, param.profileNonce,
-                      0, authClaim, request.scope, circuitData))
+                  param: GenerateProofParam(param.did, param.profileNonce,
+                      0, credential, request.scope, circuitData, privKey, challenge))
               .then((proof) => JWZProofEntity(
                   id: request.scope.id,
                   circuitId: circuitId,

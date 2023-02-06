@@ -55,25 +55,40 @@ dev_dependencies:
   envied_generator: ^0.2.3
 
 ffigen:
-  name: NativePolygonIdCoreLib
-  description: Bindings to `ios/Classes/libpolygonid.h`.
-  output: 'lib/common/libs/polygonidcore/native_polygonidcore.dart'
-  headers:
-    entry-points:
-      - 'ios/Classes/libpolygonid.h'
+  #name: NativePolygonIdCoreLib
+  #description: Bindings to `ios/Classes/libpolygonid.h`.
+  #output: 'lib/common/libs/polygonidcore/native_polygonidcore.dart'
+  #headers:
+  #  entry-points:
+  #    - 'ios/Classes/libpolygonid.h'
 
         # name: WitnessMtpLib
-        # description: Bindings to `ios/Classes/witnesscalc_mtp.h`.
-        # output: 'lib/libs/generated_bindings_witness_mtp.dart'
+        # description: Bindings to `ios/Classes/witnesscalc_credentialAtomicQueryMTPV2.h`.
+        # output: 'lib/proof/libs/mtp_v2/native_witness_mtp_v2.dart'
         # headers:
         #  entry-points:
         #    - 'ios/Classes/witnesscalc_mtp.h'
+
         # name: WitnessLib
         # description: Bindings to `ios/Classes/witnesscalc.h`.
         # output: 'lib/libs/generated_bindings_witness.dart'
         # headers:
         #  entry-points:
         #   - 'ios/Classes/witnesscalc.h'
+
+  #name: NativeWitnessMtpOnchainLib
+  #description: Bindings to `ios/Classes/witnesscalc_credentialAtomicQueryMTPV2OnChain.h`.
+  #output: 'lib/proof/libs/witnesscalc/mtp_v2_onchain/native_witness_mtp_v2_onchain.dart'
+  #headers:
+  #  entry-points:
+  #    - 'ios/Classes/witnesscalc_credentialAtomicQueryMTPV2OnChain.h'
+
+  name: NativeWitnessSigOnchainLib
+  description: Bindings to `ios/Classes/witnesscalc_credentialAtomicQuerySigV2OnChain.h`.
+  output: 'lib/proof/libs/witnesscalc/sig_v2_onchain/native_witness_sig_v2_onchain.dart'
+  headers:
+    entry-points:
+      - 'ios/Classes/witnesscalc_credentialAtomicQuerySigV2OnChain.h'
 
 
         # name: ProverLib

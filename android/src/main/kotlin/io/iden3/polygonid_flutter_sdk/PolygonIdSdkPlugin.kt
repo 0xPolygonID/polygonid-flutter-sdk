@@ -17,6 +17,8 @@ class PolygonIdSdkPlugin: FlutterPlugin, MethodCallHandler {
     System.loadLibrary("witnesscalc_authV2")
     System.loadLibrary("witnesscalc_credentialAtomicQuerySigV2")
     System.loadLibrary("witnesscalc_credentialAtomicQueryMTPV2")
+    System.loadLibrary("witnesscalc_credentialAtomicQuerySigV2OnChain")
+    System.loadLibrary("witnesscalc_credentialAtomicQueryMTPV2OnChain")
     System.loadLibrary("rapidsnark")
   }
 

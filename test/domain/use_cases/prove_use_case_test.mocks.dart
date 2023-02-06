@@ -8,11 +8,11 @@ import 'dart:typed_data' as _i7;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
-    as _i10;
+    as _i11;
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
     as _i8;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart'
-    as _i11;
+    as _i12;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart'
     as _i9;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart'
@@ -20,9 +20,11 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart'
     as _i4;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz.dart'
-    as _i12;
+    as _i13;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart'
     as _i3;
+import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart'
+    as _i10;
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart'
     as _i5;
 
@@ -104,23 +106,38 @@ class MockProofRepository extends _i1.Mock implements _i5.ProofRepository {
         )),
       ) as _i6.Future<_i2.CircuitDataEntity>);
   @override
-  _i6.Future<_i7.Uint8List> calculateAtomicQueryInputs(
-    String? id,
-    int? profileNonce,
-    int? claimSubjectProfileNonce,
-    _i8.ClaimEntity? claim,
-    _i9.ProofScopeRequest? request,
-  ) =>
+  _i6.Future<_i7.Uint8List> calculateAtomicQueryInputs({
+    required String? id,
+    required int? profileNonce,
+    required int? claimSubjectProfileNonce,
+    required _i8.ClaimEntity? claim,
+    required _i9.ProofScopeRequest? request,
+    _i10.ProofEntity? incProof,
+    _i10.ProofEntity? nonRevProof,
+    _i4.GistProofEntity? gistProof,
+    List<String>? authClaim,
+    Map<String, dynamic>? treeState,
+    String? challenge,
+    String? signature,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #calculateAtomicQueryInputs,
-          [
-            id,
-            profileNonce,
-            claimSubjectProfileNonce,
-            claim,
-            request,
-          ],
+          [],
+          {
+            #id: id,
+            #profileNonce: profileNonce,
+            #claimSubjectProfileNonce: claimSubjectProfileNonce,
+            #claim: claim,
+            #request: request,
+            #incProof: incProof,
+            #nonRevProof: nonRevProof,
+            #gistProof: gistProof,
+            #authClaim: authClaim,
+            #treeState: treeState,
+            #challenge: challenge,
+            #signature: signature,
+          },
         ),
         returnValue: _i6.Future<_i7.Uint8List>.value(_i7.Uint8List(0)),
       ) as _i6.Future<_i7.Uint8List>);
@@ -164,8 +181,8 @@ class MockProofRepository extends _i1.Mock implements _i5.ProofRepository {
         )),
       ) as _i6.Future<_i3.JWZProof>);
   @override
-  _i6.Future<List<_i10.FilterEntity>> getFilters(
-          {required _i11.ProofRequestEntity? request}) =>
+  _i6.Future<List<_i11.FilterEntity>> getFilters(
+          {required _i12.ProofRequestEntity? request}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getFilters,
@@ -173,10 +190,10 @@ class MockProofRepository extends _i1.Mock implements _i5.ProofRepository {
           {#request: request},
         ),
         returnValue:
-            _i6.Future<List<_i10.FilterEntity>>.value(<_i10.FilterEntity>[]),
-      ) as _i6.Future<List<_i10.FilterEntity>>);
+            _i6.Future<List<_i11.FilterEntity>>.value(<_i11.FilterEntity>[]),
+      ) as _i6.Future<List<_i11.FilterEntity>>);
   @override
-  _i6.Future<String> encodeJWZ({required _i12.JWZEntity? jwz}) =>
+  _i6.Future<String> encodeJWZ({required _i13.JWZEntity? jwz}) =>
       (super.noSuchMethod(
         Invocation.method(
           #encodeJWZ,
