@@ -152,7 +152,7 @@ main() {
       expect(verifyLoadCircuit.captured[i],
           Iden3commMocks.proofRequestList[i].scope.circuitId);
 
-      expect(verifyGenerateProof.captured[i].id, IdentityMocks.did.identifier);
+      expect(verifyGenerateProof.captured[i].did, IdentityMocks.did.did);
       expect(verifyGenerateProof.captured[i].profileNonce, param.profileNonce);
       expect(verifyGenerateProof.captured[i].claimSubjectProfileNonce, 0);
       expect(verifyGenerateProof.captured[i].credential, CredentialMocks.claim);
