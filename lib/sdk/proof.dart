@@ -8,11 +8,13 @@ import '../proof/domain/entities/circuit_data_entity.dart';
 
 abstract class PolygonIdSdkProof {
   Future<JWZProof> prove(
-      {required String id,
+      {required String did,
       int? profileNonce,
-      required ClaimEntity claim,
-      required CircuitDataEntity circuitData,
-      required ProofScopeRequest request});
+        required ClaimEntity claim,
+        required CircuitDataEntity circuitData,
+        required ProofScopeRequest request,
+        String? privateKey,
+        String? challenge});
 }
 
 @injectable
@@ -25,13 +27,15 @@ class Proof implements PolygonIdSdkProof {
 
   @override
   Future<JWZProof> prove(
-      {required String id,
+      {required String did,
       int? profileNonce,
       required ClaimEntity claim,
       required CircuitDataEntity circuitData,
-      required ProofScopeRequest request}) {
+      required ProofScopeRequest request,
+      String? privateKey,
+      String? challenge}) {
     return _proveUseCase.execute(
         param: GenerateProofParam(
-            id, profileNonce ?? 0, 0, claim, request, circuitData));
+            did, profileNonce ?? 0, 0, claim, request, circuitData, privateKey, challenge));
   }
 }

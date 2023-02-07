@@ -252,7 +252,7 @@ class SMTDataSource {
         case NodeTypeDTO.empty:
           return ProofDTO(existence: false, siblings: siblings);
         case NodeTypeDTO.leaf:
-          if (node.children[0] == key) {
+          if (node.hash == key) {
             return ProofDTO(existence: true, siblings: siblings);
           }
           // We found a leaf whose entry didn't match key

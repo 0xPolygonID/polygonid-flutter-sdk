@@ -5,6 +5,8 @@ import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/mtp_v2/witness_mtp.
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/sig_v2/witness_sig.dart';
 
 import '../../libs/witnesscalc/auth_v2/witness_auth.dart';
+import '../../libs/witnesscalc/mtp_v2_onchain/witness_mtp_onchain.dart';
+import '../../libs/witnesscalc/sig_v2_onchain/witness_sig_onchain.dart';
 import '../mappers/circuit_type_mapper.dart';
 
 @injectable
@@ -17,6 +19,12 @@ class WitnessIsolatesWrapper {
 
   Future<Uint8List?> computeWitnessMtp(WitnessParam param) =>
       compute(_computeWitnessMtp, param);
+
+  Future<Uint8List?> computeWitnessMtpOnchain(WitnessParam param) =>
+      compute(_computeWitnessMtpOnchain, param);
+
+  Future<Uint8List?> computeWitnessSigOnchain(WitnessParam param) =>
+      compute(_computeWitnessSigOnchain, param);
 }
 
 /// As this is running in a separate thread, we cannot inject [WitnessAuthLib]
@@ -43,6 +51,22 @@ Future<Uint8List?> _computeWitnessMtp(WitnessParam param) async {
   return witnessBytes;
 }
 
+/// As this is running in a separate thread, we cannot inject [WitnessMTPV2OnchainLib]
+Future<Uint8List?> _computeWitnessMtpOnchain(WitnessParam param) async {
+  final WitnessMTPV2OnchainLib witnessMTPV2OnchainLib = WitnessMTPV2OnchainLib();
+  final Uint8List? witnessBytes =
+  await witnessMTPV2OnchainLib.calculateWitnessMTPOnchain(param.wasm, param.json);
+  return witnessBytes;
+}
+
+/// As this is running in a separate thread, we cannot inject [WitnessSigV2OnchainLib]
+Future<Uint8List?> _computeWitnessSigOnchain(WitnessParam param) async {
+  final WitnessSigV2OnchainLib witnessSigV2OnchainLib = WitnessSigV2OnchainLib();
+  final Uint8List? witnessBytes =
+  await witnessSigV2OnchainLib.calculateWitnessSigOnchain(param.wasm, param.json);
+  return witnessBytes;
+}
+
 class WitnessDataSource {
   final WitnessIsolatesWrapper _witnessIsolatesWrapper;
 
@@ -57,6 +81,10 @@ class WitnessDataSource {
         return _witnessIsolatesWrapper.computeWitnessMtp(param);
       case CircuitType.sig:
         return _witnessIsolatesWrapper.computeWitnessSig(param);
+      case CircuitType.mtponchain:
+        return _witnessIsolatesWrapper.computeWitnessMtpOnchain(param);
+      case CircuitType.sigonchain:
+        return _witnessIsolatesWrapper.computeWitnessSigOnchain(param);
       default:
         return Future.value(null);
     }

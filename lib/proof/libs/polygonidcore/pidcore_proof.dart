@@ -51,6 +51,27 @@ class PolygonIdCoreProof extends PolygonIdCore {
     return result;
   }
 
+  String getSigOnchainProofInputs(String input) {
+    ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
+    ffi.Pointer<ffi.Pointer<ffi.Char>> response =
+    malloc<ffi.Pointer<ffi.Char>>();
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
+    malloc<ffi.Pointer<PLGNStatus>>();
+    int res = PolygonIdCore.nativePolygonIdCoreLib
+        .PLGNAtomicQuerySigV2OnChainInputs(response, in1, ffi.nullptr,status);
+    if (res == 0) {
+      consumeStatus(status, "");
+    }
+    String result = "";
+    ffi.Pointer<ffi.Char> jsonResponse = response.value;
+    ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
+    if (jsonString != ffi.nullptr) {
+      result = jsonString.toDartString();
+    }
+
+    return result;
+  }
+
   String getMTProofInputs(String input) {
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<ffi.Char>> response =
@@ -59,6 +80,27 @@ class PolygonIdCoreProof extends PolygonIdCore {
         malloc<ffi.Pointer<PLGNStatus>>();
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNMtpV2Inputs(response, in1, status);
+    if (res == 0) {
+      consumeStatus(status, "");
+    }
+    String result = "";
+    ffi.Pointer<ffi.Char> jsonResponse = response.value;
+    ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
+    if (jsonString != ffi.nullptr) {
+      result = jsonString.toDartString();
+    }
+
+    return result;
+  }
+
+  String getMTPOnchainProofInputs(String input) {
+    ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
+    ffi.Pointer<ffi.Pointer<ffi.Char>> response =
+    malloc<ffi.Pointer<ffi.Char>>();
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
+    malloc<ffi.Pointer<PLGNStatus>>();
+    int res = PolygonIdCore.nativePolygonIdCoreLib
+        .PLGNAtomicQueryMtpV2OnChainInputs(response, in1, ffi.nullptr, status);
     if (res == 0) {
       consumeStatus(status, "");
     }

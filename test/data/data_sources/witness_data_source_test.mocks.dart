@@ -59,4 +59,24 @@ class MockWitnessIsolatesWrapper extends _i1.Mock
         ),
         returnValue: _i3.Future<_i4.Uint8List?>.value(),
       ) as _i3.Future<_i4.Uint8List?>);
+  @override
+  _i3.Future<_i4.Uint8List?> computeWitnessMtpOnchain(
+          _i5.WitnessParam? param) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #computeWitnessMtpOnchain,
+          [param],
+        ),
+        returnValue: _i3.Future<_i4.Uint8List?>.value(),
+      ) as _i3.Future<_i4.Uint8List?>);
+  @override
+  _i3.Future<_i4.Uint8List?> computeWitnessSigOnchain(
+          _i5.WitnessParam? param) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #computeWitnessSigOnchain,
+          [param],
+        ),
+        returnValue: _i3.Future<_i4.Uint8List?>.value(),
+      ) as _i3.Future<_i4.Uint8List?>);
 }

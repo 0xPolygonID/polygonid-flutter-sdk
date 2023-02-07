@@ -9,18 +9,26 @@ import '../entities/circuit_data_entity.dart';
 import '../entities/gist_proof_entity.dart';
 import '../entities/jwz/jwz.dart';
 import '../entities/jwz/jwz_proof.dart';
+import '../entities/proof_entity.dart';
 
 abstract class ProofRepository {
   Future<bool> isCircuitSupported({required String circuitId});
 
   Future<CircuitDataEntity> loadCircuitFiles(String circuitId);
 
-  Future<Uint8List> calculateAtomicQueryInputs(
-      String id,
-      int profileNonce,
-      int claimSubjectProfileNonce,
-      ClaimEntity claim,
-      ProofScopeRequest request);
+  Future<Uint8List> calculateAtomicQueryInputs({
+      required String id,
+      required int profileNonce,
+      required int claimSubjectProfileNonce,
+      required ClaimEntity claim,
+      required ProofScopeRequest request,
+      ProofEntity? incProof,
+      ProofEntity? nonRevProof,
+      GistProofEntity? gistProof,
+      List<String>? authClaim,
+      Map<String, dynamic>? treeState,
+      String? challenge,
+      String? signature});
 
   Future<Uint8List> calculateWitness(
     CircuitDataEntity circuitData,

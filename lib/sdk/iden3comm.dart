@@ -93,13 +93,15 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       {required Iden3MessageEntity message,
       required String did,
       int? profileNonce,
-      required String privateKey}) {
+      required String privateKey,
+      String? challenge}) {
     return _getProofsUseCase.execute(
         param: GetProofsParam(
-      message: message,
-      did: did,
-      profileNonce: profileNonce ?? 0,
-      privateKey: privateKey,
+          message: message,
+          did: did,
+          profileNonce: profileNonce ?? 0,
+          privateKey: privateKey,
+          challenge: challenge,
     ));
   }
 }

@@ -45,7 +45,6 @@ MockIsProofCircuitSupportedUseCase isProofCircuitSupportedUseCase =
     MockIsProofCircuitSupportedUseCase();
 MockGetProofRequestsUseCase getProofRequestsUseCase =
     MockGetProofRequestsUseCase();
-MockGetDidUseCase getDidUseCase = MockGetDidUseCase();
 
 // Tested instance
 GetProofsUseCase useCase = GetProofsUseCase(
@@ -55,7 +54,6 @@ GetProofsUseCase useCase = GetProofsUseCase(
   generateProofUseCase,
   isProofCircuitSupportedUseCase,
   getProofRequestsUseCase,
-  getDidUseCase,
 );
 
 @GenerateMocks([
@@ -65,7 +63,6 @@ GetProofsUseCase useCase = GetProofsUseCase(
   GenerateProofUseCase,
   IsProofCircuitSupportedUseCase,
   GetProofRequestsUseCase,
-  GetDidUseCase,
 ])
 main() {
   setUp(() {
@@ -75,7 +72,6 @@ main() {
     reset(generateProofUseCase);
     reset(isProofCircuitSupportedUseCase);
     reset(getProofRequestsUseCase);
-    reset(getDidUseCase);
 
     //Given
     when(identityRepository.getIdentity(did: anyNamed('did'))).thenAnswer(
@@ -102,9 +98,6 @@ main() {
 
     when(generateProofUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value(ProofMocks.jwzProof));
-
-    when(getDidUseCase.execute(param: anyNamed('param')))
-        .thenAnswer((realInvocation) => Future.value(IdentityMocks.did));
   });
 
   test(
@@ -159,7 +152,7 @@ main() {
       expect(verifyLoadCircuit.captured[i],
           Iden3commMocks.proofRequestList[i].scope.circuitId);
 
-      expect(verifyGenerateProof.captured[i].id, IdentityMocks.did.identifier);
+      expect(verifyGenerateProof.captured[i].did, IdentityMocks.did.did);
       expect(verifyGenerateProof.captured[i].profileNonce, param.profileNonce);
       expect(verifyGenerateProof.captured[i].claimSubjectProfileNonce, 0);
       expect(verifyGenerateProof.captured[i].credential, CredentialMocks.claim);
