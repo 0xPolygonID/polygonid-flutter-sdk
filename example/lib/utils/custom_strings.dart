@@ -42,4 +42,11 @@ class CustomStrings {
   // ERROR
   static const String genericError = "A generic error occurred, try again";
   static const String iden3messageGenericError = "Error in the readed message";
+
+  // SIGN MESSAGE FEATURE CARD
+  static const String signMessageMethod = "identity.sign()";
+  static const String signMessageTitle = "Sign a message";
+  static const String signMessageDescription =
+      "Sign a message (hex/int) with your private key";
+
 }

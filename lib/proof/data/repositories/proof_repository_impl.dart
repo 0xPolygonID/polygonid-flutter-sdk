@@ -21,7 +21,8 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 
 import '../../../common/utils/uint8_list_utils.dart';
-import '../../../iden3comm/data/mappers/gist_proof_mapper.dart' as iden3GistProofMapper;
+import '../../../iden3comm/data/mappers/gist_proof_mapper.dart'
+    as iden3GistProofMapper;
 import '../mappers/gist_proof_mapper.dart';
 import '../../../identity/data/data_sources/remote_identity_data_source.dart';
 import '../../domain/entities/circuit_data_entity.dart';
@@ -76,7 +77,7 @@ class ProofRepositoryImpl extends ProofRepository {
     this._proofRequestFiltersMapper,
     this._authProofMapper,
     this._gistProofMapper,
-      this._iden3GistProofMapper,
+    this._iden3GistProofMapper,
   );
 
   @override
@@ -89,12 +90,12 @@ class ProofRepositoryImpl extends ProofRepository {
   }
 
   @override
-  Future<Uint8List> calculateAtomicQueryInputs({
-    required String id,
-    required int profileNonce,
-    required int claimSubjectProfileNonce,
-    required ClaimEntity claim,
-    required ProofScopeRequest request,
+  Future<Uint8List> calculateAtomicQueryInputs(
+      {required String id,
+      required int profileNonce,
+      required int claimSubjectProfileNonce,
+      required ClaimEntity claim,
+      required ProofScopeRequest request,
       ProofEntity? incProof,
       ProofEntity? nonRevProof,
       GistProofEntity? gistProof,
@@ -103,47 +104,46 @@ class ProofRepositoryImpl extends ProofRepository {
       String? challenge,
       String? signature}) async {
     ClaimDTO credentialDto = _claimMapper.mapTo(claim);
-    Map<String,dynamic>? gistProofMap;
+    Map<String, dynamic>? gistProofMap;
     if (gistProof != null) {
       gistProofMap = _iden3GistProofMapper.mapTo(gistProof);
     }
-    Map<String,dynamic>? incProofMap;
+    Map<String, dynamic>? incProofMap;
     if (incProof != null) {
       incProofMap = _authProofMapper.mapTo(incProof);
     }
 
-    Map<String,dynamic>? nonRevProofMap;
+    Map<String, dynamic>? nonRevProofMap;
     if (nonRevProof != null) {
       nonRevProofMap = _authProofMapper.mapTo(nonRevProof);
     }
 
-
     String? res = await _libPolygonIdCoreProofDataSource.getProofInputs(
-        id: id,
-        profileNonce: profileNonce,
-        claimSubjectProfileNonce : claimSubjectProfileNonce,
-        authClaim: authClaim,
-        incProof: incProofMap,
-        nonRevProof: nonRevProofMap,
-        gistProof: gistProofMap,
-        treeState: treeState,
-        challenge: challenge,
-        signature: signature,
-        credential: credentialDto.info,
-        request: request,
-        );
+      id: id,
+      profileNonce: profileNonce,
+      claimSubjectProfileNonce: claimSubjectProfileNonce,
+      authClaim: authClaim,
+      incProof: incProofMap,
+      nonRevProof: nonRevProofMap,
+      gistProof: gistProofMap,
+      treeState: treeState,
+      challenge: challenge,
+      signature: signature,
+      credential: credentialDto.info,
+      request: request,
+    );
 
     if (res != null && res.isNotEmpty) {
       Uint8List inputsJsonBytes;
       dynamic inputsJson = json.decode(res);
-      if (inputsJson is Map<String,dynamic>) {
+      if (inputsJson is Map<String, dynamic>) {
         Map<String, dynamic> inputs = json.decode(res);
         Uint8List inputsJsonBytes =
-        Uint8ArrayUtils.uint8ListfromString(json.encode(inputs["inputs"]));
+            Uint8ArrayUtils.uint8ListfromString(json.encode(inputs["inputs"]));
         return inputsJsonBytes;
       } else if (inputsJson is String) {
         Uint8List inputsJsonBytes =
-        Uint8ArrayUtils.uint8ListfromString(inputsJson);
+            Uint8ArrayUtils.uint8ListfromString(inputsJson);
         return inputsJsonBytes;
       }
     }
@@ -243,9 +243,7 @@ class ProofRepositoryImpl extends ProofRepository {
     return _localContractFilesDataSource
         .loadStateContract(contractAddress)
         .then((contract) => _rpcDataSource
-            .getGistProof(
-                identifier,
-                contract)
+            .getGistProof(identifier, contract)
             .catchError((error) => throw FetchGistProofException(error)));
   }
 }
