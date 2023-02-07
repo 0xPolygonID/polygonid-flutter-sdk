@@ -125,7 +125,6 @@ class LibPolygonIdCoreProofDataSource {
     String? signature,
     required ClaimInfoDTO credential,
     required ProofScopeRequest request,
-
   }
   ) {
     AtomicQueryInputsType type = AtomicQueryInputsType.mtp;

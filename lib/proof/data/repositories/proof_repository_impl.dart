@@ -244,7 +244,7 @@ class ProofRepositoryImpl extends ProofRepository {
         .loadStateContract(contractAddress)
         .then((contract) => _rpcDataSource
             .getGistProof(
-                identifier /*_stateIdentifierMapper.mapTo(identifier)*/,
+                identifier,
                 contract)
             .catchError((error) => throw FetchGistProofException(error)));
   }

@@ -64,7 +64,7 @@ import '../../iden3comm/data/data_sources/remote_iden3comm_data_source.dart'
 import '../../iden3comm/data/mappers/auth_inputs_mapper.dart' as _i4;
 import '../../iden3comm/data/mappers/auth_proof_mapper.dart' as _i69;
 import '../../iden3comm/data/mappers/auth_response_mapper.dart' as _i5;
-import '../../iden3comm/data/mappers/gist_proof_mapper.dart' as _i73;
+import '../../iden3comm/data/mappers/gist_proof_mapper.dart' as _i74;
 import '../../iden3comm/data/mappers/proof_request_filters_mapper.dart' as _i50;
 import '../../iden3comm/data/repositories/iden3comm_repository_impl.dart'
     as _i90;
@@ -152,7 +152,7 @@ import '../../proof/data/data_sources/proof_circuit_data_source.dart' as _i48;
 import '../../proof/data/data_sources/prover_lib_data_source.dart' as _i52;
 import '../../proof/data/data_sources/witness_data_source.dart' as _i64;
 import '../../proof/data/mappers/circuit_type_mapper.dart' as _i7;
-import '../../proof/data/mappers/gist_proof_mapper.dart' as _i74;
+import '../../proof/data/mappers/gist_proof_mapper.dart' as _i73;
 import '../../proof/data/mappers/jwz_mapper.dart' as _i29;
 import '../../proof/data/mappers/jwz_proof_mapper.dart' as _i30;
 import '../../proof/data/mappers/node_aux_mapper.dart' as _i34;
@@ -209,6 +209,7 @@ _i1.GetIt $initSDKGetIt(
   gh.factory<_i9.ClaimStateMapper>(() => _i9.ClaimStateMapper());
   gh.factory<_i10.Client>(() => networkModule.client);
   gh.factory<_i11.CreatePathWrapper>(() => _i11.CreatePathWrapper());
+  gh.lazySingletonAsync<_i12.Database>(() => databaseModule.database());
   gh.factoryParamAsync<_i12.Database, String?, String?>(
     (
       identifier,
@@ -220,7 +221,6 @@ _i1.GetIt $initSDKGetIt(
     ),
     instanceName: 'polygonIdSdkIdentity',
   );
-  gh.lazySingletonAsync<_i12.Database>(() => databaseModule.database());
   gh.factory<_i11.DestinationPathDataSource>(
       () => _i11.DestinationPathDataSource(get<_i11.CreatePathWrapper>()));
   gh.factory<_i13.DidMapper>(() => _i13.DidMapper());
@@ -341,9 +341,9 @@ _i1.GetIt $initSDKGetIt(
           instanceName: 'securedStore')));
   gh.factory<_i72.EnvDataSource>(() => _i72.EnvDataSource(get<_i59.SdkEnv>()));
   gh.factory<_i73.GistProofMapper>(
-      () => _i73.GistProofMapper(get<_i24.HashMapper>()));
+      () => _i73.GistProofMapper(get<_i49.ProofMapper>()));
   gh.factory<_i74.GistProofMapper>(
-      () => _i74.GistProofMapper(get<_i49.ProofMapper>()));
+      () => _i74.GistProofMapper(get<_i24.HashMapper>()));
   gh.factory<_i75.IdentitySMTStoreRefWrapper>(() =>
       _i75.IdentitySMTStoreRefWrapper(
           get<Map<String, _i12.StoreRef<String, Map<String, Object?>>>>(
@@ -418,7 +418,7 @@ _i1.GetIt $initSDKGetIt(
         get<_i5.AuthResponseMapper>(),
         get<_i4.AuthInputsMapper>(),
         get<_i69.AuthProofMapper>(),
-        get<_i73.GistProofMapper>(),
+        get<_i74.GistProofMapper>(),
       ));
   gh.factory<_i81.LibPolygonIdCoreProofDataSource>(() =>
       _i81.LibPolygonIdCoreProofDataSource(
@@ -439,8 +439,8 @@ _i1.GetIt $initSDKGetIt(
         get<_i29.JWZMapper>(),
         get<_i50.ProofRequestFiltersMapper>(),
         get<_i69.AuthProofMapper>(),
-        get<_i74.GistProofMapper>(),
         get<_i73.GistProofMapper>(),
+        get<_i74.GistProofMapper>(),
       ));
   gh.factory<_i92.SMTDataSource>(() => _i92.SMTDataSource(
         get<_i25.HexMapper>(),
