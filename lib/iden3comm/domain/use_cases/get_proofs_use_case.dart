@@ -97,9 +97,7 @@ class GetProofsUseCase
                   circuitId: circuitId,
                   proof: proof.proof,
                   pubSignals: proof.pubSignals))
-              .catchError((error) {
-                throw error;
-              }));
+              );
         }).catchError((error) {
           throw error;
         });
