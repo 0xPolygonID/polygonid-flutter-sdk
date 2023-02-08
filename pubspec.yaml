@@ -28,6 +28,7 @@ dependencies:
   crypto: ^3.0.1
   get_it: ^7.2.0
   injectable: ^1.5.3
+  # Path provider 2.0.12 is giving problems with iOS, forced to use 2.0.11
   path_provider: 2.0.11
   archive: 3.3.2
   sembast: ^3.2.0+1

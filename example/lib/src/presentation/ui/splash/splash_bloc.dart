@@ -14,7 +14,7 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
   /// Simulation of a possible loading time
   Future<void> onFakeLoadingSplashEvent(
       FakeLoadingSplashEvent event, Emitter<SplashState> emit) async {
-    await PolygonIdSdk.I.iden3comm.initFilesDownloadedFromServer();
+    await PolygonIdSdk.I.proof.initFilesDownloadedFromServer();
     await Future.delayed(CustomDimensions.splashDuration);
     emit(SplashState.waitingTimeEnded());
   }
