@@ -109,7 +109,11 @@ class GenerateProofUseCase extends FutureUseCase<GenerateProofParam, JWZProof> {
             signature: signature,
             claim: param.credential,
             request: param.request,
-            );
+            ).catchError((error) {
+          logger().e("[GenerateProofUseCase] Error: $error");
+
+          throw error;
+        });
 
     // Prove
     return _proveUseCase

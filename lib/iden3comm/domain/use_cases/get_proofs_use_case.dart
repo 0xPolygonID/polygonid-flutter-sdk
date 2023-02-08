@@ -96,8 +96,13 @@ class GetProofsUseCase
                   id: request.scope.id,
                   circuitId: circuitId,
                   proof: proof.proof,
-                  pubSignals: proof.pubSignals)));
-        }).catchError((_) {}, test: (error) => error is StateError);
+                  pubSignals: proof.pubSignals))
+              .catchError((error) {
+                throw error;
+              }));
+        }).catchError((error) {
+          throw error;
+        });
       }
     }
 
