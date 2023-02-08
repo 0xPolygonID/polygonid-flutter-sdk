@@ -18,18 +18,16 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
   Future<void> onFakeLoadingSplashEvent(
       FakeLoadingSplashEvent event, Emitter<SplashState> emit) async {
     _subscription =
-        PolygonIdSdk.I.proof.downloadInfoStream.listen((downloadInfo) {
+        PolygonIdSdk.I.proof.initCircuitsDownloadAndGetInfoStream.listen((downloadInfo) {
       add(DownloadProgressSplashEvent(downloadInfo));
     });
-
-    await PolygonIdSdk.I.proof.initDownloadCircuitsFromServer();
   }
 
   Future<void> onDownloadProgressSplashEvent(
       DownloadProgressSplashEvent event, Emitter<SplashState> emit) async {
     if (event.downloadInfo.completed) {
       _subscription?.cancel();
-      PolygonIdSdk.I.proof.disposeDownloadInfoController();
+      PolygonIdSdk.I.proof.disposeCircuitsDownloadInfoStreamController();
       emit(SplashState.waitingTimeEnded());
     } else {
       emit(SplashState.downloadProgress(event.downloadInfo));

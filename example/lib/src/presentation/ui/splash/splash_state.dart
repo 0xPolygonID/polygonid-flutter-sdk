@@ -1,4 +1,4 @@
-import 'package:polygonid_flutter_sdk/sdk/proof.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
 
 abstract class SplashState {
   SplashState();

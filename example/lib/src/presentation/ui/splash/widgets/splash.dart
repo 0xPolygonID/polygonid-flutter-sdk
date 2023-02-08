@@ -69,16 +69,24 @@ class _SplashScreenState extends State<SplashScreen> {
 
   ///
   Widget _buildDownloadProgress() {
-    return BlocBuilder(
-      bloc: widget._bloc,
-      builder: (BuildContext context, SplashState state) {
-        if (state is DownloadProgressSplashState) {
-          return Text(
-              "${state.downloadInfo.downloaded} / ${state.downloadInfo.contentLength}");
-        } else {
-          return const SizedBox.shrink();
-        }
-      },
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Text("Downloading circuits..."),
+        const SizedBox(height: 2),
+        BlocBuilder(
+          bloc: widget._bloc,
+          builder: (BuildContext context, SplashState state) {
+            if (state is DownloadProgressSplashState) {
+              // return percentage
+              return Text(
+                  "${(state.downloadInfo.downloaded / state.downloadInfo.contentLength * 100).toStringAsFixed(2)} %");
+            } else {
+              return const SizedBox.shrink();
+            }
+          },
+        ),
+      ],
     );
   }
 

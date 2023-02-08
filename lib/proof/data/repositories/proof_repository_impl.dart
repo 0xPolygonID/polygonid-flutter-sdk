@@ -1,6 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
+import 'package:archive/archive.dart';
+import 'package:http/http.dart' as http;
 
+import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
@@ -13,8 +18,10 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/pro
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_download_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/jwz_proof_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart';
@@ -55,6 +62,7 @@ class ProofRepositoryImpl extends ProofRepository {
   final AuthProofMapper _authProofMapper;
   final GistProofMapper _gistProofMapper;
   final iden3GistProofMapper.GistProofMapper _iden3GistProofMapper;
+  final CircuitsDownloadDataSource _circuitsDownloadDataSource;
 
   // FIXME: those mappers shouldn't be used here as they are part of Credential
   final ClaimMapper _claimMapper;
@@ -78,6 +86,7 @@ class ProofRepositoryImpl extends ProofRepository {
     this._authProofMapper,
     this._gistProofMapper,
     this._iden3GistProofMapper,
+    this._circuitsDownloadDataSource,
   );
 
   @override
@@ -245,5 +254,81 @@ class ProofRepositoryImpl extends ProofRepository {
         .then((contract) => _rpcDataSource
             .getGistProof(identifier, contract)
             .catchError((error) => throw FetchGistProofException(error)));
+  }
+
+  ///
+  StreamController<DownloadInfo> _downloadInfoController =
+      StreamController.broadcast();
+
+  ///
+  @override
+  Stream<DownloadInfo> get circuitsDownloadInfoStream =>
+      _downloadInfoController.stream;
+
+  ///
+  @override
+  void disposeCircuitsDownloadInfoStreamController() {
+    _downloadInfoController.close();
+  }
+
+  ///
+  @override
+  Future<void> initCircuitsDownloadFromServer() async {
+    if (await _circuitsDownloadDataSource.circuitsFilesExist()) {
+      _downloadInfoController.add(DownloadInfo(
+        contentLength: 0,
+        downloaded: 0,
+        completed: true,
+      ));
+      return;
+    }
+    Directory directory = await getApplicationDocumentsDirectory();
+    String path = directory.path;
+    String fileName = 'circuits.zip';
+    const bucketUrl =
+        "https://iden3-circuits-bucket.s3.eu-west-1.amazonaws.com/circuits/v0.2.0-beta/polygonid-keys-2.0.0.zip";
+
+    var request = http.Request('GET', Uri.parse(bucketUrl));
+    final http.StreamedResponse response = await http.Client().send(request);
+    final int? contentLength = response.contentLength;
+    List<int> bytes = [];
+
+    response.stream.listen(
+      (List<int> newBytes) {
+        bytes.addAll(newBytes);
+        _downloadInfoController.add(DownloadInfo(
+          contentLength: contentLength ?? 0,
+          downloaded: bytes.length,
+        ));
+      },
+      onDone: () async {
+        var file = File('$path/$fileName');
+        file.writeAsBytes(bytes);
+        _downloadInfoController.add(DownloadInfo(
+          contentLength: contentLength ?? 0,
+          downloaded: bytes.length,
+          completed: true,
+        ));
+        var archive = ZipDecoder().decodeBytes(bytes);
+
+        for (var file in archive) {
+          var filename = '$path/${file.name}';
+          if (file.isFile) {
+            var outFile = File(filename);
+            outFile = await outFile.create(recursive: true);
+            await outFile.writeAsBytes(file.content);
+          }
+        }
+      },
+      onError: (e) {
+        throw Exception();
+      },
+      cancelOnError: true,
+    );
+  }
+
+  @override
+  Future<bool> circuitsFilesExist() {
+    return _circuitsDownloadDataSource.circuitsFilesExist();
   }
 }
