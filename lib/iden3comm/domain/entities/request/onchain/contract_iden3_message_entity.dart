@@ -47,9 +47,9 @@ class ContractIden3MessageEntity extends Iden3MessageEntity {
 
   ContractIden3MessageEntity(
       {required String id,
-        String? typ,
+      String? typ,
       required String type,
-        String? thid,
+      String? thid,
       required this.body})
       : super(
             from: '',

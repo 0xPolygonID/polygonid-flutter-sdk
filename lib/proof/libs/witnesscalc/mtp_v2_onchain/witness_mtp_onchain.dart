@@ -43,15 +43,16 @@ class WitnessMTPV2OnchainLib {
     int errorMaxSize = 256;
     ffi.Pointer<ffi.Char> errorMsg = malloc<ffi.Char>(errorMaxSize);
 
-    int result = _nativeWitnessMTPV2OnchainLib.witnesscalc_credentialAtomicQueryMTPV2OnChain(
-        circuitBuffer,
-        circuitSize,
-        jsonBuffer,
-        jsonSize,
-        wtnsBuffer,
-        wtnsSize,
-        errorMsg,
-        errorMaxSize);
+    int result = _nativeWitnessMTPV2OnchainLib
+        .witnesscalc_credentialAtomicQueryMTPV2OnChain(
+            circuitBuffer,
+            circuitSize,
+            jsonBuffer,
+            jsonSize,
+            wtnsBuffer,
+            wtnsSize,
+            errorMsg,
+            errorMaxSize);
     if (result == WITNESSCALC_OK) {
       Uint8List wtnsBytes = Uint8List(wtnsSize.value);
       for (int i = 0; i < wtnsSize.value; i++) {

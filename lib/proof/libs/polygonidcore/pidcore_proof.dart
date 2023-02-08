@@ -54,11 +54,11 @@ class PolygonIdCoreProof extends PolygonIdCore {
   String getSigOnchainProofInputs(String input) {
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<ffi.Char>> response =
-    malloc<ffi.Pointer<ffi.Char>>();
+        malloc<ffi.Pointer<ffi.Char>>();
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
-    malloc<ffi.Pointer<PLGNStatus>>();
+        malloc<ffi.Pointer<PLGNStatus>>();
     int res = PolygonIdCore.nativePolygonIdCoreLib
-        .PLGNAtomicQuerySigV2OnChainInputs(response, in1, ffi.nullptr,status);
+        .PLGNAtomicQuerySigV2OnChainInputs(response, in1, ffi.nullptr, status);
     if (res == 0) {
       consumeStatus(status, "");
     }
@@ -96,9 +96,9 @@ class PolygonIdCoreProof extends PolygonIdCore {
   String getMTPOnchainProofInputs(String input) {
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<ffi.Char>> response =
-    malloc<ffi.Pointer<ffi.Char>>();
+        malloc<ffi.Pointer<ffi.Char>>();
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
-    malloc<ffi.Pointer<PLGNStatus>>();
+        malloc<ffi.Pointer<PLGNStatus>>();
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNAtomicQueryMtpV2OnChainInputs(response, in1, ffi.nullptr, status);
     if (res == 0) {

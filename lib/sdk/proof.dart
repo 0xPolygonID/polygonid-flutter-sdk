@@ -10,11 +10,11 @@ abstract class PolygonIdSdkProof {
   Future<JWZProof> prove(
       {required String did,
       int? profileNonce,
-        required ClaimEntity claim,
-        required CircuitDataEntity circuitData,
-        required ProofScopeRequest request,
-        String? privateKey,
-        String? challenge});
+      required ClaimEntity claim,
+      required CircuitDataEntity circuitData,
+      required ProofScopeRequest request,
+      String? privateKey,
+      String? challenge});
 }
 
 @injectable
@@ -35,7 +35,7 @@ class Proof implements PolygonIdSdkProof {
       String? privateKey,
       String? challenge}) {
     return _proveUseCase.execute(
-        param: GenerateProofParam(
-            did, profileNonce ?? 0, 0, claim, request, circuitData, privateKey, challenge));
+        param: GenerateProofParam(did, profileNonce ?? 0, 0, claim, request,
+            circuitData, privateKey, challenge));
   }
 }
