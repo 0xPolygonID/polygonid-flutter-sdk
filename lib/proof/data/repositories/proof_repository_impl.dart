@@ -302,6 +302,15 @@ class ProofRepositoryImpl extends ProofRepository {
         ));
       },
       onDone: () async {
+        if (bytes.length != contentLength) {
+          try {
+            var file = File('$path/$fileName');
+            await file.delete();
+          } catch (_) {}
+          _downloadInfoController.addError("Downloaded files incorrect");
+          return;
+        }
+
         var file = File('$path/$fileName');
         file.writeAsBytes(bytes);
         _downloadInfoController.add(DownloadInfo(
@@ -321,7 +330,7 @@ class ProofRepositoryImpl extends ProofRepository {
         }
       },
       onError: (e) {
-        throw Exception();
+        _downloadInfoController.addError(e);
       },
       cancelOnError: true,
     );
