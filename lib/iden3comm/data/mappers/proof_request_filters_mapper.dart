@@ -1,4 +1,3 @@
-import 'package:country_code/country_code.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/mappers/from_mapper.dart';
 
@@ -74,39 +73,12 @@ class ProofRequestFiltersMapper
               value: values)
         ];
       case '\$nin':
-        if (schema == "KYCAgeCredential" || schema == "AgeCredential") {
-          List<int> excluded = List<int>.from(value);
-          excluded.sort((a, b) => a.compareTo(b));
-          FilterEntity lower = FilterEntity(
-              operator: FilterOperator.lesser,
-              name: 'credential.credentialSubject.$field',
-              value: excluded[0]);
-          FilterEntity higher = FilterEntity(
-              operator: FilterOperator.greater,
-              name: 'credential.credentialSubject.$field',
-              value: excluded[1]);
-          return [
-            FilterEntity(
-                operator: FilterOperator.or, name: '', value: [lower, higher])
-          ];
-        } else if (schema == "KYCCountryOfResidenceCredential" ||
-            schema == "CountryOfResidenceCredential") {
-          List<int> values = [];
-          List<dynamic> excluded = value;
-          for (var countryCode in CountryCode.values) {
-            int country = countryCode.numeric;
-            if (!excluded.contains(country)) {
-              values.add(country);
-            }
-          }
-          return [
-            FilterEntity(
-                operator: FilterOperator.inList,
+        return List.from(value)
+            .map((item) => FilterEntity(
                 name: 'credential.credentialSubject.$field',
-                value: values)
-          ];
-        }
-        break;
+                value: item,
+                operator: FilterOperator.nonEqual))
+            .toList();
       case '\$ne':
         return [
           FilterEntity(
