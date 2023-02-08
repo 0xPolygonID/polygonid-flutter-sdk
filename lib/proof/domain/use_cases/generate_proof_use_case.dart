@@ -34,8 +34,15 @@ class GenerateProofParam {
   final String? privateKey;
   final String? challenge;
 
-  GenerateProofParam(this.did, this.profileNonce, this.claimSubjectProfileNonce,
-      this.credential, this.request, this.circuitData, this.privateKey, this.challenge);
+  GenerateProofParam(
+      this.did,
+      this.profileNonce,
+      this.claimSubjectProfileNonce,
+      this.credential,
+      this.request,
+      this.circuitData,
+      this.privateKey,
+      this.challenge);
 }
 
 class GenerateProofUseCase extends FutureUseCase<GenerateProofParam, JWZProof> {
@@ -49,8 +56,16 @@ class GenerateProofUseCase extends FutureUseCase<GenerateProofParam, JWZProof> {
   final GetDidUseCase _getDidUseCase;
   final SignMessageUseCase _signMessageUseCase;
 
-  GenerateProofUseCase(this._identityRepository, this._smtRepository, this._proofRepository, this._proveUseCase,
-      this._getIdentityUseCase, this._getAuthClaimUseCase, this._getGistProofUseCase, this._getDidUseCase, this._signMessageUseCase);
+  GenerateProofUseCase(
+      this._identityRepository,
+      this._smtRepository,
+      this._proofRepository,
+      this._proveUseCase,
+      this._getIdentityUseCase,
+      this._getAuthClaimUseCase,
+      this._getGistProofUseCase,
+      this._getDidUseCase,
+      this._signMessageUseCase);
 
   @override
   Future<JWZProof> execute({required GenerateProofParam param}) async {
@@ -63,11 +78,11 @@ class GenerateProofUseCase extends FutureUseCase<GenerateProofParam, JWZProof> {
     if (param.request.circuitId == "credentialAtomicQueryMTPV2OnChain" ||
         param.request.circuitId == "credentialAtomicQuerySigV2OnChain") {
       IdentityEntity identity = await _getIdentityUseCase.execute(
-          param: GetIdentityParam(did: param.did, privateKey: param.privateKey));
-      authClaim =
-      await _getAuthClaimUseCase.execute(param: identity.publicKey);
+          param:
+              GetIdentityParam(did: param.did, privateKey: param.privateKey));
+      authClaim = await _getAuthClaimUseCase.execute(param: identity.publicKey);
       NodeEntity authClaimNode =
-      await _identityRepository.getAuthClaimNode(children: authClaim);
+          await _identityRepository.getAuthClaimNode(children: authClaim);
 
       incProof = await _smtRepository.generateProof(
           key: authClaimNode.hash,
@@ -87,29 +102,28 @@ class GenerateProofUseCase extends FutureUseCase<GenerateProofParam, JWZProof> {
 
       gistProof = await _getGistProofUseCase.execute(param: param.did);
 
-      signature = await _signMessageUseCase
-          .execute(param: SignMessageParam(param.privateKey!, param.challenge!));
+      signature = await _signMessageUseCase.execute(
+          param: SignMessageParam(param.privateKey!, param.challenge!));
     }
 
-    DidEntity didEntity =  await _getDidUseCase.execute(param: param.did);
-
+    DidEntity didEntity = await _getDidUseCase.execute(param: param.did);
 
     // Prepare atomic query inputs
     Uint8List atomicQueryInputs =
         await _proofRepository.calculateAtomicQueryInputs(
-            id: didEntity.identifier,
-            profileNonce: param.profileNonce,
-            claimSubjectProfileNonce: param.claimSubjectProfileNonce,
-            authClaim: authClaim,
-            incProof: incProof,
-            nonRevProof: nonRevProof,
-            gistProof: gistProof,
-            treeState: treeState,
-            challenge: param.challenge,
-            signature: signature,
-            claim: param.credential,
-            request: param.request,
-            );
+      id: didEntity.identifier,
+      profileNonce: param.profileNonce,
+      claimSubjectProfileNonce: param.claimSubjectProfileNonce,
+      authClaim: authClaim,
+      incProof: incProof,
+      nonRevProof: nonRevProof,
+      gistProof: gistProof,
+      treeState: treeState,
+      challenge: param.challenge,
+      signature: signature,
+      claim: param.credential,
+      request: param.request,
+    );
 
     // Prove
     return _proveUseCase

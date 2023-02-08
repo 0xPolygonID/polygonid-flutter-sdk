@@ -16,6 +16,9 @@ class LocalProofFilesDataSource {
     var circuitZkeyFilePath = '$path/$circuitZkeyFileName';
     var circuitZkeyFile = File(circuitZkeyFilePath);
 
-    return [circuitDatFile.readAsBytesSync(), circuitZkeyFile.readAsBytesSync()];
+    return [
+      circuitDatFile.readAsBytesSync(),
+      circuitZkeyFile.readAsBytesSync()
+    ];
   }
 }

@@ -53,17 +53,19 @@ Future<Uint8List?> _computeWitnessMtp(WitnessParam param) async {
 
 /// As this is running in a separate thread, we cannot inject [WitnessMTPV2OnchainLib]
 Future<Uint8List?> _computeWitnessMtpOnchain(WitnessParam param) async {
-  final WitnessMTPV2OnchainLib witnessMTPV2OnchainLib = WitnessMTPV2OnchainLib();
-  final Uint8List? witnessBytes =
-  await witnessMTPV2OnchainLib.calculateWitnessMTPOnchain(param.wasm, param.json);
+  final WitnessMTPV2OnchainLib witnessMTPV2OnchainLib =
+      WitnessMTPV2OnchainLib();
+  final Uint8List? witnessBytes = await witnessMTPV2OnchainLib
+      .calculateWitnessMTPOnchain(param.wasm, param.json);
   return witnessBytes;
 }
 
 /// As this is running in a separate thread, we cannot inject [WitnessSigV2OnchainLib]
 Future<Uint8List?> _computeWitnessSigOnchain(WitnessParam param) async {
-  final WitnessSigV2OnchainLib witnessSigV2OnchainLib = WitnessSigV2OnchainLib();
-  final Uint8List? witnessBytes =
-  await witnessSigV2OnchainLib.calculateWitnessSigOnchain(param.wasm, param.json);
+  final WitnessSigV2OnchainLib witnessSigV2OnchainLib =
+      WitnessSigV2OnchainLib();
+  final Uint8List? witnessBytes = await witnessSigV2OnchainLib
+      .calculateWitnessSigOnchain(param.wasm, param.json);
   return witnessBytes;
 }
 

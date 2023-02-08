@@ -48,5 +48,6 @@ class AtomicQueryInputsParam {
         "signature": signature,
         "verifiableCredentials": credential.toJson(),
         "request": request.toJson(),
-      }..removeWhere((dynamic key, dynamic value) => key == null || value == null);
+      }..removeWhere(
+          (dynamic key, dynamic value) => key == null || value == null);
 }

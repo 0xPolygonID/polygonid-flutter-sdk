@@ -48,5 +48,4 @@ class CustomStrings {
   static const String signMessageTitle = "Sign a message";
   static const String signMessageDescription =
       "Sign a message (hex/int) with your private key";
-
 }

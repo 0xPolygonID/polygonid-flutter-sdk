@@ -17,8 +17,8 @@ abstract class ProofRepository {
 
   Future<CircuitDataEntity> loadCircuitFiles(String circuitId);
 
-  Future<Uint8List> calculateAtomicQueryInputs({
-      required String id,
+  Future<Uint8List> calculateAtomicQueryInputs(
+      {required String id,
       required int profileNonce,
       required int claimSubjectProfileNonce,
       required ClaimEntity claim,
