@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:archive/archive.dart';
@@ -14,11 +15,11 @@ abstract class PolygonIdSdkProof {
   Future<JWZProof> prove(
       {required String did,
       int? profileNonce,
-        required ClaimEntity claim,
-        required CircuitDataEntity circuitData,
-        required ProofScopeRequest request,
-        String? privateKey,
-        String? challenge});
+      required ClaimEntity claim,
+      required CircuitDataEntity circuitData,
+      required ProofScopeRequest request,
+      String? privateKey,
+      String? challenge});
 }
 
 @injectable
@@ -39,47 +40,95 @@ class Proof implements PolygonIdSdkProof {
       String? privateKey,
       String? challenge}) {
     return _proveUseCase.execute(
-        param: GenerateProofParam(
-            did, profileNonce ?? 0, 0, claim, request, circuitData, privateKey, challenge));
+        param: GenerateProofParam(did, profileNonce ?? 0, 0, claim, request,
+            circuitData, privateKey, challenge));
   }
 
-  Future<void> initFilesDownloadedFromServer() async {
+  Future<void> initDownloadCircuitsFromServer() async {
     Directory directory = await getApplicationDocumentsDirectory();
     String path = directory.path;
     String fileName = 'circuits.zip';
     const bucketUrl =
         "https://iden3-circuits-bucket.s3.eu-west-1.amazonaws.com/circuits/v0.2.0-beta/polygonid-keys-2.0.0.zip";
 
-    if (!(await _hasToDownloadAssets(fileName, path))) {
+    if (!(await hasToDownloadCircuitsFromServer())) {
+      _downloadInfoController.add(DownloadInfo(
+        contentLength: 0,
+        downloaded: 0,
+        completed: true,
+      ));
       return;
     }
-    var zippedFile = await _downloadFile(
-      bucketUrl,
-      fileName,
-      path,
+
+    var request = http.Request('GET', Uri.parse(bucketUrl));
+    final http.StreamedResponse response = await http.Client().send(request);
+    final int? contentLength = response.contentLength;
+    List<int> bytes = [];
+
+    response.stream.listen(
+      (List<int> newBytes) {
+        bytes.addAll(newBytes);
+        _downloadInfoController.add(DownloadInfo(
+          contentLength: contentLength ?? 0,
+          downloaded: bytes.length,
+        ));
+      },
+      onDone: () async {
+        var file = File('$path/$fileName');
+        file.writeAsBytes(bytes);
+        _downloadInfoController.add(DownloadInfo(
+          contentLength: contentLength ?? 0,
+          downloaded: bytes.length,
+          completed: true,
+        ));
+        var archive = ZipDecoder().decodeBytes(bytes);
+
+        for (var file in archive) {
+          var filename = '$path/${file.name}';
+          if (file.isFile) {
+            var outFile = File(filename);
+            outFile = await outFile.create(recursive: true);
+            await outFile.writeAsBytes(file.content);
+          }
+        }
+      },
+      onError: (e) {
+        throw Exception();
+      },
+      cancelOnError: true,
     );
-
-    var bytes = zippedFile.readAsBytesSync();
-    var archive = ZipDecoder().decodeBytes(bytes);
-
-    for (var file in archive) {
-      var filename = '$path/${file.name}';
-      if (file.isFile) {
-        var outFile = File(filename);
-        outFile = await outFile.create(recursive: true);
-        await outFile.writeAsBytes(file.content);
-      }
-    }
   }
 
-  Future<File> _downloadFile(String url, String filename, String path) async {
-    var req = await http.Client().get(Uri.parse(url));
-    var file = File('$path/$filename');
-    return file.writeAsBytes(req.bodyBytes);
-  }
-
-  Future<bool> _hasToDownloadAssets(String name, String path) async {
-    var file = File('$path/$name');
+  ///
+  Future<bool> hasToDownloadCircuitsFromServer() async {
+    String fileName = 'circuits.zip';
+    Directory directory = await getApplicationDocumentsDirectory();
+    String path = directory.path;
+    var file = File('$path/$fileName');
     return !(await file.exists());
   }
+
+  ///
+  StreamController<DownloadInfo> _downloadInfoController =
+      StreamController.broadcast();
+
+  ///
+  Stream<DownloadInfo> get downloadInfoStream => _downloadInfoController.stream;
+
+  ///
+  void disposeDownloadInfoController() {
+    _downloadInfoController.close();
+  }
+}
+
+class DownloadInfo {
+  final bool completed;
+  final int contentLength;
+  final int downloaded;
+
+  DownloadInfo({
+    required this.contentLength,
+    required this.downloaded,
+    this.completed = false,
+  });
 }
