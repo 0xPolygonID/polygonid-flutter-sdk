@@ -56,6 +56,29 @@ abstract class PolygonIdSdkIdentity {
       required network,
       Map<int, String>? encryptedIdentityDbs});
 
+  /// Backup a previously stored [IdentityEntity] from a privateKey
+  /// associated to the identity
+  ///
+  /// Identity [privateKey] is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
+  /// using the claims associated to the identity
+  ///
+  /// The [blockchain] is the blockchain name where the identity
+  /// is associated, e.g. Polygon
+  ///
+  /// The [network] is the network name of the blockchain where the identity
+  /// is associated, e.g. Main
+  ///
+  /// Returns a map of profile nonces and
+  /// associated encrypted Identity's Databases.
+  ///
+  /// Throws [IdentityException] if an error occurs.
+  Future<Map<int, String>?> backupIdentity({
+    required String privateKey,
+    required blockchain,
+    required network,
+  });
+
   /// Gets an [IdentityEntity] from an identifier.
   /// Returns an identity as a [PrivateIdentityEntity] or [IdentityEntity]
   /// if privateKey is ommited or invalid.
@@ -156,12 +179,12 @@ abstract class PolygonIdSdkIdentity {
     required String privateKey,
   });
 
-  /// Import encrypted claims database
+  /*/// Import encrypted claims database
   Future<void> importEncryptedIdentityDb({
     required String did,
     required String privateKey,
     required String encryptedDb,
-  });
+  });*/
 }
 
 @injectable
@@ -237,6 +260,32 @@ class Identity implements PolygonIdSdkIdentity {
             blockchain: blockchain,
             network: network,
             encryptedIdentityDbs: encryptedIdentityDbs));
+  }
+
+  /// Backup a previously stored [IdentityEntity] from a privateKey
+  /// associated to the identity
+  ///
+  /// Identity [privateKey] is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
+  /// using the claims associated to the identity
+  ///
+  /// The [blockchain] is the blockchain name where the identity
+  /// is associated, e.g. Polygon
+  ///
+  /// The [network] is the network name of the blockchain where the identity
+  /// is associated, e.g. Main
+  ///
+  /// Returns a map of profile nonces and
+  /// associated encrypted Identity's Databases.
+  ///
+  /// Throws [IdentityException] if an error occurs.
+  Future<Map<int, String>?> backupIdentity({
+    required String privateKey,
+    required blockchain,
+    required network,
+  }) {
+    // TODO: implement updateState
+    throw UnimplementedError();
   }
 
   /// Gets an [IdentityEntity] from an identifier.
@@ -378,7 +427,7 @@ class Identity implements PolygonIdSdkIdentity {
     ));
   }
 
-  @override
+  /*@override
   Future<void> importEncryptedIdentityDb({
     required String did,
     required String privateKey,
@@ -390,5 +439,5 @@ class Identity implements PolygonIdSdkIdentity {
       did: did,
       encryptedDb: encryptedDb,
     ));
-  }
+  }*/
 }

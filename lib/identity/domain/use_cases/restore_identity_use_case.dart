@@ -10,6 +10,7 @@ import '../repositories/identity_repository.dart';
 import 'create_and_save_identity_use_case.dart';
 import 'get_did_identifier_use_case.dart';
 import 'get_did_use_case.dart';
+import 'import_identity_use_case.dart';
 
 class RestoreIdentityParam {
   final String secret;
@@ -28,9 +29,13 @@ class RestoreIdentityParam {
 class RestoreIdentityUseCase
     extends FutureUseCase<RestoreIdentityParam, IdentityEntity> {
   final CreateAndSaveIdentityUseCase _createAndSaveIdentityUseCase;
+  final ImportIdentityUseCase _importIdentityUseCase;
+  final GetDidIdentifierUseCase _getDidIdentifierUseCase;
 
   RestoreIdentityUseCase(
     this._createAndSaveIdentityUseCase,
+    this._importIdentityUseCase,
+    this._getDidIdentifierUseCase,
   );
 
   @override
@@ -45,7 +50,23 @@ class RestoreIdentityUseCase
                   blockchain: param.blockchain,
                   network: param.network));
 
-      // TODO: restore profiles and dbs
+      if (param.encryptedIdentityDbs != null) {
+        param.encryptedIdentityDbs!
+            .forEach((profileNonce, encryptedIdentityDb) async {
+          String profileDid = await _getDidIdentifierUseCase.execute(
+              param: GetDidIdentifierParam(
+                  privateKey: privateIdentity.privateKey,
+                  blockchain: param.blockchain,
+                  network: param.network,
+                  profileNonce: profileNonce));
+          await _importIdentityUseCase.execute(
+              param: ImportIdentityParam(
+            privateKey: privateIdentity.privateKey,
+            did: profileDid,
+            encryptedDb: encryptedIdentityDb,
+          ));
+        });
+      }
 
       logger().i(
           "[RestoreIdentityUseCase] Identity restored with did: ${privateIdentity.did}, for key $param");
