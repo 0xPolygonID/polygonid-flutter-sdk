@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/backup_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_and_save_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/export_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identities_use_case.dart';
@@ -151,11 +152,11 @@ abstract class PolygonIdSdkIdentity {
   /// The Identity's [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
   /// using the claims associated to the identity
-  Future<void> updateState({
+  /*Future<void> updateState({
     required String state,
     required String did,
     required String privateKey,
-  });
+  });*/
 
   /// Sign a message through a identity's private key.
   /// The [privateKey]  is the key used to access all the sensitive info from the identity
@@ -165,26 +166,13 @@ abstract class PolygonIdSdkIdentity {
   Future<String> sign({required String privateKey, required String message});
 
   // Profiles
-  Future<void> addProfile(
+  /*Future<void> addProfile(
       {required String privateKey, required int profileNonce});
 
   Future<void> removeProfile(
       {required String privateKey, required int profileNonce});
 
-  Future<List<int>> getProfiles({required String privateKey});
-
-  /// Export encrypted identity database
-  Future<String> exportEncryptedIdentityDb({
-    required String did,
-    required String privateKey,
-  });
-
-  /*/// Import encrypted claims database
-  Future<void> importEncryptedIdentityDb({
-    required String did,
-    required String privateKey,
-    required String encryptedDb,
-  });*/
+  Future<List<int>> getProfiles({required String privateKey});*/
 }
 
 @injectable
@@ -192,27 +180,25 @@ class Identity implements PolygonIdSdkIdentity {
   final CheckIdentityValidityUseCase _checkIdentityValidityUseCase;
   final CreateAndSaveIdentityUseCase _createAndSaveIdentityUseCase;
   final RestoreIdentityUseCase _restoreIdentityUseCase;
+  final BackupIdentityUseCase _backupIdentityUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
   final GetIdentitiesUseCase _getIdentitiesUseCase;
   final RemoveIdentityUseCase _removeIdentityUseCase;
   final GetDidIdentifierUseCase _getDidIdentifierUseCase;
   final SignMessageUseCase _signMessageUseCase;
   final FetchIdentityStateUseCase _fetchIdentityStateUseCase;
-  final ExportIdentityUseCase _exportIdentityUseCase;
-  final ImportIdentityUseCase _importIdentityUseCase;
 
   Identity(
     this._checkIdentityValidityUseCase,
     this._createAndSaveIdentityUseCase,
     this._restoreIdentityUseCase,
+    this._backupIdentityUseCase,
     this._getIdentityUseCase,
     this._getIdentitiesUseCase,
     this._removeIdentityUseCase,
     this._getDidIdentifierUseCase,
     this._signMessageUseCase,
     this._fetchIdentityStateUseCase,
-    this._exportIdentityUseCase,
-    this._importIdentityUseCase,
   );
 
   Future<void> checkIdentityValidity(
@@ -279,13 +265,14 @@ class Identity implements PolygonIdSdkIdentity {
   /// associated encrypted Identity's Databases.
   ///
   /// Throws [IdentityException] if an error occurs.
-  Future<Map<int, String>?> backupIdentity({
+  Future<Map<int, String>> backupIdentity({
     required String privateKey,
     required blockchain,
     required network,
   }) {
-    // TODO: implement updateState
-    throw UnimplementedError();
+    return _backupIdentityUseCase.execute(
+        param: BackupIdentityParam(
+            privateKey: privateKey, blockchain: blockchain, network: network));
   }
 
   /// Gets an [IdentityEntity] from an identifier.
@@ -385,7 +372,7 @@ class Identity implements PolygonIdSdkIdentity {
   /// The Identity's [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
   /// using the claims associated to the identity
-  @override
+  /*@override
   Future<void> updateState(
       {required String state,
       required String did,
@@ -413,31 +400,5 @@ class Identity implements PolygonIdSdkIdentity {
       {required String privateKey, required int profileNonce}) {
     // TODO: implement removeProfile
     throw UnimplementedError();
-  }
-
-  @override
-  Future<String> exportEncryptedIdentityDb({
-    required String did,
-    required String privateKey,
-  }) {
-    return _exportIdentityUseCase.execute(
-        param: ExportIdentityParam(
-      privateKey: privateKey,
-      did: did,
-    ));
-  }
-
-  /*@override
-  Future<void> importEncryptedIdentityDb({
-    required String did,
-    required String privateKey,
-    required String encryptedDb,
-  }) {
-    return _importIdentityUseCase.execute(
-        param: ImportIdentityParam(
-      privateKey: privateKey,
-      did: did,
-      encryptedDb: encryptedDb,
-    ));
   }*/
 }
