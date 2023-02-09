@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:archive/archive.dart';
 import 'package:http/http.dart' as http;
 
@@ -50,19 +51,30 @@ class CircuitsDownloadDataSource {
   }
 
   ///
-  Future<void> writeZipFile({
+  void writeZipFile({
     required String pathToFile,
     required List<int> zipBytes,
-  }) async {
+  }) {
     var file = File(pathToFile);
-    await file.writeAsBytes(zipBytes);
+    file.writeAsBytesSync(
+      zipBytes,
+      mode: FileMode.append,
+    );
+  }
+
+  ///
+  int zipFileSize({required String pathToFile}) {
+    var file = File(pathToFile);
+    return file.lengthSync();
   }
 
   ///
   Future<void> writeCircuitsFileFromZip({
-    required List<int> zipBytes,
     required String path,
+    required String zipPath,
   }) async {
+    var zipFile = File(zipPath);
+    Uint8List zipBytes = zipFile.readAsBytesSync();
     final zipDecoder = getItSdk.get<ZipDecoder>(instanceName: 'zipDecoder');
     var archive = zipDecoder.decodeBytes(zipBytes);
 
