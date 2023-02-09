@@ -86,7 +86,7 @@ abstract class PolygonIdSdkIdentity {
   Future<void> removeIdentity(
       {required String genesisDid, required String privateKey});
 
-  /// Returns the genesisDid derived from a privateKey
+  /// Returns the did identifier derived from a privateKey
   ///
   /// Identity [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
@@ -98,7 +98,10 @@ abstract class PolygonIdSdkIdentity {
   /// The [network] is the network name of the blockchain where the identity
   /// is associated, e.g. Main
   ///
-  /// Return The Identity's [genesisDid]
+  /// The [profileNonce] is the nonce of the profile used from identity
+  /// to obtain the did identifier
+  ///
+  /// Return The Identity's [did] identifier
   Future<String> getDidIdentifier({
     required String privateKey,
     required String blockchain,
@@ -271,7 +274,7 @@ class Identity implements PolygonIdSdkIdentity {
         param: SignMessageParam(privateKey, message));
   }
 
-  /// Returns the genesisDid derived from a privateKey
+  /// Returns the did identifier derived from a privateKey
   ///
   /// Identity [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
@@ -282,6 +285,9 @@ class Identity implements PolygonIdSdkIdentity {
   ///
   /// The [network] is the network name of the blockchain where the identity
   /// is associated, e.g. Main
+  /// 
+  /// The [profileNonce] is the nonce of the profile used from identity
+  /// to obtain the did identifier
   ///
   /// Return The Identity's [did] identifier
   Future<String> getDidIdentifier({
