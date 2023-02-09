@@ -39,7 +39,11 @@ class RestoreIdentityUseCase
     try {
       // Create the [PrivateIdentityEntity] with the secret
       PrivateIdentityEntity privateIdentity =
-      await _createAndSaveIdentityUseCase.execute(param: CreateAndSaveIdentityParam(secret: param.secret, blockchain: param.blockchain, network: param.network));
+          await _createAndSaveIdentityUseCase.execute(
+              param: CreateAndSaveIdentityParam(
+                  secret: param.secret,
+                  blockchain: param.blockchain,
+                  network: param.network));
 
       // TODO: restore profiles and dbs
 
@@ -51,7 +55,5 @@ class RestoreIdentityUseCase
 
       rethrow;
     }
-
-
   }
 }

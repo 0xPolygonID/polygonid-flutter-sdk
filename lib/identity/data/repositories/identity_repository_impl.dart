@@ -376,9 +376,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
               if (profileNonce == 0) {
                 return Future.value(genesis["did"]);
               } else {
-                String profileId =
-                _libPolygonIdCoreIdentityDataSource.calculateProfileId(
-                    genesis["did"], profileNonce);
+                String profileId = _libPolygonIdCoreIdentityDataSource
+                    .calculateProfileId(genesis["did"], profileNonce);
                 Map<String, dynamic> profile = jsonDecode(profileId);
                 return Future.value(profile["profileDID"]);
               }
@@ -387,8 +386,12 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
   @override
   Future<List<IdentityEntity>> getIdentities() {
-    // TODO: implement getIdentities
-    throw UnimplementedError();
+    return _storageIdentityDataSource
+        .getIdentities()
+        .then((dtos) =>
+            dtos.map((dto) => _identityDTOMapper.mapFrom(dto)).toList())
+        .catchError((error) => throw IdentityException(error),
+            test: (error) => error is! UnknownIdentityException);
   }
 
   @override

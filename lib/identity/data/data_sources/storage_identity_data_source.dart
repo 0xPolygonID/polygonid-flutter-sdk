@@ -19,6 +19,12 @@ class IdentityStoreRefWrapper {
     return _store.record(key).get(database);
   }
 
+  Future<List<RecordSnapshot<String, Map<String, Object?>>>> find(
+      DatabaseClient databaseClient,
+      {Finder? finder}) {
+    return _store.find(databaseClient, finder: finder);
+  }
+
   Future<Map<String, Object?>> put(
       DatabaseClient database, String key, Map<String, Object?> value,
       {bool? merge}) {
@@ -35,6 +41,14 @@ class StorageIdentityDataSource {
   final IdentityStoreRefWrapper _storeRefWrapper;
 
   StorageIdentityDataSource(this._database, this._storeRefWrapper);
+
+  Future<List<IdentityDTO>> getIdentities({Filter? filter}) {
+    return _storeRefWrapper
+        .find(_database, finder: Finder(filter: filter))
+        .then((snapshots) => snapshots
+            .map((snapshot) => IdentityDTO.fromJson(snapshot.value))
+            .toList());
+  }
 
   Future<IdentityDTO> getIdentity({required String did}) {
     return _storeRefWrapper.get(_database, did).then((storedValue) {

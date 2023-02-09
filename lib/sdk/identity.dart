@@ -50,7 +50,10 @@ abstract class PolygonIdSdkIdentity {
   /// The [network] is the network name of the blockchain where the identity
   /// is associated, e.g. Main
   Future<PrivateIdentityEntity> restoreIdentity(
-  {required String secret, required blockchain, required network, Map<int, String>? encryptedIdentityDbs});
+      {required String secret,
+      required blockchain,
+      required network,
+      Map<int, String>? encryptedIdentityDbs});
 
   /// Gets an [IdentityEntity] from an identifier.
   /// Returns an identity as a [PrivateIdentityEntity] or [IdentityEntity]
@@ -67,10 +70,14 @@ abstract class PolygonIdSdkIdentity {
   /// in order to be compatible with the SDK. The following rules will be applied:
   /// - If the byte array is not 32 length, it will be padded with 0s.
   /// - If the byte array is longer than 32, an exception will be thrown.
-  Future<IdentityEntity> getIdentity({required String genesisDid, String? privateKey});
+  Future<IdentityEntity> getIdentity(
+      {required String genesisDid, String? privateKey});
 
-  /// Get a list of public info of [IdentityEntity] associated to the identities stored in the Polygon ID Sdk.
+  /// Get a list of public info of [IdentityEntity] associated
+  /// to the identities stored in the Polygon ID Sdk.
+  ///
   /// Return an list of [IdentityEntity].
+  ///
   /// Throws [IdentityException] if an error occurs.
   Future<List<IdentityEntity>> getIdentities();
 
@@ -102,12 +109,11 @@ abstract class PolygonIdSdkIdentity {
   /// to obtain the did identifier
   ///
   /// Return The Identity's [did] identifier
-  Future<String> getDidIdentifier({
-    required String privateKey,
-    required String blockchain,
-    required String network,
-    int? profileNonce
-  });
+  Future<String> getDidIdentifier(
+      {required String privateKey,
+      required String blockchain,
+      required String network,
+      int? profileNonce});
 
   /// Returns the identity state from a did
   ///
@@ -218,11 +224,14 @@ class Identity implements PolygonIdSdkIdentity {
   /// Throws [IdentityException] if an error occurs.
   @override
   Future<PrivateIdentityEntity> restoreIdentity(
-      {required String secret, required blockchain, required network, Map<int, String>? encryptedIdentityDbs}) {
-    // TODO: implement restoreIdentity
-    throw UnknownIdentityException("");
+      {required String secret,
+      required blockchain,
+      required network,
+      Map<int, String>? encryptedIdentityDbs}) {
+    return _restoreIdentityUseCase.execute(
+        param: CreateAndSaveIdentityParam(
+            blockchain: blockchain, network: network, secret: secret));
 
-    //importEncryptedIdentityDb(encryptedIdentityDb)
   }
 
   /// Gets an [IdentityEntity] from an identifier.
@@ -240,8 +249,11 @@ class Identity implements PolygonIdSdkIdentity {
         param: GetIdentityParam(did: genesisDid, privateKey: privateKey));
   }
 
-  /// Get a list of public info of [IdentityEntity] associated to the identities stored in the Polygon ID Sdk.
+  /// Get a list of public info of [IdentityEntity] associated
+  /// to the identities stored in the Polygon ID Sdk.
+  ///
   /// Return an list of [IdentityEntity].
+  ///
   /// Throws [IdentityException] if an error occurs.
   @override
   Future<List<IdentityEntity>> getIdentities() {
@@ -285,7 +297,7 @@ class Identity implements PolygonIdSdkIdentity {
   ///
   /// The [network] is the network name of the blockchain where the identity
   /// is associated, e.g. Main
-  /// 
+  ///
   /// The [profileNonce] is the nonce of the profile used from identity
   /// to obtain the did identifier
   ///
@@ -298,10 +310,10 @@ class Identity implements PolygonIdSdkIdentity {
   }) {
     return _getDidIdentifierUseCase.execute(
         param: GetDidIdentifierParam(
-      privateKey: privateKey,
-      blockchain: blockchain,
-      network: network, profileNonce: profileNonce ?? 0
-    ));
+            privateKey: privateKey,
+            blockchain: blockchain,
+            network: network,
+            profileNonce: profileNonce ?? 0));
   }
 
   /// Returns the identity state from a did

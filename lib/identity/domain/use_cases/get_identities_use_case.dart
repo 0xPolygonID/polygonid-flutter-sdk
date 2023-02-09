@@ -4,8 +4,7 @@ import '../entities/identity_entity.dart';
 import '../repositories/identity_repository.dart';
 import 'get_did_use_case.dart';
 
-class GetIdentitiesUseCase
-    extends FutureUseCase<void, List<IdentityEntity>> {
+class GetIdentitiesUseCase extends FutureUseCase<void, List<IdentityEntity>> {
   final IdentityRepository _identityRepository;
 
   GetIdentitiesUseCase(this._identityRepository);
@@ -13,13 +12,13 @@ class GetIdentitiesUseCase
   @override
   Future<List<IdentityEntity>> execute({void param}) {
     return _identityRepository.getIdentities().then((identities) {
-            logger().i("[GetIdentitiesUseCase] identities: $identities");
+      logger().i("[GetIdentitiesUseCase] identities: $identities");
 
-            return identities;
-          }).catchError((error) {
-            logger().e("[GetIdentitiesUseCase] Error: $error");
+      return identities;
+    }).catchError((error) {
+      logger().e("[GetIdentitiesUseCase] Error: $error");
 
-            throw error;
-          });
+      throw error;
+    });
   }
 }
