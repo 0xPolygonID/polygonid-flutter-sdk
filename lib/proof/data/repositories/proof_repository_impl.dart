@@ -6,6 +6,7 @@ import 'package:archive/archive.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:path_provider/path_provider.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
@@ -277,18 +278,26 @@ class ProofRepositoryImpl extends ProofRepository {
 
     final int downloadSize = serverResponse.contentLength ?? 0;
 
-    List<int> bytes = [];
-
     serverResponse.stream.listen(
       (List<int> newBytes) {
-        bytes.addAll(newBytes);
+        _circuitsDownloadDataSource.writeZipFile(
+          pathToFile: pathForZipFile,
+          zipBytes: newBytes,
+        );
+
+        int zipFileSize =
+            _circuitsDownloadDataSource.zipFileSize(pathToFile: pathForZipFile);
         _downloadInfoController.add(DownloadInfo(
           contentLength: downloadSize,
-          downloaded: bytes.length,
+          downloaded: zipFileSize,
         ));
       },
       onDone: () async {
-        if (downloadSize != 0 && bytes.length != downloadSize) {
+        int zipFileSize =
+            _circuitsDownloadDataSource.zipFileSize(pathToFile: pathForZipFile);
+        logger().i(
+            "[Circuits success:] downloadSize -> $downloadSize / zipFileSize -> $zipFileSize");
+        if (downloadSize != 0 && zipFileSize != downloadSize) {
           try {
             _circuitsDownloadDataSource.deleteFile(pathForZipFile);
           } catch (_) {}
@@ -296,23 +305,19 @@ class ProofRepositoryImpl extends ProofRepository {
           return;
         }
 
-        _downloadInfoController.add(DownloadInfo(
-          contentLength: downloadSize,
-          downloaded: bytes.length,
-          completed: true,
-        ));
-
-        await _circuitsDownloadDataSource.writeZipFile(
-          pathToFile: pathForZipFile,
-          zipBytes: bytes,
-        );
-
         await _circuitsDownloadDataSource.writeCircuitsFileFromZip(
-          zipBytes: bytes,
+          zipPath: pathForZipFile,
           path: pathForCircuits,
         );
+
+        _downloadInfoController.add(DownloadInfo(
+          contentLength: downloadSize,
+          downloaded: zipFileSize,
+          completed: true,
+        ));
       },
       onError: (e) {
+        _circuitsDownloadDataSource.deleteFile(pathForZipFile);
         _downloadInfoController.addError(e);
       },
       cancelOnError: true,
