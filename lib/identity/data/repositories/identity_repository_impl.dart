@@ -113,35 +113,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
     }
   }
 
-  @override
-  Future<PrivateIdentityEntity> restoreIdentity({
-    required String privateKey,
-    required String blockchain,
-    required String network,
-  }) async {
-    try {
-      PrivadoIdWallet wallet = await _walletDataSource.getWallet(
-          privateKey: _hexMapper.mapTo(privateKey));
-
-      String did = await getDidIdentifier(
-        blockchain: blockchain,
-        network: network,
-        privateKey: privateKey,
-      );
-
-      Map<String, dynamic> treeState = await _createIdentityState(
-          did: did, privateKey: privateKey, publicKey: wallet.publicKey);
-
-      PrivateIdentityEntity identityEntity = _identityDTOMapper.mapPrivateFrom(
-          IdentityDTO(
-              did: did, publicKey: wallet.publicKey, profiles: {0: did}),
-          _hexMapper.mapFrom(wallet.privateKey));
-      return Future.value(identityEntity);
-    } catch (error) {
-      return Future.error(IdentityException(error));
-    }
-  }
-
   /// TODO: this is an UC
   Future<Map<String, dynamic>> _createIdentityState(
       {required String did,

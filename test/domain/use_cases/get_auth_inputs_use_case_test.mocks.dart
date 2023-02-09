@@ -362,24 +362,6 @@ class MockIdentityRepository extends _i1.Mock
         )),
       ) as _i9.Future<_i2.IdentityEntity>);
   @override
-  _i9.Future<dynamic> restoreIdentity({
-    required String? privateKey,
-    required String? blockchain,
-    required String? network,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #restoreIdentity,
-          [],
-          {
-            #privateKey: privateKey,
-            #blockchain: blockchain,
-            #network: network,
-          },
-        ),
-        returnValue: _i9.Future<dynamic>.value(),
-      ) as _i9.Future<dynamic>);
-  @override
   _i9.Future<void> storeIdentity({required _i2.IdentityEntity? identity}) =>
       (super.noSuchMethod(
         Invocation.method(

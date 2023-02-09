@@ -2,9 +2,8 @@ import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/backup_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_and_save_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/export_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_new_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identities_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/import_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/restore_identity_use_case.dart';
 
 import '../identity/domain/entities/identity_entity.dart';
@@ -164,8 +163,8 @@ abstract class PolygonIdSdkIdentity {
   /// and [message] is the message to sign. Returns a string representing the signature.
   Future<String> sign({required String privateKey, required String message});
 
-  // Profiles
-  /*Future<void> addProfile(
+// Profiles
+/*Future<void> addProfile(
       {required String privateKey, required int profileNonce});
 
   Future<void> removeProfile(
@@ -178,6 +177,7 @@ abstract class PolygonIdSdkIdentity {
 class Identity implements PolygonIdSdkIdentity {
   final CheckIdentityValidityUseCase _checkIdentityValidityUseCase;
   final CreateAndSaveIdentityUseCase _createAndSaveIdentityUseCase;
+  final CreateNewIdentityUseCase _createNewIdentityUseCase;
   final RestoreIdentityUseCase _restoreIdentityUseCase;
   final BackupIdentityUseCase _backupIdentityUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
@@ -190,6 +190,7 @@ class Identity implements PolygonIdSdkIdentity {
   Identity(
     this._checkIdentityValidityUseCase,
     this._createAndSaveIdentityUseCase,
+    this._createNewIdentityUseCase,
     this._restoreIdentityUseCase,
     this._backupIdentityUseCase,
     this._getIdentityUseCase,
@@ -221,8 +222,8 @@ class Identity implements PolygonIdSdkIdentity {
   /// - If the byte array is longer than 32, an exception will be thrown.
   Future<PrivateIdentityEntity> createIdentity(
       {String? secret, required blockchain, required network}) async {
-    return _createAndSaveIdentityUseCase.execute(
-        param: CreateAndSaveIdentityParam(
+    return _createNewIdentityUseCase.execute(
+        param: CreateNewIdentityParam(
             blockchain: blockchain, network: network, secret: secret));
   }
 
@@ -371,7 +372,7 @@ class Identity implements PolygonIdSdkIdentity {
   /// The Identity's [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
   /// using the claims associated to the identity
-  /*@override
+/*@override
   Future<void> updateState(
       {required String state,
       required String did,

@@ -16,9 +16,7 @@ import 'create_and_save_identity_use_case_test.mocks.dart';
 // Data
 var exception = Exception();
 var param = CreateAndSaveIdentityParam(
-    blockchain: CommonMocks.blockchain, network: CommonMocks.network);
-var paramSecret = CreateAndSaveIdentityParam(
-    secret: CommonMocks.privateKey,
+    privateKey: CommonMocks.privateKey,
     blockchain: CommonMocks.blockchain,
     network: CommonMocks.network);
 
@@ -32,7 +30,6 @@ MockGetIdentityAuthClaimUseCase getIdentityAuthClaimUseCase =
 
 // Tested instance
 CreateAndSaveIdentityUseCase useCase = CreateAndSaveIdentityUseCase(
-  CommonMocks.config,
   identityRepository,
   getDidUseCase,
   getDidIdentifierUseCase,
@@ -73,35 +70,6 @@ void main() {
       "Given a private key which is not already associated with an identity, when I call execute, then I expect an identity to be returned",
       () async {
     // When
-    expect(await useCase.execute(param: paramSecret),
-        IdentityMocks.privateIdentity);
-
-    // Then
-    var configCaptured = verify(identityRepository.createIdentity(
-      privateKey: captureAnyNamed('privateKey'),
-      didIdentifier: captureAnyNamed('didIdentifier'),
-      authClaim: captureAnyNamed('authClaim'),
-    )).captured;
-    expect(configCaptured[0], CommonMocks.privateKey);
-    expect(configCaptured[1], CommonMocks.did);
-    expect(configCaptured[2], CredentialMocks.authClaim);
-
-    expect(
-        verify(identityRepository.getIdentity(did: captureAnyNamed('did')))
-            .captured
-            .first,
-        CommonMocks.did);
-
-    var capturedStore = verify(identityRepository.storeIdentity(
-            identity: captureAnyNamed('identity')))
-        .captured;
-    expect(capturedStore[0], IdentityMocks.privateIdentity);
-  });
-
-  test(
-      "Given a private key which is null, when I call execute, then I expect an identifier to be returned",
-      () async {
-    // When
     expect(await useCase.execute(param: param), IdentityMocks.privateIdentity);
 
     // Then
@@ -134,10 +102,7 @@ void main() {
         (realInvocation) => Future.value(IdentityMocks.privateIdentity));
 
     // When
-    await useCase
-        .execute(param: paramSecret)
-        .then((_) => null)
-        .catchError((error) {
+    await useCase.execute(param: param).then((_) => null).catchError((error) {
       expect(error, isA<IdentityAlreadyExistsException>());
       expect(error.did, IdentityMocks.identity.did);
     });
@@ -170,7 +135,7 @@ void main() {
         .thenAnswer((realInvocation) => Future.error(exception));
 
     // When
-    await expectLater(useCase.execute(param: paramSecret), throwsA(exception));
+    await expectLater(useCase.execute(param: param), throwsA(exception));
 
     // Then
     var configCaptured = verify(identityRepository.createIdentity(

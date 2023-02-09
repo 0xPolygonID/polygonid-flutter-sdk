@@ -126,9 +126,9 @@ import '../../identity/domain/repositories/smt_repository.dart' as _i108;
 import '../../identity/domain/use_cases/backup_identity_use_case.dart' as _i131;
 import '../../identity/domain/use_cases/check_identity_validity_use_case.dart'
     as _i132;
-import '../../identity/domain/use_cases/create_and_save_identity_from_pk_use_case.dart'
-    as _i133;
 import '../../identity/domain/use_cases/create_and_save_identity_use_case.dart'
+    as _i133;
+import '../../identity/domain/use_cases/create_new_identity_use_case.dart'
     as _i134;
 import '../../identity/domain/use_cases/export_identity_use_case.dart' as _i119;
 import '../../identity/domain/use_cases/fetch_identity_state_use_case.dart'
@@ -616,19 +616,18 @@ _i1.GetIt $initSDKGetIt(
             await get.getAsync<_i113.IdentityRepository>(),
             await get.getAsync<_i129.GetDidIdentifierUseCase>(),
           ));
-  gh.factoryAsync<_i133.CreateAndSaveIdentityFromPKUseCase>(
-      () async => _i133.CreateAndSaveIdentityFromPKUseCase(
-            await get.getAsync<_i113.IdentityRepository>(),
-            await get.getAsync<_i122.GetDidUseCase>(),
-            await get.getAsync<_i129.GetDidIdentifierUseCase>(),
-          ));
-  gh.factoryAsync<_i134.CreateAndSaveIdentityUseCase>(
-      () async => _i134.CreateAndSaveIdentityUseCase(
-            get<String>(instanceName: 'accessMessage'),
+  gh.factoryAsync<_i133.CreateAndSaveIdentityUseCase>(
+      () async => _i133.CreateAndSaveIdentityUseCase(
             await get.getAsync<_i113.IdentityRepository>(),
             await get.getAsync<_i122.GetDidUseCase>(),
             await get.getAsync<_i129.GetDidIdentifierUseCase>(),
             await get.getAsync<_i125.GetIdentityAuthClaimUseCase>(),
+          ));
+  gh.factoryAsync<_i134.CreateNewIdentityUseCase>(
+      () async => _i134.CreateNewIdentityUseCase(
+            get<String>(instanceName: 'accessMessage'),
+            await get.getAsync<_i113.IdentityRepository>(),
+            await get.getAsync<_i133.CreateAndSaveIdentityUseCase>(),
           ));
   gh.factoryAsync<_i135.GenerateProofUseCase>(
       () async => _i135.GenerateProofUseCase(
@@ -675,7 +674,7 @@ _i1.GetIt $initSDKGetIt(
       ));
   gh.factoryAsync<_i140.RestoreIdentityUseCase>(
       () async => _i140.RestoreIdentityUseCase(
-            await get.getAsync<_i133.CreateAndSaveIdentityFromPKUseCase>(),
+            await get.getAsync<_i133.CreateAndSaveIdentityUseCase>(),
             await get.getAsync<_i114.ImportIdentityUseCase>(),
             await get.getAsync<_i129.GetDidIdentifierUseCase>(),
           ));
@@ -702,7 +701,8 @@ _i1.GetIt $initSDKGetIt(
       ));
   gh.factoryAsync<_i144.Identity>(() async => _i144.Identity(
         await get.getAsync<_i132.CheckIdentityValidityUseCase>(),
-        await get.getAsync<_i134.CreateAndSaveIdentityUseCase>(),
+        await get.getAsync<_i133.CreateAndSaveIdentityUseCase>(),
+        await get.getAsync<_i134.CreateNewIdentityUseCase>(),
         await get.getAsync<_i140.RestoreIdentityUseCase>(),
         await get.getAsync<_i131.BackupIdentityUseCase>(),
         await get.getAsync<_i130.GetIdentityUseCase>(),

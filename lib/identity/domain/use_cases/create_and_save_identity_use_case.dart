@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_auth_claim_use_case.dart';
 
@@ -10,12 +9,12 @@ import 'get_did_identifier_use_case.dart';
 import 'get_did_use_case.dart';
 
 class CreateAndSaveIdentityParam {
-  final String? secret;
+  final String privateKey;
   final String blockchain;
   final String network;
 
   CreateAndSaveIdentityParam({
-    this.secret,
+    required this.privateKey,
     required this.blockchain,
     required this.network,
   });
@@ -23,14 +22,12 @@ class CreateAndSaveIdentityParam {
 
 class CreateAndSaveIdentityUseCase
     extends FutureUseCase<CreateAndSaveIdentityParam, PrivateIdentityEntity> {
-  final String _accessMessage;
   final IdentityRepository _identityRepository;
   final GetDidUseCase _getDidUseCase;
   final GetDidIdentifierUseCase _getDidIdentifierUseCase;
   final GetIdentityAuthClaimUseCase _getIdentityAuthClaimUseCase;
 
   CreateAndSaveIdentityUseCase(
-    @Named('accessMessage') this._accessMessage,
     this._identityRepository,
     this._getDidUseCase,
     this._getDidIdentifierUseCase,
@@ -40,18 +37,14 @@ class CreateAndSaveIdentityUseCase
   @override
   Future<PrivateIdentityEntity> execute(
       {required CreateAndSaveIdentityParam param}) async {
-    // Get the privateKey
-    String privateKey = await _identityRepository.getPrivateKey(
-        accessMessage: _accessMessage, secret: param.secret);
-
     // Get AuthClaim
     List<String> authClaim =
-        await _getIdentityAuthClaimUseCase.execute(param: privateKey);
+        await _getIdentityAuthClaimUseCase.execute(param: param.privateKey);
 
     // Get the didIdentifier
     String didIdentifier = await _getDidIdentifierUseCase.execute(
         param: GetDidIdentifierParam(
-            privateKey: privateKey,
+            privateKey: param.privateKey,
             blockchain: param.blockchain,
             network: param.network));
 
@@ -59,14 +52,14 @@ class CreateAndSaveIdentityUseCase
     PrivateIdentityEntity identity = await _identityRepository
         .createIdentity(
           didIdentifier: didIdentifier,
-          privateKey: privateKey,
+          privateKey: param.privateKey,
           authClaim: authClaim,
         )
         .then((entity) => PrivateIdentityEntity(
             did: entity.did,
             publicKey: entity.publicKey,
             profiles: entity.profiles,
-            privateKey: privateKey));
+            privateKey: param.privateKey));
 
     // Check if identity is already stored (already created)
     try {
@@ -81,12 +74,12 @@ class CreateAndSaveIdentityUseCase
           .execute(param: identity.did)
           .then((did) => _getDidIdentifierUseCase.execute(
               param: GetDidIdentifierParam(
-                  privateKey: privateKey,
+                  privateKey: param.privateKey,
                   blockchain: did.blockchain,
                   network: did.network)));
 
       if (identity.did != didIdentifier) {
-        throw InvalidPrivateKeyException(privateKey);
+        throw InvalidPrivateKeyException(param.privateKey);
       }
 
       // If it doesn't exist, we save it
