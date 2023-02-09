@@ -362,6 +362,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
     required String privateKey,
     required String blockchain,
     required String network,
+    int profileNonce = 0,
   }) {
     return _walletDataSource
         .getWallet(privateKey: _hexMapper.mapTo(privateKey))
@@ -371,10 +372,16 @@ class IdentityRepositoryImpl extends IdentityRepository {
               String genesisId =
                   _libPolygonIdCoreIdentityDataSource.calculateGenesisId(
                       genesisState["claimsRoot"], blockchain, network);
-
               Map<String, dynamic> genesis = jsonDecode(genesisId);
-
-              return Future.value(genesis["did"]);
+              if (profileNonce == 0) {
+                return Future.value(genesis["did"]);
+              } else {
+                String profileId =
+                _libPolygonIdCoreIdentityDataSource.calculateProfileId(
+                    genesis["did"], profileNonce);
+                Map<String, dynamic> profile = jsonDecode(profileId);
+                return Future.value(profile["did"]);
+              }
             }));
   }
 

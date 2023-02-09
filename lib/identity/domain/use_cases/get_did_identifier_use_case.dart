@@ -6,11 +6,13 @@ class GetDidIdentifierParam {
   final String privateKey;
   final String blockchain;
   final String network;
+  final int profileNonce;
 
   GetDidIdentifierParam({
     required this.privateKey,
     required this.blockchain,
     required this.network,
+    this.profileNonce = 0,
   });
 }
 
@@ -26,7 +28,8 @@ class GetDidIdentifierUseCase
         .getDidIdentifier(
             privateKey: param.privateKey,
             blockchain: param.blockchain,
-            network: param.network)
+            network: param.network,
+            profileNonce: param.profileNonce)
         .then((did) {
       logger().i("[GetDidIdentifierUseCase] did: $did");
 

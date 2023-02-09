@@ -2,6 +2,7 @@ import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_and_save_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/export_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identities_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/import_identity_use_case.dart';
 
 import '../identity/domain/entities/identity_entity.dart';
@@ -26,7 +27,7 @@ abstract class PolygonIdSdkIdentity {
   /// The [network] is the network name of the blockchain where the identity
   /// is associated, e.g. Main
   ///
-  /// Be aware the secret is internally converted to a 32 length bytes array
+  /// Be aware [secret] is internally converted to a 32 length bytes array
   /// in order to be compatible with the SDK. The following rules will be applied:
   /// - If the byte array is not 32 length, it will be padded with 0s.
   /// - If the byte array is longer than 32, an exception will be thrown.
@@ -38,19 +39,25 @@ abstract class PolygonIdSdkIdentity {
   /// Return an identity as a [PrivateIdentityEntity].
   /// Throws [IdentityException] if an error occurs.
   ///
-  /// Be aware the secret is internally converted to a 32 length bytes array
+  /// Be aware [secret] is internally converted to a 32 length bytes array
   /// in order to be compatible with the SDK. The following rules will be applied:
   /// - If the byte array is not 32 length, it will be padded with 0s.
   /// - If the byte array is longer than 32, an exception will be thrown.
+  ///
+  /// The [blockchain] is the blockchain name where the identity
+  /// is associated, e.g. Polygon
+  ///
+  /// The [network] is the network name of the blockchain where the identity
+  /// is associated, e.g. Main
   Future<PrivateIdentityEntity> restoreIdentity(
-      {required String secret, required String encryptedIdentityDb});
+  {required String secret, required blockchain, required network, Map<int, String>? encryptedIdentityDbs});
 
   /// Gets an [IdentityEntity] from an identifier.
   /// Returns an identity as a [PrivateIdentityEntity] or [IdentityEntity]
   /// if privateKey is ommited or invalid.
   /// Throws [IdentityException] if an error occurs.
   ///
-  /// The [did] is the unique id of the identity
+  /// the [genesisDid] is the unique id of the identity which profileNonce is 0
   ///
   /// The Identity's [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
@@ -60,7 +67,7 @@ abstract class PolygonIdSdkIdentity {
   /// in order to be compatible with the SDK. The following rules will be applied:
   /// - If the byte array is not 32 length, it will be padded with 0s.
   /// - If the byte array is longer than 32, an exception will be thrown.
-  Future<IdentityEntity> getIdentity({required String did, String? privateKey});
+  Future<IdentityEntity> getIdentity({required String genesisDid, String? privateKey});
 
   /// Get a list of public info of [IdentityEntity] associated to the identities stored in the Polygon ID Sdk.
   /// Return an list of [IdentityEntity].
@@ -69,7 +76,7 @@ abstract class PolygonIdSdkIdentity {
 
   /// Remove the previously stored identity associated with the identifier
   ///
-  /// the [did] is the unique id of the identity
+  /// the [genesisDid] is the unique id of the identity which profileNonce is 0
   ///
   /// Identity [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
@@ -77,15 +84,26 @@ abstract class PolygonIdSdkIdentity {
   ///
   /// Throws [IdentityException] if an error occurs.
   Future<void> removeIdentity(
-      {required String did, required String privateKey});
+      {required String genesisDid, required String privateKey});
 
-  /// Returns the identifier derived from a privateKey
+  /// Returns the genesisDid derived from a privateKey
   ///
-  /// The Identity's [publicKey]
+  /// Identity [privateKey] is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
+  /// using the claims associated to the identity
+  ///
+  /// The [blockchain] is the blockchain name where the identity
+  /// is associated, e.g. Polygon
+  ///
+  /// The [network] is the network name of the blockchain where the identity
+  /// is associated, e.g. Main
+  ///
+  /// Return The Identity's [genesisDid]
   Future<String> getDidIdentifier({
     required String privateKey,
     required String blockchain,
     required String network,
+    int profileNonce = 0
   });
 
   /// Returns the identity state from a did
@@ -141,8 +159,7 @@ class Identity implements PolygonIdSdkIdentity {
   final CheckIdentityValidityUseCase _checkIdentityValidityUseCase;
   final CreateAndSaveIdentityUseCase _createAndSaveIdentityUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
-
-  //final GetIdentitiesUseCase _getIdentitiesUseCase;
+  final GetIdentitiesUseCase _getIdentitiesUseCase;
   final RemoveIdentityUseCase _removeIdentityUseCase;
   final GetDidIdentifierUseCase _getDidIdentifierUseCase;
   final SignMessageUseCase _signMessageUseCase;
@@ -154,6 +171,7 @@ class Identity implements PolygonIdSdkIdentity {
     this._checkIdentityValidityUseCase,
     this._createAndSaveIdentityUseCase,
     this._getIdentityUseCase,
+    this._getIdentitiesUseCase,
     this._removeIdentityUseCase,
     this._getDidIdentifierUseCase,
     this._signMessageUseCase,
@@ -172,7 +190,9 @@ class Identity implements PolygonIdSdkIdentity {
   /// Creates and store an [IdentityEntity] from a secret
   /// if it doesn't exist already in the Polygon ID Sdk.
   /// If [secret] is omitted or null, a random one will be used to create a new identity.
+  ///
   /// Return an identity as a [PrivateIdentityEntity].
+  ///
   /// Throws [IdentityException] if an error occurs.
   ///
   /// Be aware the secret is internally converted to a 32 length bytes array
@@ -186,20 +206,20 @@ class Identity implements PolygonIdSdkIdentity {
             blockchain: blockchain, network: network, secret: secret));
   }
 
-  /// Restores an [IdentityEntity] from a secret and an encrypted backup database
+  /// Restores an [IdentityEntity] from a secret and an optional encrypted backup database for each identity profile
+  /// if it doesn't exist already in the Polygon ID Sdk.
   /// associated to the identity
-  /// Return an identity as a [PrivateIdentityEntity].
-  /// Throws [IdentityException] if an error occurs.
   ///
-  /// Be aware the secret is internally converted to a 32 length bytes array
-  /// in order to be compatible with the SDK. The following rules will be applied:
-  /// - If the byte array is not 32 length, it will be padded with 0s.
-  /// - If the byte array is longer than 32, an exception will be thrown.
+  /// Return an identity as a [PrivateIdentityEntity].
+  ///
+  /// Throws [IdentityException] if an error occurs.
   @override
   Future<PrivateIdentityEntity> restoreIdentity(
-      {required String secret, required String encryptedIdentityDb}) {
+      {required String secret, required blockchain, required network, Map<int, String>? encryptedIdentityDbs}) {
     // TODO: implement restoreIdentity
     throw UnknownIdentityException("");
+
+    //importEncryptedIdentityDb(encryptedIdentityDb)
   }
 
   /// Gets an [IdentityEntity] from an identifier.
@@ -212,9 +232,9 @@ class Identity implements PolygonIdSdkIdentity {
   /// - If the byte array is longer than 32, an exception will be thrown.
   @override
   Future<IdentityEntity> getIdentity(
-      {required String did, String? privateKey}) async {
+      {required String genesisDid, String? privateKey}) async {
     return _getIdentityUseCase.execute(
-        param: GetIdentityParam(did: did, privateKey: privateKey));
+        param: GetIdentityParam(did: genesisDid, privateKey: privateKey));
   }
 
   /// Get a list of public info of [IdentityEntity] associated to the identities stored in the Polygon ID Sdk.
@@ -222,13 +242,12 @@ class Identity implements PolygonIdSdkIdentity {
   /// Throws [IdentityException] if an error occurs.
   @override
   Future<List<IdentityEntity>> getIdentities() {
-    // TODO: implement getIdentities
-    throw UnimplementedError();
+    return _getIdentitiesUseCase.execute();
   }
 
   /// Remove the previously stored identity associated with the identifier
   ///
-  /// the [did] is the unique id of the identity
+  /// the [genesisDid] is the unique id of the identity which profileNonce is 0
   ///
   /// Identity [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
@@ -237,9 +256,9 @@ class Identity implements PolygonIdSdkIdentity {
   /// Throws [IdentityException] if an error occurs.
   @override
   Future<void> removeIdentity(
-      {required String did, required String privateKey}) {
+      {required String genesisDid, required String privateKey}) {
     return _removeIdentityUseCase.execute(
-        param: RemoveIdentityParam(did: did, privateKey: privateKey));
+        param: RemoveIdentityParam(did: genesisDid, privateKey: privateKey));
   }
 
   /// Sign a message through a identity's private key.
@@ -252,19 +271,30 @@ class Identity implements PolygonIdSdkIdentity {
         param: SignMessageParam(privateKey, message));
   }
 
-  /// Returns the did derived from a publicKey
+  /// Returns the genesisDid derived from a privateKey
   ///
-  /// The Identity's [privateKey]
-  @override
-  Future<String> getDidIdentifier(
-      {required String privateKey,
-      required String blockchain,
-      required String network}) {
+  /// Identity [privateKey] is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
+  /// using the claims associated to the identity
+  ///
+  /// The [blockchain] is the blockchain name where the identity
+  /// is associated, e.g. Polygon
+  ///
+  /// The [network] is the network name of the blockchain where the identity
+  /// is associated, e.g. Main
+  ///
+  /// Return The Identity's [did] identifier
+  Future<String> getDidIdentifier({
+    required String privateKey,
+    required String blockchain,
+    required String network,
+    int profileNonce = 0,
+  }) {
     return _getDidIdentifierUseCase.execute(
         param: GetDidIdentifierParam(
       privateKey: privateKey,
       blockchain: blockchain,
-      network: network,
+      network: network, profileNonce: profileNonce
     ));
   }
 

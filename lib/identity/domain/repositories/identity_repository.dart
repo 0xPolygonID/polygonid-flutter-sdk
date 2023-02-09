@@ -44,6 +44,7 @@ abstract class IdentityRepository {
     required String privateKey,
     required String blockchain,
     required String network,
+    required int profileNonce,
   });
 
   // RHS

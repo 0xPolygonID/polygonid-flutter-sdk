@@ -461,6 +461,7 @@ class MockIdentityRepository extends _i1.Mock
     required String? privateKey,
     required String? blockchain,
     required String? network,
+    required int? profileNonce,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -470,6 +471,7 @@ class MockIdentityRepository extends _i1.Mock
             #privateKey: privateKey,
             #blockchain: blockchain,
             #network: network,
+            #profileNonce: profileNonce,
           },
         ),
         returnValue: _i10.Future<String>.value(''),
