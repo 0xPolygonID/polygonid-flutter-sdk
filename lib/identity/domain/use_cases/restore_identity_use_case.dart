@@ -7,19 +7,20 @@ import '../entities/identity_entity.dart';
 import '../entities/private_identity_entity.dart';
 import '../exceptions/identity_exceptions.dart';
 import '../repositories/identity_repository.dart';
+import 'create_and_save_identity_from_pk_use_case.dart';
 import 'create_and_save_identity_use_case.dart';
 import 'get_did_identifier_use_case.dart';
 import 'get_did_use_case.dart';
 import 'import_identity_use_case.dart';
 
 class RestoreIdentityParam {
-  final String secret;
+  final String privateKey;
   final String blockchain;
   final String network;
   final Map<int, String>? encryptedIdentityDbs;
 
   RestoreIdentityParam({
-    required this.secret,
+    required this.privateKey,
     required this.blockchain,
     required this.network,
     this.encryptedIdentityDbs,
@@ -28,12 +29,12 @@ class RestoreIdentityParam {
 
 class RestoreIdentityUseCase
     extends FutureUseCase<RestoreIdentityParam, IdentityEntity> {
-  final CreateAndSaveIdentityUseCase _createAndSaveIdentityUseCase;
+  final CreateAndSaveIdentityFromPKUseCase _createAndSaveIdentityFromPKUseCase;
   final ImportIdentityUseCase _importIdentityUseCase;
   final GetDidIdentifierUseCase _getDidIdentifierUseCase;
 
   RestoreIdentityUseCase(
-    this._createAndSaveIdentityUseCase,
+    this._createAndSaveIdentityFromPKUseCase,
     this._importIdentityUseCase,
     this._getDidIdentifierUseCase,
   );
@@ -44,9 +45,9 @@ class RestoreIdentityUseCase
     try {
       // Create the [PrivateIdentityEntity] with the secret
       PrivateIdentityEntity privateIdentity =
-          await _createAndSaveIdentityUseCase.execute(
-              param: CreateAndSaveIdentityParam(
-                  secret: param.secret,
+          await _createAndSaveIdentityFromPKUseCase.execute(
+              param: CreateAndSaveIdentityFromPKParam(
+                  privateKey: param.privateKey,
                   blockchain: param.blockchain,
                   network: param.network));
 

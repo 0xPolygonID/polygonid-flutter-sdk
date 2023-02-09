@@ -377,6 +377,36 @@ class MockIdentityRepository extends _i1.Mock
         )),
       ) as _i10.Future<_i4.PrivateIdentityEntity>);
   @override
+  _i10.Future<_i4.PrivateIdentityEntity> restoreIdentity({
+    required String? privateKey,
+    required String? blockchain,
+    required String? network,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #restoreIdentity,
+          [],
+          {
+            #privateKey: privateKey,
+            #blockchain: blockchain,
+            #network: network,
+          },
+        ),
+        returnValue: _i10.Future<_i4.PrivateIdentityEntity>.value(
+            _FakePrivateIdentityEntity_2(
+          this,
+          Invocation.method(
+            #restoreIdentity,
+            [],
+            {
+              #privateKey: privateKey,
+              #blockchain: blockchain,
+              #network: network,
+            },
+          ),
+        )),
+      ) as _i10.Future<_i4.PrivateIdentityEntity>);
+  @override
   _i10.Future<void> storeIdentity({required _i2.IdentityEntity? identity}) =>
       (super.noSuchMethod(
         Invocation.method(

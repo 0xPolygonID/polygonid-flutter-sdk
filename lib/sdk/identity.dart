@@ -52,9 +52,9 @@ abstract class PolygonIdSdkIdentity {
   /// The [network] is the network name of the blockchain where the identity
   /// is associated, e.g. Main
   Future<PrivateIdentityEntity> restoreIdentity(
-      {required String secret,
-      required blockchain,
-      required network,
+      {required String privateKey,
+      required String blockchain,
+      required String network,
       Map<int, String>? encryptedIdentityDbs});
 
   /// Backup a previously stored [IdentityEntity] from a privateKey
@@ -236,13 +236,13 @@ class Identity implements PolygonIdSdkIdentity {
   /// Throws [IdentityException] if an error occurs.
   @override
   Future<PrivateIdentityEntity> restoreIdentity(
-      {required String secret,
-      required blockchain,
-      required network,
+      {required String privateKey,
+      required String blockchain,
+      required String network,
       Map<int, String>? encryptedIdentityDbs}) {
     return _restoreIdentityUseCase.execute(
         param: RestoreIdentityParam(
-            secret: secret,
+            privateKey: privateKey,
             blockchain: blockchain,
             network: network,
             encryptedIdentityDbs: encryptedIdentityDbs));
