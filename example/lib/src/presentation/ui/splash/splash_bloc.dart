@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/splash_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/splash_state.dart';
@@ -17,8 +18,9 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
   /// Simulation of a possible loading time
   Future<void> onFakeLoadingSplashEvent(
       FakeLoadingSplashEvent event, Emitter<SplashState> emit) async {
-    _subscription = PolygonIdSdk.I.proof.initCircuitsDownloadAndGetInfoStream
-        .listen((downloadInfo) {
+    Stream<DownloadInfo> stream =
+        await PolygonIdSdk.I.proof.initCircuitsDownloadAndGetInfoStream;
+    _subscription = stream.listen((downloadInfo) {
       add(DownloadProgressSplashEvent(downloadInfo));
     });
   }

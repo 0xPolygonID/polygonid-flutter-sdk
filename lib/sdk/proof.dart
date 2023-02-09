@@ -24,7 +24,7 @@ abstract class PolygonIdSdkProof {
       String? privateKey,
       String? challenge});
 
-  Stream<DownloadInfo> get initCircuitsDownloadAndGetInfoStream;
+  Future<Stream<DownloadInfo>> get initCircuitsDownloadAndGetInfoStream;
 
   Future<bool> isAlreadyDownloadedCircuitsFromServer();
 }
@@ -63,7 +63,7 @@ class Proof implements PolygonIdSdkProof {
 
   ///
   @override
-  Stream<DownloadInfo> get initCircuitsDownloadAndGetInfoStream {
+  Future<Stream<DownloadInfo>> get initCircuitsDownloadAndGetInfoStream {
     return _downloadCircuitsUseCase.execute();
   }
 }

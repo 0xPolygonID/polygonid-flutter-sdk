@@ -55,7 +55,7 @@ class CircuitsDownloadDataSource {
     required List<int> zipBytes,
   }) async {
     var file = File(pathToFile);
-    file.writeAsBytes(zipBytes);
+    await file.writeAsBytes(zipBytes);
   }
 
   ///

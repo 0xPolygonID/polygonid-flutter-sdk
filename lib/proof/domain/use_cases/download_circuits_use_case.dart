@@ -3,7 +3,8 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/circuits_files_exist_use_case.dart';
 
-class DownloadCircuitsUseCase extends StreamUseCase<void, DownloadInfo> {
+class DownloadCircuitsUseCase
+    extends FutureUseCase<void, Stream<DownloadInfo>> {
   final ProofRepository _proofRepository;
   final CircuitsFilesExistUseCase _circuitsFilesExistUseCase;
 
@@ -13,23 +14,21 @@ class DownloadCircuitsUseCase extends StreamUseCase<void, DownloadInfo> {
   );
 
   @override
-  Stream<DownloadInfo> execute({void param}) {
-    _circuitsFilesExistUseCase.execute().then((value) {
-      if (value) {
-        // return void stream
-        return Stream<void>.value(null);
-        return Stream<DownloadInfo>.value(
-          DownloadInfo(
-            downloaded: 0,
-            contentLength: 0,
-            completed: true,
-          ),
-        );
-      }
-    });
+  Future<Stream<DownloadInfo>> execute({void param}) async {
+    bool circuitsFilesExist = await _circuitsFilesExistUseCase.execute();
 
-    Stream<DownloadInfo> stream = _proofRepository.circuitsDownloadInfoStream;
-    _proofRepository.initCircuitsDownloadFromServer();
-    return stream;
+    if (circuitsFilesExist) {
+      return Stream<DownloadInfo>.value(
+        DownloadInfo(
+          downloaded: 0,
+          contentLength: 0,
+          completed: true,
+        ),
+      );
+    } else {
+      Stream<DownloadInfo> stream = _proofRepository.circuitsDownloadInfoStream;
+      _proofRepository.initCircuitsDownloadFromServer();
+      return stream;
+    }
   }
 }
