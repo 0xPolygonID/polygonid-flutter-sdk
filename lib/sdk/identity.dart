@@ -103,7 +103,7 @@ abstract class PolygonIdSdkIdentity {
     required String privateKey,
     required String blockchain,
     required String network,
-    int profileNonce = 0
+    int? profileNonce
   });
 
   /// Returns the identity state from a did
@@ -288,13 +288,13 @@ class Identity implements PolygonIdSdkIdentity {
     required String privateKey,
     required String blockchain,
     required String network,
-    int profileNonce = 0,
+    int? profileNonce,
   }) {
     return _getDidIdentifierUseCase.execute(
         param: GetDidIdentifierParam(
       privateKey: privateKey,
       blockchain: blockchain,
-      network: network, profileNonce: profileNonce
+      network: network, profileNonce: profileNonce ?? 0
     ));
   }
 

@@ -380,7 +380,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
                 _libPolygonIdCoreIdentityDataSource.calculateProfileId(
                     genesis["did"], profileNonce);
                 Map<String, dynamic> profile = jsonDecode(profileId);
-                return Future.value(profile["did"]);
+                return Future.value(profile["profileDID"]);
               }
             }));
   }
