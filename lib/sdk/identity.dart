@@ -36,15 +36,14 @@ abstract class PolygonIdSdkIdentity {
   Future<PrivateIdentityEntity> createIdentity(
       {String? secret, required blockchain, required network});
 
-  /// Restores an [IdentityEntity] from a secret and an encrypted backup database
+  /// Restores an [IdentityEntity] from a privateKey and encrypted backup databases
   /// associated to the identity
   /// Return an identity as a [PrivateIdentityEntity].
   /// Throws [IdentityException] if an error occurs.
   ///
-  /// Be aware [secret] is internally converted to a 32 length bytes array
-  /// in order to be compatible with the SDK. The following rules will be applied:
-  /// - If the byte array is not 32 length, it will be padded with 0s.
-  /// - If the byte array is longer than 32, an exception will be thrown.
+  /// Identity [privateKey] is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
+  /// using the claims associated to the identity
   ///
   /// The [blockchain] is the blockchain name where the identity
   /// is associated, e.g. Polygon
