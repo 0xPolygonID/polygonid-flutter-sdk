@@ -47,8 +47,6 @@ abstract class ProofRepository {
 
   Stream<DownloadInfo> get circuitsDownloadInfoStream;
 
-  void disposeCircuitsDownloadInfoStreamController();
-
   Future<bool> circuitsFilesExist();
 
   Future<void> initCircuitsDownloadFromServer();

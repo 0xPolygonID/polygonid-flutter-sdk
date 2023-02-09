@@ -8,7 +8,6 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.da
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/circuits_files_exist_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/use_cases/dispose_circuits_download_stream_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/download_circuits_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/generate_proof_use_case.dart';
 
@@ -27,8 +26,6 @@ abstract class PolygonIdSdkProof {
 
   Stream<DownloadInfo> get initCircuitsDownloadAndGetInfoStream;
 
-  void disposeCircuitsDownloadInfoStreamController();
-
   Future<bool> isAlreadyDownloadedCircuitsFromServer();
 }
 
@@ -37,14 +34,11 @@ class Proof implements PolygonIdSdkProof {
   final GenerateProofUseCase _proveUseCase;
   final DownloadCircuitsUseCase _downloadCircuitsUseCase;
   final CircuitsFilesExistUseCase _circuitsFilesExistUseCase;
-  final DisposeCircuitsDownloadStreamUseCase
-      _disposeCircuitsDownloadStreamUseCase;
 
   Proof(
     this._proveUseCase,
     this._downloadCircuitsUseCase,
     this._circuitsFilesExistUseCase,
-    this._disposeCircuitsDownloadStreamUseCase,
   );
 
   @override
@@ -71,11 +65,5 @@ class Proof implements PolygonIdSdkProof {
   @override
   Stream<DownloadInfo> get initCircuitsDownloadAndGetInfoStream {
     return _downloadCircuitsUseCase.execute();
-  }
-
-  ///
-  @override
-  void disposeCircuitsDownloadInfoStreamController() {
-    _disposeCircuitsDownloadStreamUseCase.execute();
   }
 }

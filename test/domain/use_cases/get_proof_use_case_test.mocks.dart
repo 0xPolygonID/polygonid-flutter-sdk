@@ -302,14 +302,6 @@ class MockProofRepository extends _i1.Mock implements _i9.ProofRepository {
         )),
       ) as _i10.Future<_i4.GistProofEntity>);
   @override
-  void disposeCircuitsDownloadInfoStreamController() => super.noSuchMethod(
-        Invocation.method(
-          #disposeCircuitsDownloadInfoStreamController,
-          [],
-        ),
-        returnValueForMissingStub: null,
-      );
-  @override
   _i10.Future<bool> circuitsFilesExist() => (super.noSuchMethod(
         Invocation.method(
           #circuitsFilesExist,

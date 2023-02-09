@@ -27,7 +27,6 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
       DownloadProgressSplashEvent event, Emitter<SplashState> emit) async {
     if (event.downloadInfo.completed) {
       _subscription?.cancel();
-      PolygonIdSdk.I.proof.disposeCircuitsDownloadInfoStreamController();
       emit(SplashState.waitingTimeEnded());
     } else {
       emit(SplashState.downloadProgress(event.downloadInfo));

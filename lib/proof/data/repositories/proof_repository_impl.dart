@@ -26,6 +26,7 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.da
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 import '../../../common/utils/uint8_list_utils.dart';
 import '../../../iden3comm/data/mappers/gist_proof_mapper.dart'
@@ -267,67 +268,49 @@ class ProofRepositoryImpl extends ProofRepository {
 
   ///
   @override
-  void disposeCircuitsDownloadInfoStreamController() {
-    _downloadInfoController.close();
-  }
-
-  ///
-  @override
   Future<void> initCircuitsDownloadFromServer() async {
-    if (await _circuitsDownloadDataSource.circuitsFilesExist()) {
-      _downloadInfoController.add(DownloadInfo(
-        contentLength: 0,
-        downloaded: 0,
-        completed: true,
-      ));
-      return;
-    }
-    Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path;
-    String fileName = 'circuits.zip';
-    const bucketUrl =
-        "https://iden3-circuits-bucket.s3.eu-west-1.amazonaws.com/circuits/v0.2.0-beta/polygonid-keys-2.0.0.zip";
+    String pathForZipFile =
+        await _circuitsDownloadDataSource.getPathToCircuitZipFile();
+    String pathForCircuits = await _circuitsDownloadDataSource.getPath();
+    http.StreamedResponse serverResponse =
+        await _circuitsDownloadDataSource.getStreamedResponseFromServer();
 
-    var request = http.Request('GET', Uri.parse(bucketUrl));
-    final http.StreamedResponse response = await http.Client().send(request);
-    final int? contentLength = response.contentLength;
+    final int downloadSize = serverResponse.contentLength ?? 0;
+
     List<int> bytes = [];
 
-    response.stream.listen(
+    serverResponse.stream.listen(
       (List<int> newBytes) {
         bytes.addAll(newBytes);
         _downloadInfoController.add(DownloadInfo(
-          contentLength: contentLength ?? 0,
+          contentLength: downloadSize,
           downloaded: bytes.length,
         ));
       },
       onDone: () async {
-        if (bytes.length != contentLength) {
+        if (downloadSize != 0 && bytes.length != downloadSize) {
           try {
-            var file = File('$path/$fileName');
-            await file.delete();
+            _circuitsDownloadDataSource.deleteFile(pathForZipFile);
           } catch (_) {}
           _downloadInfoController.addError("Downloaded files incorrect");
           return;
         }
 
-        var file = File('$path/$fileName');
-        file.writeAsBytes(bytes);
         _downloadInfoController.add(DownloadInfo(
-          contentLength: contentLength ?? 0,
+          contentLength: downloadSize,
           downloaded: bytes.length,
           completed: true,
         ));
-        var archive = ZipDecoder().decodeBytes(bytes);
 
-        for (var file in archive) {
-          var filename = '$path/${file.name}';
-          if (file.isFile) {
-            var outFile = File(filename);
-            outFile = await outFile.create(recursive: true);
-            await outFile.writeAsBytes(file.content);
-          }
-        }
+        await _circuitsDownloadDataSource.writeZipFile(
+          pathToFile: pathForZipFile,
+          zipBytes: bytes,
+        );
+
+        await _circuitsDownloadDataSource.writeCircuitsFileFromZip(
+          zipBytes: bytes,
+          path: pathForCircuits,
+        );
       },
       onError: (e) {
         _downloadInfoController.addError(e);
@@ -336,6 +319,7 @@ class ProofRepositoryImpl extends ProofRepository {
     );
   }
 
+  ///
   @override
   Future<bool> circuitsFilesExist() {
     return _circuitsDownloadDataSource.circuitsFilesExist();
