@@ -140,6 +140,24 @@ class MockIdentityRepository extends _i1.Mock
         )),
       ) as _i7.Future<_i2.IdentityEntity>);
   @override
+  _i7.Future<dynamic> restoreIdentity({
+    required String? privateKey,
+    required String? blockchain,
+    required String? network,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #restoreIdentity,
+          [],
+          {
+            #privateKey: privateKey,
+            #blockchain: blockchain,
+            #network: network,
+          },
+        ),
+        returnValue: _i7.Future<dynamic>.value(),
+      ) as _i7.Future<dynamic>);
+  @override
   _i7.Future<void> storeIdentity({required _i2.IdentityEntity? identity}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -215,6 +233,7 @@ class MockIdentityRepository extends _i1.Mock
     required String? blockchain,
     required String? network,
     required List<String>? authClaim,
+    required int? profileNonce,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -225,6 +244,7 @@ class MockIdentityRepository extends _i1.Mock
             #blockchain: blockchain,
             #network: network,
             #authClaim: authClaim,
+            #profileNonce: profileNonce,
           },
         ),
         returnValue: _i7.Future<String>.value(''),

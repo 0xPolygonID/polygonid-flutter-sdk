@@ -339,6 +339,17 @@ class MockStorageIdentityDataSource extends _i1.Mock
   }
 
   @override
+  _i15.Future<List<_i4.IdentityDTO>> getIdentities({_i19.Filter? filter}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getIdentities,
+          [],
+          {#filter: filter},
+        ),
+        returnValue:
+            _i15.Future<List<_i4.IdentityDTO>>.value(<_i4.IdentityDTO>[]),
+      ) as _i15.Future<List<_i4.IdentityDTO>>);
+  @override
   _i15.Future<_i4.IdentityDTO> getIdentity({required String? did}) =>
       (super.noSuchMethod(
         Invocation.method(

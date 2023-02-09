@@ -109,8 +109,8 @@ class GenerateProofUseCase extends FutureUseCase<GenerateProofParam, JWZProof> {
     DidEntity didEntity = await _getDidUseCase.execute(param: param.did);
 
     // Prepare atomic query inputs
-    Uint8List atomicQueryInputs =
-        await _proofRepository.calculateAtomicQueryInputs(
+    Uint8List atomicQueryInputs = await _proofRepository
+        .calculateAtomicQueryInputs(
       id: didEntity.identifier,
       profileNonce: param.profileNonce,
       claimSubjectProfileNonce: param.claimSubjectProfileNonce,
@@ -123,7 +123,12 @@ class GenerateProofUseCase extends FutureUseCase<GenerateProofParam, JWZProof> {
       signature: signature,
       claim: param.credential,
       request: param.request,
-    );
+    )
+        .catchError((error) {
+      logger().e("[GenerateProofUseCase] Error: $error");
+
+      throw error;
+    });
 
     // Prove
     return _proveUseCase

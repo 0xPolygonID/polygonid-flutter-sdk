@@ -43,6 +43,7 @@ void main() {
       blockchain: anyNamed('blockchain'),
       network: anyNamed('network'),
       authClaim: anyNamed('authClaim'),
+      profileNonce: anyNamed('profileNonce'),
     )).thenAnswer((realInvocation) => Future.value(CommonMocks.did));
   });
 
@@ -65,11 +66,13 @@ void main() {
         blockchain: captureAnyNamed('blockchain'),
         network: captureAnyNamed('network'),
         authClaim: captureAnyNamed('authClaim'),
+        profileNonce: captureAnyNamed('profileNonce'),
       )).captured;
       expect(authClaimCapture[0], CommonMocks.privateKey);
       expect(authClaimCapture[1], CommonMocks.blockchain);
       expect(authClaimCapture[2], CommonMocks.network);
       expect(authClaimCapture[3], CredentialMocks.authClaim);
+      expect(authClaimCapture[4], 0);
     },
   );
 
@@ -97,6 +100,7 @@ void main() {
         blockchain: captureAnyNamed('blockchain'),
         network: captureAnyNamed('network'),
         authClaim: captureAnyNamed('authClaim'),
+        profileNonce: captureAnyNamed('profileNonce'),
       ));
     },
   );

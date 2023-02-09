@@ -113,6 +113,35 @@ class IdentityRepositoryImpl extends IdentityRepository {
     }
   }
 
+  @override
+  Future<PrivateIdentityEntity> restoreIdentity({
+    required String privateKey,
+    required String blockchain,
+    required String network,
+  }) async {
+    try {
+      PrivadoIdWallet wallet = await _walletDataSource.getWallet(
+          privateKey: _hexMapper.mapTo(privateKey));
+
+      String did = await getDidIdentifier(
+        blockchain: blockchain,
+        network: network,
+        privateKey: privateKey,
+      );
+
+      Map<String, dynamic> treeState = await _createIdentityState(
+          did: did, privateKey: privateKey, publicKey: wallet.publicKey);
+
+      PrivateIdentityEntity identityEntity = _identityDTOMapper.mapPrivateFrom(
+          IdentityDTO(
+              did: did, publicKey: wallet.publicKey, profiles: {0: did}),
+          _hexMapper.mapFrom(wallet.privateKey));
+      return Future.value(identityEntity);
+    } catch (error) {
+      return Future.error(IdentityException(error));
+    }
+  }
+
   /// TODO: this is an UC
   Future<Map<String, dynamic>> _createIdentityState(
       {required String did,
@@ -317,6 +346,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
     required String blockchain,
     required String network,
     required List<String> authClaim,
+    int profileNonce = 0,
   }) {
     return _walletDataSource
         .getWallet(privateKey: _hexMapper.mapTo(privateKey))
@@ -326,17 +356,26 @@ class IdentityRepositoryImpl extends IdentityRepository {
               String genesisId =
                   _libPolygonIdCoreIdentityDataSource.calculateGenesisId(
                       genesisState["claimsRoot"], blockchain, network);
-
               Map<String, dynamic> genesis = jsonDecode(genesisId);
-
-              return Future.value(genesis["did"]);
+              if (profileNonce == 0) {
+                return Future.value(genesis["did"]);
+              } else {
+                String profileId = _libPolygonIdCoreIdentityDataSource
+                    .calculateProfileId(genesis["did"], profileNonce);
+                Map<String, dynamic> profile = jsonDecode(profileId);
+                return Future.value(profile["profileDID"]);
+              }
             }));
   }
 
   @override
   Future<List<IdentityEntity>> getIdentities() {
-    // TODO: implement getIdentities
-    throw UnimplementedError();
+    return _storageIdentityDataSource
+        .getIdentities()
+        .then((dtos) =>
+            dtos.map((dto) => _identityDTOMapper.mapFrom(dto)).toList())
+        .catchError((error) => throw IdentityException(error),
+            test: (error) => error is! UnknownIdentityException);
   }
 
   @override

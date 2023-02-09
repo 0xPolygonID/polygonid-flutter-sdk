@@ -105,7 +105,9 @@ class GetProofsUseCase
                   circuitId: circuitId,
                   proof: proof.proof,
                   pubSignals: proof.pubSignals)));
-        }).catchError((_) {}, test: (error) => error is StateError);
+        }).catchError((error) {
+          throw error;
+        });
       }
     }
 

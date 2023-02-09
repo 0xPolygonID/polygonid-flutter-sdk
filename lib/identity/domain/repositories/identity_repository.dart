@@ -16,6 +16,12 @@ abstract class IdentityRepository {
     required List<String> authClaim,
   });
 
+  Future<PrivateIdentityEntity> restoreIdentity({
+    required String privateKey,
+    required String blockchain,
+    required String network,
+  });
+
   Future<void> storeIdentity({required IdentityEntity identity});
 
   Future<void> removeIdentity(
@@ -35,6 +41,7 @@ abstract class IdentityRepository {
     required String blockchain,
     required String network,
     required List<String> authClaim,
+    required int profileNonce,
   });
 
   // RHS
