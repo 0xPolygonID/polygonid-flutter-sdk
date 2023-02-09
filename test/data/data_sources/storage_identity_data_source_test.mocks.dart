@@ -106,6 +106,21 @@ class MockIdentityStoreRefWrapper extends _i1.Mock
         returnValue: _i4.Future<Map<String, Object?>?>.value(),
       ) as _i4.Future<Map<String, Object?>?>);
   @override
+  _i4.Future<List<_i3.RecordSnapshot<String, Map<String, Object?>>>> find(
+    _i7.DatabaseClient? databaseClient, {
+    _i3.Finder? finder,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #find,
+          [databaseClient],
+          {#finder: finder},
+        ),
+        returnValue: _i4.Future<
+                List<_i3.RecordSnapshot<String, Map<String, Object?>>>>.value(
+            <_i3.RecordSnapshot<String, Map<String, Object?>>>[]),
+      ) as _i4.Future<List<_i3.RecordSnapshot<String, Map<String, Object?>>>>);
+  @override
   _i4.Future<Map<String, Object?>> put(
     _i7.DatabaseClient? database,
     String? key,

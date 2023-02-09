@@ -15,13 +15,13 @@ class RestoreIdentityParam {
   final String secret;
   final String blockchain;
   final String network;
-  final String? encryptedIdentityDb;
+  final Map<int, String>? encryptedIdentityDbs;
 
   RestoreIdentityParam({
     required this.secret,
     required this.blockchain,
     required this.network,
-    this.encryptedIdentityDb,
+    this.encryptedIdentityDbs,
   });
 }
 

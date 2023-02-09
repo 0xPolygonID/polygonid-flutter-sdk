@@ -4,6 +4,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_and_save_
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/export_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identities_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/import_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/restore_identity_use_case.dart';
 
 import '../identity/domain/entities/identity_entity.dart';
 import '../identity/domain/entities/private_identity_entity.dart';
@@ -167,6 +168,7 @@ abstract class PolygonIdSdkIdentity {
 class Identity implements PolygonIdSdkIdentity {
   final CheckIdentityValidityUseCase _checkIdentityValidityUseCase;
   final CreateAndSaveIdentityUseCase _createAndSaveIdentityUseCase;
+  final RestoreIdentityUseCase _restoreIdentityUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
   final GetIdentitiesUseCase _getIdentitiesUseCase;
   final RemoveIdentityUseCase _removeIdentityUseCase;
@@ -179,6 +181,7 @@ class Identity implements PolygonIdSdkIdentity {
   Identity(
     this._checkIdentityValidityUseCase,
     this._createAndSaveIdentityUseCase,
+    this._restoreIdentityUseCase,
     this._getIdentityUseCase,
     this._getIdentitiesUseCase,
     this._removeIdentityUseCase,
@@ -229,9 +232,11 @@ class Identity implements PolygonIdSdkIdentity {
       required network,
       Map<int, String>? encryptedIdentityDbs}) {
     return _restoreIdentityUseCase.execute(
-        param: CreateAndSaveIdentityParam(
-            blockchain: blockchain, network: network, secret: secret));
-
+        param: RestoreIdentityParam(
+            secret: secret,
+            blockchain: blockchain,
+            network: network,
+            encryptedIdentityDbs: encryptedIdentityDbs));
   }
 
   /// Gets an [IdentityEntity] from an identifier.
