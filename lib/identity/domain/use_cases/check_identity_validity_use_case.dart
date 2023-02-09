@@ -1,12 +1,8 @@
-import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_case.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
+import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
-import '../../../constants.dart';
-import '../entities/identity_entity.dart';
-import '../entities/private_identity_entity.dart';
-import '../exceptions/identity_exceptions.dart';
 import '../repositories/identity_repository.dart';
 
 class CheckIdentityValidityParam {
@@ -23,23 +19,31 @@ class CheckIdentityValidityParam {
 
 class CheckIdentityValidityUseCase
     extends FutureUseCase<CheckIdentityValidityParam, void> {
+  final String _accessMessage;
   final IdentityRepository _identityRepository;
+  final GetDidIdentifierUseCase _getDidIdentifierUseCase;
 
-  CheckIdentityValidityUseCase(this._identityRepository);
+  CheckIdentityValidityUseCase(
+    @Named('accessMessage') this._accessMessage,
+    this._identityRepository,
+    this._getDidIdentifierUseCase,
+  );
 
   @override
   Future<void> execute({required CheckIdentityValidityParam param}) async {
-    try {
-      String accessMessage = POLYGONID_ACCESS_MESSAGE;
-      await _identityRepository.checkIdentityValidity(
-          secret: param.secret,
-          accessMessage: accessMessage,
-          blockchain: param.blockchain,
-          network: param.network);
+    return _identityRepository
+        .getPrivateKey(accessMessage: _accessMessage, secret: param.secret)
+        .then((privateKey) => _getDidIdentifierUseCase.execute(
+            param: GetDidIdentifierParam(
+                privateKey: privateKey,
+                blockchain: param.blockchain,
+                network: param.network)))
+        .then((_) {
       logger().i("[CheckIdentityValidityUseCase] Identity is valid");
-    } catch (error) {
+    }).catchError((error) {
       logger().e("[CheckValidIdentityUseCase] Error: $error");
-      rethrow;
-    }
+
+      return error;
+    });
   }
 }

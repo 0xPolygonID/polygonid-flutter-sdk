@@ -151,7 +151,6 @@ MockStorageIdentityDataSource storageIdentityDataSource =
 MockRPCDataSource rpcDataSource = MockRPCDataSource();
 MockLocalContractFilesDataSource localContractFilesDataSource =
     MockLocalContractFilesDataSource();
-MockLocalClaimDataSource localClaimDataSource = MockLocalClaimDataSource();
 MockLibBabyJubJubDataSource libBabyJubJubDataSource =
     MockLibBabyJubJubDataSource();
 MockLibPolygonIdCoreIdentityDataSource libPolygonIdCoreIdentityDataSource =
@@ -177,7 +176,6 @@ IdentityRepository repository = IdentityRepositoryImpl(
   storageIdentityDataSource,
   rpcDataSource,
   localContractFilesDataSource,
-  localClaimDataSource,
   libBabyJubJubDataSource,
   libPolygonIdCoreIdentityDataSource,
   smtDataSource,

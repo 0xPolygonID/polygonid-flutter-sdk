@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:encrypt/encrypt.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
-import 'package:polygonid_flutter_sdk/credential/data/data_sources/local_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
@@ -24,10 +23,8 @@ import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key_mapper.d
 import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/rhs_node_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
@@ -40,7 +37,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final StorageIdentityDataSource _storageIdentityDataSource;
   final RPCDataSource _rpcDataSource;
   final LocalContractFilesDataSource _localContractFilesDataSource;
-  final LocalClaimDataSource _localClaimDataSource;
   final LibBabyJubJubDataSource _libBabyJubJubDataSource;
   final LibPolygonIdCoreIdentityDataSource _libPolygonIdCoreIdentityDataSource;
   final SMTDataSource _smtDataSource;
@@ -61,7 +57,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._storageIdentityDataSource,
     this._rpcDataSource,
     this._localContractFilesDataSource,
-    this._localClaimDataSource,
     this._libBabyJubJubDataSource,
     this._libPolygonIdCoreIdentityDataSource,
     this._smtDataSource,
@@ -77,93 +72,52 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._encryptionKeyMapper,
   );
 
-  Future<void> checkIdentityValidity({
-    required String secret,
-    required String accessMessage,
-    required blockchain,
-    required network,
-  }) async {
-    // Create a wallet
-    PrivadoIdWallet wallet = await _walletDataSource.createWallet(
-        secret: _privateKeyMapper.mapFrom(secret),
-        accessMessage: accessMessage);
-    String privateKey = _hexMapper.mapFrom(wallet.privateKey);
-
-    String did = await getDidIdentifier(
-      blockchain: blockchain,
-      network: network,
-      privateKey: privateKey,
-    );
-  }
-
-  /// Get a [PrivateIdentityEntity] from a String secret
-  /// It will create a new [PrivateIdentity]
-  ///
-  /// @return the associated identifier
   @override
-  Future<PrivateIdentityEntity> createIdentity(
-      {required blockchain,
-      required network,
-      String? secret,
-      required String accessMessage}) async {
-    try {
-      PrivadoIdWallet wallet = await _walletDataSource.createWallet(
-          secret: _privateKeyMapper.mapFrom(secret),
-          accessMessage: accessMessage);
-      String privateKey = _hexMapper.mapFrom(wallet.privateKey);
-
-      String did = await getDidIdentifier(
-        blockchain: blockchain,
-        network: network,
-        privateKey: privateKey,
-      );
-
-      Map<String, dynamic> treeState = await _createIdentityState(
-          did: did, privateKey: privateKey, publicKey: wallet.publicKey);
-
-      PrivateIdentityEntity identityEntity = _identityDTOMapper.mapPrivateFrom(
-          IdentityDTO(
-              did: did, publicKey: wallet.publicKey, profiles: {0: did}),
-          _hexMapper.mapFrom(wallet.privateKey));
-      return Future.value(identityEntity);
-    } catch (error) {
-      return Future.error(IdentityException(error));
-    }
+  Future<String> getPrivateKey(
+      {required String accessMessage, required String? secret}) {
+    return _walletDataSource
+        .createWallet(
+            secret: _privateKeyMapper.mapFrom(secret),
+            accessMessage: accessMessage)
+        .then((wallet) => _hexMapper.mapFrom(wallet.privateKey));
   }
 
   @override
-  Future<PrivateIdentityEntity> restoreIdentity({
+  Future<List<String>> getPublicKeys({required privateKey}) {
+    return _walletDataSource
+        .getWallet(privateKey: _hexMapper.mapTo(privateKey))
+        .then((wallet) => wallet.publicKey);
+  }
+
+  /// Get a [IdentityEntity]
+  @override
+  Future<IdentityEntity> createIdentity({
+    required String didIdentifier,
     required String privateKey,
-    required String blockchain,
-    required String network,
+    required List<String> authClaim,
   }) async {
     try {
       PrivadoIdWallet wallet = await _walletDataSource.getWallet(
           privateKey: _hexMapper.mapTo(privateKey));
 
-      String did = await getDidIdentifier(
-        blockchain: blockchain,
-        network: network,
-        privateKey: privateKey,
-      );
-
       Map<String, dynamic> treeState = await _createIdentityState(
-          did: did, privateKey: privateKey, publicKey: wallet.publicKey);
+          did: didIdentifier, privateKey: privateKey, authClaim: authClaim);
 
-      PrivateIdentityEntity identityEntity = _identityDTOMapper.mapPrivateFrom(
-          IdentityDTO(
-              did: did, publicKey: wallet.publicKey, profiles: {0: did}),
-          _hexMapper.mapFrom(wallet.privateKey));
+      IdentityEntity identityEntity = _identityDTOMapper.mapFrom(IdentityDTO(
+          did: didIdentifier,
+          publicKey: wallet.publicKey,
+          profiles: {0: didIdentifier}));
       return Future.value(identityEntity);
     } catch (error) {
       return Future.error(IdentityException(error));
     }
   }
 
+  /// TODO: this is an UC
   Future<Map<String, dynamic>> _createIdentityState(
       {required String did,
       required String privateKey,
-      required List<String> publicKey}) async {
+      required List<String> authClaim}) async {
     // 1. initialize merkle trees
     await _smtDataSource.createSMT(
         maxLevels: 40,
@@ -184,10 +138,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
         privateKey: privateKey);
 
     // 2. add authClaim to claims tree
-    List<String> authClaimChildren =
-        await _localClaimDataSource.getAuthClaim(publicKey: publicKey);
-    NodeEntity authClaimNode =
-        await getAuthClaimNode(children: authClaimChildren);
+    NodeEntity authClaimNode = await getAuthClaimNode(children: authClaim);
     /*List<String> authClaimChildren =
         await _getAuthClaimChildren(publicKey: publicKey);*/
 
@@ -212,11 +163,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   Future<Map<String, dynamic>> _getGenesisState(
-      {required List<String> publicKey}) async {
-    List<String> authClaimChildren =
-        await _localClaimDataSource.getAuthClaim(publicKey: publicKey);
-    NodeEntity authClaimNode =
-        await getAuthClaimNode(children: authClaimChildren);
+      {required List<String> authClaim}) async {
+    NodeEntity authClaimNode = await getAuthClaimNode(children: authClaim);
     HashDTO claimsTreeRoot = _nodeMapper.mapTo(authClaimNode).hash;
 
     // hash of clatr, revtr, rootr
@@ -233,6 +181,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
     return treeState;
   }
 
+  /// TODO: this is an UC
   @override
   Future<Map<String, dynamic>> getLatestState({
     required String did,
@@ -309,30 +258,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
             test: (error) => error is! UnknownIdentityException);
   }
 
-  /// Get an [PrivateIdentityEntity] from an [DidEntity] and a privateKey
-  /// The [PrivateIdentityEntity] is the one previously stored and associated to the identifier
-  /// And we and the private info (privateKey and authClaim)
-  /// Throws an [UnknownIdentityException] if not found.
-  @override
-  Future<PrivateIdentityEntity> getPrivateIdentity(
-      {required DidEntity did, required String privateKey}) {
-    return _storageIdentityDataSource
-        .getIdentity(did: did.did)
-        .then((dto) async {
-      var didFromKey = await getDidIdentifier(
-          privateKey: privateKey,
-          blockchain: did.blockchain,
-          network: did.network);
-
-      if (didFromKey != did.did) {
-        throw InvalidPrivateKeyException(privateKey);
-      }
-
-      return _identityDTOMapper.mapPrivateFrom(dto, privateKey);
-    }).catchError((error) => throw IdentityException(error),
-            test: (error) => error is! UnknownIdentityException);
-  }
-
   @override
   Future<void> removeIdentity(
       {required String did, required String privateKey}) async {
@@ -391,12 +316,13 @@ class IdentityRepositoryImpl extends IdentityRepository {
     required String privateKey,
     required String blockchain,
     required String network,
+    required List<String> authClaim,
     int profileNonce = 0,
   }) {
     return _walletDataSource
         .getWallet(privateKey: _hexMapper.mapTo(privateKey))
         .then((wallet) =>
-            _getGenesisState(publicKey: wallet.publicKey).then((genesisState) {
+            _getGenesisState(authClaim: authClaim).then((genesisState) {
               // Get the genesis id
               String genesisId =
                   _libPolygonIdCoreIdentityDataSource.calculateGenesisId(

@@ -1,3 +1,8 @@
+import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
+
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
 import '../entities/identity_entity.dart';
@@ -18,23 +23,52 @@ class GetIdentityUseCase
     extends FutureUseCase<GetIdentityParam, IdentityEntity> {
   final IdentityRepository _identityRepository;
   final GetDidUseCase _getDidUseCase;
+  final GetDidIdentifierUseCase _getDidIdentifierUseCase;
 
-  GetIdentityUseCase(this._identityRepository, this._getDidUseCase);
+  GetIdentityUseCase(
+    this._identityRepository,
+    this._getDidUseCase,
+    this._getDidIdentifierUseCase,
+  );
 
   @override
-  Future<IdentityEntity> execute({required GetIdentityParam param}) {
-    return param.privateKey != null
-        ? _getDidUseCase.execute(param: param.did).then((did) =>
-            _identityRepository.getPrivateIdentity(
-                did: did, privateKey: param.privateKey!))
-        : _identityRepository.getIdentity(did: param.did).then((identity) {
-            logger().i("[GetIdentityUseCase] Identity: $identity");
+  Future<IdentityEntity> execute({required GetIdentityParam param}) async {
+    try {
+      IdentityEntity identity;
 
-            return identity;
-          }).catchError((error) {
-            logger().e("[GetIdentityUseCase] Error: $error");
+      // Check if we want [PrivateIdentityEntity] or [IdentityEntity]
+      if (param.privateKey != null) {
+        // Check if the did from param matches the did from the privateKey
+        DidEntity did = await _getDidUseCase.execute(param: param.did);
 
-            throw error;
-          });
+        String didIdentifier = await _getDidIdentifierUseCase.execute(
+            param: GetDidIdentifierParam(
+                privateKey: param.privateKey!,
+                blockchain: did.blockchain,
+                network: did.network));
+
+        if (did.did != didIdentifier) {
+          throw InvalidPrivateKeyException(param.privateKey!);
+        }
+
+        // Get the [PrivateIdentityEntity]
+        identity = await _identityRepository.getIdentity(did: param.did).then(
+            (identity) => PrivateIdentityEntity(
+                did: param.did,
+                publicKey: identity.publicKey,
+                profiles: identity.profiles,
+                privateKey: param.privateKey!));
+      } else {
+        identity = await _identityRepository.getIdentity(did: param.did);
+      }
+
+      logger().i("[GetIdentityUseCase] Identity: $identity");
+
+      return identity;
+    } catch (error) {
+      logger().e("[GetIdentityUseCase] Error: $error");
+
+      rethrow;
+    }
   }
 }
