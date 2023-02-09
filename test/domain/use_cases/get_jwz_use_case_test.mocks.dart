@@ -4,25 +4,29 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i6;
-import 'dart:typed_data' as _i7;
+import 'dart:typed_data' as _i8;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
-    as _i10;
+    as _i12;
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
-    as _i8;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart'
-    as _i11;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart'
     as _i9;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart'
+    as _i13;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart'
+    as _i10;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart'
     as _i2;
+import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart'
+    as _i7;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart'
     as _i4;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz.dart'
-    as _i12;
+    as _i14;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart'
     as _i3;
+import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart'
+    as _i11;
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart'
     as _i5;
 
@@ -78,6 +82,12 @@ class MockProofRepository extends _i1.Mock implements _i5.ProofRepository {
   }
 
   @override
+  _i6.Stream<_i7.DownloadInfo> get circuitsDownloadInfoStream =>
+      (super.noSuchMethod(
+        Invocation.getter(#circuitsDownloadInfoStream),
+        returnValue: _i6.Stream<_i7.DownloadInfo>.empty(),
+      ) as _i6.Stream<_i7.DownloadInfo>);
+  @override
   _i6.Future<bool> isCircuitSupported({required String? circuitId}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -104,30 +114,45 @@ class MockProofRepository extends _i1.Mock implements _i5.ProofRepository {
         )),
       ) as _i6.Future<_i2.CircuitDataEntity>);
   @override
-  _i6.Future<_i7.Uint8List> calculateAtomicQueryInputs(
-    String? id,
-    int? profileNonce,
-    int? claimSubjectProfileNonce,
-    _i8.ClaimEntity? claim,
-    _i9.ProofScopeRequest? request,
-  ) =>
+  _i6.Future<_i8.Uint8List> calculateAtomicQueryInputs({
+    required String? id,
+    required int? profileNonce,
+    required int? claimSubjectProfileNonce,
+    required _i9.ClaimEntity? claim,
+    required _i10.ProofScopeRequest? request,
+    _i11.ProofEntity? incProof,
+    _i11.ProofEntity? nonRevProof,
+    _i4.GistProofEntity? gistProof,
+    List<String>? authClaim,
+    Map<String, dynamic>? treeState,
+    String? challenge,
+    String? signature,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #calculateAtomicQueryInputs,
-          [
-            id,
-            profileNonce,
-            claimSubjectProfileNonce,
-            claim,
-            request,
-          ],
+          [],
+          {
+            #id: id,
+            #profileNonce: profileNonce,
+            #claimSubjectProfileNonce: claimSubjectProfileNonce,
+            #claim: claim,
+            #request: request,
+            #incProof: incProof,
+            #nonRevProof: nonRevProof,
+            #gistProof: gistProof,
+            #authClaim: authClaim,
+            #treeState: treeState,
+            #challenge: challenge,
+            #signature: signature,
+          },
         ),
-        returnValue: _i6.Future<_i7.Uint8List>.value(_i7.Uint8List(0)),
-      ) as _i6.Future<_i7.Uint8List>);
+        returnValue: _i6.Future<_i8.Uint8List>.value(_i8.Uint8List(0)),
+      ) as _i6.Future<_i8.Uint8List>);
   @override
-  _i6.Future<_i7.Uint8List> calculateWitness(
+  _i6.Future<_i8.Uint8List> calculateWitness(
     _i2.CircuitDataEntity? circuitData,
-    _i7.Uint8List? atomicQueryInputs,
+    _i8.Uint8List? atomicQueryInputs,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -137,12 +162,12 @@ class MockProofRepository extends _i1.Mock implements _i5.ProofRepository {
             atomicQueryInputs,
           ],
         ),
-        returnValue: _i6.Future<_i7.Uint8List>.value(_i7.Uint8List(0)),
-      ) as _i6.Future<_i7.Uint8List>);
+        returnValue: _i6.Future<_i8.Uint8List>.value(_i8.Uint8List(0)),
+      ) as _i6.Future<_i8.Uint8List>);
   @override
   _i6.Future<_i3.JWZProof> prove(
     _i2.CircuitDataEntity? circuitData,
-    _i7.Uint8List? wtnsBytes,
+    _i8.Uint8List? wtnsBytes,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -164,8 +189,8 @@ class MockProofRepository extends _i1.Mock implements _i5.ProofRepository {
         )),
       ) as _i6.Future<_i3.JWZProof>);
   @override
-  _i6.Future<List<_i10.FilterEntity>> getFilters(
-          {required _i11.ProofRequestEntity? request}) =>
+  _i6.Future<List<_i12.FilterEntity>> getFilters(
+          {required _i13.ProofRequestEntity? request}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getFilters,
@@ -173,10 +198,10 @@ class MockProofRepository extends _i1.Mock implements _i5.ProofRepository {
           {#request: request},
         ),
         returnValue:
-            _i6.Future<List<_i10.FilterEntity>>.value(<_i10.FilterEntity>[]),
-      ) as _i6.Future<List<_i10.FilterEntity>>);
+            _i6.Future<List<_i12.FilterEntity>>.value(<_i12.FilterEntity>[]),
+      ) as _i6.Future<List<_i12.FilterEntity>>);
   @override
-  _i6.Future<String> encodeJWZ({required _i12.JWZEntity? jwz}) =>
+  _i6.Future<String> encodeJWZ({required _i14.JWZEntity? jwz}) =>
       (super.noSuchMethod(
         Invocation.method(
           #encodeJWZ,
@@ -212,4 +237,21 @@ class MockProofRepository extends _i1.Mock implements _i5.ProofRepository {
           ),
         )),
       ) as _i6.Future<_i4.GistProofEntity>);
+  @override
+  _i6.Future<bool> circuitsFilesExist() => (super.noSuchMethod(
+        Invocation.method(
+          #circuitsFilesExist,
+          [],
+        ),
+        returnValue: _i6.Future<bool>.value(false),
+      ) as _i6.Future<bool>);
+  @override
+  _i6.Future<void> initCircuitsDownloadFromServer() => (super.noSuchMethod(
+        Invocation.method(
+          #initCircuitsDownloadFromServer,
+          [],
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
 }

@@ -20,6 +20,12 @@ abstract class PolygonIdSdkIdentity {
   /// Return an identity as a [PrivateIdentityEntity].
   /// Throws [IdentityException] if an error occurs.
   ///
+  /// The [blockchain] is the blockchain name where the identity
+  /// is associated, e.g. Polygon
+  ///
+  /// The [network] is the network name of the blockchain where the identity
+  /// is associated, e.g. Main
+  ///
   /// Be aware the secret is internally converted to a 32 length bytes array
   /// in order to be compatible with the SDK. The following rules will be applied:
   /// - If the byte array is not 32 length, it will be padded with 0s.

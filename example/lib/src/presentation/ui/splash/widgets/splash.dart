@@ -50,19 +50,48 @@ class _SplashScreenState extends State<SplashScreen> {
     return BlocListener(
       bloc: widget._bloc,
       listener: (BuildContext context, SplashState state) {
-        if (state is WaitingTimeEndedSplashState) _handleWaitingTImeEnded();
+        if (state is WaitingTimeEndedSplashState) _handleWaitingTimeEnded();
       },
       child: Center(
-        child: SvgPicture.asset(
-          ImageResources.logo,
-          width: 180,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SvgPicture.asset(
+              ImageResources.logo,
+              width: 180,
+            ),
+            _buildDownloadProgress(),
+          ],
         ),
       ),
     );
   }
 
   ///
-  void _handleWaitingTImeEnded() {
+  Widget _buildDownloadProgress() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Text("Downloading circuits..."),
+        const SizedBox(height: 2),
+        BlocBuilder(
+          bloc: widget._bloc,
+          builder: (BuildContext context, SplashState state) {
+            if (state is DownloadProgressSplashState) {
+              // return percentage
+              return Text(
+                  "${(state.downloadInfo.downloaded / state.downloadInfo.contentLength * 100).toStringAsFixed(2)} %");
+            } else {
+              return const SizedBox.shrink();
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  ///
+  void _handleWaitingTimeEnded() {
     Navigator.of(context).pushReplacementNamed(Routes.homePath);
   }
 

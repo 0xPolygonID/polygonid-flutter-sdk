@@ -1,3 +1,4 @@
+import 'package:archive/archive.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -172,5 +173,14 @@ abstract class EncryptionModule {
   @factoryMethod
   encrypt.Encrypter encryptAES(@factoryParam encrypt.Key key) {
     return encrypt.Encrypter(encrypt.AES(key));
+  }
+}
+
+@module
+abstract class ZipDecoderModule {
+  @Named('zipDecoder')
+  @factoryMethod
+  ZipDecoder zipDecoder() {
+    return ZipDecoder();
   }
 }
