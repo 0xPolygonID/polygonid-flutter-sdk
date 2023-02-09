@@ -34,13 +34,13 @@ class LibPolygonIdCoreWrapper {
             _polygonIdCoreProof.getSigProofInputs(jsonEncode(param.toJson()));
         break;
       case AtomicQueryInputsType.mtponchain:
-        result =
-            _polygonIdCoreProof.getMTPOnchainProofInputs(jsonEncode(param.toJson()));
+        result = _polygonIdCoreProof
+            .getMTPOnchainProofInputs(jsonEncode(param.toJson()));
         break;
         break;
       case AtomicQueryInputsType.sigonchain:
-        result =
-            _polygonIdCoreProof.getSigOnchainProofInputs(jsonEncode(param.toJson()));
+        result = _polygonIdCoreProof
+            .getSigOnchainProofInputs(jsonEncode(param.toJson()));
         break;
     }
 
@@ -125,8 +125,7 @@ class LibPolygonIdCoreProofDataSource {
     String? signature,
     required ClaimInfoDTO credential,
     required ProofScopeRequest request,
-  }
-  ) {
+  }) {
     AtomicQueryInputsType type = AtomicQueryInputsType.mtp;
 
     if (request.circuitId == "credentialAtomicQueryMTPV2") {
@@ -140,7 +139,7 @@ class LibPolygonIdCoreProofDataSource {
     }
 
     return _libPolygonIdCoreWrapper.getProofInputs(AtomicQueryInputsParam(
-        type: type,
+      type: type,
       id: id,
       profileNonce: profileNonce,
       claimSubjectProfileNonce: claimSubjectProfileNonce,
@@ -151,6 +150,8 @@ class LibPolygonIdCoreProofDataSource {
       gistProof: gistProof,
       challenge: challenge,
       signature: signature,
-      credential: credential, request: request, ));
+      credential: credential,
+      request: request,
+    ));
   }
 }

@@ -82,7 +82,8 @@ class GetProofsUseCase
 
           String? challenge;
           String? privKey;
-          if (circuitId == "credentialAtomicQuerySigV2OnChain" || circuitId == "credentialAtomicQueryMTPV2OnChain") {
+          if (circuitId == "credentialAtomicQuerySigV2OnChain" ||
+              circuitId == "credentialAtomicQueryMTPV2OnChain") {
             privKey = param.privateKey;
             challenge = param.challenge;
           }
@@ -90,8 +91,15 @@ class GetProofsUseCase
           // Generate proof
           proofs.add(await _generateProofUseCase
               .execute(
-                  param: GenerateProofParam(param.did, param.profileNonce,
-                      0, credential, request.scope, circuitData, privKey, challenge))
+                  param: GenerateProofParam(
+                      param.did,
+                      param.profileNonce,
+                      0,
+                      credential,
+                      request.scope,
+                      circuitData,
+                      privKey,
+                      challenge))
               .then((proof) => JWZProofEntity(
                   id: request.scope.id,
                   circuitId: circuitId,

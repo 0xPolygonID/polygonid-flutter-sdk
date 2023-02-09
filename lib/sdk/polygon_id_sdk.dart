@@ -1,10 +1,15 @@
+import 'dart:io';
+
+import 'package:archive/archive.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 import 'credential.dart';
 import 'iden3comm.dart';
 import 'identity.dart';
 import 'proof.dart';
+import 'package:http/http.dart' as http;
 
 class PolygonIsSdkNotInitializedException implements Exception {
   String message;

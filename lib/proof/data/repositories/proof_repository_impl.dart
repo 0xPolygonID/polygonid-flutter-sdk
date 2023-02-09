@@ -1,6 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
+import 'package:archive/archive.dart';
+import 'package:http/http.dart' as http;
 
+import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
@@ -13,15 +18,19 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/pro
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_download_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/jwz_proof_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 import '../../../common/utils/uint8_list_utils.dart';
-import '../../../iden3comm/data/mappers/gist_proof_mapper.dart' as iden3GistProofMapper;
+import '../../../iden3comm/data/mappers/gist_proof_mapper.dart'
+    as iden3GistProofMapper;
 import '../mappers/gist_proof_mapper.dart';
 import '../../../identity/data/data_sources/remote_identity_data_source.dart';
 import '../../domain/entities/circuit_data_entity.dart';
@@ -54,6 +63,7 @@ class ProofRepositoryImpl extends ProofRepository {
   final AuthProofMapper _authProofMapper;
   final GistProofMapper _gistProofMapper;
   final iden3GistProofMapper.GistProofMapper _iden3GistProofMapper;
+  final CircuitsDownloadDataSource _circuitsDownloadDataSource;
 
   // FIXME: those mappers shouldn't be used here as they are part of Credential
   final ClaimMapper _claimMapper;
@@ -76,7 +86,8 @@ class ProofRepositoryImpl extends ProofRepository {
     this._proofRequestFiltersMapper,
     this._authProofMapper,
     this._gistProofMapper,
-      this._iden3GistProofMapper,
+    this._iden3GistProofMapper,
+    this._circuitsDownloadDataSource,
   );
 
   @override
@@ -89,12 +100,12 @@ class ProofRepositoryImpl extends ProofRepository {
   }
 
   @override
-  Future<Uint8List> calculateAtomicQueryInputs({
-    required String id,
-    required int profileNonce,
-    required int claimSubjectProfileNonce,
-    required ClaimEntity claim,
-    required ProofScopeRequest request,
+  Future<Uint8List> calculateAtomicQueryInputs(
+      {required String id,
+      required int profileNonce,
+      required int claimSubjectProfileNonce,
+      required ClaimEntity claim,
+      required ProofScopeRequest request,
       ProofEntity? incProof,
       ProofEntity? nonRevProof,
       GistProofEntity? gistProof,
@@ -103,47 +114,46 @@ class ProofRepositoryImpl extends ProofRepository {
       String? challenge,
       String? signature}) async {
     ClaimDTO credentialDto = _claimMapper.mapTo(claim);
-    Map<String,dynamic>? gistProofMap;
+    Map<String, dynamic>? gistProofMap;
     if (gistProof != null) {
       gistProofMap = _iden3GistProofMapper.mapTo(gistProof);
     }
-    Map<String,dynamic>? incProofMap;
+    Map<String, dynamic>? incProofMap;
     if (incProof != null) {
       incProofMap = _authProofMapper.mapTo(incProof);
     }
 
-    Map<String,dynamic>? nonRevProofMap;
+    Map<String, dynamic>? nonRevProofMap;
     if (nonRevProof != null) {
       nonRevProofMap = _authProofMapper.mapTo(nonRevProof);
     }
 
-
     String? res = await _libPolygonIdCoreProofDataSource.getProofInputs(
-        id: id,
-        profileNonce: profileNonce,
-        claimSubjectProfileNonce : claimSubjectProfileNonce,
-        authClaim: authClaim,
-        incProof: incProofMap,
-        nonRevProof: nonRevProofMap,
-        gistProof: gistProofMap,
-        treeState: treeState,
-        challenge: challenge,
-        signature: signature,
-        credential: credentialDto.info,
-        request: request,
-        );
+      id: id,
+      profileNonce: profileNonce,
+      claimSubjectProfileNonce: claimSubjectProfileNonce,
+      authClaim: authClaim,
+      incProof: incProofMap,
+      nonRevProof: nonRevProofMap,
+      gistProof: gistProofMap,
+      treeState: treeState,
+      challenge: challenge,
+      signature: signature,
+      credential: credentialDto.info,
+      request: request,
+    );
 
     if (res != null && res.isNotEmpty) {
       Uint8List inputsJsonBytes;
       dynamic inputsJson = json.decode(res);
-      if (inputsJson is Map<String,dynamic>) {
+      if (inputsJson is Map<String, dynamic>) {
         Map<String, dynamic> inputs = json.decode(res);
         Uint8List inputsJsonBytes =
-        Uint8ArrayUtils.uint8ListfromString(json.encode(inputs["inputs"]));
+            Uint8ArrayUtils.uint8ListfromString(json.encode(inputs["inputs"]));
         return inputsJsonBytes;
       } else if (inputsJson is String) {
         Uint8List inputsJsonBytes =
-        Uint8ArrayUtils.uint8ListfromString(inputsJson);
+            Uint8ArrayUtils.uint8ListfromString(inputsJson);
         return inputsJsonBytes;
       }
     }
@@ -243,9 +253,75 @@ class ProofRepositoryImpl extends ProofRepository {
     return _localContractFilesDataSource
         .loadStateContract(contractAddress)
         .then((contract) => _rpcDataSource
-            .getGistProof(
-                identifier,
-                contract)
+            .getGistProof(identifier, contract)
             .catchError((error) => throw FetchGistProofException(error)));
+  }
+
+  ///
+  StreamController<DownloadInfo> _downloadInfoController =
+      StreamController.broadcast();
+
+  ///
+  @override
+  Stream<DownloadInfo> get circuitsDownloadInfoStream =>
+      _downloadInfoController.stream;
+
+  ///
+  @override
+  Future<void> initCircuitsDownloadFromServer() async {
+    String pathForZipFile =
+        await _circuitsDownloadDataSource.getPathToCircuitZipFile();
+    String pathForCircuits = await _circuitsDownloadDataSource.getPath();
+    http.StreamedResponse serverResponse =
+        await _circuitsDownloadDataSource.getStreamedResponseFromServer();
+
+    final int downloadSize = serverResponse.contentLength ?? 0;
+
+    List<int> bytes = [];
+
+    serverResponse.stream.listen(
+      (List<int> newBytes) {
+        bytes.addAll(newBytes);
+        _downloadInfoController.add(DownloadInfo(
+          contentLength: downloadSize,
+          downloaded: bytes.length,
+        ));
+      },
+      onDone: () async {
+        if (downloadSize != 0 && bytes.length != downloadSize) {
+          try {
+            _circuitsDownloadDataSource.deleteFile(pathForZipFile);
+          } catch (_) {}
+          _downloadInfoController.addError("Downloaded files incorrect");
+          return;
+        }
+
+        _downloadInfoController.add(DownloadInfo(
+          contentLength: downloadSize,
+          downloaded: bytes.length,
+          completed: true,
+        ));
+
+        await _circuitsDownloadDataSource.writeZipFile(
+          pathToFile: pathForZipFile,
+          zipBytes: bytes,
+        );
+
+        await _circuitsDownloadDataSource.writeCircuitsFileFromZip(
+          zipBytes: bytes,
+          path: pathForCircuits,
+        );
+      },
+      onError: (e) {
+        _downloadInfoController.addError(e);
+      },
+      cancelOnError: true,
+    );
+  }
+
+  ///
+  @override
+  Future<bool> circuitsFilesExist() {
+    return _circuitsDownloadDataSource.circuitsFilesExist();
   }
 }
