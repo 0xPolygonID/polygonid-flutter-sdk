@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/navigations/routes.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/common/widgets/button_next_action.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/common/widgets/feature_card.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_state.dart';
@@ -58,6 +59,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       _buildIdentifierSection(),
                       const SizedBox(height: 24),
                       _buildErrorSection(),
+                      const SizedBox(height: 24),
+                      _buildFeaturesSection(),
                       const SizedBox(height: 24),
                       _buildSignMessageSection(),
                       const SizedBox(height: 48),
@@ -267,6 +270,27 @@ class _HomeScreenState extends State<HomeScreen> {
         return SignWidget();
       },
       buildWhen: (_, currentState) => currentState is LoadedIdentifierHomeState,
+    );
+  }
+
+  ///
+  Widget _buildFeaturesSection() {
+    return ListView(
+      shrinkWrap: true,
+      physics: const ClampingScrollPhysics(),
+      children: [
+        _buildSignMessageFeatureCard(),
+      ],
+    );
+  }
+
+  ///
+  Widget _buildSignMessageFeatureCard() {
+    return FeatureCard(
+      methodName: CustomStrings.signMessageMethod,
+      title: CustomStrings.signMessageTitle,
+      description: CustomStrings.signMessageDescription,
+      onTap: () {},
     );
   }
 }
