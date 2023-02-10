@@ -27,6 +27,14 @@ class CircuitsDownloadDataSource {
   }
 
   ///
+  Future<String> getPathToCircuitZipFileTemp() async {
+    Directory directory = await getApplicationDocumentsDirectory();
+    String path = directory.path;
+    String fileName = 'circuits_temp.zip';
+    return '$path/$fileName';
+  }
+
+  ///
   Future<String> getPath() async {
     Directory directory = await getApplicationDocumentsDirectory();
     String path = directory.path;
@@ -46,8 +54,18 @@ class CircuitsDownloadDataSource {
 
   ///
   Future<void> deleteFile(String pathToFile) async {
-    var file = File(pathToFile);
-    await file.delete();
+    try {
+      var file = File(pathToFile);
+      await file.delete();
+    } catch (_) {
+      // file not found? no problem, we don't need it
+    }
+  }
+
+  ///
+  void renameFile(String pathTofile, String newPathToFile) {
+    var file = File(pathTofile);
+    file.renameSync(newPathToFile);
   }
 
   ///
