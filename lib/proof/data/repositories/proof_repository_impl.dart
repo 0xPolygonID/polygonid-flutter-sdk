@@ -270,6 +270,8 @@ class ProofRepositoryImpl extends ProofRepository {
   ///
   @override
   Future<void> initCircuitsDownloadFromServer() async {
+    String pathForZipFileTemp =
+        await _circuitsDownloadDataSource.getPathToCircuitZipFileTemp();
     String pathForZipFile =
         await _circuitsDownloadDataSource.getPathToCircuitZipFile();
     String pathForCircuits = await _circuitsDownloadDataSource.getPath();
@@ -278,33 +280,43 @@ class ProofRepositoryImpl extends ProofRepository {
 
     final int downloadSize = serverResponse.contentLength ?? 0;
 
+    // We delete eventual temp zip file downloaded before
+    _circuitsDownloadDataSource.deleteFile(pathForZipFileTemp);
+
     serverResponse.stream.listen(
       (List<int> newBytes) {
+        // we write in a temp zip file
         _circuitsDownloadDataSource.writeZipFile(
-          pathToFile: pathForZipFile,
+          pathToFile: pathForZipFileTemp,
           zipBytes: newBytes,
         );
 
-        int zipFileSize =
-            _circuitsDownloadDataSource.zipFileSize(pathToFile: pathForZipFile);
+        // size of the temp zip file
+        int zipFileSize = _circuitsDownloadDataSource.zipFileSize(
+            pathToFile: pathForZipFileTemp);
         _downloadInfoController.add(DownloadInfo(
           contentLength: downloadSize,
           downloaded: zipFileSize,
         ));
       },
       onDone: () async {
-        int zipFileSize =
-            _circuitsDownloadDataSource.zipFileSize(pathToFile: pathForZipFile);
+        // we get the size of the temp zip file
+        int zipFileSize = _circuitsDownloadDataSource.zipFileSize(
+            pathToFile: pathForZipFileTemp);
         logger().i(
             "[Circuits success:] downloadSize -> $downloadSize / zipFileSize -> $zipFileSize");
+
         if (downloadSize != 0 && zipFileSize != downloadSize) {
           try {
-            _circuitsDownloadDataSource.deleteFile(pathForZipFile);
+            // if error we delete the temp file
+            _circuitsDownloadDataSource.deleteFile(pathForZipFileTemp);
           } catch (_) {}
           _downloadInfoController.addError("Downloaded files incorrect");
           return;
         }
 
+        _circuitsDownloadDataSource.renameFile(
+            pathForZipFileTemp, pathForZipFile);
         await _circuitsDownloadDataSource.writeCircuitsFileFromZip(
           zipPath: pathForZipFile,
           path: pathForCircuits,
