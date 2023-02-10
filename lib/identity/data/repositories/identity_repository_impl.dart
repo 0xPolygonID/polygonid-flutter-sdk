@@ -181,36 +181,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
     return treeState;
   }
 
-  /// TODO: this is an UC
-  @override
-  Future<Map<String, dynamic>> getLatestState({
-    required String did,
-    required String privateKey,
-  }) async {
-    HashDTO claimsTreeRoot = await _smtDataSource.getRoot(
-        storeName: claimsTreeStoreName, did: did, privateKey: privateKey);
-
-    HashDTO revocationTreeRoot = await _smtDataSource.getRoot(
-        storeName: revocationTreeStoreName, did: did, privateKey: privateKey);
-
-    HashDTO rootsTreeRoot = await _smtDataSource.getRoot(
-        storeName: rootsTreeStoreName, did: did, privateKey: privateKey);
-
-    // hash of clatr, revtr, rootr
-    String state = await _libBabyJubJubDataSource.hashPoseidon3(
-        claimsTreeRoot.toString(),
-        revocationTreeRoot.toString(),
-        rootsTreeRoot.toString());
-
-    // TODO: convert to dto
-    Map<String, dynamic> treeState = {};
-    treeState["state"] = state;
-    treeState["claimsRoot"] = claimsTreeRoot.toString();
-    treeState["revocationRoot"] = revocationTreeRoot.toString();
-    treeState["rootOfRoots"] = rootsTreeRoot.toString();
-    return treeState;
-  }
-
   @override
   Future<NodeEntity> getAuthClaimNode({required List<String> children}) async {
     String hashIndex = await _libBabyJubJubDataSource.hashPoseidon4(
@@ -259,16 +229,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<void> removeIdentity(
-      {required String did, required String privateKey}) async {
-    // remove smt
-    await _smtDataSource.removeSMT(
-        storeName: claimsTreeStoreName, did: did, privateKey: privateKey);
-    await _smtDataSource.removeSMT(
-        storeName: revocationTreeStoreName, did: did, privateKey: privateKey);
-    await _smtDataSource.removeSMT(
-        storeName: rootsTreeStoreName, did: did, privateKey: privateKey);
-    // remove identity
+  Future<void> removeIdentity({required String did}) async {
     return _storageIdentityDataSource.removeIdentity(did: did);
   }
 

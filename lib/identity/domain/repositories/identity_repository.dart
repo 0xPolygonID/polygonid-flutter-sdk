@@ -18,8 +18,7 @@ abstract class IdentityRepository {
 
   Future<void> storeIdentity({required IdentityEntity identity});
 
-  Future<void> removeIdentity(
-      {required String did, required String privateKey});
+  Future<void> removeIdentity({required String did});
 
   Future<IdentityEntity> getIdentity({required String did});
 
@@ -54,11 +53,6 @@ abstract class IdentityRepository {
   Future<String> getChallenge({required String message});
 
   Future<NodeEntity> getAuthClaimNode({required List<String> children});
-
-  Future<Map<String, dynamic>> getLatestState({
-    required String did,
-    required String privateKey,
-  });
 
   Future<String> exportIdentity({
     required String did,

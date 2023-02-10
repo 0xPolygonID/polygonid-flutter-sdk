@@ -148,18 +148,12 @@ class MockIdentityRepository extends _i1.Mock
         returnValueForMissingStub: _i7.Future<void>.value(),
       ) as _i7.Future<void>);
   @override
-  _i7.Future<void> removeIdentity({
-    required String? did,
-    required String? privateKey,
-  }) =>
+  _i7.Future<void> removeIdentity({required String? did}) =>
       (super.noSuchMethod(
         Invocation.method(
           #removeIdentity,
           [],
-          {
-            #did: did,
-            #privateKey: privateKey,
-          },
+          {#did: did},
         ),
         returnValue: _i7.Future<void>.value(),
         returnValueForMissingStub: _i7.Future<void>.value(),
@@ -318,23 +312,6 @@ class MockIdentityRepository extends _i1.Mock
           ),
         )),
       ) as _i7.Future<_i4.NodeEntity>);
-  @override
-  _i7.Future<Map<String, dynamic>> getLatestState({
-    required String? did,
-    required String? privateKey,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getLatestState,
-          [],
-          {
-            #did: did,
-            #privateKey: privateKey,
-          },
-        ),
-        returnValue:
-            _i7.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
-      ) as _i7.Future<Map<String, dynamic>>);
   @override
   _i7.Future<String> exportIdentity({
     required String? did,
