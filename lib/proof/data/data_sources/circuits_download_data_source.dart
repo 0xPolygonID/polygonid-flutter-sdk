@@ -36,7 +36,7 @@ class CircuitsDownloadDataSource {
   ///
   Future<http.StreamedResponse> getStreamedResponseFromServer() async {
     const bucketUrl =
-        "https://iden3-circuits-bucket.s3.eu-west-1.amazonaws.com/circuits/v0.2.0-beta/polygonid-keys-2.0.0.zip";
+        "https://circuits.polygonid.me/circuits/v1.0.0/polygonid-keys.zip";
 
     var request = http.Request('GET', Uri.parse(bucketUrl));
 
