@@ -54,13 +54,13 @@ class BackupIdentityUseCase
         did: genesisDid,
       ));
 
-      identity.profiles.forEach((profileNonce, profileDid) async {
-        result[profileNonce] = await _exportIdentityUseCase.execute(
+      for (MapEntry<int, String> profile in identity.profiles.entries) {
+        result[profile.key] = await _exportIdentityUseCase.execute(
             param: ExportIdentityParam(
           privateKey: param.privateKey,
-          did: profileDid,
+          did: profile.value,
         ));
-      });
+      }
 
       logger().i(
           "[BackupIdentityUseCase] Identity backed up with did: ${identity.did}, for key $param");

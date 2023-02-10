@@ -45,21 +45,21 @@ class RestoreIdentityUseCase
                   network: param.network));
 
       if (param.encryptedIdentityDbs != null) {
-        param.encryptedIdentityDbs!
-            .forEach((profileNonce, encryptedIdentityDb) async {
+        for (MapEntry<int, String> identityDb
+            in param.encryptedIdentityDbs!.entries) {
           String profileDid = await _getDidIdentifierUseCase.execute(
               param: GetDidIdentifierParam(
                   privateKey: privateIdentity.privateKey,
                   blockchain: param.blockchain,
                   network: param.network,
-                  profileNonce: profileNonce));
+                  profileNonce: identityDb.key));
           await _importIdentityUseCase.execute(
               param: ImportIdentityParam(
             privateKey: privateIdentity.privateKey,
             did: profileDid,
-            encryptedDb: encryptedIdentityDb,
+            encryptedDb: identityDb.value,
           ));
-        });
+        }
       }
 
       logger().i(
