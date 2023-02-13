@@ -1,5 +1,6 @@
 import '../entities/identity_entity.dart';
 import '../entities/node_entity.dart';
+import '../entities/private_identity_entity.dart';
 import '../entities/rhs_node_entity.dart';
 
 abstract class IdentityRepository {
@@ -11,17 +12,18 @@ abstract class IdentityRepository {
   Future<List<String>> getPublicKeys({required privateKey});
 
   Future<IdentityEntity> createIdentity({
-    required String didIdentifier,
     required String privateKey,
-    required List<String> authClaim,
+    required String blockchain,
+    required String network,
+    List<int>? profiles
   });
 
   Future<void> storeIdentity({required IdentityEntity identity});
 
   Future<void> removeIdentity(
-      {required String did, required String privateKey});
+      {required String genesisDid, required String privateKey});
 
-  Future<IdentityEntity> getIdentity({required String did});
+  Future<IdentityEntity> getIdentity({required String genesisDid});
 
   Future<List<IdentityEntity>> getIdentities();
 
@@ -34,7 +36,6 @@ abstract class IdentityRepository {
     required String privateKey,
     required String blockchain,
     required String network,
-    required List<String> authClaim,
     required int profileNonce,
   });
 
@@ -44,14 +45,22 @@ abstract class IdentityRepository {
       required int nonce,
       required String baseUrl});
 
+  Future<Map<String, dynamic>> createIdentityState(
+      {required String did,
+        required String privateKey
+      });
+
+  Future<void> removeIdentityState(
+      {required String did,
+        required String privateKey
+      });
+
   Future<String> getState(
       {required String identifier, required String contractAddress});
 
   Future<String> convertIdToBigInt({required String id});
 
   Future<RhsNodeEntity> getStateRoots({required String url});
-
-  Future<String> getChallenge({required String message});
 
   Future<NodeEntity> getAuthClaimNode({required List<String> children});
 

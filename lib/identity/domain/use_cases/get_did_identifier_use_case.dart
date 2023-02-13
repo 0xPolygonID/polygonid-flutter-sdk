@@ -1,8 +1,8 @@
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_auth_claim_use_case.dart';
-
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
+import '../../../credential/domain/use_cases/get_auth_claim_use_case.dart';
 import '../repositories/identity_repository.dart';
+import 'get_public_keys_use_case.dart';
 
 class GetDidIdentifierParam {
   final String privateKey;
@@ -21,20 +21,20 @@ class GetDidIdentifierParam {
 class GetDidIdentifierUseCase
     extends FutureUseCase<GetDidIdentifierParam, String> {
   final IdentityRepository _identityRepository;
-  final GetIdentityAuthClaimUseCase _getIdentityAuthClaimUseCase;
+  final GetPublicKeysUseCase _getPublicKeysUseCase;
+  final GetAuthClaimUseCase _getAuthClaimUseCase;
 
   GetDidIdentifierUseCase(
-      this._identityRepository, this._getIdentityAuthClaimUseCase);
+      this._identityRepository, this._getPublicKeysUseCase, this._getAuthClaimUseCase);
 
   @override
   Future<String> execute({required GetDidIdentifierParam param}) {
-    return _getIdentityAuthClaimUseCase
-        .execute(param: param.privateKey)
+    return _getPublicKeysUseCase
+        .execute(param: param.privateKey).then((publicKeys) => _getAuthClaimUseCase.execute(param: publicKeys))
         .then((authClaim) => _identityRepository.getDidIdentifier(
             privateKey: param.privateKey,
             blockchain: param.blockchain,
             network: param.network,
-            authClaim: authClaim,
             profileNonce: param.profileNonce))
         .then((did) {
       logger().i("[GetDidIdentifierUseCase] did: $did");

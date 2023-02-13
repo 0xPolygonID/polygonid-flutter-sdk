@@ -51,11 +51,11 @@ void main() {
         .thenAnswer((realInvocation) => Future.value(CommonMocks.privateKey));
     when(identityRepository.createIdentity(
       privateKey: anyNamed('privateKey'),
-      didIdentifier: anyNamed('didIdentifier'),
+      genesisDid: anyNamed('genesisDid'),
       authClaim: anyNamed('authClaim'),
     )).thenAnswer((realInvocation) => Future.value(IdentityMocks.identity));
-    when(identityRepository.getIdentity(did: anyNamed('did'))).thenAnswer(
-        (realInvocation) =>
+    when(identityRepository.getIdentity(genesisDid: anyNamed('genesisDid')))
+        .thenAnswer((realInvocation) =>
             Future.error(UnknownIdentityException(CommonMocks.identifier)));
     when(getDidUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value(IdentityMocks.did));
@@ -75,7 +75,7 @@ void main() {
     // Then
     var configCaptured = verify(identityRepository.createIdentity(
       privateKey: captureAnyNamed('privateKey'),
-      didIdentifier: captureAnyNamed('didIdentifier'),
+      genesisDid: captureAnyNamed('genesisDid'),
       authClaim: captureAnyNamed('authClaim'),
     )).captured;
     expect(configCaptured[0], CommonMocks.privateKey);
@@ -83,7 +83,8 @@ void main() {
     expect(configCaptured[2], CredentialMocks.authClaim);
 
     expect(
-        verify(identityRepository.getIdentity(did: captureAnyNamed('did')))
+        verify(identityRepository.getIdentity(
+                genesisDid: captureAnyNamed('genesisDid')))
             .captured
             .first,
         CommonMocks.did);
@@ -98,8 +99,9 @@ void main() {
       "Given a private key and with an associated identity, when I call execute, then I expect an IdentityAlreadyExistsException to be thrown",
       () async {
     // Given
-    when(identityRepository.getIdentity(did: anyNamed('did'))).thenAnswer(
-        (realInvocation) => Future.value(IdentityMocks.privateIdentity));
+    when(identityRepository.getIdentity(genesisDid: anyNamed('genesisDid')))
+        .thenAnswer(
+            (realInvocation) => Future.value(IdentityMocks.privateIdentity));
 
     // When
     await useCase.execute(param: param).then((_) => null).catchError((error) {
@@ -110,7 +112,7 @@ void main() {
     // Then
     var configCaptured = verify(identityRepository.createIdentity(
       privateKey: captureAnyNamed('privateKey'),
-      didIdentifier: captureAnyNamed('didIdentifier'),
+      genesisDid: captureAnyNamed('genesisDid'),
       authClaim: captureAnyNamed('authClaim'),
     )).captured;
     expect(configCaptured[0], CommonMocks.privateKey);
@@ -118,7 +120,8 @@ void main() {
     expect(configCaptured[2], CredentialMocks.authClaim);
 
     expect(
-        verify(identityRepository.getIdentity(did: captureAnyNamed('did')))
+        verify(identityRepository.getIdentity(
+                genesisDid: captureAnyNamed('genesisDid')))
             .captured
             .first,
         CommonMocks.did);
@@ -131,7 +134,7 @@ void main() {
       "Given a private key, when I call execute and an error occurred, then I expect an exception to be thrown",
       () async {
     // Given
-    when(identityRepository.getIdentity(did: anyNamed('did')))
+    when(identityRepository.getIdentity(genesisDid: anyNamed('genesisDid')))
         .thenAnswer((realInvocation) => Future.error(exception));
 
     // When
@@ -140,7 +143,7 @@ void main() {
     // Then
     var configCaptured = verify(identityRepository.createIdentity(
       privateKey: captureAnyNamed('privateKey'),
-      didIdentifier: captureAnyNamed('didIdentifier'),
+      genesisDid: captureAnyNamed('genesisDid'),
       authClaim: captureAnyNamed('authClaim'),
     )).captured;
     expect(configCaptured[0], CommonMocks.privateKey);
@@ -148,7 +151,8 @@ void main() {
     expect(configCaptured[2], CredentialMocks.authClaim);
 
     expect(
-        verify(identityRepository.getIdentity(did: captureAnyNamed('did')))
+        verify(identityRepository.getIdentity(
+                genesisDid: captureAnyNamed('genesisDid')))
             .captured
             .first,
         CommonMocks.did);

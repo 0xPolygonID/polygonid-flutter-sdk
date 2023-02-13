@@ -1,9 +1,11 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/add_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/add_profile_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/backup_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_and_save_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_new_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identities_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_profiles_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/restore_identity_use_case.dart';
 
 import '../identity/domain/entities/identity_entity.dart';
@@ -13,6 +15,7 @@ import '../identity/domain/use_cases/fetch_identity_state_use_case.dart';
 import '../identity/domain/use_cases/get_did_identifier_use_case.dart';
 import '../identity/domain/use_cases/get_identity_use_case.dart';
 import '../identity/domain/use_cases/remove_identity_use_case.dart';
+import '../identity/domain/use_cases/remove_profile_use_case.dart';
 import '../identity/domain/use_cases/sign_message_use_case.dart';
 
 abstract class PolygonIdSdkIdentity {
@@ -163,20 +166,28 @@ abstract class PolygonIdSdkIdentity {
   /// and [message] is the message to sign. Returns a string representing the signature.
   Future<String> sign({required String privateKey, required String message});
 
-// Profiles
-/*Future<void> addProfile(
-      {required String privateKey, required int profileNonce});
+  // Profiles
+  Future<void> addProfile(
+      {required String privateKey,
+      required String blockchain,
+      required String network,
+      required int profileNonce});
 
   Future<void> removeProfile(
-      {required String privateKey, required int profileNonce});
+      {required String privateKey,
+        required String blockchain,
+        required String network,
+        required int profileNonce});
 
-  Future<List<int>> getProfiles({required String privateKey});*/
+  Future<Map<int, String>> getProfiles(
+      {required String privateKey,
+        required String blockchain,
+        required String network});
 }
 
 @injectable
 class Identity implements PolygonIdSdkIdentity {
   final CheckIdentityValidityUseCase _checkIdentityValidityUseCase;
-  final CreateAndSaveIdentityUseCase _createAndSaveIdentityUseCase;
   final CreateNewIdentityUseCase _createNewIdentityUseCase;
   final RestoreIdentityUseCase _restoreIdentityUseCase;
   final BackupIdentityUseCase _backupIdentityUseCase;
@@ -185,11 +196,15 @@ class Identity implements PolygonIdSdkIdentity {
   final RemoveIdentityUseCase _removeIdentityUseCase;
   final GetDidIdentifierUseCase _getDidIdentifierUseCase;
   final SignMessageUseCase _signMessageUseCase;
+
   final FetchIdentityStateUseCase _fetchIdentityStateUseCase;
+
+  final AddProfileUseCase _addProfileUseCase;
+  final GetProfilesUseCase _getProfilesUseCase;
+  final RemoveProfileUseCase _removeProfileUseCase;
 
   Identity(
     this._checkIdentityValidityUseCase,
-    this._createAndSaveIdentityUseCase,
     this._createNewIdentityUseCase,
     this._restoreIdentityUseCase,
     this._backupIdentityUseCase,
@@ -199,6 +214,9 @@ class Identity implements PolygonIdSdkIdentity {
     this._getDidIdentifierUseCase,
     this._signMessageUseCase,
     this._fetchIdentityStateUseCase,
+    this._addProfileUseCase,
+    this._getProfilesUseCase,
+      this._removeProfileUseCase,
   );
 
   Future<void> checkIdentityValidity(
@@ -287,7 +305,8 @@ class Identity implements PolygonIdSdkIdentity {
   Future<IdentityEntity> getIdentity(
       {required String genesisDid, String? privateKey}) async {
     return _getIdentityUseCase.execute(
-        param: GetIdentityParam(did: genesisDid, privateKey: privateKey));
+        param:
+            GetIdentityParam(genesisDid: genesisDid, privateKey: privateKey));
   }
 
   /// Get a list of public info of [IdentityEntity] associated
@@ -314,7 +333,8 @@ class Identity implements PolygonIdSdkIdentity {
   Future<void> removeIdentity(
       {required String genesisDid, required String privateKey}) {
     return _removeIdentityUseCase.execute(
-        param: RemoveIdentityParam(did: genesisDid, privateKey: privateKey));
+        param: RemoveIdentityParam(
+            genesisDid: genesisDid, privateKey: privateKey));
   }
 
   /// Sign a message through a identity's private key.
@@ -379,26 +399,51 @@ class Identity implements PolygonIdSdkIdentity {
       required String privateKey}) {
     // TODO: implement updateState
     throw UnimplementedError();
-  }
+  }*/
 
   /// Profile
   @override
   Future<void> addProfile(
-      {required String privateKey, required int profileNonce}) {
-    // TODO: implement addProfile
-    throw UnimplementedError();
+      {required String privateKey,
+      required String blockchain,
+      required String network,
+      required int profileNonce}) {
+    return _getDidIdentifierUseCase.execute(
+        param: GetDidIdentifierParam(
+            privateKey: privateKey,
+            blockchain: blockchain,
+            network: network)).then((genesisDid) =>
+    _addProfileUseCase.execute(param: AddProfileParam(profileNonce: profileNonce,
+        genesisDid: genesisDid,
+        privateKey: privateKey)));
   }
 
   @override
-  Future<List<int>> getProfiles({required String privateKey}) {
-    // TODO: implement getProfiles
-    throw UnimplementedError();
+  Future<Map<int, String>> getProfiles(
+      {required String privateKey,
+      required String blockchain,
+      required String network}) {
+    return _getDidIdentifierUseCase.execute(
+        param: GetDidIdentifierParam(
+            privateKey: privateKey,
+            blockchain: blockchain,
+            network: network)).then((genesisDid) =>
+        _getProfilesUseCase.execute(
+            param: GetProfilesParam(
+                genesisDid: genesisDid)));
   }
 
   @override
   Future<void> removeProfile(
-      {required String privateKey, required int profileNonce}) {
-    // TODO: implement removeProfile
-    throw UnimplementedError();
-  }*/
+      {required String privateKey, required String blockchain,
+        required String network, required int profileNonce}) {
+    return _getDidIdentifierUseCase.execute(
+        param: GetDidIdentifierParam(
+            privateKey: privateKey,
+            blockchain: blockchain,
+            network: network)).then((genesisDid) =>
+        _removeProfileUseCase.execute(param: RemoveProfileParam(profileNonce: profileNonce,
+            genesisDid: genesisDid,
+            privateKey: privateKey)));
+  }
 }

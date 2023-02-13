@@ -10,11 +10,11 @@ import '../repositories/identity_repository.dart';
 import 'get_did_use_case.dart';
 
 class GetIdentityParam {
-  final String did;
+  final String genesisDid;
   final String? privateKey;
 
   GetIdentityParam({
-    required this.did,
+    required this.genesisDid,
     this.privateKey,
   });
 }
@@ -39,7 +39,7 @@ class GetIdentityUseCase
       // Check if we want [PrivateIdentityEntity] or [IdentityEntity]
       if (param.privateKey != null) {
         // Check if the did from param matches the did from the privateKey
-        DidEntity did = await _getDidUseCase.execute(param: param.did);
+        DidEntity did = await _getDidUseCase.execute(param: param.genesisDid);
 
         String didIdentifier = await _getDidIdentifierUseCase.execute(
             param: GetDidIdentifierParam(
@@ -52,14 +52,16 @@ class GetIdentityUseCase
         }
 
         // Get the [PrivateIdentityEntity]
-        identity = await _identityRepository.getIdentity(did: param.did).then(
-            (identity) => PrivateIdentityEntity(
-                did: param.did,
+        identity = await _identityRepository
+            .getIdentity(genesisDid: param.genesisDid)
+            .then((identity) => PrivateIdentityEntity(
+                did: param.genesisDid,
                 publicKey: identity.publicKey,
                 profiles: identity.profiles,
                 privateKey: param.privateKey!));
       } else {
-        identity = await _identityRepository.getIdentity(did: param.did);
+        identity =
+            await _identityRepository.getIdentity(genesisDid: param.genesisDid);
       }
 
       logger().i("[GetIdentityUseCase] Identity: $identity");

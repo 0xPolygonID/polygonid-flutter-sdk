@@ -56,7 +56,7 @@ class GetProofsUseCase
 
     List<String> publicKey = await _identityRepository
         .getIdentity(
-          did: param.did,
+          genesisDid: param.did,
         )
         .then((identity) => identity.publicKey);
 

@@ -78,8 +78,8 @@ class GenerateProofUseCase extends FutureUseCase<GenerateProofParam, JWZProof> {
     if (param.request.circuitId == "credentialAtomicQueryMTPV2OnChain" ||
         param.request.circuitId == "credentialAtomicQuerySigV2OnChain") {
       IdentityEntity identity = await _getIdentityUseCase.execute(
-          param:
-              GetIdentityParam(did: param.did, privateKey: param.privateKey));
+          param: GetIdentityParam(
+              genesisDid: param.did, privateKey: param.privateKey));
       authClaim = await _getAuthClaimUseCase.execute(param: identity.publicKey);
       NodeEntity authClaimNode =
           await _identityRepository.getAuthClaimNode(children: authClaim);

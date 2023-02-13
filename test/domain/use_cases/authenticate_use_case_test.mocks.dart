@@ -125,6 +125,16 @@ class MockIden3commRepository extends _i1.Mock
         ),
         returnValue: _i3.Future<String>.value(''),
       ) as _i3.Future<String>);
+  @override
+  _i3.Future<String> getChallenge({required String? message}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getChallenge,
+          [],
+          {#message: message},
+        ),
+        returnValue: _i3.Future<String>.value(''),
+      ) as _i3.Future<String>);
 }
 
 /// A class which mocks [GetProofsUseCase].

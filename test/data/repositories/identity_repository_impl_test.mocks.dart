@@ -736,6 +736,25 @@ class MockSMTDataSource extends _i1.Mock implements _i25.SMTDataSource {
         returnValueForMissingStub: _i15.Future<void>.value(),
       ) as _i15.Future<void>);
   @override
+  _i15.Future<void> removeRoot({
+    required String? storeName,
+    required String? did,
+    required String? privateKey,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #removeRoot,
+          [],
+          {
+            #storeName: storeName,
+            #did: did,
+            #privateKey: privateKey,
+          },
+        ),
+        returnValue: _i15.Future<void>.value(),
+        returnValueForMissingStub: _i15.Future<void>.value(),
+      ) as _i15.Future<void>);
+  @override
   _i15.Future<_i6.HashDTO> getRoot({
     required String? storeName,
     required String? did,

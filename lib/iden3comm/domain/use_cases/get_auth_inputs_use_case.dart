@@ -49,7 +49,8 @@ class GetAuthInputsUseCase
   @override
   Future<Uint8List> execute({required GetAuthInputsParam param}) async {
     IdentityEntity identity = await _getIdentityUseCase.execute(
-        param: GetIdentityParam(did: param.did, privateKey: param.privateKey));
+        param: GetIdentityParam(
+            genesisDid: param.did, privateKey: param.privateKey));
     List<String> authClaim =
         await _getAuthClaimUseCase.execute(param: identity.publicKey);
     NodeEntity authClaimNode =

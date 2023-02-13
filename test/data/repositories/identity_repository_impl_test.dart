@@ -389,7 +389,7 @@ void main() {
         "Given an identifier, when I call getIdentity, then I expect a IdentityEntity to be returned",
         () async {
       // When
-      expect(await repository.getIdentity(did: CommonMocks.identifier),
+      expect(await repository.getIdentity(genesisDid: CommonMocks.identifier),
           IdentityMocks.identity);
 
       // Then
@@ -413,7 +413,7 @@ void main() {
 
       // When
       await repository
-          .getIdentity(did: CommonMocks.identifier)
+          .getIdentity(genesisDid: CommonMocks.identifier)
           .then((_) => null)
           .catchError((error) {
         expect(error, isA<IdentityException>());
@@ -441,7 +441,7 @@ void main() {
 
       // When
       await repository
-          .getIdentity(did: CommonMocks.identifier)
+          .getIdentity(genesisDid: CommonMocks.identifier)
           .then((_) => null)
           .catchError((error) {
         expect(error, isA<UnknownIdentityException>());

@@ -31,6 +31,8 @@ import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repo
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart';
 import 'package:sembast/sembast_io.dart';
 
+import '../../../credential/data/data_sources/local_claim_data_source.dart';
+
 class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
   final RemoteIdentityDataSource _remoteIdentityDataSource;
@@ -48,8 +50,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final RhsNodeMapper _rhsNodeMapper;
   final StateIdentifierMapper _stateIdentifierMapper;
   final NodeMapper _nodeMapper;
-  final QMapper _qMapper;
   final EncryptionKeyMapper _encryptionKeyMapper;
+  final LocalClaimDataSource _localClaimDataSource;
 
   IdentityRepositoryImpl(
     this._walletDataSource,
@@ -68,8 +70,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._rhsNodeMapper,
     this._stateIdentifierMapper,
     this._nodeMapper,
-    this._qMapper,
     this._encryptionKeyMapper,
+      this._localClaimDataSource,
   );
 
   @override
@@ -89,35 +91,52 @@ class IdentityRepositoryImpl extends IdentityRepository {
         .then((wallet) => wallet.publicKey);
   }
 
-  /// Get a [IdentityEntity]
+  /// Creates an [IdentityEntity] object
   @override
   Future<IdentityEntity> createIdentity({
-    required String didIdentifier,
     required String privateKey,
-    required List<String> authClaim,
+    required String blockchain,
+    required String network,
+    List<int>? profiles
   }) async {
     try {
       PrivadoIdWallet wallet = await _walletDataSource.getWallet(
           privateKey: _hexMapper.mapTo(privateKey));
 
-      Map<String, dynamic> treeState = await _createIdentityState(
-          did: didIdentifier, privateKey: privateKey, authClaim: authClaim);
+      String genesisDid = await getDidIdentifier(
+        privateKey: privateKey,
+        blockchain: blockchain,
+        network: network,
+      );
+      Map<int, String> profileMap = {0 : genesisDid};
+      if (profiles != null) {
+        for (int profileNonce in profiles) {
+          profileMap[profileNonce] = await getDidIdentifier(
+            privateKey: privateKey,
+            blockchain: blockchain,
+            network: network,
+            profileNonce: profileNonce,
+          );
+        }
+      }
 
       IdentityEntity identityEntity = _identityDTOMapper.mapFrom(IdentityDTO(
-          did: didIdentifier,
+          did: genesisDid,
           publicKey: wallet.publicKey,
-          profiles: {0: didIdentifier}));
+          profiles: profileMap));
       return Future.value(identityEntity);
     } catch (error) {
       return Future.error(IdentityException(error));
     }
   }
 
-  /// TODO: this is an UC
-  Future<Map<String, dynamic>> _createIdentityState(
-      {required String did,
-      required String privateKey,
-      required List<String> authClaim}) async {
+  @override
+  Future<Map<String, dynamic>> createIdentityState(
+      {
+        required String did,
+        required String privateKey,
+      }) async {
+
     // 1. initialize merkle trees
     await _smtDataSource.createSMT(
         maxLevels: 40,
@@ -137,10 +156,13 @@ class IdentityRepositoryImpl extends IdentityRepository {
         did: did,
         privateKey: privateKey);
 
+   List<String> authClaim = await _walletDataSource
+        .getWallet(privateKey: _hexMapper.mapTo(privateKey))
+        .then((wallet) => _localClaimDataSource
+        .getAuthClaim(publicKey: wallet.publicKey));
+
     // 2. add authClaim to claims tree
     NodeEntity authClaimNode = await getAuthClaimNode(children: authClaim);
-    /*List<String> authClaimChildren =
-        await _getAuthClaimChildren(publicKey: publicKey);*/
 
     HashDTO claimsTreeRoot = await _smtDataSource.addLeaf(
         newNodeLeaf: _nodeMapper.mapTo(authClaimNode),
@@ -160,6 +182,42 @@ class IdentityRepositoryImpl extends IdentityRepository {
     treeState["revocationRoot"] = BigInt.zero.toString();
     treeState["rootOfRoots"] = BigInt.zero.toString();
     return treeState;
+  }
+
+  @override
+  Future<void> removeIdentityState(
+      {
+        required String did,
+        required String privateKey,
+      }) async {
+
+    // 1. remove merkle trees
+    await _smtDataSource.removeSMT(
+        storeName: claimsTreeStoreName,
+        did: did,
+        privateKey: privateKey);
+    await _smtDataSource.removeRoot(
+        storeName: claimsTreeStoreName,
+        did: did,
+        privateKey: privateKey);
+
+    await _smtDataSource.removeSMT(
+        storeName: revocationTreeStoreName,
+        did: did,
+        privateKey: privateKey);
+    await _smtDataSource.removeRoot(
+        storeName: revocationTreeStoreName,
+        did: did,
+        privateKey: privateKey);
+
+    await _smtDataSource.removeSMT(
+        storeName: rootsTreeStoreName,
+        did: did,
+        privateKey: privateKey);
+    await _smtDataSource.removeRoot(
+        storeName: rootsTreeStoreName,
+        did: did,
+        privateKey: privateKey);
   }
 
   Future<Map<String, dynamic>> _getGenesisState(
@@ -250,9 +308,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
   /// The [IdentityEntity] is the one previously stored and associated to the identifier
   /// Throws an [UnknownIdentityException] if not found.
   @override
-  Future<IdentityEntity> getIdentity({required String did}) {
+  Future<IdentityEntity> getIdentity({required String genesisDid}) {
     return _storageIdentityDataSource
-        .getIdentity(did: did)
+        .getIdentity(did: genesisDid)
         .then((dto) => _identityDTOMapper.mapFrom(dto))
         .catchError((error) => throw IdentityException(error),
             test: (error) => error is! UnknownIdentityException);
@@ -260,16 +318,20 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
   @override
   Future<void> removeIdentity(
-      {required String did, required String privateKey}) async {
+      {required String genesisDid, required String privateKey}) async {
     // remove smt
     await _smtDataSource.removeSMT(
-        storeName: claimsTreeStoreName, did: did, privateKey: privateKey);
+        storeName: claimsTreeStoreName,
+        did: genesisDid,
+        privateKey: privateKey);
     await _smtDataSource.removeSMT(
-        storeName: revocationTreeStoreName, did: did, privateKey: privateKey);
+        storeName: revocationTreeStoreName,
+        did: genesisDid,
+        privateKey: privateKey);
     await _smtDataSource.removeSMT(
-        storeName: rootsTreeStoreName, did: did, privateKey: privateKey);
+        storeName: rootsTreeStoreName, did: genesisDid, privateKey: privateKey);
     // remove identity
-    return _storageIdentityDataSource.removeIdentity(did: did);
+    return _storageIdentityDataSource.removeIdentity(did: genesisDid);
   }
 
   /// Sign a message through a privateKey
@@ -316,12 +378,12 @@ class IdentityRepositoryImpl extends IdentityRepository {
     required String privateKey,
     required String blockchain,
     required String network,
-    required List<String> authClaim,
     int profileNonce = 0,
   }) {
     return _walletDataSource
         .getWallet(privateKey: _hexMapper.mapTo(privateKey))
         .then((wallet) =>
+            _localClaimDataSource.getAuthClaim(publicKey: wallet.publicKey).then((authClaim) =>
             _getGenesisState(authClaim: authClaim).then((genesisState) {
               // Get the genesis id
               String genesisId =
@@ -336,7 +398,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
                 Map<String, dynamic> profile = jsonDecode(profileId);
                 return Future.value(profile["profileDID"]);
               }
-            }));
+            })));
   }
 
   @override
@@ -347,12 +409,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
             dtos.map((dto) => _identityDTOMapper.mapFrom(dto)).toList())
         .catchError((error) => throw IdentityException(error),
             test: (error) => error is! UnknownIdentityException);
-  }
-
-  @override
-  Future<String> getChallenge({required String message}) {
-    return Future.value(_qMapper.mapFrom(message))
-        .then((q) => _libBabyJubJubDataSource.hashPoseidon(q));
   }
 
   @override
