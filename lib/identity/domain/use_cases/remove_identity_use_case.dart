@@ -1,3 +1,4 @@
+
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_use_case.dart';
@@ -5,9 +6,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/remove_identity_
 
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
-import '../../../credential/domain/repositories/credential_repository.dart';
 import '../../../credential/domain/use_cases/remove_all_claims_use_case.dart';
-import '../../../credential/domain/use_cases/remove_claims_use_case.dart';
 import '../repositories/identity_repository.dart';
 import 'get_profiles_use_case.dart';
 

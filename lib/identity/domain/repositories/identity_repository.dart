@@ -64,11 +64,6 @@ abstract class IdentityRepository {
 
   Future<NodeEntity> getAuthClaimNode({required List<String> children});
 
-  Future<Map<String, dynamic>> getLatestState({
-    required String did,
-    required String privateKey,
-  });
-
   Future<String> exportIdentity({
     required String did,
     required String privateKey,

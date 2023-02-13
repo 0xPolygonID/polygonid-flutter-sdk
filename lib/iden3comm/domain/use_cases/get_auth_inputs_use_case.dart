@@ -1,13 +1,14 @@
 import 'dart:typed_data';
 
-import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_auth_claim_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_stype.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_latest_state_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/sign_message_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
@@ -32,6 +33,7 @@ class GetAuthInputsUseCase
   final GetAuthClaimUseCase _getAuthClaimUseCase;
   final SignMessageUseCase _signMessageUseCase;
   final GetGistProofUseCase _getGistProofUseCase;
+  final GetLatestStateUseCase _getLatestStateUseCase;
   final Iden3commRepository _iden3commRepository;
   final IdentityRepository _identityRepository;
   final SMTRepository _smtRepository;
@@ -41,6 +43,7 @@ class GetAuthInputsUseCase
     this._getAuthClaimUseCase,
     this._signMessageUseCase,
     this._getGistProofUseCase,
+    this._getLatestStateUseCase,
     this._iden3commRepository,
     this._identityRepository,
     this._smtRepository,
@@ -58,19 +61,20 @@ class GetAuthInputsUseCase
 
     ProofEntity incProof = await _smtRepository.generateProof(
         key: authClaimNode.hash,
-        storeName: claimsTreeStoreName,
+        type: TreeType.claims,
         did: param.did,
         privateKey: param.privateKey);
 
     ProofEntity nonRevProof = await _smtRepository.generateProof(
         key: authClaimNode.hash,
-        storeName: revocationTreeStoreName,
+        type: TreeType.revocation,
         did: param.did,
         privateKey: param.privateKey);
 
     // hash of clatr, revtr, rootr
-    Map<String, dynamic> treeState = await _identityRepository.getLatestState(
-        did: param.did, privateKey: param.privateKey);
+    Map<String, dynamic> treeState = await _getLatestStateUseCase.execute(
+        param:
+            GetLatestStateParam(did: param.did, privateKey: param.privateKey));
 
     GistProofEntity gistProof =
         await _getGistProofUseCase.execute(param: param.did);

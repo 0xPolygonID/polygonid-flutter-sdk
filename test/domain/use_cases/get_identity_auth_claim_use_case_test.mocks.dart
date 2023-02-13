@@ -331,23 +331,6 @@ class MockIdentityRepository extends _i1.Mock
         )),
       ) as _i6.Future<_i4.NodeEntity>);
   @override
-  _i6.Future<Map<String, dynamic>> getLatestState({
-    required String? did,
-    required String? privateKey,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getLatestState,
-          [],
-          {
-            #did: did,
-            #privateKey: privateKey,
-          },
-        ),
-        returnValue:
-            _i6.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
-      ) as _i6.Future<Map<String, dynamic>>);
-  @override
   _i6.Future<String> exportIdentity({
     required String? did,
     required String? privateKey,
