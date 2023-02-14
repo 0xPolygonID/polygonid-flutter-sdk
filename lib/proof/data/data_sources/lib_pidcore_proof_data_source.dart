@@ -6,6 +6,7 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_proof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 
 import '../../libs/polygonidcore/pidcore_proof.dart';
 import '../dtos/atomic_query_inputs_param.dart';
@@ -18,33 +19,39 @@ class LibPolygonIdCoreWrapper {
 
   Future<String> getProofInputs(
       AtomicQueryInputsParam atomicQueryInputsParam) async {
-    return compute(_computeAtomicQueryInputs, atomicQueryInputsParam);
+    return compute(_computeAtomicQueryInputs, atomicQueryInputsParam)
+        .catchError((error) =>
+            throw NullAtomicQueryInputsException(atomicQueryInputsParam.id));
   }
 
   Future<String> _computeAtomicQueryInputs(AtomicQueryInputsParam param) {
-    String result;
+    try {
+      String result;
 
-    switch (param.type) {
-      case AtomicQueryInputsType.mtp:
-        result =
-            _polygonIdCoreProof.getMTProofInputs(jsonEncode(param.toJson()));
-        break;
-      case AtomicQueryInputsType.sig:
-        result =
-            _polygonIdCoreProof.getSigProofInputs(jsonEncode(param.toJson()));
-        break;
-      case AtomicQueryInputsType.mtponchain:
-        result = _polygonIdCoreProof
-            .getMTPOnchainProofInputs(jsonEncode(param.toJson()));
-        break;
-        break;
-      case AtomicQueryInputsType.sigonchain:
-        result = _polygonIdCoreProof
-            .getSigOnchainProofInputs(jsonEncode(param.toJson()));
-        break;
+      switch (param.type) {
+        case AtomicQueryInputsType.mtp:
+          result =
+              _polygonIdCoreProof.getMTProofInputs(jsonEncode(param.toJson()));
+          break;
+        case AtomicQueryInputsType.sig:
+          result =
+              _polygonIdCoreProof.getSigProofInputs(jsonEncode(param.toJson()));
+          break;
+        case AtomicQueryInputsType.mtponchain:
+          result = _polygonIdCoreProof
+              .getMTPOnchainProofInputs(jsonEncode(param.toJson()));
+          break;
+          break;
+        case AtomicQueryInputsType.sigonchain:
+          result = _polygonIdCoreProof
+              .getSigOnchainProofInputs(jsonEncode(param.toJson()));
+          break;
+      }
+
+      return Future.value(result);
+    } catch (error) {
+      throw NullAtomicQueryInputsException(param.id);
     }
-
-    return Future.value(result);
   }
 
   String proofFromSmartContract(String input) {
