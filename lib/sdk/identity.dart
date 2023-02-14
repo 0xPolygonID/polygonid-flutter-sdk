@@ -143,34 +143,12 @@ abstract class PolygonIdSdkIdentity {
   /// The [did] is the unique id of the identity
   Future<String> getState(String did);
 
-  /// Updates the identity state
-  ///
-  /// The [did] is the unique id of the identity
-  ///
-  /// The Identity's [privateKey] is the key used to access all the sensitive info from the identity
-  /// and also to realize operations like generating proofs
-  /// using the claims associated to the identity
-  /*Future<void> updateState({
-    required String state,
-    required String did,
-    required String privateKey,
-  });*/
-
   /// Sign a message through a identity's private key.
   /// The [privateKey]  is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
   /// using the claims associated to the identity
   /// and [message] is the message to sign. Returns a string representing the signature.
   Future<String> sign({required String privateKey, required String message});
-
-// Profiles
-/*Future<void> addProfile(
-      {required String privateKey, required int profileNonce});
-
-  Future<void> removeProfile(
-      {required String privateKey, required int profileNonce});
-
-  Future<List<int>> getProfiles({required String privateKey});*/
 }
 
 @injectable
@@ -364,41 +342,4 @@ class Identity implements PolygonIdSdkIdentity {
   Future<String> getState(String did) {
     return _fetchIdentityStateUseCase.execute(param: did);
   }
-
-  /// Updates the identity state
-  ///
-  /// The [did] is the unique id of the identity
-  ///
-  /// The Identity's [privateKey] is the key used to access all the sensitive info from the identity
-  /// and also to realize operations like generating proofs
-  /// using the claims associated to the identity
-/*@override
-  Future<void> updateState(
-      {required String state,
-      required String did,
-      required String privateKey}) {
-    // TODO: implement updateState
-    throw UnimplementedError();
-  }
-
-  /// Profile
-  @override
-  Future<void> addProfile(
-      {required String privateKey, required int profileNonce}) {
-    // TODO: implement addProfile
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<int>> getProfiles({required String privateKey}) {
-    // TODO: implement getProfiles
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> removeProfile(
-      {required String privateKey, required int profileNonce}) {
-    // TODO: implement removeProfile
-    throw UnimplementedError();
-  }*/
 }
