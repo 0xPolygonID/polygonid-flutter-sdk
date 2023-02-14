@@ -1,202 +1,155 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_query_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_rules_query_request.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_rules_query_schema_request.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_rules_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_query_use_case.dart';
 
 ProofScopeRequest mockProofScopeRequestLT = ProofScopeRequest(
   id: 1,
-  circuit_id: "credentialAtomicQuerySig",
-  rules: ProofScopeRulesRequest(
-    query: ProofScopeRulesQueryRequest(
-      schema: ProofScopeRulesQuerySchemaRequest(
-        type: "KYCAgeCredential",
-        url:
-            "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
-      ),
-      allowedIssuers: ["*"],
-      req: {
-        "birthday": {
-          "\$lt": 20000101,
-        },
+  circuitId: "credentialAtomicQuerySig",
+  query: ProofScopeQueryRequest(
+    type: "KYCAgeCredential",
+    allowedIssuers: ["*"],
+    credentialSubject: {
+      "birthday": {
+        "\$lt": 20000101,
       },
-    ),
-    audience: '',
+    },
+    context:
+        "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
     challenge: 0,
   ),
 );
 
 ProofScopeRequest mockProofScopeRequestNOOP = ProofScopeRequest(
   id: 1,
-  circuit_id: "credentialAtomicQuerySig",
-  rules: ProofScopeRulesRequest(
-    query: ProofScopeRulesQueryRequest(
-      schema: ProofScopeRulesQuerySchemaRequest(
-        type: "KYCAgeCredential",
-        url:
-            "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
-      ),
-      allowedIssuers: ["*"],
-      req: {
-        "birthday": {
-          "\$noop": 19880101,
-        },
+  circuitId: "credentialAtomicQuerySig",
+  query: ProofScopeQueryRequest(
+    type: "KYCAgeCredential",
+    allowedIssuers: ["*"],
+    credentialSubject: {
+      "birthday": {
+        "\$noop": 19880101,
       },
-    ),
-    audience: '',
+    },
+    context:
+        "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
     challenge: 0,
   ),
 );
 
 ProofScopeRequest mockProofScopeRequestEQ = ProofScopeRequest(
   id: 1,
-  circuit_id: "credentialAtomicQuerySig",
-  rules: ProofScopeRulesRequest(
-    query: ProofScopeRulesQueryRequest(
-      schema: ProofScopeRulesQuerySchemaRequest(
-        type: "KYCAgeCredential",
-        url:
-            "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
-      ),
-      allowedIssuers: ["*"],
-      req: {
-        "birthday": {
-          "\$eq": 19870202,
-        },
+  circuitId: "credentialAtomicQuerySig",
+  query: ProofScopeQueryRequest(
+    type: "KYCAgeCredential",
+    allowedIssuers: ["*"],
+    credentialSubject: {
+      "birthday": {
+        "\$eq": 19870202,
       },
-    ),
-    audience: '',
+    },
+    context:
+        "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
     challenge: 0,
   ),
 );
 
 ProofScopeRequest mockProofScopeRequestGT = ProofScopeRequest(
   id: 1,
-  circuit_id: "credentialAtomicQuerySig",
-  rules: ProofScopeRulesRequest(
-    query: ProofScopeRulesQueryRequest(
-      schema: ProofScopeRulesQuerySchemaRequest(
-        type: "KYCAgeCredential",
-        url:
-            "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
-      ),
-      allowedIssuers: ["*"],
-      req: {
-        "birthday": {
-          "\$gt": 19900202,
-        },
+  circuitId: "credentialAtomicQuerySig",
+  query: ProofScopeQueryRequest(
+    type: "KYCAgeCredential",
+    allowedIssuers: ["*"],
+    credentialSubject: {
+      "birthday": {
+        "\$gt": 19900202,
       },
-    ),
-    audience: '',
+    },
+    context:
+        "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
     challenge: 0,
   ),
 );
 
 ProofScopeRequest mockProofScopeRequestIN = ProofScopeRequest(
   id: 1,
-  circuit_id: "credentialAtomicQuerySig",
-  rules: ProofScopeRulesRequest(
-    query: ProofScopeRulesQueryRequest(
-      schema: ProofScopeRulesQuerySchemaRequest(
-        type: "KYCAgeCredential",
-        url:
-            "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
-      ),
-      allowedIssuers: ["*"],
-      req: {
-        "birthday": {
-          "\$in": [19900202, 19900205],
-        },
+  circuitId: "credentialAtomicQuerySig",
+  query: ProofScopeQueryRequest(
+    type: "KYCAgeCredential",
+    allowedIssuers: ["*"],
+    credentialSubject: {
+      "birthday": {
+        "\$in": [19900202, 19900205],
       },
-    ),
-    audience: '',
+    },
+    context:
+        "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
     challenge: 0,
   ),
 );
 
 ProofScopeRequest mockProofScopeRequestNIN = ProofScopeRequest(
   id: 1,
-  circuit_id: "credentialAtomicQuerySig",
-  rules: ProofScopeRulesRequest(
-    query: ProofScopeRulesQueryRequest(
-      schema: ProofScopeRulesQuerySchemaRequest(
-        type: "KYCAgeCredential",
-        url:
-            "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
-      ),
-      allowedIssuers: ["*"],
-      req: {
-        "birthday": {
-          "\$nin": [19900202, 19900205],
-        },
+  circuitId: "credentialAtomicQuerySig",
+  query: ProofScopeQueryRequest(
+    type: "KYCAgeCredential",
+    allowedIssuers: ["*"],
+    credentialSubject: {
+      "birthday": {
+        "\$nin": [19900202, 19900205],
       },
-    ),
-    audience: '',
+    },
+    context:
+        "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
     challenge: 0,
   ),
 );
 
 ProofScopeRequest mockProofScopeRequestNoReq = ProofScopeRequest(
   id: 1,
-  circuit_id: "credentialAtomicQuerySig",
-  rules: ProofScopeRulesRequest(
-    query: ProofScopeRulesQueryRequest(
-      schema: ProofScopeRulesQuerySchemaRequest(
-        type: "KYCAgeCredential",
-        url:
-            "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
-      ),
-      allowedIssuers: ["*"],
-    ),
-    audience: '',
+  circuitId: "credentialAtomicQuerySig",
+  query: ProofScopeQueryRequest(
+    type: "KYCAgeCredential",
+    allowedIssuers: ["*"],
+    context:
+        "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
     challenge: 0,
   ),
 );
 
 ProofScopeRequest mockProofScopeRequestTooMany = ProofScopeRequest(
   id: 1,
-  circuit_id: "credentialAtomicQuerySig",
-  rules: ProofScopeRulesRequest(
-    query: ProofScopeRulesQueryRequest(
-      schema: ProofScopeRulesQuerySchemaRequest(
-        type: "KYCAgeCredential",
-        url:
-            "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
-      ),
-      allowedIssuers: ["*"],
-      req: {
-        "birthday": [
-          {
-            "\$nin": [19900202, 19900205],
-          },
-          {"\$gt": 19900202}
-        ],
-      },
-    ),
-    audience: '',
+  circuitId: "credentialAtomicQuerySig",
+  query: ProofScopeQueryRequest(
+    type: "KYCAgeCredential",
+    allowedIssuers: ["*"],
+    credentialSubject: {
+      "birthday": [
+        {
+          "\$nin": [19900202, 19900205],
+        },
+        {"\$gt": 19900202}
+      ],
+    },
+    context:
+        "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
     challenge: 0,
   ),
 );
 
 ProofScopeRequest mockProofScopeRequestInvalid = ProofScopeRequest(
   id: 1,
-  circuit_id: "credentialAtomicQuerySig",
-  rules: ProofScopeRulesRequest(
-    query: ProofScopeRulesQueryRequest(
-      schema: ProofScopeRulesQuerySchemaRequest(
-        type: "KYCAgeCredential",
-        url:
-            "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
-      ),
-      allowedIssuers: ["*"],
-      req: {
-        "birthday": {"\$gt": "19900202"},
-      },
-    ),
-    audience: '',
+  circuitId: "credentialAtomicQuerySig",
+  query: ProofScopeQueryRequest(
+    type: "KYCAgeCredential",
+    allowedIssuers: ["*"],
+    credentialSubject: {
+      "birthday": {"\$gt": "19900202"},
+    },
+    context:
+        "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld",
     challenge: 0,
   ),
 );

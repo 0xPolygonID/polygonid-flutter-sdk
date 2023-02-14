@@ -1,12 +1,10 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:sembast/sembast.dart';
-
-import '../../domain/exceptions/identity_exceptions.dart';
-import '../dtos/identity_dto.dart';
-import 'storage_key_value_data_source.dart';
+import 'package:sembast/utils/sembast_import_export.dart';
 
 /// [StoreRef] wrapper
 /// Delegates all call to [IdentityStoreRefWrapper._store]
@@ -21,31 +19,41 @@ class IdentityStoreRefWrapper {
     return _store.record(key).get(database);
   }
 
+  Future<List<RecordSnapshot<String, Map<String, Object?>>>> find(
+      DatabaseClient databaseClient,
+      {Finder? finder}) {
+    return _store.find(databaseClient, finder: finder);
+  }
+
   Future<Map<String, Object?>> put(
       DatabaseClient database, String key, Map<String, Object?> value,
       {bool? merge}) {
     return _store.record(key).put(database, value, merge: merge);
   }
 
-  Future<String?> remove(DatabaseClient database, String identifier) {
-    return _store.record(identifier).delete(database);
+  Future<String?> remove(DatabaseClient database, String did) {
+    return _store.record(did).delete(database);
   }
 }
 
 class StorageIdentityDataSource {
   final Database _database;
   final IdentityStoreRefWrapper _storeRefWrapper;
-  final StorageKeyValueDataSource _storageKeyValueDataSource;
-  final WalletDataSource _walletDataSource;
-  final HexMapper _hexMapper;
 
-  StorageIdentityDataSource(this._database, this._storeRefWrapper,
-      this._storageKeyValueDataSource, this._walletDataSource, this._hexMapper);
+  StorageIdentityDataSource(this._database, this._storeRefWrapper);
 
-  Future<IdentityDTO> getIdentity({required String identifier}) {
-    return _storeRefWrapper.get(_database, identifier).then((storedValue) {
+  Future<List<IdentityDTO>> getIdentities({Filter? filter}) {
+    return _storeRefWrapper
+        .find(_database, finder: Finder(filter: filter))
+        .then((snapshots) => snapshots
+            .map((snapshot) => IdentityDTO.fromJson(snapshot.value))
+            .toList());
+  }
+
+  Future<IdentityDTO> getIdentity({required String did}) {
+    return _storeRefWrapper.get(_database, did).then((storedValue) {
       if (storedValue == null) {
-        throw UnknownIdentityException(identifier);
+        throw UnknownIdentityException(did);
       }
 
       return IdentityDTO.fromJson(storedValue);
@@ -53,34 +61,70 @@ class StorageIdentityDataSource {
   }
 
   /// As we support only one identity at the moment, we need to maintain
-  /// the stored current identifier up to date
+  /// the stored current did up to date
   Future<void> storeIdentity(
-      {required String identifier, required IdentityDTO identity}) {
+      {required String did, required IdentityDTO identity}) {
     return _database.transaction((transaction) => storeIdentityTransact(
-        transaction: transaction, identifier: identifier, identity: identity));
+        transaction: transaction, did: did, identity: identity));
   }
 
   Future<void> storeIdentityTransact(
       {required DatabaseClient transaction,
-      required String identifier,
+      required String did,
       required IdentityDTO identity}) async {
-    await _storageKeyValueDataSource.remove(
-        key: currentIdentifierKey, database: transaction);
-    await _storeRefWrapper.put(transaction, identifier, identity.toJson());
-    await _storageKeyValueDataSource.store(
-        key: currentIdentifierKey, value: identifier, database: transaction);
+    await _storeRefWrapper.put(transaction, did, identity.toJson());
   }
 
-  Future<void> removeIdentity({required String identifier}) {
-    return _database.transaction((transaction) => removeIdentityTransact(
-        transaction: transaction, identifier: identifier));
+  Future<void> removeIdentity({required String did}) {
+    // TODO: get privateKey from param and obtain publicKey
+    //  from identity and encrypt/decrypt a msg to allow removing the identity
+    return _database.transaction((transaction) =>
+        removeIdentityTransact(transaction: transaction, did: did));
   }
 
   // For UT purpose
   Future<void> removeIdentityTransact(
-      {required DatabaseClient transaction, required String identifier}) async {
-    await _storageKeyValueDataSource.remove(
-        key: currentIdentifierKey, database: transaction);
-    await _storeRefWrapper.remove(transaction, identifier);
+      {required DatabaseClient transaction, required String did}) async {
+    await _storeRefWrapper.remove(transaction, did);
+  }
+
+  /// Export identity database
+  Future<Map<String, Object?>> getIdentityDb(
+      {required String did, required String privateKey}) async {
+    Database db = await _getDatabase(
+      did: did,
+      privateKey: privateKey,
+    );
+
+    Map<String, Object?> exportableDb = await exportDatabase(db);
+    return exportableDb;
+  }
+
+  /// Import entire claims database
+  Future<void> saveIdentityDb({
+    required Map<String, Object?> exportableDb,
+    required DatabaseFactory databaseFactory,
+    required String destinationPath,
+    required String privateKey,
+  }) async {
+    SembastCodec codec = getItSdk.get<SembastCodec>(param1: privateKey);
+
+    await importDatabase(
+      exportableDb,
+      databaseFactory,
+      destinationPath,
+      codec: codec,
+    );
+  }
+
+  Future<Database> _getDatabase({
+    required String did,
+    required String privateKey,
+  }) {
+    return getItSdk.getAsync<Database>(
+      instanceName: identityDatabaseName,
+      param1: did,
+      param2: privateKey,
+    );
   }
 }

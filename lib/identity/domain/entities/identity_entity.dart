@@ -1,24 +1,27 @@
 /// Represents an identity.
 class IdentityEntity {
-  final String identifier;
+  final String did;
   final List<String> publicKey;
+  final Map<int, String> profiles;
 
   const IdentityEntity({
-    required this.identifier,
+    required this.did,
     required this.publicKey,
+    required this.profiles,
   });
 
   @override
   String toString() =>
-      "[IdentityEntity] {identifier: $identifier, publicKey: $publicKey}";
+      "[IdentityEntity] {did: $did, publicKey: $publicKey, profiles: $profiles}";
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is IdentityEntity &&
           runtimeType == other.runtimeType &&
-          identifier == other.identifier &&
-          publicKey == other.publicKey;
+          did == other.did &&
+          publicKey == other.publicKey &&
+          profiles == other.profiles;
 
   @override
   int get hashCode => runtimeType.hashCode;

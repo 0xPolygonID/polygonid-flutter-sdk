@@ -49,7 +49,7 @@ final exception = Exception();
 
 AuthenticateParam param = AuthenticateParam(
   message: authRequest,
-  identifier: identifier,
+  did: identifier,
   pushToken: pushToken,
   privateKey: privateKey,
 );
@@ -83,7 +83,7 @@ void main() {
             .thenAnswer((realInvocation) => Future.value(package));
 
         when(iden3commRepository.getAuthResponse(
-                identifier: anyNamed('identifier'),
+                did: anyNamed('did'),
                 request: anyNamed('request'),
                 scope: anyNamed('scope'),
                 pushUrl: anyNamed('pushUrl'),
@@ -113,7 +113,7 @@ void main() {
                   .captured
                   .first;
           expect(capturedProofs.message, authRequest);
-          expect(capturedProofs.identifier, identifier);
+          expect(capturedProofs.did, identifier);
           expect(capturedProofs.privateKey, privateKey);
 
           var verifyConfig = verify(
@@ -128,14 +128,14 @@ void main() {
                   param: captureAnyNamed('param')))
               .captured
               .first;
-          expect(capturedDid.identifier, identifier);
-          expect(capturedDid.networkName, config);
-          expect(capturedDid.networkEnv, config);
+          expect(capturedDid.privateKey, privateKey);
+          expect(capturedDid.blockchain, config);
+          expect(capturedDid.network, config);
 
           verify(getPackageNameUseCase.execute());
 
           var capturedAuthResponse = verify(iden3commRepository.getAuthResponse(
-                  identifier: captureAnyNamed('identifier'),
+                  did: captureAnyNamed('did'),
                   request: captureAnyNamed('request'),
                   scope: captureAnyNamed('scope'),
                   pushUrl: captureAnyNamed('pushUrl'),
@@ -155,7 +155,7 @@ void main() {
                   getAuthTokenUseCase.execute(param: captureAnyNamed('param')))
               .captured
               .first;
-          expect(capturedAuthToken.identifier, identifier);
+          expect(capturedAuthToken.did, identifier);
           expect(capturedAuthToken.privateKey, privateKey);
           expect(capturedAuthToken.message, authResponse);
 
@@ -173,7 +173,7 @@ void main() {
         () async {
           // Given
           when(iden3commRepository.getAuthResponse(
-                  identifier: anyNamed('identifier'),
+                  did: anyNamed('did'),
                   request: anyNamed('request'),
                   scope: anyNamed('scope'),
                   pushUrl: anyNamed('pushUrl'),
@@ -191,7 +191,7 @@ void main() {
                   .captured
                   .first;
           expect(capturedProofs.message, authRequest);
-          expect(capturedProofs.identifier, identifier);
+          expect(capturedProofs.did, identifier);
           expect(capturedProofs.privateKey, privateKey);
 
           var verifyConfig = verify(
@@ -206,14 +206,14 @@ void main() {
                   param: captureAnyNamed('param')))
               .captured
               .first;
-          expect(capturedDid.identifier, identifier);
-          expect(capturedDid.networkName, config);
-          expect(capturedDid.networkEnv, config);
+          expect(capturedDid.privateKey, privateKey);
+          expect(capturedDid.blockchain, config);
+          expect(capturedDid.network, config);
 
           verify(getPackageNameUseCase.execute());
 
           var capturedAuthResponse = verify(iden3commRepository.getAuthResponse(
-                  identifier: captureAnyNamed('identifier'),
+                  did: captureAnyNamed('did'),
                   request: captureAnyNamed('request'),
                   scope: captureAnyNamed('scope'),
                   pushUrl: captureAnyNamed('pushUrl'),

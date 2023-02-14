@@ -1,6 +1,7 @@
 import 'package:polygonid_flutter_sdk/common/mappers/mapper.dart';
 
 import '../../domain/entities/rhs_node_entity.dart';
+import '../dtos/node_dto.dart';
 import '../dtos/rhs_node_dto.dart';
 import 'rhs_node_type_mapper.dart';
 
@@ -19,7 +20,7 @@ class RhsNodeMapper extends Mapper<RhsNodeDTO, RhsNodeEntity> {
 
   @override
   RhsNodeDTO mapTo(RhsNodeEntity to) {
-    RhsNodeItemDTO node = RhsNodeItemDTO.fromJson(to.node);
+    NodeDTO node = NodeDTO.fromJson(to.node);
     return RhsNodeDTO(
       node: node,
       status: to.status,

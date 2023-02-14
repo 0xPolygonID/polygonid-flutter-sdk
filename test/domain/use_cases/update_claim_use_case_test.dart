@@ -23,7 +23,7 @@ final exception = Exception();
 
 final UpdateClaimParam param = UpdateClaimParam(
     id: id,
-    identifier: identifier,
+    did: identifier,
     privateKey: privateKey,
     issuer: otherIssuer,
     expiration: otherExpiration,
@@ -31,7 +31,7 @@ final UpdateClaimParam param = UpdateClaimParam(
 
 final claimEntity = ClaimEntity(
     issuer: issuer,
-    identifier: identifier,
+    did: identifier,
     expiration: expiration,
     info: data,
     type: type,
@@ -40,7 +40,7 @@ final claimEntity = ClaimEntity(
 
 final otherClaimEntity = ClaimEntity(
     issuer: otherIssuer,
-    identifier: identifier,
+    did: identifier,
     expiration: otherExpiration,
     info: otherData,
     type: type,
@@ -61,12 +61,12 @@ void main() {
 
       // Given
       when(credentialRepository.getClaim(
-              identifier: anyNamed('identifier'),
+              did: anyNamed('did'),
               privateKey: anyNamed('privateKey'),
               claimId: anyNamed('claimId')))
           .thenAnswer((realInvocation) => Future.value(claimEntity));
       when(credentialRepository.saveClaims(
-              identifier: anyNamed('identifier'),
+              did: anyNamed('did'),
               privateKey: anyNamed('privateKey'),
               claims: anyNamed('claims')))
           .thenAnswer((realInvocation) => Future.value(null));
@@ -80,7 +80,7 @@ void main() {
 
       // Then
       var capturedGet = verify(credentialRepository.getClaim(
-              identifier: captureAnyNamed('identifier'),
+              did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey'),
               claimId: captureAnyNamed('claimId')))
           .captured;
@@ -89,7 +89,7 @@ void main() {
       expect(capturedGet[2], id);
 
       var capturedSave = verify(credentialRepository.saveClaims(
-              identifier: captureAnyNamed('identifier'),
+              did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey'),
               claims: captureAnyNamed('claims')))
           .captured;
@@ -103,7 +103,7 @@ void main() {
         () async {
       // Given
       when(credentialRepository.getClaim(
-              identifier: anyNamed('identifier'),
+              did: anyNamed('did'),
               privateKey: anyNamed('privateKey'),
               claimId: anyNamed('claimId')))
           .thenAnswer((realInvocation) => Future.error(exception));
@@ -113,7 +113,7 @@ void main() {
 
       // Then
       var capturedGet = verify(credentialRepository.getClaim(
-              identifier: captureAnyNamed('identifier'),
+              did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey'),
               claimId: captureAnyNamed('claimId')))
           .captured;
@@ -122,7 +122,7 @@ void main() {
       expect(capturedGet[2], id);
 
       verifyNever(credentialRepository.saveClaims(
-          identifier: captureAnyNamed('identifier'),
+          did: captureAnyNamed('did'),
           privateKey: captureAnyNamed('privateKey'),
           claims: captureAnyNamed('claims')));
     });

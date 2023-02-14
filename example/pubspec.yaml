@@ -43,6 +43,7 @@ dependencies:
   uuid: ^3.0.6
   http: ^0.13.5
   flutter_secure_storage: ^6.0.0
+  logger: ^1.1.0
 
 dev_dependencies:
   integration_test:

@@ -16,12 +16,11 @@ void main() {
       expect(authBodyRequest.message, "");
       expect(authBodyRequest.callbackUrl, CommonMocks.url);
       expect(authBodyRequest.scope![0].id, 1);
-      expect(authBodyRequest.scope![0].circuit_id, "credentialAtomicQuerySig");
-      expect(authBodyRequest.scope![0].rules.query.allowedIssuers![0], "*");
-      expect(authBodyRequest.scope![0].rules.query.schema?.type,
-          "KYCAgeCredential");
-      expect(authBodyRequest.scope![0].rules.query.schema?.url,
-          "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld");
+      expect(authBodyRequest.scope![0].circuitId, "credentialAtomicQuerySig");
+      expect(authBodyRequest.scope![0].query.allowedIssuers![0], "*");
+      expect(authBodyRequest.scope![0].query.type, "KYCAgeCredential");
+      expect(authBodyRequest.scope![0].query.context,
+          "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld");
       expect(authBodyRequest.url, "theUrl");
       expect(authBodyRequest.credentials![0].id, "27887");
       expect(authBodyRequest.credentials![0].description,

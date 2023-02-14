@@ -20,21 +20,14 @@ void main() {
           contractFunctionCallBodyRequest.transactionData.network, "mainnet");
       expect(contractFunctionCallBodyRequest.reason, "theTransactionReason");
       expect(contractFunctionCallBodyRequest.scope![0].id, 1);
-      expect(contractFunctionCallBodyRequest.scope![0].circuit_id,
+      expect(contractFunctionCallBodyRequest.scope![0].circuitId,
           "credentialAtomicQuerySig");
-      expect(contractFunctionCallBodyRequest.scope![0].rules.audience,
-          "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b");
-      expect(contractFunctionCallBodyRequest.scope![0].rules.challenge, 748916);
-      expect(
-          contractFunctionCallBodyRequest
-              .scope![0].rules.query.allowedIssuers![0],
+      expect(contractFunctionCallBodyRequest.scope![0].query.allowedIssuers![0],
           "*");
-      expect(contractFunctionCallBodyRequest.scope![0].rules.query.challenge,
-          123456);
-      expect(contractFunctionCallBodyRequest.scope![0].rules.query.schema?.type,
+      expect(contractFunctionCallBodyRequest.scope![0].query.type,
           "KYCAgeCredential");
-      expect(contractFunctionCallBodyRequest.scope![0].rules.query.schema?.url,
-          "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld");
+      expect(contractFunctionCallBodyRequest.scope![0].query.context,
+          "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld");
     });
 
     test("toJson", () {

@@ -5,7 +5,8 @@ enum FilterOperator {
   greaterEqual,
   lesserEqual,
   inList,
-  or
+  or,
+  nonEqual
 }
 
 class FilterEntity {

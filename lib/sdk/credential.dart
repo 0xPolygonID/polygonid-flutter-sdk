@@ -1,45 +1,44 @@
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/fetch_and_save_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/update_claim_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
-
-import '../common/domain/entities/filter_entity.dart';
-import '../credential/domain/entities/claim_entity.dart';
-import '../credential/domain/use_cases/fetch_and_save_claims_use_case.dart';
-import '../credential/domain/use_cases/get_claims_use_case.dart';
-import '../credential/domain/use_cases/remove_claims_use_case.dart';
-import '../credential/domain/use_cases/update_claim_use_case.dart';
 
 abstract class PolygonIdSdkCredential {
   /// Fetch a list of [ClaimEntity] and store them
   Future<List<ClaimEntity>> fetchAndSaveClaims(
       {required OfferIden3MessageEntity message,
-      required String identifier,
+      required String did,
       required String privateKey});
 
   /// Get a list of [ClaimEntity] of the identity from storage
   /// The list can be filtered by [filters]
   Future<List<ClaimEntity>> getClaims(
       {List<FilterEntity>? filters,
-      required String identifier,
+      required String did,
       required String privateKey});
 
   /// Get a list of [ClaimEntity] of the identity from storage from a list of id
   /// This is a shortcut to [getClaims], using a filter on id
   Future<List<ClaimEntity>> getClaimsByIds(
       {required List<String> claimIds,
-      required String identifier,
+      required String did,
       required String privateKey});
 
   /// Remove Claims from storage from a list of ids
   Future<void> removeClaims(
       {required List<String> claimIds,
-      required String identifier,
+      required String did,
       required String privateKey});
 
   /// Remove a Claim from storage by id
   /// This is a shortcut of [removeClaims] with only one id
   Future<void> removeClaim(
       {required String claimId,
-      required String identifier,
+      required String did,
       required String privateKey});
 
   /// Update the Claim associated to the [claimId] in storage
@@ -48,7 +47,7 @@ abstract class PolygonIdSdkCredential {
   Future<ClaimEntity> updateClaim({
     required String claimId,
     String? issuer,
-    required String identifier,
+    required String did,
     ClaimState? state,
     String? expiration,
     String? type,
@@ -64,18 +63,22 @@ class Credential implements PolygonIdSdkCredential {
   final RemoveClaimsUseCase _removeClaimsUseCase;
   final UpdateClaimUseCase _updateClaimUseCase;
 
-  Credential(this._fetchAndSaveClaimsUseCase, this._getClaimsUseCase,
-      this._removeClaimsUseCase, this._updateClaimUseCase);
+  Credential(
+    this._fetchAndSaveClaimsUseCase,
+    this._getClaimsUseCase,
+    this._removeClaimsUseCase,
+    this._updateClaimUseCase,
+  );
 
   /// Fetch a list of [ClaimEntity] and store them
   @override
   Future<List<ClaimEntity>> fetchAndSaveClaims(
       {required OfferIden3MessageEntity message,
-      required String identifier,
+      required String did,
       required String privateKey}) {
     return _fetchAndSaveClaimsUseCase.execute(
         param: FetchAndSaveClaimsParam(
-            message: message, identifier: identifier, privateKey: privateKey));
+            message: message, did: did, privateKey: privateKey));
   }
 
   /// Get a list of [ClaimEntity] from storage
@@ -83,12 +86,12 @@ class Credential implements PolygonIdSdkCredential {
   @override
   Future<List<ClaimEntity>> getClaims(
       {List<FilterEntity>? filters,
-      required String identifier,
+      required String did,
       required String privateKey}) {
     return _getClaimsUseCase.execute(
         param: GetClaimsParam(
       filters: filters,
-      identifier: identifier,
+      did: did,
       privateKey: privateKey,
     ));
   }
@@ -98,7 +101,7 @@ class Credential implements PolygonIdSdkCredential {
   @override
   Future<List<ClaimEntity>> getClaimsByIds(
       {required List<String> claimIds,
-      required String identifier,
+      required String did,
       required String privateKey}) {
     return _getClaimsUseCase.execute(
         param: GetClaimsParam(
@@ -106,7 +109,7 @@ class Credential implements PolygonIdSdkCredential {
         FilterEntity(
             operator: FilterOperator.inList, name: 'id', value: claimIds)
       ],
-      identifier: identifier,
+      did: did,
       privateKey: privateKey,
     ));
   }
@@ -115,12 +118,12 @@ class Credential implements PolygonIdSdkCredential {
   @override
   Future<void> removeClaims(
       {required List<String> claimIds,
-      required String identifier,
+      required String did,
       required String privateKey}) {
     return _removeClaimsUseCase.execute(
         param: RemoveClaimsParam(
       claimIds: claimIds,
-      identifier: identifier,
+      did: did,
       privateKey: privateKey,
     ));
   }
@@ -130,12 +133,12 @@ class Credential implements PolygonIdSdkCredential {
   @override
   Future<void> removeClaim(
       {required String claimId,
-      required String identifier,
+      required String did,
       required String privateKey}) {
     return _removeClaimsUseCase.execute(
         param: RemoveClaimsParam(
       claimIds: [claimId],
-      identifier: identifier,
+      did: did,
       privateKey: privateKey,
     ));
   }
@@ -147,7 +150,7 @@ class Credential implements PolygonIdSdkCredential {
   Future<ClaimEntity> updateClaim({
     required String claimId,
     String? issuer,
-    required String identifier,
+    required String did,
     ClaimState? state,
     String? expiration,
     String? type,
@@ -158,7 +161,7 @@ class Credential implements PolygonIdSdkCredential {
         param: UpdateClaimParam(
             id: claimId,
             issuer: issuer,
-            identifier: identifier,
+            did: did,
             state: state,
             expiration: expiration,
             type: type,

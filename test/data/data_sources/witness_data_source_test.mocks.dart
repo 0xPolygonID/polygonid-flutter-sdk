@@ -7,9 +7,9 @@ import 'dart:async' as _i3;
 import 'dart:typed_data' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/proof_generation/data/data_sources/witness_data_source.dart'
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/witness_data_source.dart'
     as _i2;
-import 'package:polygonid_flutter_sdk/proof_generation/data/dtos/witness_param.dart'
+import 'package:polygonid_flutter_sdk/proof/data/dtos/witness_param.dart'
     as _i5;
 
 // ignore_for_file: type=lint
@@ -55,6 +55,26 @@ class MockWitnessIsolatesWrapper extends _i1.Mock
       (super.noSuchMethod(
         Invocation.method(
           #computeWitnessMtp,
+          [param],
+        ),
+        returnValue: _i3.Future<_i4.Uint8List?>.value(),
+      ) as _i3.Future<_i4.Uint8List?>);
+  @override
+  _i3.Future<_i4.Uint8List?> computeWitnessMtpOnchain(
+          _i5.WitnessParam? param) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #computeWitnessMtpOnchain,
+          [param],
+        ),
+        returnValue: _i3.Future<_i4.Uint8List?>.value(),
+      ) as _i3.Future<_i4.Uint8List?>);
+  @override
+  _i3.Future<_i4.Uint8List?> computeWitnessSigOnchain(
+          _i5.WitnessParam? param) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #computeWitnessSigOnchain,
           [param],
         ),
         returnValue: _i3.Future<_i4.Uint8List?>.value(),

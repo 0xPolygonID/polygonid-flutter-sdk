@@ -19,10 +19,14 @@ class GetClaimRevocationStatusUseCase
   Future<Map<String, dynamic>> execute({required ClaimEntity param}) async {
     return _credentialRepository.isUsingRHS(claim: param).then((useRHS) {
       if (useRHS) {
-        return _generateNonRevProofUseCase.execute(param: param);
+        try {
+          return _generateNonRevProofUseCase.execute(param: param);
+        } catch (e) {
+          return _credentialRepository.getRevocationStatus(claim: param);
+        }
+      } else {
+        return _credentialRepository.getRevocationStatus(claim: param);
       }
-
-      return _credentialRepository.getRevocationStatus(claim: param);
     }).then((status) {
       logger()
           .i("[GetClaimRevocationStatusUseCase] Revocation status: $status");

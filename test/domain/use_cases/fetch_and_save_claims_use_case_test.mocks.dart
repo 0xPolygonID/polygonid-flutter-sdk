@@ -18,8 +18,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/of
     as _i7;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart'
     as _i5;
-import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart'
-    as _i9;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -96,7 +94,7 @@ class MockCredentialRepository extends _i1.Mock
 
   @override
   _i4.Future<_i2.ClaimEntity> fetchClaim({
-    required String? identifier,
+    required String? did,
     required String? token,
     required _i7.OfferIden3MessageEntity? message,
   }) =>
@@ -105,7 +103,7 @@ class MockCredentialRepository extends _i1.Mock
           #fetchClaim,
           [],
           {
-            #identifier: identifier,
+            #did: did,
             #token: token,
             #message: message,
           },
@@ -116,7 +114,7 @@ class MockCredentialRepository extends _i1.Mock
             #fetchClaim,
             [],
             {
-              #identifier: identifier,
+              #did: did,
               #token: token,
               #message: message,
             },
@@ -126,7 +124,7 @@ class MockCredentialRepository extends _i1.Mock
   @override
   _i4.Future<void> saveClaims({
     required List<_i2.ClaimEntity>? claims,
-    required String? identifier,
+    required String? did,
     required String? privateKey,
   }) =>
       (super.noSuchMethod(
@@ -135,7 +133,7 @@ class MockCredentialRepository extends _i1.Mock
           [],
           {
             #claims: claims,
-            #identifier: identifier,
+            #did: did,
             #privateKey: privateKey,
           },
         ),
@@ -145,7 +143,7 @@ class MockCredentialRepository extends _i1.Mock
   @override
   _i4.Future<List<_i2.ClaimEntity>> getClaims({
     List<_i8.FilterEntity>? filters,
-    required String? identifier,
+    required String? did,
     required String? privateKey,
   }) =>
       (super.noSuchMethod(
@@ -154,7 +152,7 @@ class MockCredentialRepository extends _i1.Mock
           [],
           {
             #filters: filters,
-            #identifier: identifier,
+            #did: did,
             #privateKey: privateKey,
           },
         ),
@@ -164,7 +162,7 @@ class MockCredentialRepository extends _i1.Mock
   @override
   _i4.Future<_i2.ClaimEntity> getClaim({
     required String? claimId,
-    required String? identifier,
+    required String? did,
     required String? privateKey,
   }) =>
       (super.noSuchMethod(
@@ -173,7 +171,7 @@ class MockCredentialRepository extends _i1.Mock
           [],
           {
             #claimId: claimId,
-            #identifier: identifier,
+            #did: did,
             #privateKey: privateKey,
           },
         ),
@@ -184,7 +182,7 @@ class MockCredentialRepository extends _i1.Mock
             [],
             {
               #claimId: claimId,
-              #identifier: identifier,
+              #did: did,
               #privateKey: privateKey,
             },
           ),
@@ -193,7 +191,7 @@ class MockCredentialRepository extends _i1.Mock
   @override
   _i4.Future<void> removeClaims({
     required List<String>? claimIds,
-    required String? identifier,
+    required String? did,
     required String? privateKey,
   }) =>
       (super.noSuchMethod(
@@ -202,7 +200,24 @@ class MockCredentialRepository extends _i1.Mock
           [],
           {
             #claimIds: claimIds,
-            #identifier: identifier,
+            #did: did,
+            #privateKey: privateKey,
+          },
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+  @override
+  _i4.Future<void> removeAllClaims({
+    required String? did,
+    required String? privateKey,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #removeAllClaims,
+          [],
+          {
+            #did: did,
             #privateKey: privateKey,
           },
         ),
@@ -270,24 +285,55 @@ class MockCredentialRepository extends _i1.Mock
         returnValue: _i4.Future<String>.value(''),
       ) as _i4.Future<String>);
   @override
-  _i4.Future<int> getRevocationNonce({required _i2.ClaimEntity? claim}) =>
+  _i4.Future<String> getIssuerIdentifier({required _i2.ClaimEntity? claim}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getIssuerIdentifier,
+          [],
+          {#claim: claim},
+        ),
+        returnValue: _i4.Future<String>.value(''),
+      ) as _i4.Future<String>);
+  @override
+  _i4.Future<int> getRevocationNonce({
+    required _i2.ClaimEntity? claim,
+    required bool? rhs,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #getRevocationNonce,
           [],
-          {#claim: claim},
+          {
+            #claim: claim,
+            #rhs: rhs,
+          },
         ),
         returnValue: _i4.Future<int>.value(0),
       ) as _i4.Future<int>);
   @override
-  _i4.Future<String> getAuthClaim(
-          {required _i9.PrivateIdentityEntity? identity}) =>
+  _i4.Future<String> getRevocationUrl({
+    required _i2.ClaimEntity? claim,
+    required bool? rhs,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getRevocationUrl,
+          [],
+          {
+            #claim: claim,
+            #rhs: rhs,
+          },
+        ),
+        returnValue: _i4.Future<String>.value(''),
+      ) as _i4.Future<String>);
+  @override
+  _i4.Future<List<String>> getAuthClaim({required List<String>? publicKey}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getAuthClaim,
           [],
-          {#identity: identity},
+          {#publicKey: publicKey},
         ),
-        returnValue: _i4.Future<String>.value(''),
-      ) as _i4.Future<String>);
+        returnValue: _i4.Future<List<String>>.value(<String>[]),
+      ) as _i4.Future<List<String>>);
 }

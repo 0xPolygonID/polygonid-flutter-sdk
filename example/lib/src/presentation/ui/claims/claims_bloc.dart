@@ -15,6 +15,8 @@ import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/models/
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
 import 'package:polygonid_flutter_sdk_example/utils/secure_storage_keys.dart';
 
+import '../../../../utils/blockchain_resources.dart';
+
 class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
   final ClaimModelMapper _mapper;
   final PolygonIdSdk _polygonIdSdk;
@@ -41,19 +43,16 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       FetchAndSaveClaimsEvent event, Emitter<ClaimsState> emit) async {
     String? privateKey =
         await SecureStorage.read(key: SecureStorageKeys.privateKey);
+
     if (privateKey == null) {
       emit(const ClaimsState.error("Private key not found"));
       return;
     }
 
-    String? identifier =
-        await _polygonIdSdk.identity.getIdentifier(privateKey: privateKey);
-
-    if (identifier == null || identifier.isEmpty) {
-      emit(const ClaimsState.error(
-          "without an identity is impossible to fetch claims"));
-      return;
-    }
+    String didIdentifier = await _polygonIdSdk.identity.getDidIdentifier(
+        privateKey: privateKey,
+        blockchain: BlockchainResources.blockchain,
+        network: BlockchainResources.network);
 
     emit(const ClaimsState.loading());
 
@@ -68,7 +67,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       List<ClaimEntity> claimList =
           await _polygonIdSdk.credential.fetchAndSaveClaims(
         message: event.iden3message as OfferIden3MessageEntity,
-        identifier: identifier,
+        did: didIdentifier,
         privateKey: privateKey,
       );
 
@@ -95,10 +94,13 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       return;
     }
 
-    String? identifier =
-        await _polygonIdSdk.identity.getIdentifier(privateKey: privateKey);
+    String? did = await _polygonIdSdk.identity.getDidIdentifier(
+      privateKey: privateKey,
+      blockchain: BlockchainResources.blockchain,
+      network: BlockchainResources.network,
+    );
 
-    if (identifier == null || identifier.isEmpty) {
+    if (did == null || did.isEmpty) {
       emit(const ClaimsState.error(
           "without an identity is impossible to get claims"));
       return;
@@ -107,7 +109,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     try {
       List<ClaimEntity> claimList = await _polygonIdSdk.credential.getClaims(
         filters: filters,
-        identifier: identifier,
+        did: did,
         privateKey: privateKey,
       );
 
@@ -136,10 +138,13 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       return;
     }
 
-    String? identifier =
-        await _polygonIdSdk.identity.getIdentifier(privateKey: privateKey);
+    String? did = await _polygonIdSdk.identity.getDidIdentifier(
+      privateKey: privateKey,
+      blockchain: BlockchainResources.blockchain,
+      network: BlockchainResources.network,
+    );
 
-    if (identifier == null || identifier.isEmpty) {
+    if (did == null || did.isEmpty) {
       emit(const ClaimsState.error(
           "without an identity is impossible to get claims"));
       return;
@@ -149,7 +154,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       List<ClaimEntity> claimList =
           await _polygonIdSdk.credential.getClaimsByIds(
         claimIds: ids,
-        identifier: identifier,
+        did: did,
         privateKey: privateKey,
       );
 
@@ -176,10 +181,13 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       return;
     }
 
-    String? identifier =
-        await _polygonIdSdk.identity.getIdentifier(privateKey: privateKey);
+    String? did = await _polygonIdSdk.identity.getDidIdentifier(
+      privateKey: privateKey,
+      blockchain: BlockchainResources.blockchain,
+      network: BlockchainResources.network,
+    );
 
-    if (identifier == null || identifier.isEmpty) {
+    if (did == null || did.isEmpty) {
       emit(const ClaimsState.error(
           "without an identity is impossible to remove claim"));
       return;
@@ -188,7 +196,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     try {
       await _polygonIdSdk.credential.removeClaim(
         claimId: id,
-        identifier: identifier,
+        did: did,
         privateKey: privateKey,
       );
       add(const GetClaimsEvent());
@@ -212,10 +220,13 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       return;
     }
 
-    String? identifier =
-        await _polygonIdSdk.identity.getIdentifier(privateKey: privateKey);
+    String? did = await _polygonIdSdk.identity.getDidIdentifier(
+      privateKey: privateKey,
+      blockchain: BlockchainResources.blockchain,
+      network: BlockchainResources.network,
+    );
 
-    if (identifier == null || identifier.isEmpty) {
+    if (did == null || did.isEmpty) {
       emit(const ClaimsState.error(
           "without an identity is impossible to remove claims"));
       return;
@@ -223,7 +234,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     try {
       await _polygonIdSdk.credential.removeClaims(
         claimIds: ids,
-        identifier: identifier,
+        did: did,
         privateKey: privateKey,
       );
       add(const GetClaimsEvent());
@@ -239,7 +250,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       UpdateClaimEvent event, Emitter<ClaimsState> emit) async {
     String id = event.id;
     String? issuer = event.issuer;
-    String? identifier = event.identifier;
+    String? did = event.did;
     ClaimState? state = event.state;
     String? expiration = event.expiration;
     String? type = event.type;
@@ -253,7 +264,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       return;
     }
 
-    if (identifier == null || identifier.isEmpty) {
+    if (did == null || did.isEmpty) {
       emit(const ClaimsState.error(
           "without an identity is impossible to update a claim"));
       return;
@@ -262,7 +273,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       await _polygonIdSdk.credential.updateClaim(
         claimId: id,
         issuer: issuer,
-        identifier: identifier,
+        did: did,
         state: state,
         expiration: expiration,
         type: type,
@@ -332,10 +343,13 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       return;
     }
 
-    String? identifier =
-        await _polygonIdSdk.identity.getIdentifier(privateKey: privateKey);
+    String? did = await _polygonIdSdk.identity.getDidIdentifier(
+      privateKey: privateKey,
+      blockchain: BlockchainResources.blockchain,
+      network: BlockchainResources.network,
+    );
 
-    if (identifier == null || identifier.isEmpty) {
+    if (did == null || did.isEmpty) {
       emit(const ClaimsState.error(
           "without an identity is impossible to remove all claims"));
       return;
@@ -343,14 +357,14 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
     try {
       List<ClaimEntity> claimList = await _polygonIdSdk.credential.getClaims(
-        identifier: identifier,
+        did: did,
         privateKey: privateKey,
       );
 
       List<String> claimIds = claimList.map((claim) => claim.id).toList();
       await _polygonIdSdk.credential.removeClaims(
         claimIds: claimIds,
-        identifier: identifier,
+        did: did,
         privateKey: privateKey,
       );
       add(const GetClaimsEvent());

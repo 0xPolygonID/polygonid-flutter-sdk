@@ -16,39 +16,44 @@ enum ClaimProofType {
 
 @JsonSerializable(explicitToJson: true, createFactory: false)
 class ClaimProofDTO extends Equatable {
-  @JsonKey(name: '@type')
+  @JsonKey(name: 'type')
   final ClaimProofType type;
-  @JsonKey(name: 'issuer_data')
+  @JsonKey(name: 'issuerData')
   final ClaimProofIssuerDTO issuer;
+  final String coreClaim;
 
-  const ClaimProofDTO(this.type, this.issuer);
+  const ClaimProofDTO(this.type, this.issuer, this.coreClaim);
 
   factory ClaimProofDTO.fromJson(Map<String, dynamic> json) {
-    ClaimProofType type = $enumDecode(_$ClaimProofTypeEnumMap, json['@type']);
+    ClaimProofType type = $enumDecode(_$ClaimProofTypeEnumMap, json['type']);
 
     switch (type) {
       case ClaimProofType.bjj:
         return ClaimProofBJJDTO(
           type,
           ClaimProofIssuerBJJDTO.fromJson(
-              json['issuer_data'] as Map<String, dynamic>),
+              json['issuerData'] as Map<String, dynamic>),
+          json['coreClaim'] as String,
           json['signature'] as String,
         );
       case ClaimProofType.sparseMerkle:
         return ClaimProofSMDTO(
           type,
           ClaimProofIssuerSMDTO.fromJson(
-              json['issuer_data'] as Map<String, dynamic>),
+              json['issuerData'] as Map<String, dynamic>),
+          json['coreClaim'] as String,
           ClaimProofMTPDTO.fromJson(json['mtp'] as Map<String, dynamic>),
         );
     }
   }
 
-  Map<String, dynamic> toJson() => _$ClaimProofDTOToJson(this);
+  Map<String, dynamic> toJson() => _$ClaimProofDTOToJson(this)
+    ..removeWhere((dynamic key, dynamic value) => key == null || value == null);
 
   @override
-  List<Object?> get props =>
-      [type]; // , issuer]; For UT but we could compare more thoroughly
+  List<Object?> get props => [
+        type,
+      ]; // , issuer]; For UT but we could compare more thoroughly
 }
 
 @JsonSerializable()
@@ -64,9 +69,34 @@ class ClaimProofMTPDTO {
   Map<String, dynamic> toJson() => _$ClaimProofMTPDTOToJson(this);
 }
 
+@JsonEnum()
+enum ClaimProofIssuerCredStatusType {
+  @JsonValue("Iden3ReverseSparseMerkleTreeProof")
+  reverseSparseMerkleTreeProof,
+  @JsonValue("SparseMerkleTreeProof")
+  sparseMerkleTreeProof
+}
+
+@JsonSerializable(explicitToJson: true)
+class ClaimProofIssuerCredStatusDTO {
+  final String id;
+  final int? revocationNonce;
+  @JsonKey(name: 'type')
+  final ClaimProofIssuerCredStatusType type;
+  final ClaimProofIssuerCredStatusDTO? statusIssuer;
+
+  ClaimProofIssuerCredStatusDTO(
+      this.id, this.revocationNonce, this.type, this.statusIssuer);
+
+  factory ClaimProofIssuerCredStatusDTO.fromJson(Map<String, dynamic> json) =>
+      _$ClaimProofIssuerCredStatusDTOFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ClaimProofIssuerCredStatusDTOToJson(this);
+}
+
 @JsonSerializable(explicitToJson: true)
 class ClaimProofIssuerStateDTO {
-  @JsonKey(name: 'claims_tree_root')
+  @JsonKey(name: 'claimsTreeRoot')
   final String treeRoot;
   final String value;
 

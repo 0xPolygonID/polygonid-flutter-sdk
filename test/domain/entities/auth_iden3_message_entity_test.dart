@@ -17,7 +17,7 @@ void main() {
         var authRequest = AuthIden3MessageEntity.fromJson(json);
         expect(authRequest.id, "4dd6479b-99b6-405c-ba9e-c7b18d251a5e");
         expect(authRequest.thid, "4dd6479b-99b6-405c-ba9e-c7b18d251a5e");
-        expect(authRequest.from, "1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ");
+        expect(authRequest.from, CommonMocks.did);
         expect(authRequest.typ, "application/iden3comm-plain-json");
         expect(authRequest.messageType, Iden3MessageType.auth);
         expect(authRequest.body.reason, "test flow");
@@ -25,17 +25,12 @@ void main() {
         expect(authRequest.body.callbackUrl, CommonMocks.url);
         expect(authRequest.body.scope?[0].id, 1);
         expect(
-            authRequest.body.scope?[0].circuit_id, "credentialAtomicQuerySig");
+            authRequest.body.scope?[0].circuitId, "credentialAtomicQuerySig");
         expect(authRequest.body.scope?[0].optional, false);
-        expect(authRequest.body.scope?[0].rules.audience,
-            "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b");
-        expect(authRequest.body.scope?[0].rules.challenge, 748916);
-        expect(authRequest.body.scope?[0].rules.query.allowedIssuers?[0], "*");
-        expect(authRequest.body.scope?[0].rules.query.challenge, 123456);
-        expect(authRequest.body.scope?[0].rules.query.schema?.type,
-            "KYCAgeCredential");
-        expect(authRequest.body.scope?[0].rules.query.schema?.url,
-            "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v2.json-ld");
+        expect(authRequest.body.scope?[0].query.allowedIssuers?[0], "*");
+        expect(authRequest.body.scope?[0].query.type, "KYCAgeCredential");
+        expect(authRequest.body.scope?[0].query.context,
+            "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld");
         expect(authRequest.body.url, "theUrl");
         expect(authRequest.body.credentials?[0].id, "27887");
         expect(authRequest.body.credentials?[0].description,

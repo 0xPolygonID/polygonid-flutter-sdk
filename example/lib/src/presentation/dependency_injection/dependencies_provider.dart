@@ -1,6 +1,9 @@
 import 'package:get_it/get_it.dart';
+import 'package:logger/logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/sdk/mappers/iden3_message_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
+import 'package:polygonid_flutter_sdk_example/src/common/app_logger.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claim_detail/bloc/claim_detail_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_bloc.dart';
@@ -29,6 +32,9 @@ Future<void> init() async {
 Future<void> registerProviders() async {
   await PolygonIdSdk.init();
   getIt.registerLazySingleton<PolygonIdSdk>(() => PolygonIdSdk.I);
+  getIt.registerLazySingleton<Logger>(() => Logger());
+  getIt.registerLazySingleton<DomainLogger>(() => AppLogger(getIt()));
+  Domain.logger = getIt<DomainLogger>();
 }
 
 ///

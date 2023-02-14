@@ -2,13 +2,11 @@ import 'package:polygonid_flutter_sdk/common/domain/repositories/config_reposito
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 
 enum PolygonIdConfig {
-  polygonIdAccessMessage,
   networkName,
   networkEnv,
   infuraUrl,
   infuraRdpUrl,
   infuraApiKey,
-  reverseHashServiceUrl,
   idStateContractAddress,
   pushUrl,
 }

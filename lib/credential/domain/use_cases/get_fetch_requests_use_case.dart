@@ -9,9 +9,9 @@ import '../../../iden3comm/domain/entities/request/offer/offer_iden3_message_ent
 
 class GetFetchRequestsParam {
   final OfferIden3MessageEntity message;
-  final String identifier;
+  final String did;
 
-  GetFetchRequestsParam(this.message, this.identifier);
+  GetFetchRequestsParam(this.message, this.did);
 }
 
 class GetFetchRequestsUseCase
@@ -26,7 +26,7 @@ class GetFetchRequestsUseCase
                 "https://iden3-communication.io/credentials/1.0/fetch-request",
             thid: param.message.thid,
             body: FetchBodyRequest(id: credential.id),
-            from: param.identifier,
+            from: param.did,
             to: param.message.from)))
         .toList());
   }

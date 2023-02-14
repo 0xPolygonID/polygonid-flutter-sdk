@@ -8,12 +8,14 @@ import 'get_fetch_requests_use_case.dart';
 
 class FetchAndSaveClaimsParam {
   final OfferIden3MessageEntity message;
-  final String identifier;
+  final String did;
+  final int profileNonce;
   final String privateKey;
 
   FetchAndSaveClaimsParam({
     required this.message,
-    required this.identifier,
+    required this.did,
+    this.profileNonce = 0,
     required this.privateKey,
   });
 }
@@ -34,7 +36,7 @@ class FetchAndSaveClaimsUseCase
     /// With the auth token, fetch the [ClaimEntity]
     /// Then save the list of [ClaimEntity]
     return _getFetchRequestsUseCase
-        .execute(param: GetFetchRequestsParam(param.message, param.identifier))
+        .execute(param: GetFetchRequestsParam(param.message, param.did))
         .then((requests) async {
           List<ClaimEntity> claims = [];
 
@@ -42,14 +44,13 @@ class FetchAndSaveClaimsUseCase
             await _getAuthTokenUseCase
                 .execute(
                     param: GetAuthTokenParam(
-                  param.identifier,
-                  param.privateKey,
-                  request,
+                  did: param.did,
+                  profileNonce: param.profileNonce,
+                  privateKey: param.privateKey,
+                  message: request,
                 ))
                 .then((token) => _credentialRepository.fetchClaim(
-                    identifier: param.identifier,
-                    token: token,
-                    message: param.message))
+                    did: param.did, token: token, message: param.message))
                 .then((claim) => claims.add(claim));
           }
 
@@ -58,7 +59,7 @@ class FetchAndSaveClaimsUseCase
         .then((claims) => _credentialRepository
                 .saveClaims(
               claims: claims,
-              identifier: param.identifier,
+              did: param.did,
               privateKey: param.privateKey,
             )
                 .then((_) {

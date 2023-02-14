@@ -29,8 +29,8 @@ final fetchClaimDTO =
 final claim = ClaimDTO(
     id: fetchClaimDTO.credential.id,
     issuer: fetchClaimDTO.from,
-    identifier: identifier,
-    expiration: fetchClaimDTO.credential.expiration,
+    did: identifier,
+    expiration: fetchClaimDTO.credential.expirationDate,
     type: fetchClaimDTO.credential.credentialSubject.type,
     info: fetchClaimDTO.credential);
 final exception = Exception();
@@ -54,8 +54,7 @@ void main() {
 
       // When
       expect(
-          await dataSource.fetchClaim(
-              token: token, url: url, identifier: identifier),
+          await dataSource.fetchClaim(token: token, url: url, did: identifier),
           claim);
 
       // Then
@@ -82,7 +81,7 @@ void main() {
 
       // When
       await expectLater(
-          dataSource.fetchClaim(token: token, url: url, identifier: identifier),
+          dataSource.fetchClaim(token: token, url: url, did: identifier),
           throwsA(isA<NetworkException>()));
 
       // Then
@@ -109,7 +108,7 @@ void main() {
 
       // When
       await dataSource
-          .fetchClaim(token: token, url: url, identifier: identifier)
+          .fetchClaim(token: token, url: url, did: identifier)
           .then((_) => expect(true, false)) // Be sure we don't succeed
           .catchError((error) {
         expect(error, (isA<UnsupportedFetchClaimTypeException>()));
@@ -140,7 +139,7 @@ void main() {
 
       // When
       await expectLater(
-          dataSource.fetchClaim(token: token, url: url, identifier: identifier),
+          dataSource.fetchClaim(token: token, url: url, did: identifier),
           throwsA(exception));
 
       // Then

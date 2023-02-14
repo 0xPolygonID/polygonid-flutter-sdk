@@ -22,8 +22,8 @@ class GetVocabsUseCase
     List<Map<String, dynamic>> result = [];
 
     for (ProofScopeRequest proofScopeRequest in param.body.scope) {
-      String? schemaUrl = proofScopeRequest.rules.query.schema?.url;
-      String? schemaType = proofScopeRequest.rules.query.schema?.type;
+      String? schemaUrl = proofScopeRequest.query.context;
+      String? schemaType = proofScopeRequest.query.type;
 
       if (schemaUrl != null &&
           schemaUrl.isNotEmpty &&

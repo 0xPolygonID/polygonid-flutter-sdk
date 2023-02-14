@@ -23,12 +23,11 @@ class GenerateNonRevProofUseCase
   @override
   Future<Map<String, dynamic>> execute({required ClaimEntity param}) {
     return _credentialRepository
-        .getRhsRevocationId(claim: param)
+        .getIssuerIdentifier(claim: param)
         .then((id) => _fetchIdentityStateUseCase.execute(param: id))
         .then((identityState) => Future.wait<dynamic>([
-              _credentialRepository.getRevocationNonce(claim: param),
-              _getEnvConfigUseCase.execute(
-                  param: PolygonIdConfig.reverseHashServiceUrl),
+              _credentialRepository.getRevocationNonce(claim: param, rhs: true),
+              _credentialRepository.getRevocationUrl(claim: param, rhs: true),
             ]).then((values) => _identityRepository.getNonRevProof(
                 identityState: identityState,
                 nonce: values[0],

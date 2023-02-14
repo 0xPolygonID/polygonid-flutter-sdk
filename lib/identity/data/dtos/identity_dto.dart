@@ -6,11 +6,12 @@ part 'identity_dto.g.dart';
 /// Represents an identity DTO.
 @JsonSerializable()
 class IdentityDTO extends Equatable {
-  final String identifier;
+  final String did;
   final List<String> publicKey;
-  // TODO: add List<String> profiles?
+  final Map<int, String> profiles;
 
-  const IdentityDTO({required this.identifier, required this.publicKey});
+  const IdentityDTO(
+      {required this.did, required this.publicKey, required this.profiles});
 
   factory IdentityDTO.fromJson(Map<String, dynamic> json) =>
       _$IdentityDTOFromJson(json);
@@ -18,5 +19,5 @@ class IdentityDTO extends Equatable {
   Map<String, dynamic> toJson() => _$IdentityDTOToJson(this);
 
   @override
-  List<Object?> get props => [identifier, publicKey];
+  List<Object?> get props => [did, publicKey, profiles];
 }

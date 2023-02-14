@@ -43,38 +43,50 @@
 }
 
 {
-  "type": "https://iden3-communication.io/authorization-request/v1",
-  "data": {
-    "callbackUrl": "https://auth-demo.idyllicvision.com/callback?id=27887",
-    "audience": "1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ",
+  "id": "627a0eb7-2b7b-40aa-aa2b-f201a2b4b709",
+  "typ": "application/iden3comm-plain-json",
+  "type": "https://iden3-communication.io/authorization/1.0/request",
+  "thid": "627a0eb7-2b7b-40aa-aa2b-f201a2b4b709",
+  "body": {
+    "callbackUrl": "https://verifier-v2.polygonid.me/api/callback?sessionId=590414",
+    "reason": "test flow",
     "scope": [
       {
-        "circuit_id": "auth",
-        "type": "zeroknowledge",
-        "rules": {
-          "audience": "1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ",
-          "challenge": 27887
+        "id": 1,
+        "circuitId": "credentialAtomicQuerySigV2",
+        "query": {
+          "allowedIssuers": [
+            "*"
+          ],
+          "context": "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld",
+          "credentialSubject": {
+            "birthday": {
+              "$lt": 20000101
+            }
+          },
+          "type": "KYCAgeCredential"
         }
       }
     ]
-  }
+  },
+  "from": "did:polygonid:polygon:mumbai:2qDyy1kEo2AYcP3RT4XGea7BtxsY285szg6yP9SPrs"
 }
 
 */
 
-import 'proof_scope_rules_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_query_request.dart';
 
 class ProofScopeRequest {
   final int id;
-  final String circuit_id;
+  final String circuitId;
   final bool? optional;
-  final ProofScopeRulesRequest rules;
+  final ProofScopeQueryRequest query;
 
   ProofScopeRequest({
     required this.id,
-    required this.circuit_id,
-    this.optional = false,
-    required this.rules,
+    required this.circuitId,
+    this.optional,
+    required this.query,
   });
 
   /// Creates an instance from the given json
@@ -82,26 +94,27 @@ class ProofScopeRequest {
   /// @param [Map<String, dynamic>] json
   /// @returns [ProofScopeRequest]
   factory ProofScopeRequest.fromJson(Map<String, dynamic> json) {
-    ProofScopeRulesRequest rules =
-        ProofScopeRulesRequest.fromJson(json['rules']);
+    ProofScopeQueryRequest query =
+        ProofScopeQueryRequest.fromJson(json['query']);
     return ProofScopeRequest(
       id: json['id'],
-      circuit_id: json['circuit_id'],
-      optional: json['optional'] ?? false,
-      rules: rules,
+      circuitId: json['circuitId'],
+      optional: json['optional'],
+      query: query,
     );
   }
 
   Map<String, dynamic> toJson() => {
         'id': id,
-        'circuit_id': circuit_id,
+        'circuitId': circuitId,
         'optional': optional,
-        'rules': rules.toJson(),
-      };
+        'query': query.toJson(),
+      }..removeWhere(
+          (dynamic key, dynamic value) => key == null || value == null);
 
   @override
   String toString() =>
-      "[ProofScopeRequest] {id: $id, circuit_id: $circuit_id, optional: $optional, rules: $rules}";
+      "[ProofScopeRequest] {id: $id, circuitId: $circuitId, optional: $optional, query: $query}";
 
   @override
   bool operator ==(Object other) =>
@@ -109,9 +122,9 @@ class ProofScopeRequest {
       other is ProofScopeRequest &&
           runtimeType == other.runtimeType &&
           id == other.id &&
-          circuit_id == other.circuit_id &&
+          circuitId == other.circuitId &&
           optional == other.optional &&
-          rules == other.rules;
+          query == other.query;
 
   @override
   int get hashCode => runtimeType.hashCode;

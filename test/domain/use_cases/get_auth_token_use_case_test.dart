@@ -1,137 +1,143 @@
-import 'dart:typed_data';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/entities/circuit_data_entity.dart';
-import 'package:polygonid_flutter_sdk/proof_generation/domain/repositories/proof_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_auth_challenge_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/use_cases/get_jwz_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/use_cases/load_circuit_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/use_cases/prove_use_case.dart';
 
+import '../../common/common_mocks.dart';
+import '../../common/proof_mocks.dart';
 import 'get_auth_token_use_case_test.mocks.dart';
 
 // Data
-const message = "theMessage";
-const identifier = "theIdentifier";
-const privateKey = "thePrivateKey";
-const authClaim = "theAuthClaim";
-const pubKeys = ["pubX", "pubY"];
-const privateIdentity = PrivateIdentityEntity(
-    privateKey: privateKey, identifier: identifier, publicKey: pubKeys);
-const circuitId = "1";
-final datFile = Uint8List(32);
-final zKeyFile = Uint8List(32);
-final circuitData = CircuitDataEntity(circuitId, datFile, zKeyFile);
-final param = GetAuthTokenParam(identifier, privateKey, message);
+final param = GetAuthTokenParam(
+    did: CommonMocks.did,
+    privateKey: CommonMocks.privateKey,
+    message: CommonMocks.message);
 const result = "token";
 var exception = Exception();
 
 // Dependencies
-MockIden3commRepository iden3commRepository = MockIden3commRepository();
-MockCredentialRepository credentialRepository = MockCredentialRepository();
-MockProofRepository proofRepository = MockProofRepository();
-MockIdentityRepository identityRepository = MockIdentityRepository();
+MockLoadCircuitUseCase loadCircuitUseCase = MockLoadCircuitUseCase();
+MockGetJWZUseCase getJWZUseCase = MockGetJWZUseCase();
+MockGetAuthChallengeUseCase getAuthChallengeUseCase =
+    MockGetAuthChallengeUseCase();
+MockGetAuthInputsUseCase getAuthInputsUseCase = MockGetAuthInputsUseCase();
+MockProveUseCase proveUseCase = MockProveUseCase();
 
 // Tested instance
-GetAuthTokenUseCase useCase = GetAuthTokenUseCase(iden3commRepository,
-    proofRepository, credentialRepository, identityRepository);
+GetAuthTokenUseCase useCase = GetAuthTokenUseCase(loadCircuitUseCase,
+    getJWZUseCase, getAuthChallengeUseCase, getAuthInputsUseCase, proveUseCase);
 
 @GenerateMocks([
-  Iden3commRepository,
-  CredentialRepository,
-  ProofRepository,
-  IdentityRepository
+  LoadCircuitUseCase,
+  GetJWZUseCase,
+  GetAuthChallengeUseCase,
+  GetAuthInputsUseCase,
+  ProveUseCase
 ])
 void main() {
   setUp(() {
     // Given
-    when(identityRepository.getPrivateIdentity(
-            identifier: anyNamed('identifier'),
-            privateKey: anyNamed('privateKey')))
-        .thenAnswer((realInvocation) => Future.value(privateIdentity));
-    when(proofRepository.loadCircuitFiles(any))
-        .thenAnswer((realInvocation) => Future.value(circuitData));
-    when(credentialRepository.getAuthClaim(identity: anyNamed('identity')))
-        .thenAnswer((realInvocation) => Future.value(authClaim));
-    when(iden3commRepository.getAuthToken(
-            identity: anyNamed('identity'),
-            message: anyNamed('message'),
-            authData: anyNamed('authData'),
-            authClaim: anyNamed('authClaim')))
-        .thenAnswer((realInvocation) => Future.value(result));
+    when(getJWZUseCase.execute(param: anyNamed('param')))
+        .thenAnswer((realInvocation) => Future.value(ProofMocks.encodedJWZ));
+    when(getAuthChallengeUseCase.execute(param: anyNamed('param')))
+        .thenAnswer((realInvocation) => Future.value(CommonMocks.challenge));
+    when(getAuthInputsUseCase.execute(param: anyNamed('param')))
+        .thenAnswer((realInvocation) => Future.value(CommonMocks.aBytes));
+    when(loadCircuitUseCase.execute(param: anyNamed('param')))
+        .thenAnswer((realInvocation) => Future.value(ProofMocks.circuitData));
+    when(proveUseCase.execute(param: anyNamed('param')))
+        .thenAnswer((realInvocation) => Future.value(ProofMocks.jwzProof));
   });
 
   test(
-      "Given an identifier and a message, when I call execute, then I expect a String to be returned",
+      "Given a GetAuthTokenParam, when I call execute, then I expect a token String to be returned",
       () async {
     // When
-    expect(await useCase.execute(param: param), result);
+    expect(await useCase.execute(param: param), ProofMocks.encodedJWZ);
 
     // Then
-    var identityCaptured = verify(identityRepository.getPrivateIdentity(
-            identifier: captureAnyNamed('identifier'),
-            privateKey: captureAnyNamed('privateKey')))
-        .captured;
-    expect(identityCaptured[0], identifier);
-    expect(identityCaptured[1], privateKey);
-
-    expect(verify(proofRepository.loadCircuitFiles(captureAny)).captured.first,
-        "auth");
+    var verifyGetJWZ =
+        verify(getJWZUseCase.execute(param: captureAnyNamed('param')));
+    expect(verifyGetJWZ.callCount, 2);
+    expect(verifyGetJWZ.captured[0].message, param.message);
+    expect(verifyGetJWZ.captured[0].proof, null);
+    expect(verifyGetJWZ.captured[1].message, param.message);
+    expect(verifyGetJWZ.captured[1].proof, ProofMocks.jwzProof);
 
     expect(
-        verify(credentialRepository.getAuthClaim(
-                identity: captureAnyNamed('identity')))
+        verify(getAuthChallengeUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first,
-        privateIdentity);
+        ProofMocks.encodedJWZ);
 
-    var authCaptured = verify(iden3commRepository.getAuthToken(
-            identity: captureAnyNamed('identity'),
-            message: captureAnyNamed('message'),
-            authData: captureAnyNamed('authData'),
-            authClaim: captureAnyNamed('authClaim')))
-        .captured;
-    expect(authCaptured[0], privateIdentity);
-    expect(authCaptured[1], message);
-    expect(authCaptured[2], circuitData);
-    expect(authCaptured[3], authClaim);
+    var captureAuthInputs =
+        verify(getAuthInputsUseCase.execute(param: captureAnyNamed('param')))
+            .captured
+            .first;
+    expect(captureAuthInputs.did, CommonMocks.did);
+    expect(captureAuthInputs.privateKey, CommonMocks.privateKey);
+
+    expect(
+        verify(loadCircuitUseCase.execute(param: captureAnyNamed('param')))
+            .captured
+            .first,
+        "authV2");
+
+    var captureProve =
+        verify(proveUseCase.execute(param: captureAnyNamed('param')))
+            .captured
+            .first;
+    expect(captureProve.inputs, CommonMocks.aBytes);
+    expect(captureProve.circuitData, ProofMocks.circuitData);
   });
 
   test(
-      "Given an identifier and a message, when I call execute and an error occurred, then I expect an exception to be thrown",
+      "Given a GetAuthTokenParam, when I call execute and an error occurred, then I expect an exception to be thrown",
       () async {
     // Given
-    when(credentialRepository.getAuthClaim(identity: anyNamed('identity')))
-        .thenAnswer((realInvocation) => Future.error(exception));
+    when(proveUseCase.execute(param: anyNamed('param')))
+        .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
     // When
-    await expectLater(useCase.execute(param: param), throwsA(exception));
+    await expectLater(
+        useCase.execute(param: param), throwsA(CommonMocks.exception));
 
     // Then
-    var identityCaptured = verify(identityRepository.getPrivateIdentity(
-            identifier: captureAnyNamed('identifier'),
-            privateKey: captureAnyNamed('privateKey')))
-        .captured;
-    expect(identityCaptured[0], identifier);
-    expect(identityCaptured[1], privateKey);
-
-    expect(verify(proofRepository.loadCircuitFiles(captureAny)).captured.first,
-        "auth");
+    var verifyGetJWZ =
+        verify(getJWZUseCase.execute(param: captureAnyNamed('param')));
+    expect(verifyGetJWZ.callCount, 1);
+    expect(verifyGetJWZ.captured[0].message, param.message);
+    expect(verifyGetJWZ.captured[0].proof, null);
 
     expect(
-        verify(credentialRepository.getAuthClaim(
-                identity: captureAnyNamed('identity')))
+        verify(getAuthChallengeUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first,
-        privateIdentity);
+        ProofMocks.encodedJWZ);
 
-    verifyNever(iden3commRepository.getAuthToken(
-        identity: captureAnyNamed('identity'),
-        message: captureAnyNamed('message'),
-        authData: captureAnyNamed('authData'),
-        authClaim: captureAnyNamed('authClaim')));
+    var captureAuthInputs =
+        verify(getAuthInputsUseCase.execute(param: captureAnyNamed('param')))
+            .captured
+            .first;
+    expect(captureAuthInputs.did, CommonMocks.did);
+    expect(captureAuthInputs.privateKey, CommonMocks.privateKey);
+
+    expect(
+        verify(loadCircuitUseCase.execute(param: captureAnyNamed('param')))
+            .captured
+            .first,
+        "authV2");
+
+    var captureProve =
+        verify(proveUseCase.execute(param: captureAnyNamed('param')))
+            .captured
+            .first;
+    expect(captureProve.inputs, CommonMocks.aBytes);
+    expect(captureProve.circuitData, ProofMocks.circuitData);
   });
 }

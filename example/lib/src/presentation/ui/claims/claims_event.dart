@@ -28,7 +28,7 @@ class ClaimsEvent with _$ClaimsEvent {
   const factory ClaimsEvent.updateClaim({
     required String id,
     String? issuer,
-    String? identifier,
+    String? did,
     ClaimState? state,
     String? expiration,
     String? type,

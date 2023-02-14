@@ -17,7 +17,7 @@ analyzer:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^0.13.4
+  http: ^0.13.5
   ffi: ^2.0.1
   hex: ^0.2.0
   web3dart: 2.3.5
@@ -28,7 +28,9 @@ dependencies:
   crypto: ^3.0.1
   get_it: ^7.2.0
   injectable: ^1.5.3
-  path_provider: ^2.0.11
+  # Path provider 2.0.12 is giving problems with iOS, forced to use 2.0.11
+  path_provider: 2.0.11
+  archive: 3.3.2
   sembast: ^3.2.0+1
   fast_base58: 0.2.1
   uuid: ^3.0.6
@@ -50,44 +52,53 @@ dev_dependencies:
   json_serializable: ^6.3.1
   mockito: ^5.3.2
   injectable_generator: ^1.5.3
-  build_runner: ^2.2.1
+  build_runner: ^2.3.3
   freezed: ^2.1.1
   envied_generator: ^0.2.3
 
 ffigen:
-  name: NativeIden3CoreLib
-  description: Bindings to `ios/Classes/libiden3core.h`.
-  output: 'lib/identity/libs/iden3core/native_iden3core.dart'
+  #name: NativePolygonIdCoreLib
+  #description: Bindings to `ios/Classes/libpolygonid.h`.
+  #output: 'lib/common/libs/polygonidcore/native_polygonidcore.dart'
+  #headers:
+  #  entry-points:
+  #    - 'ios/Classes/libpolygonid.h'
+
+        # name: WitnessMtpLib
+        # description: Bindings to `ios/Classes/witnesscalc_credentialAtomicQueryMTPV2.h`.
+        # output: 'lib/proof/libs/mtp_v2/native_witness_mtp_v2.dart'
+        # headers:
+        #  entry-points:
+        #    - 'ios/Classes/witnesscalc_mtp.h'
+
+        # name: WitnessLib
+        # description: Bindings to `ios/Classes/witnesscalc.h`.
+        # output: 'lib/libs/generated_bindings_witness.dart'
+        # headers:
+        #  entry-points:
+        #   - 'ios/Classes/witnesscalc.h'
+
+  #name: NativeWitnessMtpOnchainLib
+  #description: Bindings to `ios/Classes/witnesscalc_credentialAtomicQueryMTPV2OnChain.h`.
+  #output: 'lib/proof/libs/witnesscalc/mtp_v2_onchain/native_witness_mtp_v2_onchain.dart'
+  #headers:
+  #  entry-points:
+  #    - 'ios/Classes/witnesscalc_credentialAtomicQueryMTPV2OnChain.h'
+
+  name: NativeWitnessSigOnchainLib
+  description: Bindings to `ios/Classes/witnesscalc_credentialAtomicQuerySigV2OnChain.h`.
+  output: 'lib/proof/libs/witnesscalc/sig_v2_onchain/native_witness_sig_v2_onchain.dart'
   headers:
     entry-points:
-       - 'ios/Classes/libiden3core.h'
-
-  # name: WitnessMtpLib
-  # description: Bindings to `ios/Classes/witnesscalc_mtp.h`.
-  # output: 'lib/libs/generated_bindings_witness_mtp.dart'
-  # headers:
-  #  entry-points:
-  #    - 'ios/Classes/witnesscalc_mtp.h'
-  # name: WitnessLib
-  # description: Bindings to `ios/Classes/witnesscalc.h`.
-  # output: 'lib/libs/generated_bindings_witness.dart'
-  # headers:
-  #  entry-points:
-   #   - 'ios/Classes/witnesscalc.h'
+      - 'ios/Classes/witnesscalc_credentialAtomicQuerySigV2OnChain.h'
 
 
-  # name: ProverLib
-  # description: Bindings to `ios/Classes/prover.h`.
-  # output: 'lib/libs/generated_bindings_prover.dart'
-    # headers:
-      # entry-points:
-       # - 'ios/Classes/prover.h'
-
-
-
-
-
-
+        # name: ProverLib
+        # description: Bindings to `ios/Classes/prover.h`.
+        # output: 'lib/libs/generated_bindings_prover.dart'
+        # headers:
+        # entry-points:
+      # - 'ios/Classes/prover.h'
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -104,7 +115,6 @@ flutter:
 
   assets:
     - lib/assets/
-    - lib/assets/auth/
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
   #

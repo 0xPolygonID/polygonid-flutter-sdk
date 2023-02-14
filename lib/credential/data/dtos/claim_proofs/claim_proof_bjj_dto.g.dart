@@ -8,15 +8,17 @@ part of 'claim_proof_bjj_dto.dart';
 
 ClaimProofBJJDTO _$ClaimProofBJJDTOFromJson(Map<String, dynamic> json) =>
     ClaimProofBJJDTO(
-      $enumDecode(_$ClaimProofTypeEnumMap, json['@type']),
-      ClaimProofIssuerDTO.fromJson(json['issuer_data'] as Map<String, dynamic>),
+      $enumDecode(_$ClaimProofTypeEnumMap, json['type']),
+      ClaimProofIssuerDTO.fromJson(json['issuerData'] as Map<String, dynamic>),
+      json['coreClaim'] as String,
       json['signature'] as String,
     );
 
 Map<String, dynamic> _$ClaimProofBJJDTOToJson(ClaimProofBJJDTO instance) =>
     <String, dynamic>{
-      '@type': _$ClaimProofTypeEnumMap[instance.type]!,
-      'issuer_data': instance.issuer.toJson(),
+      'type': _$ClaimProofTypeEnumMap[instance.type]!,
+      'issuerData': instance.issuer.toJson(),
+      'coreClaim': instance.coreClaim,
       'signature': instance.signature,
     };
 
@@ -30,9 +32,10 @@ ClaimProofIssuerBJJDTO _$ClaimProofIssuerBJJDTOFromJson(
     ClaimProofIssuerBJJDTO(
       json['id'] as String,
       ClaimProofIssuerStateDTO.fromJson(json['state'] as Map<String, dynamic>),
-      (json['auth_claim'] as List<dynamic>).map((e) => e as String).toList(),
+      json['authCoreClaim'] as String,
       ClaimProofMTPDTO.fromJson(json['mtp'] as Map<String, dynamic>),
-      json['revocation_status'] as String,
+      ClaimProofIssuerCredStatusDTO.fromJson(
+          json['credentialStatus'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$ClaimProofIssuerBJJDTOToJson(
@@ -40,7 +43,7 @@ Map<String, dynamic> _$ClaimProofIssuerBJJDTOToJson(
     <String, dynamic>{
       'id': instance.id,
       'state': instance.state.toJson(),
-      'auth_claim': instance.authClaim,
+      'authCoreClaim': instance.authCoreClaim,
       'mtp': instance.mtp.toJson(),
-      'revocation_status': instance.revocationStatus,
+      'credentialStatus': instance.credentialStatus.toJson(),
     };

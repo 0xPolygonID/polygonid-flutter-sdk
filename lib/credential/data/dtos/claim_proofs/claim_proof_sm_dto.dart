@@ -8,8 +8,9 @@ part 'claim_proof_sm_dto.g.dart';
 class ClaimProofSMDTO extends ClaimProofDTO {
   final ClaimProofMTPDTO mtp;
 
-  ClaimProofSMDTO(ClaimProofType type, ClaimProofIssuerSMDTO issuer, this.mtp)
-      : super(type, issuer);
+  ClaimProofSMDTO(ClaimProofType type, ClaimProofIssuerSMDTO issuer,
+      String coreClaim, this.mtp)
+      : super(type, issuer, coreClaim);
 
   factory ClaimProofSMDTO.fromJson(Map<String, dynamic> json) =>
       _$ClaimProofSMDTOFromJson(json);
@@ -32,15 +33,15 @@ class ClaimProofIssuerSMDTO extends ClaimProofIssuerDTO {
 
 @JsonSerializable(explicitToJson: true)
 class ClaimProofIssuerStateSMDTO extends ClaimProofIssuerStateDTO {
-  @JsonKey(name: 'block_number')
+  @JsonKey(name: 'blockNumber')
   final int number;
-  @JsonKey(name: 'block_timestamp')
+  @JsonKey(name: 'blockTimestamp')
   final int timestamp;
-  @JsonKey(name: 'revocation_tree_root')
+  @JsonKey(name: 'revocationTreeRoot')
   final String revocationTree;
-  @JsonKey(name: 'root_of_roots')
+  @JsonKey(name: 'rootOfRoots')
   final String root;
-  @JsonKey(name: 'tx_id')
+  @JsonKey(name: 'txId')
   final String tx;
 
   ClaimProofIssuerStateSMDTO(String treeRoot, String value, this.number,

@@ -8,14 +8,15 @@ part of 'claim_info_dto.dart';
 
 ClaimInfoDTO _$ClaimInfoDTOFromJson(Map<String, dynamic> json) => ClaimInfoDTO(
       json['id'] as String,
-      json['expiration'] as String?,
-      json['updatable'] as bool?,
-      json['version'] as int,
-      json['rev_nonce'] as int,
+      (json['@context'] as List<dynamic>).map((e) => e as String).toList(),
+      (json['type'] as List<dynamic>).map((e) => e as String).toList(),
+      json['expirationDate'] as String?,
+      json['issuanceDate'] as String,
       CredentialSubjectDTO.fromJson(
           json['credentialSubject'] as Map<String, dynamic>),
       CredentialStatusDTO.fromJson(
           json['credentialStatus'] as Map<String, dynamic>),
+      json['issuer'] as String,
       CredentialSchemaDTO.fromJson(
           json['credentialSchema'] as Map<String, dynamic>),
       (json['proof'] as List<dynamic>)
@@ -26,12 +27,13 @@ ClaimInfoDTO _$ClaimInfoDTOFromJson(Map<String, dynamic> json) => ClaimInfoDTO(
 Map<String, dynamic> _$ClaimInfoDTOToJson(ClaimInfoDTO instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'expiration': instance.expiration,
-      'updatable': instance.updatable,
-      'version': instance.version,
-      'rev_nonce': instance.revNonce,
+      '@context': instance.context,
+      'type': instance.type,
+      'expirationDate': instance.expirationDate,
+      'issuanceDate': instance.issuanceDate,
       'credentialSubject': instance.credentialSubject.toJson(),
       'credentialStatus': instance.credentialStatus.toJson(),
+      'issuer': instance.issuer,
       'credentialSchema': instance.credentialSchema.toJson(),
       'proof': instance.proofs.map((e) => e.toJson()).toList(),
     };
@@ -39,25 +41,38 @@ Map<String, dynamic> _$ClaimInfoDTOToJson(ClaimInfoDTO instance) =>
 CredentialStatusDTO _$CredentialStatusDTOFromJson(Map<String, dynamic> json) =>
     CredentialStatusDTO(
       json['id'] as String,
-      json['type'] as String,
+      json['revocationNonce'] as int?,
+      $enumDecode(_$CredentialStatusTypeEnumMap, json['type']),
+      json['statusIssuer'] == null
+          ? null
+          : CredentialStatusDTO.fromJson(
+              json['statusIssuer'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$CredentialStatusDTOToJson(
         CredentialStatusDTO instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'type': instance.type,
+      'revocationNonce': instance.revocationNonce,
+      'type': _$CredentialStatusTypeEnumMap[instance.type]!,
+      'statusIssuer': instance.statusIssuer?.toJson(),
     };
+
+const _$CredentialStatusTypeEnumMap = {
+  CredentialStatusType.reverseSparseMerkleTreeProof:
+      'Iden3ReverseSparseMerkleTreeProof',
+  CredentialStatusType.sparseMerkleTreeProof: 'SparseMerkleTreeProof',
+};
 
 CredentialSchemaDTO _$CredentialSchemaDTOFromJson(Map<String, dynamic> json) =>
     CredentialSchemaDTO(
-      json['@id'] as String,
+      json['id'] as String,
       json['type'] as String,
     );
 
 Map<String, dynamic> _$CredentialSchemaDTOToJson(
         CredentialSchemaDTO instance) =>
     <String, dynamic>{
-      '@id': instance.id,
+      'id': instance.id,
       'type': instance.type,
     };
