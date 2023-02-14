@@ -6,6 +6,7 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_proof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 
 import '../../libs/polygonidcore/pidcore_proof.dart';
 import '../dtos/atomic_query_inputs_param.dart';
@@ -18,7 +19,7 @@ class LibPolygonIdCoreWrapper {
 
   Future<String> getProofInputs(
       AtomicQueryInputsParam atomicQueryInputsParam) async {
-    return compute(_computeAtomicQueryInputs, atomicQueryInputsParam);
+    return compute(_computeAtomicQueryInputs, atomicQueryInputsParam).catchError((error) => throw NullAtomicQueryInputsException(atomicQueryInputsParam.id));
   }
 
   Future<String> _computeAtomicQueryInputs(AtomicQueryInputsParam param) {
