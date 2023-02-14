@@ -129,20 +129,22 @@ class ProofRepositoryImpl extends ProofRepository {
       nonRevProofMap = _authProofMapper.mapTo(nonRevProof);
     }
 
-    String? res = await _libPolygonIdCoreProofDataSource.getProofInputs(
-      id: id,
-      profileNonce: profileNonce,
-      claimSubjectProfileNonce: claimSubjectProfileNonce,
-      authClaim: authClaim,
-      incProof: incProofMap,
-      nonRevProof: nonRevProofMap,
-      gistProof: gistProofMap,
-      treeState: treeState,
-      challenge: challenge,
-      signature: signature,
-      credential: credentialDto.info,
-      request: request,
-    ).catchError((error) => throw NullAtomicQueryInputsException(id));
+    String? res = await _libPolygonIdCoreProofDataSource
+        .getProofInputs(
+          id: id,
+          profileNonce: profileNonce,
+          claimSubjectProfileNonce: claimSubjectProfileNonce,
+          authClaim: authClaim,
+          incProof: incProofMap,
+          nonRevProof: nonRevProofMap,
+          gistProof: gistProofMap,
+          treeState: treeState,
+          challenge: challenge,
+          signature: signature,
+          credential: credentialDto.info,
+          request: request,
+        )
+        .catchError((error) => throw NullAtomicQueryInputsException(id));
 
     if (res != null && res.isNotEmpty) {
       Uint8List inputsJsonBytes;
