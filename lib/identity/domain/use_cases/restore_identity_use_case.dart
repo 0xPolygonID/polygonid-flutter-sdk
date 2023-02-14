@@ -40,7 +40,6 @@ class RestoreIdentityUseCase
   @override
   Future<PrivateIdentityEntity> execute(
       {required RestoreIdentityParam param}) async {
-
     PrivateIdentityEntity? privateIdentity;
     try {
       String genesisDid = await _getDidIdentifierUseCase.execute(
@@ -48,16 +47,16 @@ class RestoreIdentityUseCase
               privateKey: param.privateKey,
               blockchain: param.blockchain,
               network: param.network));
-      privateIdentity = await _getIdentityUseCase.execute(param: GetIdentityParam(did: genesisDid, privateKey: param.privateKey)) as PrivateIdentityEntity;
+      privateIdentity = await _getIdentityUseCase.execute(
+          param: GetIdentityParam(
+              did: genesisDid,
+              privateKey: param.privateKey)) as PrivateIdentityEntity;
     } on UnknownIdentityException {
-
-      privateIdentity =
-      await _createAndSaveIdentityUseCase.execute(
+      privateIdentity = await _createAndSaveIdentityUseCase.execute(
           param: CreateAndSaveIdentityParam(
               privateKey: param.privateKey,
               blockchain: param.blockchain,
               network: param.network));
-
     } catch (error) {
       logger().e("[RestoreIdentityUseCase] Error: $error");
 
