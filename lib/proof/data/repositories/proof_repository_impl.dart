@@ -142,7 +142,7 @@ class ProofRepositoryImpl extends ProofRepository {
       signature: signature,
       credential: credentialDto.info,
       request: request,
-    );
+    ).catchError((error) => throw NullAtomicQueryInputsException(id));
 
     if (res != null && res.isNotEmpty) {
       Uint8List inputsJsonBytes;
