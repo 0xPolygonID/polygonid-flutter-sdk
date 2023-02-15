@@ -1,5 +1,6 @@
 enum FilterOperator {
   equal,
+  equalsAnyInList,
   greater,
   lesser,
   greaterEqual,
