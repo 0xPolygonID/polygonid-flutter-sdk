@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 /// Represents an identity.
 class IdentityEntity {
   final String did;
@@ -20,8 +22,8 @@ class IdentityEntity {
       other is IdentityEntity &&
           runtimeType == other.runtimeType &&
           did == other.did &&
-          publicKey == other.publicKey &&
-          profiles == other.profiles;
+          listEquals(publicKey, other.publicKey) &&
+          mapEquals(profiles, other.profiles);
 
   @override
   int get hashCode => runtimeType.hashCode;

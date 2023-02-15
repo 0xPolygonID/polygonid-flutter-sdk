@@ -9,7 +9,8 @@ class GetPublicKeysUseCase extends FutureUseCase<String, List<String>> {
 
   @override
   Future<List<String>> execute({required String param}) {
-    return Future.value(_identityRepository.getPublicKeys(privateKey: param).then((publicKeys) {
+    return Future.value(
+        _identityRepository.getPublicKeys(privateKey: param).then((publicKeys) {
       logger()
           .i("[GetPublicKeysUseCase] Message $param publicKeys: $publicKeys");
 

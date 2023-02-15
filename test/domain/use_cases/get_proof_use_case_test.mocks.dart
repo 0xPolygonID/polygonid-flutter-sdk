@@ -341,38 +341,6 @@ class MockIdentityRepository extends _i1.Mock
         returnValue: _i9.Future<List<String>>.value(<String>[]),
       ) as _i9.Future<List<String>>);
   @override
-  _i9.Future<_i5.IdentityEntity> createIdentity({
-    required String? privateKey,
-    required String? blockchain,
-    required String? network,
-    List<int>? profiles,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #createIdentity,
-          [],
-          {
-            #privateKey: privateKey,
-            #blockchain: blockchain,
-            #network: network,
-            #profiles: profiles,
-          },
-        ),
-        returnValue: _i9.Future<_i5.IdentityEntity>.value(_FakeIdentityEntity_3(
-          this,
-          Invocation.method(
-            #createIdentity,
-            [],
-            {
-              #privateKey: privateKey,
-              #blockchain: blockchain,
-              #network: network,
-              #profiles: profiles,
-            },
-          ),
-        )),
-      ) as _i9.Future<_i5.IdentityEntity>);
-  @override
   _i9.Future<void> storeIdentity({required _i5.IdentityEntity? identity}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -447,6 +415,7 @@ class MockIdentityRepository extends _i1.Mock
     required String? privateKey,
     required String? blockchain,
     required String? network,
+    required List<String>? authClaim,
     required int? profileNonce,
   }) =>
       (super.noSuchMethod(
@@ -457,6 +426,7 @@ class MockIdentityRepository extends _i1.Mock
             #privateKey: privateKey,
             #blockchain: blockchain,
             #network: network,
+            #authClaim: authClaim,
             #profileNonce: profileNonce,
           },
         ),
@@ -476,23 +446,6 @@ class MockIdentityRepository extends _i1.Mock
             #identityState: identityState,
             #nonce: nonce,
             #baseUrl: baseUrl,
-          },
-        ),
-        returnValue:
-            _i9.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
-      ) as _i9.Future<Map<String, dynamic>>);
-  @override
-  _i9.Future<Map<String, dynamic>> createIdentityState({
-    required String? did,
-    required String? privateKey,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #createIdentityState,
-          [],
-          {
-            #did: did,
-            #privateKey: privateKey,
           },
         ),
         returnValue:

@@ -24,31 +24,32 @@ class RemoveProfileParam {
   });
 }
 
-class RemoveProfileUseCase
-    extends FutureUseCase<RemoveProfileParam, void> {
+class RemoveProfileUseCase extends FutureUseCase<RemoveProfileParam, void> {
   final IdentityRepository _identityRepository;
   final GetIdentityUseCase _getIdentityUseCase;
   final GetDidUseCase _getDidUseCase;
   final UpdateIdentityUseCase _updateIdentityUseCase;
 
-  RemoveProfileUseCase(this._identityRepository, this._getIdentityUseCase, this._getDidUseCase, this._updateIdentityUseCase);
+  RemoveProfileUseCase(this._identityRepository, this._getIdentityUseCase,
+      this._getDidUseCase, this._updateIdentityUseCase);
 
   @override
   Future<void> execute({required RemoveProfileParam param}) async {
-    var identityEntity = await _getIdentityUseCase
-        .execute(param: GetIdentityParam(genesisDid: param.genesisDid, privateKey: param.privateKey));
+    var identityEntity = await _getIdentityUseCase.execute(
+        param: GetIdentityParam(
+            genesisDid: param.genesisDid, privateKey: param.privateKey));
     if (identityEntity is PrivateIdentityEntity) {
-
       var didEntity = await _getDidUseCase.execute(param: param.genesisDid);
 
       List<int> profiles = identityEntity.profiles.keys.toList();
       profiles.remove(param.profileNonce);
 
-      await _updateIdentityUseCase.execute(param: UpdateIdentityParam(
-          privateKey: param.privateKey,
-          blockchain: didEntity.blockchain,
-          network: didEntity.network,
-          profiles:profiles));
+      await _updateIdentityUseCase.execute(
+          param: UpdateIdentityParam(
+              privateKey: param.privateKey,
+              blockchain: didEntity.blockchain,
+              network: didEntity.network,
+              profiles: profiles));
     } else {
       throw InvalidPrivateKeyException(param.privateKey);
     }

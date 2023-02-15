@@ -15,14 +15,13 @@ class AddIdentityParam {
   final String privateKey;
   final String blockchain;
   final String network;
-  final List<int>? profiles;
+  final List<int> profiles;
 
-  AddIdentityParam({
-    required this.privateKey,
-    required this.blockchain,
-    required this.network,
-    this.profiles
-  });
+  AddIdentityParam(
+      {required this.privateKey,
+      required this.blockchain,
+      required this.network,
+      this.profiles = const []});
 }
 
 class AddIdentityUseCase
@@ -33,14 +32,13 @@ class AddIdentityUseCase
 
   AddIdentityUseCase(
     this._identityRepository,
-      this._createIdentityUseCase,
-      this._createIdentityStateUseCase,
+    this._createIdentityUseCase,
+    this._createIdentityStateUseCase,
   );
 
   @override
   Future<PrivateIdentityEntity> execute(
       {required AddIdentityParam param}) async {
-
     // Create the [IdentityEntity]
     PrivateIdentityEntity identity = await _createIdentityUseCase.execute(
         param: CreateIdentityParam(
@@ -49,7 +47,6 @@ class AddIdentityUseCase
             network: param.network,
             profiles: param.profiles));
     try {
-
       // Check if identity is already stored (already added)
       await _identityRepository.getIdentity(genesisDid: identity.did);
 
@@ -62,9 +59,9 @@ class AddIdentityUseCase
       // create identity state for each profile did
       if (identity.profiles != null) {
         for (String profileDid in identity.profiles.values) {
-          await _createIdentityStateUseCase.execute(param:
-          CreateIdentityStateParam(did: profileDid,
-              privateKey: param.privateKey));
+          await _createIdentityStateUseCase.execute(
+              param: CreateIdentityStateParam(
+                  did: profileDid, privateKey: param.privateKey));
         }
       }
     } catch (error) {

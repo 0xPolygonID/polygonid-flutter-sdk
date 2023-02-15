@@ -16,8 +16,6 @@ import '../../../proof/data/mappers/proof_mapper.dart';
 import '../../../proof/domain/entities/proof_entity.dart';
 import '../../domain/repositories/smt_repository.dart';
 import '../data_sources/smt_data_source.dart';
-import '../dtos/hash_dto.dart';
-import '../dtos/node_dto.dart';
 import '../mappers/hash_mapper.dart';
 import '../mappers/node_mapper.dart';
 
@@ -42,29 +40,40 @@ class SMTRepositoryImpl implements SMTRepository {
     this._treeStateMapper,
   );
 
-  @override
-  Future<HashEntity> addLeaf(
-      {required HashEntity key,
-      required HashEntity value,
+  // @override
+  // Future<HashEntity> addLeaf({required HashEntity key,
+  //   required HashEntity value,
+  //   required TreeType type,
+  //   required String did,
+  //   required String privateKey}) async {
+  //   final keyHash = _hashMapper.mapTo(key);
+  //   final valueHash = _hashMapper.mapTo(value);
+  //   final oneHash = HashDTO.fromBigInt(BigInt.one);
+  //   final newNodeChildren = [keyHash, valueHash, oneHash];
+  //   String nodeHashString = await _libBabyJubJubDataSource.hashPoseidon3(
+  //       keyHash.toString(), valueHash.toString(), BigInt.one.toString());
+  //   HashDTO nodeHash = HashDTO.fromBigInt(BigInt.parse(nodeHashString));
+  //   final newNodeLeaf = NodeDTO(
+  //       hash: nodeHash, children: newNodeChildren, type: NodeTypeDTO.leaf);
+  //   return _smtDataSource
+  //       .addLeaf(
+  //       newNodeLeaf: newNodeLeaf,
+  //       storeName: _treeTypeMapper.mapTo(type),
+  //       did: did,
+  //       privateKey: privateKey)
+  //       .then((dto) => _hashMapper.mapFrom(dto)); // returns new root
+  // }
+
+  Future<void> addLeaf(
+      {required NodeEntity leaf,
       required TreeType type,
       required String did,
-      required String privateKey}) async {
-    final keyHash = _hashMapper.mapTo(key);
-    final valueHash = _hashMapper.mapTo(value);
-    final oneHash = HashDTO.fromBigInt(BigInt.one);
-    final newNodeChildren = [keyHash, valueHash, oneHash];
-    String nodeHashString = await _libBabyJubJubDataSource.hashPoseidon3(
-        keyHash.toString(), valueHash.toString(), BigInt.one.toString());
-    HashDTO nodeHash = HashDTO.fromBigInt(BigInt.parse(nodeHashString));
-    final newNodeLeaf = NodeDTO(
-        hash: nodeHash, children: newNodeChildren, type: NodeTypeDTO.leaf);
-    return _smtDataSource
-        .addLeaf(
-            newNodeLeaf: newNodeLeaf,
-            storeName: _treeTypeMapper.mapTo(type),
-            did: did,
-            privateKey: privateKey)
-        .then((dto) => _hashMapper.mapFrom(dto)); // returns new root
+      required String privateKey}) {
+    return _smtDataSource.addLeaf(
+        newNodeLeaf: _nodeMapper.mapTo(leaf),
+        storeName: _treeTypeMapper.mapTo(type),
+        did: did,
+        privateKey: privateKey);
   }
 
   @override
@@ -154,6 +163,20 @@ class SMTRepositoryImpl implements SMTRepository {
         proof: _proofMapper.mapTo(proof),
         node: _nodeMapper.mapTo(node),
         treeRoot: _hashMapper.mapTo(treeRoot));
+  }
+
+  @override
+  Future<void> createSMT({
+    required int maxLevels,
+    required TreeType type,
+    required String did,
+    required String privateKey,
+  }) {
+    return _smtDataSource.createSMT(
+        maxLevels: maxLevels,
+        storeName: _treeTypeMapper.mapTo(type),
+        did: did,
+        privateKey: privateKey);
   }
 
   @override

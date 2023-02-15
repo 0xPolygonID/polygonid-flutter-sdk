@@ -18,14 +18,13 @@ class UpdateIdentityParam {
   final String privateKey;
   final String blockchain;
   final String network;
-  final List<int>? profiles;
+  final List<int> profiles;
 
-  UpdateIdentityParam({
-    required this.privateKey,
-    required this.blockchain,
-    required this.network,
-    this.profiles
-  });
+  UpdateIdentityParam(
+      {required this.privateKey,
+      required this.blockchain,
+      required this.network,
+      this.profiles = const []});
 }
 
 class UpdateIdentityUseCase
@@ -37,17 +36,16 @@ class UpdateIdentityUseCase
   final RemoveAllClaimsUseCase _removeAllClaimsUseCase;
 
   UpdateIdentityUseCase(
-      this._identityRepository,
-      this._createIdentityUseCase,
-      this._createIdentityStateUseCase,
-      this._removeIdentityStateUseCase,
-      this._removeAllClaimsUseCase,
+    this._identityRepository,
+    this._createIdentityUseCase,
+    this._createIdentityStateUseCase,
+    this._removeIdentityStateUseCase,
+    this._removeAllClaimsUseCase,
   );
 
   @override
   Future<PrivateIdentityEntity> execute(
       {required UpdateIdentityParam param}) async {
-
     // Create the new [IdentityEntity]
     PrivateIdentityEntity identity = await _createIdentityUseCase.execute(
         param: CreateIdentityParam(
@@ -58,18 +56,22 @@ class UpdateIdentityUseCase
 
     try {
       // Check if identity is already stored (already added)
-      IdentityEntity oldIdentity = await _identityRepository.getIdentity(genesisDid: identity.did);
+      IdentityEntity oldIdentity =
+          await _identityRepository.getIdentity(genesisDid: identity.did);
 
       // remove old identity states and claims
       if (oldIdentity.profiles != null) {
         for (int profileDid in oldIdentity.profiles.keys) {
-          if (identity.profiles == null || identity.profiles[profileDid] == null) {
-            await _removeIdentityStateUseCase.execute(param:
-            RemoveIdentityStateParam(did: oldIdentity.profiles[profileDid]!,
-                privateKey: param.privateKey));
-            await _removeAllClaimsUseCase.execute(param:
-            RemoveAllClaimsParam(did: oldIdentity.profiles[profileDid]!,
-                privateKey: param.privateKey));
+          if (identity.profiles == null ||
+              identity.profiles[profileDid] == null) {
+            await _removeIdentityStateUseCase.execute(
+                param: RemoveIdentityStateParam(
+                    did: oldIdentity.profiles[profileDid]!,
+                    privateKey: param.privateKey));
+            await _removeAllClaimsUseCase.execute(
+                param: RemoveAllClaimsParam(
+                    did: oldIdentity.profiles[profileDid]!,
+                    privateKey: param.privateKey));
           }
         }
       }
@@ -77,10 +79,11 @@ class UpdateIdentityUseCase
       // create identity state for each profile did that was not previously created
       if (identity.profiles != null) {
         for (String profileDid in identity.profiles.values) {
-          if (oldIdentity.profiles == null || oldIdentity.profiles[profileDid] == null) {
-            await _createIdentityStateUseCase.execute(param:
-            CreateIdentityStateParam(did: profileDid,
-                privateKey: param.privateKey));
+          if (oldIdentity.profiles == null ||
+              oldIdentity.profiles[profileDid] == null) {
+            await _createIdentityStateUseCase.execute(
+                param: CreateIdentityStateParam(
+                    did: profileDid, privateKey: param.privateKey));
           }
         }
       }

@@ -1,4 +1,3 @@
-
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_use_case.dart';
@@ -38,10 +37,9 @@ class RemoveIdentityUseCase extends FutureUseCase<RemoveIdentityParam, void> {
       // remove identity state and claims for each profile did
       if (profilesMap != null) {
         for (String profileDid in profilesMap.values) {
-
-          await _removeIdentityStateUseCase.execute(param:
-          RemoveIdentityStateParam(did: profileDid,
-              privateKey: param.privateKey));
+          await _removeIdentityStateUseCase.execute(
+              param: RemoveIdentityStateParam(
+                  did: profileDid, privateKey: param.privateKey));
 
           await _removeAllClaimsUseCase.execute(
               param: RemoveAllClaimsParam(

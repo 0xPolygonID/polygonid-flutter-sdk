@@ -162,7 +162,6 @@ MockIdentityDTOMapper identityDTOMapper = MockIdentityDTOMapper();
 MockRhsNodeMapper rhsNodeMapper = MockRhsNodeMapper();
 MockStateIdentifierMapper stateIdentifierMapper = MockStateIdentifierMapper();
 MockNodeMapper nodeMapper = MockNodeMapper();
-MockQMapper qMapper = MockQMapper();
 MockEncryptionKeyMapper encryptionKeyMapper = MockEncryptionKeyMapper();
 
 // Tested instance
@@ -183,7 +182,6 @@ IdentityRepository repository = IdentityRepositoryImpl(
   rhsNodeMapper,
   stateIdentifierMapper,
   nodeMapper,
-  qMapper,
   encryptionKeyMapper,
 );
 
@@ -205,7 +203,6 @@ IdentityRepository repository = IdentityRepositoryImpl(
   RhsNodeMapper,
   StateIdentifierMapper,
   NodeMapper,
-  QMapper,
   EncryptionKeyMapper,
 ])
 void main() {

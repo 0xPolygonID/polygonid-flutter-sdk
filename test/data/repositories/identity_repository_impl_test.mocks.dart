@@ -37,7 +37,7 @@ import 'package:polygonid_flutter_sdk/identity/data/dtos/node_dto.dart' as _i12;
 import 'package:polygonid_flutter_sdk/identity/data/dtos/rhs_node_dto.dart'
     as _i3;
 import 'package:polygonid_flutter_sdk/identity/data/mappers/encryption_key_mapper.dart'
-    as _i35;
+    as _i34;
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart'
     as _i28;
 import 'package:polygonid_flutter_sdk/identity/data/mappers/identity_dto_mapper.dart'
@@ -46,8 +46,6 @@ import 'package:polygonid_flutter_sdk/identity/data/mappers/node_mapper.dart'
     as _i33;
 import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key_mapper.dart'
     as _i29;
-import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart'
-    as _i34;
 import 'package:polygonid_flutter_sdk/identity/data/mappers/rhs_node_mapper.dart'
     as _i31;
 import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart'
@@ -1149,29 +1147,11 @@ class MockNodeMapper extends _i1.Mock implements _i33.NodeMapper {
       ) as _i12.NodeDTO);
 }
 
-/// A class which mocks [QMapper].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockQMapper extends _i1.Mock implements _i34.QMapper {
-  MockQMapper() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  String mapFrom(String? from) => (super.noSuchMethod(
-        Invocation.method(
-          #mapFrom,
-          [from],
-        ),
-        returnValue: '',
-      ) as String);
-}
-
 /// A class which mocks [EncryptionKeyMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockEncryptionKeyMapper extends _i1.Mock
-    implements _i35.EncryptionKeyMapper {
+    implements _i34.EncryptionKeyMapper {
   MockEncryptionKeyMapper() {
     _i1.throwOnMissingStub(this);
   }

@@ -13,14 +13,12 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/smt_data_source
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/node_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/encryption_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/identity_dto_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/node_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/rhs_node_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
@@ -28,10 +26,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart'
 import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart';
 import 'package:sembast/sembast_io.dart';
-
-import '../../../credential/data/data_sources/local_claim_data_source.dart';
 
 class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
@@ -51,7 +46,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final StateIdentifierMapper _stateIdentifierMapper;
   final NodeMapper _nodeMapper;
   final EncryptionKeyMapper _encryptionKeyMapper;
-  final LocalClaimDataSource _localClaimDataSource;
 
   IdentityRepositoryImpl(
     this._walletDataSource,
@@ -71,7 +65,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._stateIdentifierMapper,
     this._nodeMapper,
     this._encryptionKeyMapper,
-      this._localClaimDataSource,
   );
 
   @override
@@ -91,133 +84,26 @@ class IdentityRepositoryImpl extends IdentityRepository {
         .then((wallet) => wallet.publicKey);
   }
 
-  /// Creates an [IdentityEntity] object
   @override
-  Future<IdentityEntity> createIdentity({
+  Future<void> removeIdentityState({
+    required String did,
     required String privateKey,
-    required String blockchain,
-    required String network,
-    List<int>? profiles
   }) async {
-    try {
-      PrivadoIdWallet wallet = await _walletDataSource.getWallet(
-          privateKey: _hexMapper.mapTo(privateKey));
-
-      String genesisDid = await getDidIdentifier(
-        privateKey: privateKey,
-        blockchain: blockchain,
-        network: network,
-      );
-      Map<int, String> profileMap = {0 : genesisDid};
-      if (profiles != null) {
-        for (int profileNonce in profiles) {
-          profileMap[profileNonce] = await getDidIdentifier(
-            privateKey: privateKey,
-            blockchain: blockchain,
-            network: network,
-            profileNonce: profileNonce,
-          );
-        }
-      }
-
-      IdentityEntity identityEntity = _identityDTOMapper.mapFrom(IdentityDTO(
-          did: genesisDid,
-          publicKey: wallet.publicKey,
-          profiles: profileMap));
-      return Future.value(identityEntity);
-    } catch (error) {
-      return Future.error(IdentityException(error));
-    }
-  }
-
-  @override
-  Future<Map<String, dynamic>> createIdentityState(
-      {
-        required String did,
-        required String privateKey,
-      }) async {
-
-    // 1. initialize merkle trees
-    await _smtDataSource.createSMT(
-        maxLevels: 40,
-        storeName: claimsTreeStoreName,
-        did: did,
-        privateKey: privateKey);
-
-    await _smtDataSource.createSMT(
-        maxLevels: 40,
-        storeName: revocationTreeStoreName,
-        did: did,
-        privateKey: privateKey);
-
-    await _smtDataSource.createSMT(
-        maxLevels: 40,
-        storeName: rootsTreeStoreName,
-        did: did,
-        privateKey: privateKey);
-
-   List<String> authClaim = await _walletDataSource
-        .getWallet(privateKey: _hexMapper.mapTo(privateKey))
-        .then((wallet) => _localClaimDataSource
-        .getAuthClaim(publicKey: wallet.publicKey));
-
-    // 2. add authClaim to claims tree
-    NodeEntity authClaimNode = await getAuthClaimNode(children: authClaim);
-
-    HashDTO claimsTreeRoot = await _smtDataSource.addLeaf(
-        newNodeLeaf: _nodeMapper.mapTo(authClaimNode),
-        storeName: claimsTreeStoreName,
-        did: did,
-        privateKey: privateKey);
-
-    // hash of clatr, revtr, rootr
-    String genesisState = await _libBabyJubJubDataSource.hashPoseidon3(
-        claimsTreeRoot.toString(),
-        BigInt.zero.toString(),
-        BigInt.zero.toString());
-
-    Map<String, dynamic> treeState = {};
-    treeState["state"] = genesisState;
-    treeState["claimsRoot"] = claimsTreeRoot.toString();
-    treeState["revocationRoot"] = BigInt.zero.toString();
-    treeState["rootOfRoots"] = BigInt.zero.toString();
-    return treeState;
-  }
-
-  @override
-  Future<void> removeIdentityState(
-      {
-        required String did,
-        required String privateKey,
-      }) async {
-
     // 1. remove merkle trees
     await _smtDataSource.removeSMT(
-        storeName: claimsTreeStoreName,
-        did: did,
-        privateKey: privateKey);
+        storeName: claimsTreeStoreName, did: did, privateKey: privateKey);
     await _smtDataSource.removeRoot(
-        storeName: claimsTreeStoreName,
-        did: did,
-        privateKey: privateKey);
+        storeName: claimsTreeStoreName, did: did, privateKey: privateKey);
 
     await _smtDataSource.removeSMT(
-        storeName: revocationTreeStoreName,
-        did: did,
-        privateKey: privateKey);
+        storeName: revocationTreeStoreName, did: did, privateKey: privateKey);
     await _smtDataSource.removeRoot(
-        storeName: revocationTreeStoreName,
-        did: did,
-        privateKey: privateKey);
+        storeName: revocationTreeStoreName, did: did, privateKey: privateKey);
 
     await _smtDataSource.removeSMT(
-        storeName: rootsTreeStoreName,
-        did: did,
-        privateKey: privateKey);
+        storeName: rootsTreeStoreName, did: did, privateKey: privateKey);
     await _smtDataSource.removeRoot(
-        storeName: rootsTreeStoreName,
-        did: did,
-        privateKey: privateKey);
+        storeName: rootsTreeStoreName, did: did, privateKey: privateKey);
   }
 
   Future<Map<String, dynamic>> _getGenesisState(
@@ -348,12 +234,12 @@ class IdentityRepositoryImpl extends IdentityRepository {
     required String privateKey,
     required String blockchain,
     required String network,
+    required List<String> authClaim,
     int profileNonce = 0,
   }) {
     return _walletDataSource
         .getWallet(privateKey: _hexMapper.mapTo(privateKey))
         .then((wallet) =>
-            _localClaimDataSource.getAuthClaim(publicKey: wallet.publicKey).then((authClaim) =>
             _getGenesisState(authClaim: authClaim).then((genesisState) {
               // Get the genesis id
               String genesisId =
@@ -368,7 +254,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
                 Map<String, dynamic> profile = jsonDecode(profileId);
                 return Future.value(profile["profileDID"]);
               }
-            })));
+            }));
   }
 
   @override

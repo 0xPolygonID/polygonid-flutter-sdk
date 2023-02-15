@@ -95,35 +95,6 @@ class MockIdentityRepository extends _i1.Mock
         returnValue: _i6.Future<List<String>>.value(<String>[]),
       ) as _i6.Future<List<String>>);
   @override
-  _i6.Future<_i2.IdentityEntity> createIdentity({
-    required String? didIdentifier,
-    required String? privateKey,
-    required List<String>? authClaim,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #createIdentity,
-          [],
-          {
-            #didIdentifier: didIdentifier,
-            #privateKey: privateKey,
-            #authClaim: authClaim,
-          },
-        ),
-        returnValue: _i6.Future<_i2.IdentityEntity>.value(_FakeIdentityEntity_0(
-          this,
-          Invocation.method(
-            #createIdentity,
-            [],
-            {
-              #didIdentifier: didIdentifier,
-              #privateKey: privateKey,
-              #authClaim: authClaim,
-            },
-          ),
-        )),
-      ) as _i6.Future<_i2.IdentityEntity>);
-  @override
   _i6.Future<void> storeIdentity({required _i2.IdentityEntity? identity}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -135,30 +106,36 @@ class MockIdentityRepository extends _i1.Mock
         returnValueForMissingStub: _i6.Future<void>.value(),
       ) as _i6.Future<void>);
   @override
-  _i6.Future<void> removeIdentity({required String? did}) =>
+  _i6.Future<void> removeIdentity({
+    required String? genesisDid,
+    required String? privateKey,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #removeIdentity,
           [],
-          {#did: did},
+          {
+            #genesisDid: genesisDid,
+            #privateKey: privateKey,
+          },
         ),
         returnValue: _i6.Future<void>.value(),
         returnValueForMissingStub: _i6.Future<void>.value(),
       ) as _i6.Future<void>);
   @override
-  _i6.Future<_i2.IdentityEntity> getIdentity({required String? did}) =>
+  _i6.Future<_i2.IdentityEntity> getIdentity({required String? genesisDid}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getIdentity,
           [],
-          {#did: did},
+          {#genesisDid: genesisDid},
         ),
         returnValue: _i6.Future<_i2.IdentityEntity>.value(_FakeIdentityEntity_0(
           this,
           Invocation.method(
             #getIdentity,
             [],
-            {#did: did},
+            {#genesisDid: genesisDid},
           ),
         )),
       ) as _i6.Future<_i2.IdentityEntity>);
@@ -229,6 +206,23 @@ class MockIdentityRepository extends _i1.Mock
             _i6.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
       ) as _i6.Future<Map<String, dynamic>>);
   @override
+  _i6.Future<void> removeIdentityState({
+    required String? did,
+    required String? privateKey,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #removeIdentityState,
+          [],
+          {
+            #did: did,
+            #privateKey: privateKey,
+          },
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+  @override
   _i6.Future<String> getState({
     required String? identifier,
     required String? contractAddress,
@@ -271,16 +265,6 @@ class MockIdentityRepository extends _i1.Mock
           ),
         )),
       ) as _i6.Future<_i3.RhsNodeEntity>);
-  @override
-  _i6.Future<String> getChallenge({required String? message}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getChallenge,
-          [],
-          {#message: message},
-        ),
-        returnValue: _i6.Future<String>.value(''),
-      ) as _i6.Future<String>);
   @override
   _i6.Future<_i4.NodeEntity> getAuthClaimNode(
           {required List<String>? children}) =>

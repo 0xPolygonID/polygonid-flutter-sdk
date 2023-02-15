@@ -39,7 +39,8 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   final RemoteIden3commDataSource _remoteIden3commDataSource;
   final LibPolygonIdCoreIden3commDataSource
       _libPolygonIdCoreIden3commDataSource;
-  final LibBabyJubJubDataSource _libBabyJubJubDataSource; // TODO move bjj DS to common
+  final LibBabyJubJubDataSource
+      _libBabyJubJubDataSource; // TODO move bjj DS to common
   final AuthResponseMapper _authResponseMapper;
   final AuthInputsMapper _authInputsMapper;
   final AuthProofMapper _authProofMapper;
@@ -54,7 +55,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     this._authInputsMapper,
     this._authProofMapper,
     this._gistProofMapper,
-      this._qMapper,
+    this._qMapper,
   );
 
   @override

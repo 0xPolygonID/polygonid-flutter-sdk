@@ -99,7 +99,7 @@ void main() {
           verify(getIdentityUseCase.execute(param: captureAnyNamed("param")))
               .captured
               .first;
-      expect(capturedIdentity.did, param.did);
+      expect(capturedIdentity.genesisDid, param.did);
       expect(capturedIdentity.privateKey, param.privateKey);
 
       var capturedSign =
@@ -150,7 +150,7 @@ void main() {
           verify(getIdentityUseCase.execute(param: captureAnyNamed("param")))
               .captured
               .first;
-      expect(capturedIdentity.did, param.did);
+      expect(capturedIdentity.genesisDid, param.did);
       expect(capturedIdentity.privateKey, param.privateKey);
 
       verifyNever(signMessageUseCase.execute(param: captureAnyNamed("param")));

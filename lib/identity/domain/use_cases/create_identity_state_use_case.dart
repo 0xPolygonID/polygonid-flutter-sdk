@@ -1,17 +1,10 @@
-import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_stype.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_auth_claim_use_case.dart';
 
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
-import '../../../credential/domain/use_cases/get_auth_claim_use_case.dart';
-import '../entities/did_entity.dart';
-import '../entities/identity_entity.dart';
 import '../repositories/identity_repository.dart';
-import 'get_did_identifier_use_case.dart';
-import 'get_did_use_case.dart';
-import 'get_identities_use_case.dart';
-import 'get_identity_use_case.dart';
-import 'get_public_keys_use_case.dart';
 
 class CreateIdentityStateParam {
   final String did;
@@ -26,25 +19,52 @@ class CreateIdentityStateParam {
 class CreateIdentityStateUseCase
     extends FutureUseCase<CreateIdentityStateParam, void> {
   final IdentityRepository _identityRepository;
-  final GetPublicKeysUseCase _getPublicKeysUseCase;
-  final GetAuthClaimUseCase _getAuthClaimUseCase;
+  final SMTRepository _smtRepository;
+  final GetIdentityAuthClaimUseCase _getIdentityAuthClaimUseCase;
 
-
-  CreateIdentityStateUseCase(this._identityRepository, this._getPublicKeysUseCase,
-  this._getAuthClaimUseCase);
+  CreateIdentityStateUseCase(
+    this._identityRepository,
+    this._smtRepository,
+    this._getIdentityAuthClaimUseCase,
+  );
 
   @override
   Future<void> execute({required CreateIdentityStateParam param}) async {
-
-    List<String> publicKeys = await _getPublicKeysUseCase
-        .execute(param: param.privateKey);
-
-    // Get AuthClaim
-    List<String> authClaim =
-    await _getAuthClaimUseCase.execute(param: publicKeys);
-
-    await _identityRepository.createIdentityState(
+    return Future.wait([
+      _smtRepository.createSMT(
+        maxLevels: 40,
+        type: TreeType.claims,
         did: param.did,
-        privateKey: param.privateKey);
+        privateKey: param.privateKey,
+      ),
+      _smtRepository.createSMT(
+        maxLevels: 40,
+        type: TreeType.revocation,
+        did: param.did,
+        privateKey: param.privateKey,
+      ),
+      _smtRepository.createSMT(
+        maxLevels: 40,
+        type: TreeType.roots,
+        did: param.did,
+        privateKey: param.privateKey,
+      ),
+    ], eagerError: true)
+        .then((_) =>
+            _getIdentityAuthClaimUseCase.execute(param: param.privateKey))
+        .then((authClaim) =>
+            _identityRepository.getAuthClaimNode(children: authClaim))
+        .then((node) => _smtRepository.addLeaf(
+            leaf: node,
+            type: TreeType.claims,
+            did: param.did,
+            privateKey: param.privateKey))
+        .then((_) => logger()
+            .i("[CreateIdentityStateUseCase] State created with: $param"))
+        .catchError((error) {
+      logger().e("[CreateIdentityStateUseCase] Error: $error");
+
+      throw error;
+    });
   }
 }

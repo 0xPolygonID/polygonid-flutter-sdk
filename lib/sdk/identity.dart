@@ -175,14 +175,14 @@ abstract class PolygonIdSdkIdentity {
 
   Future<void> removeProfile(
       {required String privateKey,
-        required String blockchain,
-        required String network,
-        required int profileNonce});
+      required String blockchain,
+      required String network,
+      required int profileNonce});
 
   Future<Map<int, String>> getProfiles(
       {required String privateKey,
-        required String blockchain,
-        required String network});
+      required String blockchain,
+      required String network});
 }
 
 @injectable
@@ -216,7 +216,7 @@ class Identity implements PolygonIdSdkIdentity {
     this._fetchIdentityStateUseCase,
     this._addProfileUseCase,
     this._getProfilesUseCase,
-      this._removeProfileUseCase,
+    this._removeProfileUseCase,
   );
 
   Future<void> checkIdentityValidity(
@@ -408,14 +408,17 @@ class Identity implements PolygonIdSdkIdentity {
       required String blockchain,
       required String network,
       required int profileNonce}) {
-    return _getDidIdentifierUseCase.execute(
-        param: GetDidIdentifierParam(
-            privateKey: privateKey,
-            blockchain: blockchain,
-            network: network)).then((genesisDid) =>
-    _addProfileUseCase.execute(param: AddProfileParam(profileNonce: profileNonce,
-        genesisDid: genesisDid,
-        privateKey: privateKey)));
+    return _getDidIdentifierUseCase
+        .execute(
+            param: GetDidIdentifierParam(
+                privateKey: privateKey,
+                blockchain: blockchain,
+                network: network))
+        .then((genesisDid) => _addProfileUseCase.execute(
+            param: AddProfileParam(
+                profileNonce: profileNonce,
+                genesisDid: genesisDid,
+                privateKey: privateKey)));
   }
 
   @override
@@ -423,27 +426,32 @@ class Identity implements PolygonIdSdkIdentity {
       {required String privateKey,
       required String blockchain,
       required String network}) {
-    return _getDidIdentifierUseCase.execute(
-        param: GetDidIdentifierParam(
-            privateKey: privateKey,
-            blockchain: blockchain,
-            network: network)).then((genesisDid) =>
-        _getProfilesUseCase.execute(
-            param: GetProfilesParam(
-                genesisDid: genesisDid)));
+    return _getDidIdentifierUseCase
+        .execute(
+            param: GetDidIdentifierParam(
+                privateKey: privateKey,
+                blockchain: blockchain,
+                network: network))
+        .then((genesisDid) => _getProfilesUseCase.execute(
+            param: GetProfilesParam(genesisDid: genesisDid)));
   }
 
   @override
   Future<void> removeProfile(
-      {required String privateKey, required String blockchain,
-        required String network, required int profileNonce}) {
-    return _getDidIdentifierUseCase.execute(
-        param: GetDidIdentifierParam(
-            privateKey: privateKey,
-            blockchain: blockchain,
-            network: network)).then((genesisDid) =>
-        _removeProfileUseCase.execute(param: RemoveProfileParam(profileNonce: profileNonce,
-            genesisDid: genesisDid,
-            privateKey: privateKey)));
+      {required String privateKey,
+      required String blockchain,
+      required String network,
+      required int profileNonce}) {
+    return _getDidIdentifierUseCase
+        .execute(
+            param: GetDidIdentifierParam(
+                privateKey: privateKey,
+                blockchain: blockchain,
+                network: network))
+        .then((genesisDid) => _removeProfileUseCase.execute(
+            param: RemoveProfileParam(
+                profileNonce: profileNonce,
+                genesisDid: genesisDid,
+                privateKey: privateKey)));
   }
 }

@@ -7,8 +7,7 @@ import '../entities/node_entity.dart';
 
 abstract class SMTRepository {
   Future<void> addLeaf(
-      {required HashEntity key,
-      required HashEntity value,
+      {required NodeEntity leaf,
       required TreeType type,
       required String did,
       required String privateKey});
@@ -40,6 +39,13 @@ abstract class SMTRepository {
   /// TODO: use this through an UC
   Future<ProofEntity> generateProof({
     required HashEntity key,
+    required TreeType type,
+    required String did,
+    required String privateKey,
+  });
+
+  Future<void> createSMT({
+    required int maxLevels,
     required TreeType type,
     required String did,
     required String privateKey,

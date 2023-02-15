@@ -27,11 +27,11 @@ class RemoveIdentityStateUseCase
     extends FutureUseCase<RemoveIdentityStateParam, void> {
   final IdentityRepository _identityRepository;
 
-
   RemoveIdentityStateUseCase(this._identityRepository);
 
   @override
   Future<void> execute({required RemoveIdentityStateParam param}) async {
-    return  _identityRepository.removeIdentityState(did: param.did, privateKey: param.privateKey);
+    return _identityRepository.removeIdentityState(
+        did: param.did, privateKey: param.privateKey);
   }
 }

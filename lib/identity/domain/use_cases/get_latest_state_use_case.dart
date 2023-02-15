@@ -18,8 +18,7 @@ class GetLatestStateUseCase
   GetLatestStateUseCase(this._smtRepository);
 
   @override
-  Future<Map<String, dynamic>> execute(
-      {required GetLatestStateParam param}) async {
+  Future<Map<String, dynamic>> execute({required GetLatestStateParam param}) {
     return Future.wait([
       _smtRepository.getRoot(
         type: TreeType.claims,

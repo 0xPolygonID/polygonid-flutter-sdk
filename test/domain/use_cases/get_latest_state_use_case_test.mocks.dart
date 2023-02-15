@@ -70,8 +70,7 @@ class MockSMTRepository extends _i1.Mock implements _i5.SMTRepository {
 
   @override
   _i6.Future<void> addLeaf({
-    required _i3.HashEntity? key,
-    required _i3.HashEntity? value,
+    required _i2.NodeEntity? leaf,
     required _i7.TreeType? type,
     required String? did,
     required String? privateKey,
@@ -81,8 +80,7 @@ class MockSMTRepository extends _i1.Mock implements _i5.SMTRepository {
           #addLeaf,
           [],
           {
-            #key: key,
-            #value: value,
+            #leaf: leaf,
             #type: type,
             #did: did,
             #privateKey: privateKey,
@@ -228,6 +226,27 @@ class MockSMTRepository extends _i1.Mock implements _i5.SMTRepository {
           ),
         )),
       ) as _i6.Future<_i4.ProofEntity>);
+  @override
+  _i6.Future<void> createSMT({
+    required int? maxLevels,
+    required _i7.TreeType? type,
+    required String? did,
+    required String? privateKey,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #createSMT,
+          [],
+          {
+            #maxLevels: maxLevels,
+            #type: type,
+            #did: did,
+            #privateKey: privateKey,
+          },
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
   @override
   _i6.Future<void> removeSMT({
     required _i7.TreeType? type,
