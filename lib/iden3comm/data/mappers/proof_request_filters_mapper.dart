@@ -13,7 +13,7 @@ class ProofRequestFiltersMapper
     List<FilterEntity> filters = [
       FilterEntity(
           name: 'credential.credentialSubject.type', value: query.type),
-      FilterEntity(name: 'credential.@context', value: query.context),
+      FilterEntity(operator: FilterOperator.equalsAnyInList, name: 'credential.@context', value: query.context),
     ];
     if (query.allowedIssuers is List && query.allowedIssuers!.isNotEmpty) {
       if (query.allowedIssuers![0] != "*") {
