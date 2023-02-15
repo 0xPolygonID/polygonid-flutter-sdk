@@ -9,6 +9,8 @@ class FilterMapper extends ToMapper<Filter, FilterEntity> {
     switch (to.operator) {
       case FilterOperator.equal:
         return Filter.equals(to.name, to.value);
+      case FilterOperator.equalsAnyInList:
+        return Filter.equals(to.name, to.value, anyInList: true);
       case FilterOperator.greater:
         return Filter.greaterThan(to.name, to.value);
       case FilterOperator.lesser:
