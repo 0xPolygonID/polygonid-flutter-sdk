@@ -31,12 +31,11 @@ dependencies:
 # Env variables
 
 ### Required:
-
-**POLYGONID_ACCESS_MESSAGE** - Access message used for creating identities. <br />
+**NETWORK_NAME** - Blockchain name. <br />
+**NETWORK_ENV** - Network name. <br />
 **INFURA_URL** - Infura base url. <br />
 **INFURA_RDP_URL** - Infura base rdp url. <br />
 **INFURA_API_KEY** - Infura api key. <br />
-**REVERSE_HASH_SERVICE_URL** - Reverse has service url. <br />
 **ID_STATE_CONTRACT_ADDR** - Identity state smart contract address. <br />
 
 ### Not required:
@@ -49,13 +48,13 @@ dependencies:
 2. Generate `.env` and `.env.dev` files in the root folder of the project.
 3. Add required env variables (example):
    ```bash
-    export POLYGONID_ACCESS_MESSAGE="access_message"
-    export INFURA_URL="https://polygon-mainnet.infura.io/v3/"
-    export INFURA_RDP_URL="wss://polygon-mainnet.infura.io/v3/"
-    export INFURA_API_KEY="secret"
-    export REVERSE_HASH_SERVICE_URL="rhs_url"
-    export ID_STATE_CONTRACT_ADDR="sc_address"
-    export PUSH_URL="push_url"
+    NETWORK_NAME="polygon"
+    NETWORK_ENV="mumbai"
+    INFURA_URL="https://polygon-mumbai.infura.io/v3/"
+    INFURA_RDP_URL="wss://polygon-mumbai.infura.io/v3/"
+    INFURA_API_KEY="secret"
+    ID_STATE_CONTRACT_ADDR="sc_address"
+    PUSH_URL="push_url"
    ```
 4. run `build_runner` to generate `.g.dart` files:
 ```bash
