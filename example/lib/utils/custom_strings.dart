@@ -1,6 +1,4 @@
 class CustomStrings {
-
-
   CustomStrings._();
 
   // APP
@@ -9,10 +7,13 @@ class CustomStrings {
   // HOME
   static const String homeDescription =
       "Generate a new identity or if saved retrieved via PolygonID SDK";
-  static const String homeIdentifierSectionPrefix = "identity.getDidIdentifier()\nIdentifier:";
+  static const String homeIdentifierSectionPrefix =
+      "identity.getDidIdentifier()\nIdentifier:";
   static const String homeIdentifierSectionPlaceHolder = "Not yet created";
-  static const String homeButtonCTA = "Create identity\nidentity.createIdentity()";
-  static const String homeButtonRemoveIdentityCTA = "Remove identity\nidentity.removeIdentity() ";
+  static const String homeButtonCTA =
+      "Create identity\nidentity.createIdentity()";
+  static const String homeButtonRemoveIdentityCTA =
+      "Remove identity\nidentity.removeIdentity() ";
 
   // AUTH
   static const String authButtonCTA = "Connect";
@@ -58,9 +59,11 @@ class CustomStrings {
       "Authenticate through issuer/verifier service provider";
 
   // CHECK IDENTITY VALIDITY FEATURE CARD
-  static const String checkIdentityValidityMethod = "identity.checkIdentityValidity()";
+  static const String checkIdentityValidityMethod =
+      "identity.checkIdentityValidity()";
   static const String checkIdentityValidityTitle = "Check identity validity";
   static const String checkIdentityValidityDescription =
       "Check if the identity is valid";
-  static const String chechIdentityValidityButtonCTA = "Check validity\nidentity.checkIdentityValidity()";
+  static const String chechIdentityValidityButtonCTA =
+      "Check validity\nidentity.checkIdentityValidity()";
 }
