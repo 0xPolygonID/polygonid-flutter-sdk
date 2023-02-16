@@ -1,5 +1,5 @@
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_stype.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 
 import '../../../proof/domain/entities/proof_entity.dart';
 import '../entities/hash_entity.dart';

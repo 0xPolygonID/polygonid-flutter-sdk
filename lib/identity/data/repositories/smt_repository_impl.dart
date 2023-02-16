@@ -10,7 +10,7 @@ import 'package:polygonid_flutter_sdk/identity/data/mappers/tree_type_mapper.dar
 import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_stype.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 
 import '../../../proof/data/mappers/proof_mapper.dart';
 import '../../../proof/domain/entities/proof_entity.dart';

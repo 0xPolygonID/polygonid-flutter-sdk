@@ -1,7 +1,7 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_stype.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
 
 class GetLatestStateParam {

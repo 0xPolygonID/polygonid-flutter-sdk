@@ -12,7 +12,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart'
     as _i2;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart'
     as _i8;
-import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_stype.dart'
+import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart'
     as _i7;
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart'
     as _i5;

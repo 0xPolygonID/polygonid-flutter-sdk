@@ -1,6 +1,6 @@
 import 'package:polygonid_flutter_sdk/common/mappers/to_mapper.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_stype.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 
 class TreeTypeMapper extends ToMapper<String, TreeType> {
   @override

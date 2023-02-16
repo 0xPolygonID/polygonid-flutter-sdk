@@ -28,7 +28,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart'
     as _i5;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart'
     as _i19;
-import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_stype.dart'
+import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart'
     as _i17;
 import 'package:polygonid_flutter_sdk/proof/data/dtos/proof_dto.dart' as _i3;
 import 'package:polygonid_flutter_sdk/proof/data/mappers/proof_mapper.dart'

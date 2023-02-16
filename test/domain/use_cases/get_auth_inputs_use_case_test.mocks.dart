@@ -25,7 +25,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.d
     as _i4;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart'
     as _i21;
-import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_stype.dart'
+import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart'
     as _i20;
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart'
     as _i18;
