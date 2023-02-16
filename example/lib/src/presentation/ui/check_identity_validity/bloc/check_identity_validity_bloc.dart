@@ -21,7 +21,7 @@ class CheckIdentityValidityBloc
     Emitter<CheckIdentityValidityState> emit,
   ) async {
     emit(const CheckIdentityValidityState.loading());
-    _polygonIdSdk.identity
+    await _polygonIdSdk.identity
         .checkIdentityValidity(
             secret: event.secret,
             blockchain: event.blockchain,

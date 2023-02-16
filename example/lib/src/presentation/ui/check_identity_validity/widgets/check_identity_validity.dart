@@ -22,9 +22,9 @@ class _CheckIdentityValidityScreenState
     extends State<CheckIdentityValidityScreen> {
   late final CheckIdentityValidityBloc _bloc;
 
-  String _secret = 'asdqwrrwq';
-  String _blockchain = 'affaaf';
-  String _network = 'affafasf';
+  String _secret = '';
+  String _blockchain = 'polygon';
+  String _network = 'mumbai';
 
   TextEditingController _secretController = TextEditingController();
 
@@ -191,6 +191,8 @@ class _CheckIdentityValidityScreenState
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: TextFormField(
+        enabled: false,
+        initialValue: _blockchain,
         onChanged: (value) {
           _blockchain = value;
           _bloc.add(const ResetCheckIdentityValidity());
@@ -217,6 +219,8 @@ class _CheckIdentityValidityScreenState
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: TextFormField(
+        initialValue: _network,
+        enabled: false,
         onChanged: (value) {
           _network = value;
           _bloc.add(const ResetCheckIdentityValidity());
