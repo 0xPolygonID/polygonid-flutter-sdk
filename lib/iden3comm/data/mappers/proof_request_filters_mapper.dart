@@ -1,6 +1,7 @@
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/mappers/from_mapper.dart';
 
+import '../../../credential/domain/entities/claim_entity.dart';
 import '../../domain/entities/proof_request_entity.dart';
 import '../../domain/entities/request/auth/proof_scope_query_request.dart';
 
@@ -25,6 +26,14 @@ class ProofRequestFiltersMapper
             name: 'issuer',
             value: query.allowedIssuers));
       }
+    }
+
+    if (query.skipClaimRevocationCheck == null ||
+        query.skipClaimRevocationCheck == false) {
+      filters.add(FilterEntity(
+          operator: FilterOperator.nonEqual,
+          name: 'state',
+          value: ClaimState.revoked.name));
     }
 
     if (query.credentialSubject != null) {

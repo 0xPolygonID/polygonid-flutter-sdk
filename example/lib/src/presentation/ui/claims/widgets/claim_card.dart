@@ -65,7 +65,6 @@ class ClaimCard extends StatelessWidget {
                     Text(
                       claimModel.name,
                       style: const TextStyle(
-                        fontFamily: 'ModernEra',
                         fontWeight: FontWeight.w500,
                         color: Colors.white,
                         fontSize: 26,

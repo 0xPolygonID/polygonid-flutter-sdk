@@ -7,10 +7,9 @@ import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/data/secure_storage.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_state.dart';
+import 'package:polygonid_flutter_sdk_example/utils/blockchain_resources.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
 import 'package:polygonid_flutter_sdk_example/utils/secure_storage_keys.dart';
-
-import '../../../../utils/blockchain_resources.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final PolygonIdSdk _polygonIdSdk;
@@ -38,11 +37,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         blockchain: BlockchainResources.blockchain,
         network: BlockchainResources.network);
     emit(HomeState.loaded(identifier: identifier));
-
-    // FIXME: crashing and not used
-    // if (identifier != null) {
-    //   String state = await _polygonIdSdk.identity.getState(identifier);
-    // }
   }
 
   ///

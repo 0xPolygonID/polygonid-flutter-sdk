@@ -91,7 +91,7 @@ class _ClaimsScreenState extends State<ClaimsScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Text(
         CustomStrings.claimsTitle,
-        style: CustomTextStyles.descriptionTextStyle.copyWith(fontSize: 20),
+        style: CustomTextStyles.titleTextStyle.copyWith(fontSize: 20),
       ),
     );
   }

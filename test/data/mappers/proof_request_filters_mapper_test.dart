@@ -192,7 +192,7 @@ main() {
     test("From ProofRequestEntity to List<FilterEntity> LT operator", () {
       List<FilterEntity> filters =
           proofRequestFiltersMapper.mapFrom(mockProofRequestEntityLT);
-      expect(filters.length, 3);
+      expect(filters.length, 4);
       expect(filters[0].name, "credential.credentialSubject.type");
       expect(filters[0].value, "KYCAgeCredential");
     });
@@ -200,7 +200,7 @@ main() {
     test("From ProofRequestEntity to List<FilterEntity> GT operator", () {
       List<FilterEntity> filters =
           proofRequestFiltersMapper.mapFrom(mockProofRequestEntityGT);
-      expect(filters.length, 3);
+      expect(filters.length, 4);
       expect(filters[0].name, "credential.credentialSubject.type");
       expect(filters[0].value, "KYCAgeCredential");
     });
@@ -208,7 +208,7 @@ main() {
     test("From ProofRequestEntity to List<FilterEntity> EQ", () {
       List<FilterEntity> filters =
           proofRequestFiltersMapper.mapFrom(mockProofRequestEntityEQ);
-      expect(filters.length, 3);
+      expect(filters.length, 4);
       expect(filters[0].name, "credential.credentialSubject.type");
       expect(filters[0].value, "KYCAgeCredential");
     });
@@ -216,7 +216,7 @@ main() {
     test("From ProofRequestEntity to List<FilterEntity> IN", () {
       List<FilterEntity> filters =
           proofRequestFiltersMapper.mapFrom(mockProofRequestEntityIN);
-      expect(filters.length, 3);
+      expect(filters.length, 4);
       expect(filters[0].name, "credential.credentialSubject.type");
       expect(filters[0].value, "KYCAgeCredential");
     });
@@ -224,7 +224,7 @@ main() {
     test("From ProofRequestEntity to List<FilterEntity> NIN", () {
       List<FilterEntity> filters =
           proofRequestFiltersMapper.mapFrom(mockProofRequestEntityNIN);
-      expect(filters.length, 4);
+      expect(filters.length, 5);
       expect(filters[0].name, "credential.credentialSubject.type");
       expect(filters[0].value, "KYCAgeCredential");
     });
@@ -234,7 +234,7 @@ main() {
         () {
       List<FilterEntity> filters =
           proofRequestFiltersMapper.mapFrom(mockProofRequestEntityNINCountry);
-      expect(filters.length, 6);
+      expect(filters.length, 7);
       expect(filters[0].name, "credential.credentialSubject.type");
       expect(filters[0].value, "CountryOfResidenceCredential");
     });
@@ -243,7 +243,7 @@ main() {
         () {
       List<FilterEntity> filters = proofRequestFiltersMapper
           .mapFrom(mockProofRequestEntityNotSupportedOperator);
-      expect(filters.length, 2);
+      expect(filters.length, 3);
       expect(filters[0].name, "credential.credentialSubject.type");
       expect(filters[0].value, "CountryOfResidenceCredential");
     });

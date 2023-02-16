@@ -27,17 +27,10 @@ class _SignWidgetState extends State<SignWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      key: CustomWidgetsKeys.signWidget,
-      margin: const EdgeInsets.symmetric(horizontal: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: CustomColors.background,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: CustomColors.primaryButton),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+    return Scaffold(
+      backgroundColor: CustomColors.background,
+      appBar: _buildAppBar(),
+      body: Column(
         children: [
           _buildSignDescription(),
           _buildForm(),
@@ -49,6 +42,7 @@ class _SignWidgetState extends State<SignWidget> {
   ///
   Widget _buildSignDescription() {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           'Sign a message',
@@ -67,6 +61,7 @@ class _SignWidgetState extends State<SignWidget> {
   ///
   Widget _buildForm() {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       key: const Key("form"),
       children: [
         const SizedBox(height: 24),
@@ -157,6 +152,14 @@ class _SignWidgetState extends State<SignWidget> {
           ),
         );
       },
+    );
+  }
+
+  ///
+  _buildAppBar() {
+    return AppBar(
+      elevation: 0.0,
+      backgroundColor: CustomColors.background,
     );
   }
 }

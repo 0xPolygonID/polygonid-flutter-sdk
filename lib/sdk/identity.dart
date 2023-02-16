@@ -52,6 +52,9 @@ abstract class PolygonIdSdkIdentity {
   ///
   /// The [network] is the network name of the blockchain where the identity
   /// is associated, e.g. Main
+  ///
+  ///  The [encryptedIdentityDbs] is a map of profile nonces and
+  ///  associated encrypted Identity's Databases
   Future<PrivateIdentityEntity> restoreIdentity(
       {required String privateKey,
       required String blockchain,
@@ -338,8 +341,13 @@ class Identity implements PolygonIdSdkIdentity {
   }
 
   /// Sign a message through a identity's private key.
+  ///
   /// The [privateKey] is a string
-  /// and [message] is the message to sign. Returns a string representing the signature.
+  ///
+  /// The [message] is the message to sign.
+  /// Requires a big int string in hexadecimal of decimal format
+  ///
+  /// Returns a string representing the signature.
   @override
   Future<String> sign(
       {required String privateKey, required String message}) async {
