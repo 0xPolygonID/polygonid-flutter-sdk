@@ -1,6 +1,5 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/add_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/add_profile_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/backup_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_new_identity_use_case.dart';
@@ -440,8 +439,7 @@ class Identity implements PolygonIdSdkIdentity {
                 privateKey: privateKey,
                 blockchain: blockchain,
                 network: network))
-        .then((genesisDid) => _getProfilesUseCase.execute(
-            param: GetProfilesParam(genesisDid: genesisDid)));
+        .then((genesisDid) => _getProfilesUseCase.execute(param: genesisDid));
   }
 
   @override

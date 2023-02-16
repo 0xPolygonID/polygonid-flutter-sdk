@@ -151,7 +151,6 @@ MockLibBabyJubJubDataSource libBabyJubJubDataSource =
     MockLibBabyJubJubDataSource();
 MockLibPolygonIdCoreIdentityDataSource libPolygonIdCoreIdentityDataSource =
     MockLibPolygonIdCoreIdentityDataSource();
-MockSMTDataSource smtDataSource = MockSMTDataSource();
 MockEncryptionDbDataSource encryptionDbDataSource =
     MockEncryptionDbDataSource();
 MockDestinationPathDataSource destinationPathDataSource =
@@ -173,7 +172,6 @@ IdentityRepository repository = IdentityRepositoryImpl(
   localContractFilesDataSource,
   libBabyJubJubDataSource,
   libPolygonIdCoreIdentityDataSource,
-  smtDataSource,
   encryptionDbDataSource,
   destinationPathDataSource,
   hexMapper,
@@ -194,7 +192,6 @@ IdentityRepository repository = IdentityRepositoryImpl(
   LocalClaimDataSource,
   LibBabyJubJubDataSource,
   LibPolygonIdCoreIdentityDataSource,
-  SMTDataSource,
   EncryptionDbDataSource,
   DestinationPathDataSource,
   HexMapper,

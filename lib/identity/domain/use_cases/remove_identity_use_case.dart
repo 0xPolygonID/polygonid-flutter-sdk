@@ -1,6 +1,3 @@
-import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/remove_identity_state_use_case.dart';
 
 import '../../../common/domain/domain_logger.dart';
@@ -31,8 +28,8 @@ class RemoveIdentityUseCase extends FutureUseCase<RemoveIdentityParam, void> {
   @override
   Future<void> execute({required RemoveIdentityParam param}) async {
     try {
-      Map<int, String> profilesMap = await _getProfilesUseCase.execute(
-          param: GetProfilesParam(genesisDid: param.genesisDid));
+      Map<int, String> profilesMap =
+          await _getProfilesUseCase.execute(param: param.genesisDid);
 
       // remove identity state and claims for each profile did
       if (profilesMap != null) {
@@ -47,6 +44,12 @@ class RemoveIdentityUseCase extends FutureUseCase<RemoveIdentityParam, void> {
         }
       }
 
+      // Remove genesisId identity state
+      await _removeIdentityStateUseCase.execute(
+          param: RemoveIdentityStateParam(
+              did: param.genesisDid, privateKey: param.privateKey));
+
+      // Remove the identity
       await _identityRepository.removeIdentity(
           genesisDid: param.genesisDid, privateKey: param.privateKey);
     } catch (error) {
