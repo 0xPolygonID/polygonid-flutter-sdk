@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:encrypt/encrypt.dart';
-import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
@@ -9,7 +8,6 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_ide
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/smt_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
@@ -36,7 +34,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final LocalContractFilesDataSource _localContractFilesDataSource;
   final LibBabyJubJubDataSource _libBabyJubJubDataSource;
   final LibPolygonIdCoreIdentityDataSource _libPolygonIdCoreIdentityDataSource;
-  final SMTDataSource _smtDataSource;
   final EncryptionDbDataSource _encryptionDbDataSource;
   final DestinationPathDataSource _destinationPathDataSource;
   final HexMapper _hexMapper;
@@ -55,7 +52,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._localContractFilesDataSource,
     this._libBabyJubJubDataSource,
     this._libPolygonIdCoreIdentityDataSource,
-    this._smtDataSource,
     this._encryptionDbDataSource,
     this._destinationPathDataSource,
     this._hexMapper,
@@ -82,47 +78,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
     return _walletDataSource
         .getWallet(privateKey: _hexMapper.mapTo(privateKey))
         .then((wallet) => wallet.publicKey);
-  }
-
-  @override
-  Future<void> removeIdentityState({
-    required String did,
-    required String privateKey,
-  }) async {
-    // 1. remove merkle trees
-    await _smtDataSource.removeSMT(
-        storeName: claimsTreeStoreName, did: did, privateKey: privateKey);
-    await _smtDataSource.removeRoot(
-        storeName: claimsTreeStoreName, did: did, privateKey: privateKey);
-
-    await _smtDataSource.removeSMT(
-        storeName: revocationTreeStoreName, did: did, privateKey: privateKey);
-    await _smtDataSource.removeRoot(
-        storeName: revocationTreeStoreName, did: did, privateKey: privateKey);
-
-    await _smtDataSource.removeSMT(
-        storeName: rootsTreeStoreName, did: did, privateKey: privateKey);
-    await _smtDataSource.removeRoot(
-        storeName: rootsTreeStoreName, did: did, privateKey: privateKey);
-  }
-
-  Future<Map<String, dynamic>> _getGenesisState(
-      {required List<String> authClaim}) async {
-    NodeEntity authClaimNode = await getAuthClaimNode(children: authClaim);
-    HashDTO claimsTreeRoot = _nodeMapper.mapTo(authClaimNode).hash;
-
-    // hash of clatr, revtr, rootr
-    String genesisState = await _libBabyJubJubDataSource.hashPoseidon3(
-        claimsTreeRoot.toString(),
-        BigInt.zero.toString(),
-        BigInt.zero.toString());
-
-    Map<String, dynamic> treeState = {};
-    treeState["state"] = genesisState;
-    treeState["claimsRoot"] = claimsTreeRoot.toString();
-    treeState["revocationRoot"] = BigInt.zero.toString();
-    treeState["rootOfRoots"] = BigInt.zero.toString();
-    return treeState;
   }
 
   @override
@@ -175,17 +130,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
   @override
   Future<void> removeIdentity(
       {required String genesisDid, required String privateKey}) async {
-    // remove smt
-    await _smtDataSource.removeSMT(
-        storeName: claimsTreeStoreName,
-        did: genesisDid,
-        privateKey: privateKey);
-    await _smtDataSource.removeSMT(
-        storeName: revocationTreeStoreName,
-        did: genesisDid,
-        privateKey: privateKey);
-    await _smtDataSource.removeSMT(
-        storeName: rootsTreeStoreName, did: genesisDid, privateKey: privateKey);
     // remove identity
     return _storageIdentityDataSource.removeIdentity(did: genesisDid);
   }
@@ -231,30 +175,25 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
   @override
   Future<String> getDidIdentifier({
-    required String privateKey,
     required String blockchain,
     required String network,
-    required List<String> authClaim,
+    required Map<String, dynamic> genesisState,
     int profileNonce = 0,
   }) {
-    return _walletDataSource
-        .getWallet(privateKey: _hexMapper.mapTo(privateKey))
-        .then((wallet) =>
-            _getGenesisState(authClaim: authClaim).then((genesisState) {
-              // Get the genesis id
-              String genesisId =
-                  _libPolygonIdCoreIdentityDataSource.calculateGenesisId(
-                      genesisState["claimsRoot"], blockchain, network);
-              Map<String, dynamic> genesis = jsonDecode(genesisId);
-              if (profileNonce == 0) {
-                return Future.value(genesis["did"]);
-              } else {
-                String profileId = _libPolygonIdCoreIdentityDataSource
-                    .calculateProfileId(genesis["did"], profileNonce);
-                Map<String, dynamic> profile = jsonDecode(profileId);
-                return Future.value(profile["profileDID"]);
-              }
-            }));
+    // Get the genesis id
+    String genesisId = _libPolygonIdCoreIdentityDataSource.calculateGenesisId(
+        genesisState["claimsRoot"], blockchain, network);
+    Map<String, dynamic> genesis = jsonDecode(genesisId);
+
+    if (profileNonce == 0) {
+      return Future.value(genesis["did"]);
+    } else {
+      String profileId = _libPolygonIdCoreIdentityDataSource.calculateProfileId(
+          genesis["did"], profileNonce);
+      Map<String, dynamic> profile = jsonDecode(profileId);
+
+      return Future.value(profile["profileDID"]);
+    }
   }
 
   @override

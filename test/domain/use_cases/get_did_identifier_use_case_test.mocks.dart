@@ -14,7 +14,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.d
     as _i3;
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart'
     as _i5;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_auth_claim_use_case.dart'
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_genesis_state_use_case.dart'
     as _i7;
 
 // ignore_for_file: type=lint
@@ -166,21 +166,19 @@ class MockIdentityRepository extends _i1.Mock
       ) as _i6.Future<String>);
   @override
   _i6.Future<String> getDidIdentifier({
-    required String? privateKey,
     required String? blockchain,
     required String? network,
-    required List<String>? authClaim,
-    required int? profileNonce,
+    required Map<String, dynamic>? genesisState,
+    int? profileNonce = 0,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
           #getDidIdentifier,
           [],
           {
-            #privateKey: privateKey,
             #blockchain: blockchain,
             #network: network,
-            #authClaim: authClaim,
+            #genesisState: genesisState,
             #profileNonce: profileNonce,
           },
         ),
@@ -205,23 +203,6 @@ class MockIdentityRepository extends _i1.Mock
         returnValue:
             _i6.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
       ) as _i6.Future<Map<String, dynamic>>);
-  @override
-  _i6.Future<void> removeIdentityState({
-    required String? did,
-    required String? privateKey,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #removeIdentityState,
-          [],
-          {
-            #did: did,
-            #privateKey: privateKey,
-          },
-        ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
   @override
   _i6.Future<String> getState({
     required String? identifier,
@@ -320,23 +301,24 @@ class MockIdentityRepository extends _i1.Mock
       ) as _i6.Future<void>);
 }
 
-/// A class which mocks [GetIdentityAuthClaimUseCase].
+/// A class which mocks [GetGenesisStateUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockGetIdentityAuthClaimUseCase extends _i1.Mock
-    implements _i7.GetIdentityAuthClaimUseCase {
-  MockGetIdentityAuthClaimUseCase() {
+class MockGetGenesisStateUseCase extends _i1.Mock
+    implements _i7.GetGenesisStateUseCase {
+  MockGetGenesisStateUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i6.Future<List<String>> execute({required String? param}) =>
+  _i6.Future<Map<String, dynamic>> execute({required String? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
           {#param: param},
         ),
-        returnValue: _i6.Future<List<String>>.value(<String>[]),
-      ) as _i6.Future<List<String>>);
+        returnValue:
+            _i6.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i6.Future<Map<String, dynamic>>);
 }

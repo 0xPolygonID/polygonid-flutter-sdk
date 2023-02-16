@@ -185,10 +185,12 @@ class SMTRepositoryImpl implements SMTRepository {
     required String did,
     required String privateKey,
   }) {
-    return _smtDataSource.removeSMT(
-        storeName: _treeTypeMapper.mapTo(type),
-        did: did,
-        privateKey: privateKey);
+    var name = _treeTypeMapper.mapTo(type);
+
+    return _smtDataSource
+        .removeSMT(storeName: name, did: did, privateKey: privateKey)
+        .then((_) => _smtDataSource.removeRoot(
+            storeName: name, did: did, privateKey: privateKey));
   }
 
   @override

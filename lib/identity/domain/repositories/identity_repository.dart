@@ -25,11 +25,10 @@ abstract class IdentityRepository {
   });
 
   Future<String> getDidIdentifier({
-    required String privateKey,
     required String blockchain,
     required String network,
-    required List<String> authClaim,
-    required int profileNonce,
+    required Map<String, dynamic> genesisState,
+    int profileNonce = 0,
   });
 
   // RHS
@@ -37,9 +36,6 @@ abstract class IdentityRepository {
       {required String identityState,
       required int nonce,
       required String baseUrl});
-
-  Future<void> removeIdentityState(
-      {required String did, required String privateKey});
 
   Future<String> getState(
       {required String identifier, required String contractAddress});
