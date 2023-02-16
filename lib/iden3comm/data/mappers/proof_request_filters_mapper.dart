@@ -1,6 +1,7 @@
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/mappers/from_mapper.dart';
 
+import '../../../credential/domain/entities/claim_entity.dart';
 import '../../domain/entities/proof_request_entity.dart';
 import '../../domain/entities/request/auth/proof_scope_query_request.dart';
 
@@ -13,7 +14,10 @@ class ProofRequestFiltersMapper
     List<FilterEntity> filters = [
       FilterEntity(
           name: 'credential.credentialSubject.type', value: query.type),
-      FilterEntity(operator: FilterOperator.equalsAnyInList, name: 'credential.@context', value: query.context),
+      FilterEntity(
+          operator: FilterOperator.equalsAnyInList,
+          name: 'credential.@context',
+          value: query.context),
     ];
     if (query.allowedIssuers is List && query.allowedIssuers!.isNotEmpty) {
       if (query.allowedIssuers![0] != "*") {
@@ -22,6 +26,14 @@ class ProofRequestFiltersMapper
             name: 'issuer',
             value: query.allowedIssuers));
       }
+    }
+
+    if (query.skipClaimRevocationCheck == null ||
+        query.skipClaimRevocationCheck == false) {
+      filters.add(FilterEntity(
+          operator: FilterOperator.nonEqual,
+          name: 'state',
+          value: ClaimState.revoked.name));
     }
 
     if (query.credentialSubject != null) {
