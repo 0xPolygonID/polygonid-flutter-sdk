@@ -14,7 +14,10 @@ class ProofRequestFiltersMapper
     List<FilterEntity> filters = [
       FilterEntity(
           name: 'credential.credentialSubject.type', value: query.type),
-      FilterEntity(operator: FilterOperator.equalsAnyInList, name: 'credential.@context', value: query.context),
+      FilterEntity(
+          operator: FilterOperator.equalsAnyInList,
+          name: 'credential.@context',
+          value: query.context),
     ];
     if (query.allowedIssuers is List && query.allowedIssuers!.isNotEmpty) {
       if (query.allowedIssuers![0] != "*") {
@@ -25,8 +28,8 @@ class ProofRequestFiltersMapper
       }
     }
 
-    if (query.skipClaimRevocationCheck == null
-        || query.skipClaimRevocationCheck == false) {
+    if (query.skipClaimRevocationCheck == null ||
+        query.skipClaimRevocationCheck == false) {
       filters.add(FilterEntity(
           operator: FilterOperator.nonEqual,
           name: 'state',
