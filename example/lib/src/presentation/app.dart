@@ -27,7 +27,6 @@ class AppState extends State<App> {
           buttonColor: CustomColors.primaryOrange,
           textTheme: ButtonTextTheme.accent,
         ),
-        fontFamily: 'ModernEra',
       ),
     );
   }

@@ -226,7 +226,6 @@ _i1.GetIt $initSDKGetIt(
   gh.factory<_i10.ClaimStateMapper>(() => _i10.ClaimStateMapper());
   gh.factory<_i11.Client>(() => networkModule.client);
   gh.factory<_i12.CreatePathWrapper>(() => _i12.CreatePathWrapper());
-  gh.lazySingletonAsync<_i13.Database>(() => databaseModule.database());
   gh.factoryParamAsync<_i13.Database, String?, String?>(
     (
       identifier,
@@ -238,6 +237,7 @@ _i1.GetIt $initSDKGetIt(
     ),
     instanceName: 'polygonIdSdkIdentity',
   );
+  gh.lazySingletonAsync<_i13.Database>(() => databaseModule.database());
   gh.factory<_i12.DestinationPathDataSource>(
       () => _i12.DestinationPathDataSource(get<_i12.CreatePathWrapper>()));
   gh.factory<_i14.DidMapper>(() => _i14.DidMapper());
