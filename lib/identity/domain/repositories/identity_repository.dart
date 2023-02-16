@@ -10,18 +10,12 @@ abstract class IdentityRepository {
 
   Future<List<String>> getPublicKeys({required privateKey});
 
-  Future<IdentityEntity> createIdentity({
-    required String didIdentifier,
-    required String privateKey,
-    required List<String> authClaim,
-  });
-
   Future<void> storeIdentity({required IdentityEntity identity});
 
   Future<void> removeIdentity(
-      {required String did, required String privateKey});
+      {required String genesisDid, required String privateKey});
 
-  Future<IdentityEntity> getIdentity({required String did});
+  Future<IdentityEntity> getIdentity({required String genesisDid});
 
   Future<List<IdentityEntity>> getIdentities();
 
@@ -44,6 +38,9 @@ abstract class IdentityRepository {
       required int nonce,
       required String baseUrl});
 
+  Future<void> removeIdentityState(
+      {required String did, required String privateKey});
+
   Future<String> getState(
       {required String identifier, required String contractAddress});
 
@@ -51,14 +48,7 @@ abstract class IdentityRepository {
 
   Future<RhsNodeEntity> getStateRoots({required String url});
 
-  Future<String> getChallenge({required String message});
-
   Future<NodeEntity> getAuthClaimNode({required List<String> children});
-
-  Future<Map<String, dynamic>> getLatestState({
-    required String did,
-    required String privateKey,
-  });
 
   Future<String> exportIdentity({
     required String did,

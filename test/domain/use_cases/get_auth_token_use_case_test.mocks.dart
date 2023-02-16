@@ -7,10 +7,10 @@ import 'dart:async' as _i5;
 import 'dart:typed_data' as _i9;
 
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_challenge_use_case.dart'
+    as _i7;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs_use_case.dart'
     as _i8;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_auth_challenge_use_case.dart'
-    as _i7;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart'
     as _i2;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart'

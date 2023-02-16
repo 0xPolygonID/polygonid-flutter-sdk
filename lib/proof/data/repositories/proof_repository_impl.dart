@@ -1,11 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
-import 'package:archive/archive.dart';
-import 'package:http/http.dart' as http;
 
-import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
@@ -19,6 +16,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/pro
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_download_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/jwz_proof_mapper.dart';
@@ -27,12 +25,10 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.da
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
-import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 import '../../../common/utils/uint8_list_utils.dart';
 import '../../../iden3comm/data/mappers/gist_proof_mapper.dart'
     as iden3GistProofMapper;
-import '../mappers/gist_proof_mapper.dart';
 import '../../../identity/data/data_sources/remote_identity_data_source.dart';
 import '../../domain/entities/circuit_data_entity.dart';
 import '../../domain/entities/proof_entity.dart';
@@ -46,6 +42,7 @@ import '../dtos/gist_proof_dto.dart';
 import '../dtos/proof_dto.dart';
 import '../dtos/witness_param.dart';
 import '../mappers/circuit_type_mapper.dart';
+import '../mappers/gist_proof_mapper.dart';
 import '../mappers/jwz_mapper.dart';
 
 class ProofRepositoryImpl extends ProofRepository {
@@ -56,6 +53,7 @@ class ProofRepositoryImpl extends ProofRepository {
   final ProofCircuitDataSource _proofCircuitDataSource;
   final RemoteIdentityDataSource _remoteIdentityDataSource;
   final LocalContractFilesDataSource _localContractFilesDataSource;
+  final CircuitsDownloadDataSource _circuitsDownloadDataSource;
   final RPCDataSource _rpcDataSource;
   final CircuitTypeMapper _circuitTypeMapper;
   final JWZProofMapper _jwzProofMapper;
@@ -64,7 +62,6 @@ class ProofRepositoryImpl extends ProofRepository {
   final AuthProofMapper _authProofMapper;
   final GistProofMapper _gistProofMapper;
   final iden3GistProofMapper.GistProofMapper _iden3GistProofMapper;
-  final CircuitsDownloadDataSource _circuitsDownloadDataSource;
 
   // FIXME: those mappers shouldn't be used here as they are part of Credential
   final ClaimMapper _claimMapper;
@@ -78,6 +75,7 @@ class ProofRepositoryImpl extends ProofRepository {
     this._proofCircuitDataSource,
     this._remoteIdentityDataSource,
     this._localContractFilesDataSource,
+    this._circuitsDownloadDataSource,
     this._rpcDataSource,
     this._circuitTypeMapper,
     this._jwzProofMapper,
@@ -88,7 +86,6 @@ class ProofRepositoryImpl extends ProofRepository {
     this._authProofMapper,
     this._gistProofMapper,
     this._iden3GistProofMapper,
-    this._circuitsDownloadDataSource,
   );
 
   @override

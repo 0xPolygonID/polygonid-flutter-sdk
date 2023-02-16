@@ -7,6 +7,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_latest_state_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/sign_message_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/get_gist_proof_use_case.dart';
 
@@ -19,6 +20,7 @@ MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
 MockGetAuthClaimUseCase getAuthClaimUseCase = MockGetAuthClaimUseCase();
 MockSignMessageUseCase signMessageUseCase = MockSignMessageUseCase();
 MockGetGistProofUseCase getGistProofUseCase = MockGetGistProofUseCase();
+MockGetLatestStateUseCase getLatestStateUseCase = MockGetLatestStateUseCase();
 MockIden3commRepository iden3commRepository = MockIden3commRepository();
 MockIdentityRepository identityRepository = MockIdentityRepository();
 MockSMTRepository smtRepository = MockSMTRepository();
@@ -34,6 +36,7 @@ GetAuthInputsUseCase useCase = GetAuthInputsUseCase(
   getAuthClaimUseCase,
   signMessageUseCase,
   getGistProofUseCase,
+  getLatestStateUseCase,
   iden3commRepository,
   identityRepository,
   smtRepository,
@@ -44,6 +47,7 @@ GetAuthInputsUseCase useCase = GetAuthInputsUseCase(
   GetAuthClaimUseCase,
   SignMessageUseCase,
   GetGistProofUseCase,
+  GetLatestStateUseCase,
   Iden3commRepository,
   IdentityRepository,
   SMTRepository,
@@ -74,12 +78,11 @@ void main() {
         .thenAnswer((realInvocation) => Future.value(IdentityMocks.node));
     when(smtRepository.generateProof(
             key: anyNamed('key'),
-            storeName: anyNamed('storeName'),
+            type: anyNamed('type'),
             did: anyNamed('did'),
             privateKey: anyNamed('privateKey')))
         .thenAnswer((realInvocation) => Future.value(ProofMocks.proof));
-    when(identityRepository.getLatestState(
-            did: anyNamed('did'), privateKey: anyNamed('privateKey')))
+    when(getLatestStateUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value(CommonMocks.aMap));
     when(getGistProofUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value(ProofMocks.gistProof));
@@ -96,7 +99,7 @@ void main() {
           verify(getIdentityUseCase.execute(param: captureAnyNamed("param")))
               .captured
               .first;
-      expect(capturedIdentity.did, param.did);
+      expect(capturedIdentity.genesisDid, param.did);
       expect(capturedIdentity.privateKey, param.privateKey);
 
       var capturedSign =
@@ -135,8 +138,7 @@ void main() {
     'Given a param, when I call execute and an error occurred, then I expect an exception to be thrown',
     () async {
       // Given
-      when(identityRepository.getLatestState(
-              did: anyNamed('did'), privateKey: anyNamed('privateKey')))
+      when(getLatestStateUseCase.execute(param: anyNamed('param')))
           .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
       // When
@@ -148,7 +150,7 @@ void main() {
           verify(getIdentityUseCase.execute(param: captureAnyNamed("param")))
               .captured
               .first;
-      expect(capturedIdentity.did, param.did);
+      expect(capturedIdentity.genesisDid, param.did);
       expect(capturedIdentity.privateKey, param.privateKey);
 
       verifyNever(signMessageUseCase.execute(param: captureAnyNamed("param")));

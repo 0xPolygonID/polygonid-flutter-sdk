@@ -35,4 +35,6 @@ abstract class Iden3commRepository {
     String? didIdentifier,
     String? packageName,
   });
+
+  Future<String> getChallenge({required String message});
 }

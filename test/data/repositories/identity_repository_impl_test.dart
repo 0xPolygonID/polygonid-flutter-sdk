@@ -7,7 +7,6 @@ import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/local_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_inputs_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
@@ -22,13 +21,10 @@ import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/node_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/rhs_node_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/did_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/encryption_key_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/hash_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/identity_dto_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/node_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/poseidon_hash_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/rhs_node_mapper.dart';
@@ -166,7 +162,6 @@ MockIdentityDTOMapper identityDTOMapper = MockIdentityDTOMapper();
 MockRhsNodeMapper rhsNodeMapper = MockRhsNodeMapper();
 MockStateIdentifierMapper stateIdentifierMapper = MockStateIdentifierMapper();
 MockNodeMapper nodeMapper = MockNodeMapper();
-MockQMapper qMapper = MockQMapper();
 MockEncryptionKeyMapper encryptionKeyMapper = MockEncryptionKeyMapper();
 
 // Tested instance
@@ -187,7 +182,6 @@ IdentityRepository repository = IdentityRepositoryImpl(
   rhsNodeMapper,
   stateIdentifierMapper,
   nodeMapper,
-  qMapper,
   encryptionKeyMapper,
 );
 
@@ -209,7 +203,6 @@ IdentityRepository repository = IdentityRepositoryImpl(
   RhsNodeMapper,
   StateIdentifierMapper,
   NodeMapper,
-  QMapper,
   EncryptionKeyMapper,
 ])
 void main() {
@@ -389,7 +382,7 @@ void main() {
         "Given an identifier, when I call getIdentity, then I expect a IdentityEntity to be returned",
         () async {
       // When
-      expect(await repository.getIdentity(did: CommonMocks.identifier),
+      expect(await repository.getIdentity(genesisDid: CommonMocks.identifier),
           IdentityMocks.identity);
 
       // Then
@@ -413,7 +406,7 @@ void main() {
 
       // When
       await repository
-          .getIdentity(did: CommonMocks.identifier)
+          .getIdentity(genesisDid: CommonMocks.identifier)
           .then((_) => null)
           .catchError((error) {
         expect(error, isA<IdentityException>());
@@ -441,7 +434,7 @@ void main() {
 
       // When
       await repository
-          .getIdentity(did: CommonMocks.identifier)
+          .getIdentity(genesisDid: CommonMocks.identifier)
           .then((_) => null)
           .catchError((error) {
         expect(error, isA<UnknownIdentityException>());

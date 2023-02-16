@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_and_save_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/add_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_new_identity_use_case.dart';
 
 import '../../common/common_mocks.dart';
@@ -20,19 +20,18 @@ var paramSecret = CreateNewIdentityParam(
 
 // Dependencies
 MockIdentityRepository identityRepository = MockIdentityRepository();
-MockCreateAndSaveIdentityUseCase createAndSaveIdentityUseCase =
-    MockCreateAndSaveIdentityUseCase();
+MockAddIdentityUseCase addIdentityUseCase = MockAddIdentityUseCase();
 
 // Tested instance
 CreateNewIdentityUseCase useCase = CreateNewIdentityUseCase(
   CommonMocks.config,
   identityRepository,
-  createAndSaveIdentityUseCase,
+  addIdentityUseCase,
 );
 
 @GenerateMocks([
   IdentityRepository,
-  CreateAndSaveIdentityUseCase,
+  AddIdentityUseCase,
 ])
 void main() {
   setUp(() {
@@ -41,9 +40,8 @@ void main() {
             accessMessage: anyNamed('accessMessage'),
             secret: anyNamed('secret')))
         .thenAnswer((realInvocation) => Future.value(CommonMocks.privateKey));
-    when(createAndSaveIdentityUseCase.execute(param: anyNamed('param')))
-        .thenAnswer(
-            (realInvocation) => Future.value(IdentityMocks.privateIdentity));
+    when(addIdentityUseCase.execute(param: anyNamed('param'))).thenAnswer(
+        (realInvocation) => Future.value(IdentityMocks.privateIdentity));
   });
 
   test(
@@ -61,10 +59,10 @@ void main() {
     expect(configCaptured[0], CommonMocks.config);
     expect(configCaptured[1], CommonMocks.message);
 
-    var capturedCreate = verify(createAndSaveIdentityUseCase.execute(
-            param: captureAnyNamed('param')))
-        .captured
-        .first;
+    var capturedCreate =
+        verify(addIdentityUseCase.execute(param: captureAnyNamed('param')))
+            .captured
+            .first;
     expect(capturedCreate.privateKey, CommonMocks.privateKey);
     expect(capturedCreate.blockchain, CommonMocks.blockchain);
     expect(capturedCreate.network, CommonMocks.network);
@@ -84,10 +82,10 @@ void main() {
     expect(configCaptured[0], CommonMocks.config);
     expect(configCaptured[1], null);
 
-    var capturedCreate = verify(createAndSaveIdentityUseCase.execute(
-            param: captureAnyNamed('param')))
-        .captured
-        .first;
+    var capturedCreate =
+        verify(addIdentityUseCase.execute(param: captureAnyNamed('param')))
+            .captured
+            .first;
     expect(capturedCreate.privateKey, CommonMocks.privateKey);
     expect(capturedCreate.blockchain, CommonMocks.blockchain);
     expect(capturedCreate.network, CommonMocks.network);
@@ -114,7 +112,6 @@ void main() {
     expect(configCaptured[0], CommonMocks.config);
     expect(configCaptured[1], CommonMocks.message);
 
-    verifyNever(
-        createAndSaveIdentityUseCase.execute(param: captureAnyNamed('param')));
+    verifyNever(addIdentityUseCase.execute(param: captureAnyNamed('param')));
   });
 }

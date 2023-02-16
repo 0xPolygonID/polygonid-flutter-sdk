@@ -1,6 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_and_save_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/add_identity_use_case.dart';
 
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
@@ -22,12 +22,12 @@ class CreateNewIdentityUseCase
     extends FutureUseCase<CreateNewIdentityParam, PrivateIdentityEntity> {
   final String _accessMessage;
   final IdentityRepository _identityRepository;
-  final CreateAndSaveIdentityUseCase _createAndSaveIdentityUseCase;
+  final AddIdentityUseCase _addIdentityUseCase;
 
   CreateNewIdentityUseCase(
     @Named('accessMessage') this._accessMessage,
     this._identityRepository,
-    this._createAndSaveIdentityUseCase,
+    this._addIdentityUseCase,
   );
 
   @override
@@ -37,8 +37,8 @@ class CreateNewIdentityUseCase
     return _identityRepository
         .getPrivateKey(accessMessage: _accessMessage, secret: param.secret)
         // Create and save the identity
-        .then((privateKey) => _createAndSaveIdentityUseCase.execute(
-            param: CreateAndSaveIdentityParam(
+        .then((privateKey) => _addIdentityUseCase.execute(
+            param: AddIdentityParam(
                 privateKey: privateKey,
                 blockchain: param.blockchain,
                 network: param.network)))

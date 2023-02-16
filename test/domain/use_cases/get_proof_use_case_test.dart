@@ -74,8 +74,9 @@ main() {
     reset(getProofRequestsUseCase);
 
     //Given
-    when(identityRepository.getIdentity(did: anyNamed('did'))).thenAnswer(
-        (realInvocation) => Future.value(IdentityMocks.privateIdentity));
+    when(identityRepository.getIdentity(genesisDid: anyNamed('genesisDid')))
+        .thenAnswer(
+            (realInvocation) => Future.value(IdentityMocks.privateIdentity));
 
     when(getProofRequestsUseCase.execute(param: anyNamed('param'))).thenAnswer(
         (realInvocation) => Future.value(Iden3commMocks.proofRequestList));
@@ -107,9 +108,9 @@ main() {
     expect(await useCase.execute(param: param), result);
 
     // Then
-    var getIdentityCaptured =
-        verify(identityRepository.getIdentity(did: captureAnyNamed('did')))
-            .captured;
+    var getIdentityCaptured = verify(identityRepository.getIdentity(
+            genesisDid: captureAnyNamed('genesisDid')))
+        .captured;
     expect(getIdentityCaptured[0], CommonMocks.did);
 
     var getRequestsCaptured =
@@ -175,9 +176,9 @@ main() {
         useCase.execute(param: param), throwsA(CommonMocks.exception));
 
     // Then
-    var getIdentityCaptured =
-        verify(identityRepository.getIdentity(did: captureAnyNamed('did')))
-            .captured;
+    var getIdentityCaptured = verify(identityRepository.getIdentity(
+            genesisDid: captureAnyNamed('genesisDid')))
+        .captured;
     expect(getIdentityCaptured[0], CommonMocks.did);
 
     var getRequestsCaptured =

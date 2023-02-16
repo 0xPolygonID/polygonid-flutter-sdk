@@ -7,7 +7,6 @@ import '../entities/identity_entity.dart';
 import '../entities/private_identity_entity.dart';
 import '../exceptions/identity_exceptions.dart';
 import '../repositories/identity_repository.dart';
-import 'create_and_save_identity_use_case.dart';
 import 'export_identity_use_case.dart';
 import 'get_did_identifier_use_case.dart';
 import 'get_did_use_case.dart';
@@ -51,7 +50,7 @@ class BackupIdentityUseCase
 
       IdentityEntity identity = await _getIdentityUseCase.execute(
           param: GetIdentityParam(
-        did: genesisDid,
+        genesisDid: genesisDid,
       ));
 
       for (MapEntry<int, String> profile in identity.profiles.entries) {

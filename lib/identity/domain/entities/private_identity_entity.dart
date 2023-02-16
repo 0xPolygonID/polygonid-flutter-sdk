@@ -17,11 +17,9 @@ class PrivateIdentityEntity extends IdentityEntity {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
+      super == other &&
       other is PrivateIdentityEntity &&
-          publicKey == other.publicKey &&
-          privateKey == other.privateKey &&
-          super == other;
+      privateKey == other.privateKey;
 
   @override
   int get hashCode => runtimeType.hashCode;

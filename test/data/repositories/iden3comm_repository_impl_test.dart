@@ -18,9 +18,10 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/iden3comm_repo
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 
-import '../../common/common_mocks.dart';
 import 'iden3comm_repository_impl_test.mocks.dart';
 
 // Data
@@ -80,29 +81,36 @@ MockRemoteIden3commDataSource remoteIden3commDataSource =
     MockRemoteIden3commDataSource();
 MockLibPolygonIdCoreIden3commDataSource libPolygonIdCoreIden3commDataSource =
     MockLibPolygonIdCoreIden3commDataSource();
+MockLibBabyJubJubDataSource libBabyJubJubDataSource =
+    MockLibBabyJubJubDataSource();
 MockAuthResponseMapper authResponseMapper = MockAuthResponseMapper();
 MockAuthInputsMapper authInputsMapper = MockAuthInputsMapper();
 MockAuthProofMapper authProofMapper = MockAuthProofMapper();
 MockGistProofMapper gistProofMapper = MockGistProofMapper();
+MockQMapper qMapper = MockQMapper();
 
 // Tested instance
 Iden3commRepository repository = Iden3commRepositoryImpl(
   remoteIden3commDataSource,
   libPolygonIdCoreIden3commDataSource,
+  libBabyJubJubDataSource,
   authResponseMapper,
   authInputsMapper,
   authProofMapper,
   gistProofMapper,
+  qMapper,
 );
 
-// TODO: verify params
+// TODO: verify params and write other functions
 @GenerateMocks([
   RemoteIden3commDataSource,
   LibPolygonIdCoreIden3commDataSource,
+  LibBabyJubJubDataSource,
   AuthResponseMapper,
   AuthInputsMapper,
   AuthProofMapper,
   GistProofMapper,
+  QMapper,
 ])
 void main() {
   group(
