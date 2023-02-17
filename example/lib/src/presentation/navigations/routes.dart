@@ -46,7 +46,7 @@ class Routes {
 
   ///
   static WidgetBuilder _homeRoute() {
-    return (BuildContext context) => HomeScreen();
+    return (BuildContext context) => const HomeScreen();
   }
 
   ///
