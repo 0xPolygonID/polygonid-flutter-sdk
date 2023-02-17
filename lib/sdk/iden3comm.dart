@@ -9,9 +9,9 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3messag
 import '../common/domain/entities/filter_entity.dart';
 import '../credential/domain/entities/claim_entity.dart';
 import '../credential/domain/use_cases/get_vocabs_use_case.dart';
-import '../iden3comm/domain/use_cases/get_claims_from_iden3msg_use_case.dart';
-import '../iden3comm/domain/use_cases/get_filters_from_iden3msg_use_case.dart';
-import '../iden3comm/domain/use_cases/get_proofs_from_iden3msg_use_case.dart';
+import '../iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart';
+import '../iden3comm/domain/use_cases/get_iden3comm_filters_use_case.dart';
+import '../iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
 
 abstract class PolygonIdSdkIden3comm {
   /// Returns a [Iden3MessageEntity] from a message string
@@ -55,17 +55,17 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   final GetIden3MessageUseCase _getIden3MessageUseCase;
   final GetVocabsUseCase _getVocabsFromIden3MsgUseCase;
   final AuthenticateUseCase _authenticateUseCase;
-  final GetFiltersFromIden3MsgUseCase _getFiltersFromIden3MsgUseCase;
-  final GetClaimsFromIden3MsgUseCase _getClaimsFromIden3MsgUseCase;
-  final GetProofsFromIden3MsgUseCase _getProofsFromIden3MsgUseCase;
+  final GetIden3commFiltersUseCase _getIden3commFiltersUseCase;
+  final GetIden3commClaimsUseCase _getIden3commClaimsUseCase;
+  final GetIden3commProofsUseCase _getIden3commProofsUseCase;
 
   Iden3comm(
     this._getIden3MessageUseCase,
     this._getVocabsFromIden3MsgUseCase,
     this._authenticateUseCase,
-    this._getFiltersFromIden3MsgUseCase,
-    this._getClaimsFromIden3MsgUseCase,
-    this._getProofsFromIden3MsgUseCase,
+    this._getIden3commFiltersUseCase,
+    this._getIden3commClaimsUseCase,
+    this._getIden3commProofsUseCase,
   );
 
   @override
@@ -110,8 +110,8 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }
 
   Future<List<FilterEntity>> getFilters({required Iden3MessageEntity message}) {
-    return _getFiltersFromIden3MsgUseCase.execute(
-        param: GetFiltersFromIden3MsgParam(
+    return _getIden3commFiltersUseCase.execute(
+        param: GetIden3commFiltersParam(
       message: message,
     ));
   }
@@ -122,8 +122,8 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       required String did,
       int? profileNonce,
       required String privateKey}) {
-    return _getClaimsFromIden3MsgUseCase.execute(
-        param: GetClaimsFromIden3MsgParam(
+    return _getIden3commClaimsUseCase.execute(
+        param: GetIden3commClaimsParam(
       message: message,
       did: did,
       profileNonce: profileNonce ?? 0,
@@ -138,8 +138,8 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       int? profileNonce,
       required String privateKey,
       String? challenge}) {
-    return _getProofsFromIden3MsgUseCase.execute(
-        param: GetProofsFromIden3MsgParam(
+    return _getIden3commProofsUseCase.execute(
+        param: GetIden3commProofsParam(
       message: message,
       did: did,
       profileNonce: profileNonce ?? 0,

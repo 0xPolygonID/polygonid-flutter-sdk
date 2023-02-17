@@ -19,21 +19,21 @@ import '../../../proof/domain/repositories/proof_repository.dart';
 import '../../../proof/domain/use_cases/generate_proof_use_case.dart';
 import 'get_proof_requests_use_case.dart';
 
-class GetClaimsFromIden3MsgParam {
+class GetIden3commClaimsParam {
   final Iden3MessageEntity message;
   final String did;
   final int profileNonce;
   final String privateKey;
 
-  GetClaimsFromIden3MsgParam(
+  GetIden3commClaimsParam(
       {required this.message,
       required this.did,
       required this.profileNonce,
       required this.privateKey});
 }
 
-class GetClaimsFromIden3MsgUseCase
-    extends FutureUseCase<GetClaimsFromIden3MsgParam, List<ClaimEntity>> {
+class GetIden3commClaimsUseCase
+    extends FutureUseCase<GetIden3commClaimsParam, List<ClaimEntity>> {
   final Iden3commRepository _iden3commRepository;
   final GetClaimsUseCase _getClaimsUseCase;
   final GetClaimRevocationStatusUseCase _getClaimRevocationStatusUseCase;
@@ -41,7 +41,7 @@ class GetClaimsFromIden3MsgUseCase
   final IsProofCircuitSupportedUseCase _isProofCircuitSupported;
   final GetProofRequestsUseCase _getProofRequestsUseCase;
 
-  GetClaimsFromIden3MsgUseCase(
+  GetIden3commClaimsUseCase(
     this._iden3commRepository,
     this._getClaimsUseCase,
     this._getClaimRevocationStatusUseCase,
@@ -52,7 +52,7 @@ class GetClaimsFromIden3MsgUseCase
 
   @override
   Future<List<ClaimEntity>> execute(
-      {required GetClaimsFromIden3MsgParam param}) async {
+      {required GetIden3commClaimsParam param}) async {
     List<ClaimEntity> claims = [];
 
     List<ProofRequestEntity> requests =

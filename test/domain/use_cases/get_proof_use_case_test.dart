@@ -6,9 +6,9 @@ import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_claims_from_iden3msg_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proofs_from_iden3msg_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
@@ -31,7 +31,7 @@ List<JWZProofEntity> result = [
   Iden3commMocks.jwzProof
 ];
 
-GetProofsFromIden3MsgParam param = GetProofsFromIden3MsgParam(
+GetIden3commProofsParam param = GetIden3commProofsParam(
   message: Iden3commMocks.authRequest,
   did: CommonMocks.did,
   profileNonce: CommonMocks.nonce,
@@ -44,8 +44,8 @@ var exception = ProofsNotFoundException([]);
 MockProofRepository proofRepository = MockProofRepository();
 MockIden3commRepository iden3commRepository = MockIden3commRepository();
 MockIdentityRepository identityRepository = MockIdentityRepository();
-MockGetClaimsFromIden3MsgUseCase getClaimsFromIden3MsgUseCase =
-    MockGetClaimsFromIden3MsgUseCase();
+MockGetIden3commClaimsUseCase getIden3commClaimsUseCase =
+    MockGetIden3commClaimsUseCase();
 MockGenerateProofUseCase generateProofUseCase = MockGenerateProofUseCase();
 MockIsProofCircuitSupportedUseCase isProofCircuitSupportedUseCase =
     MockIsProofCircuitSupportedUseCase();
@@ -53,10 +53,10 @@ MockGetProofRequestsUseCase getProofRequestsUseCase =
     MockGetProofRequestsUseCase();
 
 // Tested instance
-GetProofsFromIden3MsgUseCase useCase = GetProofsFromIden3MsgUseCase(
+GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   proofRepository,
   identityRepository,
-  getClaimsFromIden3MsgUseCase,
+  getIden3commClaimsUseCase,
   generateProofUseCase,
   isProofCircuitSupportedUseCase,
   getProofRequestsUseCase,
@@ -65,7 +65,7 @@ GetProofsFromIden3MsgUseCase useCase = GetProofsFromIden3MsgUseCase(
 @GenerateMocks([
   ProofRepository,
   IdentityRepository,
-  GetClaimsFromIden3MsgUseCase,
+  GetIden3commClaimsUseCase,
   GenerateProofUseCase,
   IsProofCircuitSupportedUseCase,
   GetProofRequestsUseCase,
@@ -74,7 +74,7 @@ main() {
   setUp(() {
     reset(proofRepository);
     reset(identityRepository);
-    reset(getClaimsFromIden3MsgUseCase);
+    reset(getIden3commClaimsUseCase);
     reset(generateProofUseCase);
     reset(isProofCircuitSupportedUseCase);
     reset(getProofRequestsUseCase);
@@ -90,7 +90,7 @@ main() {
     when(isProofCircuitSupportedUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value(true));
 
-    when(getClaimsFromIden3MsgUseCase.execute(param: anyNamed('param')))
+    when(getIden3commClaimsUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value([CredentialMocks.claim]));
 
     when(proofRepository.loadCircuitFiles(any))
@@ -127,7 +127,7 @@ main() {
         Iden3commMocks.proofRequestList.length);
 
     var verifyGetClaims = verify(
-        getClaimsFromIden3MsgUseCase.execute(param: captureAnyNamed('param')));
+        getIden3commClaimsUseCase.execute(param: captureAnyNamed('param')));
     expect(verifyGetClaims.callCount, Iden3commMocks.proofRequestList.length);
 
     var verifyLoadCircuit =
@@ -164,7 +164,7 @@ main() {
       "Given GetProofsFromIden3MsgParam as param, when call execute and error occurred, then I expect an exception to be thrown",
       () async {
     // Given
-    when(getClaimsFromIden3MsgUseCase.execute(param: anyNamed('param')))
+    when(getIden3commClaimsUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
     // When

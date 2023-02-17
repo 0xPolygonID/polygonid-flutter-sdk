@@ -9,14 +9,14 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/aut
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proofs_from_iden3msg_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 
 import 'authenticate_use_case_test.mocks.dart';
 
 MockIden3commRepository iden3commRepository = MockIden3commRepository();
-MockGetProofsFromIden3MsgUseCase getProofsFromIden3MsgUseCase =
-    MockGetProofsFromIden3MsgUseCase();
+MockGetIden3commProofsUseCase getIden3commProofsUseCase =
+    MockGetIden3commProofsUseCase();
 MockGetAuthTokenUseCase getAuthTokenUseCase = MockGetAuthTokenUseCase();
 MockGetEnvConfigUseCase getEnvConfigUseCase = MockGetEnvConfigUseCase();
 MockGetPackageNameUseCase getPackageNameUseCase = MockGetPackageNameUseCase();
@@ -25,7 +25,7 @@ MockGetDidIdentifierUseCase getDidIdentifierUseCase =
 
 AuthenticateUseCase useCase = AuthenticateUseCase(
   iden3commRepository,
-  getProofsFromIden3MsgUseCase,
+  getIden3commProofsUseCase,
   getAuthTokenUseCase,
   getEnvConfigUseCase,
   getPackageNameUseCase,
@@ -57,7 +57,7 @@ AuthenticateParam param = AuthenticateParam(
 
 @GenerateMocks([
   Iden3commRepository,
-  GetProofsFromIden3MsgUseCase,
+  GetIden3commProofsUseCase,
   GetAuthTokenUseCase,
   GetEnvConfigUseCase,
   GetPackageNameUseCase,
@@ -71,7 +71,7 @@ void main() {
         // Given
         reset(iden3commRepository);
 
-        when(getProofsFromIden3MsgUseCase.execute(param: anyNamed('param')))
+        when(getIden3commProofsUseCase.execute(param: anyNamed('param')))
             .thenAnswer((realInvocation) => Future.value([]));
 
         when(getEnvConfigUseCase.execute(param: anyNamed('param')))
@@ -109,7 +109,7 @@ void main() {
           await expectLater(useCase.execute(param: param), completes);
 
           // Then
-          var capturedProofs = verify(getProofsFromIden3MsgUseCase.execute(
+          var capturedProofs = verify(getIden3commProofsUseCase.execute(
                   param: captureAnyNamed('param')))
               .captured
               .first;
@@ -187,7 +187,7 @@ void main() {
           await expectLater(useCase.execute(param: param), throwsA(exception));
 
           // Then
-          var capturedProofs = verify(getProofsFromIden3MsgUseCase.execute(
+          var capturedProofs = verify(getIden3commProofsUseCase.execute(
                   param: captureAnyNamed('param')))
               .captured
               .first;

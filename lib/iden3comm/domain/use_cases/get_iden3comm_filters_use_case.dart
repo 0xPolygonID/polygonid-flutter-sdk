@@ -19,21 +19,21 @@ import '../../../proof/domain/repositories/proof_repository.dart';
 import '../../../proof/domain/use_cases/generate_proof_use_case.dart';
 import 'get_proof_requests_use_case.dart';
 
-class GetFiltersFromIden3MsgParam {
+class GetIden3commFiltersParam {
   final Iden3MessageEntity message;
 
-  GetFiltersFromIden3MsgParam({
+  GetIden3commFiltersParam({
     required this.message,
   });
 }
 
-class GetFiltersFromIden3MsgUseCase
-    extends FutureUseCase<GetFiltersFromIden3MsgParam, List<FilterEntity>> {
+class GetIden3commFiltersUseCase
+    extends FutureUseCase<GetIden3commFiltersParam, List<FilterEntity>> {
   final Iden3commRepository _iden3commRepository;
   final IsProofCircuitSupportedUseCase _isProofCircuitSupported;
   final GetProofRequestsUseCase _getProofRequestsUseCase;
 
-  GetFiltersFromIden3MsgUseCase(
+  GetIden3commFiltersUseCase(
     this._iden3commRepository,
     this._isProofCircuitSupported,
     this._getProofRequestsUseCase,
@@ -41,7 +41,7 @@ class GetFiltersFromIden3MsgUseCase
 
   @override
   Future<List<FilterEntity>> execute(
-      {required GetFiltersFromIden3MsgParam param}) async {
+      {required GetIden3commFiltersParam param}) async {
     List<FilterEntity> filters = [];
 
     List<ProofRequestEntity> requests =

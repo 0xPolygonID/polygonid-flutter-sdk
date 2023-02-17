@@ -23,7 +23,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_re
     as _i2;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart'
     as _i13;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proofs_from_iden3msg_use_case.dart'
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart'
     as _i12;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
     as _i6;
@@ -153,18 +153,18 @@ class MockIden3commRepository extends _i1.Mock
       ) as _i3.Future<List<_i10.FilterEntity>>);
 }
 
-/// A class which mocks [GetProofsFromIden3MsgUseCase].
+/// A class which mocks [GetIden3commProofsUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockGetProofsFromIden3MsgUseCase extends _i1.Mock
-    implements _i12.GetProofsFromIden3MsgUseCase {
-  MockGetProofsFromIden3MsgUseCase() {
+class MockGetIden3commProofsUseCase extends _i1.Mock
+    implements _i12.GetIden3commProofsUseCase {
+  MockGetIden3commProofsUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
   _i3.Future<List<_i9.JWZProofEntity>> execute(
-          {required _i12.GetProofsFromIden3MsgParam? param}) =>
+          {required _i12.GetIden3commProofsParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
