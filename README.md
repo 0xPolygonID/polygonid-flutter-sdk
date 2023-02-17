@@ -75,3 +75,7 @@ To start using this package first import it in your Dart file.
 import 'package:polygonid_flutter_sdk/polygonid_sdk.dart';
 ```
 
+## Notes
+
+P.S. Using iOS simulator for testing wallet sdk is right now under maintenance and will be available soon.
+
