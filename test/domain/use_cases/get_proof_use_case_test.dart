@@ -164,7 +164,7 @@ main() {
       "Given GetProofsFromIden3MsgParam as param, when call execute and error occurred, then I expect an exception to be thrown",
       () async {
     // Given
-    when(iden3commRepository.getFilters(request: anyNamed('request')))
+    when(getClaimsFromIden3MsgUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
     // When
@@ -188,9 +188,7 @@ main() {
 
     expect(verifyIsFilterSupported.captured[0],
         Iden3commMocks.proofRequestList[0].scope.circuitId);
-
-    verifyNever(
-        getClaimsFromIden3MsgUseCase.execute(param: captureAnyNamed('param')));
+    
     verifyNever(proofRepository.loadCircuitFiles(captureAny));
     verifyNever(generateProofUseCase.execute(param: captureAnyNamed('param')));
   });
