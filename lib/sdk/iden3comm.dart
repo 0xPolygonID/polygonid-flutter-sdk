@@ -19,9 +19,6 @@ abstract class PolygonIdSdkIden3comm {
 
   /// get the vocabulary json-ld files to translate the values of the schemas
   /// to show them to end users in a natural language format in the apps
-  /// TODO: remove or fix
-  //Future<List<Map<String, dynamic>>> getVocabs(
-  //    {required Iden3MessageEntity message});
 
   Future<List<FilterEntity>> getFilters({required Iden3MessageEntity message});
 
