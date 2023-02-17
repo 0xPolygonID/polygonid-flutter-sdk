@@ -1,4 +1,4 @@
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_auth_claim_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_genesis_state_use_case.dart';
 
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
@@ -21,20 +21,19 @@ class GetDidIdentifierParam {
 class GetDidIdentifierUseCase
     extends FutureUseCase<GetDidIdentifierParam, String> {
   final IdentityRepository _identityRepository;
-  final GetIdentityAuthClaimUseCase _getIdentityAuthClaimUseCase;
+  final GetGenesisStateUseCase _getGenesisStateUseCase;
 
   GetDidIdentifierUseCase(
-      this._identityRepository, this._getIdentityAuthClaimUseCase);
+      this._identityRepository, this._getGenesisStateUseCase);
 
   @override
   Future<String> execute({required GetDidIdentifierParam param}) {
-    return _getIdentityAuthClaimUseCase
+    return _getGenesisStateUseCase
         .execute(param: param.privateKey)
-        .then((authClaim) => _identityRepository.getDidIdentifier(
-            privateKey: param.privateKey,
+        .then((genesisState) => _identityRepository.getDidIdentifier(
             blockchain: param.blockchain,
             network: param.network,
-            authClaim: authClaim,
+            genesisState: genesisState,
             profileNonce: param.profileNonce))
         .then((did) {
       logger().i("[GetDidIdentifierUseCase] did: $did");

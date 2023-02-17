@@ -1,17 +1,8 @@
-import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
 
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
-import '../../../credential/domain/use_cases/get_auth_claim_use_case.dart';
-import '../entities/did_entity.dart';
-import '../entities/identity_entity.dart';
-import '../repositories/identity_repository.dart';
-import 'get_did_identifier_use_case.dart';
-import 'get_did_use_case.dart';
-import 'get_identities_use_case.dart';
-import 'get_identity_use_case.dart';
-import 'get_public_keys_use_case.dart';
 
 class RemoveIdentityStateParam {
   final String did;
@@ -25,13 +16,28 @@ class RemoveIdentityStateParam {
 
 class RemoveIdentityStateUseCase
     extends FutureUseCase<RemoveIdentityStateParam, void> {
-  final IdentityRepository _identityRepository;
+  final SMTRepository _smtRepository;
 
-  RemoveIdentityStateUseCase(this._identityRepository);
+  RemoveIdentityStateUseCase(this._smtRepository);
 
   @override
-  Future<void> execute({required RemoveIdentityStateParam param}) async {
-    return _identityRepository.removeIdentityState(
-        did: param.did, privateKey: param.privateKey);
+  Future<void> execute({required RemoveIdentityStateParam param}) {
+    return Future.wait([
+      _smtRepository.removeSMT(
+          type: TreeType.claims, did: param.did, privateKey: param.privateKey),
+      _smtRepository.removeSMT(
+          type: TreeType.revocation,
+          did: param.did,
+          privateKey: param.privateKey),
+      _smtRepository.removeSMT(
+          type: TreeType.roots, did: param.did, privateKey: param.privateKey),
+    ])
+        .then((did) => logger().i(
+            "[RemoveIdentityStateUseCase] State has been removed for did: $did"))
+        .catchError((error) {
+      logger().e("[RemoveIdentityStateUseCase] Error: $error");
+
+      throw error;
+    });
   }
 }

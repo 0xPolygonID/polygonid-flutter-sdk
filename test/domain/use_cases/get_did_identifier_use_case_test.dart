@@ -3,6 +3,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_genesis_state_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_auth_claim_use_case.dart';
 
 import '../../common/common_mocks.dart';
@@ -10,8 +11,8 @@ import '../../common/credential_mocks.dart';
 import 'get_did_identifier_use_case_test.mocks.dart';
 
 MockIdentityRepository identityRepository = MockIdentityRepository();
-MockGetIdentityAuthClaimUseCase getIdentityAuthClaimUseCase =
-    MockGetIdentityAuthClaimUseCase();
+MockGetGenesisStateUseCase getGenesisStateUseCase =
+    MockGetGenesisStateUseCase();
 
 // Data
 GetDidIdentifierParam param = GetDidIdentifierParam(
@@ -22,27 +23,25 @@ GetDidIdentifierParam param = GetDidIdentifierParam(
 
 GetDidIdentifierUseCase useCase = GetDidIdentifierUseCase(
   identityRepository,
-  getIdentityAuthClaimUseCase,
+  getGenesisStateUseCase,
 );
 
 @GenerateMocks([
   IdentityRepository,
-  GetIdentityAuthClaimUseCase,
+  GetGenesisStateUseCase,
 ])
 void main() {
   setUp(() {
     reset(identityRepository);
-    reset(getIdentityAuthClaimUseCase);
+    reset(getGenesisStateUseCase);
 
     // Given
-    when(getIdentityAuthClaimUseCase.execute(param: anyNamed('param')))
-        .thenAnswer(
-            (realInvocation) => Future.value(CredentialMocks.authClaim));
+    when(getGenesisStateUseCase.execute(param: anyNamed('param')))
+        .thenAnswer((realInvocation) => Future.value(CommonMocks.aMap));
     when(identityRepository.getDidIdentifier(
-      privateKey: anyNamed('privateKey'),
       blockchain: anyNamed('blockchain'),
       network: anyNamed('network'),
-      authClaim: anyNamed('authClaim'),
+      genesisState: anyNamed('genesisState'),
       profileNonce: anyNamed('profileNonce'),
     )).thenAnswer((realInvocation) => Future.value(CommonMocks.did));
   });
@@ -55,24 +54,22 @@ void main() {
 
       // Then
       expect(
-          verify(getIdentityAuthClaimUseCase.execute(
+          verify(getGenesisStateUseCase.execute(
                   param: captureAnyNamed('param')))
               .captured
               .first,
           CommonMocks.privateKey);
 
       var authClaimCapture = verify(identityRepository.getDidIdentifier(
-        privateKey: captureAnyNamed('privateKey'),
         blockchain: captureAnyNamed('blockchain'),
         network: captureAnyNamed('network'),
-        authClaim: captureAnyNamed('authClaim'),
+        genesisState: captureAnyNamed('genesisState'),
         profileNonce: captureAnyNamed('profileNonce'),
       )).captured;
-      expect(authClaimCapture[0], CommonMocks.privateKey);
-      expect(authClaimCapture[1], CommonMocks.blockchain);
-      expect(authClaimCapture[2], CommonMocks.network);
-      expect(authClaimCapture[3], CredentialMocks.authClaim);
-      expect(authClaimCapture[4], 0);
+      expect(authClaimCapture[0], CommonMocks.blockchain);
+      expect(authClaimCapture[1], CommonMocks.network);
+      expect(authClaimCapture[2], CommonMocks.aMap);
+      expect(authClaimCapture[3], 0);
     },
   );
 
@@ -80,7 +77,7 @@ void main() {
     'Given a param, when I call execute and an error occurred, then I expect an exception to be thrown',
     () async {
       // Given
-      when(getIdentityAuthClaimUseCase.execute(param: anyNamed('param')))
+      when(getGenesisStateUseCase.execute(param: anyNamed('param')))
           .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
       // When
@@ -89,17 +86,16 @@ void main() {
 
       // Then
       expect(
-          verify(getIdentityAuthClaimUseCase.execute(
+          verify(getGenesisStateUseCase.execute(
                   param: captureAnyNamed('param')))
               .captured
               .first,
           CommonMocks.privateKey);
 
       verifyNever(identityRepository.getDidIdentifier(
-        privateKey: captureAnyNamed('privateKey'),
         blockchain: captureAnyNamed('blockchain'),
         network: captureAnyNamed('network'),
-        authClaim: captureAnyNamed('authClaim'),
+        genesisState: captureAnyNamed('genesisState'),
         profileNonce: captureAnyNamed('profileNonce'),
       ));
     },
