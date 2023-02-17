@@ -14,6 +14,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_inputs_mapper.
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_response_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/gist_proof_mapper.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/proof_request_filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/iden3comm_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
@@ -22,6 +23,7 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_
 import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 
+import '../mappers/proof_request_filters_mapper_test.dart';
 import 'iden3comm_repository_impl_test.mocks.dart';
 
 // Data
@@ -88,18 +90,20 @@ MockAuthInputsMapper authInputsMapper = MockAuthInputsMapper();
 MockAuthProofMapper authProofMapper = MockAuthProofMapper();
 MockGistProofMapper gistProofMapper = MockGistProofMapper();
 MockQMapper qMapper = MockQMapper();
+MockProofRequestFiltersMapper proofRequestFiltersMapper =
+    MockProofRequestFiltersMapper();
 
 // Tested instance
 Iden3commRepository repository = Iden3commRepositoryImpl(
-  remoteIden3commDataSource,
-  libPolygonIdCoreIden3commDataSource,
-  libBabyJubJubDataSource,
-  authResponseMapper,
-  authInputsMapper,
-  authProofMapper,
-  gistProofMapper,
-  qMapper,
-);
+    remoteIden3commDataSource,
+    libPolygonIdCoreIden3commDataSource,
+    libBabyJubJubDataSource,
+    authResponseMapper,
+    authInputsMapper,
+    authProofMapper,
+    gistProofMapper,
+    qMapper,
+    proofRequestFiltersMapper);
 
 // TODO: verify params and write other functions
 @GenerateMocks([
@@ -111,6 +115,7 @@ Iden3commRepository repository = Iden3commRepositoryImpl(
   AuthProofMapper,
   GistProofMapper,
   QMapper,
+  ProofRequestFiltersMapper
 ])
 void main() {
   group(

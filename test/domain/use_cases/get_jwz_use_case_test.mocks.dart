@@ -7,12 +7,8 @@ import 'dart:async' as _i6;
 import 'dart:typed_data' as _i8;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
-    as _i12;
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
     as _i9;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart'
-    as _i13;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart'
     as _i10;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart'
@@ -22,7 +18,7 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart'
     as _i4;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz.dart'
-    as _i14;
+    as _i12;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart'
     as _i3;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart'
@@ -189,19 +185,7 @@ class MockProofRepository extends _i1.Mock implements _i5.ProofRepository {
         )),
       ) as _i6.Future<_i3.JWZProof>);
   @override
-  _i6.Future<List<_i12.FilterEntity>> getFilters(
-          {required _i13.ProofRequestEntity? request}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getFilters,
-          [],
-          {#request: request},
-        ),
-        returnValue:
-            _i6.Future<List<_i12.FilterEntity>>.value(<_i12.FilterEntity>[]),
-      ) as _i6.Future<List<_i12.FilterEntity>>);
-  @override
-  _i6.Future<String> encodeJWZ({required _i14.JWZEntity? jwz}) =>
+  _i6.Future<String> encodeJWZ({required _i12.JWZEntity? jwz}) =>
       (super.noSuchMethod(
         Invocation.method(
           #encodeJWZ,

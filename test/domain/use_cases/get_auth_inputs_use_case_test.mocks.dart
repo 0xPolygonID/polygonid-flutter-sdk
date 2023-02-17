@@ -7,10 +7,14 @@ import 'dart:async' as _i9;
 import 'dart:typed_data' as _i16;
 
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
+    as _i18;
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_auth_claim_use_case.dart'
     as _i10;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart'
     as _i17;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart'
+    as _i19;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart'
     as _i15;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart'
@@ -24,13 +28,13 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart'
 import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart'
     as _i4;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart'
-    as _i21;
+    as _i23;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart'
-    as _i20;
+    as _i22;
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart'
-    as _i18;
+    as _i20;
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart'
-    as _i19;
+    as _i21;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_use_case.dart'
     as _i8;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_latest_state_use_case.dart'
@@ -334,13 +338,25 @@ class MockIden3commRepository extends _i1.Mock
         ),
         returnValue: _i9.Future<String>.value(''),
       ) as _i9.Future<String>);
+  @override
+  _i9.Future<List<_i18.FilterEntity>> getFilters(
+          {required _i19.ProofRequestEntity? request}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getFilters,
+          [],
+          {#request: request},
+        ),
+        returnValue:
+            _i9.Future<List<_i18.FilterEntity>>.value(<_i18.FilterEntity>[]),
+      ) as _i9.Future<List<_i18.FilterEntity>>);
 }
 
 /// A class which mocks [IdentityRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockIdentityRepository extends _i1.Mock
-    implements _i18.IdentityRepository {
+    implements _i20.IdentityRepository {
   MockIdentityRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -600,7 +616,7 @@ class MockIdentityRepository extends _i1.Mock
 /// A class which mocks [SMTRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockSMTRepository extends _i1.Mock implements _i19.SMTRepository {
+class MockSMTRepository extends _i1.Mock implements _i21.SMTRepository {
   MockSMTRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -608,7 +624,7 @@ class MockSMTRepository extends _i1.Mock implements _i19.SMTRepository {
   @override
   _i9.Future<void> addLeaf({
     required _i5.NodeEntity? leaf,
-    required _i20.TreeType? type,
+    required _i22.TreeType? type,
     required String? did,
     required String? privateKey,
   }) =>
@@ -629,7 +645,7 @@ class MockSMTRepository extends _i1.Mock implements _i19.SMTRepository {
   @override
   _i9.Future<_i5.NodeEntity> getNode({
     required _i6.HashEntity? hash,
-    required _i20.TreeType? type,
+    required _i22.TreeType? type,
     required String? did,
     required String? privateKey,
   }) =>
@@ -662,7 +678,7 @@ class MockSMTRepository extends _i1.Mock implements _i19.SMTRepository {
   _i9.Future<void> addNode({
     required _i6.HashEntity? hash,
     required _i5.NodeEntity? node,
-    required _i20.TreeType? type,
+    required _i22.TreeType? type,
     required String? did,
     required String? privateKey,
   }) =>
@@ -683,7 +699,7 @@ class MockSMTRepository extends _i1.Mock implements _i19.SMTRepository {
       ) as _i9.Future<void>);
   @override
   _i9.Future<_i6.HashEntity> getRoot({
-    required _i20.TreeType? type,
+    required _i22.TreeType? type,
     required String? did,
     required String? privateKey,
   }) =>
@@ -713,7 +729,7 @@ class MockSMTRepository extends _i1.Mock implements _i19.SMTRepository {
   @override
   _i9.Future<void> setRoot({
     required _i6.HashEntity? root,
-    required _i20.TreeType? type,
+    required _i22.TreeType? type,
     required String? did,
     required String? privateKey,
   }) =>
@@ -734,7 +750,7 @@ class MockSMTRepository extends _i1.Mock implements _i19.SMTRepository {
   @override
   _i9.Future<_i7.ProofEntity> generateProof({
     required _i6.HashEntity? key,
-    required _i20.TreeType? type,
+    required _i22.TreeType? type,
     required String? did,
     required String? privateKey,
   }) =>
@@ -766,7 +782,7 @@ class MockSMTRepository extends _i1.Mock implements _i19.SMTRepository {
   @override
   _i9.Future<void> createSMT({
     required int? maxLevels,
-    required _i20.TreeType? type,
+    required _i22.TreeType? type,
     required String? did,
     required String? privateKey,
   }) =>
@@ -786,7 +802,7 @@ class MockSMTRepository extends _i1.Mock implements _i19.SMTRepository {
       ) as _i9.Future<void>);
   @override
   _i9.Future<void> removeSMT({
-    required _i20.TreeType? type,
+    required _i22.TreeType? type,
     required String? did,
     required String? privateKey,
   }) =>
@@ -823,7 +839,7 @@ class MockSMTRepository extends _i1.Mock implements _i19.SMTRepository {
       ) as _i9.Future<String>);
   @override
   _i9.Future<Map<String, dynamic>> convertState(
-          {required _i21.TreeStateEntity? state}) =>
+          {required _i23.TreeStateEntity? state}) =>
       (super.noSuchMethod(
         Invocation.method(
           #convertState,

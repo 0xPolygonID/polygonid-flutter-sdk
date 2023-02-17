@@ -5,8 +5,10 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_claims_from_iden3msg_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proofs_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proofs_from_iden3msg_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
@@ -18,6 +20,8 @@ import '../../common/credential_mocks.dart';
 import '../../common/iden3com_mocks.dart';
 import '../../common/identity_mocks.dart';
 import '../../common/proof_mocks.dart';
+import 'authenticate_use_case_test.dart';
+import 'authenticate_use_case_test.mocks.dart';
 import 'get_proof_use_case_test.mocks.dart';
 
 // Data
@@ -27,7 +31,7 @@ List<JWZProofEntity> result = [
   Iden3commMocks.jwzProof
 ];
 
-GetProofsParam param = GetProofsParam(
+GetProofsFromIden3MsgParam param = GetProofsFromIden3MsgParam(
   message: Iden3commMocks.authRequest,
   did: CommonMocks.did,
   profileNonce: CommonMocks.nonce,
@@ -38,8 +42,10 @@ var exception = ProofsNotFoundException([]);
 
 // Mocked dependencies
 MockProofRepository proofRepository = MockProofRepository();
+MockIden3commRepository iden3commRepository = MockIden3commRepository();
 MockIdentityRepository identityRepository = MockIdentityRepository();
-MockGetClaimsUseCase getClaimsUseCase = MockGetClaimsUseCase();
+MockGetClaimsFromIden3MsgUseCase getClaimsFromIden3MsgUseCase =
+    MockGetClaimsFromIden3MsgUseCase();
 MockGenerateProofUseCase generateProofUseCase = MockGenerateProofUseCase();
 MockIsProofCircuitSupportedUseCase isProofCircuitSupportedUseCase =
     MockIsProofCircuitSupportedUseCase();
@@ -47,10 +53,10 @@ MockGetProofRequestsUseCase getProofRequestsUseCase =
     MockGetProofRequestsUseCase();
 
 // Tested instance
-GetProofsUseCase useCase = GetProofsUseCase(
+GetProofsFromIden3MsgUseCase useCase = GetProofsFromIden3MsgUseCase(
   proofRepository,
   identityRepository,
-  getClaimsUseCase,
+  getClaimsFromIden3MsgUseCase,
   generateProofUseCase,
   isProofCircuitSupportedUseCase,
   getProofRequestsUseCase,
@@ -59,7 +65,7 @@ GetProofsUseCase useCase = GetProofsUseCase(
 @GenerateMocks([
   ProofRepository,
   IdentityRepository,
-  GetClaimsUseCase,
+  GetClaimsFromIden3MsgUseCase,
   GenerateProofUseCase,
   IsProofCircuitSupportedUseCase,
   GetProofRequestsUseCase,
@@ -68,7 +74,7 @@ main() {
   setUp(() {
     reset(proofRepository);
     reset(identityRepository);
-    reset(getClaimsUseCase);
+    reset(getClaimsFromIden3MsgUseCase);
     reset(generateProofUseCase);
     reset(isProofCircuitSupportedUseCase);
     reset(getProofRequestsUseCase);
@@ -84,10 +90,7 @@ main() {
     when(isProofCircuitSupportedUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value(true));
 
-    when(proofRepository.getFilters(request: anyNamed('request')))
-        .thenAnswer((realInvocation) => Future.value(filters));
-
-    when(getClaimsUseCase.execute(param: anyNamed('param')))
+    when(getClaimsFromIden3MsgUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value([CredentialMocks.claim]));
 
     when(proofRepository.loadCircuitFiles(any))
@@ -123,12 +126,8 @@ main() {
     expect(verifyIsFilterSupported.callCount,
         Iden3commMocks.proofRequestList.length);
 
-    var verifyGetFilters =
-        verify(proofRepository.getFilters(request: captureAnyNamed('request')));
-    expect(verifyGetFilters.callCount, Iden3commMocks.proofRequestList.length);
-
-    var verifyGetClaims =
-        verify(getClaimsUseCase.execute(param: captureAnyNamed('param')));
+    var verifyGetClaims = verify(
+        getClaimsFromIden3MsgUseCase.execute(param: captureAnyNamed('param')));
     expect(verifyGetClaims.callCount, Iden3commMocks.proofRequestList.length);
 
     var verifyLoadCircuit =
@@ -144,9 +143,6 @@ main() {
       expect(verifyIsFilterSupported.captured[i],
           Iden3commMocks.proofRequestList[i].scope.circuitId);
 
-      expect(verifyGetFilters.captured[i], Iden3commMocks.proofRequestList[i]);
-
-      expect(verifyGetClaims.captured[i].filters, filters);
       expect(verifyGetClaims.captured[i].did, param.did);
       expect(verifyGetClaims.captured[i].privateKey, param.privateKey);
 
@@ -165,10 +161,10 @@ main() {
   });
 
   test(
-      "Given GetProofsParam as param, when call execute and error occurred, then I expect an exception to be thrown",
+      "Given GetProofsFromIden3MsgParam as param, when call execute and error occurred, then I expect an exception to be thrown",
       () async {
     // Given
-    when(proofRepository.getFilters(request: anyNamed('request')))
+    when(iden3commRepository.getFilters(request: anyNamed('request')))
         .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
     // When
@@ -193,12 +189,8 @@ main() {
     expect(verifyIsFilterSupported.captured[0],
         Iden3commMocks.proofRequestList[0].scope.circuitId);
 
-    var verifyGetFilters =
-        verify(proofRepository.getFilters(request: captureAnyNamed('request')));
-    expect(verifyGetFilters.callCount, 1);
-    expect(verifyGetFilters.captured[0], Iden3commMocks.proofRequestList[0]);
-
-    verifyNever(getClaimsUseCase.execute(param: captureAnyNamed('param')));
+    verifyNever(
+        getClaimsFromIden3MsgUseCase.execute(param: captureAnyNamed('param')));
     verifyNever(proofRepository.loadCircuitFiles(captureAny));
     verifyNever(generateProofUseCase.execute(param: captureAnyNamed('param')));
   });

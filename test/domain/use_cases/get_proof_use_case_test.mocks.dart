@@ -7,20 +7,18 @@ import 'dart:async' as _i9;
 import 'dart:typed_data' as _i11;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
-    as _i15;
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
     as _i12;
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart'
-    as _i19;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart'
-    as _i23;
+    as _i22;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart'
-    as _i16;
+    as _i21;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart'
     as _i13;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_claims_from_iden3msg_use_case.dart'
+    as _i17;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart'
-    as _i22;
+    as _i20;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
     as _i5;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart'
@@ -28,7 +26,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart'
 import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart'
     as _i6;
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart'
-    as _i18;
+    as _i16;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart'
     as _i2;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart'
@@ -36,7 +34,7 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart'
     as _i4;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz.dart'
-    as _i17;
+    as _i15;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart'
     as _i3;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart'
@@ -44,9 +42,9 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart'
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart'
     as _i8;
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/generate_proof_use_case.dart'
-    as _i20;
+    as _i18;
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart'
-    as _i21;
+    as _i19;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -238,19 +236,7 @@ class MockProofRepository extends _i1.Mock implements _i8.ProofRepository {
         )),
       ) as _i9.Future<_i3.JWZProof>);
   @override
-  _i9.Future<List<_i15.FilterEntity>> getFilters(
-          {required _i16.ProofRequestEntity? request}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getFilters,
-          [],
-          {#request: request},
-        ),
-        returnValue:
-            _i9.Future<List<_i15.FilterEntity>>.value(<_i15.FilterEntity>[]),
-      ) as _i9.Future<List<_i15.FilterEntity>>);
-  @override
-  _i9.Future<String> encodeJWZ({required _i17.JWZEntity? jwz}) =>
+  _i9.Future<String> encodeJWZ({required _i15.JWZEntity? jwz}) =>
       (super.noSuchMethod(
         Invocation.method(
           #encodeJWZ,
@@ -309,7 +295,7 @@ class MockProofRepository extends _i1.Mock implements _i8.ProofRepository {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockIdentityRepository extends _i1.Mock
-    implements _i18.IdentityRepository {
+    implements _i16.IdentityRepository {
   MockIdentityRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -566,17 +552,18 @@ class MockIdentityRepository extends _i1.Mock
       ) as _i9.Future<void>);
 }
 
-/// A class which mocks [GetClaimsUseCase].
+/// A class which mocks [GetClaimsFromIden3MsgUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockGetClaimsUseCase extends _i1.Mock implements _i19.GetClaimsUseCase {
-  MockGetClaimsUseCase() {
+class MockGetClaimsFromIden3MsgUseCase extends _i1.Mock
+    implements _i17.GetClaimsFromIden3MsgUseCase {
+  MockGetClaimsFromIden3MsgUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
   _i9.Future<List<_i12.ClaimEntity>> execute(
-          {required _i19.GetClaimsParam? param}) =>
+          {required _i17.GetClaimsFromIden3MsgParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -592,13 +579,13 @@ class MockGetClaimsUseCase extends _i1.Mock implements _i19.GetClaimsUseCase {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGenerateProofUseCase extends _i1.Mock
-    implements _i20.GenerateProofUseCase {
+    implements _i18.GenerateProofUseCase {
   MockGenerateProofUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i9.Future<_i3.JWZProof> execute({required _i20.GenerateProofParam? param}) =>
+  _i9.Future<_i3.JWZProof> execute({required _i18.GenerateProofParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -620,7 +607,7 @@ class MockGenerateProofUseCase extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockIsProofCircuitSupportedUseCase extends _i1.Mock
-    implements _i21.IsProofCircuitSupportedUseCase {
+    implements _i19.IsProofCircuitSupportedUseCase {
   MockIsProofCircuitSupportedUseCase() {
     _i1.throwOnMissingStub(this);
   }
@@ -640,21 +627,21 @@ class MockIsProofCircuitSupportedUseCase extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetProofRequestsUseCase extends _i1.Mock
-    implements _i22.GetProofRequestsUseCase {
+    implements _i20.GetProofRequestsUseCase {
   MockGetProofRequestsUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i9.Future<List<_i16.ProofRequestEntity>> execute(
-          {required _i23.Iden3MessageEntity? param}) =>
+  _i9.Future<List<_i21.ProofRequestEntity>> execute(
+          {required _i22.Iden3MessageEntity? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
           {#param: param},
         ),
-        returnValue: _i9.Future<List<_i16.ProofRequestEntity>>.value(
-            <_i16.ProofRequestEntity>[]),
-      ) as _i9.Future<List<_i16.ProofRequestEntity>>);
+        returnValue: _i9.Future<List<_i21.ProofRequestEntity>>.value(
+            <_i21.ProofRequestEntity>[]),
+      ) as _i9.Future<List<_i21.ProofRequestEntity>>);
 }

@@ -7,24 +7,28 @@ import 'dart:async' as _i3;
 import 'dart:typed_data' as _i5;
 
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
+    as _i10;
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_case.dart'
-    as _i12;
+    as _i14;
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart'
-    as _i13;
+    as _i15;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart'
     as _i9;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart'
+    as _i11;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart'
     as _i4;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart'
     as _i2;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart'
-    as _i11;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proofs_use_case.dart'
-    as _i10;
+    as _i13;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proofs_from_iden3msg_use_case.dart'
+    as _i12;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
     as _i6;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart'
-    as _i14;
+    as _i16;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart'
     as _i8;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart'
@@ -135,19 +139,32 @@ class MockIden3commRepository extends _i1.Mock
         ),
         returnValue: _i3.Future<String>.value(''),
       ) as _i3.Future<String>);
+  @override
+  _i3.Future<List<_i10.FilterEntity>> getFilters(
+          {required _i11.ProofRequestEntity? request}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getFilters,
+          [],
+          {#request: request},
+        ),
+        returnValue:
+            _i3.Future<List<_i10.FilterEntity>>.value(<_i10.FilterEntity>[]),
+      ) as _i3.Future<List<_i10.FilterEntity>>);
 }
 
-/// A class which mocks [GetProofsUseCase].
+/// A class which mocks [GetProofsFromIden3MsgUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockGetProofsUseCase extends _i1.Mock implements _i10.GetProofsUseCase {
-  MockGetProofsUseCase() {
+class MockGetProofsFromIden3MsgUseCase extends _i1.Mock
+    implements _i12.GetProofsFromIden3MsgUseCase {
+  MockGetProofsFromIden3MsgUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
   _i3.Future<List<_i9.JWZProofEntity>> execute(
-          {required _i10.GetProofsParam? param}) =>
+          {required _i12.GetProofsFromIden3MsgParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -163,13 +180,13 @@ class MockGetProofsUseCase extends _i1.Mock implements _i10.GetProofsUseCase {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetAuthTokenUseCase extends _i1.Mock
-    implements _i11.GetAuthTokenUseCase {
+    implements _i13.GetAuthTokenUseCase {
   MockGetAuthTokenUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<String> execute({required _i11.GetAuthTokenParam? param}) =>
+  _i3.Future<String> execute({required _i13.GetAuthTokenParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -184,13 +201,13 @@ class MockGetAuthTokenUseCase extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetEnvConfigUseCase extends _i1.Mock
-    implements _i12.GetEnvConfigUseCase {
+    implements _i14.GetEnvConfigUseCase {
   MockGetEnvConfigUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<String> execute({required _i12.PolygonIdConfig? param}) =>
+  _i3.Future<String> execute({required _i14.PolygonIdConfig? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -205,7 +222,7 @@ class MockGetEnvConfigUseCase extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetPackageNameUseCase extends _i1.Mock
-    implements _i13.GetPackageNameUseCase {
+    implements _i15.GetPackageNameUseCase {
   MockGetPackageNameUseCase() {
     _i1.throwOnMissingStub(this);
   }
@@ -225,13 +242,13 @@ class MockGetPackageNameUseCase extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetDidIdentifierUseCase extends _i1.Mock
-    implements _i14.GetDidIdentifierUseCase {
+    implements _i16.GetDidIdentifierUseCase {
   MockGetDidIdentifierUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<String> execute({required _i14.GetDidIdentifierParam? param}) =>
+  _i3.Future<String> execute({required _i16.GetDidIdentifierParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,

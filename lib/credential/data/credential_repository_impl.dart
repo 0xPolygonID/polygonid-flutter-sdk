@@ -46,15 +46,15 @@ class CredentialRepositoryImpl extends CredentialRepository {
       /// Error in fetching schema and vocab are not blocking
       return _remoteClaimDataSource
           .fetchSchema(url: dto.info.credentialSchema.id)
-          .then((schema) => _remoteClaimDataSource
-                  .fetchVocab(
-                      schema: schema, type: dto.info.credentialSubject.type)
-                  .then((vocab) {
-                dto.schema = schema;
-                dto.vocab = vocab;
-
-                return dto;
-              }))
+          .then((schema) {
+            dto.schema = schema;
+            return _remoteClaimDataSource
+                .fetchVocab(schema: schema, type: dto.info.context[2])
+                .then((vocab) {
+              dto.vocab = vocab;
+              return dto;
+            });
+          })
           .catchError((_) => dto)
           .then((value) => _claimMapper.mapFrom(dto));
     }).catchError((error) => throw FetchClaimException(error));

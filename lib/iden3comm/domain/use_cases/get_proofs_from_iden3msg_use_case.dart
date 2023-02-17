@@ -4,24 +4,29 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_en
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_claims_from_iden3msg_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
 
+import '../../../credential/domain/entities/claim_entity.dart';
+import '../../../credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
+import '../../../credential/domain/use_cases/update_claim_use_case.dart';
 import '../../../identity/domain/repositories/identity_repository.dart';
 import '../../../proof/domain/entities/circuit_data_entity.dart';
 import '../../../proof/domain/repositories/proof_repository.dart';
 import '../../../proof/domain/use_cases/generate_proof_use_case.dart';
 import 'get_proof_requests_use_case.dart';
 
-class GetProofsParam {
+class GetProofsFromIden3MsgParam {
   final Iden3MessageEntity message;
   final String did;
   final int profileNonce;
   final String privateKey;
   final String? challenge;
 
-  GetProofsParam(
+  GetProofsFromIden3MsgParam(
       {required this.message,
       required this.did,
       required this.profileNonce,
@@ -29,26 +34,27 @@ class GetProofsParam {
       this.challenge});
 }
 
-class GetProofsUseCase
-    extends FutureUseCase<GetProofsParam, List<JWZProofEntity>> {
+class GetProofsFromIden3MsgUseCase
+    extends FutureUseCase<GetProofsFromIden3MsgParam, List<JWZProofEntity>> {
   final ProofRepository _proofRepository;
   final IdentityRepository _identityRepository;
-  final GetClaimsUseCase _getClaimsUseCase;
+  final GetClaimsFromIden3MsgUseCase _getClaimsFromIden3MsgUseCase;
   final GenerateProofUseCase _generateProofUseCase;
   final IsProofCircuitSupportedUseCase _isProofCircuitSupported;
   final GetProofRequestsUseCase _getProofRequestsUseCase;
 
-  GetProofsUseCase(
+  GetProofsFromIden3MsgUseCase(
     this._proofRepository,
     this._identityRepository,
-    this._getClaimsUseCase,
+    this._getClaimsFromIden3MsgUseCase,
     this._generateProofUseCase,
     this._isProofCircuitSupported,
     this._getProofRequestsUseCase,
   );
 
   @override
-  Future<List<JWZProofEntity>> execute({required GetProofsParam param}) async {
+  Future<List<JWZProofEntity>> execute(
+      {required GetProofsFromIden3MsgParam param}) async {
     List<JWZProofEntity> proofs = [];
 
     List<ProofRequestEntity> requests =
@@ -66,15 +72,14 @@ class GetProofsUseCase
       if (await _isProofCircuitSupported.execute(
           param: request.scope.circuitId)) {
         // Claims
-        await _proofRepository
-            .getFilters(request: request)
-            .then((filters) => _getClaimsUseCase.execute(
-                    param: GetClaimsParam(
-                  filters: filters,
-                  did: param.did,
-                  privateKey: param.privateKey,
-                )))
-            .then((claims) => claims.first)
+        await _getClaimsFromIden3MsgUseCase
+            .execute(
+                param: GetClaimsFromIden3MsgParam(
+                    message: param.message,
+                    did: param.did,
+                    profileNonce: param.profileNonce,
+                    privateKey: param.privateKey))
+            .then((claim) => claim.first)
             .then((credential) async {
           String circuitId = request.scope.circuitId;
           CircuitDataEntity circuitData =

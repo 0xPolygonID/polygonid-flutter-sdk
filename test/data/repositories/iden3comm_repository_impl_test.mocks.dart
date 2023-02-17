@@ -8,6 +8,8 @@ import 'dart:typed_data' as _i10;
 
 import 'package:http/http.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
+    as _i17;
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/lib_pidcore_iden3comm_data_source.dart'
     as _i5;
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart'
@@ -22,6 +24,10 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_response_mappe
     as _i7;
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/gist_proof_mapper.dart'
     as _i13;
+import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/proof_request_filters_mapper.dart'
+    as _i16;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart'
+    as _i18;
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart'
     as _i6;
 import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart'
@@ -322,4 +328,24 @@ class MockQMapper extends _i1.Mock implements _i15.QMapper {
         ),
         returnValue: '',
       ) as String);
+}
+
+/// A class which mocks [ProofRequestFiltersMapper].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockProofRequestFiltersMapper extends _i1.Mock
+    implements _i16.ProofRequestFiltersMapper {
+  MockProofRequestFiltersMapper() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  List<_i17.FilterEntity> mapFrom(_i18.ProofRequestEntity? from) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #mapFrom,
+          [from],
+        ),
+        returnValue: <_i17.FilterEntity>[],
+      ) as List<_i17.FilterEntity>);
 }
