@@ -78,9 +78,17 @@ class GetClaimsFromIden3MsgUseCase
               Map<String, dynamic> revStatus =
                   await _getClaimRevocationStatusUseCase
                       .execute(param: claims[i])
-                      .catchError((_) => <String,dynamic>{});
-              if (revStatus.isNotEmpty && revStatus["mtp"] != null && revStatus["mtp"]["existence"] != null && revStatus["mtp"]["existence"] == true) {
-                claims[i] = await _updateClaimUseCase.execute(param: UpdateClaimParam(id: claims[i].id ,state: ClaimState.revoked, did: param.did, privateKey: param.privateKey));
+                      .catchError((_) => <String, dynamic>{});
+              if (revStatus.isNotEmpty &&
+                  revStatus["mtp"] != null &&
+                  revStatus["mtp"]["existence"] != null &&
+                  revStatus["mtp"]["existence"] == true) {
+                claims[i] = await _updateClaimUseCase.execute(
+                    param: UpdateClaimParam(
+                        id: claims[i].id,
+                        state: ClaimState.revoked,
+                        did: param.did,
+                        privateKey: param.privateKey));
               }
             }
             return claims
