@@ -286,6 +286,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _buildSignMessageFeatureCard(),
         _buildAuthenticateFeatureCard(),
         _buildCheckIdentityValidityFeatureCard(),
+        _buildBackupIdentityFeatureCard(),
       ],
     );
   }
@@ -345,6 +346,27 @@ class _HomeScreenState extends State<HomeScreen> {
           description: CustomStrings.checkIdentityValidityDescription,
           onTap: () {
             Navigator.pushNamed(context, Routes.checkIdentityValidityPath);
+          },
+          enabled: enabled,
+          disabledReason: 'You need to create an identity first',
+        );
+      },
+    );
+  }
+
+  ///
+  Widget _buildBackupIdentityFeatureCard() {
+    return BlocBuilder(
+      bloc: _bloc,
+      builder: (BuildContext context, HomeState state) {
+        bool enabled = (state is! LoadingDataHomeState) &&
+            (state.identifier != null && state.identifier!.isNotEmpty);
+        return FeatureCard(
+          methodName: CustomStrings.backupIdentityMethod,
+          title: CustomStrings.backupIdentityTitle,
+          description: CustomStrings.backupIdentityDescription,
+          onTap: () {
+            Navigator.pushNamed(context, Routes.backupIdentityPath);
           },
           enabled: enabled,
           disabledReason: 'You need to create an identity first',
