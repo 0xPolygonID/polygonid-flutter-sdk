@@ -188,7 +188,7 @@ main() {
 
     expect(verifyIsFilterSupported.captured[0],
         Iden3commMocks.proofRequestList[0].scope.circuitId);
-    
+
     verifyNever(proofRepository.loadCircuitFiles(captureAny));
     verifyNever(generateProofUseCase.execute(param: captureAnyNamed('param')));
   });
