@@ -5,6 +5,7 @@ import 'package:polygonid_flutter_sdk/sdk/mappers/iden3_message_type_mapper.dart
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/common/app_logger.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_bloc.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/backup_identity/bloc/backup_identity_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/check_identity_validity/bloc/check_identity_validity_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claim_detail/bloc/claim_detail_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_bloc.dart';
@@ -28,6 +29,7 @@ Future<void> init() async {
   registerMappers();
   registerSignDependencies();
   registerIdentityDependencies();
+  registerBackupIdentityDependencies();
 }
 
 ///
@@ -77,7 +79,13 @@ void registerSignDependencies() {
   getIt.registerFactory(() => SignBloc(getIt()));
 }
 
+///
 void registerIdentityDependencies() {
   getIt.registerFactory<CheckIdentityValidityBloc>(
       () => CheckIdentityValidityBloc(getIt()));
+}
+
+///
+void registerBackupIdentityDependencies() {
+  getIt.registerFactory<BackupIdentityBloc>(() => BackupIdentityBloc(getIt()));
 }

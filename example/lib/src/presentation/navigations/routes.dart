@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/backup_identity/widgets/backup_identity.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/check_identity_validity/widgets/check_identity_validity.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claim_detail/widgets/claim_detail.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/models/claim_model.dart';
@@ -20,6 +21,7 @@ class Routes {
   static const String claimDetailPath = "/claim_detail";
   static const String signMessagePath = "/sign_message";
   static const String checkIdentityValidityPath = "/check_identity_validity";
+  static const String backupIdentityPath = "/backup_identity";
 
   ///
   static Map<String, WidgetBuilder> getRoutes(context) {
@@ -33,6 +35,7 @@ class Routes {
       claimDetailPath: _claimDetailPath(),
       signMessagePath: _signMessageRoute(),
       checkIdentityValidityPath: _checkIdentityValidityRoute(),
+      backupIdentityPath: _backupIdentityRoute(),
     };
   }
 
@@ -77,5 +80,10 @@ class Routes {
   ///
   static WidgetBuilder _checkIdentityValidityRoute() {
     return (BuildContext context) => const CheckIdentityValidityScreen();
+  }
+
+  ///
+  static WidgetBuilder _backupIdentityRoute() {
+    return (BuildContext context) => const BackupIdentityScreen();
   }
 }
