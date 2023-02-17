@@ -66,4 +66,14 @@ class CustomStrings {
       "Check if the identity is valid";
   static const String chechIdentityValidityButtonCTA =
       "Check validity\nidentity.checkIdentityValidity()";
+
+  // BACKUP IDENTITY FEATURE CARD
+  static const String backupIdentityMethod = "identity.backupIdentity()";
+  static const String backupIdentityTitle = "Backup identity";
+  static const String backupIdentityDescription =
+      "Backup identity, by exporting encrypted version of the identity database";
+  static const String backupIdentityButtonCTA =
+      "Backup identity\nidentity.backupIdentity()";
+  static const String backupIdentityScreenDescription =
+      "Backup your identity to an encrypted String version of your database.\nThis encrypted String can be used to restore your identity in the future";
 }
