@@ -72,7 +72,7 @@ Please file feature requests and bugs at the [issue tracker][tracker].
 To start using this package first import it in your Dart file.
 
 ```dart
-import 'package:polygonid_flutter_sdk/polygonid_sdk.dart';
+import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 ```
 
 ## Notes
