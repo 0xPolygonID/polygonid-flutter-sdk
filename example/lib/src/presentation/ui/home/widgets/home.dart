@@ -287,6 +287,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _buildAuthenticateFeatureCard(),
         _buildCheckIdentityValidityFeatureCard(),
         _buildBackupIdentityFeatureCard(),
+        _buildRestoreIdentityFeatureCard(),
       ],
     );
   }
@@ -306,7 +307,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Navigator.pushNamed(context, Routes.signMessagePath);
           },
           enabled: enabled,
-          disabledReason: 'You need to create an identity first',
+          disabledReason: CustomStrings.homeFeatureCardDisabledReason,
         );
       },
     );
@@ -327,7 +328,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Navigator.pushNamed(context, Routes.authPath);
           },
           enabled: enabled,
-          disabledReason: 'You need to create an identity first',
+          disabledReason: CustomStrings.homeFeatureCardDisabledReason,
         );
       },
     );
@@ -348,7 +349,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Navigator.pushNamed(context, Routes.checkIdentityValidityPath);
           },
           enabled: enabled,
-          disabledReason: 'You need to create an identity first',
+          disabledReason: CustomStrings.homeFeatureCardDisabledReason,
         );
       },
     );
@@ -369,7 +370,28 @@ class _HomeScreenState extends State<HomeScreen> {
             Navigator.pushNamed(context, Routes.backupIdentityPath);
           },
           enabled: enabled,
-          disabledReason: 'You need to create an identity first',
+          disabledReason: CustomStrings.homeFeatureCardDisabledReason,
+        );
+      },
+    );
+  }
+
+  ///
+  Widget _buildRestoreIdentityFeatureCard() {
+    return BlocBuilder(
+      bloc: _bloc,
+      builder: (BuildContext context, HomeState state) {
+        bool enabled = (state is! LoadingDataHomeState) &&
+            (state.identifier != null && state.identifier!.isNotEmpty);
+        return FeatureCard(
+          methodName: CustomStrings.restoreIdentityMethod,
+          title: CustomStrings.restoreIdentityTitle,
+          description: CustomStrings.restoreIdentityDescription,
+          onTap: () {
+            Navigator.pushNamed(context, Routes.restoreIdentityPath);
+          },
+          enabled: enabled,
+          disabledReason: CustomStrings.homeFeatureCardDisabledReason,
         );
       },
     );
