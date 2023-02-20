@@ -65,7 +65,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
     try {
       List<ClaimEntity> claimList =
-          await _polygonIdSdk.credential.fetchAndSaveClaims(
+          await _polygonIdSdk.iden3comm.fetchAndSaveClaims(
         message: event.iden3message as OfferIden3MessageEntity,
         did: didIdentifier,
         privateKey: privateKey,

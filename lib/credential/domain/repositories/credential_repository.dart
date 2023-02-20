@@ -5,7 +5,6 @@ import '../../../identity/domain/entities/identity_entity.dart';
 import '../entities/claim_entity.dart';
 
 abstract class CredentialRepository {
-
   Future<void> saveClaims({
     required List<ClaimEntity> claims,
     required String did,

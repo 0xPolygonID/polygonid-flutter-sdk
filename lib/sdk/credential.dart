@@ -9,12 +9,11 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/of
 import '../credential/domain/use_cases/save_claims_use_case.dart';
 
 abstract class PolygonIdSdkCredential {
-
   /// Store a list of [ClaimEntity] of the identity
   Future<List<ClaimEntity>> saveClaims(
       {required List<ClaimEntity> claims,
-        required String did,
-        required String privateKey});
+      required String did,
+      required String privateKey});
 
   /// Get a list of [ClaimEntity] of the identity from storage
   /// The list can be filtered by [filters]
@@ -74,15 +73,13 @@ class Credential implements PolygonIdSdkCredential {
 
   /// store a list of [ClaimEntity] of the identity
   @override
-  Future<List<ClaimEntity>> saveClaims({
-    required List<ClaimEntity> claims,
-    required String did,
-    required String privateKey}) {
+  Future<List<ClaimEntity>> saveClaims(
+      {required List<ClaimEntity> claims,
+      required String did,
+      required String privateKey}) {
     return _saveClaimsUseCase.execute(
-        param: SaveClaimsParam(
-            claims: claims,
-            did: did,
-            privateKey: privateKey));
+        param:
+            SaveClaimsParam(claims: claims, did: did, privateKey: privateKey));
   }
 
   /// Get a list of [ClaimEntity] from storage

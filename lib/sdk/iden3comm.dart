@@ -25,9 +25,9 @@ abstract class PolygonIdSdkIden3comm {
   /// Fetch a list of [ClaimEntity] from iden3Message and store them
   Future<List<ClaimEntity>> fetchAndSaveClaims(
       {required Iden3MessageEntity message,
-        required String did,
-        int? profileNonce,
-        required String privateKey});
+      required String did,
+      int? profileNonce,
+      required String privateKey});
 
   /// Get a list of [ClaimEntity] from iden3Message
   Future<List<ClaimEntity>> getClaims({
@@ -65,7 +65,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   final GetIden3commProofsUseCase _getIden3commProofsUseCase;
 
   Iden3comm(
-      this._fetchAndSaveClaimsUseCase,
+    this._fetchAndSaveClaimsUseCase,
     this._getIden3MessageUseCase,
     this._authenticateUseCase,
     this._getFiltersUseCase,
@@ -77,7 +77,6 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   Future<Iden3MessageEntity> getIden3Message({required String message}) {
     return _getIden3MessageUseCase.execute(param: message);
   }
-
 
   /// Returns a list of [FilterEntity] from a message string to
   /// apply to [Credential.getClaims]
@@ -91,19 +90,21 @@ class Iden3comm implements PolygonIdSdkIden3comm {
 
   /// Fetch a list of [ClaimEntity] from iden3Message and store them
   @override
-  Future<List<ClaimEntity>> fetchAndSaveClaims({
-    required Iden3MessageEntity message,
-    required String did,
-    int? profileNonce,
-    required String privateKey
-  }) {
+  Future<List<ClaimEntity>> fetchAndSaveClaims(
+      {required Iden3MessageEntity message,
+      required String did,
+      int? profileNonce,
+      required String privateKey}) {
     if (message is! OfferIden3MessageEntity) {
       throw InvalidIden3MsgTypeException(
           Iden3MessageType.offer, message.messageType);
     }
     return _fetchAndSaveClaimsUseCase.execute(
         param: FetchAndSaveClaimsParam(
-            message: message, did: did, profileNonce: profileNonce ?? 0, privateKey: privateKey));
+            message: message,
+            did: did,
+            profileNonce: profileNonce ?? 0,
+            privateKey: privateKey));
   }
 
   /// Get a list of [ClaimEntity] from iden3Message
@@ -145,10 +146,10 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   @override
   Future<void> authenticate(
       {required Iden3MessageEntity message,
-        required String did,
-        int? profileNonce,
-        required String privateKey,
-        String? pushToken}) {
+      required String did,
+      int? profileNonce,
+      required String privateKey,
+      String? pushToken}) {
     if (message is! AuthIden3MessageEntity) {
       throw InvalidIden3MsgTypeException(
           Iden3MessageType.auth, message.messageType);
@@ -156,11 +157,11 @@ class Iden3comm implements PolygonIdSdkIden3comm {
 
     return _authenticateUseCase.execute(
         param: AuthenticateParam(
-          message: message,
-          did: did,
-          profileNonce: profileNonce ?? 0,
-          privateKey: privateKey,
-          pushToken: pushToken,
-        ));
+      message: message,
+      did: did,
+      profileNonce: profileNonce ?? 0,
+      privateKey: privateKey,
+      pushToken: pushToken,
+    ));
   }
 }

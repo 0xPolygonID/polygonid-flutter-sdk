@@ -30,8 +30,12 @@ class FetchAndSaveClaimsUseCase
   final GetAuthTokenUseCase _getAuthTokenUseCase;
   final SaveClaimsUseCase _saveClaimsUseCase;
 
-  FetchAndSaveClaimsUseCase(this._iden3commRepository, this._getFetchRequestsUseCase,
-      this._getAuthTokenUseCase, this._saveClaimsUseCase, );
+  FetchAndSaveClaimsUseCase(
+    this._iden3commRepository,
+    this._getFetchRequestsUseCase,
+    this._getAuthTokenUseCase,
+    this._saveClaimsUseCase,
+  );
 
   @override
   Future<List<ClaimEntity>> execute({required FetchAndSaveClaimsParam param}) {
@@ -54,19 +58,21 @@ class FetchAndSaveClaimsUseCase
                   message: request,
                 ))
                 .then((authToken) => _iden3commRepository.fetchClaim(
-                    did: param.did, authToken: authToken, message: param.message))
+                    did: param.did,
+                    authToken: authToken,
+                    message: param.message))
                 .then((claim) => claims.add(claim));
           }
 
           return claims;
         })
         .then((claims) => _saveClaimsUseCase
-                .execute(param: SaveClaimsParam(
+                .execute(
+                    param: SaveClaimsParam(
               claims: claims,
               did: param.did,
               privateKey: param.privateKey,
-            )
-            )
+            ))
                 .then((_) {
               logger().i(
                   "[FetchAndSaveClaimsUseCase] All claims have been saved: $claims");

@@ -42,17 +42,17 @@ class RemoteIden3commDataSource with HttpExceptionsHandlerMixin {
       {required String authToken, required String url, required String did}) {
     return Future.value(Uri.parse(url))
         .then((uri) => client.post(
-      uri,
-      body: authToken,
-      headers: {
-        HttpHeaders.acceptHeader: '*/*',
-        HttpHeaders.contentTypeHeader: 'text/plain',
-      },
-    ))
+              uri,
+              body: authToken,
+              headers: {
+                HttpHeaders.acceptHeader: '*/*',
+                HttpHeaders.contentTypeHeader: 'text/plain',
+              },
+            ))
         .then((response) async {
       if (response.statusCode == 200) {
         FetchClaimResponseDTO fetchResponse =
-        FetchClaimResponseDTO.fromJson(json.decode(response.body));
+            FetchClaimResponseDTO.fromJson(json.decode(response.body));
 
         if (fetchResponse.type == FetchClaimResponseType.issuance) {
           return ClaimDTO(

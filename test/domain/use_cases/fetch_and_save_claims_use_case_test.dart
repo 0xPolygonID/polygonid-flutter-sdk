@@ -3,12 +3,15 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/fetch_and_save_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_fetch_requests_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 
 import '../../common/common_mocks.dart';
 import '../../common/iden3com_mocks.dart';
+import 'authenticate_use_case_test.dart';
 import 'fetch_and_save_claims_use_case_test.mocks.dart';
 
 // Data
@@ -37,20 +40,31 @@ final param = FetchAndSaveClaimsParam(
     privateKey: CommonMocks.privateKey);
 
 // Dependencies
+MockIden3commRepository iden3commRepository = MockIden3commRepository();
 MockGetFetchRequestsUseCase getFetchRequestsUseCase =
     MockGetFetchRequestsUseCase();
+MockSaveClaimsUseCase saveClaimsUseCase = MockSaveClaimsUseCase();
 MockGetAuthTokenUseCase getAuthTokenUseCase = MockGetAuthTokenUseCase();
 MockCredentialRepository credentialRepository = MockCredentialRepository();
 
 // Tested instance
 FetchAndSaveClaimsUseCase useCase = FetchAndSaveClaimsUseCase(
-    getFetchRequestsUseCase, getAuthTokenUseCase, credentialRepository);
+    iden3commRepository,
+    getFetchRequestsUseCase,
+    getAuthTokenUseCase,
+    saveClaimsUseCase);
 
-@GenerateMocks(
-    [GetFetchRequestsUseCase, GetAuthTokenUseCase, CredentialRepository])
+@GenerateMocks([
+  Iden3commRepository,
+  GetFetchRequestsUseCase,
+  GetAuthTokenUseCase,
+  SaveClaimsUseCase,
+  CredentialRepository
+])
 void main() {
   group("Fetch and save claims", () {
     setUp(() {
+      reset(iden3commRepository);
       reset(credentialRepository);
       reset(getAuthTokenUseCase);
 
@@ -59,9 +73,9 @@ void main() {
           .thenAnswer((realInvocation) => Future.value(requests));
       when(getAuthTokenUseCase.execute(param: anyNamed('param')))
           .thenAnswer((realInvocation) => Future.value(CommonMocks.token));
-      when(credentialRepository.fetchClaim(
+      when(iden3commRepository.fetchClaim(
               did: anyNamed('did'),
-              token: anyNamed('token'),
+              authToken: anyNamed('token'),
               message: anyNamed('message')))
           .thenAnswer((realInvocation) => Future.value(claimEntity));
       when(credentialRepository.saveClaims(
@@ -96,9 +110,9 @@ void main() {
         expect(authVerify.captured[i].message, requests[i]);
       }
 
-      var fetchVerify = verify(credentialRepository.fetchClaim(
+      var fetchVerify = verify(iden3commRepository.fetchClaim(
           did: captureAnyNamed('did'),
-          token: captureAnyNamed('token'),
+          authToken: captureAnyNamed('token'),
           message: captureAnyNamed('message')));
 
       expect(fetchVerify.callCount, requests.length);
@@ -124,9 +138,9 @@ void main() {
         "Given a FetchAndSaveClaimsParam, when I call execute and an error occurred, then I expect an exception to be thrown",
         () async {
       // Given
-      when(credentialRepository.fetchClaim(
+      when(iden3commRepository.fetchClaim(
               did: anyNamed('did'),
-              token: anyNamed('token'),
+              authToken: anyNamed('token'),
               message: anyNamed('message')))
           .thenAnswer((realInvocation) => Future.error(exception));
       // When
@@ -149,9 +163,9 @@ void main() {
       expect(authVerify.captured[0].privateKey, param.privateKey);
       expect(authVerify.captured[0].message, requests[0]);
 
-      var fetchVerify = verify(credentialRepository.fetchClaim(
+      var fetchVerify = verify(iden3commRepository.fetchClaim(
           did: captureAnyNamed('did'),
-          token: captureAnyNamed('token'),
+          authToken: captureAnyNamed('token'),
           message: captureAnyNamed('message')));
 
       expect(fetchVerify.callCount, 1);

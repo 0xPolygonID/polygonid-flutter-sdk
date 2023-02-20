@@ -70,8 +70,8 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     this._claimMapper,
     this._qMapper,
     this._proofRequestFiltersMapper,
-      this._fetchSchemaUseCase,
-      this._fetchVocabUseCase,
+    this._fetchSchemaUseCase,
+    this._fetchVocabUseCase,
   );
 
   @override
@@ -217,12 +217,11 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   }
 
   @override
-  Future<ClaimEntity> fetchClaim(
-      {
-        required OfferIden3MessageEntity message,
-        required String did,
-        required String authToken,
-        }) {
+  Future<ClaimEntity> fetchClaim({
+    required OfferIden3MessageEntity message,
+    required String did,
+    required String authToken,
+  }) {
     return _remoteIden3commDataSource
         .fetchClaim(authToken: authToken, url: message.body.url, did: did)
         .then((dto) {
@@ -230,14 +229,16 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       return _fetchSchemaUseCase
           .execute(param: dto.info.credentialSchema.id)
           .then((schema) {
-        dto.schema = schema;
-        return _fetchVocabUseCase
-            .execute(param: FetchVocabUseParam(schema: schema, type: dto.info.context[2]))
-            .then((vocab) {
-          dto.vocab = vocab;
-          return dto;
-        });
-      })
+            dto.schema = schema;
+            return _fetchVocabUseCase
+                .execute(
+                    param: FetchVocabParam(
+                        schema: schema, type: dto.info.context[2]))
+                .then((vocab) {
+              dto.vocab = vocab;
+              return dto;
+            });
+          })
           .catchError((_) => dto)
           .then((value) => _claimMapper.mapFrom(dto));
     }).catchError((error) => throw FetchClaimException(error));

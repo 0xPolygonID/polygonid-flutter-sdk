@@ -26,25 +26,25 @@ class SaveClaimsUseCase
   final GetAuthTokenUseCase _getAuthTokenUseCase;
   final CredentialRepository _credentialRepository;
 
-  SaveClaimsUseCase(this._getFetchRequestsUseCase,
-      this._getAuthTokenUseCase, this._credentialRepository);
+  SaveClaimsUseCase(this._getFetchRequestsUseCase, this._getAuthTokenUseCase,
+      this._credentialRepository);
 
   @override
   Future<List<ClaimEntity>> execute({required SaveClaimsParam param}) {
     return _credentialRepository
-                .saveClaims(
-              claims: param.claims,
-              did: param.did,
-              privateKey: param.privateKey,
-            ).then((_) {
-              logger().i(
-                  "[SaveClaimsUseCase] All claims have been saved: ${param.claims}");
+        .saveClaims(
+      claims: param.claims,
+      did: param.did,
+      privateKey: param.privateKey,
+    )
+        .then((_) {
+      logger()
+          .i("[SaveClaimsUseCase] All claims have been saved: ${param.claims}");
 
-              return param.claims;
-            })
-        .catchError((error) {
-          logger().e("[SaveClaimsUseCase] Error: $error");
-          throw error;
-        });
+      return param.claims;
+    }).catchError((error) {
+      logger().e("[SaveClaimsUseCase] Error: $error");
+      throw error;
+    });
   }
 }

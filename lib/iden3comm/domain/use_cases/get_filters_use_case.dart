@@ -40,8 +40,7 @@ class GetFiltersUseCase
   );
 
   @override
-  Future<List<FilterEntity>> execute(
-      {required GetFiltersParam param}) async {
+  Future<List<FilterEntity>> execute({required GetFiltersParam param}) async {
     List<FilterEntity> filters = [];
 
     List<ProofRequestEntity> requests =

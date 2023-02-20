@@ -3,15 +3,13 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i4;
+import 'dart:async' as _i3;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
-    as _i5;
-import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/fetch_schema_use_case.dart'
     as _i2;
-import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart'
-    as _i3;
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/fetch_vocab_use_case.dart'
+    as _i4;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -24,238 +22,46 @@ import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakeClaimEntity_0 extends _i1.SmartFake implements _i2.ClaimEntity {
-  _FakeClaimEntity_0(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-}
-
-/// A class which mocks [CredentialRepository].
+/// A class which mocks [FetchSchemaUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockCredentialRepository extends _i1.Mock
-    implements _i3.CredentialRepository {
-  MockCredentialRepository() {
+class MockFetchSchemaUseCase extends _i1.Mock
+    implements _i2.FetchSchemaUseCase {
+  MockFetchSchemaUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.Future<void> saveClaims({
-    required List<_i2.ClaimEntity>? claims,
-    required String? did,
-    required String? privateKey,
-  }) =>
+  _i3.Future<Map<String, dynamic>> execute({required String? param}) =>
       (super.noSuchMethod(
         Invocation.method(
-          #saveClaims,
+          #execute,
           [],
-          {
-            #claims: claims,
-            #did: did,
-            #privateKey: privateKey,
-          },
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
-  @override
-  _i4.Future<List<_i2.ClaimEntity>> getClaims({
-    List<_i5.FilterEntity>? filters,
-    required String? did,
-    required String? privateKey,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getClaims,
-          [],
-          {
-            #filters: filters,
-            #did: did,
-            #privateKey: privateKey,
-          },
+          {#param: param},
         ),
         returnValue:
-            _i4.Future<List<_i2.ClaimEntity>>.value(<_i2.ClaimEntity>[]),
-      ) as _i4.Future<List<_i2.ClaimEntity>>);
+            _i3.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i3.Future<Map<String, dynamic>>);
+}
+
+/// A class which mocks [FetchVocabUseCase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockFetchVocabUseCase extends _i1.Mock implements _i4.FetchVocabUseCase {
+  MockFetchVocabUseCase() {
+    _i1.throwOnMissingStub(this);
+  }
+
   @override
-  _i4.Future<_i2.ClaimEntity> getClaim({
-    required String? claimId,
-    required String? did,
-    required String? privateKey,
-  }) =>
+  _i3.Future<Map<String, dynamic>> execute(
+          {required _i4.FetchVocabParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
-          #getClaim,
+          #execute,
           [],
-          {
-            #claimId: claimId,
-            #did: did,
-            #privateKey: privateKey,
-          },
-        ),
-        returnValue: _i4.Future<_i2.ClaimEntity>.value(_FakeClaimEntity_0(
-          this,
-          Invocation.method(
-            #getClaim,
-            [],
-            {
-              #claimId: claimId,
-              #did: did,
-              #privateKey: privateKey,
-            },
-          ),
-        )),
-      ) as _i4.Future<_i2.ClaimEntity>);
-  @override
-  _i4.Future<void> removeClaims({
-    required List<String>? claimIds,
-    required String? did,
-    required String? privateKey,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #removeClaims,
-          [],
-          {
-            #claimIds: claimIds,
-            #did: did,
-            #privateKey: privateKey,
-          },
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
-  @override
-  _i4.Future<void> removeAllClaims({
-    required String? did,
-    required String? privateKey,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #removeAllClaims,
-          [],
-          {
-            #did: did,
-            #privateKey: privateKey,
-          },
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
-  @override
-  _i4.Future<Map<String, dynamic>> fetchSchema({required String? url}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #fetchSchema,
-          [],
-          {#url: url},
+          {#param: param},
         ),
         returnValue:
-            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
-      ) as _i4.Future<Map<String, dynamic>>);
-  @override
-  _i4.Future<Map<String, dynamic>> fetchVocab({
-    required Map<String, dynamic>? schema,
-    required String? type,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #fetchVocab,
-          [],
-          {
-            #schema: schema,
-            #type: type,
-          },
-        ),
-        returnValue:
-            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
-      ) as _i4.Future<Map<String, dynamic>>);
-  @override
-  _i4.Future<Map<String, dynamic>> getRevocationStatus(
-          {required _i2.ClaimEntity? claim}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getRevocationStatus,
-          [],
-          {#claim: claim},
-        ),
-        returnValue:
-            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
-      ) as _i4.Future<Map<String, dynamic>>);
-  @override
-  _i4.Future<bool> isUsingRHS({required _i2.ClaimEntity? claim}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #isUsingRHS,
-          [],
-          {#claim: claim},
-        ),
-        returnValue: _i4.Future<bool>.value(false),
-      ) as _i4.Future<bool>);
-  @override
-  _i4.Future<String> getRhsRevocationId({required _i2.ClaimEntity? claim}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getRhsRevocationId,
-          [],
-          {#claim: claim},
-        ),
-        returnValue: _i4.Future<String>.value(''),
-      ) as _i4.Future<String>);
-  @override
-  _i4.Future<String> getIssuerIdentifier({required _i2.ClaimEntity? claim}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getIssuerIdentifier,
-          [],
-          {#claim: claim},
-        ),
-        returnValue: _i4.Future<String>.value(''),
-      ) as _i4.Future<String>);
-  @override
-  _i4.Future<int> getRevocationNonce({
-    required _i2.ClaimEntity? claim,
-    required bool? rhs,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getRevocationNonce,
-          [],
-          {
-            #claim: claim,
-            #rhs: rhs,
-          },
-        ),
-        returnValue: _i4.Future<int>.value(0),
-      ) as _i4.Future<int>);
-  @override
-  _i4.Future<String> getRevocationUrl({
-    required _i2.ClaimEntity? claim,
-    required bool? rhs,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getRevocationUrl,
-          [],
-          {
-            #claim: claim,
-            #rhs: rhs,
-          },
-        ),
-        returnValue: _i4.Future<String>.value(''),
-      ) as _i4.Future<String>);
-  @override
-  _i4.Future<List<String>> getAuthClaim({required List<String>? publicKey}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getAuthClaim,
-          [],
-          {#publicKey: publicKey},
-        ),
-        returnValue: _i4.Future<List<String>>.value(<String>[]),
-      ) as _i4.Future<List<String>>);
+            _i3.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i3.Future<Map<String, dynamic>>);
 }
