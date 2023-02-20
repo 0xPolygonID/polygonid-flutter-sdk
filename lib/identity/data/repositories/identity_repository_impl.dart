@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:encrypt/encrypt.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
@@ -128,9 +126,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<void> removeIdentity(
-      {required String genesisDid, required String privateKey}) async {
-    // remove identity
+  Future<void> removeIdentity({required String genesisDid}) {
     return _storageIdentityDataSource.removeIdentity(did: genesisDid);
   }
 
@@ -177,22 +173,24 @@ class IdentityRepositoryImpl extends IdentityRepository {
   Future<String> getDidIdentifier({
     required String blockchain,
     required String network,
-    required Map<String, dynamic> genesisState,
+    required String claimsRoot,
     int profileNonce = 0,
   }) {
-    // Get the genesis id
-    String genesisId = _libPolygonIdCoreIdentityDataSource.calculateGenesisId(
-        genesisState["claimsRoot"], blockchain, network);
-    Map<String, dynamic> genesis = jsonDecode(genesisId);
+    try {
+      // Get the genesis id
+      String genesisDid = _libPolygonIdCoreIdentityDataSource
+          .calculateGenesisId(claimsRoot, blockchain, network);
 
-    if (profileNonce == 0) {
-      return Future.value(genesis["did"]);
-    } else {
-      String profileId = _libPolygonIdCoreIdentityDataSource.calculateProfileId(
-          genesis["did"], profileNonce);
-      Map<String, dynamic> profile = jsonDecode(profileId);
+      if (profileNonce == 0) {
+        return Future.value(genesisDid);
+      } else {
+        String profileDid = _libPolygonIdCoreIdentityDataSource
+            .calculateProfileId(genesisDid, profileNonce);
 
-      return Future.value(profile["profileDID"]);
+        return Future.value(profileDid);
+      }
+    } catch (error) {
+      return Future.error(error);
     }
   }
 
@@ -202,8 +200,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
         .getIdentities()
         .then((dtos) =>
             dtos.map((dto) => _identityDTOMapper.mapFrom(dto)).toList())
-        .catchError((error) => throw IdentityException(error),
-            test: (error) => error is! UnknownIdentityException);
+        .catchError((error) => throw IdentityException(error));
   }
 
   @override
@@ -246,7 +243,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
     return _storageIdentityDataSource.saveIdentityDb(
       exportableDb: decryptedDb,
-      databaseFactory: databaseFactoryIo,
       destinationPath: destinationPath,
       privateKey: privateKey,
     );

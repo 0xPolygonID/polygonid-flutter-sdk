@@ -4,10 +4,9 @@ import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_genesis_state_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_auth_claim_use_case.dart';
 
 import '../../common/common_mocks.dart';
-import '../../common/credential_mocks.dart';
+import '../../common/identity_mocks.dart';
 import 'get_did_identifier_use_case_test.mocks.dart';
 
 MockIdentityRepository identityRepository = MockIdentityRepository();
@@ -37,11 +36,11 @@ void main() {
 
     // Given
     when(getGenesisStateUseCase.execute(param: anyNamed('param')))
-        .thenAnswer((realInvocation) => Future.value(CommonMocks.aMap));
+        .thenAnswer((realInvocation) => Future.value(IdentityMocks.treeState));
     when(identityRepository.getDidIdentifier(
       blockchain: anyNamed('blockchain'),
       network: anyNamed('network'),
-      genesisState: anyNamed('genesisState'),
+      claimsRoot: anyNamed('claimsRoot'),
       profileNonce: anyNamed('profileNonce'),
     )).thenAnswer((realInvocation) => Future.value(CommonMocks.did));
   });
@@ -63,12 +62,12 @@ void main() {
       var authClaimCapture = verify(identityRepository.getDidIdentifier(
         blockchain: captureAnyNamed('blockchain'),
         network: captureAnyNamed('network'),
-        genesisState: captureAnyNamed('genesisState'),
+        claimsRoot: captureAnyNamed('claimsRoot'),
         profileNonce: captureAnyNamed('profileNonce'),
       )).captured;
       expect(authClaimCapture[0], CommonMocks.blockchain);
       expect(authClaimCapture[1], CommonMocks.network);
-      expect(authClaimCapture[2], CommonMocks.aMap);
+      expect(authClaimCapture[2], IdentityMocks.treeState.claimsTree.data);
       expect(authClaimCapture[3], 0);
     },
   );
@@ -95,7 +94,7 @@ void main() {
       verifyNever(identityRepository.getDidIdentifier(
         blockchain: captureAnyNamed('blockchain'),
         network: captureAnyNamed('network'),
-        genesisState: captureAnyNamed('genesisState'),
+        claimsRoot: captureAnyNamed('claimsRoot'),
         profileNonce: captureAnyNamed('profileNonce'),
       ));
     },

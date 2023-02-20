@@ -4,6 +4,7 @@ import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:sembast/sembast.dart';
+import 'package:sembast/sembast_io.dart';
 import 'package:sembast/utils/sembast_import_export.dart';
 
 /// [StoreRef] wrapper
@@ -42,6 +43,7 @@ class StorageIdentityDataSource {
 
   StorageIdentityDataSource(this._database, this._storeRefWrapper);
 
+  //FIXME: mutualize [getIdentities] and [getIdentity]
   Future<List<IdentityDTO>> getIdentities({Filter? filter}) {
     return _storeRefWrapper
         .find(_database, finder: Finder(filter: filter))
@@ -103,7 +105,6 @@ class StorageIdentityDataSource {
   /// Import entire claims database
   Future<void> saveIdentityDb({
     required Map<String, Object?> exportableDb,
-    required DatabaseFactory databaseFactory,
     required String destinationPath,
     required String privateKey,
   }) async {
@@ -111,7 +112,9 @@ class StorageIdentityDataSource {
 
     await importDatabase(
       exportableDb,
-      databaseFactory,
+      databaseFactoryIo,
+
+      ///FIXME: should be injected
       destinationPath,
       codec: codec,
     );

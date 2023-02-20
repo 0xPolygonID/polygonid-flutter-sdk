@@ -1,3 +1,4 @@
+import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
@@ -8,6 +9,11 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity
 import 'common_mocks.dart';
 
 class IdentityMocks {
+  static IdentityDTO identityDTO = IdentityDTO(
+      did: CommonMocks.did,
+      publicKey: CommonMocks.pubKeys,
+      profiles: CommonMocks.profiles);
+
   static IdentityEntity identity = IdentityEntity(
       did: CommonMocks.did,
       publicKey: CommonMocks.pubKeys,

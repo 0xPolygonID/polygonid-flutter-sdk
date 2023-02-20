@@ -50,8 +50,7 @@ class RemoveIdentityUseCase extends FutureUseCase<RemoveIdentityParam, void> {
               did: param.genesisDid, privateKey: param.privateKey));
 
       // Remove the identity
-      await _identityRepository.removeIdentity(
-          genesisDid: param.genesisDid, privateKey: param.privateKey);
+      await _identityRepository.removeIdentity(genesisDid: param.genesisDid);
     } catch (error) {
       logger().e("[RemoveIdentityUseCase] Error: $error");
 

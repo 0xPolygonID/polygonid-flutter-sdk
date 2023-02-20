@@ -6,8 +6,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repo
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_auth_claim_use_case.dart';
 
-class GetGenesisStateUseCase
-    extends FutureUseCase<String, Map<String, dynamic>> {
+class GetGenesisStateUseCase extends FutureUseCase<String, TreeStateEntity> {
   final IdentityRepository _identityRepository;
   final SMTRepository _smtRepository;
   final GetIdentityAuthClaimUseCase _getIdentityAuthClaimUseCase;
@@ -19,7 +18,7 @@ class GetGenesisStateUseCase
   );
 
   @override
-  Future<Map<String, dynamic>> execute({required String param}) {
+  Future<TreeStateEntity> execute({required String param}) {
     String zero = BigInt.zero.toString();
 
     return _getIdentityAuthClaimUseCase
@@ -30,7 +29,6 @@ class GetGenesisStateUseCase
             .hashState(claims: node.hash.data, revocation: zero, roots: zero)
             .then((hash) => TreeStateEntity(hash, node.hash,
                 HashEntity(data: zero), HashEntity(data: zero))))
-        .then((state) => _smtRepository.convertState(state: state))
         .then((state) {
       logger().i("[GetGenesisStateUseCase] State: $state");
 
