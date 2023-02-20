@@ -5,6 +5,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/qrcode_scanner/widgets/qrcode_scanner_overlay_shape.dart';
+import 'package:polygonid_flutter_sdk_example/utils/custom_button_style.dart';
+import 'package:polygonid_flutter_sdk_example/utils/custom_colors.dart';
 
 enum ScreenMode { liveFeed, gallery }
 
@@ -13,8 +16,6 @@ class CameraView extends StatefulWidget {
 
   const CameraView({
     Key? key,
-    required this.title,
-    required this.customPaint,
     this.text,
     required this.onImage,
     this.onScreenModeChanged,
@@ -22,8 +23,6 @@ class CameraView extends StatefulWidget {
     required this.cameras,
   }) : super(key: key);
 
-  final String title;
-  final CustomPaint? customPaint;
   final String? text;
   final Function(InputImage inputImage) onImage;
   final Function(ScreenMode mode)? onScreenModeChanged;
@@ -44,35 +43,14 @@ class _CameraViewState extends State<CameraView> {
   final bool _allowPicker = true;
   bool _changingCameraLens = false;
 
+  ResolutionPreset _selectedCameraQuality = ResolutionPreset.high;
+  final GlobalKey _dropdownKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
-    _imagePicker = ImagePicker();
-
-    if (widget.cameras.any(
-      (element) =>
-          element.lensDirection == widget.initialDirection &&
-          element.sensorOrientation == 90,
-    )) {
-      _cameraIndex = widget.cameras.indexOf(
-        widget.cameras.firstWhere((element) =>
-            element.lensDirection == widget.initialDirection &&
-            element.sensorOrientation == 90),
-      );
-    } else {
-      for (var i = 0; i < widget.cameras.length; i++) {
-        if (widget.cameras[i].lensDirection == widget.initialDirection) {
-          _cameraIndex = i;
-          break;
-        }
-      }
-    }
-
-    if (_cameraIndex != -1) {
-      _startLiveFeed();
-    } else {
-      _mode = ScreenMode.gallery;
-    }
+    _initImagePicker();
+    _initCamera();
   }
 
   @override
@@ -84,58 +62,80 @@ class _CameraViewState extends State<CameraView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        actions: [
-          if (_allowPicker)
-            Padding(
-              padding: const EdgeInsets.only(right: 20.0),
-              child: GestureDetector(
-                onTap: _switchScreenMode,
-                child: Icon(
-                  _mode == ScreenMode.liveFeed
-                      ? Icons.photo_library_outlined
-                      : (Platform.isIOS
-                          ? Icons.camera_alt_outlined
-                          : Icons.camera),
-                ),
-              ),
-            ),
-        ],
-      ),
       body: _body(),
-      floatingActionButton: _floatingActionButton(),
+      floatingActionButton: _switchModefloatingActionButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
-  Widget? _floatingActionButton() {
-    if (_mode == ScreenMode.gallery) return null;
-    if (widget.cameras.length == 1) return null;
-    return SizedBox(
-        height: 70.0,
-        width: 70.0,
-        child: FloatingActionButton(
-          onPressed: _switchLiveCamera,
-          child: Icon(
-            Platform.isIOS
-                ? Icons.flip_camera_ios_outlined
-                : Icons.flip_camera_android_outlined,
-            size: 40,
+  ///
+  Widget _buildClosePageElement() {
+    return SafeArea(
+      child: Align(
+        alignment: Alignment.topRight,
+        child: Container(
+          margin: const EdgeInsets.only(top: 15, right: 15),
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            style: CustomButtonStyle.iconButtonStyle,
+            child: const Icon(
+              Icons.close,
+              color: CustomColors.secondaryButton,
+              size: 20,
+            ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 
+  ///
+  Widget _buildQrCodeScanOverlay() {
+    double cutOutSize = MediaQuery.of(context).size.width * 0.85;
+    return Container(
+      decoration: ShapeDecoration(
+        shape: QrScannerOverlayShape(
+          borderColor: CustomColors.primaryButton,
+          borderWidth: 5,
+          cutOutSize: cutOutSize,
+        ),
+      ),
+    );
+  }
+
+  ///
+  Widget _switchModefloatingActionButton() {
+    return SizedBox(
+      height: 70.0,
+      width: 70.0,
+      child: _allowPicker
+          ? FloatingActionButton(
+              onPressed: _switchScreenMode,
+              child: Icon(
+                _mode == ScreenMode.liveFeed
+                    ? Icons.photo_library_outlined
+                    : (Platform.isIOS
+                        ? Icons.camera_alt_outlined
+                        : Icons.camera),
+                size: 40,
+              ),
+            )
+          : const SizedBox.shrink(),
+    );
+  }
+
+  ///
   Widget _body() {
-    Widget body;
     if (_mode == ScreenMode.liveFeed) {
-      body = _liveFeedBody();
+      return _liveFeedBody();
     } else {
-      body = _galleryBody();
+      return _galleryBody();
     }
-    return body;
   }
 
+  ///
   Widget _liveFeedBody() {
     if (_controller?.value.isInitialized == false) {
       return Container();
@@ -166,7 +166,7 @@ class _CameraViewState extends State<CameraView> {
                   : CameraPreview(_controller!),
             ),
           ),
-          if (widget.customPaint != null) widget.customPaint!,
+          _buildQrCodeScanOverlay(),
           Positioned(
             bottom: 100,
             left: 50,
@@ -185,7 +185,9 @@ class _CameraViewState extends State<CameraView> {
                   ? null
                   : (maxZoomLevel - 1).toInt(),
             ),
-          )
+          ),
+          _buildClosePageElement(),
+          _buildDropdownCameraQualitySelection(),
         ],
       ),
     );
@@ -201,7 +203,6 @@ class _CameraViewState extends State<CameraView> {
                 fit: StackFit.expand,
                 children: <Widget>[
                   Image.file(_image!),
-                  if (widget.customPaint != null) widget.customPaint!,
                 ],
               ),
             )
@@ -263,9 +264,13 @@ class _CameraViewState extends State<CameraView> {
     final camera = widget.cameras[_cameraIndex];
     _controller = CameraController(
       camera,
-      ResolutionPreset.high,
+      _selectedCameraQuality,
       enableAudio: false,
     );
+    try {
+      _controller?.setFocusMode(FocusMode.auto);
+    } catch (_) {}
+
     _controller?.initialize().then((_) {
       if (!mounted) {
         return;
@@ -277,6 +282,7 @@ class _CameraViewState extends State<CameraView> {
       _controller?.getMaxZoomLevel().then((value) {
         maxZoomLevel = value;
       });
+
       _controller?.startImageStream(_processCameraImage);
       setState(() {});
     });
@@ -350,5 +356,98 @@ class _CameraViewState extends State<CameraView> {
         InputImage.fromBytes(bytes: bytes, inputImageData: inputImageData);
 
     widget.onImage(inputImage);
+  }
+
+  ///
+  void _initImagePicker() {
+    _imagePicker = ImagePicker();
+  }
+
+  ///
+  void _initCamera() {
+    if (widget.cameras.any(
+      (element) =>
+          element.lensDirection == widget.initialDirection &&
+          element.sensorOrientation == 90,
+    )) {
+      _cameraIndex = widget.cameras.indexOf(
+        widget.cameras.firstWhere((element) =>
+            element.lensDirection == widget.initialDirection &&
+            element.sensorOrientation == 90),
+      );
+    } else {
+      for (var i = 0; i < widget.cameras.length; i++) {
+        if (widget.cameras[i].lensDirection == widget.initialDirection) {
+          _cameraIndex = i;
+          break;
+        }
+      }
+    }
+
+    if (_cameraIndex != -1) {
+      _startLiveFeed();
+    } else {
+      _mode = ScreenMode.gallery;
+    }
+  }
+
+  ///
+  Widget _buildDropdownCameraQualitySelection() {
+    return Positioned(
+      bottom: 150,
+      left: 50,
+      right: 50,
+      child: GestureDetector(
+        onTap: _openDropDown,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: Colors.black,
+              width: 1,
+            ),
+          ),
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('Camera Resolution: '),
+              DropdownButton(
+                key: _dropdownKey,
+                value: _selectedCameraQuality,
+                items: ResolutionPreset.values.map((ResolutionPreset value) {
+                  return DropdownMenuItem<ResolutionPreset>(
+                    value: value,
+                    child: Text(value.name),
+                  );
+                }).toList(),
+                onChanged: (ResolutionPreset? value) {
+                  setState(() {
+                    _selectedCameraQuality = value!;
+                    _startLiveFeed();
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  ///
+  void _openDropDown() {
+    _dropdownKey.currentContext?.visitChildElements((element) {
+      if (element.widget != null && element.widget is Semantics) {
+        element.visitChildElements((element) {
+          if (element.widget != null && element.widget is Actions) {
+            element.visitChildElements((element) {
+              Actions.invoke(element, const ActivateIntent());
+            });
+          }
+        });
+      }
+    });
   }
 }
