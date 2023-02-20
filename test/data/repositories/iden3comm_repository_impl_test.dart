@@ -47,7 +47,7 @@ const circuitId = "1";
 final datFile = Uint8List(32);
 final zKeyFile = Uint8List(32);
 final circuitData = CircuitDataEntity(circuitId, datFile, zKeyFile);
-const token = "token";
+const token = "authToken";
 var exception = Exception();
 
 /// We assume [AuthIden3MessageEntity.fromJson] has been tested
@@ -165,10 +165,16 @@ Iden3commRepository repository = Iden3commRepositoryImpl(
 void main() {
   group("Fetch claim", () {
     setUp(() {
+      reset(fetchSchemaUseCase);
+      reset(fetchVocabUseCase);
       reset(remoteIden3commDataSource);
       reset(claimMapper);
 
       // Given
+      when(fetchSchemaUseCase.execute(param: anyNamed('param')))
+          .thenAnswer((realInvocation) => Future.value(CommonMocks.aMap));
+      when(fetchVocabUseCase.execute(param: anyNamed('param')))
+          .thenAnswer((realInvocation) => Future.value(CommonMocks.aMap));
       when(remoteIden3commDataSource.fetchClaim(
               authToken: anyNamed('authToken'),
               url: anyNamed('url'),
@@ -190,7 +196,7 @@ void main() {
 
       // Then
       var fetchCaptured = verify(remoteIden3commDataSource.fetchClaim(
-              authToken: captureAnyNamed('token'),
+              authToken: captureAnyNamed('authToken'),
               url: captureAnyNamed('url'),
               did: captureAnyNamed('did')))
           .captured;
@@ -208,7 +214,7 @@ void main() {
         () async {
       // Given
       when(remoteIden3commDataSource.fetchClaim(
-              authToken: anyNamed('token'),
+              authToken: anyNamed('authToken'),
               url: anyNamed('url'),
               did: anyNamed('did')))
           .thenAnswer((realInvocation) => Future.error(exception));
@@ -227,7 +233,7 @@ void main() {
 
       // Then
       var fetchCaptured = verify(remoteIden3commDataSource.fetchClaim(
-              authToken: captureAnyNamed('token'),
+              authToken: captureAnyNamed('authToken'),
               url: captureAnyNamed('url'),
               did: captureAnyNamed('did')))
           .captured;
@@ -257,7 +263,7 @@ void main() {
 
       // Then
       var fetchCaptured = verify(remoteIden3commDataSource.fetchClaim(
-              authToken: captureAnyNamed('token'),
+              authToken: captureAnyNamed('authToken'),
               url: captureAnyNamed('url'),
               did: captureAnyNamed('did')))
           .captured;

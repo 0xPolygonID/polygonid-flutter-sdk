@@ -21,8 +21,8 @@ import 'remote_iden3comm_data_source_test.mocks.dart';
 const token = "theToken";
 const url = "theUrl";
 const identifier = "theIdentifier";
-Response response = Response("body", 200);
-Response errorResponse = Response("body", 450);
+Response response = Response(mockFetchClaim, 200);
+Response errorResponse = Response(mockFetchClaim, 444);
 Response otherTypeResponse = Response(mockOtherTypeFetchClaim, 200);
 final exception = Exception();
 

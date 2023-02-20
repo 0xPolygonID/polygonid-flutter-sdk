@@ -67,15 +67,19 @@ void main() {
       reset(iden3commRepository);
       reset(credentialRepository);
       reset(getAuthTokenUseCase);
+      reset(saveClaimsUseCase);
+      reset(getFetchRequestsUseCase);
 
       // Given
       when(getFetchRequestsUseCase.execute(param: anyNamed('param')))
           .thenAnswer((realInvocation) => Future.value(requests));
       when(getAuthTokenUseCase.execute(param: anyNamed('param')))
           .thenAnswer((realInvocation) => Future.value(CommonMocks.token));
+      when(saveClaimsUseCase.execute(param: anyNamed('param')))
+          .thenAnswer((realInvocation) => Future.value(result));
       when(iden3commRepository.fetchClaim(
               did: anyNamed('did'),
-              authToken: anyNamed('token'),
+              authToken: anyNamed('authToken'),
               message: anyNamed('message')))
           .thenAnswer((realInvocation) => Future.value(claimEntity));
       when(credentialRepository.saveClaims(
@@ -112,7 +116,7 @@ void main() {
 
       var fetchVerify = verify(iden3commRepository.fetchClaim(
           did: captureAnyNamed('did'),
-          authToken: captureAnyNamed('token'),
+          authToken: captureAnyNamed('authToken'),
           message: captureAnyNamed('message')));
 
       expect(fetchVerify.callCount, requests.length);
@@ -124,14 +128,10 @@ void main() {
         j++;
       }
 
-      expect(
-          verify(credentialRepository.saveClaims(
+      verifyNever(credentialRepository.saveClaims(
                   did: CommonMocks.identifier,
                   privateKey: CommonMocks.privateKey,
-                  claims: captureAnyNamed('claims')))
-              .captured
-              .first,
-          result);
+                  claims: captureAnyNamed('claims')));
     });
 
     test(
@@ -140,7 +140,7 @@ void main() {
       // Given
       when(iden3commRepository.fetchClaim(
               did: anyNamed('did'),
-              authToken: anyNamed('token'),
+              authToken: anyNamed('authToken'),
               message: anyNamed('message')))
           .thenAnswer((realInvocation) => Future.error(exception));
       // When
@@ -165,7 +165,7 @@ void main() {
 
       var fetchVerify = verify(iden3commRepository.fetchClaim(
           did: captureAnyNamed('did'),
-          authToken: captureAnyNamed('token'),
+          authToken: captureAnyNamed('authToken'),
           message: captureAnyNamed('message')));
 
       expect(fetchVerify.callCount, 1);

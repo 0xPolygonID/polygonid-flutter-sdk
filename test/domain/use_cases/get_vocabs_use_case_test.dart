@@ -46,10 +46,10 @@ void main() {
         reset(fetchSchemaUseCase);
         reset(fetchVocabUseCase);
 
-        when(fetchSchemaUseCase.execute(param: anyNamed('url')))
+        when(fetchSchemaUseCase.execute(param: anyNamed('param')))
             .thenAnswer((realInvocation) => Future.value(schema));
 
-        when(fetchVocabUseCase.execute(param: captureAnyNamed('param')))
+        when(fetchVocabUseCase.execute(param: anyNamed('param')))
             .thenAnswer((realInvocation) => Future.value(vocab));
       });
 
@@ -63,14 +63,14 @@ void main() {
             // Then
             expect(
                 verify(fetchSchemaUseCase.execute(
-                        param: captureAnyNamed('url')))
+                        param: captureAnyNamed('param')))
                     .callCount,
                 messages[i].body.scope.length);
 
             var verifyVocab = verify(
                 fetchVocabUseCase.execute(param: captureAnyNamed('param')));
             expect(verifyVocab.callCount, messages[i].body.scope.length);
-            expect(verifyVocab.captured[0], schema);
+            expect(verifyVocab.captured[0].schema, schema);
           }
         },
       );
@@ -89,7 +89,7 @@ void main() {
 
           // Then
           verifyNever(
-              fetchSchemaUseCase.execute(param: captureAnyNamed('url')));
+              fetchSchemaUseCase.execute(param: captureAnyNamed('param')));
           verifyNever(
               fetchVocabUseCase.execute(param: captureAnyNamed('param')));
         },
@@ -98,16 +98,12 @@ void main() {
       test(
         'Given a Iden3MessageEntity, when I call execute and an error occurred, I expect an empty array to be returned',
         () async {
-          when(fetchSchemaUseCase.execute(param: anyNamed('url')))
+          when(fetchSchemaUseCase.execute(param: anyNamed('param')))
               .thenAnswer((realInvocation) => Future.error(exception));
 
-          expect(await useCase.execute(param: Iden3commMocks.authRequest), []);
+         await expectLater(useCase.execute(param: Iden3commMocks.authRequest), throwsA(exception));
 
           // Then
-          expect(
-              verify(fetchSchemaUseCase.execute(param: captureAnyNamed('url')))
-                  .callCount,
-              Iden3commMocks.authRequest.body.scope?.length);
           verifyNever(
               fetchVocabUseCase.execute(param: captureAnyNamed('param')));
         },
