@@ -14,6 +14,8 @@ class CustomStrings {
       "Create identity\nidentity.createIdentity()";
   static const String homeButtonRemoveIdentityCTA =
       "Remove identity\nidentity.removeIdentity() ";
+  static const String homeFeatureCardDisabledReason =
+      "You need to create an identity first";
 
   // AUTH
   static const String authButtonCTA = "Connect";
@@ -66,4 +68,27 @@ class CustomStrings {
       "Check if the identity is valid";
   static const String chechIdentityValidityButtonCTA =
       "Check validity\nidentity.checkIdentityValidity()";
+
+  // BACKUP IDENTITY FEATURE CARD
+  static const String backupIdentityMethod = "identity.backupIdentity()";
+  static const String backupIdentityTitle = "Backup identity";
+  static const String backupIdentityDescription =
+      "Backup identity, by exporting encrypted version of the identity database";
+  static const String backupIdentityButtonCTA =
+      "Backup identity\nidentity.backupIdentity()";
+  static const String backupIdentityScreenDescription =
+      "Backup your identity to an encrypted String version of your database.\nThis encrypted String can be used to restore your identity in the future";
+
+  // RESTORE IDENTITY FEATURE CARD
+  static const String restoreIdentityMethod = "identity.restoreIdentity()";
+  static const String restoreIdentityTitle = "Restore identity";
+  static const String restoreIdentityDescription =
+      "Restore identity, by importing encrypted version of the identity database";
+  static const String restoreIdentityButtonCTA =
+      "Restore identity\nidentity.restoreIdentity()";
+  static const String restoreIdentityScreenDescription =
+      "Restore your identity from an encrypted String version of your database.";
+  static const String restoreIdentityScreenInitialState = "Not restored yet";
+  static const String restoreIdentityScreenSuccess =
+      "Identity restored successfully";
 }
