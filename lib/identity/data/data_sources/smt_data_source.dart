@@ -255,6 +255,7 @@ class SMTDataSource {
     final root = await _storageSMTDataSource.getRoot(
         storeName: storeName, did: did, privateKey: privateKey);
     var nextKey = root;
+    // ignore: dead_code
     for (int depth = 0; depth < maxLevels; depth++) {
       final node = await _storageSMTDataSource.getNode(
           key: nextKey, storeName: storeName, did: did, privateKey: privateKey);
