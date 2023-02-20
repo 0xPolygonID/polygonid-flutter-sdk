@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-import 'claim_info_dto.dart';
+import '../../../../../credential/data/dtos/claim_info_dto.dart';
 
 part 'fetch_claim_response_dto.g.dart';
 

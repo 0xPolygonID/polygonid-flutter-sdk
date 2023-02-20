@@ -36,31 +36,6 @@ class CredentialRepositoryImpl extends CredentialRepository {
   );
 
   @override
-  Future<ClaimEntity> fetchClaim(
-      {required String did,
-      required String token,
-      required OfferIden3MessageEntity message}) {
-    return _remoteClaimDataSource
-        .fetchClaim(token: token, url: message.body.url, did: did)
-        .then((dto) {
-      /// Error in fetching schema and vocab are not blocking
-      return _remoteClaimDataSource
-          .fetchSchema(url: dto.info.credentialSchema.id)
-          .then((schema) {
-            dto.schema = schema;
-            return _remoteClaimDataSource
-                .fetchVocab(schema: schema, type: dto.info.context[2])
-                .then((vocab) {
-              dto.vocab = vocab;
-              return dto;
-            });
-          })
-          .catchError((_) => dto)
-          .then((value) => _claimMapper.mapFrom(dto));
-    }).catchError((error) => throw FetchClaimException(error));
-  }
-
-  @override
   Future<void> saveClaims(
       {required List<ClaimEntity> claims,
       required String did,

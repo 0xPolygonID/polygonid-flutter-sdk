@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
-import 'package:polygonid_flutter_sdk/credential/data/dtos/fetch_claim_response_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/fetch/fetch_claim_response_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_info_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_state_mapper.dart';

@@ -1,18 +1,20 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/fetch_and_save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/update_claim_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
 
+import '../credential/domain/use_cases/save_claims_use_case.dart';
+
 abstract class PolygonIdSdkCredential {
-  /// Fetch a list of [ClaimEntity] and store them
-  Future<List<ClaimEntity>> fetchAndSaveClaims(
-      {required OfferIden3MessageEntity message,
-      required String did,
-      required String privateKey});
+
+  /// Store a list of [ClaimEntity] of the identity
+  Future<List<ClaimEntity>> saveClaims(
+      {required List<ClaimEntity> claims,
+        required String did,
+        required String privateKey});
 
   /// Get a list of [ClaimEntity] of the identity from storage
   /// The list can be filtered by [filters]
@@ -58,27 +60,29 @@ abstract class PolygonIdSdkCredential {
 
 @injectable
 class Credential implements PolygonIdSdkCredential {
-  final FetchAndSaveClaimsUseCase _fetchAndSaveClaimsUseCase;
+  final SaveClaimsUseCase _saveClaimsUseCase;
   final GetClaimsUseCase _getClaimsUseCase;
   final RemoveClaimsUseCase _removeClaimsUseCase;
   final UpdateClaimUseCase _updateClaimUseCase;
 
   Credential(
-    this._fetchAndSaveClaimsUseCase,
+    this._saveClaimsUseCase,
     this._getClaimsUseCase,
     this._removeClaimsUseCase,
     this._updateClaimUseCase,
   );
 
-  /// Fetch a list of [ClaimEntity] and store them
+  /// store a list of [ClaimEntity] of the identity
   @override
-  Future<List<ClaimEntity>> fetchAndSaveClaims(
-      {required OfferIden3MessageEntity message,
-      required String did,
-      required String privateKey}) {
-    return _fetchAndSaveClaimsUseCase.execute(
-        param: FetchAndSaveClaimsParam(
-            message: message, did: did, privateKey: privateKey));
+  Future<List<ClaimEntity>> saveClaims({
+    required List<ClaimEntity> claims,
+    required String did,
+    required String privateKey}) {
+    return _saveClaimsUseCase.execute(
+        param: SaveClaimsParam(
+            claims: claims,
+            did: did,
+            privateKey: privateKey));
   }
 
   /// Get a list of [ClaimEntity] from storage

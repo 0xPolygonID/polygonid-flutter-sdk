@@ -14,14 +14,6 @@ class ClaimWrongIdentityException implements Exception {
   ClaimWrongIdentityException(this.identifier);
 }
 
-class FetchClaimException extends ErrorException {
-  FetchClaimException(error) : super(error);
-}
-
-class UnsupportedFetchClaimTypeException extends ErrorException {
-  UnsupportedFetchClaimTypeException(error) : super(error);
-}
-
 class SaveClaimException extends ErrorException {
   SaveClaimException(error) : super(error);
 }

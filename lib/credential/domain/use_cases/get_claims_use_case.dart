@@ -7,11 +7,13 @@ import '../repositories/credential_repository.dart';
 class GetClaimsParam {
   final List<FilterEntity>? filters;
   final String did;
+  final int profileNonce;
   final String privateKey;
 
   GetClaimsParam({
     this.filters,
     required this.did,
+    this.profileNonce = 0,
     required this.privateKey,
   });
 }

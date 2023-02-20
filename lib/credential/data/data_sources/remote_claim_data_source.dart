@@ -7,48 +7,12 @@ import '../../../common/data/exceptions/network_exceptions.dart';
 import '../../../common/domain/domain_logger.dart';
 import '../../domain/exceptions/credential_exceptions.dart';
 import '../dtos/claim_dto.dart';
-import '../dtos/fetch_claim_response_dto.dart';
+import '../../../iden3comm/data/dtos/response/fetch/fetch_claim_response_dto.dart';
 
 class RemoteClaimDataSource {
   final Client client;
 
   RemoteClaimDataSource(this.client);
-
-  Future<ClaimDTO> fetchClaim(
-      {required String token, required String url, required String did}) {
-    return Future.value(Uri.parse(url))
-        .then((uri) => client.post(
-              uri,
-              body: token,
-              headers: {
-                HttpHeaders.acceptHeader: '*/*',
-                HttpHeaders.contentTypeHeader: 'text/plain',
-              },
-            ))
-        .then((response) async {
-      if (response.statusCode == 200) {
-        FetchClaimResponseDTO fetchResponse =
-            FetchClaimResponseDTO.fromJson(json.decode(response.body));
-
-        if (fetchResponse.type == FetchClaimResponseType.issuance) {
-          return ClaimDTO(
-              id: fetchResponse.credential.id,
-              issuer: fetchResponse.from,
-              did: did,
-              type: fetchResponse.credential.credentialSubject.type,
-              expiration: fetchResponse.credential.expirationDate,
-              // TODO expiration??
-              info: fetchResponse.credential);
-        } else {
-          throw UnsupportedFetchClaimTypeException(response);
-        }
-      } else {
-        logger().d(
-            'fetchClaim Error: code: ${response.statusCode} msg: ${response.body}');
-        throw NetworkException(response);
-      }
-    });
-  }
 
   Future<Map<String, dynamic>> fetchSchema({required String url}) async {
     try {

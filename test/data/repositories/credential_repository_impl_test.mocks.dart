@@ -16,7 +16,7 @@ import 'package:polygonid_flutter_sdk/credential/data/data_sources/remote_claim_
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart'
     as _i8;
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart'
-    as _i3;
+    as _i4;
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart'
     as _i10;
 import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart'
@@ -24,7 +24,7 @@ import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dar
 import 'package:polygonid_flutter_sdk/credential/data/mappers/id_filter_mapper.dart'
     as _i13;
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
-    as _i4;
+    as _i3;
 import 'package:sembast/sembast.dart' as _i5;
 
 // ignore_for_file: type=lint
@@ -48,8 +48,8 @@ class _FakeClient_0 extends _i1.SmartFake implements _i2.Client {
         );
 }
 
-class _FakeClaimDTO_1 extends _i1.SmartFake implements _i3.ClaimDTO {
-  _FakeClaimDTO_1(
+class _FakeClaimEntity_1 extends _i1.SmartFake implements _i3.ClaimEntity {
+  _FakeClaimEntity_1(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -58,8 +58,8 @@ class _FakeClaimDTO_1 extends _i1.SmartFake implements _i3.ClaimDTO {
         );
 }
 
-class _FakeClaimEntity_2 extends _i1.SmartFake implements _i4.ClaimEntity {
-  _FakeClaimEntity_2(
+class _FakeClaimDTO_2 extends _i1.SmartFake implements _i4.ClaimDTO {
+  _FakeClaimDTO_2(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -95,35 +95,6 @@ class MockRemoteClaimDataSource extends _i1.Mock
           Invocation.getter(#client),
         ),
       ) as _i2.Client);
-  @override
-  _i7.Future<_i3.ClaimDTO> fetchClaim({
-    required String? token,
-    required String? url,
-    required String? did,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #fetchClaim,
-          [],
-          {
-            #token: token,
-            #url: url,
-            #did: did,
-          },
-        ),
-        returnValue: _i7.Future<_i3.ClaimDTO>.value(_FakeClaimDTO_1(
-          this,
-          Invocation.method(
-            #fetchClaim,
-            [],
-            {
-              #token: token,
-              #url: url,
-              #did: did,
-            },
-          ),
-        )),
-      ) as _i7.Future<_i3.ClaimDTO>);
   @override
   _i7.Future<Map<String, dynamic>> fetchSchema({required String? url}) =>
       (super.noSuchMethod(
@@ -176,7 +147,7 @@ class MockStorageClaimDataSource extends _i1.Mock
 
   @override
   _i7.Future<void> storeClaims({
-    required List<_i3.ClaimDTO>? claims,
+    required List<_i4.ClaimDTO>? claims,
     required String? did,
     required String? privateKey,
   }) =>
@@ -196,7 +167,7 @@ class MockStorageClaimDataSource extends _i1.Mock
   @override
   _i7.Future<void> storeClaimsTransact({
     required _i5.DatabaseClient? transaction,
-    required List<_i3.ClaimDTO>? claims,
+    required List<_i4.ClaimDTO>? claims,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -276,7 +247,7 @@ class MockStorageClaimDataSource extends _i1.Mock
         returnValueForMissingStub: _i7.Future<void>.value(),
       ) as _i7.Future<void>);
   @override
-  _i7.Future<List<_i3.ClaimDTO>> getClaims({
+  _i7.Future<List<_i4.ClaimDTO>> getClaims({
     _i5.Filter? filter,
     required String? did,
     required String? privateKey,
@@ -291,8 +262,8 @@ class MockStorageClaimDataSource extends _i1.Mock
             #privateKey: privateKey,
           },
         ),
-        returnValue: _i7.Future<List<_i3.ClaimDTO>>.value(<_i3.ClaimDTO>[]),
-      ) as _i7.Future<List<_i3.ClaimDTO>>);
+        returnValue: _i7.Future<List<_i4.ClaimDTO>>.value(<_i4.ClaimDTO>[]),
+      ) as _i7.Future<List<_i4.ClaimDTO>>);
 }
 
 /// A class which mocks [LocalClaimDataSource].
@@ -325,33 +296,33 @@ class MockClaimMapper extends _i1.Mock implements _i10.ClaimMapper {
   }
 
   @override
-  _i4.ClaimEntity mapFrom(_i3.ClaimDTO? from) => (super.noSuchMethod(
+  _i3.ClaimEntity mapFrom(_i4.ClaimDTO? from) => (super.noSuchMethod(
         Invocation.method(
           #mapFrom,
           [from],
         ),
-        returnValue: _FakeClaimEntity_2(
+        returnValue: _FakeClaimEntity_1(
           this,
           Invocation.method(
             #mapFrom,
             [from],
           ),
         ),
-      ) as _i4.ClaimEntity);
+      ) as _i3.ClaimEntity);
   @override
-  _i3.ClaimDTO mapTo(_i4.ClaimEntity? to) => (super.noSuchMethod(
+  _i4.ClaimDTO mapTo(_i3.ClaimEntity? to) => (super.noSuchMethod(
         Invocation.method(
           #mapTo,
           [to],
         ),
-        returnValue: _FakeClaimDTO_1(
+        returnValue: _FakeClaimDTO_2(
           this,
           Invocation.method(
             #mapTo,
             [to],
           ),
         ),
-      ) as _i3.ClaimDTO);
+      ) as _i4.ClaimDTO);
 }
 
 /// A class which mocks [FiltersMapper].

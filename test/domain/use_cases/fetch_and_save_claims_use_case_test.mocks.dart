@@ -7,17 +7,15 @@ import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
-    as _i8;
+    as _i7;
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
     as _i2;
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart'
     as _i6;
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_fetch_requests_use_case.dart'
-    as _i3;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart'
-    as _i7;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart'
     as _i5;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_fetch_requests_use_case.dart'
+    as _i3;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -93,35 +91,6 @@ class MockCredentialRepository extends _i1.Mock
   }
 
   @override
-  _i4.Future<_i2.ClaimEntity> fetchClaim({
-    required String? did,
-    required String? token,
-    required _i7.OfferIden3MessageEntity? message,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #fetchClaim,
-          [],
-          {
-            #did: did,
-            #token: token,
-            #message: message,
-          },
-        ),
-        returnValue: _i4.Future<_i2.ClaimEntity>.value(_FakeClaimEntity_0(
-          this,
-          Invocation.method(
-            #fetchClaim,
-            [],
-            {
-              #did: did,
-              #token: token,
-              #message: message,
-            },
-          ),
-        )),
-      ) as _i4.Future<_i2.ClaimEntity>);
-  @override
   _i4.Future<void> saveClaims({
     required List<_i2.ClaimEntity>? claims,
     required String? did,
@@ -142,7 +111,7 @@ class MockCredentialRepository extends _i1.Mock
       ) as _i4.Future<void>);
   @override
   _i4.Future<List<_i2.ClaimEntity>> getClaims({
-    List<_i8.FilterEntity>? filters,
+    List<_i7.FilterEntity>? filters,
     required String? did,
     required String? privateKey,
   }) =>

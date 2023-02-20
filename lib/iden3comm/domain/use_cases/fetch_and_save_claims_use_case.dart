@@ -1,9 +1,12 @@
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
+
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
+import '../../../credential/domain/entities/claim_entity.dart';
 import '../../../credential/domain/repositories/credential_repository.dart';
+import '../../../credential/domain/use_cases/save_claims_use_case.dart';
 import '../../../iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
 import '../../../iden3comm/domain/use_cases/get_auth_token_use_case.dart';
-import '../entities/claim_entity.dart';
 import 'get_fetch_requests_use_case.dart';
 
 class FetchAndSaveClaimsParam {
@@ -22,12 +25,13 @@ class FetchAndSaveClaimsParam {
 
 class FetchAndSaveClaimsUseCase
     extends FutureUseCase<FetchAndSaveClaimsParam, List<ClaimEntity>> {
+  final Iden3commRepository _iden3commRepository;
   final GetFetchRequestsUseCase _getFetchRequestsUseCase;
   final GetAuthTokenUseCase _getAuthTokenUseCase;
-  final CredentialRepository _credentialRepository;
+  final SaveClaimsUseCase _saveClaimsUseCase;
 
-  FetchAndSaveClaimsUseCase(this._getFetchRequestsUseCase,
-      this._getAuthTokenUseCase, this._credentialRepository);
+  FetchAndSaveClaimsUseCase(this._iden3commRepository, this._getFetchRequestsUseCase,
+      this._getAuthTokenUseCase, this._saveClaimsUseCase, );
 
   @override
   Future<List<ClaimEntity>> execute({required FetchAndSaveClaimsParam param}) {
@@ -49,27 +53,28 @@ class FetchAndSaveClaimsUseCase
                   privateKey: param.privateKey,
                   message: request,
                 ))
-                .then((token) => _credentialRepository.fetchClaim(
-                    did: param.did, token: token, message: param.message))
+                .then((authToken) => _iden3commRepository.fetchClaim(
+                    did: param.did, authToken: authToken, message: param.message))
                 .then((claim) => claims.add(claim));
           }
 
           return claims;
         })
-        .then((claims) => _credentialRepository
-                .saveClaims(
+        .then((claims) => _saveClaimsUseCase
+                .execute(param: SaveClaimsParam(
               claims: claims,
               did: param.did,
               privateKey: param.privateKey,
             )
+            )
                 .then((_) {
               logger().i(
-                  "[FetchAndSaveCredentialUseCase] All claims have been saved: $claims");
+                  "[FetchAndSaveClaimsUseCase] All claims have been saved: $claims");
 
               return claims;
             }))
         .catchError((error) {
-          logger().e("[FetchAndSaveCredentialUseCase] Error: $error");
+          logger().e("[FetchAndSaveClaimsUseCase] Error: $error");
           throw error;
         });
   }

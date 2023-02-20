@@ -1,3 +1,4 @@
+import '../../../common/domain/error_exception.dart';
 import '../entities/iden3_message_entity.dart';
 import '../entities/proof_request_entity.dart';
 import '../entities/request/auth/auth_iden3_message_entity.dart';
@@ -27,4 +28,12 @@ class NullAuthenticateCallbackException implements Exception {
   final AuthIden3MessageEntity authRequest;
 
   NullAuthenticateCallbackException(this.authRequest);
+}
+
+class FetchClaimException extends ErrorException {
+  FetchClaimException(error) : super(error);
+}
+
+class UnsupportedFetchClaimTypeException extends ErrorException {
+  UnsupportedFetchClaimTypeException(error) : super(error);
 }

@@ -5,9 +5,11 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.da
 import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
 
 import '../../../common/domain/entities/filter_entity.dart';
+import '../../../credential/domain/entities/claim_entity.dart';
 import '../entities/jwz_proof_entity.dart';
 import '../entities/proof_request_entity.dart';
 import '../entities/request/auth/auth_iden3_message_entity.dart';
+import '../entities/request/offer/offer_iden3_message_entity.dart';
 
 abstract class Iden3commRepository {
   Future<void> authenticate({
@@ -41,4 +43,10 @@ abstract class Iden3commRepository {
   Future<String> getChallenge({required String message});
 
   Future<List<FilterEntity>> getFilters({required ProofRequestEntity request});
+
+  Future<ClaimEntity> fetchClaim(
+      {required OfferIden3MessageEntity message,
+        required String did,
+        required String authToken,
+      });
 }

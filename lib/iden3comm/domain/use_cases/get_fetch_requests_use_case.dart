@@ -5,7 +5,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/fetch/fe
 import 'package:uuid/uuid.dart';
 
 import '../../../common/domain/use_case.dart';
-import '../../../iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
+import '../entities/request/offer/offer_iden3_message_entity.dart';
 
 class GetFetchRequestsParam {
   final OfferIden3MessageEntity message;
