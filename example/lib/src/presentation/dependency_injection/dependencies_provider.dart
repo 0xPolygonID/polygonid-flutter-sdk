@@ -13,6 +13,7 @@ import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/mappers
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/mappers/claim_model_state_mapper.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/mappers/proof_model_type_mapper.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_bloc.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/restore_identity/bloc/restore_identity_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/sign/sign_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/splash_bloc.dart';
 
@@ -30,6 +31,7 @@ Future<void> init() async {
   registerSignDependencies();
   registerIdentityDependencies();
   registerBackupIdentityDependencies();
+  registerRestoreIdentityDependencies();
 }
 
 ///
@@ -88,4 +90,10 @@ void registerIdentityDependencies() {
 ///
 void registerBackupIdentityDependencies() {
   getIt.registerFactory<BackupIdentityBloc>(() => BackupIdentityBloc(getIt()));
+}
+
+///
+void registerRestoreIdentityDependencies() {
+  getIt
+      .registerFactory<RestoreIdentityBloc>(() => RestoreIdentityBloc(getIt()));
 }

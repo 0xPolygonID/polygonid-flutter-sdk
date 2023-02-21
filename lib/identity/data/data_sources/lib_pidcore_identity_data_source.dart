@@ -16,26 +16,31 @@ class LibPolygonIdCoreIdentityDataSource {
     String input = jsonEncode({
       "claimsTreeRoot": claimsTreeRoot,
       //"8174871235721986756013575194888048894328426483724665491825528183806540196001",
-      "blockchain": blockchain, //"polygon",
-      "network": network, //"mumbai"
+      "blockchain": blockchain,
+      //"polygon",
+      "network": network,
+      //"mumbai"
     });
 
     String output = _polygonIdCoreIdentity.calculateGenesisId(input);
     logger().d("calculateGenesisId: $output");
-    return output;
+
+    return jsonDecode(output)["did"];
   }
 
   String calculateProfileId(String genesisDid, int profileNonce) {
     String input = jsonEncode({
-      "genesisDID":
-          genesisDid, //"did:iden3:polygon:mumbai:wwc17vYCJV4iqVRQu9U99CpG5KtHFbXRxE16fH3Kp",
-      "nonce": profileNonce.toString(), // "10"
+      "genesisDID": genesisDid,
+      //"did:iden3:polygon:mumbai:wwc17vYCJV4iqVRQu9U99CpG5KtHFbXRxE16fH3Kp",
+      "nonce": profileNonce.toString(),
+      // "10"
     });
 
     String output = _polygonIdCoreIdentity.calculateProfileId(input);
     logger().d("calculateProfileId: $output");
     // {"profileDID":"did:iden3:polygon:mumbai:x42d3rxWAC6mGS8AmCVWFUz7Tnndm2QCy1KzksG2R"}
-    return output;
+
+    return jsonDecode(output)["profileDID"];
   }
 
   String genesisIdToBigInt(String genesisId) {

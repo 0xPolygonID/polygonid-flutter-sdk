@@ -14,7 +14,6 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_ide
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/smt_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
@@ -26,7 +25,6 @@ import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/identity_dto_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/node_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/rhs_node_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/repositories/identity_repository_impl.dart';
@@ -103,8 +101,6 @@ final rhsNodeEntities = [
 
 Response errorResponse = Response("body", 450);
 
-Map<String, dynamic> nonRev = {"name": "Yep"};
-
 const address = "address";
 const abiName = "theABIName";
 final DeployedContract contract = DeployedContract(
@@ -131,12 +127,17 @@ final DeployedContract contract = DeployedContract(
       0,
       0,
     ])));
-var genesis = '''
-{
-  "did": "${CommonMocks.id}"
-}
-''';
-var claimChildren = [CommonMocks.id, CommonMocks.id];
+
+var identities = [
+  IdentityMocks.identityDTO,
+  IdentityMocks.identityDTO,
+  IdentityMocks.identityDTO,
+];
+var expectedIdentities = [
+  IdentityMocks.identity,
+  IdentityMocks.identity,
+  IdentityMocks.identity,
+];
 
 // Dependencies
 MockWalletDataSource walletDataSource = MockWalletDataSource();
@@ -203,165 +204,6 @@ IdentityRepository repository = IdentityRepositoryImpl(
   EncryptionKeyMapper,
 ])
 void main() {
-  /// FIXME: skipping fixing, [IdentityRepository.createIdentity] needs refactor
-  // group("Create identity", () {
-  //   setUp(() {
-  //     reset(walletDataSource);
-  //     reset(libPolygonIdCoreIdentityDataSource);
-  //     reset(storageIdentityDataSource);
-  //     reset(localClaimDataSource);
-  //     reset(localContractFilesDataSource);
-  //     reset(hexMapper);
-  //     reset(privateKeyMapper);
-  //     reset(identityDTOMapper);
-  //     reset(smtDataSource);
-  //
-  //     // Given
-  //     when(privateKeyMapper.mapFrom(any))
-  //         .thenAnswer((realInvocation) => CommonMocks.aBytes);
-  //
-  //     when(walletDataSource.createWallet(
-  //             secret: anyNamed('secret'),
-  //             accessMessage: anyNamed('accessMessage')))
-  //         .thenAnswer((realInvocation) => Future.value(mockWallet));
-  //
-  //     when(walletDataSource.getWallet(privateKey: anyNamed('privateKey')))
-  //         .thenAnswer((realInvocation) => Future.value(mockWallet));
-  //
-  //     when(identityDTOMapper.mapPrivateFrom(any, any))
-  //         .thenAnswer((realInvocation) => IdentityMocks.privateIdentity);
-  //
-  //     when(hexMapper.mapFrom(any))
-  //         .thenAnswer((realInvocation) => CommonMocks.walletPrivateKey);
-  //
-  //     when(hexMapper.mapTo(any))
-  //         .thenAnswer((realInvocation) => mockWallet.privateKey);
-  //
-  //     when(storageIdentityDataSource.getIdentity(did: anyNamed('did')))
-  //         .thenAnswer((realInvocation) =>
-  //             Future.error(UnknownIdentityException(CommonMocks.identifier)));
-  //
-  //     when(identityDTOMapper.mapFrom(any))
-  //         .thenAnswer((realInvocation) => IdentityMocks.identity);
-  //
-  //     when(libPolygonIdCoreIdentityDataSource.calculateGenesisId(any, any, any))
-  //         .thenReturn(genesis);
-  //
-  //     when(localClaimDataSource.getAuthClaim(publicKey: anyNamed('publicKey')))
-  //         .thenAnswer((realInvocation) => Future.value(claimChildren));
-  //   });
-  //
-  //   test(
-  //       "Given a private key, when I call createIdentity, then I expect a PrivateIdentityEntity to be returned",
-  //       () async {
-  //     // When
-  //     expect(
-  //         await repository.createIdentity(
-  //             secret: CommonMocks.privateKey,
-  //             accessMessage: CommonMocks.config),
-  //         IdentityMocks.privateIdentity);
-  //
-  //     // Then
-  //     var createCaptured = verify(walletDataSource.createWallet(
-  //             secret: captureAnyNamed('secret'),
-  //             accessMessage: captureAnyNamed('accessMessage')))
-  //         .captured;
-  //     expect(createCaptured[0], CommonMocks.aBytes);
-  //     expect(createCaptured[1], CommonMocks.config);
-  //
-  //     var identifierCaptured = verify(libIdentityDataSource.getIdentifier(
-  //             pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')))
-  //         .captured;
-  //     expect(identifierCaptured[0], CommonMocks.pubX);
-  //     expect(identifierCaptured[1], CommonMocks.pubY);
-  //
-  //     var identityMapperCaptured =
-  //         verify(identityDTOMapper.mapPrivateFrom(captureAny, captureAny))
-  //             .captured;
-  //     expect(identityMapperCaptured[0], mockDTO);
-  //     expect(identityMapperCaptured[1], CommonMocks.walletPrivateKey);
-  //
-  //     var hexMapperVerify = verify(hexMapper.mapFrom(captureAny));
-  //     expect(hexMapperVerify.callCount, 2);
-  //     expect(hexMapperVerify.captured[0], mockWallet.privateKey);
-  //     expect(hexMapperVerify.captured[1], mockWallet.privateKey);
-  //   });
-  //
-  //   test(
-  //       "Given a private key which is null, when I call createIdentity, then I expect a PrivateIdentityEntity to be returned",
-  //       () async {
-  //     // When
-  //     expect(
-  //         await repository.createIdentity(
-  //             secret: null, accessMessage: CommonMocks.config),
-  //         IdentityMocks.privateIdentity);
-  //
-  //     // Then
-  //     var createCaptured = verify(walletDataSource.createWallet(
-  //             secret: captureAnyNamed('secret'),
-  //             accessMessage: captureAnyNamed('accessMessage')))
-  //         .captured;
-  //     expect(createCaptured[0], CommonMocks.aBytes);
-  //     expect(createCaptured[1], CommonMocks.config);
-  //
-  //     var identifierCaptured = verify(libIdentityDataSource.getIdentifier(
-  //             pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')))
-  //         .captured;
-  //     expect(identifierCaptured[0], CommonMocks.pubX);
-  //     expect(identifierCaptured[1], CommonMocks.pubY);
-  //
-  //     var identityMapperCaptured =
-  //         verify(identityDTOMapper.mapPrivateFrom(captureAny, captureAny))
-  //             .captured;
-  //     expect(identityMapperCaptured[0], mockDTO);
-  //     expect(identityMapperCaptured[1], CommonMocks.walletPrivateKey);
-  //
-  //     var hexMapperVerify = verify(hexMapper.mapFrom(captureAny));
-  //     expect(hexMapperVerify.callCount, 2);
-  //     expect(hexMapperVerify.captured[0], mockWallet.privateKey);
-  //     expect(hexMapperVerify.captured[1], mockWallet.privateKey);
-  //   });
-  //
-  //   test(
-  //       "Given a private key, when I call createIdentity and an error occurred, then I expect a IdentityException to be thrown",
-  //       () async {
-  //     // Given
-  //     when(libIdentityDataSource.getIdentifier(
-  //             pubX: anyNamed('pubX'), pubY: anyNamed('pubY')))
-  //         .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
-  //
-  //     // When
-  //     await repository
-  //         .createIdentity(
-  //             secret: CommonMocks.privateKey, accessMessage: CommonMocks.config)
-  //         .then((_) => expect(true, false))
-  //         .catchError((error) {
-  //       expect(error, isA<IdentityException>());
-  //       expect(error.error, CommonMocks.exception);
-  //     });
-  //
-  //     // Then
-  //     var createCaptured = verify(walletDataSource.createWallet(
-  //             secret: captureAnyNamed('secret'),
-  //             accessMessage: captureAnyNamed('accessMessage')))
-  //         .captured;
-  //     expect(createCaptured[0], CommonMocks.aBytes);
-  //     expect(createCaptured[1], CommonMocks.config);
-  //
-  //     var identifierCaptured = verify(libIdentityDataSource.getIdentifier(
-  //             pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')))
-  //         .captured;
-  //     expect(identifierCaptured[0], CommonMocks.pubX);
-  //     expect(identifierCaptured[1], CommonMocks.pubY);
-  //
-  //     verifyNever(identityDTOMapper.mapPrivateFrom(captureAny, captureAny));
-  //
-  //     var hexMapperVerify = verify(hexMapper.mapFrom(captureAny));
-  //     expect(hexMapperVerify.callCount, 1);
-  //     expect(hexMapperVerify.captured[0], mockWallet.privateKey);
-  //   });
-  // });
-
   group("Get identity", () {
     setUp(() {
       reset(storageIdentityDataSource);
@@ -450,566 +292,532 @@ void main() {
     });
   });
 
-  // group("Get private identity", () {
-  //   setUp(() {
-  //     reset(walletDataSource);
-  //     reset(libPolygonIdCoreIdentityDataSource);
-  //     reset(storageIdentityDataSource);
-  //     reset(identityDTOMapper);
-  //     reset(hexMapper);
-  //
-  //     // Given
-  //     when(walletDataSource.getWallet(privateKey: anyNamed('privateKey')))
-  //         .thenAnswer((realInvocation) => Future.value(mockWallet));
-  //
-  //     when(libPolygonIdCoreIdentityDataSource.calculateGenesisId(any, any, any))
-  //         .thenReturn(genesis);
-  //
-  //     when(identityDTOMapper.mapPrivateFrom(any, any))
-  //         .thenAnswer((realInvocation) => IdentityMocks.privateIdentity);
-  //
-  //     when(storageIdentityDataSource.getIdentity(did: anyNamed('did')))
-  //         .thenAnswer((realInvocation) => Future.value(mockDTO));
-  //
-  //     when(hexMapper.mapTo(any))
-  //         .thenAnswer((realInvocation) => CommonMocks.aBytes);
-  //   });
-  //
-  //   test(
-  //       "Given an identifier and a privateKey, when I call getPrivateIdentity, then I expect a PrivateIdentityEntity to be returned",
-  //       () async {
-  //     // When
-  //     expect(
-  //         await repository.getPrivateIdentity(
-  //             did: CommonMocks.identifier, privateKey: CommonMocks.privateKey),
-  //         IdentityMocks.privateIdentity);
-  //
-  //     // Then
-  //     expect(
-  //         verify(storageIdentityDataSource.getIdentity(
-  //                 did: captureAnyNamed('did')))
-  //             .captured
-  //             .first,
-  //         CommonMocks.identifier);
-  //
-  //     expect(verify(hexMapper.mapTo(captureAny)).captured.first,
-  //         CommonMocks.privateKey);
-  //
-  //     var identifierCaptured = verify(libIdentityDataSource.getIdentifier(
-  //             pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')))
-  //         .captured;
-  //     expect(identifierCaptured[0], CommonMocks.pubX);
-  //     expect(identifierCaptured[1], CommonMocks.pubY);
-  //
-  //     expect(
-  //         verify(walletDataSource.getWallet(
-  //                 privateKey: captureAnyNamed('privateKey')))
-  //             .captured
-  //             .first,
-  //         CommonMocks.aBytes);
-  //
-  //     var captureDTOMapper =
-  //         verify(identityDTOMapper.mapPrivateFrom(captureAny, captureAny))
-  //             .captured;
-  //     expect(captureDTOMapper[0], mockDTO);
-  //     expect(captureDTOMapper[1], CommonMocks.privateKey);
-  //   });
-  //
-  //   test(
-  //       "Given an identifier and a privateKey, when I call getPrivateIdentity and an error occurred, then I expect a IdentityException to be returned",
-  //       () async {
-  //     // Given
-  //     when(libIdentityDataSource.getIdentifier(
-  //             pubX: anyNamed('pubX'), pubY: anyNamed('pubY')))
-  //         .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
-  //
-  //     // When
-  //
-  //     await repository
-  //         .getPrivateIdentity(
-  //             did: CommonMocks.identifier, privateKey: CommonMocks.privateKey)
-  //         .then((_) => expect(true, false))
-  //         .catchError((error) {
-  //       expect(error, isA<IdentityException>());
-  //       expect(error.error, CommonMocks.exception);
-  //     });
-  //
-  //     // Then
-  //     expect(
-  //         verify(storageIdentityDataSource.getIdentity(
-  //                 did: captureAnyNamed('did')))
-  //             .captured
-  //             .first,
-  //         CommonMocks.identifier);
-  //
-  //     expect(verify(hexMapper.mapTo(captureAny)).captured.first,
-  //         CommonMocks.privateKey);
-  //
-  //     var identifierCaptured = verify(libIdentityDataSource.getIdentifier(
-  //             pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')))
-  //         .captured;
-  //     expect(identifierCaptured[0], CommonMocks.pubX);
-  //     expect(identifierCaptured[1], CommonMocks.pubY);
-  //
-  //     expect(
-  //         verify(walletDataSource.getWallet(
-  //                 privateKey: captureAnyNamed('privateKey')))
-  //             .captured
-  //             .first,
-  //         CommonMocks.aBytes);
-  //
-  //     verifyNever(identityDTOMapper.mapPrivateFrom(captureAny, captureAny));
-  //   });
-  //
-  //   test(
-  //       "Given an identifier and a privateKey, when I call getPrivateIdentity and the associated identity identifier is different, then I expect a InvalidPrivateKeyException to be returned",
-  //       () async {
-  //     // Given
-  //     when(libIdentityDataSource.getIdentifier(
-  //             pubX: anyNamed('pubX'), pubY: anyNamed('pubY')))
-  //         .thenAnswer((realInvocation) => Future.value(otherIdentifier));
-  //
-  //     // When
-  //     await repository
-  //         .getPrivateIdentity(
-  //             did: CommonMocks.identifier, privateKey: CommonMocks.privateKey)
-  //         .then((_) => expect(true, false))
-  //         .catchError((error) {
-  //       expect(error, isA<IdentityException>());
-  //       expect(error.error, isA<InvalidPrivateKeyException>());
-  //       expect(error.error.privateKey, CommonMocks.privateKey);
-  //     });
-  //
-  //     // Then
-  //     expect(
-  //         verify(storageIdentityDataSource.getIdentity(
-  //                 did: captureAnyNamed('did')))
-  //             .captured
-  //             .first,
-  //         CommonMocks.identifier);
-  //
-  //     expect(verify(hexMapper.mapTo(captureAny)).captured.first,
-  //         CommonMocks.privateKey);
-  //
-  //     var identifierCaptured = verify(libIdentityDataSource.getIdentifier(
-  //             pubX: captureAnyNamed('pubX'), pubY: captureAnyNamed('pubY')))
-  //         .captured;
-  //     expect(identifierCaptured[0], CommonMocks.pubX);
-  //     expect(identifierCaptured[1], CommonMocks.pubY);
-  //
-  //     expect(
-  //         verify(walletDataSource.getWallet(
-  //                 privateKey: captureAnyNamed('privateKey')))
-  //             .captured
-  //             .first,
-  //         CommonMocks.aBytes);
-  //
-  //     verifyNever(identityDTOMapper.mapPrivateFrom(captureAny, captureAny));
-  //   });
-  // });
-  //
-  // group("Sign message", () {
-  //   setUp(() {
-  //     reset(libIdentityDataSource);
-  //     reset(privateKeyMapper);
-  //
-  //     // Given
-  //     when(walletDataSource.signMessage(
-  //             privateKey: anyNamed('privateKey'), message: anyNamed('message')))
-  //         .thenAnswer((realInvocation) => Future.value(CommonMocks.signature));
-  //     when(hexMapper.mapTo(any))
-  //         .thenAnswer((realInvocation) => CommonMocks.aBytes);
-  //   });
-  //
-  //   test(
-  //       "Given an identifier key and a message, when I call signMessage, then I expect a signature as a String to be returned",
-  //       () async {
-  //     // When
-  //     expect(
-  //         await repository.signMessage(
-  //             privateKey: CommonMocks.privateKey, message: CommonMocks.message),
-  //         CommonMocks.signature);
-  //
-  //     // Then
-  //     expect(verify(hexMapper.mapTo(captureAny)).captured.first,
-  //         CommonMocks.privateKey);
-  //     var signCaptured = verify(walletDataSource.signMessage(
-  //             privateKey: captureAnyNamed('privateKey'),
-  //             message: captureAnyNamed('message')))
-  //         .captured;
-  //     expect(signCaptured[0], CommonMocks.aBytes);
-  //     expect(signCaptured[1], CommonMocks.message);
-  //   });
-  //
-  //   test(
-  //       "Given an identifier key and a message, when I call signMessage and an error occurred, then I expect an IdentityException to be thrown",
-  //       () async {
-  //     // Given
-  //     when(walletDataSource.signMessage(
-  //             privateKey: anyNamed('privateKey'), message: anyNamed('message')))
-  //         .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
-  //
-  //     // When
-  //     await repository
-  //         .signMessage(
-  //             privateKey: CommonMocks.privateKey, message: CommonMocks.message)
-  //         .then((_) => null)
-  //         .catchError((error) {
-  //       expect(error, isA<IdentityException>());
-  //       expect(error.error, CommonMocks.exception);
-  //     });
-  //
-  //     // Then
-  //     expect(verify(hexMapper.mapTo(captureAny)).captured.first,
-  //         CommonMocks.privateKey);
-  //     var signCaptured = verify(walletDataSource.signMessage(
-  //             privateKey: captureAnyNamed('privateKey'),
-  //             message: captureAnyNamed('message')))
-  //         .captured;
-  //     expect(signCaptured[0], CommonMocks.aBytes);
-  //     expect(signCaptured[1], CommonMocks.message);
-  //   });
-  // });
-  //
-  // group("Remove identity", () {
-  //   test(
-  //       "Given an identifier, when I call removeIdentity, then I expect the process to complete",
-  //       () async {
-  //     // Given
-  //     when(storageIdentityDataSource.removeIdentity(
-  //             did: anyNamed('did')))
-  //         .thenAnswer((realInvocation) => Future.value());
-  //
-  //     // When
-  //     await expectLater(
-  //         repository.removeIdentity(
-  //             privateKey: CommonMocks.privateKey, did: CommonMocks.identifier),
-  //         completes);
-  //
-  //     // Then
-  //     expect(
-  //         verify(storageIdentityDataSource.removeIdentity(
-  //                 did: captureAnyNamed('did')))
-  //             .captured
-  //             .first,
-  //         CommonMocks.identifier);
-  //   });
-  //
-  //   test(
-  //       "Given an identifier, when I call removeIdentity and an error occurred, then I expect an error to be thrown",
-  //       () async {
-  //     // Given
-  //     when(storageIdentityDataSource.removeIdentity(
-  //             did: anyNamed('did')))
-  //         .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
-  //
-  //     // When
-  //     await expectLater(
-  //         repository.removeIdentity(
-  //             privateKey: CommonMocks.privateKey, did: CommonMocks.identifier),
-  //         throwsA(CommonMocks.exception));
-  //
-  //     // Then
-  //     expect(
-  //         verify(storageIdentityDataSource.removeIdentity(
-  //                 did: captureAnyNamed('did')))
-  //             .captured
-  //             .first,
-  //         CommonMocks.identifier);
-  //   });
-  // });
-  //
-  // group("Get Identity State", () {
-  //   setUp(() {
-  //     reset(rpcDataSource);
-  //
-  //     // Given
-  //     when(localContractFilesDataSource.loadStateContract(any))
-  //         .thenAnswer((realInvocation) => Future.value(contract));
-  //     when(stateIdentifierMapper.mapTo(any))
-  //         .thenAnswer((realInvocation) => CommonMocks.id);
-  //     when(rpcDataSource.getState(any, any))
-  //         .thenAnswer((realInvocation) => Future.value(CommonMocks.state));
-  //   });
-  //
-  //   test(
-  //       "Given parameters, when I call getState, then I expect a string to be returned",
-  //       () async {
-  //     // When
-  //     expect(
-  //         await repository.getState(
-  //             identifier: CommonMocks.identifier, contractAddress: address),
-  //         CommonMocks.state);
-  //
-  //     // Then
-  //     expect(
-  //         verify(localContractFilesDataSource.loadStateContract(captureAny))
-  //             .captured
-  //             .first,
-  //         address);
-  //     expect(verify(stateIdentifierMapper.mapTo(captureAny)).captured.first,
-  //         CommonMocks.identifier);
-  //     var getStateCaptured =
-  //         verify(rpcDataSource.getState(captureAny, captureAny)).captured;
-  //
-  //     expect(getStateCaptured[0], CommonMocks.id);
-  //     expect(getStateCaptured[1], contract);
-  //   });
-  //
-  //   test(
-  //       "Given parameters, when I call getState and an error occured, then I expect an exception to be thrown",
-  //       () async {
-  //     // Given
-  //     when(rpcDataSource.getState(any, any))
-  //         .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
-  //
-  //     // When
-  //     await repository
-  //         .getState(
-  //             identifier: CommonMocks.identifier, contractAddress: address)
-  //         .then((_) => expect(true, false))
-  //         .catchError((error) {
-  //       expect(error, isA<FetchIdentityStateException>());
-  //       expect(error.error, CommonMocks.exception);
-  //     });
-  //
-  //     // Then
-  //     expect(
-  //         verify(localContractFilesDataSource.loadStateContract(captureAny))
-  //             .captured
-  //             .first,
-  //         address);
-  //     expect(verify(stateIdentifierMapper.mapTo(captureAny)).captured.first,
-  //         CommonMocks.identifier);
-  //     var getStateCaptured =
-  //         verify(rpcDataSource.getState(captureAny, captureAny)).captured;
-  //
-  //     expect(getStateCaptured[0], CommonMocks.id);
-  //     expect(getStateCaptured[1], contract);
-  //   });
-  // });
-  //
-  // group("Get State Roots", () {
-  //   setUp(() {
-  //     reset(remoteIdentityDataSource);
-  //     reset(rhsNodeMapper);
-  //
-  //     // Given
-  //     when(remoteIdentityDataSource.fetchStateRoots(url: anyNamed('url')))
-  //         .thenAnswer((realInvocation) => Future.value(rhsNodeDTOs[0]));
-  //     when(rhsNodeMapper.mapFrom(any)).thenReturn(rhsNodeEntities[0]);
-  //   });
-  //
-  //   test(
-  //       "Given parameters, when I call fetchStateRoots, then I expect a RhsNodeEntity to be returned",
-  //       () async {
-  //     // When
-  //     expect(await repository.getStateRoots(url: CommonMocks.url),
-  //         rhsNodeEntities[0]);
-  //
-  //     // Then
-  //     var fetchCaptured = verify(remoteIdentityDataSource.fetchStateRoots(
-  //             url: captureAnyNamed('url')))
-  //         .captured;
-  //
-  //     expect(fetchCaptured[0], CommonMocks.url);
-  //
-  //     expect(verify(rhsNodeMapper.mapFrom(captureAny)).captured.first,
-  //         rhsNodeDTOs[0]);
-  //   });
-  //
-  //   test(
-  //       "Given parameters, when I call fetchStateRoots and an error occurred, then I expect a FetchIdentityStateException to be thrown",
-  //       () async {
-  //     // Given
-  //     when(remoteIdentityDataSource.fetchStateRoots(
-  //       url: anyNamed('url'),
-  //     )).thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
-  //
-  //     // When
-  //     await repository
-  //         .getStateRoots(url: CommonMocks.url)
-  //         .then((_) => expect(true, false))
-  //         .catchError((error) {
-  //       expect(error, isA<FetchStateRootsException>());
-  //       expect(error.error, CommonMocks.exception);
-  //     });
-  //
-  //     // Then
-  //     var fetchCaptured = verify(remoteIdentityDataSource.fetchStateRoots(
-  //       url: captureAnyNamed('url'),
-  //     )).captured;
-  //
-  //     expect(fetchCaptured[0], CommonMocks.url);
-  //
-  //     verifyNever(rhsNodeMapper.mapFrom(captureAny));
-  //   });
-  // });
-  //
-  // group("Get non revocation proof", () {
-  //   test(
-  //       "Given parameters, when I call getNonRevProof, then I expect a Map to be returned",
-  //       () async {
-  //     // Given
-  //     when(remoteIdentityDataSource.getNonRevocationProof(any, any, any))
-  //         .thenAnswer((realInvocation) => Future.value(nonRev));
-  //
-  //     // When
-  //     expect(
-  //         await repository.getNonRevProof(
-  //             identityState: CommonMocks.state,
-  //             nonce: CommonMocks.nonce,
-  //             baseUrl: CommonMocks.url),
-  //         nonRev);
-  //
-  //     // Then
-  //     var fetchCaptured = verify(remoteIdentityDataSource.getNonRevocationProof(
-  //             captureAny, captureAny, captureAny))
-  //         .captured;
-  //
-  //     expect(fetchCaptured[0], CommonMocks.state);
-  //     expect(fetchCaptured[1], CommonMocks.nonce);
-  //     expect(fetchCaptured[2], CommonMocks.url);
-  //   });
-  //
-  //   test(
-  //       "Given parameters, when I call getNonRevProof and an error occurred, then I expect a NonRevProofException to be thrown",
-  //       () async {
-  //     // Given
-  //     when(remoteIdentityDataSource.getNonRevocationProof(any, any, any))
-  //         .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
-  //
-  //     // When
-  //     await repository
-  //         .getNonRevProof(
-  //             identityState: CommonMocks.state,
-  //             nonce: CommonMocks.nonce,
-  //             baseUrl: CommonMocks.url)
-  //         .then((_) => expect(true, false))
-  //         .catchError((error) {
-  //       expect(error, isA<NonRevProofException>());
-  //       expect(error.error, CommonMocks.exception);
-  //     });
-  //
-  //     // Then
-  //     var fetchCaptured = verify(remoteIdentityDataSource.getNonRevocationProof(
-  //             captureAny, captureAny, captureAny))
-  //         .captured;
-  //
-  //     expect(fetchCaptured[0], CommonMocks.state);
-  //     expect(fetchCaptured[1], CommonMocks.nonce);
-  //     expect(fetchCaptured[2], CommonMocks.url);
-  //   });
-  // });
-  //
-  // group("Get challenge", () {
-  //   setUp(() {
-  //     when(qMapper.mapFrom(any)).thenReturn(CommonMocks.id);
-  //     when(hashMapper.mapFrom(any)).thenReturn(CommonMocks.challenge);
-  //     when(babyjubjubLibDataSource.getPoseidonHash(any))
-  //         .thenAnswer((realInvocation) => Future.value(CommonMocks.hash));
-  //   });
-  //
-  //   test(
-  //       "Given a message, when I call getChallenge, then I expect a String to be returned",
-  //       () async {
-  //     // When
-  //     expect(await repository.getChallenge(message: CommonMocks.message),
-  //         CommonMocks.challenge);
-  //
-  //     // Then
-  //     expect(verify(qMapper.mapFrom(captureAny)).captured.first,
-  //         CommonMocks.message);
-  //     expect(verify(hashMapper.mapFrom(captureAny)).captured.first,
-  //         CommonMocks.hash);
-  //     expect(
-  //         verify(babyjubjubLibDataSource.getPoseidonHash(captureAny))
-  //             .captured
-  //             .first,
-  //         CommonMocks.id);
-  //   });
-  //
-  //   test(
-  //       "Given a message, when I call getChallenge and an error occurred, then I expect an exception to be thrown",
-  //       () async {
-  //     // Given
-  //     when(babyjubjubLibDataSource.getPoseidonHash(any))
-  //         .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
-  //
-  //     // When
-  //     await expectLater(repository.getChallenge(message: CommonMocks.message),
-  //         throwsA(CommonMocks.exception));
-  //
-  //     // Then
-  //     expect(verify(qMapper.mapFrom(captureAny)).captured.first,
-  //         CommonMocks.message);
-  //     verifyNever(hashMapper.mapFrom(captureAny));
-  //     expect(
-  //         verify(babyjubjubLibDataSource.getPoseidonHash(captureAny))
-  //             .captured
-  //             .first,
-  //         CommonMocks.id);
-  //   });
-  // });
-  //
-  // group("Get auth inputs", () {
-  //   setUp(() {
-  //     when(libIdentityDataSource.getAuthInputs(any, any, any, any))
-  //         .thenAnswer((realInvocation) => Future.value(CommonMocks.message));
-  //     when(authInputsMapper.mapFrom(any)).thenReturn(CommonMocks.aBytes);
-  //   });
-  //
-  //   test(
-  //       "Given parameters, when I call getAuthInputs, then I expect bytes to be returned",
-  //       () async {
-  //     // When
-  //     expect(
-  //         await repository.getAuthInputs(
-  //             challenge: CommonMocks.challenge,
-  //             authClaim: CommonMocks.authClaim,
-  //             identity: IdentityMocks.identity,
-  //             signature: CommonMocks.signature),
-  //         CommonMocks.aBytes);
-  //
-  //     // Then
-  //     var captureGetAuthInputs = verify(libIdentityDataSource.getAuthInputs(
-  //             captureAny, captureAny, captureAny, captureAny))
-  //         .captured;
-  //     expect(captureGetAuthInputs[0], CommonMocks.challenge);
-  //     expect(captureGetAuthInputs[1], CommonMocks.authClaim);
-  //     expect(captureGetAuthInputs[2], IdentityMocks.identity.publicKey);
-  //     expect(captureGetAuthInputs[3], CommonMocks.signature);
-  //
-  //     expect(verify(authInputsMapper.mapFrom(captureAny)).captured.first,
-  //         CommonMocks.message);
-  //   });
-  //
-  //   test(
-  //       "Given parameters, when I call getAuthInputs and an error occurred, then I expect an exception to be thrown",
-  //       () async {
-  //     // Given
-  //     when(libIdentityDataSource.getAuthInputs(any, any, any, any))
-  //         .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
-  //
-  //     // When
-  //     await expectLater(
-  //         repository.getAuthInputs(
-  //             challenge: CommonMocks.challenge,
-  //             authClaim: CommonMocks.authClaim,
-  //             identity: IdentityMocks.identity,
-  //             signature: CommonMocks.signature),
-  //         throwsA(CommonMocks.exception));
-  //
-  //     // Then
-  //     var captureGetAuthInputs = verify(libIdentityDataSource.getAuthInputs(
-  //             captureAny, captureAny, captureAny, captureAny))
-  //         .captured;
-  //     expect(captureGetAuthInputs[0], CommonMocks.challenge);
-  //     expect(captureGetAuthInputs[1], CommonMocks.authClaim);
-  //     expect(captureGetAuthInputs[2], IdentityMocks.identity.publicKey);
-  //     expect(captureGetAuthInputs[3], CommonMocks.signature);
-  //
-  //     verifyNever(authInputsMapper.mapFrom(captureAny));
-  //   });
-  // });
+  group("Sign message", () {
+    setUp(() {
+      reset(walletDataSource);
+      reset(privateKeyMapper);
+
+      // Given
+      when(walletDataSource.signMessage(
+              privateKey: anyNamed('privateKey'), message: anyNamed('message')))
+          .thenAnswer((realInvocation) => Future.value(CommonMocks.signature));
+      when(hexMapper.mapTo(any))
+          .thenAnswer((realInvocation) => CommonMocks.aBytes);
+    });
+
+    test(
+        "Given a privateKey and a message, when I call signMessage, then I expect a signature as a String to be returned",
+        () async {
+      // When
+      expect(
+          await repository.signMessage(
+              privateKey: CommonMocks.privateKey, message: CommonMocks.message),
+          CommonMocks.signature);
+
+      // Then
+      expect(verify(hexMapper.mapTo(captureAny)).captured.first,
+          CommonMocks.privateKey);
+      var signCaptured = verify(walletDataSource.signMessage(
+              privateKey: captureAnyNamed('privateKey'),
+              message: captureAnyNamed('message')))
+          .captured;
+      expect(signCaptured[0], CommonMocks.aBytes);
+      expect(signCaptured[1], CommonMocks.message);
+    });
+
+    test(
+        "Given a privateKey and a message, when I call signMessage and an error occurred, then I expect an IdentityException to be thrown",
+        () async {
+      // Given
+      when(walletDataSource.signMessage(
+              privateKey: anyNamed('privateKey'), message: anyNamed('message')))
+          .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
+
+      // When
+      await repository
+          .signMessage(
+              privateKey: CommonMocks.privateKey, message: CommonMocks.message)
+          .then((_) => null)
+          .catchError((error) {
+        expect(error, isA<IdentityException>());
+        expect(error.error, CommonMocks.exception);
+      });
+
+      // Then
+      expect(verify(hexMapper.mapTo(captureAny)).captured.first,
+          CommonMocks.privateKey);
+      var signCaptured = verify(walletDataSource.signMessage(
+              privateKey: captureAnyNamed('privateKey'),
+              message: captureAnyNamed('message')))
+          .captured;
+      expect(signCaptured[0], CommonMocks.aBytes);
+      expect(signCaptured[1], CommonMocks.message);
+    });
+  });
+
+  group("Remove identity", () {
+    test(
+        "Given an identifier, when I call removeIdentity, then I expect the process to complete",
+        () async {
+      // Given
+      when(storageIdentityDataSource.removeIdentity(did: anyNamed('did')))
+          .thenAnswer((realInvocation) => Future.value());
+
+      // When
+      await expectLater(
+          repository.removeIdentity(genesisDid: CommonMocks.did), completes);
+
+      // Then
+      expect(
+          verify(storageIdentityDataSource.removeIdentity(
+                  did: captureAnyNamed('did')))
+              .captured
+              .first,
+          CommonMocks.did);
+    });
+
+    test(
+        "Given an identifier, when I call removeIdentity and an error occurred, then I expect an error to be thrown",
+        () async {
+      // Given
+      when(storageIdentityDataSource.removeIdentity(did: anyNamed('did')))
+          .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
+
+      // When
+      await expectLater(repository.removeIdentity(genesisDid: CommonMocks.did),
+          throwsA(CommonMocks.exception));
+
+      // Then
+      expect(
+          verify(storageIdentityDataSource.removeIdentity(
+                  did: captureAnyNamed('did')))
+              .captured
+              .first,
+          CommonMocks.did);
+    });
+  });
+
+  group("Get Identity State", () {
+    setUp(() {
+      reset(rpcDataSource);
+
+      // Given
+      when(localContractFilesDataSource.loadStateContract(any))
+          .thenAnswer((realInvocation) => Future.value(contract));
+      when(stateIdentifierMapper.mapTo(any))
+          .thenAnswer((realInvocation) => CommonMocks.id);
+      when(rpcDataSource.getState(any, any))
+          .thenAnswer((realInvocation) => Future.value(CommonMocks.state));
+    });
+
+    test(
+        "Given parameters, when I call getState, then I expect a string to be returned",
+        () async {
+      // When
+      expect(
+          await repository.getState(
+              identifier: CommonMocks.identifier, contractAddress: address),
+          CommonMocks.state);
+
+      // Then
+      expect(
+          verify(localContractFilesDataSource.loadStateContract(captureAny))
+              .captured
+              .first,
+          address);
+      expect(verify(stateIdentifierMapper.mapTo(captureAny)).captured.first,
+          CommonMocks.identifier);
+      var getStateCaptured =
+          verify(rpcDataSource.getState(captureAny, captureAny)).captured;
+
+      expect(getStateCaptured[0], CommonMocks.id);
+      expect(getStateCaptured[1], contract);
+    });
+
+    test(
+        "Given parameters, when I call getState and an error occured, then I expect an exception to be thrown",
+        () async {
+      // Given
+      when(rpcDataSource.getState(any, any))
+          .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
+
+      // When
+      await repository
+          .getState(
+              identifier: CommonMocks.identifier, contractAddress: address)
+          .then((_) => expect(true, false))
+          .catchError((error) {
+        expect(error, isA<FetchIdentityStateException>());
+        expect(error.error, CommonMocks.exception);
+      });
+
+      // Then
+      expect(
+          verify(localContractFilesDataSource.loadStateContract(captureAny))
+              .captured
+              .first,
+          address);
+      expect(verify(stateIdentifierMapper.mapTo(captureAny)).captured.first,
+          CommonMocks.identifier);
+      var getStateCaptured =
+          verify(rpcDataSource.getState(captureAny, captureAny)).captured;
+
+      expect(getStateCaptured[0], CommonMocks.id);
+      expect(getStateCaptured[1], contract);
+    });
+  });
+
+  group("Get State Roots", () {
+    setUp(() {
+      reset(remoteIdentityDataSource);
+      reset(rhsNodeMapper);
+
+      // Given
+      when(remoteIdentityDataSource.fetchStateRoots(url: anyNamed('url')))
+          .thenAnswer((realInvocation) => Future.value(rhsNodeDTOs[0]));
+      when(rhsNodeMapper.mapFrom(any)).thenReturn(rhsNodeEntities[0]);
+    });
+
+    test(
+        "Given parameters, when I call fetchStateRoots, then I expect a RhsNodeEntity to be returned",
+        () async {
+      // When
+      expect(await repository.getStateRoots(url: CommonMocks.url),
+          rhsNodeEntities[0]);
+
+      // Then
+      var fetchCaptured = verify(remoteIdentityDataSource.fetchStateRoots(
+              url: captureAnyNamed('url')))
+          .captured;
+
+      expect(fetchCaptured[0], CommonMocks.url);
+
+      expect(verify(rhsNodeMapper.mapFrom(captureAny)).captured.first,
+          rhsNodeDTOs[0]);
+    });
+
+    test(
+        "Given parameters, when I call fetchStateRoots and an error occurred, then I expect a FetchIdentityStateException to be thrown",
+        () async {
+      // Given
+      when(remoteIdentityDataSource.fetchStateRoots(
+        url: anyNamed('url'),
+      )).thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
+
+      // When
+      await repository
+          .getStateRoots(url: CommonMocks.url)
+          .then((_) => expect(true, false))
+          .catchError((error) {
+        expect(error, isA<FetchStateRootsException>());
+        expect(error.error, CommonMocks.exception);
+      });
+
+      // Then
+      var fetchCaptured = verify(remoteIdentityDataSource.fetchStateRoots(
+        url: captureAnyNamed('url'),
+      )).captured;
+
+      expect(fetchCaptured[0], CommonMocks.url);
+
+      verifyNever(rhsNodeMapper.mapFrom(captureAny));
+    });
+  });
+
+  group("Get non revocation proof", () {
+    test(
+        "Given parameters, when I call getNonRevProof, then I expect a Map to be returned",
+        () async {
+      // Given
+      when(remoteIdentityDataSource.getNonRevocationProof(any, any, any))
+          .thenAnswer((realInvocation) => Future.value(CommonMocks.aMap));
+
+      // When
+      expect(
+          await repository.getNonRevProof(
+              identityState: CommonMocks.state,
+              nonce: CommonMocks.nonce,
+              baseUrl: CommonMocks.url),
+          CommonMocks.aMap);
+
+      // Then
+      var fetchCaptured = verify(remoteIdentityDataSource.getNonRevocationProof(
+              captureAny, captureAny, captureAny))
+          .captured;
+
+      expect(fetchCaptured[0], CommonMocks.state);
+      expect(fetchCaptured[1], CommonMocks.nonce);
+      expect(fetchCaptured[2], CommonMocks.url);
+    });
+
+    test(
+        "Given parameters, when I call getNonRevProof and an error occurred, then I expect a NonRevProofException to be thrown",
+        () async {
+      // Given
+      when(remoteIdentityDataSource.getNonRevocationProof(any, any, any))
+          .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
+
+      // When
+      await repository
+          .getNonRevProof(
+              identityState: CommonMocks.state,
+              nonce: CommonMocks.nonce,
+              baseUrl: CommonMocks.url)
+          .then((_) => expect(true, false))
+          .catchError((error) {
+        expect(error, isA<NonRevProofException>());
+        expect(error.error, CommonMocks.exception);
+      });
+
+      // Then
+      var fetchCaptured = verify(remoteIdentityDataSource.getNonRevocationProof(
+              captureAny, captureAny, captureAny))
+          .captured;
+
+      expect(fetchCaptured[0], CommonMocks.state);
+      expect(fetchCaptured[1], CommonMocks.nonce);
+      expect(fetchCaptured[2], CommonMocks.url);
+    });
+  });
+
+  group("Get did identifier", () {
+    setUp(() {
+      // Given
+      when(libPolygonIdCoreIdentityDataSource.calculateGenesisId(any, any, any))
+          .thenReturn(CommonMocks.did);
+      when(libPolygonIdCoreIdentityDataSource.calculateProfileId(any, any))
+          .thenReturn(CommonMocks.did);
+    });
+
+    test(
+        "Given parameters without profileNonce, when I call getDidIdentifier, then I expect a String to be returned",
+        () async {
+      // When
+      expect(
+          await repository.getDidIdentifier(
+              blockchain: CommonMocks.blockchain,
+              network: CommonMocks.network,
+              claimsRoot: CommonMocks.message),
+          CommonMocks.did);
+
+      // Then
+      var captureCalculate = verify(libPolygonIdCoreIdentityDataSource
+              .calculateGenesisId(captureAny, captureAny, captureAny))
+          .captured;
+
+      expect(captureCalculate[0], CommonMocks.message);
+      expect(captureCalculate[1], CommonMocks.blockchain);
+      expect(captureCalculate[2], CommonMocks.network);
+
+      verifyNever(libPolygonIdCoreIdentityDataSource.calculateProfileId(
+          captureAny, captureAny));
+    });
+
+    test(
+        "Given parameters with a profileNonce, when I call getDidIdentifier, then I expect a String to be returned",
+        () async {
+      // When
+      expect(
+          await repository.getDidIdentifier(
+              blockchain: CommonMocks.blockchain,
+              network: CommonMocks.network,
+              claimsRoot: CommonMocks.message,
+              profileNonce: CommonMocks.nonce),
+          CommonMocks.did);
+
+      // Then
+      var captureCalculate = verify(libPolygonIdCoreIdentityDataSource
+              .calculateGenesisId(captureAny, captureAny, captureAny))
+          .captured;
+      expect(captureCalculate[0], CommonMocks.message);
+      expect(captureCalculate[1], CommonMocks.blockchain);
+      expect(captureCalculate[2], CommonMocks.network);
+
+      var captureCalculateProfile = verify(libPolygonIdCoreIdentityDataSource
+              .calculateProfileId(captureAny, captureAny))
+          .captured;
+      expect(captureCalculateProfile[0], CommonMocks.did);
+      expect(captureCalculateProfile[1], CommonMocks.nonce);
+    });
+
+    test(
+        "Given parameters with a profileNonce, when I call getDidIdentifier and an error occurred, then I expect an exception to be thrown",
+        () async {
+      // Given
+      when(libPolygonIdCoreIdentityDataSource.calculateGenesisId(any, any, any))
+          .thenThrow(CommonMocks.exception);
+
+      // When
+      await expectLater(
+          repository.getDidIdentifier(
+              blockchain: CommonMocks.blockchain,
+              network: CommonMocks.network,
+              claimsRoot: CommonMocks.message,
+              profileNonce: CommonMocks.nonce),
+          throwsA(CommonMocks.exception));
+
+      // Then
+      var captureCalculate = verify(libPolygonIdCoreIdentityDataSource
+              .calculateGenesisId(captureAny, captureAny, captureAny))
+          .captured;
+      expect(captureCalculate[0], CommonMocks.message);
+      expect(captureCalculate[1], CommonMocks.blockchain);
+      expect(captureCalculate[2], CommonMocks.network);
+
+      verifyNever(libPolygonIdCoreIdentityDataSource.calculateProfileId(
+          captureAny, captureAny));
+    });
+  });
+
+  group("Export identity", () {
+    setUp(() {
+      // Given
+      when(storageIdentityDataSource.getIdentityDb(
+              did: anyNamed('did'), privateKey: anyNamed('privateKey')))
+          .thenAnswer((realInvocation) => Future.value(CommonMocks.aMap));
+      when(encryptionKeyMapper.mapFrom(any)).thenReturn(CommonMocks.key);
+      when(encryptionDbDataSource.encryptData(
+              data: anyNamed('data'), key: anyNamed('key')))
+          .thenReturn(CommonMocks.message);
+    });
+
+    test(
+        "Given params, when I call exportIdentity, then I expect a String to be returned",
+        () async {
+      // When
+      expect(
+          await repository.exportIdentity(
+              did: CommonMocks.did, privateKey: CommonMocks.privateKey),
+          CommonMocks.message);
+
+      // Then
+      var captureIdentity = verify(storageIdentityDataSource.getIdentityDb(
+              did: captureAnyNamed('did'),
+              privateKey: captureAnyNamed('privateKey')))
+          .captured;
+      expect(captureIdentity[0], CommonMocks.did);
+      expect(captureIdentity[1], CommonMocks.privateKey);
+
+      expect(verify(encryptionKeyMapper.mapFrom(captureAny)).captured.first,
+          CommonMocks.privateKey);
+
+      var captureEncrypt = verify(encryptionDbDataSource.encryptData(
+              data: captureAnyNamed('data'), key: captureAnyNamed('key')))
+          .captured;
+      expect(captureEncrypt[0], CommonMocks.aMap);
+      expect(captureEncrypt[1], CommonMocks.key);
+    });
+
+    test(
+        "Given params, when I call exportIdentity and a error occurred, then I expect an exception to be thrown",
+        () async {
+      // Given
+      when(encryptionKeyMapper.mapFrom(any)).thenThrow(CommonMocks.exception);
+
+      // When
+      try {
+        await repository.exportIdentity(
+            did: CommonMocks.did, privateKey: CommonMocks.privateKey);
+      } catch (error) {
+        expect(error, CommonMocks.exception);
+      }
+
+      // Then
+      var captureIdentity = verify(storageIdentityDataSource.getIdentityDb(
+              did: captureAnyNamed('did'),
+              privateKey: captureAnyNamed('privateKey')))
+          .captured;
+      expect(captureIdentity[0], CommonMocks.did);
+      expect(captureIdentity[1], CommonMocks.privateKey);
+
+      expect(verify(encryptionKeyMapper.mapFrom(captureAny)).captured.first,
+          CommonMocks.privateKey);
+
+      verifyNever(encryptionDbDataSource.encryptData(
+          data: captureAnyNamed('data'), key: captureAnyNamed('key')));
+    });
+  });
+
+  group("Import identity", () {
+    setUp(() {
+      // Given
+      when(destinationPathDataSource.getDestinationPath(did: anyNamed('did')))
+          .thenAnswer((realInvocation) => Future.value(CommonMocks.name));
+      when(encryptionKeyMapper.mapFrom(any)).thenReturn(CommonMocks.key);
+      when(encryptionDbDataSource.decryptData(
+              encryptedData: anyNamed('encryptedData'), key: anyNamed('key')))
+          .thenReturn(CommonMocks.aMap);
+      when(storageIdentityDataSource.saveIdentityDb(
+              exportableDb: anyNamed('exportableDb'),
+              destinationPath: anyNamed('destinationPath'),
+              privateKey: anyNamed('privateKey')))
+          .thenAnswer((realInvocation) => Future.value());
+    });
+
+    test(
+        "Given params, when I call exportIdentity, then I expect a String to be returned",
+        () async {
+      // When
+      await expectLater(
+          repository.importIdentity(
+              did: CommonMocks.did,
+              privateKey: CommonMocks.privateKey,
+              encryptedDb: CommonMocks.message),
+          completes);
+
+      // Then
+      expect(verify(encryptionKeyMapper.mapFrom(captureAny)).captured.first,
+          CommonMocks.privateKey);
+
+      var captureDecrypt = verify(encryptionDbDataSource.decryptData(
+              encryptedData: captureAnyNamed('encryptedData'),
+              key: captureAnyNamed('key')))
+          .captured;
+      expect(captureDecrypt[0], CommonMocks.message);
+      expect(captureDecrypt[1], CommonMocks.key);
+
+      var captureSave = verify(storageIdentityDataSource.saveIdentityDb(
+              exportableDb: captureAnyNamed('exportableDb'),
+              destinationPath: captureAnyNamed('destinationPath'),
+              privateKey: captureAnyNamed('privateKey')))
+          .captured;
+      expect(captureSave[0], CommonMocks.aMap);
+      expect(captureSave[1], CommonMocks.name);
+      expect(captureSave[2], CommonMocks.privateKey);
+    });
+
+    test(
+        "Given params, when I call exportIdentity and an error occurred, then I expect an exception to be thrown",
+        () async {
+      // Given
+      when(destinationPathDataSource.getDestinationPath(did: anyNamed('did')))
+          .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
+
+      // When
+      try {
+        await repository.importIdentity(
+            did: CommonMocks.did,
+            privateKey: CommonMocks.privateKey,
+            encryptedDb: CommonMocks.message);
+      } catch (error) {
+        expect(error, CommonMocks.exception);
+      }
+
+      // Then
+      expect(verify(encryptionKeyMapper.mapFrom(captureAny)).captured.first,
+          CommonMocks.privateKey);
+
+      var captureDecrypt = verify(encryptionDbDataSource.decryptData(
+              encryptedData: captureAnyNamed('encryptedData'),
+              key: captureAnyNamed('key')))
+          .captured;
+      expect(captureDecrypt[0], CommonMocks.message);
+      expect(captureDecrypt[1], CommonMocks.key);
+
+      verifyNever(storageIdentityDataSource.saveIdentityDb(
+          exportableDb: captureAnyNamed('exportableDb'),
+          destinationPath: captureAnyNamed('destinationPath'),
+          privateKey: captureAnyNamed('privateKey')));
+    });
+  });
 }
