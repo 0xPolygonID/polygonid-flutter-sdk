@@ -85,7 +85,7 @@ abstract class PolygonIdSdkIdentity {
 
   /// Gets an [IdentityEntity] from an identifier.
   /// Returns an identity as a [PrivateIdentityEntity] or [IdentityEntity]
-  /// if privateKey is ommited or invalid.
+  /// if privateKey is omitted or invalid.
   /// Throws [IdentityException] if an error occurs.
   ///
   /// the [genesisDid] is the unique id of the identity which profileNonce is 0

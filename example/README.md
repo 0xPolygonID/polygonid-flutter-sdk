@@ -38,34 +38,44 @@ If not yet created, create an identity via `identity.createIdentity();`
 Future<void> createIdentity() async {
   //we get the sdk instance previously initialized
   final sdk = PolygonIdSdk.I;
-  PrivateIdentityEntity identity = await sdk.identity.createIdentity(secret: secretKey);
+  PrivateIdentityEntity identity = await sdk.identity.createIdentity(
+     secret: secretKey,
+     blockchain: blockchain,
+     network: network,
+  );
 }
 ```
 - `secret` param in the `createIdentity()` is optional, if not passed there will be one generated randomly.
+- `blockchain` and `network` are not optional, they are used to associate the identity to a specific blockchain network.
 - it is recommended to securely save the `privateKey` generated with `createIdentity()`, this will often be used within the sdk methods as a security system, you can find the `privateKey` in the `PrivateIdentityEntity` object.
 
 #### Get identifier
-Get the identifier from previously created identity via `identity.getIdentifier();` by passing as param the `privateKey`.
+Get the DID identifier from previously created identity via `identity.getDidIdentifier();` by passing as param the `privateKey`, `blockchain` and `network`.
 ```dart
-Future<void> getIdentifier() async {
+Future<void> getDidIdentifier() async {
   String privateKey = privateIdentityEntity.privateKey;
-  String identifier = await sdk.identity.getIdentifier(privateKey: privateKey);
+  String didIdentifier = await sdk.identity.getDidIdentifier(
+     privateKey: privateKey,
+     blockchain: blockchain,
+     network: network,
+  );
 }
 ```
 
 #### Remove identity
-To remove an `identity` call `identity.removeIdentity()`, the `privateKey` and the `identifier` of the `identity` you want to remove are needed.
+To remove an `identity` call `identity.removeIdentity()`, the `privateKey` and the `genesisDid` of the `identity` you want to remove are needed.
 ```dart
 Future<void> removeIdentity({
   required String privateKey,
-  required String identifier,
+  required String genesisDid,
 }) async {
-  await sdk.identity.removeIdentity(
-    privateKey: privateKey,
-    identifier: identifier,
-  );
-
+   await sdk.identity.removeIdentity(
+      privateKey: privateKey,
+      genesisDid: genesisDid,
+   );
+}
 ```
+- `genesisDid` is the unique id of the identity which profileNonce is 0.
 
 #### Sign a message
 To sign a message with your `privateKey` call `identity.sign()`, with the `message` and `privateKey`. (The `message` String must be an Hex or a Int otherwise an Exception will be thrown)
@@ -82,6 +92,57 @@ Future<void> signMessage({
 }
 ```
 
+#### Backup identity
+To backup an identity call `identity.backupIdentity()`, with the `privateKey`, `blockchain` and `network`.
+A map of profile nonces and associated encrypted Identity's Databases is returned.
+```dart
+Future<Map<int, String>?> backupIdentity({
+  required String privateKey,
+  required blockchain,
+  required network,
+}){
+  return sdk.identity.backupIdentity(
+    privateKey: privateKey,
+    blockchain: blockchain,
+    network: network,
+  );
+}
+```
+
+#### Restore identity
+To restore an identity call `identity.restoreIdentity()`, with the `privateKey`, `blockchain`, `network` and the `backup`.
+```dart
+Future<void> restoreIdentity({
+  required String privateKey,
+  required blockchain,
+  required network,
+  required Map<int, String> backup,
+}) async {
+  await sdk.identity.restoreIdentity(
+    privateKey: privateKey,
+    blockchain: blockchain,
+    network: network,
+    backup: backup,
+  );
+}
+```
+
+#### Check identity validity
+To check if an identity is valid call `identity.checkIdentityValidity()`, with the `secret`, `blockchain` and `network`.
+```dart
+Future<bool> checkIdentityValidity({
+  required String secret,
+  required blockchain,
+  required network,
+}) async {
+  return sdk.identity.checkIdentityValidity(
+    secret: secret,
+    blockchain: blockchain,
+    network: network,
+  );
+}
+```
+
 ### Authentication
 After the identity has been created, it can be used to perform an authentication.
 
@@ -94,16 +155,16 @@ Iden3MessageEntity getIden3MessageFromString(String message){
 ```
 
 #### Authenticate
-In order to authenticate, you will need to pass the following parameters, `iden3message` related to the authentication request, the `identifier` and the `privateKey`
+In order to authenticate, you will need to pass the following parameters, `iden3message` related to the authentication request, the `did` and the `privateKey`
 ```dart
 Future<void> authenticate({
   required Iden3MessageEntity iden3message,
-  required String identifier,
+  required String did,
   required String privateKey,
 }) async {
   await sdk.iden3comm.authenticate(
     iden3message: iden3message,
-    identifier: identifier,
+    did: did,
     privateKey: privateKey,
   );
 }
@@ -113,34 +174,16 @@ Future<void> authenticate({
 The credential consists of **claims**, to retrieve them from an **Issuer** and save them in the **wallet** is possible to use `iden3comm.fetchAndSaveClaims()` method, these **claims** will later be used to **prove** one's **Identity** in a **Verifier**. Saved **claims** can be `updated` or `removed` later.
 
 #### Fetch and Save Claims
-From the **iden3message** obtained from **Issuer**, you can build a `CredentialRequestEntity` object, composed by `identifier`, `url` for the **callback**, `credential id`, **iden3message**'s `thid` and `from` field, then for fetch and save claim you'll need a `CredentialRequestEntity` list, the `identifier` and `privateKey`.
+From the **iden3message** obtained from **Issuer**, you can pass it as `OfferIden3MessageEntity` to the `fetchAndSaveClaims` method along with the `did` and `privateKey`.
 ```dart
 Future<void> fetchAndSaveClaims({
-  required Iden3MessageEntity iden3message,
-  required String identifier,
+  required OfferIden3MessageEntity message,
+  required String did,
   required String privateKey,
 }) async {
-  Map<String, dynamic>? messageBody = iden3message.body;
-
-  // url for the callback
-  final String callbackUrl = messageBody['url'];
-  // credentials
-  List<dynamic> credentials = messageBody['credentials'];
-  List<CredentialRequestEntity> credentialRequestEntityList =
-      credentials.map((credential) {
-    String credentialId = credential['id'];
-    return CredentialRequestEntity(
-      identifier,
-      callbackUrl,
-      credentialId,
-      iden3message.thid,
-      iden3message.from,
-    );
-  }).toList();
-  
   await sdk.iden3comm.fetchAndSaveClaims(
-    credentialRequests: credentialRequestEntityList,
-    identifier: identifier,
+    message: message,
+    did: did,
     privateKey: privateKey,
   );
 }
@@ -148,48 +191,48 @@ Future<void> fetchAndSaveClaims({
 ```
 
 #### Get Claims
-It is possible to retrieve **claims** saved on the sdk through the use of the `credential.getClaims()`, with `filters` as optional param, `identifier` and `privateKey` are mandatory fields.
+It is possible to retrieve **claims** saved on the sdk through the use of the `credential.getClaims()`, with `filters` as optional param, `did` and `privateKey` are mandatory fields.
 ```dart
-Future<void> getAllClaims({
+Future<void> getClaims({
   List<FilterEntity>? filters,
-  required String identifier,
+  required String did,
   required String privateKey,
 }) async {
-  List<ClaimEntity> claimList = await sdk.claim.getAllClaims(
+  List<ClaimEntity> claimList = await sdk.claim.getClaims(
     filters: filters,
-    identifier: identifier,
+    did: did,
     privateKey: privateKey,
   );
 }
 ```
 
 #### Get Claims by id
-If you want to obtain specific **claims** by knowing the **ids**, you can use the sdk method `credential.getClaimsByIds()`, passing the desired `ids`, `identifier` and `privateKey` as parameters.
+If you want to obtain specific **claims** by knowing the **ids**, you can use the sdk method `credential.getClaimsByIds()`, passing the desired `ids`, `did` and `privateKey` as parameters.
 ```dart
 Future<void> getClaimsByIds({
   required List<String> claimIds,
-  required String identifier,
+  required String did,
   required String privateKey,
 }) async {
   List<ClaimEntity> claimList = await sdk.credential.getClaimsByIds(
     claimIds: claimIds,
-    identifier: identifier,
+    did: did,
     privateKey: privateKey,
   );
 }
 ```
 
 #### Remove single Claim
-To **remove** a **claim**, simply call the `credential.removeClaim()` with the `id` of the **claim** you want to remove, you must also pass the `identifier` and `privateKey`.
+To **remove** a **claim**, simply call the `credential.removeClaim()` with the `id` of the **claim** you want to remove, you must also pass the `did` and `privateKey`.
 ```dart
 Future<void> removeClaim({
   required String claimId,
-  required String identifier,
+  required String did,
   required String privateKey,
 }) async {
   await sdk.credential.removeClaim(
     claimId: claimId,
-    identifier: identifier,
+    did: did,
     privateKey: privateKey,
   );
 }
@@ -200,12 +243,12 @@ If you want to **remove** a series of **claims**, you have to pass a list of `id
 ```dart
 Future<void> removeClaims({
   required List<String> claimIds,
-  required String identifier,
+  required String did,
   required String privateKey,
 }) async {
   await sdk.credential.removeClaims(
     claimIds: claimIds,
-    identifier: identifier,
+    did: did,
     privateKey: privateKey,
   );
 }
@@ -220,7 +263,7 @@ It is also possible to **update** a **claim** through `credential.updateClaim()`
 ```dart
 Future<void> updateClaim({
   required String claimId,
-  required String identifier,
+  required String did,
   required String privateKey,
   String? issuer,
   ClaimState? state,
@@ -230,8 +273,8 @@ Future<void> updateClaim({
 }) async {
   PolygonIdSdk sdk = PolygonIdSdk.I;
   await sdk.credential.updateClaim(
-    id: claimId,
-    identifier: identifier,
+    claimId: claimId,
+    did: did,
     privateKey: privateKey,
     issuer: issuer,
     state: state,
