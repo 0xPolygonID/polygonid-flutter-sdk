@@ -129,9 +129,9 @@ void main() {
       }
 
       verifyNever(credentialRepository.saveClaims(
-                  did: CommonMocks.identifier,
-                  privateKey: CommonMocks.privateKey,
-                  claims: captureAnyNamed('claims')));
+          did: CommonMocks.identifier,
+          privateKey: CommonMocks.privateKey,
+          claims: captureAnyNamed('claims')));
     });
 
     test(

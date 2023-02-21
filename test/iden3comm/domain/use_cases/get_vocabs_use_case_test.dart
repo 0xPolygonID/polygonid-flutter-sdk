@@ -101,7 +101,8 @@ void main() {
           when(fetchSchemaUseCase.execute(param: anyNamed('param')))
               .thenAnswer((realInvocation) => Future.error(exception));
 
-         await expectLater(useCase.execute(param: Iden3commMocks.authRequest), throwsA(exception));
+          await expectLater(useCase.execute(param: Iden3commMocks.authRequest),
+              throwsA(exception));
 
           // Then
           verifyNever(

@@ -24,17 +24,25 @@ final filters = [
       name: "theName2",
       value: ["theValue2", "theValue3"])
 ];
-final GetFiltersParam param = GetFiltersParam(message: Iden3commMocks.authRequest);
+final GetFiltersParam param =
+    GetFiltersParam(message: Iden3commMocks.authRequest);
 var exception = Exception();
 
 // Dependencies
 MockIden3commRepository iden3commRepository = MockIden3commRepository();
-MockIsProofCircuitSupportedUseCase isProofCircuitSupportedUseCase = MockIsProofCircuitSupportedUseCase();
-MockGetProofRequestsUseCase getProofRequestsUseCase = MockGetProofRequestsUseCase();
+MockIsProofCircuitSupportedUseCase isProofCircuitSupportedUseCase =
+    MockIsProofCircuitSupportedUseCase();
+MockGetProofRequestsUseCase getProofRequestsUseCase =
+    MockGetProofRequestsUseCase();
 // Tested instance
-GetFiltersUseCase useCase = GetFiltersUseCase(iden3commRepository, isProofCircuitSupportedUseCase, getProofRequestsUseCase);
+GetFiltersUseCase useCase = GetFiltersUseCase(iden3commRepository,
+    isProofCircuitSupportedUseCase, getProofRequestsUseCase);
 
-@GenerateMocks([Iden3commRepository, IsProofCircuitSupportedUseCase, GetProofRequestsUseCase])
+@GenerateMocks([
+  Iden3commRepository,
+  IsProofCircuitSupportedUseCase,
+  GetProofRequestsUseCase
+])
 void main() {
   group("Get filters", () {
     setUp(() {
@@ -50,22 +58,22 @@ void main() {
           .thenAnswer((realInvocation) => Future.value(true));
 
       when(getProofRequestsUseCase.execute(param: anyNamed('param')))
-          .thenAnswer((realInvocation) => Future.value(Iden3commMocks.proofRequestList));
+          .thenAnswer((realInvocation) =>
+              Future.value(Iden3commMocks.proofRequestList));
     });
 
     test(
         "When I call execute, then I expect a list of FilterEntity to be returned",
-            () async {
-          // When
-          expect(await useCase.execute(param: param), filters);
+        () async {
+      // When
+      expect(await useCase.execute(param: param), filters);
 
-          // Then
-          var capturedGet = verify(iden3commRepository.getFilters(
-              request: captureAnyNamed('request'),
-              ))
-              .captured;
-          expect(capturedGet[0], Iden3commMocks.proofRequestList[0]);
-          expect(capturedGet[1], Iden3commMocks.proofRequestList[1]);
-        });
+      // Then
+      var capturedGet = verify(iden3commRepository.getFilters(
+        request: captureAnyNamed('request'),
+      )).captured;
+      expect(capturedGet[0], Iden3commMocks.proofRequestList[0]);
+      expect(capturedGet[1], Iden3commMocks.proofRequestList[1]);
+    });
   });
 }
