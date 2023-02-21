@@ -22,6 +22,7 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_
 import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 
+import '../../common/common_mocks.dart';
 import 'iden3comm_repository_impl_test.mocks.dart';
 
 // Data
@@ -193,6 +194,52 @@ void main() {
       });
     },
   );
+
+  group("Get challenge", () {
+    setUp(() {
+      when(qMapper.mapFrom(any)).thenReturn(CommonMocks.id);
+      when(libBabyJubJubDataSource.hashPoseidon(any))
+          .thenAnswer((realInvocation) => Future.value(CommonMocks.hash));
+    });
+
+    test(
+        "Given a message, when I call getChallenge, then I expect a String to be returned",
+        () async {
+      // When
+      expect(await repository.getChallenge(message: CommonMocks.message),
+          CommonMocks.hash);
+
+      // Then
+      expect(verify(qMapper.mapFrom(captureAny)).captured.first,
+          CommonMocks.message);
+      expect(
+          verify(libBabyJubJubDataSource.hashPoseidon(captureAny))
+              .captured
+              .first,
+          CommonMocks.id);
+    });
+
+    test(
+        "Given a message, when I call getChallenge and an error occurred, then I expect an exception to be thrown",
+        () async {
+      // Given
+      when(libBabyJubJubDataSource.hashPoseidon(any))
+          .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
+
+      // When
+      await expectLater(repository.getChallenge(message: CommonMocks.message),
+          throwsA(CommonMocks.exception));
+
+      // Then
+      expect(verify(qMapper.mapFrom(captureAny)).captured.first,
+          CommonMocks.message);
+      expect(
+          verify(libBabyJubJubDataSource.hashPoseidon(captureAny))
+              .captured
+              .first,
+          CommonMocks.id);
+    });
+  });
 
   /// FIXME: cannot UT as [Iden3commRepositoryImpl._getPushCipherText] is internal and call [Http.get]
   // group("Get Auth Response", () {

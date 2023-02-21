@@ -41,7 +41,6 @@ class LibPolygonIdCoreWrapper {
           result = _polygonIdCoreProof
               .getMTPOnchainProofInputs(jsonEncode(param.toJson()));
           break;
-          break;
         case AtomicQueryInputsType.sigonchain:
           result = _polygonIdCoreProof
               .getSigOnchainProofInputs(jsonEncode(param.toJson()));

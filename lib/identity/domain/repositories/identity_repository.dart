@@ -12,8 +12,7 @@ abstract class IdentityRepository {
 
   Future<void> storeIdentity({required IdentityEntity identity});
 
-  Future<void> removeIdentity(
-      {required String genesisDid, required String privateKey});
+  Future<void> removeIdentity({required String genesisDid});
 
   Future<IdentityEntity> getIdentity({required String genesisDid});
 
@@ -27,7 +26,7 @@ abstract class IdentityRepository {
   Future<String> getDidIdentifier({
     required String blockchain,
     required String network,
-    required Map<String, dynamic> genesisState,
+    required String claimsRoot,
     int profileNonce = 0,
   });
 

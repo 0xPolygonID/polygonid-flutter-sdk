@@ -104,18 +104,12 @@ class MockIdentityRepository extends _i1.Mock
         returnValueForMissingStub: _i6.Future<void>.value(),
       ) as _i6.Future<void>);
   @override
-  _i6.Future<void> removeIdentity({
-    required String? genesisDid,
-    required String? privateKey,
-  }) =>
+  _i6.Future<void> removeIdentity({required String? genesisDid}) =>
       (super.noSuchMethod(
         Invocation.method(
           #removeIdentity,
           [],
-          {
-            #genesisDid: genesisDid,
-            #privateKey: privateKey,
-          },
+          {#genesisDid: genesisDid},
         ),
         returnValue: _i6.Future<void>.value(),
         returnValueForMissingStub: _i6.Future<void>.value(),
@@ -166,7 +160,7 @@ class MockIdentityRepository extends _i1.Mock
   _i6.Future<String> getDidIdentifier({
     required String? blockchain,
     required String? network,
-    required Map<String, dynamic>? genesisState,
+    required String? claimsRoot,
     int? profileNonce = 0,
   }) =>
       (super.noSuchMethod(
@@ -176,7 +170,7 @@ class MockIdentityRepository extends _i1.Mock
           {
             #blockchain: blockchain,
             #network: network,
-            #genesisState: genesisState,
+            #claimsRoot: claimsRoot,
             #profileNonce: profileNonce,
           },
         ),

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:encrypt/encrypt.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 
 class CommonMocks {
@@ -43,4 +44,6 @@ class CommonMocks {
   static String network = "theNetwork";
 
   static FilterEntity filter = FilterEntity(name: name, value: aMap);
+
+  static Key key = Key.fromLength(3);
 }

@@ -424,7 +424,6 @@ class MockStorageIdentityDataSource extends _i1.Mock
   @override
   _i13.Future<void> saveIdentityDb({
     required Map<String, Object?>? exportableDb,
-    required _i17.DatabaseFactory? databaseFactory,
     required String? destinationPath,
     required String? privateKey,
   }) =>
@@ -434,7 +433,6 @@ class MockStorageIdentityDataSource extends _i1.Mock
           [],
           {
             #exportableDb: exportableDb,
-            #databaseFactory: databaseFactory,
             #destinationPath: destinationPath,
             #privateKey: privateKey,
           },

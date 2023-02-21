@@ -37,7 +37,7 @@ void main() {
             initialRoute: Routes.splashPath,
             routes: {
               Routes.splashPath: (BuildContext context) => SplashScreen(),
-              Routes.homePath: (BuildContext context) => HomeScreen(),
+              Routes.homePath: (BuildContext context) => const HomeScreen(),
               Routes.authPath: (BuildContext context) => AuthScreen(),
               Routes.qrCodeScannerPath: (BuildContext context) => Container(),
               Routes.claimsPath: (BuildContext context) => ClaimsScreen(),
