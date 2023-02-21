@@ -9,40 +9,86 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/of
 import '../credential/domain/use_cases/save_claims_use_case.dart';
 
 abstract class PolygonIdSdkCredential {
-  /// Store a list of [ClaimEntity] of the identity
+  /// Stores in the the Polygon ID Sdk a list of [ClaimEntity] associated to
+  /// the identity
+  ///
+  /// The [claims] is the list of [ClaimEntity] to store associated to the identity
+  ///
+  /// The [did] is the unique id of the identity
+  ///
+  /// The [privateKey]  is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
   Future<List<ClaimEntity>> saveClaims(
       {required List<ClaimEntity> claims,
       required String did,
       required String privateKey});
 
-  /// Get a list of [ClaimEntity] of the identity from storage
+  /// Gets a list of [ClaimEntity] associated to the identity previously stored
+  /// in the the Polygon ID Sdk
+  ///
   /// The list can be filtered by [filters]
+  ///
+  /// The [did] is the unique id of the identity
+  ///
+  /// The [privateKey]  is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
   Future<List<ClaimEntity>> getClaims(
       {List<FilterEntity>? filters,
       required String did,
       required String privateKey});
 
-  /// Get a list of [ClaimEntity] of the identity from storage from a list of id
-  /// This is a shortcut to [getClaims], using a filter on id
+  /// Gets a list of [ClaimEntity] filtered by ids associated to the identity previously stored
+  /// in the the Polygon ID Sdk
+  ///
+  /// The [claimIds] is a list of claim ids to filter by
+  ///
+  /// The [did] is the unique id of the identity
+  ///
+  /// The [privateKey]  is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
   Future<List<ClaimEntity>> getClaimsByIds(
       {required List<String> claimIds,
       required String did,
       required String privateKey});
 
-  /// Remove Claims from storage from a list of ids
+  /// Removes a list of [ClaimEntity] filtered by ids associated to the identity previously stored
+  /// in the the Polygon ID Sdk
+  ///
+  /// The [claimIds] is a list of claim ids to filter by
+  ///
+  /// The [did] is the unique id of the identity
+  ///
+  /// The [privateKey]  is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
   Future<void> removeClaims(
       {required List<String> claimIds,
       required String did,
       required String privateKey});
 
-  /// Remove a Claim from storage by id
-  /// This is a shortcut of [removeClaims] with only one id
+  /// Removes a [ClaimEntity] filtered by id associated to the identity previously stored
+  /// in the the Polygon ID Sdk
+  ///
+  /// The [claimId] is a claim id to filter by
+  ///
+  /// The [did] is the unique id of the identity
+  ///
+  /// The [privateKey]  is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
   Future<void> removeClaim(
       {required String claimId,
       required String did,
       required String privateKey});
 
-  /// Update the Claim associated to the [claimId] in storage
+  /// Updates a [ClaimEntity] filtered by id associated to the identity previously stored
+  /// in the the Polygon ID Sdk
+  ///
+  /// The [claimId] is a claim id to filter by
+  ///
+  /// The [did] is the unique id of the identity
+  ///
+  /// The [privateKey]  is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
+  ///
   /// Be aware only the [ClaimEntity.info] will be updated
   /// and [data] is subject to validation by the data layer
   Future<ClaimEntity> updateClaim({
@@ -71,7 +117,15 @@ class Credential implements PolygonIdSdkCredential {
     this._updateClaimUseCase,
   );
 
-  /// store a list of [ClaimEntity] of the identity
+  /// Stores in the the Polygon ID Sdk a list of [ClaimEntity] associated to
+  /// the identity
+  ///
+  /// The [claims] is the list of [ClaimEntity] to store associated to the identity
+  ///
+  /// The [did] is the unique id of the identity
+  ///
+  /// The [privateKey]  is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
   @override
   Future<List<ClaimEntity>> saveClaims(
       {required List<ClaimEntity> claims,
@@ -82,8 +136,15 @@ class Credential implements PolygonIdSdkCredential {
             SaveClaimsParam(claims: claims, did: did, privateKey: privateKey));
   }
 
-  /// Get a list of [ClaimEntity] from storage
+  /// Gets a list of [ClaimEntity] associated to the identity previously stored
+  /// in the the Polygon ID Sdk
+  ///
   /// The list can be filtered by [filters]
+  ///
+  /// The [did] is the unique id of the identity
+  ///
+  /// The [privateKey]  is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
   @override
   Future<List<ClaimEntity>> getClaims(
       {List<FilterEntity>? filters,
@@ -97,8 +158,15 @@ class Credential implements PolygonIdSdkCredential {
     ));
   }
 
-  /// Get a list of [ClaimEntity] from storage from a list of id
-  /// This is a shortcut to [getClaims], using a filter on id
+  /// Gets a list of [ClaimEntity] filtered by ids associated to the identity previously stored
+  /// in the the Polygon ID Sdk
+  ///
+  /// The [claimIds] is a list of claim ids to filter by
+  ///
+  /// The [did] is the unique id of the identity
+  ///
+  /// The [privateKey]  is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
   @override
   Future<List<ClaimEntity>> getClaimsByIds(
       {required List<String> claimIds,
@@ -115,7 +183,15 @@ class Credential implements PolygonIdSdkCredential {
     ));
   }
 
-  /// Remove Claims from storage from a list of id
+  /// Removes a list of [ClaimEntity] filtered by ids associated to the identity previously stored
+  /// in the the Polygon ID Sdk
+  ///
+  /// The [claimIds] is a list of claim ids to filter by
+  ///
+  /// The [did] is the unique id of the identity
+  ///
+  /// The [privateKey]  is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
   @override
   Future<void> removeClaims(
       {required List<String> claimIds,
@@ -129,8 +205,15 @@ class Credential implements PolygonIdSdkCredential {
     ));
   }
 
-  /// Remove a Claim from storage by id
-  /// This is a shortcut of [removeClaims] with only one id
+  /// Removes a [ClaimEntity] filtered by id associated to the identity previously stored
+  /// in the the Polygon ID Sdk
+  ///
+  /// The [claimId] is a claim id to filter by
+  ///
+  /// The [did] is the unique id of the identity
+  ///
+  /// The [privateKey]  is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
   @override
   Future<void> removeClaim(
       {required String claimId,
@@ -144,7 +227,16 @@ class Credential implements PolygonIdSdkCredential {
     ));
   }
 
-  /// Update the Claim associated to the [claimId] in storage
+  /// Updates a [ClaimEntity] filtered by id associated to the identity previously stored
+  /// in the the Polygon ID Sdk
+  ///
+  /// The [claimId] is a claim id to filter by
+  ///
+  /// The [did] is the unique id of the identity
+  ///
+  /// The [privateKey]  is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
+  ///
   /// Be aware only the [ClaimEntity.info] will be updated
   /// and [data] is subject to validation by the data layer
   @override
