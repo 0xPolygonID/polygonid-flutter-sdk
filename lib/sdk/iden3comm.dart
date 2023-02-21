@@ -15,21 +15,51 @@ import '../iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart';
 import '../iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
 
 abstract class PolygonIdSdkIden3comm {
-  /// Returns a [Iden3MessageEntity] from a message string
+  /// Returns a [Iden3MessageEntity] from an iden3comm message string.
+  ///
+  /// The [message] is the iden3comm message in string format
+  ///
+  /// When communicating through iden3comm with an Issuer or Verifier,
+  /// iden3comm message string needs to be parsed to a supported
+  /// [Iden3MessageEntity] by the Polygon Id Sdk using this method.
   Future<Iden3MessageEntity> getIden3Message({required String message});
 
-  /// Returns a list of [FilterEntity] from a message string to
+  /// Returns a list of [FilterEntity] from an iden3comm message to
   /// apply to [Credential.getClaims]
+  ///
+  /// The [message] is the iden3comm message entity
   Future<List<FilterEntity>> getFilters({required Iden3MessageEntity message});
 
-  /// Fetch a list of [ClaimEntity] from issuer using iden3Message and store them
+  /// Fetch a list of [ClaimEntity] from issuer using iden3comm message
+  /// and stores them in Polygon Id Sdk.
+  ///
+  /// The [message] is the iden3comm message entity
+  ///
+  /// The [did] is the unique id of the identity
+  ///
+  /// The [profileNonce] is the nonce of the profile used from identity
+  /// to obtain the did identifier
+  ///
+  /// The [privateKey] is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
   Future<List<ClaimEntity>> fetchAndSaveClaims(
       {required Iden3MessageEntity message,
       required String did,
       int? profileNonce,
       required String privateKey});
 
-  /// Get a list of [ClaimEntity] from iden3Message
+  /// Get a list of [ClaimEntity] from iden3comm message
+  /// stored in Polygon Id Sdk.
+  ///
+  /// The [message] is the iden3comm message entity
+  ///
+  /// The [did] is the unique id of the identity
+  ///
+  /// The [profileNonce] is the nonce of the profile used from identity
+  /// to obtain the did identifier
+  ///
+  /// The [privateKey] is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
   Future<List<ClaimEntity>> getClaims({
     required Iden3MessageEntity message,
     required String did,
@@ -37,7 +67,17 @@ abstract class PolygonIdSdkIden3comm {
     required String privateKey,
   });
 
-  /// Get a list of [JWZProofEntity] from iden3Message
+  /// Get a list of [JWZProofEntity] from iden3comm message
+  ///
+  /// The [message] is the iden3comm message entity
+  ///
+  /// The [did] is the unique id of the identity
+  ///
+  /// The [profileNonce] is the nonce of the profile used from identity
+  /// to obtain the did identifier
+  ///
+  /// The [privateKey] is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
   Future<List<JWZProofEntity>> getProofs({
     required Iden3MessageEntity message,
     required String did,
@@ -47,6 +87,19 @@ abstract class PolygonIdSdkIden3comm {
 
   /// Authenticate response from iden3Message sharing the needed
   /// (if any) proofs requested by it
+  ///
+  /// The [message] is the iden3comm message entity
+  ///
+  /// The [did] is the unique id of the identity
+  ///
+  /// The [profileNonce] is the nonce of the profile used from identity
+  /// to obtain the did identifier
+  ///
+  /// The [privateKey] is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
+  ///
+  /// The [pushToken] is the push notification registration token so the issuer/verifer
+  /// can send notifications to the identity.
   Future<void> authenticate(
       {required Iden3MessageEntity message,
       required String did,
@@ -73,13 +126,22 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     this._getIden3commProofsUseCase,
   );
 
+  /// Returns a [Iden3MessageEntity] from an iden3comm message string.
+  ///
+  /// The [message] is the iden3comm message in string format
+  ///
+  /// When communicating through iden3comm with an Issuer or Verifier,
+  /// iden3comm message string needs to be parsed to a supported
+  /// [Iden3MessageEntity] by the Polygon Id Sdk using this method.
   @override
   Future<Iden3MessageEntity> getIden3Message({required String message}) {
     return _getIden3MessageUseCase.execute(param: message);
   }
 
-  /// Returns a list of [FilterEntity] from a message string to
+  /// Returns a list of [FilterEntity] from an iden3comm message to
   /// apply to [Credential.getClaims]
+  ///
+  /// The [message] is the iden3comm message entity
   @override
   Future<List<FilterEntity>> getFilters({required Iden3MessageEntity message}) {
     return _getFiltersUseCase.execute(
@@ -88,7 +150,18 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     ));
   }
 
-  /// Fetch a list of [ClaimEntity] from issuer using iden3Message and store them
+  /// Fetch a list of [ClaimEntity] from issuer using iden3comm message
+  /// and stores them in Polygon Id Sdk.
+  ///
+  /// The [message] is the iden3comm message entity
+  ///
+  /// The [did] is the unique id of the identity
+  ///
+  /// The [profileNonce] is the nonce of the profile used from identity
+  /// to obtain the did identifier
+  ///
+  /// The [privateKey] is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
   @override
   Future<List<ClaimEntity>> fetchAndSaveClaims(
       {required Iden3MessageEntity message,
@@ -107,7 +180,18 @@ class Iden3comm implements PolygonIdSdkIden3comm {
             privateKey: privateKey));
   }
 
-  /// Get a list of [ClaimEntity] from iden3Message
+  /// Get a list of [ClaimEntity] from iden3comm message
+  /// stored in Polygon Id Sdk.
+  ///
+  /// The [message] is the iden3comm message entity
+  ///
+  /// The [did] is the unique id of the identity
+  ///
+  /// The [profileNonce] is the nonce of the profile used from identity
+  /// to obtain the did identifier
+  ///
+  /// The [privateKey] is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
   @override
   Future<List<ClaimEntity>> getClaims(
       {required Iden3MessageEntity message,
@@ -123,7 +207,17 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     ));
   }
 
-  /// Get a list of [JWZProofEntity] from iden3Message
+  /// Get a list of [JWZProofEntity] from iden3comm message
+  ///
+  /// The [message] is the iden3comm message entity
+  ///
+  /// The [did] is the unique id of the identity
+  ///
+  /// The [profileNonce] is the nonce of the profile used from identity
+  /// to obtain the did identifier
+  ///
+  /// The [privateKey] is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
   @override
   Future<List<JWZProofEntity>> getProofs(
       {required Iden3MessageEntity message,
@@ -143,6 +237,19 @@ class Iden3comm implements PolygonIdSdkIden3comm {
 
   /// Authenticate response from iden3Message sharing the needed
   /// (if any) proofs requested by it
+  ///
+  /// The [message] is the iden3comm message entity
+  ///
+  /// The [did] is the unique id of the identity
+  ///
+  /// The [profileNonce] is the nonce of the profile used from identity
+  /// to obtain the did identifier
+  ///
+  /// The [privateKey] is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
+  ///
+  /// The [pushToken] is the push notification registration token so the issuer/verifer
+  /// can send notifications to the identity.
   @override
   Future<void> authenticate(
       {required Iden3MessageEntity message,

@@ -16,7 +16,7 @@ abstract class PolygonIdSdkCredential {
   ///
   /// The [did] is the unique id of the identity
   ///
-  /// The [privateKey]  is the key used to access all the sensitive info from the identity
+  /// The [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
   Future<List<ClaimEntity>> saveClaims(
       {required List<ClaimEntity> claims,
@@ -139,7 +139,7 @@ class Credential implements PolygonIdSdkCredential {
   /// Gets a list of [ClaimEntity] associated to the identity previously stored
   /// in the the Polygon ID Sdk
   ///
-  /// The list can be filtered by [filters]
+  /// The [filters] is a list of conditions for filtering the claims
   ///
   /// The [did] is the unique id of the identity
   ///
