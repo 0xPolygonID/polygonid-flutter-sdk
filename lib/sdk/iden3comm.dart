@@ -22,7 +22,7 @@ abstract class PolygonIdSdkIden3comm {
   /// apply to [Credential.getClaims]
   Future<List<FilterEntity>> getFilters({required Iden3MessageEntity message});
 
-  /// Fetch a list of [ClaimEntity] from iden3Message and store them
+  /// Fetch a list of [ClaimEntity] from issuer using iden3Message and store them
   Future<List<ClaimEntity>> fetchAndSaveClaims(
       {required Iden3MessageEntity message,
       required String did,
@@ -88,7 +88,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     ));
   }
 
-  /// Fetch a list of [ClaimEntity] from iden3Message and store them
+  /// Fetch a list of [ClaimEntity] from issuer using iden3Message and store them
   @override
   Future<List<ClaimEntity>> fetchAndSaveClaims(
       {required Iden3MessageEntity message,
