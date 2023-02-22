@@ -61,7 +61,6 @@ class RemoteIden3commDataSource with HttpExceptionsHandlerMixin {
               did: did,
               type: fetchResponse.credential.credentialSubject.type,
               expiration: fetchResponse.credential.expirationDate,
-              // TODO expiration??
               info: fetchResponse.credential);
         } else {
           throw UnsupportedFetchClaimTypeException(response);
