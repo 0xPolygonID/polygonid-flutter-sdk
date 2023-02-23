@@ -282,7 +282,7 @@ class SMTDataSource {
             nextKey = node.children[0];
             siblings.add(node.children[1]);
           }
-          continue;
+          break;
         default:
           throw SMTInvalidNodeFoundException();
       }

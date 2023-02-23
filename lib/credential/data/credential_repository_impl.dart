@@ -36,31 +36,6 @@ class CredentialRepositoryImpl extends CredentialRepository {
   );
 
   @override
-  Future<ClaimEntity> fetchClaim(
-      {required String did,
-      required String token,
-      required OfferIden3MessageEntity message}) {
-    return _remoteClaimDataSource
-        .fetchClaim(token: token, url: message.body.url, did: did)
-        .then((dto) {
-      /// Error in fetching schema and vocab are not blocking
-      return _remoteClaimDataSource
-          .fetchSchema(url: dto.info.credentialSchema.id)
-          .then((schema) => _remoteClaimDataSource
-                  .fetchVocab(
-                      schema: schema, type: dto.info.credentialSubject.type)
-                  .then((vocab) {
-                dto.schema = schema;
-                dto.vocab = vocab;
-
-                return dto;
-              }))
-          .catchError((_) => dto)
-          .then((value) => _claimMapper.mapFrom(dto));
-    }).catchError((error) => throw FetchClaimException(error));
-  }
-
-  @override
   Future<void> saveClaims(
       {required List<ClaimEntity> claims,
       required String did,
@@ -119,21 +94,6 @@ class CredentialRepositoryImpl extends CredentialRepository {
     return _storageClaimDataSource
         .removeAllClaims(did: did, privateKey: privateKey)
         .catchError((error) => throw RemoveClaimsException(error));
-  }
-
-  @override
-  Future<Map<String, dynamic>> fetchSchema({required String url}) {
-    return _remoteClaimDataSource
-        .fetchSchema(url: url)
-        .catchError((error) => throw FetchSchemaException(error));
-  }
-
-  @override
-  Future<Map<String, dynamic>> fetchVocab(
-      {required Map<String, dynamic> schema, required String type}) {
-    return _remoteClaimDataSource
-        .fetchVocab(schema: schema, type: type)
-        .catchError((error) => throw FetchVocabException(error));
   }
 
   Future<String> getRhsRevocationId({required ClaimEntity claim}) {

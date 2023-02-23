@@ -5,11 +5,6 @@ import '../../../identity/domain/entities/identity_entity.dart';
 import '../entities/claim_entity.dart';
 
 abstract class CredentialRepository {
-  Future<ClaimEntity> fetchClaim(
-      {required String did,
-      required String token,
-      required OfferIden3MessageEntity message});
-
   Future<void> saveClaims({
     required List<ClaimEntity> claims,
     required String did,
@@ -33,11 +28,6 @@ abstract class CredentialRepository {
 
   Future<void> removeAllClaims(
       {required String did, required String privateKey});
-
-  Future<Map<String, dynamic>> fetchSchema({required String url});
-
-  Future<Map<String, dynamic>> fetchVocab(
-      {required Map<String, dynamic> schema, required String type});
 
   Future<Map<String, dynamic>> getRevocationStatus(
       {required ClaimEntity claim});

@@ -58,7 +58,6 @@ class ProofRepositoryImpl extends ProofRepository {
   final CircuitTypeMapper _circuitTypeMapper;
   final JWZProofMapper _jwzProofMapper;
   final JWZMapper _jwzMapper;
-  final ProofRequestFiltersMapper _proofRequestFiltersMapper;
   final AuthProofMapper _authProofMapper;
   final GistProofMapper _gistProofMapper;
   final iden3GistProofMapper.GistProofMapper _iden3GistProofMapper;
@@ -82,7 +81,6 @@ class ProofRepositoryImpl extends ProofRepository {
     this._claimMapper,
     this._revocationStatusMapper,
     this._jwzMapper,
-    this._proofRequestFiltersMapper,
     this._authProofMapper,
     this._gistProofMapper,
     this._iden3GistProofMapper,
@@ -199,11 +197,6 @@ class ProofRepositoryImpl extends ProofRepository {
   Future<bool> isCircuitSupported({required String circuitId}) {
     return Future.value(_circuitTypeMapper.mapTo(circuitId)).then((circuit) =>
         _proofCircuitDataSource.isCircuitSupported(circuit: circuit));
-  }
-
-  @override
-  Future<List<FilterEntity>> getFilters({required ProofRequestEntity request}) {
-    return Future.value(_proofRequestFiltersMapper.mapFrom(request));
   }
 
   @override

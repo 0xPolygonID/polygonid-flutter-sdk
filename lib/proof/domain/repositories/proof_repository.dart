@@ -38,8 +38,6 @@ abstract class ProofRepository {
 
   Future<JWZProof> prove(CircuitDataEntity circuitData, Uint8List wtnsBytes);
 
-  Future<List<FilterEntity>> getFilters({required ProofRequestEntity request});
-
   Future<String> encodeJWZ({required JWZEntity jwz});
 
   Future<GistProofEntity> getGistProof(

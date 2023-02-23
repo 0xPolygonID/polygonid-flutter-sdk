@@ -21,7 +21,6 @@ import 'package:uuid/uuid.dart';
 
 import '../../../common/domain/domain_logger.dart';
 import '../../../identity/data/data_sources/lib_babyjubjub_data_source.dart';
-import '../../../identity/data/mappers/hex_mapper.dart';
 import '../../../identity/data/mappers/q_mapper.dart';
 import '../../domain/exceptions/iden3comm_exceptions.dart';
 import '../../domain/repositories/iden3comm_repository.dart';
@@ -34,6 +33,7 @@ import '../mappers/auth_inputs_mapper.dart';
 import '../mappers/auth_proof_mapper.dart';
 import '../mappers/auth_response_mapper.dart';
 import '../mappers/gist_proof_mapper.dart';
+import '../mappers/proof_request_filters_mapper.dart';
 
 class Iden3commRepositoryImpl extends Iden3commRepository {
   final RemoteIden3commDataSource _remoteIden3commDataSource;

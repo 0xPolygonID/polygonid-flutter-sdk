@@ -8,7 +8,7 @@ import '../entities/jwz_proof_entity.dart';
 import '../entities/request/auth/auth_iden3_message_entity.dart';
 import '../repositories/iden3comm_repository.dart';
 import 'get_auth_token_use_case.dart';
-import 'get_proofs_use_case.dart';
+import 'get_iden3comm_proofs_use_case.dart';
 
 class AuthenticateParam {
   final AuthIden3MessageEntity message;
@@ -28,14 +28,14 @@ class AuthenticateParam {
 class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
   final Iden3commRepository _iden3commRepository;
   final GetAuthTokenUseCase _getAuthTokenUseCase;
-  final GetProofsUseCase _getProofsUseCase;
+  final GetIden3commProofsUseCase _getIden3commProofsUseCase;
   final GetEnvConfigUseCase _getEnvConfigUseCase;
   final GetPackageNameUseCase _getPackageNameUseCase;
   final GetDidIdentifierUseCase _getDidIdentifierUseCase;
 
   AuthenticateUseCase(
     this._iden3commRepository,
-    this._getProofsUseCase,
+    this._getIden3commProofsUseCase,
     this._getAuthTokenUseCase,
     this._getEnvConfigUseCase,
     this._getPackageNameUseCase,
@@ -45,8 +45,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
   @override
   Future<void> execute({required AuthenticateParam param}) async {
     try {
-      List<JWZProofEntity> proofs = await _getProofsUseCase.execute(
-          param: GetProofsParam(
+      List<JWZProofEntity> proofs = await _getIden3commProofsUseCase.execute(
+          param: GetIden3commProofsParam(
         message: param.message,
         did: param.did,
         profileNonce: param.profileNonce,

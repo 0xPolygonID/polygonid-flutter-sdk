@@ -14,14 +14,6 @@ class ClaimWrongIdentityException implements Exception {
   ClaimWrongIdentityException(this.identifier);
 }
 
-class FetchClaimException extends ErrorException {
-  FetchClaimException(error) : super(error);
-}
-
-class UnsupportedFetchClaimTypeException extends ErrorException {
-  UnsupportedFetchClaimTypeException(error) : super(error);
-}
-
 class SaveClaimException extends ErrorException {
   SaveClaimException(error) : super(error);
 }
@@ -36,18 +28,6 @@ class RemoveClaimsException extends ErrorException {
 
 class UpdateClaimException extends ErrorException {
   UpdateClaimException(error) : super(error);
-}
-
-class FetchSchemaException extends ErrorException {
-  FetchSchemaException(error) : super(error);
-}
-
-class FetchVocabException extends ErrorException {
-  FetchVocabException(error) : super(error);
-}
-
-class UnsupportedSchemaFetchVocabException extends ErrorException {
-  UnsupportedSchemaFetchVocabException(error) : super(error);
 }
 
 class NullRevocationStatusException implements Exception {
