@@ -96,21 +96,6 @@ class CredentialRepositoryImpl extends CredentialRepository {
         .catchError((error) => throw RemoveClaimsException(error));
   }
 
-  @override
-  Future<Map<String, dynamic>> fetchSchema({required String url}) {
-    return _remoteClaimDataSource
-        .fetchSchema(url: url)
-        .catchError((error) => throw FetchSchemaException(error));
-  }
-
-  @override
-  Future<Map<String, dynamic>> fetchVocab(
-      {required Map<String, dynamic> schema, required String type}) {
-    return _remoteClaimDataSource
-        .fetchVocab(schema: schema, type: type)
-        .catchError((error) => throw FetchVocabException(error));
-  }
-
   Future<String> getRhsRevocationId({required ClaimEntity claim}) {
     ClaimDTO claimDTO = _claimMapper.mapTo(claim);
     try {

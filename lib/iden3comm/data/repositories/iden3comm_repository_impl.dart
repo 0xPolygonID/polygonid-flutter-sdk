@@ -9,27 +9,19 @@ import 'package:pointycastle/asymmetric/oaep.dart';
 import 'package:pointycastle/asymmetric/rsa.dart';
 import 'package:pointycastle/digests/sha512.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
-import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../common/domain/domain_logger.dart';
-import '../../../common/domain/entities/filter_entity.dart';
-import '../../../credential/domain/use_cases/fetch_schema_use_case.dart';
-import '../../../credential/domain/use_cases/fetch_vocab_use_case.dart';
 import '../../../identity/data/data_sources/lib_babyjubjub_data_source.dart';
-import '../../../identity/data/mappers/hex_mapper.dart';
 import '../../../identity/data/mappers/q_mapper.dart';
-import '../../domain/entities/proof_request_entity.dart';
 import '../../domain/exceptions/iden3comm_exceptions.dart';
 import '../../domain/repositories/iden3comm_repository.dart';
 import '../data_sources/lib_pidcore_iden3comm_data_source.dart';
@@ -53,11 +45,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   final AuthInputsMapper _authInputsMapper;
   final AuthProofMapper _authProofMapper;
   final GistProofMapper _gistProofMapper;
-  final ClaimMapper _claimMapper;
   final QMapper _qMapper;
-  final ProofRequestFiltersMapper _proofRequestFiltersMapper;
-  final FetchSchemaUseCase _fetchSchemaUseCase;
-  final FetchVocabUseCase _fetchVocabUseCase;
 
   Iden3commRepositoryImpl(
     this._remoteIden3commDataSource,
@@ -67,11 +55,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     this._authInputsMapper,
     this._authProofMapper,
     this._gistProofMapper,
-    this._claimMapper,
     this._qMapper,
-    this._proofRequestFiltersMapper,
-    this._fetchSchemaUseCase,
-    this._fetchVocabUseCase,
   );
 
   @override
@@ -209,38 +193,5 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   Future<String> getChallenge({required String message}) {
     return Future.value(_qMapper.mapFrom(message))
         .then((q) => _libBabyJubJubDataSource.hashPoseidon(q));
-  }
-
-  @override
-  Future<List<FilterEntity>> getFilters({required ProofRequestEntity request}) {
-    return Future.value(_proofRequestFiltersMapper.mapFrom(request));
-  }
-
-  @override
-  Future<ClaimEntity> fetchClaim({
-    required OfferIden3MessageEntity message,
-    required String did,
-    required String authToken,
-  }) {
-    return _remoteIden3commDataSource
-        .fetchClaim(authToken: authToken, url: message.body.url, did: did)
-        .then((dto) {
-      /// Error in fetching schema and vocab are not blocking
-      return _fetchSchemaUseCase
-          .execute(param: dto.info.credentialSchema.id)
-          .then((schema) {
-            dto.schema = schema;
-            return _fetchVocabUseCase
-                .execute(
-                    param: FetchVocabParam(
-                        schema: schema, type: dto.info.context[2]))
-                .then((vocab) {
-              dto.vocab = vocab;
-              return dto;
-            });
-          })
-          .catchError((_) => dto)
-          .then((value) => _claimMapper.mapFrom(dto));
-    }).catchError((error) => throw FetchClaimException(error));
   }
 }

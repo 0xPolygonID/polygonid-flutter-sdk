@@ -144,10 +144,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   /// The [message] is the iden3comm message entity
   @override
   Future<List<FilterEntity>> getFilters({required Iden3MessageEntity message}) {
-    return _getFiltersUseCase.execute(
-        param: GetFiltersParam(
-      message: message,
-    ));
+    return _getFiltersUseCase.execute(param: message);
   }
 
   /// Fetch a list of [ClaimEntity] from issuer using iden3comm message

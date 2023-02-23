@@ -3,13 +3,17 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i3;
+import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/fetch_schema_use_case.dart'
+import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
+    as _i5;
+import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
     as _i2;
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/fetch_vocab_use_case.dart'
-    as _i4;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart'
+    as _i6;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart'
+    as _i3;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -22,46 +26,92 @@ import 'package:polygonid_flutter_sdk/credential/domain/use_cases/fetch_vocab_us
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-/// A class which mocks [FetchSchemaUseCase].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockFetchSchemaUseCase extends _i1.Mock
-    implements _i2.FetchSchemaUseCase {
-  MockFetchSchemaUseCase() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  _i3.Future<Map<String, dynamic>> execute({required String? param}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #execute,
-          [],
-          {#param: param},
-        ),
-        returnValue:
-            _i3.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
-      ) as _i3.Future<Map<String, dynamic>>);
+class _FakeClaimEntity_0 extends _i1.SmartFake implements _i2.ClaimEntity {
+  _FakeClaimEntity_0(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
 }
 
-/// A class which mocks [FetchVocabUseCase].
+/// A class which mocks [Iden3commCredentialRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockFetchVocabUseCase extends _i1.Mock implements _i4.FetchVocabUseCase {
-  MockFetchVocabUseCase() {
+class MockIden3commCredentialRepository extends _i1.Mock
+    implements _i3.Iden3commCredentialRepository {
+  MockIden3commCredentialRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<Map<String, dynamic>> execute(
-          {required _i4.FetchVocabParam? param}) =>
+  _i4.Future<List<_i5.FilterEntity>> getFilters(
+          {required _i6.ProofRequestEntity? request}) =>
       (super.noSuchMethod(
         Invocation.method(
-          #execute,
+          #getFilters,
           [],
-          {#param: param},
+          {#request: request},
         ),
         returnValue:
-            _i3.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
-      ) as _i3.Future<Map<String, dynamic>>);
+            _i4.Future<List<_i5.FilterEntity>>.value(<_i5.FilterEntity>[]),
+      ) as _i4.Future<List<_i5.FilterEntity>>);
+  @override
+  _i4.Future<_i2.ClaimEntity> fetchClaim({
+    required String? url,
+    required String? did,
+    required String? authToken,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #fetchClaim,
+          [],
+          {
+            #url: url,
+            #did: did,
+            #authToken: authToken,
+          },
+        ),
+        returnValue: _i4.Future<_i2.ClaimEntity>.value(_FakeClaimEntity_0(
+          this,
+          Invocation.method(
+            #fetchClaim,
+            [],
+            {
+              #url: url,
+              #did: did,
+              #authToken: authToken,
+            },
+          ),
+        )),
+      ) as _i4.Future<_i2.ClaimEntity>);
+  @override
+  _i4.Future<Map<String, dynamic>> fetchSchema({required String? url}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #fetchSchema,
+          [],
+          {#url: url},
+        ),
+        returnValue:
+            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i4.Future<Map<String, dynamic>>);
+  @override
+  _i4.Future<Map<String, dynamic>> fetchVocab({
+    required Map<String, dynamic>? schema,
+    required String? type,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #fetchVocab,
+          [],
+          {
+            #schema: schema,
+            #type: type,
+          },
+        ),
+        returnValue:
+            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i4.Future<Map<String, dynamic>>);
 }

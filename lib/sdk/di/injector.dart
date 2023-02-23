@@ -19,7 +19,9 @@ import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_
 import 'package:polygonid_flutter_sdk/env/dev_env.dart';
 import 'package:polygonid_flutter_sdk/env/prod_env.dart';
 import 'package:polygonid_flutter_sdk/env/sdk_env.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/iden3comm_credential_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/iden3comm_repository_impl.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/data/repositories/identity_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/identity/data/repositories/smt_repository_impl.dart';
@@ -158,6 +160,11 @@ abstract class RepositoriesModule {
       proofRepositoryImpl;
 
   // Iden3comm
+  Iden3commCredentialRepository iden3commCredentialRepository(
+          Iden3commCredentialRepositoryImpl
+              iden3commCredentialRepositoryImpl) =>
+      iden3commCredentialRepositoryImpl;
+
   Iden3commRepository iden3commRepository(
           Iden3commRepositoryImpl iden3commRepositoryImpl) =>
       iden3commRepositoryImpl;

@@ -7,10 +7,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
-import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/fetch_schema_use_case.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/fetch_vocab_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/lib_pidcore_iden3comm_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
@@ -19,7 +16,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_inputs_mapper.
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_response_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/gist_proof_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/proof_request_filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/iden3comm_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
@@ -29,10 +25,6 @@ import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 
 import '../../../common/common_mocks.dart';
-import '../../../common/iden3comm_mocks.dart';
-import '../../../credential/domain/use_cases/get_claims_use_case_test.dart';
-import '../../domain/use_cases/get_vocabs_use_case_test.dart';
-import '../mappers/proof_request_filters_mapper_test.dart';
 import '../../../credential/data/repositories/credential_repository_impl_test.dart';
 import 'iden3comm_repository_impl_test.mocks.dart';
 
@@ -124,12 +116,7 @@ MockAuthResponseMapper authResponseMapper = MockAuthResponseMapper();
 MockAuthInputsMapper authInputsMapper = MockAuthInputsMapper();
 MockAuthProofMapper authProofMapper = MockAuthProofMapper();
 MockGistProofMapper gistProofMapper = MockGistProofMapper();
-MockClaimMapper claimMapper = MockClaimMapper();
 MockQMapper qMapper = MockQMapper();
-MockProofRequestFiltersMapper proofRequestFiltersMapper =
-    MockProofRequestFiltersMapper();
-MockFetchSchemaUseCase fetchSchemaUseCase = MockFetchSchemaUseCase();
-MockFetchVocabUseCase fetchVocabUseCase = MockFetchVocabUseCase();
 
 // Tested instance
 Iden3commRepository repository = Iden3commRepositoryImpl(
@@ -140,11 +127,7 @@ Iden3commRepository repository = Iden3commRepositoryImpl(
   authInputsMapper,
   authProofMapper,
   gistProofMapper,
-  claimMapper,
   qMapper,
-  proofRequestFiltersMapper,
-  fetchSchemaUseCase,
-  fetchVocabUseCase,
 );
 
 // TODO: verify params and write other functions
@@ -156,125 +139,9 @@ Iden3commRepository repository = Iden3commRepositoryImpl(
   AuthInputsMapper,
   AuthProofMapper,
   GistProofMapper,
-  ClaimMapper,
   QMapper,
-  ProofRequestFiltersMapper,
-  FetchSchemaUseCase,
-  FetchVocabUseCase,
 ])
 void main() {
-  group("Fetch claim", () {
-    setUp(() {
-      reset(fetchSchemaUseCase);
-      reset(fetchVocabUseCase);
-      reset(remoteIden3commDataSource);
-      reset(claimMapper);
-
-      // Given
-      when(fetchSchemaUseCase.execute(param: anyNamed('param')))
-          .thenAnswer((realInvocation) => Future.value(CommonMocks.aMap));
-      when(fetchVocabUseCase.execute(param: anyNamed('param')))
-          .thenAnswer((realInvocation) => Future.value(CommonMocks.aMap));
-      when(remoteIden3commDataSource.fetchClaim(
-              authToken: anyNamed('authToken'),
-              url: anyNamed('url'),
-              did: anyNamed('did')))
-          .thenAnswer((realInvocation) => Future.value(claimDTOs[0]));
-      when(claimMapper.mapFrom(any)).thenReturn(claimEntities[0]);
-    });
-
-    test(
-        "Given parameters, when I call fetchClaim, then I expect a ClaimEntity to be returned",
-        () async {
-      // When
-      expect(
-          await repository.fetchClaim(
-              did: CommonMocks.identifier,
-              authToken: CommonMocks.token,
-              message: Iden3commMocks.offerRequest),
-          claimEntities[0]);
-
-      // Then
-      var fetchCaptured = verify(remoteIden3commDataSource.fetchClaim(
-              authToken: captureAnyNamed('authToken'),
-              url: captureAnyNamed('url'),
-              did: captureAnyNamed('did')))
-          .captured;
-
-      expect(fetchCaptured[0], CommonMocks.token);
-      expect(fetchCaptured[1], Iden3commMocks.offerUrl);
-      expect(fetchCaptured[2], CommonMocks.identifier);
-
-      expect(
-          verify(claimMapper.mapFrom(captureAny)).captured.first, claimDTOs[0]);
-    });
-
-    test(
-        "Given parameters, when I call fetchClaim and an error occurred, then I expect a FetchClaimException to be thrown",
-        () async {
-      // Given
-      when(remoteIden3commDataSource.fetchClaim(
-              authToken: anyNamed('authToken'),
-              url: anyNamed('url'),
-              did: anyNamed('did')))
-          .thenAnswer((realInvocation) => Future.error(exception));
-
-      // When
-      await repository
-          .fetchClaim(
-              did: CommonMocks.identifier,
-              authToken: CommonMocks.token,
-              message: Iden3commMocks.offerRequest)
-          .then((_) => expect(true, false))
-          .catchError((error) {
-        expect(error, isA<FetchClaimException>());
-        expect(error.error, exception);
-      });
-
-      // Then
-      var fetchCaptured = verify(remoteIden3commDataSource.fetchClaim(
-              authToken: captureAnyNamed('authToken'),
-              url: captureAnyNamed('url'),
-              did: captureAnyNamed('did')))
-          .captured;
-
-      expect(fetchCaptured[0], CommonMocks.token);
-      expect(fetchCaptured[1], Iden3commMocks.offerUrl);
-      expect(fetchCaptured[2], CommonMocks.identifier);
-
-      verifyNever(claimMapper.mapFrom(captureAny));
-    });
-
-    test(
-        "Given parameters, when I call fetchClaim and an error occurred during fetchVocab, then I expect a ClaimEntity to be returned",
-        () async {
-      // Given
-      when(remoteClaimDataSource.fetchVocab(
-              schema: anyNamed('schema'), type: anyNamed('type')))
-          .thenAnswer((realInvocation) => Future.error(exception));
-
-      // When
-      expect(
-          await repository.fetchClaim(
-              did: CommonMocks.identifier,
-              authToken: CommonMocks.token,
-              message: Iden3commMocks.offerRequest),
-          claimEntities[0]);
-
-      // Then
-      var fetchCaptured = verify(remoteIden3commDataSource.fetchClaim(
-              authToken: captureAnyNamed('authToken'),
-              url: captureAnyNamed('url'),
-              did: captureAnyNamed('did')))
-          .captured;
-      expect(fetchCaptured[0], CommonMocks.token);
-      expect(fetchCaptured[1], Iden3commMocks.offerUrl);
-      expect(fetchCaptured[2], CommonMocks.identifier);
-
-      expect(
-          verify(claimMapper.mapFrom(captureAny)).captured.first, claimDTOs[0]);
-    });
-  });
   group(
     "Authenticate",
     () {

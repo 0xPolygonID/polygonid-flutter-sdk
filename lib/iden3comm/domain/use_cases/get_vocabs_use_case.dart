@@ -2,16 +2,13 @@ import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
-
-import '../../../credential/domain/use_cases/fetch_schema_use_case.dart';
-import '../../../credential/domain/use_cases/fetch_vocab_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 
 class GetVocabsUseCase
     extends FutureUseCase<Iden3MessageEntity, List<Map<String, dynamic>>> {
-  FetchSchemaUseCase _fetchSchemaUseCase;
-  FetchVocabUseCase _fetchVocabUseCase;
+  final Iden3commCredentialRepository _iden3commCredentialRepository;
 
-  GetVocabsUseCase(this._fetchSchemaUseCase, this._fetchVocabUseCase);
+  GetVocabsUseCase(this._iden3commCredentialRepository);
 
   @override
   Future<List<Map<String, dynamic>>> execute(
@@ -31,12 +28,11 @@ class GetVocabsUseCase
           schemaUrl.isNotEmpty &&
           schemaType != null &&
           schemaType.isNotEmpty) {
-        Map<String, dynamic> vocab = await _fetchSchemaUseCase
-            .execute(param: schemaUrl)
-            .then((schema) => _fetchVocabUseCase
-                .execute(
-                    param: FetchVocabParam(schema: schema, type: schemaType))
-                .catchError((error) => <String, dynamic>{}));
+        Map<String, dynamic> vocab = await _iden3commCredentialRepository
+            .fetchSchema(url: schemaUrl)
+            .then((schema) => _iden3commCredentialRepository.fetchVocab(
+                schema: schema, type: schemaType))
+            .catchError((error) => <String, dynamic>{});
 
         if (vocab.isNotEmpty) {
           result.add(vocab);

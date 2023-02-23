@@ -1,9 +1,8 @@
-import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
 import '../../../credential/domain/entities/claim_entity.dart';
-import '../../../credential/domain/repositories/credential_repository.dart';
 import '../../../credential/domain/use_cases/save_claims_use_case.dart';
 import '../../../iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
 import '../../../iden3comm/domain/use_cases/get_auth_token_use_case.dart';
@@ -25,13 +24,13 @@ class FetchAndSaveClaimsParam {
 
 class FetchAndSaveClaimsUseCase
     extends FutureUseCase<FetchAndSaveClaimsParam, List<ClaimEntity>> {
-  final Iden3commRepository _iden3commRepository;
+  final Iden3commCredentialRepository _iden3commCredentialRepository;
   final GetFetchRequestsUseCase _getFetchRequestsUseCase;
   final GetAuthTokenUseCase _getAuthTokenUseCase;
   final SaveClaimsUseCase _saveClaimsUseCase;
 
   FetchAndSaveClaimsUseCase(
-    this._iden3commRepository,
+    this._iden3commCredentialRepository,
     this._getFetchRequestsUseCase,
     this._getAuthTokenUseCase,
     this._saveClaimsUseCase,
@@ -57,10 +56,10 @@ class FetchAndSaveClaimsUseCase
                   privateKey: param.privateKey,
                   message: request,
                 ))
-                .then((authToken) => _iden3commRepository.fetchClaim(
+                .then((authToken) => _iden3commCredentialRepository.fetchClaim(
                     did: param.did,
                     authToken: authToken,
-                    message: param.message))
+                    url: param.message.body.url))
                 .then((claim) => claims.add(claim));
           }
 

@@ -1,23 +1,20 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/fetch_schema_use_case.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/fetch_vocab_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_vocabs_use_case.dart';
 
 import '../../../common/iden3comm_mocks.dart';
 import 'get_vocabs_use_case_test.mocks.dart';
 
 // Dependencies
-MockFetchSchemaUseCase fetchSchemaUseCase = MockFetchSchemaUseCase();
-MockFetchVocabUseCase fetchVocabUseCase = MockFetchVocabUseCase();
+MockIden3commCredentialRepository iden3commCredentialRepository =
+    MockIden3commCredentialRepository();
 
 // Tested instance
-GetVocabsUseCase useCase =
-    GetVocabsUseCase(fetchSchemaUseCase, fetchVocabUseCase);
+GetVocabsUseCase useCase = GetVocabsUseCase(iden3commCredentialRepository);
 
 // Data
 const Map<String, dynamic> schema = {
@@ -36,20 +33,20 @@ final expectations = [
   [vocab]
 ];
 
-@GenerateMocks([FetchSchemaUseCase, FetchVocabUseCase])
+@GenerateMocks([Iden3commCredentialRepository])
 void main() {
   group(
     "Get vocabs",
     () {
       setUp(() {
         // Given
-        reset(fetchSchemaUseCase);
-        reset(fetchVocabUseCase);
+        reset(iden3commCredentialRepository);
 
-        when(fetchSchemaUseCase.execute(param: anyNamed('param')))
+        when(iden3commCredentialRepository.fetchSchema(url: anyNamed('url')))
             .thenAnswer((realInvocation) => Future.value(schema));
 
-        when(fetchVocabUseCase.execute(param: anyNamed('param')))
+        when(iden3commCredentialRepository.fetchVocab(
+                schema: anyNamed('schema'), type: anyNamed('type')))
             .thenAnswer((realInvocation) => Future.value(vocab));
       });
 
@@ -61,16 +58,26 @@ void main() {
             expect(await useCase.execute(param: messages[i]), expectations[i]);
 
             // Then
-            expect(
-                verify(fetchSchemaUseCase.execute(
-                        param: captureAnyNamed('param')))
-                    .callCount,
-                messages[i].body.scope.length);
+            var verifySchema = verify(iden3commCredentialRepository.fetchSchema(
+                url: captureAnyNamed('url')));
+            expect(verifySchema.callCount, messages[i].body.scope.length);
 
-            var verifyVocab = verify(
-                fetchVocabUseCase.execute(param: captureAnyNamed('param')));
-            expect(verifyVocab.callCount, messages[i].body.scope.length);
-            expect(verifyVocab.captured[0].schema, schema);
+            for (int j = 0; j < messages[i].body.scope.length; j++) {
+              expect(verifySchema.captured[j],
+                  messages[i].body.scope[j].query.context);
+            }
+
+            var verifyVocab = verify(iden3commCredentialRepository.fetchVocab(
+                schema: captureAnyNamed('schema'),
+                type: captureAnyNamed('type')));
+            int count = messages[i].body.scope.length;
+            expect(verifyVocab.callCount, count);
+
+            for (int j = 0; j < messages[i].body.scope.length; j++) {
+              expect(verifyVocab.captured[j * count], schema);
+              expect(verifyVocab.captured[j * count + 1],
+                  messages[i].body.scope[j].query.type);
+            }
           }
         },
       );
@@ -88,25 +95,29 @@ void main() {
           });
 
           // Then
-          verifyNever(
-              fetchSchemaUseCase.execute(param: captureAnyNamed('param')));
-          verifyNever(
-              fetchVocabUseCase.execute(param: captureAnyNamed('param')));
+          verifyNever(iden3commCredentialRepository.fetchSchema(
+              url: captureAnyNamed('url')));
+          verifyNever(iden3commCredentialRepository.fetchVocab(
+              schema: captureAnyNamed('schema'),
+              type: captureAnyNamed('type')));
         },
       );
 
       test(
         'Given a Iden3MessageEntity, when I call execute and an error occurred, I expect an empty array to be returned',
         () async {
-          when(fetchSchemaUseCase.execute(param: anyNamed('param')))
+          when(iden3commCredentialRepository.fetchSchema(url: anyNamed('url')))
               .thenAnswer((realInvocation) => Future.error(exception));
 
-          await expectLater(useCase.execute(param: Iden3commMocks.authRequest),
-              throwsA(exception));
+          expect(await useCase.execute(param: Iden3commMocks.authRequest), []);
 
           // Then
-          verifyNever(
-              fetchVocabUseCase.execute(param: captureAnyNamed('param')));
+          var verifySchema = verify(iden3commCredentialRepository.fetchSchema(
+              url: captureAnyNamed('url')));
+          expect(verifySchema.callCount, 2);
+          verifyNever(iden3commCredentialRepository.fetchVocab(
+              schema: captureAnyNamed('schema'),
+              type: captureAnyNamed('type')));
         },
       );
     },

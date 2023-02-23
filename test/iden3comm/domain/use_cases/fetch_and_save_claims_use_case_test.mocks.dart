@@ -4,37 +4,24 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i4;
-import 'dart:typed_data' as _i6;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
-    as _i11;
+    as _i5;
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart'
     as _i2;
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart'
-    as _i17;
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_use_case.dart'
-    as _i16;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart'
     as _i10;
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_use_case.dart'
+    as _i9;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart'
-    as _i12;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart'
-    as _i5;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart'
-    as _i13;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart'
+    as _i6;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart'
     as _i3;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart'
-    as _i15;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_fetch_requests_use_case.dart'
-    as _i14;
-import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
-    as _i7;
-import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart'
-    as _i9;
-import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart'
     as _i8;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_fetch_requests_use_case.dart'
+    as _i7;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -57,103 +44,18 @@ class _FakeClaimEntity_0 extends _i1.SmartFake implements _i2.ClaimEntity {
         );
 }
 
-/// A class which mocks [Iden3commRepository].
+/// A class which mocks [Iden3commCredentialRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockIden3commRepository extends _i1.Mock
-    implements _i3.Iden3commRepository {
-  MockIden3commRepository() {
+class MockIden3commCredentialRepository extends _i1.Mock
+    implements _i3.Iden3commCredentialRepository {
+  MockIden3commCredentialRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.Future<void> authenticate({
-    required _i5.AuthIden3MessageEntity? request,
-    required String? authToken,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #authenticate,
-          [],
-          {
-            #request: request,
-            #authToken: authToken,
-          },
-        ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
-  @override
-  _i4.Future<_i6.Uint8List> getAuthInputs({
-    required String? did,
-    required int? profileNonce,
-    required String? challenge,
-    required List<String>? authClaim,
-    required _i7.IdentityEntity? identity,
-    required String? signature,
-    required _i8.ProofEntity? incProof,
-    required _i8.ProofEntity? nonRevProof,
-    required _i9.GistProofEntity? gistProof,
-    required Map<String, dynamic>? treeState,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getAuthInputs,
-          [],
-          {
-            #did: did,
-            #profileNonce: profileNonce,
-            #challenge: challenge,
-            #authClaim: authClaim,
-            #identity: identity,
-            #signature: signature,
-            #incProof: incProof,
-            #nonRevProof: nonRevProof,
-            #gistProof: gistProof,
-            #treeState: treeState,
-          },
-        ),
-        returnValue: _i4.Future<_i6.Uint8List>.value(_i6.Uint8List(0)),
-      ) as _i4.Future<_i6.Uint8List>);
-  @override
-  _i4.Future<String> getAuthResponse({
-    required String? did,
-    required _i5.AuthIden3MessageEntity? request,
-    required List<_i10.JWZProofEntity>? scope,
-    String? pushUrl,
-    String? pushToken,
-    String? didIdentifier,
-    String? packageName,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getAuthResponse,
-          [],
-          {
-            #did: did,
-            #request: request,
-            #scope: scope,
-            #pushUrl: pushUrl,
-            #pushToken: pushToken,
-            #didIdentifier: didIdentifier,
-            #packageName: packageName,
-          },
-        ),
-        returnValue: _i4.Future<String>.value(''),
-      ) as _i4.Future<String>);
-  @override
-  _i4.Future<String> getChallenge({required String? message}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getChallenge,
-          [],
-          {#message: message},
-        ),
-        returnValue: _i4.Future<String>.value(''),
-      ) as _i4.Future<String>);
-  @override
-  _i4.Future<List<_i11.FilterEntity>> getFilters(
-          {required _i12.ProofRequestEntity? request}) =>
+  _i4.Future<List<_i5.FilterEntity>> getFilters(
+          {required _i6.ProofRequestEntity? request}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getFilters,
@@ -161,11 +63,11 @@ class MockIden3commRepository extends _i1.Mock
           {#request: request},
         ),
         returnValue:
-            _i4.Future<List<_i11.FilterEntity>>.value(<_i11.FilterEntity>[]),
-      ) as _i4.Future<List<_i11.FilterEntity>>);
+            _i4.Future<List<_i5.FilterEntity>>.value(<_i5.FilterEntity>[]),
+      ) as _i4.Future<List<_i5.FilterEntity>>);
   @override
   _i4.Future<_i2.ClaimEntity> fetchClaim({
-    required _i13.OfferIden3MessageEntity? message,
+    required String? url,
     required String? did,
     required String? authToken,
   }) =>
@@ -174,7 +76,7 @@ class MockIden3commRepository extends _i1.Mock
           #fetchClaim,
           [],
           {
-            #message: message,
+            #url: url,
             #did: did,
             #authToken: authToken,
           },
@@ -185,27 +87,55 @@ class MockIden3commRepository extends _i1.Mock
             #fetchClaim,
             [],
             {
-              #message: message,
+              #url: url,
               #did: did,
               #authToken: authToken,
             },
           ),
         )),
       ) as _i4.Future<_i2.ClaimEntity>);
+  @override
+  _i4.Future<Map<String, dynamic>> fetchSchema({required String? url}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #fetchSchema,
+          [],
+          {#url: url},
+        ),
+        returnValue:
+            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i4.Future<Map<String, dynamic>>);
+  @override
+  _i4.Future<Map<String, dynamic>> fetchVocab({
+    required Map<String, dynamic>? schema,
+    required String? type,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #fetchVocab,
+          [],
+          {
+            #schema: schema,
+            #type: type,
+          },
+        ),
+        returnValue:
+            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i4.Future<Map<String, dynamic>>);
 }
 
 /// A class which mocks [GetFetchRequestsUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetFetchRequestsUseCase extends _i1.Mock
-    implements _i14.GetFetchRequestsUseCase {
+    implements _i7.GetFetchRequestsUseCase {
   MockGetFetchRequestsUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
   _i4.Future<List<String>> execute(
-          {required _i14.GetFetchRequestsParam? param}) =>
+          {required _i7.GetFetchRequestsParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -220,13 +150,13 @@ class MockGetFetchRequestsUseCase extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetAuthTokenUseCase extends _i1.Mock
-    implements _i15.GetAuthTokenUseCase {
+    implements _i8.GetAuthTokenUseCase {
   MockGetAuthTokenUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.Future<String> execute({required _i15.GetAuthTokenParam? param}) =>
+  _i4.Future<String> execute({required _i8.GetAuthTokenParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -240,14 +170,14 @@ class MockGetAuthTokenUseCase extends _i1.Mock
 /// A class which mocks [SaveClaimsUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockSaveClaimsUseCase extends _i1.Mock implements _i16.SaveClaimsUseCase {
+class MockSaveClaimsUseCase extends _i1.Mock implements _i9.SaveClaimsUseCase {
   MockSaveClaimsUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
   _i4.Future<List<_i2.ClaimEntity>> execute(
-          {required _i16.SaveClaimsParam? param}) =>
+          {required _i9.SaveClaimsParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -263,7 +193,7 @@ class MockSaveClaimsUseCase extends _i1.Mock implements _i16.SaveClaimsUseCase {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockCredentialRepository extends _i1.Mock
-    implements _i17.CredentialRepository {
+    implements _i10.CredentialRepository {
   MockCredentialRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -289,7 +219,7 @@ class MockCredentialRepository extends _i1.Mock
       ) as _i4.Future<void>);
   @override
   _i4.Future<List<_i2.ClaimEntity>> getClaims({
-    List<_i11.FilterEntity>? filters,
+    List<_i5.FilterEntity>? filters,
     required String? did,
     required String? privateKey,
   }) =>
@@ -371,34 +301,6 @@ class MockCredentialRepository extends _i1.Mock
         returnValue: _i4.Future<void>.value(),
         returnValueForMissingStub: _i4.Future<void>.value(),
       ) as _i4.Future<void>);
-  @override
-  _i4.Future<Map<String, dynamic>> fetchSchema({required String? url}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #fetchSchema,
-          [],
-          {#url: url},
-        ),
-        returnValue:
-            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
-      ) as _i4.Future<Map<String, dynamic>>);
-  @override
-  _i4.Future<Map<String, dynamic>> fetchVocab({
-    required Map<String, dynamic>? schema,
-    required String? type,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #fetchVocab,
-          [],
-          {
-            #schema: schema,
-            #type: type,
-          },
-        ),
-        returnValue:
-            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
-      ) as _i4.Future<Map<String, dynamic>>);
   @override
   _i4.Future<Map<String, dynamic>> getRevocationStatus(
           {required _i2.ClaimEntity? claim}) =>

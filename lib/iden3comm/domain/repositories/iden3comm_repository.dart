@@ -41,12 +41,4 @@ abstract class Iden3commRepository {
   });
 
   Future<String> getChallenge({required String message});
-
-  Future<List<FilterEntity>> getFilters({required ProofRequestEntity request});
-
-  Future<ClaimEntity> fetchClaim({
-    required OfferIden3MessageEntity message,
-    required String did,
-    required String authToken,
-  });
 }

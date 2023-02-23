@@ -147,34 +147,6 @@ class MockCredentialRepository extends _i1.Mock
         returnValueForMissingStub: _i4.Future<void>.value(),
       ) as _i4.Future<void>);
   @override
-  _i4.Future<Map<String, dynamic>> fetchSchema({required String? url}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #fetchSchema,
-          [],
-          {#url: url},
-        ),
-        returnValue:
-            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
-      ) as _i4.Future<Map<String, dynamic>>);
-  @override
-  _i4.Future<Map<String, dynamic>> fetchVocab({
-    required Map<String, dynamic>? schema,
-    required String? type,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #fetchVocab,
-          [],
-          {
-            #schema: schema,
-            #type: type,
-          },
-        ),
-        returnValue:
-            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
-      ) as _i4.Future<Map<String, dynamic>>);
-  @override
   _i4.Future<Map<String, dynamic>> getRevocationStatus(
           {required _i2.ClaimEntity? claim}) =>
       (super.noSuchMethod(
