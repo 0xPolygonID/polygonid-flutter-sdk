@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_auth_claim_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_sd_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
@@ -11,7 +13,9 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_use
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_latest_state_use_case.dart';
 
 import '../../../common/domain/domain_logger.dart';
+import '../../../common/domain/tuples.dart';
 import '../../../common/domain/use_case.dart';
+import '../../../common/utils/uint8_list_utils.dart';
 import '../../../identity/domain/entities/did_entity.dart';
 import '../../../identity/domain/entities/identity_entity.dart';
 import '../../../identity/domain/entities/node_entity.dart';
@@ -47,7 +51,7 @@ class GenerateProofParam {
       this.challenge);
 }
 
-class GenerateProofUseCase extends FutureUseCase<GenerateProofParam, JWZProof> {
+class GenerateProofUseCase extends FutureUseCase<GenerateProofParam, Pair<JWZProof,JWZVPProof>> {
   final IdentityRepository _identityRepository;
   final SMTRepository _smtRepository;
   final ProofRepository _proofRepository;
@@ -73,7 +77,7 @@ class GenerateProofUseCase extends FutureUseCase<GenerateProofParam, JWZProof> {
   );
 
   @override
-  Future<JWZProof> execute({required GenerateProofParam param}) async {
+  Future<Pair<JWZProof,JWZVPProof>> execute({required GenerateProofParam param}) async {
     List<String>? authClaim;
     ProofEntity? incProof;
     ProofEntity? nonRevProof;
@@ -115,7 +119,7 @@ class GenerateProofUseCase extends FutureUseCase<GenerateProofParam, JWZProof> {
     DidEntity didEntity = await _getDidUseCase.execute(param: param.did);
 
     // Prepare atomic query inputs
-    Uint8List atomicQueryInputs = await _proofRepository
+    Uint8List res = await _proofRepository
         .calculateAtomicQueryInputs(
       id: didEntity.identifier,
       profileNonce: param.profileNonce,
@@ -136,13 +140,18 @@ class GenerateProofUseCase extends FutureUseCase<GenerateProofParam, JWZProof> {
       throw error;
     });
 
+    dynamic inputsJson = json.decode(Uint8ArrayUtils.uint8ListToString(res));
+    Uint8List atomicQueryInputs = Uint8ArrayUtils.uint8ListfromString(json.encode(inputsJson["inputs"]));
+    // inputsJson["verifiablePresentation"]
+    var vpProof = JWZVPProof.fromJson(inputsJson["verifiablePresentation"]);
+
     // Prove
     return _proveUseCase
         .execute(param: ProveParam(atomicQueryInputs, param.circuitData))
         .then((proof) {
       logger().i("[GenerateProofUseCase] proof: $proof");
-
-      return proof;
+      // TODO:
+      return Pair(proof,vpProof);
     }).catchError((error) {
       logger().e("[GenerateProofUseCase] Error: $error");
 

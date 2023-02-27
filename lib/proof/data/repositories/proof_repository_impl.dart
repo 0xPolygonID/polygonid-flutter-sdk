@@ -145,9 +145,9 @@ class ProofRepositoryImpl extends ProofRepository {
       Uint8List inputsJsonBytes;
       dynamic inputsJson = json.decode(res);
       if (inputsJson is Map<String, dynamic>) {
-        Map<String, dynamic> inputs = json.decode(res);
+        //Map<String, dynamic> inputs = json.decode(res);
         Uint8List inputsJsonBytes =
-            Uint8ArrayUtils.uint8ListfromString(json.encode(inputs["inputs"]));
+            Uint8ArrayUtils.uint8ListfromString(res/*json.encode(inputs["inputs"])*/);
         return inputsJsonBytes;
       } else if (inputsJson is String) {
         Uint8List inputsJsonBytes =

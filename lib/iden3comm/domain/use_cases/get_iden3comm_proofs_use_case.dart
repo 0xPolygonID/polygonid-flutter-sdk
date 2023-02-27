@@ -16,6 +16,7 @@ import '../../../identity/domain/repositories/identity_repository.dart';
 import '../../../proof/domain/entities/circuit_data_entity.dart';
 import '../../../proof/domain/repositories/proof_repository.dart';
 import '../../../proof/domain/use_cases/generate_proof_use_case.dart';
+import '../entities/jwz_sd_proof_entity.dart';
 import 'get_iden3comm_claims_use_case.dart';
 import 'get_proof_requests_use_case.dart';
 
@@ -53,9 +54,9 @@ class GetIden3commProofsUseCase
   );
 
   @override
-  Future<List<JWZProofEntity>> execute(
+  Future<List<JWZSDProofEntity>> execute(
       {required GetIden3commProofsParam param}) async {
-    List<JWZProofEntity> proofs = [];
+    List<JWZSDProofEntity> proofs = [];
 
     List<ProofRequestEntity> requests =
         await _getProofRequestsUseCase.execute(param: param.message);
@@ -105,11 +106,11 @@ class GetIden3commProofsUseCase
                       circuitData,
                       privKey,
                       challenge))
-              .then((proof) => JWZProofEntity(
+              .then((pair) => JWZSDProofEntity(
                   id: request.scope.id,
                   circuitId: circuitId,
-                  proof: proof.proof,
-                  pubSignals: proof.pubSignals)));
+                  proof: pair.first.proof,
+                  pubSignals: pair.first.pubSignals, vp: pair.second)));
         }).catchError((error) {
           throw error;
         });
