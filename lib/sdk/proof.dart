@@ -11,11 +11,13 @@ import 'package:polygonid_flutter_sdk/proof/domain/use_cases/circuits_files_exis
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/download_circuits_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/generate_proof_use_case.dart';
 
+import '../common/domain/tuples.dart';
+import '../iden3comm/domain/entities/jwz_sd_proof_entity.dart';
 import '../iden3comm/domain/entities/request/auth/proof_scope_request.dart';
 import '../proof/domain/entities/circuit_data_entity.dart';
 
 abstract class PolygonIdSdkProof {
-  Future<JWZProof> prove(
+  Future<Pair<JWZProof,JWZVPProof>> prove(
       {required String did,
       int? profileNonce,
       required ClaimEntity claim,
@@ -42,7 +44,7 @@ class Proof implements PolygonIdSdkProof {
   );
 
   @override
-  Future<JWZProof> prove(
+  Future<Pair<JWZProof,JWZVPProof>> prove(
       {required String did,
       int? profileNonce,
       required ClaimEntity claim,

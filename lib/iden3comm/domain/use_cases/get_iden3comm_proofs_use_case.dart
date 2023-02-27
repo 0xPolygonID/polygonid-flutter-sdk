@@ -110,7 +110,8 @@ class GetIden3commProofsUseCase
                   id: request.scope.id,
                   circuitId: circuitId,
                   proof: pair.first.proof,
-                  pubSignals: pair.first.pubSignals, vp: pair.second)));
+                  pubSignals: pair.first.pubSignals,
+                  vp: pair.second)));
         }).catchError((error) {
           throw error;
         });
