@@ -10,11 +10,10 @@ import '../mappers/hex_mapper.dart';
 import 'lib_babyjubjub_data_source.dart';
 
 class SMTDataSource {
-  final HexMapper _hexMapper;
   final LibBabyJubJubDataSource _libBabyjubjubDataSource;
   final StorageSMTDataSource _storageSMTDataSource;
 
-  SMTDataSource(this._hexMapper, this._libBabyjubjubDataSource,
+  SMTDataSource(this._libBabyjubjubDataSource,
       this._storageSMTDataSource);
 
   Future<void> createSMT(

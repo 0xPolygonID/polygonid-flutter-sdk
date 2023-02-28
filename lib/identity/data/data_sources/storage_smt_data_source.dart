@@ -129,14 +129,17 @@ class StorageSMTDataSource {
   }
 
   Future<void> setRoot(
-      {required HashDTO root,
+      {HashDTO? root,
       required String storeName,
       required String did,
       required String privateKey}) {
-    return _getDatabase(did: did, privateKey: privateKey).then((database) =>
-        database
+    return _getDatabase(did: did, privateKey: privateKey)
+        .then((database) => database
             .transaction((transaction) => setRootTransact(
-                transaction: transaction, storeName: storeName, root: root))
+                  transaction: transaction,
+                  storeName: storeName,
+                  root: root ?? HashDTO.zero(),
+                ))
             .whenComplete(() => database.close()));
   }
 

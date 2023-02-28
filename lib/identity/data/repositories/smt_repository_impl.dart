@@ -172,6 +172,21 @@ class SMTRepositoryImpl implements SMTRepository {
     required String did,
     required String privateKey,
   }) {
+    await _storageSMTDataSource
+        .getRoot(storeName: storeName, did: did, privateKey: privateKey)
+        .then((root) async => await _storageSMTDataSource.removeSMT(
+        storeName: storeName, did: did, privateKey: privateKey))
+        .catchError((error) {});
+    await _storageSMTDataSource.setRoot(
+        root: HashDTO.zero(),
+        storeName: storeName,
+        did: did,
+        privateKey: privateKey);
+    await _storageSMTDataSource.setMaxLevels(
+        maxLevels: maxLevels,
+        storeName: storeName,
+        did: did,
+        privateKey: privateKey);
     return _smtDataSource.createSMT(
         maxLevels: maxLevels,
         storeName: _treeTypeMapper.mapTo(type),
