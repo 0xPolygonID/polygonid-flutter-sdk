@@ -111,7 +111,7 @@ class GetIden3commProofsUseCase
                   circuitId: circuitId,
                   proof: pair.first.proof,
                   pubSignals: pair.first.pubSignals,
-                  vp: pair.second)));
+                  verifiablePresentation: pair.second)));
         }).catchError((error) {
           throw error;
         });
