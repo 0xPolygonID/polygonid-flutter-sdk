@@ -94,6 +94,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
     );
     String hashClaimNode = await _libBabyJubJubDataSource.hashPoseidon3(
         hashIndex, hashValue, BigInt.one.toString());
+
+    /// FIXME: Repo impl don't create DTO
     NodeDTO authClaimNode = NodeDTO(
         children: [
           HashDTO.fromBigInt(BigInt.parse(hashIndex)),

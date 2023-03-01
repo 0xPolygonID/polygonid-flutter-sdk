@@ -518,7 +518,6 @@ _i1.GetIt $initSDKGetIt(
         get<_i77.GistProofMapper>(),
       ));
   gh.factory<_i98.SMTDataSource>(() => _i98.SMTDataSource(
-        get<_i25.HexMapper>(),
         get<_i31.LibBabyJubJubDataSource>(),
         get<_i79.StorageSMTDataSource>(),
       ));

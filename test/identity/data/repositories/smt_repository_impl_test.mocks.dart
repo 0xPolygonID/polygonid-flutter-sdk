@@ -117,96 +117,12 @@ class MockSMTDataSource extends _i1.Mock implements _i8.SMTDataSource {
   }
 
   @override
-  _i9.Future<void> createSMT({
-    required int? maxLevels,
-    required String? storeName,
-    required String? did,
-    required String? privateKey,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #createSMT,
-          [],
-          {
-            #maxLevels: maxLevels,
-            #storeName: storeName,
-            #did: did,
-            #privateKey: privateKey,
-          },
-        ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
-  @override
-  _i9.Future<void> removeSMT({
-    required String? storeName,
-    required String? did,
-    required String? privateKey,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #removeSMT,
-          [],
-          {
-            #storeName: storeName,
-            #did: did,
-            #privateKey: privateKey,
-          },
-        ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
-  @override
-  _i9.Future<void> removeRoot({
-    required String? storeName,
-    required String? did,
-    required String? privateKey,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #removeRoot,
-          [],
-          {
-            #storeName: storeName,
-            #did: did,
-            #privateKey: privateKey,
-          },
-        ),
-        returnValue: _i9.Future<void>.value(),
-        returnValueForMissingStub: _i9.Future<void>.value(),
-      ) as _i9.Future<void>);
-  @override
-  _i9.Future<_i2.HashDTO> getRoot({
-    required String? storeName,
-    required String? did,
-    required String? privateKey,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getRoot,
-          [],
-          {
-            #storeName: storeName,
-            #did: did,
-            #privateKey: privateKey,
-          },
-        ),
-        returnValue: _i9.Future<_i2.HashDTO>.value(_FakeHashDTO_0(
-          this,
-          Invocation.method(
-            #getRoot,
-            [],
-            {
-              #storeName: storeName,
-              #did: did,
-              #privateKey: privateKey,
-            },
-          ),
-        )),
-      ) as _i9.Future<_i2.HashDTO>);
-  @override
   _i9.Future<_i2.HashDTO> addLeaf({
-    required _i4.NodeDTO? newNodeLeaf,
+    required int? maxLevels,
+    required _i4.NodeDTO? newLeaf,
+    required _i2.HashDTO? key,
+    required int? level,
+    required List<bool>? path,
     required String? storeName,
     required String? did,
     required String? privateKey,
@@ -216,7 +132,11 @@ class MockSMTDataSource extends _i1.Mock implements _i8.SMTDataSource {
           #addLeaf,
           [],
           {
-            #newNodeLeaf: newNodeLeaf,
+            #maxLevels: maxLevels,
+            #newLeaf: newLeaf,
+            #key: key,
+            #level: level,
+            #path: path,
             #storeName: storeName,
             #did: did,
             #privateKey: privateKey,
@@ -228,7 +148,11 @@ class MockSMTDataSource extends _i1.Mock implements _i8.SMTDataSource {
             #addLeaf,
             [],
             {
-              #newNodeLeaf: newNodeLeaf,
+              #maxLevels: maxLevels,
+              #newLeaf: newLeaf,
+              #key: key,
+              #level: level,
+              #path: path,
               #storeName: storeName,
               #did: did,
               #privateKey: privateKey,
@@ -236,6 +160,21 @@ class MockSMTDataSource extends _i1.Mock implements _i8.SMTDataSource {
           ),
         )),
       ) as _i9.Future<_i2.HashDTO>);
+  @override
+  _i9.Future<List<bool>> getPath(
+    int? numLevel,
+    _i2.HashDTO? h,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getPath,
+          [
+            numLevel,
+            h,
+          ],
+        ),
+        returnValue: _i9.Future<List<bool>>.value(<bool>[]),
+      ) as _i9.Future<List<bool>>);
   @override
   _i9.Future<_i3.ProofDTO> generateProof({
     required _i2.HashDTO? key,
@@ -474,7 +413,7 @@ class MockStorageSMTDataSource extends _i1.Mock
       ) as _i9.Future<_i2.HashDTO>);
   @override
   _i9.Future<void> setRoot({
-    required _i2.HashDTO? root,
+    _i2.HashDTO? root,
     required String? storeName,
     required String? did,
     required String? privateKey,

@@ -5,6 +5,7 @@
 //
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_smt_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/tree_state_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/tree_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
@@ -40,40 +41,34 @@ class SMTRepositoryImpl implements SMTRepository {
     this._treeStateMapper,
   );
 
-  // @override
-  // Future<HashEntity> addLeaf({required HashEntity key,
-  //   required HashEntity value,
-  //   required TreeType type,
-  //   required String did,
-  //   required String privateKey}) async {
-  //   final keyHash = _hashMapper.mapTo(key);
-  //   final valueHash = _hashMapper.mapTo(value);
-  //   final oneHash = HashDTO.fromBigInt(BigInt.one);
-  //   final newNodeChildren = [keyHash, valueHash, oneHash];
-  //   String nodeHashString = await _libBabyJubJubDataSource.hashPoseidon3(
-  //       keyHash.toString(), valueHash.toString(), BigInt.one.toString());
-  //   HashDTO nodeHash = HashDTO.fromBigInt(BigInt.parse(nodeHashString));
-  //   final newNodeLeaf = NodeDTO(
-  //       hash: nodeHash, children: newNodeChildren, type: NodeTypeDTO.leaf);
-  //   return _smtDataSource
-  //       .addLeaf(
-  //       newNodeLeaf: newNodeLeaf,
-  //       storeName: _treeTypeMapper.mapTo(type),
-  //       did: did,
-  //       privateKey: privateKey)
-  //       .then((dto) => _hashMapper.mapFrom(dto)); // returns new root
-  // }
-
   Future<void> addLeaf(
       {required NodeEntity leaf,
       required TreeType type,
       required String did,
       required String privateKey}) {
-    return _smtDataSource.addLeaf(
-        newNodeLeaf: _nodeMapper.mapTo(leaf),
-        storeName: _treeTypeMapper.mapTo(type),
-        did: did,
-        privateKey: privateKey);
+    var name = _treeTypeMapper.mapTo(type);
+    var dto = _nodeMapper.mapTo(leaf);
+
+    return _storageSMTDataSource
+        .getMaxLevels(
+            storeName: _treeTypeMapper.mapTo(type),
+            did: did,
+            privateKey: privateKey)
+        .then((maxLevels) => Future.wait([
+              _smtDataSource.getPath(maxLevels, dto.children[0]),
+              _storageSMTDataSource.getRoot(
+                  storeName: name, did: did, privateKey: privateKey)
+            ]).then((values) => _smtDataSource.addLeaf(
+                maxLevels: maxLevels,
+                newLeaf: dto,
+                key: values[1] as HashDTO,
+                level: 0,
+                path: values[0] as List<bool>,
+                storeName: name,
+                did: did,
+                privateKey: privateKey)))
+        .then((newRoot) => _storageSMTDataSource.setRoot(
+            root: newRoot, storeName: name, did: did, privateKey: privateKey));
   }
 
   @override
@@ -172,26 +167,22 @@ class SMTRepositoryImpl implements SMTRepository {
     required String did,
     required String privateKey,
   }) {
-    await _storageSMTDataSource
-        .getRoot(storeName: storeName, did: did, privateKey: privateKey)
-        .then((root) async => await _storageSMTDataSource.removeSMT(
-        storeName: storeName, did: did, privateKey: privateKey))
-        .catchError((error) {});
-    await _storageSMTDataSource.setRoot(
-        root: HashDTO.zero(),
-        storeName: storeName,
-        did: did,
-        privateKey: privateKey);
-    await _storageSMTDataSource.setMaxLevels(
-        maxLevels: maxLevels,
-        storeName: storeName,
-        did: did,
-        privateKey: privateKey);
-    return _smtDataSource.createSMT(
-        maxLevels: maxLevels,
-        storeName: _treeTypeMapper.mapTo(type),
-        did: did,
-        privateKey: privateKey);
+    var name = _treeTypeMapper.mapTo(type);
+
+    return Future.wait([
+      _storageSMTDataSource
+          .getRoot(storeName: name, did: did, privateKey: privateKey)
+          .then((root) async => await _storageSMTDataSource.removeSMT(
+              storeName: name, did: did, privateKey: privateKey))
+          .catchError((error) {}),
+      _storageSMTDataSource.setRoot(
+          storeName: name, did: did, privateKey: privateKey),
+      _storageSMTDataSource.setMaxLevels(
+          maxLevels: maxLevels,
+          storeName: name,
+          did: did,
+          privateKey: privateKey)
+    ]);
   }
 
   @override
@@ -202,9 +193,9 @@ class SMTRepositoryImpl implements SMTRepository {
   }) {
     var name = _treeTypeMapper.mapTo(type);
 
-    return _smtDataSource
+    return _storageSMTDataSource
         .removeSMT(storeName: name, did: did, privateKey: privateKey)
-        .then((_) => _smtDataSource.removeRoot(
+        .then((_) => _storageSMTDataSource.setRoot(
             storeName: name, did: did, privateKey: privateKey));
   }
 

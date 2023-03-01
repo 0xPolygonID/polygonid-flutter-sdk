@@ -6,86 +6,24 @@ import '../../../proof/data/dtos/proof_dto.dart';
 import '../../domain/exceptions/smt_exceptions.dart';
 import '../dtos/hash_dto.dart';
 import '../dtos/node_dto.dart';
-import '../mappers/hex_mapper.dart';
 import 'lib_babyjubjub_data_source.dart';
 
+/// FIXME: DS don't have other DS as dependencies
 class SMTDataSource {
   final LibBabyJubJubDataSource _libBabyjubjubDataSource;
   final StorageSMTDataSource _storageSMTDataSource;
 
-  SMTDataSource(this._libBabyjubjubDataSource,
-      this._storageSMTDataSource);
-
-  Future<void> createSMT(
-      {required int maxLevels,
-      required String storeName,
-      required String did,
-      required String privateKey}) async {
-    await _storageSMTDataSource
-        .getRoot(storeName: storeName, did: did, privateKey: privateKey)
-        .then((root) async => await _storageSMTDataSource.removeSMT(
-            storeName: storeName, did: did, privateKey: privateKey))
-        .catchError((error) {});
-    await _storageSMTDataSource.setRoot(
-        root: HashDTO.zero(),
-        storeName: storeName,
-        did: did,
-        privateKey: privateKey);
-    await _storageSMTDataSource.setMaxLevels(
-        maxLevels: maxLevels,
-        storeName: storeName,
-        did: did,
-        privateKey: privateKey);
-  }
-
-  Future<void> removeSMT(
-      {required String storeName,
-      required String did,
-      required String privateKey}) async {
-    return _storageSMTDataSource.removeSMT(
-        storeName: storeName, did: did, privateKey: privateKey);
-  }
-
-  Future<void> removeRoot(
-      {required String storeName,
-      required String did,
-      required String privateKey}) async {
-    return _storageSMTDataSource.setRoot(
-        root: HashDTO.zero(),
-        storeName: storeName,
-        did: did,
-        privateKey: privateKey);
-  }
-
-  Future<HashDTO> getRoot(
-      {required String storeName,
-      required String did,
-      required String privateKey}) async {
-    return _storageSMTDataSource.getRoot(
-        storeName: storeName, did: did, privateKey: privateKey);
-  }
+  SMTDataSource(this._libBabyjubjubDataSource, this._storageSMTDataSource);
 
   Future<HashDTO> addLeaf(
-      {required NodeDTO newNodeLeaf,
+      {required int maxLevels,
+      required NodeDTO newLeaf,
+      required HashDTO key,
+      required int level,
+      required List<bool> path,
       required String storeName,
       required String did,
       required String privateKey}) async {
-    int maxLevels = await _storageSMTDataSource.getMaxLevels(
-        storeName: storeName, did: did, privateKey: privateKey);
-    final root = await _storageSMTDataSource.getRoot(
-        storeName: storeName, did: did, privateKey: privateKey);
-    final path = _getPath(maxLevels, newNodeLeaf.children[0]);
-    final newRoot =
-        await _addLeaf(newNodeLeaf, root, 0, path, storeName, did, privateKey);
-    await _storageSMTDataSource.setRoot(
-        root: newRoot, storeName: storeName, did: did, privateKey: privateKey);
-    return newRoot;
-  }
-
-  Future<HashDTO> _addLeaf(NodeDTO newLeaf, HashDTO key, int level,
-      List<bool> path, String storeName, String did, String privateKey) async {
-    int maxLevels = await _storageSMTDataSource.getMaxLevels(
-        storeName: storeName, did: did, privateKey: privateKey);
     if (level > maxLevels - 1) {
       throw ArgumentError("level must be less than maxLevels");
     }
@@ -106,7 +44,7 @@ class SMTDataSource {
         if (newLeafKey == nKey) {
           throw SMTEntryIndexAlreadyExistsException();
         }
-        final pathOldLeaf = _getPath(maxLevels, nKey);
+        final pathOldLeaf = await getPath(maxLevels, nKey);
         // We need to push newLeaf down until its path diverges from
         // n's path
         return _pushLeaf(newLeaf, node, level, path, pathOldLeaf, storeName,
@@ -117,8 +55,15 @@ class SMTDataSource {
         late final NodeDTO newNodeMiddle;
         if (path[level]) {
           // go right
-          final nextKey = await _addLeaf(newLeaf, node.children[1], level + 1,
-              path, storeName, did, privateKey);
+          final nextKey = await addLeaf(
+              maxLevels: maxLevels,
+              newLeaf: newLeaf,
+              key: node.children[1],
+              level: level + 1,
+              path: path,
+              storeName: storeName,
+              did: did,
+              privateKey: privateKey);
           final newNodeChildren = [node.children[0], nextKey];
           final nodeHashData = await _libBabyjubjubDataSource.hashPoseidon2(
               node.children[0].toString(), nextKey.toString());
@@ -129,8 +74,15 @@ class SMTDataSource {
               type: NodeTypeDTO.middle);
         } else {
           // go left
-          final nextKey = await _addLeaf(newLeaf, node.children[0], level + 1,
-              path, storeName, did, privateKey);
+          final nextKey = await addLeaf(
+              maxLevels: maxLevels,
+              newLeaf: newLeaf,
+              key: node.children[0],
+              level: level + 1,
+              path: path,
+              storeName: storeName,
+              did: did,
+              privateKey: privateKey);
           final newNodeChildren = [nextKey, node.children[1]];
           final nodeHashData = await _libBabyjubjubDataSource.hashPoseidon2(
               nextKey.toString(), node.children[1].toString());
@@ -234,12 +186,15 @@ class SMTDataSource {
     return _addNode(newNodeMiddle, storeName, did, privateKey);
   }
 
-  _getPath(int numLevel, HashDTO h) {
+  /// FIXME: this is part of an UC
+  Future<List<bool>> getPath(int numLevel, HashDTO h) {
     final path = List<bool>.filled(numLevel, false);
+
     for (int i = 0; i < numLevel; i++) {
       path[i] = h.testBit(i);
     }
-    return path;
+
+    return Future.value(path);
   }
 
   Future<ProofDTO> generateProof(
@@ -249,7 +204,7 @@ class SMTDataSource {
       required String privateKey}) async {
     int maxLevels = await _storageSMTDataSource.getMaxLevels(
         storeName: storeName, did: did, privateKey: privateKey);
-    final path = _getPath(maxLevels, key);
+    final path = await getPath(maxLevels, key);
     var siblings = <HashDTO>[];
     final root = await _storageSMTDataSource.getRoot(
         storeName: storeName, did: did, privateKey: privateKey);
@@ -308,7 +263,7 @@ class SMTDataSource {
       }
     }
 
-    final path = _getPath(proof.siblings.length, node.children[0]);
+    final path = await getPath(proof.siblings.length, node.children[0]);
 
     for (int level = proof.siblings.length - 1; level >= 0; level--) {
       late final List<HashDTO> newNodeChildren;
