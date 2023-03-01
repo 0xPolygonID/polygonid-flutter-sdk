@@ -125,14 +125,14 @@ class JWZVPProof {
 }
 
 class JWZSDProofEntity extends JWZProofEntity {
-  final JWZVPProof verifiablePresentation;
+  final JWZVPProof vp;
 
   JWZSDProofEntity(
       {required int id,
       required String circuitId,
       required JWZBaseProof proof,
       required List<String> pubSignals,
-      required this.verifiablePresentation})
+      required this.vp})
       : super(
             id: id, circuitId: circuitId, proof: proof, pubSignals: pubSignals);
 
@@ -143,14 +143,14 @@ class JWZSDProofEntity extends JWZProofEntity {
   factory JWZSDProofEntity.fromJson(Map<String, dynamic> json) {
     JWZBaseProof proof = JWZBaseProof.fromJson(json['proof']);
     List<String> pubSig = List.from(jsonDecode(json['pub_signals']));
-    JWZVPProof verifiablePresentation = JWZVPProof.fromJson(json['verifiablePresentation']);
+    JWZVPProof vp = JWZVPProof.fromJson(json['vp']);
 
     return JWZSDProofEntity(
         id: json['id'],
         circuitId: json['circuitId'],
         proof: proof,
         pubSignals: pubSig,
-        verifiablePresentation: verifiablePresentation);
+        vp: vp);
   }
 
   Map<String, dynamic> toJson() => {
@@ -158,6 +158,6 @@ class JWZSDProofEntity extends JWZProofEntity {
         'circuitId': circuitId,
         'proof': proof.toJson(),
         'pub_signals': pubSignals,
-        'verifiablePresentation': verifiablePresentation.toJson(),
+        'vp': vp.toJson(),
       };
 }
