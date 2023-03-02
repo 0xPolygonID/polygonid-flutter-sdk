@@ -26,21 +26,22 @@ class GetProofQueryUseCase
       MapEntry reqEntry = param.query.credentialSubject!.entries.first;
 
       if (reqEntry.value != null &&
-          reqEntry.value is Map &&
-          reqEntry.value.length == 1) {
+          reqEntry.value is Map) {
         field = reqEntry.key;
-        MapEntry entry = (reqEntry.value as Map).entries.first;
-
-        if (_queryOperators.containsKey(entry.key)) {
-          operator = _queryOperators[entry.key]!;
-        }
-
-        if (entry.value is List<dynamic>) {
-          values = entry.value.cast<int>();
-        } else if (entry.value is int) {
-          values = [entry.value];
+        if (reqEntry.value.length == 0) {
+          Future.value(ProofQueryParamEntity(field, values, operator));
         } else {
-          return Future.error(InvalidProofReqException());
+          MapEntry entry = (reqEntry.value as Map).entries.first;
+          if (_queryOperators.containsKey(entry.key)) {
+            operator = _queryOperators[entry.key]!;
+          }
+          if (entry.value is List<dynamic>) {
+            values = entry.value.cast<int>();
+          } else if (entry.value is int) {
+            values = [entry.value];
+          } else {
+            return Future.error(InvalidProofReqException());
+          }
         }
       } else {
         return Future.error(InvalidProofReqException());

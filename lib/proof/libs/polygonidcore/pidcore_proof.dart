@@ -37,7 +37,7 @@ class PolygonIdCoreProof extends PolygonIdCore {
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
         malloc<ffi.Pointer<PLGNStatus>>();
     int res = PolygonIdCore.nativePolygonIdCoreLib
-        .PLGNSigV2Inputs(response, in1, status);
+        .PLGNAtomicQuerySigV2Inputs(response, in1, ffi.nullptr ,status);
     if (res == 0) {
       consumeStatus(status, "");
     }
@@ -79,7 +79,7 @@ class PolygonIdCoreProof extends PolygonIdCore {
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
         malloc<ffi.Pointer<PLGNStatus>>();
     int res = PolygonIdCore.nativePolygonIdCoreLib
-        .PLGNMtpV2Inputs(response, in1, status);
+        .PLGNAtomicQueryMtpV2Inputs(response, in1, ffi.nullptr, status);
     if (res == 0) {
       consumeStatus(status, "");
     }

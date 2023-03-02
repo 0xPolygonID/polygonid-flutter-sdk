@@ -5,6 +5,7 @@ import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_u
 import '../../../common/domain/use_cases/get_config_use_case.dart';
 import '../../../identity/domain/use_cases/get_did_identifier_use_case.dart';
 import '../entities/jwz_proof_entity.dart';
+import '../entities/jwz_sd_proof_entity.dart';
 import '../entities/request/auth/auth_iden3_message_entity.dart';
 import '../repositories/iden3comm_repository.dart';
 import 'get_auth_token_use_case.dart';
@@ -45,7 +46,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
   @override
   Future<void> execute({required AuthenticateParam param}) async {
     try {
-      List<JWZProofEntity> proofs = await _getIden3commProofsUseCase.execute(
+      List<JWZSDProofEntity> proofs = await _getIden3commProofsUseCase.execute(
           param: GetIden3commProofsParam(
         message: param.message,
         did: param.did,
