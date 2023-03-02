@@ -16,7 +16,7 @@ enum FetchClaimResponseType {
   issuance,
   @JsonValue(
       "https://iden3-communication.io/proofs/1.0/contract-invoke-request")
-  contractFunctionCall;
+  contractFunctionCall,
 }
 
 @JsonSerializable(explicitToJson: true, createToJson: false)

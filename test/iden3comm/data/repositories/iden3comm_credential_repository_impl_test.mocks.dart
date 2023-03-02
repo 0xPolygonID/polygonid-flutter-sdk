@@ -173,21 +173,6 @@ class MockRemoteIden3commDataSource extends _i1.Mock
         returnValue:
             _i6.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
       ) as _i6.Future<Map<String, dynamic>>);
-  @override
-  void throwExceptionOnStatusCode(
-    int? statusCode,
-    String? responseBody,
-  ) =>
-      super.noSuchMethod(
-        Invocation.method(
-          #throwExceptionOnStatusCode,
-          [
-            statusCode,
-            responseBody,
-          ],
-        ),
-        returnValueForMissingStub: null,
-      );
 }
 
 /// A class which mocks [ClaimMapper].

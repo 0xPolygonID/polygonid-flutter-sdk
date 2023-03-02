@@ -69,13 +69,9 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       throw NullAuthenticateCallbackException(request);
     }
 
-    Response res = await _remoteIden3commDataSource.authWithToken(
-        token: authToken, url: url);
-    if (res.statusCode != 200) {
-      logger()
-          .d('authenticate Error: code: ${res.statusCode} msg: ${res.body}');
-      throw NetworkException(res);
-    }
+    _remoteIden3commDataSource
+        .authWithToken(token: authToken, url: url)
+        .catchError((error) => throw error);
   }
 
   @override

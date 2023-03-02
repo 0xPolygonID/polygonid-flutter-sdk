@@ -10,7 +10,7 @@ import '../../../credential/data/dtos/claim_dto.dart';
 import '../../domain/exceptions/iden3comm_exceptions.dart';
 import '../dtos/response/fetch/fetch_claim_response_dto.dart';
 
-class RemoteIden3commDataSource with HttpExceptionsHandlerMixin {
+class RemoteIden3commDataSource {
   final Client client;
 
   RemoteIden3commDataSource(this.client);
@@ -32,9 +32,10 @@ class RemoteIden3commDataSource with HttpExceptionsHandlerMixin {
       if (response.statusCode != 200) {
         logger().d(
             'Auth Error: code: ${response.statusCode} msg: ${response.body}');
-        throwExceptionOnStatusCode(response.statusCode, response.body);
+        throw NetworkException(response);
+      } else {
+        return response;
       }
-      return response;
     });
   }
 
@@ -49,7 +50,7 @@ class RemoteIden3commDataSource with HttpExceptionsHandlerMixin {
                 HttpHeaders.contentTypeHeader: 'text/plain',
               },
             ))
-        .then((response) async {
+        .then((response) {
       if (response.statusCode == 200) {
         FetchClaimResponseDTO fetchResponse =
             FetchClaimResponseDTO.fromJson(json.decode(response.body));
