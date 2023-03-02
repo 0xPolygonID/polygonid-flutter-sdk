@@ -51,7 +51,7 @@ class GenerateProofParam {
       this.challenge);
 }
 
-class GenerateProofUseCase extends FutureUseCase<GenerateProofParam, Pair<JWZProof,JWZVPProof>> {
+class GenerateProofUseCase extends FutureUseCase<GenerateProofParam, JWZSDProofEntity> {
   final IdentityRepository _identityRepository;
   final SMTRepository _smtRepository;
   final ProofRepository _proofRepository;
@@ -77,7 +77,7 @@ class GenerateProofUseCase extends FutureUseCase<GenerateProofParam, Pair<JWZPro
   );
 
   @override
-  Future<Pair<JWZProof,JWZVPProof>> execute({required GenerateProofParam param}) async {
+  Future<JWZSDProofEntity> execute({required GenerateProofParam param}) async {
     List<String>? authClaim;
     ProofEntity? incProof;
     ProofEntity? nonRevProof;
@@ -150,8 +150,13 @@ class GenerateProofUseCase extends FutureUseCase<GenerateProofParam, Pair<JWZPro
         .execute(param: ProveParam(atomicQueryInputs, param.circuitData))
         .then((proof) {
       logger().i("[GenerateProofUseCase] proof: $proof");
-      // TODO:
-      return Pair(proof,vpProof);
+
+      return JWZSDProofEntity(
+          id: param.request.id,
+          circuitId: param.circuitData.circuitId,
+          proof: proof.proof,
+          pubSignals: proof.pubSignals,
+          vp: vpProof);
     }).catchError((error) {
       logger().e("[GenerateProofUseCase] Error: $error");
 

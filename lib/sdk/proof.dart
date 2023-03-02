@@ -17,7 +17,7 @@ import '../iden3comm/domain/entities/request/auth/proof_scope_request.dart';
 import '../proof/domain/entities/circuit_data_entity.dart';
 
 abstract class PolygonIdSdkProof {
-  Future<Pair<JWZProof,JWZVPProof>> prove(
+  Future<JWZSDProofEntity> prove(
       {required String did,
       int? profileNonce,
       required ClaimEntity claim,
@@ -44,7 +44,7 @@ class Proof implements PolygonIdSdkProof {
   );
 
   @override
-  Future<Pair<JWZProof,JWZVPProof>> prove(
+  Future<JWZSDProofEntity> prove(
       {required String did,
       int? profileNonce,
       required ClaimEntity claim,

@@ -105,13 +105,7 @@ class GetIden3commProofsUseCase
                       request.scope,
                       circuitData,
                       privKey,
-                      challenge))
-              .then((pair) => JWZSDProofEntity(
-                  id: request.scope.id,
-                  circuitId: circuitId,
-                  proof: pair.first.proof,
-                  pubSignals: pair.first.pubSignals,
-                  vp: pair.second)));
+                      challenge)));
         }).catchError((error) {
           throw error;
         });
