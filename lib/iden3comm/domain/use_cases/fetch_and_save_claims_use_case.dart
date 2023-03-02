@@ -3,6 +3,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_cr
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
 import '../../../credential/domain/entities/claim_entity.dart';
+import '../../../credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
 import '../../../credential/domain/use_cases/save_claims_use_case.dart';
 import '../../../iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
 import '../../../iden3comm/domain/use_cases/get_auth_token_use_case.dart';
@@ -28,12 +29,14 @@ class FetchAndSaveClaimsUseCase
   final GetFetchRequestsUseCase _getFetchRequestsUseCase;
   final GetAuthTokenUseCase _getAuthTokenUseCase;
   final SaveClaimsUseCase _saveClaimsUseCase;
+  final GetClaimRevocationStatusUseCase _getClaimRevocationStatusUseCase;
 
   FetchAndSaveClaimsUseCase(
     this._iden3commCredentialRepository,
     this._getFetchRequestsUseCase,
     this._getAuthTokenUseCase,
     this._saveClaimsUseCase,
+    this._getClaimRevocationStatusUseCase,
   );
 
   @override
@@ -60,7 +63,31 @@ class FetchAndSaveClaimsUseCase
                     did: param.did,
                     authToken: authToken,
                     url: param.message.body.url))
-                .then((claim) => claims.add(claim));
+                .then((claim) async {
+              Map<String, dynamic> revStatus =
+                  await _getClaimRevocationStatusUseCase
+                      .execute(param: claim)
+                      .catchError((_) => <String, dynamic>{});
+
+              /// FIXME: define an entity for revocation and use it in repo impl
+              if (revStatus.isNotEmpty &&
+                  revStatus["mtp"] != null &&
+                  revStatus["mtp"]["existence"] != null &&
+                  revStatus["mtp"]["existence"] == true) {
+                claim = ClaimEntity(
+                  id: claim.id,
+                  issuer: claim.issuer,
+                  did: claim.did,
+                  state: ClaimState.revoked,
+                  expiration: claim.expiration,
+                  schema: claim.schema,
+                  vocab: claim.vocab,
+                  type: claim.type,
+                  info: claim.info,
+                );
+              }
+              claims.add(claim);
+            });
           }
 
           return claims;

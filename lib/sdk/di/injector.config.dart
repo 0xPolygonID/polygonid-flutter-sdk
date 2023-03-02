@@ -793,6 +793,7 @@ _i1.GetIt $initSDKGetIt(
             get<_i19.GetFetchRequestsUseCase>(),
             await get.getAsync<_i147.GetAuthTokenUseCase>(),
             await get.getAsync<_i150.SaveClaimsUseCase>(),
+            await get.getAsync<_i134.GetClaimRevocationStatusUseCase>(),
           ));
   gh.factoryAsync<_i158.Iden3comm>(() async => _i158.Iden3comm(
         await get.getAsync<_i157.FetchAndSaveClaimsUseCase>(),
