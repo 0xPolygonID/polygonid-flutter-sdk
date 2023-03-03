@@ -15,6 +15,7 @@ import '../../../common/iden3comm_mocks.dart';
 import 'authenticate_use_case_test.dart';
 import 'fetch_and_save_claims_use_case_test.mocks.dart';
 
+
 // Data
 final exception = Exception();
 
