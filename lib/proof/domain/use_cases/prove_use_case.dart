@@ -22,7 +22,6 @@ class ProveUseCase extends FutureUseCase<ProveParam, JWZProof> {
 
   @override
   Future<JWZProof> execute({required ProveParam param}) async {
-
     // Calculate witness
     Uint8List wtnsBytes = await _proofRepository.calculateWitness(
         param.circuitData, param.inputs);

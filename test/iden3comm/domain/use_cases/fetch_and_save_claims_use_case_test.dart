@@ -3,6 +3,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
@@ -23,6 +24,12 @@ final requests = [
   "theOtherRequest",
   "theThirdRequest",
 ];
+
+final revStatus = {
+  "mtp": {
+    "existence": false,
+  }
+};
 
 final claimEntity = ClaimEntity(
     issuer: "",
@@ -47,30 +54,33 @@ MockGetFetchRequestsUseCase getFetchRequestsUseCase =
     MockGetFetchRequestsUseCase();
 MockSaveClaimsUseCase saveClaimsUseCase = MockSaveClaimsUseCase();
 MockGetAuthTokenUseCase getAuthTokenUseCase = MockGetAuthTokenUseCase();
-MockCredentialRepository credentialRepository = MockCredentialRepository();
+MockGetClaimRevocationStatusUseCase getClaimRevocationStatusUseCase =
+    MockGetClaimRevocationStatusUseCase();
 
 // Tested instance
 FetchAndSaveClaimsUseCase useCase = FetchAndSaveClaimsUseCase(
-    iden3commCredentialRepository,
-    getFetchRequestsUseCase,
-    getAuthTokenUseCase,
-    saveClaimsUseCase);
+  iden3commCredentialRepository,
+  getFetchRequestsUseCase,
+  getAuthTokenUseCase,
+  saveClaimsUseCase,
+  getClaimRevocationStatusUseCase,
+);
 
 @GenerateMocks([
   Iden3commCredentialRepository,
   GetFetchRequestsUseCase,
   GetAuthTokenUseCase,
   SaveClaimsUseCase,
-  CredentialRepository
+  GetClaimRevocationStatusUseCase,
 ])
 void main() {
   group("Fetch and save claims", () {
     setUp(() {
-      reset(iden3commRepository);
-      reset(credentialRepository);
+      reset(iden3commCredentialRepository);
+      reset(getFetchRequestsUseCase);
       reset(getAuthTokenUseCase);
       reset(saveClaimsUseCase);
-      reset(getFetchRequestsUseCase);
+      reset(getClaimRevocationStatusUseCase);
 
       // Given
       when(getFetchRequestsUseCase.execute(param: anyNamed('param')))
@@ -84,11 +94,8 @@ void main() {
               authToken: anyNamed('authToken'),
               url: anyNamed('url')))
           .thenAnswer((realInvocation) => Future.value(claimEntity));
-      when(credentialRepository.saveClaims(
-              did: anyNamed('did'),
-              privateKey: anyNamed('privateKey'),
-              claims: anyNamed('claims')))
-          .thenAnswer((realInvocation) => Future.value());
+      when(getClaimRevocationStatusUseCase.execute(param: anyNamed('param')))
+          .thenAnswer((realInvocation) => Future.value(revStatus));
     });
 
     test(
@@ -130,10 +137,8 @@ void main() {
         j++;
       }
 
-      verifyNever(credentialRepository.saveClaims(
-          did: CommonMocks.identifier,
-          privateKey: CommonMocks.privateKey,
-          claims: captureAnyNamed('claims')));
+      var revStatusVerify = verify(getClaimRevocationStatusUseCase.execute(
+          param: captureAnyNamed('param')));
     });
 
     test(
@@ -176,10 +181,8 @@ void main() {
       expect(fetchVerify.captured[1], CommonMocks.token);
       expect(fetchVerify.captured[2], param.message.body.url);
 
-      verifyNever(credentialRepository.saveClaims(
-          did: CommonMocks.identifier,
-          privateKey: CommonMocks.privateKey,
-          claims: captureAnyNamed('claims')));
+      verifyNever(getClaimRevocationStatusUseCase.execute(
+          param: captureAnyNamed('param')));
     });
   });
 }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_sd_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
@@ -187,5 +188,13 @@ class Iden3commMocks {
     circuitId: proofRequestList[0].scope.circuitId,
     proof: ProofMocks.jwzProof.proof,
     pubSignals: ProofMocks.jwzProof.pubSignals,
+  );
+
+  static JWZSDProofEntity jwzSdProof = JWZSDProofEntity(
+    id: proofRequestList[0].scope.id,
+    circuitId: proofRequestList[0].scope.circuitId,
+    proof: ProofMocks.jwzProof.proof,
+    pubSignals: ProofMocks.jwzProof.pubSignals,
+    vp: ProofMocks.vp,
   );
 }
