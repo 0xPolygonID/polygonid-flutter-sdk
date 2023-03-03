@@ -25,8 +25,7 @@ class GetProofQueryUseCase
         param.query.credentialSubject!.length == 1) {
       MapEntry reqEntry = param.query.credentialSubject!.entries.first;
 
-      if (reqEntry.value != null &&
-          reqEntry.value is Map) {
+      if (reqEntry.value != null && reqEntry.value is Map) {
         field = reqEntry.key;
         if (reqEntry.value.length == 0) {
           Future.value(ProofQueryParamEntity(field, values, operator));

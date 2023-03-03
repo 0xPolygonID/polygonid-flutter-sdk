@@ -4,6 +4,7 @@ import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_sd_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart';
@@ -26,9 +27,9 @@ import 'get_iden3comm_proofs_use_case_test.mocks.dart';
 
 // Data
 List<FilterEntity> filters = [CommonMocks.filter, CommonMocks.filter];
-List<JWZProofEntity> result = [
-  Iden3commMocks.jwzProof,
-  Iden3commMocks.jwzProof
+List<JWZSDProofEntity> result = [
+  Iden3commMocks.jwzSdProof,
+  Iden3commMocks.jwzSdProof
 ];
 
 GetIden3commProofsParam param = GetIden3commProofsParam(
@@ -100,8 +101,8 @@ main() {
             privateKey: anyNamed('privateKey'), message: anyNamed('message')))
         .thenAnswer((realInvocation) => Future.value(CommonMocks.signature));
 
-    when(generateProofUseCase.execute(param: anyNamed('param')))
-        .thenAnswer((realInvocation) => Future.value(ProofMocks.jwzProof));
+    when(generateProofUseCase.execute(param: anyNamed('param'))).thenAnswer(
+        (realInvocation) => Future.value(Iden3commMocks.jwzSdProof));
   });
 
   test(

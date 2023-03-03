@@ -69,7 +69,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       throw NullAuthenticateCallbackException(request);
     }
 
-    _remoteIden3commDataSource.authWithToken(token: authToken, url: url);
+    await _remoteIden3commDataSource.authWithToken(token: authToken, url: url);
   }
 
   @override

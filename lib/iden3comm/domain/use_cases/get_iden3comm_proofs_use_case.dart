@@ -95,17 +95,9 @@ class GetIden3commProofsUseCase
           }
 
           // Generate proof
-          proofs.add(await _generateProofUseCase
-              .execute(
-                  param: GenerateProofParam(
-                      param.did,
-                      param.profileNonce,
-                      0,
-                      credential,
-                      request.scope,
-                      circuitData,
-                      privKey,
-                      challenge)));
+          proofs.add(await _generateProofUseCase.execute(
+              param: GenerateProofParam(param.did, param.profileNonce, 0,
+                  credential, request.scope, circuitData, privKey, challenge)));
         }).catchError((error) {
           throw error;
         });
