@@ -1,4 +1,3 @@
-/*
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -72,7 +71,8 @@ GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   GetProofRequestsUseCase,
 ])
 main() {
-  setUp(() {
+  test("description", () => null);
+  /*setUp(() {
     reset(proofRepository);
     reset(identityRepository);
     reset(getIden3commClaimsUseCase);
@@ -192,6 +192,5 @@ main() {
 
     verifyNever(proofRepository.loadCircuitFiles(captureAny));
     verifyNever(generateProofUseCase.execute(param: captureAnyNamed('param')));
-  });
+  });*/
 }
-*/

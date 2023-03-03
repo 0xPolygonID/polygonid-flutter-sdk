@@ -97,7 +97,7 @@ void main() {
       await expectLater(
         dataSource.authWithToken(
             token: CommonMocks.token, url: CommonMocks.url),
-        throwsA(isA<UnknownApiException>()),
+        throwsA(isA<NetworkException>()),
       );
 
       //

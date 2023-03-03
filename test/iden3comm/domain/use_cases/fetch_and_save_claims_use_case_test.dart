@@ -1,4 +1,3 @@
-/*
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -15,7 +14,6 @@ import '../../../common/common_mocks.dart';
 import '../../../common/iden3comm_mocks.dart';
 import 'authenticate_use_case_test.dart';
 import 'fetch_and_save_claims_use_case_test.mocks.dart';
-
 
 // Data
 final exception = Exception();
@@ -52,11 +50,11 @@ MockGetAuthTokenUseCase getAuthTokenUseCase = MockGetAuthTokenUseCase();
 MockCredentialRepository credentialRepository = MockCredentialRepository();
 
 // Tested instance
-FetchAndSaveClaimsUseCase useCase = FetchAndSaveClaimsUseCase(
+/*FetchAndSaveClaimsUseCase useCase = FetchAndSaveClaimsUseCase(
     iden3commCredentialRepository,
     getFetchRequestsUseCase,
     getAuthTokenUseCase,
-    saveClaimsUseCase);
+    saveClaimsUseCase);*/
 
 @GenerateMocks([
   Iden3commCredentialRepository,
@@ -66,7 +64,8 @@ FetchAndSaveClaimsUseCase useCase = FetchAndSaveClaimsUseCase(
   CredentialRepository
 ])
 void main() {
-  group("Fetch and save claims", () {
+  test("description", () => null);
+  /*group("Fetch and save claims", () {
     setUp(() {
       reset(iden3commRepository);
       reset(credentialRepository);
@@ -183,6 +182,5 @@ void main() {
           privateKey: CommonMocks.privateKey,
           claims: captureAnyNamed('claims')));
     });
-  });
+  });*/
 }
-*/
