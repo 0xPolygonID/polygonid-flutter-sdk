@@ -51,7 +51,8 @@ class GenerateProofParam {
       this.challenge);
 }
 
-class GenerateProofUseCase extends FutureUseCase<GenerateProofParam, JWZSDProofEntity> {
+class GenerateProofUseCase
+    extends FutureUseCase<GenerateProofParam, JWZSDProofEntity> {
   final IdentityRepository _identityRepository;
   final SMTRepository _smtRepository;
   final ProofRepository _proofRepository;
@@ -141,7 +142,8 @@ class GenerateProofUseCase extends FutureUseCase<GenerateProofParam, JWZSDProofE
     });
 
     dynamic inputsJson = json.decode(Uint8ArrayUtils.uint8ListToString(res));
-    Uint8List atomicQueryInputs = Uint8ArrayUtils.uint8ListfromString(json.encode(inputsJson["inputs"]));
+    Uint8List atomicQueryInputs =
+        Uint8ArrayUtils.uint8ListfromString(json.encode(inputsJson["inputs"]));
     // inputsJson["verifiablePresentation"]
     var vpProof = JWZVPProof.fromJson(inputsJson["verifiablePresentation"]);
 
