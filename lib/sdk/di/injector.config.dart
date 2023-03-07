@@ -324,13 +324,13 @@ _i1.GetIt $initSDKGetIt(
   ) =>
       databaseModule.getCodec(privateKey));
   gh.factory<_i61.StateIdentifierMapper>(() => _i61.StateIdentifierMapper());
-  gh.factory<_i13.StoreRef<String, dynamic>>(
-    () => databaseModule.keyValueStore,
-    instanceName: 'keyValueStore',
-  );
   gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
     () => databaseModule.identityStore,
     instanceName: 'identityStore',
+  );
+  gh.factory<_i13.StoreRef<String, dynamic>>(
+    () => databaseModule.keyValueStore,
+    instanceName: 'keyValueStore',
   );
   gh.factory<String>(
     () => sdk.accessMessage,

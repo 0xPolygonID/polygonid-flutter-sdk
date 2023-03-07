@@ -10,16 +10,11 @@ Map<String, dynamic> _$ClaimProofDTOToJson(ClaimProofDTO instance) =>
     <String, dynamic>{
       'stringify': instance.stringify,
       'hashCode': instance.hashCode,
-      'type': _$ClaimProofTypeEnumMap[instance.type]!,
+      'type': instance.type,
       'issuerData': instance.issuer.toJson(),
       'coreClaim': instance.coreClaim,
       'props': instance.props,
     };
-
-const _$ClaimProofTypeEnumMap = {
-  ClaimProofType.bjj: 'BJJSignature2021',
-  ClaimProofType.sparseMerkle: 'Iden3SparseMerkleProof',
-};
 
 ClaimProofMTPDTO _$ClaimProofMTPDTOFromJson(Map<String, dynamic> json) =>
     ClaimProofMTPDTO(

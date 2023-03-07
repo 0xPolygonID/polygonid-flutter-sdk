@@ -8,7 +8,7 @@ part of 'claim_proof_sm_dto.dart';
 
 ClaimProofSMDTO _$ClaimProofSMDTOFromJson(Map<String, dynamic> json) =>
     ClaimProofSMDTO(
-      $enumDecode(_$ClaimProofTypeEnumMap, json['type']),
+      json['type'] as String,
       ClaimProofIssuerSMDTO.fromJson(
           json['issuerData'] as Map<String, dynamic>),
       json['coreClaim'] as String,
@@ -17,16 +17,11 @@ ClaimProofSMDTO _$ClaimProofSMDTOFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$ClaimProofSMDTOToJson(ClaimProofSMDTO instance) =>
     <String, dynamic>{
-      'type': _$ClaimProofTypeEnumMap[instance.type]!,
+      'type': instance.type,
       'issuerData': instance.issuer.toJson(),
       'coreClaim': instance.coreClaim,
       'mtp': instance.mtp.toJson(),
     };
-
-const _$ClaimProofTypeEnumMap = {
-  ClaimProofType.bjj: 'BJJSignature2021',
-  ClaimProofType.sparseMerkle: 'Iden3SparseMerkleProof',
-};
 
 ClaimProofIssuerSMDTO _$ClaimProofIssuerSMDTOFromJson(
         Map<String, dynamic> json) =>
