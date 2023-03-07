@@ -6,18 +6,10 @@ import 'claim_proof_sm_dto.dart';
 
 part 'claim_proof_dto.g.dart';
 
-@JsonEnum()
-enum ClaimProofType {
-  @JsonValue("BJJSignature2021")
-  bjj,
-  @JsonValue("Iden3SparseMerkleProof")
-  sparseMerkle
-}
-
 @JsonSerializable(explicitToJson: true, createFactory: false)
 class ClaimProofDTO extends Equatable {
   @JsonKey(name: 'type')
-  final ClaimProofType type;
+  final String type;
   @JsonKey(name: 'issuerData')
   final ClaimProofIssuerDTO issuer;
   final String coreClaim;
@@ -25,10 +17,10 @@ class ClaimProofDTO extends Equatable {
   const ClaimProofDTO(this.type, this.issuer, this.coreClaim);
 
   factory ClaimProofDTO.fromJson(Map<String, dynamic> json) {
-    ClaimProofType type = $enumDecode(_$ClaimProofTypeEnumMap, json['type']);
+    String type = json['type'];
 
     switch (type) {
-      case ClaimProofType.bjj:
+      case "BJJSignature2021":
         return ClaimProofBJJDTO(
           type,
           ClaimProofIssuerBJJDTO.fromJson(
@@ -36,13 +28,21 @@ class ClaimProofDTO extends Equatable {
           json['coreClaim'] as String,
           json['signature'] as String,
         );
-      case ClaimProofType.sparseMerkle:
+      case "Iden3SparseMerkleProof":
+      case "Iden3SparseMerkleTreeProof":
         return ClaimProofSMDTO(
           type,
           ClaimProofIssuerSMDTO.fromJson(
               json['issuerData'] as Map<String, dynamic>),
           json['coreClaim'] as String,
           ClaimProofMTPDTO.fromJson(json['mtp'] as Map<String, dynamic>),
+        );
+      default:
+        return ClaimProofDTO(
+          type,
+          ClaimProofIssuerSMDTO.fromJson(
+              json['issuerData'] as Map<String, dynamic>),
+          json['coreClaim'] as String,
         );
     }
   }
