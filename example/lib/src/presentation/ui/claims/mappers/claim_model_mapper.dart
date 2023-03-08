@@ -39,17 +39,22 @@ class ClaimModelMapper implements FromMapper<ClaimEntity, ClaimModel> {
 
     // Creation date and proof name
     String creationDate = "None";
-    String proofType = 'BJJ Signature';
+    String proofType = '';
     if (from.info['proof'].isNotEmpty) {
       for (var proof in from.info['proof']) {
-        if (proof['@type'] == "Iden3SparseMerkleProof") {
+        if (proof['type'] == "Iden3SparseMerkleProof" ||
+            proof['type'] == "Iden3SparseMerkleTreeProof") {
           creationDate = DateFormat("d MMM yyyy").format(
               DateTime.fromMillisecondsSinceEpoch(
                   (proof['issuer_data']['state']['block_timestamp']) * 1000));
-          proofType = 'SMT Signature';
-          break;
+          proofType += '- SMT Signature\n';
+        } else if (proof['type'] == "BJJSignature2021") {
+          proofType += '- BJJ Signature\n';
+        } else {
+          proofType += '- ${proof['type']}\n';
         }
       }
+      proofType = proofType.substring(0, proofType.length - 1);
     }
 
     String value = '';

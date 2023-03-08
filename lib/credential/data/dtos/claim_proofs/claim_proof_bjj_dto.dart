@@ -8,8 +8,8 @@ part 'claim_proof_bjj_dto.g.dart';
 class ClaimProofBJJDTO extends ClaimProofDTO {
   final String signature;
 
-  const ClaimProofBJJDTO(ClaimProofType type, ClaimProofIssuerDTO issuer,
-      String coreClaim, this.signature)
+  const ClaimProofBJJDTO(
+      String type, ClaimProofIssuerDTO issuer, String coreClaim, this.signature)
       : super(type, issuer, coreClaim);
 
   factory ClaimProofBJJDTO.fromJson(Map<String, dynamic> json) =>
