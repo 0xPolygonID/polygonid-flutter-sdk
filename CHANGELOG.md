@@ -1,3 +1,6 @@
+## 2.1.1
+- Proof type support hotfix
+
 ## 2.0.0
 - Did support
 - Verifiable credentials
