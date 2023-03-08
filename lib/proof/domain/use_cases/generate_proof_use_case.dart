@@ -16,6 +16,7 @@ import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/tuples.dart';
 import '../../../common/domain/use_case.dart';
 import '../../../common/utils/uint8_list_utils.dart';
+import '../../../iden3comm/domain/entities/jwz_proof_entity.dart';
 import '../../../identity/domain/entities/did_entity.dart';
 import '../../../identity/domain/entities/identity_entity.dart';
 import '../../../identity/domain/entities/node_entity.dart';
@@ -52,7 +53,7 @@ class GenerateProofParam {
 }
 
 class GenerateProofUseCase
-    extends FutureUseCase<GenerateProofParam, JWZSDProofEntity> {
+    extends FutureUseCase<GenerateProofParam, JWZProofEntity> {
   final IdentityRepository _identityRepository;
   final SMTRepository _smtRepository;
   final ProofRepository _proofRepository;
@@ -78,7 +79,7 @@ class GenerateProofUseCase
   );
 
   @override
-  Future<JWZSDProofEntity> execute({required GenerateProofParam param}) async {
+  Future<JWZProofEntity> execute({required GenerateProofParam param}) async {
     List<String>? authClaim;
     ProofEntity? incProof;
     ProofEntity? nonRevProof;
@@ -144,8 +145,11 @@ class GenerateProofUseCase
     dynamic inputsJson = json.decode(Uint8ArrayUtils.uint8ListToString(res));
     Uint8List atomicQueryInputs =
         Uint8ArrayUtils.uint8ListfromString(json.encode(inputsJson["inputs"]));
-    // inputsJson["verifiablePresentation"]
-    var vpProof = JWZVPProof.fromJson(inputsJson["verifiablePresentation"]);
+
+    var vpProof;
+    if (inputsJson["verifiablePresentation"] != null) {
+      vpProof = JWZVPProof.fromJson(inputsJson["verifiablePresentation"]);
+    }
 
     // Prove
     return _proveUseCase
@@ -153,12 +157,21 @@ class GenerateProofUseCase
         .then((proof) {
       logger().i("[GenerateProofUseCase] proof: $proof");
 
-      return JWZSDProofEntity(
-          id: param.request.id,
-          circuitId: param.circuitData.circuitId,
-          proof: proof.proof,
-          pubSignals: proof.pubSignals,
-          vp: vpProof);
+      if (vpProof != null) {
+        return JWZSDProofEntity(
+            id: param.request.id,
+            circuitId: param.circuitData.circuitId,
+            proof: proof.proof,
+            pubSignals: proof.pubSignals,
+            vp: vpProof);
+      } else {
+        return JWZProofEntity(
+            id: param.request.id,
+            circuitId: param.circuitData.circuitId,
+            proof: proof.proof,
+            pubSignals: proof.pubSignals,
+        );
+      }
     }).catchError((error) {
       logger().e("[GenerateProofUseCase] Error: $error");
 
