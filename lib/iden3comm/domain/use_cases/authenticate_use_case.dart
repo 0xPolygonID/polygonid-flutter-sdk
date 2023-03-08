@@ -46,7 +46,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
   @override
   Future<void> execute({required AuthenticateParam param}) async {
     try {
-      List<JWZSDProofEntity> proofs = await _getIden3commProofsUseCase.execute(
+      List<JWZProofEntity> proofs = await _getIden3commProofsUseCase.execute(
           param: GetIden3commProofsParam(
         message: param.message,
         did: param.did,

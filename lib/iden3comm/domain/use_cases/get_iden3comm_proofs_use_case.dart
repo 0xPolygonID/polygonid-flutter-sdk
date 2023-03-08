@@ -54,9 +54,9 @@ class GetIden3commProofsUseCase
   );
 
   @override
-  Future<List<JWZSDProofEntity>> execute(
+  Future<List<JWZProofEntity>> execute(
       {required GetIden3commProofsParam param}) async {
-    List<JWZSDProofEntity> proofs = [];
+    List<JWZProofEntity> proofs = [];
 
     List<ProofRequestEntity> requests =
         await _getProofRequestsUseCase.execute(param: param.message);
