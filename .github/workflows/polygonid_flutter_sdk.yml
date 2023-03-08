@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.7.3'
+          flutter-version: '3.7.6'
           channel: 'stable'
       - name: production secret environment setting
         run: echo $PROD_ENV | base64 -d > lib/env/prod_env.g.dart
@@ -21,10 +21,12 @@ jobs:
             DEV_ENV: ${{ secrets.DEV_ENV }}
       - name: verify flutter version
         run: flutter --version
+      - name: flutter clean
+        run: flutter clean
       - name: Install dependencies
-        run: flutter packages get
+        run: flutter pub get
       - name: Format
-        run: flutter format --set-exit-if-changed lib test example
+        run: dart format --set-exit-if-changed lib test example
       - name: Analyze
         run: flutter analyze lib test example
       - name: Run tests
