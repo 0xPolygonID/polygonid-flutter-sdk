@@ -100,7 +100,7 @@ class CredentialRepositoryImpl extends CredentialRepository {
     ClaimDTO claimDTO = _claimMapper.mapTo(claim);
     try {
       return Future.value(claimDTO.info.proofs
-          .where((proof) => proof.type == ClaimProofType.bjj)
+          .where((proof) => proof.type == "BJJSignature2021")
           .first
           .issuer
           .id);

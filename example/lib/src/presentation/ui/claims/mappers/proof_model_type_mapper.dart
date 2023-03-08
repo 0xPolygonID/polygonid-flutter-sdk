@@ -8,6 +8,7 @@ class ProofModelTypeMapper implements Mapper<String, ProofType> {
       case 'BJJSignature2021':
         return ProofType.signatureProof;
       case 'Iden3SparseMerkleProof':
+      case 'Iden3SparseMerkleTreeProof':
         return ProofType.sparseMerkleTreeProof;
       default:
         return ProofType.unknown;

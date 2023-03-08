@@ -8,7 +8,7 @@ part of 'claim_proof_bjj_dto.dart';
 
 ClaimProofBJJDTO _$ClaimProofBJJDTOFromJson(Map<String, dynamic> json) =>
     ClaimProofBJJDTO(
-      $enumDecode(_$ClaimProofTypeEnumMap, json['type']),
+      json['type'] as String,
       ClaimProofIssuerDTO.fromJson(json['issuerData'] as Map<String, dynamic>),
       json['coreClaim'] as String,
       json['signature'] as String,
@@ -16,16 +16,11 @@ ClaimProofBJJDTO _$ClaimProofBJJDTOFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$ClaimProofBJJDTOToJson(ClaimProofBJJDTO instance) =>
     <String, dynamic>{
-      'type': _$ClaimProofTypeEnumMap[instance.type]!,
+      'type': instance.type,
       'issuerData': instance.issuer.toJson(),
       'coreClaim': instance.coreClaim,
       'signature': instance.signature,
     };
-
-const _$ClaimProofTypeEnumMap = {
-  ClaimProofType.bjj: 'BJJSignature2021',
-  ClaimProofType.sparseMerkle: 'Iden3SparseMerkleProof',
-};
 
 ClaimProofIssuerBJJDTO _$ClaimProofIssuerBJJDTOFromJson(
         Map<String, dynamic> json) =>
