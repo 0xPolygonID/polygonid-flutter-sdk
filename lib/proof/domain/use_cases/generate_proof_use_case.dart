@@ -166,10 +166,10 @@ class GenerateProofUseCase
             vp: vpProof);
       } else {
         return JWZProofEntity(
-            id: param.request.id,
-            circuitId: param.circuitData.circuitId,
-            proof: proof.proof,
-            pubSignals: proof.pubSignals,
+          id: param.request.id,
+          circuitId: param.circuitData.circuitId,
+          proof: proof.proof,
+          pubSignals: proof.pubSignals,
         );
       }
     }).catchError((error) {
