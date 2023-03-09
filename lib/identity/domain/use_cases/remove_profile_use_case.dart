@@ -25,13 +25,12 @@ class RemoveProfileParam {
 }
 
 class RemoveProfileUseCase extends FutureUseCase<RemoveProfileParam, void> {
-  final IdentityRepository _identityRepository;
   final GetIdentityUseCase _getIdentityUseCase;
   final GetDidUseCase _getDidUseCase;
   final UpdateIdentityUseCase _updateIdentityUseCase;
 
-  RemoveProfileUseCase(this._identityRepository, this._getIdentityUseCase,
-      this._getDidUseCase, this._updateIdentityUseCase);
+  RemoveProfileUseCase(this._getIdentityUseCase, this._getDidUseCase,
+      this._updateIdentityUseCase);
 
   @override
   Future<void> execute({required RemoveProfileParam param}) async {

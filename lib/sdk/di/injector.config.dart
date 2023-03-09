@@ -805,7 +805,6 @@ _i1.GetIt $initSDKGetIt(
       ));
   gh.factoryAsync<_i159.RemoveProfileUseCase>(
       () async => _i159.RemoveProfileUseCase(
-            await get.getAsync<_i107.IdentityRepository>(),
             await get.getAsync<_i139.GetIdentityUseCase>(),
             await get.getAsync<_i121.GetDidUseCase>(),
             await get.getAsync<_i151.UpdateIdentityUseCase>(),
