@@ -25,13 +25,12 @@ class AddProfileParam {
 }
 
 class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
-  final IdentityRepository _identityRepository;
   final GetIdentityUseCase _getIdentityUseCase;
   final GetDidUseCase _getDidUseCase;
   final UpdateIdentityUseCase _updateIdentityUseCase;
 
-  AddProfileUseCase(this._identityRepository, this._getIdentityUseCase,
-      this._getDidUseCase, this._updateIdentityUseCase);
+  AddProfileUseCase(this._getIdentityUseCase, this._getDidUseCase,
+      this._updateIdentityUseCase);
 
   @override
   Future<void> execute({required AddProfileParam param}) async {

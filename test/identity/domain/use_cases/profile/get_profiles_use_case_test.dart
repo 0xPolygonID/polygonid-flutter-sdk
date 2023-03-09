@@ -5,40 +5,30 @@ import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repo
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_profiles_use_case.dart';
 
-import '../../../common/common_mocks.dart';
-import '../../../common/identity_mocks.dart';
+import '../../../../common/common_mocks.dart';
+import '../../../../common/identity_mocks.dart';
 
 import 'get_profiles_use_case_test.mocks.dart';
 
-MockIdentityRepository identityRepository = MockIdentityRepository();
 MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
 
 // Data
 String param = CommonMocks.did;
 
 GetProfilesUseCase useCase = GetProfilesUseCase(
-  identityRepository,
   getIdentityUseCase,
 );
 
 @GenerateMocks([
-  IdentityRepository,
   GetIdentityUseCase,
 ])
 void main() {
   setUp(() {
-    reset(identityRepository);
     reset(getIdentityUseCase);
 
     // Given
     when(getIdentityUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value(IdentityMocks.identity));
-    when(identityRepository.getDidIdentifier(
-      blockchain: anyNamed('blockchain'),
-      network: anyNamed('network'),
-      claimsRoot: anyNamed('claimsRoot'),
-      profileNonce: anyNamed('profileNonce'),
-    )).thenAnswer((realInvocation) => Future.value(CommonMocks.did));
   });
 
   test(

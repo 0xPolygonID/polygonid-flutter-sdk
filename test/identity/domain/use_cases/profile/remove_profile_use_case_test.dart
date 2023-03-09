@@ -9,8 +9,8 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_profiles_use
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/remove_profile_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/update_identity_use_case.dart';
 
-import '../../../common/common_mocks.dart';
-import '../../../common/identity_mocks.dart';
+import '../../../../common/common_mocks.dart';
+import '../../../../common/identity_mocks.dart';
 
 import 'remove_profile_use_case_test.mocks.dart';
 

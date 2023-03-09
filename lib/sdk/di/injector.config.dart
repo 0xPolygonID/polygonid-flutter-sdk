@@ -665,11 +665,8 @@ _i1.GetIt $initSDKGetIt(
             await get.getAsync<_i121.GetDidUseCase>(),
             await get.getAsync<_i138.GetDidIdentifierUseCase>(),
           ));
-  gh.factoryAsync<_i140.GetProfilesUseCase>(
-      () async => _i140.GetProfilesUseCase(
-            await get.getAsync<_i107.IdentityRepository>(),
-            await get.getAsync<_i139.GetIdentityUseCase>(),
-          ));
+  gh.factoryAsync<_i140.GetProfilesUseCase>(() async =>
+      _i140.GetProfilesUseCase(await get.getAsync<_i139.GetIdentityUseCase>()));
   gh.factoryAsync<_i141.RemoveIdentityUseCase>(
       () async => _i141.RemoveIdentityUseCase(
             await get.getAsync<_i107.IdentityRepository>(),
@@ -761,7 +758,6 @@ _i1.GetIt $initSDKGetIt(
             await get.getAsync<_i131.CreateIdentityStateUseCase>(),
           ));
   gh.factoryAsync<_i153.AddProfileUseCase>(() async => _i153.AddProfileUseCase(
-        await get.getAsync<_i107.IdentityRepository>(),
         await get.getAsync<_i139.GetIdentityUseCase>(),
         await get.getAsync<_i121.GetDidUseCase>(),
         await get.getAsync<_i151.UpdateIdentityUseCase>(),
