@@ -19,6 +19,11 @@ class IdentityMocks {
       publicKey: CommonMocks.pubKeys,
       profiles: CommonMocks.profiles);
 
+  static List<PrivateIdentityEntity> privateIdentityList = [
+    privateIdentity,
+    privateIdentity
+  ];
+
   static PrivateIdentityEntity privateIdentity = PrivateIdentityEntity(
       did: CommonMocks.did,
       publicKey: CommonMocks.pubKeys,
