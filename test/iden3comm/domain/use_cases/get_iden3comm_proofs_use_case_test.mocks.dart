@@ -11,7 +11,7 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.da
     as _i13;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart'
     as _i23;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_sd_proof_entity.dart'
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart'
     as _i8;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart'
     as _i22;
@@ -122,9 +122,9 @@ class _FakeNodeEntity_5 extends _i1.SmartFake implements _i7.NodeEntity {
         );
 }
 
-class _FakeJWZSDProofEntity_6 extends _i1.SmartFake
-    implements _i8.JWZSDProofEntity {
-  _FakeJWZSDProofEntity_6(
+class _FakeJWZProofEntity_6 extends _i1.SmartFake
+    implements _i8.JWZProofEntity {
+  _FakeJWZProofEntity_6(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -574,7 +574,7 @@ class MockGenerateProofUseCase extends _i1.Mock
   }
 
   @override
-  _i10.Future<_i8.JWZSDProofEntity> execute(
+  _i10.Future<_i8.JWZProofEntity> execute(
           {required _i19.GenerateProofParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -583,7 +583,7 @@ class MockGenerateProofUseCase extends _i1.Mock
           {#param: param},
         ),
         returnValue:
-            _i10.Future<_i8.JWZSDProofEntity>.value(_FakeJWZSDProofEntity_6(
+            _i10.Future<_i8.JWZProofEntity>.value(_FakeJWZProofEntity_6(
           this,
           Invocation.method(
             #execute,
@@ -591,7 +591,7 @@ class MockGenerateProofUseCase extends _i1.Mock
             {#param: param},
           ),
         )),
-      ) as _i10.Future<_i8.JWZSDProofEntity>);
+      ) as _i10.Future<_i8.JWZProofEntity>);
 }
 
 /// A class which mocks [IsProofCircuitSupportedUseCase].

@@ -469,7 +469,7 @@ class Identity implements PolygonIdSdkIdentity {
     return _fetchIdentityStateUseCase.execute(param: did);
   }
 
-  /// Adds a profile to the identity derived from private key and stored
+  /// Adds a profile if it doesn't already exist to the identity derived from private key and stored
   /// in the Polygon ID Sdk.
   ///
   /// The [privateKey]  is the key used to access all the sensitive info from the identity
