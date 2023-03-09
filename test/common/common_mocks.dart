@@ -9,7 +9,7 @@ class CommonMocks {
   static String id = "theId";
   static String identifier = "theIdentifier";
   static String privateKey = "thePrivateKey";
-  static Map<int, String> profiles = {0: 'profile1', 1: 'profile1'};
+  static Map<int, String> profiles = {0: "${did}0", 1: "${did}1"};
   static String walletPrivateKey = "theWalletPrivateKey";
   static String pubX = "thePubX";
   static String pubY = "thePubY";

@@ -121,7 +121,7 @@ void main() {
               gistProof: captureAnyNamed('gistProof'),
               treeState: captureAnyNamed('treeState')))
           .captured;
-      expect(capturedAuthInputs[0], CommonMocks.profiles[0]);
+      expect(capturedAuthInputs[0], CommonMocks.profiles[1]);
       expect(capturedAuthInputs[1], CommonMocks.nonce);
       expect(capturedAuthInputs[2], CommonMocks.challenge);
       expect(capturedAuthInputs[3], claims);

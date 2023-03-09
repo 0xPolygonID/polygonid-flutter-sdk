@@ -8,25 +8,23 @@ import 'dart:typed_data' as _i5;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_case.dart'
-    as _i13;
+    as _i12;
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart'
-    as _i14;
+    as _i13;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart'
     as _i9;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_sd_proof_entity.dart'
-    as _i11;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart'
     as _i4;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart'
     as _i2;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart'
-    as _i12;
+    as _i11;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart'
     as _i10;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
     as _i6;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart'
-    as _i15;
+    as _i14;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart'
     as _i8;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart'
@@ -149,7 +147,7 @@ class MockGetIden3commProofsUseCase extends _i1.Mock
   }
 
   @override
-  _i3.Future<List<_i11.JWZSDProofEntity>> execute(
+  _i3.Future<List<_i9.JWZProofEntity>> execute(
           {required _i10.GetIden3commProofsParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -157,22 +155,22 @@ class MockGetIden3commProofsUseCase extends _i1.Mock
           [],
           {#param: param},
         ),
-        returnValue: _i3.Future<List<_i11.JWZSDProofEntity>>.value(
-            <_i11.JWZSDProofEntity>[]),
-      ) as _i3.Future<List<_i11.JWZSDProofEntity>>);
+        returnValue:
+            _i3.Future<List<_i9.JWZProofEntity>>.value(<_i9.JWZProofEntity>[]),
+      ) as _i3.Future<List<_i9.JWZProofEntity>>);
 }
 
 /// A class which mocks [GetAuthTokenUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetAuthTokenUseCase extends _i1.Mock
-    implements _i12.GetAuthTokenUseCase {
+    implements _i11.GetAuthTokenUseCase {
   MockGetAuthTokenUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<String> execute({required _i12.GetAuthTokenParam? param}) =>
+  _i3.Future<String> execute({required _i11.GetAuthTokenParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -187,13 +185,13 @@ class MockGetAuthTokenUseCase extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetEnvConfigUseCase extends _i1.Mock
-    implements _i13.GetEnvConfigUseCase {
+    implements _i12.GetEnvConfigUseCase {
   MockGetEnvConfigUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<String> execute({required _i13.PolygonIdConfig? param}) =>
+  _i3.Future<String> execute({required _i12.PolygonIdConfig? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -208,7 +206,7 @@ class MockGetEnvConfigUseCase extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetPackageNameUseCase extends _i1.Mock
-    implements _i14.GetPackageNameUseCase {
+    implements _i13.GetPackageNameUseCase {
   MockGetPackageNameUseCase() {
     _i1.throwOnMissingStub(this);
   }
@@ -228,13 +226,13 @@ class MockGetPackageNameUseCase extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetDidIdentifierUseCase extends _i1.Mock
-    implements _i15.GetDidIdentifierUseCase {
+    implements _i14.GetDidIdentifierUseCase {
   MockGetDidIdentifierUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<String> execute({required _i15.GetDidIdentifierParam? param}) =>
+  _i3.Future<String> execute({required _i14.GetDidIdentifierParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
