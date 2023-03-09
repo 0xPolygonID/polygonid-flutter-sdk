@@ -12,6 +12,13 @@ class IdentityAlreadyExistsException implements Exception {
   IdentityAlreadyExistsException(this.did);
 }
 
+class ProfileAlreadyExistsException implements Exception {
+  final String genesisDid;
+  final int profileNonce;
+
+  ProfileAlreadyExistsException(this.genesisDid, this.profileNonce);
+}
+
 class UnknownIdentityException implements Exception {
   final String did;
 
