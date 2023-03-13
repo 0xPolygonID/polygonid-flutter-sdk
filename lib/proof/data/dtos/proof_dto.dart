@@ -19,7 +19,7 @@ part 'proof_dto.g.dart';
     }
 */
 /// Represents a proof DTO.
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class ProofDTO extends Equatable {
   final bool existence;
   final List<HashDTO> siblings;

@@ -11,7 +11,7 @@ class GenerateNonRevProofUseCase
     extends FutureUseCase<ClaimEntity, Map<String, dynamic>> {
   final IdentityRepository _identityRepository;
   final CredentialRepository _credentialRepository;
-  final GetEnvConfigUseCase _getEnvConfigUseCase;
+  final GetConfigUseCase _getEnvConfigUseCase;
   final FetchIdentityStateUseCase _fetchIdentityStateUseCase;
 
   GenerateNonRevProofUseCase(

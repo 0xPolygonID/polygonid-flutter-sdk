@@ -14,7 +14,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.d
     as _i3;
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart'
     as _i5;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart'
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart'
     as _i8;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_public_keys_use_case.dart'
     as _i7;
@@ -318,17 +318,18 @@ class MockGetPublicKeysUseCase extends _i1.Mock
       ) as _i6.Future<List<String>>);
 }
 
-/// A class which mocks [GetDidIdentifierUseCase].
+/// A class which mocks [GetCurrentEnvDidIdentifierUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockGetDidIdentifierUseCase extends _i1.Mock
-    implements _i8.GetDidIdentifierUseCase {
-  MockGetDidIdentifierUseCase() {
+class MockGetCurrentEnvDidIdentifierUseCase extends _i1.Mock
+    implements _i8.GetCurrentEnvDidIdentifierUseCase {
+  MockGetCurrentEnvDidIdentifierUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i6.Future<String> execute({required _i8.GetDidIdentifierParam? param}) =>
+  _i6.Future<String> execute(
+          {required _i8.GetCurrentEnvDidIdentifierParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,

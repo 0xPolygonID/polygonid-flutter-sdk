@@ -1,37 +1,40 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identities_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_profiles_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/remove_profile_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/update_identity_use_case.dart';
 
 import '../../../../common/common_mocks.dart';
 import '../../../../common/identity_mocks.dart';
-
 import 'remove_profile_use_case_test.mocks.dart';
 
 MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
 MockGetDidUseCase getDidUseCase = MockGetDidUseCase();
 MockUpdateIdentityUseCase updateIdentityUseCase = MockUpdateIdentityUseCase();
+MockGetCurrentEnvDidIdentifierUseCase getCurrentEnvDidIdentifierUseCase =
+    MockGetCurrentEnvDidIdentifierUseCase();
 
 RemoveProfileParam param = RemoveProfileParam(
   profileNonce: CommonMocks.nonce,
-  genesisDid: CommonMocks.did,
   privateKey: CommonMocks.privateKey,
 );
 
 // Tested instance
 RemoveProfileUseCase useCase = RemoveProfileUseCase(
-    getIdentityUseCase, getDidUseCase, updateIdentityUseCase);
+  getIdentityUseCase,
+  getDidUseCase,
+  updateIdentityUseCase,
+  getCurrentEnvDidIdentifierUseCase,
+);
 
 @GenerateMocks([
   GetIdentityUseCase,
   GetDidUseCase,
   UpdateIdentityUseCase,
+  GetCurrentEnvDidIdentifierUseCase,
 ])
 void main() {
   setUp(() {
@@ -40,6 +43,8 @@ void main() {
     reset(updateIdentityUseCase);
 
     // Given
+    when(getCurrentEnvDidIdentifierUseCase.execute(param: anyNamed('param')))
+        .thenAnswer((realInvocation) => Future.value(CommonMocks.did));
     when(getIdentityUseCase.execute(param: anyNamed('param'))).thenAnswer(
         (realInvocation) => Future.value(IdentityMocks.privateIdentity));
     when(getDidUseCase.execute(param: anyNamed('param')))
@@ -56,6 +61,14 @@ void main() {
           null);
 
       // Then
+      expect(
+          verify(getCurrentEnvDidIdentifierUseCase.execute(
+                  param: captureAnyNamed('param')))
+              .captured
+              .first
+              .privateKey,
+          param.privateKey);
+
       var getIdentityCapture =
           verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))
               .captured
@@ -73,8 +86,6 @@ void main() {
               .captured
               .first;
       expect(capturedUpdate.privateKey, CommonMocks.privateKey);
-      expect(capturedUpdate.blockchain, CommonMocks.blockchain);
-      expect(capturedUpdate.network, CommonMocks.network);
       expect(capturedUpdate.profiles.first, 0);
     },
   );
@@ -89,6 +100,25 @@ void main() {
       // When
       await expectLater(
           useCase.execute(param: param), throwsA(CommonMocks.exception));
+
+      // Then
+      expect(
+          verify(getCurrentEnvDidIdentifierUseCase.execute(
+                  param: captureAnyNamed('param')))
+              .captured
+              .first
+              .privateKey,
+          param.privateKey);
+
+      var getIdentityCapture =
+          verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))
+              .captured
+              .first;
+      expect(getIdentityCapture.genesisDid, CommonMocks.did);
+
+      verifyNever(getDidUseCase.execute(param: captureAnyNamed('param')));
+      verifyNever(
+          updateIdentityUseCase.execute(param: captureAnyNamed('param')));
     },
   );
 }

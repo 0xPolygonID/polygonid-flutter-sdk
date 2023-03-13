@@ -1,15 +1,12 @@
-import 'dart:io';
-
-import 'package:archive/archive.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/set_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 import 'credential.dart';
 import 'iden3comm.dart';
 import 'identity.dart';
 import 'proof.dart';
-import 'package:http/http.dart' as http;
 
 class PolygonIsSdkNotInitializedException implements Exception {
   String message;
@@ -30,7 +27,7 @@ class PolygonIdSdk {
     return _ref!;
   }
 
-  static Future<void> init() async {
+  static Future<void> init({EnvEntity? env}) async {
     // As [PolygonIdSdk] uses path_provider plugin, we need to ensure the
     // platform is initialized
     WidgetsFlutterBinding.ensureInitialized();
@@ -38,6 +35,13 @@ class PolygonIdSdk {
     // Init injection
     configureInjection();
     await getItSdk.allReady();
+
+    // Set env
+    if (env != null) {
+      await getItSdk
+          .getAsync<SetEnvUseCase>()
+          .then((instance) => instance.execute(param: env));
+    }
 
     // SDK singleton
     _ref = PolygonIdSdk._();
@@ -53,4 +57,8 @@ class PolygonIdSdk {
   late Iden3comm iden3comm;
 
   PolygonIdSdk._();
+
+  Future<void> setEnv({required EnvEntity env}) {
+    return getItSdk.get<SetEnvUseCase>().execute(param: env);
+  }
 }

@@ -14,5 +14,5 @@ GistProofDTO _$GistProofDTOFromJson(Map<String, dynamic> json) => GistProofDTO(
 Map<String, dynamic> _$GistProofDTOToJson(GistProofDTO instance) =>
     <String, dynamic>{
       'root': instance.root,
-      'proof': instance.proof,
+      'proof': instance.proof.toJson(),
     };

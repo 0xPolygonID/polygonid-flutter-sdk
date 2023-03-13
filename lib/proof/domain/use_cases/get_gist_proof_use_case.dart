@@ -10,7 +10,7 @@ import '../repositories/proof_repository.dart';
 class GetGistProofUseCase extends FutureUseCase<String, GistProofEntity> {
   final ProofRepository _proofRepository;
   final IdentityRepository _identityRepository;
-  final GetEnvConfigUseCase _getEnvConfigUseCase;
+  final GetConfigUseCase _getEnvConfigUseCase;
   final GetDidUseCase _getDidUseCase;
 
   GetGistProofUseCase(
