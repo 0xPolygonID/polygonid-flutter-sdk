@@ -1,6 +1,4 @@
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_auth_claim_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_public_keys_use_case.dart';
 
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
@@ -8,20 +6,15 @@ import '../exceptions/identity_exceptions.dart';
 import '../repositories/identity_repository.dart';
 import 'create_identity_state_use_case.dart';
 import 'create_identity_use_case.dart';
-import 'get_did_identifier_use_case.dart';
-import 'get_did_use_case.dart';
 
 class AddIdentityParam {
   final String privateKey;
-  final String blockchain;
-  final String network;
   final List<int> profiles;
 
-  AddIdentityParam(
-      {required this.privateKey,
-      required this.blockchain,
-      required this.network,
-      this.profiles = const []});
+  AddIdentityParam({
+    required this.privateKey,
+    this.profiles = const [],
+  });
 }
 
 class AddIdentityUseCase
@@ -42,10 +35,7 @@ class AddIdentityUseCase
     // Create the [IdentityEntity]
     PrivateIdentityEntity identity = await _createIdentityUseCase.execute(
         param: CreateIdentityParam(
-            privateKey: param.privateKey,
-            blockchain: param.blockchain,
-            network: param.network,
-            profiles: param.profiles));
+            privateKey: param.privateKey, profiles: param.profiles));
     try {
       // Check if identity is already stored (already added)
       await _identityRepository.getIdentity(genesisDid: identity.did);

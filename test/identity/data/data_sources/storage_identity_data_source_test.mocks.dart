@@ -7,10 +7,10 @@ import 'dart:async' as _i4;
 import 'dart:typed_data' as _i10;
 
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:polygonid_flutter_sdk/common/data/data_sources/storage_key_value_data_source.dart'
+    as _i8;
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart'
     as _i6;
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_key_value_data_source.dart'
-    as _i8;
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart'
     as _i9;
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart'

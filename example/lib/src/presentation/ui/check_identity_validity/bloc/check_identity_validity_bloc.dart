@@ -22,10 +22,7 @@ class CheckIdentityValidityBloc
   ) async {
     emit(const CheckIdentityValidityState.loading());
     await _polygonIdSdk.identity
-        .checkIdentityValidity(
-            secret: event.secret,
-            blockchain: event.blockchain,
-            network: event.network)
+        .checkIdentityValidity(secret: event.secret)
         .then((value) {
       emit(const CheckIdentityValidityState.success());
     }).catchError((error) {

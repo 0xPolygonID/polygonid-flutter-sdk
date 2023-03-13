@@ -1,11 +1,10 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 
 import '../../../common/domain/use_cases/get_config_use_case.dart';
-import '../../../identity/domain/use_cases/get_did_identifier_use_case.dart';
 import '../entities/jwz_proof_entity.dart';
-import '../entities/jwz_sd_proof_entity.dart';
 import '../entities/request/auth/auth_iden3_message_entity.dart';
 import '../repositories/iden3comm_repository.dart';
 import 'get_auth_token_use_case.dart';
@@ -30,9 +29,9 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
   final Iden3commRepository _iden3commRepository;
   final GetAuthTokenUseCase _getAuthTokenUseCase;
   final GetIden3commProofsUseCase _getIden3commProofsUseCase;
-  final GetEnvConfigUseCase _getEnvConfigUseCase;
+  final GetConfigUseCase _getEnvConfigUseCase;
   final GetPackageNameUseCase _getPackageNameUseCase;
-  final GetDidIdentifierUseCase _getDidIdentifierUseCase;
+  final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
 
   AuthenticateUseCase(
     this._iden3commRepository,
@@ -40,7 +39,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
     this._getAuthTokenUseCase,
     this._getEnvConfigUseCase,
     this._getPackageNameUseCase,
-    this._getDidIdentifierUseCase,
+    this._getCurrentEnvDidIdentifierUseCase,
   );
 
   @override
@@ -56,18 +55,10 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
 
       String pushUrl =
           await _getEnvConfigUseCase.execute(param: PolygonIdConfig.pushUrl);
-      String blockchain = await _getEnvConfigUseCase.execute(
-          param: PolygonIdConfig.networkName);
-      String network =
-          await _getEnvConfigUseCase.execute(param: PolygonIdConfig.networkEnv);
 
-      String didIdentifier = await _getDidIdentifierUseCase.execute(
-        param: GetDidIdentifierParam(
-          privateKey: param.privateKey,
-          blockchain: blockchain,
-          network: network,
-        ),
-      );
+      String didIdentifier = await _getCurrentEnvDidIdentifierUseCase.execute(
+          param: GetCurrentEnvDidIdentifierParam(
+              privateKey: param.privateKey, profileNonce: param.profileNonce));
 
       String packageName = await _getPackageNameUseCase.execute();
 

@@ -109,11 +109,8 @@ class _CheckIdentityValidityScreenState
   Widget _buildButton() {
     return ElevatedButton(
       onPressed: () {
-        _bloc.add(CheckIdentityValidityEvent.checkIdentityValidity(
-          secret: _secret,
-          blockchain: _blockchain,
-          network: _network,
-        ));
+        _bloc.add(
+            CheckIdentityValidityEvent.checkIdentityValidity(secret: _secret));
       },
       style: CustomButtonStyle.primaryButtonStyle,
       child: const FittedBox(

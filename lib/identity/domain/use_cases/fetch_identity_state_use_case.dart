@@ -7,7 +7,7 @@ import 'get_did_use_case.dart';
 
 class FetchIdentityStateUseCase extends FutureUseCase<String, String> {
   final IdentityRepository _identityRepository;
-  final GetEnvConfigUseCase _getEnvConfigUseCase;
+  final GetConfigUseCase _getEnvConfigUseCase;
   final GetDidUseCase _getDidUseCase;
 
   FetchIdentityStateUseCase(

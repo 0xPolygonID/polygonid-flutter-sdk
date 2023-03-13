@@ -6,20 +6,8 @@ import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
 import '../repositories/identity_repository.dart';
 
-class CreateNewIdentityParam {
-  final String? secret;
-  final String blockchain;
-  final String network;
-
-  CreateNewIdentityParam({
-    this.secret,
-    required this.blockchain,
-    required this.network,
-  });
-}
-
 class CreateNewIdentityUseCase
-    extends FutureUseCase<CreateNewIdentityParam, PrivateIdentityEntity> {
+    extends FutureUseCase<String?, PrivateIdentityEntity> {
   final String _accessMessage;
   final IdentityRepository _identityRepository;
   final AddIdentityUseCase _addIdentityUseCase;
@@ -31,17 +19,13 @@ class CreateNewIdentityUseCase
   );
 
   @override
-  Future<PrivateIdentityEntity> execute(
-      {required CreateNewIdentityParam param}) {
+  Future<PrivateIdentityEntity> execute({String? param}) {
     // Get the privateKey
     return _identityRepository
-        .getPrivateKey(accessMessage: _accessMessage, secret: param.secret)
+        .getPrivateKey(accessMessage: _accessMessage, secret: param)
         // Create and save the identity
         .then((privateKey) => _addIdentityUseCase.execute(
-            param: AddIdentityParam(
-                privateKey: privateKey,
-                blockchain: param.blockchain,
-                network: param.network)))
+            param: AddIdentityParam(privateKey: privateKey)))
         .then((identity) {
       logger().i(
           "[CreateNewIdentityUseCase] Identity created and saved with did: ${identity.did}, for key $param");

@@ -33,11 +33,8 @@ class BackupIdentityBloc
 
     try {
       // get backup, it's a map of profile id and backup
-      Map<int, String> backup = await _polygonIdSdk.identity.backupIdentity(
-        privateKey: privateKey,
-        blockchain: "polygon",
-        network: "mumbai",
-      );
+      Map<int, String> backup =
+          await _polygonIdSdk.identity.backupIdentity(privateKey: privateKey);
 
       // check if backup is empty
       if (!backup.containsKey(0)) {

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:encrypt/encrypt.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 
 class CommonMocks {
@@ -46,4 +47,24 @@ class CommonMocks {
   static FilterEntity filter = FilterEntity(name: name, value: aMap);
 
   static Key key = Key.fromLength(3);
+
+  static Map<String, dynamic> envJson = {
+    'blockchain': name,
+    'network': network,
+    'url': url,
+    'rdpUrl': url,
+    'rhsUrl': url,
+    'apiKey': id,
+    'idStateContract': message,
+  };
+
+  static EnvEntity env = EnvEntity(
+    blockchain: name,
+    network: network,
+    url: url,
+    rdpUrl: url,
+    rhsUrl: url,
+    apiKey: id,
+    idStateContract: message,
+  );
 }

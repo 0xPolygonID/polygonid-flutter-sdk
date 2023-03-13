@@ -23,7 +23,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_p
     as _i10;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
     as _i6;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart'
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart'
     as _i14;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart'
     as _i8;
@@ -181,12 +181,11 @@ class MockGetAuthTokenUseCase extends _i1.Mock
       ) as _i3.Future<String>);
 }
 
-/// A class which mocks [GetEnvConfigUseCase].
+/// A class which mocks [GetConfigUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockGetEnvConfigUseCase extends _i1.Mock
-    implements _i12.GetEnvConfigUseCase {
-  MockGetEnvConfigUseCase() {
+class MockGetConfigUseCase extends _i1.Mock implements _i12.GetConfigUseCase {
+  MockGetConfigUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
@@ -222,17 +221,18 @@ class MockGetPackageNameUseCase extends _i1.Mock
       ) as _i3.Future<String>);
 }
 
-/// A class which mocks [GetDidIdentifierUseCase].
+/// A class which mocks [GetCurrentEnvDidIdentifierUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockGetDidIdentifierUseCase extends _i1.Mock
-    implements _i14.GetDidIdentifierUseCase {
-  MockGetDidIdentifierUseCase() {
+class MockGetCurrentEnvDidIdentifierUseCase extends _i1.Mock
+    implements _i14.GetCurrentEnvDidIdentifierUseCase {
+  MockGetCurrentEnvDidIdentifierUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<String> execute({required _i14.GetDidIdentifierParam? param}) =>
+  _i3.Future<String> execute(
+          {required _i14.GetCurrentEnvDidIdentifierParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
