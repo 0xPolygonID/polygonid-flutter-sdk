@@ -45,8 +45,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(const HomeState.loading());
 
     try {
-      PrivateIdentityEntity identity =
-          await _polygonIdSdk.identity.createIdentity(
+      PrivateIdentityEntity identity = await _polygonIdSdk.identity.addIdentity(
         blockchain: BlockchainResources.blockchain,
         network: BlockchainResources.network,
       );

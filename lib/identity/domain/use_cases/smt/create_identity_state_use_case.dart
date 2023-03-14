@@ -2,9 +2,9 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_auth_claim_use_case.dart';
 
-import '../../../common/domain/domain_logger.dart';
-import '../../../common/domain/use_case.dart';
-import '../repositories/identity_repository.dart';
+import '../../../../common/domain/domain_logger.dart';
+import '../../../../common/domain/use_case.dart';
+import '../../repositories/identity_repository.dart';
 
 class CreateIdentityStateParam {
   final String did;

@@ -1,27 +1,27 @@
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 
-/// Param required to import the identity database
-class ImportIdentityParam {
+/// Param required to import the profile database
+class ImportProfileParam {
   final String privateKey;
   final String did;
   final String encryptedDb;
 
-  ImportIdentityParam({
+  ImportProfileParam({
     required this.privateKey,
     required this.did,
     required this.encryptedDb,
   });
 }
 
-/// Use case to import the encrypted identity database
-class ImportIdentityUseCase extends FutureUseCase<ImportIdentityParam, void> {
+/// Use case to import the encrypted profile database
+class ImportProfileUseCase extends FutureUseCase<ImportProfileParam, void> {
   final IdentityRepository _identityRepository;
 
-  ImportIdentityUseCase(this._identityRepository);
+  ImportProfileUseCase(this._identityRepository);
 
   @override
-  Future<void> execute({required ImportIdentityParam param}) {
+  Future<void> execute({required ImportProfileParam param}) {
     return _identityRepository.importIdentity(
       did: param.did,
       privateKey: param.privateKey,
