@@ -1,17 +1,16 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 
-import '../../../common/domain/domain_logger.dart';
-import '../../../common/domain/use_case.dart';
-import '../entities/identity_entity.dart';
-import '../entities/private_identity_entity.dart';
-import '../exceptions/identity_exceptions.dart';
-import '../repositories/identity_repository.dart';
-import 'export_identity_use_case.dart';
-import 'get_did_identifier_use_case.dart';
-import 'get_did_use_case.dart';
-import 'get_identity_use_case.dart';
-import 'import_identity_use_case.dart';
+import '../../../../common/domain/domain_logger.dart';
+import '../../../../common/domain/use_case.dart';
+import '../../entities/identity_entity.dart';
+import '../../entities/private_identity_entity.dart';
+import '../../exceptions/identity_exceptions.dart';
+import '../../repositories/identity_repository.dart';
+import '../get_did_identifier_use_case.dart';
+import '../get_did_use_case.dart';
+import '../profile/export_profile_use_case.dart';
 
 class BackupIdentityParam {
   final String privateKey;
@@ -28,12 +27,12 @@ class BackupIdentityParam {
 class BackupIdentityUseCase
     extends FutureUseCase<BackupIdentityParam, Map<int, String>> {
   final GetIdentityUseCase _getIdentityUseCase;
-  final ExportIdentityUseCase _exportIdentityUseCase;
+  final ExportProfileUseCase _exportProfileUseCase;
   final GetDidIdentifierUseCase _getDidIdentifierUseCase;
 
   BackupIdentityUseCase(
     this._getIdentityUseCase,
-    this._exportIdentityUseCase,
+    this._exportProfileUseCase,
     this._getDidIdentifierUseCase,
   );
 
@@ -54,8 +53,8 @@ class BackupIdentityUseCase
       ));
 
       for (MapEntry<int, String> profile in identity.profiles.entries) {
-        result[profile.key] = await _exportIdentityUseCase.execute(
-            param: ExportIdentityParam(
+        result[profile.key] = await _exportProfileUseCase.execute(
+            param: ExportProfileParam(
           privateKey: param.privateKey,
           did: profile.value,
         ));

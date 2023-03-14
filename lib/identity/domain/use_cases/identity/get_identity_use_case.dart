@@ -1,13 +1,12 @@
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
-
-import '../../../common/domain/domain_logger.dart';
-import '../../../common/domain/use_case.dart';
-import '../entities/identity_entity.dart';
-import '../repositories/identity_repository.dart';
-import 'get_did_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
 
 class GetIdentityParam {
   final String genesisDid;

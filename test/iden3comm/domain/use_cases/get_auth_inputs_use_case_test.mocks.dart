@@ -31,10 +31,10 @@ import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repo
     as _i18;
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart'
     as _i19;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_use_case.dart'
-    as _i8;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_latest_state_use_case.dart'
     as _i13;
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart'
+    as _i8;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/sign_message_use_case.dart'
     as _i11;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart'

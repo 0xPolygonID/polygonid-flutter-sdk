@@ -2,15 +2,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/import_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/import_profile_use_case.dart';
 
-import 'import_identity_use_case_test.mocks.dart';
+import 'import_profile_use_case_test.mocks.dart';
 
 const privateKey = "thePrivateKey";
 const identifier = "theIdentifier";
 const encrypted = "theIdentityToBeImported";
 
-ImportIdentityParam param = ImportIdentityParam(
+ImportProfileParam param = ImportProfileParam(
   privateKey: privateKey,
   did: identifier,
   encryptedDb: encrypted,
@@ -19,7 +19,7 @@ ImportIdentityParam param = ImportIdentityParam(
 MockIdentityRepository identityRepository = MockIdentityRepository();
 
 // Tested instance
-ImportIdentityUseCase useCase = ImportIdentityUseCase(identityRepository);
+ImportProfileUseCase useCase = ImportProfileUseCase(identityRepository);
 
 @GenerateMocks([IdentityRepository])
 void main() {

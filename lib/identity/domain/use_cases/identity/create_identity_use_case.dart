@@ -1,10 +1,10 @@
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_public_keys_use_case.dart';
 
-import '../../../common/domain/domain_logger.dart';
-import '../../../common/domain/use_case.dart';
-import '../repositories/identity_repository.dart';
-import 'get_did_identifier_use_case.dart';
+import '../../../../common/domain/domain_logger.dart';
+import '../../../../common/domain/use_case.dart';
+import '../../repositories/identity_repository.dart';
+import '../get_did_identifier_use_case.dart';
 
 class CreateIdentityParam {
   final String privateKey;

@@ -1,13 +1,13 @@
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/import_profile_use_case.dart';
 
-import '../../../common/domain/domain_logger.dart';
-import '../../../common/domain/use_case.dart';
-import '../entities/identity_entity.dart';
-import '../entities/private_identity_entity.dart';
-import '../exceptions/identity_exceptions.dart';
+import '../../../../common/domain/domain_logger.dart';
+import '../../../../common/domain/use_case.dart';
+import '../../entities/identity_entity.dart';
+import '../../entities/private_identity_entity.dart';
+import '../../exceptions/identity_exceptions.dart';
 import 'add_identity_use_case.dart';
-import 'get_did_identifier_use_case.dart';
-import 'import_identity_use_case.dart';
+import '../get_did_identifier_use_case.dart';
 
 class RestoreIdentityParam {
   final String privateKey;
@@ -27,13 +27,13 @@ class RestoreIdentityUseCase
     extends FutureUseCase<RestoreIdentityParam, IdentityEntity> {
   final AddIdentityUseCase _addIdentityUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
-  final ImportIdentityUseCase _importIdentityUseCase;
+  final ImportProfileUseCase _importProfileUseCase;
   final GetDidIdentifierUseCase _getDidIdentifierUseCase;
 
   RestoreIdentityUseCase(
     this._addIdentityUseCase,
     this._getIdentityUseCase,
-    this._importIdentityUseCase,
+    this._importProfileUseCase,
     this._getDidIdentifierUseCase,
   );
 
@@ -73,8 +73,8 @@ class RestoreIdentityUseCase
                   blockchain: param.blockchain,
                   network: param.network,
                   profileNonce: identityDb.key));
-          await _importIdentityUseCase.execute(
-              param: ImportIdentityParam(
+          await _importProfileUseCase.execute(
+              param: ImportProfileParam(
             privateKey: param.privateKey,
             did: profileDid,
             encryptedDb: identityDb.value,

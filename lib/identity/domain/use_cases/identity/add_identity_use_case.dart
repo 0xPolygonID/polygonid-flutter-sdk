@@ -2,14 +2,14 @@ import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_auth_claim
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_public_keys_use_case.dart';
 
-import '../../../common/domain/domain_logger.dart';
-import '../../../common/domain/use_case.dart';
-import '../exceptions/identity_exceptions.dart';
-import '../repositories/identity_repository.dart';
-import 'create_identity_state_use_case.dart';
+import '../../../../common/domain/domain_logger.dart';
+import '../../../../common/domain/use_case.dart';
+import '../../exceptions/identity_exceptions.dart';
+import '../../repositories/identity_repository.dart';
+import '../smt/create_identity_state_use_case.dart';
 import 'create_identity_use_case.dart';
-import 'get_did_identifier_use_case.dart';
-import 'get_did_use_case.dart';
+import '../get_did_identifier_use_case.dart';
+import '../get_did_use_case.dart';
 
 class AddIdentityParam {
   final String privateKey;
