@@ -2,19 +2,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/add_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_new_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/add_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/add_new_identity_use_case.dart';
 
 import '../../../common/common_mocks.dart';
 import '../../../common/identity_mocks.dart';
-import 'create_new_identity_use_case_test.mocks.dart';
+import 'add_new_identity_use_case_test.mocks.dart';
 
 // Dependencies
 MockIdentityRepository identityRepository = MockIdentityRepository();
 MockAddIdentityUseCase addIdentityUseCase = MockAddIdentityUseCase();
 
 // Tested instance
-CreateNewIdentityUseCase useCase = CreateNewIdentityUseCase(
+AddNewIdentityUseCase useCase = AddNewIdentityUseCase(
   CommonMocks.config,
   identityRepository,
   addIdentityUseCase,

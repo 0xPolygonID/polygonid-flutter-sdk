@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/set_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
@@ -60,5 +61,11 @@ class PolygonIdSdk {
 
   Future<void> setEnv({required EnvEntity env}) {
     return getItSdk.get<SetEnvUseCase>().execute(param: env);
+  }
+
+  Future<EnvEntity> getEnv() {
+    return getItSdk
+        .getAsync<GetEnvUseCase>()
+        .then((instance) => instance.execute());
   }
 }

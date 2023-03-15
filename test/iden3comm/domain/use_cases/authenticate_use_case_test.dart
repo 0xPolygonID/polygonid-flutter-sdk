@@ -78,7 +78,8 @@ void main() {
         when(getConfigUseCase.execute(param: anyNamed('param')))
             .thenAnswer((realInvocation) => Future.value(config));
 
-        when(getCurrentEnvDidIdentifierUseCase.execute(param: anyNamed('param')))
+        when(getCurrentEnvDidIdentifierUseCase.execute(
+                param: anyNamed('param')))
             .thenAnswer((realInvocation) => Future.value(did));
 
         when(getPackageNameUseCase.execute(param: anyNamed('param')))

@@ -3,9 +3,9 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/add_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_identity_state_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/add_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/smt/create_identity_state_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/create_identity_use_case.dart';
 
 import '../../../common/common_mocks.dart';
 import '../../../common/identity_mocks.dart';
@@ -14,8 +14,7 @@ import 'add_identity_use_case_test.mocks.dart';
 // Data
 var exception = Exception();
 var param = AddIdentityParam(
-    privateKey: CommonMocks.privateKey,
-    profiles: CommonMocks.intValues);
+    privateKey: CommonMocks.privateKey, profiles: CommonMocks.intValues);
 
 // Dependencies
 MockIdentityRepository identityRepository = MockIdentityRepository();

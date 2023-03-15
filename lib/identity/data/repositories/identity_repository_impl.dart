@@ -126,6 +126,15 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
+  Future<List<IdentityEntity>> getIdentities() {
+    return _storageIdentityDataSource
+        .getIdentities()
+        .then((dtos) =>
+            dtos.map((dto) => _identityDTOMapper.mapFrom(dto)).toList())
+        .catchError((error) => throw IdentityException(error));
+  }
+
+  @override
   Future<void> removeIdentity({required String genesisDid}) {
     return _storageIdentityDataSource.removeIdentity(did: genesisDid);
   }
@@ -192,15 +201,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
     } catch (error) {
       return Future.error(error);
     }
-  }
-
-  @override
-  Future<List<IdentityEntity>> getIdentities() {
-    return _storageIdentityDataSource
-        .getIdentities()
-        .then((dtos) =>
-            dtos.map((dto) => _identityDTOMapper.mapFrom(dto)).toList())
-        .catchError((error) => throw IdentityException(error));
   }
 
   @override

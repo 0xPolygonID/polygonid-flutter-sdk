@@ -1,10 +1,10 @@
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 
-import '../../../common/domain/domain_logger.dart';
-import '../../../common/domain/use_case.dart';
-import '../exceptions/identity_exceptions.dart';
-import '../repositories/identity_repository.dart';
-import 'create_identity_state_use_case.dart';
+import '../../../../common/domain/domain_logger.dart';
+import '../../../../common/domain/use_case.dart';
+import '../../exceptions/identity_exceptions.dart';
+import '../../repositories/identity_repository.dart';
+import '../smt/create_identity_state_use_case.dart';
 import 'create_identity_use_case.dart';
 
 class AddIdentityParam {
@@ -55,13 +55,13 @@ class AddIdentityUseCase
         }
       }
     } catch (error) {
-      logger().e("[CreateAndSaveIdentityUseCase] Error: $error");
+      logger().e("[AddIdentityUseCase] Error: $error");
 
       rethrow;
     }
 
     logger().i(
-        "[CreateAndSaveIdentityUseCase] Identity created and saved with did: ${identity.did}, for key $param");
+        "[AddIdentityUseCase] Identity created and saved with did: ${identity.did}, for key ${param.privateKey}");
     return identity;
   }
 }

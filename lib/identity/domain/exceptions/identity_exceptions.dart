@@ -19,6 +19,12 @@ class ProfileAlreadyExistsException implements Exception {
   ProfileAlreadyExistsException(this.genesisDid, this.profileNonce);
 }
 
+class UnknownProfileException implements Exception {
+  final int profileNonce;
+
+  UnknownProfileException(this.profileNonce);
+}
+
 class UnknownIdentityException implements Exception {
   final String did;
 

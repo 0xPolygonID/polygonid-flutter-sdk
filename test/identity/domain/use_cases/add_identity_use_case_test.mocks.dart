@@ -16,10 +16,10 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.d
     as _i3;
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart'
     as _i6;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_identity_state_use_case.dart'
-    as _i9;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_identity_use_case.dart'
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/create_identity_use_case.dart'
     as _i8;
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/smt/create_identity_state_use_case.dart'
+    as _i9;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values

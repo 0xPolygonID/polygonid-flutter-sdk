@@ -6,6 +6,8 @@
 import 'dart:async' as _i6;
 
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_all_claims_use_case.dart'
+    as _i10;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart'
     as _i3;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
@@ -13,13 +15,17 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.d
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart'
     as _i4;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart'
-    as _i9;
+    as _i12;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart'
     as _i7;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_use_case.dart'
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart'
     as _i5;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/update_identity_use_case.dart'
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/update_identity_use_case.dart'
+    as _i11;
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/create_profiles_use_case.dart'
     as _i8;
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/smt/remove_identity_state_use_case.dart'
+    as _i9;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -120,18 +126,84 @@ class MockGetDidUseCase extends _i1.Mock implements _i7.GetDidUseCase {
       ) as _i6.Future<_i3.DidEntity>);
 }
 
+/// A class which mocks [CreateProfilesUseCase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockCreateProfilesUseCase extends _i1.Mock
+    implements _i8.CreateProfilesUseCase {
+  MockCreateProfilesUseCase() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i6.Future<Map<int, String>> execute(
+          {required _i8.CreateProfilesParam? param}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [],
+          {#param: param},
+        ),
+        returnValue: _i6.Future<Map<int, String>>.value(<int, String>{}),
+      ) as _i6.Future<Map<int, String>>);
+}
+
+/// A class which mocks [RemoveIdentityStateUseCase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockRemoveIdentityStateUseCase extends _i1.Mock
+    implements _i9.RemoveIdentityStateUseCase {
+  MockRemoveIdentityStateUseCase() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i6.Future<void> execute({required _i9.RemoveIdentityStateParam? param}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [],
+          {#param: param},
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+}
+
+/// A class which mocks [RemoveAllClaimsUseCase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockRemoveAllClaimsUseCase extends _i1.Mock
+    implements _i10.RemoveAllClaimsUseCase {
+  MockRemoveAllClaimsUseCase() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i6.Future<void> execute({required _i10.RemoveAllClaimsParam? param}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [],
+          {#param: param},
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+}
+
 /// A class which mocks [UpdateIdentityUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockUpdateIdentityUseCase extends _i1.Mock
-    implements _i8.UpdateIdentityUseCase {
+    implements _i11.UpdateIdentityUseCase {
   MockUpdateIdentityUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
   _i6.Future<_i4.PrivateIdentityEntity> execute(
-          {required _i8.UpdateIdentityParam? param}) =>
+          {required _i11.UpdateIdentityParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -154,14 +226,14 @@ class MockUpdateIdentityUseCase extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetCurrentEnvDidIdentifierUseCase extends _i1.Mock
-    implements _i9.GetCurrentEnvDidIdentifierUseCase {
+    implements _i12.GetCurrentEnvDidIdentifierUseCase {
   MockGetCurrentEnvDidIdentifierUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
   _i6.Future<String> execute(
-          {required _i9.GetCurrentEnvDidIdentifierParam? param}) =>
+          {required _i12.GetCurrentEnvDidIdentifierParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,

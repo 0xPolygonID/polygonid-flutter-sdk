@@ -1,20 +1,20 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/add_profile_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/backup_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/create_new_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identities_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_profiles_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/restore_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/add_new_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/backup_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identities_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/restore_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/add_profile_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/get_profiles_use_case.dart';
 
 import '../identity/domain/entities/identity_entity.dart';
 import '../identity/domain/entities/private_identity_entity.dart';
 import '../identity/domain/use_cases/check_identity_validity_use_case.dart';
 import '../identity/domain/use_cases/fetch_identity_state_use_case.dart';
 import '../identity/domain/use_cases/get_did_identifier_use_case.dart';
-import '../identity/domain/use_cases/get_identity_use_case.dart';
-import '../identity/domain/use_cases/remove_identity_use_case.dart';
-import '../identity/domain/use_cases/remove_profile_use_case.dart';
+import '../identity/domain/use_cases/identity/remove_identity_use_case.dart';
+import '../identity/domain/use_cases/profile/remove_profile_use_case.dart';
 import '../identity/domain/use_cases/sign_message_use_case.dart';
 
 abstract class PolygonIdSdkIdentity {
@@ -42,7 +42,7 @@ abstract class PolygonIdSdkIdentity {
   /// - If the byte array is longer than 32, an exception will be thrown.
   ///
   /// The identity will be created using the current env set with [PolygonIdSdk.setEnv]
-  Future<PrivateIdentityEntity> createIdentity({String? secret});
+  Future<PrivateIdentityEntity> addIdentity({String? secret});
 
   /// Restores an [IdentityEntity] from a privateKey and encrypted backup databases
   /// associated to the identity
@@ -105,15 +105,13 @@ abstract class PolygonIdSdkIdentity {
 
   /// Remove the previously stored identity associated with the identifier
   ///
-  /// the [genesisDid] is the unique id of the identity which profileNonce is 0
-  ///
   /// Identity [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
   /// using the claims associated to the identity
   ///
   /// Throws [IdentityException] if an error occurs.
-  Future<void> removeIdentity(
-      {required String genesisDid, required String privateKey});
+  @override
+  Future<void> removeIdentity({required String privateKey});
 
   /// Returns the did identifier derived from a privateKey
   ///
@@ -150,7 +148,7 @@ abstract class PolygonIdSdkIdentity {
   /// The [message] is the message to sign. Returns a string representing the signature.
   Future<String> sign({required String privateKey, required String message});
 
-  /// Adds a profile to the identity derived from private key and stored
+  /// Adds a profile if it doesn't already exist to the identity derived from private key and stored
   /// in the Polygon ID Sdk.
   ///
   /// The [privateKey]  is the key used to access all the sensitive info from the identity
@@ -191,7 +189,7 @@ abstract class PolygonIdSdkIdentity {
 @injectable
 class Identity implements PolygonIdSdkIdentity {
   final CheckIdentityValidityUseCase _checkIdentityValidityUseCase;
-  final CreateNewIdentityUseCase _createNewIdentityUseCase;
+  final AddNewIdentityUseCase _addNewIdentityUseCase;
   final RestoreIdentityUseCase _restoreIdentityUseCase;
   final BackupIdentityUseCase _backupIdentityUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
@@ -208,7 +206,7 @@ class Identity implements PolygonIdSdkIdentity {
 
   Identity(
     this._checkIdentityValidityUseCase,
-    this._createNewIdentityUseCase,
+    this._addNewIdentityUseCase,
     this._restoreIdentityUseCase,
     this._backupIdentityUseCase,
     this._getIdentityUseCase,
@@ -253,8 +251,8 @@ class Identity implements PolygonIdSdkIdentity {
   /// - If the byte array is longer than 32, an exception will be thrown.
   ///
   /// The identity will be created using the current env set with [PolygonIdSdk.setEnv]
-  Future<PrivateIdentityEntity> createIdentity({String? secret}) async {
-    return _createNewIdentityUseCase.execute(param: secret);
+  Future<PrivateIdentityEntity> addIdentity({String? secret}) async {
+    return _addNewIdentityUseCase.execute(param: secret);
   }
 
   /// Restores an [IdentityEntity] from a privateKey and encrypted backup databases
@@ -330,19 +328,14 @@ class Identity implements PolygonIdSdkIdentity {
 
   /// Remove the previously stored identity associated with the identifier
   ///
-  /// the [genesisDid] is the unique id of the identity which profileNonce is 0
-  ///
   /// Identity [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
   /// using the claims associated to the identity
   ///
   /// Throws [IdentityException] if an error occurs.
   @override
-  Future<void> removeIdentity(
-      {required String genesisDid, required String privateKey}) {
-    return _removeIdentityUseCase.execute(
-        param: RemoveIdentityParam(
-            genesisDid: genesisDid, privateKey: privateKey));
+  Future<void> removeIdentity({required String privateKey}) {
+    return _removeIdentityUseCase.execute(param: privateKey);
   }
 
   /// Sign a message through a identity's private key.
