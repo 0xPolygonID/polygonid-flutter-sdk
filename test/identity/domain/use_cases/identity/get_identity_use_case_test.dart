@@ -15,16 +15,13 @@ import 'get_identity_use_case_test.mocks.dart';
 
 MockIdentityRepository identityRepository = MockIdentityRepository();
 MockGetDidUseCase getDidUseCase = MockGetDidUseCase();
-MockGetDidIdentifierUseCase getDidIdentifierUseCase = MockGetDidIdentifierUseCase();
+MockGetDidIdentifierUseCase getDidIdentifierUseCase =
+    MockGetDidIdentifierUseCase();
 
-var param = GetIdentityParam(
-    genesisDid: CommonMocks.did);
+var param = GetIdentityParam(genesisDid: CommonMocks.did);
 
 GetIdentityUseCase useCase = GetIdentityUseCase(
-  identityRepository,
-  getDidUseCase,
-  getDidIdentifierUseCase
-);
+    identityRepository, getDidUseCase, getDidIdentifierUseCase);
 
 @GenerateMocks([
   IdentityRepository,
@@ -37,15 +34,17 @@ void main() {
     reset(getDidUseCase);
 
     // Given
-    when(identityRepository.getIdentity(genesisDid: CommonMocks.did)).thenAnswer(
-        (realInvocation) => Future.value(IdentityMocks.privateIdentity));
+    when(identityRepository.getIdentity(genesisDid: CommonMocks.did))
+        .thenAnswer(
+            (realInvocation) => Future.value(IdentityMocks.privateIdentity));
   });
 
   test(
     'Given a param, when I call execute, then I expect a PrivateIdentityEntity to be returned',
     () async {
       // When
-      expect(await useCase.execute(param: param), IdentityMocks.privateIdentity);
+      expect(
+          await useCase.execute(param: param), IdentityMocks.privateIdentity);
     },
   );
 
@@ -57,7 +56,8 @@ void main() {
           .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
       // When
-      await expectLater(useCase.execute(param: param), throwsA(CommonMocks.exception));
+      await expectLater(
+          useCase.execute(param: param), throwsA(CommonMocks.exception));
     },
   );
 }
