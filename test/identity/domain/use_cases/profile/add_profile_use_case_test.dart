@@ -1,12 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/add_profile_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/update_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/update_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/add_profile_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/create_profiles_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/smt/create_identity_state_use_case.dart';
 
 import '../../../../common/common_mocks.dart';
 import '../../../../common/identity_mocks.dart';
@@ -15,7 +16,7 @@ import 'add_profile_use_case_test.mocks.dart';
 // Data
 var exception = Exception();
 var param = AddProfileParam(
-  profileNonce: CommonMocks.nonce,
+  profileNonce: 2,
   privateKey: CommonMocks.privateKey,
 );
 
@@ -23,6 +24,9 @@ var param = AddProfileParam(
 MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
 MockGetDidUseCase getDidUseCase = MockGetDidUseCase();
 MockUpdateIdentityUseCase updateIdentityUseCase = MockUpdateIdentityUseCase();
+MockCreateProfilesUseCase createProfilesUseCase = MockCreateProfilesUseCase();
+MockCreateIdentityStateUseCase createIdentityStateUseCase =
+    MockCreateIdentityStateUseCase();
 MockGetCurrentEnvDidIdentifierUseCase getCurrentEnvDidIdentifierUseCase =
     MockGetCurrentEnvDidIdentifierUseCase();
 
@@ -32,6 +36,8 @@ AddProfileUseCase useCase = AddProfileUseCase(
   getDidUseCase,
   updateIdentityUseCase,
   getCurrentEnvDidIdentifierUseCase,
+  createProfilesUseCase,
+  createIdentityStateUseCase,
 );
 
 @GenerateMocks([
@@ -39,12 +45,17 @@ AddProfileUseCase useCase = AddProfileUseCase(
   GetDidUseCase,
   UpdateIdentityUseCase,
   GetCurrentEnvDidIdentifierUseCase,
+  CreateProfilesUseCase,
+  CreateIdentityStateUseCase,
 ])
 void main() {
   setUp(() {
     reset(getIdentityUseCase);
     reset(getDidUseCase);
     reset(updateIdentityUseCase);
+    reset(createProfilesUseCase);
+    reset(createIdentityStateUseCase);
+    reset(getCurrentEnvDidIdentifierUseCase);
 
     // Given
     when(getCurrentEnvDidIdentifierUseCase.execute(param: anyNamed('param')))
@@ -53,16 +64,20 @@ void main() {
         (realInvocation) => Future.value(IdentityMocks.privateIdentity));
     when(getDidUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value(IdentityMocks.did));
+    when(createProfilesUseCase.execute(param: anyNamed('param'))).thenAnswer(
+        (realInvocation) => Future.value(
+            {param.profileNonce: CommonMocks.did + "${param.profileNonce}"}));
+    when(createIdentityStateUseCase.execute(param: anyNamed('param')))
+        .thenAnswer((realInvocation) => Future.value());
     when(updateIdentityUseCase.execute(param: anyNamed('param'))).thenAnswer(
         (realInvocation) => Future.value(IdentityMocks.privateIdentity));
   });
 
   test(
-    'Given a param, when I call execute, then I expect no response to be returned',
+    'Given a param, when I call execute, then I expect the process to complete',
     () async {
       // When
-      expect(await useCase.execute(param: param).then((realInvocation) => null),
-          null);
+      await expectLater(useCase.execute(param: param), completes);
 
       // Then
       expect(

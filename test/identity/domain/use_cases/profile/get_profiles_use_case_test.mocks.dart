@@ -10,7 +10,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.d
     as _i2;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart'
     as _i5;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_use_case.dart'
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart'
     as _i3;
 
 // ignore_for_file: type=lint

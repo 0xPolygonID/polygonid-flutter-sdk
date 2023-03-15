@@ -1,26 +1,20 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_profiles_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/get_profiles_use_case.dart';
 
 import '../../../../common/common_mocks.dart';
 import '../../../../common/identity_mocks.dart';
 import 'get_profiles_use_case_test.mocks.dart';
 
 MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
-MockGetCurrentEnvDidIdentifierUseCase getCurrentEnvDidIdentifierUseCase =
-    MockGetCurrentEnvDidIdentifierUseCase();
 
 // Data
 String param = CommonMocks.did;
 
-GetProfilesUseCase useCase = GetProfilesUseCase(
-  getIdentityUseCase,
-  getCurrentEnvDidIdentifierUseCase,
-);
+GetProfilesUseCase useCase = GetProfilesUseCase(getIdentityUseCase);
 
 @GenerateMocks([
   GetIdentityUseCase,
@@ -31,8 +25,6 @@ void main() {
     reset(getIdentityUseCase);
 
     // Given
-    when(getCurrentEnvDidIdentifierUseCase.execute(param: anyNamed('param')))
-        .thenAnswer((realInvocation) => Future.value(CommonMocks.did));
     when(getIdentityUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value(IdentityMocks.identity));
   });
@@ -44,14 +36,6 @@ void main() {
       expect(await useCase.execute(param: param), CommonMocks.profiles);
 
       // Then
-      expect(
-          verify(getCurrentEnvDidIdentifierUseCase.execute(
-              param: captureAnyNamed('param')))
-              .captured
-              .first
-              .privateKey,
-          param);
-
       var getIdentityCapture =
           verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))
               .captured;
@@ -71,14 +55,6 @@ void main() {
           useCase.execute(param: param), throwsA(CommonMocks.exception));
 
       // Then
-      expect(
-          verify(getCurrentEnvDidIdentifierUseCase.execute(
-              param: captureAnyNamed('param')))
-              .captured
-              .first
-              .privateKey,
-          param);
-
       var getIdentityCapture =
           verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))
               .captured;

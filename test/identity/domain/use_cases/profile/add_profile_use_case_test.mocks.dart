@@ -16,10 +16,14 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_
     as _i9;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart'
     as _i7;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_use_case.dart'
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart'
     as _i5;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/update_identity_use_case.dart'
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/update_identity_use_case.dart'
     as _i8;
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/create_profiles_use_case.dart'
+    as _i10;
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/smt/create_identity_state_use_case.dart'
+    as _i11;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -170,4 +174,48 @@ class MockGetCurrentEnvDidIdentifierUseCase extends _i1.Mock
         ),
         returnValue: _i6.Future<String>.value(''),
       ) as _i6.Future<String>);
+}
+
+/// A class which mocks [CreateProfilesUseCase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockCreateProfilesUseCase extends _i1.Mock
+    implements _i10.CreateProfilesUseCase {
+  MockCreateProfilesUseCase() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i6.Future<Map<int, String>> execute(
+          {required _i10.CreateProfilesParam? param}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [],
+          {#param: param},
+        ),
+        returnValue: _i6.Future<Map<int, String>>.value(<int, String>{}),
+      ) as _i6.Future<Map<int, String>>);
+}
+
+/// A class which mocks [CreateIdentityStateUseCase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockCreateIdentityStateUseCase extends _i1.Mock
+    implements _i11.CreateIdentityStateUseCase {
+  MockCreateIdentityStateUseCase() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i6.Future<void> execute({required _i11.CreateIdentityStateParam? param}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [],
+          {#param: param},
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
 }

@@ -1,11 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_all_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/remove_profile_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/update_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/update_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/create_profiles_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/remove_profile_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/smt/remove_identity_state_use_case.dart';
 
 import '../../../../common/common_mocks.dart';
 import '../../../../common/identity_mocks.dart';
@@ -13,6 +16,11 @@ import 'remove_profile_use_case_test.mocks.dart';
 
 MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
 MockGetDidUseCase getDidUseCase = MockGetDidUseCase();
+MockCreateProfilesUseCase createProfilesUseCase = MockCreateProfilesUseCase();
+MockRemoveIdentityStateUseCase removeIdentityStateUseCase =
+    MockRemoveIdentityStateUseCase();
+MockRemoveAllClaimsUseCase removeAllClaimsUseCase =
+    MockRemoveAllClaimsUseCase();
 MockUpdateIdentityUseCase updateIdentityUseCase = MockUpdateIdentityUseCase();
 MockGetCurrentEnvDidIdentifierUseCase getCurrentEnvDidIdentifierUseCase =
     MockGetCurrentEnvDidIdentifierUseCase();
@@ -28,11 +36,17 @@ RemoveProfileUseCase useCase = RemoveProfileUseCase(
   getDidUseCase,
   updateIdentityUseCase,
   getCurrentEnvDidIdentifierUseCase,
+  createProfilesUseCase,
+  removeIdentityStateUseCase,
+  removeAllClaimsUseCase,
 );
 
 @GenerateMocks([
   GetIdentityUseCase,
   GetDidUseCase,
+  CreateProfilesUseCase,
+  RemoveIdentityStateUseCase,
+  RemoveAllClaimsUseCase,
   UpdateIdentityUseCase,
   GetCurrentEnvDidIdentifierUseCase,
 ])
@@ -40,6 +54,9 @@ void main() {
   setUp(() {
     reset(getIdentityUseCase);
     reset(getDidUseCase);
+    reset(createProfilesUseCase);
+    reset(removeIdentityStateUseCase);
+    reset(removeAllClaimsUseCase);
     reset(updateIdentityUseCase);
 
     // Given
@@ -49,6 +66,12 @@ void main() {
         (realInvocation) => Future.value(IdentityMocks.privateIdentity));
     when(getDidUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value(IdentityMocks.did));
+    when(createProfilesUseCase.execute(param: anyNamed('param')))
+        .thenAnswer((realInvocation) => Future.value(CommonMocks.profiles));
+    when(removeIdentityStateUseCase.execute(param: anyNamed('param')))
+        .thenAnswer((realInvocation) => Future.value());
+    when(removeAllClaimsUseCase.execute(param: anyNamed('param')))
+        .thenAnswer((realInvocation) => Future.value());
     when(updateIdentityUseCase.execute(param: anyNamed('param'))).thenAnswer(
         (realInvocation) => Future.value(IdentityMocks.privateIdentity));
   });

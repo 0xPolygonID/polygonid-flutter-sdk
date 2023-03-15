@@ -1,19 +1,18 @@
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
-
-import '../../../common/domain/domain_logger.dart';
-import '../../../common/domain/use_case.dart';
-import '../entities/identity_entity.dart';
-import 'export_identity_use_case.dart';
-import 'get_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/export_profile_use_case.dart';
 
 class BackupIdentityUseCase extends FutureUseCase<String, Map<int, String>> {
   final GetIdentityUseCase _getIdentityUseCase;
-  final ExportIdentityUseCase _exportIdentityUseCase;
+  final ExportProfileUseCase _exportProfileUseCase;
   final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
 
   BackupIdentityUseCase(
     this._getIdentityUseCase,
-    this._exportIdentityUseCase,
+    this._exportProfileUseCase,
     this._getCurrentEnvDidIdentifierUseCase,
   );
 
@@ -28,8 +27,8 @@ class BackupIdentityUseCase extends FutureUseCase<String, Map<int, String>> {
           param: GetIdentityParam(genesisDid: genesisDid));
 
       for (MapEntry<int, String> profile in identity.profiles.entries) {
-        result[profile.key] = await _exportIdentityUseCase.execute(
-            param: ExportIdentityParam(
+        result[profile.key] = await _exportProfileUseCase.execute(
+            param: ExportProfileParam(
           privateKey: param,
           did: profile.value,
         ));
