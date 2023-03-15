@@ -46,5 +46,4 @@ app.*.map.json
 /android/app/release
 
 # Project specific
-env.dart
 env.g.dart
