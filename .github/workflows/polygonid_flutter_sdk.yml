@@ -11,14 +11,10 @@ jobs:
         with:
           flutter-version: '3.7.6'
           channel: 'stable'
-      - name: production secret environment setting
-        run: echo $PROD_ENV | base64 -d > lib/env/prod_env.g.dart
+      - name: example app env
+        run: echo $APP_ENV | base64 -d > example/lib/src/common/env.g.dart
         env:
             PROD_ENV: ${{ secrets.PROD_ENV }}
-      - name: development secret environment setting
-        run: echo $DEV_ENV | base64 -d > lib/env/dev_env.g.dart
-        env:
-            DEV_ENV: ${{ secrets.DEV_ENV }}
       - name: verify flutter version
         run: flutter --version
       - name: flutter clean

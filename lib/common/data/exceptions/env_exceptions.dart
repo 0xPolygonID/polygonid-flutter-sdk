@@ -1,0 +1,1 @@
+class EnvNotSetException implements Exception {}
