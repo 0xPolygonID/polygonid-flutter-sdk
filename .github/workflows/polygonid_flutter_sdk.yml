@@ -1,5 +1,9 @@
 name: polygonid_flutter_sdk
-on: [pull_request, push]
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
 
 jobs:
   build:
@@ -32,10 +36,10 @@ jobs:
       - name: Run tests
         if: github.base_ref == 'develop' || github.base_ref == 'main'
         run: flutter test --coverage
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
       - name: Publish dry run
         if: github.base_ref == 'main'
         run: flutter pub publish --dry-run
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        with: 
-          token: ${{ secrets.CODECOV_TOKEN }}
