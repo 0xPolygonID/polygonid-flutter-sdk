@@ -31,7 +31,7 @@ jobs:
         run: flutter analyze lib test example
       - name: Run tests
         if: github.base_ref == 'develop' || github.base_ref == 'main'
-        run: flutter test
+        run: flutter test --coverage
       - name: Publish dry run
         if: github.base_ref == 'main'
         run: flutter pub publish --dry-run
