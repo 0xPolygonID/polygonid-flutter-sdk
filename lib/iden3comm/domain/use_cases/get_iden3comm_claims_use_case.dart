@@ -54,43 +54,47 @@ class GetIden3commClaimsUseCase
       if (await _isProofCircuitSupported.execute(
           param: request.scope.circuitId)) {
         // Claims
-        claims = await _iden3commCredentialRepository
-            .getFilters(request: request)
-            .then((filters) => _getClaimsUseCase.execute(
-                    param: GetClaimsParam(
-                  filters: filters,
-                  did: param.did,
-                  privateKey: param.privateKey,
-                )))
-            .then((claims) async {
-          if (request.scope.query.skipClaimRevocationCheck == null ||
-              request.scope.query.skipClaimRevocationCheck == false) {
-            for (int i = 0; i < claims.length; i++) {
-              Map<String, dynamic> revStatus =
-                  await _getClaimRevocationStatusUseCase
-                      .execute(param: claims[i])
-                      .catchError((_) => <String, dynamic>{});
+        claims.addAll(
+          await _iden3commCredentialRepository
+              .getFilters(request: request)
+              .then((filters) => _getClaimsUseCase.execute(
+                      param: GetClaimsParam(
+                    filters: filters,
+                    did: param.did,
+                    privateKey: param.privateKey,
+                  )))
+              .then(
+            (claims) async {
+              if (request.scope.query.skipClaimRevocationCheck == null ||
+                  request.scope.query.skipClaimRevocationCheck == false) {
+                for (int i = 0; i < claims.length; i++) {
+                  Map<String, dynamic> revStatus =
+                      await _getClaimRevocationStatusUseCase
+                          .execute(param: claims[i])
+                          .catchError((_) => <String, dynamic>{});
 
-              /// FIXME: define an entity for revocation and use it in repo impl
-              if (revStatus.isNotEmpty &&
-                  revStatus["mtp"] != null &&
-                  revStatus["mtp"]["existence"] != null &&
-                  revStatus["mtp"]["existence"] == true) {
-                claims[i] = await _updateClaimUseCase.execute(
-                    param: UpdateClaimParam(
-                        id: claims[i].id,
-                        state: ClaimState.revoked,
-                        did: param.did,
-                        privateKey: param.privateKey));
+                  /// FIXME: define an entity for revocation and use it in repo impl
+                  if (revStatus.isNotEmpty &&
+                      revStatus["mtp"] != null &&
+                      revStatus["mtp"]["existence"] != null &&
+                      revStatus["mtp"]["existence"] == true) {
+                    claims[i] = await _updateClaimUseCase.execute(
+                        param: UpdateClaimParam(
+                            id: claims[i].id,
+                            state: ClaimState.revoked,
+                            did: param.did,
+                            privateKey: param.privateKey));
+                  }
+                }
+                return claims
+                    .where((claim) => claim.state != ClaimState.revoked)
+                    .toList();
+              } else {
+                return claims;
               }
-            }
-            return claims
-                .where((claim) => claim.state != ClaimState.revoked)
-                .toList();
-          } else {
-            return claims;
-          }
-        });
+            },
+          ),
+        );
       }
     }
 
