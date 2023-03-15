@@ -1,5 +1,9 @@
 name: polygonid_flutter_sdk
-on: [pull_request, push]
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
 
 jobs:
   build:
@@ -31,16 +35,11 @@ jobs:
         run: flutter analyze lib test example
       - name: Run tests
         if: github.base_ref == 'develop' || github.base_ref == 'main'
-        run: flutter test --coverage="coverage"
-      - name: Install coverage tools
-        run: dart pub global activate coverage
-      - name: format coverage
-        run: $HOME/.pub-cache/bin/format_coverage --lcov --in=coverage --out=coverage.lcov --packages=.packages --report-on=lib
+        run: flutter test --coverage
       - name: Publish dry run
         if: github.base_ref == 'main'
         run: flutter pub publish --dry-run
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:
-          files: coverage.lcov 
           token: ${{ secrets.CODECOV_TOKEN }}
