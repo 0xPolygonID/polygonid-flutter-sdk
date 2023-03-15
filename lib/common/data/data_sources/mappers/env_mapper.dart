@@ -8,11 +8,12 @@ class EnvMapper extends Mapper<Map<String, dynamic>, EnvEntity> {
     return EnvEntity(
       blockchain: from['blockchain'],
       network: from['network'],
-      url: from['url'],
-      rdpUrl: from['rdpUrl'],
+      web3Url: from['web3Url'],
+      web3RdpUrl: from['web3RdpUrl'],
       rhsUrl: from['rhsUrl'],
-      apiKey: from['apiKey'],
+      web3ApiKey: from['web3ApiKey'],
       idStateContract: from['idStateContract'],
+      pushUrl: from['pushUrl'],
     );
   }
 
@@ -21,11 +22,12 @@ class EnvMapper extends Mapper<Map<String, dynamic>, EnvEntity> {
     return EnvDTO(
       blockchain: to.blockchain,
       network: to.network,
-      url: to.url,
-      rdpUrl: to.rdpUrl,
+      web3Url: to.web3Url,
+      web3RdpUrl: to.web3RdpUrl,
       rhsUrl: to.rhsUrl,
-      apiKey: to.apiKey,
+      web3ApiKey: to.web3ApiKey,
       idStateContract: to.idStateContract,
+      pushUrl: to.pushUrl,
     ).toJson();
   }
 }

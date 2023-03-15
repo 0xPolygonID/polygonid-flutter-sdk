@@ -51,20 +51,22 @@ class CommonMocks {
   static Map<String, dynamic> envJson = {
     'blockchain': name,
     'network': network,
-    'url': url,
-    'rdpUrl': url,
+    'web3Url': url,
+    'web3RdpUrl': url,
     'rhsUrl': url,
-    'apiKey': id,
+    'web3ApiKey': id,
     'idStateContract': message,
+    'pushUrl': url,
   };
 
   static EnvEntity env = EnvEntity(
     blockchain: name,
     network: network,
-    url: url,
-    rdpUrl: url,
+    web3Url: url,
+    web3RdpUrl: url,
     rhsUrl: url,
-    apiKey: id,
+    web3ApiKey: id,
     idStateContract: message,
+    pushUrl: url,
   );
 }

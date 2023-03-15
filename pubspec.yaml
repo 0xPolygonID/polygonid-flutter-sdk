@@ -37,7 +37,6 @@ dependencies:
   country_code: ^1.0.0
   encrypt: ^5.0.1
   pointycastle: ^3.6.1
-  envied: ^0.3.0
   package_info_plus: ^3.0.1
 
 dev_dependencies:
@@ -54,7 +53,6 @@ dev_dependencies:
   injectable_generator: ^1.5.3
   build_runner: ^2.3.3
   freezed: ^2.1.1
-  envied_generator: ^0.3.0
 
 ffigen:
   name: NativePolygonIdCoreLib

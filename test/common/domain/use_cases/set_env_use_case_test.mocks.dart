@@ -10,8 +10,6 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart'
     as _i2;
 import 'package:polygonid_flutter_sdk/common/domain/repositories/config_repository.dart'
     as _i3;
-import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_case.dart'
-    as _i5;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -42,16 +40,6 @@ class MockConfigRepository extends _i1.Mock implements _i3.ConfigRepository {
     _i1.throwOnMissingStub(this);
   }
 
-  @override
-  _i4.Future<String> getConfig({required _i5.PolygonIdConfig? config}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getConfig,
-          [],
-          {#config: config},
-        ),
-        returnValue: _i4.Future<String>.value(''),
-      ) as _i4.Future<String>);
   @override
   _i4.Future<_i2.EnvEntity> getEnv() => (super.noSuchMethod(
         Invocation.method(

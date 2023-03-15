@@ -3,20 +3,16 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i6;
+import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:polygonid_flutter_sdk/common/data/data_sources/env_datasource.dart'
-    as _i3;
 import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/env_mapper.dart'
-    as _i8;
+    as _i6;
 import 'package:polygonid_flutter_sdk/common/data/data_sources/storage_key_value_data_source.dart'
-    as _i5;
+    as _i3;
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart'
     as _i2;
-import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_case.dart'
-    as _i4;
-import 'package:sembast/sembast.dart' as _i7;
+import 'package:sembast/sembast.dart' as _i5;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -39,36 +35,19 @@ class _FakeEnvEntity_0 extends _i1.SmartFake implements _i2.EnvEntity {
         );
 }
 
-/// A class which mocks [EnvDataSource].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockEnvDataSource extends _i1.Mock implements _i3.EnvDataSource {
-  MockEnvDataSource() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  String? getConfig({required _i4.PolygonIdConfig? config}) =>
-      (super.noSuchMethod(Invocation.method(
-        #getConfig,
-        [],
-        {#config: config},
-      )) as String?);
-}
-
 /// A class which mocks [StorageKeyValueDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockStorageKeyValueDataSource extends _i1.Mock
-    implements _i5.StorageKeyValueDataSource {
+    implements _i3.StorageKeyValueDataSource {
   MockStorageKeyValueDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i6.Future<dynamic> get({
+  _i4.Future<dynamic> get({
     required String? key,
-    _i7.DatabaseClient? database,
+    _i5.DatabaseClient? database,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -79,13 +58,13 @@ class MockStorageKeyValueDataSource extends _i1.Mock
             #database: database,
           },
         ),
-        returnValue: _i6.Future<dynamic>.value(),
-      ) as _i6.Future<dynamic>);
+        returnValue: _i4.Future<dynamic>.value(),
+      ) as _i4.Future<dynamic>);
   @override
-  _i6.Future<void> store({
+  _i4.Future<void> store({
     required String? key,
     required dynamic value,
-    _i7.DatabaseClient? database,
+    _i5.DatabaseClient? database,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -97,13 +76,13 @@ class MockStorageKeyValueDataSource extends _i1.Mock
             #database: database,
           },
         ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
   @override
-  _i6.Future<String?> remove({
+  _i4.Future<String?> remove({
     required String? key,
-    _i7.DatabaseClient? database,
+    _i5.DatabaseClient? database,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -114,14 +93,14 @@ class MockStorageKeyValueDataSource extends _i1.Mock
             #database: database,
           },
         ),
-        returnValue: _i6.Future<String?>.value(),
-      ) as _i6.Future<String?>);
+        returnValue: _i4.Future<String?>.value(),
+      ) as _i4.Future<String?>);
 }
 
 /// A class which mocks [EnvMapper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockEnvMapper extends _i1.Mock implements _i8.EnvMapper {
+class MockEnvMapper extends _i1.Mock implements _i6.EnvMapper {
   MockEnvMapper() {
     _i1.throwOnMissingStub(this);
   }

@@ -1,99 +1,29 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/common/data/data_sources/env_datasource.dart';
 import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/env_mapper.dart';
 import 'package:polygonid_flutter_sdk/common/data/data_sources/storage_key_value_data_source.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/env_exceptions.dart';
 import 'package:polygonid_flutter_sdk/common/data/repositories/config_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/common/domain/repositories/config_repository.dart';
-import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_case.dart';
 
 import '../../common_mocks.dart';
 import 'config_repository_test.mocks.dart';
 
 // Dependencies
-MockEnvDataSource envDataSource = MockEnvDataSource();
 MockStorageKeyValueDataSource storageKeyValueDataSource =
     MockStorageKeyValueDataSource();
 MockEnvMapper envMapper = MockEnvMapper();
 
 // Tested instance
 ConfigRepository repository =
-    ConfigRepositoryImpl(envDataSource, storageKeyValueDataSource, envMapper);
+    ConfigRepositoryImpl(storageKeyValueDataSource, envMapper);
 
 @GenerateMocks([
-  EnvDataSource,
   StorageKeyValueDataSource,
   EnvMapper,
 ])
 void main() {
-  group("Get config", () {
-    test(
-        "Given a PolygonIdConfig, when I call getConfig, I expect a String to be returned",
-        () async {
-      // Given
-      when(envDataSource.getConfig(config: anyNamed('config')))
-          .thenReturn(CommonMocks.config);
-
-      // When
-      expect(await repository.getConfig(config: PolygonIdConfig.network),
-          CommonMocks.config);
-
-      // Then
-      expect(
-          verify(envDataSource.getConfig(config: captureAnyNamed('config')))
-              .captured
-              .first,
-          PolygonIdConfig.network);
-    });
-
-    test(
-        "Given a PolygonIdConfig which has no value, when I call getConfig, I expect a ConfigNotSetException to be thrown",
-        () async {
-      // Given
-      when(envDataSource.getConfig(config: anyNamed('config')))
-          .thenReturn(null);
-
-      // When
-      await repository
-          .getConfig(config: PolygonIdConfig.network)
-          .then((value) => expect(true, false))
-          .catchError((error) {
-        expect(error, isA<ConfigNotSetException>());
-        expect(error.config, PolygonIdConfig.network);
-      });
-
-      // Then
-      expect(
-          verify(envDataSource.getConfig(config: captureAnyNamed('config')))
-              .captured
-              .first,
-          PolygonIdConfig.network);
-    });
-
-    test(
-        "Given a PolygonIdConfig, when I call getConfig and an error occurred, I expect a ConfigNotSetException to be thrown",
-        () async {
-      // Given
-      when(envDataSource.getConfig(config: anyNamed('config')))
-          .thenThrow(CommonMocks.exception);
-
-      // When
-      await repository
-          .getConfig(config: PolygonIdConfig.network)
-          .then((value) => expect(true, false))
-          .catchError((error) => expect(error, CommonMocks.exception));
-
-      // Then
-      expect(
-          verify(envDataSource.getConfig(config: captureAnyNamed('config')))
-              .captured
-              .first,
-          PolygonIdConfig.network);
-    });
-  });
-
   group("Get env", () {
     setUp(() {
       // Given

@@ -7,20 +7,22 @@ part 'env_dto.g.dart';
 class EnvDTO extends Equatable {
   final String blockchain;
   final String network;
-  final String url;
-  final String rdpUrl;
+  final String web3Url;
+  final String web3RdpUrl;
   final String rhsUrl;
-  final String apiKey;
+  final String web3ApiKey;
   final String idStateContract;
+  final String pushUrl;
 
   EnvDTO({
     required this.blockchain,
     required this.network,
-    required this.url,
-    required this.rdpUrl,
+    required this.web3Url,
+    required this.web3RdpUrl,
     required this.rhsUrl,
-    required this.apiKey,
+    required this.web3ApiKey,
     required this.idStateContract,
+    required this.pushUrl,
   });
 
   factory EnvDTO.fromJson(Map<String, dynamic> json) => _$EnvDTOFromJson(json);
@@ -31,10 +33,11 @@ class EnvDTO extends Equatable {
   List<Object?> get props => [
         blockchain,
         network,
-        url,
-        rdpUrl,
+        web3Url,
+        web3RdpUrl,
         rhsUrl,
-        apiKey,
+        web3ApiKey,
         idStateContract,
+        pushUrl,
       ];
 }

@@ -1,14 +1,13 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
-
-import '../../../common/domain/use_cases/get_config_use_case.dart';
-import '../entities/jwz_proof_entity.dart';
-import '../entities/request/auth/auth_iden3_message_entity.dart';
-import '../repositories/iden3comm_repository.dart';
-import 'get_auth_token_use_case.dart';
-import 'get_iden3comm_proofs_use_case.dart';
 
 class AuthenticateParam {
   final AuthIden3MessageEntity message;
@@ -29,7 +28,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
   final Iden3commRepository _iden3commRepository;
   final GetAuthTokenUseCase _getAuthTokenUseCase;
   final GetIden3commProofsUseCase _getIden3commProofsUseCase;
-  final GetConfigUseCase _getEnvConfigUseCase;
+  final GetEnvUseCase _getEnvUseCase;
   final GetPackageNameUseCase _getPackageNameUseCase;
   final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
 
@@ -37,7 +36,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
     this._iden3commRepository,
     this._getIden3commProofsUseCase,
     this._getAuthTokenUseCase,
-    this._getEnvConfigUseCase,
+    this._getEnvUseCase,
     this._getPackageNameUseCase,
     this._getCurrentEnvDidIdentifierUseCase,
   );
@@ -54,7 +53,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
       ));
 
       String pushUrl =
-          await _getEnvConfigUseCase.execute(param: PolygonIdConfig.pushUrl);
+          await _getEnvUseCase.execute().then((env) => env.pushUrl);
 
       String didIdentifier = await _getCurrentEnvDidIdentifierUseCase.execute(
           param: GetCurrentEnvDidIdentifierParam(

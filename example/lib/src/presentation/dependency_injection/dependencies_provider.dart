@@ -45,11 +45,12 @@ void registerEnv() {
     EnvEntity(
       blockchain: polygonMumbai['blockchain'],
       network: polygonMumbai['network'],
-      url: polygonMumbai['url'],
-      rdpUrl: polygonMumbai['rdpUrl'],
+      web3Url: polygonMumbai['web3Url'],
+      web3RdpUrl: polygonMumbai['web3RdpUrl'],
       rhsUrl: polygonMumbai['rhsUrl'],
-      apiKey: polygonMumbai['apiKey'],
+      web3ApiKey: polygonMumbai['web3ApiKey'],
       idStateContract: polygonMumbai['idStateContract'],
+      pushUrl: polygonMumbai['pushUrl'],
     ),
   ];
   getIt.registerSingleton<List<EnvEntity>>(env);
