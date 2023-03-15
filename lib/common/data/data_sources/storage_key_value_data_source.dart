@@ -1,12 +1,6 @@
 import 'package:injectable/injectable.dart';
-import 'package:polygonid_flutter_sdk/common/domain/entities/env_dto.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:sembast/sembast.dart';
-
-// Kind of hacky
-class StorageKey {
-  static String env = "env";
-}
 
 /// [StoreRef] wrapper
 /// Delegates all call to [KeyValueStoreRefWrapper._store]
