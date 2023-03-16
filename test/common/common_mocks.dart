@@ -34,6 +34,8 @@ class CommonMocks {
   static int operator = 4;
   static String config = "theConfig";
   static int nonce = 1;
+  static int genesisNonce = 0;
+  static int negativeNonce = -1;
   static Map<String, dynamic> aMap = {
     'the': {'very': 'nice map'},
     'yep': 4

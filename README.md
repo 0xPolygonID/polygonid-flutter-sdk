@@ -1,8 +1,9 @@
 # polygonid_flutter_sdk
 
-[![pub package](https://img.shields.io/badge/pub-1.0.0-orange)](https://pub.dev/packages/polygonid_flutter_sdk)
+[![pub package](https://img.shields.io/badge/pub-2.1.1-orange)](https://pub.dev/packages/polygonid_flutter_sdk)
 [![build](https://github.com/iden3/polygonid-flutter-sdk/workflows/polygonid_flutter_sdk/badge.svg)](https://github.com/iden3/polygonid-flutter-sdk/actions?query=workflow%3Apolygonid_flutter_sdk)
-[![license](https://img.shields.io/badge/License-Apache-blue.svg)](https://github.com/iden3/polygonid-flutter-sdk/blob/master/LICENSE)
+[![codecov](https://codecov.io/gh/iden3/polygonid-flutter-sdk/branch/develop/graph/badge.svg?token=0SI0XWGXKL)](https://codecov.io/gh/iden3/polygonid-flutter-sdk)
+[![license](https://img.shields.io/badge/License-agpl-blue.svg)](https://github.com/iden3/polygonid-flutter-sdk/blob/master/LICENSE)
 
 ## Description
 
@@ -73,7 +74,18 @@ You can get the current env using [PolygonIdSdk.getEnv()](lib/sdk/polygon_id_sdk
 # Deploy and check
 ### Deploy
 1. Clone this repository.
-2. run `build_runner` to generate `.g.dart` files:
+2. Generate `.env` and `.env.dev` files in the root folder of the project.
+3. Add required env variables (example):
+   ```bash
+    NETWORK_NAME="polygon"
+    NETWORK_ENV="mumbai"
+    INFURA_URL="https://polygon-mumbai.infura.io/v3/"
+    INFURA_RDP_URL="wss://polygon-mumbai.infura.io/v3/"
+    INFURA_API_KEY="secret"
+    ID_STATE_CONTRACT_ADDR="sc_address"
+    PUSH_URL="push_url"
+   ```
+4. run `build_runner` to generate `.g.dart` files:
 ```bash
 flutter pub run build_runner build --delete-conflicting-outputs
 ```
