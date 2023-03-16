@@ -40,7 +40,16 @@ class InvalidPrivateKeyException implements Exception {
 class InvalidProfileException extends ErrorException {
   final int profileNonce;
 
-  InvalidProfileException(this.profileNonce, error) : super(error);
+  InvalidProfileException(this.profileNonce, error)
+      : super(() {
+          if (profileNonce == 0) {
+            return "Genesis profile can't be modified";
+          } else if (profileNonce < 0) {
+            return "Profile nonce can't be negative";
+          }
+
+          return "Invalid profile";
+        });
 }
 
 class FetchIdentityStateException extends ErrorException {
