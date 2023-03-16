@@ -24,6 +24,24 @@ var param = AddProfileParam(
   privateKey: CommonMocks.privateKey,
 );
 
+var existingParam = AddProfileParam(
+  profileNonce: CommonMocks.nonce,
+  genesisDid: CommonMocks.did,
+  privateKey: CommonMocks.privateKey,
+);
+
+var negativeParam = AddProfileParam(
+  profileNonce: CommonMocks.negativeNonce,
+  genesisDid: CommonMocks.did,
+  privateKey: CommonMocks.privateKey,
+);
+
+var genesisParam = AddProfileParam(
+  profileNonce: CommonMocks.genesisNonce,
+  genesisDid: CommonMocks.did,
+  privateKey: CommonMocks.privateKey,
+);
+
 // Dependencies
 MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
 MockGetDidUseCase getDidUseCase = MockGetDidUseCase();
@@ -74,8 +92,7 @@ void main() {
     'Given a param, when I call execute, then I expect no response to be returned',
     () async {
       // When
-      expect(await useCase.execute(param: param).then((realInvocation) => null),
-          null);
+      await expectLater(useCase.execute(param: param), completes);
 
       // Then
       var getIdentityCapture =
@@ -109,13 +126,72 @@ void main() {
         (realInvocation) => Future.value(IdentityMocks.privateIdentity));
 
     // When
-    await useCase.execute(param: param).then((_) => null).catchError((error) {
+    await useCase.execute(param: existingParam).catchError((error) {
       expect(error, isA<ProfileAlreadyExistsException>());
       expect(error.genesisDid, IdentityMocks.identity.did);
-      expect(error.profileNonce, 1); //IdentityMocks.identity.profiles);
+      expect(error.profileNonce,
+          existingParam.profileNonce); //IdentityMocks.identity.profiles);
     });
 
     // Then
+    var captureGetIdentity =
+        verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))
+            .captured
+            .first;
+    expect(captureGetIdentity.genesisDid, CommonMocks.did);
+    expect(captureGetIdentity.privateKey, CommonMocks.privateKey);
+
+    verifyNever(getDidUseCase.execute(param: captureAnyNamed('param')));
+
+    verifyNever(updateIdentityUseCase.execute(param: captureAnyNamed('param')));
+  });
+
+  test(
+      "Given a param and with an negative profile nonce, when I call execute, then I expect an InvalidProfileException to be thrown",
+      () async {
+    // Given
+
+    // When
+    await useCase
+        .execute(param: negativeParam)
+        .then((_) => null)
+        .catchError((error) {
+      expect(error, isA<InvalidProfileException>());
+      expect(error.error, IdentityMocks.profileNegativeError);
+      expect(error.profileNonce,
+          negativeParam.profileNonce); //IdentityMocks.identity.profiles);
+    });
+
+    // Then
+    verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
+
+    verifyNever(getDidUseCase.execute(param: captureAnyNamed('param')));
+
+    verifyNever(updateIdentityUseCase.execute(param: captureAnyNamed('param')));
+  });
+
+  test(
+      "Given a param and with an profile nonce of 0, when I call execute, then I expect an InvalidProfileException to be thrown",
+      () async {
+    // Given
+
+    // When
+    await useCase
+        .execute(param: genesisParam)
+        .then((_) => null)
+        .catchError((error) {
+      expect(error, isA<InvalidProfileException>());
+      expect(error.error, IdentityMocks.profileGenesisError);
+      expect(error.profileNonce,
+          genesisParam.profileNonce); //IdentityMocks.identity.profiles);
+    });
+
+    // Then
+    verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
+
+    verifyNever(getDidUseCase.execute(param: captureAnyNamed('param')));
+
+    verifyNever(updateIdentityUseCase.execute(param: captureAnyNamed('param')));
   });
 
   test(

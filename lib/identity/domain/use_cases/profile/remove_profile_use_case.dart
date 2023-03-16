@@ -45,48 +45,52 @@ class RemoveProfileUseCase extends FutureUseCase<RemoveProfileParam, void> {
 
   @override
   Future<void> execute({required RemoveProfileParam param}) async {
-    var identityEntity = await _getIdentityUseCase.execute(
-        param: GetIdentityParam(
-            genesisDid: param.genesisDid, privateKey: param.privateKey));
-    if (identityEntity is PrivateIdentityEntity) {
-      List<int> profiles = identityEntity.profiles.keys.toList();
-      if (!profiles.contains(param.profileNonce)) {
-        throw UnknownProfileException(param.profileNonce);
-      } else {
-        var didEntity = await _getDidUseCase.execute(param: param.genesisDid);
-
-        Map<int, String> newProfiles = await _createProfilesUseCase.execute(
-            param: CreateProfilesParam(
-                privateKey: param.privateKey,
-                blockchain: didEntity.blockchain,
-                network: didEntity.network,
-                profiles: [param.profileNonce]));
-
-        String? profileDid = newProfiles[param.profileNonce];
-        // remove identity state and claims for profile did
-        if (profileDid != null) {
-          await _removeIdentityStateUseCase.execute(
-              param: RemoveIdentityStateParam(
-                  did: profileDid, privateKey: param.privateKey));
-
-          await _removeAllClaimsUseCase.execute(
-              param: RemoveAllClaimsParam(
-                  did: profileDid, privateKey: param.privateKey));
-
-          profiles.remove(param.profileNonce);
-        } else {
+    if (param.profileNonce > 0) {
+      var identityEntity = await _getIdentityUseCase.execute(
+          param: GetIdentityParam(
+              genesisDid: param.genesisDid, privateKey: param.privateKey));
+      if (identityEntity is PrivateIdentityEntity) {
+        List<int> profiles = identityEntity.profiles.keys.toList();
+        if (!profiles.contains(param.profileNonce)) {
           throw UnknownProfileException(param.profileNonce);
-        }
+        } else {
+          var didEntity = await _getDidUseCase.execute(param: param.genesisDid);
 
-        await _updateIdentityUseCase.execute(
-            param: UpdateIdentityParam(
-                privateKey: param.privateKey,
-                blockchain: didEntity.blockchain,
-                network: didEntity.network,
-                profiles: profiles));
+          Map<int, String> newProfiles = await _createProfilesUseCase.execute(
+              param: CreateProfilesParam(
+                  privateKey: param.privateKey,
+                  blockchain: didEntity.blockchain,
+                  network: didEntity.network,
+                  profiles: [param.profileNonce]));
+
+          String? profileDid = newProfiles[param.profileNonce];
+          // remove identity state and claims for profile did
+          if (profileDid != null) {
+            await _removeIdentityStateUseCase.execute(
+                param: RemoveIdentityStateParam(
+                    did: profileDid, privateKey: param.privateKey));
+
+            await _removeAllClaimsUseCase.execute(
+                param: RemoveAllClaimsParam(
+                    did: profileDid, privateKey: param.privateKey));
+
+            profiles.remove(param.profileNonce);
+          } else {
+            throw UnknownProfileException(param.profileNonce);
+          }
+
+          await _updateIdentityUseCase.execute(
+              param: UpdateIdentityParam(
+                  privateKey: param.privateKey,
+                  blockchain: didEntity.blockchain,
+                  network: didEntity.network,
+                  profiles: profiles));
+        }
+      } else {
+        throw InvalidPrivateKeyException(param.privateKey);
       }
     } else {
-      throw InvalidPrivateKeyException(param.privateKey);
+      throw InvalidProfileException(param.profileNonce);
     }
   }
 }
