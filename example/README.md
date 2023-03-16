@@ -19,17 +19,17 @@ Demonstrates how to use the polygonid_flutter_sdk plugin.
 ## Examples
 
 ### PolygonId SDK initialization
-Before you can start using the SDK, you need to initialise it, otherwise a `PolygonIsSdkNotInitializedException` exception will be thrown.  
-For convenience you can initialise it in the main class like that:
-```dart
-import 'package:flutter/material.dart';
-import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
+Before you can start using the SDK, you need to initialise it and set the environment, otherwise a `PolygonIsSdkNotInitializedException` exception will be thrown.
 
-Future<void> main() async {
-  await PolygonIdSdk.init();
-  runApp(const App());
-}
+See [the SDK environment](../README.md#environment) for more information.
+
+In this example app we are using environment variable and Envied package to initialize the SDK.
+
+To be able to run the app, you will need to either create a `ENV_POLYGON_MUMBAI` environment variable or create a `.env` at the root of this folder with the desired environment values (replace with your own values):
 ```
+ENV_POLYGON_MUMBAI={"blockchain": "polygon", "network": "mumbai", "web3Url": "https://polygon-mumbai.infura.io/v3/", "web3RdpUrl": "wss://polygon-mumbai.infura.io/v3/", "rhsUrl": "http://id.eu-west-1.compute.amazonaws.com/rsh/", "web3ApiKey": "a536514602ea4e22a2e9007b6e9dbc63", "idStateContract": "0x453A1BC32122E39A8398ec6288783389730807a5", "pushUrl": "https://push.service.io/api/v1"}
+```
+
 
 ### Identity
 #### Create identity
