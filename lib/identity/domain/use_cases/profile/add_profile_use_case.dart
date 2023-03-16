@@ -84,7 +84,13 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
         throw InvalidPrivateKeyException(param.privateKey);
       }
     } else {
-      throw InvalidProfileException(param.profileNonce);
+      String errorMsg = "Invalid profile";
+      if (param.profileNonce == 0) {
+        errorMsg = "Genesis profile can't be modified";
+      } else if (param.profileNonce < 0) {
+        errorMsg = "Profile nonce can't be negative";
+      }
+      throw InvalidProfileException(param.profileNonce, errorMsg);
     }
   }
 }
