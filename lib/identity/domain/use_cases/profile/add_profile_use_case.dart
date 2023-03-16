@@ -42,45 +42,49 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
 
   @override
   Future<void> execute({required AddProfileParam param}) async {
-    var identityEntity = await _getIdentityUseCase.execute(
-        param: GetIdentityParam(
-            genesisDid: param.genesisDid, privateKey: param.privateKey));
-    if (identityEntity is PrivateIdentityEntity) {
-      List<int> profiles = identityEntity.profiles.keys.toList();
-      if (profiles.contains(param.profileNonce)) {
-        throw ProfileAlreadyExistsException(
-            param.genesisDid, param.profileNonce);
-      } else {
-        // Create profile
-        var didEntity = await _getDidUseCase.execute(param: param.genesisDid);
-        Map<int, String> newProfiles = await _createProfilesUseCase.execute(
-            param: CreateProfilesParam(
-                privateKey: param.privateKey,
-                blockchain: didEntity.blockchain,
-                network: didEntity.network,
-                profiles: [param.profileNonce]));
-
-        String? profileDid = newProfiles[param.profileNonce];
-        // create identity state for profile did
-        if (profileDid != null) {
-          await _createIdentityStateUseCase.execute(
-              param: CreateIdentityStateParam(
-                  did: profileDid, privateKey: param.privateKey));
-          profiles.add(param.profileNonce);
+    if (param.profileNonce > 0) {
+      var identityEntity = await _getIdentityUseCase.execute(
+          param: GetIdentityParam(
+              genesisDid: param.genesisDid, privateKey: param.privateKey));
+      if (identityEntity is PrivateIdentityEntity) {
+        List<int> profiles = identityEntity.profiles.keys.toList();
+        if (profiles.contains(param.profileNonce)) {
+          throw ProfileAlreadyExistsException(
+              param.genesisDid, param.profileNonce);
         } else {
-          throw UnknownProfileException(param.profileNonce);
-        }
+          // Create profile
+          var didEntity = await _getDidUseCase.execute(param: param.genesisDid);
+          Map<int, String> newProfiles = await _createProfilesUseCase.execute(
+              param: CreateProfilesParam(
+                  privateKey: param.privateKey,
+                  blockchain: didEntity.blockchain,
+                  network: didEntity.network,
+                  profiles: [param.profileNonce]));
 
-        // Update Identity
-        await _updateIdentityUseCase.execute(
-            param: UpdateIdentityParam(
-                privateKey: param.privateKey,
-                blockchain: didEntity.blockchain,
-                network: didEntity.network,
-                profiles: profiles));
+          String? profileDid = newProfiles[param.profileNonce];
+          // create identity state for profile did
+          if (profileDid != null) {
+            await _createIdentityStateUseCase.execute(
+                param: CreateIdentityStateParam(
+                    did: profileDid, privateKey: param.privateKey));
+            profiles.add(param.profileNonce);
+          } else {
+            throw UnknownProfileException(param.profileNonce);
+          }
+
+          // Update Identity
+          await _updateIdentityUseCase.execute(
+              param: UpdateIdentityParam(
+                  privateKey: param.privateKey,
+                  blockchain: didEntity.blockchain,
+                  network: didEntity.network,
+                  profiles: profiles));
+        }
+      } else {
+        throw InvalidPrivateKeyException(param.privateKey);
       }
     } else {
-      throw InvalidPrivateKeyException(param.privateKey);
+      throw InvalidProfileException(param.profileNonce);
     }
   }
 }

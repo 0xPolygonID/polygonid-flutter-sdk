@@ -37,6 +37,12 @@ class InvalidPrivateKeyException implements Exception {
   InvalidPrivateKeyException(this.privateKey);
 }
 
+class InvalidProfileException implements Exception {
+  final int profileNonce;
+
+  InvalidProfileException(this.profileNonce);
+}
+
 class FetchIdentityStateException extends ErrorException {
   FetchIdentityStateException(error) : super(error);
 }

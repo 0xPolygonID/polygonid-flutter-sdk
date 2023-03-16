@@ -4,14 +4,14 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'polygonid_flutter_sdk'
-  s.version          = '1.0.0'
+  s.version          = '2.1.1'
   s.summary          = 'Flutter plugin for PolygonID SDK'
   s.description      = <<-DESC
 PolygonID SDK flutter plugin project.
                        DESC
-  s.homepage         = 'http://iden3.io'
+  s.homepage         = 'https://polygon.technology/polygon-id'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Iden3' => 'info@iden3.io' }
+  s.author           = { 'Polygon ID' => 'raulj@polygon.technology' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
