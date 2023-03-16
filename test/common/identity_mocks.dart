@@ -44,4 +44,7 @@ class IdentityMocks {
 
   static TreeStateEntity treeState =
       TreeStateEntity(CommonMocks.hash, hash, hash, hash);
+
+  static String profileNegativeError = "Profile nonce can't be negative";
+  static String profileGenesisError = "Genesis profile can't be modified";
 }
