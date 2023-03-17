@@ -47,7 +47,6 @@ void registerEnv() {
       network: polygonMumbai['network'],
       web3Url: polygonMumbai['web3Url'],
       web3RdpUrl: polygonMumbai['web3RdpUrl'],
-      rhsUrl: polygonMumbai['rhsUrl'],
       web3ApiKey: polygonMumbai['web3ApiKey'],
       idStateContract: polygonMumbai['idStateContract'],
       pushUrl: polygonMumbai['pushUrl'],

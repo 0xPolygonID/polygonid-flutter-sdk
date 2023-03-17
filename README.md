@@ -41,7 +41,6 @@ The environment object is [EnvEntity](lib/common/domain/entities/env_entity.dart
   final String network; # The network of the blockchain (eg: mumbai)
   final String web3Url; # URL of the blockchain (eg: https://polygon-mumbai.infura.io/v3/)
   final String web3RdpUrl; # RDP URL (eg: wss://polygon-mumbai.infura.io/v3/)
-  final String rhsUrl; # Reverse Hash Service URL (eg: http://id.eu-west-1.compute.amazonaws.com/rsh/)
   final String web3ApiKey; # The API key of the web3 URL service (eg: a536514602ea4e22a2e9007b6e9dbc63)
   final String idStateContract; # The ID state contract (eg: 0x453A1BC32122E39A8398ec6288783389730807a5)
   final String pushUrl; # The push notification URL (eg: https://push.service.io/api/v1)
@@ -58,7 +57,6 @@ Future<void> main() async {
       network: 'mumbai',
       web3Url: 'https://polygon-mumbai.infura.io/v3/'
       web3RdpUrl: 'wss://polygon-mumbai.infura.io/v3/'
-      rhsUrl: 'http://id.eu-west-1.compute.amazonaws.com/rsh/'
       web3ApiKey: 'a536514602ea4e22a2e9007b6e9dbc63'
       idStateContract: '0x453A1BC32122E39A8398ec6288783389730807a5'
       pushUrl: 'https://push.service.io/api/v1',

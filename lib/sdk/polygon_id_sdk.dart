@@ -60,7 +60,9 @@ class PolygonIdSdk {
   PolygonIdSdk._();
 
   Future<void> setEnv({required EnvEntity env}) {
-    return getItSdk.get<SetEnvUseCase>().execute(param: env);
+    return getItSdk
+        .getAsync<SetEnvUseCase>()
+        .then((instance) => instance.execute(param: env));
   }
 
   Future<EnvEntity> getEnv() {
