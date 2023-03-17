@@ -3,33 +3,35 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 
+import '../../../common/common_mocks.dart';
 import 'authenticate_use_case_test.mocks.dart';
 
 MockIden3commRepository iden3commRepository = MockIden3commRepository();
 MockGetIden3commProofsUseCase getIden3commProofsUseCase =
     MockGetIden3commProofsUseCase();
 MockGetAuthTokenUseCase getAuthTokenUseCase = MockGetAuthTokenUseCase();
-MockGetEnvConfigUseCase getEnvConfigUseCase = MockGetEnvConfigUseCase();
+MockGetEnvUseCase getEnvUseCase = MockGetEnvUseCase();
 MockGetPackageNameUseCase getPackageNameUseCase = MockGetPackageNameUseCase();
-MockGetDidIdentifierUseCase getDidIdentifierUseCase =
-    MockGetDidIdentifierUseCase();
+MockGetCurrentEnvDidIdentifierUseCase getCurrentEnvDidIdentifierUseCase =
+    MockGetCurrentEnvDidIdentifierUseCase();
 
 AuthenticateUseCase useCase = AuthenticateUseCase(
   iden3commRepository,
   getIden3commProofsUseCase,
   getAuthTokenUseCase,
-  getEnvConfigUseCase,
+  getEnvUseCase,
   getPackageNameUseCase,
-  getDidIdentifierUseCase,
+  getCurrentEnvDidIdentifierUseCase,
 );
 
 // Data
@@ -59,9 +61,9 @@ AuthenticateParam param = AuthenticateParam(
   Iden3commRepository,
   GetIden3commProofsUseCase,
   GetAuthTokenUseCase,
-  GetEnvConfigUseCase,
+  GetEnvUseCase,
   GetPackageNameUseCase,
-  GetDidIdentifierUseCase
+  GetCurrentEnvDidIdentifierUseCase,
 ])
 void main() {
   group(
@@ -74,10 +76,11 @@ void main() {
         when(getIden3commProofsUseCase.execute(param: anyNamed('param')))
             .thenAnswer((realInvocation) => Future.value([]));
 
-        when(getEnvConfigUseCase.execute(param: anyNamed('param')))
-            .thenAnswer((realInvocation) => Future.value(config));
+        when(getEnvUseCase.execute(param: anyNamed('param')))
+            .thenAnswer((realInvocation) => Future.value(CommonMocks.env));
 
-        when(getDidIdentifierUseCase.execute(param: anyNamed('param')))
+        when(getCurrentEnvDidIdentifierUseCase.execute(
+                param: anyNamed('param')))
             .thenAnswer((realInvocation) => Future.value(did));
 
         when(getPackageNameUseCase.execute(param: anyNamed('param')))
@@ -117,21 +120,17 @@ void main() {
           expect(capturedProofs.did, identifier);
           expect(capturedProofs.privateKey, privateKey);
 
-          var verifyConfig = verify(
-              getEnvConfigUseCase.execute(param: captureAnyNamed('param')));
-          expect(verifyConfig.callCount, 3);
+          var verifyConfig =
+              verify(getEnvUseCase.execute(param: captureAnyNamed('param')));
+          expect(verifyConfig.callCount, 1);
           var capturedConfig = verifyConfig.captured;
-          expect(capturedConfig[0], PolygonIdConfig.pushUrl);
-          expect(capturedConfig[1], PolygonIdConfig.networkName);
-          expect(capturedConfig[2], PolygonIdConfig.networkEnv);
+          expect(capturedConfig[0], null);
 
-          var capturedDid = verify(getDidIdentifierUseCase.execute(
+          var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(
                   param: captureAnyNamed('param')))
               .captured
               .first;
           expect(capturedDid.privateKey, privateKey);
-          expect(capturedDid.blockchain, config);
-          expect(capturedDid.network, config);
 
           verify(getPackageNameUseCase.execute());
 
@@ -147,7 +146,7 @@ void main() {
           expect(capturedAuthResponse[0], identifier);
           expect(capturedAuthResponse[1], authRequest);
           expect(capturedAuthResponse[2], []);
-          expect(capturedAuthResponse[3], config);
+          expect(capturedAuthResponse[3], CommonMocks.url);
           expect(capturedAuthResponse[4], pushToken);
           expect(capturedAuthResponse[5], did);
           expect(capturedAuthResponse[6], package);
@@ -195,21 +194,17 @@ void main() {
           expect(capturedProofs.did, identifier);
           expect(capturedProofs.privateKey, privateKey);
 
-          var verifyConfig = verify(
-              getEnvConfigUseCase.execute(param: captureAnyNamed('param')));
-          expect(verifyConfig.callCount, 3);
+          var verifyConfig =
+              verify(getEnvUseCase.execute(param: captureAnyNamed('param')));
+          expect(verifyConfig.callCount, 1);
           var capturedConfig = verifyConfig.captured;
-          expect(capturedConfig[0], PolygonIdConfig.pushUrl);
-          expect(capturedConfig[1], PolygonIdConfig.networkName);
-          expect(capturedConfig[2], PolygonIdConfig.networkEnv);
+          expect(capturedConfig[0], null);
 
-          var capturedDid = verify(getDidIdentifierUseCase.execute(
+          var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(
                   param: captureAnyNamed('param')))
               .captured
               .first;
           expect(capturedDid.privateKey, privateKey);
-          expect(capturedDid.blockchain, config);
-          expect(capturedDid.network, config);
 
           verify(getPackageNameUseCase.execute());
 
@@ -225,7 +220,7 @@ void main() {
           expect(capturedAuthResponse[0], identifier);
           expect(capturedAuthResponse[1], authRequest);
           expect(capturedAuthResponse[2], []);
-          expect(capturedAuthResponse[3], config);
+          expect(capturedAuthResponse[3], CommonMocks.url);
           expect(capturedAuthResponse[4], pushToken);
           expect(capturedAuthResponse[5], did);
           expect(capturedAuthResponse[6], package);

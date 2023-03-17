@@ -20,7 +20,7 @@ part 'gist_proof_dto.g.dart';
 }
 */
 /// Represents a gist proof DTO.
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class GistProofDTO extends Equatable {
   @JsonKey(name: 'root')
   final String root;

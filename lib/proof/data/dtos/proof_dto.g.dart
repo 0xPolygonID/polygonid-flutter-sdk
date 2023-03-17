@@ -18,6 +18,6 @@ ProofDTO _$ProofDTOFromJson(Map<String, dynamic> json) => ProofDTO(
 
 Map<String, dynamic> _$ProofDTOToJson(ProofDTO instance) => <String, dynamic>{
       'existence': instance.existence,
-      'siblings': instance.siblings,
-      'node_aux': instance.nodeAux,
+      'siblings': instance.siblings.map((e) => e.toJson()).toList(),
+      'node_aux': instance.nodeAux?.toJson(),
     };

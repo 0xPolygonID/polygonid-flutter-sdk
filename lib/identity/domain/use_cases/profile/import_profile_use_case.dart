@@ -1,3 +1,4 @@
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 
@@ -22,10 +23,19 @@ class ImportProfileUseCase extends FutureUseCase<ImportProfileParam, void> {
 
   @override
   Future<void> execute({required ImportProfileParam param}) {
-    return _identityRepository.importIdentity(
+    return _identityRepository
+        .importIdentity(
       did: param.did,
       privateKey: param.privateKey,
       encryptedDb: param.encryptedDb,
-    );
+    )
+        .then((_) {
+      logger().i(
+          "[ImportProfileUseCase] Profile for did ${param.did} has been imported");
+    }).catchError((error) {
+      logger().e("[ImportProfileUseCase] Error: $error");
+
+      throw error;
+    });
   }
 }

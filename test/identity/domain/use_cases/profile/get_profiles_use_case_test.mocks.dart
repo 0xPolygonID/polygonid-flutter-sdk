@@ -8,6 +8,8 @@ import 'dart:async' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
     as _i2;
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart'
+    as _i5;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart'
     as _i3;
 
@@ -60,4 +62,26 @@ class MockGetIdentityUseCase extends _i1.Mock
           ),
         )),
       ) as _i4.Future<_i2.IdentityEntity>);
+}
+
+/// A class which mocks [GetCurrentEnvDidIdentifierUseCase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetCurrentEnvDidIdentifierUseCase extends _i1.Mock
+    implements _i5.GetCurrentEnvDidIdentifierUseCase {
+  MockGetCurrentEnvDidIdentifierUseCase() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.Future<String> execute(
+          {required _i5.GetCurrentEnvDidIdentifierParam? param}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [],
+          {#param: param},
+        ),
+        returnValue: _i4.Future<String>.value(''),
+      ) as _i4.Future<String>);
 }

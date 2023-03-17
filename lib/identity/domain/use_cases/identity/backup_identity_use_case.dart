@@ -1,61 +1,35 @@
-import 'package:injectable/injectable.dart';
-import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_config_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/export_profile_use_case.dart';
 
-import '../../../../common/domain/domain_logger.dart';
-import '../../../../common/domain/use_case.dart';
-import '../../entities/identity_entity.dart';
-import '../../entities/private_identity_entity.dart';
-import '../../exceptions/identity_exceptions.dart';
-import '../../repositories/identity_repository.dart';
-import '../get_did_identifier_use_case.dart';
-import '../get_did_use_case.dart';
-import '../profile/export_profile_use_case.dart';
-
-class BackupIdentityParam {
-  final String privateKey;
-  final String blockchain;
-  final String network;
-
-  BackupIdentityParam({
-    required this.privateKey,
-    required this.blockchain,
-    required this.network,
-  });
-}
-
-class BackupIdentityUseCase
-    extends FutureUseCase<BackupIdentityParam, Map<int, String>> {
+class BackupIdentityUseCase extends FutureUseCase<String, Map<int, String>> {
   final GetIdentityUseCase _getIdentityUseCase;
   final ExportProfileUseCase _exportProfileUseCase;
-  final GetDidIdentifierUseCase _getDidIdentifierUseCase;
+  final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
 
   BackupIdentityUseCase(
     this._getIdentityUseCase,
     this._exportProfileUseCase,
-    this._getDidIdentifierUseCase,
+    this._getCurrentEnvDidIdentifierUseCase,
   );
 
   @override
-  Future<Map<int, String>> execute({required BackupIdentityParam param}) async {
+  Future<Map<int, String>> execute({required String param}) async {
     try {
       Map<int, String> result = {};
-      String genesisDid = await _getDidIdentifierUseCase.execute(
-          param: GetDidIdentifierParam(
-        privateKey: param.privateKey,
-        blockchain: param.blockchain,
-        network: param.network,
-      ));
+      String genesisDid = await _getCurrentEnvDidIdentifierUseCase.execute(
+          param: GetCurrentEnvDidIdentifierParam(privateKey: param));
 
       IdentityEntity identity = await _getIdentityUseCase.execute(
-          param: GetIdentityParam(
-        genesisDid: genesisDid,
-      ));
+          param: GetIdentityParam(genesisDid: genesisDid));
 
       for (MapEntry<int, String> profile in identity.profiles.entries) {
         result[profile.key] = await _exportProfileUseCase.execute(
             param: ExportProfileParam(
-          privateKey: param.privateKey,
+          privateKey: param,
           did: profile.value,
         ));
       }

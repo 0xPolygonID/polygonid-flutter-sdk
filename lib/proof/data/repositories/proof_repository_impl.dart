@@ -226,6 +226,7 @@ class ProofRepositoryImpl extends ProofRepository {
 
     var gistProofJson = jsonDecode(quotedString);
 
+    /// FIXME: repo don't create and manipulate DTO, that's the DS job
     return _gistProofMapper.mapFrom(GistProofDTO(
         root: gistProofJson["root"],
         proof: ProofDTO(
