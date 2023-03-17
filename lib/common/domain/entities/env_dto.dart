@@ -9,7 +9,6 @@ class EnvDTO extends Equatable {
   final String network;
   final String web3Url;
   final String web3RdpUrl;
-  final String rhsUrl;
   final String web3ApiKey;
   final String idStateContract;
   final String pushUrl;
@@ -19,7 +18,6 @@ class EnvDTO extends Equatable {
     required this.network,
     required this.web3Url,
     required this.web3RdpUrl,
-    required this.rhsUrl,
     required this.web3ApiKey,
     required this.idStateContract,
     required this.pushUrl,
@@ -35,7 +33,6 @@ class EnvDTO extends Equatable {
         network,
         web3Url,
         web3RdpUrl,
-        rhsUrl,
         web3ApiKey,
         idStateContract,
         pushUrl,
