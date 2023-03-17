@@ -40,19 +40,18 @@ class RemoveIdentityUseCase extends FutureUseCase<String, void> {
             await _removeProfileUseCase.execute(
                 param: RemoveProfileParam(
                     profileNonce: profileNonce,
-                    genesisDid: param.genesisDid,
-                    privateKey: param.privateKey));
+                    privateKey: param));
           }
         }
       }
       // Remove genesisId identity state and claims
       await _removeIdentityStateUseCase.execute(
           param: RemoveIdentityStateParam(
-              did: param.genesisDid, privateKey: param.privateKey));
+              did: genesisDid, privateKey: param));
 
       await _removeAllClaimsUseCase.execute(
           param: RemoveAllClaimsParam(
-              did: param.genesisDid, privateKey: param.privateKey));
+              did: genesisDid, privateKey: param));
 
       // Remove the identity
       await _identityRepository.removeIdentity(genesisDid: genesisDid);
