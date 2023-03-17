@@ -1,28 +1,20 @@
+import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_all_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/update_identity_use_case.dart';
-
-import '../../../../common/domain/domain_logger.dart';
-import '../../../../common/domain/use_case.dart';
-import '../../entities/did_entity.dart';
-import '../../entities/identity_entity.dart';
-import '../../repositories/identity_repository.dart';
-import '../get_did_identifier_use_case.dart';
-import '../get_did_use_case.dart';
-import '../identity/get_identities_use_case.dart';
-import '../smt/remove_identity_state_use_case.dart';
-import 'create_profiles_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/create_profiles_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/smt/remove_identity_state_use_case.dart';
 
 class RemoveProfileParam {
   final int profileNonce;
-  final String genesisDid;
   final String privateKey;
 
   RemoveProfileParam({
     required this.profileNonce,
-    required this.genesisDid,
     required this.privateKey,
   });
 }
@@ -30,31 +22,36 @@ class RemoveProfileParam {
 class RemoveProfileUseCase extends FutureUseCase<RemoveProfileParam, void> {
   final GetIdentityUseCase _getIdentityUseCase;
   final GetDidUseCase _getDidUseCase;
+  final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
   final CreateProfilesUseCase _createProfilesUseCase;
   final RemoveIdentityStateUseCase _removeIdentityStateUseCase;
   final RemoveAllClaimsUseCase _removeAllClaimsUseCase;
   final UpdateIdentityUseCase _updateIdentityUseCase;
 
   RemoveProfileUseCase(
-      this._getIdentityUseCase,
-      this._getDidUseCase,
-      this._createProfilesUseCase,
-      this._removeIdentityStateUseCase,
-      this._removeAllClaimsUseCase,
-      this._updateIdentityUseCase);
+    this._getIdentityUseCase,
+    this._getDidUseCase,
+    this._updateIdentityUseCase,
+    this._getCurrentEnvDidIdentifierUseCase,
+    this._createProfilesUseCase,
+    this._removeIdentityStateUseCase,
+    this._removeAllClaimsUseCase,
+  );
 
   @override
   Future<void> execute({required RemoveProfileParam param}) async {
     if (param.profileNonce > 0) {
+      var genesisDid = await _getCurrentEnvDidIdentifierUseCase.execute(
+          param: GetCurrentEnvDidIdentifierParam(privateKey: param.privateKey));
       var identityEntity = await _getIdentityUseCase.execute(
           param: GetIdentityParam(
-              genesisDid: param.genesisDid, privateKey: param.privateKey));
+              genesisDid: genesisDid, privateKey: param.privateKey));
       if (identityEntity is PrivateIdentityEntity) {
         List<int> profiles = identityEntity.profiles.keys.toList();
         if (!profiles.contains(param.profileNonce)) {
           throw UnknownProfileException(param.profileNonce);
         } else {
-          var didEntity = await _getDidUseCase.execute(param: param.genesisDid);
+          var didEntity = await _getDidUseCase.execute(param: genesisDid);
 
           Map<int, String> newProfiles = await _createProfilesUseCase.execute(
               param: CreateProfilesParam(
@@ -81,10 +78,7 @@ class RemoveProfileUseCase extends FutureUseCase<RemoveProfileParam, void> {
 
           await _updateIdentityUseCase.execute(
               param: UpdateIdentityParam(
-                  privateKey: param.privateKey,
-                  blockchain: didEntity.blockchain,
-                  network: didEntity.network,
-                  profiles: profiles));
+                  privateKey: param.privateKey, profiles: profiles));
         }
       } else {
         throw InvalidPrivateKeyException(param.privateKey);

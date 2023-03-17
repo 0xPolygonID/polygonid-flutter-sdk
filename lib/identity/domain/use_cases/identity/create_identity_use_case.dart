@@ -1,34 +1,31 @@
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_public_keys_use_case.dart';
 
 import '../../../../common/domain/domain_logger.dart';
 import '../../../../common/domain/use_case.dart';
 import '../../repositories/identity_repository.dart';
-import '../get_did_identifier_use_case.dart';
 
 class CreateIdentityParam {
   final String privateKey;
-  final String blockchain;
-  final String network;
   final List<int> profiles;
 
-  CreateIdentityParam(
-      {required this.privateKey,
-      required this.blockchain,
-      required this.network,
-      this.profiles = const []});
+  CreateIdentityParam({
+    required this.privateKey,
+    this.profiles = const [],
+  });
 }
 
 class CreateIdentityUseCase
     extends FutureUseCase<CreateIdentityParam, PrivateIdentityEntity> {
   final IdentityRepository _identityRepository;
   final GetPublicKeysUseCase _getPublicKeysUseCase;
-  final GetDidIdentifierUseCase _getDidIdentifierUseCase;
+  final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
 
   CreateIdentityUseCase(
     this._identityRepository,
     this._getPublicKeysUseCase,
-    this._getDidIdentifierUseCase,
+    this._getCurrentEnvDidIdentifierUseCase,
   );
 
   @override
@@ -36,11 +33,8 @@ class CreateIdentityUseCase
       {required CreateIdentityParam param}) async {
     return Future.wait([
       _getPublicKeysUseCase.execute(param: param.privateKey),
-      _getDidIdentifierUseCase.execute(
-          param: GetDidIdentifierParam(
-              privateKey: param.privateKey,
-              blockchain: param.blockchain,
-              network: param.network))
+      _getCurrentEnvDidIdentifierUseCase.execute(
+          param: GetCurrentEnvDidIdentifierParam(privateKey: param.privateKey))
     ], eagerError: true)
         .then((values) async {
       String didIdentifier = values[1] as String;
@@ -48,12 +42,11 @@ class CreateIdentityUseCase
       Map<int, String> profiles = {0: didIdentifier};
 
       for (int profile in param.profiles) {
-        String identifier = await _getDidIdentifierUseCase.execute(
-            param: GetDidIdentifierParam(
-                privateKey: param.privateKey,
-                blockchain: param.blockchain,
-                network: param.network,
-                profileNonce: profile));
+        String identifier = await _getCurrentEnvDidIdentifierUseCase.execute(
+            param: GetCurrentEnvDidIdentifierParam(
+          privateKey: param.privateKey,
+          profileNonce: profile,
+        ));
         profiles[profile] = identifier;
       }
 

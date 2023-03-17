@@ -9,15 +9,6 @@ import '../../../common/common_mocks.dart';
 import '../../../common/identity_mocks.dart';
 import 'add_new_identity_use_case_test.mocks.dart';
 
-// Data
-var exception = Exception();
-var param = AddNewIdentityParam(
-    blockchain: CommonMocks.blockchain, network: CommonMocks.network);
-var paramSecret = AddNewIdentityParam(
-    secret: CommonMocks.message,
-    blockchain: CommonMocks.blockchain,
-    network: CommonMocks.network);
-
 // Dependencies
 MockIdentityRepository identityRepository = MockIdentityRepository();
 MockAddIdentityUseCase addIdentityUseCase = MockAddIdentityUseCase();
@@ -48,7 +39,7 @@ void main() {
       "Given a secret, when I call execute, then I expect an identity to be returned",
       () async {
     // When
-    expect(await useCase.execute(param: paramSecret),
+    expect(await useCase.execute(param: CommonMocks.message),
         IdentityMocks.privateIdentity);
 
     // Then
@@ -64,15 +55,13 @@ void main() {
             .captured
             .first;
     expect(capturedCreate.privateKey, CommonMocks.privateKey);
-    expect(capturedCreate.blockchain, CommonMocks.blockchain);
-    expect(capturedCreate.network, CommonMocks.network);
   });
 
   test(
       "Given a private key which is null, when I call execute, then I expect an identifier to be returned",
       () async {
     // When
-    expect(await useCase.execute(param: param), IdentityMocks.privateIdentity);
+    expect(await useCase.execute(), IdentityMocks.privateIdentity);
 
     // Then
     var configCaptured = verify(identityRepository.getPrivateKey(
@@ -87,8 +76,6 @@ void main() {
             .captured
             .first;
     expect(capturedCreate.privateKey, CommonMocks.privateKey);
-    expect(capturedCreate.blockchain, CommonMocks.blockchain);
-    expect(capturedCreate.network, CommonMocks.network);
   });
 
   test(
@@ -101,8 +88,8 @@ void main() {
         .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
     // When
-    await expectLater(
-        useCase.execute(param: paramSecret), throwsA(CommonMocks.exception));
+    await expectLater(useCase.execute(param: CommonMocks.message),
+        throwsA(CommonMocks.exception));
 
     // Then
     var configCaptured = verify(identityRepository.getPrivateKey(

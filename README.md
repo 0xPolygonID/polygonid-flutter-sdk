@@ -29,19 +29,47 @@ dependencies:
         ref: branchPathName
 ```
 
-# Env variables
+# Environment
+### App side
+You need to set the environment you are working on in the SDK.
 
-### Required:
-**NETWORK_NAME** - Blockchain name. <br />
-**NETWORK_ENV** - Network name. <br />
-**INFURA_URL** - Infura base url. <br />
-**INFURA_RDP_URL** - Infura base rdp url. <br />
-**INFURA_API_KEY** - Infura api key. <br />
-**ID_STATE_CONTRACT_ADDR** - Identity state smart contract address. <br />
+You can either set the environment during initialization (with `env` parameter) or later with [PolygonIdSdk.setEnv()](lib/sdk/polygon_id_sdk.dart#L62).
 
-### Not required:
+The environment object is [EnvEntity](lib/common/domain/entities/env_entity.dart) with:
+```
+  final String blockchain; # The name of the blockchain (eg: polygon)
+  final String network; # The network of the blockchain (eg: mumbai)
+  final String web3Url; # URL of the blockchain (eg: https://polygon-mumbai.infura.io/v3/)
+  final String web3RdpUrl; # RDP URL (eg: wss://polygon-mumbai.infura.io/v3/)
+  final String rhsUrl; # Reverse Hash Service URL (eg: http://id.eu-west-1.compute.amazonaws.com/rsh/)
+  final String web3ApiKey; # The API key of the web3 URL service (eg: a536514602ea4e22a2e9007b6e9dbc63)
+  final String idStateContract; # The ID state contract (eg: 0x453A1BC32122E39A8398ec6288783389730807a5)
+  final String pushUrl; # The push notification URL (eg: https://push.service.io/api/v1)
+```
 
-**PUSH_URL** - Polygon push gateway server base url. <br />
+An example of initialization:
+```dart
+import 'package:flutter/material.dart';
+import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
+
+Future<void> main() async {
+  await PolygonIdSdk.init(env: EnvEntity(
+      blockchain: 'polygon',
+      network: 'mumbai',
+      web3Url: 'https://polygon-mumbai.infura.io/v3/'
+      web3RdpUrl: 'wss://polygon-mumbai.infura.io/v3/'
+      rhsUrl: 'http://id.eu-west-1.compute.amazonaws.com/rsh/'
+      web3ApiKey: 'a536514602ea4e22a2e9007b6e9dbc63'
+      idStateContract: '0x453A1BC32122E39A8398ec6288783389730807a5'
+      pushUrl: 'https://push.service.io/api/v1',
+  ));
+  runApp(const App());
+}
+```
+
+You can get the current env using [PolygonIdSdk.getEnv()](lib/sdk/polygon_id_sdk.dart#L66).
+
+
 
 # Deploy and check
 ### Deploy
@@ -55,12 +83,9 @@ dependencies:
     INFURA_RDP_URL="wss://polygon-mumbai.infura.io/v3/"
     INFURA_API_KEY="secret"
     ID_STATE_CONTRACT_ADDR="sc_address"
-   ```
-4. Add optional env variables (example):
-   ```bash
     PUSH_URL="push_url"
    ```
-5. run `build_runner` to generate `.g.dart` files:
+4. run `build_runner` to generate `.g.dart` files:
 ```bash
 flutter pub run build_runner build --delete-conflicting-outputs
 ```

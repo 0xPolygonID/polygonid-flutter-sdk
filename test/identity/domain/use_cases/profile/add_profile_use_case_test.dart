@@ -2,15 +2,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/add_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/update_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/add_profile_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/create_profiles_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/smt/create_identity_state_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/create_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/update_identity_use_case.dart';
 
 import '../../../../common/common_mocks.dart';
 import '../../../../common/identity_mocks.dart';
@@ -20,25 +18,21 @@ import 'add_profile_use_case_test.mocks.dart';
 var exception = Exception();
 var param = AddProfileParam(
   profileNonce: 2,
-  genesisDid: CommonMocks.did,
   privateKey: CommonMocks.privateKey,
 );
 
 var existingParam = AddProfileParam(
   profileNonce: CommonMocks.nonce,
-  genesisDid: CommonMocks.did,
   privateKey: CommonMocks.privateKey,
 );
 
 var negativeParam = AddProfileParam(
   profileNonce: CommonMocks.negativeNonce,
-  genesisDid: CommonMocks.did,
   privateKey: CommonMocks.privateKey,
 );
 
 var genesisParam = AddProfileParam(
   profileNonce: CommonMocks.genesisNonce,
-  genesisDid: CommonMocks.did,
   privateKey: CommonMocks.privateKey,
 );
 
@@ -49,12 +43,15 @@ MockUpdateIdentityUseCase updateIdentityUseCase = MockUpdateIdentityUseCase();
 MockCreateProfilesUseCase createProfilesUseCase = MockCreateProfilesUseCase();
 MockCreateIdentityStateUseCase createIdentityStateUseCase =
     MockCreateIdentityStateUseCase();
+MockGetCurrentEnvDidIdentifierUseCase getCurrentEnvDidIdentifierUseCase =
+    MockGetCurrentEnvDidIdentifierUseCase();
 
 // Tested instance
 AddProfileUseCase useCase = AddProfileUseCase(
   getIdentityUseCase,
   getDidUseCase,
   updateIdentityUseCase,
+  getCurrentEnvDidIdentifierUseCase,
   createProfilesUseCase,
   createIdentityStateUseCase,
 );
@@ -63,6 +60,7 @@ AddProfileUseCase useCase = AddProfileUseCase(
   GetIdentityUseCase,
   GetDidUseCase,
   UpdateIdentityUseCase,
+  GetCurrentEnvDidIdentifierUseCase,
   CreateProfilesUseCase,
   CreateIdentityStateUseCase,
 ])
@@ -73,8 +71,11 @@ void main() {
     reset(updateIdentityUseCase);
     reset(createProfilesUseCase);
     reset(createIdentityStateUseCase);
+    reset(getCurrentEnvDidIdentifierUseCase);
 
     // Given
+    when(getCurrentEnvDidIdentifierUseCase.execute(param: anyNamed('param')))
+        .thenAnswer((realInvocation) => Future.value(CommonMocks.did));
     when(getIdentityUseCase.execute(param: anyNamed('param'))).thenAnswer(
         (realInvocation) => Future.value(IdentityMocks.privateIdentity));
     when(getDidUseCase.execute(param: anyNamed('param')))
@@ -89,12 +90,20 @@ void main() {
   });
 
   test(
-    'Given a param, when I call execute, then I expect no response to be returned',
+    'Given a param, when I call execute, then I expect the process to complete',
     () async {
       // When
       await expectLater(useCase.execute(param: param), completes);
 
       // Then
+      expect(
+          verify(getCurrentEnvDidIdentifierUseCase.execute(
+                  param: captureAnyNamed('param')))
+              .captured
+              .first
+              .privateKey,
+          param.privateKey);
+
       var getIdentityCapture =
           verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))
               .captured
@@ -112,8 +121,6 @@ void main() {
               .captured
               .first;
       expect(capturedUpdate.privateKey, CommonMocks.privateKey);
-      expect(capturedUpdate.blockchain, CommonMocks.blockchain);
-      expect(capturedUpdate.network, CommonMocks.network);
       expect(capturedUpdate.profiles.first, 0);
     },
   );

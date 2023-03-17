@@ -14,10 +14,7 @@ import 'add_identity_use_case_test.mocks.dart';
 // Data
 var exception = Exception();
 var param = AddIdentityParam(
-    privateKey: CommonMocks.privateKey,
-    blockchain: CommonMocks.blockchain,
-    network: CommonMocks.network,
-    profiles: CommonMocks.intValues);
+    privateKey: CommonMocks.privateKey, profiles: CommonMocks.intValues);
 
 // Dependencies
 MockIdentityRepository identityRepository = MockIdentityRepository();
@@ -67,8 +64,6 @@ void main() {
             .captured
             .first;
     expect(captureCreate.privateKey, CommonMocks.privateKey);
-    expect(captureCreate.blockchain, CommonMocks.blockchain);
-    expect(captureCreate.network, CommonMocks.network);
     expect(captureCreate.profiles, CommonMocks.intValues);
 
     expect(
@@ -114,8 +109,6 @@ void main() {
             .captured
             .first;
     expect(captureCreate.privateKey, CommonMocks.privateKey);
-    expect(captureCreate.blockchain, CommonMocks.blockchain);
-    expect(captureCreate.network, CommonMocks.network);
     expect(captureCreate.profiles, CommonMocks.intValues);
 
     expect(
@@ -148,8 +141,6 @@ void main() {
             .captured
             .first;
     expect(captureCreate.privateKey, CommonMocks.privateKey);
-    expect(captureCreate.blockchain, CommonMocks.blockchain);
-    expect(captureCreate.network, CommonMocks.network);
     expect(captureCreate.profiles, CommonMocks.intValues);
 
     verifyNever(identityRepository.getIdentity(

@@ -1,6 +1,5 @@
 import 'package:archive/archive.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart';
@@ -8,17 +7,15 @@ import 'package:injectable/injectable.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:polygonid_flutter_sdk/common/data/repositories/env_config_repository_impl.dart';
+import 'package:polygonid_flutter_sdk/common/data/repositories/config_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/common/data/repositories/package_info_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/common/domain/repositories/config_repository.dart';
 import 'package:polygonid_flutter_sdk/common/domain/repositories/package_info_repository.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/utils/encrypt_sembast_codec.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/data/credential_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
-import 'package:polygonid_flutter_sdk/env/dev_env.dart';
-import 'package:polygonid_flutter_sdk/env/prod_env.dart';
-import 'package:polygonid_flutter_sdk/env/sdk_env.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/iden3comm_credential_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/iden3comm_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
@@ -44,9 +41,6 @@ configureInjection() => $initSDKGetIt(getItSdk);
 
 @module
 abstract class Sdk {
-  @lazySingleton
-  SdkEnv get sdkEnv => kDebugMode ? DevEnv() : ProdEnv();
-
   @Named('accessMessage')
   String get accessMessage => POLYGONID_ACCESS_MESSAGE;
 }
@@ -66,13 +60,13 @@ abstract class NetworkModule {
   /// like Dio: https://pub.dev/packages/dio
   Client get client => Client();
 
-  Web3Client web3Client(SdkEnv sdkEnv) =>
-      Web3Client(sdkEnv.infuraUrl + sdkEnv.infuraApiKey, client,
-          socketConnector: () {
-        return IOWebSocketChannel.connect(
-                sdkEnv.infuraRdpUrl + sdkEnv.infuraApiKey)
-            .cast<String>();
-      });
+  Future<Web3Client> web3Client(GetEnvUseCase getEnvUseCase) {
+    return getEnvUseCase.execute().then((env) =>
+        Web3Client(env.web3Url + env.web3ApiKey, client, socketConnector: () {
+          return IOWebSocketChannel.connect(env.web3RdpUrl + env.web3ApiKey)
+              .cast<String>();
+        }));
+  }
 }
 
 @module

@@ -46,8 +46,6 @@ class RestoreIdentityBloc
       await _polygonIdSdk.identity.restoreIdentity(
         privateKey: privateKey,
         encryptedIdentityDbs: {0: backup},
-        blockchain: "polygon",
-        network: "mumbai",
       );
 
       // emit success state

@@ -18,22 +18,19 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$CheckIdentityValidityEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String secret, String blockchain, String network)
-        checkIdentityValidity,
+    required TResult Function(String secret) checkIdentityValidity,
     required TResult Function() reset,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String secret, String blockchain, String network)?
-        checkIdentityValidity,
+    TResult? Function(String secret)? checkIdentityValidity,
     TResult? Function()? reset,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String secret, String blockchain, String network)?
-        checkIdentityValidity,
+    TResult Function(String secret)? checkIdentityValidity,
     TResult Function()? reset,
     required TResult orElse(),
   }) =>
@@ -86,7 +83,7 @@ abstract class _$$CheckIdentityValidityCopyWith<$Res> {
           $Res Function(_$CheckIdentityValidity) then) =
       __$$CheckIdentityValidityCopyWithImpl<$Res>;
   @useResult
-  $Res call({String secret, String blockchain, String network});
+  $Res call({String secret});
 }
 
 /// @nodoc
@@ -102,21 +99,11 @@ class __$$CheckIdentityValidityCopyWithImpl<$Res>
   @override
   $Res call({
     Object? secret = null,
-    Object? blockchain = null,
-    Object? network = null,
   }) {
     return _then(_$CheckIdentityValidity(
       secret: null == secret
           ? _value.secret
           : secret // ignore: cast_nullable_to_non_nullable
-              as String,
-      blockchain: null == blockchain
-          ? _value.blockchain
-          : blockchain // ignore: cast_nullable_to_non_nullable
-              as String,
-      network: null == network
-          ? _value.network
-          : network // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -125,19 +112,14 @@ class __$$CheckIdentityValidityCopyWithImpl<$Res>
 /// @nodoc
 
 class _$CheckIdentityValidity implements CheckIdentityValidity {
-  const _$CheckIdentityValidity(
-      {required this.secret, required this.blockchain, required this.network});
+  const _$CheckIdentityValidity({required this.secret});
 
   @override
   final String secret;
-  @override
-  final String blockchain;
-  @override
-  final String network;
 
   @override
   String toString() {
-    return 'CheckIdentityValidityEvent.checkIdentityValidity(secret: $secret, blockchain: $blockchain, network: $network)';
+    return 'CheckIdentityValidityEvent.checkIdentityValidity(secret: $secret)';
   }
 
   @override
@@ -145,14 +127,11 @@ class _$CheckIdentityValidity implements CheckIdentityValidity {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CheckIdentityValidity &&
-            (identical(other.secret, secret) || other.secret == secret) &&
-            (identical(other.blockchain, blockchain) ||
-                other.blockchain == blockchain) &&
-            (identical(other.network, network) || other.network == network));
+            (identical(other.secret, secret) || other.secret == secret));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, secret, blockchain, network);
+  int get hashCode => Object.hash(runtimeType, secret);
 
   @JsonKey(ignore: true)
   @override
@@ -164,33 +143,30 @@ class _$CheckIdentityValidity implements CheckIdentityValidity {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String secret, String blockchain, String network)
-        checkIdentityValidity,
+    required TResult Function(String secret) checkIdentityValidity,
     required TResult Function() reset,
   }) {
-    return checkIdentityValidity(secret, blockchain, network);
+    return checkIdentityValidity(secret);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String secret, String blockchain, String network)?
-        checkIdentityValidity,
+    TResult? Function(String secret)? checkIdentityValidity,
     TResult? Function()? reset,
   }) {
-    return checkIdentityValidity?.call(secret, blockchain, network);
+    return checkIdentityValidity?.call(secret);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String secret, String blockchain, String network)?
-        checkIdentityValidity,
+    TResult Function(String secret)? checkIdentityValidity,
     TResult Function()? reset,
     required TResult orElse(),
   }) {
     if (checkIdentityValidity != null) {
-      return checkIdentityValidity(secret, blockchain, network);
+      return checkIdentityValidity(secret);
     }
     return orElse();
   }
@@ -229,14 +205,10 @@ class _$CheckIdentityValidity implements CheckIdentityValidity {
 }
 
 abstract class CheckIdentityValidity implements CheckIdentityValidityEvent {
-  const factory CheckIdentityValidity(
-      {required final String secret,
-      required final String blockchain,
-      required final String network}) = _$CheckIdentityValidity;
+  const factory CheckIdentityValidity({required final String secret}) =
+      _$CheckIdentityValidity;
 
   String get secret;
-  String get blockchain;
-  String get network;
   @JsonKey(ignore: true)
   _$$CheckIdentityValidityCopyWith<_$CheckIdentityValidity> get copyWith =>
       throw _privateConstructorUsedError;
@@ -284,8 +256,7 @@ class _$ResetCheckIdentityValidity implements ResetCheckIdentityValidity {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String secret, String blockchain, String network)
-        checkIdentityValidity,
+    required TResult Function(String secret) checkIdentityValidity,
     required TResult Function() reset,
   }) {
     return reset();
@@ -294,8 +265,7 @@ class _$ResetCheckIdentityValidity implements ResetCheckIdentityValidity {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String secret, String blockchain, String network)?
-        checkIdentityValidity,
+    TResult? Function(String secret)? checkIdentityValidity,
     TResult? Function()? reset,
   }) {
     return reset?.call();
@@ -304,8 +274,7 @@ class _$ResetCheckIdentityValidity implements ResetCheckIdentityValidity {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String secret, String blockchain, String network)?
-        checkIdentityValidity,
+    TResult Function(String secret)? checkIdentityValidity,
     TResult Function()? reset,
     required TResult orElse(),
   }) {

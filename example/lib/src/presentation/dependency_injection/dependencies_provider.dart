@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/mappers/iden3_message_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/common/app_logger.dart';
+import 'package:polygonid_flutter_sdk_example/src/common/env.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/backup_identity/bloc/backup_identity_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/check_identity_validity/bloc/check_identity_validity_bloc.dart';
@@ -21,6 +25,7 @@ final getIt = GetIt.instance;
 
 /// Dependency Injection initializer
 Future<void> init() async {
+  registerEnv();
   await registerProviders();
   registerSplashDependencies();
   registerHomeDependencies();
@@ -34,9 +39,26 @@ Future<void> init() async {
   registerRestoreIdentityDependencies();
 }
 
+void registerEnv() {
+  Map<String, dynamic> polygonMumbai = jsonDecode(Env.polygonMumbai);
+  List<EnvEntity> env = [
+    EnvEntity(
+      blockchain: polygonMumbai['blockchain'],
+      network: polygonMumbai['network'],
+      web3Url: polygonMumbai['web3Url'],
+      web3RdpUrl: polygonMumbai['web3RdpUrl'],
+      rhsUrl: polygonMumbai['rhsUrl'],
+      web3ApiKey: polygonMumbai['web3ApiKey'],
+      idStateContract: polygonMumbai['idStateContract'],
+      pushUrl: polygonMumbai['pushUrl'],
+    ),
+  ];
+  getIt.registerSingleton<List<EnvEntity>>(env);
+}
+
 ///
 Future<void> registerProviders() async {
-  await PolygonIdSdk.init();
+  await PolygonIdSdk.init(env: getIt<List<EnvEntity>>()[0]);
   getIt.registerLazySingleton<PolygonIdSdk>(() => PolygonIdSdk.I);
   getIt.registerLazySingleton<Logger>(() => Logger());
   getIt.registerLazySingleton<DomainLogger>(() => AppLogger(getIt()));
