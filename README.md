@@ -74,18 +74,7 @@ You can get the current env using [PolygonIdSdk.getEnv()](lib/sdk/polygon_id_sdk
 # Deploy and check
 ### Deploy
 1. Clone this repository.
-2. Generate `.env` and `.env.dev` files in the root folder of the project.
-3. Add required env variables (example):
-   ```bash
-    NETWORK_NAME="polygon"
-    NETWORK_ENV="mumbai"
-    INFURA_URL="https://polygon-mumbai.infura.io/v3/"
-    INFURA_RDP_URL="wss://polygon-mumbai.infura.io/v3/"
-    INFURA_API_KEY="secret"
-    ID_STATE_CONTRACT_ADDR="sc_address"
-    PUSH_URL="push_url"
-   ```
-4. run `build_runner` to generate `.g.dart` files:
+2. run `build_runner` to generate `.g.dart` files:
 ```bash
 flutter pub run build_runner build --delete-conflicting-outputs
 ```
