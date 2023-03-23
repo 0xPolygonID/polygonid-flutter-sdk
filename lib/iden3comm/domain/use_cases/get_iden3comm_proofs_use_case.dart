@@ -98,7 +98,8 @@ class GetIden3commProofsUseCase
             challenge = param.challenge;
           }
 
-          _proofGenerationStepsStreamManager.add("Generating proof for ${credential.type}");
+          _proofGenerationStepsStreamManager
+              .add("Generating proof for ${credential.type}");
           // Generate proof
           proofs.add(await _generateProofUseCase.execute(
               param: GenerateProofParam(param.did, param.profileNonce, 0,

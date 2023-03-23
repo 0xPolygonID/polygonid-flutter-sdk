@@ -80,7 +80,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
           didIdentifier: didIdentifier,
           packageName: packageName);
 
-      _proofGenerationStepsStreamManager.add("preparing authentication token...");
+      _proofGenerationStepsStreamManager
+          .add("preparing authentication token...");
       String authToken = await _getAuthTokenUseCase.execute(
           param: GetAuthTokenParam(
               did: param.did,
