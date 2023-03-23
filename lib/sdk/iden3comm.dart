@@ -7,12 +7,12 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_us
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart';
 
-import '../common/domain/entities/filter_entity.dart';
-import '../credential/domain/entities/claim_entity.dart';
-import '../iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
-import '../iden3comm/domain/use_cases/get_filters_use_case.dart';
-import '../iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart';
-import '../iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_filters_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
 
 abstract class PolygonIdSdkIden3comm {
   /// Returns a [Iden3MessageEntity] from an iden3comm message string.

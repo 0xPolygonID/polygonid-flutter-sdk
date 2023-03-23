@@ -12,7 +12,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
-
+import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 import '../../../common/common_mocks.dart';
 import 'authenticate_use_case_test.mocks.dart';
 
@@ -24,6 +24,8 @@ MockGetEnvUseCase getEnvUseCase = MockGetEnvUseCase();
 MockGetPackageNameUseCase getPackageNameUseCase = MockGetPackageNameUseCase();
 MockGetCurrentEnvDidIdentifierUseCase getCurrentEnvDidIdentifierUseCase =
     MockGetCurrentEnvDidIdentifierUseCase();
+MockProofGenerationStepsStreamManager proofGenerationStepsStreamManager =
+    MockProofGenerationStepsStreamManager();
 
 AuthenticateUseCase useCase = AuthenticateUseCase(
   iden3commRepository,
@@ -32,6 +34,7 @@ AuthenticateUseCase useCase = AuthenticateUseCase(
   getEnvUseCase,
   getPackageNameUseCase,
   getCurrentEnvDidIdentifierUseCase,
+  proofGenerationStepsStreamManager,
 );
 
 // Data
@@ -64,6 +67,7 @@ AuthenticateParam param = AuthenticateParam(
   GetEnvUseCase,
   GetPackageNameUseCase,
   GetCurrentEnvDidIdentifierUseCase,
+  ProofGenerationStepsStreamManager,
 ])
 void main() {
   group(

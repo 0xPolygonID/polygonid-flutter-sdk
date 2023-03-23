@@ -47,6 +47,8 @@ import 'package:polygonid_flutter_sdk/proof/domain/use_cases/generate_proof_use_
     as _i19;
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart'
     as _i20;
+import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart'
+    as _i24;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -635,4 +637,44 @@ class MockGetProofRequestsUseCase extends _i1.Mock
         returnValue: _i10.Future<List<_i22.ProofRequestEntity>>.value(
             <_i22.ProofRequestEntity>[]),
       ) as _i10.Future<List<_i22.ProofRequestEntity>>);
+}
+
+/// A class which mocks [ProofGenerationStepsStreamManager].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockProofGenerationStepsStreamManager extends _i1.Mock
+    implements _i24.ProofGenerationStepsStreamManager {
+  MockProofGenerationStepsStreamManager() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i10.Stream<String> get proofGenerationStepsStream => (super.noSuchMethod(
+        Invocation.getter(#proofGenerationStepsStream),
+        returnValue: _i10.Stream<String>.empty(),
+      ) as _i10.Stream<String>);
+  @override
+  void reset() => super.noSuchMethod(
+        Invocation.method(
+          #reset,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void dispose() => super.noSuchMethod(
+        Invocation.method(
+          #dispose,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void add(String? stepDescription) => super.noSuchMethod(
+        Invocation.method(
+          #add,
+          [stepDescription],
+        ),
+        returnValueForMissingStub: null,
+      );
 }

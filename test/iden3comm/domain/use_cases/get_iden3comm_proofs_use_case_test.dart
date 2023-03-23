@@ -15,6 +15,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/generate_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 
 import '../../../common/common_mocks.dart';
 import '../../../common/credential_mocks.dart';
@@ -22,7 +23,6 @@ import '../../../common/iden3comm_mocks.dart';
 import '../../../common/identity_mocks.dart';
 import '../../../common/proof_mocks.dart';
 import 'authenticate_use_case_test.dart';
-import 'authenticate_use_case_test.mocks.dart';
 import 'get_iden3comm_proofs_use_case_test.mocks.dart';
 
 // Data
@@ -43,7 +43,6 @@ var exception = ProofsNotFoundException([]);
 
 // Mocked dependencies
 MockProofRepository proofRepository = MockProofRepository();
-MockIden3commRepository iden3commRepository = MockIden3commRepository();
 MockIdentityRepository identityRepository = MockIdentityRepository();
 MockGetIden3commClaimsUseCase getIden3commClaimsUseCase =
     MockGetIden3commClaimsUseCase();
@@ -52,6 +51,8 @@ MockIsProofCircuitSupportedUseCase isProofCircuitSupportedUseCase =
     MockIsProofCircuitSupportedUseCase();
 MockGetProofRequestsUseCase getProofRequestsUseCase =
     MockGetProofRequestsUseCase();
+MockProofGenerationStepsStreamManager proofGenerationStepsStreamManager =
+    MockProofGenerationStepsStreamManager();
 
 // Tested instance
 GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
@@ -61,6 +62,7 @@ GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   generateProofUseCase,
   isProofCircuitSupportedUseCase,
   getProofRequestsUseCase,
+  proofGenerationStepsStreamManager,
 );
 
 @GenerateMocks([
@@ -70,6 +72,7 @@ GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   GenerateProofUseCase,
   IsProofCircuitSupportedUseCase,
   GetProofRequestsUseCase,
+  ProofGenerationStepsStreamManager,
 ])
 main() {
   setUp(() {

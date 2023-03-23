@@ -160,12 +160,27 @@ class _AuthScreenState extends State<AuthScreen> {
             width: 48,
           );
         }
-        return const SizedBox(
-          height: 48,
-          width: 48,
-          child: CircularProgressIndicator(
-            backgroundColor: CustomColors.primaryButton,
-          ),
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            StreamBuilder<String>(
+              stream: widget._bloc.proofGenerationStepsStream,
+              initialData: "",
+              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                return Text(
+                  snapshot.data ?? "",
+                  style: CustomTextStyles.descriptionTextStyle,
+                );
+              },
+            ),
+            const SizedBox(
+              height: 48,
+              width: 48,
+              child: CircularProgressIndicator(
+                backgroundColor: CustomColors.primaryButton,
+              ),
+            ),
+          ],
         );
       },
     );
