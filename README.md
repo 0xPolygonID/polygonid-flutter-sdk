@@ -1,4 +1,8 @@
-# polygonid_flutter_sdk
+[<p align="center">
+  <img src="example/assets/images/polygon_id_logo.svg"  width="100" height="100">
+</p>](https://polygon.technology/polygon-id)
+ 
+# Polygon ID Flutter SDK
 
 [![pub package](https://img.shields.io/badge/pub-2.1.1-orange)](https://pub.dev/packages/polygonid_flutter_sdk)
 [![build](https://github.com/iden3/polygonid-flutter-sdk/workflows/polygonid_flutter_sdk/badge.svg)](https://github.com/iden3/polygonid-flutter-sdk/actions?query=workflow%3Apolygonid_flutter_sdk)
@@ -7,7 +11,7 @@
 
 ## Description
 
-This is a flutter Plugin for PolygonID Mobile SDK (https://polygon.technology/polygon-id) This plugin provides a cross-platform tool (iOS, Android) to communicate with the PolygonID platform.
+This is a Flutter Plugin for Polygon ID Mobile SDK (https://polygon.technology/polygon-id) This plugin provides a cross-platform tool (iOS, Android) to communicate with the PolygonID platform.
 
 ## Installation
 
@@ -72,9 +76,32 @@ You can get the current env using [PolygonIdSdk.getEnv()](lib/sdk/polygon_id_sdk
 # Deploy and check
 ### Deploy
 1. Clone this repository.
-2. run `build_runner` to generate `.g.dart` files:
+2. Run `build_runner` to generate `.g.dart` files:
 ```bash
 flutter pub run build_runner build --delete-conflicting-outputs
+```
+
+For iOS only:
+
+1. Add to your app's Podfile the following post_install code:
+
+```
+post_install do |installer|  
+  installer.pods_project.targets.each do |target|
+    ...
+    end
+    # polygon-setup
+    if target.name == "Pods-Runner"
+      puts "Updating #{target.name} OTHER_LDFLAGS"
+      target.build_configurations.each do |config|
+                      xcconfig_path = config.base_configuration_reference.real_path
+                      xcconfig = File.read(xcconfig_path)
+                      new_xcconfig = xcconfig.sub('OTHER_LDFLAGS = $(inherited)', 'OTHER_LDFLAGS = $(inherited) -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/librapidsnark.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libwitnesscalc_authV2.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libwitnesscalc_credentialAtomicQueryMTPV2.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libwitnesscalc_credentialAtomicQuerySigV2.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libgmp.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libpolygonid.a"')
+                      File.open(xcconfig_path, "w") { |file| file << new_xcconfig }
+         end
+     end
+  end
+end
 ```
 
 ## Features and bugs
@@ -94,4 +121,3 @@ import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 ## Notes
 
 P.S. Using iOS simulator for testing wallet sdk is right now under maintenance and will be available soon.
-
