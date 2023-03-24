@@ -1,6 +1,6 @@
-[<p align="center">
-  <img src="example/assets/images/polygon_id_logo.svg"  width="100" height="100">
-</p>](https://polygon.technology/polygon-id)
+<p align="center">
+  <img src="example/assets/images/polygon_id_logo.svg" width="120" height="120">
+</p>
  
 # Polygon ID Flutter SDK
 
