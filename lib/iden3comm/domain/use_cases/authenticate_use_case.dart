@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
@@ -8,6 +10,8 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_re
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 class AuthenticateParam {
   final AuthIden3MessageEntity message;
@@ -31,6 +35,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
   final GetEnvUseCase _getEnvUseCase;
   final GetPackageNameUseCase _getPackageNameUseCase;
   final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
+  final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
 
   AuthenticateUseCase(
     this._iden3commRepository,
@@ -39,10 +44,13 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
     this._getEnvUseCase,
     this._getPackageNameUseCase,
     this._getCurrentEnvDidIdentifierUseCase,
+    this._proofGenerationStepsStreamManager,
   );
 
   @override
   Future<void> execute({required AuthenticateParam param}) async {
+    _proofGenerationStepsStreamManager.reset();
+
     try {
       List<JWZProofEntity> proofs = await _getIden3commProofsUseCase.execute(
           param: GetIden3commProofsParam(
@@ -61,6 +69,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
 
       String packageName = await _getPackageNameUseCase.execute();
 
+      _proofGenerationStepsStreamManager
+          .add("preparing authentication parameters...");
       String authResponse = await _iden3commRepository.getAuthResponse(
           did: param.did,
           request: param.message,
@@ -70,12 +80,15 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
           didIdentifier: didIdentifier,
           packageName: packageName);
 
+      _proofGenerationStepsStreamManager
+          .add("preparing authentication token...");
       String authToken = await _getAuthTokenUseCase.execute(
           param: GetAuthTokenParam(
               did: param.did,
               privateKey: param.privateKey,
               message: authResponse));
 
+      _proofGenerationStepsStreamManager.add("authenticating...");
       return _iden3commRepository.authenticate(
         request: param.message,
         authToken: authToken,

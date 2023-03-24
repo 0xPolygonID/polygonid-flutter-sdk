@@ -31,6 +31,8 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.da
     as _i9;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart'
     as _i8;
+import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart'
+    as _i16;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -259,4 +261,44 @@ class MockGetCurrentEnvDidIdentifierUseCase extends _i1.Mock
         ),
         returnValue: _i4.Future<String>.value(''),
       ) as _i4.Future<String>);
+}
+
+/// A class which mocks [ProofGenerationStepsStreamManager].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockProofGenerationStepsStreamManager extends _i1.Mock
+    implements _i16.ProofGenerationStepsStreamManager {
+  MockProofGenerationStepsStreamManager() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.Stream<String> get proofGenerationStepsStream => (super.noSuchMethod(
+        Invocation.getter(#proofGenerationStepsStream),
+        returnValue: _i4.Stream<String>.empty(),
+      ) as _i4.Stream<String>);
+  @override
+  void reset() => super.noSuchMethod(
+        Invocation.method(
+          #reset,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void dispose() => super.noSuchMethod(
+        Invocation.method(
+          #dispose,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void add(String? stepDescription) => super.noSuchMethod(
+        Invocation.method(
+          #add,
+          [stepDescription],
+        ),
+        returnValueForMissingStub: null,
+      );
 }
