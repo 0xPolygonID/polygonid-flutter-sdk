@@ -35,20 +35,17 @@ PrivateIdentityEntity expectedNoProfiles = PrivateIdentityEntity(
     privateKey: CommonMocks.privateKey);
 
 // Dependencies
-MockIdentityRepository identityRepository = MockIdentityRepository();
 MockGetPublicKeysUseCase getPublicKeysUseCase = MockGetPublicKeysUseCase();
 MockGetCurrentEnvDidIdentifierUseCase getCurrentEnvDidIdentifierUseCase =
     MockGetCurrentEnvDidIdentifierUseCase();
 
 // Tested instance
 CreateIdentityUseCase useCase = CreateIdentityUseCase(
-  identityRepository,
   getPublicKeysUseCase,
   getCurrentEnvDidIdentifierUseCase,
 );
 
 @GenerateMocks([
-  IdentityRepository,
   GetPublicKeysUseCase,
   GetCurrentEnvDidIdentifierUseCase,
 ])
@@ -62,8 +59,6 @@ void main() {
     }
 
     // Given
-    when(getCurrentEnvDidIdentifierUseCase.execute(param: anyNamed('param')))
-        .thenAnswer((realInvocation) => Future.value(CommonMocks.did));
     when(getPublicKeysUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value(CommonMocks.pubKeys));
     when(getCurrentEnvDidIdentifierUseCase.execute(param: anyNamed('param')))

@@ -37,13 +37,13 @@ abstract class PolygonIdSdkProof {
 
 @injectable
 class Proof implements PolygonIdSdkProof {
-  final GenerateProofUseCase _proveUseCase;
+  final GenerateProofUseCase generateProofUseCase;
   final DownloadCircuitsUseCase _downloadCircuitsUseCase;
   final CircuitsFilesExistUseCase _circuitsFilesExistUseCase;
   final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
 
   Proof(
-    this._proveUseCase,
+    this.generateProofUseCase,
     this._downloadCircuitsUseCase,
     this._circuitsFilesExistUseCase,
     this._proofGenerationStepsStreamManager,
@@ -58,7 +58,7 @@ class Proof implements PolygonIdSdkProof {
       required ProofScopeRequest request,
       String? privateKey,
       String? challenge}) {
-    return _proveUseCase.execute(
+    return generateProofUseCase.execute(
         param: GenerateProofParam(did, profileNonce ?? 0, 0, claim, request,
             circuitData, privateKey, challenge));
   }

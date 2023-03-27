@@ -18,12 +18,10 @@ class CreateIdentityParam {
 
 class CreateIdentityUseCase
     extends FutureUseCase<CreateIdentityParam, PrivateIdentityEntity> {
-  final IdentityRepository _identityRepository;
   final GetPublicKeysUseCase _getPublicKeysUseCase;
   final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
 
   CreateIdentityUseCase(
-    this._identityRepository,
     this._getPublicKeysUseCase,
     this._getCurrentEnvDidIdentifierUseCase,
   );
