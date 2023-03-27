@@ -20,7 +20,6 @@ class AddProfileParam {
 
 class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
   final GetIdentityUseCase _getIdentityUseCase;
-  final GetDidUseCase _getDidUseCase;
   final UpdateIdentityUseCase _updateIdentityUseCase;
   final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
   final CreateProfilesUseCase _createProfilesUseCase;
@@ -28,7 +27,6 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
 
   AddProfileUseCase(
     this._getIdentityUseCase,
-    this._getDidUseCase,
     this._updateIdentityUseCase,
     this._getCurrentEnvDidIdentifierUseCase,
     this._createProfilesUseCase,
@@ -49,12 +47,9 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
           throw ProfileAlreadyExistsException(genesisDid, param.profileNonce);
         } else {
           // Create profile
-          var didEntity = await _getDidUseCase.execute(param: genesisDid);
           Map<int, String> newProfiles = await _createProfilesUseCase.execute(
               param: CreateProfilesParam(
                   privateKey: param.privateKey,
-                  blockchain: didEntity.blockchain,
-                  network: didEntity.network,
                   profiles: [param.profileNonce]));
 
           String? profileDid = newProfiles[param.profileNonce];

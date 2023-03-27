@@ -1,4 +1,5 @@
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_public_keys_use_case.dart';
 
 import '../../../../common/domain/domain_logger.dart';
@@ -8,38 +9,27 @@ import '../get_did_identifier_use_case.dart';
 
 class CreateProfilesParam {
   final String privateKey;
-  final String blockchain;
-  final String network;
   final List<int> profiles;
 
-  CreateProfilesParam(
-      {required this.privateKey,
-      required this.blockchain,
-      required this.network,
-      this.profiles = const []});
+  CreateProfilesParam({required this.privateKey, this.profiles = const []});
 }
 
 class CreateProfilesUseCase
     extends FutureUseCase<CreateProfilesParam, Map<int, String>> {
-  final IdentityRepository _identityRepository;
   final GetPublicKeysUseCase _getPublicKeysUseCase;
-  final GetDidIdentifierUseCase _getDidIdentifierUseCase;
+  final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
 
   CreateProfilesUseCase(
-    this._identityRepository,
     this._getPublicKeysUseCase,
-    this._getDidIdentifierUseCase,
+    this._getCurrentEnvDidIdentifierUseCase,
   );
 
   @override
   Future<Map<int, String>> execute({required CreateProfilesParam param}) async {
     return Future.wait([
       _getPublicKeysUseCase.execute(param: param.privateKey),
-      _getDidIdentifierUseCase.execute(
-          param: GetDidIdentifierParam(
-              privateKey: param.privateKey,
-              blockchain: param.blockchain,
-              network: param.network))
+      _getCurrentEnvDidIdentifierUseCase.execute(
+          param: GetCurrentEnvDidIdentifierParam(privateKey: param.privateKey))
     ], eagerError: true)
         .then((values) async {
       String didIdentifier = values[1] as String;
@@ -47,12 +37,9 @@ class CreateProfilesUseCase
       Map<int, String> profiles = {0: didIdentifier};
 
       for (int profile in param.profiles) {
-        String profileDid = await _getDidIdentifierUseCase.execute(
-            param: GetDidIdentifierParam(
-                privateKey: param.privateKey,
-                blockchain: param.blockchain,
-                network: param.network,
-                profileNonce: profile));
+        String profileDid = await _getCurrentEnvDidIdentifierUseCase.execute(
+            param: GetCurrentEnvDidIdentifierParam(
+                privateKey: param.privateKey, profileNonce: profile));
         profiles[profile] = profileDid;
       }
 

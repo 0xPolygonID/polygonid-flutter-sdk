@@ -21,7 +21,6 @@ class RemoveProfileParam {
 
 class RemoveProfileUseCase extends FutureUseCase<RemoveProfileParam, void> {
   final GetIdentityUseCase _getIdentityUseCase;
-  final GetDidUseCase _getDidUseCase;
   final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
   final CreateProfilesUseCase _createProfilesUseCase;
   final RemoveIdentityStateUseCase _removeIdentityStateUseCase;
@@ -30,7 +29,6 @@ class RemoveProfileUseCase extends FutureUseCase<RemoveProfileParam, void> {
 
   RemoveProfileUseCase(
     this._getIdentityUseCase,
-    this._getDidUseCase,
     this._updateIdentityUseCase,
     this._getCurrentEnvDidIdentifierUseCase,
     this._createProfilesUseCase,
@@ -51,13 +49,9 @@ class RemoveProfileUseCase extends FutureUseCase<RemoveProfileParam, void> {
         if (!profiles.contains(param.profileNonce)) {
           throw UnknownProfileException(param.profileNonce);
         } else {
-          var didEntity = await _getDidUseCase.execute(param: genesisDid);
-
           Map<int, String> newProfiles = await _createProfilesUseCase.execute(
               param: CreateProfilesParam(
                   privateKey: param.privateKey,
-                  blockchain: didEntity.blockchain,
-                  network: didEntity.network,
                   profiles: [param.profileNonce]));
 
           String? profileDid = newProfiles[param.profileNonce];

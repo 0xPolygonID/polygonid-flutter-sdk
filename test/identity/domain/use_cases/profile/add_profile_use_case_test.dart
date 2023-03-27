@@ -38,7 +38,6 @@ var genesisParam = AddProfileParam(
 
 // Dependencies
 MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
-MockGetDidUseCase getDidUseCase = MockGetDidUseCase();
 MockUpdateIdentityUseCase updateIdentityUseCase = MockUpdateIdentityUseCase();
 MockCreateProfilesUseCase createProfilesUseCase = MockCreateProfilesUseCase();
 MockCreateIdentityStateUseCase createIdentityStateUseCase =
@@ -49,7 +48,6 @@ MockGetCurrentEnvDidIdentifierUseCase getCurrentEnvDidIdentifierUseCase =
 // Tested instance
 AddProfileUseCase useCase = AddProfileUseCase(
   getIdentityUseCase,
-  getDidUseCase,
   updateIdentityUseCase,
   getCurrentEnvDidIdentifierUseCase,
   createProfilesUseCase,
@@ -58,7 +56,6 @@ AddProfileUseCase useCase = AddProfileUseCase(
 
 @GenerateMocks([
   GetIdentityUseCase,
-  GetDidUseCase,
   UpdateIdentityUseCase,
   GetCurrentEnvDidIdentifierUseCase,
   CreateProfilesUseCase,
@@ -67,7 +64,6 @@ AddProfileUseCase useCase = AddProfileUseCase(
 void main() {
   setUp(() {
     reset(getIdentityUseCase);
-    reset(getDidUseCase);
     reset(updateIdentityUseCase);
     reset(createProfilesUseCase);
     reset(createIdentityStateUseCase);
@@ -78,8 +74,6 @@ void main() {
         .thenAnswer((realInvocation) => Future.value(CommonMocks.did));
     when(getIdentityUseCase.execute(param: anyNamed('param'))).thenAnswer(
         (realInvocation) => Future.value(IdentityMocks.privateIdentity));
-    when(getDidUseCase.execute(param: anyNamed('param')))
-        .thenAnswer((realInvocation) => Future.value(IdentityMocks.did));
     when(createProfilesUseCase.execute(param: anyNamed('param'))).thenAnswer(
         (realInvocation) => Future.value(
             {param.profileNonce: CommonMocks.did + "${param.profileNonce}"}));
@@ -109,12 +103,6 @@ void main() {
               .captured
               .first;
       expect(getIdentityCapture.genesisDid, CommonMocks.did);
-
-      var capturedDid =
-          verify(getDidUseCase.execute(param: captureAnyNamed('param')))
-              .captured
-              .first;
-      expect(capturedDid, CommonMocks.did);
 
       var capturedUpdate =
           verify(updateIdentityUseCase.execute(param: captureAnyNamed('param')))
@@ -148,8 +136,6 @@ void main() {
     expect(captureGetIdentity.genesisDid, CommonMocks.did);
     expect(captureGetIdentity.privateKey, CommonMocks.privateKey);
 
-    verifyNever(getDidUseCase.execute(param: captureAnyNamed('param')));
-
     verifyNever(updateIdentityUseCase.execute(param: captureAnyNamed('param')));
   });
 
@@ -171,8 +157,6 @@ void main() {
 
     // Then
     verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
-
-    verifyNever(getDidUseCase.execute(param: captureAnyNamed('param')));
 
     verifyNever(updateIdentityUseCase.execute(param: captureAnyNamed('param')));
   });
@@ -196,8 +180,6 @@ void main() {
     // Then
     verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
 
-    verifyNever(getDidUseCase.execute(param: captureAnyNamed('param')));
-
     verifyNever(updateIdentityUseCase.execute(param: captureAnyNamed('param')));
   });
 
@@ -218,8 +200,6 @@ void main() {
             .first;
     expect(captureGetIdentity.genesisDid, CommonMocks.did);
     expect(captureGetIdentity.privateKey, CommonMocks.privateKey);
-
-    verifyNever(getDidUseCase.execute(param: captureAnyNamed('param')));
 
     verifyNever(updateIdentityUseCase.execute(param: captureAnyNamed('param')));
   });
