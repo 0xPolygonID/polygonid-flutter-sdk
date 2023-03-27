@@ -1,7 +1,7 @@
-#coverage:
-#  precision: 2
-#  round: down
-#  range: "30...100"
+coverage:
+  precision: 2
+  round: down
+  range: "30...100"
 
 #  status:
 #    project: no
@@ -18,7 +18,7 @@ ignore:
   - '**/example/'
   - '**/*.g.dart'
 
-# https://docs.codecov.io/docs/pull-request-comments
+ https://docs.codecov.io/docs/pull-request-comments
   #comment:
   #  layout: "reach, diff, flags, files"
 #  behavior: default

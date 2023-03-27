@@ -9,6 +9,12 @@ jobs:
   build:
     name: sdk_actions
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        api-level:
+          - 29
+          # you can add more API level if you want to run your tests on different API
+      fail-fast: true
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -30,6 +36,15 @@ jobs:
       - name: Run tests
         if: github.base_ref == 'develop' || github.base_ref == 'main'
         run: flutter test --coverage
+      - name: Run integration tests
+        if: github.base_ref == 'develop' || github.base_ref == 'main'
+          # more info on https://github.com/ReactiveCircus/android-emulator-runner
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          arch: x86_64
+          profile: Nexus 6
+          script: cd example&&flutter test integration_test/libpolygonid_test.dart --verbose
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:
