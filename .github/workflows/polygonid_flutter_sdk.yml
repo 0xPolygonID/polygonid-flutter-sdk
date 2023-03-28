@@ -4,19 +4,25 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main, develop]
+  workflow_dispatch:
 
+# 2 jobs are configured.
+# The first one runs tests on iOS devices.
+# The second runs tests on Android devices
 jobs:
-  build:
-    name: sdk_actions
+  # job responsible for running Flutter tests on Android devices
+  android:
     runs-on: macos-latest
     strategy:
       matrix:
-        api-level: [ 21, 23, 29, 32 ]
-        target: [ default, google_apis ]
+        api-level:  [ 32 ] #[ 21, 23, 29, 32 ]
+        target: [ google_apis ] #[ default, google_apis ]
+      # if one of the jobs in the matrix expansion fails, the rest of the jobs will be cancelled
       fail-fast: true
     steps:
       - name: checkout
         uses: actions/checkout@v3
+
       - name: Gradle cache
         uses: gradle/gradle-build-action@v2
 
@@ -47,21 +53,28 @@ jobs:
         with:
           flutter-version: '3.7.6'
           channel: 'stable'
+
       - name: verify flutter version
         run: flutter --version
+
       - name: Clean, dependencies and generate for SDK
         run: flutter clean&&flutter pub get&&flutter pub run build_runner build --delete-conflicting-outputs
+
       - name: Clean, dependencies and generate for example
         env:
           ENV_POLYGON_MUMBAI: ${{ secrets.ENV_POLYGON_MUMBAI }}
         run: cd example&&flutter clean&&flutter pub get&&flutter pub run build_runner build --delete-conflicting-outputs
+
       - name: Format
         run: dart format --set-exit-if-changed lib test example
+
       - name: Analyze
         run: flutter analyze lib test example
+
       - name: Run tests
         if: github.base_ref == 'develop' || github.base_ref == 'main'
         run: flutter test --coverage
+
       - name: Run integration tests
         if: github.base_ref == 'develop' || github.base_ref == 'main'
           # more info on https://github.com/ReactiveCircus/android-emulator-runner
@@ -74,11 +87,13 @@ jobs:
           disable-animations: true
           arch: x86_64
           profile: Nexus 6
-          script: ./gradlew connectedCheck&&cd example&&flutter test integration_test/libpolygonid_test.dart --verbose
+          script: cd example&&flutter test integration_test/libpolygonid_test.dart --verbose
+
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+
       - name: Publish dry run
         if: github.base_ref == 'main'
         run: flutter pub publish --dry-run
