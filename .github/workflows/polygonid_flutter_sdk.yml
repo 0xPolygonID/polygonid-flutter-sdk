@@ -17,10 +17,10 @@ jobs:
       matrix:
         device:
           # The available simulators are listed by the "xcrun xctrace list devices" command
-          - "iPhone 11 Simulator (15.2)" # the name of the simulator could be different depending on the macos version you are using
+          - "iPhone 14 Simulator (16.2)" # the name of the simulator could be different depending on the macos version you are using
       # if one of the jobs in the matrix expansion fails, the rest of the jobs will be cancelled
       fail-fast: true
-    runs-on: macos-11 # or macos-latest if you prefer, but be aware that the available simulators could be different if you run a different version
+    runs-on: macos-latest # or macos-latest if you prefer, but be aware that the available simulators could be different if you run a different version
     steps:
       - name: "List all simulators"
         run: "xcrun xctrace list devices"
@@ -41,6 +41,7 @@ jobs:
         with:
           flutter-version: '3.7.6'
           channel: 'stable'
+          cache: true
           # instead of "channel: stable", you could be more precise by specifying the exact version of Flutter you're using:
           # flutter-version: '<FLUTTER_VERSION>'
 
@@ -91,6 +92,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: "12.x"
+          cache: 'gradle'
 
       - name: Gradle cache
         uses: gradle/gradle-build-action@v2
@@ -122,6 +124,7 @@ jobs:
         with:
           flutter-version: '3.7.6'
           channel: 'stable'
+          cache: true
 
       - name: Verify Flutter version
         run: flutter --version
