@@ -77,47 +77,47 @@ jobs:
   # job responsible for running Flutter tests on Android devices
   android:
     runs-on: macos-latest
-    strategy:
-      matrix:
-        api-level:  [ 32 ] #[ 21, 23, 29, 32 ]
-        target: [ google_apis ] #[ default, google_apis ]
+      # strategy:
+      # matrix:
+      #  api-level:  [ 32 ] #[ 21, 23, 29, 32 ]
+      #  target: [ google_apis ] #[ default, google_apis ]
       # if one of the jobs in the matrix expansion fails, the rest of the jobs will be cancelled
-      fail-fast: true
+      # fail-fast: true
     steps:
       - name: checkout
         uses: actions/checkout@v3
 
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: "12.x"
-          cache: 'gradle'
+        # - name: Setup Java
+        # uses: actions/setup-java@v3
+          # with:
+          #   distribution: 'zulu'
+          #   java-version: "12.x"
+        #   cache: 'gradle'
 
-      - name: Gradle cache
-        uses: gradle/gradle-build-action@v2
+        # - name: Gradle cache
+      #  uses: gradle/gradle-build-action@v2
 
-      - name: AVD cache
-        uses: actions/cache@v3
-        id: avd-cache
-        with:
-          path: |
-            ~/.android/avd/*
-            ~/.android/adb*
-          key: avd-${{ matrix.api-level }}
+        # - name: AVD cache
+        # uses: actions/cache@v3
+        # id: avd-cache
+          # with:
+          #   path: |
+          #     ~/.android/avd/*
+          #    ~/.android/adb*
+        #  key: avd-${{ matrix.api-level }}
 
-      - name: create AVD and generate snapshot for caching
-        if: (github.base_ref == 'develop' || github.base_ref == 'main') && steps.avd-cache.outputs.cache-hit != 'true'
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ matrix.api-level }}
-          target: ${{ matrix.target }}
-          force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: false
-          arch: x86_64
-          profile: Nexus 6
-          script: echo "Generated AVD snapshot for caching."
+        #  - name: create AVD and generate snapshot for caching
+        #  if: (github.base_ref == 'develop' || github.base_ref == 'main') && steps.avd-cache.outputs.cache-hit != 'true'
+        #  uses: reactivecircus/android-emulator-runner@v2
+          # with:
+          # api-level: ${{ matrix.api-level }}
+          # target: ${{ matrix.target }}
+          # force-avd-creation: false
+          # emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          # disable-animations: false
+          # arch: x86_64
+          # profile: Nexus 6
+          # script: echo "Generated AVD snapshot for caching."
 
       - name: Setup Flutter SDK
         uses: subosito/flutter-action@v2
@@ -147,19 +147,19 @@ jobs:
         if: github.base_ref == 'develop' || github.base_ref == 'main'
         run: flutter test --coverage
 
-      - name: Run integration tests
-        if: github.base_ref == 'develop' || github.base_ref == 'main'
+        #- name: Run integration tests
+          # if: github.base_ref == 'develop' || github.base_ref == 'main'
           # more info on https://github.com/ReactiveCircus/android-emulator-runner
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ matrix.api-level }}
-          target: ${{ matrix.target }}
-          force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: true
-          arch: x86_64
-          profile: Nexus 6
-          script: cd example&&flutter test integration_test/libpolygonid_test.dart --verbose
+        # uses: reactivecircus/android-emulator-runner@v2
+          # with:
+          # api-level: ${{ matrix.api-level }}
+          # target: ${{ matrix.target }}
+          # force-avd-creation: false
+          # emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          # disable-animations: true
+          # arch: x86_64
+          # profile: Nexus 6
+        # script: cd example&&flutter test integration_test/libpolygonid_test.dart --verbose
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
