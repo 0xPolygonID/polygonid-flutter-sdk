@@ -8,16 +8,42 @@ on:
 jobs:
   build:
     name: sdk_actions
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     strategy:
       matrix:
-        api-level:
-          - 29
-          # you can add more API level if you want to run your tests on different API
+        api-level: [ 21, 23, 29, 32 ]
+        target: [ default, google_apis ]
       fail-fast: true
     steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: Gradle cache
+        uses: gradle/gradle-build-action@v2
+
+      - name: AVD cache
+        uses: actions/cache@v3
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{ matrix.api-level }}
+
+      - name: create AVD and generate snapshot for caching
+        if: (github.base_ref == 'develop' || github.base_ref == 'main') && steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          target: ${{ matrix.target }}
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
+          arch: x86_64
+          profile: Nexus 6
+          script: echo "Generated AVD snapshot for caching."
+
+      - name: flutter
+        uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.7.6'
           channel: 'stable'
@@ -42,9 +68,13 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
+          target: ${{ matrix.target }}
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
           arch: x86_64
           profile: Nexus 6
-          script: cd example&&flutter test integration_test/libpolygonid_test.dart --verbose
+          script: ./gradlew connectedCheck&&cd example&&flutter test integration_test/libpolygonid_test.dart --verbose
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:
