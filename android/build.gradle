@@ -27,7 +27,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -44,7 +44,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 20
+        minSdkVersion 21
         ndk{
             // TODO: armeabi-v7a and x86 not supported yet
             abiFilters 'arm64-v8a', 'x86_64'  /*,'armeabi-v7a', 'x86',*/
@@ -79,5 +79,5 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation fileTree(dir: 'libs', include: ['*.a'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.annotation:annotation:1.5.0'
+    implementation 'androidx.annotation:annotation:1.6.0'
 }
