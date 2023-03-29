@@ -1,9 +1,11 @@
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/connection_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/connection/get_connections_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart';
 
@@ -106,6 +108,17 @@ abstract class PolygonIdSdkIden3comm {
       int? profileNonce,
       required String privateKey,
       String? pushToken});
+
+  /// Gets a list of [ConnectionEntity] associated to the identity previously stored
+  /// in the the Polygon ID Sdk
+  ///
+  ///
+  /// The [did] is the unique id of the identity
+  ///
+  /// The [privateKey]  is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
+  Future<List<ConnectionEntity>> getConnections(
+      {required String did, required String privateKey});
 }
 
 @injectable
@@ -117,6 +130,8 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   final GetIden3commClaimsUseCase _getIden3commClaimsUseCase;
   final GetIden3commProofsUseCase _getIden3commProofsUseCase;
 
+  final GetConnectionsUseCase _getConnectionsUseCase;
+
   Iden3comm(
     this._fetchAndSaveClaimsUseCase,
     this._getIden3MessageUseCase,
@@ -124,6 +139,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     this._getFiltersUseCase,
     this._getIden3commClaimsUseCase,
     this._getIden3commProofsUseCase,
+    this._getConnectionsUseCase,
   );
 
   /// Returns a [Iden3MessageEntity] from an iden3comm message string.
@@ -266,6 +282,24 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       profileNonce: profileNonce ?? 0,
       privateKey: privateKey,
       pushToken: pushToken,
+    ));
+  }
+
+  /// Gets a list of [ConnectionEntity] associated to the identity previously stored
+  /// in the the Polygon ID Sdk
+  ///
+  ///
+  /// The [did] is the unique id of the identity
+  ///
+  /// The [privateKey]  is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
+  @override
+  Future<List<ConnectionEntity>> getConnections(
+      {required String did, required String privateKey}) {
+    return _getConnectionsUseCase.execute(
+        param: GetConnectionsParam(
+      did: did,
+      privateKey: privateKey,
     ));
   }
 }
