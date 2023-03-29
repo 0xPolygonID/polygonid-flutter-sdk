@@ -17,6 +17,30 @@ class EnvEntity {
     required this.pushUrl,
   });
 
+  factory EnvEntity.fromJson(Map<String, dynamic> json) {
+    return EnvEntity(
+      blockchain: json['blockchain'],
+      network: json['network'],
+      web3Url: json['web3Url'],
+      web3RdpUrl: json['web3RdpUrl'],
+      web3ApiKey: json['web3ApiKey'],
+      idStateContract: json['idStateContract'],
+      pushUrl: json['pushUrl'],
+    );
+  }
+
+  @override
+  Map<String, dynamic> toJson() =>
+      {
+        'blockchain': blockchain,
+        'network': network,
+        'web3Url': web3Url,
+        'web3RdpUrl': web3RdpUrl,
+        'web3ApiKey': web3ApiKey,
+        'idStateContract': idStateContract,
+        'pushUrl': pushUrl,
+      };
+
   @override
   String toString() =>
       "[EnvEntity] {blockchain: $blockchain, network: $network, web3Url: $web3Url, web3RdpUrl: $web3RdpUrl, web3ApiKey: $web3ApiKey, idStateContract: $idStateContract, pushUrl: $pushUrl}";
@@ -24,14 +48,14 @@ class EnvEntity {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is EnvEntity &&
-          blockchain == other.blockchain &&
-          network == other.network &&
-          web3Url == other.web3Url &&
-          web3RdpUrl == other.web3RdpUrl &&
-          web3ApiKey == other.web3ApiKey &&
-          idStateContract == other.idStateContract &&
-          pushUrl == other.pushUrl;
+          other is EnvEntity &&
+              blockchain == other.blockchain &&
+              network == other.network &&
+              web3Url == other.web3Url &&
+              web3RdpUrl == other.web3RdpUrl &&
+              web3ApiKey == other.web3ApiKey &&
+              idStateContract == other.idStateContract &&
+              pushUrl == other.pushUrl;
 
   @override
   int get hashCode => runtimeType.hashCode;

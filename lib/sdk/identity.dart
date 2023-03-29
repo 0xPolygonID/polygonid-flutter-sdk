@@ -129,16 +129,15 @@ abstract class PolygonIdSdkIdentity {
   /// to obtain the did identifier
   ///
   /// Return The Identity's [did] identifier
-  Future<String> getDidIdentifier(
-      {required String privateKey,
-      required String blockchain,
-      required String network,
-      int? profileNonce});
+  Future<String> getDidIdentifier({required String privateKey,
+    required String blockchain,
+    required String network,
+    int? profileNonce});
 
   /// Returns the identity state from a did
   ///
   /// The [did] is the unique id of the identity
-  Future<String> getState(String did);
+  Future<String> getState({required String did});
 
   /// Sign a message through a identity's private key.
   ///
@@ -204,21 +203,19 @@ class Identity implements PolygonIdSdkIdentity {
   final GetProfilesUseCase _getProfilesUseCase;
   final RemoveProfileUseCase _removeProfileUseCase;
 
-  Identity(
-    this._checkIdentityValidityUseCase,
-    this._addNewIdentityUseCase,
-    this._restoreIdentityUseCase,
-    this._backupIdentityUseCase,
-    this._getIdentityUseCase,
-    this._getIdentitiesUseCase,
-    this._removeIdentityUseCase,
-    this._getDidIdentifierUseCase,
-    this._signMessageUseCase,
-    this._fetchIdentityStateUseCase,
-    this._addProfileUseCase,
-    this._getProfilesUseCase,
-    this._removeProfileUseCase,
-  );
+  Identity(this._checkIdentityValidityUseCase,
+      this._addNewIdentityUseCase,
+      this._restoreIdentityUseCase,
+      this._backupIdentityUseCase,
+      this._getIdentityUseCase,
+      this._getIdentitiesUseCase,
+      this._removeIdentityUseCase,
+      this._getDidIdentifierUseCase,
+      this._signMessageUseCase,
+      this._fetchIdentityStateUseCase,
+      this._addProfileUseCase,
+      this._getProfilesUseCase,
+      this._removeProfileUseCase,);
 
   /// Checks the identity validity from a secret
   ///
@@ -312,7 +309,7 @@ class Identity implements PolygonIdSdkIdentity {
       {required String genesisDid, String? privateKey}) async {
     return _getIdentityUseCase.execute(
         param:
-            GetIdentityParam(genesisDid: genesisDid, privateKey: privateKey));
+        GetIdentityParam(genesisDid: genesisDid, privateKey: privateKey));
   }
 
   /// Get a list of public info of [IdentityEntity] associated
@@ -387,7 +384,7 @@ class Identity implements PolygonIdSdkIdentity {
   ///
   /// The [did] is the unique id of the identity
   @override
-  Future<String> getState(String did) {
+  Future<String> getState({required String did}) {
     return _fetchIdentityStateUseCase.execute(param: did);
   }
 

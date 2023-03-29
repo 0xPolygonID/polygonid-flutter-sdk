@@ -12,6 +12,21 @@ class IdentityEntity {
     required this.profiles,
   });
 
+  factory IdentityEntity.fromJson(Map<String, dynamic> json) {
+    return IdentityEntity(
+      did: json['did'],
+      publicKey: List<String>.from(json['publicKey']),
+      profiles: Map<int, String>.from(json['profiles']),
+    );
+  }
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'did': did,
+        'publicKey': publicKey,
+        'profiles': profiles,
+      };
+
   @override
   String toString() =>
       "[IdentityEntity] {did: $did, publicKey: $publicKey, profiles: $profiles}";
