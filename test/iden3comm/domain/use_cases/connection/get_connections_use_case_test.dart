@@ -22,51 +22,51 @@ final GetConnectionsParam param =
     GetConnectionsParam(did: identifier, privateKey: privateKey);
 final connectionEntities = [
   ConnectionEntity(
-      from: CommonMocks.did,
-      to: CommonMocks.did,
-      interactions: [],
+    from: CommonMocks.did,
+    to: CommonMocks.did,
+    interactions: [],
   ),
   ConnectionEntity(
-      from: CommonMocks.did,
-      to: CommonMocks.did,
-      interactions: [],
+    from: CommonMocks.did,
+    to: CommonMocks.did,
+    interactions: [],
   ),
   ConnectionEntity(
-      from: CommonMocks.did,
-      to: CommonMocks.did,
-      interactions: [],
+    from: CommonMocks.did,
+    to: CommonMocks.did,
+    interactions: [],
   )
 ];
 final profilesConnectionEntities = [
   ConnectionEntity(
-      from: CommonMocks.did,
-      to: CommonMocks.did,
-      interactions: [],
+    from: CommonMocks.did,
+    to: CommonMocks.did,
+    interactions: [],
   ),
   ConnectionEntity(
-      from: CommonMocks.did,
-      to: CommonMocks.did,
-      interactions: [],
+    from: CommonMocks.did,
+    to: CommonMocks.did,
+    interactions: [],
   ),
   ConnectionEntity(
-      from: CommonMocks.did,
-      to: CommonMocks.did,
-      interactions: [],
+    from: CommonMocks.did,
+    to: CommonMocks.did,
+    interactions: [],
   ),
   ConnectionEntity(
-      from: CommonMocks.did,
-      to: CommonMocks.did,
-      interactions: [],
+    from: CommonMocks.did,
+    to: CommonMocks.did,
+    interactions: [],
   ),
   ConnectionEntity(
-      from: CommonMocks.did,
-      to: CommonMocks.did,
-      interactions: [],
+    from: CommonMocks.did,
+    to: CommonMocks.did,
+    interactions: [],
   ),
   ConnectionEntity(
-      from: CommonMocks.did,
-      to: CommonMocks.did,
-      interactions: [],
+    from: CommonMocks.did,
+    to: CommonMocks.did,
+    interactions: [],
   )
 ];
 var exception = Exception();
@@ -78,8 +78,8 @@ MockGetCurrentEnvDidIdentifierUseCase getCurrentEnvDidIdentifierUseCase =
 MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
 
 // Tested instance
-GetConnectionsUseCase useCase = GetConnectionsUseCase(iden3commRepository,
-    getCurrentEnvDidIdentifierUseCase, getIdentityUseCase);
+GetConnectionsUseCase useCase = GetConnectionsUseCase(
+    iden3commRepository, getCurrentEnvDidIdentifierUseCase, getIdentityUseCase);
 
 @GenerateMocks([
   Iden3commRepository,
@@ -93,17 +93,15 @@ void main() {
       reset(getIdentityUseCase);
       reset(iden3commRepository);
 
-
       // Given
       when(iden3commRepository.getConnections(
-              did: anyNamed('did'),
-              privateKey: anyNamed('privateKey'),
-          ))
-          .thenAnswer((realInvocation) => Future.value(connectionEntities));
+        did: anyNamed('did'),
+        privateKey: anyNamed('privateKey'),
+      )).thenAnswer((realInvocation) => Future.value(connectionEntities));
       when(getCurrentEnvDidIdentifierUseCase.execute(param: anyNamed('param')))
           .thenAnswer((realInvocation) => Future.value(CommonMocks.did));
       when(getIdentityUseCase.execute(param: anyNamed('param'))).thenAnswer(
-              (realInvocation) => Future.value(IdentityMocks.privateIdentity));
+          (realInvocation) => Future.value(IdentityMocks.privateIdentity));
     });
 
     test(
@@ -114,7 +112,7 @@ void main() {
 
       // Then
       var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(
-          param: captureAnyNamed('param')))
+              param: captureAnyNamed('param')))
           .captured
           .first;
       expect(capturedDid.privateKey, privateKey);
@@ -129,8 +127,7 @@ void main() {
       var capturedGet = verify(iden3commRepository.getConnections(
               did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey')))
-          .captured
-          ;
+          .captured;
       expect(capturedGet[0], identifier);
       expect(capturedGet[1], privateKey);
     });
@@ -140,18 +137,16 @@ void main() {
         () async {
       // Given
       when(iden3commRepository.getConnections(
-              did: captureAnyNamed('did'),
-              privateKey: captureAnyNamed('privateKey'),
-              ))
-          .thenAnswer((realInvocation) => Future.error(exception));
+        did: captureAnyNamed('did'),
+        privateKey: captureAnyNamed('privateKey'),
+      )).thenAnswer((realInvocation) => Future.error(exception));
 
       // When
-      await expectLater(
-          useCase.execute(param: param), throwsA(exception));
+      await expectLater(useCase.execute(param: param), throwsA(exception));
 
       // Then
       var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(
-          param: captureAnyNamed('param')))
+              param: captureAnyNamed('param')))
           .captured
           .first;
       expect(capturedDid.privateKey, privateKey);
@@ -163,10 +158,9 @@ void main() {
       expect(getIdentityCapture.genesisDid, CommonMocks.did);
 
       var capturedGet = verify(iden3commRepository.getConnections(
-              did: captureAnyNamed('did'),
-              privateKey: captureAnyNamed('privateKey'),
-              ))
-          .captured;
+        did: captureAnyNamed('did'),
+        privateKey: captureAnyNamed('privateKey'),
+      )).captured;
       expect(capturedGet[0], identifier);
       expect(capturedGet[1], privateKey);
     });

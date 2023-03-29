@@ -137,7 +137,7 @@ void main() {
       when(getCurrentEnvDidIdentifierUseCase.execute(param: anyNamed('param')))
           .thenAnswer((realInvocation) => Future.value(CommonMocks.did));
       when(getIdentityUseCase.execute(param: anyNamed('param'))).thenAnswer(
-              (realInvocation) => Future.value(IdentityMocks.privateIdentity));
+          (realInvocation) => Future.value(IdentityMocks.privateIdentity));
     });
 
     test(
@@ -148,7 +148,7 @@ void main() {
 
       // Then
       var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(
-          param: captureAnyNamed('param')))
+              param: captureAnyNamed('param')))
           .captured
           .first;
       expect(capturedDid.privateKey, privateKey);
@@ -163,8 +163,7 @@ void main() {
               did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey'),
               filters: captureAnyNamed('filters')))
-          .captured
-          ;
+          .captured;
       expect(capturedGet[0], CommonMocks.profiles[0]);
       expect(capturedGet[1], privateKey);
       expect(capturedGet[2], null);
@@ -178,7 +177,7 @@ void main() {
 
       // Then
       var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(
-          param: captureAnyNamed('param')))
+              param: captureAnyNamed('param')))
           .captured
           .first;
       expect(capturedDid.privateKey, privateKey);
@@ -215,7 +214,7 @@ void main() {
 
       // Then
       var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(
-          param: captureAnyNamed('param')))
+              param: captureAnyNamed('param')))
           .captured
           .first;
       expect(capturedDid.privateKey, privateKey);
