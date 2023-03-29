@@ -11,7 +11,7 @@
 
 ## Description
 
-This is a Flutter Plugin for Polygon ID Mobile SDK (https://polygon.technology/polygon-id) This plugin provides a cross-platform tool (iOS, Android) to communicate with the PolygonID platform.
+This is a Flutter plugin for the [Polygon ID SDK](https://polygon.technology/polygon-id), which allows you to integrate Polygon ID identity system into your Flutter apps.
 
 ## Installation
 
@@ -71,8 +71,6 @@ Future<void> main() async {
 
 You can get the current env using [PolygonIdSdk.getEnv()](lib/sdk/polygon_id_sdk.dart#L66).
 
-
-
 # Deploy and check
 ### Deploy
 1. Clone this repository.
@@ -103,20 +101,48 @@ post_install do |installer|
   end
 end
 ```
-
-## Features and bugs
-
-Please file feature requests and bugs at the [issue tracker][tracker].
-
-[tracker]: https://github.com/iden3/polygonid-flutter-sdk/issues
-
 ## Usage
 
-To start using this package first import it in your Dart file.
+To integrate Polygon ID Flutter SDK into your Flutter app, follow these steps:
+
+1. Import the `polygonid_flutter_sdk` package:
 
 ```dart
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 ```
+2. Initialize the Polygon ID Flutter SDK with your environment:
+
+```dart
+await PolygonIdSdk.init(env: EnvEntity(
+      blockchain: 'polygon',
+      network: 'mumbai',
+      web3Url: 'https://polygon-mumbai.infura.io/v3/'
+      web3RdpUrl: 'wss://polygon-mumbai.infura.io/v3/'
+      web3ApiKey: 'a536514602ea4e22a2e9007b6e9dbc63'
+      idStateContract: '0x453A1BC32122E39A8398ec6288783389730807a5'
+      pushUrl: 'https://push.service.io/api/v1',
+  ));
+```
+3. To be able to authenticate with issuers or verifiers, fetch credentials and generate proofs, you need to download the proof circuit files.
+
+```dart
+Stream<DownloadInfo> stream =
+        await PolygonIdSdk.I.proof.initCircuitsDownloadAndGetInfoStream;
+```
+For more information on how to use the PolygonID Flutter SDK, please check the [example app](https://github.com/iden3/polygonid-flutter-sdk/tree/develop/example) included in the repository and follow the [Polygon ID Wallet SDK Documentation](https://0xpolygonid.github.io/tutorials/wallet/wallet-sdk/polygonid-sdk/polygonid-sdk-overview/)
+
+## Issues and Contributions
+
+If you encounter any issues with this SDK, please file an [issue][tracker]. Contributions are also welcome - simply fork this repository, make your changes, and submit a pull request.
+
+[tracker]: https://github.com/iden3/polygonid-flutter-sdk/issues
+
+## Resources
+
+- [Polygon ID website](https://polygon.technology/polygon-id/)
+- [Polygon ID GitHub repository](https://github.com/0xPolygonId/)
+- [Polygon ID Documentation](https://0xpolygonid.github.io/tutorials/)
+- [Flutter documentation](https://flutter.dev/docs)
 
 ## Notes
 
