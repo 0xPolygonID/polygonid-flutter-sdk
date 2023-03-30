@@ -109,15 +109,13 @@ abstract class DatabaseModule {
         stringMapStoreFactory.store(revocationTreeStoreName);
     result[rootsTreeStoreName] =
         stringMapStoreFactory.store(rootsTreeStoreName);
+
     result[claimStoreName] = stringMapStoreFactory.store(claimStoreName);
+
+    result[connectionStoreName] =
+        stringMapStoreFactory.store(connectionStoreName);
     return result;
   }
-
-  // TODO: uncomment when implementing connections
-  // Iden3comm (interactions or connections?)
-  //@Named(interactionStoreName)
-  //StoreRef<String, Map<String, Object?>> get interactionStore =>
-  //    stringMapStoreFactory.store(interactionStoreName);
 
   SembastCodec getCodec(@factoryParam String privateKey) {
     return getEncryptSembastCodec(password: privateKey);

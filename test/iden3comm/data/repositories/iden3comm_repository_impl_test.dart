@@ -10,11 +10,13 @@ import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/lib_pidcore_iden3comm_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/storage_connection_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_inputs_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_response_mapper.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/connection_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/gist_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/iden3comm_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
@@ -25,6 +27,7 @@ import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 
 import '../../../common/common_mocks.dart';
+import '../../../common/iden3comm_mocks.dart';
 import '../../../credential/data/repositories/credential_repository_impl_test.dart';
 import 'iden3comm_repository_impl_test.mocks.dart';
 
@@ -112,22 +115,27 @@ MockLibPolygonIdCoreIden3commDataSource libPolygonIdCoreIden3commDataSource =
     MockLibPolygonIdCoreIden3commDataSource();
 MockLibBabyJubJubDataSource libBabyJubJubDataSource =
     MockLibBabyJubJubDataSource();
+MockStorageConnectionDataSource storageConnectionDataSource =
+    MockStorageConnectionDataSource();
 MockAuthResponseMapper authResponseMapper = MockAuthResponseMapper();
 MockAuthInputsMapper authInputsMapper = MockAuthInputsMapper();
 MockAuthProofMapper authProofMapper = MockAuthProofMapper();
 MockGistProofMapper gistProofMapper = MockGistProofMapper();
 MockQMapper qMapper = MockQMapper();
+MockConnectionMapper connectionMapper = MockConnectionMapper();
 
 // Tested instance
 Iden3commRepository repository = Iden3commRepositoryImpl(
   remoteIden3commDataSource,
   libPolygonIdCoreIden3commDataSource,
   libBabyJubJubDataSource,
+  storageConnectionDataSource,
   authResponseMapper,
   authInputsMapper,
   authProofMapper,
   gistProofMapper,
   qMapper,
+  connectionMapper,
 );
 
 // TODO: verify params and write other functions
@@ -135,11 +143,13 @@ Iden3commRepository repository = Iden3commRepositoryImpl(
   RemoteIden3commDataSource,
   LibPolygonIdCoreIden3commDataSource,
   LibBabyJubJubDataSource,
+  StorageConnectionDataSource,
   AuthResponseMapper,
   AuthInputsMapper,
   AuthProofMapper,
   GistProofMapper,
   QMapper,
+  ConnectionMapper,
 ])
 void main() {
   group(
@@ -267,6 +277,43 @@ void main() {
               .captured
               .first,
           CommonMocks.id);
+    });
+  });
+
+  group("Connections", () {
+    setUp(() {
+      reset(storageConnectionDataSource);
+      reset(connectionMapper);
+
+      when(storageConnectionDataSource.getConnections(
+        did: anyNamed('did'),
+        privateKey: anyNamed('privateKey'),
+      )).thenAnswer(
+          (realInvocation) => Future.value(Iden3commMocks.connectionDtos));
+
+      when(connectionMapper.mapFrom(any))
+          .thenAnswer((realInvocation) => Iden3commMocks.connectionEntities[0]);
+    });
+    test(
+        'Given a did and privateKey, when I call getConnections, then I expect a List of ConnectionEntity to be returned',
+        () async {
+      // When
+      expect(
+          await repository.getConnections(
+            did: CommonMocks.did,
+            privateKey: CommonMocks.privateKey,
+          ),
+          Iden3commMocks.connectionEntities);
+
+      // Then
+      expect(verify(connectionMapper.mapFrom(captureAny)).captured.first,
+          Iden3commMocks.connectionDtos[0]);
+      var capturedGet = verify(storageConnectionDataSource.getConnections(
+              did: captureAnyNamed('did'),
+              privateKey: captureAnyNamed('privateKey')))
+          .captured;
+      expect(capturedGet[0], CommonMocks.did);
+      expect(capturedGet[1], CommonMocks.privateKey);
     });
   });
 

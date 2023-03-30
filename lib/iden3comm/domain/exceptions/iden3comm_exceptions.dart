@@ -49,3 +49,7 @@ class UnsupportedFetchClaimTypeException extends ErrorException {
 class UnsupportedSchemaFetchVocabException extends ErrorException {
   UnsupportedSchemaFetchVocabException(error) : super(error);
 }
+
+class GetConnectionsException extends ErrorException {
+  GetConnectionsException(error) : super(error);
+}
