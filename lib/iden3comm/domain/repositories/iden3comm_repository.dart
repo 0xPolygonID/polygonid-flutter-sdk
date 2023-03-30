@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/connection_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
@@ -41,4 +42,7 @@ abstract class Iden3commRepository {
   });
 
   Future<String> getChallenge({required String message});
+
+  Future<List<ConnectionEntity>> getConnections(
+      {required String did, required String privateKey});
 }

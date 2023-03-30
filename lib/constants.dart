@@ -187,9 +187,6 @@ final String POLYGONID_ACCESS_MESSAGE = String.fromCharCodes(
 const AUTH_CLAIM_SCHEMA = "cca3371a6cb1b715004407e325bd993c";
 const API_VERSION = 'v1';
 
-const STORAGE_VERSION_KEY = 'privadoIdStorageVersion';
-const STORAGE_VERSION = 1;
-
 /// Database
 const databaseName = "polygonIdSdk.db";
 const sembastCodecName = "sembastCodec";
@@ -212,3 +209,6 @@ const rootsTreeStoreName = "rootsTreeStore";
 
 /// Credential
 const claimStoreName = "claimStore";
+
+/// Iden3comm
+const connectionStoreName = "connectionStore";
