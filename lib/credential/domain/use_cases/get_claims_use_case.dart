@@ -1,11 +1,11 @@
-import '../../../common/domain/domain_logger.dart';
-import '../../../common/domain/entities/filter_entity.dart';
-import '../../../common/domain/use_case.dart';
-import '../../../identity/domain/exceptions/identity_exceptions.dart';
-import '../../../identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
-import '../../../identity/domain/use_cases/identity/get_identity_use_case.dart';
-import '../entities/claim_entity.dart';
-import '../repositories/credential_repository.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 
 class GetClaimsParam {
   final List<FilterEntity>? filters;
@@ -32,14 +32,14 @@ class GetClaimsUseCase
 
   @override
   Future<List<ClaimEntity>> execute({required GetClaimsParam param}) async {
-    // if profileNonce is zero, return all profiles claims,
-    // if profileNonce > 0 then return only claims from that profile
+    // if profileNonce is zero, return all profiles credentials,
+    // if profileNonce > 0 then return only credentials from that profile
     if (param.profileNonce >= 0) {
+      // TODO check param.did and did from profile nonce are the same or return exception
+      String did = await _getCurrentEnvDidIdentifierUseCase.execute(
+          param: GetCurrentEnvDidIdentifierParam(
+              privateKey: param.privateKey, profileNonce: param.profileNonce));
       if (param.profileNonce > 0) {
-        String did = await _getCurrentEnvDidIdentifierUseCase.execute(
-            param: GetCurrentEnvDidIdentifierParam(
-                privateKey: param.privateKey,
-                profileNonce: param.profileNonce));
         return _credentialRepository
             .getClaims(
                 filters: param.filters, did: did, privateKey: param.privateKey)
@@ -51,18 +51,15 @@ class GetClaimsUseCase
           throw error;
         });
       } else {
-        String genesisDid = await _getCurrentEnvDidIdentifierUseCase.execute(
-            param:
-                GetCurrentEnvDidIdentifierParam(privateKey: param.privateKey));
         var identityEntity = await _getIdentityUseCase.execute(
             param: GetIdentityParam(
-                genesisDid: genesisDid, privateKey: param.privateKey));
+                genesisDid: did, privateKey: param.privateKey));
         List<ClaimEntity> result = [];
-        for (var did in identityEntity.profiles.values) {
+        for (var profileDid in identityEntity.profiles.values) {
           List<ClaimEntity> didClaims = await _credentialRepository
               .getClaims(
                   filters: param.filters,
-                  did: did,
+                  did: profileDid,
                   privateKey: param.privateKey)
               .then((claims) {
             logger().i("[GetClaimsUseCase] Claims: $claims");

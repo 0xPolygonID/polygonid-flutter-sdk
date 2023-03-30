@@ -22,15 +22,13 @@ class SaveClaimsParam {
 
 class SaveClaimsUseCase
     extends FutureUseCase<SaveClaimsParam, List<ClaimEntity>> {
-  final GetFetchRequestsUseCase _getFetchRequestsUseCase;
-  final GetAuthTokenUseCase _getAuthTokenUseCase;
   final CredentialRepository _credentialRepository;
 
-  SaveClaimsUseCase(this._getFetchRequestsUseCase, this._getAuthTokenUseCase,
-      this._credentialRepository);
+  SaveClaimsUseCase(this._credentialRepository);
 
   @override
   Future<List<ClaimEntity>> execute({required SaveClaimsParam param}) {
+    // TODO: profile nonce from param?
     return _credentialRepository
         .saveClaims(
       claims: param.claims,
