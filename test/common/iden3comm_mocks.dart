@@ -222,17 +222,17 @@ class Iden3commMocks {
     ConnectionDTO(
       from: CommonMocks.did,
       to: CommonMocks.did,
-      interactions: [],
+      interactions: const [],
     ),
     ConnectionDTO(
       from: CommonMocks.did,
       to: CommonMocks.did,
-      interactions: [],
+      interactions: const [],
     ),
     ConnectionDTO(
       from: CommonMocks.did,
       to: CommonMocks.did,
-      interactions: [],
+      interactions: const [],
     )
   ];
 }
