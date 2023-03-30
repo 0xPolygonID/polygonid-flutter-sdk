@@ -27,6 +27,7 @@ import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 
 import '../../../common/common_mocks.dart';
+import '../../../common/iden3comm_mocks.dart';
 import '../../../credential/data/repositories/credential_repository_impl_test.dart';
 import 'iden3comm_repository_impl_test.mocks.dart';
 
@@ -276,6 +277,43 @@ void main() {
               .captured
               .first,
           CommonMocks.id);
+    });
+  });
+
+  group("Connections", () {
+    setUp(() {
+      reset(storageConnectionDataSource);
+      reset(connectionMapper);
+
+      when(storageConnectionDataSource.getConnections(
+        did: anyNamed('did'),
+        privateKey: anyNamed('privateKey'),
+      )).thenAnswer(
+          (realInvocation) => Future.value(Iden3commMocks.connectionDtos));
+
+      when(connectionMapper.mapFrom(any))
+          .thenAnswer((realInvocation) => Iden3commMocks.connectionEntities[0]);
+    });
+    test(
+        'Given a did and privateKey, when I call getConnections, then I expect a List of ConnectionEntity to be returned',
+        () async {
+      // When
+      expect(
+          await repository.getConnections(
+            did: CommonMocks.did,
+            privateKey: CommonMocks.privateKey,
+          ),
+          Iden3commMocks.connectionEntities);
+
+      // Then
+      expect(verify(connectionMapper.mapFrom(captureAny)).captured.first,
+          Iden3commMocks.connectionDtos[0]);
+      var capturedGet = verify(storageConnectionDataSource.getConnections(
+              did: captureAnyNamed('did'),
+              privateKey: captureAnyNamed('privateKey')))
+          .captured;
+      expect(capturedGet[0], CommonMocks.did);
+      expect(capturedGet[1], CommonMocks.privateKey);
     });
   });
 

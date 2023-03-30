@@ -12,6 +12,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 
 import '../../../../common/common_mocks.dart';
+import '../../../../common/iden3comm_mocks.dart';
 import '../../../../common/identity_mocks.dart';
 import 'get_connections_use_case_test.mocks.dart';
 
@@ -22,23 +23,6 @@ final GetConnectionsParam param =
     GetConnectionsParam(did: identifier, privateKey: privateKey);
 final GetConnectionsParam profileParam = GetConnectionsParam(
     did: identifier, profileNonce: 1, privateKey: privateKey);
-final connectionEntities = [
-  ConnectionEntity(
-    from: CommonMocks.did,
-    to: CommonMocks.did,
-    interactions: [],
-  ),
-  ConnectionEntity(
-    from: CommonMocks.did,
-    to: CommonMocks.did,
-    interactions: [],
-  ),
-  ConnectionEntity(
-    from: CommonMocks.did,
-    to: CommonMocks.did,
-    interactions: [],
-  )
-];
 final profilesConnectionEntities = [
   ConnectionEntity(
     from: CommonMocks.did,
@@ -99,7 +83,8 @@ void main() {
       when(iden3commRepository.getConnections(
         did: anyNamed('did'),
         privateKey: anyNamed('privateKey'),
-      )).thenAnswer((realInvocation) => Future.value(connectionEntities));
+      )).thenAnswer(
+          (realInvocation) => Future.value(Iden3commMocks.connectionEntities));
       when(getCurrentEnvDidIdentifierUseCase.execute(param: anyNamed('param')))
           .thenAnswer((realInvocation) => Future.value(CommonMocks.did));
       when(getIdentityUseCase.execute(param: anyNamed('param'))).thenAnswer(
@@ -138,7 +123,8 @@ void main() {
         "Given a non genesis profile, When I call execute, then I expect a list of ConnectionEntity to be returned",
         () async {
       // When
-      expect(await useCase.execute(param: profileParam), connectionEntities);
+      expect(await useCase.execute(param: profileParam),
+          Iden3commMocks.connectionEntities);
 
       // Then
       var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(
