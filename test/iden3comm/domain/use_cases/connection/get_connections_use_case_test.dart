@@ -20,6 +20,8 @@ const identifier = "theIdentifier";
 const privateKey = "thePrivateKey";
 final GetConnectionsParam param =
     GetConnectionsParam(did: identifier, privateKey: privateKey);
+final GetConnectionsParam profileParam = GetConnectionsParam(
+    did: identifier, profileNonce: 1, privateKey: privateKey);
 final connectionEntities = [
   ConnectionEntity(
     from: CommonMocks.did,
@@ -123,6 +125,30 @@ void main() {
               .captured
               .first;
       expect(getIdentityCapture.genesisDid, CommonMocks.did);
+
+      var capturedGet = verify(iden3commRepository.getConnections(
+              did: captureAnyNamed('did'),
+              privateKey: captureAnyNamed('privateKey')))
+          .captured;
+      expect(capturedGet[0], identifier);
+      expect(capturedGet[1], privateKey);
+    });
+
+    test(
+        "Given a non genesis profile, When I call execute, then I expect a list of ConnectionEntity to be returned",
+        () async {
+      // When
+      expect(await useCase.execute(param: profileParam), connectionEntities);
+
+      // Then
+      var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(
+              param: captureAnyNamed('param')))
+          .captured
+          .first;
+      expect(capturedDid.privateKey, privateKey);
+      expect(capturedDid.profileNonce, 1);
+
+      verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
 
       var capturedGet = verify(iden3commRepository.getConnections(
               did: captureAnyNamed('did'),

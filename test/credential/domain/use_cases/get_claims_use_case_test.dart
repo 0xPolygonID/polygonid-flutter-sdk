@@ -28,6 +28,8 @@ final GetClaimsParam param =
     GetClaimsParam(did: identifier, privateKey: privateKey);
 final GetClaimsParam paramFilters =
     GetClaimsParam(did: identifier, privateKey: privateKey, filters: filters);
+final GetClaimsParam profileParam =
+    GetClaimsParam(did: identifier, profileNonce: 1, privateKey: privateKey);
 final claimEntities = [
   ClaimEntity(
       issuer: "",
@@ -165,6 +167,31 @@ void main() {
               filters: captureAnyNamed('filters')))
           .captured;
       expect(capturedGet[0], CommonMocks.profiles[0]);
+      expect(capturedGet[1], privateKey);
+      expect(capturedGet[2], null);
+    });
+
+    test(
+        "Given no filters and a non genesis profile, when I call execute, then I expect a list of ClaimEntity to be returned",
+        () async {
+      // When
+      expect(await useCase.execute(param: profileParam), claimEntities);
+
+      // Then
+      var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(
+              param: captureAnyNamed('param')))
+          .captured
+          .first;
+      expect(capturedDid.privateKey, privateKey);
+
+      verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
+
+      var capturedGet = verify(credentialRepository.getClaims(
+              did: captureAnyNamed('did'),
+              privateKey: captureAnyNamed('privateKey'),
+              filters: captureAnyNamed('filters')))
+          .captured;
+      expect(capturedGet[0], CommonMocks.did);
       expect(capturedGet[1], privateKey);
       expect(capturedGet[2], null);
     });
