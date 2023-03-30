@@ -176,5 +176,35 @@ void main() {
       expect(capturedGet[0], identifier);
       expect(capturedGet[1], privateKey);
     });
+
+    test(
+        "Given a non genesis profile, When I call execute and an error occurred, then I expect an exception to be thrown",
+        () async {
+      // Given
+      when(iden3commRepository.getConnections(
+        did: captureAnyNamed('did'),
+        privateKey: captureAnyNamed('privateKey'),
+      )).thenAnswer((realInvocation) => Future.error(exception));
+
+      // When
+      await expectLater(
+          useCase.execute(param: profileParam), throwsA(exception));
+
+      // Then
+      var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(
+              param: captureAnyNamed('param')))
+          .captured
+          .first;
+      expect(capturedDid.privateKey, privateKey);
+
+      verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
+
+      var capturedGet = verify(iden3commRepository.getConnections(
+        did: captureAnyNamed('did'),
+        privateKey: captureAnyNamed('privateKey'),
+      )).captured;
+      expect(capturedGet[0], identifier);
+      expect(capturedGet[1], privateKey);
+    });
   });
 }

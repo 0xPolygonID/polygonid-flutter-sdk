@@ -261,5 +261,37 @@ void main() {
       expect(capturedGet[1], privateKey);
       expect(capturedGet[2], filters);
     });
+
+    test(
+        "Given no filters and a non genesis profile, when I call execute and an error occurred, then I expect an exception to be thrown",
+        () async {
+      // Given
+      when(credentialRepository.getClaims(
+              did: captureAnyNamed('did'),
+              privateKey: captureAnyNamed('privateKey')))
+          .thenAnswer((realInvocation) => Future.error(exception));
+
+      // When
+      await expectLater(
+          useCase.execute(param: profileParam), throwsA(exception));
+
+      // Then
+      var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(
+              param: captureAnyNamed('param')))
+          .captured
+          .first;
+      expect(capturedDid.privateKey, privateKey);
+
+      verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
+
+      var capturedGet = verify(credentialRepository.getClaims(
+              did: captureAnyNamed('did'),
+              privateKey: captureAnyNamed('privateKey'),
+              filters: captureAnyNamed('filters')))
+          .captured;
+      expect(capturedGet[0], CommonMocks.did);
+      expect(capturedGet[1], privateKey);
+      expect(capturedGet[2], null);
+    });
   });
 }
