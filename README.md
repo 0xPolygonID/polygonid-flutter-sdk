@@ -46,8 +46,8 @@ The environment object is [EnvEntity](lib/common/domain/entities/env_entity.dart
   final String web3Url; # URL of the blockchain (eg: https://polygon-mumbai.infura.io/v3/)
   final String web3RdpUrl; # RDP URL (eg: wss://polygon-mumbai.infura.io/v3/)
   final String web3ApiKey; # The API key of the web3 URL service (eg: a536514602ea4e22a2e9007b6e9dbc63)
-  final String idStateContract; # The ID state contract (eg: 0x453A1BC32122E39A8398ec6288783389730807a5)
-  final String pushUrl; # The push notification URL (eg: https://push.service.io/api/v1)
+  final String idStateContract; # The ID state contract (eg: 0x134B1BE34911E39A8397ec6289782989729807a4)
+  final String pushUrl; # The push notification URL (eg: https://push-staging.polygonid.com/api/v1)
 ```
 
 An example of initialization:
@@ -61,13 +61,24 @@ Future<void> main() async {
       network: 'mumbai',
       web3Url: 'https://polygon-mumbai.infura.io/v3/'
       web3RdpUrl: 'wss://polygon-mumbai.infura.io/v3/'
-      web3ApiKey: 'a536514602ea4e22a2e9007b6e9dbc63'
-      idStateContract: '0x453A1BC32122E39A8398ec6288783389730807a5'
-      pushUrl: 'https://push.service.io/api/v1',
+      web3ApiKey: 'YOUR-INFURA-API-KEY'
+      idStateContract: '0x134B1BE34911E39A8397ec6289782989729807a4'
+      pushUrl: 'https://push-staging.polygonid.com/api/v1',
   ));
   runApp(const App());
 }
 ```
+
+### Supported Environments
+
+| Environment   |      Polygon Mumbai                           |  Polygon Main |
+|------------------|:------------------------------------------:|:-------------:|
+| blockchain       |         polygon                            |  coming soon  |
+| network          |         mumbai                             |  coming soon  |
+| web3Url          | https://polygon-mumbai.infura.io/v3/       |  coming soon  |
+| web3RdpUrl       | wss://polygon-mumbai.infura.io/v3/         |  coming soon  |
+| idStateContract  | 0x134B1BE34911E39A8397ec6289782989729807a4 |  coming soon  |
+| pushUrl          | https://push-staging.polygonid.com/api/v1  |  coming soon  |
 
 You can get the current env using [PolygonIdSdk.getEnv()](lib/sdk/polygon_id_sdk.dart#L66).
 
@@ -118,9 +129,9 @@ await PolygonIdSdk.init(env: EnvEntity(
       network: 'mumbai',
       web3Url: 'https://polygon-mumbai.infura.io/v3/'
       web3RdpUrl: 'wss://polygon-mumbai.infura.io/v3/'
-      web3ApiKey: 'a536514602ea4e22a2e9007b6e9dbc63'
-      idStateContract: '0x453A1BC32122E39A8398ec6288783389730807a5'
-      pushUrl: 'https://push.service.io/api/v1',
+      web3ApiKey: 'YOUR-INFURA-API-KEY'
+      idStateContract: '0x134B1BE34911E39A8397ec6289782989729807a4'
+      pushUrl: 'https://push-staging.polygonid.com/api/v1',
   ));
 ```
 3. To be able to authenticate with issuers or verifiers, fetch credentials and generate proofs, you need to download the proof circuit files.
