@@ -115,7 +115,7 @@ void main() {
               did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey')))
           .captured;
-      expect(capturedGet[0], identifier);
+      expect(capturedGet[0], CommonMocks.profiles[0]);
       expect(capturedGet[1], privateKey);
     });
 
@@ -140,7 +140,7 @@ void main() {
               did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey')))
           .captured;
-      expect(capturedGet[0], identifier);
+      expect(capturedGet[0], CommonMocks.did);
       expect(capturedGet[1], privateKey);
     });
 
@@ -173,7 +173,7 @@ void main() {
         did: captureAnyNamed('did'),
         privateKey: captureAnyNamed('privateKey'),
       )).captured;
-      expect(capturedGet[0], identifier);
+      expect(capturedGet[0], CommonMocks.profiles[0]);
       expect(capturedGet[1], privateKey);
     });
 
@@ -203,7 +203,7 @@ void main() {
         did: captureAnyNamed('did'),
         privateKey: captureAnyNamed('privateKey'),
       )).captured;
-      expect(capturedGet[0], identifier);
+      expect(capturedGet[0], CommonMocks.did);
       expect(capturedGet[1], privateKey);
     });
   });
