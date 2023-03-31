@@ -42,7 +42,9 @@ class RemoveProfileUseCase extends FutureUseCase<RemoveProfileParam, void> {
   Future<void> execute({required RemoveProfileParam param}) async {
     await _checkProfileAndDidCurrentEnvUseCase.execute(
         param: CheckProfileAndDidCurrentEnvParam(
-            did: param.genesisDid, privateKey: param.privateKey));
+            did: param.genesisDid,
+            privateKey: param.privateKey,
+            excludeGenesisProfile: true));
     var identityEntity = await _getIdentityUseCase.execute(
         param: GetIdentityParam(
             genesisDid: param.genesisDid, privateKey: param.privateKey));

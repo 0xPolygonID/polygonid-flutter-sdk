@@ -22,7 +22,7 @@ dependencies:
   hex: ^0.2.0
   web3dart: 2.3.5
   web_socket_channel: ^2.2.0
-  ffigen: ^7.1.0
+  ffigen: ^7.2.9
   json_annotation: ^4.6.0
   equatable: ^2.0.3
   crypto: ^3.0.1
@@ -38,6 +38,7 @@ dependencies:
   encrypt: ^5.0.1
   pointycastle: ^3.6.1
   package_info_plus: ^3.0.1
+  bip32: ^2.0.0
 
 dev_dependencies:
   flutter_test:

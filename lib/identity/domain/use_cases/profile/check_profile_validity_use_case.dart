@@ -7,10 +7,10 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_
 
 class CheckProfileValidityParam {
   final int profileNonce;
-  final bool checkForGenesis;
+  final bool excludeGenesis;
 
   CheckProfileValidityParam(
-      {required this.profileNonce, this.checkForGenesis = false});
+      {required this.profileNonce, this.excludeGenesis = false});
 }
 
 class CheckProfileValidityUseCase
@@ -19,7 +19,7 @@ class CheckProfileValidityUseCase
   Future<void> execute({required CheckProfileValidityParam param}) {
     return Future(() {
       if (param.profileNonce < 0 ||
-          (param.profileNonce == 0 && param.checkForGenesis)) {
+          (param.profileNonce == 0 && param.excludeGenesis)) {
         throw InvalidProfileException(param.profileNonce);
       }
     }).then((_) {

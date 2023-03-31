@@ -10,29 +10,31 @@ import 'package:mockito/mockito.dart' as _i1;
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart'
     as _i2;
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart'
-    as _i13;
-import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart'
     as _i14;
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart'
+    as _i15;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/connection_entity.dart'
+    as _i11;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart'
     as _i10;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart'
     as _i5;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart'
     as _i3;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart'
+    as _i16;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart'
-    as _i12;
+    as _i13;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart'
-    as _i11;
+    as _i12;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
     as _i7;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart'
-    as _i15;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart'
     as _i9;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart'
     as _i8;
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart'
-    as _i16;
+    as _i17;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -147,20 +149,37 @@ class MockIden3commRepository extends _i1.Mock
         ),
         returnValue: _i4.Future<String>.value(''),
       ) as _i4.Future<String>);
+  @override
+  _i4.Future<List<_i11.ConnectionEntity>> getConnections({
+    required String? did,
+    required String? privateKey,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getConnections,
+          [],
+          {
+            #did: did,
+            #privateKey: privateKey,
+          },
+        ),
+        returnValue: _i4.Future<List<_i11.ConnectionEntity>>.value(
+            <_i11.ConnectionEntity>[]),
+      ) as _i4.Future<List<_i11.ConnectionEntity>>);
 }
 
 /// A class which mocks [GetIden3commProofsUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetIden3commProofsUseCase extends _i1.Mock
-    implements _i11.GetIden3commProofsUseCase {
+    implements _i12.GetIden3commProofsUseCase {
   MockGetIden3commProofsUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
   _i4.Future<List<_i10.JWZProofEntity>> execute(
-          {required _i11.GetIden3commProofsParam? param}) =>
+          {required _i12.GetIden3commProofsParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -176,13 +195,13 @@ class MockGetIden3commProofsUseCase extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetAuthTokenUseCase extends _i1.Mock
-    implements _i12.GetAuthTokenUseCase {
+    implements _i13.GetAuthTokenUseCase {
   MockGetAuthTokenUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.Future<String> execute({required _i12.GetAuthTokenParam? param}) =>
+  _i4.Future<String> execute({required _i13.GetAuthTokenParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
@@ -196,7 +215,7 @@ class MockGetAuthTokenUseCase extends _i1.Mock
 /// A class which mocks [GetEnvUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockGetEnvUseCase extends _i1.Mock implements _i13.GetEnvUseCase {
+class MockGetEnvUseCase extends _i1.Mock implements _i14.GetEnvUseCase {
   MockGetEnvUseCase() {
     _i1.throwOnMissingStub(this);
   }
@@ -223,7 +242,7 @@ class MockGetEnvUseCase extends _i1.Mock implements _i13.GetEnvUseCase {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetPackageNameUseCase extends _i1.Mock
-    implements _i14.GetPackageNameUseCase {
+    implements _i15.GetPackageNameUseCase {
   MockGetPackageNameUseCase() {
     _i1.throwOnMissingStub(this);
   }
@@ -239,33 +258,34 @@ class MockGetPackageNameUseCase extends _i1.Mock
       ) as _i4.Future<String>);
 }
 
-/// A class which mocks [GetCurrentEnvDidIdentifierUseCase].
+/// A class which mocks [CheckProfileAndDidCurrentEnvUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockGetCurrentEnvDidIdentifierUseCase extends _i1.Mock
-    implements _i15.GetCurrentEnvDidIdentifierUseCase {
-  MockGetCurrentEnvDidIdentifierUseCase() {
+class MockCheckProfileAndDidCurrentEnvUseCase extends _i1.Mock
+    implements _i16.CheckProfileAndDidCurrentEnvUseCase {
+  MockCheckProfileAndDidCurrentEnvUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.Future<String> execute(
-          {required _i15.GetCurrentEnvDidIdentifierParam? param}) =>
+  _i4.Future<void> execute(
+          {required _i16.CheckProfileAndDidCurrentEnvParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
           {#param: param},
         ),
-        returnValue: _i4.Future<String>.value(''),
-      ) as _i4.Future<String>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 }
 
 /// A class which mocks [ProofGenerationStepsStreamManager].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockProofGenerationStepsStreamManager extends _i1.Mock
-    implements _i16.ProofGenerationStepsStreamManager {
+    implements _i17.ProofGenerationStepsStreamManager {
   MockProofGenerationStepsStreamManager() {
     _i1.throwOnMissingStub(this);
   }

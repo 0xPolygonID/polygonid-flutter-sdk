@@ -4,6 +4,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/add_new
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/backup_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identities_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_private_key_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/restore_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/add_profile_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/get_profiles_use_case.dart';
@@ -14,8 +15,8 @@ import '../identity/domain/use_cases/fetch_identity_state_use_case.dart';
 import '../identity/domain/use_cases/get_did_identifier_use_case.dart';
 import '../identity/domain/use_cases/identity/check_identity_validity_use_case.dart';
 import '../identity/domain/use_cases/identity/remove_identity_use_case.dart';
+import '../identity/domain/use_cases/identity/sign_message_use_case.dart';
 import '../identity/domain/use_cases/profile/remove_profile_use_case.dart';
-import '../identity/domain/use_cases/sign_message_use_case.dart';
 
 abstract class PolygonIdSdkIdentity {
   /// Checks the identity validity from a secret
@@ -29,6 +30,17 @@ abstract class PolygonIdSdkIdentity {
   /// - If the byte array is not 32 length, it will be padded with 0s.
   /// - If the byte array is longer than 32, an exception will be thrown.
   Future<void> checkIdentityValidity({required String secret});
+
+  /// Gets the identity private key from a secret
+  ///
+  /// Throws [IdentityException] if an error occurs.
+  ///
+  /// Be aware [secret] is internally converted to a 32 length bytes array
+  /// in order to be compatible with the SDK. The following rules will be applied:
+  /// - If the byte array is not 32 length, it will be padded with 0s.
+  /// - If the byte array is longer than 32, an exception will be thrown.
+  ///
+  Future<String> getPrivateKey({required String secret});
 
   /// Creates and stores an [IdentityEntity] from a secret
   /// if it doesn't exist already in the Polygon ID Sdk.
@@ -203,6 +215,7 @@ abstract class PolygonIdSdkIdentity {
 @injectable
 class Identity implements PolygonIdSdkIdentity {
   final CheckIdentityValidityUseCase _checkIdentityValidityUseCase;
+  final GetPrivateKeyUseCase _getPrivateKeyUseCase;
   final AddNewIdentityUseCase _addNewIdentityUseCase;
   final RestoreIdentityUseCase _restoreIdentityUseCase;
   final BackupIdentityUseCase _backupIdentityUseCase;
@@ -220,6 +233,7 @@ class Identity implements PolygonIdSdkIdentity {
 
   Identity(
     this._checkIdentityValidityUseCase,
+    this._getPrivateKeyUseCase,
     this._addNewIdentityUseCase,
     this._restoreIdentityUseCase,
     this._backupIdentityUseCase,
@@ -237,6 +251,11 @@ class Identity implements PolygonIdSdkIdentity {
   @override
   Future<void> checkIdentityValidity({required String secret}) async {
     return _checkIdentityValidityUseCase.execute(param: secret);
+  }
+
+  @override
+  Future<String> getPrivateKey({required String secret}) {
+    return _getPrivateKeyUseCase.execute(param: secret);
   }
 
   Future<PrivateIdentityEntity> addIdentity({String? secret}) async {

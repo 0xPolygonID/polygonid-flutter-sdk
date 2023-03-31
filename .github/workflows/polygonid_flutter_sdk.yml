@@ -1,38 +1,19 @@
 name: polygonid_flutter_sdk
 on:
   push:
-    branches: [main, develop]
+    branches: [ main, develop ]
   pull_request:
-    branches: [main, develop]
+    branches: [ main, develop ]
   workflow_dispatch:
 
-# 2 jobs are configured.
-# The first one runs tests on iOS devices.
-# The second runs tests on Android devices
+# 4 jobs are configured:
+# 1. common: runs setup, clean, generate, format, analyze, test and reports
+# 2. ios: runs tests on iOS devices
+# 3. android: runs tests on Android devices
+# 4. publish: publishes the package to pub.dev (only dry run)
 jobs:
-  # job responsible for running Flutter tests on iOS devices
-  ios:
-    # Creates a build matrix for your jobs. You can define different variations of an environment to run each job
-    strategy:
-      matrix:
-        device:
-          # The available simulators are listed by the "xcrun xctrace list devices" command
-          - "iPhone 13 Pro Max Simulator (16.2)" # the name of the simulator could be different depending on the macos version you are using
-      # if one of the jobs in the matrix expansion fails, the rest of the jobs will be cancelled
-      fail-fast: true
-    runs-on: macos-latest # or macos-latest if you prefer, but be aware that the available simulators could be different if you run a different version
+  common:
     steps:
-      - name: "List all simulators"
-        run: "xcrun xctrace list devices"
-      - name: "Start Simulator"
-        # the command "xcrun simctl boot" expects a device identifier
-        # the assignment of the UDID variable consists of retrieving the ID of the simulator
-        # by extracting it from the command "xcrun xctrace list devices"
-        run: |
-          UDID=$(xcrun xctrace list devices | grep "^${{ matrix.device }}" | awk '{gsub(/[()]/,""); print $NF}')
-          echo $UDID
-          xcrun simctl boot "${UDID:?No Simulator with this name found}"
-
       - name: checkout
         uses: actions/checkout@v3
 
@@ -66,13 +47,37 @@ jobs:
         if: github.base_ref == 'develop' || github.base_ref == 'main'
         run: flutter test --coverage
 
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  # job responsible for running Flutter tests on iOS devices
+  ios:
+    # Creates a build matrix for your jobs. You can define different variations of an environment to run each job
+    strategy:
+      matrix:
+        device:
+          # The available simulators are listed by the "xcrun xctrace list devices" command
+          - "iPhone 13 Pro Max Simulator (16.2)" # the name of the simulator could be different depending on the macos version you are using
+      # if one of the jobs in the matrix expansion fails, the rest of the jobs will be cancelled
+      fail-fast: true
+    runs-on: macos-latest # or macos-latest if you prefer, but be aware that the available simulators could be different if you run a different version
+    steps:
+      - name: "List all simulators"
+        run: "xcrun xctrace list devices"
+      - name: "Start Simulator"
+        # the command "xcrun simctl boot" expects a device identifier
+        # the assignment of the UDID variable consists of retrieving the ID of the simulator
+        # by extracting it from the command "xcrun xctrace list devices"
+        run: |
+          UDID=$(xcrun xctrace list devices | grep "^${{ matrix.device }}" | awk '{gsub(/[()]/,""); print $NF}')
+          echo $UDID
+          xcrun simctl boot "${UDID:?No Simulator with this name found}"
+
       - name: Run integration tests
         if: github.base_ref == 'develop' || github.base_ref == 'main'
         run: cd example&&flutter test integration_test/libpolygonid_test.dart --verbose
-
-      - name: Publish dry run
-        if: github.base_ref == 'main'
-        run: flutter pub publish --dry-run
 
   # job responsible for running Flutter tests on Android devices
   android:
@@ -81,34 +86,34 @@ jobs:
       # matrix:
       #  api-level:  [ 32 ] #[ 21, 23, 29, 32 ]
       #  target: [ google_apis ] #[ default, google_apis ]
-      # if one of the jobs in the matrix expansion fails, the rest of the jobs will be cancelled
-      # fail-fast: true
+    # if one of the jobs in the matrix expansion fails, the rest of the jobs will be cancelled
+    # fail-fast: true
     steps:
       - name: checkout
         uses: actions/checkout@v3
 
-        # - name: Setup Java
-        # uses: actions/setup-java@v3
+          # - name: Setup Java
+          # uses: actions/setup-java@v3
           # with:
           #   distribution: 'zulu'
           #   java-version: "12.x"
-        #   cache: 'gradle'
+          #   cache: 'gradle'
 
-        # - name: Gradle cache
-      #  uses: gradle/gradle-build-action@v2
+          # - name: Gradle cache
+          #  uses: gradle/gradle-build-action@v2
 
-        # - name: AVD cache
-        # uses: actions/cache@v3
-        # id: avd-cache
+          # - name: AVD cache
+          # uses: actions/cache@v3
+          # id: avd-cache
           # with:
           #   path: |
           #     ~/.android/avd/*
           #    ~/.android/adb*
-        #  key: avd-${{ matrix.api-level }}
+          #  key: avd-${{ matrix.api-level }}
 
-        #  - name: create AVD and generate snapshot for caching
-        #  if: (github.base_ref == 'develop' || github.base_ref == 'main') && steps.avd-cache.outputs.cache-hit != 'true'
-        #  uses: reactivecircus/android-emulator-runner@v2
+          #  - name: create AVD and generate snapshot for caching
+          #  if: (github.base_ref == 'develop' || github.base_ref == 'main') && steps.avd-cache.outputs.cache-hit != 'true'
+          #  uses: reactivecircus/android-emulator-runner@v2
           # with:
           # api-level: ${{ matrix.api-level }}
           # target: ${{ matrix.target }}
@@ -119,53 +124,24 @@ jobs:
           # profile: Nexus 6
           # script: echo "Generated AVD snapshot for caching."
 
-      - name: Setup Flutter SDK
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.7.6'
-          channel: 'stable'
-          cache: true
-
-      - name: Verify Flutter version
-        run: flutter --version
-
-      - name: Clean, dependencies and generate for SDK
-        run: flutter clean&&flutter pub get&&flutter pub run build_runner build --delete-conflicting-outputs
-
-      - name: Clean, dependencies and generate for Example
-        env:
-          ENV_POLYGON_MUMBAI: ${{ secrets.ENV_POLYGON_MUMBAI }}
-        run: cd example&&flutter clean&&flutter pub get&&flutter pub run build_runner build --delete-conflicting-outputs
-
-      - name: Format
-        run: dart format --set-exit-if-changed lib test example
-
-      - name: Analyze
-        run: flutter analyze lib test example
-
-      - name: Run tests
-        if: github.base_ref == 'develop' || github.base_ref == 'main'
-        run: flutter test --coverage
-
-        #- name: Run integration tests
+          #- name: Run integration tests
           # if: github.base_ref == 'develop' || github.base_ref == 'main'
           # more info on https://github.com/ReactiveCircus/android-emulator-runner
-        # uses: reactivecircus/android-emulator-runner@v2
+          # uses: reactivecircus/android-emulator-runner@v2
           # with:
           # api-level: ${{ matrix.api-level }}
           # target: ${{ matrix.target }}
           # force-avd-creation: false
           # emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           # disable-animations: true
-          # arch: x86_64
-          # profile: Nexus 6
+        # arch: x86_64
+        # profile: Nexus 6
         # script: cd example&&flutter test integration_test/libpolygonid_test.dart --verbose
 
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-
+  # job responsible for publishing the package to pub.dev
+  publish:
+    steps:
       - name: Publish dry run
         if: github.base_ref == 'main'
         run: flutter pub publish --dry-run
+

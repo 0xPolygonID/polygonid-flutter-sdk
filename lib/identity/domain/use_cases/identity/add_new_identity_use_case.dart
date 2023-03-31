@@ -8,12 +8,10 @@ import '../../repositories/identity_repository.dart';
 
 class AddNewIdentityUseCase
     extends FutureUseCase<String?, PrivateIdentityEntity> {
-  final String _accessMessage;
   final IdentityRepository _identityRepository;
   final AddIdentityUseCase _addIdentityUseCase;
 
   AddNewIdentityUseCase(
-    @Named('accessMessage') this._accessMessage,
     this._identityRepository,
     this._addIdentityUseCase,
   );
@@ -22,7 +20,7 @@ class AddNewIdentityUseCase
   Future<PrivateIdentityEntity> execute({String? param}) {
     // Get the privateKey
     return _identityRepository
-        .getPrivateKey(accessMessage: _accessMessage, secret: param)
+        .getPrivateKey(secret: param)
         // Create and save the identity
         .then((privateKey) => _addIdentityUseCase.execute(
             param: AddIdentityParam(privateKey: privateKey)))

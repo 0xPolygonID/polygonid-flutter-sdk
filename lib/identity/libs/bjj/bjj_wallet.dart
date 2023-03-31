@@ -1,18 +1,20 @@
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:fast_base58/fast_base58.dart';
+import 'package:polygonid_flutter_sdk/common/utils/hex_utils.dart';
+import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:web3dart/credentials.dart';
 import 'package:web3dart/crypto.dart';
 
-import '../../../common/utils/hex_utils.dart';
-import '../../../common/utils/uint8_list_utils.dart';
 import 'eddsa_babyjub.dart' as eddsaBabyJub;
+import 'package:bip32/bip32.dart' as bip32;
 
 // TODO: move impl to a DS and transform this class to an entity
 /// @class
 /// Manage Babyjubjub keys
 /// Perform standard wallet actions
-class PrivadoIdWallet {
+class BjjWallet {
   late Uint8List privateKey;
   late List<String> publicKey;
   dynamic publicKeyHex;
@@ -23,7 +25,7 @@ class PrivadoIdWallet {
   /// Initialize Babyjubjub wallet from private key
   ///
   /// @param [Uint8List] privateKey - 32 bytes buffer
-  PrivadoIdWallet(this.privateKey) {
+  BjjWallet(this.privateKey) {
     if (privateKey.length != 32) {
       throw ArgumentError('buf must be 32 bytes');
     }
@@ -43,25 +45,31 @@ class PrivadoIdWallet {
     publicKeyBase64 = HexUtils.hexToBase64BJJ(publicKeyCompressedHex!);
   }
 
-  /// Creates a PrivadoIdWallet
+  /// Creates a BjjWallet
   ///
   /// This creates a wallet
   /// Random wallet is created if no private key is provided
   ///
   /// @param [Uint8List] secret - 32 bytes buffer
   /// @returns [PrivadoIdWallet] privadoIdWallet - PrivadoIdWallet instance
-  static Future<PrivadoIdWallet> createPrivadoIdWallet(
-      {Uint8List? secret, required String accessMessage}) async {
+  static Future<BjjWallet> createBjjWallet({Uint8List? secret}) async {
     EthPrivateKey prvKey;
     if (secret == null) {
       prvKey = EthPrivateKey.createRandom(Random.secure());
     } else {
       prvKey = EthPrivateKey(secret);
     }
-    final signature =
-        await prvKey.sign(Uint8ArrayUtils.uint8ListfromString(accessMessage));
-    Uint8List privateBjjKey = keccak256(signature);
-    final bjjWallet = PrivadoIdWallet(privateBjjKey);
+    // Convert the master private key to a BIP32 instance
+    final master = bip32.BIP32.fromSeed(prvKey.privateKey);
+
+    // Derive the path m/44'/60'/0'/0
+    const path = "m/44'/60'/0'/0";
+    final child = master.derivePath(path);
+
+    // Get the private key
+    final privateBjjKey = child.privateKey;
+
+    final bjjWallet = BjjWallet(privateBjjKey!);
     return bjjWallet;
   }
 

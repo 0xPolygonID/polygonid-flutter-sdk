@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/connection_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/connection_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_sd_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';
@@ -197,4 +199,40 @@ class Iden3commMocks {
     pubSignals: ProofMocks.jwzProof.pubSignals,
     vp: ProofMocks.vp,
   );
+
+  static List<ConnectionEntity> connectionEntities = [
+    ConnectionEntity(
+      from: CommonMocks.did,
+      to: CommonMocks.did,
+      interactions: [],
+    ),
+    ConnectionEntity(
+      from: CommonMocks.did,
+      to: CommonMocks.did,
+      interactions: [],
+    ),
+    ConnectionEntity(
+      from: CommonMocks.did,
+      to: CommonMocks.did,
+      interactions: [],
+    )
+  ];
+
+  static List<ConnectionDTO> connectionDtos = [
+    ConnectionDTO(
+      from: CommonMocks.did,
+      to: CommonMocks.did,
+      interactions: const [],
+    ),
+    ConnectionDTO(
+      from: CommonMocks.did,
+      to: CommonMocks.did,
+      interactions: const [],
+    ),
+    ConnectionDTO(
+      from: CommonMocks.did,
+      to: CommonMocks.did,
+      interactions: const [],
+    )
+  ];
 }

@@ -80,6 +80,8 @@ Future<void> main() async {
 | idStateContract  | 0x134B1BE34911E39A8397ec6289782989729807a4 |  coming soon  |
 | pushUrl          | https://push-staging.polygonid.com/api/v1  |  coming soon  |
 
+If you want to deploy your own State Contract, please check the [contract documentation](https://docs.iden3.io/contracts/state/).
+
 You can get the current env using [PolygonIdSdk.getEnv()](lib/sdk/polygon_id_sdk.dart#L66).
 
 # Deploy and check

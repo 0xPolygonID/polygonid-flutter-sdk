@@ -6,12 +6,12 @@
 import 'dart:async' as _i5;
 
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart'
+    as _i7;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
     as _i2;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart'
     as _i3;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart'
-    as _i7;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart'
     as _i4;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/update_identity_use_case.dart'
@@ -113,26 +113,27 @@ class MockUpdateIdentityUseCase extends _i1.Mock
       ) as _i5.Future<_i3.PrivateIdentityEntity>);
 }
 
-/// A class which mocks [GetCurrentEnvDidIdentifierUseCase].
+/// A class which mocks [CheckProfileAndDidCurrentEnvUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockGetCurrentEnvDidIdentifierUseCase extends _i1.Mock
-    implements _i7.GetCurrentEnvDidIdentifierUseCase {
-  MockGetCurrentEnvDidIdentifierUseCase() {
+class MockCheckProfileAndDidCurrentEnvUseCase extends _i1.Mock
+    implements _i7.CheckProfileAndDidCurrentEnvUseCase {
+  MockCheckProfileAndDidCurrentEnvUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i5.Future<String> execute(
-          {required _i7.GetCurrentEnvDidIdentifierParam? param}) =>
+  _i5.Future<void> execute(
+          {required _i7.CheckProfileAndDidCurrentEnvParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
           {#param: param},
         ),
-        returnValue: _i5.Future<String>.value(''),
-      ) as _i5.Future<String>);
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
 }
 
 /// A class which mocks [CreateProfilesUseCase].

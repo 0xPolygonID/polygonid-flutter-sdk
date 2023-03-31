@@ -3,16 +3,19 @@ import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/check_profile_validity_use_case.dart';
 
 class CheckProfileAndDidCurrentEnvParam {
   final String did;
   final String privateKey;
   final int profileNonce;
+  final bool excludeGenesisProfile;
 
   CheckProfileAndDidCurrentEnvParam(
-      {required this.did, required this.privateKey, this.profileNonce = 0});
+      {required this.did,
+      required this.privateKey,
+      this.profileNonce = 0,
+      this.excludeGenesisProfile = false});
 }
 
 class CheckProfileAndDidCurrentEnvUseCase
@@ -28,7 +31,9 @@ class CheckProfileAndDidCurrentEnvUseCase
   Future<void> execute({required CheckProfileAndDidCurrentEnvParam param}) {
     return _checkProfileValidityUseCase
         .execute(
-            param: CheckProfileValidityParam(profileNonce: param.profileNonce))
+            param: CheckProfileValidityParam(
+                profileNonce: param.profileNonce,
+                excludeGenesis: param.excludeGenesisProfile))
         .then((_) => _getEnvUseCase.execute().then((env) =>
             _getDidIdentifierUseCase
                 .execute(
