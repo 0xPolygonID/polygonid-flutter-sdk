@@ -49,7 +49,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
 
   @override
   Future<void> execute({required AuthenticateParam param}) async {
-    _proofGenerationStepsStreamManager.reset();
+    //_proofGenerationStepsStreamManager.reset();
 
     try {
       List<JWZProofEntity> proofs = await _getIden3commProofsUseCase.execute(
