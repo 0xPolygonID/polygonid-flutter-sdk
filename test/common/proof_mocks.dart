@@ -73,14 +73,20 @@ class ProofMocks {
   static String jwzVpProofJson = '''
   {
     "verifiableCredential": {
-        "documentType": 99,
-        "@type": "KYCAgeCredential"
-    },
-    "@type": "VerifiablePresentation",
-    "@context": [
-         "https://www.w3.org/2018/credentials/v1",
-         "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld"
-    ]
+             "@context": [
+                "https://www.w3.org/2018/credentials/v1",
+                "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld",
+             ]
+            "type": [ "VerifiableCredential","KYCAgeCredential"],
+             "credentialSubject":{
+                "type: "KYCAgeCredential",
+                "birthday": 19960424
+             }
+          },
+          "@type": "VerifiablePresentation",
+          "@context": [
+            "https://www.w3.org/2018/credentials/v1"
+          ]
   }
   ''';
 
