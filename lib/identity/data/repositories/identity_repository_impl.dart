@@ -62,12 +62,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
   );
 
   @override
-  Future<String> getPrivateKey(
-      {required String accessMessage, required String? secret}) {
+  Future<String> getPrivateKey({required String? secret}) {
     return _walletDataSource
-        .createWallet(
-            secret: _privateKeyMapper.mapFrom(secret),
-            accessMessage: accessMessage)
+        .createWallet(secret: _privateKeyMapper.mapFrom(secret))
         .then((wallet) => _hexMapper.mapFrom(wallet.privateKey));
   }
 

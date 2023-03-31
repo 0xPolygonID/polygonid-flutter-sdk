@@ -4,7 +4,6 @@ import '../entities/rhs_node_entity.dart';
 
 abstract class IdentityRepository {
   Future<String> getPrivateKey({
-    required String accessMessage,
     required String? secret,
   });
 

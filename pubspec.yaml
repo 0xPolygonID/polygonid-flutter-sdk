@@ -38,6 +38,7 @@ dependencies:
   encrypt: ^5.0.1
   pointycastle: ^3.6.1
   package_info_plus: ^3.0.1
+  bip32: ^2.0.0
 
 dev_dependencies:
   flutter_test:

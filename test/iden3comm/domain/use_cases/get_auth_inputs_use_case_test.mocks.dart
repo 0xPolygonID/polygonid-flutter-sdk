@@ -365,18 +365,12 @@ class MockIdentityRepository extends _i1.Mock
   }
 
   @override
-  _i9.Future<String> getPrivateKey({
-    required String? accessMessage,
-    required String? secret,
-  }) =>
+  _i9.Future<String> getPrivateKey({required String? secret}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getPrivateKey,
           [],
-          {
-            #accessMessage: accessMessage,
-            #secret: secret,
-          },
+          {#secret: secret},
         ),
         returnValue: _i9.Future<String>.value(''),
       ) as _i9.Future<String>);

@@ -5,12 +5,10 @@ import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repo
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 
 class CheckIdentityValidityUseCase extends FutureUseCase<String, void> {
-  final String _accessMessage;
   final IdentityRepository _identityRepository;
   final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
 
   CheckIdentityValidityUseCase(
-    @Named('accessMessage') this._accessMessage,
     this._identityRepository,
     this._getCurrentEnvDidIdentifierUseCase,
   );
@@ -18,7 +16,7 @@ class CheckIdentityValidityUseCase extends FutureUseCase<String, void> {
   @override
   Future<void> execute({required String param}) async {
     return _identityRepository
-        .getPrivateKey(accessMessage: _accessMessage, secret: param)
+        .getPrivateKey(secret: param)
         .then((privateKey) => _getCurrentEnvDidIdentifierUseCase.execute(
             param: GetCurrentEnvDidIdentifierParam(privateKey: privateKey)))
         .then((_) {
