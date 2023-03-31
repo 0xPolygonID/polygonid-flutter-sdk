@@ -13,6 +13,7 @@ on:
 # 4. publish: publishes the package to pub.dev (only dry run)
 jobs:
   common:
+    runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -54,6 +55,7 @@ jobs:
 
   # job responsible for running Flutter tests on iOS devices
   ios:
+    needs: common
     # Creates a build matrix for your jobs. You can define different variations of an environment to run each job
     strategy:
       matrix:
@@ -79,67 +81,67 @@ jobs:
         if: github.base_ref == 'develop' || github.base_ref == 'main'
         run: cd example&&flutter test integration_test/libpolygonid_test.dart --verbose
 
-  # job responsible for running Flutter tests on Android devices
-  android:
-    runs-on: macos-latest
-      # strategy:
-      # matrix:
-      #  api-level:  [ 32 ] #[ 21, 23, 29, 32 ]
-      #  target: [ google_apis ] #[ default, google_apis ]
+    # job responsible for running Flutter tests on Android devices
+    #  android:
+    #    needs: common
+    #    runs-on: macos-latest
+    # strategy:
+    # matrix:
+    #  api-level:  [ 32 ] #[ 21, 23, 29, 32 ]
+    #  target: [ google_apis ] #[ default, google_apis ]
     # if one of the jobs in the matrix expansion fails, the rest of the jobs will be cancelled
     # fail-fast: true
-    steps:
-      - name: checkout
-        uses: actions/checkout@v3
+    # steps:
+    # - name: Setup Java
+    # uses: actions/setup-java@v3
+    # with:
+    #   distribution: 'zulu'
+    #   java-version: "12.x"
+    #   cache: 'gradle'
 
-          # - name: Setup Java
-          # uses: actions/setup-java@v3
-          # with:
-          #   distribution: 'zulu'
-          #   java-version: "12.x"
-          #   cache: 'gradle'
+    # - name: Gradle cache
+    #  uses: gradle/gradle-build-action@v2
 
-          # - name: Gradle cache
-          #  uses: gradle/gradle-build-action@v2
+    # - name: AVD cache
+    # uses: actions/cache@v3
+    # id: avd-cache
+    # with:
+    #   path: |
+    #     ~/.android/avd/*
+    #    ~/.android/adb*
+    #  key: avd-${{ matrix.api-level }}
 
-          # - name: AVD cache
-          # uses: actions/cache@v3
-          # id: avd-cache
-          # with:
-          #   path: |
-          #     ~/.android/avd/*
-          #    ~/.android/adb*
-          #  key: avd-${{ matrix.api-level }}
+    #  - name: create AVD and generate snapshot for caching
+    #  if: (github.base_ref == 'develop' || github.base_ref == 'main') && steps.avd-cache.outputs.cache-hit != 'true'
+    #  uses: reactivecircus/android-emulator-runner@v2
+    # with:
+    # api-level: ${{ matrix.api-level }}
+    # target: ${{ matrix.target }}
+    # force-avd-creation: false
+    # emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+    # disable-animations: false
+    # arch: x86_64
+    # profile: Nexus 6
+    # script: echo "Generated AVD snapshot for caching."
 
-          #  - name: create AVD and generate snapshot for caching
-          #  if: (github.base_ref == 'develop' || github.base_ref == 'main') && steps.avd-cache.outputs.cache-hit != 'true'
-          #  uses: reactivecircus/android-emulator-runner@v2
-          # with:
-          # api-level: ${{ matrix.api-level }}
-          # target: ${{ matrix.target }}
-          # force-avd-creation: false
-          # emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          # disable-animations: false
-          # arch: x86_64
-          # profile: Nexus 6
-          # script: echo "Generated AVD snapshot for caching."
-
-          #- name: Run integration tests
-          # if: github.base_ref == 'develop' || github.base_ref == 'main'
-          # more info on https://github.com/ReactiveCircus/android-emulator-runner
-          # uses: reactivecircus/android-emulator-runner@v2
-          # with:
-          # api-level: ${{ matrix.api-level }}
-          # target: ${{ matrix.target }}
-          # force-avd-creation: false
-          # emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          # disable-animations: true
-        # arch: x86_64
-        # profile: Nexus 6
-        # script: cd example&&flutter test integration_test/libpolygonid_test.dart --verbose
+    #- name: Run integration tests
+    # if: github.base_ref == 'develop' || github.base_ref == 'main'
+    # more info on https://github.com/ReactiveCircus/android-emulator-runner
+    # uses: reactivecircus/android-emulator-runner@v2
+    # with:
+    # api-level: ${{ matrix.api-level }}
+    # target: ${{ matrix.target }}
+    # force-avd-creation: false
+    # emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+    # disable-animations: true
+    # arch: x86_64
+    # profile: Nexus 6
+    # script: cd example&&flutter test integration_test/libpolygonid_test.dart --verbose
 
   # job responsible for publishing the package to pub.dev
   publish:
+    needs: [ common, ios] #, android ]
+    runs-on: ubuntu-latest
     steps:
       - name: Publish dry run
         if: github.base_ref == 'main'
