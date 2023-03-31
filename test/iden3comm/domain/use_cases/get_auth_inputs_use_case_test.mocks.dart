@@ -305,7 +305,6 @@ class MockIden3commRepository extends _i1.Mock
     required List<_i17.JWZProofEntity>? scope,
     String? pushUrl,
     String? pushToken,
-    String? didIdentifier,
     String? packageName,
   }) =>
       (super.noSuchMethod(
@@ -318,7 +317,6 @@ class MockIden3commRepository extends _i1.Mock
             #scope: scope,
             #pushUrl: pushUrl,
             #pushToken: pushToken,
-            #didIdentifier: didIdentifier,
             #packageName: packageName,
           },
         ),

@@ -1,9 +1,8 @@
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
-
-import '../../../common/domain/domain_logger.dart';
-import '../../../common/domain/use_case.dart';
-import '../repositories/identity_repository.dart';
 
 class CheckIdentityValidityUseCase extends FutureUseCase<String, void> {
   final String _accessMessage;
@@ -17,7 +16,7 @@ class CheckIdentityValidityUseCase extends FutureUseCase<String, void> {
   );
 
   @override
-  Future<void> execute({required String param}) async {
+  Future<void> execute({required String param}) {
     return _identityRepository
         .getPrivateKey(accessMessage: _accessMessage, secret: param)
         .then((privateKey) => _getCurrentEnvDidIdentifierUseCase.execute(
