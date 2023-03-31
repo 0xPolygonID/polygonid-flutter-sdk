@@ -179,6 +179,8 @@ import '../../identity/domain/use_cases/identity/remove_identity_use_case.dart'
     as _i167;
 import '../../identity/domain/use_cases/identity/restore_identity_use_case.dart'
     as _i166;
+import '../../identity/domain/use_cases/identity/sign_message_use_case.dart'
+    as _i121;
 import '../../identity/domain/use_cases/identity/update_identity_use_case.dart'
     as _i158;
 import '../../identity/domain/use_cases/profile/add_profile_use_case.dart'
@@ -193,8 +195,6 @@ import '../../identity/domain/use_cases/profile/import_profile_use_case.dart'
     as _i118;
 import '../../identity/domain/use_cases/profile/remove_profile_use_case.dart'
     as _i165;
-import '../../identity/domain/use_cases/identity/sign_message_use_case.dart'
-    as _i121;
 import '../../identity/domain/use_cases/smt/create_identity_state_use_case.dart'
     as _i135;
 import '../../identity/domain/use_cases/smt/remove_identity_state_use_case.dart'
@@ -262,7 +262,6 @@ _i1.GetIt $initSDKGetIt(
   final networkModule = _$NetworkModule();
   final databaseModule = _$DatabaseModule();
   final encryptionModule = _$EncryptionModule();
-  final sdk = _$Sdk();
   final zipDecoderModule = _$ZipDecoderModule();
   final repositoriesModule = _$RepositoriesModule();
   gh.lazySingleton<_i3.AssetBundle>(() => platformModule.assetBundle);
@@ -376,17 +375,13 @@ _i1.GetIt $initSDKGetIt(
   ) =>
       databaseModule.getCodec(privateKey));
   gh.factory<_i62.StateIdentifierMapper>(() => _i62.StateIdentifierMapper());
-  gh.factory<_i14.StoreRef<String, Map<String, Object?>>>(
-    () => databaseModule.identityStore,
-    instanceName: 'identityStore',
-  );
   gh.factory<_i14.StoreRef<String, dynamic>>(
     () => databaseModule.keyValueStore,
     instanceName: 'keyValueStore',
   );
-  gh.factory<String>(
-    () => sdk.accessMessage,
-    instanceName: 'accessMessage',
+  gh.factory<_i14.StoreRef<String, Map<String, Object?>>>(
+    () => databaseModule.identityStore,
+    instanceName: 'identityStore',
   );
   gh.factory<_i63.TreeStateMapper>(() => _i63.TreeStateMapper());
   gh.factory<_i64.TreeTypeMapper>(() => _i64.TreeTypeMapper());
@@ -647,11 +642,9 @@ _i1.GetIt $initSDKGetIt(
           ));
   gh.factoryAsync<_i130.GetJWZUseCase>(() async =>
       _i130.GetJWZUseCase(await get.getAsync<_i119.ProofRepository>()));
-  gh.factoryAsync<_i131.GetPrivateKeyUseCase>(
-      () async => _i131.GetPrivateKeyUseCase(
-            get<String>(instanceName: 'accessMessage'),
-            await get.getAsync<_i117.IdentityRepository>(),
-          ));
+  gh.factoryAsync<_i131.GetPrivateKeyUseCase>(() async =>
+      _i131.GetPrivateKeyUseCase(
+          await get.getAsync<_i117.IdentityRepository>()));
   gh.factoryAsync<_i132.GetPublicKeysUseCase>(() async =>
       _i132.GetPublicKeysUseCase(
           await get.getAsync<_i117.IdentityRepository>()));
@@ -759,7 +752,6 @@ _i1.GetIt $initSDKGetIt(
           ));
   gh.factoryAsync<_i150.CheckIdentityValidityUseCase>(
       () async => _i150.CheckIdentityValidityUseCase(
-            get<String>(instanceName: 'accessMessage'),
             await get.getAsync<_i117.IdentityRepository>(),
             await get.getAsync<_i147.GetCurrentEnvDidIdentifierUseCase>(),
           ));
@@ -825,7 +817,6 @@ _i1.GetIt $initSDKGetIt(
           ));
   gh.factoryAsync<_i160.AddNewIdentityUseCase>(
       () async => _i160.AddNewIdentityUseCase(
-            get<String>(instanceName: 'accessMessage'),
             await get.getAsync<_i117.IdentityRepository>(),
             await get.getAsync<_i159.AddIdentityUseCase>(),
           ));
@@ -912,8 +903,6 @@ class _$NetworkModule extends _i169.NetworkModule {}
 class _$DatabaseModule extends _i169.DatabaseModule {}
 
 class _$EncryptionModule extends _i169.EncryptionModule {}
-
-class _$Sdk extends _i169.Sdk {}
 
 class _$ZipDecoderModule extends _i169.ZipDecoderModule {}
 

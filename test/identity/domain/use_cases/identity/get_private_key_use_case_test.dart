@@ -13,7 +13,6 @@ import 'get_private_key_use_case_test.mocks.dart';
 MockIdentityRepository identityRepository = MockIdentityRepository();
 
 GetPrivateKeyUseCase useCase = GetPrivateKeyUseCase(
-  CommonMocks.config,
   identityRepository,
 );
 
@@ -24,9 +23,7 @@ void main() {
   setUp(() {
     reset(identityRepository);
 
-    when(identityRepository.getPrivateKey(
-            accessMessage: anyNamed('accessMessage'),
-            secret: anyNamed('secret')))
+    when(identityRepository.getPrivateKey(secret: anyNamed('secret')))
         .thenAnswer((realInvocation) => Future.value(CommonMocks.privateKey));
   });
 
@@ -43,9 +40,7 @@ void main() {
     'Given a param, when I call execute and an error occurred, then I expect an exception to be thrown',
     () async {
       // Given
-      when(identityRepository.getPrivateKey(
-              accessMessage: anyNamed('accessMessage'),
-              secret: anyNamed('secret')))
+      when(identityRepository.getPrivateKey(secret: anyNamed('secret')))
           .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
       // When
