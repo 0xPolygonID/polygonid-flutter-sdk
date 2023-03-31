@@ -193,7 +193,8 @@ import '../../identity/domain/use_cases/profile/import_profile_use_case.dart'
     as _i118;
 import '../../identity/domain/use_cases/profile/remove_profile_use_case.dart'
     as _i165;
-import '../../identity/domain/use_cases/identity/sign_message_use_case.dart' as _i121;
+import '../../identity/domain/use_cases/identity/sign_message_use_case.dart'
+    as _i121;
 import '../../identity/domain/use_cases/smt/create_identity_state_use_case.dart'
     as _i135;
 import '../../identity/domain/use_cases/smt/remove_identity_state_use_case.dart'
