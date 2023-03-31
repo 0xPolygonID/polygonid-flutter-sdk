@@ -7,8 +7,8 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/add_ide
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/smt/create_identity_state_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/create_identity_use_case.dart';
 
-import '../../../common/common_mocks.dart';
-import '../../../common/identity_mocks.dart';
+import '../../../../common/common_mocks.dart';
+import '../../../../common/identity_mocks.dart';
 import 'add_identity_use_case_test.mocks.dart';
 
 // Data

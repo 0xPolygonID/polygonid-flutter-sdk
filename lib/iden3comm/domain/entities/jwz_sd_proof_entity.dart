@@ -70,46 +70,50 @@ import 'jwz_proof_entity.dart';
 
 /// Sample
 /// ``` "vp":{
-///       "verifiableCredential": {
-///         "documentType": 99,
-///         "@type": "KYCAgeCredential"
-///       },
+///       "@context": ["https://www.w3.org/2018/credentials/v1"]
 ///       "@type": "VerifiablePresentation",
-///       "@context": [
-///         "https://www.w3.org/2018/credentials/v1",
-///         "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld"
-///       ]
-///   }
+///       "verifiableCredential": {
+///         "@context": [
+///           "https://www.w3.org/2018/credentials/v1",
+///           "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld",
+///         ]
+///         "type": [ "VerifiableCredential","KYCAgeCredential"],
+///         "credentialSubject":{
+///           "type: "KYCAgeCredential",
+///           "birthday": 19960424
+///         }
+///       }
+///     }
 /// ```
 class JWZVPProof {
-  final Map<String, dynamic> verifiableCredential;
-  final String type;
   final List<String> context;
+  final String type;
+  final Map<String, dynamic> verifiableCredential;
 
   const JWZVPProof({
-    required this.verifiableCredential,
-    required this.type,
     required this.context,
+    required this.type,
+    required this.verifiableCredential,
   });
 
   factory JWZVPProof.fromJson(Map<String, dynamic> json) => JWZVPProof(
-        verifiableCredential:
-            (json['verifiableCredential'] as Map<String, dynamic>),
-        type: json['@type'] as String,
         context: (json['@context'] as List<dynamic>)
             .map((e) => e as String)
             .toList(),
+        type: json['@type'] as String,
+        verifiableCredential:
+            (json['verifiableCredential'] as Map<String, dynamic>),
       );
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'verifiableCredential': verifiableCredential,
         '@type': type,
         '@context': context,
+        'verifiableCredential': verifiableCredential,
       };
 
   @override
   String toString() =>
-      "[JWZVPProof] {verifiableCredential: $verifiableCredential, type: $type, context: $context}";
+      "[JWZVPProof] {type: $type, context: $context, verifiableCredential: $verifiableCredential}";
 
   @override
   bool operator ==(Object other) =>
