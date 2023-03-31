@@ -15,8 +15,7 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_sou
     as _i9;
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart'
     as _i11;
-import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart'
-    as _i2;
+import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj_wallet.dart' as _i2;
 import 'package:sembast/sembast.dart' as _i3;
 import 'package:sembast/src/api/client.dart' as _i7;
 import 'package:sembast/src/api/transaction.dart' as _i5;
@@ -32,9 +31,8 @@ import 'package:sembast/src/api/transaction.dart' as _i5;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakePrivadoIdWallet_0 extends _i1.SmartFake
-    implements _i2.PrivadoIdWallet {
-  _FakePrivadoIdWallet_0(
+class _FakeBjjWallet_0 extends _i1.SmartFake implements _i2.BjjWallet {
+  _FakeBjjWallet_0(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -228,43 +226,31 @@ class MockWalletDataSource extends _i1.Mock implements _i9.WalletDataSource {
   }
 
   @override
-  _i4.Future<_i2.PrivadoIdWallet> createWallet({
-    _i10.Uint8List? secret,
-    required String? accessMessage,
-  }) =>
+  _i4.Future<_i2.BjjWallet> createWallet({_i10.Uint8List? secret}) =>
       (super.noSuchMethod(
         Invocation.method(
           #createWallet,
           [],
-          {
-            #secret: secret,
-            #accessMessage: accessMessage,
-          },
+          {#secret: secret},
         ),
-        returnValue:
-            _i4.Future<_i2.PrivadoIdWallet>.value(_FakePrivadoIdWallet_0(
+        returnValue: _i4.Future<_i2.BjjWallet>.value(_FakeBjjWallet_0(
           this,
           Invocation.method(
             #createWallet,
             [],
-            {
-              #secret: secret,
-              #accessMessage: accessMessage,
-            },
+            {#secret: secret},
           ),
         )),
-      ) as _i4.Future<_i2.PrivadoIdWallet>);
+      ) as _i4.Future<_i2.BjjWallet>);
   @override
-  _i4.Future<_i2.PrivadoIdWallet> getWallet(
-          {required _i10.Uint8List? privateKey}) =>
+  _i4.Future<_i2.BjjWallet> getWallet({required _i10.Uint8List? privateKey}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getWallet,
           [],
           {#privateKey: privateKey},
         ),
-        returnValue:
-            _i4.Future<_i2.PrivadoIdWallet>.value(_FakePrivadoIdWallet_0(
+        returnValue: _i4.Future<_i2.BjjWallet>.value(_FakeBjjWallet_0(
           this,
           Invocation.method(
             #getWallet,
@@ -272,7 +258,7 @@ class MockWalletDataSource extends _i1.Mock implements _i9.WalletDataSource {
             {#privateKey: privateKey},
           ),
         )),
-      ) as _i4.Future<_i2.PrivadoIdWallet>);
+      ) as _i4.Future<_i2.BjjWallet>);
   @override
   _i4.Future<String> signMessage({
     required _i10.Uint8List? privateKey,

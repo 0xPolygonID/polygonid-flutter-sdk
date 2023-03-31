@@ -37,7 +37,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_latest_state
     as _i13;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart'
     as _i8;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/sign_message_use_case.dart'
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/sign_message_use_case.dart'
     as _i11;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart'
     as _i3;
@@ -365,18 +365,12 @@ class MockIdentityRepository extends _i1.Mock
   }
 
   @override
-  _i9.Future<String> getPrivateKey({
-    required String? accessMessage,
-    required String? secret,
-  }) =>
+  _i9.Future<String> getPrivateKey({required String? secret}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getPrivateKey,
           [],
-          {
-            #accessMessage: accessMessage,
-            #secret: secret,
-          },
+          {#secret: secret},
         ),
         returnValue: _i9.Future<String>.value(''),
       ) as _i9.Future<String>);
