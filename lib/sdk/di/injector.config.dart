@@ -752,7 +752,7 @@ _i1.GetIt $initSDKGetIt(
           ));
   gh.factoryAsync<_i150.CheckIdentityValidityUseCase>(
       () async => _i150.CheckIdentityValidityUseCase(
-            await get.getAsync<_i117.IdentityRepository>(),
+            await get.getAsync<_i131.GetPrivateKeyUseCase>(),
             await get.getAsync<_i147.GetCurrentEnvDidIdentifierUseCase>(),
           ));
   gh.factoryAsync<_i151.CreateIdentityUseCase>(
