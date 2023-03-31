@@ -20,7 +20,7 @@ import '../../../identity/domain/entities/did_entity.dart';
 import '../../../identity/domain/entities/identity_entity.dart';
 import '../../../identity/domain/entities/node_entity.dart';
 import '../../../identity/domain/use_cases/identity/get_identity_use_case.dart';
-import '../../../identity/domain/use_cases/sign_message_use_case.dart';
+import '../../../identity/domain/use_cases/identity/sign_message_use_case.dart';
 import '../entities/circuit_data_entity.dart';
 import '../entities/gist_proof_entity.dart';
 import '../entities/jwz/jwz_proof.dart';

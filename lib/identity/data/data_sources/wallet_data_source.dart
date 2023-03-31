@@ -1,26 +1,23 @@
 import 'dart:typed_data';
 
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj_wallet.dart';
+import 'package:polygonid_flutter_sdk/identity/libs/bjj/eddsa_babyjub.dart';
 import 'package:web3dart/crypto.dart';
-
-import '../../libs/bjj/eddsa_babyjub.dart';
-import '../../libs/bjj/privadoid_wallet.dart';
 
 @injectable
 class WalletLibWrapper {
-  Future<PrivadoIdWallet> createWallet(
-      {Uint8List? secret, required String accessMessage}) {
+  Future<BjjWallet> createWallet({Uint8List? secret}) {
     try {
-      return PrivadoIdWallet.createPrivadoIdWallet(
-          secret: secret, accessMessage: accessMessage);
+      return BjjWallet.createBjjWallet(secret: secret);
     } catch (e) {
       return Future.error(e);
     }
   }
 
-  Future<PrivadoIdWallet> getWallet({required Uint8List privateKey}) {
+  Future<BjjWallet> getWallet({required Uint8List privateKey}) {
     try {
-      return Future.value(PrivadoIdWallet(privateKey));
+      return Future.value(BjjWallet(privateKey));
     } catch (e) {
       return Future.error(e);
     }
@@ -54,13 +51,11 @@ class WalletDataSource {
 
   WalletDataSource(this._walletLibWrapper);
 
-  Future<PrivadoIdWallet> createWallet(
-      {Uint8List? secret, required String accessMessage}) {
-    return _walletLibWrapper.createWallet(
-        secret: secret, accessMessage: accessMessage);
+  Future<BjjWallet> createWallet({Uint8List? secret}) {
+    return _walletLibWrapper.createWallet(secret: secret);
   }
 
-  Future<PrivadoIdWallet> getWallet({required Uint8List privateKey}) {
+  Future<BjjWallet> getWallet({required Uint8List privateKey}) {
     return _walletLibWrapper.getWallet(privateKey: privateKey);
   }
 

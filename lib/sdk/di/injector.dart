@@ -40,12 +40,6 @@ final getItSdk = GetIt.asNewInstance();
 configureInjection() => $initSDKGetIt(getItSdk);
 
 @module
-abstract class Sdk {
-  @Named('accessMessage')
-  String get accessMessage => POLYGONID_ACCESS_MESSAGE;
-}
-
-@module
 abstract class PlatformModule {
   @lazySingleton
   Future<PackageInfo> get packageInfo async => PackageInfo.fromPlatform();
