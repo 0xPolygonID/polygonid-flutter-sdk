@@ -63,9 +63,9 @@ class BarcodeDetectorPainter extends CustomPainter {
         final List<Offset> offsetPoints = <Offset>[];
         for (final point in cornerPoints) {
           final double x =
-          translateX(point.x.toDouble(), rotation, size, absoluteImageSize);
+              translateX(point.x.toDouble(), rotation, size, absoluteImageSize);
           final double y =
-          translateY(point.y.toDouble(), rotation, size, absoluteImageSize);
+              translateY(point.y.toDouble(), rotation, size, absoluteImageSize);
 
           offsetPoints.add(Offset(x, y));
 
