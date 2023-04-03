@@ -60,7 +60,7 @@ class BjjWallet {
       prvKey = EthPrivateKey(secret);
     }
     // Convert the master private key to a BIP32 instance
-    final master = bip32.BIP32.fromBase58(Base58Encode(prvKey.privateKey));
+    final master = bip32.BIP32.fromSeed(prvKey.privateKey);
 
     // Derive the path m/44'/60'/0'/0
     const path = "m/44'/60'/0'/0";
