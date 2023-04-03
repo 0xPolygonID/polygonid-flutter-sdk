@@ -46,7 +46,7 @@ class ClaimModelMapper implements FromMapper<ClaimEntity, ClaimModel> {
             proof['type'] == "Iden3SparseMerkleTreeProof") {
           creationDate = DateFormat("d MMM yyyy").format(
               DateTime.fromMillisecondsSinceEpoch(
-                  (proof['issuer_data']['state']['block_timestamp']) * 1000));
+                  (proof['issuerData']['state']['blockTimestamp']) * 1000));
           proofType += '- SMT Signature\n';
         } else if (proof['type'] == "BJJSignature2021") {
           proofType += '- BJJ Signature\n';

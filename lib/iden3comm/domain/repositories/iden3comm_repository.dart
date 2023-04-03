@@ -37,7 +37,6 @@ abstract class Iden3commRepository {
     required List<JWZProofEntity> scope,
     String? pushUrl,
     String? pushToken,
-    String? didIdentifier,
     String? packageName,
   });
 

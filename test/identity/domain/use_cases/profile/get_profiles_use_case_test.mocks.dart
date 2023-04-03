@@ -6,10 +6,10 @@
 import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart'
+    as _i5;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
     as _i2;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart'
-    as _i5;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart'
     as _i3;
 
@@ -64,24 +64,25 @@ class MockGetIdentityUseCase extends _i1.Mock
       ) as _i4.Future<_i2.IdentityEntity>);
 }
 
-/// A class which mocks [GetCurrentEnvDidIdentifierUseCase].
+/// A class which mocks [CheckProfileAndDidCurrentEnvUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockGetCurrentEnvDidIdentifierUseCase extends _i1.Mock
-    implements _i5.GetCurrentEnvDidIdentifierUseCase {
-  MockGetCurrentEnvDidIdentifierUseCase() {
+class MockCheckProfileAndDidCurrentEnvUseCase extends _i1.Mock
+    implements _i5.CheckProfileAndDidCurrentEnvUseCase {
+  MockCheckProfileAndDidCurrentEnvUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.Future<String> execute(
-          {required _i5.GetCurrentEnvDidIdentifierParam? param}) =>
+  _i4.Future<void> execute(
+          {required _i5.CheckProfileAndDidCurrentEnvParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
           {#param: param},
         ),
-        returnValue: _i4.Future<String>.value(''),
-      ) as _i4.Future<String>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 }

@@ -21,14 +21,14 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/aut
     as _i5;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart'
     as _i3;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart'
+    as _i16;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart'
     as _i13;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart'
     as _i12;
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart'
     as _i7;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart'
-    as _i16;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart'
     as _i9;
 import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart'
@@ -122,7 +122,6 @@ class MockIden3commRepository extends _i1.Mock
     required List<_i10.JWZProofEntity>? scope,
     String? pushUrl,
     String? pushToken,
-    String? didIdentifier,
     String? packageName,
   }) =>
       (super.noSuchMethod(
@@ -135,7 +134,6 @@ class MockIden3commRepository extends _i1.Mock
             #scope: scope,
             #pushUrl: pushUrl,
             #pushToken: pushToken,
-            #didIdentifier: didIdentifier,
             #packageName: packageName,
           },
         ),
@@ -260,26 +258,27 @@ class MockGetPackageNameUseCase extends _i1.Mock
       ) as _i4.Future<String>);
 }
 
-/// A class which mocks [GetCurrentEnvDidIdentifierUseCase].
+/// A class which mocks [CheckProfileAndDidCurrentEnvUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockGetCurrentEnvDidIdentifierUseCase extends _i1.Mock
-    implements _i16.GetCurrentEnvDidIdentifierUseCase {
-  MockGetCurrentEnvDidIdentifierUseCase() {
+class MockCheckProfileAndDidCurrentEnvUseCase extends _i1.Mock
+    implements _i16.CheckProfileAndDidCurrentEnvUseCase {
+  MockCheckProfileAndDidCurrentEnvUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.Future<String> execute(
-          {required _i16.GetCurrentEnvDidIdentifierParam? param}) =>
+  _i4.Future<void> execute(
+          {required _i16.CheckProfileAndDidCurrentEnvParam? param}) =>
       (super.noSuchMethod(
         Invocation.method(
           #execute,
           [],
           {#param: param},
         ),
-        returnValue: _i4.Future<String>.value(''),
-      ) as _i4.Future<String>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 }
 
 /// A class which mocks [ProofGenerationStepsStreamManager].

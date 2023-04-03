@@ -1,0 +1,60 @@
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/check_profile_validity_use_case.dart';
+
+class CheckProfileAndDidCurrentEnvParam {
+  final String did;
+  final String privateKey;
+  final int profileNonce;
+  final bool excludeGenesisProfile;
+
+  CheckProfileAndDidCurrentEnvParam(
+      {required this.did,
+      required this.privateKey,
+      this.profileNonce = 0,
+      this.excludeGenesisProfile = false});
+}
+
+class CheckProfileAndDidCurrentEnvUseCase
+    extends FutureUseCase<CheckProfileAndDidCurrentEnvParam, void> {
+  final CheckProfileValidityUseCase _checkProfileValidityUseCase;
+  final GetEnvUseCase _getEnvUseCase;
+  final GetDidIdentifierUseCase _getDidIdentifierUseCase;
+
+  CheckProfileAndDidCurrentEnvUseCase(this._checkProfileValidityUseCase,
+      this._getEnvUseCase, this._getDidIdentifierUseCase);
+
+  @override
+  Future<void> execute({required CheckProfileAndDidCurrentEnvParam param}) {
+    return _checkProfileValidityUseCase
+        .execute(
+            param: CheckProfileValidityParam(
+                profileNonce: param.profileNonce,
+                excludeGenesis: param.excludeGenesisProfile))
+        .then((_) => _getEnvUseCase.execute().then((env) =>
+            _getDidIdentifierUseCase
+                .execute(
+                    param: GetDidIdentifierParam(
+                        privateKey: param.privateKey,
+                        blockchain: env.blockchain,
+                        network: env.network))
+                .then((did) {
+              if (did != param.did) {
+                throw DidNotMatchCurrentEnvException(param.did, did);
+              }
+            })))
+        .then((identity) {
+      logger().i(
+          "[CheckProfileAndDidCurrentEnvUseCase] Profile ${param.profileNonce} and private key ${param.privateKey} are valid for current env");
+
+      return identity;
+    }).catchError((error) {
+      logger().e("[CheckProfileAndDidCurrentEnvUseCase] Error: $error");
+
+      throw error;
+    });
+  }
+}
