@@ -88,7 +88,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
 
     try {
-      await _polygonIdSdk.identity.removeIdentity(privateKey: privateKey);
+      await _polygonIdSdk.identity
+          .removeIdentity(genesisDid: did, privateKey: privateKey);
       await SecureStorage.delete(key: SecureStorageKeys.privateKey);
       emit(const HomeState.loaded());
     } on IdentityException catch (identityException) {

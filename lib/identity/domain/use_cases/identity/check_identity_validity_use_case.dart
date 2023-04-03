@@ -13,7 +13,7 @@ class CheckIdentityValidityUseCase extends FutureUseCase<String, void> {
   );
 
   @override
-  Future<void> execute({required String param}) async {
+  Future<void> execute({required String param}) {
     return _getPrivateKeyUseCase
         .execute(param: param)
         .then((privateKey) => _getCurrentEnvDidIdentifierUseCase.execute(

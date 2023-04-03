@@ -87,7 +87,6 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     required List<JWZProofEntity> scope,
     String? pushUrl,
     String? pushToken,
-    String? didIdentifier,
     String? packageName,
   }) async {
     AuthBodyDidDocResponse? didDocResponse;
@@ -95,12 +94,10 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
         pushUrl.isNotEmpty &&
         pushToken != null &&
         pushToken.isNotEmpty &&
-        didIdentifier != null &&
-        didIdentifier.isNotEmpty &&
         packageName != null &&
         packageName.isNotEmpty) {
-      didDocResponse = await _getDidDocResponse(
-          pushUrl, didIdentifier, pushToken, packageName);
+      didDocResponse =
+          await _getDidDocResponse(pushUrl, did, pushToken, packageName);
     }
 
     AuthResponse authResponse = AuthResponse(

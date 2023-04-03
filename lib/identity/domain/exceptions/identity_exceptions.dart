@@ -1,3 +1,6 @@
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
+
 import '../../../../common/domain/error_exception.dart';
 
 class IdentityException extends ErrorException {
@@ -63,4 +66,11 @@ class FetchStateRootsException extends ErrorException {
 
 class NonRevProofException extends ErrorException {
   NonRevProofException(error) : super(error);
+}
+
+class DidNotMatchCurrentEnvException implements Exception {
+  final String did;
+  final String rightDid;
+
+  DidNotMatchCurrentEnvException(this.did, this.rightDid);
 }
