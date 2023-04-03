@@ -226,3 +226,8 @@ prod_env.g.dart
 
 # Code coverage
 coverage/
+
+# Generated
+lib/sdk/di/injector.config.dart
+*.g.dart
+*.mocks.dart
