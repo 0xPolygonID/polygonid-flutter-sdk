@@ -16,7 +16,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_sd_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 
 abstract class PolygonIdSdkProof {
@@ -34,8 +33,6 @@ abstract class PolygonIdSdkProof {
   Future<bool> isAlreadyDownloadedCircuitsFromServer();
 
   Stream<String> proofGenerationStepsStream();
-
-  Future<bool> isProofCircuitSupported(String circuitId);
 }
 
 @injectable
@@ -44,14 +41,12 @@ class Proof implements PolygonIdSdkProof {
   final DownloadCircuitsUseCase _downloadCircuitsUseCase;
   final CircuitsFilesExistUseCase _circuitsFilesExistUseCase;
   final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
-  final IsProofCircuitSupportedUseCase _isProofCircuitSupportedUseCase;
 
   Proof(
     this.generateProofUseCase,
     this._downloadCircuitsUseCase,
     this._circuitsFilesExistUseCase,
     this._proofGenerationStepsStreamManager,
-    this._isProofCircuitSupportedUseCase,
   );
 
   @override
@@ -84,11 +79,5 @@ class Proof implements PolygonIdSdkProof {
   @override
   Stream<String> proofGenerationStepsStream() {
     return _proofGenerationStepsStreamManager.proofGenerationStepsStream;
-  }
-
-  /// Returns a [Future] of [bool] indicating if the proof circuit is supported
-  @override
-  Future<bool> isProofCircuitSupported(String circuitId) async {
-    return _isProofCircuitSupportedUseCase.execute(param: circuitId);
   }
 }

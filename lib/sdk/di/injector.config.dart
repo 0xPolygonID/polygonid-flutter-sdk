@@ -758,7 +758,6 @@ _i1.GetIt $initSDKGetIt(
         await get.getAsync<_i124.DownloadCircuitsUseCase>(),
         await get.getAsync<_i123.CircuitsFilesExistUseCase>(),
         get<_i52.ProofGenerationStepsStreamManager>(),
-        await get.getAsync<_i134.IsProofCircuitSupportedUseCase>(),
       ));
   gh.factoryAsync<_i151.BackupIdentityUseCase>(
       () async => _i151.BackupIdentityUseCase(
