@@ -43,7 +43,6 @@ var exception = ProofsNotFoundException([]);
 
 // Mocked dependencies
 MockProofRepository proofRepository = MockProofRepository();
-MockIdentityRepository identityRepository = MockIdentityRepository();
 MockGetIden3commClaimsUseCase getIden3commClaimsUseCase =
     MockGetIden3commClaimsUseCase();
 MockGenerateProofUseCase generateProofUseCase = MockGenerateProofUseCase();
@@ -57,7 +56,6 @@ MockProofGenerationStepsStreamManager proofGenerationStepsStreamManager =
 // Tested instance
 GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   proofRepository,
-  identityRepository,
   getIden3commClaimsUseCase,
   generateProofUseCase,
   isProofCircuitSupportedUseCase,
@@ -67,7 +65,6 @@ GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
 
 @GenerateMocks([
   ProofRepository,
-  IdentityRepository,
   GetIden3commClaimsUseCase,
   GenerateProofUseCase,
   IsProofCircuitSupportedUseCase,
@@ -77,16 +74,12 @@ GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
 main() {
   setUp(() {
     reset(proofRepository);
-    reset(identityRepository);
     reset(getIden3commClaimsUseCase);
     reset(generateProofUseCase);
     reset(isProofCircuitSupportedUseCase);
     reset(getProofRequestsUseCase);
 
     //Given
-    when(identityRepository.getIdentity(genesisDid: anyNamed('genesisDid')))
-        .thenAnswer(
-            (realInvocation) => Future.value(IdentityMocks.privateIdentity));
 
     when(getProofRequestsUseCase.execute(param: anyNamed('param'))).thenAnswer(
         (realInvocation) => Future.value(Iden3commMocks.proofRequestList));
@@ -100,10 +93,6 @@ main() {
     when(proofRepository.loadCircuitFiles(any))
         .thenAnswer((realInvocation) => Future.value(ProofMocks.circuitData));
 
-    when(identityRepository.signMessage(
-            privateKey: anyNamed('privateKey'), message: anyNamed('message')))
-        .thenAnswer((realInvocation) => Future.value(CommonMocks.signature));
-
     when(generateProofUseCase.execute(param: anyNamed('param'))).thenAnswer(
         (realInvocation) => Future.value(Iden3commMocks.jwzSdProof));
   });
@@ -115,11 +104,6 @@ main() {
     expect(await useCase.execute(param: param), result);
 
     // Then
-    var getIdentityCaptured = verify(identityRepository.getIdentity(
-            genesisDid: captureAnyNamed('genesisDid')))
-        .captured;
-    expect(getIdentityCaptured[0], CommonMocks.did);
-
     var getRequestsCaptured =
         verify(getProofRequestsUseCase.execute(param: captureAnyNamed('param')))
             .captured;
@@ -176,11 +160,6 @@ main() {
         useCase.execute(param: param), throwsA(CommonMocks.exception));
 
     // Then
-    var getIdentityCaptured = verify(identityRepository.getIdentity(
-            genesisDid: captureAnyNamed('genesisDid')))
-        .captured;
-    expect(getIdentityCaptured[0], CommonMocks.did);
-
     var getRequestsCaptured =
         verify(getProofRequestsUseCase.execute(param: captureAnyNamed('param')))
             .captured;
