@@ -39,7 +39,6 @@ class GetIden3commProofsParam {
 class GetIden3commProofsUseCase
     extends FutureUseCase<GetIden3commProofsParam, List<JWZProofEntity>> {
   final ProofRepository _proofRepository;
-  final IdentityRepository _identityRepository;
   final GetIden3commClaimsUseCase _getIden3commClaimsUseCase;
   final GenerateProofUseCase _generateProofUseCase;
   final IsProofCircuitSupportedUseCase _isProofCircuitSupported;
@@ -48,7 +47,6 @@ class GetIden3commProofsUseCase
 
   GetIden3commProofsUseCase(
     this._proofRepository,
-    this._identityRepository,
     this._getIden3commClaimsUseCase,
     this._generateProofUseCase,
     this._isProofCircuitSupported,

@@ -811,7 +811,6 @@ _i1.GetIt $initSDKGetIt(
   gh.factoryAsync<_i159.GetIden3commProofsUseCase>(
       () async => _i159.GetIden3commProofsUseCase(
             await get.getAsync<_i120.ProofRepository>(),
-            await get.getAsync<_i118.IdentityRepository>(),
             await get.getAsync<_i158.GetIden3commClaimsUseCase>(),
             await get.getAsync<_i145.GenerateProofUseCase>(),
             await get.getAsync<_i134.IsProofCircuitSupportedUseCase>(),
