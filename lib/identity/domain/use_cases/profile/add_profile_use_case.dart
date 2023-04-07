@@ -40,6 +40,7 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
     await _checkProfileAndDidCurrentEnvUseCase.execute(
         param: CheckProfileAndDidCurrentEnvParam(
             did: param.genesisDid,
+            profileNonce: param.profileNonce,
             privateKey: param.privateKey,
             excludeGenesisProfile: true));
     var identityEntity = await _getIdentityUseCase.execute(

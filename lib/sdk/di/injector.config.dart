@@ -815,6 +815,7 @@ _i1.GetIt $initSDKGetIt(
             await get.getAsync<_i145.GenerateProofUseCase>(),
             await get.getAsync<_i134.IsProofCircuitSupportedUseCase>(),
             get<_i26.GetProofRequestsUseCase>(),
+            await get.getAsync<_i143.GetIdentityUseCase>(),
             get<_i52.ProofGenerationStepsStreamManager>(),
           ));
   gh.factoryAsync<_i160.UpdateIdentityUseCase>(
@@ -845,6 +846,7 @@ _i1.GetIt $initSDKGetIt(
       () async => _i164.AuthenticateUseCase(
             get<_i104.Iden3commRepository>(),
             await get.getAsync<_i159.GetIden3commProofsUseCase>(),
+            await get.getAsync<_i142.GetDidIdentifierUseCase>(),
             await get.getAsync<_i147.GetAuthTokenUseCase>(),
             await get.getAsync<_i102.GetEnvUseCase>(),
             await get.getAsync<_i94.GetPackageNameUseCase>(),

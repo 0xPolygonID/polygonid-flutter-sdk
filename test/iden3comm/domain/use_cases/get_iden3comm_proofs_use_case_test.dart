@@ -131,7 +131,7 @@ main() {
       expect(verifyIsFilterSupported.captured[i],
           Iden3commMocks.proofRequestList[i].scope.circuitId);
 
-      expect(verifyGetClaims.captured[i].did, param.did);
+      expect(verifyGetClaims.captured[i].did, param.genesisDid);
       expect(verifyGetClaims.captured[i].privateKey, param.privateKey);
 
       expect(verifyLoadCircuit.captured[i],
