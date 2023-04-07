@@ -65,12 +65,6 @@ class GetIden3commProofsUseCase
     List<ProofRequestEntity> requests =
         await _getProofRequestsUseCase.execute(param: param.message);
 
-    List<String> publicKey = await _identityRepository
-        .getIdentity(
-          genesisDid: param.did,
-        )
-        .then((identity) => identity.publicKey);
-
     /// We got [ProofRequestEntity], let's find the associated [ClaimEntity]
     /// and generate [ProofEntity]
     for (ProofRequestEntity request in requests) {
