@@ -36,7 +36,7 @@ abstract class PolygonIdSdkIden3comm {
   ///
   /// The [message] is the iden3comm message entity
   ///
-  /// The [did] is the unique id of the identity
+  /// The [genesisDid] is the unique id of the identity
   ///
   /// The [profileNonce] is the nonce of the profile used from identity
   /// to obtain the did identifier
@@ -45,7 +45,7 @@ abstract class PolygonIdSdkIden3comm {
   /// and also to realize operations like generating proofs
   Future<List<ClaimEntity>> fetchAndSaveClaims(
       {required Iden3MessageEntity message,
-      required String did,
+      required String genesisDid,
       int? profileNonce,
       required String privateKey});
 
@@ -154,7 +154,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   @override
   Future<List<ClaimEntity>> fetchAndSaveClaims(
       {required Iden3MessageEntity message,
-      required String did,
+      required String genesisDid,
       int? profileNonce,
       required String privateKey}) {
     if (message is! OfferIden3MessageEntity) {
@@ -164,7 +164,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     return _fetchAndSaveClaimsUseCase.execute(
         param: FetchAndSaveClaimsParam(
             message: message,
-            did: did,
+            genesisDid: genesisDid,
             profileNonce: profileNonce ?? 0,
             privateKey: privateKey));
   }

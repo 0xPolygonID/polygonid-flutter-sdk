@@ -52,6 +52,7 @@ class WitnessAuthV2Lib {
         wtnsSize,
         errorMsg,
         errorMaxSize);
+
     if (result == WITNESSCALC_OK) {
       Uint8List wtnsBytes = Uint8List(wtnsSize.value);
       for (int i = 0; i < wtnsSize.value; i++) {

@@ -99,7 +99,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
           .add("preparing authentication token...");
       String authToken = await _getAuthTokenUseCase.execute(
           param: GetAuthTokenParam(
-              did: param.genesisDid,
+              genesisDid: param.genesisDid,
               profileNonce: param.profileNonce,
               privateKey: param.privateKey,
               message: authResponse));

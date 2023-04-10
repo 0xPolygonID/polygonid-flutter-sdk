@@ -20,7 +20,7 @@ abstract class Iden3commRepository {
 
   // FIXME: use Entities only from the same part
   Future<Uint8List> getAuthInputs(
-      {required String did,
+      {required String genesisDid,
       required int profileNonce,
       required String challenge,
       required List<String> authClaim,

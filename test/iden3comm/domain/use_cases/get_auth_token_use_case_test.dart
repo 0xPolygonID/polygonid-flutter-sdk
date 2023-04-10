@@ -14,7 +14,7 @@ import 'get_auth_token_use_case_test.mocks.dart';
 
 // Data
 final param = GetAuthTokenParam(
-    did: CommonMocks.did,
+    genesisDid: CommonMocks.did,
     privateKey: CommonMocks.privateKey,
     message: CommonMocks.message);
 const result = "token";
@@ -79,7 +79,7 @@ void main() {
         verify(getAuthInputsUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(captureAuthInputs.did, CommonMocks.did);
+    expect(captureAuthInputs.genesisDid, CommonMocks.did);
     expect(captureAuthInputs.privateKey, CommonMocks.privateKey);
 
     expect(
@@ -124,7 +124,7 @@ void main() {
         verify(getAuthInputsUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(captureAuthInputs.did, CommonMocks.did);
+    expect(captureAuthInputs.genesisDid, CommonMocks.did);
     expect(captureAuthInputs.privateKey, CommonMocks.privateKey);
 
     expect(

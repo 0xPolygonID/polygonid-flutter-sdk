@@ -783,6 +783,9 @@ _i1.GetIt $initSDKGetIt(
   gh.factoryAsync<_i155.FetchAndSaveClaimsUseCase>(
       () async => _i155.FetchAndSaveClaimsUseCase(
             get<_i95.Iden3commCredentialRepository>(),
+            await get.getAsync<_i144.CheckProfileAndDidCurrentEnvUseCase>(),
+            await get.getAsync<_i102.GetEnvUseCase>(),
+            await get.getAsync<_i142.GetDidIdentifierUseCase>(),
             get<_i22.GetFetchRequestsUseCase>(),
             await get.getAsync<_i147.GetAuthTokenUseCase>(),
             get<_i108.SaveClaimsUseCase>(),
@@ -840,7 +843,6 @@ _i1.GetIt $initSDKGetIt(
         await get.getAsync<_i160.UpdateIdentityUseCase>(),
         await get.getAsync<_i144.CheckProfileAndDidCurrentEnvUseCase>(),
         await get.getAsync<_i154.CreateProfilesUseCase>(),
-        await get.getAsync<_i136.CreateIdentityStateUseCase>(),
       ));
   gh.factoryAsync<_i164.AuthenticateUseCase>(
       () async => _i164.AuthenticateUseCase(

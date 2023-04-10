@@ -11,13 +11,13 @@ import '../../../common/domain/use_case.dart';
 import '../../../proof/domain/entities/circuit_data_entity.dart';
 
 class GetAuthTokenParam {
-  final String did;
+  final String genesisDid;
   final int profileNonce;
   final String privateKey;
   final String message;
 
   GetAuthTokenParam({
-    required this.did,
+    required this.genesisDid,
     this.profileNonce = 0,
     required this.privateKey,
     required this.message,
@@ -45,7 +45,7 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
         .then((encoded) => _getAuthChallengeUseCase.execute(param: encoded))
         .then((challenge) => Future.wait([
               _getAuthInputsUseCase.execute(
-                  param: GetAuthInputsParam(challenge, param.did,
+                  param: GetAuthInputsParam(challenge, param.genesisDid,
                       param.profileNonce, param.privateKey)),
               _loadCircuitUseCase.execute(param: "authV2")
             ]))

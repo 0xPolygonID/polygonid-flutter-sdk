@@ -45,8 +45,6 @@ var genesisParam = AddProfileParam(
 MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
 MockUpdateIdentityUseCase updateIdentityUseCase = MockUpdateIdentityUseCase();
 MockCreateProfilesUseCase createProfilesUseCase = MockCreateProfilesUseCase();
-MockCreateIdentityStateUseCase createIdentityStateUseCase =
-    MockCreateIdentityStateUseCase();
 MockCheckProfileAndDidCurrentEnvUseCase checkProfileAndDidCurrentEnvUseCase =
     MockCheckProfileAndDidCurrentEnvUseCase();
 
@@ -56,7 +54,6 @@ AddProfileUseCase useCase = AddProfileUseCase(
   updateIdentityUseCase,
   checkProfileAndDidCurrentEnvUseCase,
   createProfilesUseCase,
-  createIdentityStateUseCase,
 );
 
 @GenerateMocks([
@@ -64,14 +61,12 @@ AddProfileUseCase useCase = AddProfileUseCase(
   UpdateIdentityUseCase,
   CheckProfileAndDidCurrentEnvUseCase,
   CreateProfilesUseCase,
-  CreateIdentityStateUseCase,
 ])
 void main() {
   setUp(() {
     reset(getIdentityUseCase);
     reset(updateIdentityUseCase);
     reset(createProfilesUseCase);
-    reset(createIdentityStateUseCase);
     reset(checkProfileAndDidCurrentEnvUseCase);
 
     // Given
@@ -82,8 +77,6 @@ void main() {
     when(createProfilesUseCase.execute(param: anyNamed('param'))).thenAnswer(
         (realInvocation) => Future.value(
             {param.profileNonce: CommonMocks.did + "${param.profileNonce}"}));
-    when(createIdentityStateUseCase.execute(param: anyNamed('param')))
-        .thenAnswer((realInvocation) => Future.value());
     when(updateIdentityUseCase.execute(param: anyNamed('param'))).thenAnswer(
         (realInvocation) => Future.value(IdentityMocks.privateIdentity));
   });

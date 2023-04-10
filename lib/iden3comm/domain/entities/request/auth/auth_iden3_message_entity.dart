@@ -78,9 +78,11 @@ class AuthIden3MessageEntity extends Iden3MessageEntity {
       required String type,
       required String thid,
       required String from,
+      String? to,
       required this.body})
       : super(
             from: from,
+            to: to,
             id: id,
             type: type,
             messageType: Iden3MessageType.auth,
@@ -100,6 +102,7 @@ class AuthIden3MessageEntity extends Iden3MessageEntity {
       type: json['type'],
       thid: json['thid'],
       from: json['from'],
+      to: json['to'],
       body: body,
     );
   }

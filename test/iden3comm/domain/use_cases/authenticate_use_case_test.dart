@@ -151,7 +151,7 @@ void main() {
                   getAuthTokenUseCase.execute(param: captureAnyNamed('param')))
               .captured
               .first;
-          expect(capturedAuthToken.did, CommonMocks.did);
+          expect(capturedAuthToken.genesisDid, CommonMocks.did);
           expect(capturedAuthToken.privateKey, CommonMocks.privateKey);
           expect(capturedAuthToken.message, CommonMocks.message);
 

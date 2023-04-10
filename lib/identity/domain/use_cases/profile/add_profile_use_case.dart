@@ -25,14 +25,12 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
   final CheckProfileAndDidCurrentEnvUseCase
       _checkProfileAndDidCurrentEnvUseCase;
   final CreateProfilesUseCase _createProfilesUseCase;
-  final CreateIdentityStateUseCase _createIdentityStateUseCase;
 
   AddProfileUseCase(
     this._getIdentityUseCase,
     this._updateIdentityUseCase,
     this._checkProfileAndDidCurrentEnvUseCase,
     this._createProfilesUseCase,
-    this._createIdentityStateUseCase,
   );
 
   @override
@@ -59,11 +57,7 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
                 privateKey: param.privateKey, profiles: [param.profileNonce]));
 
         String? profileDid = newProfiles[param.profileNonce];
-        // create identity state for profile did
         if (profileDid != null) {
-          await _createIdentityStateUseCase.execute(
-              param: CreateIdentityStateParam(
-                  did: profileDid, privateKey: param.privateKey));
           profiles.add(param.profileNonce);
         } else {
           throw UnknownProfileException(param.profileNonce);
