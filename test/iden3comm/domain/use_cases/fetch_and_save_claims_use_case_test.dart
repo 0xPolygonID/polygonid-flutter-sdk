@@ -132,7 +132,7 @@ void main() {
           .first;
 
       expect(fetchMessageCaptures.message, param.message);
-      expect(fetchMessageCaptures.did, param.genesisDid);
+      expect(fetchMessageCaptures.did, CommonMocks.did);
 
       var authVerify =
           verify(getAuthTokenUseCase.execute(param: captureAnyNamed('param')));
@@ -152,7 +152,7 @@ void main() {
       expect(fetchVerify.callCount, requests.length);
       int j = 0;
       for (int i = 0; i < requests.length * 3; i += 3) {
-        expect(fetchVerify.captured[i], param.genesisDid);
+        expect(fetchVerify.captured[i], CommonMocks.did);
         expect(fetchVerify.captured[i + 1], CommonMocks.token);
         expect(fetchVerify.captured[i + 2], param.message.body.url);
         j++;
@@ -181,7 +181,7 @@ void main() {
           .first;
 
       expect(fetchMessageCaptures.message, param.message);
-      expect(fetchMessageCaptures.did, param.genesisDid);
+      expect(fetchMessageCaptures.did, CommonMocks.did);
 
       var authVerify =
           verify(getAuthTokenUseCase.execute(param: captureAnyNamed('param')));
@@ -198,7 +198,7 @@ void main() {
 
       expect(fetchVerify.callCount, 1);
 
-      expect(fetchVerify.captured[0], param.genesisDid);
+      expect(fetchVerify.captured[0], CommonMocks.did);
       expect(fetchVerify.captured[1], CommonMocks.token);
       expect(fetchVerify.captured[2], param.message.body.url);
 

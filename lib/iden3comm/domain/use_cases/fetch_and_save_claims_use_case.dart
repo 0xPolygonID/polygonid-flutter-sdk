@@ -65,21 +65,21 @@ class FetchAndSaveClaimsUseCase
             privateKey: param.privateKey,
             profileNonce: param.profileNonce));
 
+    EnvEntity env = await _getEnvUseCase.execute();
+
+    String profileDid = await _getDidIdentifierUseCase.execute(
+        param: GetDidIdentifierParam(
+            privateKey: param.privateKey,
+            blockchain: env.blockchain,
+            network: env.network,
+            profileNonce: param.profileNonce));
+
     return _getFetchRequestsUseCase
-        .execute(param: GetFetchRequestsParam(param.message, param.genesisDid))
+        .execute(param: GetFetchRequestsParam(param.message, profileDid))
         .then((requests) async {
           List<ClaimEntity> claims = [];
 
           for (String request in requests) {
-            EnvEntity env = await _getEnvUseCase.execute();
-
-            String profileDid = await _getDidIdentifierUseCase.execute(
-                param: GetDidIdentifierParam(
-                    privateKey: param.privateKey,
-                    blockchain: env.blockchain,
-                    network: env.network,
-                    profileNonce: param.profileNonce));
-
             await _getAuthTokenUseCase
                 .execute(
                     param: GetAuthTokenParam(
