@@ -12,6 +12,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_reque
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/generate_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
@@ -22,7 +23,6 @@ import '../../../common/credential_mocks.dart';
 import '../../../common/iden3comm_mocks.dart';
 import '../../../common/identity_mocks.dart';
 import '../../../common/proof_mocks.dart';
-import 'authenticate_use_case_test.dart';
 import 'get_iden3comm_proofs_use_case_test.mocks.dart';
 
 // Data
@@ -34,7 +34,7 @@ List<JWZSDProofEntity> result = [
 
 GetIden3commProofsParam param = GetIden3commProofsParam(
   message: Iden3commMocks.authRequest,
-  did: CommonMocks.did,
+  genesisDid: CommonMocks.did,
   profileNonce: CommonMocks.nonce,
   privateKey: CommonMocks.privateKey,
 );
@@ -50,6 +50,7 @@ MockIsProofCircuitSupportedUseCase isProofCircuitSupportedUseCase =
     MockIsProofCircuitSupportedUseCase();
 MockGetProofRequestsUseCase getProofRequestsUseCase =
     MockGetProofRequestsUseCase();
+MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
 MockProofGenerationStepsStreamManager proofGenerationStepsStreamManager =
     MockProofGenerationStepsStreamManager();
 
@@ -60,6 +61,7 @@ GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   generateProofUseCase,
   isProofCircuitSupportedUseCase,
   getProofRequestsUseCase,
+  getIdentityUseCase,
   proofGenerationStepsStreamManager,
 );
 
@@ -69,6 +71,7 @@ GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   GenerateProofUseCase,
   IsProofCircuitSupportedUseCase,
   GetProofRequestsUseCase,
+  GetIdentityUseCase,
   ProofGenerationStepsStreamManager,
 ])
 main() {
@@ -78,9 +81,9 @@ main() {
     reset(generateProofUseCase);
     reset(isProofCircuitSupportedUseCase);
     reset(getProofRequestsUseCase);
+    reset(getIdentityUseCase);
 
     //Given
-
     when(getProofRequestsUseCase.execute(param: anyNamed('param'))).thenAnswer(
         (realInvocation) => Future.value(Iden3commMocks.proofRequestList));
 
@@ -95,6 +98,9 @@ main() {
 
     when(generateProofUseCase.execute(param: anyNamed('param'))).thenAnswer(
         (realInvocation) => Future.value(Iden3commMocks.jwzSdProof));
+
+    when(getIdentityUseCase.execute(param: anyNamed('param'))).thenAnswer(
+        (realInvocation) => Future.value(IdentityMocks.privateIdentity));
   });
 
   test(
@@ -131,7 +137,7 @@ main() {
       expect(verifyIsFilterSupported.captured[i],
           Iden3commMocks.proofRequestList[i].scope.circuitId);
 
-      expect(verifyGetClaims.captured[i].did, param.did);
+      expect(verifyGetClaims.captured[i].did, param.genesisDid);
       expect(verifyGetClaims.captured[i].privateKey, param.privateKey);
 
       expect(verifyLoadCircuit.captured[i],

@@ -3,27 +3,10 @@ import 'dart:convert';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/libs/polygonidcore/pidcore_iden3comm.dart';
 
-class LibPolygonIdCoreIden3commDataSource {
-  final PolygonIdCoreIden3comm _polygonIdCoreIden3comm;
-
-  LibPolygonIdCoreIden3commDataSource(
-    this._polygonIdCoreIden3comm,
-  );
-
-  String getAuthInputs({
-    required String did,
-    required int profileNonce,
-    required List<String> authClaim,
-    required Map<String, dynamic> incProof,
-    required Map<String, dynamic> nonRevProof,
-    required Map<String, dynamic> gistProof,
-    required Map<String, dynamic> treeState,
-    required String challenge,
-    required String signature,
-  }) {
-    String input = jsonEncode({
+/*
+* {
       "genesisDID":
-          did, //"did:iden3:tT2t3b685r2dKsjo4MioyKeceFT4mQEYfDd69EY5Y",
+          genesisDid, //"did:iden3:tT2t3b685r2dKsjo4MioyKeceFT4mQEYfDd69EY5Y",
       "profileNonce": profileNonce.toString(), //"0",
       "authClaim": authClaim,
       /*[
@@ -66,6 +49,36 @@ class LibPolygonIdCoreIden3commDataSource {
       "signature":
           signature, //"fccc15d7aed2bf4f5d7dbe55c81087970344d13e5d9f348e61965ac364f41d29b366b52bc0820c603877352054833da083f5595c29c881ccd8ee47aa639aa103",
       "challenge": challenge, //"10"
+    }
+* */
+class LibPolygonIdCoreIden3commDataSource {
+  final PolygonIdCoreIden3comm _polygonIdCoreIden3comm;
+
+  LibPolygonIdCoreIden3commDataSource(
+    this._polygonIdCoreIden3comm,
+  );
+
+  String getAuthInputs({
+    required String genesisDid,
+    required int profileNonce,
+    required List<String> authClaim,
+    required Map<String, dynamic> incProof,
+    required Map<String, dynamic> nonRevProof,
+    required Map<String, dynamic> gistProof,
+    required Map<String, dynamic> treeState,
+    required String challenge,
+    required String signature,
+  }) {
+    String input = jsonEncode({
+      "genesisDID": genesisDid,
+      "profileNonce": profileNonce.toString(),
+      "authClaim": authClaim,
+      "authClaimIncMtp": incProof,
+      "authClaimNonRevMtp": nonRevProof,
+      "treeState": treeState,
+      "gistProof": gistProof,
+      "signature": signature,
+      "challenge": challenge,
     });
 
     String output = _polygonIdCoreIden3comm.getAuthInputs(input);

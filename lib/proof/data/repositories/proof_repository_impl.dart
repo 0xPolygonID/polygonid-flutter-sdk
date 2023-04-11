@@ -177,7 +177,7 @@ class ProofRepositoryImpl extends ProofRepository {
       }
 
       return witness;
-    });
+    }).catchError((error) => throw NullWitnessException(circuitData.circuitId));
   }
 
   @override
@@ -190,7 +190,7 @@ class ProofRepositoryImpl extends ProofRepository {
       }
 
       return _jwzProofMapper.mapFrom(proof);
-    });
+    }).catchError((error) => throw NullProofException(circuitData.circuitId));
   }
 
   @override

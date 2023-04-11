@@ -78,9 +78,11 @@ class OfferIden3MessageEntity extends Iden3MessageEntity {
       required String type,
       required String thid,
       required String from,
-      required this.body})
+      required this.body,
+      String? to})
       : super(
             from: from,
+            to: to,
             id: id,
             messageType: Iden3MessageType.offer,
             thid: thid,
@@ -99,6 +101,7 @@ class OfferIden3MessageEntity extends Iden3MessageEntity {
       type: json['type'],
       thid: json['thid'],
       from: json['from'],
+      to: json['to'],
       body: body,
     );
   }

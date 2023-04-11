@@ -165,7 +165,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
 
   @override
   Future<Uint8List> getAuthInputs(
-      {required String did,
+      {required String genesisDid,
       required int profileNonce,
       required String challenge,
       required List<String> authClaim,
@@ -176,7 +176,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       required GistProofEntity gistProof,
       required Map<String, dynamic> treeState}) {
     return Future.value(_libPolygonIdCoreIden3commDataSource.getAuthInputs(
-            did: did,
+            genesisDid: genesisDid,
             profileNonce: profileNonce,
             authClaim: authClaim,
             incProof: _authProofMapper.mapTo(incProof),

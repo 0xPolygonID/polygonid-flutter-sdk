@@ -1,11 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_auth_claim_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_latest_state_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/sign_message_use_case.dart';
@@ -61,7 +63,7 @@ void main() {
     when(getAuthClaimUseCase.execute(param: anyNamed("param")))
         .thenAnswer((realInvocation) => Future.value(claims));
     when(iden3commRepository.getAuthInputs(
-            did: anyNamed('did'),
+            genesisDid: anyNamed('genesisDid'),
             profileNonce: anyNamed('profileNonce'),
             challenge: anyNamed("challenge"),
             authClaim: anyNamed("authClaim"),
@@ -99,7 +101,7 @@ void main() {
           verify(getIdentityUseCase.execute(param: captureAnyNamed("param")))
               .captured
               .first;
-      expect(capturedIdentity.genesisDid, param.did);
+      expect(capturedIdentity.genesisDid, param.genesisDid);
       expect(capturedIdentity.privateKey, param.privateKey);
 
       var capturedSign =
@@ -110,7 +112,7 @@ void main() {
       expect(capturedSign.message, CommonMocks.challenge);
 
       var capturedAuthInputs = verify(iden3commRepository.getAuthInputs(
-              did: captureAnyNamed('did'),
+              genesisDid: captureAnyNamed('genesisDid'),
               profileNonce: captureAnyNamed('profileNonce'),
               challenge: captureAnyNamed("challenge"),
               authClaim: captureAnyNamed("authClaim"),
@@ -121,7 +123,7 @@ void main() {
               gistProof: captureAnyNamed('gistProof'),
               treeState: captureAnyNamed('treeState')))
           .captured;
-      expect(capturedAuthInputs[0], CommonMocks.profiles[1]);
+      expect(capturedAuthInputs[0], CommonMocks.did);
       expect(capturedAuthInputs[1], CommonMocks.nonce);
       expect(capturedAuthInputs[2], CommonMocks.challenge);
       expect(capturedAuthInputs[3], claims);
@@ -150,13 +152,13 @@ void main() {
           verify(getIdentityUseCase.execute(param: captureAnyNamed("param")))
               .captured
               .first;
-      expect(capturedIdentity.genesisDid, param.did);
+      expect(capturedIdentity.genesisDid, param.genesisDid);
       expect(capturedIdentity.privateKey, param.privateKey);
 
       verifyNever(signMessageUseCase.execute(param: captureAnyNamed("param")));
 
       verifyNever(iden3commRepository.getAuthInputs(
-          did: captureAnyNamed('did'),
+          genesisDid: captureAnyNamed('genesisDid'),
           profileNonce: captureAnyNamed('profileNonce'),
           challenge: captureAnyNamed("challenge"),
           authClaim: captureAnyNamed("authClaim"),

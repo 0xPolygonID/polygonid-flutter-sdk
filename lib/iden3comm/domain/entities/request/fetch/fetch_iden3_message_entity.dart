@@ -71,18 +71,18 @@ import 'fetch_body_request.dart';
 class FetchIden3MessageEntity extends Iden3MessageEntity {
   @override
   final FetchBodyRequest body;
-  final String to;
 
-  FetchIden3MessageEntity(
-      {required String id,
-      required String typ,
-      required String type,
-      required String thid,
-      required String from,
-      required this.body,
-      required this.to})
-      : super(
+  FetchIden3MessageEntity({
+    required String id,
+    required String typ,
+    required String type,
+    required String thid,
+    required String from,
+    required this.body,
+    String? to,
+  }) : super(
             from: from,
+            to: to,
             id: id,
             messageType: Iden3MessageType.issuance,
             thid: thid,
@@ -108,20 +108,11 @@ class FetchIden3MessageEntity extends Iden3MessageEntity {
   }
 
   @override
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> result = super.toJson();
-    result.putIfAbsent('to', () => to);
-
-    return result;
-  }
-
-  @override
-  String toString() =>
-      "[FetchIden3MessageEntity] {${super.toString()}, to: $to}";
+  String toString() => "[FetchIden3MessageEntity] {${super.toString()}}";
 
   @override
   bool operator ==(Object other) =>
-      super == other && other is FetchIden3MessageEntity && to == other.to;
+      super == other && other is FetchIden3MessageEntity;
 
   @override
   int get hashCode => runtimeType.hashCode;

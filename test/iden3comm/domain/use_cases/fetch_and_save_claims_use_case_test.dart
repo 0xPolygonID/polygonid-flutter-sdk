@@ -1,15 +1,18 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_fetch_requests_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 
 import '../../../common/common_mocks.dart';
 import '../../../common/iden3comm_mocks.dart';
@@ -44,7 +47,7 @@ final result = [claimEntity, claimEntity, claimEntity];
 
 final param = FetchAndSaveClaimsParam(
     message: Iden3commMocks.offerRequest,
-    did: CommonMocks.identifier,
+    genesisDid: CommonMocks.identifier,
     privateKey: CommonMocks.privateKey);
 
 // Dependencies
@@ -52,6 +55,11 @@ MockIden3commCredentialRepository iden3commCredentialRepository =
     MockIden3commCredentialRepository();
 MockGetFetchRequestsUseCase getFetchRequestsUseCase =
     MockGetFetchRequestsUseCase();
+MockCheckProfileAndDidCurrentEnvUseCase checkProfileAndDidCurrentEnvUseCase =
+    MockCheckProfileAndDidCurrentEnvUseCase();
+MockGetDidIdentifierUseCase getDidIdentifierUseCase =
+    MockGetDidIdentifierUseCase();
+MockGetEnvUseCase getEnvUseCase = MockGetEnvUseCase();
 MockSaveClaimsUseCase saveClaimsUseCase = MockSaveClaimsUseCase();
 MockGetAuthTokenUseCase getAuthTokenUseCase = MockGetAuthTokenUseCase();
 MockGetClaimRevocationStatusUseCase getClaimRevocationStatusUseCase =
@@ -60,6 +68,9 @@ MockGetClaimRevocationStatusUseCase getClaimRevocationStatusUseCase =
 // Tested instance
 FetchAndSaveClaimsUseCase useCase = FetchAndSaveClaimsUseCase(
   iden3commCredentialRepository,
+  checkProfileAndDidCurrentEnvUseCase,
+  getEnvUseCase,
+  getDidIdentifierUseCase,
   getFetchRequestsUseCase,
   getAuthTokenUseCase,
   saveClaimsUseCase,
@@ -68,6 +79,9 @@ FetchAndSaveClaimsUseCase useCase = FetchAndSaveClaimsUseCase(
 
 @GenerateMocks([
   Iden3commCredentialRepository,
+  CheckProfileAndDidCurrentEnvUseCase,
+  GetEnvUseCase,
+  GetDidIdentifierUseCase,
   GetFetchRequestsUseCase,
   GetAuthTokenUseCase,
   SaveClaimsUseCase,
@@ -96,6 +110,13 @@ void main() {
           .thenAnswer((realInvocation) => Future.value(claimEntity));
       when(getClaimRevocationStatusUseCase.execute(param: anyNamed('param')))
           .thenAnswer((realInvocation) => Future.value(revStatus));
+      when(getDidIdentifierUseCase.execute(param: anyNamed('param')))
+          .thenAnswer((realInvocation) => Future.value(CommonMocks.did));
+      when(getEnvUseCase.execute(param: anyNamed('param')))
+          .thenAnswer((realInvocation) => Future.value(CommonMocks.env));
+      when(checkProfileAndDidCurrentEnvUseCase.execute(
+              param: anyNamed('param')))
+          .thenAnswer((realInvocation) => Future.value(null));
     });
 
     test(
@@ -111,14 +132,14 @@ void main() {
           .first;
 
       expect(fetchMessageCaptures.message, param.message);
-      expect(fetchMessageCaptures.did, param.did);
+      expect(fetchMessageCaptures.did, CommonMocks.did);
 
       var authVerify =
           verify(getAuthTokenUseCase.execute(param: captureAnyNamed('param')));
 
       expect(authVerify.callCount, requests.length);
       for (int i = 0; i < requests.length; i++) {
-        expect(authVerify.captured[i].did, param.did);
+        expect(authVerify.captured[i].genesisDid, param.genesisDid);
         expect(authVerify.captured[i].privateKey, param.privateKey);
         expect(authVerify.captured[i].message, requests[i]);
       }
@@ -131,7 +152,7 @@ void main() {
       expect(fetchVerify.callCount, requests.length);
       int j = 0;
       for (int i = 0; i < requests.length * 3; i += 3) {
-        expect(fetchVerify.captured[i], param.did);
+        expect(fetchVerify.captured[i], CommonMocks.did);
         expect(fetchVerify.captured[i + 1], CommonMocks.token);
         expect(fetchVerify.captured[i + 2], param.message.body.url);
         j++;
@@ -160,13 +181,13 @@ void main() {
           .first;
 
       expect(fetchMessageCaptures.message, param.message);
-      expect(fetchMessageCaptures.did, param.did);
+      expect(fetchMessageCaptures.did, CommonMocks.did);
 
       var authVerify =
           verify(getAuthTokenUseCase.execute(param: captureAnyNamed('param')));
 
       expect(authVerify.callCount, 1);
-      expect(authVerify.captured[0].did, param.did);
+      expect(authVerify.captured[0].genesisDid, param.genesisDid);
       expect(authVerify.captured[0].privateKey, param.privateKey);
       expect(authVerify.captured[0].message, requests[0]);
 
@@ -177,7 +198,7 @@ void main() {
 
       expect(fetchVerify.callCount, 1);
 
-      expect(fetchVerify.captured[0], param.did);
+      expect(fetchVerify.captured[0], CommonMocks.did);
       expect(fetchVerify.captured[1], CommonMocks.token);
       expect(fetchVerify.captured[2], param.message.body.url);
 

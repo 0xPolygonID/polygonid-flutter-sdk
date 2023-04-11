@@ -7,6 +7,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exce
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 
@@ -23,14 +24,14 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_reque
 
 class GetIden3commProofsParam {
   final Iden3MessageEntity message;
-  final String did;
+  final String genesisDid;
   final int profileNonce;
   final String privateKey;
   final String? challenge;
 
   GetIden3commProofsParam(
       {required this.message,
-      required this.did,
+      required this.genesisDid,
       required this.profileNonce,
       required this.privateKey,
       this.challenge});
@@ -43,6 +44,7 @@ class GetIden3commProofsUseCase
   final GenerateProofUseCase _generateProofUseCase;
   final IsProofCircuitSupportedUseCase _isProofCircuitSupported;
   final GetProofRequestsUseCase _getProofRequestsUseCase;
+  final GetIdentityUseCase _getIdentityUseCase;
   final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
 
   GetIden3commProofsUseCase(
@@ -51,6 +53,7 @@ class GetIden3commProofsUseCase
     this._generateProofUseCase,
     this._isProofCircuitSupported,
     this._getProofRequestsUseCase,
+    this._getIdentityUseCase,
     this._proofGenerationStepsStreamManager,
   );
 
@@ -73,8 +76,8 @@ class GetIden3commProofsUseCase
             .execute(
                 param: GetIden3commClaimsParam(
                     message: param.message,
-                    did: param.did,
-                    profileNonce: param.profileNonce,
+                    did: param.genesisDid,
+                    profileNonce: 0,
                     privateKey: param.privateKey))
             .then((claim) => claim.first)
             .then((credential) async {
@@ -90,12 +93,27 @@ class GetIden3commProofsUseCase
             challenge = param.challenge;
           }
 
+          var identityEntity = await _getIdentityUseCase.execute(
+              param: GetIdentityParam(
+                  genesisDid: param.genesisDid, privateKey: param.privateKey));
+
+          int claimSubjectProfileNonce = identityEntity.profiles.keys
+              .firstWhere((k) => identityEntity.profiles[k] == credential.did,
+                  orElse: () => 0);
+
           _proofGenerationStepsStreamManager
               .add("Generating proof for ${credential.type}");
           // Generate proof
           proofs.add(await _generateProofUseCase.execute(
-              param: GenerateProofParam(param.did, param.profileNonce, 0,
-                  credential, request.scope, circuitData, privKey, challenge)));
+              param: GenerateProofParam(
+                  param.genesisDid,
+                  param.profileNonce,
+                  claimSubjectProfileNonce,
+                  credential,
+                  request.scope,
+                  circuitData,
+                  privKey,
+                  challenge)));
         }).catchError((error) {
           throw error;
         });
