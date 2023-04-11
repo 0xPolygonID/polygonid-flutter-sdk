@@ -152,6 +152,12 @@ main() {
       expect(
           verifyGenerateProof.captured[i].circuitData, ProofMocks.circuitData);
     }
+
+    var getIdentityCapture =
+        verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))
+            .captured
+            .first;
+    expect(getIdentityCapture.genesisDid, CommonMocks.did);
   });
 
   test(
@@ -180,5 +186,6 @@ main() {
 
     verifyNever(proofRepository.loadCircuitFiles(captureAny));
     verifyNever(generateProofUseCase.execute(param: captureAnyNamed('param')));
+    verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
   });
 }
