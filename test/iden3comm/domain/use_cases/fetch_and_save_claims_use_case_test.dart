@@ -144,6 +144,20 @@ void main() {
         expect(authVerify.captured[i].message, requests[i]);
       }
 
+      var verifyConfig =
+          verify(getEnvUseCase.execute(param: captureAnyNamed('param')));
+      expect(verifyConfig.callCount, 1);
+      var capturedConfig = verifyConfig.captured;
+      expect(capturedConfig[0], null);
+
+      var captureCheck = verify(checkProfileAndDidCurrentEnvUseCase.execute(
+              param: captureAnyNamed('param')))
+          .captured
+          .first;
+      expect(captureCheck.did, param.genesisDid);
+      expect(captureCheck.privateKey, CommonMocks.privateKey);
+      expect(captureCheck.profileNonce, 0);
+
       var fetchVerify = verify(iden3commCredentialRepository.fetchClaim(
           did: captureAnyNamed('did'),
           authToken: captureAnyNamed('authToken'),

@@ -30,12 +30,9 @@ class WitnessIsolatesWrapper {
 /// As this is running in a separate thread, we cannot inject [WitnessAuthLib]
 Future<Uint8List?> _computeWitnessAuth(WitnessParam param) async {
   final WitnessAuthV2Lib witnessAuthLib = WitnessAuthV2Lib();
-  return witnessAuthLib
-      .calculateWitnessAuth(param.wasm, param.json)
-      .catchError((error) {
-    print(error);
-    return null;
-  });
+  final Uint8List? witnessBytes =
+      await witnessAuthLib.calculateWitnessAuth(param.wasm, param.json);
+  return witnessBytes;
 }
 
 /// As this is running in a separate thread, we cannot inject [WitnessSigLib]

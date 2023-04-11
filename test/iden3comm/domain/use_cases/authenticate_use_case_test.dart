@@ -116,6 +116,14 @@ void main() {
           expect(capturedProofs.genesisDid, CommonMocks.did);
           expect(capturedProofs.privateKey, CommonMocks.privateKey);
 
+          var captureDidIdentifier = verify(getDidIdentifierUseCase.execute(
+                  param: captureAnyNamed('param')))
+              .captured
+              .first;
+          expect(captureDidIdentifier.privateKey, CommonMocks.privateKey);
+          expect(captureDidIdentifier.blockchain, CommonMocks.env.blockchain);
+          expect(captureDidIdentifier.network, CommonMocks.env.network);
+
           var verifyConfig =
               verify(getEnvUseCase.execute(param: captureAnyNamed('param')));
           expect(verifyConfig.callCount, 1);
