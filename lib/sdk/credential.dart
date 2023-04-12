@@ -1,6 +1,6 @@
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
-import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart';
