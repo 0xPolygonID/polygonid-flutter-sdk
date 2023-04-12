@@ -19,7 +19,6 @@ class BackupIdentityUseCase extends FutureUseCase<String, String> {
 
   @override
   Future<String> execute({required String param}) async {
-    String result = "";
     String genesisDid = await _getCurrentEnvDidIdentifierUseCase.execute(
         param: GetCurrentEnvDidIdentifierParam(
             privateKey: param, profileNonce: GENESIS_PROFILE_NONCE));

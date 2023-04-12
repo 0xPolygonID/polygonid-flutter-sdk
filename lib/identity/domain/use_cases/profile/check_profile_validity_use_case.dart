@@ -1,6 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
@@ -20,7 +21,8 @@ class CheckProfileValidityUseCase
     final maxVal = BigInt.parse('2') ^ BigInt.parse('248');
     return Future(() {
       if (param.profileNonce.isNegative ||
-          (param.profileNonce == BigInt.zero && param.excludeGenesis) ||
+          (param.profileNonce == GENESIS_PROFILE_NONCE &&
+              param.excludeGenesis) ||
           (param.profileNonce >= maxVal)) {
         throw InvalidProfileException(param.profileNonce);
       }
