@@ -300,7 +300,8 @@ void main() {
       // When
       expect(
           await repository.getConnections(
-            did: CommonMocks.did,
+            genesisDid: CommonMocks.did,
+            profileNonce: CommonMocks.genesisNonce,
             privateKey: CommonMocks.privateKey,
           ),
           Iden3commMocks.connectionEntities);

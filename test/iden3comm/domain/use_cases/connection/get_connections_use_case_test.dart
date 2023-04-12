@@ -7,6 +7,7 @@ import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/connection_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/connection/get_connections_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
@@ -14,33 +15,20 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_ide
 import '../../../../common/common_mocks.dart';
 import '../../../../common/iden3comm_mocks.dart';
 import '../../../../common/identity_mocks.dart';
+import '../../../../identity/domain/use_cases/profile/add_profile_use_case_test.dart';
 import 'get_connections_use_case_test.mocks.dart';
 
 // Data
-const identifier = "theIdentifier";
 const privateKey = "thePrivateKey";
 final GetConnectionsParam param = GetConnectionsParam(
-    did: identifier,
+    genesisDid: CommonMocks.did,
     privateKey: privateKey,
     profileNonce: CommonMocks.genesisNonce);
 final GetConnectionsParam profileParam = GetConnectionsParam(
-    did: identifier, profileNonce: CommonMocks.nonce, privateKey: privateKey);
-final profilesConnectionEntities = [
-  ConnectionEntity(
-    from: CommonMocks.did,
-    to: CommonMocks.did,
-    interactions: [],
-  ),
-  ConnectionEntity(
-    from: CommonMocks.did,
-    to: CommonMocks.did,
-    interactions: [],
-  ),
-  ConnectionEntity(
-    from: CommonMocks.did,
-    to: CommonMocks.did,
-    interactions: [],
-  ),
+    genesisDid: CommonMocks.did,
+    profileNonce: CommonMocks.nonce,
+    privateKey: privateKey);
+final connectionEntities = [
   ConnectionEntity(
     from: CommonMocks.did,
     to: CommonMocks.did,
@@ -61,64 +49,57 @@ var exception = Exception();
 
 // Dependencies
 MockIden3commRepository iden3commRepository = MockIden3commRepository();
-MockGetCurrentEnvDidIdentifierUseCase getCurrentEnvDidIdentifierUseCase =
-    MockGetCurrentEnvDidIdentifierUseCase();
-MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
-
+MockCheckProfileAndDidCurrentEnvUseCase checkProfileAndDidCurrentEnvUseCase =
+    MockCheckProfileAndDidCurrentEnvUseCase();
 // Tested instance
 GetConnectionsUseCase useCase = GetConnectionsUseCase(
-    iden3commRepository, getCurrentEnvDidIdentifierUseCase, getIdentityUseCase);
+    iden3commRepository, checkProfileAndDidCurrentEnvUseCase);
 
 @GenerateMocks([
   Iden3commRepository,
-  GetCurrentEnvDidIdentifierUseCase,
-  GetIdentityUseCase
+  CheckProfileAndDidCurrentEnvUseCase,
 ])
 void main() {
   group("Get connections", () {
     setUp(() {
-      reset(getCurrentEnvDidIdentifierUseCase);
-      reset(getIdentityUseCase);
+      reset(checkProfileAndDidCurrentEnvUseCase);
       reset(iden3commRepository);
 
       // Given
       when(iden3commRepository.getConnections(
-        did: anyNamed('did'),
+        genesisDid: anyNamed('genesisDid'),
+        profileNonce: anyNamed('profileNonce'),
         privateKey: anyNamed('privateKey'),
       )).thenAnswer(
           (realInvocation) => Future.value(Iden3commMocks.connectionEntities));
-      when(getCurrentEnvDidIdentifierUseCase.execute(param: anyNamed('param')))
-          .thenAnswer((realInvocation) => Future.value(CommonMocks.did));
-      when(getIdentityUseCase.execute(param: anyNamed('param'))).thenAnswer(
-          (realInvocation) => Future.value(IdentityMocks.privateIdentity));
+      when(checkProfileAndDidCurrentEnvUseCase.execute(
+              param: anyNamed('param')))
+          .thenAnswer((realInvocation) => Future.value(null));
     });
 
     test(
         "When I call execute, then I expect a list of ConnectionEntity to be returned",
         () async {
       // When
-      expect(await useCase.execute(param: param), profilesConnectionEntities);
+      expect(await useCase.execute(param: param), connectionEntities);
 
       // Then
-      var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(
+      var captureCheck = verify(checkProfileAndDidCurrentEnvUseCase.execute(
               param: captureAnyNamed('param')))
           .captured
           .first;
-      expect(capturedDid.privateKey, privateKey);
-      expect(capturedDid.profileNonce, CommonMocks.genesisNonce);
-
-      var getIdentityCapture =
-          verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))
-              .captured
-              .first;
-      expect(getIdentityCapture.genesisDid, CommonMocks.did);
+      expect(captureCheck.did, CommonMocks.did);
+      expect(captureCheck.privateKey, CommonMocks.privateKey);
+      expect(captureCheck.profileNonce, CommonMocks.genesisNonce);
 
       var capturedGet = verify(iden3commRepository.getConnections(
-              did: captureAnyNamed('did'),
+              genesisDid: captureAnyNamed('genesisDid'),
+              profileNonce: captureAnyNamed('profileNonce'),
               privateKey: captureAnyNamed('privateKey')))
           .captured;
-      expect(capturedGet[0], CommonMocks.profiles[CommonMocks.genesisNonce]);
-      expect(capturedGet[1], privateKey);
+      expect(capturedGet[0], CommonMocks.did);
+      expect(capturedGet[1], CommonMocks.genesisNonce);
+      expect(capturedGet[2], CommonMocks.privateKey);
     });
 
     test(
@@ -129,21 +110,22 @@ void main() {
           Iden3commMocks.connectionEntities);
 
       // Then
-      var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(
+      var captureCheck = verify(checkProfileAndDidCurrentEnvUseCase.execute(
               param: captureAnyNamed('param')))
           .captured
           .first;
-      expect(capturedDid.privateKey, privateKey);
-      expect(capturedDid.profileNonce, CommonMocks.nonce);
-
-      verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
+      expect(captureCheck.did, CommonMocks.did);
+      expect(captureCheck.privateKey, CommonMocks.privateKey);
+      expect(captureCheck.profileNonce, CommonMocks.nonce);
 
       var capturedGet = verify(iden3commRepository.getConnections(
-              did: captureAnyNamed('did'),
+              genesisDid: captureAnyNamed('genesisDid'),
+              profileNonce: captureAnyNamed('profileNonce'),
               privateKey: captureAnyNamed('privateKey')))
           .captured;
       expect(capturedGet[0], CommonMocks.did);
-      expect(capturedGet[1], privateKey);
+      expect(capturedGet[1], CommonMocks.nonce);
+      expect(capturedGet[2], CommonMocks.privateKey);
     });
 
     test(
@@ -151,7 +133,8 @@ void main() {
         () async {
       // Given
       when(iden3commRepository.getConnections(
-        did: captureAnyNamed('did'),
+        genesisDid: captureAnyNamed('genesisDid'),
+        profileNonce: captureAnyNamed('profileNonce'),
         privateKey: captureAnyNamed('privateKey'),
       )).thenAnswer((realInvocation) => Future.error(exception));
 
@@ -159,24 +142,22 @@ void main() {
       await expectLater(useCase.execute(param: param), throwsA(exception));
 
       // Then
-      var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(
+      var captureCheck = verify(checkProfileAndDidCurrentEnvUseCase.execute(
               param: captureAnyNamed('param')))
           .captured
           .first;
-      expect(capturedDid.privateKey, privateKey);
-
-      var getIdentityCapture =
-          verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))
-              .captured
-              .first;
-      expect(getIdentityCapture.genesisDid, CommonMocks.did);
+      expect(captureCheck.did, CommonMocks.did);
+      expect(captureCheck.privateKey, CommonMocks.privateKey);
+      expect(captureCheck.profileNonce, CommonMocks.genesisNonce);
 
       var capturedGet = verify(iden3commRepository.getConnections(
-        did: captureAnyNamed('did'),
+        genesisDid: captureAnyNamed('genesisDid'),
+        profileNonce: captureAnyNamed('profileNonce'),
         privateKey: captureAnyNamed('privateKey'),
       )).captured;
-      expect(capturedGet[0], CommonMocks.profiles[CommonMocks.genesisNonce]);
-      expect(capturedGet[1], privateKey);
+      expect(capturedGet[0], CommonMocks.did);
+      expect(capturedGet[1], CommonMocks.genesisNonce);
+      expect(capturedGet[2], CommonMocks.privateKey);
     });
 
     test(
@@ -184,7 +165,8 @@ void main() {
         () async {
       // Given
       when(iden3commRepository.getConnections(
-        did: captureAnyNamed('did'),
+        genesisDid: captureAnyNamed('genesisDid'),
+        profileNonce: captureAnyNamed('profileNonce'),
         privateKey: captureAnyNamed('privateKey'),
       )).thenAnswer((realInvocation) => Future.error(exception));
 
@@ -193,20 +175,22 @@ void main() {
           useCase.execute(param: profileParam), throwsA(exception));
 
       // Then
-      var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(
+      var captureCheck = verify(checkProfileAndDidCurrentEnvUseCase.execute(
               param: captureAnyNamed('param')))
           .captured
           .first;
-      expect(capturedDid.privateKey, privateKey);
-
-      verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
+      expect(captureCheck.did, CommonMocks.did);
+      expect(captureCheck.privateKey, CommonMocks.privateKey);
+      expect(captureCheck.profileNonce, CommonMocks.nonce);
 
       var capturedGet = verify(iden3commRepository.getConnections(
-        did: captureAnyNamed('did'),
+        genesisDid: captureAnyNamed('genesisDid'),
+        profileNonce: captureAnyNamed('profileNonce'),
         privateKey: captureAnyNamed('privateKey'),
       )).captured;
       expect(capturedGet[0], CommonMocks.did);
-      expect(capturedGet[1], privateKey);
+      expect(capturedGet[1], CommonMocks.nonce);
+      expect(capturedGet[2], CommonMocks.privateKey);
     });
   });
 }

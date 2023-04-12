@@ -236,7 +236,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       required String privateKey}) {
     return _getConnectionsUseCase.execute(
         param: GetConnectionsParam(
-      did: genesisDid,
+      genesisDid: genesisDid,
       profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
       privateKey: privateKey,
     ));

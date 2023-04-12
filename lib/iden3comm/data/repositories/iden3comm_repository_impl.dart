@@ -196,9 +196,12 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
 
   @override
   Future<List<ConnectionEntity>> getConnections(
-      {required String did, required String privateKey}) {
+      {required String genesisDid,
+      required profileNonce,
+      required String privateKey}) {
+    // TODO: filter by profileNonce. if 0 return all
     return _storageConnectionDataSource
-        .getConnections(did: did, privateKey: privateKey)
+        .getConnections(did: genesisDid, privateKey: privateKey)
         .then((connections) => connections
             .map((connection) => _connectionMapper.mapFrom(connection))
             .toList())

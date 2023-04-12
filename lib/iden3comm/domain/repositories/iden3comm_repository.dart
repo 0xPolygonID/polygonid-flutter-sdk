@@ -43,5 +43,7 @@ abstract class Iden3commRepository {
   Future<String> getChallenge({required String message});
 
   Future<List<ConnectionEntity>> getConnections(
-      {required String did, required String privateKey});
+      {required String genesisDid,
+      required BigInt profileNonce,
+      required String privateKey});
 }
