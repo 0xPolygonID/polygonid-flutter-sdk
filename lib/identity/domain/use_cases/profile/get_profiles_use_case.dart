@@ -11,7 +11,7 @@ class GetProfilesParam {
 }
 
 class GetProfilesUseCase
-    extends FutureUseCase<GetProfilesParam, Map<int, String>> {
+    extends FutureUseCase<GetProfilesParam, Map<BigInt, String>> {
   final GetIdentityUseCase _getIdentityUseCase;
   final CheckProfileAndDidCurrentEnvUseCase
       _checkProfileAndDidCurrentEnvUseCase;
@@ -20,11 +20,13 @@ class GetProfilesUseCase
       this._getIdentityUseCase, this._checkProfileAndDidCurrentEnvUseCase);
 
   @override
-  Future<Map<int, String>> execute({required GetProfilesParam param}) {
+  Future<Map<BigInt, String>> execute({required GetProfilesParam param}) {
     return _checkProfileAndDidCurrentEnvUseCase
         .execute(
             param: CheckProfileAndDidCurrentEnvParam(
-                did: param.genesisDid, privateKey: param.privateKey))
+                did: param.genesisDid,
+                privateKey: param.privateKey,
+                profileNonce: BigInt.zero))
         .then((_) => _getIdentityUseCase
                 .execute(param: GetIdentityParam(genesisDid: param.genesisDid))
                 .then((identity) => identity.profiles)

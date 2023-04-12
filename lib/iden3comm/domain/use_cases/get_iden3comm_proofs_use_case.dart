@@ -1,3 +1,4 @@
+import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
@@ -25,7 +26,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_reque
 class GetIden3commProofsParam {
   final Iden3MessageEntity message;
   final String genesisDid;
-  final int profileNonce;
+  final BigInt profileNonce;
   final String privateKey;
   final String? challenge;
 
@@ -76,8 +77,8 @@ class GetIden3commProofsUseCase
             .execute(
                 param: GetIden3commClaimsParam(
                     message: param.message,
-                    did: param.genesisDid,
-                    profileNonce: 0,
+                    genesisDid: param.genesisDid,
+                    profileNonce: param.profileNonce,
                     privateKey: param.privateKey))
             .then((claim) => claim.first)
             .then((credential) async {
@@ -97,9 +98,9 @@ class GetIden3commProofsUseCase
               param: GetIdentityParam(
                   genesisDid: param.genesisDid, privateKey: param.privateKey));
 
-          int claimSubjectProfileNonce = identityEntity.profiles.keys
+          BigInt claimSubjectProfileNonce = identityEntity.profiles.keys
               .firstWhere((k) => identityEntity.profiles[k] == credential.did,
-                  orElse: () => 0);
+                  orElse: () => GENESIS_PROFILE_NONCE);
 
           _proofGenerationStepsStreamManager
               .add("Generating proof for ${credential.type}");

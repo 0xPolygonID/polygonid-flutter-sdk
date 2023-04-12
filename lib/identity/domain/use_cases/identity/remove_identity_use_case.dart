@@ -1,3 +1,4 @@
+import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_all_claims_use_case.dart';
@@ -40,16 +41,18 @@ class RemoveIdentityUseCase extends FutureUseCase<RemoveIdentityParam, void> {
     try {
       await _checkProfileAndDidCurrentEnvUseCase.execute(
           param: CheckProfileAndDidCurrentEnvParam(
-              did: param.genesisDid, privateKey: param.privateKey));
+              did: param.genesisDid,
+              privateKey: param.privateKey,
+              profileNonce: GENESIS_PROFILE_NONCE));
 
-      Map<int, String> profilesMap = await _getProfilesUseCase.execute(
+      Map<BigInt, String> profilesMap = await _getProfilesUseCase.execute(
           param: GetProfilesParam(
               genesisDid: param.genesisDid, privateKey: param.privateKey));
 
       // remove identity state and claims for each profile did
       if (profilesMap.isNotEmpty) {
-        for (int profileNonce in profilesMap.keys) {
-          if (profileNonce > 0) {
+        for (BigInt profileNonce in profilesMap.keys) {
+          if (profileNonce > GENESIS_PROFILE_NONCE) {
             await _removeProfileUseCase.execute(
                 param: RemoveProfileParam(
                     genesisDid: param.genesisDid,

@@ -19,6 +19,7 @@ GetDidIdentifierParam param = GetDidIdentifierParam(
   privateKey: CommonMocks.privateKey,
   blockchain: CommonMocks.blockchain,
   network: CommonMocks.network,
+  profileNonce: CommonMocks.genesisNonce,
 );
 
 GetDidIdentifierUseCase useCase = GetDidIdentifierUseCase(
@@ -69,7 +70,7 @@ void main() {
       expect(authClaimCapture[0], CommonMocks.blockchain);
       expect(authClaimCapture[1], CommonMocks.network);
       expect(authClaimCapture[2], IdentityMocks.treeState.claimsTree.data);
-      expect(authClaimCapture[3], 0);
+      expect(authClaimCapture[3], CommonMocks.genesisNonce);
     },
   );
 

@@ -60,7 +60,7 @@ class LibPolygonIdCoreIden3commDataSource {
 
   String getAuthInputs({
     required String genesisDid,
-    required int profileNonce,
+    required BigInt profileNonce,
     required List<String> authClaim,
     required Map<String, dynamic> incProof,
     required Map<String, dynamic> nonRevProof,

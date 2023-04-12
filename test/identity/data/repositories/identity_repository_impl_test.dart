@@ -597,7 +597,8 @@ void main() {
           await repository.getDidIdentifier(
               blockchain: CommonMocks.blockchain,
               network: CommonMocks.network,
-              claimsRoot: CommonMocks.message),
+              claimsRoot: CommonMocks.message,
+              profileNonce: CommonMocks.genesisNonce),
           CommonMocks.did);
 
       // Then

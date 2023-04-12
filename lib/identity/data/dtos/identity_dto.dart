@@ -8,7 +8,7 @@ part 'identity_dto.g.dart';
 class IdentityDTO extends Equatable {
   final String did;
   final List<String> publicKey;
-  final Map<int, String> profiles;
+  final Map<BigInt, String> profiles;
 
   const IdentityDTO(
       {required this.did, required this.publicKey, required this.profiles});

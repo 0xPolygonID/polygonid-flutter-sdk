@@ -45,7 +45,7 @@ void main() {
             param: CheckProfileAndDidCurrentEnvParam(
                 did: CommonMocks.did,
                 privateKey: CommonMocks.privateKey,
-                profileNonce: 1)),
+                profileNonce: CommonMocks.nonce)),
         completes);
 
     // Then
@@ -55,7 +55,7 @@ void main() {
             .captured
             .first
             .profileNonce,
-        1);
+        CommonMocks.nonce);
     verify(getEnvUseCase.execute(param: anyNamed('param')));
 
     var captureDidIdentifier =
@@ -80,7 +80,7 @@ void main() {
             param: CheckProfileAndDidCurrentEnvParam(
                 did: CommonMocks.did,
                 privateKey: CommonMocks.privateKey,
-                profileNonce: 1))
+                profileNonce: CommonMocks.nonce))
         .then((_) => expect(true, false))
         .catchError((error) {
       expect(error, isA<DidNotMatchCurrentEnvException>());
@@ -95,7 +95,7 @@ void main() {
             .captured
             .first
             .profileNonce,
-        1);
+        CommonMocks.nonce);
     verify(getEnvUseCase.execute(param: anyNamed('param')));
 
     var captureDidIdentifier =
@@ -120,7 +120,7 @@ void main() {
             param: CheckProfileAndDidCurrentEnvParam(
                 did: CommonMocks.did,
                 privateKey: CommonMocks.privateKey,
-                profileNonce: 1)),
+                profileNonce: CommonMocks.nonce)),
         throwsA(CommonMocks.exception));
 
     // Then
@@ -130,7 +130,7 @@ void main() {
             .captured
             .first
             .profileNonce,
-        1);
+        CommonMocks.nonce);
     verify(getEnvUseCase.execute(param: anyNamed('param')));
     verifyNever(
         getDidIdentifierUseCase.execute(param: captureAnyNamed('param')));

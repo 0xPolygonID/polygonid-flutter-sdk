@@ -11,7 +11,7 @@ IdentityDTO _$IdentityDTOFromJson(Map<String, dynamic> json) => IdentityDTO(
       publicKey:
           (json['publicKey'] as List<dynamic>).map((e) => e as String).toList(),
       profiles: (json['profiles'] as Map<String, dynamic>).map(
-        (k, e) => MapEntry(int.parse(k), e as String),
+        (k, e) => MapEntry(BigInt.parse(k), e as String),
       ),
     );
 

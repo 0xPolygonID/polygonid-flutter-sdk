@@ -12,13 +12,13 @@ import '../../../proof/domain/entities/circuit_data_entity.dart';
 
 class GetAuthTokenParam {
   final String genesisDid;
-  final int profileNonce;
+  final BigInt profileNonce;
   final String privateKey;
   final String message;
 
   GetAuthTokenParam({
     required this.genesisDid,
-    this.profileNonce = 0,
+    required this.profileNonce,
     required this.privateKey,
     required this.message,
   });

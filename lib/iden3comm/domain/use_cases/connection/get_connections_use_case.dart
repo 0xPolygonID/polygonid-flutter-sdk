@@ -1,3 +1,4 @@
+import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/connection_entity.dart';
@@ -8,12 +9,12 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_ide
 
 class GetConnectionsParam {
   final String did;
-  final int profileNonce;
+  final BigInt profileNonce;
   final String privateKey;
 
   GetConnectionsParam({
     required this.did,
-    this.profileNonce = 0,
+    required this.profileNonce,
     required this.privateKey,
   });
 }
@@ -32,12 +33,12 @@ class GetConnectionsUseCase
       {required GetConnectionsParam param}) async {
     // if profileNonce is zero, return all profiles' credentials,
     // if profileNonce > 0 then return only credentials from that profile
-    if (param.profileNonce >= 0) {
+    if (param.profileNonce >= GENESIS_PROFILE_NONCE) {
       // TODO check param.did and did from profile nonce are the same or return exception
       String did = await _getCurrentEnvDidIdentifierUseCase.execute(
           param: GetCurrentEnvDidIdentifierParam(
               privateKey: param.privateKey, profileNonce: param.profileNonce));
-      if (param.profileNonce > 0) {
+      if (param.profileNonce > GENESIS_PROFILE_NONCE) {
         return _iden3commRepository
             .getConnections(did: did, privateKey: param.privateKey)
             .then((connections) {

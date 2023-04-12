@@ -9,7 +9,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/smt/create_ident
 
 class AddProfileParam {
   final String genesisDid;
-  final int profileNonce;
+  final BigInt profileNonce;
   final String privateKey;
 
   AddProfileParam({
@@ -46,13 +46,13 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
             genesisDid: param.genesisDid, privateKey: param.privateKey));
 
     if (identityEntity is PrivateIdentityEntity) {
-      List<int> profiles = identityEntity.profiles.keys.toList();
+      List<BigInt> profiles = identityEntity.profiles.keys.toList();
       if (profiles.contains(param.profileNonce)) {
         throw ProfileAlreadyExistsException(
             param.genesisDid, param.profileNonce);
       } else {
         // Create profile
-        Map<int, String> newProfiles = await _createProfilesUseCase.execute(
+        Map<BigInt, String> newProfiles = await _createProfilesUseCase.execute(
             param: CreateProfilesParam(
                 privateKey: param.privateKey, profiles: [param.profileNonce]));
 

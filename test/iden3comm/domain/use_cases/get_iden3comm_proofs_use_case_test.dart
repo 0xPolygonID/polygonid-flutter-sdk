@@ -137,7 +137,7 @@ main() {
       expect(verifyIsFilterSupported.captured[i],
           Iden3commMocks.proofRequestList[i].scope.circuitId);
 
-      expect(verifyGetClaims.captured[i].did, param.genesisDid);
+      expect(verifyGetClaims.captured[i].genesisDid, param.genesisDid);
       expect(verifyGetClaims.captured[i].privateKey, param.privateKey);
 
       expect(verifyLoadCircuit.captured[i],
@@ -145,7 +145,8 @@ main() {
 
       expect(verifyGenerateProof.captured[i].did, IdentityMocks.did.did);
       expect(verifyGenerateProof.captured[i].profileNonce, param.profileNonce);
-      expect(verifyGenerateProof.captured[i].claimSubjectProfileNonce, 0);
+      expect(verifyGenerateProof.captured[i].claimSubjectProfileNonce,
+          CommonMocks.genesisNonce);
       expect(verifyGenerateProof.captured[i].credential, CredentialMocks.claim);
       expect(verifyGenerateProof.captured[i].request,
           Iden3commMocks.proofRequestList[i].scope);

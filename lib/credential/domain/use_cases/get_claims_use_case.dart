@@ -1,3 +1,4 @@
+import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
@@ -10,13 +11,13 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_ide
 class GetClaimsParam {
   final List<FilterEntity>? filters;
   final String did;
-  final int profileNonce;
+  final BigInt profileNonce;
   final String privateKey;
 
   GetClaimsParam({
     this.filters,
     required this.did,
-    this.profileNonce = 0,
+    required this.profileNonce,
     required this.privateKey,
   });
 }
@@ -34,12 +35,12 @@ class GetClaimsUseCase
   Future<List<ClaimEntity>> execute({required GetClaimsParam param}) async {
     // if profileNonce is zero, return all profiles credentials,
     // if profileNonce > 0 then return only credentials from that profile
-    if (param.profileNonce >= 0) {
+    if (param.profileNonce >= GENESIS_PROFILE_NONCE) {
       // TODO check param.did and did from profile nonce are the same or return exception
       String did = await _getCurrentEnvDidIdentifierUseCase.execute(
           param: GetCurrentEnvDidIdentifierParam(
               privateKey: param.privateKey, profileNonce: param.profileNonce));
-      if (param.profileNonce > 0) {
+      if (param.profileNonce > GENESIS_PROFILE_NONCE) {
         return _credentialRepository
             .getClaims(
                 filters: param.filters, did: did, privateKey: param.privateKey)

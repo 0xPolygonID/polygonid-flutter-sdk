@@ -65,12 +65,11 @@ abstract class PolygonIdSdkIdentity {
   /// and also to realize operations like generating proofs
   /// using the claims associated to the identity
   ///
-  ///  The [encryptedIdentityDbs] is a map of profile nonces and
-  ///  associated encrypted Identity's Databases
+  ///  The [encryptedDb] is an encrypted Identity's Database
   ///
   /// The identity will be restored using the current env set with [PolygonIdSdk.setEnv]
   Future<PrivateIdentityEntity> restoreIdentity(
-      {required String privateKey, Map<int, String>? encryptedIdentityDbs});
+      {required String privateKey, String? encryptedDb});
 
   /// Backup a previously stored [IdentityEntity] from a privateKey
   /// associated to the identity
@@ -79,13 +78,12 @@ abstract class PolygonIdSdkIdentity {
   /// and also to realize operations like generating proofs
   /// using the claims associated to the identity
   ///
-  /// Returns a map of profile nonces and
-  /// associated encrypted Identity's Databases.
+  /// Returns an encrypted Identity's Database.
   ///
   /// Throws [IdentityException] if an error occurs.
   ///
   /// The identity will be backed up using the current env set with [PolygonIdSdk.setEnv]
-  Future<Map<int, String>?> backupIdentity({
+  Future<String?> backupIdentity({
     required String privateKey,
   });
 
@@ -141,14 +139,14 @@ abstract class PolygonIdSdkIdentity {
   /// is associated, e.g. Main
   ///
   /// The [profileNonce] is the nonce of the profile used from identity
-  /// to obtain the did identifier
+  /// to obtain the did identifier. Value must be greater than 0 and less than 2^248
   ///
   /// Return The Identity's [did] identifier
   Future<String> getDidIdentifier(
       {required String privateKey,
       required String blockchain,
       required String network,
-      int? profileNonce});
+      BigInt? profileNonce});
 
   /// Returns the identity state from a did
   ///
@@ -172,13 +170,13 @@ abstract class PolygonIdSdkIdentity {
   /// and also to realize operations like generating proofs
   ///
   /// The [profileNonce] is the nonce of the profile used from identity
-  /// to obtain the did identifier
+  /// to obtain the did identifier. Value must be greater than 0 and less than 2^248
   ///
   /// The profile will be added using the current env set with [PolygonIdSdk.setEnv]
   Future<void> addProfile(
       {required String genesisDid,
       required String privateKey,
-      required int profileNonce});
+      required BigInt profileNonce});
 
   /// Removes a profile from the identity derived from private key and stored
   /// in the Polygon ID Sdk.
@@ -189,13 +187,13 @@ abstract class PolygonIdSdkIdentity {
   /// and also to realize operations like generating proofs
   ///
   /// The [profileNonce] is the nonce of the profile used from identity
-  /// to obtain the did identifier
+  /// to obtain the did identifier. Value must be greater than 0 and less than 2^248
   ///
   /// The profile will be removed using the current env set with [PolygonIdSdk.setEnv]
   Future<void> removeProfile(
       {required String genesisDid,
       required String privateKey,
-      required int profileNonce});
+      required BigInt profileNonce});
 
   /// Gets a map of profile nonce as key and profile did as value associated
   /// to the identity derived from private key and stored in the Polygon ID Sdk.
@@ -205,10 +203,10 @@ abstract class PolygonIdSdkIdentity {
   /// The [privateKey]  is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
   ///
-  /// Returns a map of <int, String>.
+  /// Returns a map of <BigInt, String>.
   ///
   /// The returned profiles will come from the current env set with [PolygonIdSdk.setEnv]
-  Future<Map<int, String>> getProfiles(
+  Future<Map<BigInt, String>> getProfiles(
       {required String genesisDid, required String privateKey});
 }
 
@@ -264,14 +262,13 @@ class Identity implements PolygonIdSdkIdentity {
 
   @override
   Future<PrivateIdentityEntity> restoreIdentity(
-      {required String privateKey, Map<int, String>? encryptedIdentityDbs}) {
+      {required String privateKey, String? encryptedDb}) {
     return _restoreIdentityUseCase.execute(
         param: RestoreIdentityParam(
-            privateKey: privateKey,
-            encryptedIdentityDbs: encryptedIdentityDbs));
+            privateKey: privateKey, encryptedDb: encryptedDb));
   }
 
-  Future<Map<int, String>> backupIdentity({
+  Future<String> backupIdentity({
     required String privateKey,
   }) {
     return _backupIdentityUseCase.execute(param: privateKey);
@@ -309,14 +306,14 @@ class Identity implements PolygonIdSdkIdentity {
     required String privateKey,
     required String blockchain,
     required String network,
-    int? profileNonce,
+    BigInt? profileNonce,
   }) {
     return _getDidIdentifierUseCase.execute(
         param: GetDidIdentifierParam(
             privateKey: privateKey,
             blockchain: blockchain,
             network: network,
-            profileNonce: profileNonce ?? 0));
+            profileNonce: profileNonce ?? BigInt.zero));
   }
 
   @override
@@ -328,7 +325,7 @@ class Identity implements PolygonIdSdkIdentity {
   Future<void> addProfile(
       {required String genesisDid,
       required String privateKey,
-      required int profileNonce}) {
+      required BigInt profileNonce}) {
     return _addProfileUseCase.execute(
         param: AddProfileParam(
             genesisDid: genesisDid,
@@ -340,7 +337,7 @@ class Identity implements PolygonIdSdkIdentity {
   Future<void> removeProfile(
       {required String genesisDid,
       required String privateKey,
-      required int profileNonce}) {
+      required BigInt profileNonce}) {
     return _removeProfileUseCase.execute(
         param: RemoveProfileParam(
             genesisDid: genesisDid,
@@ -349,7 +346,7 @@ class Identity implements PolygonIdSdkIdentity {
   }
 
   @override
-  Future<Map<int, String>> getProfiles(
+  Future<Map<BigInt, String>> getProfiles(
       {required String genesisDid, required String privateKey}) {
     return _getProfilesUseCase.execute(
         param:

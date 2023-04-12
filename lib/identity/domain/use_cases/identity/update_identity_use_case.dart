@@ -9,7 +9,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_ide
 
 class UpdateIdentityParam {
   final String privateKey;
-  final List<int> profiles;
+  final List<BigInt> profiles;
 
   UpdateIdentityParam({required this.privateKey, this.profiles = const []});
 }

@@ -16,13 +16,13 @@ import 'get_fetch_requests_use_case.dart';
 class FetchAndSaveClaimsParam {
   final OfferIden3MessageEntity message;
   final String genesisDid;
-  final int profileNonce;
+  final BigInt profileNonce;
   final String privateKey;
 
   FetchAndSaveClaimsParam({
     required this.message,
     required this.genesisDid,
-    this.profileNonce = 0,
+    required this.profileNonce,
     required this.privateKey,
   });
 }

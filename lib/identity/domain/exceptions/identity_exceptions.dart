@@ -17,13 +17,13 @@ class IdentityAlreadyExistsException implements Exception {
 
 class ProfileAlreadyExistsException implements Exception {
   final String genesisDid;
-  final int profileNonce;
+  final BigInt profileNonce;
 
   ProfileAlreadyExistsException(this.genesisDid, this.profileNonce);
 }
 
 class UnknownProfileException implements Exception {
-  final int profileNonce;
+  final BigInt profileNonce;
 
   UnknownProfileException(this.profileNonce);
 }
@@ -41,14 +41,14 @@ class InvalidPrivateKeyException implements Exception {
 }
 
 class InvalidProfileException extends ErrorException {
-  final int profileNonce;
+  final BigInt profileNonce;
 
   InvalidProfileException(this.profileNonce) : super(null);
 
   dynamic get error {
-    if (profileNonce == 0) {
+    if (profileNonce == BigInt.zero) {
       return "Genesis profile can't be modified";
-    } else if (profileNonce < 0) {
+    } else if (profileNonce.isNegative) {
       return "Profile nonce can't be negative";
     }
 

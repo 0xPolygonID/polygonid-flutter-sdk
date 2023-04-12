@@ -18,14 +18,14 @@ import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stre
 class AuthenticateParam {
   final AuthIden3MessageEntity message;
   final String genesisDid;
-  int profileNonce;
+  final BigInt profileNonce;
   final String privateKey;
   final String? pushToken;
 
   AuthenticateParam(
       {required this.message,
       required this.genesisDid,
-      this.profileNonce = 0,
+      required this.profileNonce,
       required this.privateKey,
       this.pushToken});
 }

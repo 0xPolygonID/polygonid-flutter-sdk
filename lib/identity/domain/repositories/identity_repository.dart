@@ -26,13 +26,13 @@ abstract class IdentityRepository {
     required String blockchain,
     required String network,
     required String claimsRoot,
-    int profileNonce = 0,
+    required BigInt profileNonce,
   });
 
   // RHS
   Future<Map<String, dynamic>> getNonRevProof(
       {required String identityState,
-      required int nonce,
+      required BigInt nonce,
       required String baseUrl});
 
   Future<String> getState(

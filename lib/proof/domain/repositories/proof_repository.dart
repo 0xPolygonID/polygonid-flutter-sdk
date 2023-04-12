@@ -19,8 +19,8 @@ abstract class ProofRepository {
 
   Future<Uint8List> calculateAtomicQueryInputs(
       {required String id,
-      required int profileNonce,
-      required int claimSubjectProfileNonce,
+      required BigInt profileNonce,
+      required BigInt claimSubjectProfileNonce,
       required ClaimEntity claim,
       required ProofScopeRequest request,
       ProofEntity? incProof,
