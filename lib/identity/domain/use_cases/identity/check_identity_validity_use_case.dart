@@ -17,7 +17,8 @@ class CheckIdentityValidityUseCase extends FutureUseCase<String, void> {
     return _getPrivateKeyUseCase
         .execute(param: param)
         .then((privateKey) => _getCurrentEnvDidIdentifierUseCase.execute(
-            param: GetCurrentEnvDidIdentifierParam(privateKey: privateKey)))
+            param: GetCurrentEnvDidIdentifierParam(
+                privateKey: privateKey, profileNonce: BigInt.zero)))
         .then((_) {
       logger().i("[CheckIdentityValidityUseCase] Identity is valid");
     }).catchError((error) {

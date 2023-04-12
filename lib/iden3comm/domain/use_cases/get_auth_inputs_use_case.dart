@@ -23,7 +23,7 @@ import '../../../common/domain/use_case.dart';
 class GetAuthInputsParam {
   final String challenge;
   final String genesisDid;
-  final int profileNonce;
+  final BigInt profileNonce;
   final String privateKey;
 
   GetAuthInputsParam(

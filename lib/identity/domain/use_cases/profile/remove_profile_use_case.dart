@@ -10,7 +10,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/smt/remove_ident
 
 class RemoveProfileParam {
   final String genesisDid;
-  final int profileNonce;
+  final BigInt profileNonce;
   final String privateKey;
 
   RemoveProfileParam({
@@ -44,17 +44,18 @@ class RemoveProfileUseCase extends FutureUseCase<RemoveProfileParam, void> {
         param: CheckProfileAndDidCurrentEnvParam(
             did: param.genesisDid,
             privateKey: param.privateKey,
+            profileNonce: BigInt.zero,
             excludeGenesisProfile: true));
     var identityEntity = await _getIdentityUseCase.execute(
         param: GetIdentityParam(
             genesisDid: param.genesisDid, privateKey: param.privateKey));
 
     if (identityEntity is PrivateIdentityEntity) {
-      List<int> profiles = identityEntity.profiles.keys.toList();
+      List<BigInt> profiles = identityEntity.profiles.keys.toList();
       if (!profiles.contains(param.profileNonce)) {
         throw UnknownProfileException(param.profileNonce);
       } else {
-        Map<int, String> newProfiles = await _createProfilesUseCase.execute(
+        Map<BigInt, String> newProfiles = await _createProfilesUseCase.execute(
             param: CreateProfilesParam(
                 privateKey: param.privateKey, profiles: [param.profileNonce]));
 

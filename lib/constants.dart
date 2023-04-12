@@ -26,3 +26,5 @@ const claimStoreName = "claimStore";
 
 /// Iden3comm
 const connectionStoreName = "connectionStore";
+
+final BigInt GENESIS_PROFILE_NONCE = BigInt.zero;

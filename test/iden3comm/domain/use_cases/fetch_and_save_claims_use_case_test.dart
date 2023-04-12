@@ -48,6 +48,7 @@ final result = [claimEntity, claimEntity, claimEntity];
 final param = FetchAndSaveClaimsParam(
     message: Iden3commMocks.offerRequest,
     genesisDid: CommonMocks.identifier,
+    profileNonce: CommonMocks.genesisNonce,
     privateKey: CommonMocks.privateKey);
 
 // Dependencies
@@ -156,7 +157,7 @@ void main() {
           .first;
       expect(captureCheck.did, param.genesisDid);
       expect(captureCheck.privateKey, CommonMocks.privateKey);
-      expect(captureCheck.profileNonce, 0);
+      expect(captureCheck.profileNonce, CommonMocks.genesisNonce);
 
       var fetchVerify = verify(iden3commCredentialRepository.fetchClaim(
           did: captureAnyNamed('did'),

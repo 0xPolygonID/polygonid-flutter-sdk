@@ -20,8 +20,9 @@ import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stre
 
 abstract class PolygonIdSdkProof {
   Future<JWZProofEntity> prove(
-      {required String did,
-      int? profileNonce,
+      {required String genesisDid,
+      required BigInt profileNonce,
+      required BigInt claimSubjectProfileNonce,
       required ClaimEntity claim,
       required CircuitDataEntity circuitData,
       required ProofScopeRequest request,
@@ -51,16 +52,24 @@ class Proof implements PolygonIdSdkProof {
 
   @override
   Future<JWZProofEntity> prove(
-      {required String did,
-      int? profileNonce,
+      {required String genesisDid,
+      required BigInt profileNonce,
+      required BigInt claimSubjectProfileNonce,
       required ClaimEntity claim,
       required CircuitDataEntity circuitData,
       required ProofScopeRequest request,
       String? privateKey,
       String? challenge}) {
     return generateProofUseCase.execute(
-        param: GenerateProofParam(did, profileNonce ?? 0, 0, claim, request,
-            circuitData, privateKey, challenge));
+        param: GenerateProofParam(
+            genesisDid,
+            profileNonce,
+            claimSubjectProfileNonce,
+            claim,
+            request,
+            circuitData,
+            privateKey,
+            challenge));
   }
 
   ///

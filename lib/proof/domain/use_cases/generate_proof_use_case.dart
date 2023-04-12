@@ -31,8 +31,8 @@ import 'prove_use_case.dart';
 
 class GenerateProofParam {
   final String did;
-  final int profileNonce;
-  final int claimSubjectProfileNonce;
+  final BigInt profileNonce;
+  final BigInt claimSubjectProfileNonce;
   final ClaimEntity credential;
   final ProofScopeRequest request; //FIXME: this is not from proof
   final CircuitDataEntity circuitData;

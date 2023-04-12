@@ -1,6 +1,7 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
+import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/check_profile_validity_use_case.dart';
@@ -8,13 +9,13 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/check_pr
 class CheckProfileAndDidCurrentEnvParam {
   final String did;
   final String privateKey;
-  final int profileNonce;
+  final BigInt profileNonce;
   final bool excludeGenesisProfile;
 
   CheckProfileAndDidCurrentEnvParam(
       {required this.did,
       required this.privateKey,
-      this.profileNonce = 0,
+      required this.profileNonce,
       this.excludeGenesisProfile = false});
 }
 
@@ -40,7 +41,8 @@ class CheckProfileAndDidCurrentEnvUseCase
                     param: GetDidIdentifierParam(
                         privateKey: param.privateKey,
                         blockchain: env.blockchain,
-                        network: env.network))
+                        network: env.network,
+                        profileNonce: GENESIS_PROFILE_NONCE))
                 .then((did) {
               if (did != param.did) {
                 throw DidNotMatchCurrentEnvException(param.did, did);

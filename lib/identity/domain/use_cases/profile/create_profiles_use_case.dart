@@ -9,13 +9,13 @@ import '../get_did_identifier_use_case.dart';
 
 class CreateProfilesParam {
   final String privateKey;
-  final List<int> profiles;
+  final List<BigInt> profiles;
 
   CreateProfilesParam({required this.privateKey, this.profiles = const []});
 }
 
 class CreateProfilesUseCase
-    extends FutureUseCase<CreateProfilesParam, Map<int, String>> {
+    extends FutureUseCase<CreateProfilesParam, Map<BigInt, String>> {
   final GetPublicKeysUseCase _getPublicKeysUseCase;
   final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
 
@@ -25,18 +25,20 @@ class CreateProfilesUseCase
   );
 
   @override
-  Future<Map<int, String>> execute({required CreateProfilesParam param}) async {
+  Future<Map<BigInt, String>> execute(
+      {required CreateProfilesParam param}) async {
     return Future.wait([
       _getPublicKeysUseCase.execute(param: param.privateKey),
       _getCurrentEnvDidIdentifierUseCase.execute(
-          param: GetCurrentEnvDidIdentifierParam(privateKey: param.privateKey))
+          param: GetCurrentEnvDidIdentifierParam(
+              privateKey: param.privateKey, profileNonce: BigInt.zero))
     ], eagerError: true)
         .then((values) async {
       String didIdentifier = values[1] as String;
       List<String> publicKey = values[0] as List<String>;
-      Map<int, String> profiles = {0: didIdentifier};
+      Map<BigInt, String> profiles = {BigInt.zero: didIdentifier};
 
-      for (int profile in param.profiles) {
+      for (BigInt profile in param.profiles) {
         String profileDid = await _getCurrentEnvDidIdentifierUseCase.execute(
             param: GetCurrentEnvDidIdentifierParam(
                 privateKey: param.privateKey, profileNonce: profile));

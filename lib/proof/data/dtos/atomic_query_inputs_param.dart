@@ -7,8 +7,8 @@ enum AtomicQueryInputsType { mtp, sig, mtponchain, sigonchain }
 class AtomicQueryInputsParam {
   final AtomicQueryInputsType type;
   final String id;
-  final int profileNonce;
-  final int claimSubjectProfileNonce;
+  final BigInt profileNonce;
+  final BigInt claimSubjectProfileNonce;
   final List<String>? authClaim;
   final Map<String, dynamic>? incProof;
   final Map<String, dynamic>? nonRevProof;

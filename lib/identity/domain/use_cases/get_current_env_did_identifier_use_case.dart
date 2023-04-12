@@ -6,11 +6,11 @@ import '../../../common/domain/use_case.dart';
 
 class GetCurrentEnvDidIdentifierParam {
   final String privateKey;
-  final int profileNonce;
+  final BigInt profileNonce;
 
   GetCurrentEnvDidIdentifierParam({
     required this.privateKey,
-    this.profileNonce = 0,
+    required this.profileNonce,
   });
 }
 

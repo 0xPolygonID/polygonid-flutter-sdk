@@ -8,13 +8,13 @@ class GetDidIdentifierParam {
   final String privateKey;
   final String blockchain;
   final String network;
-  final int profileNonce;
+  final BigInt profileNonce;
 
   GetDidIdentifierParam({
     required this.privateKey,
     required this.blockchain,
     required this.network,
-    this.profileNonce = 0,
+    required this.profileNonce,
   });
 }
 

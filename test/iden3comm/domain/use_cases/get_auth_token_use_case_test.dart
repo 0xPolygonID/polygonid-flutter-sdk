@@ -15,6 +15,7 @@ import 'get_auth_token_use_case_test.mocks.dart';
 // Data
 final param = GetAuthTokenParam(
     genesisDid: CommonMocks.did,
+    profileNonce: CommonMocks.genesisNonce,
     privateKey: CommonMocks.privateKey,
     message: CommonMocks.message);
 const result = "token";

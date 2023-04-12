@@ -166,7 +166,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   @override
   Future<Uint8List> getAuthInputs(
       {required String genesisDid,
-      required int profileNonce,
+      required BigInt profileNonce,
       required String challenge,
       required List<String> authClaim,
       required IdentityEntity identity,

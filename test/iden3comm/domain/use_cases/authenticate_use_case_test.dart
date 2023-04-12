@@ -45,6 +45,7 @@ AuthenticateUseCase useCase = AuthenticateUseCase(
 AuthenticateParam param = AuthenticateParam(
   message: Iden3commMocks.authRequest,
   genesisDid: CommonMocks.did,
+  profileNonce: CommonMocks.genesisNonce,
   pushToken: CommonMocks.token,
   privateKey: CommonMocks.privateKey,
 );
@@ -136,7 +137,7 @@ void main() {
               .first;
           expect(captureCheck.did, CommonMocks.did);
           expect(captureCheck.privateKey, CommonMocks.privateKey);
-          expect(captureCheck.profileNonce, 0);
+          expect(captureCheck.profileNonce, CommonMocks.genesisNonce);
 
           verify(getPackageNameUseCase.execute());
 
@@ -211,7 +212,7 @@ void main() {
               .first;
           expect(captureCheck.did, CommonMocks.did);
           expect(captureCheck.privateKey, CommonMocks.privateKey);
-          expect(captureCheck.profileNonce, 0);
+          expect(captureCheck.profileNonce, CommonMocks.genesisNonce);
 
           verify(getPackageNameUseCase.execute());
 

@@ -6,7 +6,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repo
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 
 class CheckProfileValidityParam {
-  final int profileNonce;
+  final BigInt profileNonce;
   final bool excludeGenesis;
 
   CheckProfileValidityParam(
@@ -17,9 +17,11 @@ class CheckProfileValidityUseCase
     extends FutureUseCase<CheckProfileValidityParam, void> {
   @override
   Future<void> execute({required CheckProfileValidityParam param}) {
+    final maxVal = BigInt.parse('2') ^ BigInt.parse('248');
     return Future(() {
-      if (param.profileNonce < 0 ||
-          (param.profileNonce == 0 && param.excludeGenesis)) {
+      if (param.profileNonce.isNegative ||
+          (param.profileNonce == BigInt.zero && param.excludeGenesis) ||
+          (param.profileNonce >= maxVal)) {
         throw InvalidProfileException(param.profileNonce);
       }
     }).then((_) {
