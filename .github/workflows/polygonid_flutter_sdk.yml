@@ -67,7 +67,7 @@ jobs:
     runs-on: macos-latest # or macos-latest if you prefer, but be aware that the available simulators could be different if you run a different version
     steps:
       - name: "List all simulators"
-        run: "xcrun xctrace list devices"
+        run: xcrun xctrace list devices
       - name: "Start Simulator"
         # the command "xcrun simctl boot" expects a device identifier
         # the assignment of the UDID variable consists of retrieving the ID of the simulator
