@@ -21,6 +21,8 @@ import 'authenticate_use_case_test.mocks.dart';
 MockIden3commRepository iden3commRepository = MockIden3commRepository();
 MockGetIden3commProofsUseCase getIden3commProofsUseCase =
     MockGetIden3commProofsUseCase();
+MockGetDidIdentifierUseCase getDidIdentifierUseCase =
+    MockGetDidIdentifierUseCase();
 MockGetAuthTokenUseCase getAuthTokenUseCase = MockGetAuthTokenUseCase();
 MockGetEnvUseCase getEnvUseCase = MockGetEnvUseCase();
 MockGetPackageNameUseCase getPackageNameUseCase = MockGetPackageNameUseCase();
@@ -32,6 +34,7 @@ MockProofGenerationStepsStreamManager proofGenerationStepsStreamManager =
 AuthenticateUseCase useCase = AuthenticateUseCase(
   iden3commRepository,
   getIden3commProofsUseCase,
+  getDidIdentifierUseCase,
   getAuthTokenUseCase,
   getEnvUseCase,
   getPackageNameUseCase,
@@ -41,7 +44,8 @@ AuthenticateUseCase useCase = AuthenticateUseCase(
 
 AuthenticateParam param = AuthenticateParam(
   message: Iden3commMocks.authRequest,
-  did: CommonMocks.did,
+  genesisDid: CommonMocks.did,
+  profileNonce: CommonMocks.genesisNonce,
   pushToken: CommonMocks.token,
   privateKey: CommonMocks.privateKey,
 );
@@ -49,6 +53,7 @@ AuthenticateParam param = AuthenticateParam(
 @GenerateMocks([
   Iden3commRepository,
   GetIden3commProofsUseCase,
+  GetDidIdentifierUseCase,
   GetAuthTokenUseCase,
   GetEnvUseCase,
   GetPackageNameUseCase,
@@ -65,6 +70,9 @@ void main() {
 
         when(getIden3commProofsUseCase.execute(param: anyNamed('param')))
             .thenAnswer((realInvocation) => Future.value([]));
+
+        when(getDidIdentifierUseCase.execute(param: anyNamed('param')))
+            .thenAnswer((realInvocation) => Future.value(CommonMocks.did));
 
         when(getEnvUseCase.execute(param: anyNamed('param')))
             .thenAnswer((realInvocation) => Future.value(CommonMocks.env));
@@ -106,8 +114,16 @@ void main() {
               .captured
               .first;
           expect(capturedProofs.message, Iden3commMocks.authRequest);
-          expect(capturedProofs.did, CommonMocks.did);
+          expect(capturedProofs.genesisDid, CommonMocks.did);
           expect(capturedProofs.privateKey, CommonMocks.privateKey);
+
+          var captureDidIdentifier = verify(getDidIdentifierUseCase.execute(
+                  param: captureAnyNamed('param')))
+              .captured
+              .first;
+          expect(captureDidIdentifier.privateKey, CommonMocks.privateKey);
+          expect(captureDidIdentifier.blockchain, CommonMocks.env.blockchain);
+          expect(captureDidIdentifier.network, CommonMocks.env.network);
 
           var verifyConfig =
               verify(getEnvUseCase.execute(param: captureAnyNamed('param')));
@@ -121,7 +137,7 @@ void main() {
               .first;
           expect(captureCheck.did, CommonMocks.did);
           expect(captureCheck.privateKey, CommonMocks.privateKey);
-          expect(captureCheck.profileNonce, 0);
+          expect(captureCheck.profileNonce, CommonMocks.genesisNonce);
 
           verify(getPackageNameUseCase.execute());
 
@@ -144,7 +160,7 @@ void main() {
                   getAuthTokenUseCase.execute(param: captureAnyNamed('param')))
               .captured
               .first;
-          expect(capturedAuthToken.did, CommonMocks.did);
+          expect(capturedAuthToken.genesisDid, CommonMocks.did);
           expect(capturedAuthToken.privateKey, CommonMocks.privateKey);
           expect(capturedAuthToken.message, CommonMocks.message);
 
@@ -181,7 +197,7 @@ void main() {
               .captured
               .first;
           expect(capturedProofs.message, Iden3commMocks.authRequest);
-          expect(capturedProofs.did, CommonMocks.did);
+          expect(capturedProofs.genesisDid, CommonMocks.did);
           expect(capturedProofs.privateKey, CommonMocks.privateKey);
 
           var verifyConfig =
@@ -196,7 +212,7 @@ void main() {
               .first;
           expect(captureCheck.did, CommonMocks.did);
           expect(captureCheck.privateKey, CommonMocks.privateKey);
-          expect(captureCheck.profileNonce, 0);
+          expect(captureCheck.profileNonce, CommonMocks.genesisNonce);
 
           verify(getPackageNameUseCase.execute());
 

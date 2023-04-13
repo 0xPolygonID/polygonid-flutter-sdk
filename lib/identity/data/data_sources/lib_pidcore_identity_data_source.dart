@@ -28,12 +28,10 @@ class LibPolygonIdCoreIdentityDataSource {
     return jsonDecode(output)["did"];
   }
 
-  String calculateProfileId(String genesisDid, int profileNonce) {
+  String calculateProfileId(String genesisDid, BigInt profileNonce) {
     String input = jsonEncode({
       "genesisDID": genesisDid,
-      //"did:iden3:polygon:mumbai:wwc17vYCJV4iqVRQu9U99CpG5KtHFbXRxE16fH3Kp",
       "nonce": profileNonce.toString(),
-      // "10"
     });
 
     String output = _polygonIdCoreIdentity.calculateProfileId(input);

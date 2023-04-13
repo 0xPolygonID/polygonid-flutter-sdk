@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 class IdentityEntity {
   final String did;
   final List<String> publicKey;
-  final Map<int, String> profiles;
+  final Map<BigInt, String> profiles;
 
   const IdentityEntity({
     required this.did,

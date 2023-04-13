@@ -120,8 +120,8 @@ class LibPolygonIdCoreProofDataSource {
 
   Future<String> getProofInputs({
     required String id,
-    required int profileNonce,
-    required int claimSubjectProfileNonce,
+    required BigInt profileNonce,
+    required BigInt claimSubjectProfileNonce,
     List<String>? authClaim,
     Map<String, dynamic>? incProof,
     Map<String, dynamic>? nonRevProof,

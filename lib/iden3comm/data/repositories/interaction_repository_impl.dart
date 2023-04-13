@@ -4,8 +4,8 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/push_notificat
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/secure_storage_interaction_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/interaction_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/notification_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/connection/interaction_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/connection/notification_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/notification_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart';
 
 class InteractionRepositoryImpl implements InteractionRepository {

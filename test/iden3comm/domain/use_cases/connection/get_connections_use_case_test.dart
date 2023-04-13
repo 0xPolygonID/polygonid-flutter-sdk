@@ -5,9 +5,9 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/connection/connection_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/connection_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/connection/get_connections_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/get_connections_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 
@@ -19,10 +19,12 @@ import 'get_connections_use_case_test.mocks.dart';
 // Data
 const identifier = "theIdentifier";
 const privateKey = "thePrivateKey";
-final GetConnectionsParam param =
-    GetConnectionsParam(did: identifier, privateKey: privateKey);
+final GetConnectionsParam param = GetConnectionsParam(
+    did: identifier,
+    privateKey: privateKey,
+    profileNonce: CommonMocks.genesisNonce);
 final GetConnectionsParam profileParam = GetConnectionsParam(
-    did: identifier, profileNonce: 1, privateKey: privateKey);
+    did: identifier, profileNonce: CommonMocks.nonce, privateKey: privateKey);
 final profilesConnectionEntities = [
   ConnectionEntity(
     from: CommonMocks.did,
@@ -103,7 +105,7 @@ void main() {
           .captured
           .first;
       expect(capturedDid.privateKey, privateKey);
-      expect(capturedDid.profileNonce, 0);
+      expect(capturedDid.profileNonce, CommonMocks.genesisNonce);
 
       var getIdentityCapture =
           verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))
@@ -115,7 +117,7 @@ void main() {
               did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey')))
           .captured;
-      expect(capturedGet[0], CommonMocks.profiles[0]);
+      expect(capturedGet[0], CommonMocks.profiles[CommonMocks.genesisNonce]);
       expect(capturedGet[1], privateKey);
     });
 
@@ -132,7 +134,7 @@ void main() {
           .captured
           .first;
       expect(capturedDid.privateKey, privateKey);
-      expect(capturedDid.profileNonce, 1);
+      expect(capturedDid.profileNonce, CommonMocks.nonce);
 
       verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
 
@@ -173,7 +175,7 @@ void main() {
         did: captureAnyNamed('did'),
         privateKey: captureAnyNamed('privateKey'),
       )).captured;
-      expect(capturedGet[0], CommonMocks.profiles[0]);
+      expect(capturedGet[0], CommonMocks.profiles[CommonMocks.genesisNonce]);
       expect(capturedGet[1], privateKey);
     });
 

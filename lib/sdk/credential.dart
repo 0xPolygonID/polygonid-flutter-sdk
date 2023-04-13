@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
@@ -136,6 +137,7 @@ class Credential implements PolygonIdSdkCredential {
         param: GetClaimsParam(
       filters: filters,
       did: did,
+      profileNonce: GENESIS_PROFILE_NONCE,
       privateKey: privateKey,
     ));
   }
@@ -152,6 +154,7 @@ class Credential implements PolygonIdSdkCredential {
             operator: FilterOperator.inList, name: 'id', value: claimIds)
       ],
       did: did,
+      profileNonce: GENESIS_PROFILE_NONCE,
       privateKey: privateKey,
     ));
   }

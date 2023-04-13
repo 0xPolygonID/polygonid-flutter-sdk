@@ -98,8 +98,8 @@ class ProofRepositoryImpl extends ProofRepository {
   @override
   Future<Uint8List> calculateAtomicQueryInputs(
       {required String id,
-      required int profileNonce,
-      required int claimSubjectProfileNonce,
+      required BigInt profileNonce,
+      required BigInt claimSubjectProfileNonce,
       required ClaimEntity claim,
       required ProofScopeRequest request,
       ProofEntity? incProof,
@@ -177,7 +177,7 @@ class ProofRepositoryImpl extends ProofRepository {
       }
 
       return witness;
-    });
+    }).catchError((error) => throw NullWitnessException(circuitData.circuitId));
   }
 
   @override
@@ -190,7 +190,7 @@ class ProofRepositoryImpl extends ProofRepository {
       }
 
       return _jwzProofMapper.mapFrom(proof);
-    });
+    }).catchError((error) => throw NullProofException(circuitData.circuitId));
   }
 
   @override

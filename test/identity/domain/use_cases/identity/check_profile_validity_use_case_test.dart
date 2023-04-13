@@ -2,6 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/check_profile_validity_use_case.dart';
 
+import '../../../../common/common_mocks.dart';
+
 // Tested instance
 CheckProfileValidityUseCase useCase = CheckProfileValidityUseCase();
 
@@ -10,7 +12,8 @@ void main() {
       () async {
     // When
     await expectLater(
-        useCase.execute(param: CheckProfileValidityParam(profileNonce: 1)),
+        useCase.execute(
+            param: CheckProfileValidityParam(profileNonce: CommonMocks.nonce)),
         completes);
   });
 
@@ -19,11 +22,13 @@ void main() {
       () async {
     // When
     await useCase
-        .execute(param: CheckProfileValidityParam(profileNonce: -1))
+        .execute(
+            param: CheckProfileValidityParam(
+                profileNonce: CommonMocks.negativeNonce))
         .then((value) => expect(true, false))
         .catchError((error) {
       expect(error, isA<InvalidProfileException>());
-      expect(error.profileNonce, -1);
+      expect(error.profileNonce, CommonMocks.negativeNonce);
     });
   });
 
@@ -34,11 +39,11 @@ void main() {
     await useCase
         .execute(
             param: CheckProfileValidityParam(
-                profileNonce: 0, excludeGenesis: true))
+                profileNonce: CommonMocks.genesisNonce, excludeGenesis: true))
         .then((value) => expect(true, false))
         .catchError((error) {
       expect(error, isA<InvalidProfileException>());
-      expect(error.profileNonce, 0);
+      expect(error.profileNonce, CommonMocks.genesisNonce);
     });
   });
 }

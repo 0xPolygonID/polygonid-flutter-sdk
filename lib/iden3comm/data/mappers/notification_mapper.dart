@@ -1,5 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/mappers/from_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/connection/notification_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/notification_entity.dart';
 
 class NotificationMapper extends FromMapper<String, NotificationEntity> {
   @override
@@ -8,7 +8,8 @@ class NotificationMapper extends FromMapper<String, NotificationEntity> {
     return NotificationEntity(
         notificationType: NotificationType.generic,
         from: "fom",
-        to: "to",
+        genesisDid: "genesisDid",
+        profileNonce: BigInt.from(0),
         payload: from);
   }
 }

@@ -14,7 +14,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3co
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/storage_interaction_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/connection/connection_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/connection_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
@@ -160,8 +160,8 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
 
   @override
   Future<Uint8List> getAuthInputs(
-      {required String did,
-      required int profileNonce,
+      {required String genesisDid,
+      required BigInt profileNonce,
       required String challenge,
       required List<String> authClaim,
       required IdentityEntity identity,
@@ -171,7 +171,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       required GistProofEntity gistProof,
       required Map<String, dynamic> treeState}) {
     return Future.value(_libPolygonIdCoreIden3commDataSource.getAuthInputs(
-            did: did,
+            genesisDid: genesisDid,
             profileNonce: profileNonce,
             authClaim: authClaim,
             incProof: _authProofMapper.mapTo(incProof),

@@ -9,7 +9,7 @@ import 'create_identity_use_case.dart';
 
 class AddIdentityParam {
   final String privateKey;
-  final List<int> profiles;
+  final List<BigInt> profiles;
 
   AddIdentityParam({
     required this.privateKey,

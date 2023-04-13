@@ -1,6 +1,6 @@
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/connection/interaction_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/connection/notification_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/notification_entity.dart';
 
 abstract class InteractionRepository {
   Stream<NotificationEntity> get notifications;

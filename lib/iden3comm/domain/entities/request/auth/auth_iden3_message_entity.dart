@@ -78,7 +78,8 @@ class AuthIden3MessageEntity extends Iden3MessageEntity {
       required super.type,
       required super.thid,
       required super.from,
-      required this.body})
+      required this.body,
+      super.to})
       : super(messageType: Iden3MessageType.auth);
 
   /// Creates an instance from the given json
@@ -94,6 +95,7 @@ class AuthIden3MessageEntity extends Iden3MessageEntity {
       type: json['type'],
       thid: json['thid'],
       from: json['from'],
+      to: json['to'],
       body: body,
     );
   }

@@ -32,25 +32,16 @@ class BackupIdentityBloc
     }
 
     try {
-      // get backup, it's a map of profile id and backup
-      Map<int, String> backup =
+      // get backup
+      String backup =
           await _polygonIdSdk.identity.backupIdentity(privateKey: privateKey);
-
-      // check if backup is empty
-      if (!backup.containsKey(0)) {
-        emit(const BackupIdentityState.error('Backup not found'));
-        return;
-      }
-
-      // get backup from map
-      String profileBackup = backup[0]!;
 
       // write backup to secure storage just for example purpose
       await SecureStorage.write(
-          key: SecureStorageKeys.backupKey, value: profileBackup);
+          key: SecureStorageKeys.backupKey, value: backup);
 
       // emit success state
-      emit(BackupIdentityState.success(profileBackup));
+      emit(BackupIdentityState.success(backup));
     } catch (e) {
       emit(BackupIdentityState.error(e.toString()));
     }

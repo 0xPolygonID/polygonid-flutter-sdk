@@ -9,7 +9,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/smt/create_ident
 
 class AddProfileParam {
   final String genesisDid;
-  final int profileNonce;
+  final BigInt profileNonce;
   final String privateKey;
 
   AddProfileParam({
@@ -25,14 +25,12 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
   final CheckProfileAndDidCurrentEnvUseCase
       _checkProfileAndDidCurrentEnvUseCase;
   final CreateProfilesUseCase _createProfilesUseCase;
-  final CreateIdentityStateUseCase _createIdentityStateUseCase;
 
   AddProfileUseCase(
     this._getIdentityUseCase,
     this._updateIdentityUseCase,
     this._checkProfileAndDidCurrentEnvUseCase,
     this._createProfilesUseCase,
-    this._createIdentityStateUseCase,
   );
 
   @override
@@ -40,6 +38,7 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
     await _checkProfileAndDidCurrentEnvUseCase.execute(
         param: CheckProfileAndDidCurrentEnvParam(
             did: param.genesisDid,
+            profileNonce: param.profileNonce,
             privateKey: param.privateKey,
             excludeGenesisProfile: true));
     var identityEntity = await _getIdentityUseCase.execute(
@@ -47,22 +46,18 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
             genesisDid: param.genesisDid, privateKey: param.privateKey));
 
     if (identityEntity is PrivateIdentityEntity) {
-      List<int> profiles = identityEntity.profiles.keys.toList();
+      List<BigInt> profiles = identityEntity.profiles.keys.toList();
       if (profiles.contains(param.profileNonce)) {
         throw ProfileAlreadyExistsException(
             param.genesisDid, param.profileNonce);
       } else {
         // Create profile
-        Map<int, String> newProfiles = await _createProfilesUseCase.execute(
+        Map<BigInt, String> newProfiles = await _createProfilesUseCase.execute(
             param: CreateProfilesParam(
                 privateKey: param.privateKey, profiles: [param.profileNonce]));
 
         String? profileDid = newProfiles[param.profileNonce];
-        // create identity state for profile did
         if (profileDid != null) {
-          await _createIdentityStateUseCase.execute(
-              param: CreateIdentityStateParam(
-                  did: profileDid, privateKey: param.privateKey));
           profiles.add(param.profileNonce);
         } else {
           throw UnknownProfileException(param.profileNonce);

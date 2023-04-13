@@ -24,12 +24,15 @@ final filters = [
       name: "theName2",
       value: ["theValue2", "theValue3"])
 ];
-final GetClaimsParam param =
-    GetClaimsParam(did: identifier, privateKey: privateKey);
-final GetClaimsParam paramFilters =
-    GetClaimsParam(did: identifier, privateKey: privateKey, filters: filters);
-final GetClaimsParam profileParam =
-    GetClaimsParam(did: identifier, profileNonce: 1, privateKey: privateKey);
+final GetClaimsParam param = GetClaimsParam(
+    did: identifier, profileNonce: BigInt.zero, privateKey: privateKey);
+final GetClaimsParam paramFilters = GetClaimsParam(
+    did: identifier,
+    profileNonce: BigInt.zero,
+    privateKey: privateKey,
+    filters: filters);
+final GetClaimsParam profileParam = GetClaimsParam(
+    did: identifier, profileNonce: BigInt.one, privateKey: privateKey);
 final claimEntities = [
   ClaimEntity(
       issuer: "",
@@ -166,7 +169,7 @@ void main() {
               privateKey: captureAnyNamed('privateKey'),
               filters: captureAnyNamed('filters')))
           .captured;
-      expect(capturedGet[0], CommonMocks.profiles[0]);
+      expect(capturedGet[0], CommonMocks.profiles[CommonMocks.genesisNonce]);
       expect(capturedGet[1], privateKey);
       expect(capturedGet[2], null);
     });
@@ -220,7 +223,7 @@ void main() {
               privateKey: captureAnyNamed('privateKey'),
               filters: captureAnyNamed('filters')))
           .captured;
-      expect(capturedGet[0], CommonMocks.profiles[0]);
+      expect(capturedGet[0], CommonMocks.profiles[CommonMocks.genesisNonce]);
       expect(capturedGet[1], privateKey);
       expect(capturedGet[2], filters);
     });
@@ -257,7 +260,7 @@ void main() {
               privateKey: captureAnyNamed('privateKey'),
               filters: captureAnyNamed('filters')))
           .captured;
-      expect(capturedGet[0], CommonMocks.profiles[0]);
+      expect(capturedGet[0], CommonMocks.profiles[CommonMocks.genesisNonce]);
       expect(capturedGet[1], privateKey);
       expect(capturedGet[2], filters);
     });

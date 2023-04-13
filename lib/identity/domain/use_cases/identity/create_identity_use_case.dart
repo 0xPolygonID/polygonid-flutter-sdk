@@ -1,3 +1,4 @@
+import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_public_keys_use_case.dart';
@@ -8,7 +9,7 @@ import '../../repositories/identity_repository.dart';
 
 class CreateIdentityParam {
   final String privateKey;
-  final List<int> profiles;
+  final List<BigInt> profiles;
 
   CreateIdentityParam({
     required this.privateKey,
@@ -32,14 +33,16 @@ class CreateIdentityUseCase
     return Future.wait([
       _getPublicKeysUseCase.execute(param: param.privateKey),
       _getCurrentEnvDidIdentifierUseCase.execute(
-          param: GetCurrentEnvDidIdentifierParam(privateKey: param.privateKey))
+          param: GetCurrentEnvDidIdentifierParam(
+              privateKey: param.privateKey,
+              profileNonce: GENESIS_PROFILE_NONCE))
     ], eagerError: true)
         .then((values) async {
       String didIdentifier = values[1] as String;
       List<String> publicKey = values[0] as List<String>;
-      Map<int, String> profiles = {0: didIdentifier};
+      Map<BigInt, String> profiles = {GENESIS_PROFILE_NONCE: didIdentifier};
 
-      for (int profile in param.profiles) {
+      for (BigInt profile in param.profiles) {
         String identifier = await _getCurrentEnvDidIdentifierUseCase.execute(
             param: GetCurrentEnvDidIdentifierParam(
           privateKey: param.privateKey,

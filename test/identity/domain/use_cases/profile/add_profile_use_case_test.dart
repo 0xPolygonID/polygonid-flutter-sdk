@@ -19,7 +19,7 @@ import 'add_profile_use_case_test.mocks.dart';
 var exception = Exception();
 var param = AddProfileParam(
   genesisDid: CommonMocks.did,
-  profileNonce: 2,
+  profileNonce: BigInt.two,
   privateKey: CommonMocks.privateKey,
 );
 
@@ -45,8 +45,6 @@ var genesisParam = AddProfileParam(
 MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
 MockUpdateIdentityUseCase updateIdentityUseCase = MockUpdateIdentityUseCase();
 MockCreateProfilesUseCase createProfilesUseCase = MockCreateProfilesUseCase();
-MockCreateIdentityStateUseCase createIdentityStateUseCase =
-    MockCreateIdentityStateUseCase();
 MockCheckProfileAndDidCurrentEnvUseCase checkProfileAndDidCurrentEnvUseCase =
     MockCheckProfileAndDidCurrentEnvUseCase();
 
@@ -56,7 +54,6 @@ AddProfileUseCase useCase = AddProfileUseCase(
   updateIdentityUseCase,
   checkProfileAndDidCurrentEnvUseCase,
   createProfilesUseCase,
-  createIdentityStateUseCase,
 );
 
 @GenerateMocks([
@@ -64,14 +61,12 @@ AddProfileUseCase useCase = AddProfileUseCase(
   UpdateIdentityUseCase,
   CheckProfileAndDidCurrentEnvUseCase,
   CreateProfilesUseCase,
-  CreateIdentityStateUseCase,
 ])
 void main() {
   setUp(() {
     reset(getIdentityUseCase);
     reset(updateIdentityUseCase);
     reset(createProfilesUseCase);
-    reset(createIdentityStateUseCase);
     reset(checkProfileAndDidCurrentEnvUseCase);
 
     // Given
@@ -82,8 +77,6 @@ void main() {
     when(createProfilesUseCase.execute(param: anyNamed('param'))).thenAnswer(
         (realInvocation) => Future.value(
             {param.profileNonce: CommonMocks.did + "${param.profileNonce}"}));
-    when(createIdentityStateUseCase.execute(param: anyNamed('param')))
-        .thenAnswer((realInvocation) => Future.value());
     when(updateIdentityUseCase.execute(param: anyNamed('param'))).thenAnswer(
         (realInvocation) => Future.value(IdentityMocks.privateIdentity));
   });
@@ -101,7 +94,7 @@ void main() {
           .first;
       expect(captureCheck.did, CommonMocks.did);
       expect(captureCheck.privateKey, CommonMocks.privateKey);
-      expect(captureCheck.profileNonce, 0);
+      expect(captureCheck.profileNonce, BigInt.two);
 
       var getIdentityCapture =
           verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))
@@ -114,7 +107,7 @@ void main() {
               .captured
               .first;
       expect(capturedUpdate.privateKey, CommonMocks.privateKey);
-      expect(capturedUpdate.profiles.first, 0);
+      expect(capturedUpdate.profiles.first, CommonMocks.genesisNonce);
     },
   );
 
@@ -140,7 +133,7 @@ void main() {
         .first;
     expect(captureCheck.did, CommonMocks.did);
     expect(captureCheck.privateKey, CommonMocks.privateKey);
-    expect(captureCheck.profileNonce, 0);
+    expect(captureCheck.profileNonce, CommonMocks.nonce);
 
     var captureGetIdentity =
         verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))
@@ -169,7 +162,7 @@ void main() {
         .first;
     expect(captureCheck.did, CommonMocks.did);
     expect(captureCheck.privateKey, CommonMocks.privateKey);
-    expect(captureCheck.profileNonce, 0);
+    expect(captureCheck.profileNonce, BigInt.two);
 
     var captureGetIdentity =
         verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))

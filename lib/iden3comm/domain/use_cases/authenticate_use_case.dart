@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart';
@@ -11,19 +12,20 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_a
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 
 class AuthenticateParam {
   final AuthIden3MessageEntity message;
-  final String did;
-  int profileNonce;
+  final String genesisDid;
+  final BigInt profileNonce;
   final String privateKey;
   final String? pushToken;
 
   AuthenticateParam(
       {required this.message,
-      required this.did,
-      this.profileNonce = 0,
+      required this.genesisDid,
+      required this.profileNonce,
       required this.privateKey,
       this.pushToken});
 }
@@ -32,6 +34,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
   final Iden3commRepository _iden3commRepository;
   final GetAuthTokenUseCase _getAuthTokenUseCase;
   final GetIden3commProofsUseCase _getIden3commProofsUseCase;
+  final GetDidIdentifierUseCase _getDidIdentifierUseCase;
   final GetEnvUseCase _getEnvUseCase;
   final GetPackageNameUseCase _getPackageNameUseCase;
   final CheckProfileAndDidCurrentEnvUseCase
@@ -41,6 +44,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
   AuthenticateUseCase(
     this._iden3commRepository,
     this._getIden3commProofsUseCase,
+    this._getDidIdentifierUseCase,
     this._getAuthTokenUseCase,
     this._getEnvUseCase,
     this._getPackageNameUseCase,
@@ -55,27 +59,36 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
     try {
       await _checkProfileAndDidCurrentEnvUseCase.execute(
           param: CheckProfileAndDidCurrentEnvParam(
-              did: param.did,
+              did: param.genesisDid,
               privateKey: param.privateKey,
               profileNonce: param.profileNonce));
 
+      EnvEntity env = await _getEnvUseCase.execute();
+
+      String profileDid = await _getDidIdentifierUseCase.execute(
+          param: GetDidIdentifierParam(
+              privateKey: param.privateKey,
+              blockchain: env.blockchain,
+              network: env.network,
+              profileNonce: param.profileNonce));
+
+      // get proofs from credentials of all the profiles of the identity
       List<JWZProofEntity> proofs = await _getIden3commProofsUseCase.execute(
           param: GetIden3commProofsParam(
         message: param.message,
-        did: param.did,
+        genesisDid: param.genesisDid,
         profileNonce: param.profileNonce,
         privateKey: param.privateKey,
       ));
 
-      String pushUrl =
-          await _getEnvUseCase.execute().then((env) => env.pushUrl);
+      String pushUrl = env.pushUrl;
 
       String packageName = await _getPackageNameUseCase.execute();
 
       _proofGenerationStepsStreamManager
           .add("preparing authentication parameters...");
       String authResponse = await _iden3commRepository.getAuthResponse(
-          did: param.did,
+          did: profileDid,
           request: param.message,
           scope: proofs,
           pushUrl: pushUrl,
@@ -86,7 +99,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
           .add("preparing authentication token...");
       String authToken = await _getAuthTokenUseCase.execute(
           param: GetAuthTokenParam(
-              did: param.did,
+              genesisDid: param.genesisDid,
+              profileNonce: param.profileNonce,
               privateKey: param.privateKey,
               message: authResponse));
 

@@ -10,7 +10,10 @@ class CommonMocks {
   static String id = "theId";
   static String identifier = "theIdentifier";
   static String privateKey = "thePrivateKey";
-  static Map<int, String> profiles = {0: "${did}0", 1: "${did}1"};
+  static Map<BigInt, String> profiles = {
+    BigInt.zero: "${did}0",
+    BigInt.one: "${did}1"
+  };
   static String walletPrivateKey = "theWalletPrivateKey";
   static String pubX = "thePubX";
   static String pubY = "thePubY";
@@ -31,11 +34,12 @@ class CommonMocks {
   static String issuer = "theIssuer";
   static String type = "theType";
   static List<int> intValues = [0, 1, 2];
+  static List<BigInt> bigIntValues = [BigInt.zero, BigInt.one, BigInt.two];
   static int operator = 4;
   static String config = "theConfig";
-  static int nonce = 1;
-  static int genesisNonce = 0;
-  static int negativeNonce = -1;
+  static BigInt nonce = BigInt.one;
+  static BigInt genesisNonce = BigInt.zero;
+  static BigInt negativeNonce = BigInt.from(-1);
   static Map<String, dynamic> aMap = {
     'the': {'very': 'nice map'},
     'yep': 4
