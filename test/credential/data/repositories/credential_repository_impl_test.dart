@@ -124,7 +124,7 @@ void main() {
       // When
       await expectLater(
           repository.saveClaims(
-              did: CommonMocks.identifier,
+              genesisDid: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               claims: claimEntities),
           completes);
@@ -159,7 +159,7 @@ void main() {
       // When
       await repository
           .saveClaims(
-              did: CommonMocks.identifier,
+              genesisDid: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               claims: claimEntities)
           .then((_) => expect(true, false))
@@ -200,7 +200,7 @@ void main() {
       // When
       expect(
           await repository.getClaims(
-            did: CommonMocks.identifier,
+            genesisDid: CommonMocks.identifier,
             privateKey: CommonMocks.privateKey,
           ),
           [claimEntities[0], claimEntities[0]]);
@@ -228,7 +228,7 @@ void main() {
       // When
       expect(
           await repository.getClaims(
-              did: CommonMocks.identifier,
+              genesisDid: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               filters: filters),
           [claimEntities[0], claimEntities[0]]);
@@ -265,7 +265,7 @@ void main() {
       // When
       await repository
           .getClaims(
-              did: CommonMocks.identifier,
+              genesisDid: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               filters: filters)
           .then((_) => expect(true, false))
@@ -308,7 +308,7 @@ void main() {
       // When
       expect(
           await repository.getClaim(
-              did: CommonMocks.identifier,
+              genesisDid: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               claimId: ids[0]),
           claimEntities[0]);
@@ -341,7 +341,7 @@ void main() {
       // When
       await repository
           .getClaim(
-              did: CommonMocks.identifier,
+              genesisDid: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               claimId: ids[0])
           .then((value) => expect(true, false))
@@ -377,7 +377,7 @@ void main() {
       // When
       await expectLater(
           repository.getClaim(
-              did: CommonMocks.identifier,
+              genesisDid: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               claimId: ids[0]),
           throwsA(exception));
@@ -414,7 +414,7 @@ void main() {
       // When
       await expectLater(
           repository.removeClaims(
-              did: CommonMocks.identifier,
+              genesisDid: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               claimIds: ids),
           completes);
@@ -443,7 +443,7 @@ void main() {
       // When
       await repository
           .removeClaims(
-              did: CommonMocks.identifier,
+              genesisDid: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               claimIds: ids)
           .then((_) => expect(true, false))

@@ -21,7 +21,7 @@ class RemoveAllClaimsUseCase extends FutureUseCase<RemoveAllClaimsParam, void> {
   Future<void> execute({required RemoveAllClaimsParam param}) async {
     return _credentialRepository
         .removeAllClaims(
-          did: param.did,
+          genesisDid: param.did,
           privateKey: param.privateKey,
         )
         .then((_) => logger()

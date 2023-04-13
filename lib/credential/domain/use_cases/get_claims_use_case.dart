@@ -10,13 +10,13 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_ide
 
 class GetClaimsParam {
   final List<FilterEntity>? filters;
-  final String did;
+  final String genesisDid;
   final BigInt profileNonce;
   final String privateKey;
 
   GetClaimsParam({
     this.filters,
-    required this.did,
+    required this.genesisDid,
     required this.profileNonce,
     required this.privateKey,
   });
@@ -40,39 +40,18 @@ class GetClaimsUseCase
       String did = await _getCurrentEnvDidIdentifierUseCase.execute(
           param: GetCurrentEnvDidIdentifierParam(
               privateKey: param.privateKey, profileNonce: param.profileNonce));
-      if (param.profileNonce > GENESIS_PROFILE_NONCE) {
-        return _credentialRepository
-            .getClaims(
-                filters: param.filters, did: did, privateKey: param.privateKey)
-            .then((claims) {
-          logger().i("[GetClaimsUseCase] Claims: $claims");
-          return claims;
-        }).catchError((error) {
-          logger().e("[GetClaimsUseCase] Error: $error");
-          throw error;
-        });
-      } else {
-        var identityEntity = await _getIdentityUseCase.execute(
-            param: GetIdentityParam(
-                genesisDid: did, privateKey: param.privateKey));
-        List<ClaimEntity> result = [];
-        for (var profileDid in identityEntity.profiles.values) {
-          List<ClaimEntity> didClaims = await _credentialRepository
-              .getClaims(
-                  filters: param.filters,
-                  did: profileDid,
-                  privateKey: param.privateKey)
-              .then((claims) {
-            logger().i("[GetClaimsUseCase] Claims: $claims");
-            return claims;
-          }).catchError((error) {
-            logger().e("[GetClaimsUseCase] Error: $error");
-            throw error;
-          });
-          result.addAll(didClaims);
-        }
-        return result;
-      }
+      return _credentialRepository
+          .getClaims(
+              filters: param.filters,
+              genesisDid: param.genesisDid,
+              privateKey: param.privateKey)
+          .then((claims) {
+        logger().i("[GetClaimsUseCase] Claims: $claims");
+        return claims;
+      }).catchError((error) {
+        logger().e("[GetClaimsUseCase] Error: $error");
+        throw error;
+      });
     } else {
       throw InvalidProfileException(param.profileNonce);
     }

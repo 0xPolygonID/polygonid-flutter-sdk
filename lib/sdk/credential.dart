@@ -15,13 +15,13 @@ abstract class PolygonIdSdkCredential {
   ///
   /// The [claims] is the list of [ClaimEntity] to store associated to the identity
   ///
-  /// The [did] is the unique id of the identity
+  /// The [genesisDid] is the unique id of the identity
   ///
   /// The [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
   Future<List<ClaimEntity>> saveClaims(
       {required List<ClaimEntity> claims,
-      required String did,
+      required String genesisDid,
       required String privateKey});
 
   /// Gets a list of [ClaimEntity] associated to the identity previously stored
@@ -29,13 +29,13 @@ abstract class PolygonIdSdkCredential {
   ///
   /// The list can be filtered by [filters]
   ///
-  /// The [did] is the unique id of the identity
+  /// The [genesisDid] is the unique id of the identity
   ///
   /// The [privateKey]  is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
   Future<List<ClaimEntity>> getClaims(
       {List<FilterEntity>? filters,
-      required String did,
+      required String genesisDid,
       required String privateKey});
 
   /// Gets a list of [ClaimEntity] filtered by ids associated to the identity previously stored
@@ -43,13 +43,13 @@ abstract class PolygonIdSdkCredential {
   ///
   /// The [claimIds] is a list of claim ids to filter by
   ///
-  /// The [did] is the unique id of the identity
+  /// The [genesisDid] is the unique id of the identity
   ///
   /// The [privateKey]  is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
   Future<List<ClaimEntity>> getClaimsByIds(
       {required List<String> claimIds,
-      required String did,
+      required String genesisDid,
       required String privateKey});
 
   /// Removes a list of [ClaimEntity] filtered by ids associated to the identity previously stored
@@ -57,13 +57,13 @@ abstract class PolygonIdSdkCredential {
   ///
   /// The [claimIds] is a list of claim ids to filter by
   ///
-  /// The [did] is the unique id of the identity
+  /// The [genesisDid] is the unique id of the identity
   ///
   /// The [privateKey]  is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
   Future<void> removeClaims(
       {required List<String> claimIds,
-      required String did,
+      required String genesisDid,
       required String privateKey});
 
   /// Removes a [ClaimEntity] filtered by id associated to the identity previously stored
@@ -71,13 +71,13 @@ abstract class PolygonIdSdkCredential {
   ///
   /// The [claimId] is a claim id to filter by
   ///
-  /// The [did] is the unique id of the identity
+  /// The [genesisDid] is the unique id of the identity
   ///
   /// The [privateKey]  is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
   Future<void> removeClaim(
       {required String claimId,
-      required String did,
+      required String genesisDid,
       required String privateKey});
 
   /// Updates a [ClaimEntity] filtered by id associated to the identity previously stored
@@ -85,7 +85,7 @@ abstract class PolygonIdSdkCredential {
   ///
   /// The [claimId] is a claim id to filter by
   ///
-  /// The [did] is the unique id of the identity
+  /// The [genesisDid] is the unique id of the identity
   ///
   /// The [privateKey]  is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
@@ -95,7 +95,7 @@ abstract class PolygonIdSdkCredential {
   Future<ClaimEntity> updateClaim({
     required String claimId,
     String? issuer,
-    required String did,
+    required String genesisDid,
     ClaimState? state,
     String? expiration,
     String? type,
@@ -121,22 +121,22 @@ class Credential implements PolygonIdSdkCredential {
   @override
   Future<List<ClaimEntity>> saveClaims(
       {required List<ClaimEntity> claims,
-      required String did,
+      required String genesisDid,
       required String privateKey}) {
     return _saveClaimsUseCase.execute(
-        param:
-            SaveClaimsParam(claims: claims, did: did, privateKey: privateKey));
+        param: SaveClaimsParam(
+            claims: claims, genesisDid: genesisDid, privateKey: privateKey));
   }
 
   @override
   Future<List<ClaimEntity>> getClaims(
       {List<FilterEntity>? filters,
-      required String did,
+      required String genesisDid,
       required String privateKey}) {
     return _getClaimsUseCase.execute(
         param: GetClaimsParam(
       filters: filters,
-      did: did,
+      genesisDid: genesisDid,
       profileNonce: GENESIS_PROFILE_NONCE,
       privateKey: privateKey,
     ));
@@ -145,7 +145,7 @@ class Credential implements PolygonIdSdkCredential {
   @override
   Future<List<ClaimEntity>> getClaimsByIds(
       {required List<String> claimIds,
-      required String did,
+      required String genesisDid,
       required String privateKey}) {
     return _getClaimsUseCase.execute(
         param: GetClaimsParam(
@@ -153,7 +153,7 @@ class Credential implements PolygonIdSdkCredential {
         FilterEntity(
             operator: FilterOperator.inList, name: 'id', value: claimIds)
       ],
-      did: did,
+      genesisDid: genesisDid,
       profileNonce: GENESIS_PROFILE_NONCE,
       privateKey: privateKey,
     ));
@@ -162,12 +162,12 @@ class Credential implements PolygonIdSdkCredential {
   @override
   Future<void> removeClaims(
       {required List<String> claimIds,
-      required String did,
+      required String genesisDid,
       required String privateKey}) {
     return _removeClaimsUseCase.execute(
         param: RemoveClaimsParam(
       claimIds: claimIds,
-      did: did,
+      genesisDid: genesisDid,
       privateKey: privateKey,
     ));
   }
@@ -175,12 +175,12 @@ class Credential implements PolygonIdSdkCredential {
   @override
   Future<void> removeClaim(
       {required String claimId,
-      required String did,
+      required String genesisDid,
       required String privateKey}) {
     return _removeClaimsUseCase.execute(
         param: RemoveClaimsParam(
       claimIds: [claimId],
-      did: did,
+      genesisDid: genesisDid,
       privateKey: privateKey,
     ));
   }
@@ -189,7 +189,7 @@ class Credential implements PolygonIdSdkCredential {
   Future<ClaimEntity> updateClaim({
     required String claimId,
     String? issuer,
-    required String did,
+    required String genesisDid,
     ClaimState? state,
     String? expiration,
     String? type,
@@ -200,7 +200,7 @@ class Credential implements PolygonIdSdkCredential {
         param: UpdateClaimParam(
             id: claimId,
             issuer: issuer,
-            did: did,
+            genesisDid: genesisDid,
             state: state,
             expiration: expiration,
             type: type,

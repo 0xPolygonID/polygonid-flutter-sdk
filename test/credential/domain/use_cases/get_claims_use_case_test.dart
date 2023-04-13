@@ -25,14 +25,14 @@ final filters = [
       value: ["theValue2", "theValue3"])
 ];
 final GetClaimsParam param = GetClaimsParam(
-    did: identifier, profileNonce: BigInt.zero, privateKey: privateKey);
+    genesisDid: identifier, profileNonce: BigInt.zero, privateKey: privateKey);
 final GetClaimsParam paramFilters = GetClaimsParam(
-    did: identifier,
+    genesisDid: identifier,
     profileNonce: BigInt.zero,
     privateKey: privateKey,
     filters: filters);
 final GetClaimsParam profileParam = GetClaimsParam(
-    did: identifier, profileNonce: BigInt.one, privateKey: privateKey);
+    genesisDid: identifier, profileNonce: BigInt.one, privateKey: privateKey);
 final claimEntities = [
   ClaimEntity(
       issuer: "",
@@ -60,30 +60,6 @@ final claimEntities = [
       id: "id3")
 ];
 final profilesClaimEntities = [
-  ClaimEntity(
-      issuer: "",
-      did: "",
-      expiration: "",
-      info: {},
-      type: "",
-      state: ClaimState.active,
-      id: "id1"),
-  ClaimEntity(
-      issuer: "",
-      did: "",
-      expiration: "",
-      info: {},
-      type: "",
-      state: ClaimState.pending,
-      id: "id2"),
-  ClaimEntity(
-      issuer: "",
-      did: "",
-      expiration: "",
-      info: {},
-      type: "",
-      state: ClaimState.revoked,
-      id: "id3"),
   ClaimEntity(
       issuer: "",
       did: "",
@@ -135,7 +111,7 @@ void main() {
 
       // Given
       when(credentialRepository.getClaims(
-              did: anyNamed('did'),
+              genesisDid: anyNamed('genesisDid'),
               privateKey: anyNamed('privateKey'),
               filters: anyNamed("filters")))
           .thenAnswer((realInvocation) => Future.value(claimEntities));
@@ -158,18 +134,12 @@ void main() {
           .first;
       expect(capturedDid.privateKey, privateKey);
 
-      var getIdentityCapture =
-          verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))
-              .captured
-              .first;
-      expect(getIdentityCapture.genesisDid, CommonMocks.did);
-
       var capturedGet = verify(credentialRepository.getClaims(
-              did: captureAnyNamed('did'),
+              genesisDid: captureAnyNamed('genesisDid'),
               privateKey: captureAnyNamed('privateKey'),
               filters: captureAnyNamed('filters')))
           .captured;
-      expect(capturedGet[0], CommonMocks.profiles[CommonMocks.genesisNonce]);
+      expect(capturedGet[0], identifier);
       expect(capturedGet[1], privateKey);
       expect(capturedGet[2], null);
     });
@@ -190,11 +160,11 @@ void main() {
       verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
 
       var capturedGet = verify(credentialRepository.getClaims(
-              did: captureAnyNamed('did'),
+              genesisDid: captureAnyNamed('genesisDid'),
               privateKey: captureAnyNamed('privateKey'),
               filters: captureAnyNamed('filters')))
           .captured;
-      expect(capturedGet[0], CommonMocks.did);
+      expect(capturedGet[0], identifier);
       expect(capturedGet[1], privateKey);
       expect(capturedGet[2], null);
     });
@@ -212,18 +182,12 @@ void main() {
           .first;
       expect(capturedDid.privateKey, privateKey);
 
-      var getIdentityCapture =
-          verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))
-              .captured
-              .first;
-      expect(getIdentityCapture.genesisDid, CommonMocks.did);
-
       var capturedGet = verify(credentialRepository.getClaims(
-              did: captureAnyNamed('did'),
+              genesisDid: captureAnyNamed('genesisDid'),
               privateKey: captureAnyNamed('privateKey'),
               filters: captureAnyNamed('filters')))
           .captured;
-      expect(capturedGet[0], CommonMocks.profiles[CommonMocks.genesisNonce]);
+      expect(capturedGet[0], identifier);
       expect(capturedGet[1], privateKey);
       expect(capturedGet[2], filters);
     });
@@ -233,7 +197,7 @@ void main() {
         () async {
       // Given
       when(credentialRepository.getClaims(
-              did: captureAnyNamed('did'),
+              genesisDid: captureAnyNamed('genesisDid'),
               privateKey: captureAnyNamed('privateKey'),
               filters: anyNamed("filters")))
           .thenAnswer((realInvocation) => Future.error(exception));
@@ -249,18 +213,12 @@ void main() {
           .first;
       expect(capturedDid.privateKey, privateKey);
 
-      var getIdentityCapture =
-          verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))
-              .captured
-              .first;
-      expect(getIdentityCapture.genesisDid, CommonMocks.did);
-
       var capturedGet = verify(credentialRepository.getClaims(
-              did: captureAnyNamed('did'),
+              genesisDid: captureAnyNamed('genesisDid'),
               privateKey: captureAnyNamed('privateKey'),
               filters: captureAnyNamed('filters')))
           .captured;
-      expect(capturedGet[0], CommonMocks.profiles[CommonMocks.genesisNonce]);
+      expect(capturedGet[0], identifier);
       expect(capturedGet[1], privateKey);
       expect(capturedGet[2], filters);
     });
@@ -270,7 +228,7 @@ void main() {
         () async {
       // Given
       when(credentialRepository.getClaims(
-              did: captureAnyNamed('did'),
+              genesisDid: captureAnyNamed('genesisDid'),
               privateKey: captureAnyNamed('privateKey')))
           .thenAnswer((realInvocation) => Future.error(exception));
 
@@ -288,11 +246,11 @@ void main() {
       verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
 
       var capturedGet = verify(credentialRepository.getClaims(
-              did: captureAnyNamed('did'),
+              genesisDid: captureAnyNamed('genesisDid'),
               privateKey: captureAnyNamed('privateKey'),
               filters: captureAnyNamed('filters')))
           .captured;
-      expect(capturedGet[0], CommonMocks.did);
+      expect(capturedGet[0], identifier);
       expect(capturedGet[1], privateKey);
       expect(capturedGet[2], null);
     });
