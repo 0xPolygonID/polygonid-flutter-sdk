@@ -1187,10 +1187,10 @@ DA:81,1
 DA:86,1
 DA:87,1
 DA:89,3
-DA:92,0
-DA:95,0
-DA:96,0
-DA:97,0
+DA:92,1
+DA:95,1
+DA:96,1
+DA:97,3
 DA:100,0
 DA:101,0
 DA:103,0
@@ -1228,7 +1228,7 @@ DA:164,0
 DA:168,0
 DA:170,0
 LF:64
-LH:24
+LH:28
 end_of_record
 SF:lib/credential/data/data_sources/local_claim_data_source.dart
 DA:9,0

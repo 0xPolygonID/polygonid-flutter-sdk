@@ -398,6 +398,61 @@ void main() {
     });
   });
 
+  group("Remove all claims", () {
+    setUp(() {
+      // Given
+      when(storageClaimDataSource.removeAllClaims(
+              did: anyNamed('did'), privateKey: anyNamed('privateKey')))
+          .thenAnswer((realInvocation) => Future.value());
+    });
+
+    test("When I call removeAllClaims, then I expect the process to completes",
+        () async {
+      // When
+      await expectLater(
+          repository.removeAllClaims(
+              genesisDid: CommonMocks.identifier,
+              privateKey: CommonMocks.privateKey),
+          completes);
+
+      // Then
+      var captureRemove = verify(storageClaimDataSource.removeAllClaims(
+              did: captureAnyNamed('did'),
+              privateKey: captureAnyNamed('privateKey')))
+          .captured;
+      expect(captureRemove[0], CommonMocks.identifier);
+      expect(captureRemove[1], CommonMocks.privateKey);
+    });
+
+    test(
+        "When I call removeAllClaims and an error occurred, then I expect a RemoveClaimsException exception to be thrown",
+        () async {
+      // Given
+      when(storageClaimDataSource.removeAllClaims(
+              did: anyNamed('did'), privateKey: anyNamed('privateKey')))
+          .thenAnswer((realInvocation) => Future.error(exception));
+
+      // When
+      await repository
+          .removeAllClaims(
+              genesisDid: CommonMocks.identifier,
+              privateKey: CommonMocks.privateKey)
+          .then((_) => expect(true, false))
+          .catchError((error) {
+        expect(error, isA<RemoveClaimsException>());
+        expect(error.error, exception);
+      });
+
+      // Then
+      var captureRemove = verify(storageClaimDataSource.removeAllClaims(
+              did: captureAnyNamed('did'),
+              privateKey: captureAnyNamed('privateKey')))
+          .captured;
+      expect(captureRemove[0], CommonMocks.identifier);
+      expect(captureRemove[1], CommonMocks.privateKey);
+    });
+  });
+
   group("Remove claims", () {
     setUp(() {
       // Given
