@@ -18,7 +18,9 @@ class CheckProfileValidityUseCase
     extends FutureUseCase<CheckProfileValidityParam, void> {
   @override
   Future<void> execute({required CheckProfileValidityParam param}) {
-    final maxVal = BigInt.parse('2') ^ BigInt.parse('248');
+    BigInt base = BigInt.parse('2');
+    int exponent = 248;
+    final maxVal = base.pow(exponent) - BigInt.one;
     return Future(() {
       if (param.profileNonce.isNegative ||
           (param.profileNonce == GENESIS_PROFILE_NONCE &&
