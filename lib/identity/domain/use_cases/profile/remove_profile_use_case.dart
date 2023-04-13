@@ -51,8 +51,8 @@ class RemoveProfileUseCase extends FutureUseCase<RemoveProfileParam, void> {
             genesisDid: param.genesisDid, privateKey: param.privateKey));
 
     if (identityEntity is PrivateIdentityEntity) {
-      List<BigInt> profiles = identityEntity.profiles.keys.toList();
-      if (!profiles.contains(param.profileNonce)) {
+      Map<BigInt, String> profiles = identityEntity.profiles;
+      if (!profiles.containsKey(param.profileNonce)) {
         throw UnknownProfileException(param.profileNonce);
       } else {
         Map<BigInt, String> newProfiles = await _createProfilesUseCase.execute(
@@ -77,7 +77,10 @@ class RemoveProfileUseCase extends FutureUseCase<RemoveProfileParam, void> {
 
         await _updateIdentityUseCase.execute(
             param: UpdateIdentityParam(
-                privateKey: param.privateKey, profiles: profiles));
+          privateKey: param.privateKey,
+          genesisDid: param.genesisDid,
+          profiles: profiles,
+        ));
       }
     } else {
       throw InvalidPrivateKeyException(param.privateKey);
