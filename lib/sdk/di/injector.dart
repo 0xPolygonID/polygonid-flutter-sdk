@@ -88,12 +88,12 @@ abstract class DatabaseModule {
 
   @Named(identityDatabaseName)
   Future<Database> identityDatabase(
-      @factoryParam String identifier, @factoryParam String privateKey) async {
+      @factoryParam String? identifier, @factoryParam String? privateKey) async {
     final dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
-    final path = join(dir.path, identityDatabasePrefix + identifier + '.db');
+    final path = join(dir.path, identityDatabasePrefix + identifier! + '.db');
     // Initialize the encryption codec with the privateKey
-    final codec = getItSdk.get<SembastCodec>(param1: privateKey);
+    final codec = getItSdk.get<SembastCodec>(param1: privateKey!);
     final database = await databaseFactoryIo.openDatabase(path, codec: codec);
     return database;
   }
@@ -107,7 +107,7 @@ abstract class DatabaseModule {
   @Named(securedStoreName)
   Map<String, StoreRef<String, Map<String, Object?>>> get securedStore {
     Map<String, StoreRef<String, Map<String, Object?>>> result = {};
-    //result[identityStoreName] = stringMapStoreFactory.store(identityStoreName);
+
     result[claimsTreeStoreName] =
         stringMapStoreFactory.store(claimsTreeStoreName);
     result[revocationTreeStoreName] =
@@ -117,18 +117,6 @@ abstract class DatabaseModule {
 
     return result;
   }
-
-  // @Named(claimsTreeStoreName)
-  // StoreRef<String, dynamic> get claimsTreeStore =>
-  //     stringMapStoreFactory.store(keyValueStoreName);
-  //
-  // @Named(revocationTreeStoreName)
-  // StoreRef<String, dynamic> get revocationTreeStore =>
-  //     stringMapStoreFactory.store(keyValueStoreName);
-  //
-  // @Named(rootsTreeStoreName)
-  // StoreRef<String, dynamic> get rootsTreeStore =>
-  //     stringMapStoreFactory.store(keyValueStoreName);
 
   @Named(keyValueStoreName)
   StoreRef<String, Map<String, dynamic>> get keyValueStore =>

@@ -5,6 +5,7 @@ import 'package:encrypt/encrypt.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/data/credential_repository_impl.dart';
@@ -14,7 +15,6 @@ import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/fetch/fetch_claim_response_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
-import 'package:polygonid_flutter_sdk/credential/data/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/id_filter_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
@@ -124,7 +124,7 @@ void main() {
       // When
       await expectLater(
           repository.saveClaims(
-              did: CommonMocks.identifier,
+              genesisDid: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               claims: claimEntities),
           completes);
@@ -159,7 +159,7 @@ void main() {
       // When
       await repository
           .saveClaims(
-              did: CommonMocks.identifier,
+              genesisDid: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               claims: claimEntities)
           .then((_) => expect(true, false))
@@ -200,7 +200,7 @@ void main() {
       // When
       expect(
           await repository.getClaims(
-            did: CommonMocks.identifier,
+            genesisDid: CommonMocks.identifier,
             privateKey: CommonMocks.privateKey,
           ),
           [claimEntities[0], claimEntities[0]]);
@@ -228,7 +228,7 @@ void main() {
       // When
       expect(
           await repository.getClaims(
-              did: CommonMocks.identifier,
+              genesisDid: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               filters: filters),
           [claimEntities[0], claimEntities[0]]);
@@ -265,7 +265,7 @@ void main() {
       // When
       await repository
           .getClaims(
-              did: CommonMocks.identifier,
+              genesisDid: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               filters: filters)
           .then((_) => expect(true, false))
@@ -308,7 +308,7 @@ void main() {
       // When
       expect(
           await repository.getClaim(
-              did: CommonMocks.identifier,
+              genesisDid: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               claimId: ids[0]),
           claimEntities[0]);
@@ -341,7 +341,7 @@ void main() {
       // When
       await repository
           .getClaim(
-              did: CommonMocks.identifier,
+              genesisDid: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               claimId: ids[0])
           .then((value) => expect(true, false))
@@ -377,7 +377,7 @@ void main() {
       // When
       await expectLater(
           repository.getClaim(
-              did: CommonMocks.identifier,
+              genesisDid: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               claimId: ids[0]),
           throwsA(exception));
@@ -398,6 +398,61 @@ void main() {
     });
   });
 
+  group("Remove all claims", () {
+    setUp(() {
+      // Given
+      when(storageClaimDataSource.removeAllClaims(
+              did: anyNamed('did'), privateKey: anyNamed('privateKey')))
+          .thenAnswer((realInvocation) => Future.value());
+    });
+
+    test("When I call removeAllClaims, then I expect the process to completes",
+        () async {
+      // When
+      await expectLater(
+          repository.removeAllClaims(
+              genesisDid: CommonMocks.identifier,
+              privateKey: CommonMocks.privateKey),
+          completes);
+
+      // Then
+      var captureRemove = verify(storageClaimDataSource.removeAllClaims(
+              did: captureAnyNamed('did'),
+              privateKey: captureAnyNamed('privateKey')))
+          .captured;
+      expect(captureRemove[0], CommonMocks.identifier);
+      expect(captureRemove[1], CommonMocks.privateKey);
+    });
+
+    test(
+        "When I call removeAllClaims and an error occurred, then I expect a RemoveClaimsException exception to be thrown",
+        () async {
+      // Given
+      when(storageClaimDataSource.removeAllClaims(
+              did: anyNamed('did'), privateKey: anyNamed('privateKey')))
+          .thenAnswer((realInvocation) => Future.error(exception));
+
+      // When
+      await repository
+          .removeAllClaims(
+              genesisDid: CommonMocks.identifier,
+              privateKey: CommonMocks.privateKey)
+          .then((_) => expect(true, false))
+          .catchError((error) {
+        expect(error, isA<RemoveClaimsException>());
+        expect(error.error, exception);
+      });
+
+      // Then
+      var captureRemove = verify(storageClaimDataSource.removeAllClaims(
+              did: captureAnyNamed('did'),
+              privateKey: captureAnyNamed('privateKey')))
+          .captured;
+      expect(captureRemove[0], CommonMocks.identifier);
+      expect(captureRemove[1], CommonMocks.privateKey);
+    });
+  });
+
   group("Remove claims", () {
     setUp(() {
       // Given
@@ -414,7 +469,7 @@ void main() {
       // When
       await expectLater(
           repository.removeClaims(
-              did: CommonMocks.identifier,
+              genesisDid: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               claimIds: ids),
           completes);
@@ -443,7 +498,7 @@ void main() {
       // When
       await repository
           .removeClaims(
-              did: CommonMocks.identifier,
+              genesisDid: CommonMocks.identifier,
               privateKey: CommonMocks.privateKey,
               claimIds: ids)
           .then((_) => expect(true, false))

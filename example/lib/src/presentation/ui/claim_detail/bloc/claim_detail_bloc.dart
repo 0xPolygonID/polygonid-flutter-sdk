@@ -37,7 +37,7 @@ class ClaimDetailBloc extends Bloc<ClaimDetailEvent, ClaimDetailState> {
 
       if (did != null) {
         await _polygonIdSdk.credential.removeClaims(
-            claimIds: [event.claimId], did: did, privateKey: privateKey);
+            claimIds: [event.claimId], genesisDid: did, privateKey: privateKey);
         emit(const ClaimDetailState.claimDeleted());
       } else {
         emit(const ClaimDetailState.error(CustomStrings.claimRemovingError));

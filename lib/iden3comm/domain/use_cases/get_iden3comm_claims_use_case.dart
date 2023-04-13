@@ -60,6 +60,7 @@ class GetIden3commClaimsUseCase
               .then((filters) => _getClaimsUseCase.execute(
                       param: GetClaimsParam(
                     filters: filters,
+                    genesisDid: param.genesisDid,
                     profileNonce: param.profileNonce,
                     privateKey: param.privateKey,
                   )))
@@ -82,7 +83,7 @@ class GetIden3commClaimsUseCase
                         param: UpdateClaimParam(
                             id: claims[i].id,
                             state: ClaimState.revoked,
-                            did: param.genesisDid,
+                            genesisDid: param.genesisDid,
                             privateKey: param.privateKey));
                   }
                 }
