@@ -82,11 +82,11 @@ void main() {
       reset(iden3commRepository);
 
       // Given
-      when(iden3commRepository.getConnections(
+      when(iden3commRepository.getInteractions(
         did: anyNamed('did'),
         privateKey: anyNamed('privateKey'),
       )).thenAnswer(
-          (realInvocation) => Future.value(Iden3commMocks.connectionEntities));
+          (realInvocation) => Future.value(Iden3commMocks.interactionEntities));
       when(getCurrentEnvDidIdentifierUseCase.execute(param: anyNamed('param')))
           .thenAnswer((realInvocation) => Future.value(CommonMocks.did));
       when(getIdentityUseCase.execute(param: anyNamed('param'))).thenAnswer(
@@ -113,7 +113,7 @@ void main() {
               .first;
       expect(getIdentityCapture.genesisDid, CommonMocks.did);
 
-      var capturedGet = verify(iden3commRepository.getConnections(
+      var capturedGet = verify(iden3commRepository.getInteractions(
               did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey')))
           .captured;
@@ -126,7 +126,7 @@ void main() {
         () async {
       // When
       expect(await useCase.execute(param: profileParam),
-          Iden3commMocks.connectionEntities);
+          Iden3commMocks.interactionEntities);
 
       // Then
       var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(
@@ -138,7 +138,7 @@ void main() {
 
       verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
 
-      var capturedGet = verify(iden3commRepository.getConnections(
+      var capturedGet = verify(iden3commRepository.getInteractions(
               did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey')))
           .captured;
@@ -150,7 +150,7 @@ void main() {
         "When I call execute and an error occurred, then I expect an exception to be thrown",
         () async {
       // Given
-      when(iden3commRepository.getConnections(
+      when(iden3commRepository.getInteractions(
         did: captureAnyNamed('did'),
         privateKey: captureAnyNamed('privateKey'),
       )).thenAnswer((realInvocation) => Future.error(exception));
@@ -171,7 +171,7 @@ void main() {
               .first;
       expect(getIdentityCapture.genesisDid, CommonMocks.did);
 
-      var capturedGet = verify(iden3commRepository.getConnections(
+      var capturedGet = verify(iden3commRepository.getInteractions(
         did: captureAnyNamed('did'),
         privateKey: captureAnyNamed('privateKey'),
       )).captured;
@@ -183,7 +183,7 @@ void main() {
         "Given a non genesis profile, When I call execute and an error occurred, then I expect an exception to be thrown",
         () async {
       // Given
-      when(iden3commRepository.getConnections(
+      when(iden3commRepository.getInteractions(
         did: captureAnyNamed('did'),
         privateKey: captureAnyNamed('privateKey'),
       )).thenAnswer((realInvocation) => Future.error(exception));
@@ -201,7 +201,7 @@ void main() {
 
       verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
 
-      var capturedGet = verify(iden3commRepository.getConnections(
+      var capturedGet = verify(iden3commRepository.getInteractions(
         did: captureAnyNamed('did'),
         privateKey: captureAnyNamed('privateKey'),
       )).captured;

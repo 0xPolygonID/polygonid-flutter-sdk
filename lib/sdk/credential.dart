@@ -5,7 +5,6 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.da
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/update_claim_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
 
 import '../credential/domain/use_cases/save_claims_use_case.dart';
 
@@ -34,9 +33,7 @@ abstract class PolygonIdSdkCredential {
   /// The [privateKey]  is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
   Future<List<ClaimEntity>> getClaims(
-      {List<FilterEntity>? filters,
-      required String did,
-      required String privateKey});
+      {List<FilterEntity>? filters, required String privateKey});
 
   /// Gets a list of [ClaimEntity] filtered by ids associated to the identity previously stored
   /// in the the Polygon ID Sdk
@@ -48,9 +45,7 @@ abstract class PolygonIdSdkCredential {
   /// The [privateKey]  is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
   Future<List<ClaimEntity>> getClaimsByIds(
-      {required List<String> claimIds,
-      required String did,
-      required String privateKey});
+      {required List<String> claimIds, required String privateKey});
 
   /// Removes a list of [ClaimEntity] filtered by ids associated to the identity previously stored
   /// in the the Polygon ID Sdk
@@ -130,13 +125,10 @@ class Credential implements PolygonIdSdkCredential {
 
   @override
   Future<List<ClaimEntity>> getClaims(
-      {List<FilterEntity>? filters,
-      required String did,
-      required String privateKey}) {
+      {List<FilterEntity>? filters, required String privateKey}) {
     return _getClaimsUseCase.execute(
         param: GetClaimsParam(
       filters: filters,
-      did: did,
       profileNonce: GENESIS_PROFILE_NONCE,
       privateKey: privateKey,
     ));
@@ -144,16 +136,13 @@ class Credential implements PolygonIdSdkCredential {
 
   @override
   Future<List<ClaimEntity>> getClaimsByIds(
-      {required List<String> claimIds,
-      required String did,
-      required String privateKey}) {
+      {required List<String> claimIds, required String privateKey}) {
     return _getClaimsUseCase.execute(
         param: GetClaimsParam(
       filters: [
         FilterEntity(
             operator: FilterOperator.inList, name: 'id', value: claimIds)
       ],
-      did: did,
       profileNonce: GENESIS_PROFILE_NONCE,
       privateKey: privateKey,
     ));

@@ -69,12 +69,15 @@ class SecureStorageInteractionDataSource
     List<Map<String, dynamic>> storedInteractions = [];
 
     for (Map<String, dynamic> interaction in interactions) {
+      /// Id is null when the interaction is not stored yet
       await (interaction['id'] == null
               ? _storeRefWrapper.add(transaction, interaction).then((id) {
                   interaction['id'] = id;
 
                   return interaction;
                 })
+
+              /// Id is not null, we update the interaction
               : _storeRefWrapper
                   .put(transaction, interaction['id'], interaction)
                   .then((_) => interaction))
@@ -88,21 +91,20 @@ class SecureStorageInteractionDataSource
   /// Remove all interactions in a single transaction
   /// If one removing fails, they will all be reverted
   Future<void> removeInteractions(
-      {required List<int> interactionIds,
+      {required List<int> ids,
       required String did,
       required String privateKey}) {
     return getDatabase(did: did, privateKey: privateKey).then((database) =>
         database
-            .transaction((transaction) => removeInteractionsTransact(
-                transaction: transaction, interactionIds: interactionIds))
+            .transaction((transaction) =>
+                removeInteractionsTransact(transaction: transaction, ids: ids))
             .whenComplete(() => database.close()));
   }
 
   // For UT purpose
   Future<void> removeInteractionsTransact(
-      {required DatabaseClient transaction,
-      required List<int> interactionIds}) async {
-    for (int interactionId in interactionIds) {
+      {required DatabaseClient transaction, required List<int> ids}) async {
+    for (int interactionId in ids) {
       await _storeRefWrapper.remove(transaction, interactionId);
     }
   }

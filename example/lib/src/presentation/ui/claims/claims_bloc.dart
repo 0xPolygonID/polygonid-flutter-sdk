@@ -95,24 +95,9 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       return;
     }
 
-    EnvEntity env = await _polygonIdSdk.getEnv();
-
-    String? did = await _polygonIdSdk.identity.getDidIdentifier(
-      privateKey: privateKey,
-      blockchain: env.blockchain,
-      network: env.network,
-    );
-
-    if (did == null || did.isEmpty) {
-      emit(const ClaimsState.error(
-          "without an identity is impossible to get claims"));
-      return;
-    }
-
     try {
       List<ClaimEntity> claimList = await _polygonIdSdk.credential.getClaims(
         filters: filters,
-        did: did,
         privateKey: privateKey,
       );
 
@@ -141,25 +126,10 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       return;
     }
 
-    EnvEntity env = await _polygonIdSdk.getEnv();
-
-    String? did = await _polygonIdSdk.identity.getDidIdentifier(
-      privateKey: privateKey,
-      blockchain: env.blockchain,
-      network: env.network,
-    );
-
-    if (did == null || did.isEmpty) {
-      emit(const ClaimsState.error(
-          "without an identity is impossible to get claims"));
-      return;
-    }
-
     try {
       List<ClaimEntity> claimList =
           await _polygonIdSdk.credential.getClaimsByIds(
         claimIds: ids,
-        did: did,
         privateKey: privateKey,
       );
 
@@ -368,7 +338,6 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
     try {
       List<ClaimEntity> claimList = await _polygonIdSdk.credential.getClaims(
-        did: did,
         privateKey: privateKey,
       );
 

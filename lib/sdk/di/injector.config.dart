@@ -5,7 +5,7 @@
 // **************************************************************************
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:flutter/services.dart' as _i68;
+import 'package:flutter/services.dart' as _i69;
 import 'package:get_it/get_it.dart' as _i1;
 import 'package:http/http.dart' as _i96;
 import 'package:injectable/injectable.dart' as _i2;
@@ -18,7 +18,7 @@ import '../../common/data/data_sources/mappers/filter_mapper.dart' as _i24;
 import '../../common/data/data_sources/mappers/filters_mapper.dart' as _i25;
 import '../../common/data/data_sources/package_info_datasource.dart' as _i75;
 import '../../common/data/data_sources/storage_key_value_data_source.dart'
-    as _i62;
+    as _i63;
 import '../../common/data/repositories/config_repository_impl.dart' as _i121;
 import '../../common/data/repositories/package_info_repository_impl.dart'
     as _i77;
@@ -47,7 +47,7 @@ import '../../credential/domain/repositories/credential_repository.dart'
 import '../../credential/domain/use_cases/get_auth_claim_use_case.dart' as _i28;
 import '../../credential/domain/use_cases/get_claim_revocation_status_use_case.dart'
     as _i125;
-import '../../credential/domain/use_cases/get_claims_use_case.dart' as _i160;
+import '../../credential/domain/use_cases/get_claims_use_case.dart' as _i163;
 import '../../credential/domain/use_cases/remove_all_claims_use_case.dart'
     as _i99;
 import '../../credential/domain/use_cases/remove_claims_use_case.dart' as _i100;
@@ -63,13 +63,13 @@ import '../../iden3comm/data/data_sources/remote_iden3comm_data_source.dart'
 import '../../iden3comm/data/data_sources/secure_storage_interaction_data_source.dart'
     as _i105;
 import '../../iden3comm/data/data_sources/storage_interaction_data_source.dart'
-    as _i58;
+    as _i59;
 import '../../iden3comm/data/mappers/auth_inputs_mapper.dart' as _i3;
 import '../../iden3comm/data/mappers/auth_proof_mapper.dart' as _i119;
 import '../../iden3comm/data/mappers/auth_response_mapper.dart' as _i4;
 import '../../iden3comm/data/mappers/gist_proof_mapper.dart' as _i128;
-import '../../iden3comm/data/mappers/interaction_mapper.dart' as _i57;
-import '../../iden3comm/data/mappers/notification_mapper.dart' as _i74;
+import '../../iden3comm/data/mappers/interaction_id_filter_mapper.dart' as _i57;
+import '../../iden3comm/data/mappers/interaction_mapper.dart' as _i58;
 import '../../iden3comm/data/mappers/proof_request_filters_mapper.dart' as _i88;
 import '../../iden3comm/data/repositories/iden3comm_credential_repository_impl.dart'
     as _i130;
@@ -81,12 +81,12 @@ import '../../iden3comm/domain/repositories/iden3comm_credential_repository.dart
     as _i49;
 import '../../iden3comm/domain/repositories/iden3comm_repository.dart' as _i27;
 import '../../iden3comm/domain/repositories/interaction_repository.dart'
-    as _i65;
-import '../../iden3comm/domain/use_cases/authenticate_use_case.dart' as _i167;
+    as _i66;
+import '../../iden3comm/domain/use_cases/authenticate_use_case.dart' as _i170;
 import '../../iden3comm/domain/use_cases/check_profile_and_did_current_env.dart'
     as _i147;
 import '../../iden3comm/domain/use_cases/fetch_and_save_claims_use_case.dart'
-    as _i159;
+    as _i162;
 import '../../iden3comm/domain/use_cases/get_auth_challenge_use_case.dart'
     as _i26;
 import '../../iden3comm/domain/use_cases/get_auth_inputs_use_case.dart'
@@ -96,9 +96,9 @@ import '../../iden3comm/domain/use_cases/get_fetch_requests_use_case.dart'
     as _i33;
 import '../../iden3comm/domain/use_cases/get_filters_use_case.dart' as _i126;
 import '../../iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart'
-    as _i161;
+    as _i164;
 import '../../iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart'
-    as _i162;
+    as _i165;
 import '../../iden3comm/domain/use_cases/get_iden3message_type_use_case.dart'
     as _i35;
 import '../../iden3comm/domain/use_cases/get_iden3message_use_case.dart'
@@ -109,19 +109,25 @@ import '../../iden3comm/domain/use_cases/get_proof_requests_use_case.dart'
 import '../../iden3comm/domain/use_cases/get_vocabs_use_case.dart' as _i48;
 import '../../iden3comm/domain/use_cases/interaction/get_interactions_use_case.dart'
     as _i152;
+import '../../iden3comm/domain/use_cases/interaction/remove_interactions_use_case.dart'
+    as _i155;
+import '../../iden3comm/domain/use_cases/interaction/save_interaction_use_case.dart'
+    as _i156;
+import '../../iden3comm/domain/use_cases/interaction/update_notification_use_case.dart'
+    as _i157;
 import '../../iden3comm/domain/use_cases/listen_and_store_notification_use_case.dart'
-    as _i64;
+    as _i65;
 import '../../iden3comm/libs/polygonidcore/pidcore_iden3comm.dart' as _i80;
 import '../../identity/data/data_sources/db_destination_path_data_source.dart'
     as _i17;
 import '../../identity/data/data_sources/encryption_db_data_source.dart'
     as _i19;
 import '../../identity/data/data_sources/lib_babyjubjub_data_source.dart'
-    as _i63;
+    as _i64;
 import '../../identity/data/data_sources/lib_pidcore_identity_data_source.dart'
     as _i134;
 import '../../identity/data/data_sources/local_contract_files_data_source.dart'
-    as _i67;
+    as _i68;
 import '../../identity/data/data_sources/remote_identity_data_source.dart'
     as _i98;
 import '../../identity/data/data_sources/rpc_data_source.dart' as _i93;
@@ -135,9 +141,9 @@ import '../../identity/data/mappers/hash_mapper.dart' as _i50;
 import '../../identity/data/mappers/hex_mapper.dart' as _i51;
 import '../../identity/data/mappers/identity_dto_mapper.dart' as _i54;
 import '../../identity/data/mappers/node_mapper.dart' as _i137;
-import '../../identity/data/mappers/node_type_dto_mapper.dart' as _i71;
-import '../../identity/data/mappers/node_type_entity_mapper.dart' as _i72;
-import '../../identity/data/mappers/node_type_mapper.dart' as _i73;
+import '../../identity/data/mappers/node_type_dto_mapper.dart' as _i72;
+import '../../identity/data/mappers/node_type_entity_mapper.dart' as _i73;
+import '../../identity/data/mappers/node_type_mapper.dart' as _i74;
 import '../../identity/data/mappers/poseidon_hash_mapper.dart' as _i83;
 import '../../identity/data/mappers/private_key_mapper.dart' as _i84;
 import '../../identity/data/mappers/q_mapper.dart' as _i92;
@@ -169,15 +175,15 @@ import '../../identity/domain/use_cases/get_identity_auth_claim_use_case.dart'
 import '../../identity/domain/use_cases/get_latest_state_use_case.dart' as _i40;
 import '../../identity/domain/use_cases/get_public_keys_use_case.dart' as _i47;
 import '../../identity/domain/use_cases/identity/add_identity_use_case.dart'
-    as _i164;
+    as _i167;
 import '../../identity/domain/use_cases/identity/add_new_identity_use_case.dart'
-    as _i165;
+    as _i168;
 import '../../identity/domain/use_cases/identity/backup_identity_use_case.dart'
-    as _i155;
+    as _i158;
 import '../../identity/domain/use_cases/identity/check_identity_validity_use_case.dart'
-    as _i156;
+    as _i159;
 import '../../identity/domain/use_cases/identity/create_identity_use_case.dart'
-    as _i157;
+    as _i160;
 import '../../identity/domain/use_cases/identity/get_identities_use_case.dart'
     as _i37;
 import '../../identity/domain/use_cases/identity/get_identity_use_case.dart'
@@ -185,23 +191,23 @@ import '../../identity/domain/use_cases/identity/get_identity_use_case.dart'
 import '../../identity/domain/use_cases/identity/get_private_key_use_case.dart'
     as _i44;
 import '../../identity/domain/use_cases/identity/remove_identity_use_case.dart'
-    as _i172;
+    as _i175;
 import '../../identity/domain/use_cases/identity/restore_identity_use_case.dart'
-    as _i171;
+    as _i174;
 import '../../identity/domain/use_cases/identity/sign_message_use_case.dart'
     as _i107;
 import '../../identity/domain/use_cases/identity/update_identity_use_case.dart'
-    as _i163;
-import '../../identity/domain/use_cases/profile/add_profile_use_case.dart'
     as _i166;
+import '../../identity/domain/use_cases/profile/add_profile_use_case.dart'
+    as _i169;
 import '../../identity/domain/use_cases/profile/check_profile_validity_use_case.dart'
     as _i8;
 import '../../identity/domain/use_cases/profile/create_profiles_use_case.dart'
-    as _i158;
+    as _i161;
 import '../../identity/domain/use_cases/profile/get_profiles_use_case.dart'
     as _i153;
 import '../../identity/domain/use_cases/profile/remove_profile_use_case.dart'
-    as _i170;
+    as _i173;
 import '../../identity/domain/use_cases/smt/create_identity_state_use_case.dart'
     as _i122;
 import '../../identity/domain/use_cases/smt/remove_identity_state_use_case.dart'
@@ -213,15 +219,15 @@ import '../../proof/data/data_sources/circuits_download_data_source.dart'
 import '../../proof/data/data_sources/lib_pidcore_proof_data_source.dart'
     as _i135;
 import '../../proof/data/data_sources/local_proof_files_data_source.dart'
-    as _i69;
+    as _i70;
 import '../../proof/data/data_sources/proof_circuit_data_source.dart' as _i85;
 import '../../proof/data/data_sources/prover_lib_data_source.dart' as _i91;
 import '../../proof/data/data_sources/witness_data_source.dart' as _i114;
 import '../../proof/data/mappers/circuit_type_mapper.dart' as _i9;
 import '../../proof/data/mappers/gist_proof_mapper.dart' as _i129;
-import '../../proof/data/mappers/jwz_mapper.dart' as _i60;
-import '../../proof/data/mappers/jwz_proof_mapper.dart' as _i61;
-import '../../proof/data/mappers/node_aux_mapper.dart' as _i70;
+import '../../proof/data/mappers/jwz_mapper.dart' as _i61;
+import '../../proof/data/mappers/jwz_proof_mapper.dart' as _i62;
+import '../../proof/data/mappers/node_aux_mapper.dart' as _i71;
 import '../../proof/data/mappers/proof_mapper.dart' as _i87;
 import '../../proof/data/repositories/proof_repository_impl.dart' as _i146;
 import '../../proof/domain/repositories/proof_repository.dart' as _i12;
@@ -232,8 +238,8 @@ import '../../proof/domain/use_cases/generate_proof_use_case.dart' as _i148;
 import '../../proof/domain/use_cases/get_gist_proof_use_case.dart' as _i34;
 import '../../proof/domain/use_cases/get_jwz_use_case.dart' as _i39;
 import '../../proof/domain/use_cases/is_proof_circuit_supported_use_case.dart'
-    as _i59;
-import '../../proof/domain/use_cases/load_circuit_use_case.dart' as _i66;
+    as _i60;
+import '../../proof/domain/use_cases/load_circuit_use_case.dart' as _i67;
 import '../../proof/domain/use_cases/prove_use_case.dart' as _i89;
 import '../../proof/infrastructure/proof_generation_stream_manager.dart'
     as _i86;
@@ -246,9 +252,9 @@ import '../../proof/libs/witnesscalc/mtp_v2_onchain/witness_mtp_onchain.dart'
 import '../../proof/libs/witnesscalc/sig_v2/witness_sig.dart' as _i117;
 import '../../proof/libs/witnesscalc/sig_v2_onchain/witness_sig_onchain.dart'
     as _i118;
-import '../credential.dart' as _i168;
-import '../iden3comm.dart' as _i169;
-import '../identity.dart' as _i173;
+import '../credential.dart' as _i171;
+import '../iden3comm.dart' as _i172;
+import '../identity.dart' as _i176;
 import '../mappers/iden3_message_type_mapper.dart' as _i53;
 import '../polygon_id_channel.dart' as _i7;
 import '../proof.dart' as _i154; // ignore_for_file: unnecessary_lambdas
@@ -351,33 +357,34 @@ _i1.GetIt $initSDKGetIt(
   gh.factory<_i56.IdentityStoreRefWrapper>(() => _i56.IdentityStoreRefWrapper(
       get<_i16.StoreRef<String, Map<String, Object?>>>(
           instanceName: 'identityStore')));
-  gh.factory<_i57.InteractionMapper>(() => _i57.InteractionMapper());
-  gh.factory<_i58.InteractionStoreRefWrapper>(() =>
-      _i58.InteractionStoreRefWrapper(
+  gh.factory<_i57.InteractionIdFilterMapper>(
+      () => _i57.InteractionIdFilterMapper());
+  gh.factory<_i58.InteractionMapper>(() => _i58.InteractionMapper());
+  gh.factory<_i59.InteractionStoreRefWrapper>(() =>
+      _i59.InteractionStoreRefWrapper(
           get<_i16.StoreRef<int, Map<String, Object?>>>(
               instanceName: 'interactionStore')));
-  gh.factory<_i59.IsProofCircuitSupportedUseCase>(
-      () => _i59.IsProofCircuitSupportedUseCase(get<_i12.ProofRepository>()));
-  gh.factory<_i60.JWZMapper>(() => _i60.JWZMapper());
-  gh.factory<_i61.JWZProofMapper>(() => _i61.JWZProofMapper());
-  gh.factory<_i62.KeyValueStoreRefWrapper>(() => _i62.KeyValueStoreRefWrapper(
+  gh.factory<_i60.IsProofCircuitSupportedUseCase>(
+      () => _i60.IsProofCircuitSupportedUseCase(get<_i12.ProofRepository>()));
+  gh.factory<_i61.JWZMapper>(() => _i61.JWZMapper());
+  gh.factory<_i62.JWZProofMapper>(() => _i62.JWZProofMapper());
+  gh.factory<_i63.KeyValueStoreRefWrapper>(() => _i63.KeyValueStoreRefWrapper(
       get<_i16.StoreRef<String, dynamic>>(instanceName: 'keyValueStore')));
-  gh.factory<_i63.LibBabyJubJubDataSource>(
-      () => _i63.LibBabyJubJubDataSource(get<_i5.BabyjubjubLib>()));
-  gh.factory<_i64.ListenAndStoreNotificationUseCase>(() =>
-      _i64.ListenAndStoreNotificationUseCase(
-          get<_i65.InteractionRepository>()));
-  gh.factory<_i66.LoadCircuitUseCase>(
-      () => _i66.LoadCircuitUseCase(get<_i12.ProofRepository>()));
-  gh.factory<_i67.LocalContractFilesDataSource>(
-      () => _i67.LocalContractFilesDataSource(get<_i68.AssetBundle>()));
-  gh.factory<_i69.LocalProofFilesDataSource>(
-      () => _i69.LocalProofFilesDataSource());
-  gh.factory<_i70.NodeAuxMapper>(() => _i70.NodeAuxMapper());
-  gh.factory<_i71.NodeTypeDTOMapper>(() => _i71.NodeTypeDTOMapper());
-  gh.factory<_i72.NodeTypeEntityMapper>(() => _i72.NodeTypeEntityMapper());
-  gh.factory<_i73.NodeTypeMapper>(() => _i73.NodeTypeMapper());
-  gh.factory<_i74.NotificationMapper>(() => _i74.NotificationMapper());
+  gh.factory<_i64.LibBabyJubJubDataSource>(
+      () => _i64.LibBabyJubJubDataSource(get<_i5.BabyjubjubLib>()));
+  gh.factory<_i65.ListenAndStoreNotificationUseCase>(() =>
+      _i65.ListenAndStoreNotificationUseCase(
+          get<_i66.InteractionRepository>()));
+  gh.factory<_i67.LoadCircuitUseCase>(
+      () => _i67.LoadCircuitUseCase(get<_i12.ProofRepository>()));
+  gh.factory<_i68.LocalContractFilesDataSource>(
+      () => _i68.LocalContractFilesDataSource(get<_i69.AssetBundle>()));
+  gh.factory<_i70.LocalProofFilesDataSource>(
+      () => _i70.LocalProofFilesDataSource());
+  gh.factory<_i71.NodeAuxMapper>(() => _i71.NodeAuxMapper());
+  gh.factory<_i72.NodeTypeDTOMapper>(() => _i72.NodeTypeDTOMapper());
+  gh.factory<_i73.NodeTypeEntityMapper>(() => _i73.NodeTypeEntityMapper());
+  gh.factory<_i74.NodeTypeMapper>(() => _i74.NodeTypeMapper());
   gh.factory<_i75.PackageInfoDataSource>(
       () => _i75.PackageInfoDataSource(get<_i76.PackageInfo>()));
   gh.factory<_i77.PackageInfoRepositoryImpl>(
@@ -396,7 +403,7 @@ _i1.GetIt $initSDKGetIt(
       () => _i86.ProofGenerationStepsStreamManager());
   gh.factory<_i87.ProofMapper>(() => _i87.ProofMapper(
         get<_i50.HashMapper>(),
-        get<_i70.NodeAuxMapper>(),
+        get<_i71.NodeAuxMapper>(),
       ));
   gh.factory<_i88.ProofRequestFiltersMapper>(
       () => _i88.ProofRequestFiltersMapper());
@@ -443,15 +450,15 @@ _i1.GetIt $initSDKGetIt(
             get<_i16.Database>(),
             get<_i56.IdentityStoreRefWrapper>(),
           ));
-  gh.factory<_i58.StorageInteractionDataSource>(
-      () => _i58.StorageInteractionDataSource(
+  gh.factory<_i59.StorageInteractionDataSource>(
+      () => _i59.StorageInteractionDataSource(
             get<_i16.Database>(),
-            get<_i58.InteractionStoreRefWrapper>(),
+            get<_i59.InteractionStoreRefWrapper>(),
           ));
-  gh.factory<_i62.StorageKeyValueDataSource>(
-      () => _i62.StorageKeyValueDataSource(
+  gh.factory<_i63.StorageKeyValueDataSource>(
+      () => _i63.StorageKeyValueDataSource(
             get<_i16.Database>(),
-            get<_i62.KeyValueStoreRefWrapper>(),
+            get<_i63.KeyValueStoreRefWrapper>(),
           ));
   gh.factory<_i55.StorageSMTDataSource>(
       () => _i55.StorageSMTDataSource(get<_i55.IdentitySMTStoreRefWrapper>()));
@@ -471,14 +478,14 @@ _i1.GetIt $initSDKGetIt(
       () => _i118.WitnessSigV2OnchainLib());
   gh.factory<_i119.AuthProofMapper>(() => _i119.AuthProofMapper(
         get<_i50.HashMapper>(),
-        get<_i70.NodeAuxMapper>(),
+        get<_i71.NodeAuxMapper>(),
       ));
   gh.factory<_i120.ClaimMapper>(() => _i120.ClaimMapper(
         get<_i14.ClaimStateMapper>(),
         get<_i13.ClaimInfoMapper>(),
       ));
   gh.factory<_i121.ConfigRepositoryImpl>(() => _i121.ConfigRepositoryImpl(
-        get<_i62.StorageKeyValueDataSource>(),
+        get<_i63.StorageKeyValueDataSource>(),
         get<_i21.EnvMapper>(),
       ));
   gh.factory<_i122.CreateIdentityStateUseCase>(
@@ -507,7 +514,7 @@ _i1.GetIt $initSDKGetIt(
           ));
   gh.factory<_i126.GetFiltersUseCase>(() => _i126.GetFiltersUseCase(
         get<_i49.Iden3commCredentialRepository>(),
-        get<_i59.IsProofCircuitSupportedUseCase>(),
+        get<_i60.IsProofCircuitSupportedUseCase>(),
         get<_i46.GetProofRequestsUseCase>(),
       ));
   gh.factory<_i127.GetGenesisStateUseCase>(() => _i127.GetGenesisStateUseCase(
@@ -529,9 +536,9 @@ _i1.GetIt $initSDKGetIt(
       () => _i131.InteractionRepositoryImpl(
             get<_i6.ChannelPushNotificationDataSource>(),
             get<_i105.SecureStorageInteractionDataSource>(),
-            get<_i74.NotificationMapper>(),
-            get<_i57.InteractionMapper>(),
+            get<_i58.InteractionMapper>(),
             get<_i25.FiltersMapper>(),
+            get<_i57.InteractionIdFilterMapper>(),
           ));
   gh.factory<_i132.LibPolygonIdCoreCredentialDataSource>(() =>
       _i132.LibPolygonIdCoreCredentialDataSource(
@@ -547,9 +554,9 @@ _i1.GetIt $initSDKGetIt(
   gh.factory<_i136.LocalClaimDataSource>(() => _i136.LocalClaimDataSource(
       get<_i132.LibPolygonIdCoreCredentialDataSource>()));
   gh.factory<_i137.NodeMapper>(() => _i137.NodeMapper(
-        get<_i73.NodeTypeMapper>(),
-        get<_i72.NodeTypeEntityMapper>(),
-        get<_i71.NodeTypeDTOMapper>(),
+        get<_i74.NodeTypeMapper>(),
+        get<_i73.NodeTypeEntityMapper>(),
+        get<_i72.NodeTypeDTOMapper>(),
         get<_i50.HashMapper>(),
       ));
   gh.factory<_i91.ProverLibDataSource>(
@@ -558,13 +565,13 @@ _i1.GetIt $initSDKGetIt(
       () => _i138.RhsNodeMapper(get<_i103.RhsNodeTypeMapper>()));
   gh.factory<_i139.SMTDataSource>(() => _i139.SMTDataSource(
         get<_i51.HexMapper>(),
-        get<_i63.LibBabyJubJubDataSource>(),
+        get<_i64.LibBabyJubJubDataSource>(),
         get<_i55.StorageSMTDataSource>(),
       ));
   gh.factory<_i140.SMTRepositoryImpl>(() => _i140.SMTRepositoryImpl(
         get<_i139.SMTDataSource>(),
         get<_i55.StorageSMTDataSource>(),
-        get<_i63.LibBabyJubJubDataSource>(),
+        get<_i64.LibBabyJubJubDataSource>(),
         get<_i137.NodeMapper>(),
         get<_i50.HashMapper>(),
         get<_i87.ProofMapper>(),
@@ -596,7 +603,7 @@ _i1.GetIt $initSDKGetIt(
   gh.factory<_i144.Iden3commRepositoryImpl>(() => _i144.Iden3commRepositoryImpl(
         get<_i97.RemoteIden3commDataSource>(),
         get<_i133.LibPolygonIdCoreIden3commDataSource>(),
-        get<_i63.LibBabyJubJubDataSource>(),
+        get<_i64.LibBabyJubJubDataSource>(),
         get<_i4.AuthResponseMapper>(),
         get<_i3.AuthInputsMapper>(),
         get<_i119.AuthProofMapper>(),
@@ -608,8 +615,8 @@ _i1.GetIt $initSDKGetIt(
         get<_i98.RemoteIdentityDataSource>(),
         get<_i56.StorageIdentityDataSource>(),
         get<_i93.RPCDataSource>(),
-        get<_i67.LocalContractFilesDataSource>(),
-        get<_i63.LibBabyJubJubDataSource>(),
+        get<_i68.LocalContractFilesDataSource>(),
+        get<_i64.LibBabyJubJubDataSource>(),
         get<_i134.LibPolygonIdCoreIdentityDataSource>(),
         get<_i19.EncryptionDbDataSource>(),
         get<_i17.DestinationPathDataSource>(),
@@ -628,17 +635,17 @@ _i1.GetIt $initSDKGetIt(
         get<_i114.WitnessDataSource>(),
         get<_i91.ProverLibDataSource>(),
         get<_i135.LibPolygonIdCoreProofDataSource>(),
-        get<_i69.LocalProofFilesDataSource>(),
+        get<_i70.LocalProofFilesDataSource>(),
         get<_i85.ProofCircuitDataSource>(),
         get<_i98.RemoteIdentityDataSource>(),
-        get<_i67.LocalContractFilesDataSource>(),
+        get<_i68.LocalContractFilesDataSource>(),
         get<_i10.CircuitsDownloadDataSource>(),
         get<_i93.RPCDataSource>(),
         get<_i9.CircuitTypeMapper>(),
-        get<_i61.JWZProofMapper>(),
+        get<_i62.JWZProofMapper>(),
         get<_i120.ClaimMapper>(),
         get<_i102.RevocationStatusMapper>(),
-        get<_i60.JWZMapper>(),
+        get<_i61.JWZMapper>(),
         get<_i119.AuthProofMapper>(),
         get<_i129.GistProofMapper>(),
         get<_i128.GistProofMapper>(),
@@ -672,7 +679,7 @@ _i1.GetIt $initSDKGetIt(
         get<_i41.SMTRepository>(),
       ));
   gh.factory<_i150.GetAuthTokenUseCase>(() => _i150.GetAuthTokenUseCase(
-        get<_i66.LoadCircuitUseCase>(),
+        get<_i67.LoadCircuitUseCase>(),
         get<_i39.GetJWZUseCase>(),
         get<_i26.GetAuthChallengeUseCase>(),
         get<_i149.GetAuthInputsUseCase>(),
@@ -684,7 +691,7 @@ _i1.GetIt $initSDKGetIt(
             get<_i142.GetDidIdentifierUseCase>(),
           ));
   gh.factory<_i152.GetInteractionsUseCase>(() => _i152.GetInteractionsUseCase(
-        get<_i27.Iden3commRepository>(),
+        get<_i66.InteractionRepository>(),
         get<_i151.GetCurrentEnvDidIdentifierUseCase>(),
         get<_i143.GetIdentityUseCase>(),
       ));
@@ -698,26 +705,42 @@ _i1.GetIt $initSDKGetIt(
         get<_i11.CircuitsFilesExistUseCase>(),
         get<_i86.ProofGenerationStepsStreamManager>(),
       ));
-  gh.factory<_i155.BackupIdentityUseCase>(() => _i155.BackupIdentityUseCase(
+  gh.factory<_i155.RemoveInteractionsUseCase>(
+      () => _i155.RemoveInteractionsUseCase(
+            get<_i66.InteractionRepository>(),
+            get<_i147.CheckProfileAndDidCurrentEnvUseCase>(),
+          ));
+  gh.factory<_i156.SaveInteractionUseCase>(() => _i156.SaveInteractionUseCase(
+        get<_i66.InteractionRepository>(),
+        get<_i147.CheckProfileAndDidCurrentEnvUseCase>(),
+      ));
+  gh.factory<_i157.UpdateNotificationUseCase>(
+      () => _i157.UpdateNotificationUseCase(
+            get<_i66.InteractionRepository>(),
+            get<_i151.GetCurrentEnvDidIdentifierUseCase>(),
+            get<_i143.GetIdentityUseCase>(),
+            get<_i156.SaveInteractionUseCase>(),
+          ));
+  gh.factory<_i158.BackupIdentityUseCase>(() => _i158.BackupIdentityUseCase(
         get<_i143.GetIdentityUseCase>(),
         get<_i23.IdentityRepository>(),
         get<_i151.GetCurrentEnvDidIdentifierUseCase>(),
       ));
-  gh.factory<_i156.CheckIdentityValidityUseCase>(
-      () => _i156.CheckIdentityValidityUseCase(
+  gh.factory<_i159.CheckIdentityValidityUseCase>(
+      () => _i159.CheckIdentityValidityUseCase(
             get<_i44.GetPrivateKeyUseCase>(),
             get<_i151.GetCurrentEnvDidIdentifierUseCase>(),
           ));
-  gh.factory<_i157.CreateIdentityUseCase>(() => _i157.CreateIdentityUseCase(
+  gh.factory<_i160.CreateIdentityUseCase>(() => _i160.CreateIdentityUseCase(
         get<_i47.GetPublicKeysUseCase>(),
         get<_i151.GetCurrentEnvDidIdentifierUseCase>(),
       ));
-  gh.factory<_i158.CreateProfilesUseCase>(() => _i158.CreateProfilesUseCase(
+  gh.factory<_i161.CreateProfilesUseCase>(() => _i161.CreateProfilesUseCase(
         get<_i47.GetPublicKeysUseCase>(),
         get<_i151.GetCurrentEnvDidIdentifierUseCase>(),
       ));
-  gh.factory<_i159.FetchAndSaveClaimsUseCase>(
-      () => _i159.FetchAndSaveClaimsUseCase(
+  gh.factory<_i162.FetchAndSaveClaimsUseCase>(
+      () => _i162.FetchAndSaveClaimsUseCase(
             get<_i49.Iden3commCredentialRepository>(),
             get<_i147.CheckProfileAndDidCurrentEnvUseCase>(),
             get<_i31.GetEnvUseCase>(),
@@ -727,53 +750,53 @@ _i1.GetIt $initSDKGetIt(
             get<_i104.SaveClaimsUseCase>(),
             get<_i125.GetClaimRevocationStatusUseCase>(),
           ));
-  gh.factory<_i160.GetClaimsUseCase>(() => _i160.GetClaimsUseCase(
+  gh.factory<_i163.GetClaimsUseCase>(() => _i163.GetClaimsUseCase(
         get<_i29.CredentialRepository>(),
         get<_i151.GetCurrentEnvDidIdentifierUseCase>(),
         get<_i143.GetIdentityUseCase>(),
       ));
-  gh.factory<_i161.GetIden3commClaimsUseCase>(
-      () => _i161.GetIden3commClaimsUseCase(
+  gh.factory<_i164.GetIden3commClaimsUseCase>(
+      () => _i164.GetIden3commClaimsUseCase(
             get<_i49.Iden3commCredentialRepository>(),
-            get<_i160.GetClaimsUseCase>(),
+            get<_i163.GetClaimsUseCase>(),
             get<_i125.GetClaimRevocationStatusUseCase>(),
             get<_i111.UpdateClaimUseCase>(),
-            get<_i59.IsProofCircuitSupportedUseCase>(),
+            get<_i60.IsProofCircuitSupportedUseCase>(),
             get<_i46.GetProofRequestsUseCase>(),
           ));
-  gh.factory<_i162.GetIden3commProofsUseCase>(
-      () => _i162.GetIden3commProofsUseCase(
+  gh.factory<_i165.GetIden3commProofsUseCase>(
+      () => _i165.GetIden3commProofsUseCase(
             get<_i12.ProofRepository>(),
-            get<_i161.GetIden3commClaimsUseCase>(),
+            get<_i164.GetIden3commClaimsUseCase>(),
             get<_i148.GenerateProofUseCase>(),
-            get<_i59.IsProofCircuitSupportedUseCase>(),
+            get<_i60.IsProofCircuitSupportedUseCase>(),
             get<_i46.GetProofRequestsUseCase>(),
             get<_i143.GetIdentityUseCase>(),
             get<_i86.ProofGenerationStepsStreamManager>(),
           ));
-  gh.factory<_i163.UpdateIdentityUseCase>(() => _i163.UpdateIdentityUseCase(
+  gh.factory<_i166.UpdateIdentityUseCase>(() => _i166.UpdateIdentityUseCase(
         get<_i23.IdentityRepository>(),
-        get<_i157.CreateIdentityUseCase>(),
+        get<_i160.CreateIdentityUseCase>(),
         get<_i143.GetIdentityUseCase>(),
       ));
-  gh.factory<_i164.AddIdentityUseCase>(() => _i164.AddIdentityUseCase(
+  gh.factory<_i167.AddIdentityUseCase>(() => _i167.AddIdentityUseCase(
         get<_i23.IdentityRepository>(),
-        get<_i157.CreateIdentityUseCase>(),
+        get<_i160.CreateIdentityUseCase>(),
         get<_i122.CreateIdentityStateUseCase>(),
       ));
-  gh.factory<_i165.AddNewIdentityUseCase>(() => _i165.AddNewIdentityUseCase(
+  gh.factory<_i168.AddNewIdentityUseCase>(() => _i168.AddNewIdentityUseCase(
         get<_i23.IdentityRepository>(),
-        get<_i164.AddIdentityUseCase>(),
+        get<_i167.AddIdentityUseCase>(),
       ));
-  gh.factory<_i166.AddProfileUseCase>(() => _i166.AddProfileUseCase(
+  gh.factory<_i169.AddProfileUseCase>(() => _i169.AddProfileUseCase(
         get<_i143.GetIdentityUseCase>(),
-        get<_i163.UpdateIdentityUseCase>(),
+        get<_i166.UpdateIdentityUseCase>(),
         get<_i147.CheckProfileAndDidCurrentEnvUseCase>(),
-        get<_i158.CreateProfilesUseCase>(),
+        get<_i161.CreateProfilesUseCase>(),
       ));
-  gh.factory<_i167.AuthenticateUseCase>(() => _i167.AuthenticateUseCase(
+  gh.factory<_i170.AuthenticateUseCase>(() => _i170.AuthenticateUseCase(
         get<_i27.Iden3commRepository>(),
-        get<_i162.GetIden3commProofsUseCase>(),
+        get<_i165.GetIden3commProofsUseCase>(),
         get<_i142.GetDidIdentifierUseCase>(),
         get<_i150.GetAuthTokenUseCase>(),
         get<_i31.GetEnvUseCase>(),
@@ -781,58 +804,61 @@ _i1.GetIt $initSDKGetIt(
         get<_i147.CheckProfileAndDidCurrentEnvUseCase>(),
         get<_i86.ProofGenerationStepsStreamManager>(),
       ));
-  gh.factory<_i168.Credential>(() => _i168.Credential(
+  gh.factory<_i171.Credential>(() => _i171.Credential(
         get<_i104.SaveClaimsUseCase>(),
-        get<_i160.GetClaimsUseCase>(),
+        get<_i163.GetClaimsUseCase>(),
         get<_i100.RemoveClaimsUseCase>(),
         get<_i111.UpdateClaimUseCase>(),
       ));
-  gh.factory<_i169.Iden3comm>(() => _i169.Iden3comm(
-        get<_i159.FetchAndSaveClaimsUseCase>(),
+  gh.factory<_i172.Iden3comm>(() => _i172.Iden3comm(
+        get<_i162.FetchAndSaveClaimsUseCase>(),
         get<_i36.GetIden3MessageUseCase>(),
-        get<_i167.AuthenticateUseCase>(),
+        get<_i170.AuthenticateUseCase>(),
         get<_i126.GetFiltersUseCase>(),
-        get<_i161.GetIden3commClaimsUseCase>(),
-        get<_i162.GetIden3commProofsUseCase>(),
-        get<dynamic>(),
+        get<_i164.GetIden3commClaimsUseCase>(),
+        get<_i165.GetIden3commProofsUseCase>(),
+        get<_i152.GetInteractionsUseCase>(),
+        get<_i156.SaveInteractionUseCase>(),
+        get<_i155.RemoveInteractionsUseCase>(),
+        get<_i157.UpdateNotificationUseCase>(),
       ));
-  gh.factory<_i170.RemoveProfileUseCase>(() => _i170.RemoveProfileUseCase(
+  gh.factory<_i173.RemoveProfileUseCase>(() => _i173.RemoveProfileUseCase(
         get<_i143.GetIdentityUseCase>(),
-        get<_i163.UpdateIdentityUseCase>(),
+        get<_i166.UpdateIdentityUseCase>(),
         get<_i147.CheckProfileAndDidCurrentEnvUseCase>(),
-        get<_i158.CreateProfilesUseCase>(),
+        get<_i161.CreateProfilesUseCase>(),
         get<_i101.RemoveIdentityStateUseCase>(),
         get<_i99.RemoveAllClaimsUseCase>(),
       ));
-  gh.factory<_i171.RestoreIdentityUseCase>(() => _i171.RestoreIdentityUseCase(
-        get<_i164.AddIdentityUseCase>(),
+  gh.factory<_i174.RestoreIdentityUseCase>(() => _i174.RestoreIdentityUseCase(
+        get<_i167.AddIdentityUseCase>(),
         get<_i143.GetIdentityUseCase>(),
         get<_i23.IdentityRepository>(),
         get<_i151.GetCurrentEnvDidIdentifierUseCase>(),
       ));
-  gh.factory<_i172.RemoveIdentityUseCase>(() => _i172.RemoveIdentityUseCase(
+  gh.factory<_i175.RemoveIdentityUseCase>(() => _i175.RemoveIdentityUseCase(
         get<_i23.IdentityRepository>(),
         get<_i153.GetProfilesUseCase>(),
-        get<_i170.RemoveProfileUseCase>(),
+        get<_i173.RemoveProfileUseCase>(),
         get<_i101.RemoveIdentityStateUseCase>(),
         get<_i99.RemoveAllClaimsUseCase>(),
         get<_i147.CheckProfileAndDidCurrentEnvUseCase>(),
       ));
-  gh.factory<_i173.Identity>(() => _i173.Identity(
-        get<_i156.CheckIdentityValidityUseCase>(),
+  gh.factory<_i176.Identity>(() => _i176.Identity(
+        get<_i159.CheckIdentityValidityUseCase>(),
         get<_i44.GetPrivateKeyUseCase>(),
-        get<_i165.AddNewIdentityUseCase>(),
-        get<_i171.RestoreIdentityUseCase>(),
-        get<_i155.BackupIdentityUseCase>(),
+        get<_i168.AddNewIdentityUseCase>(),
+        get<_i174.RestoreIdentityUseCase>(),
+        get<_i158.BackupIdentityUseCase>(),
         get<_i143.GetIdentityUseCase>(),
         get<_i37.GetIdentitiesUseCase>(),
-        get<_i172.RemoveIdentityUseCase>(),
+        get<_i175.RemoveIdentityUseCase>(),
         get<_i142.GetDidIdentifierUseCase>(),
         get<_i107.SignMessageUseCase>(),
         get<_i123.FetchIdentityStateUseCase>(),
-        get<_i166.AddProfileUseCase>(),
+        get<_i169.AddProfileUseCase>(),
         get<_i153.GetProfilesUseCase>(),
-        get<_i170.RemoveProfileUseCase>(),
+        get<_i173.RemoveProfileUseCase>(),
       ));
   return get;
 }

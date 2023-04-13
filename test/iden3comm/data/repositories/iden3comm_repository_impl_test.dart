@@ -285,30 +285,30 @@ void main() {
       reset(storageConnectionDataSource);
       reset(connectionMapper);
 
-      when(storageConnectionDataSource.getConnections(
+      when(storageConnectionDataSource.getInteractions(
         did: anyNamed('did'),
         privateKey: anyNamed('privateKey'),
       )).thenAnswer(
           (realInvocation) => Future.value(Iden3commMocks.connectionDtos));
 
       when(connectionMapper.mapFrom(any))
-          .thenAnswer((realInvocation) => Iden3commMocks.connectionEntities[0]);
+          .thenAnswer((realInvocation) => Iden3commMocks.interactionEntities[0]);
     });
     test(
         'Given a did and privateKey, when I call getConnections, then I expect a List of ConnectionEntity to be returned',
         () async {
       // When
       expect(
-          await repository.getConnections(
+          await repository.getInteractions(
             did: CommonMocks.did,
             privateKey: CommonMocks.privateKey,
           ),
-          Iden3commMocks.connectionEntities);
+          Iden3commMocks.interactionEntities);
 
       // Then
       expect(verify(connectionMapper.mapFrom(captureAny)).captured.first,
           Iden3commMocks.connectionDtos[0]);
-      var capturedGet = verify(storageConnectionDataSource.getConnections(
+      var capturedGet = verify(storageConnectionDataSource.getInteractions(
               did: captureAnyNamed('did'),
               privateKey: captureAnyNamed('privateKey')))
           .captured;

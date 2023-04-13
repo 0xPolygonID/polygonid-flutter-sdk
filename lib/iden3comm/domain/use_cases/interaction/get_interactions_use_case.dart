@@ -2,78 +2,61 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/connection_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 
 class GetInteractionsParam {
-  final String genesisDid;
-  final BigInt profileNonce;
   final String privateKey;
+  final List<InteractionType>? types;
   final List<FilterEntity>? filters;
-  final InteractionType? interactionType;
 
   GetInteractionsParam({
-    required this.genesisDid,
-    required this.profileNonce,
     required this.privateKey,
+    this.types,
     this.filters,
-    this.interactionType,
   });
 }
 
 class GetInteractionsUseCase
-    extends FutureUseCase<GetInteractionsParam, List<ConnectionEntity>> {
-  final Iden3commRepository _iden3commRepository;
+    extends FutureUseCase<GetInteractionsParam, List<InteractionEntity>> {
+  final InteractionRepository _interactionRepository;
   final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
 
-  GetInteractionsUseCase(this._iden3commRepository,
-      this._getCurrentEnvDidIdentifierUseCase, this._getIdentityUseCase);
+  GetInteractionsUseCase(
+    this._interactionRepository,
+    this._getCurrentEnvDidIdentifierUseCase,
+    this._getIdentityUseCase,
+  );
 
   @override
-  Future<List<ConnectionEntity>> execute(
-      {required GetInteractionsParam param}) async {
-    // if profileNonce is zero, return all profiles' credentials,
-    // if profileNonce > 0 then return only credentials from that profile
-    if (param.profileNonce >= 0) {
-      String did = await _getCurrentEnvDidIdentifierUseCase.execute(
-          param: GetCurrentEnvDidIdentifierParam(
-              privateKey: param.privateKey, profileNonce: param.profileNonce));
-      if (param.profileNonce > GENESIS_PROFILE_NONCE) {
-        return _iden3commRepository
-            .getInteractions(did: did, privateKey: param.privateKey)
-            .then((connections) {
-          logger().i("[GetInteractionsUseCase] Interactions: $connections");
-          return connections;
-        }).catchError((error) {
-          logger().e("[GetClaimsUseCase] Error: $error");
-          throw error;
-        });
-      } else {
-        var identityEntity = await _getIdentityUseCase.execute(
-            param: GetIdentityParam(
-                genesisDid: did, privateKey: param.privateKey));
-        List<ConnectionEntity> result = [];
-        for (var profileDid in identityEntity.profiles.values) {
-          List<ConnectionEntity> didInteractions = await _iden3commRepository
-              .getInteractions(did: profileDid, privateKey: param.privateKey)
-              .then((connections) {
-            logger().i("[GetInteractionsUseCase] Interactions: $connections");
-            return connections;
-          }).catchError((error) {
-            logger().e("[GetClaimsUseCase] Error: $error");
-            throw error;
-          });
-          result.addAll(didInteractions);
-        }
-        return result;
+  Future<List<InteractionEntity>> execute(
+      {required GetInteractionsParam param}) {
+    return _getCurrentEnvDidIdentifierUseCase
+        .execute(
+            param: GetCurrentEnvDidIdentifierParam(
+                privateKey: param.privateKey,
+                profileNonce: GENESIS_PROFILE_NONCE))
+        .then((genesisDid) => _interactionRepository.getInteractions(
+            filters: param.filters,
+            did: genesisDid,
+            privateKey: param.privateKey))
+        .then((interactions) {
+      /// Shortcut to filter by type
+      if (param.types != null) {
+        interactions = interactions
+            .where((interaction) => param.types!.contains(interaction.type))
+            .toList();
       }
-    } else {
-      throw InvalidProfileException(param.profileNonce);
-    }
+
+      logger().i("[GetInteractionsUseCase] Interactions: $interactions");
+
+      return interactions;
+    }).catchError((error) {
+      logger().e("[GetInteractionsUseCase] Error: $error");
+      throw error;
+    });
   }
 }

@@ -10,13 +10,11 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_ide
 
 class GetClaimsParam {
   final List<FilterEntity>? filters;
-  final String did;
   final BigInt profileNonce;
   final String privateKey;
 
   GetClaimsParam({
     this.filters,
-    required this.did,
     required this.profileNonce,
     required this.privateKey,
   });

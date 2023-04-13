@@ -2,34 +2,38 @@ import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/filters_m
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/push_notification_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/secure_storage_interaction_data_source.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/interaction_id_filter_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/interaction_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/notification_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/notification_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/interaction_exception.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart';
 
 class InteractionRepositoryImpl implements InteractionRepository {
   final ChannelPushNotificationDataSource _channelPushNotificationDataSource;
   final SecureStorageInteractionDataSource _storageInteractionDataSource;
-  final NotificationMapper _notificationMapper;
   final InteractionMapper _interactionMapper;
   final FiltersMapper _filtersMapper;
+  final InteractionIdFilterMapper _interactionIdFilterMapper;
 
   InteractionRepositoryImpl(
     this._channelPushNotificationDataSource,
     this._storageInteractionDataSource,
-    this._notificationMapper,
     this._interactionMapper,
     this._filtersMapper,
+    this._interactionIdFilterMapper,
   );
 
   @override
   Stream<NotificationEntity> get notifications =>
       _channelPushNotificationDataSource.notifications
-          .map((event) => _notificationMapper.mapFrom(event));
+              .map((event) => _interactionMapper.mapFrom(event))
+              .where((interaction) =>
+                  interaction.type != InteractionType.connection)
+          as Stream<NotificationEntity>;
 
   @override
-  Future<InteractionEntity> storeInteraction(
+  Future<InteractionEntity> saveInteraction(
       {required InteractionEntity interaction,
       required String did,
       required String privateKey}) {
@@ -54,5 +58,30 @@ class InteractionRepositoryImpl implements InteractionRepository {
         .then((interactions) => interactions
             .map((interaction) => _interactionMapper.mapFrom(interaction))
             .toList());
+  }
+
+  @override
+  Future<InteractionEntity> getInteraction(
+      {required int id, required String did, required String privateKey}) {
+    return _storageInteractionDataSource
+        .getInteractions(
+            filter: _interactionIdFilterMapper.mapTo(id),
+            did: did,
+            privateKey: privateKey)
+        .then((interactions) => interactions.isEmpty
+            ? throw InteractionNotFoundException(id)
+            : _interactionMapper.mapFrom(interactions.first));
+  }
+
+  @override
+  Future<void> removeInteractions(
+      {required List<int> ids,
+      required String did,
+      required String privateKey}) {
+    return _storageInteractionDataSource.removeInteractions(
+      ids: ids,
+      did: did,
+      privateKey: privateKey,
+    );
   }
 }

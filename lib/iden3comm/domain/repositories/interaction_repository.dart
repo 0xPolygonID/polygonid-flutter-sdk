@@ -5,13 +5,27 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/noti
 abstract class InteractionRepository {
   Stream<NotificationEntity> get notifications;
 
-  Future<InteractionEntity> storeInteraction(
-      {required InteractionEntity interaction,
-      required String did,
-      required String privateKey});
+  Future<InteractionEntity> saveInteraction({
+    required InteractionEntity interaction,
+    required String did,
+    required String privateKey,
+  });
 
-  Future<List<InteractionEntity>> getInteractions(
-      {List<FilterEntity>? filters,
-      required String did,
-      required String privateKey});
+  Future<List<InteractionEntity>> getInteractions({
+    List<FilterEntity>? filters,
+    required String did,
+    required String privateKey,
+  });
+
+  Future<InteractionEntity> getInteraction({
+    required int id,
+    required String did,
+    required String privateKey,
+  });
+
+  Future<void> removeInteractions({
+    required List<int> ids,
+    required String did,
+    required String privateKey,
+  });
 }

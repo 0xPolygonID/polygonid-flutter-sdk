@@ -1,60 +1,60 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 
-enum NotificationType {
-  generic,
-  offer,
-  revocation,
-  update,
-  auth,
+enum NotificationState {
+  pending,
+  accepted,
+  declined,
 }
 
 class NotificationEntity extends InteractionEntity {
-  final NotificationType notificationType;
   final bool isRead;
-  final String payload;
+  final NotificationState state;
 
   NotificationEntity({
     super.id,
-    required this.notificationType,
     this.isRead = false,
-    required this.payload,
+    this.state = NotificationState.pending,
     required super.from,
     required super.genesisDid,
     required super.profileNonce,
-  }) : super(type: InteractionType.notification);
+    required super.type,
+    required super.timestamp,
+    required super.message,
+  });
 
   factory NotificationEntity.fromJson(Map<String, dynamic> json) {
     return NotificationEntity(
       id: json['id'],
-      notificationType: NotificationType.values
-          .firstWhere((type) => type.toString() == json['notificationType']),
       isRead: json['isRead'] as bool,
-      payload: json['payload'],
+      state: NotificationState.values
+          .firstWhere((type) => type.toString() == json['state']),
+      message: json['message'],
       from: json['from'],
       genesisDid: json['genesisDid'],
       profileNonce: BigInt.parse(json['profileNonce']),
+      type: InteractionType.values
+          .firstWhere((type) => type.toString() == json['type']),
+      timestamp: json['timestamp'],
     );
   }
 
   @override
   Map<String, dynamic> toJson() => super.toJson()
     ..addAll({
-      'notificationType': notificationType.toString(),
       'isRead': isRead,
-      'payload': payload,
+      'state': state.toString(),
     });
 
   @override
   String toString() =>
-      "[NotificationEntity] {${super.toString()} notificationType: $notificationType, isRead: $isRead, payload: $payload}";
+      "[NotificationEntity] {${super.toString()}, isRead: $isRead, state: $state}";
 
   @override
   bool operator ==(Object other) =>
       super == other &&
       other is NotificationEntity &&
-      type == other.type &&
       isRead == other.isRead &&
-      payload == other.payload;
+      state == other.state;
 
   @override
   int get hashCode => runtimeType.hashCode;
