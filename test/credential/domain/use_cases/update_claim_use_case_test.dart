@@ -23,7 +23,7 @@ final exception = Exception();
 
 final UpdateClaimParam param = UpdateClaimParam(
     id: id,
-    did: identifier,
+    genesisDid: identifier,
     privateKey: privateKey,
     issuer: otherIssuer,
     expiration: otherExpiration,
@@ -61,12 +61,12 @@ void main() {
 
       // Given
       when(credentialRepository.getClaim(
-              did: anyNamed('did'),
+              genesisDid: anyNamed('genesisDid'),
               privateKey: anyNamed('privateKey'),
               claimId: anyNamed('claimId')))
           .thenAnswer((realInvocation) => Future.value(claimEntity));
       when(credentialRepository.saveClaims(
-              did: anyNamed('did'),
+              genesisDid: anyNamed('genesisDid'),
               privateKey: anyNamed('privateKey'),
               claims: anyNamed('claims')))
           .thenAnswer((realInvocation) => Future.value(null));
@@ -80,7 +80,7 @@ void main() {
 
       // Then
       var capturedGet = verify(credentialRepository.getClaim(
-              did: captureAnyNamed('did'),
+              genesisDid: captureAnyNamed('genesisDid'),
               privateKey: captureAnyNamed('privateKey'),
               claimId: captureAnyNamed('claimId')))
           .captured;
@@ -89,7 +89,7 @@ void main() {
       expect(capturedGet[2], id);
 
       var capturedSave = verify(credentialRepository.saveClaims(
-              did: captureAnyNamed('did'),
+              genesisDid: captureAnyNamed('genesisDid'),
               privateKey: captureAnyNamed('privateKey'),
               claims: captureAnyNamed('claims')))
           .captured;
@@ -103,7 +103,7 @@ void main() {
         () async {
       // Given
       when(credentialRepository.getClaim(
-              did: anyNamed('did'),
+              genesisDid: anyNamed('genesisDid'),
               privateKey: anyNamed('privateKey'),
               claimId: anyNamed('claimId')))
           .thenAnswer((realInvocation) => Future.error(exception));
@@ -113,7 +113,7 @@ void main() {
 
       // Then
       var capturedGet = verify(credentialRepository.getClaim(
-              did: captureAnyNamed('did'),
+              genesisDid: captureAnyNamed('genesisDid'),
               privateKey: captureAnyNamed('privateKey'),
               claimId: captureAnyNamed('claimId')))
           .captured;
@@ -122,7 +122,7 @@ void main() {
       expect(capturedGet[2], id);
 
       verifyNever(credentialRepository.saveClaims(
-          did: captureAnyNamed('did'),
+          genesisDid: captureAnyNamed('genesisDid'),
           privateKey: captureAnyNamed('privateKey'),
           claims: captureAnyNamed('claims')));
     });

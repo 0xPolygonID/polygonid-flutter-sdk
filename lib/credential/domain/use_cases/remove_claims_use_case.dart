@@ -4,12 +4,12 @@ import '../repositories/credential_repository.dart';
 
 class RemoveClaimsParam {
   final List<String> claimIds;
-  final String did;
+  final String genesisDid;
   final String privateKey;
 
   RemoveClaimsParam({
     required this.claimIds,
-    required this.did,
+    required this.genesisDid,
     required this.privateKey,
   });
 }
@@ -24,7 +24,7 @@ class RemoveClaimsUseCase extends FutureUseCase<RemoveClaimsParam, void> {
     return _credentialRepository
         .removeClaims(
           claimIds: param.claimIds,
-          did: param.did,
+          genesisDid: param.genesisDid,
           privateKey: param.privateKey,
         )
         .then((_) => logger().i(

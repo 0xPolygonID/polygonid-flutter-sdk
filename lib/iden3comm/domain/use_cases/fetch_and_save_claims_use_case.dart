@@ -126,7 +126,7 @@ class FetchAndSaveClaimsUseCase
                 .execute(
                     param: SaveClaimsParam(
               claims: claims,
-              did: param.genesisDid,
+              genesisDid: param.genesisDid,
               privateKey: param.privateKey,
             ))
                 .then((_) {

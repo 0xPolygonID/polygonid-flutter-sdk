@@ -38,12 +38,12 @@ class CredentialRepositoryImpl extends CredentialRepository {
   @override
   Future<void> saveClaims(
       {required List<ClaimEntity> claims,
-      required String did,
+      required String genesisDid,
       required String privateKey}) {
     return _storageClaimDataSource
         .storeClaims(
             claims: claims.map((claim) => _claimMapper.mapTo(claim)).toList(),
-            did: did,
+            did: genesisDid,
             privateKey: privateKey)
         .catchError((error) => throw SaveClaimException(error));
   }
@@ -51,12 +51,12 @@ class CredentialRepositoryImpl extends CredentialRepository {
   @override
   Future<List<ClaimEntity>> getClaims(
       {List<FilterEntity>? filters,
-      required String did,
+      required String genesisDid,
       required String privateKey}) {
     return _storageClaimDataSource
         .getClaims(
             filter: filters == null ? null : _filtersMapper.mapTo(filters),
-            did: did,
+            did: genesisDid,
             privateKey: privateKey)
         .then((claims) =>
             claims.map((claim) => _claimMapper.mapFrom(claim)).toList())
@@ -66,12 +66,12 @@ class CredentialRepositoryImpl extends CredentialRepository {
   @override
   Future<ClaimEntity> getClaim(
       {required String claimId,
-      required String did,
+      required String genesisDid,
       required String privateKey}) {
     return _storageClaimDataSource
         .getClaims(
             filter: _idFilterMapper.mapTo(claimId),
-            did: did,
+            did: genesisDid,
             privateKey: privateKey)
         .then((claims) => claims.isEmpty
             ? throw ClaimNotFoundException(claimId)
@@ -81,18 +81,19 @@ class CredentialRepositoryImpl extends CredentialRepository {
   @override
   Future<void> removeClaims(
       {required List<String> claimIds,
-      required String did,
+      required String genesisDid,
       required String privateKey}) {
     return _storageClaimDataSource
-        .removeClaims(claimIds: claimIds, did: did, privateKey: privateKey)
+        .removeClaims(
+            claimIds: claimIds, did: genesisDid, privateKey: privateKey)
         .catchError((error) => throw RemoveClaimsException(error));
   }
 
   @override
   Future<void> removeAllClaims(
-      {required String did, required String privateKey}) {
+      {required String genesisDid, required String privateKey}) {
     return _storageClaimDataSource
-        .removeAllClaims(did: did, privateKey: privateKey)
+        .removeAllClaims(did: genesisDid, privateKey: privateKey)
         .catchError((error) => throw RemoveClaimsException(error));
   }
 
