@@ -5,6 +5,7 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 
@@ -26,6 +27,10 @@ final filters = [
 ];
 final GetClaimsParam param = GetClaimsParam(
     genesisDid: identifier, profileNonce: BigInt.zero, privateKey: privateKey);
+final GetClaimsParam negativeParam = GetClaimsParam(
+    genesisDid: identifier,
+    profileNonce: CommonMocks.negativeNonce,
+    privateKey: privateKey);
 final GetClaimsParam paramFilters = GetClaimsParam(
     genesisDid: identifier,
     profileNonce: BigInt.zero,
@@ -167,6 +172,23 @@ void main() {
       expect(capturedGet[0], identifier);
       expect(capturedGet[1], privateKey);
       expect(capturedGet[2], null);
+    });
+
+    test(
+        "Given no filters and a negative profile, when I call execute, then I expect an InvalidProfileException to be thrown",
+        () async {
+      // When
+      await expectLater(useCase.execute(param: negativeParam),
+          throwsA(isA<InvalidProfileException>()));
+
+      // Then
+      verifyNever(getCurrentEnvDidIdentifierUseCase.execute(
+          param: captureAnyNamed('param')));
+
+      verifyNever(credentialRepository.getClaims(
+          genesisDid: captureAnyNamed('genesisDid'),
+          privateKey: captureAnyNamed('privateKey'),
+          filters: captureAnyNamed('filters')));
     });
 
     test(
