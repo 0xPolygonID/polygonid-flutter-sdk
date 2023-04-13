@@ -1,7 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/connection_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/connection/connection_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
@@ -118,6 +118,11 @@ abstract class PolygonIdSdkIden3comm {
   /// and also to realize operations like generating proofs
   Future<List<ConnectionEntity>> getConnections(
       {required String did, required String privateKey});
+
+  /// Handles notifications and store them
+  ///
+  /// The [payload] is the notification payload
+  Future<void> handleNotification({required String payload});
 }
 
 @injectable
@@ -231,5 +236,11 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       did: did,
       privateKey: privateKey,
     ));
+  }
+
+  @override
+  Future<void> handleNotification({required String payload}) {
+    // TODO: implement handleNotification
+    throw UnimplementedError();
   }
 }

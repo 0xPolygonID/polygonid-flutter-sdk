@@ -1,5 +1,6 @@
 const AUTH_CLAIM_SCHEMA = "cca3371a6cb1b715004407e325bd993c";
 const API_VERSION = 'v1';
+const CHANNEL_NAME = 'technology.polygon.polygonid_flutter_id';
 
 /// Database
 const databaseName = "polygonIdSdk.db";
@@ -25,4 +26,4 @@ const rootsTreeStoreName = "rootsTreeStore";
 const claimStoreName = "claimStore";
 
 /// Iden3comm
-const connectionStoreName = "connectionStore";
+const interactionStoreName = "interactionStore";

@@ -73,19 +73,13 @@ class AuthIden3MessageEntity extends Iden3MessageEntity {
   final AuthBodyRequest body;
 
   AuthIden3MessageEntity(
-      {required String id,
-      required String typ,
-      required String type,
-      required String thid,
-      required String from,
+      {required super.id,
+      required super.typ,
+      required super.type,
+      required super.thid,
+      required super.from,
       required this.body})
-      : super(
-            from: from,
-            id: id,
-            type: type,
-            messageType: Iden3MessageType.auth,
-            thid: thid,
-            typ: typ);
+      : super(messageType: Iden3MessageType.auth);
 
   /// Creates an instance from the given json
   ///

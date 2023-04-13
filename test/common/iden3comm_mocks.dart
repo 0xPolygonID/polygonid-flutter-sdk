@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/connection_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/connection_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/connection/connection_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_sd_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';

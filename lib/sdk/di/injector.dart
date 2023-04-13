@@ -40,6 +40,12 @@ final getItSdk = GetIt.asNewInstance();
 configureInjection() => $initSDKGetIt(getItSdk);
 
 @module
+abstract class ChannelModule {
+  @lazySingleton
+  MethodChannel get methodChannel => const MethodChannel(CHANNEL_NAME);
+}
+
+@module
 abstract class PlatformModule {
   @lazySingleton
   Future<PackageInfo> get packageInfo async => PackageInfo.fromPlatform();
@@ -81,18 +87,23 @@ abstract class DatabaseModule {
       stringMapStoreFactory.store(identityStoreName);
 
   @Named(identityDatabaseName)
-  Future<Database> identityDatabase(@factoryParam String? identifier,
-      @factoryParam String? privateKey) async {
+  Future<Database> identityDatabase(
+      @factoryParam String identifier, @factoryParam String privateKey) async {
     final dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
-    final path = join(dir.path, identityDatabasePrefix + identifier! + '.db');
+    final path = join(dir.path, identityDatabasePrefix + identifier + '.db');
     // Initialize the encryption codec with the privateKey
     final codec = getItSdk.get<SembastCodec>(param1: privateKey);
     final database = await databaseFactoryIo.openDatabase(path, codec: codec);
     return database;
   }
 
-  // Secured store
+  SembastCodec getCodec(@factoryParam String privateKey) {
+    return getEncryptSembastCodec(password: privateKey);
+  }
+
+  // Secured stores
+  /// FIXME: inject store separately (need DS fixing)
   @Named(securedStoreName)
   Map<String, StoreRef<String, Map<String, Object?>>> get securedStore {
     Map<String, StoreRef<String, Map<String, Object?>>> result = {};
@@ -104,20 +115,32 @@ abstract class DatabaseModule {
     result[rootsTreeStoreName] =
         stringMapStoreFactory.store(rootsTreeStoreName);
 
-    result[claimStoreName] = stringMapStoreFactory.store(claimStoreName);
-
-    result[connectionStoreName] =
-        stringMapStoreFactory.store(connectionStoreName);
     return result;
   }
 
-  SembastCodec getCodec(@factoryParam String privateKey) {
-    return getEncryptSembastCodec(password: privateKey);
-  }
+  // @Named(claimsTreeStoreName)
+  // StoreRef<String, dynamic> get claimsTreeStore =>
+  //     stringMapStoreFactory.store(keyValueStoreName);
+  //
+  // @Named(revocationTreeStoreName)
+  // StoreRef<String, dynamic> get revocationTreeStore =>
+  //     stringMapStoreFactory.store(keyValueStoreName);
+  //
+  // @Named(rootsTreeStoreName)
+  // StoreRef<String, dynamic> get rootsTreeStore =>
+  //     stringMapStoreFactory.store(keyValueStoreName);
 
   @Named(keyValueStoreName)
-  StoreRef<String, dynamic> get keyValueStore =>
+  StoreRef<String, Map<String, dynamic>> get keyValueStore =>
       stringMapStoreFactory.store(keyValueStoreName);
+
+  @Named(claimStoreName)
+  StoreRef<String, Map<String, dynamic>> get claimStore =>
+      stringMapStoreFactory.store(claimStoreName);
+
+  @Named(interactionStoreName)
+  StoreRef<int, Map<String, dynamic>> get interactionStore =>
+      intMapStoreFactory.store(interactionStoreName);
 }
 
 @module
