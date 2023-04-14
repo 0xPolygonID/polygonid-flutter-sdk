@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/connection_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/connection_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/notification_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_sd_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';
@@ -200,39 +200,33 @@ class Iden3commMocks {
     vp: ProofMocks.vp,
   );
 
-  static List<ConnectionEntity> connectionEntities = [
-    ConnectionEntity(
+  static List<InteractionEntity> interactionEntities = [
+    InteractionEntity(
+      id: CommonMocks.intValues[0],
       from: CommonMocks.did,
-      to: CommonMocks.did,
-      interactions: [],
+      genesisDid: CommonMocks.did,
+      profileNonce: CommonMocks.nonce,
+      type: InteractionType.connection,
+      timestamp: 0,
+      message: CommonMocks.message,
     ),
-    ConnectionEntity(
+    NotificationEntity(
+      id: CommonMocks.intValues[1],
       from: CommonMocks.did,
-      to: CommonMocks.did,
-      interactions: [],
+      genesisDid: CommonMocks.did,
+      profileNonce: CommonMocks.nonce,
+      type: InteractionType.authRequest,
+      timestamp: 0,
+      message: CommonMocks.message,
     ),
-    ConnectionEntity(
+    NotificationEntity(
+      id: CommonMocks.intValues[2],
       from: CommonMocks.did,
-      to: CommonMocks.did,
-      interactions: [],
-    )
-  ];
-
-  static List<ConnectionDTO> connectionDtos = [
-    ConnectionDTO(
-      from: CommonMocks.did,
-      to: CommonMocks.did,
-      interactions: const [],
+      genesisDid: CommonMocks.did,
+      profileNonce: CommonMocks.nonce,
+      type: InteractionType.offer,
+      timestamp: 0,
+      message: CommonMocks.message,
     ),
-    ConnectionDTO(
-      from: CommonMocks.did,
-      to: CommonMocks.did,
-      interactions: const [],
-    ),
-    ConnectionDTO(
-      from: CommonMocks.did,
-      to: CommonMocks.did,
-      interactions: const [],
-    )
   ];
 }

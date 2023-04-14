@@ -1,16 +1,11 @@
 import 'dart:typed_data';
 
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/connection_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
 
-import '../../../common/domain/entities/filter_entity.dart';
-import '../../../credential/domain/entities/claim_entity.dart';
 import '../entities/jwz_proof_entity.dart';
-import '../entities/proof_request_entity.dart';
 import '../entities/request/auth/auth_iden3_message_entity.dart';
-import '../entities/request/offer/offer_iden3_message_entity.dart';
 
 abstract class Iden3commRepository {
   Future<void> authenticate({
@@ -41,7 +36,4 @@ abstract class Iden3commRepository {
   });
 
   Future<String> getChallenge({required String message});
-
-  Future<List<ConnectionEntity>> getConnections(
-      {required String did, required String privateKey});
 }

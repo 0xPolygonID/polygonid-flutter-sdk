@@ -1,7 +1,7 @@
 import 'package:polygonid_flutter_sdk/common/mappers/to_mapper.dart';
 import 'package:sembast/sembast.dart';
 
-import '../../../common/domain/entities/filter_entity.dart';
+import '../../../domain/entities/filter_entity.dart';
 
 class FilterMapper extends ToMapper<Filter, FilterEntity> {
   @override

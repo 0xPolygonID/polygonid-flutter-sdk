@@ -73,21 +73,14 @@ class OfferIden3MessageEntity extends Iden3MessageEntity {
   final OfferBodyRequest body;
 
   OfferIden3MessageEntity(
-      {required String id,
-      required String typ,
-      required String type,
-      required String thid,
-      required String from,
+      {required super.id,
+      required super.typ,
+      required super.type,
+      required super.thid,
+      required super.from,
       required this.body,
-      String? to})
-      : super(
-            from: from,
-            to: to,
-            id: id,
-            messageType: Iden3MessageType.offer,
-            thid: thid,
-            typ: typ,
-            type: type);
+      super.to})
+      : super(messageType: Iden3MessageType.offer);
 
   /// Creates an instance from the given json
   ///

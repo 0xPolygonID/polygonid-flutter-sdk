@@ -31,19 +31,4 @@ void main() {
       expect(error.profileNonce, CommonMocks.negativeNonce);
     });
   });
-
-  test(
-      "Given param with a genesis profileNonce and we exclude it, when I call execute, I expect an InvalidProfileNonceException to be thrown",
-      () async {
-    // When
-    await useCase
-        .execute(
-            param: CheckProfileValidityParam(
-                profileNonce: CommonMocks.genesisNonce, excludeGenesis: true))
-        .then((value) => expect(true, false))
-        .catchError((error) {
-      expect(error, isA<InvalidProfileException>());
-      expect(error.profileNonce, CommonMocks.genesisNonce);
-    });
-  });
 }

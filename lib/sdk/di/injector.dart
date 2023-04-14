@@ -18,8 +18,10 @@ import 'package:polygonid_flutter_sdk/credential/data/credential_repository_impl
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/iden3comm_credential_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/iden3comm_repository_impl.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/interaction_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/data/repositories/identity_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/identity/data/repositories/smt_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
@@ -38,6 +40,12 @@ final getItSdk = GetIt.asNewInstance();
   initializerName: r'$initSDKGetIt',
 )
 configureInjection() => $initSDKGetIt(getItSdk);
+
+@module
+abstract class ChannelModule {
+  @lazySingleton
+  MethodChannel get methodChannel => const MethodChannel(CHANNEL_NAME);
+}
 
 @module
 abstract class PlatformModule {
@@ -75,11 +83,6 @@ abstract class DatabaseModule {
     return database;
   }
 
-  // Identity
-  @Named(identityStoreName)
-  StoreRef<String, Map<String, Object?>> get identityStore =>
-      stringMapStoreFactory.store(identityStoreName);
-
   @Named(identityDatabaseName)
   Future<Database> identityDatabase(@factoryParam String? identifier,
       @factoryParam String? privateKey) async {
@@ -87,37 +90,44 @@ abstract class DatabaseModule {
     await dir.create(recursive: true);
     final path = join(dir.path, identityDatabasePrefix + identifier! + '.db');
     // Initialize the encryption codec with the privateKey
-    final codec = getItSdk.get<SembastCodec>(param1: privateKey);
+    final codec = getItSdk.get<SembastCodec>(param1: privateKey!);
     final database = await databaseFactoryIo.openDatabase(path, codec: codec);
     return database;
-  }
-
-  // Secured store
-  @Named(securedStoreName)
-  Map<String, StoreRef<String, Map<String, Object?>>> get securedStore {
-    Map<String, StoreRef<String, Map<String, Object?>>> result = {};
-    //result[identityStoreName] = stringMapStoreFactory.store(identityStoreName);
-    result[claimsTreeStoreName] =
-        stringMapStoreFactory.store(claimsTreeStoreName);
-    result[revocationTreeStoreName] =
-        stringMapStoreFactory.store(revocationTreeStoreName);
-    result[rootsTreeStoreName] =
-        stringMapStoreFactory.store(rootsTreeStoreName);
-
-    result[claimStoreName] = stringMapStoreFactory.store(claimStoreName);
-
-    result[connectionStoreName] =
-        stringMapStoreFactory.store(connectionStoreName);
-    return result;
   }
 
   SembastCodec getCodec(@factoryParam String privateKey) {
     return getEncryptSembastCodec(password: privateKey);
   }
 
+  // Identity
+  @Named(identityStoreName)
+  StoreRef<String, Map<String, Object?>> get identityStore =>
+      stringMapStoreFactory.store(identityStoreName);
+
+  /// FIXME: inject store separately (need DS fixing)
+  @Named(identityStateStoreName)
+  Map<String, StoreRef<String, Map<String, Object?>>> get identityStateStore {
+    Map<String, StoreRef<String, Map<String, Object?>>> result = {};
+    result[claimsTreeStoreName] =
+        stringMapStoreFactory.store(claimsTreeStoreName);
+    result[revocationTreeStoreName] =
+        stringMapStoreFactory.store(revocationTreeStoreName);
+    result[rootsTreeStoreName] =
+        stringMapStoreFactory.store(rootsTreeStoreName);
+    return result;
+  }
+
   @Named(keyValueStoreName)
-  StoreRef<String, dynamic> get keyValueStore =>
+  StoreRef<String, Map<String, Object?>> get keyValueStore =>
       stringMapStoreFactory.store(keyValueStoreName);
+
+  @Named(claimStoreName)
+  StoreRef<String, Map<String, Object?>> get claimStore =>
+      stringMapStoreFactory.store(claimStoreName);
+
+  @Named(interactionStoreName)
+  StoreRef<String, Map<String, Object?>> get interactionStore =>
+      stringMapStoreFactory.store(interactionStoreName);
 }
 
 @module
@@ -154,6 +164,10 @@ abstract class RepositoriesModule {
   Iden3commRepository iden3commRepository(
           Iden3commRepositoryImpl iden3commRepositoryImpl) =>
       iden3commRepositoryImpl;
+
+  InteractionRepository interactionRepository(
+          InteractionRepositoryImpl interactionRepositoryImpl) =>
+      interactionRepositoryImpl;
 
   // SMT
   SMTRepository smtRepository(SMTRepositoryImpl smtRepositoryImpl) =>

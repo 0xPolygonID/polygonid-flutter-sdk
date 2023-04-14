@@ -1,8 +1,8 @@
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/data/data_sources/secure_identity_storage_data_source.dart';
 import 'package:sembast/sembast.dart';
 
 import '../../../constants.dart';
-import '../../../sdk/di/injector.dart';
 import '../../domain/exceptions/smt_exceptions.dart';
 import '../dtos/hash_dto.dart';
 import '../dtos/node_dto.dart';
@@ -14,7 +14,7 @@ import '../dtos/node_dto.dart';
 class IdentitySMTStoreRefWrapper {
   final Map<String, StoreRef<String, Map<String, Object?>>> _store;
 
-  IdentitySMTStoreRefWrapper(@Named(securedStoreName) this._store);
+  IdentitySMTStoreRefWrapper(@Named(identityStateStoreName) this._store);
 
   Future<Map<String, Object?>?> get(
       DatabaseClient database, String storeName, String key) {
@@ -37,16 +37,10 @@ class IdentitySMTStoreRefWrapper {
   }
 }
 
-class StorageSMTDataSource {
+class StorageSMTDataSource extends SecureIdentityStorageDataSource {
   final IdentitySMTStoreRefWrapper _storeRefWrapper;
 
   StorageSMTDataSource(this._storeRefWrapper);
-
-  Future<Database> _getDatabase(
-      {required String did, required String privateKey}) {
-    return getItSdk.getAsync<Database>(
-        instanceName: identityDatabaseName, param1: did, param2: privateKey);
-  }
 
   // getNode gets a node by key from the SMT.  Empty nodes are not stored in the
   // tree; they are all the same and assumed to always exist.
@@ -62,7 +56,7 @@ class StorageSMTDataSource {
         type: NodeTypeDTO.empty,
       ));
     }
-    return _getDatabase(did: did, privateKey: privateKey).then((database) =>
+    return getDatabase(did: did, privateKey: privateKey).then((database) =>
         database
             .transaction((transaction) => getTransact(
                 storeName: storeName, transaction: transaction, key: key))
@@ -84,7 +78,7 @@ class StorageSMTDataSource {
       required String storeName,
       required String did,
       required String privateKey}) {
-    return _getDatabase(did: did, privateKey: privateKey).then((database) =>
+    return getDatabase(did: did, privateKey: privateKey).then((database) =>
         database
             .transaction((transaction) => putTransact(
                 storeName: storeName,
@@ -108,7 +102,7 @@ class StorageSMTDataSource {
       {required String storeName,
       required String did,
       required String privateKey}) {
-    return _getDatabase(did: did, privateKey: privateKey).then((database) =>
+    return getDatabase(did: did, privateKey: privateKey).then((database) =>
         database
             .transaction((transaction) =>
                 getRootTransact(transaction: transaction, storeName: storeName))
@@ -133,7 +127,7 @@ class StorageSMTDataSource {
       required String storeName,
       required String did,
       required String privateKey}) {
-    return _getDatabase(did: did, privateKey: privateKey).then((database) =>
+    return getDatabase(did: did, privateKey: privateKey).then((database) =>
         database
             .transaction((transaction) => setRootTransact(
                 transaction: transaction, storeName: storeName, root: root))
@@ -152,7 +146,7 @@ class StorageSMTDataSource {
       {required String storeName,
       required String did,
       required String privateKey}) {
-    return _getDatabase(did: did, privateKey: privateKey).then((database) =>
+    return getDatabase(did: did, privateKey: privateKey).then((database) =>
         database
             .transaction((transaction) => getMaxLevelsTransact(
                 transaction: transaction, storeName: storeName))
@@ -171,7 +165,7 @@ class StorageSMTDataSource {
       required String storeName,
       required String did,
       required String privateKey}) {
-    return _getDatabase(did: did, privateKey: privateKey).then((database) =>
+    return getDatabase(did: did, privateKey: privateKey).then((database) =>
         database
             .transaction((transaction) => setMaxLevelsTransact(
                 transaction: transaction,
@@ -193,7 +187,7 @@ class StorageSMTDataSource {
       {required String storeName,
       required String did,
       required String privateKey}) {
-    return _getDatabase(did: did, privateKey: privateKey).then((database) =>
+    return getDatabase(did: did, privateKey: privateKey).then((database) =>
         database
             .transaction((transaction) => removeSMTTransact(
                 transaction: transaction, storeName: storeName))

@@ -105,7 +105,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
     if (did == null || did.isEmpty) {
       emit(const ClaimsState.error(
-          "without an identity is impossible to get claims"));
+          "without an identity is impossible to remove claim"));
       return;
     }
 
@@ -151,7 +151,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
     if (did == null || did.isEmpty) {
       emit(const ClaimsState.error(
-          "without an identity is impossible to get claims"));
+          "without an identity is impossible to remove claim"));
       return;
     }
 

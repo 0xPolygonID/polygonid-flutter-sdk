@@ -9,35 +9,29 @@ import 'package:pointycastle/asymmetric/oaep.dart';
 import 'package:pointycastle/asymmetric/rsa.dart';
 import 'package:pointycastle/digests/sha512.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
-import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/lib_pidcore_iden3comm_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/storage_connection_data_source.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_did_doc_response.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_did_doc_service_metadata_devices_response.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_did_doc_service_metadata_response.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_did_doc_service_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/connection_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/connection_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_inputs_mapper.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_response_mapper.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/gist_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
 import 'package:uuid/uuid.dart';
-
-import '../../../common/domain/domain_logger.dart';
-import '../../../identity/data/data_sources/lib_babyjubjub_data_source.dart';
-import '../../../identity/data/mappers/q_mapper.dart';
-import '../../domain/exceptions/iden3comm_exceptions.dart';
-import '../../domain/repositories/iden3comm_repository.dart';
-import '../data_sources/lib_pidcore_iden3comm_data_source.dart';
-import '../dtos/response/auth/auth_body_did_doc_response.dart';
-import '../dtos/response/auth/auth_body_did_doc_service_metadata_devices_response.dart';
-import '../dtos/response/auth/auth_body_did_doc_service_metadata_response.dart';
-import '../dtos/response/auth/auth_body_did_doc_service_response.dart';
-import '../mappers/auth_inputs_mapper.dart';
-import '../mappers/auth_proof_mapper.dart';
-import '../mappers/auth_response_mapper.dart';
-import '../mappers/gist_proof_mapper.dart';
-import '../mappers/proof_request_filters_mapper.dart';
 
 class Iden3commRepositoryImpl extends Iden3commRepository {
   final RemoteIden3commDataSource _remoteIden3commDataSource;
@@ -45,25 +39,21 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       _libPolygonIdCoreIden3commDataSource;
   final LibBabyJubJubDataSource
       _libBabyJubJubDataSource; // TODO move bjj DS to common
-  final StorageConnectionDataSource _storageConnectionDataSource;
   final AuthResponseMapper _authResponseMapper;
   final AuthInputsMapper _authInputsMapper;
   final AuthProofMapper _authProofMapper;
   final GistProofMapper _gistProofMapper;
   final QMapper _qMapper;
-  final ConnectionMapper _connectionMapper;
 
   Iden3commRepositoryImpl(
     this._remoteIden3commDataSource,
     this._libPolygonIdCoreIden3commDataSource,
     this._libBabyJubJubDataSource,
-    this._storageConnectionDataSource,
     this._authResponseMapper,
     this._authInputsMapper,
     this._authProofMapper,
     this._gistProofMapper,
     this._qMapper,
-    this._connectionMapper,
   );
 
   @override
@@ -192,16 +182,5 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   Future<String> getChallenge({required String message}) {
     return Future.value(_qMapper.mapFrom(message))
         .then((q) => _libBabyJubJubDataSource.hashPoseidon(q));
-  }
-
-  @override
-  Future<List<ConnectionEntity>> getConnections(
-      {required String did, required String privateKey}) {
-    return _storageConnectionDataSource
-        .getConnections(did: did, privateKey: privateKey)
-        .then((connections) => connections
-            .map((connection) => _connectionMapper.mapFrom(connection))
-            .toList())
-        .catchError((error) => throw GetConnectionsException(error));
   }
 }

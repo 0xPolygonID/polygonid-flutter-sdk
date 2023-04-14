@@ -72,22 +72,15 @@ class FetchIden3MessageEntity extends Iden3MessageEntity {
   @override
   final FetchBodyRequest body;
 
-  FetchIden3MessageEntity({
-    required String id,
-    required String typ,
-    required String type,
-    required String thid,
-    required String from,
-    required this.body,
-    String? to,
-  }) : super(
-            from: from,
-            to: to,
-            id: id,
-            messageType: Iden3MessageType.issuance,
-            thid: thid,
-            typ: typ,
-            type: type);
+  FetchIden3MessageEntity(
+      {required super.id,
+      required super.typ,
+      required super.type,
+      required super.thid,
+      required super.from,
+      required this.body,
+      required super.to})
+      : super(messageType: Iden3MessageType.issuance);
 
   /// Creates an instance from the given json
   ///
