@@ -18,8 +18,10 @@ import 'package:polygonid_flutter_sdk/credential/data/credential_repository_impl
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/iden3comm_credential_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/iden3comm_repository_impl.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/interaction_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/data/repositories/identity_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/identity/data/repositories/smt_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
@@ -81,14 +83,9 @@ abstract class DatabaseModule {
     return database;
   }
 
-  // Identity
-  @Named(identityStoreName)
-  StoreRef<String, Map<String, Object?>> get identityStore =>
-      stringMapStoreFactory.store(identityStoreName);
-
   @Named(identityDatabaseName)
-  Future<Database> identityDatabase(
-      @factoryParam String? identifier, @factoryParam String? privateKey) async {
+  Future<Database> identityDatabase(@factoryParam String? identifier,
+      @factoryParam String? privateKey) async {
     final dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
     final path = join(dir.path, identityDatabasePrefix + identifier! + '.db');
@@ -102,33 +99,35 @@ abstract class DatabaseModule {
     return getEncryptSembastCodec(password: privateKey);
   }
 
-  // Secured stores
-  /// FIXME: inject store separately (need DS fixing)
-  @Named(securedStoreName)
-  Map<String, StoreRef<String, Map<String, Object?>>> get securedStore {
-    Map<String, StoreRef<String, Map<String, Object?>>> result = {};
+  // Identity
+  @Named(identityStoreName)
+  StoreRef<String, Map<String, Object?>> get identityStore =>
+      stringMapStoreFactory.store(identityStoreName);
 
+  /// FIXME: inject store separately (need DS fixing)
+  @Named(identityStateStoreName)
+  Map<String, StoreRef<String, Map<String, Object?>>> get identityStateStore {
+    Map<String, StoreRef<String, Map<String, Object?>>> result = {};
     result[claimsTreeStoreName] =
         stringMapStoreFactory.store(claimsTreeStoreName);
     result[revocationTreeStoreName] =
         stringMapStoreFactory.store(revocationTreeStoreName);
     result[rootsTreeStoreName] =
         stringMapStoreFactory.store(rootsTreeStoreName);
-
     return result;
   }
 
   @Named(keyValueStoreName)
-  StoreRef<String, Map<String, dynamic>> get keyValueStore =>
+  StoreRef<String, Map<String, Object?>> get keyValueStore =>
       stringMapStoreFactory.store(keyValueStoreName);
 
   @Named(claimStoreName)
-  StoreRef<String, Map<String, dynamic>> get claimStore =>
+  StoreRef<String, Map<String, Object?>> get claimStore =>
       stringMapStoreFactory.store(claimStoreName);
 
   @Named(interactionStoreName)
-  StoreRef<int, Map<String, dynamic>> get interactionStore =>
-      intMapStoreFactory.store(interactionStoreName);
+  StoreRef<String, Map<String, Object?>> get interactionStore =>
+      stringMapStoreFactory.store(interactionStoreName);
 }
 
 @module
@@ -165,6 +164,10 @@ abstract class RepositoriesModule {
   Iden3commRepository iden3commRepository(
           Iden3commRepositoryImpl iden3commRepositoryImpl) =>
       iden3commRepositoryImpl;
+
+  InteractionRepository interactionRepository(
+          InteractionRepositoryImpl interactionRepositoryImpl) =>
+      interactionRepositoryImpl;
 
   // SMT
   SMTRepository smtRepository(SMTRepositoryImpl smtRepositoryImpl) =>

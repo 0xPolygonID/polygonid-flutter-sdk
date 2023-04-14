@@ -8,31 +8,31 @@ import 'package:sembast/sembast.dart';
 /// Needed for UT for mocking extension methods
 @injectable
 class SecureInteractionStoreRefWrapper {
-  final StoreRef<int, Map<String, Object?>> _store;
+  final StoreRef<String, Map<String, Object?>> _store;
 
   SecureInteractionStoreRefWrapper(@Named(interactionStoreName) this._store);
 
-  Future<List<RecordSnapshot<int, Map<String, Object?>>>> find(
+  Future<List<RecordSnapshot<String, Map<String, Object?>>>> find(
       DatabaseClient databaseClient,
       {Finder? finder}) {
     return _store.find(databaseClient, finder: finder);
   }
 
-  Future<int> add(DatabaseClient database, Map<String, Object?> value) {
+  Future<String> add(DatabaseClient database, Map<String, Object?> value) {
     return _store.add(database, value);
   }
 
-  Future<Map<String, Object?>?> get(DatabaseClient database, int key) {
+  Future<Map<String, Object?>?> get(DatabaseClient database, String key) {
     return _store.record(key).get(database);
   }
 
   Future<Map<String, Object?>> put(
-      DatabaseClient database, int key, Map<String, Object?> value,
+      DatabaseClient database, String key, Map<String, Object?> value,
       {bool? merge}) {
     return _store.record(key).put(database, value, merge: merge);
   }
 
-  Future<int?> remove(DatabaseClient database, int id) {
+  Future<String?> remove(DatabaseClient database, String id) {
     return _store.record(id).delete(database);
   }
 
@@ -91,7 +91,7 @@ class SecureStorageInteractionDataSource
   /// Remove all interactions in a single transaction
   /// If one removing fails, they will all be reverted
   Future<void> removeInteractions(
-      {required List<int> ids,
+      {required List<String> ids,
       required String did,
       required String privateKey}) {
     return getDatabase(did: did, privateKey: privateKey).then((database) =>
@@ -103,8 +103,8 @@ class SecureStorageInteractionDataSource
 
   // For UT purpose
   Future<void> removeInteractionsTransact(
-      {required DatabaseClient transaction, required List<int> ids}) async {
-    for (int interactionId in ids) {
+      {required DatabaseClient transaction, required List<String> ids}) async {
+    for (String interactionId in ids) {
       await _storeRefWrapper.remove(transaction, interactionId);
     }
   }

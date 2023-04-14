@@ -10,16 +10,16 @@ class ListenAndStoreNotificationUseCase extends FutureUseCase<void, void> {
 
   @override
   Future<void> execute({dynamic param}) async {
-    await for (var notification in _interactionRepository.notifications) {
-      try {
-        // await _interactionRepository.storeInteraction(
-        //     interaction: notification);
-        logger().d(
-            "[ListenAndStoreNotification] Notification stored: $notification");
-      } catch (error) {
-        logger().e(
-            "[ListenAndStoreNotification] Error occurred but Stream continue: $error");
-      }
+    //await for (var notification in _interactionRepository.notifications) {
+    try {
+      // await _interactionRepository.storeInteraction(
+      //     interaction: notification);
+      //  logger().d(
+      //      "[ListenAndStoreNotification] Notification stored: $notification");
+    } catch (error) {
+      logger().e(
+          "[ListenAndStoreNotification] Error occurred but Stream continue: $error");
     }
   }
+  //}
 }

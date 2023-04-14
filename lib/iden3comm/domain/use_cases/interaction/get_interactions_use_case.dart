@@ -6,13 +6,18 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/inte
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/check_profile_validity_use_case.dart';
 
 class GetInteractionsParam {
+  final String genesisDid;
+  final BigInt profileNonce;
   final String privateKey;
   final List<InteractionType>? types;
   final List<FilterEntity>? filters;
 
   GetInteractionsParam({
+    required this.genesisDid,
+    required this.profileNonce,
     required this.privateKey,
     this.types,
     this.filters,
@@ -22,32 +27,43 @@ class GetInteractionsParam {
 class GetInteractionsUseCase
     extends FutureUseCase<GetInteractionsParam, List<InteractionEntity>> {
   final InteractionRepository _interactionRepository;
-  final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
+  final CheckProfileValidityUseCase _checkProfileValidityUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
 
   GetInteractionsUseCase(
     this._interactionRepository,
-    this._getCurrentEnvDidIdentifierUseCase,
+    this._checkProfileValidityUseCase,
     this._getIdentityUseCase,
   );
 
   @override
   Future<List<InteractionEntity>> execute(
       {required GetInteractionsParam param}) {
-    return _getCurrentEnvDidIdentifierUseCase
+    // we check if profile is valid and identity is existing
+    return _checkProfileValidityUseCase
         .execute(
-            param: GetCurrentEnvDidIdentifierParam(
-                privateKey: param.privateKey,
-                profileNonce: GENESIS_PROFILE_NONCE))
-        .then((genesisDid) => _interactionRepository.getInteractions(
-            filters: param.filters,
-            did: genesisDid,
-            privateKey: param.privateKey))
+            param: CheckProfileValidityParam(profileNonce: param.profileNonce))
+        .then((_) => _getIdentityUseCase
+            .execute(
+                param: GetIdentityParam(
+                    genesisDid: param.genesisDid, privateKey: param.privateKey))
+            .then((_) => _interactionRepository.getInteractions(
+                filters: param.filters,
+                genesisDid: param.genesisDid,
+                privateKey: param.privateKey)))
         .then((interactions) {
       /// Shortcut to filter by type
       if (param.types != null) {
         interactions = interactions
             .where((interaction) => param.types!.contains(interaction.type))
+            .toList();
+      }
+
+      /// Shortcut to filter by profile
+      if (param.profileNonce > GENESIS_PROFILE_NONCE) {
+        interactions = interactions
+            .where(
+                (interaction) => param.profileNonce == interaction.profileNonce)
             .toList();
       }
 

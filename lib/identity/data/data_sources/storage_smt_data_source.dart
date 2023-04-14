@@ -14,7 +14,7 @@ import '../dtos/node_dto.dart';
 class IdentitySMTStoreRefWrapper {
   final Map<String, StoreRef<String, Map<String, Object?>>> _store;
 
-  IdentitySMTStoreRefWrapper(@Named(securedStoreName) this._store);
+  IdentitySMTStoreRefWrapper(@Named(identityStateStoreName) this._store);
 
   Future<Map<String, Object?>?> get(
       DatabaseClient database, String storeName, String key) {

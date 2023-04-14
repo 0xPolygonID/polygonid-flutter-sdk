@@ -32,9 +32,7 @@ class CheckProfileAndDidCurrentEnvUseCase
   Future<void> execute({required CheckProfileAndDidCurrentEnvParam param}) {
     return _checkProfileValidityUseCase
         .execute(
-            param: CheckProfileValidityParam(
-                profileNonce: param.profileNonce,
-                excludeGenesis: param.excludeGenesisProfile))
+            param: CheckProfileValidityParam(profileNonce: param.profileNonce))
         .then((_) => _getEnvUseCase.execute().then((env) =>
             _getDidIdentifierUseCase
                 .execute(

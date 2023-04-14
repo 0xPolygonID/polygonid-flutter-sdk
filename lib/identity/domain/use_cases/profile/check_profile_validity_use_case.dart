@@ -8,10 +8,8 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_
 
 class CheckProfileValidityParam {
   final BigInt profileNonce;
-  final bool excludeGenesis;
 
-  CheckProfileValidityParam(
-      {required this.profileNonce, this.excludeGenesis = false});
+  CheckProfileValidityParam({required this.profileNonce});
 }
 
 class CheckProfileValidityUseCase
@@ -22,10 +20,7 @@ class CheckProfileValidityUseCase
     int exponent = 248;
     final maxVal = base.pow(exponent) - BigInt.one;
     return Future(() {
-      if (param.profileNonce.isNegative ||
-          (param.profileNonce == GENESIS_PROFILE_NONCE &&
-              param.excludeGenesis) ||
-          (param.profileNonce >= maxVal)) {
+      if (param.profileNonce.isNegative || (param.profileNonce >= maxVal)) {
         throw InvalidProfileException(param.profileNonce);
       }
     }).then((_) {

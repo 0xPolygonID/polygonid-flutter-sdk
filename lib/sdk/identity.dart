@@ -111,6 +111,8 @@ abstract class PolygonIdSdkIdentity {
   /// Return an list of [IdentityEntity].
   ///
   /// Throws [IdentityException] if an error occurs.
+  ///
+  /// /// The identities returned will  using the current env set with [PolygonIdSdk.setEnv]
   Future<List<IdentityEntity>> getIdentities();
 
   /// Remove the previously stored identity associated with the identifier

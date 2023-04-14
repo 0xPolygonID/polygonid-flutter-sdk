@@ -1,7 +1,7 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 
 class InteractionNotFoundException implements Exception {
-  final int id;
+  final String id;
 
   InteractionNotFoundException(this.id);
 }

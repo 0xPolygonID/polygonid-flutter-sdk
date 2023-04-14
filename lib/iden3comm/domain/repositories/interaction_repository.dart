@@ -3,29 +3,29 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/inte
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/notification_entity.dart';
 
 abstract class InteractionRepository {
-  Stream<NotificationEntity> get notifications;
+  //Stream<NotificationEntity> get notifications;
 
-  Future<InteractionEntity> saveInteraction({
+  Future<InteractionEntity> addInteraction({
     required InteractionEntity interaction,
-    required String did,
+    required String genesisDid,
     required String privateKey,
   });
 
   Future<List<InteractionEntity>> getInteractions({
     List<FilterEntity>? filters,
-    required String did,
+    required String genesisDid,
     required String privateKey,
   });
 
   Future<InteractionEntity> getInteraction({
-    required int id,
-    required String did,
+    required String id,
+    required String genesisDid,
     required String privateKey,
   });
 
   Future<void> removeInteractions({
-    required List<int> ids,
-    required String did,
+    required List<String> ids,
+    required String genesisDid,
     required String privateKey,
   });
 }
