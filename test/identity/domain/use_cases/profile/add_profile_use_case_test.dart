@@ -107,7 +107,7 @@ void main() {
               .captured
               .first;
       expect(capturedUpdate.privateKey, CommonMocks.privateKey);
-      expect(capturedUpdate.profiles.first, CommonMocks.genesisNonce);
+      expect(capturedUpdate.profiles[1], CommonMocks.profiles[1]);
     },
   );
 
