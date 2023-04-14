@@ -10,7 +10,7 @@ import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
 
 class RPCDataSource {
-  GetEnvUseCase _getEnvUseCase;
+  final GetEnvUseCase _getEnvUseCase;
 
   RPCDataSource(this._getEnvUseCase);
 
