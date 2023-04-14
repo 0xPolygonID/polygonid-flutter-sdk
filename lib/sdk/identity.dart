@@ -1,5 +1,7 @@
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/add_new_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/backup_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identities_use_case.dart';
@@ -150,6 +152,8 @@ abstract class PolygonIdSdkIdentity {
       required String network,
       BigInt? profileNonce});
 
+  Future<DidEntity> getDidEntity(String did);
+
   /// Returns the identity state from a did
   ///
   /// The [did] is the unique id of the identity
@@ -231,6 +235,8 @@ class Identity implements PolygonIdSdkIdentity {
   final GetProfilesUseCase _getProfilesUseCase;
   final RemoveProfileUseCase _removeProfileUseCase;
 
+  final GetDidUseCase _getDidUseCase;
+
   Identity(
     this._checkIdentityValidityUseCase,
     this._getPrivateKeyUseCase,
@@ -246,6 +252,7 @@ class Identity implements PolygonIdSdkIdentity {
     this._addProfileUseCase,
     this._getProfilesUseCase,
     this._removeProfileUseCase,
+    this._getDidUseCase,
   );
 
   @override
@@ -316,6 +323,10 @@ class Identity implements PolygonIdSdkIdentity {
             blockchain: blockchain,
             network: network,
             profileNonce: profileNonce ?? BigInt.zero));
+  }
+
+  Future<DidEntity> getDidEntity(String did) {
+    return _getDidUseCase.execute(param: did);
   }
 
   @override

@@ -202,7 +202,7 @@ class Iden3commMocks {
 
   static List<InteractionEntity> interactionEntities = [
     InteractionEntity(
-      id: CommonMocks.intValues[0],
+      id: CommonMocks.intValues[0].toString(),
       from: CommonMocks.did,
       genesisDid: CommonMocks.did,
       profileNonce: CommonMocks.nonce,
@@ -211,7 +211,7 @@ class Iden3commMocks {
       message: CommonMocks.message,
     ),
     NotificationEntity(
-      id: CommonMocks.intValues[1],
+      id: CommonMocks.intValues[1].toString(),
       from: CommonMocks.did,
       genesisDid: CommonMocks.did,
       profileNonce: CommonMocks.nonce,
@@ -220,7 +220,7 @@ class Iden3commMocks {
       message: CommonMocks.message,
     ),
     NotificationEntity(
-      id: CommonMocks.intValues[2],
+      id: CommonMocks.intValues[2].toString(),
       from: CommonMocks.did,
       genesisDid: CommonMocks.did,
       profileNonce: CommonMocks.nonce,

@@ -11,7 +11,7 @@ class NotificationEntity extends InteractionEntity {
   final NotificationState state;
 
   NotificationEntity({
-    super.id,
+    required super.id,
     this.isRead = false,
     this.state = NotificationState.pending,
     required super.from,
