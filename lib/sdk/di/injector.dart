@@ -1,5 +1,6 @@
 import 'package:archive/archive.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart';
@@ -9,6 +10,7 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/common/data/repositories/config_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/common/data/repositories/package_info_repository_impl.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/repositories/config_repository.dart';
 import 'package:polygonid_flutter_sdk/common/domain/repositories/package_info_repository.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
@@ -62,12 +64,11 @@ abstract class NetworkModule {
   /// like Dio: https://pub.dev/packages/dio
   Client get client => Client();
 
-  Future<Web3Client> web3Client(GetEnvUseCase getEnvUseCase) {
-    return getEnvUseCase.execute().then((env) =>
-        Web3Client(env.web3Url + env.web3ApiKey, client, socketConnector: () {
-          return IOWebSocketChannel.connect(env.web3RdpUrl + env.web3ApiKey)
-              .cast<String>();
-        }));
+  Web3Client web3client(@factoryParam EnvEntity env) {
+    return Web3Client(env.web3Url + env.web3ApiKey, client, socketConnector: () {
+      return IOWebSocketChannel.connect(env.web3RdpUrl + env.web3ApiKey)
+          .cast<String>();
+    });
   }
 }
 

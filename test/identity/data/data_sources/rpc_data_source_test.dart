@@ -1,10 +1,14 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
 import 'package:web3dart/web3dart.dart';
 
 import '../../../common/fake_capturer.dart';
+import 'rpc_data_source_test.mocks.dart';
+
 
 // Data
 const id = "4f4f4f";
@@ -76,12 +80,16 @@ class FakeWeb3Client extends FakeCapturer implements Web3Client {
 }
 
 FakeWeb3Client client = FakeWeb3Client();
+MockGetEnvUseCase _getEnvUseCase = MockGetEnvUseCase();
 
 // Tested instance
-RPCDataSource dataSource = RPCDataSource(client);
+RPCDataSource dataSource = RPCDataSource(_getEnvUseCase);
 
 /// FIXME: UT not possible since [RPCDataSource.getState] is using directly [State]
 /// TODO: [RPCDataSource.getGistProof]
+@GenerateMocks([
+  GetEnvUseCase,
+])
 void main() {
   // setUp(() {
   //   client.resetCaptures();
