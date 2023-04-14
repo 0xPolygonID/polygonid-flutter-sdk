@@ -118,7 +118,7 @@ abstract class DatabaseModule {
   }
 
   @Named(keyValueStoreName)
-  StoreRef<String, Map<String, Object?>> get keyValueStore =>
+  StoreRef<String, dynamic> get keyValueStore =>
       stringMapStoreFactory.store(keyValueStoreName);
 
   @Named(claimStoreName)
