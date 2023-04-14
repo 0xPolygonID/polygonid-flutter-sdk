@@ -7,15 +7,15 @@ import 'package:sembast/sembast.dart';
 /// Needed for UT for mocking extension methods
 @injectable
 class KeyValueStoreRefWrapper {
-  final StoreRef<String, Object?> _store;
+  final StoreRef<String, dynamic> _store;
 
   KeyValueStoreRefWrapper(@Named(keyValueStoreName) this._store);
 
-  Future<Object?> get(DatabaseClient database, String key) {
+  Future<dynamic> get(DatabaseClient database, String key) {
     return _store.record(key).get(database);
   }
 
-  Future<Object?> put(DatabaseClient database, String key, Object? value,
+  Future<dynamic> put(DatabaseClient database, String key, dynamic value,
       {bool? merge}) {
     return _store.record(key).put(database, value, merge: merge);
   }
@@ -38,7 +38,7 @@ class StorageKeyValueDataSource {
   }
 
   Future<void> store(
-      {required String key, required Object? value, DatabaseClient? database}) {
+      {required String key, required dynamic value, DatabaseClient? database}) {
     return _storeRefWrapper.put(database ?? _database, key, value);
   }
 

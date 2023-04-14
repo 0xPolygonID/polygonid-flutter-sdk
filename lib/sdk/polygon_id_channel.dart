@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 
 class PolygonIdChannel {
-  final MethodChannel _channel;
+  //final MethodChannel _channel;
 
   /// Notifications
-  final StreamController<String> _notificationsController =
+  /*final StreamController<String> _notificationsController =
       StreamController.broadcast();
 
   Stream<String> get notifications => _notificationsController.stream;
@@ -24,5 +24,5 @@ class PolygonIdChannel {
               message: 'Method ${call.method} not implemented');
       }
     });
-  }
+  }*/
 }
