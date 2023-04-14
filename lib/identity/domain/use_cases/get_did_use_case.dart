@@ -4,18 +4,6 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 import '../../../common/domain/use_case.dart';
 import '../repositories/identity_repository.dart';
 
-class GetDidParam {
-  final String identifier;
-  final String networkName;
-  final String networkEnv;
-
-  GetDidParam({
-    required this.identifier,
-    required this.networkName,
-    required this.networkEnv,
-  });
-}
-
 class GetDidUseCase extends FutureUseCase<String, DidEntity> {
   final IdentityRepository _identityRepository;
 

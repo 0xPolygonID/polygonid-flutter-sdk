@@ -970,6 +970,7 @@ _i1.GetIt $initSDKGetIt(
         await get.getAsync<_i170.AddProfileUseCase>(),
         await get.getAsync<_i156.GetProfilesUseCase>(),
         await get.getAsync<_i174.RemoveProfileUseCase>(),
+        await get.getAsync<_i131.GetDidUseCase>(),
       ));
   return get;
 }

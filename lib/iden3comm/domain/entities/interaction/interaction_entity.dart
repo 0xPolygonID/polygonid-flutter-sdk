@@ -7,7 +7,7 @@ enum InteractionType {
 }
 
 class InteractionEntity {
-  final int? id;
+  final String id;
   final String from;
   final String genesisDid;
   final BigInt profileNonce;
@@ -16,7 +16,7 @@ class InteractionEntity {
   final String message;
 
   InteractionEntity({
-    this.id,
+    required this.id,
     required this.from,
     required this.genesisDid,
     required this.profileNonce,
