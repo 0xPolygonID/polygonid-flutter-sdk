@@ -18,7 +18,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3messag
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/add_interaction_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/get_interactions_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/remove_interactions_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/add_interaction_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/update_notification_use_case.dart';
 
 abstract class PolygonIdSdkIden3comm {
