@@ -1,15 +1,18 @@
 import 'dart:convert';
 
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/assets/state.g.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
 
 class RPCDataSource {
-  final Web3Client web3Client;
+  final GetEnvUseCase _getEnvUseCase;
 
-  RPCDataSource(this.web3Client);
+  RPCDataSource(this._getEnvUseCase);
 
   /// Retrieve last state for a given identity.
   ///
@@ -18,6 +21,8 @@ class RPCDataSource {
   ///
   /// @returns [String] last state committed
   Future<String> getState(String id, DeployedContract stateContract) async {
+    EnvEntity env = await _getEnvUseCase.execute();
+    Web3Client web3Client = getItSdk.get(param1: env);
     try {
       var state = State(address: stateContract.address, client: web3Client);
       BigInt idBigInt = Uint8ArrayUtils.leBuff2int(hexToBytes(id));
@@ -51,6 +56,8 @@ class RPCDataSource {
   ///
   /// @returns [String] gist proof
   Future<String> getGistProof(String id, DeployedContract gistContract) async {
+    EnvEntity env = await _getEnvUseCase.execute();
+    Web3Client web3Client = getItSdk.get(param1: env);
     try {
       /// TODO: replace to autegenerated code to interact with SC
       //var state = State(address: gistContract.address, client: web3Client);
