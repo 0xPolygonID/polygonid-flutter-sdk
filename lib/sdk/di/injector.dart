@@ -65,7 +65,8 @@ abstract class NetworkModule {
   Client get client => Client();
 
   Web3Client web3client(@factoryParam EnvEntity env) {
-    return Web3Client(env.web3Url + env.web3ApiKey, client, socketConnector: () {
+    return Web3Client(env.web3Url + env.web3ApiKey, client,
+        socketConnector: () {
       return IOWebSocketChannel.connect(env.web3RdpUrl + env.web3ApiKey)
           .cast<String>();
     });

@@ -9,7 +9,6 @@ import 'package:web3dart/web3dart.dart';
 import '../../../common/fake_capturer.dart';
 import 'rpc_data_source_test.mocks.dart';
 
-
 // Data
 const id = "4f4f4f";
 const name = "theName";
