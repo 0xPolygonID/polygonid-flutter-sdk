@@ -63,18 +63,22 @@ abstract class PolygonIdSdkIdentity {
   /// Return an identity as a [PrivateIdentityEntity].
   /// Throws [IdentityException] if an error occurs.
   ///
+  /// The [genesisDid] is the unique id of the identity which profileNonce is 0
+  ///
   /// Identity [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
-  /// using the claims associated to the identity
+  /// using the credentials associated to the identity
   ///
   ///  The [encryptedDb] is an encrypted Identity's Database
-  ///
-  /// The identity will be restored using the current env set with [PolygonIdSdk.setEnv]
   Future<PrivateIdentityEntity> restoreIdentity(
-      {required String privateKey, String? encryptedDb});
+      {required String genesisDid,
+      required String privateKey,
+      String? encryptedDb});
 
   /// Backup a previously stored [IdentityEntity] from a privateKey
   /// associated to the identity
+  ///
+  /// The [genesisDid] is the unique id of the identity which profileNonce is 0
   ///
   /// Identity [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
@@ -83,9 +87,8 @@ abstract class PolygonIdSdkIdentity {
   /// Returns an encrypted Identity's Database.
   ///
   /// Throws [IdentityException] if an error occurs.
-  ///
-  /// The identity will be backed up using the current env set with [PolygonIdSdk.setEnv]
   Future<String?> backupIdentity({
+    required String genesisDid,
     required String privateKey,
   });
 
@@ -271,16 +274,23 @@ class Identity implements PolygonIdSdkIdentity {
 
   @override
   Future<PrivateIdentityEntity> restoreIdentity(
-      {required String privateKey, String? encryptedDb}) {
+      {required String genesisDid,
+      required String privateKey,
+      String? encryptedDb}) {
     return _restoreIdentityUseCase.execute(
         param: RestoreIdentityParam(
-            privateKey: privateKey, encryptedDb: encryptedDb));
+            genesisDid: genesisDid,
+            privateKey: privateKey,
+            encryptedDb: encryptedDb));
   }
 
   Future<String> backupIdentity({
+    required String genesisDid,
     required String privateKey,
   }) {
-    return _backupIdentityUseCase.execute(param: privateKey);
+    return _backupIdentityUseCase.execute(
+        param: BackupIdentityParam(
+            genesisDid: genesisDid, privateKey: privateKey));
   }
 
   @override

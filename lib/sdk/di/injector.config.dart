@@ -298,6 +298,7 @@ _i1.GetIt $initSDKGetIt(
   gh.factory<_i12.ClaimStateMapper>(() => _i12.ClaimStateMapper());
   gh.factory<_i13.Client>(() => networkModule.client);
   gh.factory<_i14.CreatePathWrapper>(() => _i14.CreatePathWrapper());
+  gh.lazySingletonAsync<_i15.Database>(() => databaseModule.database());
   gh.factoryParamAsync<_i15.Database, String?, String?>(
     (
       identifier,
@@ -309,7 +310,6 @@ _i1.GetIt $initSDKGetIt(
     ),
     instanceName: 'polygonIdSdkIdentity',
   );
-  gh.lazySingletonAsync<_i15.Database>(() => databaseModule.database());
   gh.factory<_i14.DestinationPathDataSource>(
       () => _i14.DestinationPathDataSource(get<_i14.CreatePathWrapper>()));
   gh.factoryParam<_i16.Encrypter, _i16.Key, dynamic>(
@@ -401,17 +401,17 @@ _i1.GetIt $initSDKGetIt(
   ) =>
       databaseModule.getCodec(privateKey));
   gh.factory<_i65.StateIdentifierMapper>(() => _i65.StateIdentifierMapper());
-  gh.factory<_i15.StoreRef<String, dynamic>>(
-    () => databaseModule.keyValueStore,
-    instanceName: 'keyValueStore',
+  gh.factory<_i15.StoreRef<String, Map<String, Object?>>>(
+    () => databaseModule.interactionStore,
+    instanceName: 'interactionStore',
   );
   gh.factory<_i15.StoreRef<String, Map<String, Object?>>>(
     () => databaseModule.claimStore,
     instanceName: 'claimStore',
   );
-  gh.factory<_i15.StoreRef<String, Map<String, Object?>>>(
-    () => databaseModule.interactionStore,
-    instanceName: 'interactionStore',
+  gh.factory<_i15.StoreRef<String, dynamic>>(
+    () => databaseModule.keyValueStore,
+    instanceName: 'keyValueStore',
   );
   gh.factory<_i15.StoreRef<String, Map<String, Object?>>>(
     () => databaseModule.identityStore,
