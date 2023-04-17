@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/data/secure_storage.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/restore_identity/bloc/restore_identity_event.dart';
@@ -33,6 +34,20 @@ class RestoreIdentityBloc
       return;
     }
 
+    EnvEntity env = await _polygonIdSdk.getEnv();
+
+    String? genesisDid = await _polygonIdSdk.identity.getDidIdentifier(
+      privateKey: privateKey,
+      blockchain: env.blockchain,
+      network: env.network,
+    );
+
+    if (genesisDid == null || genesisDid.isEmpty) {
+      emit(const RestoreIdentityState.error(
+          "without an identity is impossible to restore the backup"));
+      return;
+    }
+
     // Get backup from secure storage
     String? backup = await SecureStorage.read(key: SecureStorageKeys.backupKey);
     // Check if backup is null otherwise emit error
@@ -44,6 +59,7 @@ class RestoreIdentityBloc
     try {
       // restore identity
       await _polygonIdSdk.identity.restoreIdentity(
+        genesisDid: genesisDid,
         privateKey: privateKey,
         encryptedDb: backup,
       );

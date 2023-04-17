@@ -10,10 +10,12 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/add_ide
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 
 class RestoreIdentityParam {
+  final String genesisDid;
   final String privateKey;
   final String? encryptedDb;
 
   RestoreIdentityParam({
+    required this.genesisDid,
     required this.privateKey,
     this.encryptedDb,
   });

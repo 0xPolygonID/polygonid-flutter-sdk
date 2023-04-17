@@ -2,11 +2,22 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 
-class BackupIdentityUseCase extends FutureUseCase<String, String> {
+class BackupIdentityParam {
+  final String genesisDid;
+  final String privateKey;
+
+  BackupIdentityParam({
+    required this.genesisDid,
+    required this.privateKey,
+  });
+}
+
+class BackupIdentityUseCase extends FutureUseCase<BackupIdentityParam, String> {
   final GetIdentityUseCase _getIdentityUseCase;
   final IdentityRepository _identityRepository;
   final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
@@ -18,18 +29,16 @@ class BackupIdentityUseCase extends FutureUseCase<String, String> {
   );
 
   @override
-  Future<String> execute({required String param}) async {
-    String genesisDid = await _getCurrentEnvDidIdentifierUseCase.execute(
-        param: GetCurrentEnvDidIdentifierParam(
-            privateKey: param, profileNonce: GENESIS_PROFILE_NONCE));
-
-    IdentityEntity identity = await _getIdentityUseCase.execute(
-        param: GetIdentityParam(genesisDid: genesisDid, privateKey: param));
+  Future<String> execute({required BackupIdentityParam param}) async {
+    PrivateIdentityEntity identity = await _getIdentityUseCase.execute(
+        param: GetIdentityParam(
+            genesisDid: param.genesisDid,
+            privateKey: param.privateKey)) as PrivateIdentityEntity;
 
     return _identityRepository
         .exportIdentity(
       did: identity.did,
-      privateKey: param,
+      privateKey: identity.privateKey,
     )
         .then((export) {
       logger().i(
