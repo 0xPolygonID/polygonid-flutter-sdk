@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/data/secure_storage.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/backup_identity/bloc/backup_identity_event.dart';
@@ -31,26 +32,31 @@ class BackupIdentityBloc
       return;
     }
 
+    EnvEntity env = await _polygonIdSdk.getEnv();
+
+    String? genesisDid = await _polygonIdSdk.identity.getDidIdentifier(
+      privateKey: privateKey,
+      blockchain: env.blockchain,
+      network: env.network,
+    );
+
+    if (genesisDid == null || genesisDid.isEmpty) {
+      emit(const BackupIdentityState.error(
+          "without an identity is impossible to do the backup"));
+      return;
+    }
+
     try {
-      // get backup, it's a map of profile id and backup
-      Map<int, String> backup =
-          await _polygonIdSdk.identity.backupIdentity(privateKey: privateKey);
-
-      // check if backup is empty
-      if (!backup.containsKey(0)) {
-        emit(const BackupIdentityState.error('Backup not found'));
-        return;
-      }
-
-      // get backup from map
-      String profileBackup = backup[0]!;
+      // get backup
+      String backup = await _polygonIdSdk.identity
+          .backupIdentity(genesisDid: genesisDid, privateKey: privateKey);
 
       // write backup to secure storage just for example purpose
       await SecureStorage.write(
-          key: SecureStorageKeys.backupKey, value: profileBackup);
+          key: SecureStorageKeys.backupKey, value: backup);
 
       // emit success state
-      emit(BackupIdentityState.success(profileBackup));
+      emit(BackupIdentityState.success(backup));
     } catch (e) {
       emit(BackupIdentityState.error(e.toString()));
     }

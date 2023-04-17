@@ -226,3 +226,6 @@ prod_env.g.dart
 
 # Code coverage
 coverage/
+
+# Generated
+*.mocks.dart

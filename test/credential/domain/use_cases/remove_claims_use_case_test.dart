@@ -4,14 +4,14 @@ import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart';
 
-import 'get_claims_use_case_test.mocks.dart';
+import 'remove_claims_use_case_test.mocks.dart';
 
 // Data
 const identifier = "theIdentifier";
 const privateKey = "thePrivateKey";
 const ids = ["theId", "theId1", "theId2"];
-final param =
-    RemoveClaimsParam(claimIds: ids, did: identifier, privateKey: privateKey);
+final param = RemoveClaimsParam(
+    claimIds: ids, genesisDid: identifier, privateKey: privateKey);
 final exception = Exception();
 
 // Dependencies
@@ -28,7 +28,7 @@ void main() {
 
       // Given
       when(credentialRepository.removeClaims(
-              did: identifier,
+              genesisDid: identifier,
               privateKey: privateKey,
               claimIds: anyNamed("claimIds")))
           .thenAnswer((realInvocation) => Future.value());
@@ -42,7 +42,7 @@ void main() {
 
       // Then
       var capturedRemove = verify(credentialRepository.removeClaims(
-              did: captureAnyNamed('did'),
+              genesisDid: captureAnyNamed('genesisDid'),
               privateKey: captureAnyNamed('privateKey'),
               claimIds: captureAnyNamed('claimIds')))
           .captured;
@@ -56,7 +56,7 @@ void main() {
         () async {
       // Given
       when(credentialRepository.removeClaims(
-              did: identifier,
+              genesisDid: identifier,
               privateKey: privateKey,
               claimIds: anyNamed("claimIds")))
           .thenAnswer((realInvocation) => Future.error(exception));
@@ -66,7 +66,7 @@ void main() {
 
       // Then
       var capturedRemove = verify(credentialRepository.removeClaims(
-              did: captureAnyNamed('did'),
+              genesisDid: captureAnyNamed('genesisDid'),
               privateKey: captureAnyNamed('privateKey'),
               claimIds: captureAnyNamed('claimIds')))
           .captured;

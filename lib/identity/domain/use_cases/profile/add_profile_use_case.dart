@@ -1,18 +1,19 @@
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/update_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/create_profiles_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/smt/create_identity_state_use_case.dart';
 
 class AddProfileParam {
-  final int profileNonce;
+  final String genesisDid;
+  final BigInt profileNonce;
   final String privateKey;
 
   AddProfileParam({
+    required this.genesisDid,
     required this.profileNonce,
     required this.privateKey,
   });
@@ -20,64 +21,58 @@ class AddProfileParam {
 
 class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
   final GetIdentityUseCase _getIdentityUseCase;
-  final GetDidUseCase _getDidUseCase;
   final UpdateIdentityUseCase _updateIdentityUseCase;
-  final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
+  final CheckProfileAndDidCurrentEnvUseCase
+      _checkProfileAndDidCurrentEnvUseCase;
   final CreateProfilesUseCase _createProfilesUseCase;
-  final CreateIdentityStateUseCase _createIdentityStateUseCase;
 
   AddProfileUseCase(
     this._getIdentityUseCase,
-    this._getDidUseCase,
     this._updateIdentityUseCase,
-    this._getCurrentEnvDidIdentifierUseCase,
+    this._checkProfileAndDidCurrentEnvUseCase,
     this._createProfilesUseCase,
-    this._createIdentityStateUseCase,
   );
 
   @override
   Future<void> execute({required AddProfileParam param}) async {
-    if (param.profileNonce > 0) {
-      var genesisDid = await _getCurrentEnvDidIdentifierUseCase.execute(
-          param: GetCurrentEnvDidIdentifierParam(privateKey: param.privateKey));
-      var identityEntity = await _getIdentityUseCase.execute(
-          param: GetIdentityParam(
-              genesisDid: genesisDid, privateKey: param.privateKey));
-      if (identityEntity is PrivateIdentityEntity) {
-        List<int> profiles = identityEntity.profiles.keys.toList();
-        if (profiles.contains(param.profileNonce)) {
-          throw ProfileAlreadyExistsException(genesisDid, param.profileNonce);
-        } else {
-          // Create profile
-          var didEntity = await _getDidUseCase.execute(param: genesisDid);
-          Map<int, String> newProfiles = await _createProfilesUseCase.execute(
-              param: CreateProfilesParam(
-                  privateKey: param.privateKey,
-                  blockchain: didEntity.blockchain,
-                  network: didEntity.network,
-                  profiles: [param.profileNonce]));
+    await _checkProfileAndDidCurrentEnvUseCase.execute(
+        param: CheckProfileAndDidCurrentEnvParam(
+            did: param.genesisDid,
+            profileNonce: param.profileNonce,
+            privateKey: param.privateKey,
+            excludeGenesisProfile: true));
+    var identityEntity = await _getIdentityUseCase.execute(
+        param: GetIdentityParam(
+            genesisDid: param.genesisDid, privateKey: param.privateKey));
 
-          String? profileDid = newProfiles[param.profileNonce];
-          // create identity state for profile did
-          if (profileDid != null) {
-            await _createIdentityStateUseCase.execute(
-                param: CreateIdentityStateParam(
-                    did: profileDid, privateKey: param.privateKey));
-            profiles.add(param.profileNonce);
-          } else {
-            throw UnknownProfileException(param.profileNonce);
-          }
-
-          // Update Identity
-          await _updateIdentityUseCase.execute(
-              param: UpdateIdentityParam(
-                  privateKey: param.privateKey, profiles: profiles));
-        }
+    if (identityEntity is PrivateIdentityEntity) {
+      Map<BigInt, String> profiles = identityEntity.profiles;
+      if (profiles.containsKey(param.profileNonce)) {
+        throw ProfileAlreadyExistsException(
+            param.genesisDid, param.profileNonce);
       } else {
-        throw InvalidPrivateKeyException(param.privateKey);
+        // Create profile
+        Map<BigInt, String> newProfiles = await _createProfilesUseCase.execute(
+            param: CreateProfilesParam(
+                privateKey: param.privateKey, profiles: [param.profileNonce]));
+
+        String? profileDid = newProfiles[param.profileNonce];
+        if (profileDid != null) {
+          profiles[param.profileNonce] = profileDid;
+        } else {
+          throw UnknownProfileException(param.profileNonce);
+        }
+
+        // Update Identity
+        await _updateIdentityUseCase.execute(
+            param: UpdateIdentityParam(
+          privateKey: param.privateKey,
+          genesisDid: param.genesisDid,
+          profiles: profiles,
+        ));
       }
     } else {
-      throw InvalidProfileException(param.profileNonce);
+      throw InvalidPrivateKeyException(param.privateKey);
     }
   }
 }

@@ -6,6 +6,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exce
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_type_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart';
 
+import '../../../common/common_mocks.dart';
 import '../../../common/iden3comm_mocks.dart';
 import 'get_iden3_message_use_case_test.mocks.dart';
 
@@ -28,7 +29,6 @@ const types = [
   Iden3MessageType.issuance,
   Iden3MessageType.contractFunctionCall
 ];
-final exception = Exception();
 
 // Dependencies
 MockGetIden3MessageTypeUseCase getIden3MessageTypeUseCase =
@@ -79,14 +79,14 @@ void main() {
     () async {
       reset(getIden3MessageTypeUseCase);
       when(getIden3MessageTypeUseCase.execute(param: anyNamed('param')))
-          .thenAnswer((realInvocation) => Future.error(exception));
+          .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
       // When
       await useCase
           .execute(param: messages[0])
           .then((_) => expect(true, false))
           .catchError((error) {
-        expect(error, exception);
+        expect(error, CommonMocks.exception);
       });
     },
   );

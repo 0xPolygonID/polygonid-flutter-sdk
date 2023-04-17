@@ -31,7 +31,7 @@ import 'package:polygonid_flutter_sdk/identity/data/repositories/identity_reposi
 import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/libs/bjj/privadoid_wallet.dart';
+import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj_wallet.dart';
 import 'package:web3dart/web3dart.dart';
 
 import '../../../common/common_mocks.dart';
@@ -40,7 +40,7 @@ import '../../../common/identity_mocks.dart';
 import 'identity_repository_impl_test.mocks.dart';
 
 // Data
-class FakeWallet extends Fake implements PrivadoIdWallet {
+class FakeWallet extends Fake implements BjjWallet {
   @override
   Uint8List get privateKey => CommonMocks.aBytes;
 
@@ -597,7 +597,8 @@ void main() {
           await repository.getDidIdentifier(
               blockchain: CommonMocks.blockchain,
               network: CommonMocks.network,
-              claimsRoot: CommonMocks.message),
+              claimsRoot: CommonMocks.message,
+              profileNonce: CommonMocks.genesisNonce),
           CommonMocks.did);
 
       // Then

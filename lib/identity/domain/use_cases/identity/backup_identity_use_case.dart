@@ -1,46 +1,52 @@
+import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/export_profile_use_case.dart';
 
-class BackupIdentityUseCase extends FutureUseCase<String, Map<int, String>> {
+class BackupIdentityParam {
+  final String genesisDid;
+  final String privateKey;
+
+  BackupIdentityParam({
+    required this.genesisDid,
+    required this.privateKey,
+  });
+}
+
+class BackupIdentityUseCase extends FutureUseCase<BackupIdentityParam, String> {
   final GetIdentityUseCase _getIdentityUseCase;
-  final ExportProfileUseCase _exportProfileUseCase;
+  final IdentityRepository _identityRepository;
   final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
 
   BackupIdentityUseCase(
     this._getIdentityUseCase,
-    this._exportProfileUseCase,
+    this._identityRepository,
     this._getCurrentEnvDidIdentifierUseCase,
   );
 
   @override
-  Future<Map<int, String>> execute({required String param}) async {
-    try {
-      Map<int, String> result = {};
-      String genesisDid = await _getCurrentEnvDidIdentifierUseCase.execute(
-          param: GetCurrentEnvDidIdentifierParam(privateKey: param));
+  Future<String> execute({required BackupIdentityParam param}) async {
+    PrivateIdentityEntity identity = await _getIdentityUseCase.execute(
+        param: GetIdentityParam(
+            genesisDid: param.genesisDid,
+            privateKey: param.privateKey)) as PrivateIdentityEntity;
 
-      IdentityEntity identity = await _getIdentityUseCase.execute(
-          param: GetIdentityParam(genesisDid: genesisDid));
-
-      for (MapEntry<int, String> profile in identity.profiles.entries) {
-        result[profile.key] = await _exportProfileUseCase.execute(
-            param: ExportProfileParam(
-          privateKey: param,
-          did: profile.value,
-        ));
-      }
-
+    return _identityRepository
+        .exportIdentity(
+      did: identity.did,
+      privateKey: identity.privateKey,
+    )
+        .then((export) {
       logger().i(
           "[BackupIdentityUseCase] Identity backed up with did: ${identity.did}, for key $param");
-      return result;
-    } catch (error) {
+      return export;
+    }).catchError((error) {
       logger().e("[BackupIdentityUseCase] Error: $error");
-
-      rethrow;
-    }
+      throw error;
+    });
   }
 }

@@ -52,7 +52,7 @@ class RemoteIdentityDataSource {
   }
 
   Future<Map<String, dynamic>> getNonRevocationProof(
-      String identityState, int revNonce, String rhsBaseUrl) async {
+      String identityState, BigInt revNonce, String rhsBaseUrl) async {
     try {
       /// FIXME: this 2 lines should go to a DS and be called in a repo
       // 1. Fetch state roots from RHS
@@ -78,7 +78,7 @@ class RemoteIdentityDataSource {
       List<String> siblings = <String>[];
       String nextKey = revTreeRootHash;
       int depth = 0;
-      Uint8List key = Uint8ArrayUtils.bigIntToBytes(BigInt.from(revNonce));
+      Uint8List key = Uint8ArrayUtils.bigIntToBytes(revNonce);
 
       for (int depth = 0; depth < (key.length * 8); depth++) {
         if (nextKey !=

@@ -1,5 +1,7 @@
+import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
@@ -40,13 +42,14 @@ class GetIdentityUseCase
         // Check if the did from param matches the did from the privateKey
         DidEntity did = await _getDidUseCase.execute(param: param.genesisDid);
 
-        String didIdentifier = await _getDidIdentifierUseCase.execute(
+        String genesisDid = await _getDidIdentifierUseCase.execute(
             param: GetDidIdentifierParam(
                 privateKey: param.privateKey!,
                 blockchain: did.blockchain,
-                network: did.network));
+                network: did.network,
+                profileNonce: GENESIS_PROFILE_NONCE));
 
-        if (did.did != didIdentifier) {
+        if (did.did != genesisDid) {
           throw InvalidPrivateKeyException(param.privateKey!);
         }
 

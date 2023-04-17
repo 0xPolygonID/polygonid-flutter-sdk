@@ -9,9 +9,14 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_ide
 
 class UpdateIdentityParam {
   final String privateKey;
-  final List<int> profiles;
+  final String genesisDid;
+  final Map<BigInt, String> profiles;
 
-  UpdateIdentityParam({required this.privateKey, this.profiles = const []});
+  UpdateIdentityParam({
+    required this.privateKey,
+    required this.genesisDid,
+    this.profiles = const {},
+  });
 }
 
 class UpdateIdentityUseCase
@@ -29,18 +34,17 @@ class UpdateIdentityUseCase
   @override
   Future<PrivateIdentityEntity> execute(
       {required UpdateIdentityParam param}) async {
-    // Create the new [IdentityEntity]
-    PrivateIdentityEntity identity = await _createIdentityUseCase.execute(
-        param: CreateIdentityParam(
-            privateKey: param.privateKey, profiles: param.profiles));
+    IdentityEntity identity = await _getIdentityUseCase.execute(
+      param: GetIdentityParam(
+        genesisDid: param.genesisDid,
+        privateKey: param.privateKey,
+      ),
+    );
 
     try {
-      // Check if identity is already stored (already added)
-      IdentityEntity oldIdentity = await _getIdentityUseCase.execute(
-          param: GetIdentityParam(
-              genesisDid: identity.did, privateKey: param.privateKey));
-
-      if (oldIdentity is PrivateIdentityEntity) {
+      if (identity is PrivateIdentityEntity) {
+        identity.profiles.clear();
+        identity.profiles.addAll(param.profiles);
         await _identityRepository.storeIdentity(identity: identity);
       } else {
         throw InvalidPrivateKeyException(param.privateKey);
@@ -52,7 +56,7 @@ class UpdateIdentityUseCase
     }
 
     logger().i(
-        "[UpdateIdentityUseCase] Identity updated with did: ${identity.did}, for key $param");
+        "[UpdateIdentityUseCase] Identity updated with did: ${param.genesisDid}, for key $param");
     return identity;
   }
 }

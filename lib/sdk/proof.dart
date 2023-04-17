@@ -11,16 +11,18 @@ import 'package:polygonid_flutter_sdk/proof/domain/use_cases/circuits_files_exis
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/download_circuits_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/generate_proof_use_case.dart';
 
-import '../common/domain/tuples.dart';
-import '../iden3comm/domain/entities/jwz_proof_entity.dart';
-import '../iden3comm/domain/entities/jwz_sd_proof_entity.dart';
-import '../iden3comm/domain/entities/request/auth/proof_scope_request.dart';
-import '../proof/domain/entities/circuit_data_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/tuples.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_sd_proof_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 
 abstract class PolygonIdSdkProof {
   Future<JWZProofEntity> prove(
-      {required String did,
-      int? profileNonce,
+      {required String genesisDid,
+      required BigInt profileNonce,
+      required BigInt claimSubjectProfileNonce,
       required ClaimEntity claim,
       required CircuitDataEntity circuitData,
       required ProofScopeRequest request,
@@ -30,32 +32,44 @@ abstract class PolygonIdSdkProof {
   Future<Stream<DownloadInfo>> get initCircuitsDownloadAndGetInfoStream;
 
   Future<bool> isAlreadyDownloadedCircuitsFromServer();
+
+  Stream<String> proofGenerationStepsStream();
 }
 
 @injectable
 class Proof implements PolygonIdSdkProof {
-  final GenerateProofUseCase _proveUseCase;
+  final GenerateProofUseCase generateProofUseCase;
   final DownloadCircuitsUseCase _downloadCircuitsUseCase;
   final CircuitsFilesExistUseCase _circuitsFilesExistUseCase;
+  final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
 
   Proof(
-    this._proveUseCase,
+    this.generateProofUseCase,
     this._downloadCircuitsUseCase,
     this._circuitsFilesExistUseCase,
+    this._proofGenerationStepsStreamManager,
   );
 
   @override
   Future<JWZProofEntity> prove(
-      {required String did,
-      int? profileNonce,
+      {required String genesisDid,
+      required BigInt profileNonce,
+      required BigInt claimSubjectProfileNonce,
       required ClaimEntity claim,
       required CircuitDataEntity circuitData,
       required ProofScopeRequest request,
       String? privateKey,
       String? challenge}) {
-    return _proveUseCase.execute(
-        param: GenerateProofParam(did, profileNonce ?? 0, 0, claim, request,
-            circuitData, privateKey, challenge));
+    return generateProofUseCase.execute(
+        param: GenerateProofParam(
+            genesisDid,
+            profileNonce,
+            claimSubjectProfileNonce,
+            claim,
+            request,
+            circuitData,
+            privateKey,
+            challenge));
   }
 
   ///
@@ -68,5 +82,11 @@ class Proof implements PolygonIdSdkProof {
   @override
   Future<Stream<DownloadInfo>> get initCircuitsDownloadAndGetInfoStream {
     return _downloadCircuitsUseCase.execute();
+  }
+
+  /// Returns a [Stream] of [String] of proof generation steps
+  @override
+  Stream<String> proofGenerationStepsStream() {
+    return _proofGenerationStepsStreamManager.proofGenerationStepsStream;
   }
 }

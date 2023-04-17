@@ -15,6 +15,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   ///
+  Stream<String> get proofGenerationStepsStream =>
+      _polygonIdSdk.proof.proofGenerationStepsStream();
+
+  ///
   void _handleClickScanQrCode(
       ClickScanQrCodeEvent event, Emitter<AuthState> emit) {
     emit(const AuthState.navigateToQrCodeScanner());
@@ -71,7 +75,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       await _polygonIdSdk.iden3comm.authenticate(
         message: iden3message,
-        did: did,
+        genesisDid: did,
         privateKey: privateKey,
       );
 

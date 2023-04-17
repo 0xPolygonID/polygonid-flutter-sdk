@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_sd_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
@@ -72,13 +73,13 @@ class ProofMocks {
   static String jwzVpProofJson = '''
   {
     "verifiableCredential": {
-        "documentType": 99,
-        "@type": "KYCAgeCredential"
+      "documentType": 99,
+      "@type": "KYCAgeCredential"
     },
     "@type": "VerifiablePresentation",
     "@context": [
-         "https://www.w3.org/2018/credentials/v1",
-         "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld"
+      "https://www.w3.org/2018/credentials/v1",
+      "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld"
     ]
   }
   ''';

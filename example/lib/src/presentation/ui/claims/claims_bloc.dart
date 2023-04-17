@@ -68,7 +68,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       List<ClaimEntity> claimList =
           await _polygonIdSdk.iden3comm.fetchAndSaveClaims(
         message: event.iden3message as OfferIden3MessageEntity,
-        did: didIdentifier,
+        genesisDid: didIdentifier,
         privateKey: privateKey,
       );
 
@@ -105,14 +105,14 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
     if (did == null || did.isEmpty) {
       emit(const ClaimsState.error(
-          "without an identity is impossible to get claims"));
+          "without an identity is impossible to remove claim"));
       return;
     }
 
     try {
       List<ClaimEntity> claimList = await _polygonIdSdk.credential.getClaims(
         filters: filters,
-        did: did,
+        genesisDid: did,
         privateKey: privateKey,
       );
 
@@ -151,7 +151,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
     if (did == null || did.isEmpty) {
       emit(const ClaimsState.error(
-          "without an identity is impossible to get claims"));
+          "without an identity is impossible to remove claim"));
       return;
     }
 
@@ -159,7 +159,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       List<ClaimEntity> claimList =
           await _polygonIdSdk.credential.getClaimsByIds(
         claimIds: ids,
-        did: did,
+        genesisDid: did,
         privateKey: privateKey,
       );
 
@@ -203,7 +203,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     try {
       await _polygonIdSdk.credential.removeClaim(
         claimId: id,
-        did: did,
+        genesisDid: did,
         privateKey: privateKey,
       );
       add(const GetClaimsEvent());
@@ -243,7 +243,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     try {
       await _polygonIdSdk.credential.removeClaims(
         claimIds: ids,
-        did: did,
+        genesisDid: did,
         privateKey: privateKey,
       );
       add(const GetClaimsEvent());
@@ -282,7 +282,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       await _polygonIdSdk.credential.updateClaim(
         claimId: id,
         issuer: issuer,
-        did: did,
+        genesisDid: did,
         state: state,
         expiration: expiration,
         type: type,
@@ -368,14 +368,14 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
     try {
       List<ClaimEntity> claimList = await _polygonIdSdk.credential.getClaims(
-        did: did,
+        genesisDid: did,
         privateKey: privateKey,
       );
 
       List<String> claimIds = claimList.map((claim) => claim.id).toList();
       await _polygonIdSdk.credential.removeClaims(
         claimIds: claimIds,
-        did: did,
+        genesisDid: did,
         privateKey: privateKey,
       );
       add(const GetClaimsEvent());

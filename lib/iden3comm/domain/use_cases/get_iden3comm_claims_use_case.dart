@@ -12,13 +12,13 @@ import 'get_proof_requests_use_case.dart';
 
 class GetIden3commClaimsParam {
   final Iden3MessageEntity message;
-  final String did;
-  final int profileNonce;
+  final String genesisDid;
+  final BigInt profileNonce;
   final String privateKey;
 
   GetIden3commClaimsParam(
       {required this.message,
-      required this.did,
+      required this.genesisDid,
       required this.profileNonce,
       required this.privateKey});
 }
@@ -60,7 +60,8 @@ class GetIden3commClaimsUseCase
               .then((filters) => _getClaimsUseCase.execute(
                       param: GetClaimsParam(
                     filters: filters,
-                    did: param.did,
+                    genesisDid: param.genesisDid,
+                    profileNonce: param.profileNonce,
                     privateKey: param.privateKey,
                   )))
               .then(
@@ -82,7 +83,7 @@ class GetIden3commClaimsUseCase
                         param: UpdateClaimParam(
                             id: claims[i].id,
                             state: ClaimState.revoked,
-                            did: param.did,
+                            genesisDid: param.genesisDid,
                             privateKey: param.privateKey));
                   }
                 }

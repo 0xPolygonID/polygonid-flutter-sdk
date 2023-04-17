@@ -1,4 +1,5 @@
 import 'package:encrypt/encrypt.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
@@ -62,12 +63,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
   );
 
   @override
-  Future<String> getPrivateKey(
-      {required String accessMessage, required String? secret}) {
+  Future<String> getPrivateKey({required String? secret}) {
     return _walletDataSource
-        .createWallet(
-            secret: _privateKeyMapper.mapFrom(secret),
-            accessMessage: accessMessage)
+        .createWallet(secret: _privateKeyMapper.mapFrom(secret))
         .then((wallet) => _hexMapper.mapFrom(wallet.privateKey));
   }
 
@@ -171,7 +169,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   @override
   Future<Map<String, dynamic>> getNonRevProof(
       {required String identityState,
-      required int nonce,
+      required BigInt nonce,
       required String baseUrl}) {
     return _remoteIdentityDataSource
         .getNonRevocationProof(identityState, nonce, baseUrl)
@@ -183,14 +181,14 @@ class IdentityRepositoryImpl extends IdentityRepository {
     required String blockchain,
     required String network,
     required String claimsRoot,
-    int profileNonce = 0,
+    required BigInt profileNonce,
   }) {
     try {
       // Get the genesis id
       String genesisDid = _libPolygonIdCoreIdentityDataSource
           .calculateGenesisId(claimsRoot, blockchain, network);
 
-      if (profileNonce == 0) {
+      if (profileNonce == GENESIS_PROFILE_NONCE) {
         return Future.value(genesisDid);
       } else {
         String profileDid = _libPolygonIdCoreIdentityDataSource

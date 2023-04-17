@@ -1,3 +1,6 @@
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
+
 import '../../../../common/domain/error_exception.dart';
 
 class IdentityException extends ErrorException {
@@ -14,13 +17,13 @@ class IdentityAlreadyExistsException implements Exception {
 
 class ProfileAlreadyExistsException implements Exception {
   final String genesisDid;
-  final int profileNonce;
+  final BigInt profileNonce;
 
   ProfileAlreadyExistsException(this.genesisDid, this.profileNonce);
 }
 
 class UnknownProfileException implements Exception {
-  final int profileNonce;
+  final BigInt profileNonce;
 
   UnknownProfileException(this.profileNonce);
 }
@@ -38,14 +41,14 @@ class InvalidPrivateKeyException implements Exception {
 }
 
 class InvalidProfileException extends ErrorException {
-  final int profileNonce;
+  final BigInt profileNonce;
 
   InvalidProfileException(this.profileNonce) : super(null);
 
   dynamic get error {
-    if (profileNonce == 0) {
+    if (profileNonce == BigInt.zero) {
       return "Genesis profile can't be modified";
-    } else if (profileNonce < 0) {
+    } else if (profileNonce.isNegative) {
       return "Profile nonce can't be negative";
     }
 
@@ -63,4 +66,11 @@ class FetchStateRootsException extends ErrorException {
 
 class NonRevProofException extends ErrorException {
   NonRevProofException(error) : super(error);
+}
+
+class DidNotMatchCurrentEnvException implements Exception {
+  final String did;
+  final String rightDid;
+
+  DidNotMatchCurrentEnvException(this.did, this.rightDid);
 }

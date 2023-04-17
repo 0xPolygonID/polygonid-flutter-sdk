@@ -8,33 +8,31 @@ import '../../../iden3comm/domain/use_cases/get_fetch_requests_use_case.dart';
 
 class SaveClaimsParam {
   final List<ClaimEntity> claims;
-  final String did;
-  final int profileNonce;
+  final String genesisDid;
+  //final BigInt profileNonce;
   final String privateKey;
 
   SaveClaimsParam({
     required this.claims,
-    required this.did,
-    this.profileNonce = 0,
+    required this.genesisDid,
+    //required this.profileNonce,
     required this.privateKey,
   });
 }
 
 class SaveClaimsUseCase
     extends FutureUseCase<SaveClaimsParam, List<ClaimEntity>> {
-  final GetFetchRequestsUseCase _getFetchRequestsUseCase;
-  final GetAuthTokenUseCase _getAuthTokenUseCase;
   final CredentialRepository _credentialRepository;
 
-  SaveClaimsUseCase(this._getFetchRequestsUseCase, this._getAuthTokenUseCase,
-      this._credentialRepository);
+  SaveClaimsUseCase(this._credentialRepository);
 
   @override
   Future<List<ClaimEntity>> execute({required SaveClaimsParam param}) {
+    // TODO: profile nonce from param?
     return _credentialRepository
         .saveClaims(
       claims: param.claims,
-      did: param.did,
+      genesisDid: param.genesisDid,
       privateKey: param.privateKey,
     )
         .then((_) {

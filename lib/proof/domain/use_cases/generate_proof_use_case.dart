@@ -20,7 +20,7 @@ import '../../../identity/domain/entities/did_entity.dart';
 import '../../../identity/domain/entities/identity_entity.dart';
 import '../../../identity/domain/entities/node_entity.dart';
 import '../../../identity/domain/use_cases/identity/get_identity_use_case.dart';
-import '../../../identity/domain/use_cases/sign_message_use_case.dart';
+import '../../../identity/domain/use_cases/identity/sign_message_use_case.dart';
 import '../entities/circuit_data_entity.dart';
 import '../entities/gist_proof_entity.dart';
 import '../entities/jwz/jwz_proof.dart';
@@ -31,8 +31,8 @@ import 'prove_use_case.dart';
 
 class GenerateProofParam {
   final String did;
-  final int profileNonce;
-  final int claimSubjectProfileNonce;
+  final BigInt profileNonce;
+  final BigInt claimSubjectProfileNonce;
   final ClaimEntity credential;
   final ProofScopeRequest request; //FIXME: this is not from proof
   final CircuitDataEntity circuitData;

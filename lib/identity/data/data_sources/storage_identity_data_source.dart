@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/data/data_sources/secure_identity_storage_data_source.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
@@ -37,7 +38,7 @@ class IdentityStoreRefWrapper {
   }
 }
 
-class StorageIdentityDataSource {
+class StorageIdentityDataSource extends SecureIdentityStorageDataSource {
   final Database _database;
   final IdentityStoreRefWrapper _storeRefWrapper;
 
@@ -93,7 +94,7 @@ class StorageIdentityDataSource {
   /// Export identity database
   Future<Map<String, Object?>> getIdentityDb(
       {required String did, required String privateKey}) async {
-    Database db = await _getDatabase(
+    Database db = await getDatabase(
       did: did,
       privateKey: privateKey,
     );
@@ -112,22 +113,11 @@ class StorageIdentityDataSource {
 
     await importDatabase(
       exportableDb,
-      databaseFactoryIo,
 
       ///FIXME: should be injected
+      databaseFactoryIo,
       destinationPath,
       codec: codec,
-    );
-  }
-
-  Future<Database> _getDatabase({
-    required String did,
-    required String privateKey,
-  }) {
-    return getItSdk.getAsync<Database>(
-      instanceName: identityDatabaseName,
-      param1: did,
-      param2: privateKey,
     );
   }
 }

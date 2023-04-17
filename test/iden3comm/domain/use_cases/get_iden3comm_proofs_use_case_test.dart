@@ -12,17 +12,17 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_reque
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/generate_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 
 import '../../../common/common_mocks.dart';
 import '../../../common/credential_mocks.dart';
 import '../../../common/iden3comm_mocks.dart';
 import '../../../common/identity_mocks.dart';
 import '../../../common/proof_mocks.dart';
-import 'authenticate_use_case_test.dart';
-import 'authenticate_use_case_test.mocks.dart';
 import 'get_iden3comm_proofs_use_case_test.mocks.dart';
 
 // Data
@@ -34,7 +34,7 @@ List<JWZSDProofEntity> result = [
 
 GetIden3commProofsParam param = GetIden3commProofsParam(
   message: Iden3commMocks.authRequest,
-  did: CommonMocks.did,
+  genesisDid: CommonMocks.did,
   profileNonce: CommonMocks.nonce,
   privateKey: CommonMocks.privateKey,
 );
@@ -43,8 +43,6 @@ var exception = ProofsNotFoundException([]);
 
 // Mocked dependencies
 MockProofRepository proofRepository = MockProofRepository();
-MockIden3commRepository iden3commRepository = MockIden3commRepository();
-MockIdentityRepository identityRepository = MockIdentityRepository();
 MockGetIden3commClaimsUseCase getIden3commClaimsUseCase =
     MockGetIden3commClaimsUseCase();
 MockGenerateProofUseCase generateProofUseCase = MockGenerateProofUseCase();
@@ -52,39 +50,40 @@ MockIsProofCircuitSupportedUseCase isProofCircuitSupportedUseCase =
     MockIsProofCircuitSupportedUseCase();
 MockGetProofRequestsUseCase getProofRequestsUseCase =
     MockGetProofRequestsUseCase();
+MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
+MockProofGenerationStepsStreamManager proofGenerationStepsStreamManager =
+    MockProofGenerationStepsStreamManager();
 
 // Tested instance
 GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   proofRepository,
-  identityRepository,
   getIden3commClaimsUseCase,
   generateProofUseCase,
   isProofCircuitSupportedUseCase,
   getProofRequestsUseCase,
+  getIdentityUseCase,
+  proofGenerationStepsStreamManager,
 );
 
 @GenerateMocks([
   ProofRepository,
-  IdentityRepository,
   GetIden3commClaimsUseCase,
   GenerateProofUseCase,
   IsProofCircuitSupportedUseCase,
   GetProofRequestsUseCase,
+  GetIdentityUseCase,
+  ProofGenerationStepsStreamManager,
 ])
 main() {
   setUp(() {
     reset(proofRepository);
-    reset(identityRepository);
     reset(getIden3commClaimsUseCase);
     reset(generateProofUseCase);
     reset(isProofCircuitSupportedUseCase);
     reset(getProofRequestsUseCase);
+    reset(getIdentityUseCase);
 
     //Given
-    when(identityRepository.getIdentity(genesisDid: anyNamed('genesisDid')))
-        .thenAnswer(
-            (realInvocation) => Future.value(IdentityMocks.privateIdentity));
-
     when(getProofRequestsUseCase.execute(param: anyNamed('param'))).thenAnswer(
         (realInvocation) => Future.value(Iden3commMocks.proofRequestList));
 
@@ -97,12 +96,11 @@ main() {
     when(proofRepository.loadCircuitFiles(any))
         .thenAnswer((realInvocation) => Future.value(ProofMocks.circuitData));
 
-    when(identityRepository.signMessage(
-            privateKey: anyNamed('privateKey'), message: anyNamed('message')))
-        .thenAnswer((realInvocation) => Future.value(CommonMocks.signature));
-
     when(generateProofUseCase.execute(param: anyNamed('param'))).thenAnswer(
         (realInvocation) => Future.value(Iden3commMocks.jwzSdProof));
+
+    when(getIdentityUseCase.execute(param: anyNamed('param'))).thenAnswer(
+        (realInvocation) => Future.value(IdentityMocks.privateIdentity));
   });
 
   test(
@@ -112,11 +110,6 @@ main() {
     expect(await useCase.execute(param: param), result);
 
     // Then
-    var getIdentityCaptured = verify(identityRepository.getIdentity(
-            genesisDid: captureAnyNamed('genesisDid')))
-        .captured;
-    expect(getIdentityCaptured[0], CommonMocks.did);
-
     var getRequestsCaptured =
         verify(getProofRequestsUseCase.execute(param: captureAnyNamed('param')))
             .captured;
@@ -144,7 +137,7 @@ main() {
       expect(verifyIsFilterSupported.captured[i],
           Iden3commMocks.proofRequestList[i].scope.circuitId);
 
-      expect(verifyGetClaims.captured[i].did, param.did);
+      expect(verifyGetClaims.captured[i].genesisDid, param.genesisDid);
       expect(verifyGetClaims.captured[i].privateKey, param.privateKey);
 
       expect(verifyLoadCircuit.captured[i],
@@ -152,13 +145,20 @@ main() {
 
       expect(verifyGenerateProof.captured[i].did, IdentityMocks.did.did);
       expect(verifyGenerateProof.captured[i].profileNonce, param.profileNonce);
-      expect(verifyGenerateProof.captured[i].claimSubjectProfileNonce, 0);
+      expect(verifyGenerateProof.captured[i].claimSubjectProfileNonce,
+          CommonMocks.genesisNonce);
       expect(verifyGenerateProof.captured[i].credential, CredentialMocks.claim);
       expect(verifyGenerateProof.captured[i].request,
           Iden3commMocks.proofRequestList[i].scope);
       expect(
           verifyGenerateProof.captured[i].circuitData, ProofMocks.circuitData);
     }
+
+    var getIdentityCapture =
+        verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))
+            .captured
+            .first;
+    expect(getIdentityCapture.genesisDid, CommonMocks.did);
   });
 
   test(
@@ -173,11 +173,6 @@ main() {
         useCase.execute(param: param), throwsA(CommonMocks.exception));
 
     // Then
-    var getIdentityCaptured = verify(identityRepository.getIdentity(
-            genesisDid: captureAnyNamed('genesisDid')))
-        .captured;
-    expect(getIdentityCaptured[0], CommonMocks.did);
-
     var getRequestsCaptured =
         verify(getProofRequestsUseCase.execute(param: captureAnyNamed('param')))
             .captured;
@@ -192,5 +187,6 @@ main() {
 
     verifyNever(proofRepository.loadCircuitFiles(captureAny));
     verifyNever(generateProofUseCase.execute(param: captureAnyNamed('param')));
+    verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
   });
 }

@@ -4,7 +4,6 @@ import '../entities/rhs_node_entity.dart';
 
 abstract class IdentityRepository {
   Future<String> getPrivateKey({
-    required String accessMessage,
     required String? secret,
   });
 
@@ -27,13 +26,13 @@ abstract class IdentityRepository {
     required String blockchain,
     required String network,
     required String claimsRoot,
-    int profileNonce = 0,
+    required BigInt profileNonce,
   });
 
   // RHS
   Future<Map<String, dynamic>> getNonRevProof(
       {required String identityState,
-      required int nonce,
+      required BigInt nonce,
       required String baseUrl});
 
   Future<String> getState(

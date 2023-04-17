@@ -1,0 +1,24 @@
+coverage:
+  precision: 2
+  round: down
+  range: "30...100"
+
+#  status:
+#    project: no
+#    patch: true
+#    changes: false
+ignore:
+  - 'lib/assets/*.g.dart'
+  - '**/common/domain/entities/*.dart'
+  - '**/common/domain/error_exception.dart'
+  - '**/common/domain/domain_logger.dart'
+  - '**/env/*'
+  - '**/sdk/di/*'
+  - '**/constants.dart'
+  - '**/example/'
+  - '**/*.g.dart'
+
+ # https://docs.codecov.io/docs/pull-request-comments
+  #comment:
+  #  layout: "reach, diff, flags, files"
+#  behavior: default

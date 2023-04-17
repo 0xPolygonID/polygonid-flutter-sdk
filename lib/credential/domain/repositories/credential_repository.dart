@@ -7,27 +7,27 @@ import '../entities/claim_entity.dart';
 abstract class CredentialRepository {
   Future<void> saveClaims({
     required List<ClaimEntity> claims,
-    required String did,
+    required String genesisDid,
     required String privateKey,
   });
 
   Future<List<ClaimEntity>> getClaims(
       {List<FilterEntity>? filters,
-      required String did,
+      required String genesisDid,
       required String privateKey});
 
   Future<ClaimEntity> getClaim(
       {required String claimId,
-      required String did,
+      required String genesisDid,
       required String privateKey});
 
   Future<void> removeClaims(
       {required List<String> claimIds,
-      required String did,
+      required String genesisDid,
       required String privateKey});
 
   Future<void> removeAllClaims(
-      {required String did, required String privateKey});
+      {required String genesisDid, required String privateKey});
 
   Future<Map<String, dynamic>> getRevocationStatus(
       {required ClaimEntity claim});

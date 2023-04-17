@@ -1,4 +1,4 @@
-import 'package:polygonid_flutter_sdk/common/domain/entities/env_dto.dart';
+import 'package:polygonid_flutter_sdk/common/data/data_sources/dtos/env_dto.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/mappers/mapper.dart';
 
