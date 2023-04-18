@@ -202,15 +202,14 @@ class Iden3commMocks {
 
   static List<InteractionEntity> interactionEntities = [
     InteractionEntity(
-      id: CommonMocks.intValues[0].toString(),
-      from: CommonMocks.did,
-      genesisDid: CommonMocks.did,
-      profileNonce: CommonMocks.nonce,
-      type: InteractionType.offer,
-      timestamp: 0,
-      message: CommonMocks.message,
-        state: InteractionState.opened
-    ),
+        id: CommonMocks.intValues[0].toString(),
+        from: CommonMocks.did,
+        genesisDid: CommonMocks.did,
+        profileNonce: CommonMocks.nonce,
+        type: InteractionType.offer,
+        timestamp: 0,
+        message: CommonMocks.message,
+        state: InteractionState.opened),
     InteractionEntity(
       id: CommonMocks.intValues[1].toString(),
       from: CommonMocks.did,
@@ -218,17 +217,17 @@ class Iden3commMocks {
       profileNonce: CommonMocks.nonce,
       type: InteractionType.authRequest,
       timestamp: 0,
-      message: CommonMocks.message, state: InteractionState.received,
+      message: CommonMocks.message,
+      state: InteractionState.received,
     ),
     InteractionEntity(
-      id: CommonMocks.intValues[2].toString(),
-      from: CommonMocks.did,
-      genesisDid: CommonMocks.did,
-      profileNonce: CommonMocks.nonce,
-      type: InteractionType.offer,
-      timestamp: 0,
-      message: CommonMocks.message,
-      state: InteractionState.accepted
-    ),
+        id: CommonMocks.intValues[2].toString(),
+        from: CommonMocks.did,
+        genesisDid: CommonMocks.did,
+        profileNonce: CommonMocks.nonce,
+        type: InteractionType.offer,
+        timestamp: 0,
+        message: CommonMocks.message,
+        state: InteractionState.accepted),
   ];
 }
