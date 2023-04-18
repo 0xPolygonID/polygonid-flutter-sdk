@@ -83,12 +83,12 @@ class StorageInteractionDataSource {
     return storedInteractions;
   }
 
-  /// Remove all interactions in a single transaction
+  /// Remove interactions in a single transaction
   /// If one removing fails, they will all be reverted
-  Future<void> removeInteractions({required List<String> interactionIds}) {
+  Future<void> removeInteractions({required List<String> ids}) {
     return _database
         .transaction((transaction) => removeInteractionsTransact(
-            transaction: transaction, interactionIds: interactionIds))
+            transaction: transaction, interactionIds: ids))
         .whenComplete(() => _database.close());
   }
 
@@ -103,8 +103,7 @@ class StorageInteractionDataSource {
 
   /// Remove all interactions in a single transaction
   /// If one removing fails, they will all be reverted
-  Future<void> removeAllInteractions(
-      {required String did, required String privateKey}) {
+  Future<void> removeAllInteractions() {
     return _database
         .transaction((transaction) =>
             removeAllInteractionsTransact(transaction: transaction))
@@ -117,9 +116,9 @@ class StorageInteractionDataSource {
     await _storeRefWrapper.removeAll(transaction);
   }
 
-  Future<List<Map<String, dynamic>>> getInteractions() {
+  Future<List<Map<String, dynamic>>> getInteractions({Filter? filter}) {
     return _storeRefWrapper
-        .find(_database)
+        .find(_database, finder: Finder(filter: filter))
         .then(
             (snapshots) => snapshots.map((snapshot) => snapshot.value).toList())
         .whenComplete(() => _database.close());

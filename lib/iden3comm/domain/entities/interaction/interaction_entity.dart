@@ -1,28 +1,18 @@
-enum InteractionType {
-  connection,
-  offer,
-  revocation,
-  update,
-  authRequest,
-}
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
 
-class InteractionEntity {
-  final String id;
-  final String from;
+class InteractionEntity extends InteractionBaseEntity {
   final String genesisDid;
   final BigInt profileNonce;
-  final InteractionType type;
-  final int timestamp;
-  final String message;
 
   InteractionEntity({
-    required this.id,
-    required this.from,
+    required super.id,
+    required super.from,
     required this.genesisDid,
     required this.profileNonce,
-    required this.type,
-    required this.timestamp,
-    required this.message,
+    required super.type,
+    required super.state,
+    required super.timestamp,
+    required super.message,
   });
 
   factory InteractionEntity.fromJson(Map<String, dynamic> json) {
@@ -33,24 +23,23 @@ class InteractionEntity {
       profileNonce: BigInt.parse(json['profileNonce']),
       type: InteractionType.values
           .firstWhere((type) => type.toString() == json['type']),
+      state: InteractionState.values
+          .firstWhere((type) => type.toString() == json['state']),
       timestamp: json['timestamp'],
       message: json['message'],
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'from': from,
-        'genesisDid': genesisDid,
-        'profileNonce': profileNonce.toString(),
-        'type': type.toString(),
-        'timestamp': timestamp,
-        'message': message,
-      };
+  @override
+  Map<String, dynamic> toJson() => super.toJson()
+    ..addAll({
+      'genesisDid': genesisDid,
+      'profileNonce': profileNonce.toString(),
+    });
 
   @override
   String toString() =>
-      "[InteractionEntity] {id: $id, from: $from, genesisDid: $genesisDid, profileNonce: $profileNonce, type: $type, timestamp: $timestamp, message: $message}";
+      "[InteractionEntity] {${super.toString()}, genesisDid: $genesisDid, profileNonce: $profileNonce}";
 
   @override
   bool operator ==(Object other) =>
@@ -62,6 +51,7 @@ class InteractionEntity {
           genesisDid == other.genesisDid &&
           profileNonce == other.profileNonce &&
           type == other.type &&
+          state == other.state &&
           timestamp == other.timestamp &&
           message == other.message;
 

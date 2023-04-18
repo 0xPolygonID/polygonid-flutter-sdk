@@ -71,7 +71,7 @@ import '../../iden3comm/data/data_sources/storage_interaction_data_source.dart'
 import '../../iden3comm/data/mappers/auth_inputs_mapper.dart' as _i4;
 import '../../iden3comm/data/mappers/auth_proof_mapper.dart' as _i78;
 import '../../iden3comm/data/mappers/auth_response_mapper.dart' as _i5;
-import '../../iden3comm/data/mappers/gist_proof_mapper.dart' as _i81;
+import '../../iden3comm/data/mappers/gist_proof_mapper.dart' as _i82;
 import '../../iden3comm/data/mappers/interaction_id_filter_mapper.dart' as _i32;
 import '../../iden3comm/data/mappers/interaction_mapper.dart' as _i33;
 import '../../iden3comm/data/mappers/proof_request_filters_mapper.dart' as _i56;
@@ -117,7 +117,7 @@ import '../../iden3comm/domain/use_cases/interaction/get_interactions_use_case.d
     as _i149;
 import '../../iden3comm/domain/use_cases/interaction/remove_interactions_use_case.dart'
     as _i150;
-import '../../iden3comm/domain/use_cases/interaction/update_notification_use_case.dart'
+import '../../iden3comm/domain/use_cases/interaction/update_interaction_use_case.dart'
     as _i159;
 import '../../iden3comm/domain/use_cases/listen_and_store_notification_use_case.dart'
     as _i112;
@@ -229,7 +229,7 @@ import '../../proof/data/data_sources/proof_circuit_data_source.dart' as _i53;
 import '../../proof/data/data_sources/prover_lib_data_source.dart' as _i58;
 import '../../proof/data/data_sources/witness_data_source.dart' as _i72;
 import '../../proof/data/mappers/circuit_type_mapper.dart' as _i9;
-import '../../proof/data/mappers/gist_proof_mapper.dart' as _i82;
+import '../../proof/data/mappers/gist_proof_mapper.dart' as _i81;
 import '../../proof/data/mappers/jwz_mapper.dart' as _i34;
 import '../../proof/data/mappers/jwz_proof_mapper.dart' as _i35;
 import '../../proof/data/mappers/node_aux_mapper.dart' as _i39;
@@ -447,9 +447,9 @@ _i1.GetIt $initSDKGetIt(
       get<_i15.StoreRef<String, Map<String, Object?>>>(
           instanceName: 'claimStore')));
   gh.factory<_i81.GistProofMapper>(
-      () => _i81.GistProofMapper(get<_i27.HashMapper>()));
+      () => _i81.GistProofMapper(get<_i55.ProofMapper>()));
   gh.factory<_i82.GistProofMapper>(
-      () => _i82.GistProofMapper(get<_i55.ProofMapper>()));
+      () => _i82.GistProofMapper(get<_i27.HashMapper>()));
   gh.factory<_i83.Iden3commCredentialRepositoryImpl>(
       () => _i83.Iden3commCredentialRepositoryImpl(
             get<_i61.RemoteIden3commDataSource>(),
@@ -551,12 +551,13 @@ _i1.GetIt $initSDKGetIt(
         get<_i5.AuthResponseMapper>(),
         get<_i4.AuthInputsMapper>(),
         get<_i78.AuthProofMapper>(),
-        get<_i81.GistProofMapper>(),
+        get<_i82.GistProofMapper>(),
         get<_i59.QMapper>(),
       ));
-  gh.factory<_i102.InteractionRepositoryImpl>(
-      () => _i102.InteractionRepositoryImpl(
+  gh.factoryAsync<_i102.InteractionRepositoryImpl>(
+      () async => _i102.InteractionRepositoryImpl(
             get<_i96.SecureStorageInteractionDataSource>(),
+            await get.getAsync<_i86.StorageInteractionDataSource>(),
             get<_i33.InteractionMapper>(),
             get<_i21.FiltersMapper>(),
             get<_i32.InteractionIdFilterMapper>(),
@@ -591,11 +592,12 @@ _i1.GetIt $initSDKGetIt(
       () => _i109.GetVocabsUseCase(get<_i100.Iden3commCredentialRepository>()));
   gh.factory<_i110.Iden3commRepository>(() => repositoriesModule
       .iden3commRepository(get<_i101.Iden3commRepositoryImpl>()));
-  gh.factory<_i111.InteractionRepository>(() => repositoriesModule
-      .interactionRepository(get<_i102.InteractionRepositoryImpl>()));
-  gh.factory<_i112.ListenAndStoreNotificationUseCase>(() =>
+  gh.factoryAsync<_i111.InteractionRepository>(() async =>
+      repositoriesModule.interactionRepository(
+          await get.getAsync<_i102.InteractionRepositoryImpl>()));
+  gh.factoryAsync<_i112.ListenAndStoreNotificationUseCase>(() async =>
       _i112.ListenAndStoreNotificationUseCase(
-          get<_i111.InteractionRepository>()));
+          await get.getAsync<_i111.InteractionRepository>()));
   gh.factoryAsync<_i113.RPCDataSource>(() async =>
       _i113.RPCDataSource(await get.getAsync<_i108.GetEnvUseCase>()));
   gh.factory<_i114.RemoveAllClaimsUseCase>(
@@ -650,8 +652,8 @@ _i1.GetIt $initSDKGetIt(
             get<_i63.RevocationStatusMapper>(),
             get<_i34.JWZMapper>(),
             get<_i78.AuthProofMapper>(),
-            get<_i82.GistProofMapper>(),
             get<_i81.GistProofMapper>(),
+            get<_i82.GistProofMapper>(),
           ));
   gh.factory<_i124.RemoveIdentityStateUseCase>(
       () => _i124.RemoveIdentityStateUseCase(get<_i116.SMTRepository>()));
@@ -752,18 +754,18 @@ _i1.GetIt $initSDKGetIt(
           ));
   gh.factoryAsync<_i149.GetInteractionsUseCase>(
       () async => _i149.GetInteractionsUseCase(
-            get<_i111.InteractionRepository>(),
+            await get.getAsync<_i111.InteractionRepository>(),
             get<_i8.CheckProfileValidityUseCase>(),
             await get.getAsync<_i148.GetIdentityUseCase>(),
           ));
   gh.factoryAsync<_i150.RemoveInteractionsUseCase>(
       () async => _i150.RemoveInteractionsUseCase(
-            get<_i111.InteractionRepository>(),
+            await get.getAsync<_i111.InteractionRepository>(),
             await get.getAsync<_i148.GetIdentityUseCase>(),
           ));
   gh.factoryAsync<_i151.AddInteractionUseCase>(
       () async => _i151.AddInteractionUseCase(
-            get<_i111.InteractionRepository>(),
+            await get.getAsync<_i111.InteractionRepository>(),
             get<_i8.CheckProfileValidityUseCase>(),
             await get.getAsync<_i148.GetIdentityUseCase>(),
           ));
@@ -821,9 +823,11 @@ _i1.GetIt $initSDKGetIt(
         await get.getAsync<_i129.CircuitsFilesExistUseCase>(),
         get<_i54.ProofGenerationStepsStreamManager>(),
       ));
-  gh.factoryAsync<_i159.UpdateNotificationUseCase>(
-      () async => _i159.UpdateNotificationUseCase(
-            get<_i111.InteractionRepository>(),
+  gh.factoryAsync<_i159.UpdateInteractionUseCase>(
+      () async => _i159.UpdateInteractionUseCase(
+            await get.getAsync<_i111.InteractionRepository>(),
+            get<_i8.CheckProfileValidityUseCase>(),
+            await get.getAsync<_i148.GetIdentityUseCase>(),
             await get.getAsync<_i151.AddInteractionUseCase>(),
           ));
   gh.factoryAsync<_i160.BackupIdentityUseCase>(
@@ -932,7 +936,7 @@ _i1.GetIt $initSDKGetIt(
         await get.getAsync<_i149.GetInteractionsUseCase>(),
         await get.getAsync<_i151.AddInteractionUseCase>(),
         await get.getAsync<_i150.RemoveInteractionsUseCase>(),
-        await get.getAsync<_i159.UpdateNotificationUseCase>(),
+        await get.getAsync<_i159.UpdateInteractionUseCase>(),
       ));
   gh.factoryAsync<_i175.RemoveProfileUseCase>(
       () async => _i175.RemoveProfileUseCase(

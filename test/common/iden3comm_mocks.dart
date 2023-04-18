@@ -1,7 +1,7 @@
 import 'dart:convert';
 
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/notification_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_sd_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';
@@ -202,15 +202,15 @@ class Iden3commMocks {
 
   static List<InteractionEntity> interactionEntities = [
     InteractionEntity(
-      id: CommonMocks.intValues[0].toString(),
-      from: CommonMocks.did,
-      genesisDid: CommonMocks.did,
-      profileNonce: CommonMocks.nonce,
-      type: InteractionType.connection,
-      timestamp: 0,
-      message: CommonMocks.message,
-    ),
-    NotificationEntity(
+        id: CommonMocks.intValues[0].toString(),
+        from: CommonMocks.did,
+        genesisDid: CommonMocks.did,
+        profileNonce: CommonMocks.nonce,
+        type: InteractionType.offer,
+        timestamp: 0,
+        message: CommonMocks.message,
+        state: InteractionState.opened),
+    InteractionEntity(
       id: CommonMocks.intValues[1].toString(),
       from: CommonMocks.did,
       genesisDid: CommonMocks.did,
@@ -218,15 +218,16 @@ class Iden3commMocks {
       type: InteractionType.authRequest,
       timestamp: 0,
       message: CommonMocks.message,
+      state: InteractionState.received,
     ),
-    NotificationEntity(
-      id: CommonMocks.intValues[2].toString(),
-      from: CommonMocks.did,
-      genesisDid: CommonMocks.did,
-      profileNonce: CommonMocks.nonce,
-      type: InteractionType.offer,
-      timestamp: 0,
-      message: CommonMocks.message,
-    ),
+    InteractionEntity(
+        id: CommonMocks.intValues[2].toString(),
+        from: CommonMocks.did,
+        genesisDid: CommonMocks.did,
+        profileNonce: CommonMocks.nonce,
+        type: InteractionType.offer,
+        timestamp: 0,
+        message: CommonMocks.message,
+        state: InteractionState.accepted),
   ];
 }
