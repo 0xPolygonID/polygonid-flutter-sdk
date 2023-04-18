@@ -1,31 +1,31 @@
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/notification_entity.dart';
 
 abstract class InteractionRepository {
   //Stream<NotificationEntity> get notifications;
 
-  Future<InteractionEntity> addInteraction({
-    required InteractionEntity interaction,
-    required String genesisDid,
-    required String privateKey,
+  Future<InteractionBaseEntity> addInteraction({
+    required InteractionBaseEntity interaction,
+    String? genesisDid,
+    String? privateKey,
   });
 
-  Future<List<InteractionEntity>> getInteractions({
+  Future<List<InteractionBaseEntity>> getInteractions({
     List<FilterEntity>? filters,
-    required String genesisDid,
-    required String privateKey,
+    String? genesisDid,
+    String? privateKey,
   });
 
-  Future<InteractionEntity> getInteraction({
+  Future<InteractionBaseEntity> getInteraction({
     required String id,
-    required String genesisDid,
-    required String privateKey,
+    String? genesisDid,
+    String? privateKey,
   });
 
   Future<void> removeInteractions({
     required List<String> ids,
-    required String genesisDid,
-    required String privateKey,
+    String? genesisDid,
+    String? privateKey,
   });
 }

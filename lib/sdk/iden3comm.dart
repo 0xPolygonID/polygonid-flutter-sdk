@@ -3,8 +3,8 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/notification_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
@@ -18,7 +18,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3messag
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/add_interaction_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/get_interactions_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/remove_interactions_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/update_notification_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/update_interaction_use_case.dart';
 
 abstract class PolygonIdSdkIden3comm {
   /// Returns a [Iden3MessageEntity] from an iden3comm message string.
@@ -124,21 +124,23 @@ abstract class PolygonIdSdkIden3comm {
   ///
   /// The [privateKey]  is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
-  Future<List<InteractionEntity>> getInteractions({
-    required String genesisDid,
+  Future<List<InteractionBaseEntity>> getInteractions({
+    String? genesisDid,
     BigInt? profileNonce,
-    required String privateKey,
+    String? privateKey,
     List<InteractionType>? types,
+    List<InteractionState>? states,
     List<FilterEntity>? filters,
   });
 
-  /// Saves an [InteractionEntity] in the Polygon ID Sdk
+  /// Saves an [InteractionBaseEntity] in the Polygon ID Sdk
   ///
   /// The [interaction] is the interaction to be saved
   /// The [privateKey]  is the key used to access all the sensitive info from the identity
-  Future<InteractionEntity> addInteraction({
-    required InteractionEntity interaction,
-    required String privateKey,
+  Future<InteractionBaseEntity> addInteraction({
+    required InteractionBaseEntity interaction,
+    String? genesisDid,
+    String? privateKey,
   });
 
   /// Removes a list of [InteractionEntity] from the Polygon ID Sdk by their ids
@@ -147,24 +149,22 @@ abstract class PolygonIdSdkIden3comm {
   /// The [privateKey]  is the key used to access all the sensitive info from the identity
   /// The [ids] is the list of ids of the interactions to be removed
   Future<void> removeInteractions({
-    required String genesisDid,
-    required String privateKey,
+    String? genesisDid,
+    String? privateKey,
     required List<String> ids,
   });
 
-  /// Updated the states of a [NotitificationEntity] in the Polygon ID Sdk
+  /// Updated the states of a [InteractionBaseEntity] in the Polygon ID Sdk
   ///
   /// The [id] is the id of the notification to be updated
   /// The [genesisDid] is the unique id of the identity
   /// The [privateKey]  is the key used to access all the sensitive info from the identity
-  /// The [isRead] is the new read state of the notification
-  /// The [state] is the new state of the notification
-  Future<NotificationEntity> updateNotification({
+  /// The [state] is the new state of the inteaction
+  Future<InteractionBaseEntity> updateInteraction({
     required String id,
-    required String genesisDid,
-    required String privateKey,
-    bool? isRead,
-    NotificationState? state,
+    String? genesisDid,
+    String? privateKey,
+    InteractionState? state,
   });
 
   /// Handles notifications and store them
@@ -184,7 +184,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   final GetInteractionsUseCase _getInteractionsUseCase;
   final AddInteractionUseCase _addInteractionUseCase;
   final RemoveInteractionsUseCase _removeInteractionsUseCase;
-  final UpdateNotificationUseCase _updateNotificationUseCase;
+  final UpdateInteractionUseCase _updateInteractionUseCase;
 
   Iden3comm(
     this._fetchAndSaveClaimsUseCase,
@@ -196,7 +196,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     this._getInteractionsUseCase,
     this._addInteractionUseCase,
     this._removeInteractionsUseCase,
-    this._updateNotificationUseCase,
+    this._updateInteractionUseCase,
   );
 
   @override
@@ -282,11 +282,12 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }
 
   @override
-  Future<List<InteractionEntity>> getInteractions({
-    required String genesisDid,
+  Future<List<InteractionBaseEntity>> getInteractions({
+    String? genesisDid,
     BigInt? profileNonce,
-    required String privateKey,
+    String? privateKey,
     List<InteractionType>? types,
+    List<InteractionState>? states,
     List<FilterEntity>? filters,
   }) {
     return _getInteractionsUseCase.execute(
@@ -301,9 +302,9 @@ class Iden3comm implements PolygonIdSdkIden3comm {
 
   @override
   Future<void> removeInteractions({
-    required String genesisDid,
-    required String privateKey,
     required List<String> ids,
+    String? genesisDid,
+    String? privateKey,
   }) {
     return _removeInteractionsUseCase.execute(
         param: RemoveInteractionsParam(
@@ -311,9 +312,10 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }
 
   @override
-  Future<InteractionEntity> addInteraction({
-    required InteractionEntity interaction,
-    required String privateKey,
+  Future<InteractionBaseEntity> addInteraction({
+    required InteractionBaseEntity interaction,
+    String? genesisDid,
+    String? privateKey,
   }) {
     return _addInteractionUseCase.execute(
         param: AddInteractionParam(
@@ -321,19 +323,19 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }
 
   @override
-  Future<NotificationEntity> updateNotification({
+  Future<InteractionBaseEntity> updateInteraction({
     required String id,
-    required String genesisDid,
-    required String privateKey,
-    bool? isRead,
-    NotificationState? state,
+    String? genesisDid,
+    BigInt? profileNonce,
+    String? privateKey,
+    InteractionState? state,
   }) {
-    return _updateNotificationUseCase.execute(
-        param: UpdateNotificationParam(
+    return _updateInteractionUseCase.execute(
+        param: UpdateInteractionParam(
       genesisDid: genesisDid,
+      profileNonce: profileNonce,
       privateKey: privateKey,
       id: id,
-      isRead: isRead,
       state: state,
     ));
   }
