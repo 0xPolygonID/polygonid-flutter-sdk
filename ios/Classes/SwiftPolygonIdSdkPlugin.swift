@@ -30,5 +30,38 @@ public class SwiftPolygonIdSdkPlugin: NSObject, FlutterPlugin {
         let str = "string"
         let unsafePointer = UnsafeMutablePointer<Int8>(mutating: (str as NSString).utf8String)
         cstring_free(unsafePointer);
+        
+        // LibPolygonid bindings
+        PLGNAuthV2InputsMarshal(nil, nil, nil);
+        PLGNCalculateGenesisID(nil, nil, nil);
+        PLGNCreateClaim(nil, nil, nil);
+        PLGNIDToInt(nil, nil, nil);
+        PLGNProofFromSmartContract(nil, nil, nil);
+        PLGNProfileID(nil, nil, nil);
+        PLGNAtomicQuerySigV2Inputs(nil, nil, nil, nil);
+        PLGNSigV2Inputs(nil, nil, nil);
+        PLGNAtomicQueryMtpV2Inputs(nil, nil, nil, nil);
+        PLGNMtpV2Inputs(nil, nil, nil);
+        PLGNAtomicQuerySigV2OnChainInputs(nil, nil, nil, nil);
+        PLGNAtomicQueryMtpV2OnChainInputs(nil, nil, nil, nil);
+        PLGNFreeStatus(nil);
+        
+        // Prover bindings
+        groth16_prover(nil, 0, nil, 0, nil, nil, nil, nil, nil, 0);
+        
+        // witnesscalc authv2 bindings
+        witnesscalc_authV2(nil, 0, nil, 0, nil, nil, nil, 0);
+        
+        // witnesscalc sigv2 bindings
+        witnesscalc_credentialAtomicQuerySigV2(nil, 0, nil, 0, nil, nil, nil, 0);
+        
+        // witnesscalc sigv2 onchain bindings
+        witnesscalc_credentialAtomicQuerySigV2OnChain(nil, 0, nil, 0, nil, nil, nil, 0);
+        
+        // witnesscalc mtpv2 bindings
+        witnesscalc_credentialAtomicQueryMTPV2(nil, 0, nil, 0, nil, nil, nil, 0);
+        
+        // witnesscalc mtpv2 onchain bindings
+        witnesscalc_credentialAtomicQueryMTPV2OnChain(nil, 0, nil, 0, nil, nil, nil, 0);
     }
 }
