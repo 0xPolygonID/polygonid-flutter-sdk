@@ -304,22 +304,30 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   Future<void> removeInteractions({
     required List<String> ids,
     String? genesisDid,
+    BigInt? profileNonce,
     String? privateKey,
   }) {
     return _removeInteractionsUseCase.execute(
         param: RemoveInteractionsParam(
-            genesisDid: genesisDid, privateKey: privateKey, ids: ids));
+            genesisDid: genesisDid,
+            profileNonce: profileNonce,
+            privateKey: privateKey,
+            ids: ids));
   }
 
   @override
   Future<InteractionBaseEntity> addInteraction({
     required InteractionBaseEntity interaction,
     String? genesisDid,
+    BigInt? profileNonce,
     String? privateKey,
   }) {
     return _addInteractionUseCase.execute(
         param: AddInteractionParam(
-            privateKey: privateKey, interaction: interaction));
+            genesisDid: genesisDid,
+            profileNonce: profileNonce,
+            privateKey: privateKey,
+            interaction: interaction));
   }
 
   @override
