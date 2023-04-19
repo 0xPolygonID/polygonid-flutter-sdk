@@ -56,8 +56,7 @@ class StorageInteractionDataSource {
       {required List<Map<String, dynamic>> interactions}) {
     return _database
         .transaction((transaction) => storeInteractionsTransact(
-            transaction: transaction, interactions: interactions))
-        .whenComplete(() => _database.close());
+            transaction: transaction, interactions: interactions));
   }
 
   // For UT purpose
@@ -88,8 +87,7 @@ class StorageInteractionDataSource {
   Future<void> removeInteractions({required List<String> ids}) {
     return _database
         .transaction((transaction) => removeInteractionsTransact(
-            transaction: transaction, interactionIds: ids))
-        .whenComplete(() => _database.close());
+            transaction: transaction, interactionIds: ids));
   }
 
   // For UT purpose
@@ -106,8 +104,7 @@ class StorageInteractionDataSource {
   Future<void> removeAllInteractions() {
     return _database
         .transaction((transaction) =>
-            removeAllInteractionsTransact(transaction: transaction))
-        .whenComplete(() => _database.close());
+            removeAllInteractionsTransact(transaction: transaction));
   }
 
   // For UT purpose
@@ -120,7 +117,6 @@ class StorageInteractionDataSource {
     return _storeRefWrapper
         .find(_database, finder: Finder(filter: filter))
         .then(
-            (snapshots) => snapshots.map((snapshot) => snapshot.value).toList())
-        .whenComplete(() => _database.close());
+            (snapshots) => snapshots.map((snapshot) => snapshot.value).toList());
   }
 }
