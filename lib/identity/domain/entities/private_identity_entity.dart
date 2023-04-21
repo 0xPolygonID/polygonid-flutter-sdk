@@ -15,7 +15,8 @@ class PrivateIdentityEntity extends IdentityEntity {
     return PrivateIdentityEntity(
       did: json['did'],
       publicKey: List<String>.from(json['publicKey']),
-      profiles: Map<int, String>.from(json['profiles']),
+      profiles: json['profiles']
+          .map((key, value) => MapEntry(BigInt.parse(key), value)),
       privateKey: json['privateKey'],
     );
   }

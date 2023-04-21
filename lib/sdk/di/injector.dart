@@ -31,6 +31,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repositor
 import 'package:polygonid_flutter_sdk/proof/data/repositories/proof_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.config.dart';
+import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:web3dart/web3dart.dart';
@@ -43,8 +44,11 @@ final getItSdk = GetIt.asNewInstance();
 )
 configureInjection() => $initSDKGetIt(getItSdk);
 
+/// Channels
 @module
 abstract class ChannelModule {
+  PolygonIdSdk get polygonIdSdk => PolygonIdSdk.I;
+
   @lazySingleton
   MethodChannel get methodChannel => const MethodChannel(CHANNEL_NAME);
 }

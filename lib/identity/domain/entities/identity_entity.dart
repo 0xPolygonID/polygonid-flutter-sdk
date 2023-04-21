@@ -16,7 +16,8 @@ class IdentityEntity {
     return IdentityEntity(
       did: json['did'],
       publicKey: List<String>.from(json['publicKey']),
-      profiles: Map<int, String>.from(json['profiles']),
+      profiles: json['profiles']
+          .map((key, value) => MapEntry(BigInt.parse(key), value)),
     );
   }
 
@@ -24,7 +25,8 @@ class IdentityEntity {
   Map<String, dynamic> toJson() => {
         'did': did,
         'publicKey': publicKey,
-        'profiles': profiles,
+        'profiles':
+            profiles.map((key, value) => MapEntry(key.toString(), value)),
       };
 
   @override

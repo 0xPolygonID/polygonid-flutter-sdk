@@ -3,6 +3,7 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/set_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
+import 'package:polygonid_flutter_sdk/sdk/polygonid_flutter_channel.dart';
 
 import 'credential.dart';
 import 'iden3comm.dart';
@@ -50,6 +51,9 @@ class PolygonIdSdk {
     _ref!.credential = await getItSdk.getAsync<Credential>();
     _ref!.proof = await getItSdk.getAsync<Proof>();
     _ref!.iden3comm = await getItSdk.getAsync<Iden3comm>();
+
+    // Channel
+    getItSdk<PolygonIdFlutterChannel>();
   }
 
   late Identity identity;

@@ -1,6 +1,6 @@
 const AUTH_CLAIM_SCHEMA = "cca3371a6cb1b715004407e325bd993c";
 const API_VERSION = 'v1';
-const CHANNEL_NAME = 'technology.polygon.polygonid_flutter_id';
+const CHANNEL_NAME = 'technology.polygon.polygonid_flutter_sdk';
 
 /// Database
 const databaseName = "polygonIdSdk.db";
