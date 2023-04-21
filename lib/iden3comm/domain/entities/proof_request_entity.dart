@@ -4,13 +4,14 @@ import 'request/auth/proof_scope_request.dart';
 
 class ProofRequestEntity {
   final ProofScopeRequest scope;
+  final Map<String, dynamic> context;
   final ProofQueryParamEntity queryParam;
 
-  ProofRequestEntity(this.scope, this.queryParam);
+  ProofRequestEntity(this.scope, this.context, this.queryParam);
 
   @override
   String toString() =>
-      "[ProofRequestEntity] {scope: $scope, queryParam: $queryParam}";
+      "[ProofRequestEntity] {scope: $scope, context: $context, queryParam: $queryParam}";
 
   @override
   bool operator ==(Object other) =>
@@ -18,6 +19,7 @@ class ProofRequestEntity {
       other is ProofRequestEntity &&
           runtimeType == other.runtimeType &&
           scope == other.scope &&
+          context == other.context &&
           queryParam == other.queryParam;
 
   @override

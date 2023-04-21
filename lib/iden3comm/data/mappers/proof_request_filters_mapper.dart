@@ -10,6 +10,8 @@ class ProofRequestFiltersMapper
   @override
   List<FilterEntity> mapFrom(ProofRequestEntity from) {
     ProofScopeQueryRequest query = from.scope.query;
+    Map<String, dynamic>? context =
+        from.context["@context"][0][query.type]["@context"];
 
     List<FilterEntity> filters = [
       FilterEntity(
@@ -38,12 +40,20 @@ class ProofRequestFiltersMapper
 
     if (query.credentialSubject != null) {
       Map<String, dynamic> request = query.credentialSubject!;
-
       request.forEach((key, map) {
         if (map != null && map is Map) {
           map.forEach((operator, value) {
-            filters.addAll(
-                _getFilterByOperator(key, operator, value, query.type!));
+            if (context != null &&
+                context[key] != null &&
+                context[key]["@type"].contains("boolean")) {
+              FilterEntity? booleanFilter =
+                  _getBooleanFiltersByOperator(key, operator, value);
+              if (booleanFilter != null) {
+                filters.add(booleanFilter);
+              }
+            } else {
+              filters.addAll(_getFilterByOperator(key, operator, value));
+            }
           });
         }
       });
@@ -52,7 +62,7 @@ class ProofRequestFiltersMapper
     return filters;
   }
 
-  List<FilterEntity> _getFilterByOperator(field, operator, value, schema) {
+  List<FilterEntity> _getFilterByOperator(field, operator, value) {
     switch (operator) {
       case '\$eq':
         return [
@@ -104,5 +114,91 @@ class ProofRequestFiltersMapper
     }
 
     return [];
+  }
+
+  FilterEntity? _getBooleanFiltersByOperator(field, operator, value) {
+    print("is boolean");
+    var trueValues = [true, "true", 1];
+    var falseValues = [false, "false", 0];
+    if (value is int) {
+      if (operator == '\$eq') {
+        if (value == 0) {
+          return FilterEntity(
+              operator: FilterOperator.inList,
+              name: 'credential.credentialSubject.$field',
+              value: falseValues);
+        } else {
+          return FilterEntity(
+              operator: FilterOperator.inList,
+              name: 'credential.credentialSubject.$field',
+              value: trueValues);
+        }
+      } else if (operator == '\$ne') {
+        if (value == 0) {
+          return FilterEntity(
+              operator: FilterOperator.inList,
+              name: 'credential.credentialSubject.$field',
+              value: trueValues);
+        } else {
+          return FilterEntity(
+              operator: FilterOperator.inList,
+              name: 'credential.credentialSubject.$field',
+              value: falseValues);
+        }
+      }
+    } else if (value is String) {
+      if (operator == '\$eq') {
+        if (value == "false") {
+          return FilterEntity(
+              operator: FilterOperator.inList,
+              name: 'credential.credentialSubject.$field',
+              value: falseValues);
+        } else {
+          return FilterEntity(
+              operator: FilterOperator.inList,
+              name: 'credential.credentialSubject.$field',
+              value: trueValues);
+        }
+      } else if (operator == '\$ne') {
+        if (value == "false") {
+          return FilterEntity(
+              operator: FilterOperator.inList,
+              name: 'credential.credentialSubject.$field',
+              value: trueValues);
+        } else {
+          return FilterEntity(
+              operator: FilterOperator.inList,
+              name: 'credential.credentialSubject.$field',
+              value: falseValues);
+        }
+      }
+    } else if (value is bool) {
+      if (operator == '\$eq') {
+        if (value == false) {
+          return FilterEntity(
+              operator: FilterOperator.inList,
+              name: 'credential.credentialSubject.$field',
+              value: falseValues);
+        } else {
+          return FilterEntity(
+              operator: FilterOperator.inList,
+              name: 'credential.credentialSubject.$field',
+              value: trueValues);
+        }
+      } else if (operator == '\$ne') {
+        if (value == false) {
+          return FilterEntity(
+              operator: FilterOperator.inList,
+              name: 'credential.credentialSubject.$field',
+              value: trueValues);
+        } else {
+          return FilterEntity(
+              operator: FilterOperator.inList,
+              name: 'credential.credentialSubject.$field',
+              value: falseValues);
+        }
+      }
+    }
+    return null;
   }
 }
