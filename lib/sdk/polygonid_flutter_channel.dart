@@ -7,8 +7,11 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
@@ -20,6 +23,8 @@ import 'package:polygonid_flutter_sdk/sdk/identity.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk/sdk/proof.dart';
 
+/// PolygonIdSdh channel, to be able to use the SDK in native code
+/// We are implementing the interfaces of the SDK just to be sure nothing is missing
 @injectable
 class PolygonIdFlutterChannel
     implements
@@ -31,7 +36,6 @@ class PolygonIdFlutterChannel
   final MethodChannel _channel;
 
   PolygonIdFlutterChannel(this._polygonIdSdk, this._channel) {
-    print("PolygonIdFlutterChannel");
     _channel.setMethodCallHandler((call) {
       print(call.method);
       switch (call.method) {
@@ -49,19 +53,281 @@ class PolygonIdFlutterChannel
         case 'getEnv':
           return _polygonIdSdk.getEnv().then((env) => jsonEncode(env));
 
+        /// Iden3comm
+        case 'addInteraction':
+          Map<String, dynamic> json = jsonDecode(call.arguments['interaction']);
+          InteractionBaseEntity interaction;
+
+          try {
+            interaction = InteractionEntity.fromJson(json);
+          } catch (e) {
+            interaction = InteractionBaseEntity.fromJson(json);
+          }
+
+          return addInteraction(
+                  interaction: interaction,
+                  genesisDid: call.arguments['genesisDid'] as String?,
+                  privateKey: call.arguments['privateKey'] as String?)
+              .then((interaction) => jsonEncode(interaction));
+
+        case 'authenticate':
+          return authenticate(
+              message: AuthIden3MessageEntity.fromJson(
+                  jsonDecode(call.arguments['message'])),
+              genesisDid: call.arguments['genesisDid'] as String,
+              profileNonce: BigInt.tryParse(
+                  call.arguments['profileNonce'] as String? ?? ''),
+              privateKey: call.arguments['privateKey'] as String,
+              pushToken: call.arguments['pushToken'] as String?);
+
+        case 'fetchAndSaveClaims':
+          return fetchAndSaveClaims(
+                  message: OfferIden3MessageEntity.fromJson(
+                      jsonDecode(call.arguments['message'])),
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  profileNonce: BigInt.tryParse(
+                      call.arguments['profileNonce'] as String? ?? ''),
+                  privateKey: call.arguments['privateKey'] as String)
+              .then((claims) =>
+                  claims.map((claim) => jsonEncode(claim)).toList());
+
+        case 'getClaimsFromIden3Message':
+          return getClaimsFromIden3Message(
+                  message: OfferIden3MessageEntity.fromJson(
+                      jsonDecode(call.arguments['message'])),
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  profileNonce: BigInt.tryParse(
+                      call.arguments['profileNonce'] as String? ?? ''),
+                  privateKey: call.arguments['privateKey'] as String)
+              .then((claims) =>
+                  claims.map((claim) => jsonEncode(claim)).toList());
+
+        case 'getFilters':
+          return getIden3Message(message: call.arguments['message'])
+              .then((message) => getFilters(message: message))
+              .then((filters) =>
+                  filters.map((filter) => jsonEncode(filter)).toList());
+
+        case 'getIden3Message':
+          return getIden3Message(message: call.arguments['message'])
+              .then((message) => jsonEncode(message));
+
+        case 'getInteractions':
+          return getInteractions(
+            genesisDid: call.arguments['genesisDid'] as String?,
+            profileNonce: BigInt.tryParse(
+                call.arguments['profileNonce'] as String? ?? ''),
+            privateKey: call.arguments['privateKey'] as String?,
+            types: (call.arguments['types'] as List?)
+                ?.map((type) => InteractionType.values
+                    .firstWhere((interactionType) => interactionType == type))
+                .toList(),
+            states: (call.arguments['states'] as List?)
+                ?.map((state) => InteractionState.values.firstWhere(
+                    (interactionState) => interactionState == state))
+                .toList(),
+            filters: (call.arguments['filters'] as List?)
+                ?.map((filter) => FilterEntity.fromJson(jsonDecode(filter)))
+                .toList(),
+          ).then((interactions) => interactions
+              .map((interaction) => jsonEncode(interaction))
+              .toList());
+
+        case 'getProofs':
+          return getIden3Message(message: call.arguments['message'])
+              .then((message) => getProofs(
+                  message: message,
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  profileNonce: BigInt.tryParse(
+                      call.arguments['profileNonce'] as String? ?? ''),
+                  privateKey: call.arguments['privateKey'] as String,
+                  challenge: call.arguments['challenge'] as String?))
+              .then((message) => jsonEncode(message));
+
+        case 'removeInteractions':
+          return removeInteractions(
+              genesisDid: call.arguments['genesisDid'] as String?,
+              privateKey: call.arguments['privateKey'] as String?,
+              ids: call.arguments['ids'] as List<String>);
+
+        case 'updateInteraction':
+          return updateInteraction(
+                  id: call.arguments['id'] as String,
+                  genesisDid: call.arguments['genesisDid'] as String?,
+                  privateKey: call.arguments['privateKey'] as String?,
+                  state: call.arguments['state'] != null
+                      ? InteractionState.values.firstWhere((interactionState) =>
+                          interactionState == call.arguments['state'])
+                      : null)
+              .then((interaction) => jsonEncode(interaction));
+
         /// Identity
         case 'addIdentity':
-          return addIdentity(secret: call.arguments['secret'] as String?);
-  
+          return addIdentity(secret: call.arguments['secret'] as String?)
+              .then((identity) => jsonEncode(identity));
+
+        case 'addProfile':
+          return addProfile(
+            genesisDid: call.arguments['genesisDid'] as String,
+            privateKey: call.arguments['privateKey'] as String,
+            profileNonce:
+                BigInt.parse(call.arguments['profileNonce'] as String),
+          );
+
+        case 'backupIdentity':
+          return backupIdentity(
+              genesisDid: call.arguments['genesisDid'] as String,
+              privateKey: call.arguments['privateKey'] as String);
+
+        case 'checkIdentityValidity':
+          return checkIdentityValidity(
+              secret: call.arguments['secret'] as String);
+
+        case 'getDidEntity':
+          return getDidEntity(did: call.arguments['did'] as String)
+              .then((did) => jsonEncode(did));
+
         case 'getDidIdentifier':
-          return _polygonIdSdk.identity.getDidIdentifier(
+          return getDidIdentifier(
               privateKey: call.arguments['privateKey'] as String,
               blockchain: call.arguments['blockchain'] as String,
-              network: call.arguments['network'] as String);
+              network: call.arguments['network'] as String,
+              profileNonce: BigInt.tryParse(
+                  call.arguments['profileNonce'] as String? ?? ''));
 
         case 'getIdentities':
-          return _polygonIdSdk.identity.getIdentities().then((identities) =>
+          return getIdentities().then((identities) =>
               identities.map((identity) => jsonEncode(identity)).toList());
+
+        case 'getIdentity':
+          return getIdentity(
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  privateKey: call.arguments['privateKey'] as String?)
+              .then((identity) => jsonEncode(identity));
+
+        case 'getPrivateKey':
+          return getPrivateKey(secret: call.arguments['secret'] as String);
+
+        case 'getProfiles':
+          return getProfiles(
+              genesisDid: call.arguments['genesisDid'] as String,
+              privateKey: call.arguments['privateKey'] as String);
+
+        case 'getState':
+          return getState(did: call.arguments['did'] as String);
+
+        case 'removeIdentity':
+          return removeIdentity(
+              genesisDid: call.arguments['genesisDid'] as String,
+              privateKey: call.arguments['privateKey'] as String);
+
+        case 'removeProfile':
+          return removeProfile(
+              genesisDid: call.arguments['genesisDid'] as String,
+              privateKey: call.arguments['privateKey'] as String,
+              profileNonce:
+                  BigInt.parse(call.arguments['profileNonce'] as String));
+
+        case 'restoreIdentity':
+          return restoreIdentity(
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  privateKey: call.arguments['privateKey'] as String,
+                  encryptedDb: call.arguments['encryptedDb'] as String?)
+              .then((identity) => jsonEncode(identity));
+
+        case 'sign':
+          return sign(
+              message: call.arguments['message'] as String,
+              privateKey: call.arguments['privateKey'] as String);
+
+        /// Credential
+        case 'getClaims':
+          return getClaims(
+                  filters: (call.arguments['filters'] as List?)
+                      ?.map(
+                          (filter) => FilterEntity.fromJson(jsonDecode(filter)))
+                      .toList(),
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  privateKey: call.arguments['privateKey'] as String)
+              .then((claims) =>
+                  claims.map((claim) => jsonEncode(claim)).toList());
+
+        case 'getClaimsByIds':
+          return getClaimsByIds(
+                  claimIds: call.arguments['claimIds'] as List<String>,
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  privateKey: call.arguments['privateKey'] as String)
+              .then((claims) =>
+                  claims.map((claim) => jsonEncode(claim)).toList());
+
+        case 'removeClaim':
+          return removeClaim(
+              claimId: call.arguments['claimId'] as String,
+              genesisDid: call.arguments['genesisDid'] as String,
+              privateKey: call.arguments['privateKey'] as String);
+
+        case 'removeClaims':
+          return removeClaims(
+              claimIds: call.arguments['claimIds'] as List<String>,
+              genesisDid: call.arguments['genesisDid'] as String,
+              privateKey: call.arguments['privateKey'] as String);
+
+        case 'saveClaims':
+          return saveClaims(
+                  claims: (call.arguments['claims'] as List)
+                      .map((claim) => ClaimEntity.fromJson(jsonDecode(claim)))
+                      .toList(),
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  privateKey: call.arguments['privateKey'] as String)
+              .then((claims) =>
+                  claims.map((claim) => jsonEncode(claim)).toList());
+
+        case 'updateClaim':
+          return updateClaim(
+                  claimId: call.arguments['claimId'] as String,
+                  issuer: call.arguments['issuer'] as String?,
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  state: call.arguments['state'] != null
+                      ? ClaimState.values.firstWhere(
+                          (claimState) => claimState == call.arguments['state'])
+                      : null,
+                  expiration: call.arguments['expiration'] as String?,
+                  type: call.arguments['type'] as String?,
+                  data: call.arguments['data'] as Map<String, dynamic>?,
+                  privateKey: call.arguments['privateKey'] as String)
+              .then((claim) => jsonEncode(claim));
+
+        case 'initCircuitsDownloadAndGetInfoStream':
+          // TODO: Handle this case.
+          throw PlatformException(
+              code: 'not_implemented',
+              message: 'Method ${call.method} not implemented');
+
+        case 'isAlreadyDownloadedCircuitsFromServer':
+          return isAlreadyDownloadedCircuitsFromServer();
+
+        case 'proofGenerationStepsStream':
+          // TODO: Handle this case.
+          throw PlatformException(
+              code: 'not_implemented',
+              message: 'Method ${call.method} not implemented');
+
+        case 'prove':
+          return prove(
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  profileNonce:
+                      BigInt.parse(call.arguments['profileNonce'] as String),
+                  claimSubjectProfileNonce: BigInt.parse(
+                      call.arguments['claimSubjectProfileNonce'] as String),
+                  claim: ClaimEntity.fromJson(
+                      jsonDecode(call.arguments['claim'] as String)),
+                  circuitData: CircuitDataEntity.fromJson(
+                      jsonDecode(call.arguments['circuitData'] as String)),
+                  request: ProofScopeRequest.fromJson(
+                      jsonDecode(call.arguments['request'] as String)),
+                  privateKey: call.arguments['privateKey'] as String?,
+                  challenge: call.arguments['challenge'] as String?)
+              .then((proof) => jsonEncode(proof));
 
         default:
           throw PlatformException(
