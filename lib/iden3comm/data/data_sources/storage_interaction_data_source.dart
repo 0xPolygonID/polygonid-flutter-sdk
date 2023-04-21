@@ -54,10 +54,8 @@ class StorageInteractionDataSource {
   /// Return the stored interactions
   Future<List<Map<String, dynamic>>> storeInteractions(
       {required List<Map<String, dynamic>> interactions}) {
-    return _database
-        .transaction((transaction) => storeInteractionsTransact(
-            transaction: transaction, interactions: interactions))
-        .whenComplete(() => _database.close());
+    return _database.transaction((transaction) => storeInteractionsTransact(
+        transaction: transaction, interactions: interactions));
   }
 
   // For UT purpose
@@ -83,13 +81,11 @@ class StorageInteractionDataSource {
     return storedInteractions;
   }
 
-  /// Remove all interactions in a single transaction
+  /// Remove interactions in a single transaction
   /// If one removing fails, they will all be reverted
-  Future<void> removeInteractions({required List<String> interactionIds}) {
-    return _database
-        .transaction((transaction) => removeInteractionsTransact(
-            transaction: transaction, interactionIds: interactionIds))
-        .whenComplete(() => _database.close());
+  Future<void> removeInteractions({required List<String> ids}) {
+    return _database.transaction((transaction) => removeInteractionsTransact(
+        transaction: transaction, interactionIds: ids));
   }
 
   // For UT purpose
@@ -103,12 +99,9 @@ class StorageInteractionDataSource {
 
   /// Remove all interactions in a single transaction
   /// If one removing fails, they will all be reverted
-  Future<void> removeAllInteractions(
-      {required String did, required String privateKey}) {
-    return _database
-        .transaction((transaction) =>
-            removeAllInteractionsTransact(transaction: transaction))
-        .whenComplete(() => _database.close());
+  Future<void> removeAllInteractions() {
+    return _database.transaction((transaction) =>
+        removeAllInteractionsTransact(transaction: transaction));
   }
 
   // For UT purpose
@@ -117,11 +110,10 @@ class StorageInteractionDataSource {
     await _storeRefWrapper.removeAll(transaction);
   }
 
-  Future<List<Map<String, dynamic>>> getInteractions() {
+  Future<List<Map<String, dynamic>>> getInteractions({Filter? filter}) {
     return _storeRefWrapper
-        .find(_database)
-        .then(
-            (snapshots) => snapshots.map((snapshot) => snapshot.value).toList())
-        .whenComplete(() => _database.close());
+        .find(_database, finder: Finder(filter: filter))
+        .then((snapshots) =>
+            snapshots.map((snapshot) => snapshot.value).toList());
   }
 }

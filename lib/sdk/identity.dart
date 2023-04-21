@@ -149,12 +149,14 @@ abstract class PolygonIdSdkIdentity {
   /// to obtain the did identifier. Value must be greater than 0 and less than 2^248
   ///
   /// Return The Identity's [did] identifier
-  Future<String> getDidIdentifier({required String privateKey,
-    required String blockchain,
-    required String network,
-    BigInt? profileNonce});
+  Future<String> getDidIdentifier(
+      {required String privateKey,
+      required String blockchain,
+      required String network,
+      BigInt? profileNonce});
 
-  Future<DidEntity> getDidEntity(String did);
+  /// Returns the [DidEntity] from a did
+  Future<DidEntity> getDidEntity({required String did});
 
   /// Returns the identity state from a did
   ///
@@ -237,19 +239,24 @@ class Identity implements PolygonIdSdkIdentity {
   final GetProfilesUseCase _getProfilesUseCase;
   final RemoveProfileUseCase _removeProfileUseCase;
 
-  final GetDidUseCase _getDidUseCase;Identity(this._checkIdentityValidityUseCase,this._getPrivateKeyUseCase,
-      this._addNewIdentityUseCase,
-      this._restoreIdentityUseCase,
-      this._backupIdentityUseCase,
-      this._getIdentityUseCase,
-      this._getIdentitiesUseCase,
-      this._removeIdentityUseCase,
-      this._getDidIdentifierUseCase,
-      this._signMessageUseCase,
-      this._fetchIdentityStateUseCase,
-      this._addProfileUseCase,
-      this._getProfilesUseCase,
-      this._removeProfileUseCase,this._getDidUseCase,
+  final GetDidUseCase _getDidUseCase;
+
+  Identity(
+    this._checkIdentityValidityUseCase,
+    this._getPrivateKeyUseCase,
+    this._addNewIdentityUseCase,
+    this._restoreIdentityUseCase,
+    this._backupIdentityUseCase,
+    this._getIdentityUseCase,
+    this._getIdentitiesUseCase,
+    this._removeIdentityUseCase,
+    this._getDidIdentifierUseCase,
+    this._signMessageUseCase,
+    this._fetchIdentityStateUseCase,
+    this._addProfileUseCase,
+    this._getProfilesUseCase,
+    this._removeProfileUseCase,
+    this._getDidUseCase,
   );
 
   @override
@@ -292,7 +299,7 @@ class Identity implements PolygonIdSdkIdentity {
       {required String genesisDid, String? privateKey}) async {
     return _getIdentityUseCase.execute(
         param:
-        GetIdentityParam(genesisDid: genesisDid, privateKey: privateKey));
+            GetIdentityParam(genesisDid: genesisDid, privateKey: privateKey));
   }
 
   @override
@@ -315,6 +322,7 @@ class Identity implements PolygonIdSdkIdentity {
         param: SignMessageParam(privateKey, message));
   }
 
+  @override
   Future<String> getDidIdentifier({
     required String privateKey,
     required String blockchain,
@@ -329,7 +337,8 @@ class Identity implements PolygonIdSdkIdentity {
             profileNonce: profileNonce ?? BigInt.zero));
   }
 
-  Future<DidEntity> getDidEntity(String did) {
+  @override
+  Future<DidEntity> getDidEntity({required String did}) {
     return _getDidUseCase.execute(param: did);
   }
 

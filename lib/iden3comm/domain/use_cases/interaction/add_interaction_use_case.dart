@@ -1,5 +1,6 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
@@ -9,17 +10,21 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/check_pr
 import '../../../../common/domain/domain_constants.dart';
 
 class AddInteractionParam {
-  final String privateKey;
-  final InteractionEntity interaction;
+  final String? genesisDid;
+  final BigInt? profileNonce;
+  final String? privateKey;
+  final InteractionBaseEntity interaction;
 
   AddInteractionParam({
-    required this.privateKey,
+    this.genesisDid,
+    this.profileNonce,
+    this.privateKey,
     required this.interaction,
   });
 }
 
 class AddInteractionUseCase
-    extends FutureUseCase<AddInteractionParam, InteractionEntity> {
+    extends FutureUseCase<AddInteractionParam, InteractionBaseEntity> {
   final InteractionRepository _interactionRepository;
   final CheckProfileValidityUseCase _checkProfileValidityUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
@@ -31,21 +36,26 @@ class AddInteractionUseCase
   );
 
   @override
-  Future<InteractionEntity> execute({required AddInteractionParam param}) {
+  Future<InteractionBaseEntity> execute(
+      {required AddInteractionParam param}) async {
     // we check if profile is valid and identity is existing
-    return _checkProfileValidityUseCase
-        .execute(
-            param: CheckProfileValidityParam(
-                profileNonce: param.interaction.profileNonce))
-        .then((_) => _getIdentityUseCase
-            .execute(
-                param: GetIdentityParam(
-                    genesisDid: param.interaction.genesisDid,
-                    privateKey: param.privateKey))
-            .then((_) => _interactionRepository.addInteraction(
-                interaction: param.interaction,
-                genesisDid: param.interaction.genesisDid,
-                privateKey: param.privateKey)))
+    if (param.genesisDid != null &&
+        param.profileNonce != null &&
+        param.privateKey != null) {
+      await _checkProfileValidityUseCase
+          .execute(
+              param:
+                  CheckProfileValidityParam(profileNonce: param.profileNonce!))
+          .then((_) => _getIdentityUseCase.execute(
+              param: GetIdentityParam(
+                  genesisDid: param.genesisDid!,
+                  privateKey: param.privateKey)));
+    }
+    return _interactionRepository
+        .addInteraction(
+            interaction: param.interaction,
+            genesisDid: param.genesisDid,
+            privateKey: param.privateKey)
         .then((interaction) {
       logger().i("[AddInteractionUseCase] Interaction: $interaction");
 
