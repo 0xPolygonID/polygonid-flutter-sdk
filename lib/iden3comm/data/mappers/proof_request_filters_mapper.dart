@@ -10,6 +10,7 @@ class ProofRequestFiltersMapper
   @override
   List<FilterEntity> mapFrom(ProofRequestEntity from) {
     ProofScopeQueryRequest query = from.scope.query;
+
     Map<String, dynamic>? context =
         from.context["@context"][0][query.type]["@context"];
 
@@ -117,7 +118,6 @@ class ProofRequestFiltersMapper
   }
 
   FilterEntity? _getBooleanFiltersByOperator(field, operator, value) {
-    print("is boolean");
     var trueValues = [true, "true", 1];
     var falseValues = [false, "false", 0];
     if (value is int) {
