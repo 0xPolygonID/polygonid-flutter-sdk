@@ -178,10 +178,60 @@ class Iden3commMocks {
       ContractIden3MessageEntity.fromJson(
           jsonDecode(contractFunctionCallRequestJson));
 
+  static Map<String, dynamic> mockContext = {
+    "@context": [
+      {
+        "@version": 1.1,
+        "@protected": true,
+        "id": "@id",
+        "type": "@type",
+        "KYCAgeCredential": {
+          "@id":
+              "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v4.jsonld#KYCAgeCredential",
+          "@context": {
+            "@version": 1.1,
+            "@protected": true,
+            "id": "@id",
+            "type": "@type",
+            "kyc-vocab":
+                "https://github.com/iden3/claim-schema-vocab/blob/main/credentials/kyc.md#",
+            "xsd": "http://www.w3.org/2001/XMLSchema#",
+            "birthday": {"@id": "kyc-vocab:birthday", "@type": "xsd:integer"},
+            "documentType": {
+              "@id": "kyc-vocab:documentType",
+              "@type": "xsd:integer"
+            }
+          }
+        },
+        "KYCCountryOfResidenceCredential": {
+          "@id":
+              "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v4.jsonld#KYCCountryOfResidenceCredential",
+          "@context": {
+            "@version": 1.1,
+            "@protected": true,
+            "id": "@id",
+            "type": "@type",
+            "kyc-vocab":
+                "https://github.com/iden3/claim-schema-vocab/blob/main/credentials/kyc.md#",
+            "xsd": "http://www.w3.org/2001/XMLSchema#",
+            "countryCode": {
+              "@id": "kyc-vocab:countryCode",
+              "@type": "xsd:integer"
+            },
+            "documentType": {
+              "@id": "kyc-vocab:documentType",
+              "@type": "xsd:integer"
+            }
+          }
+        }
+      }
+    ]
+  };
+
   static List<ProofRequestEntity> proofRequestList = [
-    ProofRequestEntity(Iden3commMocks.proofScopeRequest,
+    ProofRequestEntity(Iden3commMocks.proofScopeRequest, mockContext,
         ProofQueryParamEntity(CommonMocks.field, CommonMocks.intValues, 3)),
-    ProofRequestEntity(Iden3commMocks.proofScopeRequest,
+    ProofRequestEntity(Iden3commMocks.proofScopeRequest, mockContext,
         ProofQueryParamEntity(CommonMocks.field, CommonMocks.intValues, 2)),
   ];
 

@@ -7,6 +7,8 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_en
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_query_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
 
+import '../../../common/iden3comm_mocks.dart';
+
 String mockQueryRequestLT = '''
 {
   "birthday": {
@@ -72,6 +74,7 @@ String mockQueryRequestNotSupportedOperator = '''
   }
 }
 ''';
+
 ProofScopeRequest proofScopeRequest = ProofScopeRequest(
   id: 1,
   circuitId: "credentialAtomicQuerySig",
@@ -95,6 +98,7 @@ ProofRequestEntity mockProofRequestEntityLT = ProofRequestEntity(
       credentialSubject: jsonDecode(mockQueryRequestLT),
     ),
   ),
+  Iden3commMocks.mockContext,
   proofQueryParamEntity,
 );
 
@@ -109,6 +113,7 @@ ProofRequestEntity mockProofRequestEntityGT = ProofRequestEntity(
       credentialSubject: jsonDecode(mockQueryRequestGT),
     ),
   ),
+  Iden3commMocks.mockContext,
   proofQueryParamEntity,
 );
 
@@ -123,6 +128,7 @@ ProofRequestEntity mockProofRequestEntityEQ = ProofRequestEntity(
       credentialSubject: jsonDecode(mockQueryRequestEQ),
     ),
   ),
+  Iden3commMocks.mockContext,
   proofQueryParamEntity,
 );
 
@@ -137,6 +143,7 @@ ProofRequestEntity mockProofRequestEntityIN = ProofRequestEntity(
       credentialSubject: jsonDecode(mockQueryRequestIN),
     ),
   ),
+  Iden3commMocks.mockContext,
   proofQueryParamEntity,
 );
 
@@ -151,6 +158,7 @@ ProofRequestEntity mockProofRequestEntityNIN = ProofRequestEntity(
       credentialSubject: jsonDecode(mockQueryRequestNIN),
     ),
   ),
+  Iden3commMocks.mockContext,
   proofQueryParamEntity,
 );
 
@@ -161,10 +169,11 @@ ProofRequestEntity mockProofRequestEntityNINCountry = ProofRequestEntity(
     query: ProofScopeQueryRequest(
       context: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
       challenge: 74657374,
-      type: "CountryOfResidenceCredential",
+      type: "KYCCountryOfResidenceCredential",
       credentialSubject: jsonDecode(mockQueryRequestNINCountry),
     ),
   ),
+  Iden3commMocks.mockContext,
   proofQueryParamEntity,
 );
 
@@ -176,10 +185,11 @@ ProofRequestEntity mockProofRequestEntityNotSupportedOperator =
     query: ProofScopeQueryRequest(
       context: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
       challenge: 74657374,
-      type: "CountryOfResidenceCredential",
+      type: "KYCCountryOfResidenceCredential",
       credentialSubject: jsonDecode(mockQueryRequestNotSupportedOperator),
     ),
   ),
+  Iden3commMocks.mockContext,
   proofQueryParamEntity,
 );
 
@@ -236,7 +246,7 @@ main() {
           proofRequestFiltersMapper.mapFrom(mockProofRequestEntityNINCountry);
       expect(filters.length, 7);
       expect(filters[0].name, "credential.credentialSubject.type");
-      expect(filters[0].value, "CountryOfResidenceCredential");
+      expect(filters[0].value, "KYCCountryOfResidenceCredential");
     });
 
     test("From ProofRequestEntity to List<FilterEntity> Not supported operator",
@@ -245,7 +255,7 @@ main() {
           .mapFrom(mockProofRequestEntityNotSupportedOperator);
       expect(filters.length, 3);
       expect(filters[0].name, "credential.credentialSubject.type");
-      expect(filters[0].value, "CountryOfResidenceCredential");
+      expect(filters[0].value, "KYCCountryOfResidenceCredential");
     });
   });
 }

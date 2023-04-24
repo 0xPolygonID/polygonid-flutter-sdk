@@ -4,6 +4,7 @@ import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_query_context_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_query_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart';
 
@@ -16,13 +17,18 @@ final List<Iden3MessageEntity> messages = [
   Iden3commMocks.authRequest,
   Iden3commMocks.contractFunctionCallRequest
 ];
+
 final expectations = [
   [
-    ProofRequestEntity(Iden3commMocks.proofScopeRequest, proofQueryParamEntity),
-    ProofRequestEntity(
-        Iden3commMocks.otherProofScopeRequest, proofQueryParamEntity)
+    ProofRequestEntity(Iden3commMocks.proofScopeRequest,
+        Iden3commMocks.mockContext, proofQueryParamEntity),
+    ProofRequestEntity(Iden3commMocks.otherProofScopeRequest,
+        Iden3commMocks.mockContext, proofQueryParamEntity)
   ],
-  [ProofRequestEntity(Iden3commMocks.proofScopeRequest, proofQueryParamEntity)]
+  [
+    ProofRequestEntity(Iden3commMocks.proofScopeRequest,
+        Iden3commMocks.mockContext, proofQueryParamEntity)
+  ]
 ];
 
 final ProofQueryParamEntity proofQueryParamEntity = ProofQueryParamEntity(
@@ -30,18 +36,26 @@ final ProofQueryParamEntity proofQueryParamEntity = ProofQueryParamEntity(
 final exception = Exception();
 
 // Dependencies
+MockGetProofQueryContextUseCase getProofQueryContextUseCase =
+    MockGetProofQueryContextUseCase();
 MockGetProofQueryUseCase getProofQueryUseCase = MockGetProofQueryUseCase();
 
 // Tested instance
-GetProofRequestsUseCase useCase = GetProofRequestsUseCase(getProofQueryUseCase);
+GetProofRequestsUseCase useCase =
+    GetProofRequestsUseCase(getProofQueryContextUseCase, getProofQueryUseCase);
 
-@GenerateMocks([GetProofQueryUseCase])
+@GenerateMocks([GetProofQueryUseCase, GetProofQueryContextUseCase])
 void main() {
   setUp(() {
     // Given
+    reset(getProofQueryContextUseCase);
     reset(getProofQueryUseCase);
+
     when(getProofQueryUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value(proofQueryParamEntity));
+    when(getProofQueryContextUseCase.execute(param: anyNamed('param')))
+        .thenAnswer(
+            (realInvocation) => Future.value(Iden3commMocks.mockContext));
   });
 
   test(
@@ -79,19 +93,24 @@ void main() {
   );
 
   test(
-    'Given a Iden3MessageEntity, when I call execute and an error occurred, I expect an empty array to be returned',
+    'Given a Iden3MessageEntity, when I call execute and an error occurred, then I expect an exception to be thrown',
     () async {
-      when(getProofQueryUseCase.execute(param: anyNamed('param')))
-          .thenAnswer((realInvocation) => Future.error(exception));
+      when(getProofQueryContextUseCase.execute(param: anyNamed('param')))
+          .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
-      expect(await useCase.execute(param: Iden3commMocks.authRequest), []);
+      // When
+      await expectLater(useCase.execute(param: Iden3commMocks.authRequest),
+          throwsA(CommonMocks.exception));
 
       // Then
-      var verifyQuery =
-          verify(getProofQueryUseCase.execute(param: captureAnyNamed('param')));
-      expect(
-          verifyQuery.callCount, Iden3commMocks.authRequest.body.scope?.length);
-      expect(verifyQuery.captured, Iden3commMocks.authRequest.body.scope);
+      var verifyQueryContext = verify(
+          getProofQueryContextUseCase.execute(param: captureAnyNamed('param')));
+      expect(verifyQueryContext.callCount, 1);
+      expect(verifyQueryContext.captured,
+          [Iden3commMocks.authRequest.body.scope![0]]);
+
+      verifyNever(
+          getProofQueryUseCase.execute(param: captureAnyNamed('param')));
     },
   );
 }
