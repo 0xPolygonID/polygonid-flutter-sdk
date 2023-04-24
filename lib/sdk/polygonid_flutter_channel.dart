@@ -467,7 +467,7 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<String?> backupIdentity(
+  Future<String> backupIdentity(
       {required String genesisDid, required String privateKey}) {
     return _polygonIdSdk.identity
         .backupIdentity(genesisDid: genesisDid, privateKey: privateKey);
