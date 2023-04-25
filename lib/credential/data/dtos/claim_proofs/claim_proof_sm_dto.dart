@@ -34,19 +34,21 @@ class ClaimProofIssuerSMDTO extends ClaimProofIssuerDTO {
 @JsonSerializable(explicitToJson: true)
 class ClaimProofIssuerStateSMDTO extends ClaimProofIssuerStateDTO {
   @JsonKey(name: 'blockNumber')
-  final int number;
+  final int blockNumber;
   @JsonKey(name: 'blockTimestamp')
-  final int timestamp;
-  @JsonKey(name: 'revocationTreeRoot')
-  final String revocationTree;
-  @JsonKey(name: 'rootOfRoots')
-  final String root;
+  final int blockTimestamp;
   @JsonKey(name: 'txId')
-  final String tx;
+  final String txId;
 
-  ClaimProofIssuerStateSMDTO(String treeRoot, String value, this.number,
-      this.timestamp, this.revocationTree, this.root, this.tx)
-      : super(treeRoot, value);
+  ClaimProofIssuerStateSMDTO(
+      String claimsTreeRoot,
+      String revocationTreeRoot,
+      String rootOfRoots,
+      String value,
+      this.blockNumber,
+      this.blockTimestamp,
+      this.txId)
+      : super(claimsTreeRoot, revocationTreeRoot, rootOfRoots, value);
 
   factory ClaimProofIssuerStateSMDTO.fromJson(Map<String, dynamic> json) =>
       _$ClaimProofIssuerStateSMDTOFromJson(json);

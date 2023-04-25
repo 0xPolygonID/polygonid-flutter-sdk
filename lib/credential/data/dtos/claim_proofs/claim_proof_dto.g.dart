@@ -59,13 +59,17 @@ ClaimProofIssuerStateDTO _$ClaimProofIssuerStateDTOFromJson(
         Map<String, dynamic> json) =>
     ClaimProofIssuerStateDTO(
       json['claimsTreeRoot'] as String,
+      json['revocationTreeRoot'] as String,
+      json['rootOfRoots'] as String,
       json['value'] as String,
     );
 
 Map<String, dynamic> _$ClaimProofIssuerStateDTOToJson(
         ClaimProofIssuerStateDTO instance) =>
     <String, dynamic>{
-      'claimsTreeRoot': instance.treeRoot,
+      'claimsTreeRoot': instance.claimsTreeRoot,
+      'revocationTreeRoot': instance.revocationTreeRoot,
+      'rootOfRoots': instance.rootOfRoots,
       'value': instance.value,
     };
 

@@ -42,22 +42,22 @@ ClaimProofIssuerStateSMDTO _$ClaimProofIssuerStateSMDTOFromJson(
         Map<String, dynamic> json) =>
     ClaimProofIssuerStateSMDTO(
       json['claimsTreeRoot'] as String,
+      json['revocationTreeRoot'] as String,
+      json['rootOfRoots'] as String,
       json['value'] as String,
       json['blockNumber'] as int,
       json['blockTimestamp'] as int,
-      json['revocationTreeRoot'] as String,
-      json['rootOfRoots'] as String,
       json['txId'] as String,
     );
 
 Map<String, dynamic> _$ClaimProofIssuerStateSMDTOToJson(
         ClaimProofIssuerStateSMDTO instance) =>
     <String, dynamic>{
-      'claimsTreeRoot': instance.treeRoot,
+      'claimsTreeRoot': instance.claimsTreeRoot,
+      'revocationTreeRoot': instance.revocationTreeRoot,
+      'rootOfRoots': instance.rootOfRoots,
       'value': instance.value,
-      'blockNumber': instance.number,
-      'blockTimestamp': instance.timestamp,
-      'revocationTreeRoot': instance.revocationTree,
-      'rootOfRoots': instance.root,
-      'txId': instance.tx,
+      'blockNumber': instance.blockNumber,
+      'blockTimestamp': instance.blockTimestamp,
+      'txId': instance.txId,
     };
