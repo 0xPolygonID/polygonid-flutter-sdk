@@ -106,7 +106,11 @@ class ClaimProofIssuerStateDTO {
   final String value;
 
   ClaimProofIssuerStateDTO(this.claimsTreeRoot, String? revocationTreeRoot,
-      String? rootOfRoots, this.value): revocationTreeRoot = "0000000000000000000000000000000000000000000000000000000000000000", rootOfRoots = "0000000000000000000000000000000000000000000000000000000000000000" ;
+      String? rootOfRoots, this.value)
+      : revocationTreeRoot =
+            "0000000000000000000000000000000000000000000000000000000000000000",
+        rootOfRoots =
+            "0000000000000000000000000000000000000000000000000000000000000000";
 
   factory ClaimProofIssuerStateDTO.fromJson(Map<String, dynamic> json) =>
       _$ClaimProofIssuerStateDTOFromJson(json);
