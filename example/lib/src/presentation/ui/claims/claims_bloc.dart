@@ -105,7 +105,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
     if (did == null || did.isEmpty) {
       emit(const ClaimsState.error(
-          "without an identity is impossible to remove claim"));
+          "without an identity is impossible to remove credential"));
       return;
     }
 
@@ -151,7 +151,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
     if (did == null || did.isEmpty) {
       emit(const ClaimsState.error(
-          "without an identity is impossible to remove claim"));
+          "without an identity is impossible to remove credential"));
       return;
     }
 
@@ -196,7 +196,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
     if (did == null || did.isEmpty) {
       emit(const ClaimsState.error(
-          "without an identity is impossible to remove claim"));
+          "without an identity is impossible to remove credential"));
       return;
     }
 
@@ -208,7 +208,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       );
       add(const GetClaimsEvent());
     } on RemoveClaimsException catch (_) {
-      emit(const ClaimsState.error("error while removing claim"));
+      emit(const ClaimsState.error("error while removing credential"));
     } catch (_) {
       emit(const ClaimsState.error("generic error"));
     }
@@ -275,7 +275,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
     if (did == null || did.isEmpty) {
       emit(const ClaimsState.error(
-          "without an identity is impossible to update a claim"));
+          "without an identity is impossible to update a credential"));
       return;
     }
     try {
@@ -292,7 +292,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
       add(const GetClaimsEvent());
     } on UpdateClaimException catch (_) {
-      emit(const ClaimsState.error("error while updating claim"));
+      emit(const ClaimsState.error("error while updating credential"));
     } catch (_) {
       emit(const ClaimsState.error("generic error"));
     }

@@ -98,19 +98,15 @@ class ClaimProofIssuerCredStatusDTO {
 class ClaimProofIssuerStateDTO {
   @JsonKey(name: 'claimsTreeRoot')
   final String claimsTreeRoot;
-  @JsonKey(name: 'revocationTreeRoot')
+  @JsonKey(name: 'revocationTreeRoot', includeIfNull: false)
   final String? revocationTreeRoot;
-  @JsonKey(name: 'rootOfRoots')
+  @JsonKey(name: 'rootOfRoots', includeIfNull: false)
   final String? rootOfRoots;
   @JsonKey(name: 'value')
   final String value;
 
-  ClaimProofIssuerStateDTO(this.claimsTreeRoot, String? revocationTreeRoot,
-      String? rootOfRoots, this.value)
-      : revocationTreeRoot =
-            "0000000000000000000000000000000000000000000000000000000000000000",
-        rootOfRoots =
-            "0000000000000000000000000000000000000000000000000000000000000000";
+  ClaimProofIssuerStateDTO(this.claimsTreeRoot, this.revocationTreeRoot,
+      this.rootOfRoots, this.value);
 
   factory ClaimProofIssuerStateDTO.fromJson(Map<String, dynamic> json) =>
       _$ClaimProofIssuerStateDTOFromJson(json);

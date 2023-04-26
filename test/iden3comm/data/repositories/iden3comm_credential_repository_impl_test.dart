@@ -35,7 +35,7 @@ Iden3commCredentialRepository repository = Iden3commCredentialRepositoryImpl(
   ProofRequestFiltersMapper,
 ])
 void main() {
-  group("Fetch claim", () {
+  group("Fetch credential", () {
     setUp(() {
       reset(remoteIden3commDataSource);
 
