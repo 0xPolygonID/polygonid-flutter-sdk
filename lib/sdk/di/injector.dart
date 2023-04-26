@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:archive/archive.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/foundation.dart';
@@ -186,10 +188,15 @@ abstract class EncryptionModule {
 }
 
 @module
-abstract class ZipDecoderModule {
+abstract class FilesManagerModule {
   @Named('zipDecoder')
   @factoryMethod
   ZipDecoder zipDecoder() {
     return ZipDecoder();
   }
+
+  @lazySingleton
+  @preResolve
+  Future<Directory> get applicationDocumentsDirectory async =>
+      await getApplicationDocumentsDirectory();
 }

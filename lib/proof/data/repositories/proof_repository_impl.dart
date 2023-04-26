@@ -18,6 +18,7 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source
 import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_download_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/jwz_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
@@ -61,6 +62,7 @@ class ProofRepositoryImpl extends ProofRepository {
   final AuthProofMapper _authProofMapper;
   final GistProofMapper _gistProofMapper;
   final iden3GistProofMapper.GistProofMapper _iden3GistProofMapper;
+  final CircuitsFilesDataSource _circuitsFilesDataSource;
 
   // FIXME: those mappers shouldn't be used here as they are part of Credential
   final ClaimMapper _claimMapper;
@@ -84,6 +86,7 @@ class ProofRepositoryImpl extends ProofRepository {
     this._authProofMapper,
     this._gistProofMapper,
     this._iden3GistProofMapper,
+    this._circuitsFilesDataSource,
   );
 
   @override
@@ -264,28 +267,28 @@ class ProofRepositoryImpl extends ProofRepository {
   @override
   Future<void> initCircuitsDownloadFromServer() async {
     String pathForZipFileTemp =
-        await _circuitsDownloadDataSource.getPathToCircuitZipFileTemp();
+        await _circuitsFilesDataSource.getPathToCircuitZipFileTemp();
     String pathForZipFile =
-        await _circuitsDownloadDataSource.getPathToCircuitZipFile();
-    String pathForCircuits = await _circuitsDownloadDataSource.getPath();
+        await _circuitsFilesDataSource.getPathToCircuitZipFile();
+    String pathForCircuits = await _circuitsFilesDataSource.getPath();
     http.StreamedResponse serverResponse =
         await _circuitsDownloadDataSource.getStreamedResponseFromServer();
 
     final int downloadSize = serverResponse.contentLength ?? 0;
 
     // We delete eventual temp zip file downloaded before
-    _circuitsDownloadDataSource.deleteFile(pathForZipFileTemp);
+    _circuitsFilesDataSource.deleteFile(pathForZipFileTemp);
 
     serverResponse.stream.listen(
       (List<int> newBytes) {
         // we write in a temp zip file
-        _circuitsDownloadDataSource.writeZipFile(
+        _circuitsFilesDataSource.writeZipFile(
           pathToFile: pathForZipFileTemp,
           zipBytes: newBytes,
         );
 
         // size of the temp zip file
-        int zipFileSize = _circuitsDownloadDataSource.zipFileSize(
+        int zipFileSize = _circuitsFilesDataSource.zipFileSize(
             pathToFile: pathForZipFileTemp);
         _downloadInfoController.add(DownloadInfo(
           contentLength: downloadSize,
@@ -294,7 +297,7 @@ class ProofRepositoryImpl extends ProofRepository {
       },
       onDone: () async {
         // we get the size of the temp zip file
-        int zipFileSize = _circuitsDownloadDataSource.zipFileSize(
+        int zipFileSize = _circuitsFilesDataSource.zipFileSize(
             pathToFile: pathForZipFileTemp);
         logger().i(
             "[Circuits success:] downloadSize -> $downloadSize / zipFileSize -> $zipFileSize");
@@ -302,15 +305,14 @@ class ProofRepositoryImpl extends ProofRepository {
         if (downloadSize != 0 && zipFileSize != downloadSize) {
           try {
             // if error we delete the temp file
-            _circuitsDownloadDataSource.deleteFile(pathForZipFileTemp);
+            _circuitsFilesDataSource.deleteFile(pathForZipFileTemp);
           } catch (_) {}
           _downloadInfoController.addError("Downloaded files incorrect");
           return;
         }
 
-        _circuitsDownloadDataSource.renameFile(
-            pathForZipFileTemp, pathForZipFile);
-        await _circuitsDownloadDataSource.writeCircuitsFileFromZip(
+        _circuitsFilesDataSource.renameFile(pathForZipFileTemp, pathForZipFile);
+        await _circuitsFilesDataSource.writeCircuitsFileFromZip(
           zipPath: pathForZipFile,
           path: pathForCircuits,
         );
@@ -322,7 +324,7 @@ class ProofRepositoryImpl extends ProofRepository {
         ));
       },
       onError: (e) {
-        _circuitsDownloadDataSource.deleteFile(pathForZipFile);
+        _circuitsFilesDataSource.deleteFile(pathForZipFile);
         _downloadInfoController.addError(e);
       },
       cancelOnError: true,
@@ -332,6 +334,6 @@ class ProofRepositoryImpl extends ProofRepository {
   ///
   @override
   Future<bool> circuitsFilesExist() {
-    return _circuitsDownloadDataSource.circuitsFilesExist();
+    return _circuitsFilesDataSource.circuitsFilesExist();
   }
 }
