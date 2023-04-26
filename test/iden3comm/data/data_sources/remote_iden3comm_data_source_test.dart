@@ -119,7 +119,7 @@ void main() {
     });
   });
 
-  group("Fetch claim", () {
+  group("Fetch credential", () {
     test(
         "Given parameters, when I call fetchClaim, then I expect a Claim to be returned",
         () async {

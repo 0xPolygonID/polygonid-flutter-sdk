@@ -143,8 +143,6 @@ String mockOtherTypeFetchClaim = '''
             },
             "state": {
               "claimsTreeRoot": "a69c9f7f0eb7bb69e3904608be7551b60853211c31b2700bbe6eecd00651c228",
-              "revocationTreeRoot": "28a8ecaca2cac20d60b60c49aa760dba9717f9b4eb6bdac008f8a10c8cacf10f",
-              "rootOfRoots": "9a43342829d669a70f527469643433202690c82e642dae1aa19ec33a12df0d01",
               "value": "168f3b0c33822a02e3c070ead88e1169c922984b8a91a8600dfe8a51eb9de12e"
             }
           },

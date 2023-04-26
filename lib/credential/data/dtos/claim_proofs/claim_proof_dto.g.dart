@@ -65,13 +65,22 @@ ClaimProofIssuerStateDTO _$ClaimProofIssuerStateDTOFromJson(
     );
 
 Map<String, dynamic> _$ClaimProofIssuerStateDTOToJson(
-        ClaimProofIssuerStateDTO instance) =>
-    <String, dynamic>{
-      'claimsTreeRoot': instance.claimsTreeRoot,
-      'revocationTreeRoot': instance.revocationTreeRoot,
-      'rootOfRoots': instance.rootOfRoots,
-      'value': instance.value,
-    };
+    ClaimProofIssuerStateDTO instance) {
+  final val = <String, dynamic>{
+    'claimsTreeRoot': instance.claimsTreeRoot,
+  };
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('revocationTreeRoot', instance.revocationTreeRoot);
+  writeNotNull('rootOfRoots', instance.rootOfRoots);
+  val['value'] = instance.value;
+  return val;
+}
 
 ClaimProofIssuerDTO _$ClaimProofIssuerDTOFromJson(Map<String, dynamic> json) =>
     ClaimProofIssuerDTO(

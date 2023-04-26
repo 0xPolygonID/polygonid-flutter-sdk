@@ -223,7 +223,7 @@ void main() {
     });
   });
 
-  group("Remove claims", () {
+  group("Remove credentials", () {
     test(
         "Given a list of ids, when I call removeClaims, then I expect the process to complete",
         () async {
