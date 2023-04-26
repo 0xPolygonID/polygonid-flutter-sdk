@@ -59,8 +59,8 @@ ClaimProofIssuerStateDTO _$ClaimProofIssuerStateDTOFromJson(
         Map<String, dynamic> json) =>
     ClaimProofIssuerStateDTO(
       json['claimsTreeRoot'] as String,
-      json['revocationTreeRoot'] as String,
-      json['rootOfRoots'] as String,
+      json['revocationTreeRoot'] as String?,
+      json['rootOfRoots'] as String?,
       json['value'] as String,
     );
 
