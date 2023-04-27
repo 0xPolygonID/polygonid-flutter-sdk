@@ -22,6 +22,7 @@ import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_dat
 import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/jwz_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/download_response_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart';
@@ -266,68 +267,93 @@ class ProofRepositoryImpl extends ProofRepository {
   ///
   @override
   Future<void> initCircuitsDownloadFromServer() async {
+    bool alreadyDownloaded = await circuitsFilesExist();
+    if (alreadyDownloaded) {
+      _downloadInfoController.add(
+        DownloadInfo(
+          downloaded: 0,
+          contentLength: 0,
+          completed: true,
+        ),
+      );
+      return;
+    }
+
     String pathForZipFileTemp =
         await _circuitsFilesDataSource.getPathToCircuitZipFileTemp();
     String pathForZipFile =
         await _circuitsFilesDataSource.getPathToCircuitZipFile();
     String pathForCircuits = await _circuitsFilesDataSource.getPath();
-    http.StreamedResponse serverResponse =
-        await _circuitsDownloadDataSource.getStreamedResponseFromServer();
 
-    final int downloadSize = serverResponse.contentLength ?? 0;
+    Stream<DownloadResponseEntity> downloadResponseStream =
+        _circuitsDownloadDataSource.downloadStream;
+
+    await _circuitsDownloadDataSource.initStreamedResponseFromServer();
+
+    final int downloadSize = _circuitsDownloadDataSource.downloadSize;
 
     // We delete eventual temp zip file downloaded before
     _circuitsFilesDataSource.deleteFile(pathForZipFileTemp);
 
-    serverResponse.stream.listen(
-      (List<int> newBytes) {
-        // we write in a temp zip file
+    _downloadInfoController.addStream(
+      downloadResponseStream.map((downloadResponse) {
+        if (downloadResponse.errorOccurred) {
+          return DownloadInfo(
+            contentLength: 0,
+            downloaded: 0,
+            completed: false,
+            errorOccurred: true,
+            errorMessage: downloadResponse.errorMessage,
+          );
+        }
+        if (downloadResponse.done) {
+          // we get the size of the temp zip file
+          int zipFileSize = _circuitsFilesDataSource.zipFileSize(
+              pathToFile: pathForZipFileTemp);
+          logger().i(
+              "[Circuits success:] downloadSize -> $downloadSize / zipFileSize -> $zipFileSize");
+
+          if (downloadSize != 0 && zipFileSize != downloadSize) {
+            try {
+              // if error we delete the temp file
+              _circuitsFilesDataSource.deleteFile(pathForZipFileTemp);
+            } catch (_) {}
+
+            return DownloadInfo(
+              contentLength: downloadSize,
+              downloaded: zipFileSize,
+              completed: false,
+              errorOccurred: true,
+              errorMessage: "Downloaded files incorrect",
+            );
+          }
+
+          _completeWritingFile(
+            pathForCircuits: pathForCircuits,
+            pathForZipFile: pathForZipFile,
+            pathForZipFileTemp: pathForZipFileTemp,
+          );
+
+          return DownloadInfo(
+            contentLength: downloadSize,
+            downloaded: zipFileSize,
+            completed: true,
+          );
+        }
+
         _circuitsFilesDataSource.writeZipFile(
           pathToFile: pathForZipFileTemp,
-          zipBytes: newBytes,
+          zipBytes: downloadResponse.newBytes,
         );
 
         // size of the temp zip file
         int zipFileSize = _circuitsFilesDataSource.zipFileSize(
             pathToFile: pathForZipFileTemp);
-        _downloadInfoController.add(DownloadInfo(
+        return DownloadInfo(
           contentLength: downloadSize,
           downloaded: zipFileSize,
-        ));
-      },
-      onDone: () async {
-        // we get the size of the temp zip file
-        int zipFileSize = _circuitsFilesDataSource.zipFileSize(
-            pathToFile: pathForZipFileTemp);
-        logger().i(
-            "[Circuits success:] downloadSize -> $downloadSize / zipFileSize -> $zipFileSize");
-
-        if (downloadSize != 0 && zipFileSize != downloadSize) {
-          try {
-            // if error we delete the temp file
-            _circuitsFilesDataSource.deleteFile(pathForZipFileTemp);
-          } catch (_) {}
-          _downloadInfoController.addError("Downloaded files incorrect");
-          return;
-        }
-
-        _circuitsFilesDataSource.renameFile(pathForZipFileTemp, pathForZipFile);
-        await _circuitsFilesDataSource.writeCircuitsFileFromZip(
-          zipPath: pathForZipFile,
-          path: pathForCircuits,
         );
-
-        _downloadInfoController.add(DownloadInfo(
-          contentLength: downloadSize,
-          downloaded: zipFileSize,
-          completed: true,
-        ));
-      },
-      onError: (e) {
-        _circuitsFilesDataSource.deleteFile(pathForZipFile);
-        _downloadInfoController.addError(e);
-      },
-      cancelOnError: true,
+      }),
     );
   }
 
@@ -335,5 +361,23 @@ class ProofRepositoryImpl extends ProofRepository {
   @override
   Future<bool> circuitsFilesExist() {
     return _circuitsFilesDataSource.circuitsFilesExist();
+  }
+
+  ///
+  Future<void> _completeWritingFile({
+    required String pathForZipFileTemp,
+    required String pathForZipFile,
+    required String pathForCircuits,
+  }) async {
+    _circuitsFilesDataSource.renameFile(pathForZipFileTemp, pathForZipFile);
+    await _circuitsFilesDataSource.writeCircuitsFileFromZip(
+      zipPath: pathForZipFile,
+      path: pathForCircuits,
+    );
+  }
+
+  @override
+  Future<void> cancelDownloadCircuits() async {
+    return _circuitsDownloadDataSource.cancelDownload();
   }
 }

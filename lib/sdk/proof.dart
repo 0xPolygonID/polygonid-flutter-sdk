@@ -7,6 +7,7 @@ import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/use_cases/cancel_download_circuits_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/circuits_files_exist_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/download_circuits_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/generate_proof_use_case.dart';
@@ -29,11 +30,13 @@ abstract class PolygonIdSdkProof {
       String? privateKey,
       String? challenge});
 
-  Future<Stream<DownloadInfo>> get initCircuitsDownloadAndGetInfoStream;
+  Stream<DownloadInfo> get initCircuitsDownloadAndGetInfoStream;
 
   Future<bool> isAlreadyDownloadedCircuitsFromServer();
 
   Stream<String> proofGenerationStepsStream();
+
+  Future<void> cancelDownloadCircuits();
 }
 
 @injectable
@@ -42,12 +45,14 @@ class Proof implements PolygonIdSdkProof {
   final DownloadCircuitsUseCase _downloadCircuitsUseCase;
   final CircuitsFilesExistUseCase _circuitsFilesExistUseCase;
   final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
+  final CancelDownloadCircuitsUseCase _cancelDownloadCircuitsUseCase;
 
   Proof(
     this.generateProofUseCase,
     this._downloadCircuitsUseCase,
     this._circuitsFilesExistUseCase,
     this._proofGenerationStepsStreamManager,
+    this._cancelDownloadCircuitsUseCase,
   );
 
   @override
@@ -80,7 +85,7 @@ class Proof implements PolygonIdSdkProof {
 
   ///
   @override
-  Future<Stream<DownloadInfo>> get initCircuitsDownloadAndGetInfoStream {
+  Stream<DownloadInfo> get initCircuitsDownloadAndGetInfoStream {
     return _downloadCircuitsUseCase.execute();
   }
 
@@ -88,5 +93,11 @@ class Proof implements PolygonIdSdkProof {
   @override
   Stream<String> proofGenerationStepsStream() {
     return _proofGenerationStepsStreamManager.proofGenerationStepsStream;
+  }
+
+  /// Cancel the download of circuits
+  @override
+  Future<void> cancelDownloadCircuits() async {
+    return _cancelDownloadCircuitsUseCase.execute();
   }
 }

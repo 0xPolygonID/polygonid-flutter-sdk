@@ -43,7 +43,7 @@ final getItSdk = GetIt.asNewInstance();
 @InjectableInit(
   initializerName: r'$initSDKGetIt',
 )
-configureInjection() => $initSDKGetIt(getItSdk);
+configureInjection() async => await $initSDKGetIt(getItSdk);
 
 @module
 abstract class ChannelModule {

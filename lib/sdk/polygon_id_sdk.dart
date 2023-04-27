@@ -34,7 +34,7 @@ class PolygonIdSdk {
     WidgetsFlutterBinding.ensureInitialized();
 
     // Init injection
-    configureInjection();
+    await configureInjection();
     await getItSdk.allReady();
 
     // Set env
