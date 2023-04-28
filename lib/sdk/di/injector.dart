@@ -56,7 +56,7 @@ abstract class ChannelModule {
 @module
 abstract class PlatformModule {
   @lazySingleton
-  Future<PackageInfo> get packageInfo async => PackageInfo.fromPlatform();
+  Future<PackageInfo> get packageInfo => PackageInfo.fromPlatform();
 
   @lazySingleton
   AssetBundle get assetBundle => rootBundle;

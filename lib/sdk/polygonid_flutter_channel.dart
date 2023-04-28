@@ -218,8 +218,10 @@ class PolygonIdFlutterChannel
 
         case 'getProfiles':
           return getProfiles(
-              genesisDid: call.arguments['genesisDid'] as String,
-              privateKey: call.arguments['privateKey'] as String);
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  privateKey: call.arguments['privateKey'] as String)
+              .then((profiles) => profiles
+                  .map((key, value) => MapEntry(key.toString(), value)));
 
         case 'getState':
           return getState(did: call.arguments['did'] as String);
