@@ -55,7 +55,7 @@ UpdateClaimUseCase useCase = UpdateClaimUseCase(credentialRepository);
 
 @GenerateMocks([CredentialRepository])
 void main() {
-  group("Update claim", () {
+  group("Update credential", () {
     setUp(() {
       reset(credentialRepository);
 

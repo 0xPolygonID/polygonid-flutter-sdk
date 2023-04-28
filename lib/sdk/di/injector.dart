@@ -1,6 +1,7 @@
+import 'dart:io';
+
 import 'package:archive/archive.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart';
@@ -13,7 +14,6 @@ import 'package:polygonid_flutter_sdk/common/data/repositories/package_info_repo
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/repositories/config_repository.dart';
 import 'package:polygonid_flutter_sdk/common/domain/repositories/package_info_repository.dart';
-import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/utils/encrypt_sembast_codec.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/data/credential_repository_impl.dart';
@@ -42,7 +42,7 @@ final getItSdk = GetIt.asNewInstance();
 @InjectableInit(
   initializerName: r'$initSDKGetIt',
 )
-configureInjection() => $initSDKGetIt(getItSdk);
+configureInjection() async => await $initSDKGetIt(getItSdk);
 
 /// Channels
 @module
@@ -190,10 +190,15 @@ abstract class EncryptionModule {
 }
 
 @module
-abstract class ZipDecoderModule {
+abstract class FilesManagerModule {
   @Named('zipDecoder')
   @factoryMethod
   ZipDecoder zipDecoder() {
     return ZipDecoder();
   }
+
+  @lazySingleton
+  @preResolve
+  Future<Directory> get applicationDocumentsDirectory async =>
+      await getApplicationDocumentsDirectory();
 }

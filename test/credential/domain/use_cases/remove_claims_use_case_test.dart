@@ -22,7 +22,7 @@ RemoveClaimsUseCase useCase = RemoveClaimsUseCase(credentialRepository);
 
 @GenerateMocks([CredentialRepository])
 void main() {
-  group("Remove claims", () {
+  group("Remove credentials", () {
     setUp(() {
       reset(credentialRepository);
 

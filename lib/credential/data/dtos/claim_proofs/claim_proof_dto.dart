@@ -97,10 +97,16 @@ class ClaimProofIssuerCredStatusDTO {
 @JsonSerializable(explicitToJson: true)
 class ClaimProofIssuerStateDTO {
   @JsonKey(name: 'claimsTreeRoot')
-  final String treeRoot;
+  final String claimsTreeRoot;
+  @JsonKey(name: 'revocationTreeRoot', includeIfNull: false)
+  final String? revocationTreeRoot;
+  @JsonKey(name: 'rootOfRoots', includeIfNull: false)
+  final String? rootOfRoots;
+  @JsonKey(name: 'value')
   final String value;
 
-  ClaimProofIssuerStateDTO(this.treeRoot, this.value);
+  ClaimProofIssuerStateDTO(this.claimsTreeRoot, this.revocationTreeRoot,
+      this.rootOfRoots, this.value);
 
   factory ClaimProofIssuerStateDTO.fromJson(Map<String, dynamic> json) =>
       _$ClaimProofIssuerStateDTOFromJson(json);

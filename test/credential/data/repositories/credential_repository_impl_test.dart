@@ -290,7 +290,7 @@ void main() {
     });
   });
 
-  group("Get claim", () {
+  group("Get credential", () {
     setUp(() {
       // Given
       when(storageClaimDataSource.getClaims(
@@ -453,7 +453,7 @@ void main() {
     });
   });
 
-  group("Remove claims", () {
+  group("Remove credentials", () {
     setUp(() {
       // Given
       when(storageClaimDataSource.removeClaims(

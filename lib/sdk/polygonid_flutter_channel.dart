@@ -33,10 +33,10 @@ class PolygonIdFlutterChannel
         PolygonIdSdkCredential,
         PolygonIdSdkProof {
   final PolygonIdSdk _polygonIdSdk;
-  final MethodChannel _channel;
+  final MethodChannel _methodChannel;
 
-  PolygonIdFlutterChannel(this._polygonIdSdk, this._channel) {
-    _channel.setMethodCallHandler((call) {
+  PolygonIdFlutterChannel(this._polygonIdSdk, this._methodChannel) {
+    _methodChannel.setMethodCallHandler((call) {
       print(call.method);
       switch (call.method) {
         /// SDK
@@ -315,6 +315,9 @@ class PolygonIdFlutterChannel
 
         case 'isAlreadyDownloadedCircuitsFromServer':
           return isAlreadyDownloadedCircuitsFromServer();
+
+        case 'cancelDownloadCircuits':
+          return cancelDownloadCircuits();
 
         case 'proofGenerationStepsStream':
           // TODO: Handle this case.
@@ -651,12 +654,17 @@ class PolygonIdFlutterChannel
 
   /// Proof
   @override
-  Future<Stream<DownloadInfo>> get initCircuitsDownloadAndGetInfoStream =>
+  Stream<DownloadInfo> get initCircuitsDownloadAndGetInfoStream =>
       _polygonIdSdk.proof.initCircuitsDownloadAndGetInfoStream;
 
   @override
   Future<bool> isAlreadyDownloadedCircuitsFromServer() {
     return _polygonIdSdk.proof.isAlreadyDownloadedCircuitsFromServer();
+  }
+
+  @override
+  Future<void> cancelDownloadCircuits() {
+    return _polygonIdSdk.proof.cancelDownloadCircuits();
   }
 
   @override

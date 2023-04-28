@@ -73,12 +73,12 @@ Future<void> main() async {
 
 | Environment   |      Polygon Mumbai                           |  Polygon Main |
 |------------------|:------------------------------------------:|:-------------:|
-| blockchain       |         polygon                            |  coming soon  |
-| network          |         mumbai                             |  coming soon  |
-| web3Url          | https://polygon-mumbai.infura.io/v3/       |  coming soon  |
-| web3RdpUrl       | wss://polygon-mumbai.infura.io/v3/         |  coming soon  |
-| idStateContract  | 0x134B1BE34911E39A8397ec6289782989729807a4 |  coming soon  |
-| pushUrl          | https://push-staging.polygonid.com/api/v1  |  coming soon  |
+| blockchain       |         polygon                            |  polygon  |
+| network          |         mumbai                             |  main  |
+| web3Url          | https://polygon-mumbai.infura.io/v3/       |  https://polygon-mainnet.infura.io/v3/  |
+| web3RdpUrl       | wss://polygon-mumbai.infura.io/v3/         |  wss://polygon-mainnet.infura.io/v3/  |
+| idStateContract  | 0x134B1BE34911E39A8397ec6289782989729807a4 |  0x624ce98D2d27b20b8f8d521723Df8fC4db71D79D  |
+| pushUrl          | https://push-staging.polygonid.com/api/v1  |  https://push-staging.polygonid.com/api/v1  |
 
 If you want to deploy your own State Contract, please check the [contract documentation](https://docs.iden3.io/contracts/state/).
 

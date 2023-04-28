@@ -37,7 +37,7 @@ class CustomStrings {
   static const String claimNameProofOfPersonhood = "Proof of personhood";
   static const String claimRemovingError =
       "Error while removing selected claim, please try again";
-  static const String deleteClaimButtonCTA = "Remove claim";
+  static const String deleteClaimButtonCTA = "Remove credential";
   static const String deleteAllClaimsButtonCTA = "Remove all claims";
   static const String claimCardIssuerLabel = "Issuer:";
 

@@ -46,7 +46,9 @@ String data = '''
           "siblings": []
         },
         "state": {
-          "claimsTreeRoot": "a69c9f7f0eb7bb69e3904608be7551b60853211c31b2700bbe6eecd00651c228",
+          "rootOfRoots": "02427d5b0d16baf64e1513f9650eb959550b7c4d54738a707d1de355b756a914",
+          "claimsTreeRoot": "6b8bb8c1dac02f010ac1642a694a3d7b32e1152907636521fb31dc01ba6abf0f",
+          "revocationTreeRoot": "0000000000000000000000000000000000000000000000000000000000000000",
           "value": "168f3b0c33822a02e3c070ead88e1169c922984b8a91a8600dfe8a51eb9de12e"
         }
       },

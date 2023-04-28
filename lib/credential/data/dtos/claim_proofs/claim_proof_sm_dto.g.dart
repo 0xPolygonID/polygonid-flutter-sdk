@@ -42,22 +42,31 @@ ClaimProofIssuerStateSMDTO _$ClaimProofIssuerStateSMDTOFromJson(
         Map<String, dynamic> json) =>
     ClaimProofIssuerStateSMDTO(
       json['claimsTreeRoot'] as String,
+      json['revocationTreeRoot'] as String,
+      json['rootOfRoots'] as String,
       json['value'] as String,
       json['blockNumber'] as int,
       json['blockTimestamp'] as int,
-      json['revocationTreeRoot'] as String,
-      json['rootOfRoots'] as String,
       json['txId'] as String,
     );
 
 Map<String, dynamic> _$ClaimProofIssuerStateSMDTOToJson(
-        ClaimProofIssuerStateSMDTO instance) =>
-    <String, dynamic>{
-      'claimsTreeRoot': instance.treeRoot,
-      'value': instance.value,
-      'blockNumber': instance.number,
-      'blockTimestamp': instance.timestamp,
-      'revocationTreeRoot': instance.revocationTree,
-      'rootOfRoots': instance.root,
-      'txId': instance.tx,
-    };
+    ClaimProofIssuerStateSMDTO instance) {
+  final val = <String, dynamic>{
+    'claimsTreeRoot': instance.claimsTreeRoot,
+  };
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('revocationTreeRoot', instance.revocationTreeRoot);
+  writeNotNull('rootOfRoots', instance.rootOfRoots);
+  val['value'] = instance.value;
+  val['blockNumber'] = instance.blockNumber;
+  val['blockTimestamp'] = instance.blockTimestamp;
+  val['txId'] = instance.txId;
+  return val;
+}
