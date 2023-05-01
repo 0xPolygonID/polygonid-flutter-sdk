@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/set_env_use_case.dart';
@@ -54,6 +55,9 @@ class PolygonIdSdk {
 
     // Channel
     getItSdk<PolygonIdFlutterChannel>();
+
+    // Logging
+    Domain.logger = getItSdk<PolygonIdSdkLogger>();
   }
 
   late Identity identity;

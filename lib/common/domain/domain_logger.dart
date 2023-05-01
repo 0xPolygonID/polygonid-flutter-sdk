@@ -1,4 +1,4 @@
-abstract class DomainLogger {
+abstract class PolygonIdSdkLogger {
   void v(dynamic message, [dynamic error, StackTrace? stackTrace]);
 
   void d(dynamic message, [dynamic error, StackTrace? stackTrace]);
@@ -13,7 +13,7 @@ abstract class DomainLogger {
 }
 
 // Avoid crashing if logger is not defined
-class NoLogger extends DomainLogger {
+class NoLogger extends PolygonIdSdkLogger {
   @override
   void d(message, [error, StackTrace? stackTrace]) {}
 
@@ -34,7 +34,7 @@ class NoLogger extends DomainLogger {
 }
 
 class Domain {
-  static DomainLogger? logger;
+  static PolygonIdSdkLogger? logger;
 }
 
-DomainLogger logger() => Domain.logger ?? NoLogger();
+PolygonIdSdkLogger logger() => Domain.logger ?? NoLogger();

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:archive/archive.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
 import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
@@ -13,11 +14,13 @@ class CircuitsDownloadDataSource {
   StreamController<DownloadResponseEntity> _controller =
       StreamController<DownloadResponseEntity>();
 
+  CircuitsDownloadDataSource(this._client);
+
   Stream<DownloadResponseEntity> get downloadStream => _controller.stream;
 
   int _downloadSize = 0;
 
-  late http.Client _client;
+  final Client _client;
 
   /// downloadSize
   int get downloadSize => _downloadSize;

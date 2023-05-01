@@ -6,11 +6,13 @@ import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart';
 import 'package:injectable/injectable.dart';
+import 'package:logger/logger.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/common/data/repositories/config_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/common/data/repositories/package_info_repository_impl.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/repositories/config_repository.dart';
 import 'package:polygonid_flutter_sdk/common/domain/repositories/package_info_repository.dart';
@@ -30,6 +32,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repo
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/data/repositories/proof_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
+import 'package:polygonid_flutter_sdk/sdk/default_logger.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.config.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:sembast/sembast.dart';
@@ -43,6 +46,14 @@ final getItSdk = GetIt.asNewInstance();
   initializerName: r'$initSDKGetIt',
 )
 configureInjection() async => await $initSDKGetIt(getItSdk);
+
+/// Logger
+@module
+abstract class LoggerModule {
+  Logger get logger => Logger();
+
+  PolygonIdSdkLogger get sdkLogger => DefaultLogger(logger);
+}
 
 /// Channels
 @module
