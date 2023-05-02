@@ -1,11 +1,11 @@
 class DownloadResponseDTO {
-  final List<int> newBytes;
+  final int progress;
   final bool done;
   final bool errorOccurred;
   final String errorMessage;
 
   DownloadResponseDTO({
-    required this.newBytes,
+    required this.progress,
     this.done = false,
     this.errorOccurred = false,
     this.errorMessage = '',
