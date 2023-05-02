@@ -353,7 +353,7 @@ _i1.GetIt $initSDKGetIt(
   gh.factory<_i34.LibBabyJubJubDataSource>(
       () => _i34.LibBabyJubJubDataSource(get<_i6.BabyjubjubLib>()));
   gh.factory<_i35.LocalContractFilesDataSource>(
-      () => _i35.LocalContractFilesDataSource(get<_i3.AssetBundle>()));
+      () => _i35.LocalContractFilesDataSource());
   gh.factory<_i36.Logger>(() => loggerModule.logger);
   gh.factory<Map<String, _i13.StoreRef<String, Map<String, Object?>>>>(
     () => databaseModule.identityStateStore,

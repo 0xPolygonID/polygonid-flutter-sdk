@@ -9,7 +9,9 @@ import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
 
+
 class RPCDataSource {
+  /// FIXME: UC in a DS!
   final GetEnvUseCase _getEnvUseCase;
 
   RPCDataSource(this._getEnvUseCase);
@@ -22,6 +24,8 @@ class RPCDataSource {
   /// @returns [String] last state committed
   Future<String> getState(String id, DeployedContract stateContract) async {
     EnvEntity env = await _getEnvUseCase.execute();
+
+    /// FIXME: inject web3Client through constructor
     Web3Client web3Client = getItSdk.get(param1: env);
     try {
       var state = State(address: stateContract.address, client: web3Client);
