@@ -22,8 +22,8 @@ class FilterEntity {
 
   factory FilterEntity.fromJson(Map<String, dynamic> json) {
     return FilterEntity(
-      operator: FilterOperator.values
-          .firstWhere((e) => e.toString() == json['operator']),
+      operator:
+          FilterOperator.values.firstWhere((e) => e.name == json['operator']),
       name: json['name'],
       value: json['value'],
     );
@@ -32,7 +32,7 @@ class FilterEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'operator': operator.toString(),
+      'operator': operator.name,
       'name': name,
       'value': value,
     };
