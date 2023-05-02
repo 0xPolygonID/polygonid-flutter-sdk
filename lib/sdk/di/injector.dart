@@ -43,7 +43,7 @@ final getItSdk = GetIt.asNewInstance();
 @InjectableInit(
   initializerName: r'$initSDKGetIt',
 )
-configureInjection() async => await $initSDKGetIt(getItSdk);
+configureInjection() => $initSDKGetIt(getItSdk);
 
 @module
 abstract class ChannelModule {
@@ -189,14 +189,11 @@ abstract class EncryptionModule {
 
 @module
 abstract class FilesManagerModule {
-  @Named('zipDecoder')
   @factoryMethod
   ZipDecoder zipDecoder() {
     return ZipDecoder();
   }
 
-  @lazySingleton
-  @preResolve
   Future<Directory> get applicationDocumentsDirectory async =>
       await getApplicationDocumentsDirectory();
 }

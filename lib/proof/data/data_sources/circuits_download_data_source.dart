@@ -2,48 +2,52 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:archive/archive.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
 import 'package:path_provider/path_provider.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/download_response_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/download_response_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 class CircuitsDownloadDataSource {
-  StreamController<DownloadResponseEntity> _controller =
-      StreamController<DownloadResponseEntity>();
+  final Client _client;
 
-  Stream<DownloadResponseEntity> get downloadStream => _controller.stream;
+  CircuitsDownloadDataSource(this._client);
+
+  StreamController<DownloadResponseDTO> _controller =
+      StreamController<DownloadResponseDTO>();
+
+  Stream<DownloadResponseDTO> get downloadStream => _controller.stream;
 
   int _downloadSize = 0;
-
-  late http.Client _client;
 
   /// downloadSize
   int get downloadSize => _downloadSize;
 
   ///
   Future<void> initStreamedResponseFromServer() async {
-    http.Client client = http.Client();
+    Client client = Client();
 
     const bucketUrl =
         "https://circuits.polygonid.me/circuits/v1.0.0/polygonid-keys.zip";
 
-    var request = http.Request('GET', Uri.parse(bucketUrl));
+    var request = Request('GET', Uri.parse(bucketUrl));
 
-    final http.StreamedResponse response = await client.send(request);
+    final StreamedResponse response = await client.send(request);
     _downloadSize = response.contentLength ?? 0;
+
+
 
     response.stream.listen(
       (List<int> newBytes) {
         _controller.add(
-          DownloadResponseEntity(
+          DownloadResponseDTO(
             newBytes: newBytes,
           ),
         );
       },
       onDone: () {
-        _controller.add(DownloadResponseEntity(
+        _controller.add(DownloadResponseDTO(
           newBytes: Uint8List(0),
           done: true,
         ));
@@ -51,7 +55,7 @@ class CircuitsDownloadDataSource {
         _client.close();
       },
       onError: (e) {
-        _controller.add(DownloadResponseEntity(
+        _controller.add(DownloadResponseDTO(
           newBytes: Uint8List(0),
           errorOccurred: true,
           errorMessage: e.toString(),
@@ -65,7 +69,7 @@ class CircuitsDownloadDataSource {
 
   ///
   void cancelDownload() {
-    _controller.add(DownloadResponseEntity(
+    _controller.add(DownloadResponseDTO(
       newBytes: Uint8List(0),
       errorOccurred: true,
       errorMessage: 'Download cancelled by user',

@@ -13,7 +13,15 @@ class DownloadCircuitsUseCase extends StreamUseCase<void, DownloadInfo> {
   @override
   Stream<DownloadInfo> execute({void param}) {
     Stream<DownloadInfo> stream = _proofRepository.circuitsDownloadInfoStream;
-    _proofRepository.initCircuitsDownloadFromServer();
+    _proofRepository.circuitsFilesExist().then((exist) {
+      if (exist) {
+        stream = Stream.fromIterable(
+            [DownloadInfo.onDone(contentLength: 0, downloaded: 0)]);
+      } else {
+        _proofRepository.initCircuitsDownloadFromServer();
+      }
+    });
+
     return stream;
   }
 }

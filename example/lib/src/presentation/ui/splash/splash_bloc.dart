@@ -9,17 +9,18 @@ import 'package:polygonid_flutter_sdk_example/utils/custom_dimensions.dart';
 
 class SplashBloc extends Bloc<SplashEvent, SplashState> {
   SplashBloc() : super(SplashState.init()) {
-    on<FakeLoadingSplashEvent>(onFakeLoadingSplashEvent);
+    on<StartDownloadSplashEvent>(onStartDownloadSplashEvent);
     on<DownloadProgressSplashEvent>(onDownloadProgressSplashEvent);
+    on<CancelDownloadSplashEvent>(onCancelDownloadSplashEvent);
   }
 
   StreamSubscription? _subscription;
 
   /// Simulation of a possible loading time
-  Future<void> onFakeLoadingSplashEvent(
-      FakeLoadingSplashEvent event, Emitter<SplashState> emit) async {
+  Future<void> onStartDownloadSplashEvent(
+      StartDownloadSplashEvent event, Emitter<SplashState> emit) async {
     Stream<DownloadInfo> stream =
-        await PolygonIdSdk.I.proof.initCircuitsDownloadAndGetInfoStream;
+        PolygonIdSdk.I.proof.initCircuitsDownloadAndGetInfoStream;
     _subscription = stream.listen((downloadInfo) {
       add(DownloadProgressSplashEvent(downloadInfo));
     });
@@ -27,11 +28,33 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
 
   Future<void> onDownloadProgressSplashEvent(
       DownloadProgressSplashEvent event, Emitter<SplashState> emit) async {
-    if (event.downloadInfo.completed) {
+    if (event.downloadInfo is DownloadInfoOnProgress) {
+      DownloadInfoOnProgress downloadInfoOnProgress =
+          event.downloadInfo as DownloadInfoOnProgress;
+      emit(
+        SplashState.downloadProgress(
+          downloaded: downloadInfoOnProgress.downloaded,
+          contentLength: downloadInfoOnProgress.contentLength,
+        ),
+      );
+    } else if (event.downloadInfo is DownloadInfoOnDone) {
       _subscription?.cancel();
       emit(SplashState.waitingTimeEnded());
-    } else {
-      emit(SplashState.downloadProgress(event.downloadInfo));
+    } else if (event.downloadInfo is DownloadInfoOnError) {
+      _subscription?.cancel();
+      emit(SplashState.error(
+          errorMessage:
+              (event.downloadInfo as DownloadInfoOnError).errorMessage));
     }
+  }
+
+  ///
+  Future<void> onCancelDownloadSplashEvent(
+    CancelDownloadSplashEvent event,
+    Emitter<SplashState> emit,
+  ) async {
+    PolygonIdSdk.I.proof.cancelDownloadCircuits();
+    _subscription?.cancel();
+    emit(SplashState.error(errorMessage: "Download cancelled"));
   }
 }

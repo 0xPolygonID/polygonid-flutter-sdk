@@ -1,10 +1,10 @@
-class DownloadResponseEntity {
+class DownloadResponseDTO {
   final List<int> newBytes;
   final bool done;
   final bool errorOccurred;
   final String errorMessage;
 
-  DownloadResponseEntity({
+  DownloadResponseDTO({
     required this.newBytes,
     this.done = false,
     this.errorOccurred = false,

@@ -19,39 +19,37 @@ import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_download_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/download_response_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/jwz_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/download_response_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 
-import '../../../common/utils/uint8_list_utils.dart';
-import '../../../iden3comm/data/mappers/gist_proof_mapper.dart'
+import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/gist_proof_mapper.dart'
     as iden3GistProofMapper;
-import '../../../identity/data/data_sources/remote_identity_data_source.dart';
-import '../../domain/entities/circuit_data_entity.dart';
-import '../../domain/entities/proof_entity.dart';
-import '../../domain/repositories/proof_repository.dart';
-import '../data_sources/lib_pidcore_proof_data_source.dart';
-import '../data_sources/local_proof_files_data_source.dart';
-import '../data_sources/proof_circuit_data_source.dart';
-import '../data_sources/prover_lib_data_source.dart';
-import '../data_sources/witness_data_source.dart';
-import '../dtos/gist_proof_dto.dart';
-import '../dtos/proof_dto.dart';
-import '../dtos/witness_param.dart';
-import '../mappers/circuit_type_mapper.dart';
-import '../mappers/gist_proof_mapper.dart';
-import '../mappers/jwz_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/lib_pidcore_proof_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/proof_circuit_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/prover_lib_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/witness_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_proof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/proof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/witness_param.dart';
+import 'package:polygonid_flutter_sdk/proof/data/mappers/circuit_type_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/data/mappers/gist_proof_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/data/mappers/jwz_mapper.dart';
 
 class ProofRepositoryImpl extends ProofRepository {
   final WitnessDataSource _witnessDataSource;
   final ProverLibDataSource _proverLibDataSource;
   final LibPolygonIdCoreProofDataSource _libPolygonIdCoreProofDataSource;
-  final LocalProofFilesDataSource _localProofFilesDataSource;
   final ProofCircuitDataSource _proofCircuitDataSource;
   final RemoteIdentityDataSource _remoteIdentityDataSource;
   final LocalContractFilesDataSource _localContractFilesDataSource;
@@ -69,11 +67,12 @@ class ProofRepositoryImpl extends ProofRepository {
   final ClaimMapper _claimMapper;
   final RevocationStatusMapper _revocationStatusMapper;
 
+  Stream<DownloadInfo> _circuitsDownloadInfoStream = const Stream.empty();
+
   ProofRepositoryImpl(
     this._witnessDataSource,
     this._proverLibDataSource,
     this._libPolygonIdCoreProofDataSource,
-    this._localProofFilesDataSource,
     this._proofCircuitDataSource,
     this._remoteIdentityDataSource,
     this._localContractFilesDataSource,
@@ -93,7 +92,7 @@ class ProofRepositoryImpl extends ProofRepository {
   @override
   Future<CircuitDataEntity> loadCircuitFiles(String circuitId) async {
     List<Uint8List> circuitFiles =
-        await _localProofFilesDataSource.loadCircuitFiles(circuitId);
+        await _circuitsFilesDataSource.loadCircuitFiles(circuitId);
     CircuitDataEntity circuitDataEntity =
         CircuitDataEntity(circuitId, circuitFiles[0], circuitFiles[1]);
     return circuitDataEntity;
@@ -256,36 +255,20 @@ class ProofRepositoryImpl extends ProofRepository {
   }
 
   ///
-  StreamController<DownloadInfo> _downloadInfoController =
-      StreamController.broadcast();
-
-  ///
   @override
   Stream<DownloadInfo> get circuitsDownloadInfoStream =>
-      _downloadInfoController.stream;
+      _circuitsDownloadInfoStream;
 
   ///
   @override
   Future<void> initCircuitsDownloadFromServer() async {
-    bool alreadyDownloaded = await circuitsFilesExist();
-    if (alreadyDownloaded) {
-      _downloadInfoController.add(
-        DownloadInfo(
-          downloaded: 0,
-          contentLength: 0,
-          completed: true,
-        ),
-      );
-      return;
-    }
-
     String pathForZipFileTemp =
         await _circuitsFilesDataSource.getPathToCircuitZipFileTemp();
     String pathForZipFile =
         await _circuitsFilesDataSource.getPathToCircuitZipFile();
     String pathForCircuits = await _circuitsFilesDataSource.getPath();
 
-    Stream<DownloadResponseEntity> downloadResponseStream =
+    Stream<DownloadResponseDTO> downloadResponseStream =
         _circuitsDownloadDataSource.downloadStream;
 
     await _circuitsDownloadDataSource.initStreamedResponseFromServer();
@@ -295,14 +278,10 @@ class ProofRepositoryImpl extends ProofRepository {
     // We delete eventual temp zip file downloaded before
     _circuitsFilesDataSource.deleteFile(pathForZipFileTemp);
 
-    _downloadInfoController.addStream(
-      downloadResponseStream.map((downloadResponse) {
+    _circuitsDownloadInfoStream = downloadResponseStream.map(
+      (downloadResponse) {
         if (downloadResponse.errorOccurred) {
-          return DownloadInfo(
-            contentLength: 0,
-            downloaded: 0,
-            completed: false,
-            errorOccurred: true,
+          return DownloadInfo.onError(
             errorMessage: downloadResponse.errorMessage,
           );
         }
@@ -319,13 +298,8 @@ class ProofRepositoryImpl extends ProofRepository {
               _circuitsFilesDataSource.deleteFile(pathForZipFileTemp);
             } catch (_) {}
 
-            return DownloadInfo(
-              contentLength: downloadSize,
-              downloaded: zipFileSize,
-              completed: false,
-              errorOccurred: true,
-              errorMessage: "Downloaded files incorrect",
-            );
+            return DownloadInfo.onError(
+                errorMessage: "Downloaded files incorrect");
           }
 
           _completeWritingFile(
@@ -334,10 +308,9 @@ class ProofRepositoryImpl extends ProofRepository {
             pathForZipFileTemp: pathForZipFileTemp,
           );
 
-          return DownloadInfo(
+          return DownloadInfo.onDone(
             contentLength: downloadSize,
             downloaded: zipFileSize,
-            completed: true,
           );
         }
 
@@ -349,11 +322,11 @@ class ProofRepositoryImpl extends ProofRepository {
         // size of the temp zip file
         int zipFileSize = _circuitsFilesDataSource.zipFileSize(
             pathToFile: pathForZipFileTemp);
-        return DownloadInfo(
+        return DownloadInfo.onProgress(
           contentLength: downloadSize,
           downloaded: zipFileSize,
         );
-      }),
+      },
     );
   }
 
