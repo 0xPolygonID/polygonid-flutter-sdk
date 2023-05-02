@@ -2,21 +2,16 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:http/http.dart' as http;
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
-import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/proof_request_filters_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_download_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_dto.dart';
@@ -36,7 +31,6 @@ import '../../domain/entities/circuit_data_entity.dart';
 import '../../domain/entities/proof_entity.dart';
 import '../../domain/repositories/proof_repository.dart';
 import '../data_sources/lib_pidcore_proof_data_source.dart';
-import '../data_sources/local_proof_files_data_source.dart';
 import '../data_sources/proof_circuit_data_source.dart';
 import '../data_sources/prover_lib_data_source.dart';
 import '../data_sources/witness_data_source.dart';
@@ -51,7 +45,6 @@ class ProofRepositoryImpl extends ProofRepository {
   final WitnessDataSource _witnessDataSource;
   final ProverLibDataSource _proverLibDataSource;
   final LibPolygonIdCoreProofDataSource _libPolygonIdCoreProofDataSource;
-  final LocalProofFilesDataSource _localProofFilesDataSource;
   final ProofCircuitDataSource _proofCircuitDataSource;
   final RemoteIdentityDataSource _remoteIdentityDataSource;
   final LocalContractFilesDataSource _localContractFilesDataSource;
@@ -73,7 +66,6 @@ class ProofRepositoryImpl extends ProofRepository {
     this._witnessDataSource,
     this._proverLibDataSource,
     this._libPolygonIdCoreProofDataSource,
-    this._localProofFilesDataSource,
     this._proofCircuitDataSource,
     this._remoteIdentityDataSource,
     this._localContractFilesDataSource,
@@ -93,7 +85,7 @@ class ProofRepositoryImpl extends ProofRepository {
   @override
   Future<CircuitDataEntity> loadCircuitFiles(String circuitId) async {
     List<Uint8List> circuitFiles =
-        await _localProofFilesDataSource.loadCircuitFiles(circuitId);
+        await _circuitsFilesDataSource.loadCircuitFiles(circuitId);
     CircuitDataEntity circuitDataEntity =
         CircuitDataEntity(circuitId, circuitFiles[0], circuitFiles[1]);
     return circuitDataEntity;

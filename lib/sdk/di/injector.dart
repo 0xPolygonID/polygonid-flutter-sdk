@@ -208,8 +208,6 @@ abstract class FilesManagerModule {
     return ZipDecoder();
   }
 
-  @lazySingleton
-  @preResolve
-  Future<Directory> get applicationDocumentsDirectory async =>
-      await getApplicationDocumentsDirectory();
+  Future<Directory> get applicationDocumentsDirectory =>
+      getApplicationDocumentsDirectory();
 }

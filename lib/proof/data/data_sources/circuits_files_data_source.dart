@@ -9,6 +9,23 @@ class CircuitsFilesDataSource {
 
   CircuitsFilesDataSource(this.directory);
 
+  Future<List<Uint8List>> loadCircuitFiles(String circuitId) async {
+    String path = directory.path;
+
+    var circuitDatFileName = '$circuitId.dat';
+    var circuitDatFilePath = '$path/$circuitDatFileName';
+    var circuitDatFile = File(circuitDatFilePath);
+
+    var circuitZkeyFileName = '$circuitId.zkey';
+    var circuitZkeyFilePath = '$path/$circuitZkeyFileName';
+    var circuitZkeyFile = File(circuitZkeyFilePath);
+
+    return [
+      circuitDatFile.readAsBytesSync(),
+      circuitZkeyFile.readAsBytesSync()
+    ];
+  }
+
   ///
   Future<bool> circuitsFilesExist() async {
     String fileName = 'circuits.zip';
