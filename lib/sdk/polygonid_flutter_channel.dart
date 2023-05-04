@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/services.dart';
 import 'package:injectable/injectable.dart';
@@ -44,17 +43,17 @@ class PolygonIdFlutterChannel
 
   Future<void> _listen(
       {required String name,
-        required Stream stream,
-        Function? onError,
-        void Function()? onDone,
-        bool? cancelOnError}) {
+      required Stream stream,
+      Function? onError,
+      void Function()? onDone,
+      bool? cancelOnError}) {
     return _addSubscription(
         name,
         stream.listen(
-                (event) => _methodChannel.invokeMethod('onStreamData', {
-              'key': name,
-              'data': jsonEncode(event),
-            }),
+            (event) => _methodChannel.invokeMethod('onStreamData', {
+                  'key': name,
+                  'data': jsonEncode(event),
+                }),
             onError: onError,
             onDone: onDone,
             cancelOnError: cancelOnError));
@@ -76,13 +75,13 @@ class PolygonIdFlutterChannel
       logger().d(call.method);
 
       switch (call.method) {
-      /// Internal
+        /// Internal
         case 'closeStream':
           return call.arguments['key'] != null
               ? _closeSubscription(call.arguments['key'] as String)
               : Future.value();
 
-      /// SDK
+        /// SDK
         case 'init':
           return PolygonIdSdk.init(
               env: call.arguments['env'] != null
@@ -96,7 +95,7 @@ class PolygonIdFlutterChannel
         case 'getEnv':
           return _polygonIdSdk.getEnv().then((env) => jsonEncode(env));
 
-      /// Iden3comm
+        /// Iden3comm
         case 'addInteraction':
           Map<String, dynamic> json = jsonDecode(call.arguments['interaction']);
           InteractionBaseEntity interaction;
@@ -108,9 +107,9 @@ class PolygonIdFlutterChannel
           }
 
           return addInteraction(
-              interaction: interaction,
-              genesisDid: call.arguments['genesisDid'] as String?,
-              privateKey: call.arguments['privateKey'] as String?)
+                  interaction: interaction,
+                  genesisDid: call.arguments['genesisDid'] as String?,
+                  privateKey: call.arguments['privateKey'] as String?)
               .then((interaction) => jsonEncode(interaction));
 
         case 'authenticate':
@@ -125,31 +124,31 @@ class PolygonIdFlutterChannel
 
         case 'fetchAndSaveClaims':
           return fetchAndSaveClaims(
-              message: OfferIden3MessageEntity.fromJson(
-                  jsonDecode(call.arguments['message'])),
-              genesisDid: call.arguments['genesisDid'] as String,
-              profileNonce: BigInt.tryParse(
-                  call.arguments['profileNonce'] as String? ?? ''),
-              privateKey: call.arguments['privateKey'] as String)
+                  message: OfferIden3MessageEntity.fromJson(
+                      jsonDecode(call.arguments['message'])),
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  profileNonce: BigInt.tryParse(
+                      call.arguments['profileNonce'] as String? ?? ''),
+                  privateKey: call.arguments['privateKey'] as String)
               .then((claims) =>
-              claims.map((claim) => jsonEncode(claim)).toList());
+                  claims.map((claim) => jsonEncode(claim)).toList());
 
         case 'getClaimsFromIden3Message':
           return getClaimsFromIden3Message(
-              message: OfferIden3MessageEntity.fromJson(
-                  jsonDecode(call.arguments['message'])),
-              genesisDid: call.arguments['genesisDid'] as String,
-              profileNonce: BigInt.tryParse(
-                  call.arguments['profileNonce'] as String? ?? ''),
-              privateKey: call.arguments['privateKey'] as String)
+                  message: OfferIden3MessageEntity.fromJson(
+                      jsonDecode(call.arguments['message'])),
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  profileNonce: BigInt.tryParse(
+                      call.arguments['profileNonce'] as String? ?? ''),
+                  privateKey: call.arguments['privateKey'] as String)
               .then((claims) =>
-              claims.map((claim) => jsonEncode(claim)).toList());
+                  claims.map((claim) => jsonEncode(claim)).toList());
 
         case 'getFilters':
           return getIden3Message(message: call.arguments['message'])
               .then((message) => getFilters(message: message))
               .then((filters) =>
-              filters.map((filter) => jsonEncode(filter)).toList());
+                  filters.map((filter) => jsonEncode(filter)).toList());
 
         case 'getIden3Message':
           return getIden3Message(message: call.arguments['message'])
@@ -171,7 +170,7 @@ class PolygonIdFlutterChannel
             privateKey: call.arguments['privateKey'] as String?,
             types: (call.arguments['types'] as List?)
                 ?.map((type) => InteractionType.values
-                .firstWhere((interactionType) => interactionType == type))
+                    .firstWhere((interactionType) => interactionType == type))
                 .toList(),
             states: (call.arguments['states'] as List?)
                 ?.map((state) => InteractionState.values.firstWhere(
@@ -187,12 +186,12 @@ class PolygonIdFlutterChannel
         case 'getProofs':
           return getIden3Message(message: call.arguments['message'])
               .then((message) => getProofs(
-              message: message,
-              genesisDid: call.arguments['genesisDid'] as String,
-              profileNonce: BigInt.tryParse(
-                  call.arguments['profileNonce'] as String? ?? ''),
-              privateKey: call.arguments['privateKey'] as String,
-              challenge: call.arguments['challenge'] as String?))
+                  message: message,
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  profileNonce: BigInt.tryParse(
+                      call.arguments['profileNonce'] as String? ?? ''),
+                  privateKey: call.arguments['privateKey'] as String,
+                  challenge: call.arguments['challenge'] as String?))
               .then((message) => jsonEncode(message));
 
         case 'removeInteractions':
@@ -203,16 +202,16 @@ class PolygonIdFlutterChannel
 
         case 'updateInteraction':
           return updateInteraction(
-              id: call.arguments['id'] as String,
-              genesisDid: call.arguments['genesisDid'] as String?,
-              privateKey: call.arguments['privateKey'] as String?,
-              state: call.arguments['state'] != null
-                  ? InteractionState.values.firstWhere((interactionState) =>
-              interactionState == call.arguments['state'])
-                  : null)
+                  id: call.arguments['id'] as String,
+                  genesisDid: call.arguments['genesisDid'] as String?,
+                  privateKey: call.arguments['privateKey'] as String?,
+                  state: call.arguments['state'] != null
+                      ? InteractionState.values.firstWhere((interactionState) =>
+                          interactionState == call.arguments['state'])
+                      : null)
               .then((interaction) => jsonEncode(interaction));
 
-      /// Identity
+        /// Identity
         case 'addIdentity':
           return addIdentity(secret: call.arguments['secret'] as String?)
               .then((identity) => jsonEncode(identity));
@@ -222,7 +221,7 @@ class PolygonIdFlutterChannel
             genesisDid: call.arguments['genesisDid'] as String,
             privateKey: call.arguments['privateKey'] as String,
             profileNonce:
-            BigInt.parse(call.arguments['profileNonce'] as String),
+                BigInt.parse(call.arguments['profileNonce'] as String),
           );
 
         case 'backupIdentity':
@@ -252,8 +251,8 @@ class PolygonIdFlutterChannel
 
         case 'getIdentity':
           return getIdentity(
-              genesisDid: call.arguments['genesisDid'] as String,
-              privateKey: call.arguments['privateKey'] as String?)
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  privateKey: call.arguments['privateKey'] as String?)
               .then((identity) => jsonEncode(identity));
 
         case 'getPrivateKey':
@@ -261,10 +260,10 @@ class PolygonIdFlutterChannel
 
         case 'getProfiles':
           return getProfiles(
-              genesisDid: call.arguments['genesisDid'] as String,
-              privateKey: call.arguments['privateKey'] as String)
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  privateKey: call.arguments['privateKey'] as String)
               .then((profiles) => profiles
-              .map((key, value) => MapEntry(key.toString(), value)));
+                  .map((key, value) => MapEntry(key.toString(), value)));
 
         case 'getState':
           return getState(did: call.arguments['did'] as String);
@@ -279,13 +278,13 @@ class PolygonIdFlutterChannel
               genesisDid: call.arguments['genesisDid'] as String,
               privateKey: call.arguments['privateKey'] as String,
               profileNonce:
-              BigInt.parse(call.arguments['profileNonce'] as String));
+                  BigInt.parse(call.arguments['profileNonce'] as String));
 
         case 'restoreIdentity':
           return restoreIdentity(
-              genesisDid: call.arguments['genesisDid'] as String,
-              privateKey: call.arguments['privateKey'] as String,
-              encryptedDb: call.arguments['encryptedDb'] as String?)
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  privateKey: call.arguments['privateKey'] as String,
+                  encryptedDb: call.arguments['encryptedDb'] as String?)
               .then((identity) => jsonEncode(identity));
 
         case 'sign':
@@ -293,27 +292,27 @@ class PolygonIdFlutterChannel
               message: call.arguments['message'] as String,
               privateKey: call.arguments['privateKey'] as String);
 
-      /// Credential
+        /// Credential
         case 'getClaims':
           return getClaims(
-              filters: (call.arguments['filters'] as List?)
-                  ?.map((filter) =>
-                  FilterEntity.fromJson(jsonDecode(filter as String)))
-                  .toList(),
-              genesisDid: call.arguments['genesisDid'] as String,
-              privateKey: call.arguments['privateKey'] as String)
+                  filters: (call.arguments['filters'] as List?)
+                      ?.map((filter) =>
+                          FilterEntity.fromJson(jsonDecode(filter as String)))
+                      .toList(),
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  privateKey: call.arguments['privateKey'] as String)
               .then((claims) =>
-              claims.map((claim) => jsonEncode(claim)).toList());
+                  claims.map((claim) => jsonEncode(claim)).toList());
 
         case 'getClaimsByIds':
           return getClaimsByIds(
-              claimIds: (call.arguments['claimIds'] as List)
-                  .map((e) => e as String)
-                  .toList(),
-              genesisDid: call.arguments['genesisDid'] as String,
-              privateKey: call.arguments['privateKey'] as String)
+                  claimIds: (call.arguments['claimIds'] as List)
+                      .map((e) => e as String)
+                      .toList(),
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  privateKey: call.arguments['privateKey'] as String)
               .then((claims) =>
-              claims.map((claim) => jsonEncode(claim)).toList());
+                  claims.map((claim) => jsonEncode(claim)).toList());
 
         case 'removeClaim':
           return removeClaim(
@@ -331,27 +330,27 @@ class PolygonIdFlutterChannel
 
         case 'saveClaims':
           return saveClaims(
-              claims: (call.arguments['claims'] as List)
-                  .map((claim) => ClaimEntity.fromJson(jsonDecode(claim)))
-                  .toList(),
-              genesisDid: call.arguments['genesisDid'] as String,
-              privateKey: call.arguments['privateKey'] as String)
+                  claims: (call.arguments['claims'] as List)
+                      .map((claim) => ClaimEntity.fromJson(jsonDecode(claim)))
+                      .toList(),
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  privateKey: call.arguments['privateKey'] as String)
               .then((claims) =>
-              claims.map((claim) => jsonEncode(claim)).toList());
+                  claims.map((claim) => jsonEncode(claim)).toList());
 
         case 'updateClaim':
           return updateClaim(
-              claimId: call.arguments['claimId'] as String,
-              issuer: call.arguments['issuer'] as String?,
-              genesisDid: call.arguments['genesisDid'] as String,
-              state: call.arguments['state'] != null
-                  ? ClaimState.values.firstWhere(
-                      (claimState) => claimState == call.arguments['state'])
-                  : null,
-              expiration: call.arguments['expiration'] as String?,
-              type: call.arguments['type'] as String?,
-              data: call.arguments['data'] as Map<String, dynamic>?,
-              privateKey: call.arguments['privateKey'] as String)
+                  claimId: call.arguments['claimId'] as String,
+                  issuer: call.arguments['issuer'] as String?,
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  state: call.arguments['state'] != null
+                      ? ClaimState.values.firstWhere(
+                          (claimState) => claimState == call.arguments['state'])
+                      : null,
+                  expiration: call.arguments['expiration'] as String?,
+                  type: call.arguments['type'] as String?,
+                  data: call.arguments['data'] as Map<String, dynamic>?,
+                  privateKey: call.arguments['privateKey'] as String)
               .then((claim) => jsonEncode(claim));
 
         case 'startDownloadCircuits':
@@ -381,19 +380,19 @@ class PolygonIdFlutterChannel
 
         case 'prove':
           return prove(
-              genesisDid: call.arguments['genesisDid'] as String,
-              profileNonce:
-              BigInt.parse(call.arguments['profileNonce'] as String),
-              claimSubjectProfileNonce: BigInt.parse(
-                  call.arguments['claimSubjectProfileNonce'] as String),
-              claim: ClaimEntity.fromJson(
-                  jsonDecode(call.arguments['claim'] as String)),
-              circuitData: CircuitDataEntity.fromJson(
-                  jsonDecode(call.arguments['circuitData'] as String)),
-              request: ProofScopeRequest.fromJson(
-                  jsonDecode(call.arguments['request'] as String)),
-              privateKey: call.arguments['privateKey'] as String?,
-              challenge: call.arguments['challenge'] as String?)
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  profileNonce:
+                      BigInt.parse(call.arguments['profileNonce'] as String),
+                  claimSubjectProfileNonce: BigInt.parse(
+                      call.arguments['claimSubjectProfileNonce'] as String),
+                  claim: ClaimEntity.fromJson(
+                      jsonDecode(call.arguments['claim'] as String)),
+                  circuitData: CircuitDataEntity.fromJson(
+                      jsonDecode(call.arguments['circuitData'] as String)),
+                  request: ProofScopeRequest.fromJson(
+                      jsonDecode(call.arguments['request'] as String)),
+                  privateKey: call.arguments['privateKey'] as String?,
+                  challenge: call.arguments['challenge'] as String?)
               .then((proof) => jsonEncode(proof));
 
         default:
@@ -408,8 +407,8 @@ class PolygonIdFlutterChannel
   @override
   Future<InteractionBaseEntity> addInteraction(
       {required InteractionBaseEntity interaction,
-        String? genesisDid,
-        String? privateKey}) {
+      String? genesisDid,
+      String? privateKey}) {
     return _polygonIdSdk.iden3comm.addInteraction(
         interaction: interaction,
         genesisDid: genesisDid,
@@ -419,10 +418,10 @@ class PolygonIdFlutterChannel
   @override
   Future<void> authenticate(
       {required Iden3MessageEntity message,
-        required String genesisDid,
-        BigInt? profileNonce,
-        required String privateKey,
-        String? pushToken}) {
+      required String genesisDid,
+      BigInt? profileNonce,
+      required String privateKey,
+      String? pushToken}) {
     return _polygonIdSdk.iden3comm.authenticate(
         message: message,
         genesisDid: genesisDid,
@@ -434,9 +433,9 @@ class PolygonIdFlutterChannel
   @override
   Future<List<ClaimEntity>> fetchAndSaveClaims(
       {required Iden3MessageEntity message,
-        required String genesisDid,
-        BigInt? profileNonce,
-        required String privateKey}) {
+      required String genesisDid,
+      BigInt? profileNonce,
+      required String privateKey}) {
     return _polygonIdSdk.iden3comm.fetchAndSaveClaims(
         message: message,
         genesisDid: genesisDid,
@@ -447,9 +446,9 @@ class PolygonIdFlutterChannel
   @override
   Future<List<ClaimEntity>> getClaimsFromIden3Message(
       {required Iden3MessageEntity message,
-        required String genesisDid,
-        BigInt? profileNonce,
-        required String privateKey}) {
+      required String genesisDid,
+      BigInt? profileNonce,
+      required String privateKey}) {
     return _polygonIdSdk.iden3comm.getClaimsFromIden3Message(
         message: message,
         genesisDid: genesisDid,
@@ -482,11 +481,11 @@ class PolygonIdFlutterChannel
   @override
   Future<List<InteractionBaseEntity>> getInteractions(
       {String? genesisDid,
-        BigInt? profileNonce,
-        String? privateKey,
-        List<InteractionType>? types,
-        List<InteractionState>? states,
-        List<FilterEntity>? filters}) {
+      BigInt? profileNonce,
+      String? privateKey,
+      List<InteractionType>? types,
+      List<InteractionState>? states,
+      List<FilterEntity>? filters}) {
     return _polygonIdSdk.iden3comm.getInteractions(
         genesisDid: genesisDid,
         profileNonce: profileNonce,
@@ -499,10 +498,10 @@ class PolygonIdFlutterChannel
   @override
   Future<List<JWZProofEntity>> getProofs(
       {required Iden3MessageEntity message,
-        required String genesisDid,
-        BigInt? profileNonce,
-        required String privateKey,
-        String? challenge}) {
+      required String genesisDid,
+      BigInt? profileNonce,
+      required String privateKey,
+      String? challenge}) {
     return _polygonIdSdk.iden3comm.getProofs(
         message: message,
         genesisDid: genesisDid,
@@ -521,9 +520,9 @@ class PolygonIdFlutterChannel
   @override
   Future<InteractionBaseEntity> updateInteraction(
       {required String id,
-        String? genesisDid,
-        String? privateKey,
-        InteractionState? state}) {
+      String? genesisDid,
+      String? privateKey,
+      InteractionState? state}) {
     return _polygonIdSdk.iden3comm.updateInteraction(
         id: id, genesisDid: genesisDid, privateKey: privateKey, state: state);
   }
@@ -537,8 +536,8 @@ class PolygonIdFlutterChannel
   @override
   Future<void> addProfile(
       {required String genesisDid,
-        required String privateKey,
-        required BigInt profileNonce}) {
+      required String privateKey,
+      required BigInt profileNonce}) {
     return _polygonIdSdk.identity.addProfile(
         genesisDid: genesisDid,
         privateKey: privateKey,
@@ -565,9 +564,9 @@ class PolygonIdFlutterChannel
   @override
   Future<String> getDidIdentifier(
       {required String privateKey,
-        required String blockchain,
-        required String network,
-        BigInt? profileNonce}) {
+      required String blockchain,
+      required String network,
+      BigInt? profileNonce}) {
     return _polygonIdSdk.identity.getDidIdentifier(
         privateKey: privateKey,
         blockchain: blockchain,
@@ -614,8 +613,8 @@ class PolygonIdFlutterChannel
   @override
   Future<void> removeProfile(
       {required String genesisDid,
-        required String privateKey,
-        required BigInt profileNonce}) {
+      required String privateKey,
+      required BigInt profileNonce}) {
     return _polygonIdSdk.identity.removeProfile(
         genesisDid: genesisDid,
         privateKey: privateKey,
@@ -625,8 +624,8 @@ class PolygonIdFlutterChannel
   @override
   Future<PrivateIdentityEntity> restoreIdentity(
       {required String genesisDid,
-        required String privateKey,
-        String? encryptedDb}) {
+      required String privateKey,
+      String? encryptedDb}) {
     return _polygonIdSdk.identity.restoreIdentity(
         genesisDid: genesisDid,
         privateKey: privateKey,
@@ -641,17 +640,19 @@ class PolygonIdFlutterChannel
 
   /// Credential
   @override
-  Future<List<ClaimEntity>> getClaims({List<FilterEntity>? filters,
-    required String genesisDid,
-    required String privateKey}) {
+  Future<List<ClaimEntity>> getClaims(
+      {List<FilterEntity>? filters,
+      required String genesisDid,
+      required String privateKey}) {
     return _polygonIdSdk.credential.getClaims(
         filters: filters, genesisDid: genesisDid, privateKey: privateKey);
   }
 
   @override
-  Future<List<ClaimEntity>> getClaimsByIds({required List<String> claimIds,
-    required String genesisDid,
-    required String privateKey}) {
+  Future<List<ClaimEntity>> getClaimsByIds(
+      {required List<String> claimIds,
+      required String genesisDid,
+      required String privateKey}) {
     return _polygonIdSdk.credential.getClaimsByIds(
         claimIds: claimIds, genesisDid: genesisDid, privateKey: privateKey);
   }
@@ -659,8 +660,8 @@ class PolygonIdFlutterChannel
   @override
   Future<void> removeClaim(
       {required String claimId,
-        required String genesisDid,
-        required String privateKey}) {
+      required String genesisDid,
+      required String privateKey}) {
     return _polygonIdSdk.credential.removeClaim(
         claimId: claimId, genesisDid: genesisDid, privateKey: privateKey);
   }
@@ -668,16 +669,17 @@ class PolygonIdFlutterChannel
   @override
   Future<void> removeClaims(
       {required List<String> claimIds,
-        required String genesisDid,
-        required String privateKey}) {
+      required String genesisDid,
+      required String privateKey}) {
     return _polygonIdSdk.credential.removeClaims(
         claimIds: claimIds, genesisDid: genesisDid, privateKey: privateKey);
   }
 
   @override
-  Future<List<ClaimEntity>> saveClaims({required List<ClaimEntity> claims,
-    required String genesisDid,
-    required String privateKey}) {
+  Future<List<ClaimEntity>> saveClaims(
+      {required List<ClaimEntity> claims,
+      required String genesisDid,
+      required String privateKey}) {
     return _polygonIdSdk.credential.saveClaims(
         claims: claims, genesisDid: genesisDid, privateKey: privateKey);
   }
@@ -685,13 +687,13 @@ class PolygonIdFlutterChannel
   @override
   Future<ClaimEntity> updateClaim(
       {required String claimId,
-        String? issuer,
-        required String genesisDid,
-        ClaimState? state,
-        String? expiration,
-        String? type,
-        Map<String, dynamic>? data,
-        required String privateKey}) {
+      String? issuer,
+      required String genesisDid,
+      ClaimState? state,
+      String? expiration,
+      String? type,
+      Map<String, dynamic>? data,
+      required String privateKey}) {
     return _polygonIdSdk.credential.updateClaim(
         claimId: claimId,
         issuer: issuer,
@@ -726,13 +728,13 @@ class PolygonIdFlutterChannel
   @override
   Future<JWZProofEntity> prove(
       {required String genesisDid,
-        required BigInt profileNonce,
-        required BigInt claimSubjectProfileNonce,
-        required ClaimEntity claim,
-        required CircuitDataEntity circuitData,
-        required ProofScopeRequest request,
-        String? privateKey,
-        String? challenge}) {
+      required BigInt profileNonce,
+      required BigInt claimSubjectProfileNonce,
+      required ClaimEntity claim,
+      required CircuitDataEntity circuitData,
+      required ProofScopeRequest request,
+      String? privateKey,
+      String? challenge}) {
     return _polygonIdSdk.proof.prove(
         genesisDid: genesisDid,
         profileNonce: profileNonce,

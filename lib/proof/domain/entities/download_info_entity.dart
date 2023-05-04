@@ -22,8 +22,7 @@ class DownloadInfo {
   }
 
   @override
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'contentLength': contentLength,
         'downloaded': downloaded,
         'completed': completed,

@@ -30,8 +30,7 @@ class EnvEntity {
   }
 
   @override
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'blockchain': blockchain,
         'network': network,
         'web3Url': web3Url,
@@ -48,14 +47,14 @@ class EnvEntity {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is EnvEntity &&
-              blockchain == other.blockchain &&
-              network == other.network &&
-              web3Url == other.web3Url &&
-              web3RdpUrl == other.web3RdpUrl &&
-              web3ApiKey == other.web3ApiKey &&
-              idStateContract == other.idStateContract &&
-              pushUrl == other.pushUrl;
+      other is EnvEntity &&
+          blockchain == other.blockchain &&
+          network == other.network &&
+          web3Url == other.web3Url &&
+          web3RdpUrl == other.web3RdpUrl &&
+          web3ApiKey == other.web3ApiKey &&
+          idStateContract == other.idStateContract &&
+          pushUrl == other.pushUrl;
 
   @override
   int get hashCode => runtimeType.hashCode;
