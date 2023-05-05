@@ -129,7 +129,7 @@ class LibPolygonIdCoreProofDataSource {
     Map<String, dynamic>? gistProof,
     String? challenge,
     String? signature,
-    required ClaimInfoDTO credential,
+    required Map<String, dynamic> credential,
     required ProofScopeRequest request,
   }) {
     AtomicQueryInputsType type = AtomicQueryInputsType.mtp;
@@ -157,7 +157,7 @@ class LibPolygonIdCoreProofDataSource {
       challenge: challenge,
       signature: signature,
       credential: credential,
-      request: request,
+      request: request.toJson(),
     ));
   }
 }

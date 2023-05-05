@@ -1,12 +1,13 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/entities/rev_status_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/fetch_identity_state_use_case.dart';
 
 class GenerateNonRevProofUseCase
-    extends FutureUseCase<ClaimEntity, Map<String, dynamic>> {
+    extends FutureUseCase<ClaimEntity, RevStatusEntity> {
   final IdentityRepository _identityRepository;
   final CredentialRepository _credentialRepository;
   final FetchIdentityStateUseCase _fetchIdentityStateUseCase;
@@ -15,7 +16,7 @@ class GenerateNonRevProofUseCase
       this._credentialRepository, this._fetchIdentityStateUseCase);
 
   @override
-  Future<Map<String, dynamic>> execute({required ClaimEntity param}) {
+  Future<RevStatusEntity> execute({required ClaimEntity param}) {
     return _credentialRepository
         .getIssuerIdentifier(claim: param)
         .then((id) => _fetchIdentityStateUseCase.execute(param: id))

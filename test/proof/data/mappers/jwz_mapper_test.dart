@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polygonid_flutter_sdk/proof/data/mappers/jwz_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/mappers/jwz_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_exceptions.dart';
 

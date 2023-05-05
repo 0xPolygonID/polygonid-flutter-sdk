@@ -2,6 +2,8 @@ import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/entities/rev_status_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/update_claim_use_case.dart';
@@ -48,6 +50,11 @@ abstract class PolygonIdSdkCredential {
   /// and also to realize operations like generating proofs
   Future<List<ClaimEntity>> getClaimsByIds(
       {required List<String> claimIds,
+      required String genesisDid,
+      required String privateKey});
+
+  Future<RevStatusEntity> getCredentialRevocationStatus(
+      {required String credentialId,
       required String genesisDid,
       required String privateKey});
 
@@ -109,12 +116,13 @@ class Credential implements PolygonIdSdkCredential {
   final GetClaimsUseCase _getClaimsUseCase;
   final RemoveClaimsUseCase _removeClaimsUseCase;
   final UpdateClaimUseCase _updateClaimUseCase;
-
+  final GetClaimRevocationStatusUseCase _getClaimRevocationStatusUseCase;
   Credential(
     this._saveClaimsUseCase,
     this._getClaimsUseCase,
     this._removeClaimsUseCase,
     this._updateClaimUseCase,
+    this._getClaimRevocationStatusUseCase,
   );
 
   @override
@@ -156,6 +164,18 @@ class Credential implements PolygonIdSdkCredential {
       profileNonce: GENESIS_PROFILE_NONCE,
       privateKey: privateKey,
     ));
+  }
+
+  Future<RevStatusEntity> getCredentialRevocationStatus(
+      {required String credentialId,
+      required String genesisDid,
+      required String privateKey}) {
+    return getClaimsByIds(
+            claimIds: [credentialId],
+            genesisDid: genesisDid,
+            privateKey: privateKey)
+        .then((claimEntity) =>
+            _getClaimRevocationStatusUseCase.execute(param: claimEntity[0]));
   }
 
   @override

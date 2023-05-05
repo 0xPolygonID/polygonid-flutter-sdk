@@ -28,7 +28,6 @@ class SaveClaimsUseCase
 
   @override
   Future<List<ClaimEntity>> execute({required SaveClaimsParam param}) {
-    // TODO: profile nonce from param?
     return _credentialRepository
         .saveClaims(
       claims: param.claims,

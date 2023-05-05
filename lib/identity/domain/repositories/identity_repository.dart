@@ -1,3 +1,5 @@
+import 'package:polygonid_flutter_sdk/credential/domain/entities/rev_status_entity.dart';
+
 import '../entities/identity_entity.dart';
 import '../entities/node_entity.dart';
 import '../entities/rhs_node_entity.dart';
@@ -25,12 +27,12 @@ abstract class IdentityRepository {
   Future<String> getDidIdentifier({
     required String blockchain,
     required String network,
-    required String claimsRoot,
+    required String claimsTreeRoot,
     required BigInt profileNonce,
   });
 
   // RHS
-  Future<Map<String, dynamic>> getNonRevProof(
+  Future<RevStatusEntity> getNonRevProof(
       {required String identityState,
       required BigInt nonce,
       required String baseUrl});

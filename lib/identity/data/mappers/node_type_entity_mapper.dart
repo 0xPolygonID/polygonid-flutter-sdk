@@ -5,7 +5,7 @@ class NodeTypeEntityMapper extends FromMapper<NodeEntity, NodeType> {
   @override
   NodeType mapFrom(NodeEntity from) {
     if (from.children.length == 3) {
-      if (from.children[2].data ==
+      if (from.children[2] ==
           "0100000000000000000000000000000000000000000000000000000000000000") {
         return NodeType.leaf;
       } else {

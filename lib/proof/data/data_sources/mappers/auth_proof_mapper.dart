@@ -4,7 +4,7 @@ import 'package:polygonid_flutter_sdk/common/mappers/from_mapper.dart';
 import 'package:polygonid_flutter_sdk/common/mappers/to_mapper.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hash_mapper.dart';
-import 'package:polygonid_flutter_sdk/proof/data/mappers/node_aux_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/mappers/node_aux_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
 
 class AuthProofMapper extends ToMapper<Map<String, dynamic>, ProofEntity> {
@@ -22,8 +22,11 @@ class AuthProofMapper extends ToMapper<Map<String, dynamic>, ProofEntity> {
           .toList()
     };
 
-    if (to.nodeAux != null) {
-      result["node_aux"] = {"key": to.nodeAux!.key, "value": to.nodeAux!.value};
+    if (to.node_aux != null) {
+      result["node_aux"] = {
+        "key": to.node_aux!.key,
+        "value": to.node_aux!.value
+      };
     }
 
     return result;

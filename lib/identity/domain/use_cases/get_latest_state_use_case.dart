@@ -12,13 +12,13 @@ class GetLatestStateParam {
 }
 
 class GetLatestStateUseCase
-    extends FutureUseCase<GetLatestStateParam, Map<String, dynamic>> {
+    extends FutureUseCase<GetLatestStateParam, TreeStateEntity> {
   final SMTRepository _smtRepository;
 
   GetLatestStateUseCase(this._smtRepository);
 
   @override
-  Future<Map<String, dynamic>> execute({required GetLatestStateParam param}) {
+  Future<TreeStateEntity> execute({required GetLatestStateParam param}) {
     return Future.wait([
       _smtRepository.getRoot(
         type: TreeType.claims,
@@ -37,13 +37,12 @@ class GetLatestStateUseCase
       ),
     ], eagerError: true)
         .then((trees) => _smtRepository
-            .hashState(
-                claims: trees[0].data,
-                revocation: trees[1].data,
-                roots: trees[2].data)
-            .then(
-                (hash) => TreeStateEntity(hash, trees[0], trees[1], trees[2])))
-        .then((state) => _smtRepository.convertState(state: state))
+            .hashState(claims: trees[0], revocation: trees[1], roots: trees[2])
+            .then((state) => TreeStateEntity(
+                state: state,
+                claimsTreeRoot: trees[0],
+                revocationTreeRoot: trees[1],
+                rootOfRoots: trees[2])))
         .then((state) {
       logger().i("[GetLatestStateUseCase] State: $state");
 

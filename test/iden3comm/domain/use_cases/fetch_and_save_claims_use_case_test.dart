@@ -3,6 +3,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/entities/rev_status_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_use_case.dart';
@@ -12,7 +13,9 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_a
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_fetch_requests_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
 
 import '../../../common/common_mocks.dart';
 import '../../../common/iden3comm_mocks.dart';
@@ -28,11 +31,13 @@ final requests = [
   "theThirdRequest",
 ];
 
-final revStatus = {
-  "mtp": {
-    "existence": false,
-  }
-};
+final revStatus = RevStatusEntity(
+    issuer: TreeStateEntity(
+        state: '', claimsTreeRoot: '', revocationTreeRoot: '', rootOfRoots: ''),
+    mtp: ProofEntity(
+      existence: false,
+      siblings: [],
+    ));
 
 final claimEntity = ClaimEntity(
     issuer: "",

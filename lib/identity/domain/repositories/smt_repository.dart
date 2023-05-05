@@ -2,7 +2,6 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 
 import '../../../proof/domain/entities/proof_entity.dart';
-import '../entities/hash_entity.dart';
 import '../entities/node_entity.dart';
 
 abstract class SMTRepository {
@@ -13,32 +12,32 @@ abstract class SMTRepository {
       required String privateKey});
 
   Future<NodeEntity> getNode(
-      {required HashEntity hash,
+      {required String hash,
       required TreeType type,
       required String did,
       required String privateKey});
 
   Future<void> addNode(
-      {required HashEntity hash,
+      {required String hash,
       required NodeEntity node,
       required TreeType type,
       required String did,
       required String privateKey});
 
-  Future<HashEntity> getRoot(
+  Future<String> getRoot(
       {required TreeType type,
       required String did,
       required String privateKey});
 
   Future<void> setRoot(
-      {required HashEntity root,
+      {required String root,
       required TreeType type,
       required String did,
       required String privateKey});
 
   /// TODO: use this through an UC
   Future<ProofEntity> generateProof({
-    required HashEntity key,
+    required String key,
     required TreeType type,
     required String did,
     required String privateKey,

@@ -1,26 +1,37 @@
-import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
-
 class TreeStateEntity {
-  final String hash;
-  final HashEntity claimsTree;
-  final HashEntity revocationTree;
-  final HashEntity rootsTree;
+  final String state;
+  final String claimsTreeRoot;
+  final String revocationTreeRoot;
+  final String rootOfRoots;
 
   TreeStateEntity(
-      this.hash, this.claimsTree, this.revocationTree, this.rootsTree);
+      {required this.state,
+      required this.claimsTreeRoot,
+      required this.revocationTreeRoot,
+      required this.rootOfRoots});
 
   @override
   String toString() =>
-      "[TreeStateEntity] {claimsTree: $claimsTree, revocationTree: $revocationTree, rootsTree: $rootsTree}";
+      "[TreeStateEntity] {state: $state, claimsTreeRoot: $claimsTreeRoot, revocationTreeRoot: $revocationTreeRoot, rootOfRoots: $rootOfRoots}";
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'state': state,
+        'claimsTreeRoot': claimsTreeRoot,
+        'revocationTreeRoot': revocationTreeRoot,
+        'rootOfRoots': rootOfRoots,
+      }..removeWhere(
+          (dynamic key, dynamic value) => key == null || value == null);
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is TreeStateEntity &&
           runtimeType == other.runtimeType &&
-          claimsTree == other.claimsTree &&
-          revocationTree == other.revocationTree &&
-          rootsTree == other.rootsTree;
+          state == other.state &&
+          claimsTreeRoot == other.claimsTreeRoot &&
+          revocationTreeRoot == other.revocationTreeRoot &&
+          rootOfRoots == other.rootOfRoots;
 
   @override
   int get hashCode => runtimeType.hashCode;

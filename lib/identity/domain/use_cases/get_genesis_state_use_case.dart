@@ -1,6 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
@@ -26,9 +25,12 @@ class GetGenesisStateUseCase extends FutureUseCase<String, TreeStateEntity> {
         .then((authClaim) =>
             _identityRepository.getAuthClaimNode(children: authClaim))
         .then((node) => _smtRepository
-            .hashState(claims: node.hash.data, revocation: zero, roots: zero)
-            .then((hash) => TreeStateEntity(hash, node.hash,
-                HashEntity(data: zero), HashEntity(data: zero))))
+            .hashState(claims: node.hash, revocation: zero, roots: zero)
+            .then((state) => TreeStateEntity(
+                state: state,
+                claimsTreeRoot: node.hash,
+                revocationTreeRoot: zero,
+                rootOfRoots: zero)))
         .then((state) {
       logger().i("[GetGenesisStateUseCase] State: $state");
 

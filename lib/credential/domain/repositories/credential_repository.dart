@@ -1,8 +1,6 @@
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
-
-import '../../../common/domain/entities/filter_entity.dart';
-import '../../../identity/domain/entities/identity_entity.dart';
-import '../entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/entities/rev_status_entity.dart';
 
 abstract class CredentialRepository {
   Future<void> saveClaims({
@@ -29,8 +27,7 @@ abstract class CredentialRepository {
   Future<void> removeAllClaims(
       {required String genesisDid, required String privateKey});
 
-  Future<Map<String, dynamic>> getRevocationStatus(
-      {required ClaimEntity claim});
+  Future<RevStatusEntity> getRevocationStatus({required ClaimEntity claim});
 
   Future<bool> isUsingRHS({required ClaimEntity claim});
 

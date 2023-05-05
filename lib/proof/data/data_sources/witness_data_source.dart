@@ -1,13 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/mappers/circuit_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/witness_param.dart';
+import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/auth_v2/witness_auth.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/mtp_v2/witness_mtp.dart';
+import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/mtp_v2_onchain/witness_mtp_onchain.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/sig_v2/witness_sig.dart';
-
-import '../../libs/witnesscalc/auth_v2/witness_auth.dart';
-import '../../libs/witnesscalc/mtp_v2_onchain/witness_mtp_onchain.dart';
-import '../../libs/witnesscalc/sig_v2_onchain/witness_sig_onchain.dart';
-import '../mappers/circuit_type_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/sig_v2_onchain/witness_sig_onchain.dart';
 
 @injectable
 class WitnessIsolatesWrapper {

@@ -10,7 +10,7 @@ import 'package:polygonid_flutter_sdk/identity/data/mappers/tree_state_mapper.da
 import 'package:polygonid_flutter_sdk/identity/data/mappers/tree_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/repositories/smt_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
-import 'package:polygonid_flutter_sdk/proof/data/mappers/proof_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/mappers/proof_mapper.dart';
 
 import '../../../common/common_mocks.dart';
 import '../../../common/identity_mocks.dart';
@@ -107,11 +107,11 @@ void main() {
         "Given a TreeStateEntity, when I call convertState, then I expect a Map to be returned",
         () async {
       // Given
-      when(treeStateMapper.mapTo(any)).thenReturn(CommonMocks.aMap);
+      when(treeStateMapper.mapTo(any)).thenReturn(IdentityMocks.treeStateDTO);
 
       // When
       expect(await repository.convertState(state: IdentityMocks.treeState),
-          CommonMocks.aMap);
+          IdentityMocks.treeStateDTO.toJson());
 
       // Then
       expect(verify(treeStateMapper.mapTo(captureAny)).captured.first,

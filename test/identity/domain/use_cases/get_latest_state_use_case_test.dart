@@ -38,7 +38,7 @@ void main() {
           claims: anyNamed('claims'),
           revocation: anyNamed('revocation'),
           roots: anyNamed('roots'),
-        )).thenAnswer((realInvocation) => Future.value(CommonMocks.hash));
+        )).thenAnswer((realInvocation) => Future.value(IdentityMocks.hash));
 
         when(smtRepository.convertState(state: anyNamed('state')))
             .thenAnswer((realInvocation) => Future.value(CommonMocks.aMap));
@@ -48,7 +48,7 @@ void main() {
         'Given a param, when I call execute, then I expect a map to be returned',
         () async {
           // When
-          expect(await useCase.execute(param: param), CommonMocks.aMap);
+          expect(await useCase.execute(param: param), IdentityMocks.treeState);
 
           // Then
           var verifyRoot = verify(smtRepository.getRoot(
@@ -71,16 +71,9 @@ void main() {
             revocation: captureAnyNamed('revocation'),
             roots: captureAnyNamed('roots'),
           )).captured;
-          expect(captureHash[0], IdentityMocks.hash.data);
-          expect(captureHash[1], IdentityMocks.hash.data);
-          expect(captureHash[2], IdentityMocks.hash.data);
-
-          expect(
-              verify(smtRepository.convertState(
-                      state: captureAnyNamed('state')))
-                  .captured
-                  .first,
-              IdentityMocks.treeState);
+          expect(captureHash[0], IdentityMocks.hash);
+          expect(captureHash[1], IdentityMocks.hash);
+          expect(captureHash[2], IdentityMocks.hash);
         },
       );
 
@@ -120,9 +113,6 @@ void main() {
             revocation: captureAnyNamed('revocation'),
             roots: captureAnyNamed('roots'),
           ));
-
-          verifyNever(
-              smtRepository.convertState(state: captureAnyNamed('state')));
         },
       );
     },

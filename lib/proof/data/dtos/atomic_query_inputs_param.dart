@@ -16,8 +16,8 @@ class AtomicQueryInputsParam {
   final Map<String, dynamic>? treeState;
   final String? challenge;
   final String? signature;
-  final ClaimInfoDTO credential;
-  final ProofScopeRequest request;
+  final Map<String, dynamic> credential;
+  final Map<String, dynamic> request;
 
   AtomicQueryInputsParam({
     required this.type,
@@ -46,8 +46,8 @@ class AtomicQueryInputsParam {
         "treeState": treeState,
         "challenge": challenge,
         "signature": signature,
-        "verifiableCredentials": credential.toJson(),
-        "request": request.toJson(),
+        "verifiableCredentials": credential,
+        "request": request,
       }..removeWhere(
           (dynamic key, dynamic value) => key == null || value == null);
 }

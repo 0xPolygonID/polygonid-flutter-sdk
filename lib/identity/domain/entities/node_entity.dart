@@ -1,5 +1,3 @@
-import 'hash_entity.dart';
-
 /// 3 types of nodes:
 ///
 /// - State node: [Claims Tree root, Revocation Tree root, Roots Tree root]
@@ -8,8 +6,8 @@ import 'hash_entity.dart';
 enum NodeType { unknown, state, middle, leaf }
 
 class NodeEntity {
-  final HashEntity hash;
-  final List<HashEntity> children;
+  final String hash;
+  final List<String> children;
   final NodeType nodeType;
 
   NodeEntity(

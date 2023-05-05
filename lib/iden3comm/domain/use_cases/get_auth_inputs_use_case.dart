@@ -1,24 +1,18 @@
 import 'dart:typed_data';
 
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_auth_claim_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_latest_state_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/sign_message_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/get_gist_proof_use_case.dart';
-
-import '../../../common/domain/domain_logger.dart';
-import '../../../common/domain/use_case.dart';
 
 class GetAuthInputsParam {
   final String challenge;
@@ -54,34 +48,38 @@ class GetAuthInputsUseCase
 
   @override
   Future<Uint8List> execute({required GetAuthInputsParam param}) async {
-    IdentityEntity identity = await _getIdentityUseCase.execute(
-        param: GetIdentityParam(
-            genesisDid: param.genesisDid, privateKey: param.privateKey));
+    List<String> identityPublicKey = (await _getIdentityUseCase.execute(
+            param: GetIdentityParam(
+                genesisDid: param.genesisDid, privateKey: param.privateKey)))
+        .publicKey;
 
     List<String> authClaim =
-        await _getAuthClaimUseCase.execute(param: identity.publicKey);
-    NodeEntity authClaimNode =
-        await _identityRepository.getAuthClaimNode(children: authClaim);
+        await _getAuthClaimUseCase.execute(param: identityPublicKey);
+    String authClaimNodeHash =
+        (await _identityRepository.getAuthClaimNode(children: authClaim)).hash;
 
-    ProofEntity incProof = await _smtRepository.generateProof(
-        key: authClaimNode.hash,
-        type: TreeType.claims,
-        did: param.genesisDid,
-        privateKey: param.privateKey);
+    Map<String, dynamic> incProof = (await _smtRepository.generateProof(
+            key: authClaimNodeHash,
+            type: TreeType.claims,
+            did: param.genesisDid,
+            privateKey: param.privateKey))
+        .toJson();
 
-    ProofEntity nonRevProof = await _smtRepository.generateProof(
-        key: authClaimNode.hash,
-        type: TreeType.revocation,
-        did: param.genesisDid,
-        privateKey: param.privateKey);
+    Map<String, dynamic> nonRevProof = (await _smtRepository.generateProof(
+            key: authClaimNodeHash,
+            type: TreeType.revocation,
+            did: param.genesisDid,
+            privateKey: param.privateKey))
+        .toJson();
 
     // hash of clatr, revtr, rootr
-    Map<String, dynamic> treeState = await _getLatestStateUseCase.execute(
-        param: GetLatestStateParam(
-            did: param.genesisDid, privateKey: param.privateKey));
+    Map<String, dynamic> treeState = (await _getLatestStateUseCase.execute(
+            param: GetLatestStateParam(
+                did: param.genesisDid, privateKey: param.privateKey)))
+        .toJson();
 
-    GistProofEntity gistProof =
-        await _getGistProofUseCase.execute(param: param.genesisDid);
+    Map<String, dynamic> gistProof =
+        (await _getGistProofUseCase.execute(param: param.genesisDid)).toJson();
 
     return _signMessageUseCase
         .execute(param: SignMessageParam(param.privateKey, param.challenge))
@@ -90,7 +88,6 @@ class GetAuthInputsUseCase
             profileNonce: param.profileNonce,
             challenge: param.challenge,
             authClaim: authClaim,
-            identity: identity,
             signature: signature,
             incProof: incProof,
             nonRevProof: nonRevProof,

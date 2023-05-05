@@ -1,23 +1,16 @@
-// import '../../domain/exceptions/smt_exceptions.dart';
-// import '../../domain/repositories/smt_storage_repository.dart';
-// import '../../libs/smt/hash.dart';
-// import '../../libs/smt/node.dart';
-//
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/smt_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_smt_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/hash_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/node_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/tree_state_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/tree_type_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
-
-import '../../../proof/data/mappers/proof_mapper.dart';
-import '../../../proof/domain/entities/proof_entity.dart';
-import '../../domain/repositories/smt_repository.dart';
-import '../data_sources/smt_data_source.dart';
-import '../mappers/hash_mapper.dart';
-import '../mappers/node_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/mappers/proof_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
 
 class SMTRepositoryImpl implements SMTRepository {
   final SMTDataSource _smtDataSource;
@@ -78,7 +71,7 @@ class SMTRepositoryImpl implements SMTRepository {
 
   @override
   Future<NodeEntity> getNode(
-      {required HashEntity hash,
+      {required String hash,
       required TreeType type,
       required String did,
       required String privateKey}) {
@@ -92,7 +85,7 @@ class SMTRepositoryImpl implements SMTRepository {
   }
 
   @override
-  Future<HashEntity> getRoot(
+  Future<String> getRoot(
       {required TreeType type,
       required String did,
       required String privateKey}) {
@@ -106,7 +99,7 @@ class SMTRepositoryImpl implements SMTRepository {
 
   @override
   Future<void> addNode(
-      {required HashEntity hash,
+      {required String hash,
       required NodeEntity node,
       required TreeType type,
       required String did,
@@ -121,7 +114,7 @@ class SMTRepositoryImpl implements SMTRepository {
 
   @override
   Future<void> setRoot(
-      {required HashEntity root,
+      {required String root,
       required TreeType type,
       required String did,
       required String privateKey}) {
@@ -134,7 +127,7 @@ class SMTRepositoryImpl implements SMTRepository {
 
   @override
   Future<ProofEntity> generateProof(
-      {required HashEntity key,
+      {required String key,
       required TreeType type,
       required String did,
       required String privateKey}) async {
@@ -147,7 +140,7 @@ class SMTRepositoryImpl implements SMTRepository {
         .then((dto) => _proofMapper.mapFrom(dto));
   }
 
-  Future<HashEntity> getProofTreeRoot(
+  Future<String> getProofTreeRoot(
       {required ProofEntity proof, required NodeEntity node}) async {
     return _smtDataSource
         .getProofTreeRoot(
@@ -158,7 +151,7 @@ class SMTRepositoryImpl implements SMTRepository {
   Future<bool> verifyProof(
       {required ProofEntity proof,
       required NodeEntity node,
-      required HashEntity treeRoot}) async {
+      required String treeRoot}) async {
     return _smtDataSource.verifyProof(
         proof: _proofMapper.mapTo(proof),
         node: _nodeMapper.mapTo(node),
@@ -204,6 +197,6 @@ class SMTRepositoryImpl implements SMTRepository {
 
   @override
   Future<Map<String, dynamic>> convertState({required TreeStateEntity state}) {
-    return Future.value(_treeStateMapper.mapTo(state));
+    return Future.value(_treeStateMapper.mapTo(state).toJson());
   }
 }

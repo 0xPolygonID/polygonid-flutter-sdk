@@ -1,12 +1,14 @@
 import 'package:encrypt/encrypt.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/rev_status_mapper.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/entities/rev_status_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
+import 'package:polygonid_flutter_sdk/common/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
@@ -23,13 +25,14 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart'
 import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
 import 'package:sembast/sembast_io.dart';
 
 class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
   final RemoteIdentityDataSource _remoteIdentityDataSource;
   final StorageIdentityDataSource _storageIdentityDataSource;
-  final RPCDataSource _rpcDataSource;
+  final RPCIdentityDataSource _rpcIdentityDataSource;
   final LocalContractFilesDataSource _localContractFilesDataSource;
   final LibBabyJubJubDataSource _libBabyJubJubDataSource;
   final LibPolygonIdCoreIdentityDataSource _libPolygonIdCoreIdentityDataSource;
@@ -42,12 +45,13 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final StateIdentifierMapper _stateIdentifierMapper;
   final NodeMapper _nodeMapper;
   final EncryptionKeyMapper _encryptionKeyMapper;
+  final RevStatusMapper _revStatusMapper;
 
   IdentityRepositoryImpl(
     this._walletDataSource,
     this._remoteIdentityDataSource,
     this._storageIdentityDataSource,
-    this._rpcDataSource,
+    this._rpcIdentityDataSource,
     this._localContractFilesDataSource,
     this._libBabyJubJubDataSource,
     this._libPolygonIdCoreIdentityDataSource,
@@ -60,6 +64,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._stateIdentifierMapper,
     this._nodeMapper,
     this._encryptionKeyMapper,
+    this._revStatusMapper,
   );
 
   @override
@@ -153,7 +158,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
       {required String identifier, required String contractAddress}) {
     return _localContractFilesDataSource
         .loadStateContract(contractAddress)
-        .then((contract) => _rpcDataSource
+        .then((contract) => _rpcIdentityDataSource
             .getState(_stateIdentifierMapper.mapTo(identifier), contract)
             .catchError((error) => throw FetchIdentityStateException(error)));
   }
@@ -167,12 +172,13 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<Map<String, dynamic>> getNonRevProof(
+  Future<RevStatusEntity> getNonRevProof(
       {required String identityState,
       required BigInt nonce,
       required String baseUrl}) {
     return _remoteIdentityDataSource
         .getNonRevocationProof(identityState, nonce, baseUrl)
+        .then((value) => _revStatusMapper.mapFrom(value))
         .catchError((error) => throw NonRevProofException(error));
   }
 
@@ -180,13 +186,13 @@ class IdentityRepositoryImpl extends IdentityRepository {
   Future<String> getDidIdentifier({
     required String blockchain,
     required String network,
-    required String claimsRoot,
+    required String claimsTreeRoot,
     required BigInt profileNonce,
   }) {
     try {
       // Get the genesis id
       String genesisDid = _libPolygonIdCoreIdentityDataSource
-          .calculateGenesisId(claimsRoot, blockchain, network);
+          .calculateGenesisId(claimsTreeRoot, blockchain, network);
 
       if (profileNonce == GENESIS_PROFILE_NONCE) {
         return Future.value(genesisDid);

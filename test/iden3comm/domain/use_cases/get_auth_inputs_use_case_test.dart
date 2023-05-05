@@ -67,7 +67,6 @@ void main() {
             profileNonce: anyNamed('profileNonce'),
             challenge: anyNamed("challenge"),
             authClaim: anyNamed("authClaim"),
-            identity: anyNamed("identity"),
             signature: anyNamed("signature"),
             incProof: anyNamed('incProof'),
             nonRevProof: anyNamed('nonRevProof'),
@@ -85,7 +84,7 @@ void main() {
             privateKey: anyNamed('privateKey')))
         .thenAnswer((realInvocation) => Future.value(ProofMocks.proof));
     when(getLatestStateUseCase.execute(param: anyNamed('param')))
-        .thenAnswer((realInvocation) => Future.value(CommonMocks.aMap));
+        .thenAnswer((realInvocation) => Future.value(IdentityMocks.treeState));
     when(getGistProofUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value(ProofMocks.gistProof));
   });
@@ -116,7 +115,6 @@ void main() {
               profileNonce: captureAnyNamed('profileNonce'),
               challenge: captureAnyNamed("challenge"),
               authClaim: captureAnyNamed("authClaim"),
-              identity: captureAnyNamed("identity"),
               signature: captureAnyNamed("signature"),
               incProof: captureAnyNamed('incProof'),
               nonRevProof: captureAnyNamed('nonRevProof'),
@@ -127,12 +125,11 @@ void main() {
       expect(capturedAuthInputs[1], CommonMocks.nonce);
       expect(capturedAuthInputs[2], CommonMocks.challenge);
       expect(capturedAuthInputs[3], claims);
-      expect(capturedAuthInputs[4], IdentityMocks.identity);
-      expect(capturedAuthInputs[5], CommonMocks.signature);
-      expect(capturedAuthInputs[6], ProofMocks.proof);
-      expect(capturedAuthInputs[7], ProofMocks.proof);
-      expect(capturedAuthInputs[8], ProofMocks.gistProof);
-      expect(capturedAuthInputs[9], CommonMocks.aMap);
+      expect(capturedAuthInputs[4], CommonMocks.signature);
+      expect(capturedAuthInputs[5], ProofMocks.proof.toJson());
+      expect(capturedAuthInputs[6], ProofMocks.proof.toJson());
+      expect(capturedAuthInputs[7], ProofMocks.gistProof.toJson());
+      expect(capturedAuthInputs[8], IdentityMocks.treeState.toJson());
     },
   );
 
@@ -162,7 +159,6 @@ void main() {
           profileNonce: captureAnyNamed('profileNonce'),
           challenge: captureAnyNamed("challenge"),
           authClaim: captureAnyNamed("authClaim"),
-          identity: captureAnyNamed("identity"),
           signature: captureAnyNamed("signature"),
           incProof: captureAnyNamed('incProof'),
           nonRevProof: captureAnyNamed('nonRevProof'),

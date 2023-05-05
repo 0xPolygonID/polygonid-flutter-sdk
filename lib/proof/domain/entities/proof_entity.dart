@@ -1,16 +1,23 @@
-import '../../../identity/domain/entities/hash_entity.dart';
 import 'node_aux_entity.dart';
 
 class ProofEntity {
   final bool existence;
-  final List<HashEntity> siblings;
-  final NodeAuxEntity? nodeAux;
+  final List<String> siblings;
+  final NodeAuxEntity? node_aux;
 
-  ProofEntity({required this.existence, required this.siblings, this.nodeAux});
+  ProofEntity({required this.existence, required this.siblings, this.node_aux});
 
   @override
   String toString() =>
-      "[ProofEntity] {existence: $existence, siblings: $siblings, nodeAux: $nodeAux}";
+      "[ProofEntity] {existence: $existence, siblings: $siblings, node_aux: $node_aux}";
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'existence': existence,
+        'siblings': siblings,
+        'node_aux': node_aux?.toJson(),
+      }..removeWhere(
+          (dynamic key, dynamic value) => key == null || value == null);
 
   @override
   bool operator ==(Object other) =>
@@ -19,7 +26,7 @@ class ProofEntity {
           runtimeType == other.runtimeType &&
           existence.toString() == other.existence.toString() &&
           siblings.toString() == other.siblings.toString() &&
-          nodeAux.toString() == other.nodeAux.toString();
+          node_aux.toString() == other.node_aux.toString();
 
   @override
   int get hashCode => runtimeType.hashCode;

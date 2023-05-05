@@ -1,5 +1,6 @@
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/entities/rev_status_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
@@ -77,7 +78,7 @@ class FetchAndSaveClaimsUseCase
     return _getFetchRequestsUseCase
         .execute(param: GetFetchRequestsParam(param.message, profileDid))
         .then((requests) async {
-          List<ClaimEntity> claims = [];
+          List<ClaimEntity> credentials = [];
 
           for (String request in requests) {
             await _getAuthTokenUseCase
@@ -92,36 +93,29 @@ class FetchAndSaveClaimsUseCase
                     did: profileDid,
                     authToken: authToken,
                     url: param.message.body.url))
-                .then((claim) async {
-              Map<String, dynamic> revStatus =
-                  await _getClaimRevocationStatusUseCase
-                      .execute(param: claim)
-                      .catchError((_) => <String, dynamic>{});
+                .then((credential) async {
+              RevStatusEntity revStatus = await _getClaimRevocationStatusUseCase
+                  .execute(param: credential);
 
-              /// FIXME: define an entity for revocation and use it in repo impl
-              if (revStatus.isNotEmpty &&
-                  revStatus["mtp"] != null &&
-                  revStatus["mtp"]["existence"] != null &&
-                  revStatus["mtp"]["existence"] == true) {
-                claim = ClaimEntity(
-                  id: claim.id,
-                  issuer: claim.issuer,
-                  did: claim.did,
+              if (revStatus.mtp.existence == true) {
+                credential = ClaimEntity(
+                  id: credential.id,
+                  issuer: credential.issuer,
+                  did: credential.did,
                   state: ClaimState.revoked,
-                  expiration: claim.expiration,
-                  schema: claim.schema,
-                  vocab: claim.vocab,
-                  type: claim.type,
-                  info: claim.info,
+                  expiration: credential.expiration,
+                  schema: credential.schema,
+                  vocab: credential.vocab,
+                  type: credential.type,
+                  info: credential.info,
                 );
               }
-              claims.add(claim);
+              credentials.add(credential);
             });
           }
 
-          return claims;
+          return credentials;
         })
-        // TODO profileDid
         .then((claims) => _saveClaimsUseCase
                 .execute(
                     param: SaveClaimsParam(

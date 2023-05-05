@@ -1,4 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/entities/rev_status_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';
@@ -69,16 +70,11 @@ class GetIden3commClaimsUseCase
               if (request.scope.query.skipClaimRevocationCheck == null ||
                   request.scope.query.skipClaimRevocationCheck == false) {
                 for (int i = 0; i < claims.length; i++) {
-                  Map<String, dynamic> revStatus =
-                      await _getClaimRevocationStatusUseCase
-                          .execute(param: claims[i])
-                          .catchError((_) => <String, dynamic>{});
+                  RevStatusEntity revStatus =
+                      await _getClaimRevocationStatusUseCase.execute(
+                          param: claims[i]);
 
-                  /// FIXME: define an entity for revocation and use it in repo impl
-                  if (revStatus.isNotEmpty &&
-                      revStatus["mtp"] != null &&
-                      revStatus["mtp"]["existence"] != null &&
-                      revStatus["mtp"]["existence"] == true) {
+                  if (revStatus.mtp.existence == true) {
                     claims[i] = await _updateClaimUseCase.execute(
                         param: UpdateClaimParam(
                             id: claims[i].id,

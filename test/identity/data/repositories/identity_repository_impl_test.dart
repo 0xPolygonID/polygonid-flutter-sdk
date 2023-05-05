@@ -5,15 +5,16 @@ import 'package:http/http.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/local_claim_data_source.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/rev_status_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
+import 'package:polygonid_flutter_sdk/common/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
@@ -35,6 +36,7 @@ import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj_wallet.dart';
 import 'package:web3dart/web3dart.dart';
 
 import '../../../common/common_mocks.dart';
+import '../../../common/credential_mocks.dart';
 import '../../../common/iden3comm_mocks.dart';
 import '../../../common/identity_mocks.dart';
 import 'identity_repository_impl_test.mocks.dart';
@@ -145,7 +147,7 @@ MockRemoteIdentityDataSource remoteIdentityDataSource =
     MockRemoteIdentityDataSource();
 MockStorageIdentityDataSource storageIdentityDataSource =
     MockStorageIdentityDataSource();
-MockRPCDataSource rpcDataSource = MockRPCDataSource();
+MockRPCIdentityDataSource rpcIdentityDataSource = MockRPCIdentityDataSource();
 MockLocalContractFilesDataSource localContractFilesDataSource =
     MockLocalContractFilesDataSource();
 MockLibBabyJubJubDataSource libBabyJubJubDataSource =
@@ -163,13 +165,14 @@ MockRhsNodeMapper rhsNodeMapper = MockRhsNodeMapper();
 MockStateIdentifierMapper stateIdentifierMapper = MockStateIdentifierMapper();
 MockNodeMapper nodeMapper = MockNodeMapper();
 MockEncryptionKeyMapper encryptionKeyMapper = MockEncryptionKeyMapper();
+MockRevStatusMapper revStatusMapper = MockRevStatusMapper();
 
 // Tested instance
 IdentityRepository repository = IdentityRepositoryImpl(
   walletDataSource,
   remoteIdentityDataSource,
   storageIdentityDataSource,
-  rpcDataSource,
+  rpcIdentityDataSource,
   localContractFilesDataSource,
   libBabyJubJubDataSource,
   libPolygonIdCoreIdentityDataSource,
@@ -182,13 +185,14 @@ IdentityRepository repository = IdentityRepositoryImpl(
   stateIdentifierMapper,
   nodeMapper,
   encryptionKeyMapper,
+  revStatusMapper,
 );
 
 @GenerateMocks([
   WalletDataSource,
   RemoteIdentityDataSource,
   StorageIdentityDataSource,
-  RPCDataSource,
+  RPCIdentityDataSource,
   LocalContractFilesDataSource,
   LocalClaimDataSource,
   LibBabyJubJubDataSource,
@@ -202,6 +206,7 @@ IdentityRepository repository = IdentityRepositoryImpl(
   StateIdentifierMapper,
   NodeMapper,
   EncryptionKeyMapper,
+  RevStatusMapper,
 ])
 void main() {
   group("Get identity", () {
@@ -399,14 +404,14 @@ void main() {
 
   group("Get Identity State", () {
     setUp(() {
-      reset(rpcDataSource);
+      reset(rpcIdentityDataSource);
 
       // Given
       when(localContractFilesDataSource.loadStateContract(any))
           .thenAnswer((realInvocation) => Future.value(contract));
       when(stateIdentifierMapper.mapTo(any))
           .thenAnswer((realInvocation) => CommonMocks.id);
-      when(rpcDataSource.getState(any, any))
+      when(rpcIdentityDataSource.getState(any, any))
           .thenAnswer((realInvocation) => Future.value(CommonMocks.state));
     });
 
@@ -428,7 +433,8 @@ void main() {
       expect(verify(stateIdentifierMapper.mapTo(captureAny)).captured.first,
           CommonMocks.identifier);
       var getStateCaptured =
-          verify(rpcDataSource.getState(captureAny, captureAny)).captured;
+          verify(rpcIdentityDataSource.getState(captureAny, captureAny))
+              .captured;
 
       expect(getStateCaptured[0], CommonMocks.id);
       expect(getStateCaptured[1], contract);
@@ -438,7 +444,7 @@ void main() {
         "Given parameters, when I call getState and an error occured, then I expect an exception to be thrown",
         () async {
       // Given
-      when(rpcDataSource.getState(any, any))
+      when(rpcIdentityDataSource.getState(any, any))
           .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
       // When
@@ -460,7 +466,8 @@ void main() {
       expect(verify(stateIdentifierMapper.mapTo(captureAny)).captured.first,
           CommonMocks.identifier);
       var getStateCaptured =
-          verify(rpcDataSource.getState(captureAny, captureAny)).captured;
+          verify(rpcIdentityDataSource.getState(captureAny, captureAny))
+              .captured;
 
       expect(getStateCaptured[0], CommonMocks.id);
       expect(getStateCaptured[1], contract);
@@ -532,13 +539,15 @@ void main() {
       when(remoteIdentityDataSource.getNonRevocationProof(any, any, any))
           .thenAnswer((realInvocation) => Future.value(CommonMocks.aMap));
 
+      when(revStatusMapper.mapFrom(any)).thenReturn(IdentityMocks.revStatus);
+
       // When
       expect(
           await repository.getNonRevProof(
               identityState: CommonMocks.state,
               nonce: CommonMocks.nonce,
               baseUrl: CommonMocks.url),
-          CommonMocks.aMap);
+          IdentityMocks.revStatus);
 
       // Then
       var fetchCaptured = verify(remoteIdentityDataSource.getNonRevocationProof(
@@ -597,7 +606,7 @@ void main() {
           await repository.getDidIdentifier(
               blockchain: CommonMocks.blockchain,
               network: CommonMocks.network,
-              claimsRoot: CommonMocks.message,
+              claimsTreeRoot: CommonMocks.message,
               profileNonce: CommonMocks.genesisNonce),
           CommonMocks.did);
 
@@ -622,7 +631,7 @@ void main() {
           await repository.getDidIdentifier(
               blockchain: CommonMocks.blockchain,
               network: CommonMocks.network,
-              claimsRoot: CommonMocks.message,
+              claimsTreeRoot: CommonMocks.message,
               profileNonce: CommonMocks.nonce),
           CommonMocks.did);
 
@@ -653,7 +662,7 @@ void main() {
           repository.getDidIdentifier(
               blockchain: CommonMocks.blockchain,
               network: CommonMocks.network,
-              claimsRoot: CommonMocks.message,
+              claimsTreeRoot: CommonMocks.message,
               profileNonce: CommonMocks.nonce),
           throwsA(CommonMocks.exception));
 

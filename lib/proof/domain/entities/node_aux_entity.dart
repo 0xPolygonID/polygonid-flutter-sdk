@@ -8,6 +8,13 @@ class NodeAuxEntity {
   String toString() => "[NodeAuxEntity] {key: $key, value: $value}";
 
   @override
+  Map<String, dynamic> toJson() => {
+        'key': key,
+        'value': value,
+      }..removeWhere(
+          (dynamic key, dynamic value) => key == null || value == null);
+
+  @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is NodeAuxEntity &&

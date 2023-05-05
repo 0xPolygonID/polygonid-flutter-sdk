@@ -33,7 +33,7 @@ class GetDidIdentifierUseCase
         .then((genesisState) => _identityRepository.getDidIdentifier(
             blockchain: param.blockchain,
             network: param.network,
-            claimsRoot: genesisState.claimsTree.data,
+            claimsTreeRoot: genesisState.claimsTreeRoot,
             profileNonce: param.profileNonce))
         .then((did) {
       logger().i("[GetDidIdentifierUseCase] did: $did");

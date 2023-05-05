@@ -1,14 +1,27 @@
+import 'package:polygonid_flutter_sdk/common/mappers/mapper.dart';
 import 'package:polygonid_flutter_sdk/common/mappers/to_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/tree_state_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/hash_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 
-class TreeStateMapper extends ToMapper<Map<String, dynamic>, TreeStateEntity> {
+class TreeStateMapper extends Mapper<TreeStateDTO, TreeStateEntity> {
   @override
-  Map<String, dynamic> mapTo(TreeStateEntity to) {
-    return {
-      "state": to.hash,
-      "claimsRoot": to.claimsTree.data,
-      "revocationRoot": to.revocationTree.data,
-      "rootOfRoots": to.rootsTree.data
-    };
+  TreeStateEntity mapFrom(TreeStateDTO from) {
+    return TreeStateEntity(
+      state: from.state,
+      claimsTreeRoot: from.claimsTreeRoot,
+      revocationTreeRoot: from.revocationTreeRoot,
+      rootOfRoots: from.rootOfRoots,
+    );
+  }
+
+  @override
+  TreeStateDTO mapTo(TreeStateEntity to) {
+    return TreeStateDTO(
+      state: to.state,
+      claimsTreeRoot: to.claimsTreeRoot,
+      revocationTreeRoot: to.revocationTreeRoot,
+      rootOfRoots: to.rootOfRoots,
+    );
   }
 }

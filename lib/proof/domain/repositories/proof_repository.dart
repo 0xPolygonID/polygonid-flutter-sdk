@@ -4,6 +4,7 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
 
 import '../entities/circuit_data_entity.dart';
@@ -27,7 +28,7 @@ abstract class ProofRepository {
       ProofEntity? nonRevProof,
       GistProofEntity? gistProof,
       List<String>? authClaim,
-      Map<String, dynamic>? treeState,
+      TreeStateEntity? treeState,
       String? challenge,
       String? signature});
 

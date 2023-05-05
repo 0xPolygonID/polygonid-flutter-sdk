@@ -1,6 +1,6 @@
-import '../../../common/mappers/mapper.dart';
-import '../../domain/entities/node_aux_entity.dart';
-import '../dtos/node_aux_dto.dart';
+import 'package:polygonid_flutter_sdk/common/mappers/mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/node_aux_entity.dart';
 
 class NodeAuxMapper extends Mapper<NodeAuxDTO, NodeAuxEntity> {
   @override

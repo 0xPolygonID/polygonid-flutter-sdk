@@ -1,8 +1,8 @@
-import '../../../common/mappers/mapper.dart';
-import '../../../identity/data/mappers/hash_mapper.dart';
-import '../../domain/entities/proof_entity.dart';
-import '../dtos/proof_dto.dart';
-import 'node_aux_mapper.dart';
+import 'package:polygonid_flutter_sdk/common/mappers/mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/hash_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/mappers/node_aux_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/proof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
 
 class ProofMapper extends Mapper<ProofDTO, ProofEntity> {
   final HashMapper _hashMapper;
@@ -15,7 +15,7 @@ class ProofMapper extends Mapper<ProofDTO, ProofEntity> {
     return ProofEntity(
         existence: from.existence,
         siblings: from.siblings.map((dto) => _hashMapper.mapFrom(dto)).toList(),
-        nodeAux: from.nodeAux != null
+        node_aux: from.nodeAux != null
             ? _nodeAuxMapper.mapFrom(from.nodeAux!)
             : null);
   }
@@ -27,7 +27,7 @@ class ProofMapper extends Mapper<ProofDTO, ProofEntity> {
       siblings:
           from.siblings.map((entity) => _hashMapper.mapTo(entity)).toList(),
       nodeAux:
-          from.nodeAux != null ? _nodeAuxMapper.mapTo(from.nodeAux!) : null,
+          from.node_aux != null ? _nodeAuxMapper.mapTo(from.node_aux!) : null,
     );
   }
 }

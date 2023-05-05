@@ -10,6 +10,13 @@ class GistProofEntity {
   String toString() => "[GistProofEntity] {root: $root, proof: $proof}";
 
   @override
+  Map<String, dynamic> toJson() => {
+        'root': root,
+        'proof': proof.toJson(),
+      }..removeWhere(
+          (dynamic key, dynamic value) => key == null || value == null);
+
+  @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is GistProofEntity &&

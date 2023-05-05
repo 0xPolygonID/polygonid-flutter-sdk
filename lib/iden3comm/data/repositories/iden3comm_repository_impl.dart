@@ -19,18 +19,13 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_bod
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_inputs_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_response_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/gist_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
 import 'package:uuid/uuid.dart';
 
 class Iden3commRepositoryImpl extends Iden3commRepository {
@@ -41,8 +36,6 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       _libBabyJubJubDataSource; // TODO move bjj DS to common
   final AuthResponseMapper _authResponseMapper;
   final AuthInputsMapper _authInputsMapper;
-  final AuthProofMapper _authProofMapper;
-  final GistProofMapper _gistProofMapper;
   final QMapper _qMapper;
 
   Iden3commRepositoryImpl(
@@ -51,8 +44,6 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     this._libBabyJubJubDataSource,
     this._authResponseMapper,
     this._authInputsMapper,
-    this._authProofMapper,
-    this._gistProofMapper,
     this._qMapper,
   );
 
@@ -154,24 +145,24 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   }
 
   @override
-  Future<Uint8List> getAuthInputs(
-      {required String genesisDid,
-      required BigInt profileNonce,
-      required String challenge,
-      required List<String> authClaim,
-      required IdentityEntity identity,
-      required String signature,
-      required ProofEntity incProof,
-      required ProofEntity nonRevProof,
-      required GistProofEntity gistProof,
-      required Map<String, dynamic> treeState}) {
+  Future<Uint8List> getAuthInputs({
+    required String genesisDid,
+    required BigInt profileNonce,
+    required List<String> authClaim,
+    required Map<String, dynamic> incProof,
+    required Map<String, dynamic> nonRevProof,
+    required Map<String, dynamic> gistProof,
+    required Map<String, dynamic> treeState,
+    required String challenge,
+    required String signature,
+  }) {
     return Future.value(_libPolygonIdCoreIden3commDataSource.getAuthInputs(
             genesisDid: genesisDid,
             profileNonce: profileNonce,
             authClaim: authClaim,
-            incProof: _authProofMapper.mapTo(incProof),
-            nonRevProof: _authProofMapper.mapTo(nonRevProof),
-            gistProof: _gistProofMapper.mapTo(gistProof),
+            incProof: incProof,
+            nonRevProof: nonRevProof,
+            gistProof: gistProof,
             treeState: treeState,
             challenge: challenge,
             signature: signature))

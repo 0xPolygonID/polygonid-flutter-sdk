@@ -42,7 +42,7 @@ void main() {
     when(identityRepository.getDidIdentifier(
       blockchain: anyNamed('blockchain'),
       network: anyNamed('network'),
-      claimsRoot: anyNamed('claimsRoot'),
+      claimsTreeRoot: anyNamed('claimsTreeRoot'),
       profileNonce: anyNamed('profileNonce'),
     )).thenAnswer((realInvocation) => Future.value(CommonMocks.did));
   });
@@ -64,12 +64,12 @@ void main() {
       var authClaimCapture = verify(identityRepository.getDidIdentifier(
         blockchain: captureAnyNamed('blockchain'),
         network: captureAnyNamed('network'),
-        claimsRoot: captureAnyNamed('claimsRoot'),
+        claimsTreeRoot: captureAnyNamed('claimsTreeRoot'),
         profileNonce: captureAnyNamed('profileNonce'),
       )).captured;
       expect(authClaimCapture[0], CommonMocks.blockchain);
       expect(authClaimCapture[1], CommonMocks.network);
-      expect(authClaimCapture[2], IdentityMocks.treeState.claimsTree.data);
+      expect(authClaimCapture[2], IdentityMocks.treeState.claimsTreeRoot);
       expect(authClaimCapture[3], CommonMocks.genesisNonce);
     },
   );
@@ -96,7 +96,7 @@ void main() {
       verifyNever(identityRepository.getDidIdentifier(
         blockchain: captureAnyNamed('blockchain'),
         network: captureAnyNamed('network'),
-        claimsRoot: captureAnyNamed('claimsRoot'),
+        claimsTreeRoot: captureAnyNamed('claimsTreeRoot'),
         profileNonce: captureAnyNamed('profileNonce'),
       ));
     },

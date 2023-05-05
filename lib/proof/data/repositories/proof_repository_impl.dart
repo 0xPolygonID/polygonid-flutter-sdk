@@ -3,47 +3,36 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
+import 'package:polygonid_flutter_sdk/common/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
-import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
-import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
-import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_mapper.dart';
+import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/proof_request_filters_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_download_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/lib_pidcore_proof_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/local_proof_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/local_proof_files_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/mappers/auth_proof_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/mappers/circuit_type_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/mappers/gist_proof_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/mappers/jwz_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/mappers/jwz_proof_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/proof_circuit_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/prover_lib_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/rpc_proof_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/witness_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_dto.dart';
-import 'package:polygonid_flutter_sdk/proof/data/mappers/jwz_proof_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/witness_param.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
-
-import '../../../common/utils/uint8_list_utils.dart';
-import '../../../iden3comm/data/mappers/gist_proof_mapper.dart'
-    as iden3GistProofMapper;
-import '../../../identity/data/data_sources/remote_identity_data_source.dart';
-import '../../domain/entities/circuit_data_entity.dart';
-import '../../domain/entities/proof_entity.dart';
-import '../../domain/repositories/proof_repository.dart';
-import '../data_sources/lib_pidcore_proof_data_source.dart';
-import '../data_sources/local_proof_files_data_source.dart';
-import '../data_sources/proof_circuit_data_source.dart';
-import '../data_sources/prover_lib_data_source.dart';
-import '../data_sources/witness_data_source.dart';
-import '../dtos/gist_proof_dto.dart';
-import '../dtos/proof_dto.dart';
-import '../dtos/witness_param.dart';
-import '../mappers/circuit_type_mapper.dart';
-import '../mappers/gist_proof_mapper.dart';
-import '../mappers/jwz_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 
 class ProofRepositoryImpl extends ProofRepository {
   final WitnessDataSource _witnessDataSource;
@@ -51,20 +40,15 @@ class ProofRepositoryImpl extends ProofRepository {
   final LibPolygonIdCoreProofDataSource _libPolygonIdCoreProofDataSource;
   final LocalProofFilesDataSource _localProofFilesDataSource;
   final ProofCircuitDataSource _proofCircuitDataSource;
-  final RemoteIdentityDataSource _remoteIdentityDataSource;
-  final LocalContractFilesDataSource _localContractFilesDataSource;
   final CircuitsDownloadDataSource _circuitsDownloadDataSource;
-  final RPCDataSource _rpcDataSource;
   final CircuitTypeMapper _circuitTypeMapper;
   final JWZProofMapper _jwzProofMapper;
   final JWZMapper _jwzMapper;
   final AuthProofMapper _authProofMapper;
   final GistProofMapper _gistProofMapper;
-  final iden3GistProofMapper.GistProofMapper _iden3GistProofMapper;
-
-  // FIXME: those mappers shouldn't be used here as they are part of Credential
-  final ClaimMapper _claimMapper;
-  final RevocationStatusMapper _revocationStatusMapper;
+  final LocalProofDataSource _localProofDataSource;
+  final LocalContractFilesDataSource _localContractFilesDataSource;
+  final RPCProofDataSource _rpcProofDataSource;
 
   ProofRepositoryImpl(
     this._witnessDataSource,
@@ -72,18 +56,15 @@ class ProofRepositoryImpl extends ProofRepository {
     this._libPolygonIdCoreProofDataSource,
     this._localProofFilesDataSource,
     this._proofCircuitDataSource,
-    this._remoteIdentityDataSource,
-    this._localContractFilesDataSource,
     this._circuitsDownloadDataSource,
-    this._rpcDataSource,
+    this._localProofDataSource,
+    this._localContractFilesDataSource,
+    this._rpcProofDataSource,
     this._circuitTypeMapper,
     this._jwzProofMapper,
-    this._claimMapper,
-    this._revocationStatusMapper,
     this._jwzMapper,
     this._authProofMapper,
     this._gistProofMapper,
-    this._iden3GistProofMapper,
   );
 
   @override
@@ -106,13 +87,12 @@ class ProofRepositoryImpl extends ProofRepository {
       ProofEntity? nonRevProof,
       GistProofEntity? gistProof,
       List<String>? authClaim,
-      Map<String, dynamic>? treeState,
+      TreeStateEntity? treeState,
       String? challenge,
       String? signature}) async {
-    ClaimDTO credentialDto = _claimMapper.mapTo(claim);
     Map<String, dynamic>? gistProofMap;
     if (gistProof != null) {
-      gistProofMap = _iden3GistProofMapper.mapTo(gistProof);
+      gistProofMap = _gistProofMapper.mapTo(gistProof).toJson();
     }
     Map<String, dynamic>? incProofMap;
     if (incProof != null) {
@@ -133,10 +113,10 @@ class ProofRepositoryImpl extends ProofRepository {
           incProof: incProofMap,
           nonRevProof: nonRevProofMap,
           gistProof: gistProofMap,
-          treeState: treeState,
+          treeState: treeState?.toJson(),
           challenge: challenge,
           signature: signature,
-          credential: credentialDto.info,
+          credential: claim.info,
           request: request,
         )
         .catchError((error) => throw NullAtomicQueryInputsException(id));
@@ -207,10 +187,10 @@ class ProofRepositoryImpl extends ProofRepository {
   @override
   Future<GistProofEntity> getGistProof(
       {required String idAsInt, required String contractAddress}) async {
-    String gistProofSC = await _getGistProofSC(
-      identifier: idAsInt,
-      contractAddress: contractAddress,
-    );
+    String gistProofSC = await _localContractFilesDataSource
+        .loadStateContract(contractAddress)
+        .then((contract) => _rpcProofDataSource.getGistProof(idAsInt, contract))
+        .catchError((error) => throw FetchGistProofException(error));
 
     String gistProof =
         _libPolygonIdCoreProofDataSource.proofFromSC(gistProofSC);
@@ -224,31 +204,10 @@ class ProofRepositoryImpl extends ProofRepository {
       return '"${match.group(0)}"';
     });
 
-    var gistProofJson = jsonDecode(quotedString);
+    Map<String, dynamic> gistProofJson = jsonDecode(quotedString);
 
-    /// FIXME: repo don't create and manipulate DTO, that's the DS job
-    return _gistProofMapper.mapFrom(GistProofDTO(
-        root: gistProofJson["root"],
-        proof: ProofDTO(
-            existence:
-                gistProofJson["proof"]["existence"] == "true" ? true : false,
-            siblings: (gistProofJson["proof"]["siblings"] as List)
-                .map((hash) => HashDTO.fromBigInt(BigInt.parse(hash)))
-                .toList(),
-            nodeAux: gistProofJson["proof"]["node_aux"] != null
-                ? NodeAuxDTO(
-                    key: gistProofJson["proof"]["node_aux"]["key"],
-                    value: gistProofJson["proof"]["node_aux"]["value"])
-                : null)));
-  }
-
-  Future<String> _getGistProofSC(
-      {required String identifier, required String contractAddress}) {
-    return _localContractFilesDataSource
-        .loadStateContract(contractAddress)
-        .then((contract) => _rpcDataSource
-            .getGistProof(identifier, contract)
-            .catchError((error) => throw FetchGistProofException(error)));
+    return _gistProofMapper
+        .mapFrom(_localProofDataSource.getGistProof(gistProofJson));
   }
 
   ///

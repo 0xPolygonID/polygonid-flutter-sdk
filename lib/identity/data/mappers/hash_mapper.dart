@@ -1,21 +1,18 @@
 import 'package:polygonid_flutter_sdk/common/mappers/mapper.dart';
 
 import '../../../common/utils/uint8_list_utils.dart';
-import '../../domain/entities/hash_entity.dart';
 import '../dtos/hash_dto.dart';
 
-class HashMapper extends Mapper<HashDTO, HashEntity> {
+class HashMapper extends Mapper<HashDTO, String> {
   @override
-  HashEntity mapFrom(HashDTO from) {
-    return HashEntity(
-      data: Uint8ArrayUtils.bytesToBigInt(from.data).toString(),
-    );
+  String mapFrom(HashDTO from) {
+    return Uint8ArrayUtils.bytesToBigInt(from.data).toString();
   }
 
   @override
-  HashDTO mapTo(HashEntity to) {
+  HashDTO mapTo(String to) {
     return HashDTO(
-      data: Uint8ArrayUtils.bigIntToBytes(BigInt.parse(to.data)),
+      data: Uint8ArrayUtils.bigIntToBytes(BigInt.parse(to)),
     );
   }
 }

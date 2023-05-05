@@ -1,7 +1,7 @@
-import '../../../common/mappers/mapper.dart';
-import '../../domain/entities/gist_proof_entity.dart';
-import '../dtos/gist_proof_dto.dart';
-import 'proof_mapper.dart';
+import 'package:polygonid_flutter_sdk/common/mappers/mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/mappers/proof_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_proof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
 
 class GistProofMapper extends Mapper<GistProofDTO, GistProofEntity> {
   final ProofMapper _proofMapper;
