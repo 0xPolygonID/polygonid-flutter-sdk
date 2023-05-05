@@ -1,4 +1,4 @@
-group 'io.iden3.polygonid_flutter_sdk'
+group 'io.github.0xpolygonid.polygonid_flutter_sdk'
 version '1.0.0'
 
 buildscript {
@@ -25,6 +25,7 @@ rootProject.allprojects {
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion 33
@@ -45,7 +46,7 @@ android {
 
     defaultConfig {
         minSdkVersion 21
-        ndk{
+        ndk {
             // TODO: armeabi-v7a and x86 not supported yet
             abiFilters 'arm64-v8a', 'x86_64'  /*,'armeabi-v7a', 'x86',*/
         }
@@ -80,4 +81,97 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.a'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.annotation:annotation:1.6.0'
+}
+
+// Maven
+//publishing {
+//    publications {
+//        release(MavenPublication) {
+//            pom {
+//                name = 'PolygonID Flutter SDK'
+//                description = 'PolygonID Flutter SDK.'
+//                url = 'https://polygon.technology/polygon-id'
+//                licenses {
+//                    license {
+//                        name = 'GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0'
+//                        url = 'https://www.gnu.org/licenses/agpl-3.0.txt'
+//                    }
+//                }
+//                developers {
+//                    developer {
+//                        name = 'Flavien Norindr'
+//                        email = 'fnorindr@polygon.technology'
+//                    }
+//                }
+//                scm {
+//                    connection = 'scm:git@github.com:iden3/polygonid-flutter-sdk.git'
+//                    developerConnection = 'scm:git@github.com:iden3/polygonid-flutter-sdk.git'
+//                    url = 'https://github.com/iden3/polygonid-flutter-sdk/tree/main'
+//                }
+//            }
+//        }
+//    }
+//}
+
+import groovy.xml.XmlUtil
+
+task addToPom {
+    dependsOn 'generatePomFileForReleasePublication'
+    mustRunAfter 'generatePomFileForReleasePublication'
+
+    doLast {
+        def pomTask = tasks.getByName('generatePomFileForReleasePublication')
+        def pom = pomTask.pom
+        println "=========================================================================================================================================================================================================================================================================================================================================="
+        println pomTask.destination
+        println pomTask.actions
+        println pom.name
+        println pom.packaging
+        println pom.licenses
+        println "=========================================================================================================================================================================================================================================================================================================================================="
+
+        pom.name.value('PolygonID Flutter SDK')
+        pom.description.value('The SDK for PolygonID in Flutter.')
+        pom.url.value('https://polygon.technology/polygon-id')
+
+        pom.licenses {
+            license {
+                name = 'GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0'
+                url = 'https://www.gnu.org/licenses/agpl-3.0.txt'
+            }
+        }
+
+        pom.developers {
+            developer {
+                name = 'Flavien Norindr'
+                email = 'fnorindr@polygon.technology'
+            }
+        }
+
+        pom.scm {
+            connection = 'scm:git@github.com:iden3/polygonid-flutter-sdk.git'
+            developerConnection = 'scm:git@github.com:iden3/polygonid-flutter-sdk.git'
+            url = 'https://github.com/iden3/polygonid-flutter-sdk/tree/main'
+        }
+
+        println "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+        tasks
+        println "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+    }
+}
+
+//tasks.named('generatePomFileForReleasePublication') {
+//    finalizedBy 'addToPom'
+//}
+
+task listTasks {
+    dependsOn 'tasks'
+}
+
+tasks.named('publish') {
+    finalizedBy 'listTasks'
+}
+
+tasks.named('publish') {
+    finalizedBy 'addToPom'
 }
