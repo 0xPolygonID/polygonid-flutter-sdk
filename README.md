@@ -4,7 +4,7 @@
  
 # Polygon ID Flutter SDK
 
-[![pub package](https://img.shields.io/badge/pub-2.1.1-blueviolet)](https://pub.dev/packages/polygonid_flutter_sdk)
+[![pub package](https://img.shields.io/badge/pub-2.2.0-blueviolet)](https://pub.dev/packages/polygonid_flutter_sdk)
 [![build](https://github.com/iden3/polygonid-flutter-sdk/workflows/polygonid_flutter_sdk/badge.svg)](https://github.com/iden3/polygonid-flutter-sdk/actions?query=workflow%3Apolygonid_flutter_sdk)
 [![codecov](https://codecov.io/gh/iden3/polygonid-flutter-sdk/branch/develop/graph/badge.svg?token=0SI0XWGXKL)](https://codecov.io/gh/iden3/polygonid-flutter-sdk)
 [![license](https://img.shields.io/badge/License-agpl-blue.svg)](https://github.com/iden3/polygonid-flutter-sdk/blob/master/LICENSE)
@@ -45,7 +45,7 @@ The environment object is [EnvEntity](lib/common/domain/entities/env_entity.dart
   final String network; # The network of the blockchain (eg: mumbai)
   final String web3Url; # URL of the blockchain (eg: https://polygon-mumbai.infura.io/v3/)
   final String web3RdpUrl; # RDP URL (eg: wss://polygon-mumbai.infura.io/v3/)
-  final String web3ApiKey; # The API key of the web3 URL service (eg: a536514602ea4e22a2e9007b6e9dbc63)
+  final String web3ApiKey; # The API key of the web3 URL service (eg: YOUR-INFURA-API-KEY)
   final String idStateContract; # The ID state contract (eg: 0x134B1BE34911E39A8397ec6289782989729807a4)
   final String pushUrl; # The push notification URL (eg: https://push-staging.polygonid.com/api/v1)
 ```
