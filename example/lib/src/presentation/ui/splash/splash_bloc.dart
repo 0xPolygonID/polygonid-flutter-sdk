@@ -31,6 +31,7 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
     if (event.downloadInfo is DownloadInfoOnProgress) {
       DownloadInfoOnProgress downloadInfoOnProgress =
           event.downloadInfo as DownloadInfoOnProgress;
+      print("downloadInfoOnProgress: ${downloadInfoOnProgress.downloaded}");
       emit(
         SplashState.downloadProgress(
           downloaded: downloadInfoOnProgress.downloaded,

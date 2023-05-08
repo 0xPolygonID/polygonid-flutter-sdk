@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:archive/archive.dart';
+import 'package:dio/dio.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -65,6 +66,8 @@ abstract class NetworkModule {
   /// TODO: in the future we should change this client to something with more features
   /// like Dio: https://pub.dev/packages/dio
   Client get client => Client();
+
+  Dio get dio => Dio();
 
   Web3Client web3client(@factoryParam EnvEntity env) {
     return Web3Client(env.web3Url + env.web3ApiKey, client,

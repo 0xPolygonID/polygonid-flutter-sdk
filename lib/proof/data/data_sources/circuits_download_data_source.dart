@@ -5,6 +5,7 @@ import 'package:archive/archive.dart';
 import 'package:dio/dio.dart';
 
 import 'package:path_provider/path_provider.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/download_response_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
@@ -44,9 +45,11 @@ class CircuitsDownloadDataSource {
         deleteOnError: true,
         cancelToken: _cancelToken,
         onReceiveProgress: (received, total) {
-          if (total != -1) {
+          //logger().d("received: $received, total: $total");
+          if (total <= 0) {
             _controller.add(DownloadResponseDTO(
               progress: 0,
+              total: 0,
               errorOccurred: true,
               errorMessage: "Error occurred while downloading circuits",
             ));
@@ -56,6 +59,7 @@ class CircuitsDownloadDataSource {
           _controller.add(
             DownloadResponseDTO(
               progress: received,
+              total: total,
             ),
           );
         },
@@ -63,12 +67,14 @@ class CircuitsDownloadDataSource {
     } catch (e) {
       _controller.add(DownloadResponseDTO(
         progress: 0,
+        total: 0,
         errorOccurred: true,
         errorMessage: e.toString(),
       ));
     }
     _controller.add(DownloadResponseDTO(
       progress: 100,
+      total: 100,
       done: true,
     ));
     _controller.close();
@@ -133,6 +139,7 @@ class CircuitsDownloadDataSource {
   void cancelDownload() {
     _controller.add(DownloadResponseDTO(
       progress: 0,
+      total: 0,
       errorOccurred: true,
       errorMessage: 'Download cancelled by user',
     ));

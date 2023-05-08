@@ -270,22 +270,28 @@ class ProofRepositoryImpl extends ProofRepository {
 
     Stream<DownloadResponseDTO> downloadResponseStream =
         _circuitsDownloadDataSource.downloadStream;
-
-    await _circuitsDownloadDataSource.initStreamedResponseFromServer();
-
-    final int downloadSize = _circuitsDownloadDataSource.downloadSize;
+    /*downloadResponseStream.listen((event) {
+      logger().d("event: ${event.progress}");
+    });*/
 
     // We delete eventual temp zip file downloaded before
     _circuitsFilesDataSource.deleteFile(pathForZipFileTemp);
 
+    logger().d("before stream assignment");
     _circuitsDownloadInfoStream = downloadResponseStream.map(
       (downloadResponse) {
+        int progress = downloadResponse.progress;
+        int total = downloadResponse.total;
+
         if (downloadResponse.errorOccurred) {
+          logger().e("[Circuits error:] ${downloadResponse.errorMessage}");
           return DownloadInfo.onError(
             errorMessage: downloadResponse.errorMessage,
           );
         }
         if (downloadResponse.done) {
+          final int downloadSize = _circuitsDownloadDataSource.downloadSize;
+          logger().i("[Circuits success:] downloadSize -> $downloadSize");
           // we get the size of the temp zip file
           int zipFileSize = _circuitsFilesDataSource.zipFileSize(
               pathToFile: pathForZipFileTemp);
@@ -314,20 +320,26 @@ class ProofRepositoryImpl extends ProofRepository {
           );
         }
 
-        _circuitsFilesDataSource.writeZipFile(
+        /*_circuitsFilesDataSource.writeZipFile(
           pathToFile: pathForZipFileTemp,
           zipBytes: downloadResponse.newBytes,
-        );
+        );*/
 
         // size of the temp zip file
         int zipFileSize = _circuitsFilesDataSource.zipFileSize(
             pathToFile: pathForZipFileTemp);
+
         return DownloadInfo.onProgress(
-          contentLength: downloadSize,
-          downloaded: zipFileSize,
+          contentLength: total,
+          downloaded: progress,
         );
       },
     );
+
+    _circuitsDownloadInfoStream.listen((event) {});
+
+    _circuitsDownloadDataSource
+        .initStreamedResponseFromServer(pathForZipFileTemp);
   }
 
   ///
