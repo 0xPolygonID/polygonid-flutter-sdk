@@ -5,7 +5,6 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/splash_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/splash_state.dart';
-import 'package:polygonid_flutter_sdk_example/utils/custom_dimensions.dart';
 
 class SplashBloc extends Bloc<SplashEvent, SplashState> {
   SplashBloc() : super(SplashState.init()) {
@@ -19,7 +18,7 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
   Future<void> onFakeLoadingSplashEvent(
       FakeLoadingSplashEvent event, Emitter<SplashState> emit) async {
     Stream<DownloadInfo> stream =
-        await PolygonIdSdk.I.proof.initCircuitsDownloadAndGetInfoStream;
+        PolygonIdSdk.I.proof.initCircuitsDownloadAndGetInfoStream;
     _subscription = stream.listen((downloadInfo) {
       add(DownloadProgressSplashEvent(downloadInfo));
     });

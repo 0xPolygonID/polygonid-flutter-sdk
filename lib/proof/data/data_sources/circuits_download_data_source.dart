@@ -3,106 +3,76 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:archive/archive.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
 import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/download_response_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 class CircuitsDownloadDataSource {
-  ///
-  Future<bool> circuitsFilesExist() async {
-    String fileName = 'circuits.zip';
-    Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path;
-    var file = File('$path/$fileName');
-    return await file.exists();
-  }
+  StreamController<DownloadResponseEntity> _controller =
+      StreamController<DownloadResponseEntity>();
+
+  CircuitsDownloadDataSource(this._client);
+
+  Stream<DownloadResponseEntity> get downloadStream => _controller.stream;
+
+  int _downloadSize = 0;
+
+  final Client _client;
+
+  /// downloadSize
+  int get downloadSize => _downloadSize;
 
   ///
-  Future<String> getPathToCircuitZipFile() async {
-    Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path;
-    String fileName = 'circuits.zip';
-    return '$path/$fileName';
-  }
+  Future<void> initStreamedResponseFromServer() async {
+    http.Client client = http.Client();
 
-  ///
-  Future<String> getPathToCircuitZipFileTemp() async {
-    Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path;
-    String fileName = 'circuits_temp.zip';
-    return '$path/$fileName';
-  }
-
-  ///
-  Future<String> getPath() async {
-    Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path;
-    return path;
-  }
-
-  ///
-  Future<http.StreamedResponse> getStreamedResponseFromServer() async {
     const bucketUrl =
         "https://circuits.polygonid.me/circuits/v1.0.0/polygonid-keys.zip";
 
     var request = http.Request('GET', Uri.parse(bucketUrl));
 
-    final http.StreamedResponse response = await http.Client().send(request);
-    return response;
-  }
+    final http.StreamedResponse response = await client.send(request);
+    _downloadSize = response.contentLength ?? 0;
 
-  ///
-  Future<void> deleteFile(String pathToFile) async {
-    try {
-      var file = File(pathToFile);
-      await file.delete();
-    } catch (_) {
-      // file not found? no problem, we don't need it
-    }
-  }
-
-  ///
-  void renameFile(String pathTofile, String newPathToFile) {
-    var file = File(pathTofile);
-    file.renameSync(newPathToFile);
-  }
-
-  ///
-  void writeZipFile({
-    required String pathToFile,
-    required List<int> zipBytes,
-  }) {
-    var file = File(pathToFile);
-    file.writeAsBytesSync(
-      zipBytes,
-      mode: FileMode.append,
+    response.stream.listen(
+      (List<int> newBytes) {
+        _controller.add(
+          DownloadResponseEntity(
+            newBytes: newBytes,
+          ),
+        );
+      },
+      onDone: () {
+        _controller.add(DownloadResponseEntity(
+          newBytes: Uint8List(0),
+          done: true,
+        ));
+        _controller.close();
+        _client.close();
+      },
+      onError: (e) {
+        _controller.add(DownloadResponseEntity(
+          newBytes: Uint8List(0),
+          errorOccurred: true,
+          errorMessage: e.toString(),
+        ));
+        _controller.close();
+        _client.close();
+      },
+      cancelOnError: true,
     );
   }
 
   ///
-  int zipFileSize({required String pathToFile}) {
-    var file = File(pathToFile);
-    return file.lengthSync();
-  }
-
-  ///
-  Future<void> writeCircuitsFileFromZip({
-    required String path,
-    required String zipPath,
-  }) async {
-    var zipFile = File(zipPath);
-    Uint8List zipBytes = zipFile.readAsBytesSync();
-    final zipDecoder = getItSdk.get<ZipDecoder>(instanceName: 'zipDecoder');
-    var archive = zipDecoder.decodeBytes(zipBytes);
-
-    for (var file in archive) {
-      var filename = '$path/${file.name}';
-      if (file.isFile) {
-        var outFile = File(filename);
-        outFile = await outFile.create(recursive: true);
-        await outFile.writeAsBytes(file.content);
-      }
-    }
+  void cancelDownload() {
+    _controller.add(DownloadResponseEntity(
+      newBytes: Uint8List(0),
+      errorOccurred: true,
+      errorMessage: 'Download cancelled by user',
+    ));
+    _client.close();
   }
 }

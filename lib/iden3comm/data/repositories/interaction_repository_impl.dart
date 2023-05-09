@@ -1,6 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/push_notification_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/secure_storage_interaction_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/storage_interaction_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/interaction_id_filter_mapper.dart';
@@ -11,7 +10,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/interaction_ex
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart';
 
 class InteractionRepositoryImpl implements InteractionRepository {
-  //final ChannelPushNotificationDataSource _channelPushNotificationDataSource;
   final SecureStorageInteractionDataSource _secureStorageInteractionDataSource;
   final StorageInteractionDataSource _storageInteractionDataSource;
   final InteractionMapper _interactionMapper;
@@ -19,21 +17,12 @@ class InteractionRepositoryImpl implements InteractionRepository {
   final InteractionIdFilterMapper _interactionIdFilterMapper;
 
   InteractionRepositoryImpl(
-    //this._channelPushNotificationDataSource,
     this._secureStorageInteractionDataSource,
     this._storageInteractionDataSource,
     this._interactionMapper,
     this._filtersMapper,
     this._interactionIdFilterMapper,
   );
-
-  /*@override
-  Stream<NotificationEntity> get notifications =>
-      _channelPushNotificationDataSource.notifications
-              .map((event) => _interactionMapper.mapFrom(event))
-              .where((interaction) =>
-                  interaction.type != InteractionType.connection)
-          as Stream<NotificationEntity>;*/
 
   @override
   Future<InteractionBaseEntity> addInteraction(

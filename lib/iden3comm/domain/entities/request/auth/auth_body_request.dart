@@ -107,6 +107,15 @@ class AuthBodyRequest {
     );
   }
 
+  Map<String, dynamic> toJson() => {
+        'callbackUrl': callbackUrl,
+        'reason': reason,
+        'message': message,
+        'scope': scope?.map((item) => item.toJson()).toList(),
+        'url': url,
+        'credentials': credentials?.map((item) => item.toJson()).toList(),
+      };
+
   @override
   String toString() =>
       "[AuthBodyRequest] {callbackUrl: $callbackUrl, reason: $reason, message: $message, scope: $scope,url: $url,credentials: $credentials}";

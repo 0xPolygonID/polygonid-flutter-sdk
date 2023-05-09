@@ -155,12 +155,13 @@ abstract class PolygonIdSdkIdentity {
       required String network,
       BigInt? profileNonce});
 
-  Future<DidEntity> getDidEntity(String did);
+  /// Returns the [DidEntity] from a did
+  Future<DidEntity> getDidEntity({required String did});
 
   /// Returns the identity state from a did
   ///
   /// The [did] is the unique id of the identity
-  Future<String> getState(String did);
+  Future<String> getState({required String did});
 
   /// Sign a message through a identity's private key.
   ///
@@ -321,6 +322,7 @@ class Identity implements PolygonIdSdkIdentity {
         param: SignMessageParam(privateKey, message));
   }
 
+  @override
   Future<String> getDidIdentifier({
     required String privateKey,
     required String blockchain,
@@ -335,12 +337,13 @@ class Identity implements PolygonIdSdkIdentity {
             profileNonce: profileNonce ?? BigInt.zero));
   }
 
-  Future<DidEntity> getDidEntity(String did) {
+  @override
+  Future<DidEntity> getDidEntity({required String did}) {
     return _getDidUseCase.execute(param: did);
   }
 
   @override
-  Future<String> getState(String did) {
+  Future<String> getState({required String did}) {
     return _fetchIdentityStateUseCase.execute(param: did);
   }
 
