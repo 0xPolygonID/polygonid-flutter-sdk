@@ -78,4 +78,8 @@ class PolygonIdSdk {
         .getAsync<GetEnvUseCase>()
         .then((instance) => instance.execute());
   }
+
+  void switchLog({required bool enable}) {
+    Domain.logEnabled = enable;
+  }
 }

@@ -45,7 +45,7 @@ final getItSdk = GetIt.asNewInstance();
 @InjectableInit(
   initializerName: r'$initSDKGetIt',
 )
-configureInjection() async => await $initSDKGetIt(getItSdk);
+configureInjection() => $initSDKGetIt(getItSdk);
 
 /// Logger
 @module

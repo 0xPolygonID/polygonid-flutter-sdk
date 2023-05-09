@@ -34,7 +34,9 @@ class NoLogger extends PolygonIdSdkLogger {
 }
 
 class Domain {
+  static bool logEnabled = false;
   static PolygonIdSdkLogger? logger;
 }
 
-PolygonIdSdkLogger logger() => Domain.logger ?? NoLogger();
+PolygonIdSdkLogger logger() =>
+    Domain.logEnabled ? Domain.logger ?? NoLogger() : NoLogger();
