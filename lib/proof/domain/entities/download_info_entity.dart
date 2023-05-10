@@ -1,30 +1,46 @@
-class DownloadInfo {
-  final bool completed;
+abstract class DownloadInfo {
+  //TODO refactor to sealed class as soon as we update to dart 3
+  const DownloadInfo._();
+
+  factory DownloadInfo.onDone({
+    required int contentLength,
+    required int downloaded,
+  }) = DownloadInfoOnDone;
+
+  factory DownloadInfo.onError({
+    required String errorMessage,
+  }) = DownloadInfoOnError;
+
+  factory DownloadInfo.onProgress({
+    required int contentLength,
+    required int downloaded,
+  }) = DownloadInfoOnProgress;
+}
+
+class DownloadInfoOnDone extends DownloadInfo {
   final int contentLength;
   final int downloaded;
-  final bool errorOccurred;
-  final String errorMessage;
 
-  DownloadInfo({
+  const DownloadInfoOnDone({
     required this.contentLength,
     required this.downloaded,
-    this.completed = false,
-    this.errorOccurred = false,
-    this.errorMessage = '',
-  });
+  }) : super._();
+}
 
-  factory DownloadInfo.fromJson(Map<String, dynamic> json) {
-    return DownloadInfo(
-      contentLength: json['contentLength'],
-      downloaded: json['downloaded'],
-      completed: json['completed'],
-    );
-  }
+class DownloadInfoOnError extends DownloadInfo {
+  final String errorMessage;
 
-  @override
-  Map<String, dynamic> toJson() => {
-        'contentLength': contentLength,
-        'downloaded': downloaded,
-        'completed': completed,
-      };
+  const DownloadInfoOnError({
+    required this.errorMessage,
+  }) : super._();
+}
+
+class DownloadInfoOnProgress extends DownloadInfo {
+  final int contentLength;
+  final int downloaded;
+
+  const DownloadInfoOnProgress({
+    required this.contentLength,
+    required this.downloaded,
+  }) : super._();
 }

@@ -2,44 +2,41 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/gist_proof_mapper.dart'
+    as iden3GistProofMapper;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_download_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/lib_pidcore_proof_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/proof_circuit_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/prover_lib_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/witness_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_proof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/proof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/witness_param.dart';
+import 'package:polygonid_flutter_sdk/proof/data/mappers/circuit_type_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/data/mappers/gist_proof_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/data/mappers/jwz_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/jwz_proof_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/download_response_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
-
-import '../../../common/utils/uint8_list_utils.dart';
-import '../../../iden3comm/data/mappers/gist_proof_mapper.dart'
-    as iden3GistProofMapper;
-import '../../../identity/data/data_sources/remote_identity_data_source.dart';
-import '../../domain/entities/circuit_data_entity.dart';
-import '../../domain/entities/proof_entity.dart';
-import '../../domain/repositories/proof_repository.dart';
-import '../data_sources/lib_pidcore_proof_data_source.dart';
-import '../data_sources/proof_circuit_data_source.dart';
-import '../data_sources/prover_lib_data_source.dart';
-import '../data_sources/witness_data_source.dart';
-import '../dtos/gist_proof_dto.dart';
-import '../dtos/proof_dto.dart';
-import '../dtos/witness_param.dart';
-import '../mappers/circuit_type_mapper.dart';
-import '../mappers/gist_proof_mapper.dart';
-import '../mappers/jwz_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 
 class ProofRepositoryImpl extends ProofRepository {
   final WitnessDataSource _witnessDataSource;
@@ -247,106 +244,71 @@ class ProofRepositoryImpl extends ProofRepository {
             .catchError((error) => throw FetchGistProofException(error)));
   }
 
-  ///
-  StreamController<DownloadInfo> _downloadInfoController =
-      StreamController.broadcast();
-
-  ///
   @override
-  Stream<DownloadInfo> get circuitsDownloadInfoStream =>
-      _downloadInfoController.stream;
-
-  ///
-  @override
-  Future<void> initCircuitsDownloadFromServer() async {
-    bool alreadyDownloaded = await circuitsFilesExist();
-    if (alreadyDownloaded) {
-      _downloadInfoController.add(
-        DownloadInfo(
-          downloaded: 0,
-          contentLength: 0,
-          completed: true,
-        ),
-      );
-      return;
-    }
-
+  Stream<DownloadInfo> get circuitsDownloadInfoStream async* {
     String pathForZipFileTemp =
         await _circuitsFilesDataSource.getPathToCircuitZipFileTemp();
     String pathForZipFile =
         await _circuitsFilesDataSource.getPathToCircuitZipFile();
     String pathForCircuits = await _circuitsFilesDataSource.getPath();
 
-    Stream<DownloadResponseEntity> downloadResponseStream =
-        _circuitsDownloadDataSource.downloadStream;
+    await for (final downloadResponse
+        in _circuitsDownloadDataSource.downloadStream) {
+      int progress = downloadResponse.progress;
+      int total = downloadResponse.total;
 
-    await _circuitsDownloadDataSource.initStreamedResponseFromServer();
-
-    final int downloadSize = _circuitsDownloadDataSource.downloadSize;
-
-    // We delete eventual temp zip file downloaded before
-    _circuitsFilesDataSource.deleteFile(pathForZipFileTemp);
-
-    _downloadInfoController.addStream(
-      downloadResponseStream.map((downloadResponse) {
-        if (downloadResponse.errorOccurred) {
-          return DownloadInfo(
-            contentLength: 0,
-            downloaded: 0,
-            completed: false,
-            errorOccurred: true,
-            errorMessage: downloadResponse.errorMessage,
-          );
-        }
-        if (downloadResponse.done) {
-          // we get the size of the temp zip file
-          int zipFileSize = _circuitsFilesDataSource.zipFileSize(
-              pathToFile: pathForZipFileTemp);
-          logger().i(
-              "[Circuits success:] downloadSize -> $downloadSize / zipFileSize -> $zipFileSize");
-
-          if (downloadSize != 0 && zipFileSize != downloadSize) {
-            try {
-              // if error we delete the temp file
-              _circuitsFilesDataSource.deleteFile(pathForZipFileTemp);
-            } catch (_) {}
-
-            return DownloadInfo(
-              contentLength: downloadSize,
-              downloaded: zipFileSize,
-              completed: false,
-              errorOccurred: true,
-              errorMessage: "Downloaded files incorrect",
-            );
-          }
-
-          _completeWritingFile(
-            pathForCircuits: pathForCircuits,
-            pathForZipFile: pathForZipFile,
-            pathForZipFileTemp: pathForZipFileTemp,
-          );
-
-          return DownloadInfo(
-            contentLength: downloadSize,
-            downloaded: zipFileSize,
-            completed: true,
-          );
-        }
-
-        _circuitsFilesDataSource.writeZipFile(
-          pathToFile: pathForZipFileTemp,
-          zipBytes: downloadResponse.newBytes,
+      if (downloadResponse.errorOccurred) {
+        yield DownloadInfo.onError(
+          errorMessage: downloadResponse.errorMessage,
         );
+      }
 
-        // size of the temp zip file
+      if (downloadResponse.done) {
+        final int downloadSize = _circuitsDownloadDataSource.downloadSize;
+
+        // we get the size of the temp zip file
         int zipFileSize = _circuitsFilesDataSource.zipFileSize(
             pathToFile: pathForZipFileTemp);
-        return DownloadInfo(
+
+        if (downloadSize != 0 && zipFileSize != downloadSize) {
+          try {
+            // if error we delete the temp file
+            _circuitsFilesDataSource.deleteFile(pathForZipFileTemp);
+          } catch (_) {}
+
+          yield DownloadInfo.onError(
+              errorMessage: "Downloaded files incorrect");
+        }
+
+        await _completeWritingFile(
+          pathForCircuits: pathForCircuits,
+          pathForZipFile: pathForZipFile,
+          pathForZipFileTemp: pathForZipFileTemp,
+        );
+
+        yield DownloadInfo.onDone(
           contentLength: downloadSize,
           downloaded: zipFileSize,
         );
-      }),
-    );
+      }
+
+      yield DownloadInfo.onProgress(
+        contentLength: total,
+        downloaded: progress,
+      );
+    }
+  }
+
+  ///
+  @override
+  Future<void> initCircuitsDownloadFromServer() {
+    return _circuitsFilesDataSource.getPathToCircuitZipFileTemp().then(
+        (pathForZipFileTemp) =>
+            // We delete eventual temp zip file downloaded before
+            _circuitsFilesDataSource.deleteFile(pathForZipFileTemp).then((_) =>
+                // Init download
+                _circuitsDownloadDataSource
+                    .initStreamedResponseFromServer(pathForZipFileTemp)));
   }
 
   ///
