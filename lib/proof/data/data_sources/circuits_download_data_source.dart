@@ -1,15 +1,8 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:typed_data';
-import 'package:archive/archive.dart';
+
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
-
-import 'package:path_provider/path_provider.dart';
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/download_response_dto.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
-import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 @lazySingleton
 class CircuitsDownloadDataSource {
@@ -52,7 +45,7 @@ class CircuitsDownloadDataSource {
     }
 
     try {
-      Response response = await _client.download(
+      await _client.download(
         bucketUrl,
         downloadPath,
         deleteOnError: true,

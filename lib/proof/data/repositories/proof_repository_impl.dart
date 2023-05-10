@@ -2,48 +2,41 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:http/http.dart' as http;
-import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/proof_request_filters_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_download_data_source.dart';
-import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_data_source.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/download_response_dto.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_dto.dart';
-import 'package:polygonid_flutter_sdk/proof/data/mappers/jwz_proof_mapper.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
-
-import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/gist_proof_mapper.dart'
     as iden3GistProofMapper;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_download_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/lib_pidcore_proof_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/proof_circuit_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/prover_lib_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/witness_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_proof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/proof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/witness_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/circuit_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/gist_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/jwz_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/data/mappers/jwz_proof_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 
 class ProofRepositoryImpl extends ProofRepository {
   final WitnessDataSource _witnessDataSource;
@@ -65,8 +58,6 @@ class ProofRepositoryImpl extends ProofRepository {
   // FIXME: those mappers shouldn't be used here as they are part of Credential
   final ClaimMapper _claimMapper;
   final RevocationStatusMapper _revocationStatusMapper;
-
-  bool _downloadCompleted = false;
 
   ProofRepositoryImpl(
     this._witnessDataSource,
@@ -253,80 +244,71 @@ class ProofRepositoryImpl extends ProofRepository {
             .catchError((error) => throw FetchGistProofException(error)));
   }
 
-  ///
-  StreamController<DownloadInfo> _circuitsDownloadInfoStreamController =
-      StreamController<DownloadInfo>.broadcast();
-
-  ///
   @override
-  Stream<DownloadInfo> get circuitsDownloadInfoStream =>
-      _circuitsDownloadInfoStreamController.stream;
-
-  ///
-  @override
-  Future<void> initCircuitsDownloadFromServer() async {
+  Stream<DownloadInfo> get circuitsDownloadInfoStream async* {
     String pathForZipFileTemp =
         await _circuitsFilesDataSource.getPathToCircuitZipFileTemp();
     String pathForZipFile =
         await _circuitsFilesDataSource.getPathToCircuitZipFile();
     String pathForCircuits = await _circuitsFilesDataSource.getPath();
 
-    // We delete eventual temp zip file downloaded before
-    _circuitsFilesDataSource.deleteFile(pathForZipFileTemp);
+    await for (final downloadResponse
+        in _circuitsDownloadDataSource.downloadStream) {
+      int progress = downloadResponse.progress;
+      int total = downloadResponse.total;
 
-    _circuitsDownloadDataSource.downloadStream.listen(
-      (downloadResponse) {
-        int progress = downloadResponse.progress;
-        int total = downloadResponse.total;
+      if (downloadResponse.errorOccurred) {
+        yield DownloadInfo.onError(
+          errorMessage: downloadResponse.errorMessage,
+        );
+      }
 
-        if (downloadResponse.errorOccurred) {
-          _circuitsDownloadInfoStreamController.add(DownloadInfo.onError(
-            errorMessage: downloadResponse.errorMessage,
-          ));
-        }
-        if (downloadResponse.done && !_downloadCompleted) {
-          _downloadCompleted = true;
-          final int downloadSize = _circuitsDownloadDataSource.downloadSize;
-          // we get the size of the temp zip file
+      if (downloadResponse.done) {
+        final int downloadSize = _circuitsDownloadDataSource.downloadSize;
 
-          int zipFileSize = _circuitsFilesDataSource.zipFileSize(
-              pathToFile: pathForZipFileTemp);
+        // we get the size of the temp zip file
+        int zipFileSize = _circuitsFilesDataSource.zipFileSize(
+            pathToFile: pathForZipFileTemp);
 
-          if (downloadSize != 0 && zipFileSize != downloadSize) {
-            try {
-              // if error we delete the temp file
-              _circuitsFilesDataSource.deleteFile(pathForZipFileTemp);
-            } catch (_) {}
+        if (downloadSize != 0 && zipFileSize != downloadSize) {
+          try {
+            // if error we delete the temp file
+            _circuitsFilesDataSource.deleteFile(pathForZipFileTemp);
+          } catch (_) {}
 
-            _circuitsDownloadInfoStreamController.add(DownloadInfo.onError(
-                errorMessage: "Downloaded files incorrect"));
-            return;
-          }
-
-          _completeWritingFile(
-            pathForCircuits: pathForCircuits,
-            pathForZipFile: pathForZipFile,
-            pathForZipFileTemp: pathForZipFileTemp,
-          );
-
-          _circuitsDownloadInfoStreamController.add(DownloadInfo.onDone(
-            contentLength: downloadSize,
-            downloaded: zipFileSize,
-          ));
+          yield DownloadInfo.onError(
+              errorMessage: "Downloaded files incorrect");
         }
 
-        _circuitsDownloadInfoStreamController.add(DownloadInfo.onProgress(
-          contentLength: total,
-          downloaded: progress,
-        ));
-      },
-      onDone: () {
-        _circuitsDownloadInfoStreamController.close();
-      },
-    );
+        await _completeWritingFile(
+          pathForCircuits: pathForCircuits,
+          pathForZipFile: pathForZipFile,
+          pathForZipFileTemp: pathForZipFileTemp,
+        );
 
-    _circuitsDownloadDataSource
-        .initStreamedResponseFromServer(pathForZipFileTemp);
+        yield DownloadInfo.onDone(
+          contentLength: downloadSize,
+          downloaded: zipFileSize,
+        );
+      }
+
+      yield DownloadInfo.onProgress(
+        contentLength: total,
+        downloaded: progress,
+      );
+    }
+  }
+
+  ///
+  @override
+  Future<void> initCircuitsDownloadFromServer() {
+    return _circuitsFilesDataSource.getPathToCircuitZipFileTemp().then(
+        (pathForZipFileTemp) =>
+            // We delete eventual temp zip file downloaded before
+            _circuitsFilesDataSource.deleteFile(pathForZipFileTemp).then((_) =>
+                // Init download
+                _circuitsDownloadDataSource
+                    .initStreamedResponseFromServer(pathForZipFileTemp)));
   }
 
   ///
