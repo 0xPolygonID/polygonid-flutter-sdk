@@ -440,7 +440,7 @@ _i1.GetIt $initSDKGetIt(
         get<_i27.HashMapper>(),
         get<_i38.NodeAuxMapper>(),
       ));
-  gh.factory<_i78.CircuitsDownloadDataSource>(
+  gh.lazySingleton<_i78.CircuitsDownloadDataSource>(
       () => _i78.CircuitsDownloadDataSource(get<_i15.Dio>()));
   gh.factoryAsync<_i79.CircuitsFilesDataSource>(() async =>
       _i79.CircuitsFilesDataSource(await get.getAsync<_i16.Directory>()));

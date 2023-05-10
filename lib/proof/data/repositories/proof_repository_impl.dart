@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
@@ -67,7 +66,7 @@ class ProofRepositoryImpl extends ProofRepository {
   final ClaimMapper _claimMapper;
   final RevocationStatusMapper _revocationStatusMapper;
 
-  Stream<DownloadInfo> _circuitsDownloadInfoStream = const Stream.empty();
+  bool _downloadCompleted = false;
 
   ProofRepositoryImpl(
     this._witnessDataSource,
@@ -255,9 +254,13 @@ class ProofRepositoryImpl extends ProofRepository {
   }
 
   ///
+  StreamController<DownloadInfo> _circuitsDownloadInfoStreamController =
+      StreamController<DownloadInfo>.broadcast();
+
+  ///
   @override
   Stream<DownloadInfo> get circuitsDownloadInfoStream =>
-      _circuitsDownloadInfoStream;
+      _circuitsDownloadInfoStreamController.stream;
 
   ///
   @override
@@ -268,35 +271,26 @@ class ProofRepositoryImpl extends ProofRepository {
         await _circuitsFilesDataSource.getPathToCircuitZipFile();
     String pathForCircuits = await _circuitsFilesDataSource.getPath();
 
-    Stream<DownloadResponseDTO> downloadResponseStream =
-        _circuitsDownloadDataSource.downloadStream;
-    /*downloadResponseStream.listen((event) {
-      logger().d("event: ${event.progress}");
-    });*/
-
     // We delete eventual temp zip file downloaded before
     _circuitsFilesDataSource.deleteFile(pathForZipFileTemp);
 
-    logger().d("before stream assignment");
-    _circuitsDownloadInfoStream = downloadResponseStream.map(
+    _circuitsDownloadDataSource.downloadStream.listen(
       (downloadResponse) {
         int progress = downloadResponse.progress;
         int total = downloadResponse.total;
 
         if (downloadResponse.errorOccurred) {
-          logger().e("[Circuits error:] ${downloadResponse.errorMessage}");
-          return DownloadInfo.onError(
+          _circuitsDownloadInfoStreamController.add(DownloadInfo.onError(
             errorMessage: downloadResponse.errorMessage,
-          );
+          ));
         }
-        if (downloadResponse.done) {
+        if (downloadResponse.done && !_downloadCompleted) {
+          _downloadCompleted = true;
           final int downloadSize = _circuitsDownloadDataSource.downloadSize;
-          logger().i("[Circuits success:] downloadSize -> $downloadSize");
           // we get the size of the temp zip file
+
           int zipFileSize = _circuitsFilesDataSource.zipFileSize(
               pathToFile: pathForZipFileTemp);
-          logger().i(
-              "[Circuits success:] downloadSize -> $downloadSize / zipFileSize -> $zipFileSize");
 
           if (downloadSize != 0 && zipFileSize != downloadSize) {
             try {
@@ -304,8 +298,9 @@ class ProofRepositoryImpl extends ProofRepository {
               _circuitsFilesDataSource.deleteFile(pathForZipFileTemp);
             } catch (_) {}
 
-            return DownloadInfo.onError(
-                errorMessage: "Downloaded files incorrect");
+            _circuitsDownloadInfoStreamController.add(DownloadInfo.onError(
+                errorMessage: "Downloaded files incorrect"));
+            return;
           }
 
           _completeWritingFile(
@@ -314,29 +309,21 @@ class ProofRepositoryImpl extends ProofRepository {
             pathForZipFileTemp: pathForZipFileTemp,
           );
 
-          return DownloadInfo.onDone(
+          _circuitsDownloadInfoStreamController.add(DownloadInfo.onDone(
             contentLength: downloadSize,
             downloaded: zipFileSize,
-          );
+          ));
         }
 
-        /*_circuitsFilesDataSource.writeZipFile(
-          pathToFile: pathForZipFileTemp,
-          zipBytes: downloadResponse.newBytes,
-        );*/
-
-        // size of the temp zip file
-        int zipFileSize = _circuitsFilesDataSource.zipFileSize(
-            pathToFile: pathForZipFileTemp);
-
-        return DownloadInfo.onProgress(
+        _circuitsDownloadInfoStreamController.add(DownloadInfo.onProgress(
           contentLength: total,
           downloaded: progress,
-        );
+        ));
+      },
+      onDone: () {
+        _circuitsDownloadInfoStreamController.close();
       },
     );
-
-    _circuitsDownloadInfoStream.listen((event) {});
 
     _circuitsDownloadDataSource
         .initStreamedResponseFromServer(pathForZipFileTemp);

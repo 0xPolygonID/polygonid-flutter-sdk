@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
@@ -12,16 +15,24 @@ class DownloadCircuitsUseCase extends StreamUseCase<void, DownloadInfo> {
 
   @override
   Stream<DownloadInfo> execute({void param}) {
-    Stream<DownloadInfo> stream = _proofRepository.circuitsDownloadInfoStream;
+    StreamController<DownloadInfo> streamController =
+        StreamController<DownloadInfo>.broadcast();
+
     _proofRepository.circuitsFilesExist().then((exist) {
       if (exist) {
-        stream = Stream.fromIterable(
-            [DownloadInfo.onDone(contentLength: 0, downloaded: 0)]);
+        streamController
+            .add(DownloadInfo.onDone(contentLength: 0, downloaded: 0));
+        streamController.close();
       } else {
+        _proofRepository.circuitsDownloadInfoStream.listen((event) {
+          streamController.add(event);
+        }).onDone(() {
+          streamController.close();
+        });
         _proofRepository.initCircuitsDownloadFromServer();
       }
     });
 
-    return stream;
+    return streamController.stream;
   }
 }

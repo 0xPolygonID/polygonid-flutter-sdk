@@ -14,11 +14,7 @@ import 'package:polygonid_flutter_sdk_example/utils/custom_text_styles.dart';
 import 'package:polygonid_flutter_sdk_example/utils/image_resources.dart';
 
 class SplashScreen extends StatefulWidget {
-  final SplashBloc _bloc;
-
-  SplashScreen({Key? key})
-      : _bloc = getIt<SplashBloc>(),
-        super(key: key);
+  const SplashScreen({Key? key}) : super(key: key);
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -26,11 +22,12 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   StreamSubscription? _changeStateStreamSubscription;
+  SplashBloc _bloc = getIt<SplashBloc>();
 
   @override
   void initState() {
     super.initState();
-    _initFakeLoading();
+    _startDownload();
   }
 
   @override
@@ -50,7 +47,7 @@ class _SplashScreenState extends State<SplashScreen> {
   ///
   Widget _buildBody() {
     return BlocListener(
-      bloc: widget._bloc,
+      bloc: _bloc,
       listener: (BuildContext context, SplashState state) {
         if (state is WaitingTimeEndedSplashState) _handleWaitingTimeEnded();
       },
@@ -72,7 +69,7 @@ class _SplashScreenState extends State<SplashScreen> {
   ///
   Widget _buildDownloadProgress() {
     return BlocBuilder(
-      bloc: widget._bloc,
+      bloc: _bloc,
       builder: (BuildContext context, SplashState state) {
         if (state is DownloadProgressSplashState) {
           // return percentage
@@ -86,7 +83,7 @@ class _SplashScreenState extends State<SplashScreen> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
-                  widget._bloc.add(const SplashEvent.cancelDownloadEvent());
+                  _bloc.add(const SplashEvent.cancelDownloadEvent());
                 },
                 style: CustomButtonStyle.primaryButtonStyle,
                 child: const FittedBox(
@@ -107,14 +104,15 @@ class _SplashScreenState extends State<SplashScreen> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
-                  widget._bloc.add(const SplashEvent.startDownload());
+                  _bloc.add(const SplashEvent.startDownload());
                 },
                 style: CustomButtonStyle.outlinedPrimaryButtonStyle,
-                child: const FittedBox(
+                child: FittedBox(
                   child: Text(
                     "Retry",
                     textAlign: TextAlign.center,
-                    style: CustomTextStyles.primaryButtonTextStyle,
+                    style: CustomTextStyles.primaryButtonTextStyle
+                        .copyWith(color: CustomColors.primaryButton),
                   ),
                 ),
               ),
@@ -132,8 +130,8 @@ class _SplashScreenState extends State<SplashScreen> {
     Navigator.of(context).pushReplacementNamed(Routes.homePath);
   }
 
-  /// Simulating a data loading, useful for any purpose
-  void _initFakeLoading() {
-    widget._bloc.add(const SplashEvent.startDownload());
+  ///
+  void _startDownload() {
+    _bloc.add(const SplashEvent.startDownload());
   }
 }

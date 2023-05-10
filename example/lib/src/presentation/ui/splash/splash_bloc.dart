@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/splash_event.dart';
@@ -31,7 +32,6 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
     if (event.downloadInfo is DownloadInfoOnProgress) {
       DownloadInfoOnProgress downloadInfoOnProgress =
           event.downloadInfo as DownloadInfoOnProgress;
-      print("downloadInfoOnProgress: ${downloadInfoOnProgress.downloaded}");
       emit(
         SplashState.downloadProgress(
           downloaded: downloadInfoOnProgress.downloaded,
@@ -55,7 +55,7 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
     Emitter<SplashState> emit,
   ) async {
     PolygonIdSdk.I.proof.cancelDownloadCircuits();
-    _subscription?.cancel();
+
     emit(SplashState.error(errorMessage: "Download cancelled"));
   }
 }
