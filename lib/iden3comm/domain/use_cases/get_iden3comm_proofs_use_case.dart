@@ -80,11 +80,9 @@ class GetIden3commProofsUseCase
                     genesisDid: param.genesisDid,
                     profileNonce: param.profileNonce,
                     privateKey: param.privateKey))
-            .then((claims) {
-          ClaimEntity claimForRequest = claims.firstWhere(
-              (element) => element.type == request.scope.query.type);
-          return claimForRequest;
-        }).then((credential) async {
+            .then((claims) => claims.firstWhere(
+                (element) => element.type == request.scope.query.type))
+            .then((credential) async {
           String circuitId = request.scope.circuitId;
           CircuitDataEntity circuitData =
               await _proofRepository.loadCircuitFiles(circuitId);
