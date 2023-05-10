@@ -17,7 +17,7 @@ analyzer:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^0.13.5
+  http: ^0.13.6
   ffi: ^2.0.1
   hex: ^0.2.0
   web3dart: 2.3.5
