@@ -27,34 +27,32 @@ class CircuitsFilesDataSource {
   }
 
   ///
-  Future<bool> circuitsFilesExist() async {
+  Future<bool> circuitsFilesExist() {
     String fileName = 'circuits.zip';
     String path = directory.path;
     var file = File('$path/$fileName');
-    return await file.exists();
+
+    return file.exists();
   }
 
-  ///
   Future<String> getPathToCircuitZipFile() async {
     String path = directory.path;
     String fileName = 'circuits.zip';
+
     return '$path/$fileName';
   }
 
-  ///
   Future<String> getPathToCircuitZipFileTemp() async {
     String path = directory.path;
     String fileName = 'circuits_temp.zip';
+
     return '$path/$fileName';
   }
 
-  ///
   Future<String> getPath() async {
-    String path = directory.path;
-    return path;
+    return Future.value(directory.path);
   }
 
-  ///
   Future<void> deleteFile(String pathToFile) async {
     try {
       var file = File(pathToFile);
@@ -64,13 +62,11 @@ class CircuitsFilesDataSource {
     }
   }
 
-  ///
   void renameFile(String pathTofile, String newPathToFile) {
     var file = File(pathTofile);
     file.renameSync(newPathToFile);
   }
 
-  ///
   void writeZipFile({
     required String pathToFile,
     required List<int> zipBytes,
@@ -82,13 +78,11 @@ class CircuitsFilesDataSource {
     );
   }
 
-  ///
   int zipFileSize({required String pathToFile}) {
     var file = File(pathToFile);
     return file.lengthSync();
   }
 
-  ///
   Future<void> writeCircuitsFileFromZip({
     required String path,
     required String zipPath,

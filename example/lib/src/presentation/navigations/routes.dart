@@ -1,10 +1,10 @@
 import 'package:flutter/widgets.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/widgets/auth.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/backup_identity/widgets/backup_identity.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/check_identity_validity/widgets/check_identity_validity.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claim_detail/widgets/claim_detail.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/models/claim_model.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/widgets/claims.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/widgets/auth.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/widgets/home.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/qrcode_scanner/widgets/qrcode_scanner.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/restore_identity/widgets/restore_identity.dart';
@@ -44,7 +44,7 @@ class Routes {
 
   ///
   static WidgetBuilder _splashRoute() {
-    return (BuildContext context) => SplashScreen();
+    return (BuildContext context) => const SplashScreen();
   }
 
   ///
