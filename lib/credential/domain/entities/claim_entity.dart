@@ -22,6 +22,33 @@ class ClaimEntity {
       required this.type,
       required this.info});
 
+  factory ClaimEntity.fromJson(Map<String, dynamic> json) {
+    return ClaimEntity(
+      id: json['id'],
+      issuer: json['issuer'],
+      did: json['did'],
+      state: ClaimState.values.firstWhere((e) => e.name == json['state']),
+      expiration: json['expiration'],
+      schema: json['schema'],
+      vocab: json['vocab'],
+      type: json['type'],
+      info: json['info'],
+    );
+  }
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'issuer': issuer,
+        'did': did,
+        'state': state.name,
+        'expiration': expiration,
+        'schema': schema,
+        'vocab': vocab,
+        'type': type,
+        'info': info,
+      };
+
   @override
   String toString() => "[ClaimEntity] {id: $id, "
       "issuer: $issuer, did: $did, state: $state, "

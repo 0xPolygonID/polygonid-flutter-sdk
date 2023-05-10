@@ -29,6 +29,7 @@ abstract class Iden3MessageEntity {
         'id': id,
         'typ': typ,
         'type': type,
+        'messageType': messageType.name,
         'thid': thid,
         'body': body.toJson(),
         'from': from,
