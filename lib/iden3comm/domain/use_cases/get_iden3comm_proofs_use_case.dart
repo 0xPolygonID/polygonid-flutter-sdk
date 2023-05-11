@@ -80,7 +80,8 @@ class GetIden3commProofsUseCase
                     genesisDid: param.genesisDid,
                     profileNonce: param.profileNonce,
                     privateKey: param.privateKey))
-            .then((claim) => claim.first)
+            .then((claims) => claims.firstWhere(
+                (element) => element.type == request.scope.query.type))
             .then((credential) async {
           String circuitId = request.scope.circuitId;
           CircuitDataEntity circuitData =
