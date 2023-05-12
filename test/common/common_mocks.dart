@@ -32,7 +32,7 @@ class CommonMocks {
   static String circuitId = "credentialAtomicQuerySig";
   static String field = "theField";
   static String issuer = "theIssuer";
-  static String type = "theType";
+  static String type = "KYCAgeCredential";
   static List<int> intValues = [0, 1, 2];
   static List<BigInt> bigIntValues = [BigInt.zero, BigInt.one, BigInt.two];
   static int operator = 4;

@@ -707,9 +707,10 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<RevStatusEntity> getCredentialRevocationStatus({
-    required String credentialId,
-    required String genesisDid, required String privateKey}) {
+  Future<RevStatusEntity> getCredentialRevocationStatus(
+      {required String credentialId,
+      required String genesisDid,
+      required String privateKey}) {
     return _polygonIdSdk.credential.getCredentialRevocationStatus(
         credentialId: credentialId,
         genesisDid: genesisDid,

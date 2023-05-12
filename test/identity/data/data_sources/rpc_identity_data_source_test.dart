@@ -79,16 +79,13 @@ class FakeWeb3Client extends FakeCapturer implements Web3Client {
 }
 
 FakeWeb3Client client = FakeWeb3Client();
-MockGetEnvUseCase _getEnvUseCase = MockGetEnvUseCase();
 
 // Tested instance
-RPCIdentityDataSource dataSource = RPCIdentityDataSource(_getEnvUseCase);
+RPCIdentityDataSource dataSource = RPCIdentityDataSource();
 
 /// FIXME: UT not possible since [RPCDataSource.getState] is using directly [State]
 /// TODO: [RPCDataSource.getGistProof]
-@GenerateMocks([
-  GetEnvUseCase,
-])
+@GenerateMocks([])
 void main() {
   // setUp(() {
   //   client.resetCaptures();

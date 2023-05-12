@@ -35,6 +35,7 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
+import 'package:web3dart/web3dart.dart';
 
 class ProofRepositoryImpl extends ProofRepository {
   final WitnessDataSource _witnessDataSource;
@@ -188,10 +189,13 @@ class ProofRepositoryImpl extends ProofRepository {
 
   @override
   Future<GistProofEntity> getGistProof(
-      {required String idAsInt, required String contractAddress}) async {
+      {required Web3Client web3client,
+      required String idAsInt,
+      required String contractAddress}) async {
     String gistProofSC = await _localContractFilesDataSource
         .loadStateContract(contractAddress)
-        .then((contract) => _rpcProofDataSource.getGistProof(idAsInt, contract))
+        .then((contract) =>
+            _rpcProofDataSource.getGistProof(web3client, idAsInt, contract))
         .catchError((error) => throw FetchGistProofException(error));
 
     String gistProof =

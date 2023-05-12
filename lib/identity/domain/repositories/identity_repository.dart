@@ -1,4 +1,5 @@
 import 'package:polygonid_flutter_sdk/credential/domain/entities/rev_status_entity.dart';
+import 'package:web3dart/web3dart.dart';
 
 import '../entities/identity_entity.dart';
 import '../entities/node_entity.dart';
@@ -38,7 +39,9 @@ abstract class IdentityRepository {
       required String baseUrl});
 
   Future<String> getState(
-      {required String identifier, required String contractAddress});
+      {required Web3Client web3client,
+      required String identifier,
+      required String contractAddress});
 
   Future<String> convertIdToBigInt({required String id});
 

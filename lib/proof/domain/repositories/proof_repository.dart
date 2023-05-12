@@ -6,6 +6,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_en
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
+import 'package:web3dart/web3dart.dart';
 
 import '../entities/circuit_data_entity.dart';
 import '../entities/gist_proof_entity.dart';
@@ -42,7 +43,9 @@ abstract class ProofRepository {
   Future<String> encodeJWZ({required JWZEntity jwz});
 
   Future<GistProofEntity> getGistProof(
-      {required String idAsInt, required String contractAddress});
+      {required Web3Client web3client,
+      required String idAsInt,
+      required String contractAddress});
 
   Stream<DownloadInfo> get circuitsDownloadInfoStream;
 

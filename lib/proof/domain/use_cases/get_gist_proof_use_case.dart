@@ -5,6 +5,8 @@ import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.d
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
+import 'package:web3dart/web3dart.dart';
 
 import '../repositories/proof_repository.dart';
 
@@ -29,6 +31,8 @@ class GetGistProofUseCase extends FutureUseCase<String, GistProofEntity> {
           (did) => _identityRepository.convertIdToBigInt(id: did.identifier))
     ])
         .then((values) => _proofRepository.getGistProof(
+            web3client:
+                getItSdk.get<Web3Client>(param1: (values[0] as EnvEntity)),
             idAsInt: values[1] as String,
             contractAddress: (values[0] as EnvEntity).idStateContract))
         .then((proof) {

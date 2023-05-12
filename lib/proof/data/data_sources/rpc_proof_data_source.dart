@@ -10,20 +10,15 @@ import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
 
 class RPCProofDataSource {
-  /// FIXME: UC in a DS!
-  final GetEnvUseCase _getEnvUseCase;
-
-  RPCProofDataSource(this._getEnvUseCase);
-
   /// Retrieve gist proof.
   ///
+  /// @param [web3Client] web3client
   /// @param [id] identity - The id as bigint
   /// @param [gistContract] the ABI contract
   ///
   /// @returns [String] gist proof
-  Future<String> getGistProof(String id, DeployedContract gistContract) async {
-    EnvEntity env = await _getEnvUseCase.execute();
-    Web3Client web3Client = getItSdk.get(param1: env);
+  Future<String> getGistProof(
+      Web3Client web3Client, String id, DeployedContract gistContract) async {
     try {
       /// TODO: replace to autegenerated code to interact with SC
       //var state = State(address: gistContract.address, client: web3Client);

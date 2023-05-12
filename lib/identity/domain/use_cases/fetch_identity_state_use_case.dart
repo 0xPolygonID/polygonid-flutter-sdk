@@ -3,6 +3,8 @@ import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
+import 'package:web3dart/web3dart.dart';
 
 class FetchIdentityStateUseCase extends FutureUseCase<String, String> {
   final IdentityRepository _identityRepository;
@@ -24,7 +26,9 @@ class FetchIdentityStateUseCase extends FutureUseCase<String, String> {
             .then((did) =>
                 _identityRepository.convertIdToBigInt(id: did.identifier))
             .then((id) => _identityRepository.getState(
-                identifier: id, contractAddress: env.idStateContract)))
+                web3client: getItSdk.get<Web3Client>(param1: env),
+                identifier: id,
+                contractAddress: env.idStateContract)))
         .then((state) {
       logger().i(
           "[FetchIdentityStateUseCase] Fetched state $state for identifier $param");

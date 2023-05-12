@@ -36,7 +36,7 @@ import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj_wallet.dart';
 import 'package:web3dart/web3dart.dart';
 
 import '../../../common/common_mocks.dart';
-import '../../../common/credential_mocks.dart';
+import '../../../common/fake_capturer.dart';
 import '../../../common/iden3comm_mocks.dart';
 import '../../../common/identity_mocks.dart';
 import 'identity_repository_impl_test.mocks.dart';
@@ -140,6 +140,26 @@ var expectedIdentities = [
   IdentityMocks.identity,
   IdentityMocks.identity,
 ];
+
+const callResult = [];
+const result = "";
+
+// Dependencies
+class FakeWeb3Client extends FakeCapturer implements Web3Client {
+  @override
+  Future<List<dynamic>> call({
+    EthereumAddress? sender,
+    DeployedContract? contract,
+    ContractFunction? function,
+    List<dynamic>? params,
+    BlockNum? atBlock,
+  }) {
+    capture('call', value: [sender, contract, function, params, atBlock]);
+    return Future.value(callResult);
+  }
+}
+
+FakeWeb3Client client = FakeWeb3Client();
 
 // Dependencies
 MockWalletDataSource walletDataSource = MockWalletDataSource();
@@ -411,7 +431,7 @@ void main() {
           .thenAnswer((realInvocation) => Future.value(contract));
       when(stateIdentifierMapper.mapTo(any))
           .thenAnswer((realInvocation) => CommonMocks.id);
-      when(rpcIdentityDataSource.getState(any, any))
+      when(rpcIdentityDataSource.getState(any, any, any))
           .thenAnswer((realInvocation) => Future.value(CommonMocks.state));
     });
 
@@ -421,7 +441,9 @@ void main() {
       // When
       expect(
           await repository.getState(
-              identifier: CommonMocks.identifier, contractAddress: address),
+              web3client: client,
+              identifier: CommonMocks.identifier,
+              contractAddress: address),
           CommonMocks.state);
 
       // Then
@@ -432,25 +454,28 @@ void main() {
           address);
       expect(verify(stateIdentifierMapper.mapTo(captureAny)).captured.first,
           CommonMocks.identifier);
-      var getStateCaptured =
-          verify(rpcIdentityDataSource.getState(captureAny, captureAny))
-              .captured;
+      var getStateCaptured = verify(rpcIdentityDataSource.getState(
+              captureAny, captureAny, captureAny))
+          .captured;
 
-      expect(getStateCaptured[0], CommonMocks.id);
-      expect(getStateCaptured[1], contract);
+      expect(getStateCaptured[0], client);
+      expect(getStateCaptured[1], CommonMocks.id);
+      expect(getStateCaptured[2], contract);
     });
 
     test(
         "Given parameters, when I call getState and an error occured, then I expect an exception to be thrown",
         () async {
       // Given
-      when(rpcIdentityDataSource.getState(any, any))
+      when(rpcIdentityDataSource.getState(any, any, any))
           .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
       // When
       await repository
           .getState(
-              identifier: CommonMocks.identifier, contractAddress: address)
+              web3client: client,
+              identifier: CommonMocks.identifier,
+              contractAddress: address)
           .then((_) => expect(true, false))
           .catchError((error) {
         expect(error, isA<FetchIdentityStateException>());
@@ -465,12 +490,13 @@ void main() {
           address);
       expect(verify(stateIdentifierMapper.mapTo(captureAny)).captured.first,
           CommonMocks.identifier);
-      var getStateCaptured =
-          verify(rpcIdentityDataSource.getState(captureAny, captureAny))
-              .captured;
+      var getStateCaptured = verify(rpcIdentityDataSource.getState(
+              captureAny, captureAny, captureAny))
+          .captured;
 
-      expect(getStateCaptured[0], CommonMocks.id);
-      expect(getStateCaptured[1], contract);
+      expect(getStateCaptured[0], client);
+      expect(getStateCaptured[1], CommonMocks.id);
+      expect(getStateCaptured[2], contract);
     });
   });
 

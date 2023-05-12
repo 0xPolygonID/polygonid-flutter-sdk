@@ -26,7 +26,9 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.d
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:sembast/sembast_io.dart';
+import 'package:web3dart/web3dart.dart';
 
 class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
@@ -155,11 +157,14 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
   @override
   Future<String> getState(
-      {required String identifier, required String contractAddress}) {
+      {required Web3Client web3client,
+      required String identifier,
+      required String contractAddress}) {
     return _localContractFilesDataSource
         .loadStateContract(contractAddress)
         .then((contract) => _rpcIdentityDataSource
-            .getState(_stateIdentifierMapper.mapTo(identifier), contract)
+            .getState(
+                web3client, _stateIdentifierMapper.mapTo(identifier), contract)
             .catchError((error) => throw FetchIdentityStateException(error)));
   }
 

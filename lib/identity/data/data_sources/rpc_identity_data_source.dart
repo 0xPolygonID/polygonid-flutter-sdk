@@ -10,19 +10,15 @@ import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
 
 class RPCIdentityDataSource {
-  final GetEnvUseCase _getEnvUseCase;
-
-  RPCIdentityDataSource(this._getEnvUseCase);
-
   /// Retrieve last state for a given identity.
   ///
+  /// @param [web3Client] environment entity
   /// @param [id] identity - The base58 identifier string
   /// @param [stateContract] the ABI contract
   ///
   /// @returns [String] last state committed
-  Future<String> getState(String id, DeployedContract stateContract) async {
-    EnvEntity env = await _getEnvUseCase.execute();
-    Web3Client web3Client = getItSdk.get(param1: env);
+  Future<String> getState(
+      Web3Client web3Client, String id, DeployedContract stateContract) async {
     try {
       var state = State(address: stateContract.address, client: web3Client);
       BigInt idBigInt = Uint8ArrayUtils.leBuff2int(hexToBytes(id));
