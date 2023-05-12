@@ -408,7 +408,8 @@ class PolygonIdFlutterChannel
   Future<InteractionBaseEntity> addInteraction(
       {required InteractionBaseEntity interaction,
       String? genesisDid,
-      String? privateKey}) {
+      String? privateKey,
+      BigInt? profileNonce}) {
     return _polygonIdSdk.iden3comm.addInteraction(
         interaction: interaction,
         genesisDid: genesisDid,

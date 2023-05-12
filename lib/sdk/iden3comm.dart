@@ -148,10 +148,14 @@ abstract class PolygonIdSdkIden3comm {
   ///
   /// The [interaction] is the interaction to be saved
   /// The [privateKey]  is the key used to access all the sensitive info from the identity
+  /// The [genesisDid] is the unique id of the identity
+  /// The [profileNonce] is the nonce of the profile used from identity
+  /// to obtain the did identifier
   Future<InteractionBaseEntity> addInteraction({
     required InteractionBaseEntity interaction,
     String? genesisDid,
     String? privateKey,
+    BigInt? profileNonce,
   });
 
   /// Removes a list of [InteractionEntity] from the Polygon ID Sdk by their ids
@@ -170,7 +174,7 @@ abstract class PolygonIdSdkIden3comm {
   /// The [id] is the id of the notification to be updated
   /// The [genesisDid] is the unique id of the identity
   /// The [privateKey]  is the key used to access all the sensitive info from the identity
-  /// The [state] is the new state of the inteaction
+  /// The [state] is the new state of the interaction
   Future<InteractionBaseEntity> updateInteraction({
     required String id,
     String? genesisDid,
