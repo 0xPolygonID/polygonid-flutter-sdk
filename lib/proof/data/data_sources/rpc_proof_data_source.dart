@@ -10,6 +10,7 @@ import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
 
 class RPCProofDataSource {
+  /// FIXME: UC in a DS!
   final GetEnvUseCase _getEnvUseCase;
 
   RPCProofDataSource(this._getEnvUseCase);

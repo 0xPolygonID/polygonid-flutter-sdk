@@ -1,108 +1,100 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:typed_data';
-import 'package:archive/archive.dart';
-import 'package:http/http.dart' as http;
 
-import 'package:path_provider/path_provider.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
-import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
+import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/download_response_dto.dart';
 
+@lazySingleton
 class CircuitsDownloadDataSource {
-  ///
-  Future<bool> circuitsFilesExist() async {
-    String fileName = 'circuits.zip';
-    Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path;
-    var file = File('$path/$fileName');
-    return await file.exists();
-  }
+  final Dio _client;
+  late CancelToken _cancelToken;
+
+  CircuitsDownloadDataSource(this._client);
+
+  StreamController<DownloadResponseDTO> _controller =
+      StreamController<DownloadResponseDTO>.broadcast();
+
+  Stream<DownloadResponseDTO> get downloadStream => _controller.stream;
+
+  int _downloadSize = 0;
+
+  /// downloadSize
+  int get downloadSize => _downloadSize;
 
   ///
-  Future<String> getPathToCircuitZipFile() async {
-    Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path;
-    String fileName = 'circuits.zip';
-    return '$path/$fileName';
-  }
-
-  ///
-  Future<String> getPathToCircuitZipFileTemp() async {
-    Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path;
-    String fileName = 'circuits_temp.zip';
-    return '$path/$fileName';
-  }
-
-  ///
-  Future<String> getPath() async {
-    Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path;
-    return path;
-  }
-
-  ///
-  Future<http.StreamedResponse> getStreamedResponseFromServer() async {
+  Future<void> initStreamedResponseFromServer(String downloadPath) async {
+    _cancelToken = CancelToken();
     const bucketUrl =
         "https://circuits.polygonid.me/circuits/v1.0.0/polygonid-keys.zip";
 
-    var request = http.Request('GET', Uri.parse(bucketUrl));
-
-    final http.StreamedResponse response = await http.Client().send(request);
-    return response;
-  }
-
-  ///
-  Future<void> deleteFile(String pathToFile) async {
+    // first we get the file size
     try {
-      var file = File(pathToFile);
-      await file.delete();
-    } catch (_) {
-      // file not found? no problem, we don't need it
+      Response headResponse = await _client.head(bucketUrl);
+      int contentLength =
+          int.parse(headResponse.headers.value('content-length') ?? "0");
+      _downloadSize = contentLength;
+    } catch (e) {
+      _cancelToken.cancel();
+      _controller.add(DownloadResponseDTO(
+        progress: 0,
+        total: 0,
+        errorOccurred: true,
+        errorMessage: e.toString(),
+      ));
+      return;
     }
-  }
 
-  ///
-  void renameFile(String pathTofile, String newPathToFile) {
-    var file = File(pathTofile);
-    file.renameSync(newPathToFile);
-  }
-
-  ///
-  void writeZipFile({
-    required String pathToFile,
-    required List<int> zipBytes,
-  }) {
-    var file = File(pathToFile);
-    file.writeAsBytesSync(
-      zipBytes,
-      mode: FileMode.append,
-    );
-  }
-
-  ///
-  int zipFileSize({required String pathToFile}) {
-    var file = File(pathToFile);
-    return file.lengthSync();
-  }
-
-  ///
-  Future<void> writeCircuitsFileFromZip({
-    required String path,
-    required String zipPath,
-  }) async {
-    var zipFile = File(zipPath);
-    Uint8List zipBytes = zipFile.readAsBytesSync();
-    final zipDecoder = getItSdk.get<ZipDecoder>(instanceName: 'zipDecoder');
-    var archive = zipDecoder.decodeBytes(zipBytes);
-
-    for (var file in archive) {
-      var filename = '$path/${file.name}';
-      if (file.isFile) {
-        var outFile = File(filename);
-        outFile = await outFile.create(recursive: true);
-        await outFile.writeAsBytes(file.content);
-      }
+    try {
+      await _client.download(
+        bucketUrl,
+        downloadPath,
+        deleteOnError: true,
+        cancelToken: _cancelToken,
+        onReceiveProgress: (received, total) {
+          if (total <= 0) {
+            _cancelToken.cancel();
+            _controller.add(DownloadResponseDTO(
+              progress: 0,
+              total: 0,
+              errorOccurred: true,
+              errorMessage: "Error occurred while downloading circuits",
+            ));
+            return;
+          }
+          _controller.add(
+            DownloadResponseDTO(
+              progress: received,
+              total: total,
+            ),
+          );
+        },
+      );
+    } catch (e) {
+      _cancelToken.cancel();
+      _controller.add(DownloadResponseDTO(
+        progress: 0,
+        total: 0,
+        errorOccurred: true,
+        errorMessage: e.toString(),
+      ));
+      return;
     }
+    _controller.add(DownloadResponseDTO(
+      progress: 100,
+      total: 100,
+      done: true,
+    ));
+    _controller.close();
+  }
+
+  ///
+  void cancelDownload() {
+    _cancelToken.cancel();
+    _controller.add(DownloadResponseDTO(
+      progress: 0,
+      total: 0,
+      errorOccurred: true,
+      errorMessage: 'Download cancelled by user',
+    ));
   }
 }

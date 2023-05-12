@@ -49,4 +49,6 @@ abstract class ProofRepository {
   Future<bool> circuitsFilesExist();
 
   Future<void> initCircuitsDownloadFromServer();
+
+  Future<void> cancelDownloadCircuits();
 }

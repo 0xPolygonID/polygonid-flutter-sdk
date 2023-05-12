@@ -7,8 +7,21 @@ abstract class SplashState {
 
   factory SplashState.waitingTimeEnded() => WaitingTimeEndedSplashState();
 
-  factory SplashState.downloadProgress(DownloadInfo downloadInfo) =>
-      DownloadProgressSplashState(downloadInfo);
+  factory SplashState.downloadProgress({
+    required int downloaded,
+    required int contentLength,
+  }) =>
+      DownloadProgressSplashState(
+        downloaded: downloaded,
+        contentLength: contentLength,
+      );
+
+  factory SplashState.error({
+    required String errorMessage,
+  }) =>
+      ErrorSplashState(
+        errorMessage: errorMessage,
+      );
 }
 
 class InitSplashState extends SplashState {
@@ -20,7 +33,19 @@ class WaitingTimeEndedSplashState extends SplashState {
 }
 
 class DownloadProgressSplashState extends SplashState {
-  final DownloadInfo downloadInfo;
+  final int downloaded;
+  final int contentLength;
 
-  DownloadProgressSplashState(this.downloadInfo);
+  DownloadProgressSplashState({
+    required this.downloaded,
+    required this.contentLength,
+  });
+}
+
+class ErrorSplashState extends SplashState {
+  final String errorMessage;
+
+  ErrorSplashState({
+    required this.errorMessage,
+  });
 }

@@ -13,7 +13,6 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_download_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/lib_pidcore_proof_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/local_proof_data_source.dart';
-import 'package:polygonid_flutter_sdk/proof/data/data_sources/local_proof_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/mappers/auth_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/mappers/circuit_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/mappers/gist_proof_mapper.dart';
@@ -25,6 +24,9 @@ import 'package:polygonid_flutter_sdk/proof/data/data_sources/rpc_proof_data_sou
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/witness_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/witness_param.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_proof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/proof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
@@ -38,9 +40,9 @@ class ProofRepositoryImpl extends ProofRepository {
   final WitnessDataSource _witnessDataSource;
   final ProverLibDataSource _proverLibDataSource;
   final LibPolygonIdCoreProofDataSource _libPolygonIdCoreProofDataSource;
-  final LocalProofFilesDataSource _localProofFilesDataSource;
   final ProofCircuitDataSource _proofCircuitDataSource;
   final CircuitsDownloadDataSource _circuitsDownloadDataSource;
+  final CircuitsFilesDataSource _circuitsFilesDataSource;
   final CircuitTypeMapper _circuitTypeMapper;
   final JWZProofMapper _jwzProofMapper;
   final JWZMapper _jwzMapper;
@@ -54,7 +56,6 @@ class ProofRepositoryImpl extends ProofRepository {
     this._witnessDataSource,
     this._proverLibDataSource,
     this._libPolygonIdCoreProofDataSource,
-    this._localProofFilesDataSource,
     this._proofCircuitDataSource,
     this._circuitsDownloadDataSource,
     this._localProofDataSource,
@@ -65,12 +66,13 @@ class ProofRepositoryImpl extends ProofRepository {
     this._jwzMapper,
     this._authProofMapper,
     this._gistProofMapper,
+    this._circuitsFilesDataSource,
   );
 
   @override
   Future<CircuitDataEntity> loadCircuitFiles(String circuitId) async {
     List<Uint8List> circuitFiles =
-        await _localProofFilesDataSource.loadCircuitFiles(circuitId);
+        await _circuitsFilesDataSource.loadCircuitFiles(circuitId);
     CircuitDataEntity circuitDataEntity =
         CircuitDataEntity(circuitId, circuitFiles[0], circuitFiles[1]);
     return circuitDataEntity;
@@ -210,87 +212,94 @@ class ProofRepositoryImpl extends ProofRepository {
         .mapFrom(_localProofDataSource.getGistProof(gistProofJson));
   }
 
-  ///
-  StreamController<DownloadInfo> _downloadInfoController =
-      StreamController.broadcast();
-
-  ///
   @override
-  Stream<DownloadInfo> get circuitsDownloadInfoStream =>
-      _downloadInfoController.stream;
-
-  ///
-  @override
-  Future<void> initCircuitsDownloadFromServer() async {
+  Stream<DownloadInfo> get circuitsDownloadInfoStream async* {
     String pathForZipFileTemp =
-        await _circuitsDownloadDataSource.getPathToCircuitZipFileTemp();
+        await _circuitsFilesDataSource.getPathToCircuitZipFileTemp();
     String pathForZipFile =
-        await _circuitsDownloadDataSource.getPathToCircuitZipFile();
-    String pathForCircuits = await _circuitsDownloadDataSource.getPath();
-    http.StreamedResponse serverResponse =
-        await _circuitsDownloadDataSource.getStreamedResponseFromServer();
+        await _circuitsFilesDataSource.getPathToCircuitZipFile();
+    String pathForCircuits = await _circuitsFilesDataSource.getPath();
 
-    final int downloadSize = serverResponse.contentLength ?? 0;
+    await for (final downloadResponse
+        in _circuitsDownloadDataSource.downloadStream) {
+      int progress = downloadResponse.progress;
+      int total = downloadResponse.total;
 
-    // We delete eventual temp zip file downloaded before
-    _circuitsDownloadDataSource.deleteFile(pathForZipFileTemp);
-
-    serverResponse.stream.listen(
-      (List<int> newBytes) {
-        // we write in a temp zip file
-        _circuitsDownloadDataSource.writeZipFile(
-          pathToFile: pathForZipFileTemp,
-          zipBytes: newBytes,
+      if (downloadResponse.errorOccurred) {
+        yield DownloadInfo.onError(
+          errorMessage: downloadResponse.errorMessage,
         );
+      }
 
-        // size of the temp zip file
-        int zipFileSize = _circuitsDownloadDataSource.zipFileSize(
-            pathToFile: pathForZipFileTemp);
-        _downloadInfoController.add(DownloadInfo(
-          contentLength: downloadSize,
-          downloaded: zipFileSize,
-        ));
-      },
-      onDone: () async {
+      if (downloadResponse.done) {
+        final int downloadSize = _circuitsDownloadDataSource.downloadSize;
+
         // we get the size of the temp zip file
-        int zipFileSize = _circuitsDownloadDataSource.zipFileSize(
+        int zipFileSize = _circuitsFilesDataSource.zipFileSize(
             pathToFile: pathForZipFileTemp);
-        logger().i(
-            "[Circuits success:] downloadSize -> $downloadSize / zipFileSize -> $zipFileSize");
 
         if (downloadSize != 0 && zipFileSize != downloadSize) {
           try {
             // if error we delete the temp file
-            _circuitsDownloadDataSource.deleteFile(pathForZipFileTemp);
+            _circuitsFilesDataSource.deleteFile(pathForZipFileTemp);
           } catch (_) {}
-          _downloadInfoController.addError("Downloaded files incorrect");
-          return;
+
+          yield DownloadInfo.onError(
+              errorMessage: "Downloaded files incorrect");
         }
 
-        _circuitsDownloadDataSource.renameFile(
-            pathForZipFileTemp, pathForZipFile);
-        await _circuitsDownloadDataSource.writeCircuitsFileFromZip(
-          zipPath: pathForZipFile,
-          path: pathForCircuits,
+        await _completeWritingFile(
+          pathForCircuits: pathForCircuits,
+          pathForZipFile: pathForZipFile,
+          pathForZipFileTemp: pathForZipFileTemp,
         );
 
-        _downloadInfoController.add(DownloadInfo(
+        yield DownloadInfo.onDone(
           contentLength: downloadSize,
           downloaded: zipFileSize,
-          completed: true,
-        ));
-      },
-      onError: (e) {
-        _circuitsDownloadDataSource.deleteFile(pathForZipFile);
-        _downloadInfoController.addError(e);
-      },
-      cancelOnError: true,
-    );
+        );
+      }
+
+      yield DownloadInfo.onProgress(
+        contentLength: total,
+        downloaded: progress,
+      );
+    }
+  }
+
+  ///
+  @override
+  Future<void> initCircuitsDownloadFromServer() {
+    return _circuitsFilesDataSource.getPathToCircuitZipFileTemp().then(
+        (pathForZipFileTemp) =>
+            // We delete eventual temp zip file downloaded before
+            _circuitsFilesDataSource.deleteFile(pathForZipFileTemp).then((_) =>
+                // Init download
+                _circuitsDownloadDataSource
+                    .initStreamedResponseFromServer(pathForZipFileTemp)));
   }
 
   ///
   @override
   Future<bool> circuitsFilesExist() {
-    return _circuitsDownloadDataSource.circuitsFilesExist();
+    return _circuitsFilesDataSource.circuitsFilesExist();
+  }
+
+  ///
+  Future<void> _completeWritingFile({
+    required String pathForZipFileTemp,
+    required String pathForZipFile,
+    required String pathForCircuits,
+  }) async {
+    _circuitsFilesDataSource.renameFile(pathForZipFileTemp, pathForZipFile);
+    await _circuitsFilesDataSource.writeCircuitsFileFromZip(
+      zipPath: pathForZipFile,
+      path: pathForCircuits,
+    );
+  }
+
+  @override
+  Future<void> cancelDownloadCircuits() async {
+    return _circuitsDownloadDataSource.cancelDownload();
   }
 }

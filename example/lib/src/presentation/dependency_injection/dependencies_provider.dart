@@ -60,8 +60,8 @@ Future<void> registerProviders() async {
   await PolygonIdSdk.init(env: getIt<List<EnvEntity>>()[0]);
   getIt.registerLazySingleton<PolygonIdSdk>(() => PolygonIdSdk.I);
   getIt.registerLazySingleton<Logger>(() => Logger());
-  getIt.registerLazySingleton<DomainLogger>(() => AppLogger(getIt()));
-  Domain.logger = getIt<DomainLogger>();
+  getIt.registerLazySingleton<PolygonIdSdkLogger>(() => AppLogger(getIt()));
+  Domain.logger = getIt<PolygonIdSdkLogger>();
 }
 
 ///
