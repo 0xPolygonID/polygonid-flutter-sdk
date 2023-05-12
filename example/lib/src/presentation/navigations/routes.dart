@@ -44,7 +44,7 @@ class Routes {
 
   ///
   static WidgetBuilder _splashRoute() {
-    return (BuildContext context) => SplashScreen();
+    return (BuildContext context) => const SplashScreen();
   }
 
   ///
