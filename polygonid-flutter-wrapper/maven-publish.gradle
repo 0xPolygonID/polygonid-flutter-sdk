@@ -23,6 +23,7 @@ publishing {
                 name = 'PolygonID Flutter Wrapper'
                 description = 'The wrapper around PolygonID Flutter SDK. This wrapper is needed to be able to use FlutterEngine in Android.'
                 url = 'https://polygon.technology/polygon-id'
+                packaging = 'aar'
 
                 licenses {
                     license {
