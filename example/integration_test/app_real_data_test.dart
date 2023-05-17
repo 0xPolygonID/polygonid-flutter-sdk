@@ -36,7 +36,7 @@ void main() {
             navigatorKey: key,
             initialRoute: Routes.splashPath,
             routes: {
-              Routes.splashPath: (BuildContext context) => SplashScreen(),
+              Routes.splashPath: (BuildContext context) => const SplashScreen(),
               Routes.homePath: (BuildContext context) => const HomeScreen(),
               Routes.authPath: (BuildContext context) => AuthScreen(),
               Routes.qrCodeScannerPath: (BuildContext context) => Container(),

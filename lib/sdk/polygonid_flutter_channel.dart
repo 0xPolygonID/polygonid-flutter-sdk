@@ -445,7 +445,7 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<List<ClaimEntity>> getClaimsFromIden3Message(
+  Future<List<ClaimEntity?>> getClaimsFromIden3Message(
       {required Iden3MessageEntity message,
       required String genesisDid,
       BigInt? profileNonce,

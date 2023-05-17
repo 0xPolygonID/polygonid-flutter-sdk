@@ -24,6 +24,12 @@ class ProofsNotFoundException implements Exception {
   ProofsNotFoundException(this.proofRequests);
 }
 
+class CredentialsNotFoundException implements Exception {
+  final List<ProofRequestEntity> proofRequests;
+
+  CredentialsNotFoundException(this.proofRequests);
+}
+
 class NullAuthenticateCallbackException implements Exception {
   final AuthIden3MessageEntity authRequest;
 
