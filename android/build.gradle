@@ -1,5 +1,7 @@
+apply from: 'sdk.properties'
+
 group 'io.github.0xpolygonid.polygonid_flutter_sdk'
-version '2.2.0'
+version sdkVersion
 
 buildscript {
     ext.kotlin_version = '1.8.0'
@@ -89,14 +91,12 @@ dependencies {
 }
 
 // Maven
-ext.artifactVersion = '1.0.2'
-
 publishing {
     publications {
         sdkDebug(MavenPublication) {
             groupId = 'io.github.0xpolygonid.polygonid_flutter_sdk'
             artifactId = 'polygonid_flutter_sdk_debug'
-            version = artifactVersion
+            version = version
 
             pom {
                 name = 'PolygonID Flutter SDK'

@@ -1,11 +1,10 @@
 // Maven
+apply from: "$rootDir/../../android/sdk.properties"
 apply plugin: 'maven-publish'
-
-ext.artifactVersion = '1.0.2'
 
 task createLocalMavenZip(type: Zip) {
     from("$rootDir/../build/host/outputs/repo") {
-        include "io/flutter/plugins/**/**/$artifactVersion/**"
+        include "io/flutter/plugins/**/**/$sdkVersion/**"
         exclude 'io/github/**'
         into 'm2'
     }
@@ -17,7 +16,7 @@ publishing {
         wrapperDebug(MavenPublication) {
             groupId = 'io.github.0xpolygonid.polygonid_flutter_wrapper'
             artifactId = 'debug'
-            version = artifactVersion
+            version = sdkVersion
 
             pom {
                 name = 'PolygonID Flutter Wrapper'
