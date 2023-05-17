@@ -61,73 +61,81 @@ class GetIden3commProofsUseCase
   @override
   Future<List<JWZProofEntity>> execute(
       {required GetIden3commProofsParam param}) async {
-    List<JWZProofEntity> proofs = [];
+    try {
+      List<JWZProofEntity> proofs = [];
 
-    _proofGenerationStepsStreamManager.add("Getting proof requests");
-    List<ProofRequestEntity> requests =
-        await _getProofRequestsUseCase.execute(param: param.message);
+      _proofGenerationStepsStreamManager.add("Getting proof requests");
+      List<ProofRequestEntity> requests =
+          await _getProofRequestsUseCase.execute(param: param.message);
 
-    /// We got [ProofRequestEntity], let's find the associated [ClaimEntity]
-    /// and generate [ProofEntity]
-    for (ProofRequestEntity request in requests) {
-      if (await _isProofCircuitSupported.execute(
-          param: request.scope.circuitId)) {
-        // Claims
-        await _getIden3commClaimsUseCase
-            .execute(
-                param: GetIden3commClaimsParam(
-                    message: param.message,
+      List<ClaimEntity> claims = await _getIden3commClaimsUseCase.execute(
+          param: GetIden3commClaimsParam(
+              message: param.message,
+              genesisDid: param.genesisDid,
+              profileNonce: param.profileNonce,
+              privateKey: param.privateKey));
+
+      if (requests.isNotEmpty &&
+          claims.isNotEmpty &&
+          requests.length == claims.length) {
+        /// We got [ProofRequestEntity], let's find the associated [ClaimEntity]
+        /// and generate [ProofEntity]
+        for (int i = 0; i < requests.length; i++) {
+          ProofRequestEntity request = requests[i];
+          ClaimEntity claim = claims[i];
+          if (claim.type == request.scope.query.type &&
+              await _isProofCircuitSupported.execute(
+                  param: request.scope.circuitId)) {
+            String circuitId = request.scope.circuitId;
+            CircuitDataEntity circuitData =
+                await _proofRepository.loadCircuitFiles(circuitId);
+
+            String? challenge;
+            String? privKey;
+            if (circuitId == "credentialAtomicQuerySigV2OnChain" ||
+                circuitId == "credentialAtomicQueryMTPV2OnChain") {
+              privKey = param.privateKey;
+              challenge = param.challenge;
+            }
+
+            var identityEntity = await _getIdentityUseCase.execute(
+                param: GetIdentityParam(
                     genesisDid: param.genesisDid,
-                    profileNonce: param.profileNonce,
-                    privateKey: param.privateKey))
-            .then((claims) => claims.firstWhere(
-                (element) => element.type == request.scope.query.type))
-            .then((credential) async {
-          String circuitId = request.scope.circuitId;
-          CircuitDataEntity circuitData =
-              await _proofRepository.loadCircuitFiles(circuitId);
+                    privateKey: param.privateKey));
 
-          String? challenge;
-          String? privKey;
-          if (circuitId == "credentialAtomicQuerySigV2OnChain" ||
-              circuitId == "credentialAtomicQueryMTPV2OnChain") {
-            privKey = param.privateKey;
-            challenge = param.challenge;
+            BigInt claimSubjectProfileNonce = identityEntity.profiles.keys
+                .firstWhere((k) => identityEntity.profiles[k] == claim.did,
+                    orElse: () => GENESIS_PROFILE_NONCE);
+
+            _proofGenerationStepsStreamManager
+                .add("Generating proof for ${claim.type}");
+            // Generate proof
+            proofs.add(await _generateProofUseCase.execute(
+                param: GenerateProofParam(
+                    param.genesisDid,
+                    param.profileNonce,
+                    claimSubjectProfileNonce,
+                    claim,
+                    request.scope,
+                    circuitData,
+                    privKey,
+                    challenge)));
           }
-
-          var identityEntity = await _getIdentityUseCase.execute(
-              param: GetIdentityParam(
-                  genesisDid: param.genesisDid, privateKey: param.privateKey));
-
-          BigInt claimSubjectProfileNonce = identityEntity.profiles.keys
-              .firstWhere((k) => identityEntity.profiles[k] == credential.did,
-                  orElse: () => GENESIS_PROFILE_NONCE);
-
-          _proofGenerationStepsStreamManager
-              .add("Generating proof for ${credential.type}");
-          // Generate proof
-          proofs.add(await _generateProofUseCase.execute(
-              param: GenerateProofParam(
-                  param.genesisDid,
-                  param.profileNonce,
-                  claimSubjectProfileNonce,
-                  credential,
-                  request.scope,
-                  circuitData,
-                  privKey,
-                  challenge)));
-        }).catchError((error) {
-          throw error;
-        });
+        }
+      } else {
+        throw ProofsNotFoundException(requests);
       }
-    }
 
-    /// If we have requests but didn't get any proofs, we throw
-    /// as it could be we didn't find any associated [ClaimEntity]
-    if (requests.isNotEmpty && proofs.isEmpty) {
-      throw ProofsNotFoundException(requests);
-    }
+      /// If we have requests but didn't get any proofs, we throw
+      /// as it could be we didn't find any associated [ClaimEntity]
+      if (requests.isNotEmpty && proofs.isEmpty ||
+          proofs.length != requests.length) {
+        throw ProofsNotFoundException(requests);
+      }
 
-    return proofs;
+      return proofs;
+    } catch (e) {
+      rethrow;
+    }
   }
 }
