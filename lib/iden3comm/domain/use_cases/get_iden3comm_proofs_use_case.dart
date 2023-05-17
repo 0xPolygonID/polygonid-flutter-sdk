@@ -68,22 +68,24 @@ class GetIden3commProofsUseCase
       List<ProofRequestEntity> requests =
           await _getProofRequestsUseCase.execute(param: param.message);
 
-      List<ClaimEntity> claims = await _getIden3commClaimsUseCase.execute(
+      List<ClaimEntity?> claims = await _getIden3commClaimsUseCase.execute(
           param: GetIden3commClaimsParam(
               message: param.message,
               genesisDid: param.genesisDid,
               profileNonce: param.profileNonce,
               privateKey: param.privateKey));
 
-      if (requests.isNotEmpty &&
-          claims.isNotEmpty &&
-          requests.length == claims.length) {
+      if ((requests.isNotEmpty &&
+              claims.isNotEmpty &&
+              requests.length == claims.length) ||
+          requests.isEmpty) {
         /// We got [ProofRequestEntity], let's find the associated [ClaimEntity]
         /// and generate [ProofEntity]
         for (int i = 0; i < requests.length; i++) {
           ProofRequestEntity request = requests[i];
-          ClaimEntity claim = claims[i];
-          if (claim.type == request.scope.query.type &&
+          ClaimEntity? claim = claims[i];
+          if (claim != null &&
+              claim.type == request.scope.query.type &&
               await _isProofCircuitSupported.execute(
                   param: request.scope.circuitId)) {
             String circuitId = request.scope.circuitId;
@@ -123,7 +125,7 @@ class GetIden3commProofsUseCase
           }
         }
       } else {
-        throw ProofsNotFoundException(requests);
+        throw CredentialsNotFoundException(requests);
       }
 
       /// If we have requests but didn't get any proofs, we throw
