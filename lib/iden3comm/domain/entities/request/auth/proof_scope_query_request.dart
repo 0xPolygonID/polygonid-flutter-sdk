@@ -101,6 +101,8 @@
 
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/utils/collection_extension.dart';
 
 class ProofScopeQueryRequest {
   final List<String>? allowedIssuers;
@@ -109,6 +111,7 @@ class ProofScopeQueryRequest {
   final int? challenge;
   final bool? skipClaimRevocationCheck;
   final Map<String, dynamic>? credentialSubject;
+
   //final ProofScopeRulesQuerySchemaRequest? schema;
 
   ProofScopeQueryRequest({
@@ -126,6 +129,8 @@ class ProofScopeQueryRequest {
   /// @param [Map<String, dynamic>] json
   /// @returns [ProofScopeRulesQueryRequest]
   factory ProofScopeQueryRequest.fromJson(Map<String, dynamic>? json) {
+    logger().i("ProofScopeRulesQueryRequest.fromJson $json");
+
     if (json != null) {
       //ProofScopeRulesQuerySchemaRequest? schema =
       //    ProofScopeRulesQuerySchemaRequest.fromJson(json['schema']);
@@ -134,7 +139,11 @@ class ProofScopeQueryRequest {
         context: json['context'],
         type: json['type'],
         challenge: json['challenge'],
-        credentialSubject: json['credentialSubject'],
+
+        /// FIXME: flooring doubles to have ints, this is because of protobuf
+        /// only use number_value for google.protobuf.Value and turn int to float
+        credentialSubject:
+            (json['credentialSubject'] as Map<String, dynamic>?)?.deepFloor(),
         skipClaimRevocationCheck: json['skipClaimRevocationCheck'],
       );
       //schema: schema);
