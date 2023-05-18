@@ -85,7 +85,6 @@ class UpdateInteractionUseCase
         return _addInteractionUseCase.execute(
             param: AddInteractionParam(
                 genesisDid: param.genesisDid,
-                profileNonce: param.profileNonce,
                 privateKey: param.privateKey,
                 interaction: updatedInteraction));
       } else {

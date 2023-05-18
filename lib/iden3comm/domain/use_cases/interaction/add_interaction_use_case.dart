@@ -11,13 +11,11 @@ import '../../../../common/domain/domain_constants.dart';
 
 class AddInteractionParam {
   final String? genesisDid;
-  final BigInt? profileNonce;
   final String? privateKey;
   final InteractionBaseEntity interaction;
 
   AddInteractionParam({
     this.genesisDid,
-    this.profileNonce,
     this.privateKey,
     required this.interaction,
   });
@@ -38,18 +36,11 @@ class AddInteractionUseCase
   @override
   Future<InteractionBaseEntity> execute(
       {required AddInteractionParam param}) async {
-    // we check if profile is valid and identity is existing
-    if (param.genesisDid != null &&
-        param.profileNonce != null &&
-        param.privateKey != null) {
-      await _checkProfileValidityUseCase
-          .execute(
-              param:
-                  CheckProfileValidityParam(profileNonce: param.profileNonce!))
-          .then((_) => _getIdentityUseCase.execute(
-              param: GetIdentityParam(
-                  genesisDid: param.genesisDid!,
-                  privateKey: param.privateKey)));
+    // we check if identity is existing
+    if (param.genesisDid != null && param.privateKey != null) {
+      await _getIdentityUseCase.execute(
+          param: GetIdentityParam(
+              genesisDid: param.genesisDid!, privateKey: param.privateKey));
     }
     return _interactionRepository
         .addInteraction(

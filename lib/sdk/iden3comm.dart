@@ -147,15 +147,13 @@ abstract class PolygonIdSdkIden3comm {
   /// Saves an [InteractionBaseEntity] in the Polygon ID Sdk
   ///
   /// The [interaction] is the interaction to be saved
-  /// The [privateKey]  is the key used to access all the sensitive info from the identity
   /// The [genesisDid] is the unique id of the identity
-  /// The [profileNonce] is the nonce of the profile used from identity
+  /// The [privateKey]  is the key used to access all the sensitive info from the identity
   /// to obtain the did identifier
   Future<InteractionBaseEntity> addInteraction({
     required InteractionBaseEntity interaction,
     String? genesisDid,
     String? privateKey,
-    BigInt? profileNonce,
   });
 
   /// Removes a list of [InteractionEntity] from the Polygon ID Sdk by their ids
@@ -173,11 +171,14 @@ abstract class PolygonIdSdkIden3comm {
   ///
   /// The [id] is the id of the notification to be updated
   /// The [genesisDid] is the unique id of the identity
+  /// The [profileNonce] is the nonce of the profile used from identity
+  /// to obtain the did identifier
   /// The [privateKey]  is the key used to access all the sensitive info from the identity
   /// The [state] is the new state of the interaction
   Future<InteractionBaseEntity> updateInteraction({
     required String id,
     String? genesisDid,
+    BigInt? profileNonce,
     String? privateKey,
     InteractionState? state,
   });
@@ -333,30 +334,24 @@ class Iden3comm implements PolygonIdSdkIden3comm {
 
   @override
   Future<void> removeInteractions({
-    required List<String> ids,
     String? genesisDid,
-    BigInt? profileNonce,
     String? privateKey,
+    required List<String> ids,
   }) {
     return _removeInteractionsUseCase.execute(
         param: RemoveInteractionsParam(
-            genesisDid: genesisDid,
-            profileNonce: profileNonce,
-            privateKey: privateKey,
-            ids: ids));
+            genesisDid: genesisDid, privateKey: privateKey, ids: ids));
   }
 
   @override
   Future<InteractionBaseEntity> addInteraction({
     required InteractionBaseEntity interaction,
     String? genesisDid,
-    BigInt? profileNonce,
     String? privateKey,
   }) {
     return _addInteractionUseCase.execute(
         param: AddInteractionParam(
             genesisDid: genesisDid,
-            profileNonce: profileNonce,
             privateKey: privateKey,
             interaction: interaction));
   }
@@ -372,7 +367,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     return _updateInteractionUseCase.execute(
         param: UpdateInteractionParam(
       genesisDid: genesisDid,
-      profileNonce: profileNonce,
+      profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
       privateKey: privateKey,
       id: id,
       state: state,
