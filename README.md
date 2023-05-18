@@ -4,7 +4,7 @@
  
 # Polygon ID Flutter SDK
 
-[![pub package](https://img.shields.io/badge/pub-2.2.2-blueviolet)](https://pub.dev/packages/polygonid_flutter_sdk)
+[![pub package](https://img.shields.io/badge/pub-2.2.3-blueviolet)](https://pub.dev/packages/polygonid_flutter_sdk)
 [![build](https://github.com/iden3/polygonid-flutter-sdk/workflows/polygonid_flutter_sdk/badge.svg)](https://github.com/iden3/polygonid-flutter-sdk/actions?query=workflow%3Apolygonid_flutter_sdk)
 [![codecov](https://codecov.io/gh/iden3/polygonid-flutter-sdk/branch/develop/graph/badge.svg?token=0SI0XWGXKL)](https://codecov.io/gh/iden3/polygonid-flutter-sdk)
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://github.com/iden3/polygonid-flutter-sdk/blob/master/LICENSE-APACHE)
@@ -60,10 +60,10 @@ Future<void> main() async {
   await PolygonIdSdk.init(env: EnvEntity(
       blockchain: 'polygon',
       network: 'mumbai',
-      web3Url: 'https://polygon-mumbai.infura.io/v3/'
-      web3RdpUrl: 'wss://polygon-mumbai.infura.io/v3/'
-      web3ApiKey: 'YOUR-INFURA-API-KEY'
-      idStateContract: '0x134B1BE34911E39A8397ec6289782989729807a4'
+      web3Url: 'https://polygon-mumbai.infura.io/v3/',
+      web3RdpUrl: 'wss://polygon-mumbai.infura.io/v3/',
+      web3ApiKey: 'YOUR-INFURA-API-KEY',
+      idStateContract: '0x134B1BE34911E39A8397ec6289782989729807a4',
       pushUrl: 'https://push-staging.polygonid.com/api/v1',
   ));
   runApp(const App());
@@ -139,10 +139,10 @@ import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 await PolygonIdSdk.init(env: EnvEntity(
       blockchain: 'polygon',
       network: 'mumbai',
-      web3Url: 'https://polygon-mumbai.infura.io/v3/'
-      web3RdpUrl: 'wss://polygon-mumbai.infura.io/v3/'
-      web3ApiKey: 'YOUR-INFURA-API-KEY'
-      idStateContract: '0x134B1BE34911E39A8397ec6289782989729807a4'
+      web3Url: 'https://polygon-mumbai.infura.io/v3/',
+      web3RdpUrl: 'wss://polygon-mumbai.infura.io/v3/',
+      web3ApiKey: 'YOUR-INFURA-API-KEY',
+      idStateContract: '0x134B1BE34911E39A8397ec6289782989729807a4',
       pushUrl: 'https://push-staging.polygonid.com/api/v1',
   ));
 ```

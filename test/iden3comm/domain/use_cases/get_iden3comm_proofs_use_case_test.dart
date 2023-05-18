@@ -91,7 +91,8 @@ main() {
         .thenAnswer((realInvocation) => Future.value(true));
 
     when(getIden3commClaimsUseCase.execute(param: anyNamed('param')))
-        .thenAnswer((realInvocation) => Future.value([CredentialMocks.claim]));
+        .thenAnswer((realInvocation) =>
+            Future.value([CredentialMocks.claim, CredentialMocks.claim]));
 
     when(proofRepository.loadCircuitFiles(any))
         .thenAnswer((realInvocation) => Future.value(ProofMocks.circuitData));
@@ -122,7 +123,9 @@ main() {
 
     var verifyGetClaims = verify(
         getIden3commClaimsUseCase.execute(param: captureAnyNamed('param')));
-    expect(verifyGetClaims.callCount, Iden3commMocks.proofRequestList.length);
+    expect(verifyGetClaims.callCount, 1);
+    expect(verifyGetClaims.captured.first.genesisDid, param.genesisDid);
+    expect(verifyGetClaims.captured.first.privateKey, param.privateKey);
 
     var verifyLoadCircuit =
         verify(proofRepository.loadCircuitFiles(captureAny));
@@ -136,9 +139,6 @@ main() {
     for (int i = 0; i < Iden3commMocks.proofRequestList.length; i++) {
       expect(verifyIsFilterSupported.captured[i],
           Iden3commMocks.proofRequestList[i].scope.circuitId);
-
-      expect(verifyGetClaims.captured[i].genesisDid, param.genesisDid);
-      expect(verifyGetClaims.captured[i].privateKey, param.privateKey);
 
       expect(verifyLoadCircuit.captured[i],
           Iden3commMocks.proofRequestList[i].scope.circuitId);
@@ -178,13 +178,8 @@ main() {
             .captured;
     expect(getRequestsCaptured[0], Iden3commMocks.authRequest);
 
-    var verifyIsFilterSupported = verify(isProofCircuitSupportedUseCase.execute(
+    verifyNever(isProofCircuitSupportedUseCase.execute(
         param: captureAnyNamed('param')));
-    expect(verifyIsFilterSupported.callCount, 1);
-
-    expect(verifyIsFilterSupported.captured[0],
-        Iden3commMocks.proofRequestList[0].scope.circuitId);
-
     verifyNever(proofRepository.loadCircuitFiles(captureAny));
     verifyNever(generateProofUseCase.execute(param: captureAnyNamed('param')));
     verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
