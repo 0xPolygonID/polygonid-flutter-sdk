@@ -19,7 +19,7 @@ class GetProofQueryUseCase
   Future<ProofQueryParamEntity> execute({required ProofScopeRequest param}) {
     String field = "";
     int operator = 0;
-    List<int> values = [];
+    List<dynamic> values = [];
 
     if (param.query.credentialSubject != null &&
         param.query.credentialSubject!.length == 1) {
@@ -35,7 +35,18 @@ class GetProofQueryUseCase
             operator = _queryOperators[entry.key]!;
           }
           if (entry.value is List<dynamic>) {
-            values = entry.value.cast<int>();
+            try {
+              values = entry.value.cast<int>();
+            } catch (e) {
+              try {
+                values = entry.value.cast<String>();
+              } catch (e) {
+                return Future.error(InvalidProofReqException());
+              }
+              return Future.error(InvalidProofReqException());
+            }
+          } else if (entry.value is String) {
+            values = [entry.value];
           } else if (entry.value is int) {
             values = [entry.value];
           } else if (entry.value == "true" || entry.value == "false") {

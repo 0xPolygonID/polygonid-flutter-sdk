@@ -28,7 +28,7 @@ class ProofRequestEntity {
 
 class ProofQueryParamEntity {
   final String field;
-  final List<int> values;
+  final List<dynamic> values;
   final int operator;
 
   ProofQueryParamEntity(this.field, this.values, this.operator);
