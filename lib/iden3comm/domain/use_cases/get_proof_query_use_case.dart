@@ -34,7 +34,13 @@ class GetProofQueryUseCase
           if (_queryOperators.containsKey(entry.key)) {
             operator = _queryOperators[entry.key]!;
           }
-          if (entry.value is List<dynamic>) {
+          if (entry.value == "true" || entry.value == "false") {
+            values = [entry.value == "true" ? 1 : 0];
+          } else if (entry.value is List<dynamic>) {
+            if (operator == 2 || operator == 3) {
+              // lt, gt
+              return Future.error(InvalidProofReqException());
+            }
             try {
               values = entry.value.cast<int>();
             } catch (e) {
@@ -46,11 +52,13 @@ class GetProofQueryUseCase
               return Future.error(InvalidProofReqException());
             }
           } else if (entry.value is String) {
+            if (operator == 2 || operator == 3) {
+              // lt, gt
+              return Future.error(InvalidProofReqException());
+            }
             values = [entry.value];
           } else if (entry.value is int) {
             values = [entry.value];
-          } else if (entry.value == "true" || entry.value == "false") {
-            values = [entry.value == "true" ? 1 : 0];
           } else if (entry.value is bool) {
             values = [entry.value == true ? 1 : 0];
           } else {
