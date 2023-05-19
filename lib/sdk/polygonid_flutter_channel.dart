@@ -95,6 +95,10 @@ class PolygonIdFlutterChannel
         case 'getEnv':
           return _polygonIdSdk.getEnv().then((env) => jsonEncode(env));
 
+        case 'switchLog':
+          return _polygonIdSdk.switchLog(
+              enabled: jsonDecode(call.arguments['enabled']));
+
         /// Iden3comm
         case 'addInteraction':
           Map<String, dynamic> json = jsonDecode(call.arguments['interaction']);
@@ -408,8 +412,7 @@ class PolygonIdFlutterChannel
   Future<InteractionBaseEntity> addInteraction(
       {required InteractionBaseEntity interaction,
       String? genesisDid,
-      String? privateKey,
-      BigInt? profileNonce}) {
+      String? privateKey}) {
     return _polygonIdSdk.iden3comm.addInteraction(
         interaction: interaction,
         genesisDid: genesisDid,
