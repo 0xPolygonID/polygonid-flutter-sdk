@@ -2,8 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
 
 // Data
-const id = "4f";
-const result = "d4";
+const id = "15";
+const result = "0f";
 
 // Tested instance
 StateIdentifierMapper mapper = StateIdentifierMapper();

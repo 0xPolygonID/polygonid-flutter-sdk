@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:http/http.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/rhs_node_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
 import 'package:web3dart/crypto.dart';
 
 import '../../../common/data/exceptions/network_exceptions.dart';
@@ -59,6 +60,7 @@ class RemoteIdentityDataSource {
       RhsNodeDTO rhsNode =
           await fetchStateRoots(url: rhsBaseUrl + "/" + identityState);
       RhsNodeType rhsNodeType = RhsNodeTypeMapper().mapFrom(rhsNode.node);
+      StateIdentifierMapper identifierMapper = StateIdentifierMapper();
 
       Map<String, dynamic>? issuer;
       String revTreeRootHash =
@@ -66,10 +68,13 @@ class RemoteIdentityDataSource {
       if (rhsNodeType == RhsNodeType.state) {
         revTreeRootHash = rhsNode.node.children[1].toString();
         issuer = {
-          "state": rhsNode.node.hash,
-          "rootOfRoots": rhsNode.node.children[2],
-          "claimsTreeRoot": rhsNode.node.children[0],
-          "revocationTreeRoot": rhsNode.node.children[1],
+          "state": identifierMapper.mapTo(rhsNode.node.hash.toString()),
+          "rootOfRoots":
+              identifierMapper.mapTo(rhsNode.node.children[2].toString()),
+          "claimsTreeRoot":
+              identifierMapper.mapTo(rhsNode.node.children[0].toString()),
+          "revocationTreeRoot":
+              identifierMapper.mapTo(rhsNode.node.children[1].toString()),
         };
       }
 
@@ -81,41 +86,30 @@ class RemoteIdentityDataSource {
       Uint8List key = Uint8ArrayUtils.bigIntToBytes(revNonce);
 
       for (int depth = 0; depth < (key.length * 8); depth++) {
-        if (nextKey !=
-                "0000000000000000000000000000000000000000000000000000000000000000" &&
-            nextKey != "0") {
+        if (BigInt.parse(nextKey) != BigInt.zero) {
           // rev root is not empty
-          RhsNodeDTO revNode =
-              await fetchStateRoots(url: rhsBaseUrl + "/" + nextKey);
+          RhsNodeDTO revNode = await fetchStateRoots(
+              url: rhsBaseUrl + "/" + identifierMapper.mapTo(nextKey));
           RhsNodeType nodeType = RhsNodeTypeMapper().mapFrom(revNode.node);
 
           if (nodeType == RhsNodeType.middle) {
             if (_testBit(key, depth)) {
               nextKey = revNode.node.children[1].toString();
-              siblings.add(Uint8ArrayUtils.leBuff2int(
-                      hexToBytes(revNode.node.children[0].toString()))
-                  .toString());
+              siblings.add(revNode.node.children[0].toString());
             } else {
               nextKey = revNode.node.children[0].toString();
-              siblings.add(Uint8ArrayUtils.leBuff2int(
-                      hexToBytes(revNode.node.children[1].toString()))
-                  .toString());
+              siblings.add(revNode.node.children[1].toString());
             }
           } else if (nodeType == RhsNodeType.leaf) {
-            if (Uint8ArrayUtils.leBuff2int(key) ==
-                Uint8ArrayUtils.leBuff2int(
-                    hexToBytes(revNode.node.children[0].toString()))) {
+            if (Uint8ArrayUtils.leBuff2int(key).toString() ==
+                revNode.node.children[0].toString()) {
               exists = true;
               return _mkProof(issuer, exists, siblings, null);
             }
             // We found a leaf whose entry didn't match hIndex
             Map<String, String> nodeAux = {
-              "key": Uint8ArrayUtils.leBuff2int(
-                      hexToBytes(revNode.node.children[0].toString()))
-                  .toString(),
-              "value": Uint8ArrayUtils.leBuff2int(
-                      hexToBytes(revNode.node.children[1].toString()))
-                  .toString(),
+              "key": revNode.node.children[0].toString(),
+              "value": revNode.node.children[1].toString(),
             };
             return _mkProof(issuer, exists, siblings, nodeAux);
           }
