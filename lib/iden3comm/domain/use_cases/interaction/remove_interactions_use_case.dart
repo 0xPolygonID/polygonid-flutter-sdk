@@ -8,13 +8,11 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/check_pr
 
 class RemoveInteractionsParam {
   final String? genesisDid;
-  final BigInt? profileNonce;
   final String? privateKey;
   final List<String> ids;
 
   RemoveInteractionsParam({
     this.genesisDid,
-    this.profileNonce,
     this.privateKey,
     required this.ids,
   });

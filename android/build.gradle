@@ -1,5 +1,7 @@
+apply from: 'sdk.properties'
+
 group 'io.github.0xpolygonid.polygonid_flutter_sdk'
-version '2.2.0'
+version sdkVersion
 
 buildscript {
     ext.kotlin_version = '1.8.0'
@@ -89,142 +91,60 @@ dependencies {
 }
 
 // Maven
-//publishing {
-//    publications {
-//        release(MavenPublication) {
-//            pom {
-//                name = 'PolygonID Flutter SDK'
-//                description = 'PolygonID Flutter SDK.'
-//                url = 'https://polygon.technology/polygon-id'
-//                licenses {
-//                    license {
-//                        name = 'GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0'
-//                        url = 'https://www.gnu.org/licenses/agpl-3.0.txt'
-//                    }
-//                }
-//                developers {
-//                    developer {
-//                        name = 'Flavien Norindr'
-//                        email = 'fnorindr@polygon.technology'
-//                    }
-//                }
-//                scm {
-//                    connection = 'scm:git@github.com:iden3/polygonid-flutter-sdk.git'
-//                    developerConnection = 'scm:git@github.com:iden3/polygonid-flutter-sdk.git'
-//                    url = 'https://github.com/iden3/polygonid-flutter-sdk/tree/main'
-//                }
-//            }
-//        }
-//    }
-//}
+publishing {
+    publications {
+        sdkDebug(MavenPublication) {
+            groupId = 'io.github.0xpolygonid.polygonid_flutter_sdk'
+            artifactId = 'polygonid_flutter_sdk_debug'
+            version = version
 
-//uploadArchives {
-//    repositories {
-//        mavenDeployer {
-//            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-//
-//            repository(url: "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/") {
-//                authentication(userName: ossrhUsername, password: ossrhPassword)
-//            }
-//
-//            snapshotRepository(url: "https://s01.oss.sonatype.org/content/repositories/snapshots/") {
-//                authentication(userName: ossrhUsername, password: ossrhPassword)
-//            }
-//
-//            pom.project {
-//                name 'PolygonID Flutter SDK'
-//                packaging 'aar'
-//                description 'The PolygonID Flutter SDK.'
-//                url 'https://polygon.technology/polygon-id'
-//
-//                scm {
-//                    connection 'scm:git@github.com:0xPolygonID/polygonid-flutter-sdk.git'
-//                    developerConnection 'scm:git@github.com:0xPolygonID/polygonid-flutter-sdk.git'
-//                    url 'https://github.com:0xPolygonID/polygonid-flutter-sdk.git'
-//                }
-//
-//                licenses {
-//                    license {
-//                        name 'The Apache License, Version 2.0'
-//                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-//                    }
-//                    license {
-//                        name 'MIT License'
-//                        url 'https://mit-license.org/'
-//                    }
-//                }
-//
-//                developers {
-//                    developer {
-//                        id 'flavien'
-//                        name 'Flavien Norindr'
-//                        email 'fnorindr@polygon.technology'
-//                        organization 'Polygon'
-//                        organizationUrl 'https://polygon.technology'
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
+            pom {
+                name = 'PolygonID Flutter SDK'
+                description = 'The Flutter SDK for PolygonID.'
+                url = 'https://polygon.technology/polygon-id'
 
-//task addToPom {
-//    dependsOn 'generatePomFileForReleasePublication'
-//    mustRunAfter 'generatePomFileForReleasePublication'
-//
-//    doLast {
-//        def pomTask = tasks.getByName('generatePomFileForReleasePublication')
-//        def pom = pomTask.pom
-//        println "=========================================================================================================================================================================================================================================================================================================================================="
-//        println pomTask.destination
-//        println pomTask.actions
-//        println pom.name
-//        println pom.packaging
-//        println pom.licenses
-//        println "=========================================================================================================================================================================================================================================================================================================================================="
-//
-//        pom.name.value('PolygonID Flutter SDK')
-//        pom.description.value('The SDK for PolygonID in Flutter.')
-//        pom.url.value('https://polygon.technology/polygon-id')
-//
-//        pom.licenses {
-//            license {
-//                name = 'GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0'
-//                url = 'https://www.gnu.org/licenses/agpl-3.0.txt'
-//            }
-//        }
-//
-//        pom.developers {
-//            developer {
-//                name = 'Flavien Norindr'
-//                email = 'fnorindr@polygon.technology'
-//            }
-//        }
-//
-//        pom.scm {
-//            connection = 'scm:git@github.com:iden3/polygonid-flutter-sdk.git'
-//            developerConnection = 'scm:git@github.com:iden3/polygonid-flutter-sdk.git'
-//            url = 'https://github.com/iden3/polygonid-flutter-sdk/tree/main'
-//        }
-//
-//        println "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-//        tasks
-//        println "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-//    }
-//}
+                licenses {
+                    license {
+                        name = 'Apache License 2.0'
+                        url = 'http://www.apache.org/licenses/'
+                    }
+                    license {
+                        name = 'MIT License'
+                        url = 'https://mit-license.org/'
+                    }
+                }
 
-//tasks.named('generatePomFileForReleasePublication') {
-//    finalizedBy 'addToPom'
-//}
+                developers {
+                    developer {
+                        name = 'Flavien Norindr'
+                        email = 'id@polygon.technology'
+                        organization = 'Polygon'
+                        organizationUrl = 'https://polygon.technology'
+                    }
+                    developer {
+                        name = 'Emanuel Muroni'
+                        email = 'id@polygon.technology'
+                        organization = 'Polygon'
+                        organizationUrl = 'https://polygon.technology'
+                    }
+                    developer {
+                        name = 'Raùl Jareño'
+                        email = 'id@polygon.technology'
+                        organization = 'Polygon'
+                        organizationUrl = 'https://polygon.technology'
+                    }
+                }
 
-//task listTasks {
-//    dependsOn 'tasks'
-//}
-//
-//tasks.named('publish') {
-//    finalizedBy 'listTasks'
-//}
+                scm {
+                    connection = 'scm:git@github.com:0xPolygonID/polygonid-flutter-sdk.git'
+                    developerConnection = 'scm:git@github.com:0xPolygonID/polygonid-flutter-sdk.git'
+                    url = 'https://github.com/0xPolygonID/polygonid-flutter-sdk'
+                }
+            }
 
-//tasks.named('publish') {
-//    finalizedBy 'uploadArchives'
-//}
+            afterEvaluate {
+                from components.debug
+            }
+        }
+    }
+}

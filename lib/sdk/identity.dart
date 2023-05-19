@@ -24,7 +24,6 @@ abstract class PolygonIdSdkIdentity {
   /// Checks the identity validity from a secret
   ///
   /// If [secret] is omitted or null, a random one will be used to create a new identity.
-  /// Return an identity as a [PrivateIdentityEntity].
   /// Throws [IdentityException] if an error occurs.
   ///
   /// Be aware [secret] is internally converted to a 32 length bytes array
@@ -117,7 +116,7 @@ abstract class PolygonIdSdkIdentity {
   ///
   /// Throws [IdentityException] if an error occurs.
   ///
-  /// /// The identities returned will  using the current env set with [PolygonIdSdk.setEnv]
+  /// The identities returned will come from the current env set with [PolygonIdSdk.setEnv]
   Future<List<IdentityEntity>> getIdentities();
 
   /// Remove the previously stored identity associated with the identifier
@@ -144,9 +143,6 @@ abstract class PolygonIdSdkIdentity {
   ///
   /// The [network] is the network name of the blockchain where the identity
   /// is associated, e.g. Main
-  ///
-  /// The [profileNonce] is the nonce of the profile used from identity
-  /// to obtain the did identifier. Value must be greater than 0 and less than 2^248
   ///
   /// Return The Identity's [did] identifier
   Future<String> getDidIdentifier(
@@ -210,7 +206,7 @@ abstract class PolygonIdSdkIdentity {
   ///
   /// The [genesisDid] is the unique id of the identity which profileNonce is 0
   ///
-  /// The [privateKey]  is the key used to access all the sensitive info from the identity
+  /// The [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
   ///
   /// Returns a map of <BigInt, String>.
