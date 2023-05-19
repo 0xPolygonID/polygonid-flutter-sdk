@@ -105,7 +105,6 @@ jobs:
             xcrun simctl boot "${UDID:?No Simulator with this name found}"
 
         - name: Run integration tests
-          if: github.base_ref == 'develop' || github.base_ref == 'main'
           run: cd example&&flutter test integration_test/libpolygonid_test.dart --verbose
 
     # job responsible for running Flutter tests on Android devices
