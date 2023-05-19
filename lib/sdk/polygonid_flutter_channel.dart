@@ -96,8 +96,7 @@ class PolygonIdFlutterChannel
           return _polygonIdSdk.getEnv().then((env) => jsonEncode(env));
 
         case 'switchLog':
-          return _polygonIdSdk.switchLog(
-              enabled: jsonDecode(call.arguments['enabled']));
+          return _polygonIdSdk.switchLog(enabled: call.arguments['enabled']);
 
         /// Iden3comm
         case 'addInteraction':
