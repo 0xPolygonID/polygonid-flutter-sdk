@@ -21,7 +21,7 @@ jobs:
       - name: Setup Flutter SDK
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.7.6'
+          flutter-version: '3.10.0'
           channel: 'stable'
           cache: true
           # instead of "channel: stable", you could be more precise by specifying the exact version of Flutter you're using:
@@ -45,7 +45,6 @@ jobs:
         run: flutter analyze lib test example
 
       - name: Run tests
-        if: github.base_ref == 'develop' || github.base_ref == 'main'
         run: flutter test --coverage
 
       - name: Upload coverage reports to Codecov
@@ -54,32 +53,60 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
     # job responsible for running Flutter tests on iOS devices
-    #  ios:
+  ios:
     #    needs: common
-    #    # Creates a build matrix for your jobs. You can define different variations of an environment to run each job
-    #    strategy:
-    #      matrix:
-    #        device:
-    #          # The available simulators are listed by the "xcrun xctrace list devices" command
-    #          - "iPhone 13 Pro Max Simulator (16.2)" # the name of the simulator could be different depending on the macos version you are using
-    #      # if one of the jobs in the matrix expansion fails, the rest of the jobs will be cancelled
-    #      fail-fast: true
-    #    runs-on: macos-latest # or macos-latest if you prefer, but be aware that the available simulators could be different if you run a different version
-    #    steps:
-    #      - name: "List all simulators"
-    #        run: "xcrun xctrace list devices"
-    #      - name: "Start Simulator"
-    #        # the command "xcrun simctl boot" expects a device identifier
-    #        # the assignment of the UDID variable consists of retrieving the ID of the simulator
-    #        # by extracting it from the command "xcrun xctrace list devices"
-    #        run: |
-    #          UDID=$(xcrun xctrace list devices | grep "^${{ matrix.device }}" | awk '{gsub(/[()]/,""); print $NF}')
-    #          echo $UDID
-    #          xcrun simctl boot "${UDID:?No Simulator with this name found}"
-    #
-    #      - name: Run integration tests
-    #        if: github.base_ref == 'develop' || github.base_ref == 'main'
-    #        run: cd example&&flutter test integration_test/libpolygonid_test.dart --verbose
+        # Creates a build matrix for your jobs. You can define different variations of an environment to run each job
+      strategy:
+        matrix:
+          device:
+            # The available simulators are listed by the "xcrun xctrace list devices" command
+              - "iPhone 13 Pro Max Simulator (16.2)" # the name of the simulator could be different depending on the macos version you are using
+         # if one of the jobs in the matrix expansion fails, the rest of the jobs will be cancelled
+        fail-fast: true
+      runs-on: macos-latest # or macos-latest if you prefer, but be aware that the available simulators could be different if you run a different version
+      steps:
+        - name: checkout
+          uses: actions/checkout@v3
+
+        - name: Setup Flutter SDK
+          uses: subosito/flutter-action@v2
+          with:
+            flutter-version: '3.10.0'
+            channel: 'stable'
+            cache: true
+            # instead of "channel: stable", you could be more precise by specifying the exact version of Flutter you're using:
+            # flutter-version: '<FLUTTER_VERSION>'
+
+        - name: Verify Flutter version
+          run: flutter --version
+
+        - name: Clean, dependencies and generate for SDK
+          run: flutter clean&&flutter pub get&&flutter pub run build_runner build --delete-conflicting-outputs
+
+        - name: Clean, dependencies and generate for Example
+          env:
+            ENV_POLYGON_MUMBAI: ${{ secrets.ENV_POLYGON_MUMBAI }}
+          run: cd example&&flutter clean&&flutter pub get&&flutter pub run build_runner build --delete-conflicting-outputs
+
+        - name: Format
+          run: dart format --set-exit-if-changed lib test example
+
+        - name: Analyze
+          run: flutter analyze lib test example
+        - name: "List all simulators"
+          run: "xcrun xctrace list devices"
+        - name: "Start Simulator"
+            # the command "xcrun simctl boot" expects a device identifier
+            # the assignment of the UDID variable consists of retrieving the ID of the simulator
+            # by extracting it from the command "xcrun xctrace list devices"
+          run: |
+            UDID=$(xcrun xctrace list devices | grep "^${{ matrix.device }}" | awk '{gsub(/[()]/,""); print $NF}')
+            echo $UDID
+            xcrun simctl boot "${UDID:?No Simulator with this name found}"
+
+        - name: Run integration tests
+          if: github.base_ref == 'develop' || github.base_ref == 'main'
+          run: cd example&&flutter test integration_test/libpolygonid_test.dart --verbose
 
     # job responsible for running Flutter tests on Android devices
     #  android:
