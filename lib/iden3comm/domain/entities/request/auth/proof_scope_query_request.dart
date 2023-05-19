@@ -102,7 +102,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
-import 'package:polygonid_flutter_sdk/common/utils/collection_extension.dart';
+import 'package:polygonid_flutter_sdk/common/utils/number_extension.dart';
 
 class ProofScopeQueryRequest {
   final List<String>? allowedIssuers;
@@ -140,10 +140,10 @@ class ProofScopeQueryRequest {
         type: json['type'],
         challenge: json['challenge'],
 
-        /// FIXME: flooring doubles to have ints, this is because of protobuf
+        /// FIXME: flooring doubles without decimals to ints, this is because of protobuf
         /// only use number_value for google.protobuf.Value and turn int to float
-        credentialSubject:
-            (json['credentialSubject'] as Map<String, dynamic>?)?.deepFloor(),
+        credentialSubject: (json['credentialSubject'] as Map<String, dynamic>?)
+            ?.deepDoubleToInt(),
         skipClaimRevocationCheck: json['skipClaimRevocationCheck'],
       );
       //schema: schema);
