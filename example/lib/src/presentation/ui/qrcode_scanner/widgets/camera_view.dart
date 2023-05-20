@@ -439,9 +439,9 @@ class _CameraViewState extends State<CameraView> {
   ///
   void _openDropDown() {
     _dropdownKey.currentContext?.visitChildElements((element) {
-      if (element.widget != null && element.widget is Semantics) {
+      if (element.widget is Semantics) {
         element.visitChildElements((element) {
-          if (element.widget != null && element.widget is Actions) {
+          if (element.widget is Actions) {
             element.visitChildElements((element) {
               Actions.invoke(element, const ActivateIntent());
             });

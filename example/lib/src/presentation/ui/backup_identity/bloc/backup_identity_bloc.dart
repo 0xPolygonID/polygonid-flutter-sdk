@@ -40,7 +40,7 @@ class BackupIdentityBloc
       network: env.network,
     );
 
-    if (genesisDid == null || genesisDid.isEmpty) {
+    if (genesisDid.isEmpty) {
       emit(const BackupIdentityState.error(
           "without an identity is impossible to do the backup"));
       return;
