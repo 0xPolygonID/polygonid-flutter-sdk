@@ -68,14 +68,6 @@ class HexUtils {
   }
 
   static Uint8List hexToBuffer(String source) {
-    // Source
-    print(source.length.toString() +
-        ': "' +
-        source +
-        '" (' +
-        source.runes.length.toString() +
-        ')');
-
     // String (Dart uses UTF-16) to bytes
     List<int> list = [];
     for (var rune in source.runes) {
