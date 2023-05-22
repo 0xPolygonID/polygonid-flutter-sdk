@@ -68,7 +68,7 @@ class GetIden3commClaimsUseCase
                   )))
               .then(
             (claims) async {
-              if (claims == null || claims.isEmpty) {
+              if (claims.isEmpty) {
                 return null;
               }
               if (request.scope.query.skipClaimRevocationCheck == null ||

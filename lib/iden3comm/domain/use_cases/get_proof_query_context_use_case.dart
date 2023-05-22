@@ -13,9 +13,9 @@ class GetProofQueryContextUseCase
   @override
   Future<Map<String, dynamic>> execute(
       {required ProofScopeRequest param}) async {
-    String? schemaUrl = param.query.context!;
+    String schemaUrl = param.query.context!;
 
-    if (schemaUrl != null && schemaUrl.isNotEmpty) {
+    if (schemaUrl.isNotEmpty) {
       return _iden3commCredentialRepository
           .fetchSchema(url: schemaUrl)
           .catchError((error) => <String, dynamic>{});

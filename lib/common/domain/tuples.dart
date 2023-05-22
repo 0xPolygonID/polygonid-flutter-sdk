@@ -7,11 +7,7 @@ class Pair<M, N> {
 
   @override
   bool operator ==(Object other) {
-    return (other == null && this == null ||
-        other != null &&
-            other is Pair &&
-            first == other.first &&
-            second == other.second);
+    return other is Pair && first == other.first && second == other.second;
   }
 
   @override
@@ -30,12 +26,10 @@ class Triple<M, N, O> {
 
   @override
   bool operator ==(Object other) {
-    return (other == null && this == null ||
-        other != null &&
-            other is Quintuple &&
-            first == other.first &&
-            second == other.second &&
-            third == other.third);
+    return other is Quintuple &&
+        first == other.first &&
+        second == other.second &&
+        third == other.third;
   }
 
   @override
@@ -55,13 +49,11 @@ class Quadruple<M, N, O, P> {
 
   @override
   bool operator ==(Object other) {
-    return (other == null && this == null ||
-        other != null &&
-            other is Quintuple &&
-            first == other.first &&
-            second == other.second &&
-            third == other.third &&
-            fourth == other.fourth);
+    return other is Quintuple &&
+        first == other.first &&
+        second == other.second &&
+        third == other.third &&
+        fourth == other.fourth;
   }
 
   @override
@@ -84,14 +76,12 @@ class Quintuple<M, N, O, P, Q> {
 
   @override
   bool operator ==(Object other) {
-    return (other == null && this == null ||
-        other != null &&
-            other is Quintuple &&
-            first == other.first &&
-            second == other.second &&
-            third == other.third &&
-            fourth == other.fourth &&
-            fifth == other.fifth);
+    return other is Quintuple &&
+        first == other.first &&
+        second == other.second &&
+        third == other.third &&
+        fourth == other.fourth &&
+        fifth == other.fifth;
   }
 
   @override
