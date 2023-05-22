@@ -14,7 +14,7 @@ import '../../../common/identity_mocks.dart';
 import 'get_claims_use_case_test.mocks.dart';
 
 // Data
-const identifier = "theIdentifier";
+final identifier = CommonMocks.did;
 const privateKey = "thePrivateKey";
 final filters = [
   FilterEntity(name: "theName", value: "theValue"),

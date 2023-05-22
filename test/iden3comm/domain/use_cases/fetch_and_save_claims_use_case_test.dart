@@ -162,12 +162,11 @@ void main() {
           url: captureAnyNamed('url')));
 
       expect(fetchVerify.callCount, requests.length);
-      int j = 0;
+      
       for (int i = 0; i < requests.length * 3; i += 3) {
         expect(fetchVerify.captured[i], CommonMocks.did);
         expect(fetchVerify.captured[i + 1], CommonMocks.token);
         expect(fetchVerify.captured[i + 2], param.message.body.url);
-        j++;
       }
 
       verify(getClaimRevocationStatusUseCase.execute(
