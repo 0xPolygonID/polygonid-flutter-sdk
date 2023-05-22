@@ -33,10 +33,7 @@ class RPCDataSource {
 
       List<dynamic> result = await state.getStateInfoById(idBigInt);
 
-      if (result != null &&
-          result.isNotEmpty &&
-          result.length == 7 &&
-          result[1] is BigInt) {
+      if (result.isNotEmpty && result.length == 7 && result[1] is BigInt) {
         if (result[1] != BigInt.zero) {
           // state
           String resultString =
@@ -78,10 +75,7 @@ class RPCDataSource {
           function: _getGistProof(gistContract),
           params: transactionParameters);
 
-      if (result != null &&
-          result.isNotEmpty &&
-          result[0] is List &&
-          result[0].length == 8) {
+      if (result.isNotEmpty && result[0] is List && result[0].length == 8) {
         var siblings =
             (result[0][2] as List).map((bigInt) => bigInt.toString()).toList();
 

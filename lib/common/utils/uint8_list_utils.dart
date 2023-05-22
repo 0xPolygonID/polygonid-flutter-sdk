@@ -1,5 +1,4 @@
 import 'dart:ffi';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
@@ -57,7 +56,7 @@ class Uint8ArrayUtils {
       r = r >> 8;
     }
     if (r != BigInt.zero) {
-      throw new ArgumentError("Number does not fit in this length");
+      throw ArgumentError("Number does not fit in this length");
     }
     return buff;
   }
@@ -74,7 +73,7 @@ class Uint8ArrayUtils {
       r = r >> 8;
     }
     if (r == BigInt.zero) {
-      throw new ArgumentError("Number does not fit in this length");
+      throw ArgumentError("Number does not fit in this length");
     }
     return buff;
   }
@@ -86,7 +85,7 @@ class Uint8ArrayUtils {
         for (int i = end - 1; i >= start; i--) {
           result = result * 256 + bytes[i];
         }
-        return new BigInt.from(result);
+        return BigInt.from(result);
       }
       int mid = start + ((end - start) >> 1);
       var result = read(start, mid) +
@@ -101,8 +100,8 @@ class Uint8ArrayUtils {
   static Uint8List bigIntToBytes(BigInt number) {
     // Not handling negative numbers. Decide how you want to do that.
     int bytes = (number.bitLength + 7) >> 3;
-    var b256 = new BigInt.from(256);
-    var result = new Uint8List(bytes);
+    var b256 = BigInt.from(256);
+    var result = Uint8List(bytes);
     for (int i = 0; i < bytes; i++) {
       result[i] = number.remainder(b256).toInt();
       number = number >> 8;

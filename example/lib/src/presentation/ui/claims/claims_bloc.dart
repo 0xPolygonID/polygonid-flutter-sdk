@@ -97,13 +97,13 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
     EnvEntity env = await _polygonIdSdk.getEnv();
 
-    String? did = await _polygonIdSdk.identity.getDidIdentifier(
+    String did = await _polygonIdSdk.identity.getDidIdentifier(
       privateKey: privateKey,
       blockchain: env.blockchain,
       network: env.network,
     );
 
-    if (did == null || did.isEmpty) {
+    if (did.isEmpty) {
       emit(const ClaimsState.error(
           "without an identity is impossible to remove credential"));
       return;
@@ -143,13 +143,13 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
     EnvEntity env = await _polygonIdSdk.getEnv();
 
-    String? did = await _polygonIdSdk.identity.getDidIdentifier(
+    String did = await _polygonIdSdk.identity.getDidIdentifier(
       privateKey: privateKey,
       blockchain: env.blockchain,
       network: env.network,
     );
 
-    if (did == null || did.isEmpty) {
+    if (did.isEmpty) {
       emit(const ClaimsState.error(
           "without an identity is impossible to remove credential"));
       return;
@@ -188,13 +188,13 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
     EnvEntity env = await _polygonIdSdk.getEnv();
 
-    String? did = await _polygonIdSdk.identity.getDidIdentifier(
+    String did = await _polygonIdSdk.identity.getDidIdentifier(
       privateKey: privateKey,
       blockchain: env.blockchain,
       network: env.network,
     );
 
-    if (did == null || did.isEmpty) {
+    if (did.isEmpty) {
       emit(const ClaimsState.error(
           "without an identity is impossible to remove credential"));
       return;
@@ -229,13 +229,13 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
     EnvEntity env = await _polygonIdSdk.getEnv();
 
-    String? did = await _polygonIdSdk.identity.getDidIdentifier(
+    String did = await _polygonIdSdk.identity.getDidIdentifier(
       privateKey: privateKey,
       blockchain: env.blockchain,
       network: env.network,
     );
 
-    if (did == null || did.isEmpty) {
+    if (did.isEmpty) {
       emit(const ClaimsState.error(
           "without an identity is impossible to remove claims"));
       return;
@@ -354,13 +354,13 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
     EnvEntity env = await _polygonIdSdk.getEnv();
 
-    String? did = await _polygonIdSdk.identity.getDidIdentifier(
+    String did = await _polygonIdSdk.identity.getDidIdentifier(
       privateKey: privateKey,
       blockchain: env.blockchain,
       network: env.network,
     );
 
-    if (did == null || did.isEmpty) {
+    if (did.isEmpty) {
       emit(const ClaimsState.error(
           "without an identity is impossible to remove all claims"));
       return;

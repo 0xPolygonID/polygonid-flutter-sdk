@@ -36,13 +36,13 @@ class RestoreIdentityBloc
 
     EnvEntity env = await _polygonIdSdk.getEnv();
 
-    String? genesisDid = await _polygonIdSdk.identity.getDidIdentifier(
+    String genesisDid = await _polygonIdSdk.identity.getDidIdentifier(
       privateKey: privateKey,
       blockchain: env.blockchain,
       network: env.network,
     );
 
-    if (genesisDid == null || genesisDid.isEmpty) {
+    if (genesisDid.isEmpty) {
       emit(const RestoreIdentityState.error(
           "without an identity is impossible to restore the backup"));
       return;
