@@ -161,10 +161,6 @@ class PolygonIdFlutterChannel
           return getIden3Message(message: call.arguments['message'])
               .then((message) => getSchemas(message: message));
 
-        case 'getVocabs':
-          return getIden3Message(message: call.arguments['message'])
-              .then((message) => getVocabs(message: message));
-
         case 'getInteractions':
           return getInteractions(
             genesisDid: call.arguments['genesisDid'] as String?,
@@ -473,12 +469,6 @@ class PolygonIdFlutterChannel
   Future<List<Map<String, dynamic>>> getSchemas(
       {required Iden3MessageEntity message}) {
     return _polygonIdSdk.iden3comm.getSchemas(message: message);
-  }
-
-  @override
-  Future<List<Map<String, dynamic>>> getVocabs(
-      {required Iden3MessageEntity message}) {
-    return _polygonIdSdk.iden3comm.getVocabs(message: message);
   }
 
   @override
