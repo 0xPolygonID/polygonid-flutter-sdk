@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:encrypt/encrypt.dart';
-import 'package:injectable/injectable.dart';
 import 'package:sembast/sembast.dart';
 
 enum EncryptType { salsa20, aes, fernet }

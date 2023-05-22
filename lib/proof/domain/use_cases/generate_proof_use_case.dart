@@ -12,7 +12,6 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_latest_state_use_case.dart';
 
 import '../../../common/domain/domain_logger.dart';
-import '../../../common/domain/tuples.dart';
 import '../../../common/domain/use_case.dart';
 import '../../../common/utils/uint8_list_utils.dart';
 import '../../../iden3comm/domain/entities/jwz_proof_entity.dart';
@@ -23,7 +22,6 @@ import '../../../identity/domain/use_cases/identity/get_identity_use_case.dart';
 import '../../../identity/domain/use_cases/identity/sign_message_use_case.dart';
 import '../entities/circuit_data_entity.dart';
 import '../entities/gist_proof_entity.dart';
-import '../entities/jwz/jwz_proof.dart';
 import '../entities/proof_entity.dart';
 import '../repositories/proof_repository.dart';
 import 'get_gist_proof_use_case.dart';

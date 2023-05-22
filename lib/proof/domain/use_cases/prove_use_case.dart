@@ -1,9 +1,7 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
-import '../../../common/utils/uint8_list_utils.dart';
 import '../entities/circuit_data_entity.dart';
 import '../entities/jwz/jwz_proof.dart';
 import '../repositories/proof_repository.dart';

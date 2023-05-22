@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/services.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:web3dart/contracts.dart';
 import 'package:web3dart/credentials.dart';

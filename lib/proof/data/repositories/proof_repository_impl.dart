@@ -135,7 +135,6 @@ class ProofRepositoryImpl extends ProofRepository {
         .catchError((error) => throw NullAtomicQueryInputsException(id));
 
     if (res.isNotEmpty) {
-      Uint8List inputsJsonBytes;
       dynamic inputsJson = json.decode(res);
       if (inputsJson is Map<String, dynamic>) {
         //Map<String, dynamic> inputs = json.decode(res);

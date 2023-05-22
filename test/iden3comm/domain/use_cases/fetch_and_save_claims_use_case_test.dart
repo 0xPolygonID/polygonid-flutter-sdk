@@ -3,11 +3,9 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
@@ -16,7 +14,6 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifi
 
 import '../../../common/common_mocks.dart';
 import '../../../common/iden3comm_mocks.dart';
-import 'authenticate_use_case_test.dart';
 import 'fetch_and_save_claims_use_case_test.mocks.dart';
 
 // Data
@@ -173,8 +170,9 @@ void main() {
         j++;
       }
 
-      var revStatusVerify = verify(getClaimRevocationStatusUseCase.execute(
-          param: captureAnyNamed('param')));
+      verify(getClaimRevocationStatusUseCase.execute(
+        param: captureAnyNamed('param'),
+      ));
     });
 
     test(

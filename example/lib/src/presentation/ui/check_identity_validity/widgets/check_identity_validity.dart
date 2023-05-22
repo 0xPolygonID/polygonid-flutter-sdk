@@ -25,7 +25,7 @@ class _CheckIdentityValidityScreenState
   String _blockchain = 'polygon';
   String _network = 'mumbai';
 
-  TextEditingController _secretController = TextEditingController();
+  final TextEditingController _secretController = TextEditingController();
 
   @override
   void initState() {

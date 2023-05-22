@@ -119,7 +119,6 @@ class HexUtils {
   /// @param {Array} arr - inputs hash
   /// @returns {BigInt} - final hash
   static BigInt multiHash(List<BigInt> arr) {
-    BigInt r = BigInt.zero;
     for (int i = 0; i < arr.length; i += 5) {
       final fiveElems = [];
       for (int j = 0; j < 5; j++) {

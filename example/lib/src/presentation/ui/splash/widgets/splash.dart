@@ -22,7 +22,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   StreamSubscription? _changeStateStreamSubscription;
-  SplashBloc _bloc = getIt<SplashBloc>();
+  final SplashBloc _bloc = getIt<SplashBloc>();
 
   @override
   void initState() {

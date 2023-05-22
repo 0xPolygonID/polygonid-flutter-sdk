@@ -201,7 +201,10 @@ void main() {
     setUp(() {});
 
     test("Serializable", () {
-      FetchClaimResponseDTO dto = FetchClaimResponseDTO.fromJson(json);
+      expect(
+        FetchClaimResponseDTO.fromJson(json),
+        isInstanceOf<FetchClaimResponseDTO>(),
+      );
     });
   });
 }

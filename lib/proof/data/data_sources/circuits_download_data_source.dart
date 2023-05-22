@@ -11,7 +11,7 @@ class CircuitsDownloadDataSource {
 
   CircuitsDownloadDataSource(this._client);
 
-  StreamController<DownloadResponseDTO> _controller =
+  final StreamController<DownloadResponseDTO> _controller =
       StreamController<DownloadResponseDTO>.broadcast();
 
   Stream<DownloadResponseDTO> get downloadStream => _controller.stream;

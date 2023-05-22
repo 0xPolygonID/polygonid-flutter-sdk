@@ -22,7 +22,7 @@ class SignWidget extends StatefulWidget {
 }
 
 class _SignWidgetState extends State<SignWidget> {
-  TextEditingController _controller = TextEditingController();
+  final TextEditingController _controller = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override

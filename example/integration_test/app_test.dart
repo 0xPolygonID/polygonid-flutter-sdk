@@ -1,17 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/app.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart'
-    as di;
-import 'package:polygonid_flutter_sdk_example/src/presentation/navigations/routes.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/widgets/auth.dart';
-import 'package:polygonid_flutter_sdk_example/utils/custom_dimensions.dart';
-import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
 
 //import 'app_test.mocks.dart';
 

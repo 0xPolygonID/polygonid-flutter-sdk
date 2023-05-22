@@ -2,7 +2,6 @@ import '../../../../common/domain/domain_logger.dart';
 import '../../../../common/domain/use_case.dart';
 import '../../entities/identity_entity.dart';
 import '../../repositories/identity_repository.dart';
-import '../get_did_use_case.dart';
 
 class GetIdentitiesUseCase extends FutureUseCase<void, List<IdentityEntity>> {
   final IdentityRepository _identityRepository;

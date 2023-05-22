@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:http/http.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/rhs_node_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
-import 'package:web3dart/crypto.dart';
 
 import '../../../common/data/exceptions/network_exceptions.dart';
 import '../../../common/domain/domain_logger.dart';
@@ -82,7 +81,6 @@ class RemoteIdentityDataSource {
       bool exists = false;
       List<String> siblings = <String>[];
       String nextKey = revTreeRootHash;
-      int depth = 0;
       Uint8List key = Uint8ArrayUtils.bigIntToBytes(revNonce);
 
       for (int depth = 0; depth < (key.length * 8); depth++) {

@@ -1,11 +1,8 @@
-import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_public_keys_use_case.dart';
 
 import '../../../../common/domain/domain_logger.dart';
 import '../../../../common/domain/use_case.dart';
-import '../../repositories/identity_repository.dart';
-import '../get_did_identifier_use_case.dart';
 
 class CreateProfilesParam {
   final String privateKey;
@@ -35,7 +32,6 @@ class CreateProfilesUseCase
     ], eagerError: true)
         .then((values) async {
       String didIdentifier = values[1] as String;
-      List<String> publicKey = values[0] as List<String>;
       Map<BigInt, String> profiles = {BigInt.zero: didIdentifier};
 
       for (BigInt profile in param.profiles) {

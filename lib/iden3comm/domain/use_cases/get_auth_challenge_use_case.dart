@@ -2,7 +2,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_re
 
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
-import '../../../identity/domain/repositories/identity_repository.dart';
 
 class GetAuthChallengeUseCase extends FutureUseCase<String, String> {
   final Iden3commRepository _iden3commRepository;

@@ -1,8 +1,5 @@
-import 'dart:typed_data';
 
-import 'package:polygonid_flutter_sdk/common/mappers/from_mapper.dart';
 import 'package:polygonid_flutter_sdk/common/mappers/to_mapper.dart';
-import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hash_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/node_aux_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';

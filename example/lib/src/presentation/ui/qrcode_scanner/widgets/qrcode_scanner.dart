@@ -1,11 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/ui/qrcode_scanner/widgets/barcode_detector_painter.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/qrcode_scanner/widgets/camera_view.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/ui/qrcode_scanner/widgets/qrcode_scanner_overlay_shape.dart';
-import 'package:polygonid_flutter_sdk_example/utils/custom_button_style.dart';
-import 'package:polygonid_flutter_sdk_example/utils/custom_colors.dart';
 
 class QRCodeScannerPage extends StatefulWidget {
   const QRCodeScannerPage({Key? key}) : super(key: key);
@@ -18,7 +14,7 @@ class _QRCodeScannerPageState extends State<QRCodeScannerPage> {
   final BarcodeScanner _barcodeScanner =
       BarcodeScanner(formats: [BarcodeFormat.qrCode]);
 
-  bool _canProcess = true;
+  final bool _canProcess = true;
   bool _isBusy = false;
   bool _resultFound = false;
   CustomPaint? _customPaint;

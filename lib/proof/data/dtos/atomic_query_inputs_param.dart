@@ -1,6 +1,5 @@
 import '../../../credential/data/dtos/claim_info_dto.dart';
 import '../../../iden3comm/domain/entities/request/auth/proof_scope_request.dart';
-import 'gist_proof_dto.dart';
 
 enum AtomicQueryInputsType { mtp, sig, mtponchain, sigonchain }
 

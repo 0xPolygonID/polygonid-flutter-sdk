@@ -5,7 +5,6 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_public_keys_
 
 import '../../../../common/domain/domain_logger.dart';
 import '../../../../common/domain/use_case.dart';
-import '../../repositories/identity_repository.dart';
 
 class CreateIdentityParam {
   final String privateKey;
