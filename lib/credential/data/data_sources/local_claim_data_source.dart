@@ -4,7 +4,8 @@ import '../../../constants.dart';
 import 'lib_pidcore_credential_data_source.dart';
 
 class LocalClaimDataSource {
-  final LibPolygonIdCoreCredentialDataSource _libPolygonIdCoreCredentialDataSource;
+  final LibPolygonIdCoreCredentialDataSource
+      _libPolygonIdCoreCredentialDataSource;
 
   LocalClaimDataSource(this._libPolygonIdCoreCredentialDataSource);
 

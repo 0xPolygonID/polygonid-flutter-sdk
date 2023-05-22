@@ -5,7 +5,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/check_profile_validity_use_case.dart';
 
-
 class AddInteractionParam {
   final String? genesisDid;
   final String? privateKey;

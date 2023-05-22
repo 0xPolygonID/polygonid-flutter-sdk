@@ -1,4 +1,3 @@
-
 import 'package:http/http.dart';
 import 'package:mockito/annotations.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/remote_claim_data_source.dart';

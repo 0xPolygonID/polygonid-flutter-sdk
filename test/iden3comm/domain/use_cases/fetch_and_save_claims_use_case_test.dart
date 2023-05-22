@@ -162,7 +162,7 @@ void main() {
           url: captureAnyNamed('url')));
 
       expect(fetchVerify.callCount, requests.length);
-      
+
       for (int i = 0; i < requests.length * 3; i += 3) {
         expect(fetchVerify.captured[i], CommonMocks.did);
         expect(fetchVerify.captured[i + 1], CommonMocks.token);

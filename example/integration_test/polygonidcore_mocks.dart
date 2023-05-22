@@ -1,5 +1,3 @@
-
-
 class PolygonIdCoreMocks {
   static String calculateGenesisIdInputJson = '''
 {
