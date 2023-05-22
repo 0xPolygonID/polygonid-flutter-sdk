@@ -47,7 +47,7 @@ dependencies:
   google_mlkit_barcode_scanning: ^0.5.0
   camera: ^0.10.3+2
   image_picker: ^0.8.7
-  envied: ^0.3.0
+  envied: ^0.3.0+3
 
 dev_dependencies:
   integration_test:
@@ -55,7 +55,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   mockito: ^5.3.2
-  envied_generator: ^0.3.0
+  envied_generator: ^0.3.0+3
   build_runner: ^2.3.3
   json_serializable: ^6.6.1
   freezed: ^2.3.2
