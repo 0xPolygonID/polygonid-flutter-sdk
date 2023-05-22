@@ -41,7 +41,6 @@ class _CameraViewState extends State<CameraView> {
   int _cameraIndex = -1;
   double zoomLevel = 0.0, minZoomLevel = 0.0, maxZoomLevel = 0.0;
   final bool _allowPicker = true;
-  bool _changingCameraLens = false;
 
   ResolutionPreset _selectedCameraQuality = ResolutionPreset.high;
   final GlobalKey _dropdownKey = GlobalKey();
@@ -159,11 +158,7 @@ class _CameraViewState extends State<CameraView> {
           Transform.scale(
             scale: scale,
             child: Center(
-              child: _changingCameraLens
-                  ? const Center(
-                      child: Text('Changing camera lens'),
-                    )
-                  : CameraPreview(_controller!),
+              child: CameraPreview(_controller!),
             ),
           ),
           _buildQrCodeScanOverlay(),
@@ -292,15 +287,6 @@ class _CameraViewState extends State<CameraView> {
     await _controller?.stopImageStream();
     await _controller?.dispose();
     _controller = null;
-  }
-
-  Future _switchLiveCamera() async {
-    setState(() => _changingCameraLens = true);
-    _cameraIndex = (_cameraIndex + 1) % widget.cameras.length;
-
-    await _stopLiveFeed();
-    await _startLiveFeed();
-    setState(() => _changingCameraLens = false);
   }
 
   Future _processPickedFile(XFile? pickedFile) async {

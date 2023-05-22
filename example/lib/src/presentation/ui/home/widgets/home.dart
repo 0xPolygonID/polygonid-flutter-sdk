@@ -3,12 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/navigations/routes.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/ui/common/widgets/button_next_action.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/common/widgets/feature_card.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_state.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/ui/sign/widgets/sign.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_button_style.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_colors.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
@@ -236,44 +234,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       },
-    );
-  }
-
-  ///
-  Widget _buildNavigateToNextPageButton() {
-    return Padding(
-      padding: const EdgeInsets.only(right: 16),
-      child: Align(
-        alignment: Alignment.centerRight,
-        child: BlocBuilder(
-          bloc: _bloc,
-          builder: (BuildContext context, HomeState state) {
-            bool enabled = (state is! LoadingDataHomeState) &&
-                (state.identifier != null && state.identifier!.isNotEmpty);
-            return ButtonNextAction(
-              key: CustomWidgetsKeys.homeScreenButtonNextAction,
-              enabled: enabled,
-              onPressed: () {
-                Navigator.pushNamed(context, Routes.authPath);
-              },
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  ///
-  Widget _buildSignMessageSection() {
-    return BlocBuilder(
-      bloc: _bloc,
-      builder: (BuildContext context, HomeState state) {
-        if (state.identifier == null || state.identifier!.isEmpty) {
-          return const SizedBox.shrink();
-        }
-        return SignWidget();
-      },
-      buildWhen: (_, currentState) => currentState is LoadedIdentifierHomeState,
     );
   }
 
