@@ -33,19 +33,12 @@ class Iden3commCredentialRepositoryImpl extends Iden3commCredentialRepository {
     return _remoteIden3commDataSource
         .fetchClaim(authToken: authToken, url: url, did: did)
         .then((dto) {
-      /// Error in fetching schema and vocab are not blocking
+      /// Error in fetching schema is not blocking
       return _remoteIden3commDataSource
           .fetchSchema(url: dto.info.credentialSchema.id)
           .then((schema) {
             dto.schema = schema;
-
-            return _remoteIden3commDataSource
-                .fetchVocab(schema: schema, type: dto.info.context[2])
-                .then((vocab) {
-              dto.vocab = vocab;
-
-              return dto;
-            });
+            return dto;
           })
           .catchError((_) => dto)
           .then((value) => _claimMapper.mapFrom(dto));
@@ -57,13 +50,5 @@ class Iden3commCredentialRepositoryImpl extends Iden3commCredentialRepository {
     return _remoteIden3commDataSource
         .fetchSchema(url: url)
         .catchError((error) => throw FetchSchemaException(error));
-  }
-
-  @override
-  Future<Map<String, dynamic>> fetchVocab(
-      {required Map<String, dynamic> schema, required String type}) {
-    return _remoteIden3commDataSource
-        .fetchVocab(schema: schema, type: type)
-        .catchError((error) => throw FetchVocabException(error));
   }
 }

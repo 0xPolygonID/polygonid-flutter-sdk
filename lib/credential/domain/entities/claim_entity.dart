@@ -7,7 +7,6 @@ class ClaimEntity {
   final ClaimState state;
   final String? expiration;
   final Map<String, dynamic>? schema;
-  final Map<String, dynamic>? vocab;
   final String type;
   final Map<String, dynamic> info;
 
@@ -18,7 +17,6 @@ class ClaimEntity {
       required this.state,
       this.expiration,
       this.schema,
-      this.vocab,
       required this.type,
       required this.info});
 
@@ -30,7 +28,6 @@ class ClaimEntity {
       state: ClaimState.values.firstWhere((e) => e.name == json['state']),
       expiration: json['expiration'],
       schema: json['schema'],
-      vocab: json['vocab'],
       type: json['type'],
       info: json['info'],
     );
@@ -44,7 +41,6 @@ class ClaimEntity {
         'state': state.name,
         'expiration': expiration,
         'schema': schema,
-        'vocab': vocab,
         'type': type,
         'info': info,
       };
@@ -52,7 +48,7 @@ class ClaimEntity {
   @override
   String toString() => "[ClaimEntity] {id: $id, "
       "issuer: $issuer, did: $did, state: $state, "
-      "expiration: $expiration, schema: $schema, vocab: $vocab, type: $type, info: $info}";
+      "expiration: $expiration, schema: $schema, type: $type, info: $info}";
 
   @override
   bool operator ==(Object other) =>
@@ -65,7 +61,6 @@ class ClaimEntity {
           state == other.state &&
           expiration == other.expiration &&
           schema == other.schema &&
-          vocab == other.vocab &&
           type == other.type &&
           info.toString() == other.info.toString();
 

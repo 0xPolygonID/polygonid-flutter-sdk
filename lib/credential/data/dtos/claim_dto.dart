@@ -16,7 +16,6 @@ class ClaimDTO extends Equatable {
   final String? expiration;
   final String type;
   Map<String, dynamic>? schema;
-  Map<String, dynamic>? vocab;
 
   ClaimDTO(
       {required this.id,
@@ -26,8 +25,7 @@ class ClaimDTO extends Equatable {
       this.state = '',
       this.expiration,
       required this.info,
-      this.schema,
-      this.vocab});
+      this.schema});
 
   factory ClaimDTO.fromJson(Map<String, dynamic> json) =>
       _$ClaimDTOFromJson(json);

@@ -20,7 +20,6 @@ class ClaimMapper extends Mapper<ClaimDTO, ClaimEntity> {
         state: _claimStateMapper.mapFrom(from.state),
         expiration: from.expiration,
         schema: from.schema,
-        vocab: from.vocab,
         type: from.type,
         info: _claimInfoMapper.mapFrom(from.info));
   }
@@ -35,7 +34,6 @@ class ClaimMapper extends Mapper<ClaimDTO, ClaimEntity> {
         type: to.type,
         expiration: to.expiration,
         schema: to.schema,
-        vocab: to.vocab,
         info: _claimInfoMapper.mapTo(to.info));
   }
 }

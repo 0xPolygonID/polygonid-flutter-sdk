@@ -44,16 +44,8 @@ class FetchSchemaException extends ErrorException {
   FetchSchemaException(error) : super(error);
 }
 
-class FetchVocabException extends ErrorException {
-  FetchVocabException(error) : super(error);
-}
-
 class UnsupportedFetchClaimTypeException extends ErrorException {
   UnsupportedFetchClaimTypeException(error) : super(error);
-}
-
-class UnsupportedSchemaFetchVocabException extends ErrorException {
-  UnsupportedSchemaFetchVocabException(error) : super(error);
 }
 
 class GetConnectionsException extends ErrorException {
