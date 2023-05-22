@@ -6,7 +6,6 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/data/secure_storage.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_event.dart';
@@ -59,7 +58,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
     Iden3MessageEntity iden3message = event.iden3message;
 
-    if (event.iden3message.messageType != Iden3MessageType.offer) {
+    if (iden3message.messageType != Iden3MessageType.offer) {
       emit(const ClaimsState.error("Read message is not of type offer"));
       return;
     }
@@ -67,7 +66,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     try {
       List<ClaimEntity> claimList =
           await _polygonIdSdk.iden3comm.fetchAndSaveClaims(
-        message: event.iden3message as OfferIden3MessageEntity,
+        message: iden3message,
         genesisDid: didIdentifier,
         privateKey: privateKey,
       );

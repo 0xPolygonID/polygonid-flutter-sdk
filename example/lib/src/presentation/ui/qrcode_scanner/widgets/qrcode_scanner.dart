@@ -17,7 +17,6 @@ class _QRCodeScannerPageState extends State<QRCodeScannerPage> {
   final bool _canProcess = true;
   bool _isBusy = false;
   bool _resultFound = false;
-  CustomPaint? _customPaint;
 
   @override
   void dispose() {
