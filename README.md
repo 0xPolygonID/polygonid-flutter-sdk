@@ -4,7 +4,6 @@
  
 # Polygon ID Flutter SDK
 
-[![pub package](https://img.shields.io/badge/pub-2.2.3-blueviolet)](https://pub.dev/packages/polygonid_flutter_sdk)
 [![build](https://github.com/iden3/polygonid-flutter-sdk/workflows/polygonid_flutter_sdk/badge.svg)](https://github.com/iden3/polygonid-flutter-sdk/actions?query=workflow%3Apolygonid_flutter_sdk)
 [![codecov](https://codecov.io/gh/iden3/polygonid-flutter-sdk/branch/develop/graph/badge.svg?token=0SI0XWGXKL)](https://codecov.io/gh/iden3/polygonid-flutter-sdk)
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://github.com/iden3/polygonid-flutter-sdk/blob/master/LICENSE-APACHE)
@@ -20,7 +19,8 @@ To use this plugin, add `polygonid_flutter_sdk` as a [dependency](https://flutte
 
 ```yaml
 dependencies:
-  polygonid_flutter_sdk: ^x.y.z
+  polygonid_flutter_sdk: 
+    git: https://github.com/0xPolygonID/polygonid-flutter-sdk.git
 ```
 This will get you the latest version.
 
