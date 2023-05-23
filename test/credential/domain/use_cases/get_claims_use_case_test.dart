@@ -5,6 +5,7 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
@@ -14,8 +15,6 @@ import '../../../common/identity_mocks.dart';
 import 'get_claims_use_case_test.mocks.dart';
 
 // Data
-const identifier = "theIdentifier";
-const privateKey = "thePrivateKey";
 final filters = [
   FilterEntity(name: "theName", value: "theValue"),
   FilterEntity(
@@ -26,18 +25,22 @@ final filters = [
       value: ["theValue2", "theValue3"])
 ];
 final GetClaimsParam param = GetClaimsParam(
-    genesisDid: identifier, profileNonce: BigInt.zero, privateKey: privateKey);
-final GetClaimsParam negativeParam = GetClaimsParam(
-    genesisDid: identifier,
-    profileNonce: CommonMocks.negativeNonce,
-    privateKey: privateKey);
-final GetClaimsParam paramFilters = GetClaimsParam(
-    genesisDid: identifier,
+    genesisDid: CommonMocks.did,
     profileNonce: BigInt.zero,
-    privateKey: privateKey,
+    privateKey: CommonMocks.privateKey);
+final GetClaimsParam negativeParam = GetClaimsParam(
+    genesisDid: CommonMocks.did,
+    profileNonce: CommonMocks.negativeNonce,
+    privateKey: CommonMocks.privateKey);
+final GetClaimsParam paramFilters = GetClaimsParam(
+    genesisDid: CommonMocks.did,
+    profileNonce: BigInt.zero,
+    privateKey: CommonMocks.privateKey,
     filters: filters);
 final GetClaimsParam profileParam = GetClaimsParam(
-    genesisDid: identifier, profileNonce: BigInt.one, privateKey: privateKey);
+    genesisDid: CommonMocks.did,
+    profileNonce: BigInt.one,
+    privateKey: CommonMocks.privateKey);
 final claimEntities = [
   ClaimEntity(
       issuer: "",
@@ -94,24 +97,24 @@ var exception = Exception();
 
 // Dependencies
 MockCredentialRepository credentialRepository = MockCredentialRepository();
-MockGetCurrentEnvDidIdentifierUseCase getCurrentEnvDidIdentifierUseCase =
-    MockGetCurrentEnvDidIdentifierUseCase();
+MockCheckProfileAndDidCurrentEnvUseCase checkProfileAndDidCurrentEnvUseCase =
+    MockCheckProfileAndDidCurrentEnvUseCase();
 MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
 
 // Tested instance
 GetClaimsUseCase useCase = GetClaimsUseCase(credentialRepository,
-    getCurrentEnvDidIdentifierUseCase, getIdentityUseCase);
+    checkProfileAndDidCurrentEnvUseCase, getIdentityUseCase);
 
 @GenerateMocks([
   CredentialRepository,
-  GetCurrentEnvDidIdentifierUseCase,
+  CheckProfileAndDidCurrentEnvUseCase,
   GetIdentityUseCase
 ])
 void main() {
   group("Get claims", () {
     setUp(() {
       reset(credentialRepository);
-      reset(getCurrentEnvDidIdentifierUseCase);
+      reset(checkProfileAndDidCurrentEnvUseCase);
       reset(getIdentityUseCase);
 
       // Given
@@ -120,8 +123,9 @@ void main() {
               privateKey: anyNamed('privateKey'),
               filters: anyNamed("filters")))
           .thenAnswer((realInvocation) => Future.value(claimEntities));
-      when(getCurrentEnvDidIdentifierUseCase.execute(param: anyNamed('param')))
-          .thenAnswer((realInvocation) => Future.value(CommonMocks.did));
+      when(checkProfileAndDidCurrentEnvUseCase.execute(
+              param: anyNamed('param')))
+          .thenAnswer((realInvocation) => Future.value(null));
       when(getIdentityUseCase.execute(param: anyNamed('param'))).thenAnswer(
           (realInvocation) => Future.value(IdentityMocks.privateIdentity));
     });
@@ -133,19 +137,21 @@ void main() {
       expect(await useCase.execute(param: param), profilesClaimEntities);
 
       // Then
-      var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(
+      var capturedCheck = verify(checkProfileAndDidCurrentEnvUseCase.execute(
               param: captureAnyNamed('param')))
           .captured
           .first;
-      expect(capturedDid.privateKey, privateKey);
+      expect(capturedCheck.did, CommonMocks.did);
+      expect(capturedCheck.privateKey, CommonMocks.privateKey);
+      expect(capturedCheck.profileNonce, param.profileNonce);
 
       var capturedGet = verify(credentialRepository.getClaims(
               genesisDid: captureAnyNamed('genesisDid'),
               privateKey: captureAnyNamed('privateKey'),
               filters: captureAnyNamed('filters')))
           .captured;
-      expect(capturedGet[0], identifier);
-      expect(capturedGet[1], privateKey);
+      expect(capturedGet[0], CommonMocks.did);
+      expect(capturedGet[1], CommonMocks.privateKey);
       expect(capturedGet[2], null);
     });
 
@@ -156,11 +162,13 @@ void main() {
       expect(await useCase.execute(param: profileParam), claimEntities);
 
       // Then
-      var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(
+      var capturedCheck = verify(checkProfileAndDidCurrentEnvUseCase.execute(
               param: captureAnyNamed('param')))
           .captured
           .first;
-      expect(capturedDid.privateKey, privateKey);
+      expect(capturedCheck.did, CommonMocks.did);
+      expect(capturedCheck.privateKey, CommonMocks.privateKey);
+      expect(capturedCheck.profileNonce, profileParam.profileNonce);
 
       verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
 
@@ -169,26 +177,9 @@ void main() {
               privateKey: captureAnyNamed('privateKey'),
               filters: captureAnyNamed('filters')))
           .captured;
-      expect(capturedGet[0], identifier);
-      expect(capturedGet[1], privateKey);
+      expect(capturedGet[0], CommonMocks.did);
+      expect(capturedGet[1], CommonMocks.privateKey);
       expect(capturedGet[2], null);
-    });
-
-    test(
-        "Given no filters and a negative profile, when I call execute, then I expect an InvalidProfileException to be thrown",
-        () async {
-      // When
-      await expectLater(useCase.execute(param: negativeParam),
-          throwsA(isA<InvalidProfileException>()));
-
-      // Then
-      verifyNever(getCurrentEnvDidIdentifierUseCase.execute(
-          param: captureAnyNamed('param')));
-
-      verifyNever(credentialRepository.getClaims(
-          genesisDid: captureAnyNamed('genesisDid'),
-          privateKey: captureAnyNamed('privateKey'),
-          filters: captureAnyNamed('filters')));
     });
 
     test(
@@ -198,19 +189,21 @@ void main() {
       expect(await useCase.execute(param: paramFilters), profilesClaimEntities);
 
       // Then
-      var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(
+      var capturedCheck = verify(checkProfileAndDidCurrentEnvUseCase.execute(
               param: captureAnyNamed('param')))
           .captured
           .first;
-      expect(capturedDid.privateKey, privateKey);
+      expect(capturedCheck.did, CommonMocks.did);
+      expect(capturedCheck.privateKey, CommonMocks.privateKey);
+      expect(capturedCheck.profileNonce, param.profileNonce);
 
       var capturedGet = verify(credentialRepository.getClaims(
               genesisDid: captureAnyNamed('genesisDid'),
               privateKey: captureAnyNamed('privateKey'),
               filters: captureAnyNamed('filters')))
           .captured;
-      expect(capturedGet[0], identifier);
-      expect(capturedGet[1], privateKey);
+      expect(capturedGet[0], CommonMocks.did);
+      expect(capturedGet[1], CommonMocks.privateKey);
       expect(capturedGet[2], filters);
     });
 
@@ -229,19 +222,21 @@ void main() {
           useCase.execute(param: paramFilters), throwsA(exception));
 
       // Then
-      var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(
+      var capturedCheck = verify(checkProfileAndDidCurrentEnvUseCase.execute(
               param: captureAnyNamed('param')))
           .captured
           .first;
-      expect(capturedDid.privateKey, privateKey);
+      expect(capturedCheck.did, CommonMocks.did);
+      expect(capturedCheck.privateKey, CommonMocks.privateKey);
+      expect(capturedCheck.profileNonce, param.profileNonce);
 
       var capturedGet = verify(credentialRepository.getClaims(
               genesisDid: captureAnyNamed('genesisDid'),
               privateKey: captureAnyNamed('privateKey'),
               filters: captureAnyNamed('filters')))
           .captured;
-      expect(capturedGet[0], identifier);
-      expect(capturedGet[1], privateKey);
+      expect(capturedGet[0], CommonMocks.did);
+      expect(capturedGet[1], CommonMocks.privateKey);
       expect(capturedGet[2], filters);
     });
 
@@ -259,11 +254,13 @@ void main() {
           useCase.execute(param: profileParam), throwsA(exception));
 
       // Then
-      var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(
+      var capturedCheck = verify(checkProfileAndDidCurrentEnvUseCase.execute(
               param: captureAnyNamed('param')))
           .captured
           .first;
-      expect(capturedDid.privateKey, privateKey);
+      expect(capturedCheck.did, CommonMocks.did);
+      expect(capturedCheck.privateKey, CommonMocks.privateKey);
+      expect(capturedCheck.profileNonce, profileParam.profileNonce);
 
       verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
 
@@ -272,8 +269,8 @@ void main() {
               privateKey: captureAnyNamed('privateKey'),
               filters: captureAnyNamed('filters')))
           .captured;
-      expect(capturedGet[0], identifier);
-      expect(capturedGet[1], privateKey);
+      expect(capturedGet[0], CommonMocks.did);
+      expect(capturedGet[1], CommonMocks.privateKey);
       expect(capturedGet[2], null);
     });
   });
