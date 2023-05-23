@@ -36,25 +36,22 @@ class GetClaimsUseCase
     // if profileNonce is zero, return all profiles credentials,
     // if profileNonce > 0 then return only credentials from that profile
     if (param.profileNonce >= GENESIS_PROFILE_NONCE) {
-      String did = await _getCurrentEnvDidIdentifierUseCase.execute(
+      await _getCurrentEnvDidIdentifierUseCase.execute(
           param: GetCurrentEnvDidIdentifierParam(
               privateKey: param.privateKey, profileNonce: param.profileNonce));
-      if (param.genesisDid == did) {
-        return _credentialRepository
-            .getClaims(
-                filters: param.filters,
-                genesisDid: param.genesisDid,
-                privateKey: param.privateKey)
-            .then((claims) {
-          logger().i("[GetClaimsUseCase] Claims: $claims");
-          return claims;
-        }).catchError((error) {
-          logger().e("[GetClaimsUseCase] Error: $error");
-          throw error;
-        });
-      } else {
-        throw UnknownIdentityException(did);
-      }
+
+      return _credentialRepository
+          .getClaims(
+              filters: param.filters,
+              genesisDid: param.genesisDid,
+              privateKey: param.privateKey)
+          .then((claims) {
+        logger().i("[GetClaimsUseCase] Claims: $claims");
+        return claims;
+      }).catchError((error) {
+        logger().e("[GetClaimsUseCase] Error: $error");
+        throw error;
+      });
     } else {
       throw InvalidProfileException(param.profileNonce);
     }
