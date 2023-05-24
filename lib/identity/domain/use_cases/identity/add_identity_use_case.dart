@@ -47,12 +47,10 @@ class AddIdentityUseCase
       await _identityRepository.storeIdentity(identity: identity);
 
       // create identity state for each profile did
-      if (identity.profiles != null) {
-        for (String profileDid in identity.profiles.values) {
-          await _createIdentityStateUseCase.execute(
-              param: CreateIdentityStateParam(
-                  did: profileDid, privateKey: param.privateKey));
-        }
+      for (String profileDid in identity.profiles.values) {
+        await _createIdentityStateUseCase.execute(
+            param: CreateIdentityStateParam(
+                did: profileDid, privateKey: param.privateKey));
       }
     } catch (error) {
       logger().e("[AddIdentityUseCase] Error: $error");

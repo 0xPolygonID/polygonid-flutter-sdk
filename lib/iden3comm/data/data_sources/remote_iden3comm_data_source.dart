@@ -98,44 +98,4 @@ class RemoteIden3commDataSource {
       throw FetchSchemaException(error);
     }
   }
-
-  Future<Map<String, dynamic>> fetchVocab(
-      {required Map<String, dynamic> schema, required String type}) async {
-    try {
-      Map<String, dynamic>? schemaContext;
-      if (schema['@context'] is List) {
-        schemaContext = schema['@context'].first;
-      } else if (schema['@context'] is Map) {
-        schemaContext = schema['@context'];
-      }
-
-      if (schemaContext != null &&
-          schemaContext[type]["@context"]["poly-vocab"] != null) {
-        String vocabId = schemaContext[type]["@context"]["poly-vocab"];
-        String vocabUrl = vocabId;
-        if (vocabId.toLowerCase().startsWith("ipfs://")) {
-          String vocabHash = vocabId.toLowerCase().replaceFirst("ipfs://", "");
-          vocabUrl = "https://ipfs.io/ipfs/$vocabHash";
-        }
-        var vocabUri = Uri.parse(vocabUrl);
-        var vocabResponse = await client.get(vocabUri, headers: {
-          HttpHeaders.acceptHeader: '*/*',
-          HttpHeaders.contentTypeHeader: 'application/json',
-        });
-        if (vocabResponse.statusCode == 200) {
-          Map<String, dynamic> vocab = json.decode(vocabResponse.body);
-          logger().d('vocab: $vocab');
-
-          return vocab;
-        } else {
-          throw NetworkException(vocabResponse);
-        }
-      } else {
-        throw UnsupportedSchemaFetchVocabException(schema);
-      }
-    } catch (error) {
-      logger().e('vocab error: $error');
-      throw FetchVocabException(error);
-    }
-  }
 }

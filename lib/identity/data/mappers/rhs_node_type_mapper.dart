@@ -9,10 +9,7 @@ class RhsNodeTypeMapper extends FromMapper<NodeDTO, RhsNodeType> {
   @override
   RhsNodeType mapFrom(NodeDTO from) {
     if (from.children.length == 3) {
-      if (from.children[2].data ==
-          Uint8List.fromList(
-              "0100000000000000000000000000000000000000000000000000000000000000"
-                  .codeUnits)) {
+      if (BigInt.parse(from.children[2].toString()) == BigInt.one) {
         return RhsNodeType.leaf;
       } else {
         return RhsNodeType.state;

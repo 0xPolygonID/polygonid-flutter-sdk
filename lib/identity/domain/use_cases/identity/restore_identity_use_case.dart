@@ -38,7 +38,7 @@ class RestoreIdentityUseCase
   @override
   Future<PrivateIdentityEntity> execute(
       {required RestoreIdentityParam param}) async {
-    PrivateIdentityEntity? privateIdentity;
+    late PrivateIdentityEntity privateIdentity;
 
     try {
       String genesisDid = await _getCurrentEnvDidIdentifierUseCase.execute(
@@ -59,7 +59,7 @@ class RestoreIdentityUseCase
     }
 
     try {
-      if (param.encryptedDb != null && privateIdentity != null) {
+      if (param.encryptedDb != null) {
         await _identityRepository
             .importIdentity(
           did: privateIdentity.did,
@@ -68,7 +68,7 @@ class RestoreIdentityUseCase
         )
             .then((_) {
           logger().i(
-              "[ImportProfileUseCase] Profile for did ${privateIdentity!.did} has been imported");
+              "[ImportProfileUseCase] Profile for did ${privateIdentity.did} has been imported");
         }).catchError((error) {
           logger().e("[ImportProfileUseCase] Error: $error");
 

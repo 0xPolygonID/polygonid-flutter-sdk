@@ -112,7 +112,6 @@ class FetchAndSaveClaimsUseCase
                   state: ClaimState.revoked,
                   expiration: claim.expiration,
                   schema: claim.schema,
-                  vocab: claim.vocab,
                   type: claim.type,
                   info: claim.info,
                 );

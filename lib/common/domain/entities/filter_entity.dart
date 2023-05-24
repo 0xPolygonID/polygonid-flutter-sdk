@@ -13,7 +13,7 @@ enum FilterOperator {
 class FilterEntity {
   final FilterOperator operator;
   final String name;
-  final dynamic value;
+  final Object value;
 
   FilterEntity(
       {this.operator = FilterOperator.equal,

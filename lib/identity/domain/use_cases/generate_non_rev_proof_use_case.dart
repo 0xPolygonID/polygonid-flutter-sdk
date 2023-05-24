@@ -24,7 +24,7 @@ class GenerateNonRevProofUseCase
               _credentialRepository.getRevocationUrl(claim: param, rhs: true),
             ]).then((values) => _identityRepository.getNonRevProof(
                 identityState: identityState,
-                nonce: values[0],
+                nonce: BigInt.from(values[0]),
                 baseUrl: values[1])))
         .then((nonRevProof) {
       logger().i("[GenerateNonRevProofUseCase] Non rev proof: $nonRevProof");

@@ -75,17 +75,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     EnvEntity env = await _polygonIdSdk.getEnv();
 
-    String? did = await _polygonIdSdk.identity.getDidIdentifier(
+    String did = await _polygonIdSdk.identity.getDidIdentifier(
       privateKey: privateKey,
       blockchain: env.blockchain,
       network: env.network,
     );
-
-    if (did == null) {
-      emit(const HomeState.error(
-          message: "cannot delete identity without identifier"));
-      return;
-    }
 
     try {
       await _polygonIdSdk.identity

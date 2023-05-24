@@ -79,7 +79,7 @@ class PolygonIdSdk {
         .then((instance) => instance.execute());
   }
 
-  void switchLog({required bool enable}) {
-    Domain.logEnabled = enable;
+  Future<void> switchLog({required bool enabled}) async {
+    Domain.logEnabled = enabled;
   }
 }

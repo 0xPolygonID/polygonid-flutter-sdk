@@ -17,7 +17,6 @@ class CredentialMocks {
     type: CommonMocks.type,
     info: CommonMocks.aMap,
     schema: CommonMocks.aMap,
-    vocab: CommonMocks.aMap,
   );
 
   /// We assume [ClaimInfoDTO] has been tested

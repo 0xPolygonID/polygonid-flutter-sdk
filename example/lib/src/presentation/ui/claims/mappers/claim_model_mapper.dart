@@ -47,12 +47,8 @@ class ClaimModelMapper implements FromMapper<ClaimEntity, ClaimModel> {
           creationDate = DateFormat("d MMM yyyy").format(
               DateTime.fromMillisecondsSinceEpoch(
                   (proof['issuerData']['state']['blockTimestamp']) * 1000));
-          proofType += '- SMT Signature\n';
-        } else if (proof['type'] == "BJJSignature2021") {
-          proofType += '- BJJ Signature\n';
-        } else {
-          proofType += '- ${proof['type']}\n';
         }
+        proofType += '- ${proof['type']}\n';
       }
       proofType = proofType.substring(0, proofType.length - 1);
     }
@@ -65,108 +61,6 @@ class ClaimModelMapper implements FromMapper<ClaimEntity, ClaimModel> {
       if (key != "id" && key != "type") {
         String claimTitle = key;
         String claimValue = value.toString();
-        if (from.vocab != null &&
-            from.vocab!.containsKey("properties") &&
-            (from.vocab!['properties'] as Map<String, dynamic>)
-                .containsKey(key)) {
-          Map<String, dynamic> vocabProperty =
-              (from.vocab!['properties'] as Map<String, dynamic>)[key];
-          if (vocabProperty.containsKey("display")) {
-            claimTitle = vocabProperty["display"];
-          }
-          if (vocabProperty.containsKey("anyOf")) {
-            List vocabValues = vocabProperty["anyOf"] as List;
-            for (Map<String, String> vocabValue in vocabValues) {
-              if (vocabValue["const"] == value.toString()) {
-                claimValue = '${vocabValue["const"]} - ${vocabValue["title"]}';
-                value = claimValue;
-                break;
-              }
-            }
-          } else if (vocabProperty.containsKey("format")) {
-            if (vocabProperty["format"] == "bool") {
-              claimValue = value == 0 ? "no" : "yes";
-              value = claimValue;
-            } else if (vocabProperty["format"] == "yyyymmdd") {
-              try {
-                claimValue = DateFormat("d MMM yyyy")
-                    .format(DateTime.parse(value.toString()));
-                value = claimValue;
-              } catch (e, s) {
-                logger().d(s);
-              }
-            } else {
-              if (key.toLowerCase().contains("date") ||
-                  key.toLowerCase().contains("day") ||
-                  key.toLowerCase().contains("birth") ||
-                  key.toLowerCase().contains("age")) {
-                try {
-                  claimValue = DateFormat("d MMM yyyy")
-                      .format(DateTime.parse(value.toString()));
-                  value = claimValue;
-                } catch (e, s) {
-                  logger().d(s);
-                }
-              }
-              if (key.toLowerCase().contains("country")) {
-                try {
-                  CountryCode code = CountryCode.ofNumeric(value as int);
-                  Country country = Country.isoCode(code.alpha2);
-                  claimValue = country.name;
-                  value = claimValue;
-                } catch (e, s) {
-                  logger().d(s);
-                }
-              }
-            }
-          } else {
-            if (key.toLowerCase().contains("date") ||
-                key.toLowerCase().contains("day") ||
-                key.toLowerCase().contains("birth") ||
-                key.toLowerCase().contains("age")) {
-              try {
-                claimValue = DateFormat("d MMM yyyy")
-                    .format(DateTime.parse(value.toString()));
-                value = claimValue;
-              } catch (e, s) {
-                logger().d(s);
-              }
-            }
-            if (key.toLowerCase().contains("country")) {
-              try {
-                CountryCode code = CountryCode.ofNumeric(value as int);
-                Country country = Country.isoCode(code.alpha2);
-                claimValue = country.name;
-                value = claimValue;
-              } catch (e, s) {
-                logger().d(s);
-              }
-            }
-          }
-        } else {
-          if (key.toLowerCase().contains("date") ||
-              key.toLowerCase().contains("day") ||
-              key.toLowerCase().contains("birth") ||
-              key.toLowerCase().contains("age")) {
-            try {
-              claimValue = DateFormat("d MMM yyyy")
-                  .format(DateTime.parse(value.toString()));
-              value = claimValue;
-            } catch (e, s) {
-              logger().d(s);
-            }
-          }
-          if (key.toLowerCase().contains("country")) {
-            try {
-              CountryCode code = CountryCode.ofNumeric(value as int);
-              Country country = Country.isoCode(code.alpha2);
-              claimValue = country.name;
-              value = claimValue;
-            } catch (e, s) {
-              logger().d(s);
-            }
-          }
-        }
 
         details.add(
           ClaimDetailModel(

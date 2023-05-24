@@ -15,7 +15,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_filters_use
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_vocabs_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/add_interaction_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/get_interactions_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/remove_interactions_use_case.dart';
@@ -35,10 +34,6 @@ abstract class PolygonIdSdkIden3comm {
 
   /// Returns the schemas from an [Iden3MessageEntity].
   Future<List<Map<String, dynamic>>> getSchemas(
-      {required Iden3MessageEntity message});
-
-  /// Returns the vocabs from an [Iden3MessageEntity].
-  Future<List<Map<String, dynamic>>> getVocabs(
       {required Iden3MessageEntity message});
 
   /// Returns a list of [FilterEntity] from an iden3comm message to
@@ -65,8 +60,8 @@ abstract class PolygonIdSdkIden3comm {
       BigInt? profileNonce,
       required String privateKey});
 
-  /// Get a list of [ClaimEntity] from iden3comm message
-  /// stored in Polygon Id Sdk.
+  /// Get a list of [ClaimEntity] stored in Polygon Id Sdk that fulfills
+  /// the request from iden3comm message.
   ///
   /// The [message] is the iden3comm message entity
   ///
@@ -194,7 +189,6 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   final FetchAndSaveClaimsUseCase _fetchAndSaveClaimsUseCase;
   final GetIden3MessageUseCase _getIden3MessageUseCase;
   final GetSchemasUseCase _getSchemasUseCase;
-  final GetVocabsUseCase _getVocabsUseCase;
   final AuthenticateUseCase _authenticateUseCase;
   final GetFiltersUseCase _getFiltersUseCase;
   final GetIden3commClaimsUseCase _getIden3commClaimsUseCase;
@@ -208,7 +202,6 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     this._fetchAndSaveClaimsUseCase,
     this._getIden3MessageUseCase,
     this._getSchemasUseCase,
-    this._getVocabsUseCase,
     this._authenticateUseCase,
     this._getFiltersUseCase,
     this._getIden3commClaimsUseCase,
@@ -228,12 +221,6 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   Future<List<Map<String, dynamic>>> getSchemas(
       {required Iden3MessageEntity message}) {
     return _getSchemasUseCase.execute(param: message);
-  }
-
-  @override
-  Future<List<Map<String, dynamic>>> getVocabs(
-      {required Iden3MessageEntity message}) {
-    return _getVocabsUseCase.execute(param: message);
   }
 
   @override

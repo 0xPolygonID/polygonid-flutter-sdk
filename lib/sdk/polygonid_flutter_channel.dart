@@ -95,6 +95,9 @@ class PolygonIdFlutterChannel
         case 'getEnv':
           return _polygonIdSdk.getEnv().then((env) => jsonEncode(env));
 
+        case 'switchLog':
+          return _polygonIdSdk.switchLog(enabled: call.arguments['enabled']);
+
         /// Iden3comm
         case 'addInteraction':
           Map<String, dynamic> json = jsonDecode(call.arguments['interaction']);
@@ -165,10 +168,6 @@ class PolygonIdFlutterChannel
         case 'getSchemas':
           return getIden3Message(message: call.arguments['message'])
               .then((message) => getSchemas(message: message));
-
-        case 'getVocabs':
-          return getIden3Message(message: call.arguments['message'])
-              .then((message) => getVocabs(message: message));
 
         case 'getInteractions':
           return getInteractions(
@@ -417,8 +416,7 @@ class PolygonIdFlutterChannel
   Future<InteractionBaseEntity> addInteraction(
       {required InteractionBaseEntity interaction,
       String? genesisDid,
-      String? privateKey,
-      BigInt? profileNonce}) {
+      String? privateKey}) {
     return _polygonIdSdk.iden3comm.addInteraction(
         interaction: interaction,
         genesisDid: genesisDid,
@@ -480,12 +478,6 @@ class PolygonIdFlutterChannel
   Future<List<Map<String, dynamic>>> getSchemas(
       {required Iden3MessageEntity message}) {
     return _polygonIdSdk.iden3comm.getSchemas(message: message);
-  }
-
-  @override
-  Future<List<Map<String, dynamic>>> getVocabs(
-      {required Iden3MessageEntity message}) {
-    return _polygonIdSdk.iden3comm.getVocabs(message: message);
   }
 
   @override

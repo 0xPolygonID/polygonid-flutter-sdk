@@ -71,25 +71,21 @@ class UpdateInteractionUseCase
             privateKey: param.privateKey);
       }
 
-      if (interactionToBeUpdated != null) {
-        InteractionEntity updatedInteraction = InteractionEntity(
-          id: interactionToBeUpdated.id,
-          from: interactionToBeUpdated.from,
-          genesisDid: param.genesisDid!,
-          profileNonce: param.profileNonce!,
-          type: interactionToBeUpdated.type,
-          timestamp: interactionToBeUpdated.timestamp,
-          message: interactionToBeUpdated.message,
-          state: param.state ?? interactionToBeUpdated.state,
-        );
-        return _addInteractionUseCase.execute(
-            param: AddInteractionParam(
-                genesisDid: param.genesisDid,
-                privateKey: param.privateKey,
-                interaction: updatedInteraction));
-      } else {
-        throw InteractionNotFoundException(param.id);
-      }
+      InteractionEntity updatedInteraction = InteractionEntity(
+        id: interactionToBeUpdated.id,
+        from: interactionToBeUpdated.from,
+        genesisDid: param.genesisDid!,
+        profileNonce: param.profileNonce!,
+        type: interactionToBeUpdated.type,
+        timestamp: interactionToBeUpdated.timestamp,
+        message: interactionToBeUpdated.message,
+        state: param.state ?? interactionToBeUpdated.state,
+      );
+      return _addInteractionUseCase.execute(
+          param: AddInteractionParam(
+              genesisDid: param.genesisDid,
+              privateKey: param.privateKey,
+              interaction: updatedInteraction));
     } else {
       return _interactionRepository
           .getInteraction(id: param.id)
