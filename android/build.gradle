@@ -91,6 +91,8 @@ dependencies {
 }
 
 // Maven
+/*ext.artifactVersion = '1.0.2'
+
 publishing {
     publications {
         sdkDebug(MavenPublication) {
@@ -147,4 +149,4 @@ publishing {
             }
         }
     }
-}
+}*/

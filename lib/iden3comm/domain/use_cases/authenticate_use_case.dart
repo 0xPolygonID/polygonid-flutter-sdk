@@ -56,6 +56,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
   Future<void> execute({required AuthenticateParam param}) async {
     //_proofGenerationStepsStreamManager.reset();
 
+    print("[AuthenticateUseCase] execute");
     try {
       await _checkProfileAndDidCurrentEnvUseCase.execute(
           param: CheckProfileAndDidCurrentEnvParam(
@@ -63,7 +64,11 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
               privateKey: param.privateKey,
               profileNonce: param.profileNonce));
 
+      print("[AuthenticateUseCase] execute 2");
+
       EnvEntity env = await _getEnvUseCase.execute();
+
+      print("[AuthenticateUseCase] execute 3");
 
       String profileDid = await _getDidIdentifierUseCase.execute(
           param: GetDidIdentifierParam(
@@ -71,6 +76,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
               blockchain: env.blockchain,
               network: env.network,
               profileNonce: param.profileNonce));
+
+      print("[AuthenticateUseCase] execute 4");
 
       // get proofs from credentials of all the profiles of the identity
       List<JWZProofEntity> proofs = await _getIden3commProofsUseCase.execute(
@@ -81,9 +88,13 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
         privateKey: param.privateKey,
       ));
 
+      print("[AuthenticateUseCase] execute 5");
+
       String pushUrl = env.pushUrl;
 
       String packageName = await _getPackageNameUseCase.execute();
+
+      print("[AuthenticateUseCase] execute 6");
 
       _proofGenerationStepsStreamManager
           .add("preparing authentication parameters...");
@@ -95,6 +106,9 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
           pushToken: param.pushToken,
           packageName: packageName);
 
+      print("[AuthenticateUseCase] execute 7");
+      print("[AuthenticateUseCase] authResponse: $authResponse");
+
       _proofGenerationStepsStreamManager
           .add("preparing authentication token...");
       String authToken = await _getAuthTokenUseCase.execute(
@@ -104,13 +118,15 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
               privateKey: param.privateKey,
               message: authResponse));
 
+      print("[AuthenticateUseCase] execute 8");
+
       _proofGenerationStepsStreamManager.add("authenticating...");
       return _iden3commRepository.authenticate(
         request: param.message,
         authToken: authToken,
       );
     } catch (error) {
-      logger().e("[AuthenticateUseCase] Error: $error");
+      print("[AuthenticateUseCase] Error: $error");
 
       rethrow;
     }

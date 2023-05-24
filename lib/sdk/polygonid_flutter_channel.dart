@@ -100,17 +100,25 @@ class PolygonIdFlutterChannel
           Map<String, dynamic> json = jsonDecode(call.arguments['interaction']);
           InteractionBaseEntity interaction;
 
+          print("FlutterSide addInteractionJson: ${json.toString()}");
+
           try {
             interaction = InteractionEntity.fromJson(json);
           } catch (e) {
             interaction = InteractionBaseEntity.fromJson(json);
           }
 
+          print("FlutterSide addInteraction: ${interaction.toString()}");
+
           return addInteraction(
                   interaction: interaction,
                   genesisDid: call.arguments['genesisDid'] as String?,
                   privateKey: call.arguments['privateKey'] as String?)
-              .then((interaction) => jsonEncode(interaction));
+              .then((interaction) {
+            print(
+                "FlutterSide: addInteraction success ${interaction.toString()}");
+            return jsonEncode(interaction.toJson());
+          });
 
         case 'authenticate':
           return authenticate(
@@ -180,7 +188,7 @@ class PolygonIdFlutterChannel
                 ?.map((filter) => FilterEntity.fromJson(jsonDecode(filter)))
                 .toList(),
           ).then((interactions) => interactions
-              .map((interaction) => jsonEncode(interaction))
+              .map((interaction) => jsonEncode(interaction.toJson()))
               .toList());
 
         case 'getProofs':
@@ -209,12 +217,12 @@ class PolygonIdFlutterChannel
                       ? InteractionState.values.firstWhere((interactionState) =>
                           interactionState == call.arguments['state'])
                       : null)
-              .then((interaction) => jsonEncode(interaction));
+              .then((interaction) => jsonEncode(interaction.toJson()));
 
         /// Identity
         case 'addIdentity':
           return addIdentity(secret: call.arguments['secret'] as String?)
-              .then((identity) => jsonEncode(identity));
+              .then((identity) => jsonEncode(identity.toJson()));
 
         case 'addProfile':
           return addProfile(
@@ -235,7 +243,7 @@ class PolygonIdFlutterChannel
 
         case 'getDidEntity':
           return getDidEntity(did: call.arguments['did'] as String)
-              .then((did) => jsonEncode(did));
+              .then((DidEntity did) => jsonEncode(did.toJson()));
 
         case 'getDidIdentifier':
           return getDidIdentifier(
@@ -246,14 +254,15 @@ class PolygonIdFlutterChannel
                   call.arguments['profileNonce'] as String? ?? ''));
 
         case 'getIdentities':
-          return getIdentities().then((identities) =>
-              identities.map((identity) => jsonEncode(identity)).toList());
+          return getIdentities().then((identities) => identities
+              .map((identity) => jsonEncode(identity.toJson()))
+              .toList());
 
         case 'getIdentity':
           return getIdentity(
                   genesisDid: call.arguments['genesisDid'] as String,
                   privateKey: call.arguments['privateKey'] as String?)
-              .then((identity) => jsonEncode(identity));
+              .then((identity) => jsonEncode(identity.toJson()));
 
         case 'getPrivateKey':
           return getPrivateKey(secret: call.arguments['secret'] as String);
@@ -302,7 +311,7 @@ class PolygonIdFlutterChannel
                   genesisDid: call.arguments['genesisDid'] as String,
                   privateKey: call.arguments['privateKey'] as String)
               .then((claims) =>
-                  claims.map((claim) => jsonEncode(claim)).toList());
+                  claims.map((claim) => jsonEncode(claim.toJson())).toList());
 
         case 'getClaimsByIds':
           return getClaimsByIds(

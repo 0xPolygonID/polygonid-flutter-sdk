@@ -34,9 +34,9 @@ class InteractionBaseEntity {
       id: json['id'],
       from: json['from'],
       type: InteractionType.values
-          .firstWhere((type) => type.toString() == json['type']),
+          .firstWhere((type) => type.name == json['type']),
       state: InteractionState.values
-          .firstWhere((type) => type.toString() == json['state']),
+          .firstWhere((type) => type.name == json['state']),
       timestamp: json['timestamp'],
       message: json['message'],
     );

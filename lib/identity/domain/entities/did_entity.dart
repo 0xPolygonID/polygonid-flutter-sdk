@@ -27,4 +27,18 @@ class DidEntity {
 
   @override
   int get hashCode => runtimeType.hashCode;
+
+  Map<String, dynamic> toJson() => {
+        'did': did,
+        'identifier': identifier,
+        'blockchain': blockchain,
+        'network': network,
+      };
+
+  factory DidEntity.fromJson(Map<String, dynamic> json) => DidEntity(
+        did: json['did'],
+        identifier: json['identifier'],
+        blockchain: json['blockchain'],
+        network: json['network'],
+      );
 }

@@ -74,6 +74,7 @@
 
 */
 
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_query_request.dart';
 
 class ProofScopeRequest {
@@ -96,6 +97,7 @@ class ProofScopeRequest {
   factory ProofScopeRequest.fromJson(Map<String, dynamic> json) {
     ProofScopeQueryRequest query =
         ProofScopeQueryRequest.fromJson(json['query']);
+    logger().d("query: ${query.credentialSubject}");
     return ProofScopeRequest(
       id: json['id'],
       circuitId: json['circuitId'],

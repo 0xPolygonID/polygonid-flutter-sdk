@@ -1,5 +1,5 @@
 // Maven
-apply from: "$rootDir/../../android/sdk.properties"
+apply from: "/Users/emanuel/StudioProjects/polygonid-flutter-sdk/android/sdk.properties"
 apply plugin: 'maven-publish'
 
 task createLocalMavenZip(type: Zip) {
