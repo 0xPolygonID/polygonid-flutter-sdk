@@ -1,6 +1,6 @@
 name: polygonid_flutter_sdk
 description: PolygonID Flutter SDK (https://polygon.technology/polygon-id). This plugin provides a cross-platform tool (iOS, Android) to integrate the PolygonID solution.
-version: 2.2.4
+version: 2.2.5
 homepage: https://polygon.technology/polygon-id
 repository: https://github.com/iden3/polygonid-flutter-sdk
 issue_tracker: https://github.com/iden3/polygonid-flutter-sdk/issues
@@ -16,7 +16,7 @@ dependencies:
   http: ^0.13.6
   ffi: ^2.0.1
   hex: ^0.2.0
-  web3dart: ^2.6.1
+  web3dart: 2.3.5
   web_socket_channel: ^2.2.0
   ffigen: ^8.0.2
   json_annotation: ^4.6.0
