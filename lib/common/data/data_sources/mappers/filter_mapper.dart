@@ -20,7 +20,7 @@ class FilterMapper extends ToMapper<Filter, FilterEntity> {
       case FilterOperator.lesserEqual:
         return Filter.lessThanOrEquals(to.name, to.value);
       case FilterOperator.inList:
-        return Filter.inList(to.name, to.value);
+        return Filter.inList(to.name, to.value as List<Object>);
       case FilterOperator.or:
         return Filter.or((to.value as List<FilterEntity>)
             .map((filter) => mapTo(filter))

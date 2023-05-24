@@ -60,8 +60,8 @@ abstract class PolygonIdSdkIden3comm {
       BigInt? profileNonce,
       required String privateKey});
 
-  /// Get a list of [ClaimEntity] from iden3comm message
-  /// stored in Polygon Id Sdk.
+  /// Get a list of [ClaimEntity] stored in Polygon Id Sdk that fulfills
+  /// the request from iden3comm message.
   ///
   /// The [message] is the iden3comm message entity
   ///

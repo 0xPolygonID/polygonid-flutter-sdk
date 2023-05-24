@@ -16,18 +16,20 @@ class ProofRequestFiltersMapper
 
     List<FilterEntity> filters = [
       FilterEntity(
-          name: 'credential.credentialSubject.type', value: query.type),
+          name: 'credential.credentialSubject.type', value: query.type!),
       FilterEntity(
           operator: FilterOperator.equalsAnyInList,
           name: 'credential.@context',
-          value: query.context),
+          value: query.context!),
     ];
-    if (query.allowedIssuers is List && query.allowedIssuers!.isNotEmpty) {
+    if (query.allowedIssuers != null &&
+        query.allowedIssuers is List &&
+        query.allowedIssuers!.isNotEmpty) {
       if (query.allowedIssuers![0] != "*") {
         filters.add(FilterEntity(
             operator: FilterOperator.inList,
             name: 'issuer',
-            value: query.allowedIssuers));
+            value: query.allowedIssuers!));
       }
     }
 
@@ -42,20 +44,41 @@ class ProofRequestFiltersMapper
     if (query.credentialSubject != null) {
       Map<String, dynamic> request = query.credentialSubject!;
       request.forEach((key, map) {
-        if (map != null && map is Map) {
+        if (map != null &&
+            map is Map &&
+            map.isNotEmpty &&
+            context != null &&
+            context[key] != null &&
+            context[key]["@type"] != null) {
+          String type = context[key]["@type"];
+          if (type.contains("double")) { // double not supported
+            filters.add(FilterEntity(
+                operator: FilterOperator.nonEqual,
+                name: 'schema.properties.credentialSubject.properties.$key.type',
+                value: "number"));
+          }
           map.forEach((operator, value) {
-            if (context != null &&
-                context[key] != null &&
-                context[key]["@type"].contains("boolean")) {
-              FilterEntity? booleanFilter =
-                  _getBooleanFiltersByOperator(key, operator, value);
-              if (booleanFilter != null) {
-                filters.add(booleanFilter);
+              if (type.contains("boolean")) {
+                FilterEntity? booleanFilter =
+                _getBooleanFiltersByOperator(key, operator, value);
+                if (booleanFilter != null) {
+                  filters.add(booleanFilter);
+                }
+              } else if (type.contains("string")) {
+                if (operator == '\$in' || operator == '\$nin') {
+                  List<dynamic> values = List.from(value);
+                  List<String> stringList =
+                  values.map((e) => e.toString()).toList();
+                  filters.addAll(
+                      _getFilterByOperator(key, operator, stringList));
+                } else {
+                  filters.addAll(
+                      _getFilterByOperator(key, operator, value.toString()));
+                }
+              } else {
+                filters.addAll(_getFilterByOperator(key, operator, value));
               }
-            } else {
-              filters.addAll(_getFilterByOperator(key, operator, value));
-            }
-          });
+            });
         }
       });
     }
@@ -85,17 +108,21 @@ class ProofRequestFiltersMapper
               value: value)
         ];
       case '\$in':
-        List<int> values = [];
-        List<dynamic> included = value;
-        for (int val in included) {
-          values.add(val);
+        if (value is List) {
+          return [
+            FilterEntity(
+                operator: FilterOperator.inList,
+                name: 'credential.credentialSubject.$field',
+                value: value)
+          ];
+        } else {
+          return [
+            FilterEntity(
+                operator: FilterOperator.inList,
+                name: 'credential.credentialSubject.$field',
+                value: [value])
+          ];
         }
-        return [
-          FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: values)
-        ];
       case '\$nin':
         return List.from(value)
             .map((item) => FilterEntity(
