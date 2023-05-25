@@ -5,7 +5,7 @@ description: Demonstrates how to use the polygonid_flutter_sdk plugin.
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 2.2.2+23050202
+version: 2.2.6+23052805
 
 
 environment:

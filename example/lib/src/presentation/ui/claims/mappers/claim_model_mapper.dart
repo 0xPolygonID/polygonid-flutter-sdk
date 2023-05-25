@@ -44,12 +44,8 @@ class ClaimModelMapper implements FromMapper<ClaimEntity, ClaimModel> {
           creationDate = DateFormat("d MMM yyyy").format(
               DateTime.fromMillisecondsSinceEpoch(
                   (proof['issuerData']['state']['blockTimestamp']) * 1000));
-          proofType += '- SMT Signature\n';
-        } else if (proof['type'] == "BJJSignature2021") {
-          proofType += '- BJJ Signature\n';
-        } else {
-          proofType += '- ${proof['type']}\n';
         }
+        proofType += '- ${proof['type']}\n';
       }
       proofType = proofType.substring(0, proofType.length - 1);
     }
