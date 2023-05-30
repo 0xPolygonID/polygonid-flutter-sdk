@@ -54,8 +54,6 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
 
   @override
   Future<void> execute({required AuthenticateParam param}) async {
-    //_proofGenerationStepsStreamManager.reset();
-
     try {
       await _checkProfileAndDidCurrentEnvUseCase.execute(
           param: CheckProfileAndDidCurrentEnvParam(
@@ -110,7 +108,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
         authToken: authToken,
       );
     } catch (error) {
-      logger().e("[AuthenticateUseCase] Error: $error");
+      logger().d("[AuthenticateUseCase] Error: $error");
 
       rethrow;
     }

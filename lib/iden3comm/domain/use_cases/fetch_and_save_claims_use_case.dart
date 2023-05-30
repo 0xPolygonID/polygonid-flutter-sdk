@@ -74,6 +74,8 @@ class FetchAndSaveClaimsUseCase
             network: env.network,
             profileNonce: param.profileNonce));
 
+    logger().i("[FetchAndSaveClaimsUseCase] profileDid: $profileDid");
+
     return _getFetchRequestsUseCase
         .execute(param: GetFetchRequestsParam(param.message, profileDid))
         .then((requests) async {

@@ -129,8 +129,6 @@ class ProofScopeQueryRequest {
   /// @param [Map<String, dynamic>] json
   /// @returns [ProofScopeRulesQueryRequest]
   factory ProofScopeQueryRequest.fromJson(Map<String, dynamic>? json) {
-    logger().i("ProofScopeRulesQueryRequest.fromJson $json");
-
     if (json != null) {
       //ProofScopeRulesQuerySchemaRequest? schema =
       //    ProofScopeRulesQuerySchemaRequest.fromJson(json['schema']);

@@ -33,10 +33,10 @@ class InteractionBaseEntity {
     return InteractionBaseEntity(
       id: json['id'],
       from: json['from'],
-      type: InteractionType.values
-          .firstWhere((type) => type.toString() == json['type']),
-      state: InteractionState.values
-          .firstWhere((type) => type.toString() == json['state']),
+      type: InteractionType.values.firstWhere((type) =>
+          type.name == json['type'] || type.toString() == json['type']),
+      state: InteractionState.values.firstWhere((type) =>
+          type.name == json['state'] || type.toString() == json['state']),
       timestamp: json['timestamp'],
       message: json['message'],
     );
