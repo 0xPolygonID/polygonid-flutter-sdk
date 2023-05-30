@@ -21,10 +21,10 @@ class InteractionEntity extends InteractionBaseEntity {
       from: json['from'],
       genesisDid: json['genesisDid'],
       profileNonce: BigInt.parse(json['profileNonce']),
-      type: InteractionType.values
-          .firstWhere((type) => type.name == json['type'] || type.toString() == json['type']),
-      state: InteractionState.values
-          .firstWhere((type) => type.name == json['state'] || type.toString() == json['state']),
+      type: InteractionType.values.firstWhere((type) =>
+          type.name == json['type'] || type.toString() == json['type']),
+      state: InteractionState.values.firstWhere((type) =>
+          type.name == json['state'] || type.toString() == json['state']),
       timestamp: json['timestamp'],
       message: json['message'],
     );
