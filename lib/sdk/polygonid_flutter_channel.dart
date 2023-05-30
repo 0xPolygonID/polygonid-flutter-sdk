@@ -103,25 +103,17 @@ class PolygonIdFlutterChannel
           Map<String, dynamic> json = jsonDecode(call.arguments['interaction']);
           InteractionBaseEntity interaction;
 
-          print("FlutterSide addInteractionJson: ${json.toString()}");
-
           try {
             interaction = InteractionEntity.fromJson(json);
           } catch (e) {
             interaction = InteractionBaseEntity.fromJson(json);
           }
 
-          print("FlutterSide addInteraction: ${interaction.toString()}");
-
           return addInteraction(
                   interaction: interaction,
                   genesisDid: call.arguments['genesisDid'] as String?,
                   privateKey: call.arguments['privateKey'] as String?)
-              .then((interaction) {
-            print(
-                "FlutterSide: addInteraction success ${interaction.toString()}");
-            return jsonEncode(interaction.toJson());
-          });
+              .then((interaction) => jsonEncode(interaction.toJson()));
 
         case 'authenticate':
           return authenticate(
@@ -152,13 +144,9 @@ class PolygonIdFlutterChannel
                     profileNonce: BigInt.tryParse(
                         call.arguments['profileNonce'] as String? ?? ''),
                     privateKey: call.arguments['privateKey'] as String)
-                .then(
-              (claims) {
-                return claims
+                .then((claims) => claims
                     .map((claim) => jsonEncode(claim?.toJson()))
-                    .toList();
-              },
-            ),
+                    .toList()),
           );
 
         case 'getFilters':
