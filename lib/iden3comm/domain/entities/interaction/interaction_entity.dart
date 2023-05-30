@@ -22,9 +22,9 @@ class InteractionEntity extends InteractionBaseEntity {
       genesisDid: json['genesisDid'],
       profileNonce: BigInt.parse(json['profileNonce']),
       type: InteractionType.values
-          .firstWhere((type) => type.name == json['type']),
+          .firstWhere((type) => type.name == json['type'] || type.toString() == json['type']),
       state: InteractionState.values
-          .firstWhere((type) => type.name == json['state']),
+          .firstWhere((type) => type.name == json['state'] || type.toString() == json['state']),
       timestamp: json['timestamp'],
       message: json['message'],
     );

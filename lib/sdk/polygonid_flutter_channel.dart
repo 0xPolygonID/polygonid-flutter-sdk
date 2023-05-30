@@ -145,15 +145,21 @@ class PolygonIdFlutterChannel
                   claims.map((claim) => jsonEncode(claim)).toList());
 
         case 'getClaimsFromIden3Message':
-          return getClaimsFromIden3Message(
-                  message: OfferIden3MessageEntity.fromJson(
-                      jsonDecode(call.arguments['message'])),
-                  genesisDid: call.arguments['genesisDid'] as String,
-                  profileNonce: BigInt.tryParse(
-                      call.arguments['profileNonce'] as String? ?? ''),
-                  privateKey: call.arguments['privateKey'] as String)
-              .then((claims) =>
-                  claims.map((claim) => jsonEncode(claim)).toList());
+          return getIden3Message(message: call.arguments['message']).then(
+            (message) => getClaimsFromIden3Message(
+                    message: message,
+                    genesisDid: call.arguments['genesisDid'] as String,
+                    profileNonce: BigInt.tryParse(
+                        call.arguments['profileNonce'] as String? ?? ''),
+                    privateKey: call.arguments['privateKey'] as String)
+                .then(
+              (claims) {
+                return claims
+                    .map((claim) => jsonEncode(claim?.toJson()))
+                    .toList();
+              },
+            ),
+          );
 
         case 'getFilters':
           return getIden3Message(message: call.arguments['message'])
@@ -166,8 +172,9 @@ class PolygonIdFlutterChannel
               .then((message) => jsonEncode(message));
 
         case 'getSchemas':
-          return getIden3Message(message: call.arguments['message'])
-              .then((message) => getSchemas(message: message));
+          return getIden3Message(message: call.arguments['message']).then(
+              (message) => getSchemas(message: message)
+                  .then((schemas) => jsonEncode(schemas)));
 
         case 'getInteractions':
           return getInteractions(
@@ -214,7 +221,11 @@ class PolygonIdFlutterChannel
                   privateKey: call.arguments['privateKey'] as String?,
                   state: call.arguments['state'] != null
                       ? InteractionState.values.firstWhere((interactionState) =>
-                          interactionState == call.arguments['state'])
+                          interactionState == call.arguments['state'] ||
+                          interactionState.toString() ==
+                              call.arguments['state'].toString() ||
+                          interactionState.name ==
+                              call.arguments['state'].toString())
                       : null)
               .then((interaction) => jsonEncode(interaction.toJson()));
 
