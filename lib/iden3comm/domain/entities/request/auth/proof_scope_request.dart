@@ -97,7 +97,6 @@ class ProofScopeRequest {
   factory ProofScopeRequest.fromJson(Map<String, dynamic> json) {
     ProofScopeQueryRequest query =
         ProofScopeQueryRequest.fromJson(json['query']);
-    logger().d("query: ${query.credentialSubject}");
     return ProofScopeRequest(
       id: json['id'],
       circuitId: json['circuitId'],

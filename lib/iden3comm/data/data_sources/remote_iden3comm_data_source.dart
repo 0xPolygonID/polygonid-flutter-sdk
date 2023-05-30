@@ -87,14 +87,12 @@ class RemoteIden3commDataSource {
       var schemaResponse = await get(schemaUri);
       if (schemaResponse.statusCode == 200) {
         Map<String, dynamic> schema = json.decode(schemaResponse.body);
-        logger().d('schema: $schema');
 
         return schema;
       } else {
         throw NetworkException(schemaResponse);
       }
     } catch (error) {
-      logger().e('schema error: $error');
       throw FetchSchemaException(error);
     }
   }
