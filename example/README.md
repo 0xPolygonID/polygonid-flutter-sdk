@@ -39,6 +39,9 @@ In this example app we are using environment variable and Envied package to init
   Default: `{"blockchain": "polygon", "network": "main", "web3Url": "https://polygon-mainnet.infura.io/v3/", "web3RdpUrl": "wss://polygon-mainnet.infura.io/v3/", "web3ApiKey": "YOUR_WEB3_API_KEY", "idStateContract": "0x624ce98D2d27b20b8f8d521723Df8fC4db71D79D", "pushUrl": "https://push-staging.polygonid.com/api/v1"}`
 
 To be able to run the app, you will need to create a `.env` file in the root of the project and read configurations from there. You can copy the sample environment config (env.sample) as a starting point (replace with your own values).
+```bash
+make config
+```
 
 Once the `.env` file is created and successfully configured, run `build_runner` to generate the `env.g.dart` file:
 ```bash
