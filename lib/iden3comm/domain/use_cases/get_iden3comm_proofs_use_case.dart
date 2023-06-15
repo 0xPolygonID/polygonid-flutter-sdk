@@ -29,13 +29,17 @@ class GetIden3commProofsParam {
   final BigInt profileNonce;
   final String privateKey;
   final String? challenge;
+  final String? ethereumUrl;
+  final String? stateContractAddr;
 
   GetIden3commProofsParam(
       {required this.message,
       required this.genesisDid,
       required this.profileNonce,
       required this.privateKey,
-      this.challenge});
+      this.challenge,
+      this.ethereumUrl,
+      this.stateContractAddr});
 }
 
 class GetIden3commProofsUseCase
@@ -114,14 +118,17 @@ class GetIden3commProofsUseCase
             // Generate proof
             proofs.add(await _generateProofUseCase.execute(
                 param: GenerateProofParam(
-                    param.genesisDid,
-                    param.profileNonce,
-                    claimSubjectProfileNonce,
-                    claim,
-                    request.scope,
-                    circuitData,
-                    privKey,
-                    challenge)));
+              param.genesisDid,
+              param.profileNonce,
+              claimSubjectProfileNonce,
+              claim,
+              request.scope,
+              circuitData,
+              privKey,
+              challenge,
+              param.ethereumUrl,
+              param.stateContractAddr,
+            )));
           }
         }
       } else {

@@ -100,6 +100,7 @@ class ProofRepositoryImpl extends ProofRepository {
       GistProofEntity? gistProof,
       List<String>? authClaim,
       Map<String, dynamic>? treeState,
+      Map<String, dynamic>? config,
       String? challenge,
       String? signature}) async {
     ClaimDTO credentialDto = _claimMapper.mapTo(claim);
@@ -131,6 +132,7 @@ class ProofRepositoryImpl extends ProofRepository {
           signature: signature,
           credential: credentialDto.info,
           request: request,
+          config: config,
         )
         .catchError((error) => throw NullAtomicQueryInputsException(id));
 

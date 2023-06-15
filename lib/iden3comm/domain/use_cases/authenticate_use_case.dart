@@ -77,6 +77,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
         genesisDid: param.genesisDid,
         profileNonce: param.profileNonce,
         privateKey: param.privateKey,
+        ethereumUrl: env.web3Url + env.web3ApiKey,
+        stateContractAddr: env.idStateContract,
       ));
 
       String pushUrl = env.pushUrl;
