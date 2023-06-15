@@ -51,5 +51,7 @@
 	<false/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs photo library access to upload qr code images</string>
 </dict>
 </plist>
