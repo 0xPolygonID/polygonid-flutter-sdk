@@ -31,8 +31,8 @@ dependencies:
 #      url: https://github.com/iden3/polygonid-flutter-sdk.git
 #      ref: feature/PID-339_android
 
-  path_provider: 2.0.11
-  package_info_plus: ^4.0.1
+  path_provider: 2.0.15
+  package_info_plus: ^4.0.2
 
 dev_dependencies:
   flutter_test:

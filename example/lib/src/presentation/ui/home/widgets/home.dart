@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
+import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/navigations/routes.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/common/widgets/button_next_action.dart';
@@ -25,6 +27,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late final HomeBloc _bloc;
+
   @override
   void initState() {
     super.initState();
@@ -288,6 +291,8 @@ class _HomeScreenState extends State<HomeScreen> {
         _buildCheckIdentityValidityFeatureCard(),
         _buildBackupIdentityFeatureCard(),
         _buildRestoreIdentityFeatureCard(),
+        _buildSetEnvFeatureCard(),
+        _buildINITFeatureCard(),
       ],
     );
   }
@@ -394,6 +399,53 @@ class _HomeScreenState extends State<HomeScreen> {
           disabledReason: CustomStrings.homeFeatureCardDisabledReason,
         );
       },
+    );
+  }
+
+  ///
+  Widget _buildSetEnvFeatureCard() {
+    return FeatureCard(
+      methodName: "Set Env",
+      title: "",
+      description: "",
+      onTap: () {
+        PolygonIdSdk.I.setEnv(
+            env: EnvEntity(
+          blockchain: "blockchain",
+          network: "network",
+          web3Url: "web3Url",
+          web3RdpUrl: "web3RdpUrl",
+          web3ApiKey: "web3ApiKey",
+          idStateContract: "idStateContract",
+          pushUrl: "pushUrl",
+        ));
+      },
+      enabled: true,
+      disabledReason: CustomStrings.homeFeatureCardDisabledReason,
+    );
+  }
+
+  ///
+  Widget _buildINITFeatureCard() {
+    return FeatureCard(
+      methodName: "INIT",
+      title: "",
+      description: "",
+      onTap: () {
+        getIt.unregister(instance: PolygonIdSdk);
+        /*PolygonIdSdk.init(
+            env: EnvEntity(
+              blockchain: "blockchain",
+              network: "network",
+              web3Url: "web3Url",
+              web3RdpUrl: "web3RdpUrl",
+              web3ApiKey: "web3ApiKey",
+              idStateContract: "idStateContract",
+              pushUrl: "pushUrl",
+            ));*/
+      },
+      enabled: true,
+      disabledReason: CustomStrings.homeFeatureCardDisabledReason,
     );
   }
 }

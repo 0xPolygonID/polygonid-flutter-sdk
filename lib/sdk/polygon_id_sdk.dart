@@ -1,4 +1,8 @@
+import 'dart:io';
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
@@ -31,20 +35,41 @@ class PolygonIdSdk {
   }
 
   static Future<void> init({EnvEntity? env}) async {
+    print("[PolygonIdSdk] init");
     // As [PolygonIdSdk] uses path_provider plugin, we need to ensure the
     // platform is initialized
     WidgetsFlutterBinding.ensureInitialized();
+    DartPluginRegistrant.ensureInitialized();
 
     // Init injection
     await configureInjection();
     await getItSdk.allReady();
 
+    // get sure pathprovider is available
+    try {
+      final Directory tempDir = await getTemporaryDirectory();
+      print("[PolygonIdSdk] tempDir: ${tempDir.path}");
+    } catch (e) {
+      print("[PolygonIdSdk] path provider not available with error: $e");
+    }
+
+    // Logging
+    Domain.logger = getItSdk<PolygonIdSdkLogger>();
+    print("[PolygonIdSdk] logger set");
+    print("[PolygonIdSdk] ${Domain.logger.toString()} ${Domain.logEnabled}");
+    Domain.logEnabled = true;
+
+    print("[PolygonIdSdk] injection configured");
+
     // Set env
     if (env != null) {
-      await getItSdk
-          .getAsync<SetEnvUseCase>()
-          .then((instance) => instance.execute(param: env));
+      SetEnvUseCase setEnvUseCase = await getItSdk.getAsync<SetEnvUseCase>();
+      print("[PolygonIdSdk] get async set env use case");
+      setEnvUseCase.execute(param: env);
+      print("[PolygonIdSdk] async env set");
     }
+
+    print("[PolygonIdSdk] env set");
 
     // SDK singleton
     _ref = PolygonIdSdk._();
@@ -53,11 +78,14 @@ class PolygonIdSdk {
     _ref!.proof = await getItSdk.getAsync<Proof>();
     _ref!.iden3comm = await getItSdk.getAsync<Iden3comm>();
 
+    print("[PolygonIdSdk] singletons set");
+
     // Channel
     getItSdk<PolygonIdFlutterChannel>();
 
-    // Logging
-    Domain.logger = getItSdk<PolygonIdSdkLogger>();
+    print("[PolygonIdSdk] channel set");
+
+    print("[PolygonIdSdk] logging set");
   }
 
   late Identity identity;

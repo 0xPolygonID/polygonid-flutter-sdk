@@ -28,6 +28,11 @@
 	<array>
 		<string>_dartobservatory._tcp</string>
 	</array>
+	<key>NSAppTransportSecurity</key>
+    <dict>
+      <key>NSAllowsArbitraryLoads</key>
+      <true/>
+    </dict>
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs camera access to scan QR codes for authentication, claim offers and proof requests</string>
 	<key>UILaunchStoryboardName</key>

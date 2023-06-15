@@ -10,6 +10,7 @@ class SetEnvUseCase extends FutureUseCase<EnvEntity, void> {
 
   @override
   Future<void> execute({required EnvEntity param}) {
+    print("[SetEnvUseCase] execute");
     return _configRepository.setEnv(env: param).then((_) {
       logger().i("[SetEnvUseCase] $param env has been set");
     }).catchError((error) {
