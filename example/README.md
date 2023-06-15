@@ -6,6 +6,7 @@ Demonstrates how to use the polygonid_flutter_sdk plugin.
 1. [Setup](#setup)
 2. [Examples](#examples)
    - [SDK initialization](#polygonid-sdk-initialization)
+   - [Configuration](#configuration)
    - [Identity](#identity)
    - [Authentication](#authentication)
    - [Credential](#credential)
@@ -27,7 +28,7 @@ Before you can start using the SDK, you need to initialise it and set the enviro
 
 See [the SDK environment](../README.md#environment) for more information.
 
-## Configuration
+### Configuration
 
 In this example app we are using environment variable and Envied package to initialize the SDK. You can configure the application with the following [environment variables]:
 
