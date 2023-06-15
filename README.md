@@ -90,7 +90,7 @@ You can get the current env using [PolygonIdSdk.I.getEnv()](lib/sdk/polygon_id_s
 1. Clone this repository.
 2. Run `build_runner` to generate `.g.dart` files:
 ```bash
-flutter pub run build_runner build --delete-conflicting-outputs
+dart run build_runner build --delete-conflicting-outputs
 ```
 
 For iOS only:

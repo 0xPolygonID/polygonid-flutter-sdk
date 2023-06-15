@@ -42,7 +42,7 @@ To be able to run the app, you will need to create a `.env` file in the root of 
 
 Once the `.env` file is created and successfully configured, run `build_runner` to generate the `env.g.dart` file:
 ```bash
-flutter pub run build_runner build --delete-conflicting-outputs
+dart run build_runner build --delete-conflicting-outputs
 ```
 
 ### Identity
