@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/data/secure_storage.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claim_detail/bloc/claim_detail_event.dart';
@@ -32,8 +33,12 @@ class ClaimDetailBloc extends Bloc<ClaimDetailEvent, ClaimDetailState> {
         return;
       }
 
-      final String did = await _polygonIdSdk.identity.getDidIdentifier(
-          privateKey: privateKey, blockchain: 'polygon', network: 'mumbai');
+      EnvEntity envEntity = await _polygonIdSdk.getEnv();
+
+      String? did = await _polygonIdSdk.identity.getDidIdentifier(
+          privateKey: privateKey,
+          blockchain: envEntity.blockchain,
+          network: envEntity.network);
 
       await _polygonIdSdk.credential.removeClaims(
         claimIds: [event.claimId],

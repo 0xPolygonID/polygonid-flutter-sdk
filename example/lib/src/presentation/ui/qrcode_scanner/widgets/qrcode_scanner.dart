@@ -51,6 +51,9 @@ class _QRCodeScannerPageState extends State<QRCodeScannerPage> {
             onImage: (inputImage) {
               processImage(inputImage);
             },
+            onQrCodeScanned: (code) {
+              _resultCallback(code);
+            },
           );
         } else {
           return const Center(
@@ -86,7 +89,6 @@ class _QRCodeScannerPageState extends State<QRCodeScannerPage> {
       return;
     }
 
-    //}
     _isBusy = false;
     if (mounted) {
       setState(() {});

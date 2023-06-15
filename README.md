@@ -38,7 +38,7 @@ dependencies:
 ### App side
 You need to set the environment you are working on in the SDK.
 
-You can either set the environment during initialization (with `env` parameter) or later with [PolygonIdSdk.setEnv()](lib/sdk/polygon_id_sdk.dart#L62).
+You can either set the environment during initialization (with `env` parameter) or later with [PolygonIdSdk.setEnv()](lib/sdk/polygon_id_sdk.dart#L70).
 
 The environment object is [EnvEntity](lib/common/domain/entities/env_entity.dart) with:
 ```
@@ -83,14 +83,14 @@ Future<void> main() async {
 
 If you want to deploy your own State Contract, please check the [contract documentation](https://docs.iden3.io/contracts/state/).
 
-You can get the current env using [PolygonIdSdk.getEnv()](lib/sdk/polygon_id_sdk.dart#L66).
+You can get the current env using [PolygonIdSdk.I.getEnv()](lib/sdk/polygon_id_sdk.dart#L76).
 
 # Deploy and check
 ### Deploy
 1. Clone this repository.
 2. Run `build_runner` to generate `.g.dart` files:
 ```bash
-flutter pub run build_runner build --delete-conflicting-outputs
+dart run build_runner build --delete-conflicting-outputs
 ```
 
 For iOS only:
@@ -117,7 +117,7 @@ post_install do |installer|
       target.build_configurations.each do |config|
                       xcconfig_path = config.base_configuration_reference.real_path
                       xcconfig = File.read(xcconfig_path)
-                      new_xcconfig = xcconfig.sub('OTHER_LDFLAGS = $(inherited)', 'OTHER_LDFLAGS = $(inherited) -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/librapidsnark.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libwitnesscalc_authV2.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libwitnesscalc_credentialAtomicQueryMTPV2.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libwitnesscalc_credentialAtomicQuerySigV2.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libwitnesscalc_credentialAtomicQueryMTPV2OnChain.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libwitnesscalc_credentialAtomicQuerySigV2OnChain.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libfr.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libgmp.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libpolygonid.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libbabyjubjub.a"')
+                      new_xcconfig = xcconfig.sub('OTHER_LDFLAGS = $(inherited)', 'OTHER_LDFLAGS = $(inherited) -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/librapidsnark.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libwitnesscalc_authV2.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libwitnesscalc_credentialAtomicQueryMTPV2.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libwitnesscalc_credentialAtomicQuerySigV2.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libwitnesscalc_credentialAtomicQueryMTPV2OnChain.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libwitnesscalc_credentialAtomicQuerySigV2OnChain.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libgmp.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libpolygonid.a" -force_load "${PODS_ROOT}/../.symlinks/plugins/polygonid_flutter_sdk/ios/libbabyjubjub.a"')
                       File.open(xcconfig_path, "w") { |file| file << new_xcconfig }
          end
      end
@@ -166,7 +166,3 @@ If you encounter any issues with this SDK, please file an [issue][tracker]. Cont
 - [Polygon ID GitHub repository](https://github.com/0xPolygonId/)
 - [Polygon ID Documentation](https://0xpolygonid.github.io/tutorials/)
 - [Flutter documentation](https://flutter.dev/docs)
-
-## Notes
-
-P.S. Using iOS simulator for testing wallet sdk is right now under maintenance and will be available soon.

@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/data/secure_storage.dart';
@@ -63,8 +64,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required Emitter<AuthState> emit,
   }) async {
     emit(const AuthState.loading());
+
+    EnvEntity envEntity = await _polygonIdSdk.getEnv();
+
     String? did = await _polygonIdSdk.identity.getDidIdentifier(
-        privateKey: privateKey, blockchain: 'polygon', network: 'mumbai');
+        privateKey: privateKey,
+        blockchain: envEntity.blockchain,
+        network: envEntity.network);
 
     try {
       await _polygonIdSdk.iden3comm.authenticate(

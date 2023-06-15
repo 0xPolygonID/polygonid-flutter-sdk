@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/qrcode_scanner/widgets/qrcode_scanner_overlay_shape.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_button_style.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_colors.dart';
+import 'package:scan/scan.dart';
 
 enum ScreenMode { liveFeed, gallery }
 
@@ -19,12 +20,14 @@ class CameraView extends StatefulWidget {
     this.text,
     required this.onImage,
     this.onScreenModeChanged,
+    required this.onQrCodeScanned,
     this.initialDirection = CameraLensDirection.back,
     required this.cameras,
   }) : super(key: key);
 
   final String? text;
   final Function(InputImage inputImage) onImage;
+  final Function(String scannedQrCode) onQrCodeScanned;
   final Function(ScreenMode mode)? onScreenModeChanged;
   final CameraLensDirection initialDirection;
 
@@ -239,8 +242,12 @@ class _CameraViewState extends State<CameraView> {
       _path = null;
     });
     final pickedFile = await _imagePicker?.pickImage(source: source);
+
     if (pickedFile != null) {
-      _processPickedFile(pickedFile);
+      String? str = await Scan.parse(pickedFile.path);
+      if (str != null) {
+        widget.onQrCodeScanned(str);
+      }
     }
     setState(() {});
   }
@@ -305,6 +312,7 @@ class _CameraViewState extends State<CameraView> {
 
   Future _processPickedFile(XFile? pickedFile) async {
     final path = pickedFile?.path;
+
     if (path == null) {
       return;
     }
