@@ -14,7 +14,11 @@ Demonstrates how to use the polygonid_flutter_sdk plugin.
 ### Install
 1. Clone the `polygonid-flutter-sdk` repository.
 2. Run `flutter pub get` from example directory.
-3. After the previous steps, build and run the project.
+3. Run `build_runner` to generate `.g.dart` files:
+```bash
+flutter pub run build_runner build --delete-conflicting-outputs
+```
+4. After the previous steps, build and run the project.
 
 ## Examples
 
@@ -36,9 +40,7 @@ ENV_POLYGON_MUMBAI={"blockchain": "polygon", "network": "mumbai", "web3Url": "ht
 If not yet created, create an identity via `identity.createIdentity();`
 ```dart
 Future<void> createIdentity() async {
-  //we get the sdk instance previously initialized
-  final sdk = PolygonIdSdk.I;
-  PrivateIdentityEntity identity = await sdk.identity.createIdentity(
+  PrivateIdentityEntity identity = await PolygonIdSdk.I.identity.createIdentity(
      secret: secretKey,
      blockchain: blockchain,
      network: network,
@@ -54,7 +56,7 @@ Get the DID identifier from previously created identity via `identity.getDidIden
 ```dart
 Future<void> getDidIdentifier() async {
   String privateKey = privateIdentityEntity.privateKey;
-  String didIdentifier = await sdk.identity.getDidIdentifier(
+  String didIdentifier = await PolygonIdSdk.I.identity.getDidIdentifier(
      privateKey: privateKey,
      blockchain: blockchain,
      network: network,
@@ -69,7 +71,7 @@ Future<void> removeIdentity({
   required String privateKey,
   required String genesisDid,
 }) async {
-   await sdk.identity.removeIdentity(
+   await PolygonIdSdk.I.identity.removeIdentity(
       privateKey: privateKey,
       genesisDid: genesisDid,
    );
@@ -85,7 +87,7 @@ Future<void> signMessage({
   required String privateKey,
   required String message,
 }) async {
-  String signature = await sdk.identity.signMessage(
+  String signature = await PolygonIdSdk.I.identity.signMessage(
     privateKey: privateKey,
     message: message,
   );
@@ -101,7 +103,7 @@ Future<Map<int, String>?> backupIdentity({
   required blockchain,
   required network,
 }){
-  return sdk.identity.backupIdentity(
+  return PolygonIdSdk.I.identity.backupIdentity(
     privateKey: privateKey,
     blockchain: blockchain,
     network: network,
@@ -118,7 +120,7 @@ Future<void> restoreIdentity({
   required network,
   required Map<int, String> backup,
 }) async {
-  await sdk.identity.restoreIdentity(
+  await PolygonIdSdk.I.identity.restoreIdentity(
     privateKey: privateKey,
     blockchain: blockchain,
     network: network,
@@ -135,7 +137,7 @@ Future<bool> checkIdentityValidity({
   required blockchain,
   required network,
 }) async {
-  return sdk.identity.checkIdentityValidity(
+  return PolygonIdSdk.I.identity.checkIdentityValidity(
     secret: secret,
     blockchain: blockchain,
     network: network,
@@ -150,7 +152,7 @@ After the identity has been created, it can be used to perform an authentication
 Communication between the various actors takes place through `iden3message` object, provided for example by a QR Code, in order to facilitate the translation from `String` to `Iden3message`, it is possible to use this method of the SDK `iden3comm.getIden3Message()`, providing the `String` message as param.
 ```dart
 Iden3MessageEntity getIden3MessageFromString(String message){
-  return sdk.iden3comm.getIden3Message(message: message);
+  return PolygonIdSdk.I.iden3comm.getIden3Message(message: message);
 }
 ```
 
@@ -162,7 +164,7 @@ Future<void> authenticate({
   required String did,
   required String privateKey,
 }) async {
-  await sdk.iden3comm.authenticate(
+  await PolygonIdSdk.I.iden3comm.authenticate(
     iden3message: iden3message,
     did: did,
     privateKey: privateKey,
@@ -181,7 +183,7 @@ Future<void> fetchAndSaveClaims({
   required String did,
   required String privateKey,
 }) async {
-  await sdk.iden3comm.fetchAndSaveClaims(
+  await PolygonIdSdk.I.iden3comm.fetchAndSaveClaims(
     message: message,
     did: did,
     privateKey: privateKey,
@@ -198,7 +200,7 @@ Future<void> getClaims({
   required String did,
   required String privateKey,
 }) async {
-  List<ClaimEntity> claimList = await sdk.claim.getClaims(
+  List<ClaimEntity> claimList = await PolygonIdSdk.I.claim.getClaims(
     filters: filters,
     did: did,
     privateKey: privateKey,
@@ -214,7 +216,7 @@ Future<void> getClaimsByIds({
   required String did,
   required String privateKey,
 }) async {
-  List<ClaimEntity> claimList = await sdk.credential.getClaimsByIds(
+  List<ClaimEntity> claimList = await PolygonIdSdk.I.credential.getClaimsByIds(
     claimIds: claimIds,
     did: did,
     privateKey: privateKey,
@@ -230,7 +232,7 @@ Future<void> removeClaim({
   required String did,
   required String privateKey,
 }) async {
-  await sdk.credential.removeClaim(
+  await PolygonIdSdk.I.credential.removeClaim(
     claimId: claimId,
     did: did,
     privateKey: privateKey,
@@ -246,7 +248,7 @@ Future<void> removeClaims({
   required String did,
   required String privateKey,
 }) async {
-  await sdk.credential.removeClaims(
+  await PolygonIdSdk.I.credential.removeClaims(
     claimIds: claimIds,
     did: did,
     privateKey: privateKey,
@@ -271,8 +273,7 @@ Future<void> updateClaim({
   String? type,
   Map<String, dynamic>? data,
 }) async {
-  PolygonIdSdk sdk = PolygonIdSdk.I;
-  await sdk.credential.updateClaim(
+  await PolygonIdSdk.I.credential.updateClaim(
     claimId: claimId,
     did: did,
     privateKey: privateKey,

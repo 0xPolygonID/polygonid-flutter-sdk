@@ -38,7 +38,7 @@ dependencies:
 ### App side
 You need to set the environment you are working on in the SDK.
 
-You can either set the environment during initialization (with `env` parameter) or later with [PolygonIdSdk.setEnv()](lib/sdk/polygon_id_sdk.dart#L62).
+You can either set the environment during initialization (with `env` parameter) or later with [PolygonIdSdk.setEnv()](lib/sdk/polygon_id_sdk.dart#L70).
 
 The environment object is [EnvEntity](lib/common/domain/entities/env_entity.dart) with:
 ```
@@ -83,7 +83,7 @@ Future<void> main() async {
 
 If you want to deploy your own State Contract, please check the [contract documentation](https://docs.iden3.io/contracts/state/).
 
-You can get the current env using [PolygonIdSdk.getEnv()](lib/sdk/polygon_id_sdk.dart#L66).
+You can get the current env using [PolygonIdSdk.I.getEnv()](lib/sdk/polygon_id_sdk.dart#L76).
 
 # Deploy and check
 ### Deploy
@@ -166,7 +166,3 @@ If you encounter any issues with this SDK, please file an [issue][tracker]. Cont
 - [Polygon ID GitHub repository](https://github.com/0xPolygonId/)
 - [Polygon ID Documentation](https://0xpolygonid.github.io/tutorials/)
 - [Flutter documentation](https://flutter.dev/docs)
-
-## Notes
-
-P.S. Using iOS simulator for testing wallet sdk is right now under maintenance and will be available soon.
