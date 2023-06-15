@@ -31,12 +31,13 @@ jobs:
         run: flutter --version
 
       - name: Clean, dependencies and generate for SDK
-        run: flutter clean&&flutter pub get&&flutter pub run build_runner build --delete-conflicting-outputs
+        run: flutter clean&&flutter pub get&&dart run build_runner build --delete-conflicting-outputs
 
       - name: Clean, dependencies and generate for Example
         env:
           ENV_POLYGON_MUMBAI: ${{ secrets.ENV_POLYGON_MUMBAI }}
-        run: cd example&&flutter clean&&flutter pub get&&flutter pub run build_runner build --delete-conflicting-outputs
+          ENV_POLYGON_MAINNET: ${{ secrets.ENV_POLYGON_MUMBAI }}
+        run: cd example&&flutter clean&&flutter pub get&&dart run build_runner build --delete-conflicting-outputs
 
       - name: Format
         run: dart format --set-exit-if-changed lib test example
@@ -81,12 +82,13 @@ jobs:
           run: flutter --version
 
         - name: Clean, dependencies and generate for SDK
-          run: flutter clean&&flutter pub get&&flutter pub run build_runner build --delete-conflicting-outputs
+          run: flutter clean&&flutter pub get&&dart run build_runner build --delete-conflicting-outputs
 
         - name: Clean, dependencies and generate for Example
           env:
             ENV_POLYGON_MUMBAI: ${{ secrets.ENV_POLYGON_MUMBAI }}
-          run: cd example&&flutter clean&&flutter pub get&&flutter pub run build_runner build --delete-conflicting-outputs
+            ENV_POLYGON_MAINNET: ${{ secrets.ENV_POLYGON_MUMBAI }}
+          run: cd example&&flutter clean&&flutter pub get&&dart run build_runner build --delete-conflicting-outputs
 
         - name: "List all simulators"
           run: "xcrun xctrace list devices"
