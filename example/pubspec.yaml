@@ -48,6 +48,7 @@ dependencies:
   camera: ^0.10.3+2
   image_picker: ^0.8.7
   envied: ^0.3.0+3
+  scan: ^1.6.0
 
 dev_dependencies:
   integration_test:

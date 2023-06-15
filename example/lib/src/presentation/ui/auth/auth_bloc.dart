@@ -1,10 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
-import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/data/secure_storage.dart';
-import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_state.dart';
 import 'package:polygonid_flutter_sdk_example/utils/secure_storage_keys.dart';
@@ -67,13 +65,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }) async {
     emit(const AuthState.loading());
 
-    EnvEntity env = await _polygonIdSdk.getEnv();
+    EnvEntity envEntity = await _polygonIdSdk.getEnv();
 
     String? did = await _polygonIdSdk.identity.getDidIdentifier(
-      privateKey: privateKey,
-      blockchain: env.blockchain,
-      network: env.network,
-    );
+        privateKey: privateKey,
+        blockchain: envEntity.blockchain,
+        network: envEntity.network);
 
     try {
       await _polygonIdSdk.iden3comm.authenticate(

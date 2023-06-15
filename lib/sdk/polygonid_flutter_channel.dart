@@ -387,20 +387,22 @@ class PolygonIdFlutterChannel
 
         case 'prove':
           return prove(
-                  genesisDid: call.arguments['genesisDid'] as String,
-                  profileNonce:
-                      BigInt.parse(call.arguments['profileNonce'] as String),
-                  claimSubjectProfileNonce: BigInt.parse(
-                      call.arguments['claimSubjectProfileNonce'] as String),
-                  claim: ClaimEntity.fromJson(
-                      jsonDecode(call.arguments['claim'] as String)),
-                  circuitData: CircuitDataEntity.fromJson(
-                      jsonDecode(call.arguments['circuitData'] as String)),
-                  request: ProofScopeRequest.fromJson(
-                      jsonDecode(call.arguments['request'] as String)),
-                  privateKey: call.arguments['privateKey'] as String?,
-                  challenge: call.arguments['challenge'] as String?)
-              .then((proof) => jsonEncode(proof));
+            genesisDid: call.arguments['genesisDid'] as String,
+            profileNonce:
+                BigInt.parse(call.arguments['profileNonce'] as String),
+            claimSubjectProfileNonce: BigInt.parse(
+                call.arguments['claimSubjectProfileNonce'] as String),
+            claim: ClaimEntity.fromJson(
+                jsonDecode(call.arguments['claim'] as String)),
+            circuitData: CircuitDataEntity.fromJson(
+                jsonDecode(call.arguments['circuitData'] as String)),
+            request: ProofScopeRequest.fromJson(
+                jsonDecode(call.arguments['request'] as String)),
+            privateKey: call.arguments['privateKey'] as String?,
+            challenge: call.arguments['challenge'] as String?,
+            ethereumUrl: call.arguments['ethereumUrl'] as String?,
+            stateContractAddr: call.arguments['stateContractAddr'] as String?,
+          ).then((proof) => jsonEncode(proof));
 
         default:
           throw PlatformException(
@@ -502,13 +504,17 @@ class PolygonIdFlutterChannel
       required String genesisDid,
       BigInt? profileNonce,
       required String privateKey,
-      String? challenge}) {
+      String? challenge,
+      String? ethereumUrl,
+      String? stateContractAddr}) {
     return _polygonIdSdk.iden3comm.getProofs(
         message: message,
         genesisDid: genesisDid,
         profileNonce: profileNonce,
         privateKey: privateKey,
-        challenge: challenge);
+        challenge: challenge,
+        ethereumUrl: ethereumUrl,
+        stateContractAddr: stateContractAddr);
   }
 
   @override
@@ -740,7 +746,9 @@ class PolygonIdFlutterChannel
       required CircuitDataEntity circuitData,
       required ProofScopeRequest request,
       String? privateKey,
-      String? challenge}) {
+      String? challenge,
+      String? ethereumUrl,
+      String? stateContractAddr}) {
     return _polygonIdSdk.proof.prove(
         genesisDid: genesisDid,
         profileNonce: profileNonce,
@@ -749,6 +757,8 @@ class PolygonIdFlutterChannel
         circuitData: circuitData,
         request: request,
         privateKey: privateKey,
-        challenge: challenge);
+        challenge: challenge,
+        ethereumUrl: ethereumUrl,
+        stateContractAddr: stateContractAddr);
   }
 }

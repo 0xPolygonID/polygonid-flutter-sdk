@@ -30,14 +30,18 @@ class PolygonIdCoreProof extends PolygonIdCore {
     return result;
   }
 
-  String getSigProofInputs(String input) {
+  String getSigProofInputs(String input, String? config) {
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
+    ffi.Pointer<ffi.Char> cfg = ffi.nullptr;
+    if (config != null) {
+      cfg = config.toNativeUtf8().cast<ffi.Char>();
+    }
     ffi.Pointer<ffi.Pointer<ffi.Char>> response =
         malloc<ffi.Pointer<ffi.Char>>();
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
         malloc<ffi.Pointer<PLGNStatus>>();
     int res = PolygonIdCore.nativePolygonIdCoreLib
-        .PLGNAtomicQuerySigV2Inputs(response, in1, ffi.nullptr, status);
+        .PLGNAtomicQuerySigV2Inputs(response, in1, cfg, status);
     if (res == 0) {
       consumeStatus(status, "");
     }
@@ -51,14 +55,18 @@ class PolygonIdCoreProof extends PolygonIdCore {
     return result;
   }
 
-  String getSigOnchainProofInputs(String input) {
+  String getSigOnchainProofInputs(String input, String? config) {
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
+    ffi.Pointer<ffi.Char> cfg = ffi.nullptr;
+    if (config != null) {
+      cfg = config.toNativeUtf8().cast<ffi.Char>();
+    }
     ffi.Pointer<ffi.Pointer<ffi.Char>> response =
         malloc<ffi.Pointer<ffi.Char>>();
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
         malloc<ffi.Pointer<PLGNStatus>>();
     int res = PolygonIdCore.nativePolygonIdCoreLib
-        .PLGNAtomicQuerySigV2OnChainInputs(response, in1, ffi.nullptr, status);
+        .PLGNAtomicQuerySigV2OnChainInputs(response, in1, cfg, status);
     if (res == 0) {
       consumeStatus(status, "");
     }
@@ -72,14 +80,18 @@ class PolygonIdCoreProof extends PolygonIdCore {
     return result;
   }
 
-  String getMTProofInputs(String input) {
+  String getMTProofInputs(String input, String? config) {
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
+    ffi.Pointer<ffi.Char> cfg = ffi.nullptr;
+    if (config != null) {
+      cfg = config.toNativeUtf8().cast<ffi.Char>();
+    }
     ffi.Pointer<ffi.Pointer<ffi.Char>> response =
         malloc<ffi.Pointer<ffi.Char>>();
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
         malloc<ffi.Pointer<PLGNStatus>>();
     int res = PolygonIdCore.nativePolygonIdCoreLib
-        .PLGNAtomicQueryMtpV2Inputs(response, in1, ffi.nullptr, status);
+        .PLGNAtomicQueryMtpV2Inputs(response, in1, cfg, status);
     if (res == 0) {
       consumeStatus(status, "");
     }
@@ -93,14 +105,18 @@ class PolygonIdCoreProof extends PolygonIdCore {
     return result;
   }
 
-  String getMTPOnchainProofInputs(String input) {
+  String getMTPOnchainProofInputs(String input, String? config) {
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
+    ffi.Pointer<ffi.Char> cfg = ffi.nullptr;
+    if (config != null) {
+      cfg = config.toNativeUtf8().cast<ffi.Char>();
+    }
     ffi.Pointer<ffi.Pointer<ffi.Char>> response =
         malloc<ffi.Pointer<ffi.Char>>();
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
         malloc<ffi.Pointer<PLGNStatus>>();
     int res = PolygonIdCore.nativePolygonIdCoreLib
-        .PLGNAtomicQueryMtpV2OnChainInputs(response, in1, ffi.nullptr, status);
+        .PLGNAtomicQueryMtpV2OnChainInputs(response, in1, cfg, status);
     if (res == 0) {
       consumeStatus(status, "");
     }
