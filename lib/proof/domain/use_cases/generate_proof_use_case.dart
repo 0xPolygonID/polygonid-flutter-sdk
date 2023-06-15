@@ -10,6 +10,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repo
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_latest_state_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/tuples.dart';
@@ -41,15 +42,21 @@ class GenerateProofParam {
   final String? privateKey;
   final String? challenge;
 
+  final String? ethereumUrl;
+  final String? stateContractAddr;
+
   GenerateProofParam(
-      this.did,
-      this.profileNonce,
-      this.claimSubjectProfileNonce,
-      this.credential,
-      this.request,
-      this.circuitData,
-      this.privateKey,
-      this.challenge);
+    this.did,
+    this.profileNonce,
+    this.claimSubjectProfileNonce,
+    this.credential,
+    this.request,
+    this.circuitData,
+    this.privateKey,
+    this.challenge,
+    this.ethereumUrl,
+    this.stateContractAddr,
+  );
 }
 
 class GenerateProofUseCase
@@ -85,6 +92,7 @@ class GenerateProofUseCase
     ProofEntity? nonRevProof;
     GistProofEntity? gistProof;
     Map<String, dynamic>? treeState;
+    Map<String, dynamic>? config;
     String? signature;
     if (param.request.circuitId == "credentialAtomicQueryMTPV2OnChain" ||
         param.request.circuitId == "credentialAtomicQuerySigV2OnChain") {
@@ -118,6 +126,13 @@ class GenerateProofUseCase
           param: SignMessageParam(param.privateKey!, param.challenge!));
     }
 
+    if (param.ethereumUrl != null && param.stateContractAddr != null) {
+      config = AtomicQueryInputsConfigParam(
+              ethereumUrl: param.ethereumUrl!,
+              stateContractAddr: param.stateContractAddr!)
+          .toJson();
+    }
+
     DidEntity didEntity = await _getDidUseCase.execute(param: param.did);
 
     // Prepare atomic query inputs
@@ -135,6 +150,7 @@ class GenerateProofUseCase
       signature: signature,
       claim: param.credential,
       request: param.request,
+      config: config,
     )
         .catchError((error) {
       logger().e("[GenerateProofUseCase] Error: $error");

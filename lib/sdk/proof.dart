@@ -28,7 +28,9 @@ abstract class PolygonIdSdkProof {
       required CircuitDataEntity circuitData,
       required ProofScopeRequest request,
       String? privateKey,
-      String? challenge});
+      String? challenge,
+      String? ethereumUrl,
+      String? stateContractAddr});
 
   Stream<DownloadInfo> get initCircuitsDownloadAndGetInfoStream;
 
@@ -64,7 +66,9 @@ class Proof implements PolygonIdSdkProof {
       required CircuitDataEntity circuitData,
       required ProofScopeRequest request,
       String? privateKey,
-      String? challenge}) {
+      String? challenge,
+      String? ethereumUrl,
+      String? stateContractAddr}) {
     return generateProofUseCase.execute(
         param: GenerateProofParam(
             genesisDid,
@@ -74,7 +78,9 @@ class Proof implements PolygonIdSdkProof {
             request,
             circuitData,
             privateKey,
-            challenge));
+            challenge,
+            ethereumUrl,
+            stateContractAddr));
   }
 
   ///

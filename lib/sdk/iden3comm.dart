@@ -95,7 +95,9 @@ abstract class PolygonIdSdkIden3comm {
       required String genesisDid,
       BigInt? profileNonce,
       required String privateKey,
-      String? challenge});
+      String? challenge,
+      String? ethereumUrl,
+      String? stateContractAddr});
 
   /// Authenticate response from iden3Message sharing the needed
   /// (if any) proofs requested by it
@@ -267,7 +269,9 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       required String genesisDid,
       BigInt? profileNonce,
       required String privateKey,
-      String? challenge}) {
+      String? challenge,
+      String? ethereumUrl,
+      String? stateContractAddr}) {
     return _getIden3commProofsUseCase.execute(
         param: GetIden3commProofsParam(
       message: message,
@@ -275,6 +279,8 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
       privateKey: privateKey,
       challenge: challenge,
+      ethereumUrl: ethereumUrl,
+      stateContractAddr: stateContractAddr,
     ));
   }
 

@@ -17,19 +17,21 @@ abstract class ProofRepository {
 
   Future<CircuitDataEntity> loadCircuitFiles(String circuitId);
 
-  Future<Uint8List> calculateAtomicQueryInputs(
-      {required String id,
-      required BigInt profileNonce,
-      required BigInt claimSubjectProfileNonce,
-      required ClaimEntity claim,
-      required ProofScopeRequest request,
-      ProofEntity? incProof,
-      ProofEntity? nonRevProof,
-      GistProofEntity? gistProof,
-      List<String>? authClaim,
-      Map<String, dynamic>? treeState,
-      String? challenge,
-      String? signature});
+  Future<Uint8List> calculateAtomicQueryInputs({
+    required String id,
+    required BigInt profileNonce,
+    required BigInt claimSubjectProfileNonce,
+    required ClaimEntity claim,
+    required ProofScopeRequest request,
+    ProofEntity? incProof,
+    ProofEntity? nonRevProof,
+    GistProofEntity? gistProof,
+    List<String>? authClaim,
+    Map<String, dynamic>? treeState,
+    String? challenge,
+    String? signature,
+    Map<String, dynamic>? config,
+  });
 
   Future<Uint8List> calculateWitness(
     CircuitDataEntity circuitData,

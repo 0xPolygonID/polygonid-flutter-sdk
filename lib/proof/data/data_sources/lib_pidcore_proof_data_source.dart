@@ -5,11 +5,21 @@ import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_proof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
+import 'package:polygonid_flutter_sdk/proof/libs/polygonidcore/pidcore_proof.dart';
 
-import '../../libs/polygonidcore/pidcore_proof.dart';
-import '../dtos/atomic_query_inputs_param.dart';
+class ComputeAtomicQueryInputs {
+  final AtomicQueryInputsParam param;
+  final AtomicQueryInputsConfigParam? configParam;
+
+  ComputeAtomicQueryInputs({
+    required this.param,
+    required this.configParam,
+  });
+}
 
 @injectable
 class LibPolygonIdCoreWrapper {
@@ -17,39 +27,46 @@ class LibPolygonIdCoreWrapper {
 
   LibPolygonIdCoreWrapper(this._polygonIdCoreProof);
 
-  Future<String> getProofInputs(
-      AtomicQueryInputsParam atomicQueryInputsParam) async {
-    return compute(_computeAtomicQueryInputs, atomicQueryInputsParam)
-        .catchError((error) =>
-            throw NullAtomicQueryInputsException(atomicQueryInputsParam.id));
+  Future<String> getProofInputs(AtomicQueryInputsParam atomicQueryInputsParam,
+      AtomicQueryInputsConfigParam? atomicQueryInputsConfigParam) async {
+    ComputeAtomicQueryInputs param = ComputeAtomicQueryInputs(
+        param: atomicQueryInputsParam,
+        configParam: atomicQueryInputsConfigParam);
+    return compute(_computeAtomicQueryInputs, param).catchError((error) =>
+        throw NullAtomicQueryInputsException(atomicQueryInputsParam.id));
   }
 
-  Future<String> _computeAtomicQueryInputs(AtomicQueryInputsParam param) {
+  Future<String> _computeAtomicQueryInputs(
+      ComputeAtomicQueryInputs computeParam) {
     try {
       String result;
 
-      switch (param.type) {
+      switch (computeParam.param.type) {
         case AtomicQueryInputsType.mtp:
-          result =
-              _polygonIdCoreProof.getMTProofInputs(jsonEncode(param.toJson()));
+          result = _polygonIdCoreProof.getMTProofInputs(
+              jsonEncode(computeParam.param.toJson()),
+              jsonEncode(computeParam.configParam?.toJson()));
           break;
         case AtomicQueryInputsType.sig:
-          result =
-              _polygonIdCoreProof.getSigProofInputs(jsonEncode(param.toJson()));
+          result = _polygonIdCoreProof.getSigProofInputs(
+              jsonEncode(computeParam.param.toJson()),
+              jsonEncode(computeParam.configParam?.toJson()));
           break;
         case AtomicQueryInputsType.mtponchain:
-          result = _polygonIdCoreProof
-              .getMTPOnchainProofInputs(jsonEncode(param.toJson()));
+          result = _polygonIdCoreProof.getMTPOnchainProofInputs(
+              jsonEncode(computeParam.param.toJson()),
+              jsonEncode(computeParam.configParam?.toJson()));
           break;
         case AtomicQueryInputsType.sigonchain:
-          result = _polygonIdCoreProof
-              .getSigOnchainProofInputs(jsonEncode(param.toJson()));
+          result = _polygonIdCoreProof.getSigOnchainProofInputs(
+              jsonEncode(computeParam.param.toJson()),
+              jsonEncode(computeParam.configParam?.toJson()));
           break;
       }
 
       return Future.value(result);
     } catch (error) {
-      throw NullAtomicQueryInputsException(param.id);
+      throw NullAtomicQueryInputsException(computeParam.param.id);
     }
   }
 
@@ -131,6 +148,7 @@ class LibPolygonIdCoreProofDataSource {
     String? signature,
     required ClaimInfoDTO credential,
     required ProofScopeRequest request,
+    Map<String, dynamic>? config,
   }) {
     AtomicQueryInputsType type = AtomicQueryInputsType.mtp;
 
@@ -143,21 +161,27 @@ class LibPolygonIdCoreProofDataSource {
     } else if (request.circuitId == "credentialAtomicQuerySigV2OnChain") {
       type = AtomicQueryInputsType.sigonchain;
     }
+    AtomicQueryInputsConfigParam? configParam;
+    if (config != null) {
+      configParam = AtomicQueryInputsConfigParam.fromJson(config);
+    }
 
-    return _libPolygonIdCoreWrapper.getProofInputs(AtomicQueryInputsParam(
-      type: type,
-      id: id,
-      profileNonce: profileNonce,
-      claimSubjectProfileNonce: claimSubjectProfileNonce,
-      authClaim: authClaim,
-      incProof: incProof,
-      nonRevProof: nonRevProof,
-      treeState: treeState,
-      gistProof: gistProof,
-      challenge: challenge,
-      signature: signature,
-      credential: credential,
-      request: request,
-    ));
+    return _libPolygonIdCoreWrapper.getProofInputs(
+        AtomicQueryInputsParam(
+          type: type,
+          id: id,
+          profileNonce: profileNonce,
+          claimSubjectProfileNonce: claimSubjectProfileNonce,
+          authClaim: authClaim,
+          incProof: incProof,
+          nonRevProof: nonRevProof,
+          treeState: treeState,
+          gistProof: gistProof,
+          challenge: challenge,
+          signature: signature,
+          credential: credential,
+          request: request,
+        ),
+        configParam);
   }
 }
