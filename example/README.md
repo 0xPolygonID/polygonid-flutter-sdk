@@ -27,13 +27,22 @@ Before you can start using the SDK, you need to initialise it and set the enviro
 
 See [the SDK environment](../README.md#environment) for more information.
 
-In this example app we are using environment variable and Envied package to initialize the SDK.
+## Configuration
 
-To be able to run the app, you will need to either create a `ENV_POLYGON_MUMBAI` environment variable or create a `.env` at the root of this folder with the desired environment values (replace with your own values):
-```
-ENV_POLYGON_MUMBAI={"blockchain": "polygon", "network": "mumbai", "web3Url": "https://polygon-mumbai.infura.io/v3/", "web3RdpUrl": "wss://polygon-mumbai.infura.io/v3/", "web3ApiKey": "YOUR_INFURA_API_KEY", "idStateContract": "0x134B1BE34911E39A8397ec6289782989729807a4", "pushUrl": "https://push-staging.polygonid.com/api/v1"}
-```
+In this example app we are using environment variable and Envied package to initialize the SDK. You can configure the application with the following [environment variables]:
 
+- **`ENV_POLYGON_MUMBAI`**: We use this to setup the sdk environment to Polygon Mumbai network.<br/>
+  Default: `{"blockchain": "polygon", "network": "mumbai", "web3Url": "https://polygon-mumbai.infura.io/v3/", "web3RdpUrl": "wss://polygon-mumbai.infura.io/v3/", "web3ApiKey": "YOUR_INFURA_API_KEY", "idStateContract": "0x134B1BE34911E39A8397ec6289782989729807a4", "pushUrl": "https://push-staging.polygonid.com/api/v1"}`
+
+- **`ENV_POLYGON_MAINNET`**: We use this to setup the sdk environment to Polygon Main network.<br/>
+  Default: `{"blockchain": "polygon", "network": "main", "web3Url": "https://polygon-mainnet.infura.io/v3/", "web3RdpUrl": "wss://polygon-mainnet.infura.io/v3/", "web3ApiKey": "YOUR_WEB3_API_KEY", "idStateContract": "0x624ce98D2d27b20b8f8d521723Df8fC4db71D79D", "pushUrl": "https://push-staging.polygonid.com/api/v1"}`
+
+To be able to run the app, you will need to create a `.env` file in the root of the project and read configurations from there. You can copy the sample environment config (env.sample) as a starting point (replace with your own values).
+
+Once the `.env` file is created and successfully configured, run `build_runner` to generate the `env.g.dart` file:
+```bash
+flutter pub run build_runner build --delete-conflicting-outputs
+```
 
 ### Identity
 #### Create identity
