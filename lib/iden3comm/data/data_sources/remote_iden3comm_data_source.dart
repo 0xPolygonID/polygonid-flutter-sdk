@@ -79,7 +79,7 @@ class RemoteIden3commDataSource {
       String schemaUrl = url;
 
       if (schemaUrl.toLowerCase().startsWith("ipfs://")) {
-        String fileHash = schemaUrl.toLowerCase().replaceFirst("ipfs://", "");
+        String fileHash = schemaUrl.replaceFirst("ipfs://", "");
         schemaUrl = "https://ipfs.io/ipfs/$fileHash";
       }
 
