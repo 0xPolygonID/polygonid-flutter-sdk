@@ -92,13 +92,13 @@ abstract class PolygonIdSdkCredential {
   /// [data] could be subject to validation by the data layer
   Future<ClaimEntity> updateClaim({
     required String claimId,
-    String? issuer,
     required String genesisDid,
+    required String privateKey,
+    String? issuer,
     ClaimState? state,
     String? expiration,
     String? type,
     Map<String, dynamic>? data,
-    required String privateKey,
   });
 }
 

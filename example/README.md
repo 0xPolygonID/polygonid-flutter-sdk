@@ -48,21 +48,20 @@ Once the `.env` file is created and successfully configured, run `build_runner` 
 dart run build_runner build --delete-conflicting-outputs
 ```
 
+See [the SDK Usage](../README.md#usage) for more information.
+
 ### Identity
-#### Create identity
-If not yet created, create an identity via `identity.createIdentity();`
+#### Add identity
+If not yet created, add an identity via `identity.addIdentity();`
 ```dart
-Future<void> createIdentity() async {
-  PrivateIdentityEntity identity = await PolygonIdSdk.I.identity.createIdentity(
+Future<void> addIdentity() async {
+  PrivateIdentityEntity identity = await PolygonIdSdk.I.identity.addIdentity(
      secret: secretKey,
-     blockchain: blockchain,
-     network: network,
   );
 }
 ```
-- `secret` param in the `createIdentity()` is optional, if not passed there will be one generated randomly.
-- `blockchain` and `network` are not optional, they are used to associate the identity to a specific blockchain network.
-- it is recommended to securely save the `privateKey` generated with `createIdentity()`, this will often be used within the sdk methods as a security system, you can find the `privateKey` in the `PrivateIdentityEntity` object.
+- `secret` param in the `addIdentity()` is optional, if not passed there will be one generated randomly.
+- it is recommended to securely save the `privateKey` generated with `addIdentity()`, this will often be used within the sdk methods as a security system, you can find the `privateKey` in the `PrivateIdentityEntity` object.
 
 #### Get identifier
 Get the DID identifier from previously created identity via `identity.getDidIdentifier();` by passing as param the `privateKey`, `blockchain` and `network`.
@@ -96,11 +95,11 @@ Future<void> removeIdentity({
 To sign a message with your `privateKey` call `identity.sign()`, with the `message` and `privateKey`. (The `message` String must be an Hex or a Int otherwise an Exception will be thrown)
 A `signature` containing a `BigInt` is returned as a String.
 ```dart
-Future<void> signMessage({
+Future<void> sign({
   required String privateKey,
   required String message,
 }) async {
-  String signature = await PolygonIdSdk.I.identity.signMessage(
+  String signature = await PolygonIdSdk.I.identity.sign(
     privateKey: privateKey,
     message: message,
   );
@@ -108,52 +107,44 @@ Future<void> signMessage({
 ```
 
 #### Backup identity
-To backup an identity call `identity.backupIdentity()`, with the `privateKey`, `blockchain` and `network`.
-A map of profile nonces and associated encrypted Identity's Databases is returned.
+To backup an identity call `identity.backupIdentity()`, with the `privateKey` and `genesisDid`.
+An encrypted Identity's Databases is returned.
 ```dart
-Future<Map<int, String>?> backupIdentity({
+Future<String> backupIdentity({
+  required String genesisDid,
   required String privateKey,
-  required blockchain,
-  required network,
 }){
   return PolygonIdSdk.I.identity.backupIdentity(
+    genesisDid: genesisDid,
     privateKey: privateKey,
-    blockchain: blockchain,
-    network: network,
   );
 }
 ```
 
 #### Restore identity
-To restore an identity call `identity.restoreIdentity()`, with the `privateKey`, `blockchain`, `network` and the `backup`.
+To restore an identity call `identity.restoreIdentity()`, with the `privateKey`, `genesisDid` and the `encryptedDb`.
 ```dart
 Future<void> restoreIdentity({
+  required String genesisDid,
   required String privateKey,
-  required blockchain,
-  required network,
-  required Map<int, String> backup,
+  String? encryptedDb,
 }) async {
   await PolygonIdSdk.I.identity.restoreIdentity(
+    genesisDid: genesisDid,
     privateKey: privateKey,
-    blockchain: blockchain,
-    network: network,
-    backup: backup,
+    encryptedDb: encryptedDb,
   );
 }
 ```
 
 #### Check identity validity
-To check if an identity is valid call `identity.checkIdentityValidity()`, with the `secret`, `blockchain` and `network`.
+To check if an identity is valid call `identity.checkIdentityValidity()`, with the `secret`.
 ```dart
 Future<bool> checkIdentityValidity({
   required String secret,
-  required blockchain,
-  required network,
 }) async {
   return PolygonIdSdk.I.identity.checkIdentityValidity(
     secret: secret,
-    blockchain: blockchain,
-    network: network,
   );
 }
 ```
@@ -170,17 +161,21 @@ Iden3MessageEntity getIden3MessageFromString(String message){
 ```
 
 #### Authenticate
-In order to authenticate, you will need to pass the following parameters, `iden3message` related to the authentication request, the `did` and the `privateKey`
+In order to authenticate, you will need to pass the following parameters, `iden3message` related to the authentication request, the `genesisDid`, the `profileNonce` (optional), the `privateKey`, and the `pushToken` (optional).'
 ```dart
 Future<void> authenticate({
   required Iden3MessageEntity iden3message,
-  required String did,
+  required String genesisDid,
+  BigInt? profileNonce,
   required String privateKey,
+  String? pushToken
 }) async {
   await PolygonIdSdk.I.iden3comm.authenticate(
     iden3message: iden3message,
-    did: did,
+    genesisDid: genesisDid,
+    profileNonce: profileNonce,
     privateKey: privateKey,
+    pushToken: pushToken,
   );
 }
 ```
@@ -206,48 +201,48 @@ Future<void> fetchAndSaveClaims({
 ```
 
 #### Get Claims
-It is possible to retrieve **claims** saved on the sdk through the use of the `credential.getClaims()`, with `filters` as optional param, `did` and `privateKey` are mandatory fields.
+It is possible to retrieve **claims** saved on the sdk through the use of the `credential.getClaims()`, with `filters` as optional param, `genesisDid` and `privateKey` are mandatory fields.
 ```dart
 Future<void> getClaims({
   List<FilterEntity>? filters,
-  required String did,
+  required String genesisDid,
   required String privateKey,
 }) async {
   List<ClaimEntity> claimList = await PolygonIdSdk.I.claim.getClaims(
     filters: filters,
-    did: did,
+    genesisDid: genesisDid,
     privateKey: privateKey,
   );
 }
 ```
 
 #### Get Claims by id
-If you want to obtain specific **claims** by knowing the **ids**, you can use the sdk method `credential.getClaimsByIds()`, passing the desired `ids`, `did` and `privateKey` as parameters.
+If you want to obtain specific **claims** by knowing the **ids**, you can use the sdk method `credential.getClaimsByIds()`, passing the desired `ids`, `genesisDid` and `privateKey` as parameters.
 ```dart
 Future<void> getClaimsByIds({
   required List<String> claimIds,
-  required String did,
+  required String genesisDid,
   required String privateKey,
 }) async {
   List<ClaimEntity> claimList = await PolygonIdSdk.I.credential.getClaimsByIds(
     claimIds: claimIds,
-    did: did,
+    genesisDid: genesisDid,
     privateKey: privateKey,
   );
 }
 ```
 
 #### Remove single Claim
-To **remove** a **claim**, simply call the `credential.removeClaim()` with the `id` of the **claim** you want to remove, you must also pass the `did` and `privateKey`.
+To **remove** a **claim**, simply call the `credential.removeClaim()` with the `id` of the **claim** you want to remove, you must also pass the `genesisDid` and `privateKey`.
 ```dart
 Future<void> removeClaim({
   required String claimId,
-  required String did,
+  required String genesisDid,
   required String privateKey,
 }) async {
   await PolygonIdSdk.I.credential.removeClaim(
     claimId: claimId,
-    did: did,
+    genesisDid: genesisDid,
     privateKey: privateKey,
   );
 }
@@ -258,12 +253,12 @@ If you want to **remove** a series of **claims**, you have to pass a list of `id
 ```dart
 Future<void> removeClaims({
   required List<String> claimIds,
-  required String did,
+  required String genesisDid,
   required String privateKey,
 }) async {
   await PolygonIdSdk.I.credential.removeClaims(
     claimIds: claimIds,
-    did: did,
+    genesisDid: genesisDid,
     privateKey: privateKey,
   );
 }
@@ -278,7 +273,7 @@ It is also possible to **update** a **claim** through `credential.updateClaim()`
 ```dart
 Future<void> updateClaim({
   required String claimId,
-  required String did,
+  required String genesisDid,
   required String privateKey,
   String? issuer,
   ClaimState? state,
@@ -288,7 +283,7 @@ Future<void> updateClaim({
 }) async {
   await PolygonIdSdk.I.credential.updateClaim(
     claimId: claimId,
-    did: did,
+    genesisDid: genesisDid,
     privateKey: privateKey,
     issuer: issuer,
     state: state,

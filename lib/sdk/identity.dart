@@ -144,6 +144,9 @@ abstract class PolygonIdSdkIdentity {
   /// The [network] is the network name of the blockchain where the identity
   /// is associated, e.g. Main
   ///
+  /// The [profileNonce] is the nonce of the profile used from identity
+  /// to obtain the did identifier. Value must be greater than 0 and less than 2^248
+  ///
   /// Return The Identity's [did] identifier
   Future<String> getDidIdentifier(
       {required String privateKey,
