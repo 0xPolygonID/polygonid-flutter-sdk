@@ -2,6 +2,42 @@
 
 This document provides an explanation on how to authenticate with the Polygon ID Flutter SDK using the `authenticate` method.
 
+## Preparatory steps
+
+### 1. Install the Polygon ID Mobile SDK Plugin:
+- Add the plugin as a dependency in your project's pubspec.yaml file:
+   ```yaml
+   dependencies:
+     polygonid_flutter_sdk:
+       git:
+         url: ssh://git@github.com/0xPolygonID/polygonid-flutter-sdk.git
+         ref: main
+   ```
+
+### 2. Prepare the EnvEntity object:
+- To initialize the SDK, create an EnvEntity object with the following information:
+  ```dart
+  EnvEntity(
+   blockchain: "polygon",
+   network: "mumbai",
+   web3Url: "https://polygon-mumbai.infura.io/v3/",
+   web3RdpUrl: "wss://polygon-mumbai.infura.io/v3/",
+   web3ApiKey: "YOUR_API_KEY"
+   idStateContract: 0x134B1BE34911E39A8397ec6289782989729807a4),
+  ```
+
+
+### 3. Initialize the PolygonIdSdk:
+- By calling `await PolygonIdSdk.init(env: envEntityCreatedPreviously);`, you can initialize the SDK and use it later by accessing `PolygonIdSdk.I` without the need to reinitialize every time.
+
+### 4. Download the Circuits:
+- On the first app launch (only once), perform the download of the necessary circuits for the SDK using `PolygonIdSdk.I.proof.initCircuitsDownloadAndGetInfoStream`.
+
+### 5. Add an Identity:
+- Use `await PolygonIdSdk.I.identity.addIdentity();` to add an identity and store the genesisDid DID (Decentralized Identifier) and private key, which will be required for the subsequent authentication step.
+
+Remember to replace "YOUR_API_KEY" with your actual API key provided by Infura at https://app.infura.io/dashboard and activate "polygon add on". These steps will allow you to install the plugin, initialize the SDK, download the circuits, and add an identity to proceed with the authentication.
+
 ## Authentication
 
 Authentication is a process that allows a user (or an identity) to prove their identity to an issuer or verifier, who needs to validate the user's claims about their identity.
@@ -12,11 +48,11 @@ Here's the method:
 
 ```dart
 Future<void> authenticate({
-    required Iden3MessageEntity message,
-    required String genesisDid,
-    BigInt? profileNonce,
-    required String privateKey,
-    String? pushToken,
+  required Iden3MessageEntity message,
+  required String genesisDid,
+  BigInt? profileNonce,
+  required String privateKey,
+  String? pushToken,
 });
 ```
 The method parameters are explained below:
@@ -51,22 +87,22 @@ This JSON object can be obtained by scanning a QR code, for instance from [https
 ## Practical usage
 ```dart
 await PolygonIdSdk.I.iden3comm.authenticate(
-  message: Iden3MessageEntity(
-    id: "2199c31a-cfa6-489f-8ad9-f2202990314d",
-    typ: "application/iden3comm-plain-json",
-    type: "https://iden3-communication.io/authorization/1.0/request",
-    thid: "2199c31a-cfa6-489f-8ad9-f2202990314d",
-    body: Iden3MessageBodyEntity(
-      callbackUrl: "https://self-hosted-testing-testnet-backend-platform.polygonid.me/api/callback?sessionId=402116",
-      reason: "test flow",
-      scope: []
-    ),
-    from: "did:polygonid:polygon:mumbai:2qFXmNqGWPrLqDowKz37Gq2FETk4yQwVUVUqeBLmf9"
-  ),
-  genesisDid: "YOUR_GENESIS_DID",
-  profileNonce: "YOUR_PROFILE_NONCE",
-  privateKey: "YOUR_PRIVATE_KEY",
-  pushToken: "PUSH_NOTIFICATION_TOKEN"
+message: Iden3MessageEntity(
+id: "2199c31a-cfa6-489f-8ad9-f2202990314d",
+typ: "application/iden3comm-plain-json",
+type: "https://iden3-communication.io/authorization/1.0/request",
+thid: "2199c31a-cfa6-489f-8ad9-f2202990314d",
+body: Iden3MessageBodyEntity(
+callbackUrl: "https://self-hosted-testing-testnet-backend-platform.polygonid.me/api/callback?sessionId=402116",
+reason: "test flow",
+scope: []
+),
+from: "did:polygonid:polygon:mumbai:2qFXmNqGWPrLqDowKz37Gq2FETk4yQwVUVUqeBLmf9"
+),
+genesisDid: "YOUR_GENESIS_DID",
+profileNonce: "YOUR_PROFILE_NONCE",
+privateKey: "YOUR_PRIVATE_KEY",
+pushToken: "PUSH_NOTIFICATION_TOKEN"
 );
 ```
 
