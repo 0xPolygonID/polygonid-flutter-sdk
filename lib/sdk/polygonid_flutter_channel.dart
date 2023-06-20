@@ -321,6 +321,13 @@ class PolygonIdFlutterChannel
               .then((claims) =>
                   claims.map((claim) => jsonEncode(claim)).toList());
 
+        case 'getClaimRevocationStatus':
+          return getClaimRevocationStatus(
+                  claimId: call.arguments['claimId'] as String,
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  privateKey: call.arguments['privateKey'] as String)
+              .then((revStatus) => jsonEncode(revStatus));
+
         case 'removeClaim':
           return removeClaim(
               claimId: call.arguments['claimId'] as String,
@@ -667,6 +674,15 @@ class PolygonIdFlutterChannel
       required String privateKey}) {
     return _polygonIdSdk.credential.getClaimsByIds(
         claimIds: claimIds, genesisDid: genesisDid, privateKey: privateKey);
+  }
+
+  @override
+  Future<Map<String, dynamic>> getClaimRevocationStatus(
+      {required String claimId,
+      required String genesisDid,
+      required String privateKey}) {
+    return _polygonIdSdk.credential.getClaimRevocationStatus(
+        claimId: claimId, genesisDid: genesisDid, privateKey: privateKey);
   }
 
   @override

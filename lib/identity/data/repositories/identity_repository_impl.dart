@@ -170,9 +170,10 @@ class IdentityRepositoryImpl extends IdentityRepository {
   Future<Map<String, dynamic>> getNonRevProof(
       {required String identityState,
       required BigInt nonce,
-      required String baseUrl}) {
+      required String baseUrl,
+      Map<String, dynamic>? cachedNonRevProof}) {
     return _remoteIdentityDataSource
-        .getNonRevocationProof(identityState, nonce, baseUrl)
+        .getNonRevocationProof(identityState, nonce, baseUrl, cachedNonRevProof)
         .catchError((error) => throw NonRevProofException(error));
   }
 

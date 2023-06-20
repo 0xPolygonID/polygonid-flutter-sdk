@@ -33,7 +33,8 @@ abstract class IdentityRepository {
   Future<Map<String, dynamic>> getNonRevProof(
       {required String identityState,
       required BigInt nonce,
-      required String baseUrl});
+      required String baseUrl,
+      Map<String, dynamic>? cachedNonRevProof});
 
   Future<String> getState(
       {required String identifier, required String contractAddress});

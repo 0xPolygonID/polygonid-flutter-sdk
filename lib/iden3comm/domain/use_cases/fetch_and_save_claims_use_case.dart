@@ -97,7 +97,8 @@ class FetchAndSaveClaimsUseCase
                 .then((claim) async {
               Map<String, dynamic> revStatus =
                   await _getClaimRevocationStatusUseCase
-                      .execute(param: claim)
+                      .execute(
+                          param: GetClaimRevocationStatusParam(claim: claim))
                       .catchError((_) => <String, dynamic>{});
 
               /// FIXME: define an entity for revocation and use it in repo impl
