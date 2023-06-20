@@ -2,9 +2,12 @@ import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/update_claim_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 
 import '../credential/domain/use_cases/save_claims_use_case.dart';
 
@@ -48,6 +51,11 @@ abstract class PolygonIdSdkCredential {
   /// and also to realize operations like generating proofs
   Future<List<ClaimEntity>> getClaimsByIds(
       {required List<String> claimIds,
+      required String genesisDid,
+      required String privateKey});
+
+  Future<Map<String, dynamic>> getClaimRevocationStatus(
+      {required String claimId,
       required String genesisDid,
       required String privateKey});
 
@@ -106,6 +114,7 @@ abstract class PolygonIdSdkCredential {
 class Credential implements PolygonIdSdkCredential {
   final SaveClaimsUseCase _saveClaimsUseCase;
   final GetClaimsUseCase _getClaimsUseCase;
+  final GetClaimRevocationStatusUseCase _getClaimRevocationStatusUseCase;
   final RemoveClaimsUseCase _removeClaimsUseCase;
   final UpdateClaimUseCase _updateClaimUseCase;
 
@@ -113,6 +122,7 @@ class Credential implements PolygonIdSdkCredential {
     this._saveClaimsUseCase,
     this._getClaimsUseCase,
     this._removeClaimsUseCase,
+    this._getClaimRevocationStatusUseCase,
     this._updateClaimUseCase,
   );
 
@@ -155,6 +165,26 @@ class Credential implements PolygonIdSdkCredential {
       profileNonce: GENESIS_PROFILE_NONCE,
       privateKey: privateKey,
     ));
+  }
+
+  @override
+  Future<Map<String, dynamic>> getClaimRevocationStatus({
+    required String claimId,
+    required String genesisDid,
+    required String privateKey,
+    Map<String, dynamic>? nonRevProof,
+  }) async {
+    List<ClaimEntity> claimEntityList = await getClaimsByIds(
+        claimIds: [claimId], genesisDid: genesisDid, privateKey: privateKey);
+    if (claimEntityList.isNotEmpty) {
+      return _getClaimRevocationStatusUseCase.execute(
+          param: GetClaimRevocationStatusParam(
+        claim: claimEntityList[0],
+        nonRevProof: nonRevProof,
+      ));
+    } else {
+      throw ClaimNotFoundException(claimId);
+    }
   }
 
   @override

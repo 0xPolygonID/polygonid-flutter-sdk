@@ -529,7 +529,7 @@ void main() {
         "Given parameters, when I call getNonRevProof, then I expect a Map to be returned",
         () async {
       // Given
-      when(remoteIdentityDataSource.getNonRevocationProof(any, any, any))
+      when(remoteIdentityDataSource.getNonRevocationProof(any, any, any, any))
           .thenAnswer((realInvocation) => Future.value(CommonMocks.aMap));
 
       // When
@@ -542,7 +542,7 @@ void main() {
 
       // Then
       var fetchCaptured = verify(remoteIdentityDataSource.getNonRevocationProof(
-              captureAny, captureAny, captureAny))
+              captureAny, captureAny, captureAny, captureAny))
           .captured;
 
       expect(fetchCaptured[0], CommonMocks.state);
@@ -554,7 +554,7 @@ void main() {
         "Given parameters, when I call getNonRevProof and an error occurred, then I expect a NonRevProofException to be thrown",
         () async {
       // Given
-      when(remoteIdentityDataSource.getNonRevocationProof(any, any, any))
+      when(remoteIdentityDataSource.getNonRevocationProof(any, any, any, any))
           .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
       // When
@@ -571,7 +571,7 @@ void main() {
 
       // Then
       var fetchCaptured = verify(remoteIdentityDataSource.getNonRevocationProof(
-              captureAny, captureAny, captureAny))
+              captureAny, captureAny, captureAny, captureAny))
           .captured;
 
       expect(fetchCaptured[0], CommonMocks.state);

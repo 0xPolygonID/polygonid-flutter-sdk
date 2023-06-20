@@ -74,16 +74,18 @@ class GetIden3commClaimsUseCase
               if (request.scope.query.skipClaimRevocationCheck == null ||
                   request.scope.query.skipClaimRevocationCheck == false) {
                 for (int i = 0; i < claims.length; i++) {
-                  Map<String, dynamic> revStatus =
+                  Map<String, dynamic> nonRevProof =
                       await _getClaimRevocationStatusUseCase
-                          .execute(param: claims[i])
+                          .execute(
+                              param: GetClaimRevocationStatusParam(
+                                  claim: claims[i]))
                           .catchError((_) => <String, dynamic>{});
 
                   /// FIXME: define an entity for revocation and use it in repo impl
-                  if (revStatus.isNotEmpty &&
-                      revStatus["mtp"] != null &&
-                      revStatus["mtp"]["existence"] != null &&
-                      revStatus["mtp"]["existence"] == true) {
+                  if (nonRevProof.isNotEmpty &&
+                      nonRevProof["mtp"] != null &&
+                      nonRevProof["mtp"]["existence"] != null &&
+                      nonRevProof["mtp"]["existence"] == true) {
                     claims[i] = await _updateClaimUseCase.execute(
                         param: UpdateClaimParam(
                             id: claims[i].id,
