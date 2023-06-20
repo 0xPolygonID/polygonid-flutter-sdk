@@ -83,6 +83,13 @@ An example of the `Iden3MessageEntity` object to be passed to the `authenticate`
 ```
 
 This JSON object can be obtained by scanning a QR code, for instance from [https://issuer-demo-testing-testnet.polygonid.me/auth-qr](https://issuer-demo-testing-testnet.polygonid.me/auth-qr)
+The `Iden3MessageEntity` can be obtained by passing the scanned String to this sdk methods:
+```dart
+Iden3MessageEntity message = await PolygonIdSdk.I.iden3comm.getIden3Message(
+  message: "YOUR_SCANNED_STRING"
+);
+```
+
 
 ## Practical usage
 ```dart
