@@ -84,7 +84,7 @@ class RemoteIdentityDataSource {
       // 2. Check if cached proof is valid and return it
       if (issuer != null &&
           cachedNonRevProof != null &&
-          cachedNonRevProof!.isNotEmpty &&
+          cachedNonRevProof.isNotEmpty &&
           cachedNonRevProof['issuer']['revocationTreeRoot'] ==
               issuer['revocationTreeRoot']) {
         Map<String, dynamic> result = {};
