@@ -1,5 +1,5 @@
 # Frequently Asked Questions
-- [I'm getting `PolygonIdSdkNotInitializedException` while calling `PolygonIdSdk` methods](#polygonid-sdk-not-initialized-exception)
+- [`PolygonIdSdkNotInitializedException` while calling `PolygonIdSdk` methods](#polygonid-sdk-not-initialized-exception)
 - [`FetchGistProofException`](#fetch-gist-proof-exception)
 - [Error adding claim](#error-adding-claim)
 - [PathNotFoundException (cannot open file, path = '*.dat')](#path-not-found-exception)
