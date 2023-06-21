@@ -2,7 +2,7 @@
 
 ## Preparatory steps
 
-Please follow these [steps here](https://github.com/0xPolygonID/polygonid-flutter-sdk/blob/sdk-methods-docs/AUTH.md) if you have not already done so, in order to correctly initialise the sdk and authenticate yourself on an issuer provider
+Please follow these [steps here](https://github.com/0xPolygonID/polygonid-flutter-sdk/blob/develop/AUTH.md) if you have not already done so, in order to correctly initialise the sdk and authenticate yourself on an issuer provider
 
 ## Fetch and Save method
 

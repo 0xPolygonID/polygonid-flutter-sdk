@@ -2,7 +2,7 @@
 
 Generating a proof is a critical process in a credential-based system. After you have successfully fetched and saved credentials using the Polygon ID SDK, you can generate a proof for authentication with a verifier.
 
-To authenticate yourself with a verifier provider, you will need to have previously completed all the [preparatory steps](https://github.com/0xPolygonID/polygonid-flutter-sdk/blob/sdk-methods-docs/AUTH.md) and [have credentials in your wallet](https://github.com/0xPolygonID/polygonid-flutter-sdk/blob/sdk-methods-docs/FETCH_CRED.md). Once these prerequisites are met, you can connect to a verifier, like the test one at `https://verifier-testing.polygonid.me/`, and use the `authenticate` method.
+To authenticate yourself with a verifier provider, you will need to have previously completed all the [preparatory steps](https://github.com/0xPolygonID/polygonid-flutter-sdk/blob/develop/AUTH.md) and [have credentials in your wallet](https://github.com/0xPolygonID/polygonid-flutter-sdk/blob/develop/FETCH_CRED.md). Once these prerequisites are met, you can connect to a verifier, like the test one at `https://verifier-testing.polygonid.me/`, and use the `authenticate` method.
 
 This time, however, the `Iden3MessageEntity` will have a different format:
 
