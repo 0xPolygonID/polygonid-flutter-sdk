@@ -31,6 +31,7 @@ class GetIden3commProofsParam {
   final String? challenge;
   final String? ethereumUrl;
   final String? stateContractAddr;
+  final Map<int, Map<String, dynamic>>? nonRevocationProofs;
 
   GetIden3commProofsParam(
       {required this.message,
@@ -39,7 +40,8 @@ class GetIden3commProofsParam {
       required this.privateKey,
       this.challenge,
       this.ethereumUrl,
-      this.stateContractAddr});
+      this.stateContractAddr,
+      this.nonRevocationProofs});
 }
 
 class GetIden3commProofsUseCase
@@ -77,7 +79,8 @@ class GetIden3commProofsUseCase
               message: param.message,
               genesisDid: param.genesisDid,
               profileNonce: param.profileNonce,
-              privateKey: param.privateKey));
+              privateKey: param.privateKey,
+              nonRevocationProofs: param.nonRevocationProofs ?? {}));
 
       if ((requests.isNotEmpty &&
               claims.isNotEmpty &&

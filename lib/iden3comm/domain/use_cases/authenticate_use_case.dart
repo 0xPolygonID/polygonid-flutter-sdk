@@ -21,13 +21,15 @@ class AuthenticateParam {
   final BigInt profileNonce;
   final String privateKey;
   final String? pushToken;
+  final Map<int, Map<String, dynamic>>? nonRevocationProofs;
 
   AuthenticateParam(
       {required this.message,
       required this.genesisDid,
       required this.profileNonce,
       required this.privateKey,
-      this.pushToken});
+      this.pushToken,
+      this.nonRevocationProofs});
 }
 
 class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
@@ -79,6 +81,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
         privateKey: param.privateKey,
         ethereumUrl: env.web3Url + env.web3ApiKey,
         stateContractAddr: env.idStateContract,
+        nonRevocationProofs: param.nonRevocationProofs,
       ));
 
       String pushUrl = env.pushUrl;
