@@ -29,25 +29,38 @@ class GetClaimRevocationStatusUseCase
   @override
   Future<Map<String, dynamic>> execute(
       {required GetClaimRevocationStatusParam param}) async {
-    return _credentialRepository.isUsingRHS(claim: param.claim).then((useRHS) {
-      if (useRHS) {
-        try {
-          return _generateNonRevProofUseCase.execute(
-              param: GenerateNonRevProofParam(
-                  claim: param.claim, nonRevProof: param.nonRevProof));
-        } catch (e) {
-          return _getNonRevProofUseCase.execute(param: param.claim);
-        }
-      } else {
-        return _getNonRevProofUseCase.execute(param: param.claim);
-      }
-    }).then((status) {
-      logger()
-          .i("[GetClaimRevocationStatusUseCase] Revocation status: $status");
-      return status;
-    }).catchError((error) {
+    bool useRHS = await _credentialRepository
+        .isUsingRHS(claim: param.claim)
+        .catchError((error) {
       logger().e("[GetClaimRevocationStatusUseCase] Error: $error");
       throw error;
     });
+    if (useRHS) {
+      try {
+        Map<String, dynamic> status = await _generateNonRevProofUseCase.execute(
+            param: GenerateNonRevProofParam(
+                claim: param.claim, nonRevProof: param.nonRevProof));
+        return status;
+      } catch (error) {
+        Map<String, dynamic> status = await _getNonRevProofUseCase
+            .execute(param: param.claim)
+            .catchError((error) {
+          logger().e("[GetClaimRevocationStatusUseCase] Error: $error");
+          throw error;
+        });
+        logger()
+            .i("[GetClaimRevocationStatusUseCase] Revocation status: $status");
+        return status;
+      }
+    } else {
+      return _getNonRevProofUseCase.execute(param: param.claim).then((status) {
+        logger()
+            .i("[GetClaimRevocationStatusUseCase] Revocation status: $status");
+        return status;
+      }).catchError((error) {
+        logger().e("[GetClaimRevocationStatusUseCase] Error: $error");
+        throw error;
+      });
+    }
   }
 }

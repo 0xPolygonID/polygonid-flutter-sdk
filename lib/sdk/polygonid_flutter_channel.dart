@@ -432,18 +432,21 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<void> authenticate(
-      {required Iden3MessageEntity message,
-      required String genesisDid,
-      BigInt? profileNonce,
-      required String privateKey,
-      String? pushToken}) {
+  Future<void> authenticate({
+    required Iden3MessageEntity message,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String privateKey,
+    String? pushToken,
+    Map<int, Map<String, dynamic>>? nonRevocationProofs,
+  }) {
     return _polygonIdSdk.iden3comm.authenticate(
         message: message,
         genesisDid: genesisDid,
         profileNonce: profileNonce,
         privateKey: privateKey,
-        pushToken: pushToken);
+        pushToken: pushToken,
+        nonRevocationProofs: nonRevocationProofs);
   }
 
   @override
@@ -464,12 +467,28 @@ class PolygonIdFlutterChannel
       {required Iden3MessageEntity message,
       required String genesisDid,
       BigInt? profileNonce,
-      required String privateKey}) {
+      required String privateKey,
+      Map<int, Map<String, dynamic>>? nonRevocationProofs}) {
     return _polygonIdSdk.iden3comm.getClaimsFromIden3Message(
         message: message,
         genesisDid: genesisDid,
         profileNonce: profileNonce,
-        privateKey: privateKey);
+        privateKey: privateKey,
+        nonRevocationProofs: nonRevocationProofs);
+  }
+
+  @override
+  Future<List<int>> getClaimsRevNonceFromIden3Message(
+      {required Iden3MessageEntity message,
+      required String genesisDid,
+      BigInt? profileNonce,
+      required String privateKey}) {
+    return _polygonIdSdk.iden3comm.getClaimsRevNonceFromIden3Message(
+      message: message,
+      genesisDid: genesisDid,
+      profileNonce: profileNonce,
+      privateKey: privateKey,
+    );
   }
 
   @override
@@ -513,7 +532,8 @@ class PolygonIdFlutterChannel
       required String privateKey,
       String? challenge,
       String? ethereumUrl,
-      String? stateContractAddr}) {
+      String? stateContractAddr,
+      Map<int, Map<String, dynamic>>? nonRevocationProofs}) {
     return _polygonIdSdk.iden3comm.getProofs(
         message: message,
         genesisDid: genesisDid,
@@ -521,7 +541,8 @@ class PolygonIdFlutterChannel
         privateKey: privateKey,
         challenge: challenge,
         ethereumUrl: ethereumUrl,
-        stateContractAddr: stateContractAddr);
+        stateContractAddr: stateContractAddr,
+        nonRevocationProofs: nonRevocationProofs);
   }
 
   @override

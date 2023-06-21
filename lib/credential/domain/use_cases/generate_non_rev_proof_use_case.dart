@@ -53,7 +53,6 @@ class GenerateNonRevProofUseCase
           return nonRevProof;
         }).catchError((error) {
           logger().e("[GenerateNonRevProofUseCase] Error: $error");
-
           throw error;
         });
       }
