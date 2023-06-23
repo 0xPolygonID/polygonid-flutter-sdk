@@ -8,33 +8,29 @@ import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart'
 import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/gist_proof_mapper.dart'
-    as iden3GistProofMapper;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_download_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/gist_mtproof_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/lib_pidcore_proof_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/proof_circuit_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/prover_lib_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/witness_data_source.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_proof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_dto.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/proof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/witness_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/circuit_type_mapper.dart';
-import 'package:polygonid_flutter_sdk/proof/data/mappers/gist_proof_mapper.dart';
-import 'package:polygonid_flutter_sdk/proof/data/mappers/jwz_mapper.dart';
-import 'package:polygonid_flutter_sdk/proof/data/mappers/jwz_proof_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/data/mappers/gist_mtproof_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/data/mappers/zkproof_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 
@@ -42,17 +38,16 @@ class ProofRepositoryImpl extends ProofRepository {
   final WitnessDataSource _witnessDataSource;
   final ProverLibDataSource _proverLibDataSource;
   final LibPolygonIdCoreProofDataSource _libPolygonIdCoreProofDataSource;
+  final GistMTProofDataSource _gistProofDataSource;
   final ProofCircuitDataSource _proofCircuitDataSource;
   final RemoteIdentityDataSource _remoteIdentityDataSource;
   final LocalContractFilesDataSource _localContractFilesDataSource;
   final CircuitsDownloadDataSource _circuitsDownloadDataSource;
   final RPCDataSource _rpcDataSource;
   final CircuitTypeMapper _circuitTypeMapper;
-  final JWZProofMapper _jwzProofMapper;
-  final JWZMapper _jwzMapper;
+  final ZKProofMapper _zkProofMapper;
   final AuthProofMapper _authProofMapper;
-  final GistProofMapper _gistProofMapper;
-  final iden3GistProofMapper.GistProofMapper _iden3GistProofMapper;
+  final GistMTProofMapper _gistMTProofMapper;
   final CircuitsFilesDataSource _circuitsFilesDataSource;
 
   // FIXME: those mappers shouldn't be used here as they are part of Credential
@@ -63,19 +58,18 @@ class ProofRepositoryImpl extends ProofRepository {
     this._witnessDataSource,
     this._proverLibDataSource,
     this._libPolygonIdCoreProofDataSource,
+    this._gistProofDataSource,
     this._proofCircuitDataSource,
     this._remoteIdentityDataSource,
     this._localContractFilesDataSource,
     this._circuitsDownloadDataSource,
     this._rpcDataSource,
     this._circuitTypeMapper,
-    this._jwzProofMapper,
+    this._zkProofMapper,
     this._claimMapper,
     this._revocationStatusMapper,
-    this._jwzMapper,
     this._authProofMapper,
-    this._gistProofMapper,
-    this._iden3GistProofMapper,
+    this._gistMTProofMapper,
     this._circuitsFilesDataSource,
   );
 
@@ -94,10 +88,11 @@ class ProofRepositoryImpl extends ProofRepository {
       required BigInt profileNonce,
       required BigInt claimSubjectProfileNonce,
       required ClaimEntity claim,
-      required ProofScopeRequest request,
-      ProofEntity? incProof,
-      ProofEntity? nonRevProof,
-      GistProofEntity? gistProof,
+      required Map<String, dynamic> proofScopeRequest,
+      required String circuitId,
+      MTProofEntity? incProof,
+      MTProofEntity? nonRevProof,
+      GistMTProofEntity? gistProof,
       List<String>? authClaim,
       Map<String, dynamic>? treeState,
       Map<String, dynamic>? config,
@@ -106,7 +101,7 @@ class ProofRepositoryImpl extends ProofRepository {
     ClaimDTO credentialDto = _claimMapper.mapTo(claim);
     Map<String, dynamic>? gistProofMap;
     if (gistProof != null) {
-      gistProofMap = _iden3GistProofMapper.mapTo(gistProof);
+      gistProofMap = _gistMTProofMapper.mapTo(gistProof).toJson();
     }
     Map<String, dynamic>? incProofMap;
     if (incProof != null) {
@@ -131,7 +126,8 @@ class ProofRepositoryImpl extends ProofRepository {
           challenge: challenge,
           signature: signature,
           credential: credentialDto.info,
-          request: request,
+          request: proofScopeRequest,
+          circuitId: circuitId,
           config: config,
         )
         .catchError((error) => throw NullAtomicQueryInputsException(id));
@@ -176,7 +172,8 @@ class ProofRepositoryImpl extends ProofRepository {
   }
 
   @override
-  Future<JWZProof> prove(CircuitDataEntity circuitData, Uint8List wtnsBytes) {
+  Future<ZKProofEntity> prove(
+      CircuitDataEntity circuitData, Uint8List wtnsBytes) {
     return _proverLibDataSource
         .prove(circuitData.circuitId, circuitData.zKeyFile, wtnsBytes)
         .then((proof) {
@@ -184,7 +181,7 @@ class ProofRepositoryImpl extends ProofRepository {
         throw NullProofException(circuitData.circuitId);
       }
 
-      return _jwzProofMapper.mapFrom(proof);
+      return _zkProofMapper.mapFrom(proof);
     }).catchError((error) => throw NullProofException(circuitData.circuitId));
   }
 
@@ -195,12 +192,7 @@ class ProofRepositoryImpl extends ProofRepository {
   }
 
   @override
-  Future<String> encodeJWZ({required JWZEntity jwz}) {
-    return Future.value(_jwzMapper.mapFrom(jwz));
-  }
-
-  @override
-  Future<GistProofEntity> getGistProof(
+  Future<GistMTProofEntity> getGistProof(
       {required String idAsInt, required String contractAddress}) async {
     String gistProofSC = await _getGistProofSC(
       identifier: idAsInt,
@@ -210,31 +202,8 @@ class ProofRepositoryImpl extends ProofRepository {
     String gistProof =
         _libPolygonIdCoreProofDataSource.proofFromSC(gistProofSC);
 
-    // remove all quotes from the string values
-    final gistProof2 = gistProof.replaceAll("\"", "");
-
-    // now we add quotes to both keys and Strings values
-    final quotedString =
-        gistProof2.replaceAllMapped(RegExp(r'\b\w+\b'), (match) {
-      return '"${match.group(0)}"';
-    });
-
-    var gistProofJson = jsonDecode(quotedString);
-
-    /// FIXME: repo don't create and manipulate DTO, that's the DS job
-    return _gistProofMapper.mapFrom(GistProofDTO(
-        root: gistProofJson["root"],
-        proof: ProofDTO(
-            existence:
-                gistProofJson["proof"]["existence"] == "true" ? true : false,
-            siblings: (gistProofJson["proof"]["siblings"] as List)
-                .map((hash) => HashDTO.fromBigInt(BigInt.parse(hash)))
-                .toList(),
-            nodeAux: gistProofJson["proof"]["node_aux"] != null
-                ? NodeAuxDTO(
-                    key: gistProofJson["proof"]["node_aux"]["key"],
-                    value: gistProofJson["proof"]["node_aux"]["value"])
-                : null)));
+    return _gistMTProofMapper
+        .mapFrom(_gistProofDataSource.getGistMTProof(gistProof));
   }
 
   Future<String> _getGistProofSC(

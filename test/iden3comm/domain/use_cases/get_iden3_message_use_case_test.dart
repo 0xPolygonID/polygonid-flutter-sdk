@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_type_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart';
@@ -24,10 +24,10 @@ final expectations = [
   Iden3commMocks.contractFunctionCallRequest
 ];
 const types = [
-  Iden3MessageType.auth,
-  Iden3MessageType.offer,
-  Iden3MessageType.issuance,
-  Iden3MessageType.contractFunctionCall
+  Iden3MessageType.authRequest,
+  Iden3MessageType.credentialOffer,
+  Iden3MessageType.credentialIssuanceResponse,
+  Iden3MessageType.proofContractInvokeRequest
 ];
 
 // Dependencies

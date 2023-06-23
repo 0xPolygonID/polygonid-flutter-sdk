@@ -1,11 +1,12 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof_request_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
@@ -18,8 +19,6 @@ import 'package:polygonid_flutter_sdk/credential/domain/use_cases/update_claim_u
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/use_cases/generate_proof_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_sd_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart';
 
@@ -45,10 +44,10 @@ class GetIden3commProofsParam {
 }
 
 class GetIden3commProofsUseCase
-    extends FutureUseCase<GetIden3commProofsParam, List<JWZProofEntity>> {
+    extends FutureUseCase<GetIden3commProofsParam, List<Iden3commProofEntity>> {
   final ProofRepository _proofRepository;
   final GetIden3commClaimsUseCase _getIden3commClaimsUseCase;
-  final GenerateProofUseCase _generateProofUseCase;
+  final GenerateIden3commProofUseCase _generateIden3commProofUseCase;
   final IsProofCircuitSupportedUseCase _isProofCircuitSupported;
   final GetProofRequestsUseCase _getProofRequestsUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
@@ -57,7 +56,7 @@ class GetIden3commProofsUseCase
   GetIden3commProofsUseCase(
     this._proofRepository,
     this._getIden3commClaimsUseCase,
-    this._generateProofUseCase,
+    this._generateIden3commProofUseCase,
     this._isProofCircuitSupported,
     this._getProofRequestsUseCase,
     this._getIdentityUseCase,
@@ -65,10 +64,10 @@ class GetIden3commProofsUseCase
   );
 
   @override
-  Future<List<JWZProofEntity>> execute(
+  Future<List<Iden3commProofEntity>> execute(
       {required GetIden3commProofsParam param}) async {
     try {
-      List<JWZProofEntity> proofs = [];
+      List<Iden3commProofEntity> proofs = [];
 
       _proofGenerationStepsStreamManager.add("Getting proof requests");
       List<ProofRequestEntity> requests =
@@ -119,8 +118,8 @@ class GetIden3commProofsUseCase
             _proofGenerationStepsStreamManager
                 .add("Generating proof for ${claim.type}");
             // Generate proof
-            proofs.add(await _generateProofUseCase.execute(
-                param: GenerateProofParam(
+            proofs.add(await _generateIden3commProofUseCase.execute(
+                param: GenerateIden3commProofParam(
               param.genesisDid,
               param.profileNonce,
               claimSubjectProfileNonce,

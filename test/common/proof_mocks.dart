@@ -1,37 +1,18 @@
 import 'dart:convert';
 import 'dart:typed_data';
-
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_sd_proof_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_sd_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_header.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/jwz/jwz_proof.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/response/jwz.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 
 import 'common_mocks.dart';
 import 'identity_mocks.dart';
 
 class ProofMocks {
-  /// [JWZHeader]
-  static String jwzHeaderJson = '''
-  {
-      "alg": "groth16",
-      "circuitId": "authV2",
-      "crit": [
-          "circuitId"
-      ],
-      "typ": "application/iden3-zkp-json"
-  }
-  ''';
-
-  static JWZHeader jwzHeader = JWZHeader.fromJson(jsonDecode(jwzHeaderJson));
-
-  static JWZPayload jwzPayload = JWZPayload(payload: CommonMocks.message);
-
-  /// [JWZProof]
-  static String jwzProofJson = '''
+  /// [ZKProof]
+  static String zkProofJson = '''
   {
     "proof": {
       "pi_a": [
@@ -69,30 +50,8 @@ class ProofMocks {
   }
   ''';
 
-  /// [JWZVPProof]
-  static String jwzVpProofJson = '''
-  {
-    "verifiableCredential": {
-      "documentType": 99,
-      "@type": "KYCAgeCredential"
-    },
-    "@type": "VerifiablePresentation",
-    "@context": [
-      "https://www.w3.org/2018/credentials/v1",
-      "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld"
-    ]
-  }
-  ''';
-
-  static JWZProof jwzProof = JWZProof.fromJson(jsonDecode(jwzProofJson));
-
-  static JWZEntity jwz =
-      JWZEntity(header: jwzHeader, payload: jwzPayload, proof: jwzProof);
-
-  static JWZVPProof vp = JWZVPProof.fromJson(jsonDecode(jwzVpProofJson));
-
-  static String encodedJWZ =
-      'eyJhbGciOiJncm90aDE2IiwiY2lyY3VpdElkIjoiYXV0aFYyIiwiY3JpdCI6WyJjaXJjdWl0SWQiXSwidHlwIjoiYXBwbGljYXRpb24vaWRlbjMtemtwLWpzb24ifQ.dGhlTWVzc2FnZQ.eyJwcm9vZiI6eyJwaV9hIjpbIjEyOTcyMjU3NDc4MDU1Mzg1Mjg3MjU0MzY1MjQyOTI5NTAxMzEzMzIwNTU4NzQ4OTM5MDExNjYwMDg5NjA4NzQzMDk5NzQ1MTExMTgwIiwiMjE2MjI3OTU4MTgyODMzOTA4MDI2NjU1MDQ3Njc2NDcwNjA0NjE2MzE4OTAxODM1MjU3OTY3NTM0MTQ0NTAyNDE2MDYyNDk1NzA4MDMiLCIxIl0sInBpX2IiOltbIjEyODQ3MDk5NjgxNDgzNjIwMjQ0ODkxODk2ODg5NTA5NTY1OTA1MjAwODQ3NjM5MTU2NjYyNTY2NjQ2ODMxNjQ0NDI1NTg3NzY3NjA1IiwiNzcyNjkwNjY1ODg3NDM1NTkyODU2NjEzNjU4MjIzMzc1MzQyMjMwODY5OTgzMDI4MjEyODQyNTgwMTc5MjEwMDUyMjc0MDg0MjcxNCJdLFsiNjk4MDQ2NzkwNjI1NzAxNDE0NzIzOTE1NDQ0MTc5ODE5MDAzODM4MDMxNTMwNTAzNjkyNjM2ODM0MDAwODUyMDgyODQ1NTYwNjc1MiIsIjIyMzAyNDk3NTU5MzM0MDI2NDU1ODI3NTAzNzYxNzgzMDA0NTYyNjMwMDQ4NzQwNjk3ODcyMjI2MzEyNDA5OTk2NDI0NDQ4NzQ4MDUiXSxbIjEiLCIwIl1dLCJwaV9jIjpbIjE2OTg2MDg3OTA1MDQ4NDg1NDg4NzQzODYxNTE0MjM4OTY3MDIxMTM2MjI1NzcwMjM1MzI2OTQxNDYwOTM4OTkzOTE1NTY1MTIxNzU1IiwiNjIzODMyNTA3NzU1ODQ4NzA4MjIwOTYyMzU5NTUyMzEyNjYyMjc0ODM2MDk5OTI0NjAxOTg3ODM4ODExMTU4MzEwNjUxNjMzODQzNiIsIjEiXSwicHJvdG9jb2wiOiJncm90aDE2IiwiY3VydmUiOiJibjEyOCJ9LCJwdWJfc2lnbmFscyI6WyIxNzMxNjAwOTUyOTcyODI1NTE3OTQwNzczMjIzMTMwOTQ0MTU4NzEzMzMzMjA4MjYzOTY0OTg5NDc4ODk2MjgxNDQwMjI4NTgzODYxMiIsIjQyMTkzOTQyNTU5MDQ2NDYyMDE1MjQ5Njc4MjY0NzIwMDQyNTgzNTkzMzg2OTE4MTIxMjcyNTA4Mjk0ODAxMjg2MzA3NjM1NDE5OTIiLCIzNTQyMDAxMzc0NzIyNDk2Mzg3NzE5OTE2MjI0NjcyODcwNzI2MDMyNDk1MDI1NjUxMjExNjU5Nzc1NjU3MzU5NDEzNzMyOTY2NCJdfQ';
+  static ZKProofEntity zkProof =
+      ZKProofEntity.fromJson(jsonDecode(zkProofJson));
 
   /// [CircuitDataEntity]
   static Uint8List datFile = Uint8List(32);
@@ -100,9 +59,9 @@ class ProofMocks {
   static CircuitDataEntity circuitData =
       CircuitDataEntity(CommonMocks.circuitId, datFile, zKeyFile);
 
-  static ProofEntity proof = ProofEntity(
+  static MTProofEntity mtProof = MTProofEntity(
       existence: true, siblings: [IdentityMocks.hash, IdentityMocks.hash]);
 
-  static GistProofEntity gistProof =
-      GistProofEntity(root: CommonMocks.message, proof: proof);
+  static GistMTProofEntity gistMTProof =
+      GistMTProofEntity(root: CommonMocks.message, proof: mtProof);
 }

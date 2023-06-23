@@ -1,20 +1,20 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_did_doc_response.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_response_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_response_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_response_mapper.dart';
 
-final mockAuthResponse = AuthResponse(
+final mockAuthResponse = AuthResponseDTO(
   id: "theId",
   thid: "theThid",
   to: "theTo",
   from: "theFrom",
   typ: "theTyp",
   type: "theType",
-  body: AuthBodyResponse(
+  body: const AuthBodyResponseDTO(
     message: "theMessage",
     proofs: [],
-    did_doc: AuthBodyDidDocResponse(
+    did_doc: AuthBodyDidDocResponseDTO(
       context: [],
       id: "theBodyResponseId",
       service: [],

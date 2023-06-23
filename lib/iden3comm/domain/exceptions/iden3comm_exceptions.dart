@@ -1,7 +1,7 @@
-import '../../../common/domain/error_exception.dart';
-import '../entities/iden3_message_entity.dart';
-import '../entities/proof_request_entity.dart';
-import '../entities/request/auth/auth_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
 
 class UnsupportedIden3MsgTypeException implements Exception {
   final Iden3MessageType type;

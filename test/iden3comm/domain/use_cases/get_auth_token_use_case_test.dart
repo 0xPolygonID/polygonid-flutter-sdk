@@ -4,11 +4,12 @@ import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_challenge_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/use_cases/get_jwz_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_jwz_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/load_circuit_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/prove_use_case.dart';
 
 import '../../../common/common_mocks.dart';
+import '../../../common/iden3comm_mocks.dart';
 import '../../../common/proof_mocks.dart';
 import 'get_auth_token_use_case_test.mocks.dart';
 
@@ -43,8 +44,8 @@ GetAuthTokenUseCase useCase = GetAuthTokenUseCase(loadCircuitUseCase,
 void main() {
   setUp(() {
     // Given
-    when(getJWZUseCase.execute(param: anyNamed('param')))
-        .thenAnswer((realInvocation) => Future.value(ProofMocks.encodedJWZ));
+    when(getJWZUseCase.execute(param: anyNamed('param'))).thenAnswer(
+        (realInvocation) => Future.value(Iden3commMocks.encodedJWZ));
     when(getAuthChallengeUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value(CommonMocks.challenge));
     when(getAuthInputsUseCase.execute(param: anyNamed('param')))
@@ -52,14 +53,14 @@ void main() {
     when(loadCircuitUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value(ProofMocks.circuitData));
     when(proveUseCase.execute(param: anyNamed('param')))
-        .thenAnswer((realInvocation) => Future.value(ProofMocks.jwzProof));
+        .thenAnswer((realInvocation) => Future.value(ProofMocks.zkProof));
   });
 
   test(
       "Given a GetAuthTokenParam, when I call execute, then I expect a token String to be returned",
       () async {
     // When
-    expect(await useCase.execute(param: param), ProofMocks.encodedJWZ);
+    expect(await useCase.execute(param: param), Iden3commMocks.encodedJWZ);
 
     // Then
     var verifyGetJWZ =
@@ -68,13 +69,13 @@ void main() {
     expect(verifyGetJWZ.captured[0].message, param.message);
     expect(verifyGetJWZ.captured[0].proof, null);
     expect(verifyGetJWZ.captured[1].message, param.message);
-    expect(verifyGetJWZ.captured[1].proof, ProofMocks.jwzProof);
+    expect(verifyGetJWZ.captured[1].proof, ProofMocks.zkProof);
 
     expect(
         verify(getAuthChallengeUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first,
-        ProofMocks.encodedJWZ);
+        Iden3commMocks.encodedJWZ);
 
     var captureAuthInputs =
         verify(getAuthInputsUseCase.execute(param: captureAnyNamed('param')))
@@ -119,7 +120,7 @@ void main() {
         verify(getAuthChallengeUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first,
-        ProofMocks.encodedJWZ);
+        Iden3commMocks.encodedJWZ);
 
     var captureAuthInputs =
         verify(getAuthInputsUseCase.execute(param: captureAnyNamed('param')))

@@ -1,23 +1,17 @@
-// import '../../domain/exceptions/smt_exceptions.dart';
-// import '../../domain/repositories/smt_storage_repository.dart';
-// import '../../libs/smt/hash.dart';
-// import '../../libs/smt/node.dart';
-//
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/smt_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_smt_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/hash_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/node_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/tree_state_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/tree_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
-
-import '../../../proof/data/mappers/proof_mapper.dart';
-import '../../../proof/domain/entities/proof_entity.dart';
-import '../../domain/repositories/smt_repository.dart';
-import '../data_sources/smt_data_source.dart';
-import '../mappers/hash_mapper.dart';
-import '../mappers/node_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
+import 'package:polygonid_flutter_sdk/proof/data/mappers/mtproof_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
 
 class SMTRepositoryImpl implements SMTRepository {
   final SMTDataSource _smtDataSource;
@@ -25,7 +19,7 @@ class SMTRepositoryImpl implements SMTRepository {
   final LibBabyJubJubDataSource _libBabyJubJubDataSource;
   final NodeMapper _nodeMapper;
   final HashMapper _hashMapper;
-  final ProofMapper _proofMapper;
+  final MTProofMapper _proofMapper;
   final TreeTypeMapper _treeTypeMapper;
   final TreeStateMapper _treeStateMapper;
 
@@ -133,7 +127,7 @@ class SMTRepositoryImpl implements SMTRepository {
   }
 
   @override
-  Future<ProofEntity> generateProof(
+  Future<MTProofEntity> generateProof(
       {required HashEntity key,
       required TreeType type,
       required String did,
@@ -148,7 +142,7 @@ class SMTRepositoryImpl implements SMTRepository {
   }
 
   Future<HashEntity> getProofTreeRoot(
-      {required ProofEntity proof, required NodeEntity node}) async {
+      {required MTProofEntity proof, required NodeEntity node}) async {
     return _smtDataSource
         .getProofTreeRoot(
             proof: _proofMapper.mapTo(proof), node: _nodeMapper.mapTo(node))
@@ -156,7 +150,7 @@ class SMTRepositoryImpl implements SMTRepository {
   }
 
   Future<bool> verifyProof(
-      {required ProofEntity proof,
+      {required MTProofEntity proof,
       required NodeEntity node,
       required HashEntity treeRoot}) async {
     return _smtDataSource.verifyProof(
