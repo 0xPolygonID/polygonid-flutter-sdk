@@ -315,7 +315,6 @@ _i1.GetIt $initSDKGetIt(
   gh.factory<_i10.ClaimStateMapper>(() => _i10.ClaimStateMapper());
   gh.factory<_i11.Client>(() => networkModule.client);
   gh.factory<_i12.CreatePathWrapper>(() => _i12.CreatePathWrapper());
-  gh.lazySingletonAsync<_i13.Database>(() => databaseModule.database());
   gh.factoryParamAsync<_i13.Database, String?, String?>(
     (
       identifier,
@@ -327,6 +326,7 @@ _i1.GetIt $initSDKGetIt(
     ),
     instanceName: 'polygonIdSdkIdentity',
   );
+  gh.lazySingletonAsync<_i13.Database>(() => databaseModule.database());
   gh.factory<_i12.DestinationPathDataSource>(
       () => _i12.DestinationPathDataSource(get<_i12.CreatePathWrapper>()));
   gh.factory<_i14.Dio>(() => networkModule.dio);
@@ -421,10 +421,6 @@ _i1.GetIt $initSDKGetIt(
     () => databaseModule.identityStore,
     instanceName: 'identityStore',
   );
-  gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-    () => databaseModule.interactionStore,
-    instanceName: 'interactionStore',
-  );
   gh.factory<_i13.StoreRef<String, dynamic>>(
     () => databaseModule.keyValueStore,
     instanceName: 'keyValueStore',
@@ -432,6 +428,10 @@ _i1.GetIt $initSDKGetIt(
   gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
     () => databaseModule.claimStore,
     instanceName: 'claimStore',
+  );
+  gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
+    () => databaseModule.interactionStore,
+    instanceName: 'interactionStore',
   );
   gh.factory<_i67.TreeStateMapper>(() => _i67.TreeStateMapper());
   gh.factory<_i68.TreeTypeMapper>(() => _i68.TreeTypeMapper());
@@ -567,8 +567,10 @@ _i1.GetIt $initSDKGetIt(
   gh.factoryAsync<_i105.GetPackageNameUseCase>(() async =>
       _i105.GetPackageNameUseCase(
           await get.getAsync<_i99.PackageInfoRepository>()));
-  gh.factory<_i106.GistMTProofMapper>(
-      () => _i106.GistMTProofMapper(get<_i97.MTProofMapper>()));
+  gh.factory<_i106.GistMTProofMapper>(() => _i106.GistMTProofMapper(
+        get<_i97.MTProofMapper>(),
+        get<_i27.HashMapper>(),
+      ));
   gh.factory<_i107.Iden3commCredentialRepository>(() =>
       repositoriesModule.iden3commCredentialRepository(
           get<_i86.Iden3commCredentialRepositoryImpl>()));

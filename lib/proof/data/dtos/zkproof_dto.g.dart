@@ -28,7 +28,7 @@ Map<String, dynamic> _$ZKProofBaseDTOToJson(ZKProofBaseDTO instance) =>
 
 ZKProofDTO _$ZKProofDTOFromJson(Map<String, dynamic> json) => ZKProofDTO(
       proof: ZKProofBaseDTO.fromJson(json['proof'] as Map<String, dynamic>),
-      pubSignals: (json['pubSignals'] as List<dynamic>)
+      pubSignals: (json['pub_signals'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
     );
@@ -36,5 +36,5 @@ ZKProofDTO _$ZKProofDTOFromJson(Map<String, dynamic> json) => ZKProofDTO(
 Map<String, dynamic> _$ZKProofDTOToJson(ZKProofDTO instance) =>
     <String, dynamic>{
       'proof': instance.proof.toJson(),
-      'pubSignals': instance.pubSignals,
+      'pub_signals': instance.pubSignals,
     };

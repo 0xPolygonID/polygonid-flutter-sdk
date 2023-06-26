@@ -141,7 +141,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
             authClaim: authClaim,
             incProof: _authProofMapper.mapTo(incProof),
             nonRevProof: _authProofMapper.mapTo(nonRevProof),
-            gistProof: _gistProofMapper.mapTo(gistProof).toJson(),
+            gistProof: _gistProofMapper.mapTo(gistProof),
             treeState: treeState,
             challenge: challenge,
             signature: signature))

@@ -28,6 +28,10 @@ class RemoteIden3commDataSource {
             ))
         .then((response) {
       if (response.statusCode != 200) {
+        if (kDebugMode) {
+          print(
+              'Auth Error: code: ${response.statusCode} msg: ${response.body}');
+        }
         logger().d(
             'Auth Error: code: ${response.statusCode} msg: ${response.body}');
         throw NetworkException(response);

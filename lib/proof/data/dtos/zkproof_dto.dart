@@ -35,6 +35,7 @@ class ZKProofBaseDTO extends Equatable {
 @JsonSerializable(explicitToJson: true)
 class ZKProofDTO extends Equatable {
   final ZKProofBaseDTO proof;
+  @JsonKey(name: 'pub_signals')
   final List<String> pubSignals;
 
   const ZKProofDTO({required this.proof, required this.pubSignals});

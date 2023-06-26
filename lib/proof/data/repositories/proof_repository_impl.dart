@@ -101,7 +101,7 @@ class ProofRepositoryImpl extends ProofRepository {
     ClaimDTO credentialDto = _claimMapper.mapTo(claim);
     Map<String, dynamic>? gistProofMap;
     if (gistProof != null) {
-      gistProofMap = _gistMTProofMapper.mapTo(gistProof).toJson();
+      gistProofMap = _gistMTProofMapper.mapTo(gistProof);
     }
     Map<String, dynamic>? incProofMap;
     if (incProof != null) {
