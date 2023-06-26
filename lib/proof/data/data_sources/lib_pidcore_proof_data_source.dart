@@ -63,7 +63,6 @@ class LibPolygonIdCoreWrapper {
           break;
         case AtomicQueryInputsType.unknown:
           throw NullAtomicQueryInputsException(computeParam.param.id);
-          break;
       }
 
       return Future.value(result);
