@@ -1,9 +1,8 @@
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/mappers/from_mapper.dart';
-
-import '../../../credential/domain/entities/claim_entity.dart';
-import '../../domain/entities/proof_request_entity.dart';
-import '../../domain/entities/request/auth/proof_scope_query_request.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_query_request.dart';
 
 class ProofRequestFiltersMapper
     extends FromMapper<ProofRequestEntity, List<FilterEntity>> {

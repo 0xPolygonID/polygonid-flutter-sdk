@@ -2,12 +2,12 @@ import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_claims_use_case.dart';
@@ -16,12 +16,11 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_c
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_schemas_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/add_interaction_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/get_interactions_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/remove_interactions_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/update_interaction_use_case.dart';
-
-import '../iden3comm/domain/use_cases/get_schemas_use_case.dart';
 
 abstract class PolygonIdSdkIden3comm {
   /// Returns a [Iden3MessageEntity] from an iden3comm message string.
@@ -99,7 +98,7 @@ abstract class PolygonIdSdkIden3comm {
     required String privateKey,
   });
 
-  /// Get a list of [JWZProofEntity] from iden3comm message
+  /// Get a list of [Iden3commProofEntity] from iden3comm message
   ///
   /// The [message] is the iden3comm message entity
   ///
@@ -110,7 +109,7 @@ abstract class PolygonIdSdkIden3comm {
   ///
   /// The [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
-  Future<List<JWZProofEntity>> getProofs(
+  Future<List<Iden3commProofEntity>> getProofs(
       {required Iden3MessageEntity message,
       required String genesisDid,
       BigInt? profileNonce,
@@ -261,7 +260,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       required String privateKey}) {
     if (message is! OfferIden3MessageEntity) {
       throw InvalidIden3MsgTypeException(
-          Iden3MessageType.offer, message.messageType);
+          Iden3MessageType.credentialOffer, message.messageType);
     }
     return _fetchAndSaveClaimsUseCase.execute(
         param: FetchAndSaveClaimsParam(
@@ -305,7 +304,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }
 
   @override
-  Future<List<JWZProofEntity>> getProofs(
+  Future<List<Iden3commProofEntity>> getProofs(
       {required Iden3MessageEntity message,
       required String genesisDid,
       BigInt? profileNonce,
@@ -338,7 +337,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }) {
     if (message is! AuthIden3MessageEntity) {
       throw InvalidIden3MsgTypeException(
-          Iden3MessageType.auth, message.messageType);
+          Iden3MessageType.authRequest, message.messageType);
     }
 
     return _authenticateUseCase.execute(

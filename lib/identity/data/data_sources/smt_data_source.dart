@@ -1,14 +1,14 @@
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_smt_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/node_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/exceptions/smt_exceptions.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_dto.dart';
 
-import '../../../common/domain/domain_logger.dart';
-import '../../../proof/data/dtos/node_aux_dto.dart';
-import '../../../proof/data/dtos/proof_dto.dart';
-import '../../domain/exceptions/smt_exceptions.dart';
-import '../dtos/hash_dto.dart';
-import '../dtos/node_dto.dart';
-import '../mappers/hex_mapper.dart';
-import 'lib_babyjubjub_data_source.dart';
-
+// TODO move to common
 class SMTDataSource {
   final HexMapper _hexMapper;
   final LibBabyJubJubDataSource _libBabyjubjubDataSource;
@@ -243,7 +243,8 @@ class SMTDataSource {
     return path;
   }
 
-  Future<ProofDTO> generateProof(
+  // TODO: MTProofDTO from proof, not identity
+  Future<MTProofDTO> generateProof(
       {required HashDTO key,
       required String storeName,
       required String did,
@@ -261,13 +262,13 @@ class SMTDataSource {
 
       switch (node.type) {
         case NodeTypeDTO.empty:
-          return ProofDTO(existence: false, siblings: siblings);
+          return MTProofDTO(existence: false, siblings: siblings);
         case NodeTypeDTO.leaf:
           if (node.hash == key) {
-            return ProofDTO(existence: true, siblings: siblings);
+            return MTProofDTO(existence: true, siblings: siblings);
           }
           // We found a leaf whose entry didn't match key
-          return ProofDTO(
+          return MTProofDTO(
               existence: false,
               siblings: siblings,
               nodeAux: NodeAuxDTO(
@@ -291,7 +292,7 @@ class SMTDataSource {
   }
 
   Future<HashDTO> getProofTreeRoot(
-      {required ProofDTO proof, required NodeDTO node}) async {
+      {required MTProofDTO proof, required NodeDTO node}) async {
     assert(node.type == NodeTypeDTO.leaf);
     HashDTO midKey;
     if (proof.existence) {
@@ -327,7 +328,7 @@ class SMTDataSource {
   }
 
   Future<bool> verifyProof(
-      {required ProofDTO proof,
+      {required MTProofDTO proof,
       required NodeDTO node,
       required HashDTO treeRoot}) async {
     return getProofTreeRoot(proof: proof, node: node)

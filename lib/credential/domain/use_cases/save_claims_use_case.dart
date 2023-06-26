@@ -1,7 +1,7 @@
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
 import '../../../credential/domain/repositories/credential_repository.dart';
-import '../../../iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
+import '../../../iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
 import '../../../iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import '../entities/claim_entity.dart';
 import '../../../iden3comm/domain/use_cases/get_fetch_requests_use_case.dart';

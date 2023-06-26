@@ -1,8 +1,6 @@
-import '../../../credential/data/dtos/claim_info_dto.dart';
-import '../../../iden3comm/domain/entities/request/auth/proof_scope_request.dart';
-import 'gist_proof_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 
-enum AtomicQueryInputsType { mtp, sig, mtponchain, sigonchain }
+enum AtomicQueryInputsType { mtp, sig, mtponchain, sigonchain, unknown }
 
 class AtomicQueryInputsParam {
   final AtomicQueryInputsType type;
@@ -17,7 +15,7 @@ class AtomicQueryInputsParam {
   final String? challenge;
   final String? signature;
   final ClaimInfoDTO credential;
-  final ProofScopeRequest request;
+  final Map<String, dynamic> request;
 
   AtomicQueryInputsParam({
     required this.type,
@@ -47,7 +45,7 @@ class AtomicQueryInputsParam {
         "challenge": challenge,
         "signature": signature,
         "verifiableCredentials": credential.toJson(),
-        "request": request.toJson(),
+        "request": request,
       }..removeWhere(
           (dynamic key, dynamic value) => key == null || value == null);
 }

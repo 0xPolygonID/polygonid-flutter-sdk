@@ -3,10 +3,10 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_sd_proof_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_sd_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
@@ -14,7 +14,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repo
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/use_cases/generate_proof_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/use_cases/generate_zkproof_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 
@@ -27,9 +27,9 @@ import 'get_iden3comm_proofs_use_case_test.mocks.dart';
 
 // Data
 List<FilterEntity> filters = [CommonMocks.filter, CommonMocks.filter];
-List<JWZSDProofEntity> result = [
-  Iden3commMocks.jwzSdProof,
-  Iden3commMocks.jwzSdProof
+List<Iden3commSDProofEntity> result = [
+  Iden3commMocks.iden3commSDProof,
+  Iden3commMocks.iden3commSDProof
 ];
 
 GetIden3commProofsParam param = GetIden3commProofsParam(
@@ -45,7 +45,8 @@ var exception = ProofsNotFoundException([]);
 MockProofRepository proofRepository = MockProofRepository();
 MockGetIden3commClaimsUseCase getIden3commClaimsUseCase =
     MockGetIden3commClaimsUseCase();
-MockGenerateProofUseCase generateProofUseCase = MockGenerateProofUseCase();
+MockGenerateIden3commProofUseCase generateIden3commProofUseCase =
+    MockGenerateIden3commProofUseCase();
 MockIsProofCircuitSupportedUseCase isProofCircuitSupportedUseCase =
     MockIsProofCircuitSupportedUseCase();
 MockGetProofRequestsUseCase getProofRequestsUseCase =
@@ -58,7 +59,7 @@ MockProofGenerationStepsStreamManager proofGenerationStepsStreamManager =
 GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   proofRepository,
   getIden3commClaimsUseCase,
-  generateProofUseCase,
+  generateIden3commProofUseCase,
   isProofCircuitSupportedUseCase,
   getProofRequestsUseCase,
   getIdentityUseCase,
@@ -68,7 +69,7 @@ GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
 @GenerateMocks([
   ProofRepository,
   GetIden3commClaimsUseCase,
-  GenerateProofUseCase,
+  GenerateIden3commProofUseCase,
   IsProofCircuitSupportedUseCase,
   GetProofRequestsUseCase,
   GetIdentityUseCase,
@@ -78,7 +79,7 @@ main() {
   setUp(() {
     reset(proofRepository);
     reset(getIden3commClaimsUseCase);
-    reset(generateProofUseCase);
+    reset(generateIden3commProofUseCase);
     reset(isProofCircuitSupportedUseCase);
     reset(getProofRequestsUseCase);
     reset(getIdentityUseCase);
@@ -97,8 +98,9 @@ main() {
     when(proofRepository.loadCircuitFiles(any))
         .thenAnswer((realInvocation) => Future.value(ProofMocks.circuitData));
 
-    when(generateProofUseCase.execute(param: anyNamed('param'))).thenAnswer(
-        (realInvocation) => Future.value(Iden3commMocks.jwzSdProof));
+    when(generateIden3commProofUseCase.execute(param: anyNamed('param')))
+        .thenAnswer(
+            (realInvocation) => Future.value(Iden3commMocks.iden3commSDProof));
 
     when(getIdentityUseCase.execute(param: anyNamed('param'))).thenAnswer(
         (realInvocation) => Future.value(IdentityMocks.privateIdentity));
@@ -131,8 +133,8 @@ main() {
         verify(proofRepository.loadCircuitFiles(captureAny));
     expect(verifyLoadCircuit.callCount, Iden3commMocks.proofRequestList.length);
 
-    var verifyGenerateProof =
-        verify(generateProofUseCase.execute(param: captureAnyNamed('param')));
+    var verifyGenerateProof = verify(
+        generateIden3commProofUseCase.execute(param: captureAnyNamed('param')));
     expect(
         verifyGenerateProof.callCount, Iden3commMocks.proofRequestList.length);
 
@@ -181,7 +183,8 @@ main() {
     verifyNever(isProofCircuitSupportedUseCase.execute(
         param: captureAnyNamed('param')));
     verifyNever(proofRepository.loadCircuitFiles(captureAny));
-    verifyNever(generateProofUseCase.execute(param: captureAnyNamed('param')));
+    verifyNever(
+        generateIden3commProofUseCase.execute(param: captureAnyNamed('param')));
     verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
   });
 }

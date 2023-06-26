@@ -20,14 +20,14 @@ void main() {
     when(proofRepository.calculateWitness(any, any))
         .thenAnswer((realInvocation) => Future.value(CommonMocks.aBytes));
     when(proofRepository.prove(any, any))
-        .thenAnswer((realInvocation) => Future.value(ProofMocks.jwzProof));
+        .thenAnswer((realInvocation) => Future.value(ProofMocks.zkProof));
   });
 
   test(
-    'Given a param, when I call execute, then I expect a JWZProof to be returned',
+    'Given a param, when I call execute, then I expect a ZKProof to be returned',
     () async {
       // When
-      expect(await useCase.execute(param: param), ProofMocks.jwzProof);
+      expect(await useCase.execute(param: param), ProofMocks.zkProof);
 
       // Then
       var capturedWitness =

@@ -1,10 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_type_use_case.dart';
 
 // Data
 const types = [
   "https://iden3-communication.io/authorization/1.0/request",
+  "https://iden3-communication.io/authorization/1.0/response",
   "https://iden3-communication.io/credentials/1.0/offer",
   "https://iden3-communication.io/credentials/1.0/issuance-response",
   "https://iden3-communication.io/proofs/1.0/contract-invoke-request",
@@ -12,10 +13,11 @@ const types = [
   ""
 ];
 const expectations = [
-  Iden3MessageType.auth,
-  Iden3MessageType.offer,
-  Iden3MessageType.issuance,
-  Iden3MessageType.contractFunctionCall,
+  Iden3MessageType.authRequest,
+  Iden3MessageType.authResponse,
+  Iden3MessageType.credentialOffer,
+  Iden3MessageType.credentialIssuanceResponse,
+  Iden3MessageType.proofContractInvokeRequest,
   Iden3MessageType.unknown,
   Iden3MessageType.unknown
 ];

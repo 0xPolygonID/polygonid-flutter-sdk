@@ -10,30 +10,33 @@ import 'package:pointycastle/asymmetric/rsa.dart';
 import 'package:pointycastle/digests/sha512.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/iden3_message_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/lib_pidcore_iden3comm_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_did_doc_response.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_did_doc_service_metadata_devices_response.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_did_doc_service_metadata_response.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_did_doc_service_response.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_response_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_response_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_inputs_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_response_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/gist_proof_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/iden3comm_proof_mapper.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/jwz_mapper.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_body_did_doc_response.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/response/jwz.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/data/mappers/gist_mtproof_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
 import 'package:uuid/uuid.dart';
 
 class Iden3commRepositoryImpl extends Iden3commRepository {
+  final Iden3MessageDataSource _iden3messageDataSource;
   final RemoteIden3commDataSource _remoteIden3commDataSource;
   final LibPolygonIdCoreIden3commDataSource
       _libPolygonIdCoreIden3commDataSource;
@@ -42,10 +45,13 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   final AuthResponseMapper _authResponseMapper;
   final AuthInputsMapper _authInputsMapper;
   final AuthProofMapper _authProofMapper;
-  final GistProofMapper _gistProofMapper;
+  final GistMTProofMapper _gistProofMapper;
   final QMapper _qMapper;
+  final JWZMapper _jwzMapper;
+  final Iden3commProofMapper _iden3commProofMapper;
 
   Iden3commRepositoryImpl(
+    this._iden3messageDataSource,
     this._remoteIden3commDataSource,
     this._libPolygonIdCoreIden3commDataSource,
     this._libBabyJubJubDataSource,
@@ -54,6 +60,8 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     this._authProofMapper,
     this._gistProofMapper,
     this._qMapper,
+    this._jwzMapper,
+    this._iden3commProofMapper,
   );
 
   @override
@@ -71,86 +79,48 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   }
 
   @override
+  Future<String> encodeJWZ({required JWZEntity jwz}) {
+    return Future.value(_jwzMapper.mapFrom(jwz));
+  }
+
+  @override
   Future<String> getAuthResponse({
     required String did,
     required AuthIden3MessageEntity request,
-    required List<JWZProofEntity> scope,
+    required List<Iden3commProofEntity> scope,
     String? pushUrl,
     String? pushToken,
     String? packageName,
   }) async {
-    AuthBodyDidDocResponse? didDocResponse;
+    AuthBodyDidDocResponseDTO? didDocResponse;
     if (pushUrl != null &&
         pushUrl.isNotEmpty &&
         pushToken != null &&
         pushToken.isNotEmpty &&
         packageName != null &&
         packageName.isNotEmpty) {
-      didDocResponse =
-          await _getDidDocResponse(pushUrl, did, pushToken, packageName);
+      didDocResponse = await _iden3messageDataSource.getDidDocResponse(
+          pushUrl, did, pushToken, packageName);
     }
 
-    AuthResponse authResponse = AuthResponse(
+    AuthResponseDTO authResponse = AuthResponseDTO(
       id: const Uuid().v4(),
       thid: request.thid,
       to: request.from,
       from: did,
-      typ: "application/iden3comm-plain-json",
+      typ: request
+          .typ, // "application/iden3-zkp-json", // TODO if it's plain json typ: "application/iden3comm-plain-json",
       type: "https://iden3-communication.io/authorization/1.0/response",
-      body: AuthBodyResponse(
+      body: AuthBodyResponseDTO(
         message: request.body.message,
-        proofs: scope,
+        scope: scope
+            .map((iden3commProofEntity) =>
+                _iden3commProofMapper.mapTo(iden3commProofEntity))
+            .toList(),
         did_doc: didDocResponse,
       ),
     );
     return _authResponseMapper.mapFrom(authResponse);
-  }
-
-  Future<AuthBodyDidDocResponse> _getDidDocResponse(String pushUrl,
-      String didIdentifier, String pushToken, String packageName) async {
-    return AuthBodyDidDocResponse(
-      context: ["https://www.w3.org/ns/did/v1"],
-      id: didIdentifier,
-      service: [
-        AuthBodyDidDocServiceResponse(
-          id: "$didIdentifier#push",
-          type: "push-notification",
-          serviceEndpoint: pushUrl,
-          metadata: AuthBodyDidDocServiceMetadataResponse(devices: [
-            AuthBodyDidDocServiceMetadataDevicesResponse(
-              ciphertext:
-                  await _getPushCipherText(pushToken, pushUrl, packageName),
-              alg: "RSA-OAEP-512",
-            )
-          ]),
-        )
-      ],
-    );
-  }
-
-  Future<String> _getPushCipherText(
-      String pushToken, String serviceEndpoint, String packageName) async {
-    var pushInfo = {
-      "app_id": packageName, //"com.polygonid.wallet",
-      "pushkey": pushToken,
-    };
-
-    Response publicKeyResponse =
-        await get(Uri.parse("$serviceEndpoint/public"));
-    if (publicKeyResponse.statusCode == 200) {
-      String publicKeyPem = publicKeyResponse.body;
-      var publicKey = RSAKeyParser().parse(publicKeyPem) as RSAPublicKey;
-      final encrypter =
-          OAEPEncoding.withCustomDigest(() => SHA512Digest(), RSAEngine());
-      encrypter.init(true, PublicKeyParameter<RSAPublicKey>(publicKey));
-      Uint8List encrypted = encrypter
-          .process(Uint8List.fromList(json.encode(pushInfo).codeUnits));
-      return base64.encode(encrypted);
-    } else {
-      logger().d(
-          'getPublicKey Error: code: ${publicKeyResponse.statusCode} msg: ${publicKeyResponse.body}');
-      throw NetworkException(publicKeyResponse);
-    }
   }
 
   @override
@@ -161,9 +131,9 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       required List<String> authClaim,
       required IdentityEntity identity,
       required String signature,
-      required ProofEntity incProof,
-      required ProofEntity nonRevProof,
-      required GistProofEntity gistProof,
+      required MTProofEntity incProof,
+      required MTProofEntity nonRevProof,
+      required GistMTProofEntity gistProof,
       required Map<String, dynamic> treeState}) {
     return Future.value(_libPolygonIdCoreIden3commDataSource.getAuthInputs(
             genesisDid: genesisDid,

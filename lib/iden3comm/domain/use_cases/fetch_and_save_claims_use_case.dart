@@ -9,7 +9,7 @@ import '../../../common/domain/use_case.dart';
 import '../../../credential/domain/entities/claim_entity.dart';
 import '../../../credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
 import '../../../credential/domain/use_cases/save_claims_use_case.dart';
-import '../../../iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
+import '../entities/credential/request/offer_iden3_message_entity.dart';
 import '../../../iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'get_fetch_requests_use_case.dart';
 

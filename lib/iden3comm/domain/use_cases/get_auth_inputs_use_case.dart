@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_auth_claim_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
@@ -13,12 +15,9 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifi
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_latest_state_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/sign_message_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/use_cases/get_gist_proof_use_case.dart';
-
-import '../../../common/domain/domain_logger.dart';
-import '../../../common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/use_cases/get_gist_mtproof_use_case.dart';
 
 class GetAuthInputsParam {
   final String challenge;
@@ -35,7 +34,7 @@ class GetAuthInputsUseCase
   final GetIdentityUseCase _getIdentityUseCase;
   final GetAuthClaimUseCase _getAuthClaimUseCase;
   final SignMessageUseCase _signMessageUseCase;
-  final GetGistProofUseCase _getGistProofUseCase;
+  final GetGistMTProofUseCase _getGistMTProofUseCase;
   final GetLatestStateUseCase _getLatestStateUseCase;
   final Iden3commRepository _iden3commRepository;
   final IdentityRepository _identityRepository;
@@ -45,7 +44,7 @@ class GetAuthInputsUseCase
     this._getIdentityUseCase,
     this._getAuthClaimUseCase,
     this._signMessageUseCase,
-    this._getGistProofUseCase,
+    this._getGistMTProofUseCase,
     this._getLatestStateUseCase,
     this._iden3commRepository,
     this._identityRepository,
@@ -63,13 +62,13 @@ class GetAuthInputsUseCase
     NodeEntity authClaimNode =
         await _identityRepository.getAuthClaimNode(children: authClaim);
 
-    ProofEntity incProof = await _smtRepository.generateProof(
+    MTProofEntity incProof = await _smtRepository.generateProof(
         key: authClaimNode.hash,
         type: TreeType.claims,
         did: param.genesisDid,
         privateKey: param.privateKey);
 
-    ProofEntity nonRevProof = await _smtRepository.generateProof(
+    MTProofEntity nonRevProof = await _smtRepository.generateProof(
         key: authClaimNode.hash,
         type: TreeType.revocation,
         did: param.genesisDid,
@@ -80,8 +79,8 @@ class GetAuthInputsUseCase
         param: GetLatestStateParam(
             did: param.genesisDid, privateKey: param.privateKey));
 
-    GistProofEntity gistProof =
-        await _getGistProofUseCase.execute(param: param.genesisDid);
+    GistMTProofEntity gistProof =
+        await _getGistMTProofUseCase.execute(param: param.genesisDid);
 
     return _signMessageUseCase
         .execute(param: SignMessageParam(param.privateKey, param.challenge))

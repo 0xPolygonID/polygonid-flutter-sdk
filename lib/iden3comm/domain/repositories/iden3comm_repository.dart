@@ -1,11 +1,12 @@
 import 'dart:typed_data';
 
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/response/jwz.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_proof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/proof_entity.dart';
-
-import '../entities/jwz_proof_entity.dart';
-import '../entities/request/auth/auth_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
 
 abstract class Iden3commRepository {
   Future<void> authenticate({
@@ -13,7 +14,6 @@ abstract class Iden3commRepository {
     required String authToken,
   });
 
-  // FIXME: use Entities only from the same part
   Future<Uint8List> getAuthInputs(
       {required String genesisDid,
       required BigInt profileNonce,
@@ -21,19 +21,21 @@ abstract class Iden3commRepository {
       required List<String> authClaim,
       required IdentityEntity identity,
       required String signature,
-      required ProofEntity incProof,
-      required ProofEntity nonRevProof,
-      required GistProofEntity gistProof,
+      required MTProofEntity incProof,
+      required MTProofEntity nonRevProof,
+      required GistMTProofEntity gistProof,
       required Map<String, dynamic> treeState});
 
   Future<String> getAuthResponse({
     required String did,
     required AuthIden3MessageEntity request,
-    required List<JWZProofEntity> scope,
+    required List<Iden3commProofEntity> scope,
     String? pushUrl,
     String? pushToken,
     String? packageName,
   });
+
+  Future<String> encodeJWZ({required JWZEntity jwz});
 
   Future<String> getChallenge({required String message});
 }

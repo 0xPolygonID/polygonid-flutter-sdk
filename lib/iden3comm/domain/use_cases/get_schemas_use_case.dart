@@ -1,6 +1,6 @@
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 
@@ -13,8 +13,10 @@ class GetSchemasUseCase
   @override
   Future<List<Map<String, dynamic>>> execute(
       {required Iden3MessageEntity param}) async {
-    if (![Iden3MessageType.auth, Iden3MessageType.contractFunctionCall]
-        .contains(param.messageType)) {
+    if (![
+      Iden3MessageType.authRequest,
+      Iden3MessageType.proofContractInvokeRequest
+    ].contains(param.messageType)) {
       return Future.error(UnsupportedIden3MsgTypeException(param.messageType));
     }
 

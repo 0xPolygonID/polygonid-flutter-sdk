@@ -4,10 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_param.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_proof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/polygonidcore/pidcore_proof.dart';
 
@@ -62,6 +61,8 @@ class LibPolygonIdCoreWrapper {
               jsonEncode(computeParam.param.toJson()),
               jsonEncode(computeParam.configParam?.toJson()));
           break;
+        case AtomicQueryInputsType.unknown:
+          throw NullAtomicQueryInputsException(computeParam.param.id);
       }
 
       return Future.value(result);
@@ -147,18 +148,19 @@ class LibPolygonIdCoreProofDataSource {
     String? challenge,
     String? signature,
     required ClaimInfoDTO credential,
-    required ProofScopeRequest request,
+    required Map<String, dynamic> request,
+    required String circuitId, //ProofScopeRequest request,
     Map<String, dynamic>? config,
   }) {
-    AtomicQueryInputsType type = AtomicQueryInputsType.mtp;
+    AtomicQueryInputsType type = AtomicQueryInputsType.unknown;
 
-    if (request.circuitId == "credentialAtomicQueryMTPV2") {
+    if (circuitId == "credentialAtomicQueryMTPV2") {
       type = AtomicQueryInputsType.mtp;
-    } else if (request.circuitId == "credentialAtomicQueryMTPV2OnChain") {
+    } else if (circuitId == "credentialAtomicQueryMTPV2OnChain") {
       type = AtomicQueryInputsType.mtponchain;
-    } else if (request.circuitId == "credentialAtomicQuerySigV2") {
+    } else if (circuitId == "credentialAtomicQuerySigV2") {
       type = AtomicQueryInputsType.sig;
-    } else if (request.circuitId == "credentialAtomicQuerySigV2OnChain") {
+    } else if (circuitId == "credentialAtomicQuerySigV2OnChain") {
       type = AtomicQueryInputsType.sigonchain;
     }
     AtomicQueryInputsConfigParam? configParam;
