@@ -34,11 +34,11 @@ class ClaimProofIssuerSMDTO extends ClaimProofIssuerDTO {
 @JsonSerializable(explicitToJson: true)
 class ClaimProofIssuerStateSMDTO extends ClaimProofIssuerStateDTO {
   @JsonKey(name: 'blockNumber')
-  final int blockNumber;
+  final int? blockNumber;
   @JsonKey(name: 'blockTimestamp')
-  final int blockTimestamp;
+  final int? blockTimestamp;
   @JsonKey(name: 'txId')
-  final String txId;
+  final String? txId;
 
   ClaimProofIssuerStateSMDTO(
       String claimsTreeRoot,

@@ -53,6 +53,8 @@ const _$ClaimProofIssuerCredStatusTypeEnumMap = {
   ClaimProofIssuerCredStatusType.reverseSparseMerkleTreeProof:
       'Iden3ReverseSparseMerkleTreeProof',
   ClaimProofIssuerCredStatusType.sparseMerkleTreeProof: 'SparseMerkleTreeProof',
+  ClaimProofIssuerCredStatusType.iden3OnchainSparseMerkleTreeProof2023:
+      'Iden3OnchainSparseMerkleTreeProof2023',
 };
 
 ClaimProofIssuerStateDTO _$ClaimProofIssuerStateDTOFromJson(

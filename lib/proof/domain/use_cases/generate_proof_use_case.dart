@@ -129,7 +129,8 @@ class GenerateProofUseCase
     if (param.ethereumUrl != null && param.stateContractAddr != null) {
       config = AtomicQueryInputsConfigParam(
               ethereumUrl: param.ethereumUrl!,
-              stateContractAddr: param.stateContractAddr!)
+              stateContractAddr: param.stateContractAddr!,
+              ipfsNodeURL: "<IPFS RPC>")
           .toJson();
     }
 

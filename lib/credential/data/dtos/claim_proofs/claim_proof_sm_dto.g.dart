@@ -45,9 +45,9 @@ ClaimProofIssuerStateSMDTO _$ClaimProofIssuerStateSMDTOFromJson(
       json['revocationTreeRoot'] as String,
       json['rootOfRoots'] as String,
       json['value'] as String,
-      json['blockNumber'] as int,
-      json['blockTimestamp'] as int,
-      json['txId'] as String,
+      json['blockNumber'] as int?,
+      json['blockTimestamp'] as int?,
+      json['txId'] as String?,
     );
 
 Map<String, dynamic> _$ClaimProofIssuerStateSMDTOToJson(
