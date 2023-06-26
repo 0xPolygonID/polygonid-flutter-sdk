@@ -75,10 +75,10 @@ part 'auth_body_response_dto.g.dart';
 class AuthBodyResponseDTO extends Equatable {
   final AuthBodyDidDocResponseDTO? did_doc;
   final String? message;
-  final List<Iden3commProofDTO>? proofs;
+  final List<Iden3commProofDTO>? scope;
 
   const AuthBodyResponseDTO(
-      {this.did_doc, required this.message, required this.proofs});
+      {this.did_doc, required this.message, required this.scope});
 
   factory AuthBodyResponseDTO.fromJson(Map<String, dynamic> json) =>
       _$AuthBodyResponseDTOFromJson(json);
@@ -86,5 +86,5 @@ class AuthBodyResponseDTO extends Equatable {
   Map<String, dynamic> toJson() => _$AuthBodyResponseDTOToJson(this);
 
   @override
-  List<Object?> get props => [did_doc, message, proofs];
+  List<Object?> get props => [did_doc, message, scope];
 }

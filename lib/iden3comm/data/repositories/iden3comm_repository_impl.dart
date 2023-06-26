@@ -113,7 +113,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       type: "https://iden3-communication.io/authorization/1.0/response",
       body: AuthBodyResponseDTO(
         message: request.body.message,
-        proofs: scope
+        scope: scope
             .map((iden3commProofEntity) =>
                 _iden3commProofMapper.mapTo(iden3commProofEntity))
             .toList(),

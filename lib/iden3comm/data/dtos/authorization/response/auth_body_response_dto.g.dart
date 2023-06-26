@@ -13,7 +13,7 @@ AuthBodyResponseDTO _$AuthBodyResponseDTOFromJson(Map<String, dynamic> json) =>
           : AuthBodyDidDocResponseDTO.fromJson(
               json['did_doc'] as Map<String, dynamic>),
       message: json['message'] as String?,
-      proofs: (json['proofs'] as List<dynamic>?)
+      scope: (json['scope'] as List<dynamic>?)
           ?.map((e) => Iden3commProofDTO.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
@@ -23,5 +23,5 @@ Map<String, dynamic> _$AuthBodyResponseDTOToJson(
     <String, dynamic>{
       'did_doc': instance.did_doc,
       'message': instance.message,
-      'proofs': instance.proofs,
+      'scope': instance.scope,
     };
