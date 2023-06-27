@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/fetch/fetch_body_request.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/fetch/fetch_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/fetch_body_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/fetch_iden3_message_entity.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../common/domain/use_case.dart';
-import '../entities/request/offer/offer_iden3_message_entity.dart';
+import '../entities/credential/request/offer_iden3_message_entity.dart';
 
 class GetFetchRequestsParam {
   final OfferIden3MessageEntity message;

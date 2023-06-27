@@ -5,8 +5,8 @@ import 'package:http/http.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/local_claim_data_source.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_body_response.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/auth/auth_response.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_body_response.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
@@ -529,7 +529,7 @@ void main() {
         "Given parameters, when I call getNonRevProof, then I expect a Map to be returned",
         () async {
       // Given
-      when(remoteIdentityDataSource.getNonRevocationProof(any, any, any))
+      when(remoteIdentityDataSource.getNonRevocationProof(any, any, any, any))
           .thenAnswer((realInvocation) => Future.value(CommonMocks.aMap));
 
       // When
@@ -542,7 +542,7 @@ void main() {
 
       // Then
       var fetchCaptured = verify(remoteIdentityDataSource.getNonRevocationProof(
-              captureAny, captureAny, captureAny))
+              captureAny, captureAny, captureAny, captureAny))
           .captured;
 
       expect(fetchCaptured[0], CommonMocks.state);
@@ -554,7 +554,7 @@ void main() {
         "Given parameters, when I call getNonRevProof and an error occurred, then I expect a NonRevProofException to be thrown",
         () async {
       // Given
-      when(remoteIdentityDataSource.getNonRevocationProof(any, any, any))
+      when(remoteIdentityDataSource.getNonRevocationProof(any, any, any, any))
           .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
       // When
@@ -571,7 +571,7 @@ void main() {
 
       // Then
       var fetchCaptured = verify(remoteIdentityDataSource.getNonRevocationProof(
-              captureAny, captureAny, captureAny))
+              captureAny, captureAny, captureAny, captureAny))
           .captured;
 
       expect(fetchCaptured[0], CommonMocks.state);

@@ -6,14 +6,14 @@ class EnvMapper extends Mapper<Map<String, dynamic>, EnvEntity> {
   @override
   EnvEntity mapFrom(Map<String, dynamic> from) {
     return EnvEntity(
-      blockchain: from['blockchain'],
-      network: from['network'],
-      web3Url: from['web3Url'],
-      web3RdpUrl: from['web3RdpUrl'],
-      web3ApiKey: from['web3ApiKey'],
-      idStateContract: from['idStateContract'],
-      pushUrl: from['pushUrl'],
-    );
+        blockchain: from['blockchain'],
+        network: from['network'],
+        web3Url: from['web3Url'],
+        web3RdpUrl: from['web3RdpUrl'],
+        web3ApiKey: from['web3ApiKey'],
+        idStateContract: from['idStateContract'],
+        pushUrl: from['pushUrl'],
+        ipfsUrl: from['ipfsUrl']);
   }
 
   @override
@@ -26,6 +26,7 @@ class EnvMapper extends Mapper<Map<String, dynamic>, EnvEntity> {
       web3ApiKey: to.web3ApiKey,
       idStateContract: to.idStateContract,
       pushUrl: to.pushUrl,
+      ipfsUrl: to.ipfsUrl,
     ).toJson();
   }
 }

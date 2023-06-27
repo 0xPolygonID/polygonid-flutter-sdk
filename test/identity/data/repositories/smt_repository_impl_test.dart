@@ -10,7 +10,7 @@ import 'package:polygonid_flutter_sdk/identity/data/mappers/tree_state_mapper.da
 import 'package:polygonid_flutter_sdk/identity/data/mappers/tree_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/repositories/smt_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
-import 'package:polygonid_flutter_sdk/proof/data/mappers/proof_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/data/mappers/mtproof_mapper.dart';
 
 import '../../../common/common_mocks.dart';
 import '../../../common/identity_mocks.dart';
@@ -25,7 +25,7 @@ MockLibBabyJubJubDataSource libBabyJubJubDataSource =
     MockLibBabyJubJubDataSource();
 MockNodeMapper nodeMapper = MockNodeMapper();
 MockHashMapper hashMapper = MockHashMapper();
-MockProofMapper proofMapper = MockProofMapper();
+MockMTProofMapper proofMapper = MockMTProofMapper();
 MockTreeTypeMapper treeTypeMapper = MockTreeTypeMapper();
 MockTreeStateMapper treeStateMapper = MockTreeStateMapper();
 
@@ -47,7 +47,7 @@ SMTRepository repository = SMTRepositoryImpl(
   LibBabyJubJubDataSource,
   NodeMapper,
   HashMapper,
-  ProofMapper,
+  MTProofMapper,
   TreeTypeMapper,
   TreeStateMapper,
 ])

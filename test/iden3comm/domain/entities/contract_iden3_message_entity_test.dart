@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/onchain/contract_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_iden3_message_entity.dart';
 
 import '../../../common/iden3comm_mocks.dart';
 
@@ -16,7 +16,7 @@ void main() {
       expect(contractFunctionCallRequest.id, "theId");
       expect(contractFunctionCallRequest.typ, "theTyp");
       expect(contractFunctionCallRequest.messageType,
-          Iden3MessageType.contractFunctionCall);
+          Iden3MessageType.proofContractInvokeRequest);
       expect(contractFunctionCallRequest.body.transactionData.contractAddress,
           "0x0000000000000000000000000000000000000000");
       expect(contractFunctionCallRequest.body.transactionData.methodId,

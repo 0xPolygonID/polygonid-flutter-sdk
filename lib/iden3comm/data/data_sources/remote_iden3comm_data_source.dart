@@ -1,14 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
+import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/utils/http_exceptions_handler_mixin.dart';
-
-import '../../../common/data/exceptions/network_exceptions.dart';
-import '../../../common/domain/domain_logger.dart';
-import '../../../credential/data/dtos/claim_dto.dart';
-import '../../domain/exceptions/iden3comm_exceptions.dart';
-import '../dtos/response/fetch/fetch_claim_response_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/credential/response/fetch_claim_response_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 
 class RemoteIden3commDataSource {
   final Client client;
@@ -30,6 +29,10 @@ class RemoteIden3commDataSource {
             ))
         .then((response) {
       if (response.statusCode != 200) {
+        if (kDebugMode) {
+          print(
+              'Auth Error: code: ${response.statusCode} msg: ${response.body}');
+        }
         logger().d(
             'Auth Error: code: ${response.statusCode} msg: ${response.body}');
         throw NetworkException(response);

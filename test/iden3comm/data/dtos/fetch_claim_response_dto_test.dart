@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/response/fetch/fetch_claim_response_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/credential/response/fetch_claim_response_dto.dart';
 
 // Data
 String mockFetchClaim = '''

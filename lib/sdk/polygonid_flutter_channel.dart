@@ -7,18 +7,21 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/proof_scope_request.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/credential.dart';
 import 'package:polygonid_flutter_sdk/sdk/iden3comm.dart';
 import 'package:polygonid_flutter_sdk/sdk/identity.dart';
@@ -321,6 +324,13 @@ class PolygonIdFlutterChannel
               .then((claims) =>
                   claims.map((claim) => jsonEncode(claim)).toList());
 
+        case 'getClaimRevocationStatus':
+          return getClaimRevocationStatus(
+                  claimId: call.arguments['claimId'] as String,
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  privateKey: call.arguments['privateKey'] as String)
+              .then((revStatus) => jsonEncode(revStatus));
+
         case 'removeClaim':
           return removeClaim(
               claimId: call.arguments['claimId'] as String,
@@ -386,22 +396,25 @@ class PolygonIdFlutterChannel
               });
 
         case 'prove':
+          // TODO: finish this params
           return prove(
-            genesisDid: call.arguments['genesisDid'] as String,
+            identifier: call.arguments['identifier'] as String,
             profileNonce:
                 BigInt.parse(call.arguments['profileNonce'] as String),
             claimSubjectProfileNonce: BigInt.parse(
                 call.arguments['claimSubjectProfileNonce'] as String),
-            claim: ClaimEntity.fromJson(
-                jsonDecode(call.arguments['claim'] as String)),
+            credential: ClaimEntity.fromJson(
+                jsonDecode(call.arguments['credential'] as String)),
             circuitData: CircuitDataEntity.fromJson(
                 jsonDecode(call.arguments['circuitData'] as String)),
-            request: ProofScopeRequest.fromJson(
-                jsonDecode(call.arguments['request'] as String)),
-            privateKey: call.arguments['privateKey'] as String?,
+            proofScopeRequest:
+                call.arguments['proofScopeRequest'] as Map<String, dynamic>,
+            authClaim: (call.arguments['authClaim'] as List?)
+                ?.map((e) => e as String)
+                .toList(),
+            signature: call.arguments['signature'] as String?,
             challenge: call.arguments['challenge'] as String?,
-            ethereumUrl: call.arguments['ethereumUrl'] as String?,
-            stateContractAddr: call.arguments['stateContractAddr'] as String?,
+            treeState: call.arguments['treeState'] as Map<String, dynamic>?,
           ).then((proof) => jsonEncode(proof));
 
         default:
@@ -425,18 +438,21 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<void> authenticate(
-      {required Iden3MessageEntity message,
-      required String genesisDid,
-      BigInt? profileNonce,
-      required String privateKey,
-      String? pushToken}) {
+  Future<void> authenticate({
+    required Iden3MessageEntity message,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String privateKey,
+    String? pushToken,
+    Map<int, Map<String, dynamic>>? nonRevocationProofs,
+  }) {
     return _polygonIdSdk.iden3comm.authenticate(
         message: message,
         genesisDid: genesisDid,
         profileNonce: profileNonce,
         privateKey: privateKey,
-        pushToken: pushToken);
+        pushToken: pushToken,
+        nonRevocationProofs: nonRevocationProofs);
   }
 
   @override
@@ -457,12 +473,28 @@ class PolygonIdFlutterChannel
       {required Iden3MessageEntity message,
       required String genesisDid,
       BigInt? profileNonce,
-      required String privateKey}) {
+      required String privateKey,
+      Map<int, Map<String, dynamic>>? nonRevocationProofs}) {
     return _polygonIdSdk.iden3comm.getClaimsFromIden3Message(
         message: message,
         genesisDid: genesisDid,
         profileNonce: profileNonce,
-        privateKey: privateKey);
+        privateKey: privateKey,
+        nonRevocationProofs: nonRevocationProofs);
+  }
+
+  @override
+  Future<List<int>> getClaimsRevNonceFromIden3Message(
+      {required Iden3MessageEntity message,
+      required String genesisDid,
+      BigInt? profileNonce,
+      required String privateKey}) {
+    return _polygonIdSdk.iden3comm.getClaimsRevNonceFromIden3Message(
+      message: message,
+      genesisDid: genesisDid,
+      profileNonce: profileNonce,
+      privateKey: privateKey,
+    );
   }
 
   @override
@@ -499,14 +531,16 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<List<JWZProofEntity>> getProofs(
+  Future<List<Iden3commProofEntity>> getProofs(
       {required Iden3MessageEntity message,
       required String genesisDid,
       BigInt? profileNonce,
       required String privateKey,
       String? challenge,
       String? ethereumUrl,
-      String? stateContractAddr}) {
+      String? stateContractAddr,
+      String? ipfsNodeUrl,
+      Map<int, Map<String, dynamic>>? nonRevocationProofs}) {
     return _polygonIdSdk.iden3comm.getProofs(
         message: message,
         genesisDid: genesisDid,
@@ -514,7 +548,9 @@ class PolygonIdFlutterChannel
         privateKey: privateKey,
         challenge: challenge,
         ethereumUrl: ethereumUrl,
-        stateContractAddr: stateContractAddr);
+        stateContractAddr: stateContractAddr,
+        ipfsNodeUrl: ipfsNodeUrl,
+        nonRevocationProofs: nonRevocationProofs);
   }
 
   @override
@@ -670,6 +706,15 @@ class PolygonIdFlutterChannel
   }
 
   @override
+  Future<Map<String, dynamic>> getClaimRevocationStatus(
+      {required String claimId,
+      required String genesisDid,
+      required String privateKey}) {
+    return _polygonIdSdk.credential.getClaimRevocationStatus(
+        claimId: claimId, genesisDid: genesisDid, privateKey: privateKey);
+  }
+
+  @override
   Future<void> removeClaim(
       {required String claimId,
       required String genesisDid,
@@ -738,27 +783,35 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<JWZProofEntity> prove(
-      {required String genesisDid,
+  Future<ZKProofEntity> prove(
+      {required String identifier,
       required BigInt profileNonce,
       required BigInt claimSubjectProfileNonce,
-      required ClaimEntity claim,
+      required ClaimEntity credential,
       required CircuitDataEntity circuitData,
-      required ProofScopeRequest request,
-      String? privateKey,
+      required Map<String, dynamic> proofScopeRequest,
+      List<String>? authClaim,
+      MTProofEntity? incProof,
+      MTProofEntity? nonRevProof,
+      GistMTProofEntity? gistProof,
+      Map<String, dynamic>? treeState,
       String? challenge,
-      String? ethereumUrl,
-      String? stateContractAddr}) {
+      String? signature,
+      Map<String, dynamic>? config}) {
     return _polygonIdSdk.proof.prove(
-        genesisDid: genesisDid,
+        identifier: identifier,
         profileNonce: profileNonce,
         claimSubjectProfileNonce: claimSubjectProfileNonce,
-        claim: claim,
+        credential: credential,
         circuitData: circuitData,
-        request: request,
-        privateKey: privateKey,
+        proofScopeRequest: proofScopeRequest,
         challenge: challenge,
-        ethereumUrl: ethereumUrl,
-        stateContractAddr: stateContractAddr);
+        signature: signature,
+        authClaim: authClaim,
+        incProof: incProof,
+        nonRevProof: nonRevProof,
+        gistProof: gistProof,
+        treeState: treeState,
+        config: config);
   }
 }

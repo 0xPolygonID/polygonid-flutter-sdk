@@ -1,4 +1,4 @@
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/offer/offer_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
 
 import '../../../common/domain/entities/filter_entity.dart';
 import '../../../identity/domain/entities/identity_entity.dart';

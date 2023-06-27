@@ -12,6 +12,7 @@ class EnvDTO extends Equatable {
   final String web3ApiKey;
   final String idStateContract;
   final String pushUrl;
+  final String ipfsUrl;
 
   EnvDTO({
     required this.blockchain,
@@ -21,6 +22,7 @@ class EnvDTO extends Equatable {
     required this.web3ApiKey,
     required this.idStateContract,
     required this.pushUrl,
+    required this.ipfsUrl,
   });
 
   factory EnvDTO.fromJson(Map<String, dynamic> json) => _$EnvDTOFromJson(json);
@@ -36,5 +38,6 @@ class EnvDTO extends Equatable {
         web3ApiKey,
         idStateContract,
         pushUrl,
+        ipfsUrl,
       ];
 }

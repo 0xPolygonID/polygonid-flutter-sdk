@@ -5,8 +5,9 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/jwz_proof_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/auth/auth_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
@@ -21,13 +22,15 @@ class AuthenticateParam {
   final BigInt profileNonce;
   final String privateKey;
   final String? pushToken;
+  final Map<int, Map<String, dynamic>>? nonRevocationProofs;
 
   AuthenticateParam(
       {required this.message,
       required this.genesisDid,
       required this.profileNonce,
       required this.privateKey,
-      this.pushToken});
+      this.pushToken,
+      this.nonRevocationProofs});
 }
 
 class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
@@ -71,14 +74,17 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
               profileNonce: param.profileNonce));
 
       // get proofs from credentials of all the profiles of the identity
-      List<JWZProofEntity> proofs = await _getIden3commProofsUseCase.execute(
-          param: GetIden3commProofsParam(
+      List<Iden3commProofEntity> proofs =
+          await _getIden3commProofsUseCase.execute(
+              param: GetIden3commProofsParam(
         message: param.message,
         genesisDid: param.genesisDid,
         profileNonce: param.profileNonce,
         privateKey: param.privateKey,
         ethereumUrl: env.web3Url + env.web3ApiKey,
         stateContractAddr: env.idStateContract,
+        ipfsNodeUrl: env.ipfsUrl,
+        nonRevocationProofs: param.nonRevocationProofs,
       ));
 
       String pushUrl = env.pushUrl;

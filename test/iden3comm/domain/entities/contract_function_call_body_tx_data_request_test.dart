@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/request/onchain/contract_function_call_body_tx_data_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_function_call_body_tx_data_request.dart';
 
 import '../../../common/iden3comm_mocks.dart';
 

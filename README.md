@@ -49,6 +49,7 @@ The environment object is [EnvEntity](lib/common/domain/entities/env_entity.dart
   final String web3ApiKey; # The API key of the web3 URL service (eg: YOUR-INFURA-API-KEY)
   final String idStateContract; # The ID state contract (eg: 0x134B1BE34911E39A8397ec6289782989729807a4)
   final String pushUrl; # The push notification URL (eg: https://push-staging.polygonid.com/api/v1)
+  final String ipfsUrl; # The ipfs API URL (eg: https://[YOUR-IPFS-API-KEY]:[YOUR-IPFS-API-KEY-SECRET]@ipfs.infura.io:5001)
 ```
 
 An example of initialization:
@@ -65,6 +66,7 @@ Future<void> main() async {
       web3ApiKey: 'YOUR-INFURA-API-KEY',
       idStateContract: '0x134B1BE34911E39A8397ec6289782989729807a4',
       pushUrl: 'https://push-staging.polygonid.com/api/v1',
+      ipfsUrl: "https://[YOUR-IPFS-API-KEY]:[YOUR-IPFS-API-KEY-SECRET]@ipfs.infura.io:5001",
   ));
   runApp(const App());
 }
@@ -72,14 +74,15 @@ Future<void> main() async {
 
 ### Supported Environments
 
-| Environment   |      Polygon Mumbai                           |  Polygon Main |
-|------------------|:------------------------------------------:|:-------------:|
-| blockchain       |         polygon                            |  polygon  |
-| network          |         mumbai                             |  main  |
-| web3Url          | https://polygon-mumbai.infura.io/v3/       |  https://polygon-mainnet.infura.io/v3/  |
-| web3RdpUrl       | wss://polygon-mumbai.infura.io/v3/         |  wss://polygon-mainnet.infura.io/v3/  |
-| idStateContract  | 0x134B1BE34911E39A8397ec6289782989729807a4 |  0x624ce98D2d27b20b8f8d521723Df8fC4db71D79D  |
-| pushUrl          | https://push-staging.polygonid.com/api/v1  |  https://push-staging.polygonid.com/api/v1  |
+| Environment    |      Polygon Mumbai                           |  Polygon Main |
+|----------------|:------------------------------------------:|:-------------:|
+| blockchain     |         polygon                            |  polygon  |
+| network        |         mumbai                             |  main  |
+| web3Url        | https://polygon-mumbai.infura.io/v3/       |  https://polygon-mainnet.infura.io/v3/  |
+| web3RdpUrl     | wss://polygon-mumbai.infura.io/v3/         |  wss://polygon-mainnet.infura.io/v3/  |
+| idStateContract | 0x134B1BE34911E39A8397ec6289782989729807a4 |  0x624ce98D2d27b20b8f8d521723Df8fC4db71D79D  |
+| pushUrl        | https://push-staging.polygonid.com/api/v1  |  https://push-staging.polygonid.com/api/v1  |
+| ipfsUrl        | https://[YOUR-IPFS-API-KEY]:[YOUR-IPFS-API-KEY-SECRET]@ipfs.infura.io:5001  |  https://[YOUR-IPFS-API-KEY]:[YOUR-IPFS-API-KEY-SECRET]@ipfs.infura.io:5001  |
 
 If you want to deploy your own State Contract, please check the [contract documentation](https://docs.iden3.io/contracts/state/).
 
@@ -90,7 +93,7 @@ You can get the current env using [PolygonIdSdk.I.getEnv()](lib/sdk/polygon_id_s
 1. Clone this repository.
 2. Run `build_runner` to generate `.g.dart` files:
 ```bash
-dart run build_runner build --delete-conflicting-outputs
+dart run build_runner build lib test example --delete-conflicting-outputs
 ```
 
 For iOS only:
@@ -144,6 +147,7 @@ await PolygonIdSdk.init(env: EnvEntity(
       web3ApiKey: 'YOUR-INFURA-API-KEY',
       idStateContract: '0x134B1BE34911E39A8397ec6289782989729807a4',
       pushUrl: 'https://push-staging.polygonid.com/api/v1',
+      ipfsUrl: "https://[YOUR-IPFS-API-KEY]:[YOUR-IPFS-API-KEY-SECRET]@ipfs.infura.io:5001",
   ));
 ```
 3. To be able to authenticate with issuers or verifiers, fetch credentials and generate proofs, you need to download the proof circuit files.
@@ -166,3 +170,7 @@ If you encounter any issues with this SDK, please file an [issue][tracker]. Cont
 - [Polygon ID GitHub repository](https://github.com/0xPolygonId/)
 - [Polygon ID Documentation](https://0xpolygonid.github.io/tutorials/)
 - [Flutter documentation](https://flutter.dev/docs)
+- [Polygon ID SDK FAQ](https://github.com/0xPolygonID/polygonid-flutter-sdk/blob/develop/FAQ.md)
+- [Polygon ID SDK Authentication guideline](https://github.com/0xPolygonID/polygonid-flutter-sdk/blob/develop/AUTH.md)
+- [Polygon ID SDK Fetch and Save credentials guideline](https://github.com/0xPolygonID/polygonid-flutter-sdk/blob/develop/FETCH_CRED.md)
+- [Polygon ID SDK Proof guideline](https://github.com/0xPolygonID/polygonid-flutter-sdk/blob/develop/PROOF.md)

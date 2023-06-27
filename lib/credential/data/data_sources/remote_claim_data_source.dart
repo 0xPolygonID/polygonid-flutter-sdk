@@ -1,13 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:http/http.dart';
-
-import '../../../common/data/exceptions/network_exceptions.dart';
-import '../../../common/domain/domain_logger.dart';
-import '../../domain/exceptions/credential_exceptions.dart';
-import '../dtos/claim_dto.dart';
-import '../../../iden3comm/data/dtos/response/fetch/fetch_claim_response_dto.dart';
+import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 
 class RemoteClaimDataSource {
   final Client client;

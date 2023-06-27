@@ -53,7 +53,10 @@ class RemoteIdentityDataSource {
   }
 
   Future<Map<String, dynamic>> getNonRevocationProof(
-      String identityState, BigInt revNonce, String rhsBaseUrl) async {
+      String identityState,
+      BigInt revNonce,
+      String rhsBaseUrl,
+      Map<String, dynamic>? cachedNonRevProof) async {
     try {
       /// FIXME: this 2 lines should go to a DS and be called in a repo
       // 1. Fetch state roots from RHS
@@ -78,7 +81,19 @@ class RemoteIdentityDataSource {
         };
       }
 
-      //2. walk rhs
+      // 2. Check if cached proof is valid and return it
+      if (issuer != null &&
+          cachedNonRevProof != null &&
+          cachedNonRevProof.isNotEmpty &&
+          cachedNonRevProof['issuer']['revocationTreeRoot'] ==
+              issuer['revocationTreeRoot']) {
+        Map<String, dynamic> result = {};
+        result["issuer"] = issuer;
+        result["mtp"] = cachedNonRevProof["mtp"];
+        return result;
+      }
+
+      //3. walk rhs
       bool exists = false;
       List<String> siblings = <String>[];
       String nextKey = revTreeRootHash;

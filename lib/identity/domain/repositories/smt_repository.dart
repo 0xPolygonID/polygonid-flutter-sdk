@@ -1,9 +1,8 @@
+import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
-
-import '../../../proof/domain/entities/proof_entity.dart';
-import '../entities/hash_entity.dart';
-import '../entities/node_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
 
 abstract class SMTRepository {
   Future<void> addLeaf(
@@ -37,7 +36,7 @@ abstract class SMTRepository {
       required String privateKey});
 
   /// TODO: use this through an UC
-  Future<ProofEntity> generateProof({
+  Future<MTProofEntity> generateProof({
     required HashEntity key,
     required TreeType type,
     required String did,

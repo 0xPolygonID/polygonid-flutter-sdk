@@ -6,6 +6,7 @@ class EnvEntity {
   final String web3ApiKey;
   final String idStateContract;
   final String pushUrl;
+  final String ipfsUrl;
 
   EnvEntity({
     required this.blockchain,
@@ -15,6 +16,7 @@ class EnvEntity {
     required this.web3ApiKey,
     required this.idStateContract,
     required this.pushUrl,
+    required this.ipfsUrl,
   });
 
   factory EnvEntity.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class EnvEntity {
       web3ApiKey: json['web3ApiKey'],
       idStateContract: json['idStateContract'],
       pushUrl: json['pushUrl'],
+      ipfsUrl: json['ipfsUrl'],
     );
   }
 
@@ -38,11 +41,12 @@ class EnvEntity {
         'web3ApiKey': web3ApiKey,
         'idStateContract': idStateContract,
         'pushUrl': pushUrl,
+        'ipfsUrl': ipfsUrl,
       };
 
   @override
   String toString() =>
-      "[EnvEntity] {blockchain: $blockchain, network: $network, web3Url: $web3Url, web3RdpUrl: $web3RdpUrl, web3ApiKey: $web3ApiKey, idStateContract: $idStateContract, pushUrl: $pushUrl}";
+      "[EnvEntity] {blockchain: $blockchain, network: $network, web3Url: $web3Url, web3RdpUrl: $web3RdpUrl, web3ApiKey: $web3ApiKey, idStateContract: $idStateContract, pushUrl: $pushUrl, ipfsUrl: $ipfsUrl}";
 
   @override
   bool operator ==(Object other) =>
@@ -54,7 +58,8 @@ class EnvEntity {
           web3RdpUrl == other.web3RdpUrl &&
           web3ApiKey == other.web3ApiKey &&
           idStateContract == other.idStateContract &&
-          pushUrl == other.pushUrl;
+          pushUrl == other.pushUrl &&
+          ipfsUrl == other.ipfsUrl;
 
   @override
   int get hashCode => runtimeType.hashCode;

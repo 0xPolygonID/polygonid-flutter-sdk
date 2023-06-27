@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:get_it/get_it.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
-import 'package:polygonid_flutter_sdk/sdk/mappers/iden3_message_type_mapper.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/iden3_message_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/common/env.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_bloc.dart';
@@ -47,6 +47,7 @@ void registerEnv() {
       web3ApiKey: polygonMumbai['web3ApiKey'],
       idStateContract: polygonMumbai['idStateContract'],
       pushUrl: polygonMumbai['pushUrl'],
+      ipfsUrl: polygonMumbai['ipfsUrl'],
     ),
   ];
   getIt.registerSingleton<List<EnvEntity>>(env);

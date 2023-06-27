@@ -11,7 +11,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifi
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_latest_state_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/sign_message_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/use_cases/get_gist_proof_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/use_cases/get_gist_mtproof_use_case.dart';
 
 import '../../../common/common_mocks.dart';
 import '../../../common/identity_mocks.dart';
@@ -21,7 +21,7 @@ import 'get_auth_inputs_use_case_test.mocks.dart';
 MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
 MockGetAuthClaimUseCase getAuthClaimUseCase = MockGetAuthClaimUseCase();
 MockSignMessageUseCase signMessageUseCase = MockSignMessageUseCase();
-MockGetGistProofUseCase getGistProofUseCase = MockGetGistProofUseCase();
+MockGetGistMTProofUseCase getGistProofUseCase = MockGetGistMTProofUseCase();
 MockGetLatestStateUseCase getLatestStateUseCase = MockGetLatestStateUseCase();
 MockIden3commRepository iden3commRepository = MockIden3commRepository();
 MockIdentityRepository identityRepository = MockIdentityRepository();
@@ -48,7 +48,7 @@ GetAuthInputsUseCase useCase = GetAuthInputsUseCase(
   GetIdentityUseCase,
   GetAuthClaimUseCase,
   SignMessageUseCase,
-  GetGistProofUseCase,
+  GetGistMTProofUseCase,
   GetLatestStateUseCase,
   Iden3commRepository,
   IdentityRepository,
@@ -83,11 +83,11 @@ void main() {
             type: anyNamed('type'),
             did: anyNamed('did'),
             privateKey: anyNamed('privateKey')))
-        .thenAnswer((realInvocation) => Future.value(ProofMocks.proof));
+        .thenAnswer((realInvocation) => Future.value(ProofMocks.mtProof));
     when(getLatestStateUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value(CommonMocks.aMap));
     when(getGistProofUseCase.execute(param: anyNamed('param')))
-        .thenAnswer((realInvocation) => Future.value(ProofMocks.gistProof));
+        .thenAnswer((realInvocation) => Future.value(ProofMocks.gistMTProof));
   });
 
   test(
@@ -129,9 +129,9 @@ void main() {
       expect(capturedAuthInputs[3], claims);
       expect(capturedAuthInputs[4], IdentityMocks.identity);
       expect(capturedAuthInputs[5], CommonMocks.signature);
-      expect(capturedAuthInputs[6], ProofMocks.proof);
-      expect(capturedAuthInputs[7], ProofMocks.proof);
-      expect(capturedAuthInputs[8], ProofMocks.gistProof);
+      expect(capturedAuthInputs[6], ProofMocks.mtProof);
+      expect(capturedAuthInputs[7], ProofMocks.mtProof);
+      expect(capturedAuthInputs[8], ProofMocks.gistMTProof);
       expect(capturedAuthInputs[9], CommonMocks.aMap);
     },
   );
