@@ -83,6 +83,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
         privateKey: param.privateKey,
         ethereumUrl: env.web3Url + env.web3ApiKey,
         stateContractAddr: env.idStateContract,
+        ipfsNodeUrl: env.ipfsUrl,
         nonRevocationProofs: param.nonRevocationProofs,
       ));
 

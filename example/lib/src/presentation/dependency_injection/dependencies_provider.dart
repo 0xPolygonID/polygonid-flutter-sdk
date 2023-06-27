@@ -47,6 +47,7 @@ void registerEnv() {
       web3ApiKey: polygonMumbai['web3ApiKey'],
       idStateContract: polygonMumbai['idStateContract'],
       pushUrl: polygonMumbai['pushUrl'],
+      ipfsUrl: polygonMumbai['ipfsUrl'],
     ),
   ];
   getIt.registerSingleton<List<EnvEntity>>(env);

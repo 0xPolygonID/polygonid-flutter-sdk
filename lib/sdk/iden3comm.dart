@@ -117,6 +117,7 @@ abstract class PolygonIdSdkIden3comm {
       String? challenge,
       String? ethereumUrl,
       String? stateContractAddr,
+      String? ipfsNodeUrl,
       Map<int, Map<String, dynamic>>? nonRevocationProofs});
 
   /// Authenticate response from iden3Message sharing the needed
@@ -312,6 +313,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       String? challenge,
       String? ethereumUrl,
       String? stateContractAddr,
+      String? ipfsNodeUrl,
       Map<int, Map<String, dynamic>>? nonRevocationProofs}) {
     return _getIden3commProofsUseCase.execute(
         param: GetIden3commProofsParam(
@@ -322,6 +324,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       challenge: challenge,
       ethereumUrl: ethereumUrl,
       stateContractAddr: stateContractAddr,
+      ipfsNodeUrl: ipfsNodeUrl,
       nonRevocationProofs: nonRevocationProofs,
     ));
   }

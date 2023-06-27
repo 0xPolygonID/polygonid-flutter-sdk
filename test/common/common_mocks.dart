@@ -62,6 +62,7 @@ class CommonMocks {
     'web3ApiKey': id,
     'idStateContract': message,
     'pushUrl': url,
+    'ipfsUrl': url,
   };
 
   static EnvEntity env = EnvEntity(
@@ -72,5 +73,6 @@ class CommonMocks {
     web3ApiKey: id,
     idStateContract: message,
     pushUrl: url,
+    ipfsUrl: url,
   );
 }

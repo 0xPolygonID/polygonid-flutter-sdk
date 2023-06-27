@@ -30,6 +30,7 @@ class GetIden3commProofsParam {
   final String? challenge;
   final String? ethereumUrl;
   final String? stateContractAddr;
+  final String? ipfsNodeUrl;
   final Map<int, Map<String, dynamic>>? nonRevocationProofs;
 
   GetIden3commProofsParam(
@@ -40,6 +41,7 @@ class GetIden3commProofsParam {
       this.challenge,
       this.ethereumUrl,
       this.stateContractAddr,
+      this.ipfsNodeUrl,
       this.nonRevocationProofs});
 }
 
@@ -130,6 +132,7 @@ class GetIden3commProofsUseCase
               challenge,
               param.ethereumUrl,
               param.stateContractAddr,
+              param.ipfsNodeUrl,
             )));
           }
         }

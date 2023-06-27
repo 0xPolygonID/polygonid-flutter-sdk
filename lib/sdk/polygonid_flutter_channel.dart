@@ -539,6 +539,7 @@ class PolygonIdFlutterChannel
       String? challenge,
       String? ethereumUrl,
       String? stateContractAddr,
+      String? ipfsNodeUrl,
       Map<int, Map<String, dynamic>>? nonRevocationProofs}) {
     return _polygonIdSdk.iden3comm.getProofs(
         message: message,
@@ -548,6 +549,7 @@ class PolygonIdFlutterChannel
         challenge: challenge,
         ethereumUrl: ethereumUrl,
         stateContractAddr: stateContractAddr,
+        ipfsNodeUrl: ipfsNodeUrl,
         nonRevocationProofs: nonRevocationProofs);
   }
 

@@ -108,8 +108,8 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       thid: request.thid,
       to: request.from,
       from: did,
-      typ: request
-          .typ, // "application/iden3-zkp-json", // TODO if it's plain json typ: "application/iden3comm-plain-json",
+      typ: "application/iden3-zkp-json", //request
+      //.typ, // "application/iden3-zkp-json", // TODO if it's plain json typ: "application/iden3comm-plain-json",
       type: "https://iden3-communication.io/authorization/1.0/response",
       body: AuthBodyResponseDTO(
         message: request.body.message,

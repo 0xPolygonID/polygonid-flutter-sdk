@@ -14,6 +14,7 @@ EnvDTO _$EnvDTOFromJson(Map<String, dynamic> json) => EnvDTO(
       web3ApiKey: json['web3ApiKey'] as String,
       idStateContract: json['idStateContract'] as String,
       pushUrl: json['pushUrl'] as String,
+      ipfsUrl: json['ipfsUrl'] as String,
     );
 
 Map<String, dynamic> _$EnvDTOToJson(EnvDTO instance) => <String, dynamic>{
@@ -24,4 +25,5 @@ Map<String, dynamic> _$EnvDTOToJson(EnvDTO instance) => <String, dynamic>{
       'web3ApiKey': instance.web3ApiKey,
       'idStateContract': instance.idStateContract,
       'pushUrl': instance.pushUrl,
+      'ipfsUrl': instance.ipfsUrl,
     };

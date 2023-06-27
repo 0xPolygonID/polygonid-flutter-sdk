@@ -41,6 +41,7 @@ class GenerateIden3commProofParam {
 
   final String? ethereumUrl;
   final String? stateContractAddr;
+  final String? ipfsNodeURL;
 
   GenerateIden3commProofParam(
     this.did,
@@ -53,6 +54,7 @@ class GenerateIden3commProofParam {
     this.challenge,
     this.ethereumUrl,
     this.stateContractAddr,
+    this.ipfsNodeURL,
   );
 }
 
@@ -124,10 +126,13 @@ class GenerateIden3commProofUseCase
           param: SignMessageParam(param.privateKey!, param.challenge!));
     }
 
-    if (param.ethereumUrl != null && param.stateContractAddr != null) {
+    if (param.ethereumUrl != null &&
+        param.stateContractAddr != null &&
+        param.ipfsNodeURL != null) {
       config = AtomicQueryInputsConfigParam(
               ethereumUrl: param.ethereumUrl!,
-              stateContractAddr: param.stateContractAddr!)
+              stateContractAddr: param.stateContractAddr!,
+              ipfsNodeURL: param.ipfsNodeURL!)
           .toJson();
     }
 
