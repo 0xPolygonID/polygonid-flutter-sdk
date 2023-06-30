@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'polygonid_flutter_sdk'
-  s.version          = '2.2.6'
+  s.version          = '2.2.7'
   s.summary          = 'Flutter plugin for PolygonID SDK'
   s.description      = <<-DESC
 PolygonID SDK flutter plugin project.
