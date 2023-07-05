@@ -1,5 +1,3 @@
-import 'package:country_code/country_code.dart';
-import 'package:country_list/country_list.dart';
 import 'package:intl/intl.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/mappers/from_mapper.dart';

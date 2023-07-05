@@ -16,21 +16,20 @@ dependencies:
   http: ^0.13.6
   ffi: ^2.0.1
   hex: ^0.2.0
-  web3dart: 2.3.5
+  web3dart: ^2.5.1
   web_socket_channel: ^2.2.0
-  ffigen: ^7.2.9
+  ffigen: ^8.0.2
   json_annotation: ^4.6.0
   equatable: ^2.0.3
   crypto: ^3.0.1
   get_it: ^7.2.0
-  injectable: ^1.5.3
+  injectable: ^2.1.2
   # Path provider 2.0.12 is giving problems with iOS, forced to use 2.0.11
-  path_provider: 2.0.11
-  archive: 3.3.2
-  sembast: ^3.2.0+1
+  path_provider: ^2.0.15
+  archive: ^3.3.7
+  sembast: ^3.4.9
   fast_base58: 0.2.1
   uuid: ^3.0.6
-  country_code: ^1.0.0
   encrypt: ^5.0.1
   pointycastle: ^3.6.1
   package_info_plus: ^4.0.1
@@ -47,9 +46,9 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.1
-  json_serializable: ^6.3.1
+  json_serializable: ^6.7.1
   mockito: ^5.3.2
-  injectable_generator: ^1.5.3
+  injectable_generator: ^2.1.6
   build_runner: ^2.3.3
 
 ffigen:
