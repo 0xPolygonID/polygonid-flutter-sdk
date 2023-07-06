@@ -31,14 +31,14 @@ dependencies:
 #      url: https://github.com/iden3/polygonid-flutter-sdk.git
 #      ref: feature/PID-339_android
 
-  path_provider: 2.0.11
+  path_provider: ^2.0.15
   package_info_plus: ^4.0.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
-  injectable_generator: ^1.5.3
+  flutter_lints: ^2.0.1
+  injectable_generator: ^2.1.6
   build_runner: ^2.3.3
 
 # For information on the generic Dart part of this file, see the
