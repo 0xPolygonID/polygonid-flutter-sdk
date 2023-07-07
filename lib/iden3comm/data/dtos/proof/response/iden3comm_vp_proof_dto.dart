@@ -90,7 +90,9 @@ part 'iden3comm_vp_proof_dto.g.dart';
 
 @JsonSerializable()
 class Iden3commVPProofDTO {
+  @JsonKey(name: '@context')
   final List<String> context;
+  @JsonKey(name: '@type')
   final String type;
   final Map<String, dynamic> verifiableCredential;
 
