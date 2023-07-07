@@ -27,8 +27,7 @@ class Iden3commProofMapper
           circuitId: from.circuitId,
           proof: _zkProofBaseMapper.mapFrom(from.proof),
           pubSignals: from.pubSignals,
-          vp: _iden3commVPProofMapper.mapFrom(from.vp)
-      );
+          vp: _iden3commVPProofMapper.mapFrom(from.vp));
     } else {
       return Iden3commProofEntity(
         id: from.id,
@@ -43,12 +42,11 @@ class Iden3commProofMapper
   Iden3commProofDTO mapTo(Iden3commProofEntity to) {
     if (to is Iden3commSDProofEntity) {
       return Iden3commSDProofDTO(
-        id: to.id,
-        circuitId: to.circuitId,
-        proof: _zkProofBaseMapper.mapTo(to.proof),
-        pubSignals: to.pubSignals,
-        vp: _iden3commVPProofMapper.mapTo(to.vp)
-      );
+          id: to.id,
+          circuitId: to.circuitId,
+          proof: _zkProofBaseMapper.mapTo(to.proof),
+          pubSignals: to.pubSignals,
+          vp: _iden3commVPProofMapper.mapTo(to.vp));
     } else {
       return Iden3commProofDTO(
         id: to.id,

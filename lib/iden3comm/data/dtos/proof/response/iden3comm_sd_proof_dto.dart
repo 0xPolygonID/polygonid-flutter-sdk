@@ -77,11 +77,12 @@ class Iden3commSDProofDTO extends Iden3commProofDTO {
 
   Iden3commSDProofDTO(
       {required this.vp,
-        required int id,
+      required int id,
       required String circuitId,
       required ZKProofBaseDTO proof,
       required List<String> pubSignals})
-      : super(id: id, circuitId: circuitId, proof: proof, pubSignals: pubSignals);
+      : super(
+            id: id, circuitId: circuitId, proof: proof, pubSignals: pubSignals);
 
   factory Iden3commSDProofDTO.fromJson(Map<String, dynamic> json) =>
       _$Iden3commSDProofDTOFromJson(json);

@@ -93,7 +93,8 @@ class Iden3commSDProofEntity extends Iden3commProofEntity {
     required String circuitId,
     required ZKProofBaseEntity proof,
     required List<String> pubSignals,
-  }) : super(id: id, circuitId: circuitId, proof: proof, pubSignals: pubSignals);
+  }) : super(
+            id: id, circuitId: circuitId, proof: proof, pubSignals: pubSignals);
 
   /// Creates an instance from the given json
   ///
@@ -113,12 +114,10 @@ class Iden3commSDProofEntity extends Iden3commProofEntity {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'circuitId': circuitId,
-    'proof': proof.toJson(),
-    'pub_signals': pubSignals,
-    'vp': vp.toJson(),
-  };
+        'id': id,
+        'circuitId': circuitId,
+        'proof': proof.toJson(),
+        'pub_signals': pubSignals,
+        'vp': vp.toJson(),
+      };
 }
-
-
