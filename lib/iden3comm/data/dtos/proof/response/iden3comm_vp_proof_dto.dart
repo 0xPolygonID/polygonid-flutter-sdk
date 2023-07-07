@@ -63,8 +63,8 @@
 */
 
 import 'dart:convert';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_vp_proof.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 
 /// Sample
@@ -84,41 +84,27 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart'
 ///       }
 ///     }
 /// ```
-class Iden3commSDProofEntity extends Iden3commProofEntity {
-  final Iden3commVPProof vp;
+///
 
-  Iden3commSDProofEntity({
-    required this.vp,
-    required int id,
-    required String circuitId,
-    required ZKProofBaseEntity proof,
-    required List<String> pubSignals,
-  }) : super(id: id, circuitId: circuitId, proof: proof, pubSignals: pubSignals);
+part 'iden3comm_vp_proof_dto.g.dart';
 
-  /// Creates an instance from the given json
-  ///
-  /// @param [Map<String, dynamic>] json
-  /// @returns [Iden3commSDProofEntity]
-  factory Iden3commSDProofEntity.fromJson(Map<String, dynamic> json) {
-    ZKProofBaseEntity proof = ZKProofBaseEntity.fromJson(json['proof']);
-    List<String> pubSig = List.from(jsonDecode(json['pub_signals']));
-    Iden3commVPProof vp = Iden3commVPProof.fromJson(json["vp"]);
+@JsonSerializable()
+class Iden3commVPProofDTO {
+  final List<String> context;
+  final String type;
+  final Map<String, dynamic> verifiableCredential;
 
-    return Iden3commSDProofEntity(
-        id: json['id'],
-        circuitId: json['circuitId'],
-        proof: proof,
-        pubSignals: pubSig,
-        vp: vp);
-  }
+  Iden3commVPProofDTO(
+      {required this.context,
+        required this.type,
+        required this.verifiableCredential
+      });
 
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'circuitId': circuitId,
-    'proof': proof.toJson(),
-    'pub_signals': pubSignals,
-    'vp': vp.toJson(),
-  };
+  factory Iden3commVPProofDTO.fromJson(Map<String, dynamic> json) =>
+      _$Iden3commVPProofDTOFromJson(json);
+
+  Map<String, dynamic> toJson() => _$Iden3commVPProofDTOToJson(this);
+
+  @override
+  List<Object?> get props => [context, type, verifiableCredential];
 }
-
-
