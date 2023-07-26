@@ -10,6 +10,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/p
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/data/mappers/circuit_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
 
 class GetIden3commClaimsParam {
@@ -36,6 +37,7 @@ class GetIden3commClaimsUseCase
   final UpdateClaimUseCase _updateClaimUseCase;
   final IsProofCircuitSupportedUseCase _isProofCircuitSupported;
   final GetProofRequestsUseCase _getProofRequestsUseCase;
+  final CircuitTypeMapper _circuitTypeMapper;
 
   GetIden3commClaimsUseCase(
     this._iden3commCredentialRepository,
@@ -45,6 +47,7 @@ class GetIden3commClaimsUseCase
     this._updateClaimUseCase,
     this._isProofCircuitSupported,
     this._getProofRequestsUseCase,
+    this._circuitTypeMapper,
   );
 
   @override
@@ -75,6 +78,38 @@ class GetIden3commClaimsUseCase
               if (claims.isEmpty) {
                 return null;
               }
+
+              bool hasValidProofType = claims.any((element) {
+                List<Map<String, dynamic>> proofs = element.info["proof"];
+                List<String> proofTypes =
+                    proofs.map((e) => e["type"] as String).toList();
+
+                CircuitType circuitType =
+                    _circuitTypeMapper.mapTo(request.scope.circuitId);
+
+                switch (circuitType) {
+                  case CircuitType.mtp:
+                  case CircuitType.mtponchain:
+                    bool success = [
+                      'Iden3SparseMerkleProof',
+                      'Iden3SparseMerkleTreeProof'
+                    ].any((element) => proofTypes.contains(element));
+                    return success;
+                  case CircuitType.sig:
+                  case CircuitType.sigonchain:
+                    bool success = proofTypes.contains('BJJSignature2021');
+                    return success;
+                  case CircuitType.auth:
+                  case CircuitType.unknown:
+                    break;
+                }
+                return false;
+              });
+
+              if (!hasValidProofType) {
+                return null;
+              }
+
               if (request.scope.query.skipClaimRevocationCheck == null ||
                   request.scope.query.skipClaimRevocationCheck == false) {
                 for (int i = 0; i < claims.length; i++) {

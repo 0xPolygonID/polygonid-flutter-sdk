@@ -408,7 +408,6 @@ extension GetItInjectableX on _i1.GetIt {
     gh.factory<_i10.ClaimStateMapper>(() => _i10.ClaimStateMapper());
     gh.factory<_i11.Client>(() => networkModule.client);
     gh.factory<_i12.CreatePathWrapper>(() => _i12.CreatePathWrapper());
-    gh.lazySingletonAsync<_i13.Database>(() => databaseModule.database());
     gh.factoryParamAsync<_i13.Database, String?, String?>(
       (
         identifier,
@@ -420,6 +419,7 @@ extension GetItInjectableX on _i1.GetIt {
       ),
       instanceName: 'polygonIdSdkIdentity',
     );
+    gh.lazySingletonAsync<_i13.Database>(() => databaseModule.database());
     gh.factory<_i12.DestinationPathDataSource>(
         () => _i12.DestinationPathDataSource(gh<_i12.CreatePathWrapper>()));
     gh.factory<_i14.Dio>(() => networkModule.dio);
@@ -519,20 +519,20 @@ extension GetItInjectableX on _i1.GetIt {
         databaseModule.getCodec(privateKey));
     gh.factory<_i67.StateIdentifierMapper>(() => _i67.StateIdentifierMapper());
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.identityStore,
-      instanceName: 'identityStore',
-    );
-    gh.factory<_i13.StoreRef<String, dynamic>>(
-      () => databaseModule.keyValueStore,
-      instanceName: 'keyValueStore',
-    );
-    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.claimStore,
       instanceName: 'claimStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.interactionStore,
       instanceName: 'interactionStore',
+    );
+    gh.factory<_i13.StoreRef<String, dynamic>>(
+      () => databaseModule.keyValueStore,
+      instanceName: 'keyValueStore',
+    );
+    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
+      () => databaseModule.identityStore,
+      instanceName: 'identityStore',
     );
     gh.factory<_i68.TreeStateMapper>(() => _i68.TreeStateMapper());
     gh.factory<_i69.TreeTypeMapper>(() => _i69.TreeTypeMapper());
@@ -1044,6 +1044,7 @@ extension GetItInjectableX on _i1.GetIt {
               gh<_i130.UpdateClaimUseCase>(),
               await getAsync<_i152.IsProofCircuitSupportedUseCase>(),
               gh<_i119.GetProofRequestsUseCase>(),
+              gh<_i8.CircuitTypeMapper>(),
             ));
     gh.factoryAsync<_i182.GetIden3commProofsUseCase>(
         () async => _i182.GetIden3commProofsUseCase(
