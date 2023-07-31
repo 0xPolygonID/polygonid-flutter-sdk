@@ -23,14 +23,15 @@ class RemoteIden3commDataSource {
     required String url,
   }) async {
     return Future.value(Uri.parse(url))
-        .then((uri) => client.post(
-              uri,
-              body: token,
-              headers: {
-                HttpHeaders.acceptHeader: '*/*',
-                HttpHeaders.contentTypeHeader: 'text/plain',
-              },
-            ))
+        .then((uri) =>
+        client.post(
+          uri,
+          body: token,
+          headers: {
+            HttpHeaders.acceptHeader: '*/*',
+            HttpHeaders.contentTypeHeader: 'text/plain',
+          },
+        ))
         .then((response) {
       if (response.statusCode != 200) {
         if (kDebugMode) {
@@ -49,18 +50,19 @@ class RemoteIden3commDataSource {
   Future<ClaimDTO> fetchClaim(
       {required String authToken, required String url, required String did}) {
     return Future.value(Uri.parse(url))
-        .then((uri) => client.post(
-              uri,
-              body: authToken,
-              headers: {
-                HttpHeaders.acceptHeader: '*/*',
-                HttpHeaders.contentTypeHeader: 'text/plain',
-              },
-            ))
+        .then((uri) =>
+        client.post(
+          uri,
+          body: authToken,
+          headers: {
+            HttpHeaders.acceptHeader: '*/*',
+            HttpHeaders.contentTypeHeader: 'text/plain',
+          },
+        ))
         .then((response) {
       if (response.statusCode == 200) {
         FetchClaimResponseDTO fetchResponse =
-            FetchClaimResponseDTO.fromJson(json.decode(response.body));
+        FetchClaimResponseDTO.fromJson(json.decode(response.body));
 
         if (fetchResponse.type == FetchClaimResponseType.issuance) {
           return ClaimDTO(
@@ -75,7 +77,8 @@ class RemoteIden3commDataSource {
         }
       } else {
         logger().d(
-            'fetchClaim Error: code: ${response.statusCode} msg: ${response.body}');
+            'fetchClaim Error: code: ${response.statusCode} msg: ${response
+                .body}');
         throw NetworkException(response);
       }
     });
@@ -109,7 +112,13 @@ class RemoteIden3commDataSource {
 
       var schemaResponse = await dio.get(schemaUri.toString());
       if (schemaResponse.statusCode == 200) {
-        Map<String, dynamic> schema = json.decode(schemaResponse.data);
+        Map<String, dynamic> schema = {};
+        bool isMap = schemaResponse.data is Map<String, dynamic>;
+        if (!isMap) {
+          schema = json.decode(schemaResponse.data);
+        }else{
+          schema = schemaResponse.data;
+        }
 
         return schema;
       } else {
