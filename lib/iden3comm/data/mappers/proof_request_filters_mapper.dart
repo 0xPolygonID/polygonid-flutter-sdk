@@ -50,14 +50,6 @@ class ProofRequestFiltersMapper
             context[key] != null &&
             context[key]["@type"] != null) {
           String type = context[key]["@type"];
-          if (type.contains("double")) {
-            // double not supported
-            filters.add(FilterEntity(
-                operator: FilterOperator.nonEqual,
-                name:
-                    'schema.properties.credentialSubject.properties.$key.type',
-                value: "number"));
-          }
           map.forEach((operator, value) {
             if (type.contains("boolean")) {
               FilterEntity? booleanFilter =
