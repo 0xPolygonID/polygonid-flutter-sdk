@@ -1,7 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
+import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_store.dart';
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/utils/http_exceptions_handler_mixin.dart';
@@ -10,11 +14,11 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/credential/response/fe
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 
 class RemoteIden3commDataSource {
-  final Client client;
+  final http.Client client;
 
   RemoteIden3commDataSource(this.client);
 
-  Future<Response> authWithToken({
+  Future<http.Response> authWithToken({
     required String token,
     required String url,
   }) async {
@@ -87,9 +91,25 @@ class RemoteIden3commDataSource {
       }
 
       var schemaUri = Uri.parse(schemaUrl);
-      var schemaResponse = await get(schemaUri);
+
+      Dio dio = Dio();
+      final dir = await getApplicationDocumentsDirectory();
+      final path = dir.path;
+      dio.interceptors.add(
+        DioCacheInterceptor(
+          options: CacheOptions(
+            store: HiveCacheStore(path),
+            policy: CachePolicy.refreshForceCache,
+            hitCacheOnErrorExcept: [],
+            maxStale: const Duration(days: 14),
+            priority: CachePriority.high,
+          ),
+        ),
+      );
+
+      var schemaResponse = await dio.get(schemaUri.toString());
       if (schemaResponse.statusCode == 200) {
-        Map<String, dynamic> schema = json.decode(schemaResponse.body);
+        Map<String, dynamic> schema = json.decode(schemaResponse.data);
 
         return schema;
       } else {
