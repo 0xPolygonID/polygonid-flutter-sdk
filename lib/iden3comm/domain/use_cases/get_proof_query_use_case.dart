@@ -59,7 +59,10 @@ class GetProofQueryUseCase
             values = [entry.value];
           } else if (entry.value is int) {
             values = [entry.value];
-          } else if (entry.value is bool) {
+          } else if (entry.value is double) {
+            values = [entry.value];
+          }
+          else if (entry.value is bool) {
             values = [entry.value == true ? 1 : 0];
           } else {
             return Future.error(InvalidProofReqException());
