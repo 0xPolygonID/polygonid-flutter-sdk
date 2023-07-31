@@ -71,9 +71,12 @@ class GetIden3commProofsUseCase
     try {
       List<Iden3commProofEntity> proofs = [];
 
+      Stopwatch stopwatch = Stopwatch()..start();
+
       _proofGenerationStepsStreamManager.add("Getting proof requests");
       List<ProofRequestEntity> requests =
           await _getProofRequestsUseCase.execute(param: param.message);
+      print("STOPPE after _getProofRequestsUseCase ${stopwatch.elapsedMilliseconds}");
 
       List<ClaimEntity?> claims = await _getIden3commClaimsUseCase.execute(
           param: GetIden3commClaimsParam(
@@ -82,6 +85,7 @@ class GetIden3commProofsUseCase
               profileNonce: param.profileNonce,
               privateKey: param.privateKey,
               nonRevocationProofs: param.nonRevocationProofs ?? {}));
+      print("STOPPE after _getIden3commClaimsUseCase ${stopwatch.elapsedMilliseconds}");
 
       if ((requests.isNotEmpty &&
               claims.isNotEmpty &&
@@ -134,6 +138,7 @@ class GetIden3commProofsUseCase
               param.stateContractAddr,
               param.ipfsNodeUrl,
             )));
+            print("STOPPE after _generateIden3commProofUseCase $i ${stopwatch.elapsedMilliseconds}");
           }
         }
       } else {

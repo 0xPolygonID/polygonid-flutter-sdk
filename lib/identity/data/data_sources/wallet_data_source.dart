@@ -52,6 +52,7 @@ class WalletDataSource {
   WalletDataSource(this._walletLibWrapper);
 
   Future<BjjWallet> createWallet({Uint8List? secret}) {
+    print("CREATE_WALLLET_CALLED");//TODO remove
     return _walletLibWrapper.createWallet(secret: secret);
   }
 
