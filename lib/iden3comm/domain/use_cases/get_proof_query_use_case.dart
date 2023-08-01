@@ -2,6 +2,7 @@ import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
+import 'package:intl/intl.dart';
 
 class GetProofQueryUseCase
     extends FutureUseCase<ProofScopeRequest, ProofQueryParamEntity> {
@@ -52,17 +53,17 @@ class GetProofQueryUseCase
               return Future.error(InvalidProofReqException());
             }
           } else if (entry.value is String) {
-            if (operator == 2 || operator == 3) {
+            if (!_isDateTime(entry.value) && (operator == 2 || operator == 3)) {
               // lt, gt
               return Future.error(InvalidProofReqException());
             }
+
             values = [entry.value];
           } else if (entry.value is int) {
             values = [entry.value];
           } else if (entry.value is double) {
             values = [entry.value];
-          }
-          else if (entry.value is bool) {
+          } else if (entry.value is bool) {
             values = [entry.value == true ? 1 : 0];
           } else {
             return Future.error(InvalidProofReqException());
@@ -74,5 +75,24 @@ class GetProofQueryUseCase
     }
 
     return Future.value(ProofQueryParamEntity(field, values, operator));
+  }
+
+  bool _isDateTime(String input) {
+    final dateFormat = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+    final timeZoneFormat = RegExp(r'.*\+\d{2}:\d{2}$');
+
+    // Check if the input string matches the timezone format
+    if (timeZoneFormat.hasMatch(input)) {
+      // Remove the timezone from the input
+      final noTimeZoneInput = input.substring(0, input.length - 6);
+      try {
+        dateFormat.parseStrict(noTimeZoneInput);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    } else {
+      return false;
+    }
   }
 }
