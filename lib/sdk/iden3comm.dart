@@ -10,6 +10,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/reque
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/clean_schema_cache_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_filters_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_rev_nonce_use_case.dart';
@@ -205,6 +206,8 @@ abstract class PolygonIdSdkIden3comm {
   ///
   /// The [payload] is the notification payload
 // Future<void> handleNotification({required String payload});
+
+  Future<void> cleanSchemaCache();
 }
 
 @injectable
@@ -221,6 +224,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   final AddInteractionUseCase _addInteractionUseCase;
   final RemoveInteractionsUseCase _removeInteractionsUseCase;
   final UpdateInteractionUseCase _updateInteractionUseCase;
+  final CleanSchemaCacheUseCase _cleanSchemaCacheUseCase;
 
   Iden3comm(
     this._fetchAndSaveClaimsUseCase,
@@ -235,6 +239,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     this._addInteractionUseCase,
     this._removeInteractionsUseCase,
     this._updateInteractionUseCase,
+    this._cleanSchemaCacheUseCase,
   );
 
   @override
@@ -413,5 +418,10 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       id: id,
       state: state,
     ));
+  }
+
+  @override
+  Future<void> cleanSchemaCache() {
+    return _cleanSchemaCacheUseCase.execute(param: null);
   }
 }

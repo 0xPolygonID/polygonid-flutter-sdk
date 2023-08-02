@@ -814,4 +814,10 @@ class PolygonIdFlutterChannel
         treeState: treeState,
         config: config);
   }
+
+  @override
+  Future<void> cleanSchemaCache() {
+    // TODO: implement cleanSchemaCache
+    throw UnimplementedError();
+  }
 }

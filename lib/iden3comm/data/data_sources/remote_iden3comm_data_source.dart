@@ -23,15 +23,14 @@ class RemoteIden3commDataSource {
     required String url,
   }) async {
     return Future.value(Uri.parse(url))
-        .then((uri) =>
-        client.post(
-          uri,
-          body: token,
-          headers: {
-            HttpHeaders.acceptHeader: '*/*',
-            HttpHeaders.contentTypeHeader: 'text/plain',
-          },
-        ))
+        .then((uri) => client.post(
+              uri,
+              body: token,
+              headers: {
+                HttpHeaders.acceptHeader: '*/*',
+                HttpHeaders.contentTypeHeader: 'text/plain',
+              },
+            ))
         .then((response) {
       if (response.statusCode != 200) {
         if (kDebugMode) {
@@ -50,19 +49,18 @@ class RemoteIden3commDataSource {
   Future<ClaimDTO> fetchClaim(
       {required String authToken, required String url, required String did}) {
     return Future.value(Uri.parse(url))
-        .then((uri) =>
-        client.post(
-          uri,
-          body: authToken,
-          headers: {
-            HttpHeaders.acceptHeader: '*/*',
-            HttpHeaders.contentTypeHeader: 'text/plain',
-          },
-        ))
+        .then((uri) => client.post(
+              uri,
+              body: authToken,
+              headers: {
+                HttpHeaders.acceptHeader: '*/*',
+                HttpHeaders.contentTypeHeader: 'text/plain',
+              },
+            ))
         .then((response) {
       if (response.statusCode == 200) {
         FetchClaimResponseDTO fetchResponse =
-        FetchClaimResponseDTO.fromJson(json.decode(response.body));
+            FetchClaimResponseDTO.fromJson(json.decode(response.body));
 
         if (fetchResponse.type == FetchClaimResponseType.issuance) {
           return ClaimDTO(
@@ -77,8 +75,7 @@ class RemoteIden3commDataSource {
         }
       } else {
         logger().d(
-            'fetchClaim Error: code: ${response.statusCode} msg: ${response
-                .body}');
+            'fetchClaim Error: code: ${response.statusCode} msg: ${response.body}');
         throw NetworkException(response);
       }
     });
@@ -116,7 +113,7 @@ class RemoteIden3commDataSource {
         bool isMap = schemaResponse.data is Map<String, dynamic>;
         if (!isMap) {
           schema = json.decode(schemaResponse.data);
-        }else{
+        } else {
           schema = schemaResponse.data;
         }
 
@@ -127,5 +124,13 @@ class RemoteIden3commDataSource {
     } catch (error) {
       throw FetchSchemaException(error);
     }
+  }
+
+  ///
+  Future<void> cleanSchemaCache() async {
+    final dir = await getApplicationDocumentsDirectory();
+    final path = dir.path;
+    await HiveCacheStore(path).clean();
+    return;
   }
 }

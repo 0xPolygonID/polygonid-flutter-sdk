@@ -38,4 +38,6 @@ abstract class Iden3commRepository {
   Future<String> encodeJWZ({required JWZEntity jwz});
 
   Future<String> getChallenge({required String message});
+
+  Future<void> cleanSchemaCache();
 }

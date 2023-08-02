@@ -108,7 +108,8 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       thid: request.thid,
       to: request.from,
       from: did,
-      typ: "application/iden3-zkp-json", //request
+      typ: "application/iden3-zkp-json",
+      //request
       //.typ, // "application/iden3-zkp-json", // TODO if it's plain json typ: "application/iden3comm-plain-json",
       type: "https://iden3-communication.io/authorization/1.0/response",
       body: AuthBodyResponseDTO(
@@ -152,5 +153,10 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   Future<String> getChallenge({required String message}) {
     return Future.value(_qMapper.mapFrom(message))
         .then((q) => _libBabyJubJubDataSource.hashPoseidon(q));
+  }
+
+  @override
+  Future<void> cleanSchemaCache() async {
+    return _remoteIden3commDataSource.cleanSchemaCache();
   }
 }
