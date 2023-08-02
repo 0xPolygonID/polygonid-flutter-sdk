@@ -43,13 +43,8 @@ class ProofRequestFiltersMapper
     if (query.credentialSubject != null) {
       Map<String, dynamic> request = query.credentialSubject!;
       request.forEach((key, map) {
-        if (map != null &&
-            map is Map &&
-            map.isNotEmpty &&
-            context != null &&
-            context[key] != null &&
-            context[key]["@type"] != null) {
-          String type = context[key]["@type"];
+        if (map != null && map is Map && map.isNotEmpty && context != null) {
+          String type = getValueFromNestedString(context, key);
           map.forEach((operator, value) {
             if (type.contains("boolean")) {
               FilterEntity? booleanFilter =
@@ -76,6 +71,25 @@ class ProofRequestFiltersMapper
     }
 
     return filters;
+  }
+
+  ///
+  String getValueFromNestedString(
+      Map<String, dynamic> contextMap, String nestedKey) {
+    List<String> keys = nestedKey.split('.');
+    dynamic value = contextMap;
+    for (String key in keys) {
+      if (value is Map<String, dynamic> && value[key].containsKey("@context")) {
+        value = value[key]["@context"];
+      } else if (value is Map<String, dynamic> &&
+          value[key].containsKey("@type")) {
+        value = value[key]["@type"];
+        break;
+      } else {
+        break;
+      }
+    }
+    return value;
   }
 
   List<FilterEntity> _getFilterByOperator(field, operator, value) {
