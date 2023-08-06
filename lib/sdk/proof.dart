@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:archive/archive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
@@ -53,6 +54,7 @@ class Proof implements PolygonIdSdkProof {
   final CircuitsFilesExistUseCase _circuitsFilesExistUseCase;
   final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
   final CancelDownloadCircuitsUseCase _cancelDownloadCircuitsUseCase;
+  final StacktraceStreamManager _stacktraceStreamManager;
 
   Proof(
     this.generateZKProofUseCase,
@@ -60,6 +62,7 @@ class Proof implements PolygonIdSdkProof {
     this._circuitsFilesExistUseCase,
     this._proofGenerationStepsStreamManager,
     this._cancelDownloadCircuitsUseCase,
+    this._stacktraceStreamManager,
   );
 
   @override
@@ -78,6 +81,8 @@ class Proof implements PolygonIdSdkProof {
       String? challenge,
       String? signature,
       Map<String, dynamic>? config}) {
+    _stacktraceStreamManager.clear();
+    _stacktraceStreamManager.addTrace("PolygonIdSdk.Proof.prove called");
     return generateZKProofUseCase.execute(
         param: GenerateZKProofParam(
             identifier,
@@ -99,6 +104,9 @@ class Proof implements PolygonIdSdkProof {
   ///
   @override
   Future<bool> isAlreadyDownloadedCircuitsFromServer() async {
+    _stacktraceStreamManager.clear();
+    _stacktraceStreamManager.addTrace(
+        "PolygonIdSdk.Proof.isAlreadyDownloadedCircuitsFromServer called");
     return _circuitsFilesExistUseCase.execute();
   }
 
@@ -117,6 +125,9 @@ class Proof implements PolygonIdSdkProof {
   /// Cancel the download of circuits
   @override
   Future<void> cancelDownloadCircuits() async {
+    _stacktraceStreamManager.clear();
+    _stacktraceStreamManager.addTrace(
+        "PolygonIdSdk.Proof.cancelDownloadCircuits called");
     return _cancelDownloadCircuitsUseCase.execute();
   }
 }

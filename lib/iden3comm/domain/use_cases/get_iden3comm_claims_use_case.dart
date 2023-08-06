@@ -1,4 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_nonce_use_case.dart';
@@ -38,6 +39,7 @@ class GetIden3commClaimsUseCase
   final IsProofCircuitSupportedUseCase _isProofCircuitSupported;
   final GetProofRequestsUseCase _getProofRequestsUseCase;
   final CircuitTypeMapper _circuitTypeMapper;
+  final StacktraceStreamManager _stacktraceStreamManager;
 
   GetIden3commClaimsUseCase(
     this._iden3commCredentialRepository,
@@ -48,6 +50,7 @@ class GetIden3commClaimsUseCase
     this._isProofCircuitSupported,
     this._getProofRequestsUseCase,
     this._circuitTypeMapper,
+    this._stacktraceStreamManager,
   );
 
   @override
@@ -57,6 +60,8 @@ class GetIden3commClaimsUseCase
 
     List<ProofRequestEntity> requests =
         await _getProofRequestsUseCase.execute(param: param.message);
+    _stacktraceStreamManager
+        .addTrace("[GetIden3commClaimsUseCase] requests: $requests");
 
     /// We got [ProofRequestEntity], let's find the associated [ClaimEntity]
     for (ProofRequestEntity request in requests) {
@@ -66,16 +71,22 @@ class GetIden3commClaimsUseCase
         claims.add(
           await _iden3commCredentialRepository
               .getFilters(request: request)
-              .then((filters) => _getClaimsUseCase.execute(
-                      param: GetClaimsParam(
-                    filters: filters,
-                    genesisDid: param.genesisDid,
-                    profileNonce: param.profileNonce,
-                    privateKey: param.privateKey,
-                  )))
-              .then(
+              .then((filters) {
+            _stacktraceStreamManager
+                .addTrace("[GetIden3commClaimsUseCase] filters: $filters");
+            return _getClaimsUseCase.execute(
+              param: GetClaimsParam(
+                filters: filters,
+                genesisDid: param.genesisDid,
+                profileNonce: param.profileNonce,
+                privateKey: param.privateKey,
+              ),
+            );
+          }).then(
             (claims) async {
               if (claims.isEmpty) {
+                _stacktraceStreamManager.addTrace(
+                    "[GetIden3commClaimsUseCase] claims is empty");
                 return null;
               }
 
@@ -107,14 +118,20 @@ class GetIden3commClaimsUseCase
               });
 
               if (!hasValidProofType) {
+                _stacktraceStreamManager.addTrace(
+                    "[GetIden3commClaimsUseCase] claims has no valid proof type");
                 return null;
               }
 
               if (request.scope.query.skipClaimRevocationCheck == null ||
                   request.scope.query.skipClaimRevocationCheck == false) {
+                _stacktraceStreamManager.addTrace(
+                    "[GetIden3commClaimsUseCase] claims has valid proof type, checking revocation status");
                 for (int i = 0; i < claims.length; i++) {
                   int revNonce = await _getClaimRevocationNonceUseCase.execute(
                       param: claims[i]);
+                  _stacktraceStreamManager.addTrace(
+                      "[GetIden3commClaimsUseCase] revNonce: $revNonce");
                   Map<String, dynamic>? savedNonRevProof;
                   if (param.nonRevocationProofs.isNotEmpty &&
                       param.nonRevocationProofs.containsKey(revNonce)) {
@@ -128,6 +145,8 @@ class GetIden3commClaimsUseCase
                                   claim: claims[i],
                                   nonRevProof: savedNonRevProof))
                           .catchError((_) => <String, dynamic>{});
+                  _stacktraceStreamManager.addTrace(
+                      "[GetIden3commClaimsUseCase] nonRevProof: $nonRevProof");
 
                   /// FIXME: define an entity for revocation and use it in repo impl
                   if (nonRevProof.isNotEmpty &&
@@ -159,6 +178,8 @@ class GetIden3commClaimsUseCase
     /// as it could be we didn't find any associated [ClaimEntity]
     if (requests.isNotEmpty && claims.isEmpty ||
         claims.length != requests.length) {
+      _stacktraceStreamManager.addTrace(
+          "[GetIden3commClaimsUseCase] error claims: $claims, requests: $requests");
       throw CredentialsNotFoundException(requests);
     }
 

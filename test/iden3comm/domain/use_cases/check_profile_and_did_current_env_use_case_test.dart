@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
@@ -16,16 +17,23 @@ MockCheckProfileValidityUseCase checkProfileValidityUseCase =
 MockGetEnvUseCase getEnvUseCase = MockGetEnvUseCase();
 MockGetDidIdentifierUseCase getDidIdentifierUseCase =
     MockGetDidIdentifierUseCase();
+MockStacktraceStreamManager stacktraceStreamManager =
+    MockStacktraceStreamManager();
 
 // Tested instance
 CheckProfileAndDidCurrentEnvUseCase useCase =
     CheckProfileAndDidCurrentEnvUseCase(
-        checkProfileValidityUseCase, getEnvUseCase, getDidIdentifierUseCase);
+  checkProfileValidityUseCase,
+  getEnvUseCase,
+  getDidIdentifierUseCase,
+  stacktraceStreamManager,
+);
 
 @GenerateMocks([
   CheckProfileValidityUseCase,
   GetEnvUseCase,
   GetDidIdentifierUseCase,
+  StacktraceStreamManager,
 ])
 void main() {
   setUp(() {

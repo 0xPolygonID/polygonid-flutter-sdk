@@ -2,6 +2,7 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/check_profile_validity_use_case.dart';
@@ -24,9 +25,14 @@ class CheckProfileAndDidCurrentEnvUseCase
   final CheckProfileValidityUseCase _checkProfileValidityUseCase;
   final GetEnvUseCase _getEnvUseCase;
   final GetDidIdentifierUseCase _getDidIdentifierUseCase;
+  final StacktraceStreamManager _stacktraceStreamManager;
 
-  CheckProfileAndDidCurrentEnvUseCase(this._checkProfileValidityUseCase,
-      this._getEnvUseCase, this._getDidIdentifierUseCase);
+  CheckProfileAndDidCurrentEnvUseCase(
+    this._checkProfileValidityUseCase,
+    this._getEnvUseCase,
+    this._getDidIdentifierUseCase,
+    this._stacktraceStreamManager,
+  );
 
   @override
   Future<void> execute({required CheckProfileAndDidCurrentEnvParam param}) {
@@ -53,7 +59,7 @@ class CheckProfileAndDidCurrentEnvUseCase
       return identity;
     }).catchError((error) {
       logger().e("[CheckProfileAndDidCurrentEnvUseCase] Error: $error");
-
+      _stacktraceStreamManager.addTrace("[CheckProfileAndDidCurrentEnvUseCase] Error: $error");
       throw error;
     });
   }

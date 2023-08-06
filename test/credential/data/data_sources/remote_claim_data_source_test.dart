@@ -6,6 +6,7 @@ import 'package:http/http.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/remote_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
@@ -23,9 +24,17 @@ final exception = Exception();
 
 // Dependencies
 MockClient client = MockClient();
+MockStacktraceStreamManager stacktraceStreamManager =
+    MockStacktraceStreamManager();
 
 // Tested instance
-RemoteClaimDataSource dataSource = RemoteClaimDataSource(client);
+RemoteClaimDataSource dataSource = RemoteClaimDataSource(
+  client,
+  stacktraceStreamManager,
+);
 
-@GenerateMocks([Client])
+@GenerateMocks([
+  Client,
+  StacktraceStreamManager,
+])
 void main() {}

@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/prove_use_case.dart';
 
@@ -9,12 +10,20 @@ import '../../../common/proof_mocks.dart';
 import 'prove_use_case_test.mocks.dart';
 
 MockProofRepository proofRepository = MockProofRepository();
-ProveUseCase useCase = ProveUseCase(proofRepository);
+MockStacktraceStreamManager stacktraceStreamManager =
+    MockStacktraceStreamManager();
+ProveUseCase useCase = ProveUseCase(
+  proofRepository,
+  stacktraceStreamManager,
+);
 
 // Data
 ProveParam param = ProveParam(CommonMocks.aBytes, ProofMocks.circuitData);
 
-@GenerateMocks([ProofRepository])
+@GenerateMocks([
+  ProofRepository,
+  StacktraceStreamManager,
+])
 void main() {
   setUp(() {
     when(proofRepository.calculateWitness(any, any))

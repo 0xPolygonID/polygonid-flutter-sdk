@@ -5,6 +5,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
@@ -29,6 +30,8 @@ MockCheckProfileAndDidCurrentEnvUseCase checkProfileAndDidCurrentEnvUseCase =
     MockCheckProfileAndDidCurrentEnvUseCase();
 MockProofGenerationStepsStreamManager proofGenerationStepsStreamManager =
     MockProofGenerationStepsStreamManager();
+MockStacktraceStreamManager stacktraceStreamManager =
+    MockStacktraceStreamManager();
 
 AuthenticateUseCase useCase = AuthenticateUseCase(
   iden3commRepository,
@@ -39,6 +42,7 @@ AuthenticateUseCase useCase = AuthenticateUseCase(
   getPackageNameUseCase,
   checkProfileAndDidCurrentEnvUseCase,
   proofGenerationStepsStreamManager,
+  stacktraceStreamManager,
 );
 
 AuthenticateParam param = AuthenticateParam(
@@ -58,6 +62,7 @@ AuthenticateParam param = AuthenticateParam(
   GetPackageNameUseCase,
   CheckProfileAndDidCurrentEnvUseCase,
   ProofGenerationStepsStreamManager,
+  StacktraceStreamManager,
 ])
 void main() {
   group(

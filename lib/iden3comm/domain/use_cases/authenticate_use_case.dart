@@ -5,6 +5,7 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
@@ -43,6 +44,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
   final CheckProfileAndDidCurrentEnvUseCase
       _checkProfileAndDidCurrentEnvUseCase;
   final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
+  final StacktraceStreamManager _stacktraceStreamManager;
 
   AuthenticateUseCase(
     this._iden3commRepository,
@@ -53,6 +55,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
     this._getPackageNameUseCase,
     this._checkProfileAndDidCurrentEnvUseCase,
     this._proofGenerationStepsStreamManager,
+    this._stacktraceStreamManager,
   );
 
   @override
@@ -63,8 +66,10 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
               did: param.genesisDid,
               privateKey: param.privateKey,
               profileNonce: param.profileNonce));
+      _stacktraceStreamManager.addTrace("[AuthenticateUseCase] _checkProfileAndDidCurrentEnvUseCase success");
 
       EnvEntity env = await _getEnvUseCase.execute();
+      _stacktraceStreamManager.addTrace("[AuthenticateUseCase] _getEnvUseCase success\nenv: ${env.toString()}");
 
       String profileDid = await _getDidIdentifierUseCase.execute(
           param: GetDidIdentifierParam(
@@ -72,6 +77,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
               blockchain: env.blockchain,
               network: env.network,
               profileNonce: param.profileNonce));
+      _stacktraceStreamManager.addTrace("[AuthenticateUseCase] _getDidIdentifierUseCase success\ndid: $profileDid");
 
       // get proofs from credentials of all the profiles of the identity
       List<Iden3commProofEntity> proofs =
@@ -86,10 +92,13 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
         ipfsNodeUrl: env.ipfsUrl,
         nonRevocationProofs: param.nonRevocationProofs,
       ));
+      _stacktraceStreamManager.addTrace("[AuthenticateUseCase] _getIden3commProofsUseCase success\nproofs: ${proofs.toString()}");
 
       String pushUrl = env.pushUrl;
+      _stacktraceStreamManager.addTrace("[AuthenticateUseCase] pushUrl: $pushUrl");
 
       String packageName = await _getPackageNameUseCase.execute();
+      _stacktraceStreamManager.addTrace("[AuthenticateUseCase] packageName: $packageName");
 
       _proofGenerationStepsStreamManager
           .add("preparing authentication parameters...");
@@ -100,6 +109,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
           pushUrl: pushUrl,
           pushToken: param.pushToken,
           packageName: packageName);
+      _stacktraceStreamManager.addTrace("[AuthenticateUseCase] _iden3commRepository.getAuthResponse success\nauthResponse: $authResponse");
 
       _proofGenerationStepsStreamManager
           .add("preparing authentication token...");
@@ -109,6 +119,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
               profileNonce: param.profileNonce,
               privateKey: param.privateKey,
               message: authResponse));
+      _stacktraceStreamManager.addTrace("[AuthenticateUseCase] _getAuthTokenUseCase success\nauthToken: $authToken");
 
       _proofGenerationStepsStreamManager.add("authenticating...");
       return _iden3commRepository.authenticate(
@@ -116,8 +127,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
         authToken: authToken,
       );
     } catch (error) {
+      _stacktraceStreamManager.addTrace("[AuthenticateUseCase] Error: $error");
       logger().d("[AuthenticateUseCase] Error: $error");
-
       rethrow;
     }
   }

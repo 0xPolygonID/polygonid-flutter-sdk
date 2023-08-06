@@ -1,4 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
@@ -6,6 +7,7 @@ import 'package:intl/intl.dart';
 
 class GetProofQueryUseCase
     extends FutureUseCase<ProofScopeRequest, ProofQueryParamEntity> {
+  final StacktraceStreamManager _stacktraceStreamManager;
   final Map<String, int> _queryOperators = {
     "\$noop": 0,
     "\$eq": 1,
@@ -15,6 +17,8 @@ class GetProofQueryUseCase
     "\$nin": 5,
     "\$ne": 6
   };
+
+  GetProofQueryUseCase(this._stacktraceStreamManager);
 
   @override
   Future<ProofQueryParamEntity> execute({required ProofScopeRequest param}) {
@@ -40,6 +44,8 @@ class GetProofQueryUseCase
           } else if (entry.value is List<dynamic>) {
             if (operator == 2 || operator == 3) {
               // lt, gt
+              _stacktraceStreamManager.addTrace(
+                  "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
               return Future.error(InvalidProofReqException());
             }
             try {
@@ -48,13 +54,19 @@ class GetProofQueryUseCase
               try {
                 values = entry.value.cast<String>();
               } catch (e) {
+                _stacktraceStreamManager.addTrace(
+                    "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
                 return Future.error(InvalidProofReqException());
               }
+              _stacktraceStreamManager.addTrace(
+                  "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
               return Future.error(InvalidProofReqException());
             }
           } else if (entry.value is String) {
             if (!_isDateTime(entry.value) && (operator == 2 || operator == 3)) {
               // lt, gt
+              _stacktraceStreamManager.addTrace(
+                  "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
               return Future.error(InvalidProofReqException());
             }
 
@@ -66,10 +78,14 @@ class GetProofQueryUseCase
           } else if (entry.value is bool) {
             values = [entry.value == true ? 1 : 0];
           } else {
+            _stacktraceStreamManager.addTrace(
+                "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
             return Future.error(InvalidProofReqException());
           }
         }
       } else {
+        _stacktraceStreamManager.addTrace(
+            "[GetProofQueryUseCase] InvalidProofReqException param: $param\nreqEntry: $reqEntry");
         return Future.error(InvalidProofReqException());
       }
     }

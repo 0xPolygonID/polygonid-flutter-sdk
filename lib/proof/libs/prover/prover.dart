@@ -7,6 +7,8 @@ import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 import 'native_prover.dart';
 
@@ -22,6 +24,8 @@ class ProverLib {
 
   Future<Map<String, dynamic>?> prove(
       String circuitId, Uint8List zkeyBytes, Uint8List wtnsBytes) async {
+    final StacktraceStreamManager _stacktraceStreamManager =
+        getItSdk<StacktraceStreamManager>();
     Map<String, dynamic> map = {};
 
     int zkeySize = zkeyBytes.length;
@@ -64,6 +68,8 @@ class ProverLib {
     DateTime end = DateTime.now();
 
     int time = end.difference(start).inMicroseconds;
+    _stacktraceStreamManager.addTrace(
+        "[proverLib] groth16_prover: $time in microseconds, time in seconds: ${time / 1000000}");
 
     if (result == PRPOVER_OK) {
       ffi.Pointer<Utf8> jsonString = proofBuffer.cast<Utf8>();
@@ -72,6 +78,8 @@ class ProverLib {
       ffi.Pointer<Utf8> jsonString2 = publicBuffer.cast<Utf8>();
       String publicmsg = jsonString2.toDartString();
 
+      _stacktraceStreamManager.addTrace(
+          "[proverLib] groth16_prover: result OK, proof: $proofmsg, public: $publicmsg");
       if (kDebugMode) {
         print("Proof: $proofmsg");
         print("Public: $publicmsg");
@@ -86,10 +94,14 @@ class ProverLib {
     } else if (result == PPROVER_ERROR) {
       ffi.Pointer<Utf8> jsonString = errorMsg.cast<Utf8>();
       String errormsg = jsonString.toDartString();
+      _stacktraceStreamManager.addTrace(
+          "[proverLib] groth16_prover: result ERROR, error: $errormsg");
       if (kDebugMode) {
         print("$result: ${result.toString()}. Error: $errormsg");
       }
     } else if (result == PPROVER_ERROR_SHORT_BUFFER) {
+      _stacktraceStreamManager.addTrace(
+          "[proverLib] groth16_prover: result ERROR, error: Short buffer for proof or public");
       if (kDebugMode) {
         print(
             "$result: ${result.toString()}. Error: Short buffer for proof or public");

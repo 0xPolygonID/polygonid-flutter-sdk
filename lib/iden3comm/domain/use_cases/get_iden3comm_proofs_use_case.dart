@@ -1,5 +1,6 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
@@ -54,6 +55,7 @@ class GetIden3commProofsUseCase
   final GetProofRequestsUseCase _getProofRequestsUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
   final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
+  final StacktraceStreamManager _stacktraceStreamManager;
 
   GetIden3commProofsUseCase(
     this._proofRepository,
@@ -63,6 +65,7 @@ class GetIden3commProofsUseCase
     this._getProofRequestsUseCase,
     this._getIdentityUseCase,
     this._proofGenerationStepsStreamManager,
+    this._stacktraceStreamManager,
   );
 
   @override
@@ -74,6 +77,8 @@ class GetIden3commProofsUseCase
       _proofGenerationStepsStreamManager.add("Getting proof requests");
       List<ProofRequestEntity> requests =
           await _getProofRequestsUseCase.execute(param: param.message);
+      _stacktraceStreamManager
+          .addTrace("[GetIden3commProofsUseCase] requests: $requests");
 
       List<ClaimEntity?> claims = await _getIden3commClaimsUseCase.execute(
           param: GetIden3commClaimsParam(
@@ -82,6 +87,8 @@ class GetIden3commProofsUseCase
               profileNonce: param.profileNonce,
               privateKey: param.privateKey,
               nonRevocationProofs: param.nonRevocationProofs ?? {}));
+      _stacktraceStreamManager
+          .addTrace("[GetIden3commProofsUseCase] claims: $claims");
 
       if ((requests.isNotEmpty &&
               claims.isNotEmpty &&
@@ -137,6 +144,8 @@ class GetIden3commProofsUseCase
           }
         }
       } else {
+        _stacktraceStreamManager.addTrace(
+            "[GetIden3commProofsUseCase] CredentialsNotFoundException - requests: $requests");
         throw CredentialsNotFoundException(requests);
       }
 
@@ -144,11 +153,15 @@ class GetIden3commProofsUseCase
       /// as it could be we didn't find any associated [ClaimEntity]
       if (requests.isNotEmpty && proofs.isEmpty ||
           proofs.length != requests.length) {
+        _stacktraceStreamManager.addTrace(
+            "[GetIden3commProofsUseCase] ProofsNotFoundException - requests: $requests");
         throw ProofsNotFoundException(requests);
       }
 
       return proofs;
     } catch (e) {
+      _stacktraceStreamManager.addTrace(
+          "[GetIden3commProofsUseCase] Exception: $e");
       rethrow;
     }
   }

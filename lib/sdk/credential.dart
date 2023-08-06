@@ -1,6 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
@@ -117,6 +118,7 @@ class Credential implements PolygonIdSdkCredential {
   final GetClaimRevocationStatusUseCase _getClaimRevocationStatusUseCase;
   final RemoveClaimsUseCase _removeClaimsUseCase;
   final UpdateClaimUseCase _updateClaimUseCase;
+  final StacktraceStreamManager _stacktraceStreamManager;
 
   Credential(
     this._saveClaimsUseCase,
@@ -124,6 +126,7 @@ class Credential implements PolygonIdSdkCredential {
     this._removeClaimsUseCase,
     this._getClaimRevocationStatusUseCase,
     this._updateClaimUseCase,
+    this._stacktraceStreamManager,
   );
 
   @override
@@ -131,6 +134,9 @@ class Credential implements PolygonIdSdkCredential {
       {required List<ClaimEntity> claims,
       required String genesisDid,
       required String privateKey}) {
+    _stacktraceStreamManager.clear();
+    _stacktraceStreamManager
+        .addTrace("PolygonIdSdk.Credential.saveClaims called");
     return _saveClaimsUseCase.execute(
         param: SaveClaimsParam(
             claims: claims, genesisDid: genesisDid, privateKey: privateKey));
@@ -141,6 +147,9 @@ class Credential implements PolygonIdSdkCredential {
       {List<FilterEntity>? filters,
       required String genesisDid,
       required String privateKey}) {
+    _stacktraceStreamManager.clear();
+    _stacktraceStreamManager
+        .addTrace("PolygonIdSdk.Credential.getClaims called");
     return _getClaimsUseCase.execute(
         param: GetClaimsParam(
       filters: filters,
@@ -155,6 +164,9 @@ class Credential implements PolygonIdSdkCredential {
       {required List<String> claimIds,
       required String genesisDid,
       required String privateKey}) {
+    _stacktraceStreamManager.clear();
+    _stacktraceStreamManager
+        .addTrace("PolygonIdSdk.Credential.getClaimsByIds called");
     return _getClaimsUseCase.execute(
         param: GetClaimsParam(
       filters: [
@@ -174,6 +186,9 @@ class Credential implements PolygonIdSdkCredential {
     required String privateKey,
     Map<String, dynamic>? nonRevProof,
   }) async {
+    _stacktraceStreamManager.clear();
+    _stacktraceStreamManager
+        .addTrace("PolygonIdSdk.Credential.getClaimRevocationStatus called");
     List<ClaimEntity> claimEntityList = await getClaimsByIds(
         claimIds: [claimId], genesisDid: genesisDid, privateKey: privateKey);
     if (claimEntityList.isNotEmpty) {
@@ -183,6 +198,8 @@ class Credential implements PolygonIdSdkCredential {
         nonRevProof: nonRevProof,
       ));
     } else {
+      _stacktraceStreamManager.addTrace(
+          "PolygonIdSdk.Credential.getClaimRevocationStatus claim not found");
       throw ClaimNotFoundException(claimId);
     }
   }
@@ -192,6 +209,9 @@ class Credential implements PolygonIdSdkCredential {
       {required List<String> claimIds,
       required String genesisDid,
       required String privateKey}) {
+    _stacktraceStreamManager.clear();
+    _stacktraceStreamManager
+        .addTrace("PolygonIdSdk.Credential.removeClaims called");
     return _removeClaimsUseCase.execute(
         param: RemoveClaimsParam(
       claimIds: claimIds,
@@ -205,6 +225,9 @@ class Credential implements PolygonIdSdkCredential {
       {required String claimId,
       required String genesisDid,
       required String privateKey}) {
+    _stacktraceStreamManager.clear();
+    _stacktraceStreamManager
+        .addTrace("PolygonIdSdk.Credential.removeClaim called");
     return _removeClaimsUseCase.execute(
         param: RemoveClaimsParam(
       claimIds: [claimId],
@@ -224,6 +247,9 @@ class Credential implements PolygonIdSdkCredential {
     Map<String, dynamic>? data,
     required String privateKey,
   }) {
+    _stacktraceStreamManager.clear();
+    _stacktraceStreamManager
+        .addTrace("PolygonIdSdk.Credential.updateClaim called");
     return _updateClaimUseCase.execute(
         param: UpdateClaimParam(
             id: claimId,

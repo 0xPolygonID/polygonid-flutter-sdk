@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_auth_claim_use_case.dart';
@@ -71,6 +72,7 @@ class GenerateIden3commProofUseCase
   final GetDidUseCase _getDidUseCase;
   final SignMessageUseCase _signMessageUseCase;
   final GetLatestStateUseCase _getLatestStateUseCase;
+  final StacktraceStreamManager _stacktraceStreamManager;
 
   GenerateIden3commProofUseCase(
     this._identityRepository,
@@ -83,6 +85,7 @@ class GenerateIden3commProofUseCase
     this._getDidUseCase,
     this._signMessageUseCase,
     this._getLatestStateUseCase,
+    this._stacktraceStreamManager,
   );
 
   @override
@@ -97,34 +100,54 @@ class GenerateIden3commProofUseCase
     String? signature;
     if (param.request.circuitId == "credentialAtomicQueryMTPV2OnChain" ||
         param.request.circuitId == "credentialAtomicQuerySigV2OnChain") {
+      //on chain start
+      _stacktraceStreamManager.addTrace(
+          "[GenerateIden3commProofUseCase] OnChain ${param.request.circuitId}");
       IdentityEntity identity = await _getIdentityUseCase.execute(
           param: GetIdentityParam(
               genesisDid: param.did, privateKey: param.privateKey));
+      _stacktraceStreamManager.addTrace(
+          "[GenerateIden3commProofUseCase] identity: ${identity.toString()}");
       authClaim = await _getAuthClaimUseCase.execute(param: identity.publicKey);
+      _stacktraceStreamManager.addTrace(
+          "[GenerateIden3commProofUseCase] authClaim: ${authClaim.toString()}");
       NodeEntity authClaimNode =
           await _identityRepository.getAuthClaimNode(children: authClaim);
+      _stacktraceStreamManager.addTrace(
+          "[GenerateIden3commProofUseCase] authClaimNode: ${authClaimNode.toString()}");
 
       incProof = await _smtRepository.generateProof(
           key: authClaimNode.hash,
           type: TreeType.claims,
           did: param.did,
           privateKey: param.privateKey!);
+      _stacktraceStreamManager.addTrace(
+          "[GenerateIden3commProofUseCase] incProof: ${incProof.toString()}");
 
       nonRevProof = await _smtRepository.generateProof(
           key: authClaimNode.hash,
           type: TreeType.revocation,
           did: param.did,
           privateKey: param.privateKey!);
+      _stacktraceStreamManager.addTrace(
+          "[GenerateIden3commProofUseCase] nonRevProof: ${nonRevProof.toString()}");
 
       // hash of clatr, revtr, rootr
       treeState = await _getLatestStateUseCase.execute(
           param: GetLatestStateParam(
               did: param.did, privateKey: param.privateKey!));
+      _stacktraceStreamManager.addTrace(
+          "[GenerateIden3commProofUseCase] treeState: ${treeState.toString()}");
 
       gistProof = await _getGistMTProofUseCase.execute(param: param.did);
+      _stacktraceStreamManager.addTrace(
+          "[GenerateIden3commProofUseCase] gistProof: ${gistProof.toString()}");
 
       signature = await _signMessageUseCase.execute(
           param: SignMessageParam(param.privateKey!, param.challenge!));
+      _stacktraceStreamManager.addTrace(
+          "[GenerateIden3commProofUseCase] signature: ${signature.toString()}");
+      //onchain end
     }
 
     if (param.ethereumUrl != null &&
@@ -135,9 +158,13 @@ class GenerateIden3commProofUseCase
               stateContractAddr: param.stateContractAddr!,
               ipfsNodeURL: param.ipfsNodeURL!)
           .toJson();
+      _stacktraceStreamManager.addTrace(
+          "[GenerateIden3commProofUseCase] config: ${config.toString()}");
     }
 
     DidEntity didEntity = await _getDidUseCase.execute(param: param.did);
+    _stacktraceStreamManager.addTrace(
+        "[GenerateIden3commProofUseCase] didEntity: ${didEntity.toString()}");
 
     // Prepare atomic query inputs
     Uint8List res = await _proofRepository
@@ -158,10 +185,14 @@ class GenerateIden3commProofUseCase
       config: config,
     )
         .catchError((error) {
+      _stacktraceStreamManager
+          .addTrace("[GenerateIden3commProofUseCase] Error: $error");
       logger().e("[GenerateProofUseCase] Error: $error");
 
       throw error;
     });
+    _stacktraceStreamManager.addTrace(
+        "[GenerateIden3commProofUseCase] atomicQueryInputs: ${res.toString()}");
 
     dynamic inputsJson = json.decode(Uint8ArrayUtils.uint8ListToString(res));
     Uint8List atomicQueryInputs =
@@ -176,6 +207,8 @@ class GenerateIden3commProofUseCase
     return _proveUseCase
         .execute(param: ProveParam(atomicQueryInputs, param.circuitData))
         .then((proof) {
+      _stacktraceStreamManager.addTrace(
+          "[GenerateIden3commProofUseCase] proof: ${proof.toString()}");
       logger().i("[GenerateProofUseCase] proof: $proof");
 
       if (vpProof != null) {
@@ -194,6 +227,8 @@ class GenerateIden3commProofUseCase
         );
       }
     }).catchError((error) {
+      _stacktraceStreamManager
+          .addTrace("[GenerateIden3commProofUseCase] proveUseCase Error: $error");
       logger().e("[GenerateProofUseCase] Error: $error");
 
       throw error;

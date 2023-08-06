@@ -2,6 +2,7 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
@@ -27,9 +28,14 @@ class GetClaimsUseCase
   final CredentialRepository _credentialRepository;
   final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
+  final StacktraceStreamManager _stacktraceStreamManager;
 
-  GetClaimsUseCase(this._credentialRepository,
-      this._getCurrentEnvDidIdentifierUseCase, this._getIdentityUseCase);
+  GetClaimsUseCase(
+    this._credentialRepository,
+    this._getCurrentEnvDidIdentifierUseCase,
+    this._getIdentityUseCase,
+    this._stacktraceStreamManager,
+  );
 
   @override
   Future<List<ClaimEntity>> execute({required GetClaimsParam param}) async {
@@ -49,10 +55,13 @@ class GetClaimsUseCase
         logger().i("[GetClaimsUseCase] Claims: $claims");
         return claims;
       }).catchError((error) {
+        _stacktraceStreamManager.addTrace("[GetClaimsUseCase] Error: $error");
         logger().e("[GetClaimsUseCase] Error: $error");
         throw error;
       });
     } else {
+      _stacktraceStreamManager.addTrace(
+          "[GetClaimsUseCase] Invalid profile nonce: ${param.profileNonce}");
       throw InvalidProfileException(param.profileNonce);
     }
   }
