@@ -22,12 +22,15 @@ class WitnessAuthV2Lib {
 
   Future<Uint8List?> calculateWitnessAuth(
       Uint8List wasmBytes, Uint8List inputsJsonBytes) async {
+    Stopwatch stopwatch = Stopwatch()..start();
+    print("CALCULATE WITNESS AUTH stopwatch started");
     int circuitSize = wasmBytes.length;
     ffi.Pointer<ffi.Char> circuitBuffer = malloc<ffi.Char>(circuitSize);
     final data = wasmBytes;
     for (int i = 0; i < circuitSize; i++) {
       circuitBuffer[i] = data[i];
     }
+    print("CALCULATE WITNESS AUTH circuitBuffer ${stopwatch.elapsedMilliseconds}");
 
     int jsonSize = inputsJsonBytes.length;
     ffi.Pointer<ffi.Char> jsonBuffer = malloc<ffi.Char>(jsonSize);
@@ -35,10 +38,12 @@ class WitnessAuthV2Lib {
     for (int i = 0; i < jsonSize; i++) {
       jsonBuffer[i] = data2[i];
     }
+    print("CALCULATE WITNESS AUTH jsonBuffer ${stopwatch.elapsedMilliseconds}");
 
     ffi.Pointer<ffi.UnsignedLong> wtnsSize = malloc<ffi.UnsignedLong>();
     wtnsSize.value = 4 * 1024 * 1024;
     ffi.Pointer<ffi.Char> wtnsBuffer = malloc<ffi.Char>(wtnsSize.value);
+    print("CALCULATE WITNESS AUTH wtnsBuffer ${stopwatch.elapsedMilliseconds}");
 
     int errorMaxSize = 256;
     ffi.Pointer<ffi.Char> errorMsg = malloc<ffi.Char>(errorMaxSize);
@@ -52,6 +57,7 @@ class WitnessAuthV2Lib {
         wtnsSize,
         errorMsg,
         errorMaxSize);
+    print("CALCULATE WITNESS AUTH result ${stopwatch.elapsedMilliseconds}");
 
     if (result == WITNESSCALC_OK) {
       Uint8List wtnsBytes = Uint8List(wtnsSize.value);
