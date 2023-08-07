@@ -22,8 +22,8 @@ class FilterMapper extends ToMapper<Filter, FilterEntity> {
       case FilterOperator.inList:
         try {
           List<dynamic> dynamicList = to.value as List<dynamic>;
-          List<Object> objectList = dynamicList.map((item) => item as Object)
-              .toList();
+          List<Object> objectList =
+              dynamicList.map((item) => item as Object).toList();
           Filter filter = Filter.inList(to.name, objectList);
           return filter;
         } catch (e) {

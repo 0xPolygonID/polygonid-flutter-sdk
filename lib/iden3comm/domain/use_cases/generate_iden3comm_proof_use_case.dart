@@ -98,6 +98,9 @@ class GenerateIden3commProofUseCase
     Map<String, dynamic>? treeState;
     Map<String, dynamic>? config;
     String? signature;
+
+    Stopwatch stopwatch = Stopwatch()..start();
+
     if (param.request.circuitId == "credentialAtomicQueryMTPV2OnChain" ||
         param.request.circuitId == "credentialAtomicQuerySigV2OnChain") {
       //on chain start
@@ -108,13 +111,19 @@ class GenerateIden3commProofUseCase
               genesisDid: param.did, privateKey: param.privateKey));
       _stacktraceStreamManager.addTrace(
           "[GenerateIden3commProofUseCase] identity: ${identity.toString()}");
+      logger().i(
+          "GENERATION PROOF getIdentityUseCase executed in ${stopwatch.elapsed}");
       authClaim = await _getAuthClaimUseCase.execute(param: identity.publicKey);
       _stacktraceStreamManager.addTrace(
           "[GenerateIden3commProofUseCase] authClaim: ${authClaim.toString()}");
+      logger().i(
+          "GENERATION PROOF getAuthClaimUseCase executed in ${stopwatch.elapsed}");
       NodeEntity authClaimNode =
           await _identityRepository.getAuthClaimNode(children: authClaim);
       _stacktraceStreamManager.addTrace(
           "[GenerateIden3commProofUseCase] authClaimNode: ${authClaimNode.toString()}");
+      logger().i(
+          "GENERATION PROOF getAuthClaimNode executed in ${stopwatch.elapsed}");
 
       incProof = await _smtRepository.generateProof(
           key: authClaimNode.hash,
@@ -123,6 +132,7 @@ class GenerateIden3commProofUseCase
           privateKey: param.privateKey!);
       _stacktraceStreamManager.addTrace(
           "[GenerateIden3commProofUseCase] incProof: ${incProof.toString()}");
+      logger().i("GENERATION PROOF incProof executed in ${stopwatch.elapsed}");
 
       nonRevProof = await _smtRepository.generateProof(
           key: authClaimNode.hash,
@@ -131,6 +141,8 @@ class GenerateIden3commProofUseCase
           privateKey: param.privateKey!);
       _stacktraceStreamManager.addTrace(
           "[GenerateIden3commProofUseCase] nonRevProof: ${nonRevProof.toString()}");
+      logger()
+          .i("GENERATION PROOF nonRevProof executed in ${stopwatch.elapsed}");
 
       // hash of clatr, revtr, rootr
       treeState = await _getLatestStateUseCase.execute(
@@ -138,16 +150,19 @@ class GenerateIden3commProofUseCase
               did: param.did, privateKey: param.privateKey!));
       _stacktraceStreamManager.addTrace(
           "[GenerateIden3commProofUseCase] treeState: ${treeState.toString()}");
+      logger().i("GENERATION PROOF treeState executed in ${stopwatch.elapsed}");
 
       gistProof = await _getGistMTProofUseCase.execute(param: param.did);
       _stacktraceStreamManager.addTrace(
           "[GenerateIden3commProofUseCase] gistProof: ${gistProof.toString()}");
+      logger().i("GENERATION PROOF gistProof executed in ${stopwatch.elapsed}");
 
       signature = await _signMessageUseCase.execute(
           param: SignMessageParam(param.privateKey!, param.challenge!));
       _stacktraceStreamManager.addTrace(
           "[GenerateIden3commProofUseCase] signature: ${signature.toString()}");
       //onchain end
+      logger().i("GENERATION PROOF signature executed in ${stopwatch.elapsed}");
     }
 
     if (param.ethereumUrl != null &&
@@ -165,6 +180,7 @@ class GenerateIden3commProofUseCase
     DidEntity didEntity = await _getDidUseCase.execute(param: param.did);
     _stacktraceStreamManager.addTrace(
         "[GenerateIden3commProofUseCase] didEntity: ${didEntity.toString()}");
+    logger().i("GENERATION PROOF didEntity executed in ${stopwatch.elapsed}");
 
     // Prepare atomic query inputs
     Uint8List res = await _proofRepository
@@ -193,6 +209,8 @@ class GenerateIden3commProofUseCase
     });
     _stacktraceStreamManager.addTrace(
         "[GenerateIden3commProofUseCase] atomicQueryInputs: ${res.toString()}");
+    logger().i(
+        "GENERATION PROOF calculateAtomicQueryInputs executed in ${stopwatch.elapsed}");
 
     dynamic inputsJson = json.decode(Uint8ArrayUtils.uint8ListToString(res));
     Uint8List atomicQueryInputs =
@@ -202,6 +220,9 @@ class GenerateIden3commProofUseCase
     if (inputsJson["verifiablePresentation"] != null) {
       vpProof = Iden3commVPProof.fromJson(inputsJson["verifiablePresentation"]);
     }
+
+    logger().i(
+        "GENERATION PROOF atomicQueryInputs executed in ${stopwatch.elapsed}");
 
     // Prove
     return _proveUseCase

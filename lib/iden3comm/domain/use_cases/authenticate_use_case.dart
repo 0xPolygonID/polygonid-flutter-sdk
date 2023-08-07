@@ -61,15 +61,23 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
   @override
   Future<void> execute({required AuthenticateParam param}) async {
     try {
+      // we want to misure the time of the whole process
+      Stopwatch stopwatch = Stopwatch()..start();
+      logger().i("stopwatch started");
+
       await _checkProfileAndDidCurrentEnvUseCase.execute(
           param: CheckProfileAndDidCurrentEnvParam(
               did: param.genesisDid,
               privateKey: param.privateKey,
               profileNonce: param.profileNonce));
       _stacktraceStreamManager.addTrace("[AuthenticateUseCase] _checkProfileAndDidCurrentEnvUseCase success");
+      logger().i(
+          "stopwatch after checkProfileAndDidCurrentEnvUseCase ${stopwatch.elapsedMilliseconds}");
 
       EnvEntity env = await _getEnvUseCase.execute();
       _stacktraceStreamManager.addTrace("[AuthenticateUseCase] _getEnvUseCase success\nenv: ${env.toString()}");
+      logger()
+          .i("stopwatch after getEnvUseCase ${stopwatch.elapsedMilliseconds}");
 
       String profileDid = await _getDidIdentifierUseCase.execute(
           param: GetDidIdentifierParam(
@@ -78,6 +86,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
               network: env.network,
               profileNonce: param.profileNonce));
       _stacktraceStreamManager.addTrace("[AuthenticateUseCase] _getDidIdentifierUseCase success\ndid: $profileDid");
+      logger().i(
+          "stopwatch after getDidIdentifierUseCase ${stopwatch.elapsedMilliseconds}");
 
       // get proofs from credentials of all the profiles of the identity
       List<Iden3commProofEntity> proofs =
@@ -93,12 +103,15 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
         nonRevocationProofs: param.nonRevocationProofs,
       ));
       _stacktraceStreamManager.addTrace("[AuthenticateUseCase] _getIden3commProofsUseCase success\nproofs: ${proofs.toString()}");
+      logger().i("stopwatch after getProofs ${stopwatch.elapsedMilliseconds}");
 
       String pushUrl = env.pushUrl;
       _stacktraceStreamManager.addTrace("[AuthenticateUseCase] pushUrl: $pushUrl");
 
       String packageName = await _getPackageNameUseCase.execute();
       _stacktraceStreamManager.addTrace("[AuthenticateUseCase] packageName: $packageName");
+      logger().i(
+          "stopwatch after getPackageNameUseCase ${stopwatch.elapsedMilliseconds}");
 
       _proofGenerationStepsStreamManager
           .add("preparing authentication parameters...");
@@ -110,6 +123,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
           pushToken: param.pushToken,
           packageName: packageName);
       _stacktraceStreamManager.addTrace("[AuthenticateUseCase] _iden3commRepository.getAuthResponse success\nauthResponse: $authResponse");
+      logger().i(
+          "stopwatch after getAuthResponse ${stopwatch.elapsedMilliseconds}");
 
       _proofGenerationStepsStreamManager
           .add("preparing authentication token...");
@@ -119,6 +134,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
               profileNonce: param.profileNonce,
               privateKey: param.privateKey,
               message: authResponse));
+      logger()
+          .i("stopwatch after getAuthToken ${stopwatch.elapsedMilliseconds}");
       _stacktraceStreamManager.addTrace("[AuthenticateUseCase] _getAuthTokenUseCase success\nauthToken: $authToken");
 
       _proofGenerationStepsStreamManager.add("authenticating...");

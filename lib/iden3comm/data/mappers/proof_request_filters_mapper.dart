@@ -16,10 +16,10 @@ class ProofRequestFiltersMapper
     List<FilterEntity> filters = [
       FilterEntity(
           name: 'credential.credentialSubject.type', value: query.type!),
-      FilterEntity(
+      /*FilterEntity(
           operator: FilterOperator.equalsAnyInList,
           name: 'credential.@context',
-          value: query.context!),
+          value: query.context!),*/
     ];
     if (query.allowedIssuers != null &&
         query.allowedIssuers is List &&

@@ -10,42 +10,42 @@ class AppLogger implements PolygonIdSdkLogger {
   @override
   void d(message, [error, StackTrace? stackTrace]) {
     if (kDebugMode) {
-      _logger.d(message, error, stackTrace);
+      _logger.d(message, error: error, stackTrace: stackTrace);
     }
   }
 
   @override
   void e(message, [error, StackTrace? stackTrace]) {
     if (kDebugMode) {
-      _logger.e(message, error, stackTrace);
+      _logger.e(message, error: error, stackTrace: stackTrace);
     }
   }
 
   @override
   void i(message, [error, StackTrace? stackTrace]) {
     if (kDebugMode) {
-      _logger.i(message, error, stackTrace);
+      _logger.i(message, error: error, stackTrace: stackTrace);
     }
   }
 
   @override
   void v(message, [error, StackTrace? stackTrace]) {
     if (kDebugMode) {
-      _logger.v(message, error, stackTrace);
+      _logger.v(message, error: error, stackTrace: stackTrace);
     }
   }
 
   @override
   void w(message, [error, StackTrace? stackTrace]) {
     if (kDebugMode) {
-      _logger.w(message, error, stackTrace);
+      _logger.w(message, error: error, stackTrace: stackTrace);
     }
   }
 
   @override
   void wtf(message, [error, StackTrace? stackTrace]) {
     if (kDebugMode) {
-      _logger.wtf(message, error, stackTrace);
+      _logger.wtf(message, error: error, stackTrace: stackTrace);
     }
   }
 }
