@@ -1,4 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
@@ -76,7 +77,8 @@ class GetIden3commProofsUseCase
       _proofGenerationStepsStreamManager.add("Getting proof requests");
       List<ProofRequestEntity> requests =
           await _getProofRequestsUseCase.execute(param: param.message);
-      print("STOPPE after _getProofRequestsUseCase ${stopwatch.elapsedMilliseconds}");
+      logger().i(
+          "STOPPE after _getProofRequestsUseCase ${stopwatch.elapsedMilliseconds}");
 
       List<ClaimEntity?> claims = await _getIden3commClaimsUseCase.execute(
           param: GetIden3commClaimsParam(
@@ -85,7 +87,8 @@ class GetIden3commProofsUseCase
               profileNonce: param.profileNonce,
               privateKey: param.privateKey,
               nonRevocationProofs: param.nonRevocationProofs ?? {}));
-      print("STOPPE after _getIden3commClaimsUseCase ${stopwatch.elapsedMilliseconds}");
+      logger().i(
+          "STOPPE after _getIden3commClaimsUseCase ${stopwatch.elapsedMilliseconds}");
 
       if ((requests.isNotEmpty &&
               claims.isNotEmpty &&
@@ -138,7 +141,8 @@ class GetIden3commProofsUseCase
               param.stateContractAddr,
               param.ipfsNodeUrl,
             )));
-            print("STOPPE after _generateIden3commProofUseCase $i ${stopwatch.elapsedMilliseconds}");
+            logger().i(
+                "STOPPE after _generateIden3commProofUseCase $i ${stopwatch.elapsedMilliseconds}");
           }
         }
       } else {

@@ -520,21 +520,21 @@ extension GetItInjectableX on _i1.GetIt {
     ) =>
         databaseModule.getCodec(privateKey));
     gh.factory<_i67.StateIdentifierMapper>(() => _i67.StateIdentifierMapper());
-    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.claimStore,
-      instanceName: 'claimStore',
-    );
     gh.factory<_i13.StoreRef<String, dynamic>>(
       () => databaseModule.keyValueStore,
       instanceName: 'keyValueStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.identityStore,
-      instanceName: 'identityStore',
-    );
-    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.interactionStore,
       instanceName: 'interactionStore',
+    );
+    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
+      () => databaseModule.claimStore,
+      instanceName: 'claimStore',
+    );
+    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
+      () => databaseModule.identityStore,
+      instanceName: 'identityStore',
     );
     gh.factory<_i68.TreeStateMapper>(() => _i68.TreeStateMapper());
     gh.factory<_i69.TreeTypeMapper>(() => _i69.TreeTypeMapper());

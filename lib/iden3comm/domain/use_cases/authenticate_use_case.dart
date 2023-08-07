@@ -60,17 +60,19 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
     try {
       // we want to misure the time of the whole process
       Stopwatch stopwatch = Stopwatch()..start();
-      print("stopwatch started");
+      logger().i("stopwatch started");
 
       await _checkProfileAndDidCurrentEnvUseCase.execute(
           param: CheckProfileAndDidCurrentEnvParam(
               did: param.genesisDid,
               privateKey: param.privateKey,
               profileNonce: param.profileNonce));
-      print("stopwatch after checkProfileAndDidCurrentEnvUseCase ${stopwatch.elapsedMilliseconds}");
+      logger().i(
+          "stopwatch after checkProfileAndDidCurrentEnvUseCase ${stopwatch.elapsedMilliseconds}");
 
       EnvEntity env = await _getEnvUseCase.execute();
-      print("stopwatch after getEnvUseCase ${stopwatch.elapsedMilliseconds}");
+      logger()
+          .i("stopwatch after getEnvUseCase ${stopwatch.elapsedMilliseconds}");
 
       String profileDid = await _getDidIdentifierUseCase.execute(
           param: GetDidIdentifierParam(
@@ -78,7 +80,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
               blockchain: env.blockchain,
               network: env.network,
               profileNonce: param.profileNonce));
-      print("stopwatch after getDidIdentifierUseCase ${stopwatch.elapsedMilliseconds}");
+      logger().i(
+          "stopwatch after getDidIdentifierUseCase ${stopwatch.elapsedMilliseconds}");
 
       // get proofs from credentials of all the profiles of the identity
       List<Iden3commProofEntity> proofs =
@@ -93,12 +96,13 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
         ipfsNodeUrl: env.ipfsUrl,
         nonRevocationProofs: param.nonRevocationProofs,
       ));
-      print("stopwatch after getProofs ${stopwatch.elapsedMilliseconds}");
+      logger().i("stopwatch after getProofs ${stopwatch.elapsedMilliseconds}");
 
       String pushUrl = env.pushUrl;
 
       String packageName = await _getPackageNameUseCase.execute();
-      print("stopwatch after getPackageNameUseCase ${stopwatch.elapsedMilliseconds}");
+      logger().i(
+          "stopwatch after getPackageNameUseCase ${stopwatch.elapsedMilliseconds}");
 
       _proofGenerationStepsStreamManager
           .add("preparing authentication parameters...");
@@ -109,7 +113,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
           pushUrl: pushUrl,
           pushToken: param.pushToken,
           packageName: packageName);
-      print("stopwatch after getAuthResponse ${stopwatch.elapsedMilliseconds}");
+      logger().i(
+          "stopwatch after getAuthResponse ${stopwatch.elapsedMilliseconds}");
 
       _proofGenerationStepsStreamManager
           .add("preparing authentication token...");
@@ -119,7 +124,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
               profileNonce: param.profileNonce,
               privateKey: param.privateKey,
               message: authResponse));
-      print("stopwatch after getAuthToken ${stopwatch.elapsedMilliseconds}");
+      logger()
+          .i("stopwatch after getAuthToken ${stopwatch.elapsedMilliseconds}");
 
       _proofGenerationStepsStreamManager.add("authenticating...");
       return _iden3commRepository.authenticate(

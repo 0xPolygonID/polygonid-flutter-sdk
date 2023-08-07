@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj_wallet.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/eddsa_babyjub.dart';
 import 'package:web3dart/crypto.dart';
@@ -52,7 +53,7 @@ class WalletDataSource {
   WalletDataSource(this._walletLibWrapper);
 
   Future<BjjWallet> createWallet({Uint8List? secret}) {
-    print("CREATE_WALLLET_CALLED");//TODO remove
+    logger().i("CREATE_WALLLET_CALLED");
     return _walletLibWrapper.createWallet(secret: secret);
   }
 

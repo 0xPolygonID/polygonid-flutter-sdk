@@ -103,39 +103,43 @@ class GenerateIden3commProofUseCase
       IdentityEntity identity = await _getIdentityUseCase.execute(
           param: GetIdentityParam(
               genesisDid: param.did, privateKey: param.privateKey));
-      print("GENERATION PROOF getIdentityUseCase executed in ${stopwatch.elapsed}");
+      logger().i(
+          "GENERATION PROOF getIdentityUseCase executed in ${stopwatch.elapsed}");
       authClaim = await _getAuthClaimUseCase.execute(param: identity.publicKey);
-      print("GENERATION PROOF getAuthClaimUseCase executed in ${stopwatch.elapsed}");
+      logger().i(
+          "GENERATION PROOF getAuthClaimUseCase executed in ${stopwatch.elapsed}");
       NodeEntity authClaimNode =
           await _identityRepository.getAuthClaimNode(children: authClaim);
-      print("GENERATION PROOF getAuthClaimNode executed in ${stopwatch.elapsed}");
+      logger().i(
+          "GENERATION PROOF getAuthClaimNode executed in ${stopwatch.elapsed}");
 
       incProof = await _smtRepository.generateProof(
           key: authClaimNode.hash,
           type: TreeType.claims,
           did: param.did,
           privateKey: param.privateKey!);
-      print("GENERATION PROOF incProof executed in ${stopwatch.elapsed}");
+      logger().i("GENERATION PROOF incProof executed in ${stopwatch.elapsed}");
 
       nonRevProof = await _smtRepository.generateProof(
           key: authClaimNode.hash,
           type: TreeType.revocation,
           did: param.did,
           privateKey: param.privateKey!);
-      print("GENERATION PROOF nonRevProof executed in ${stopwatch.elapsed}");
+      logger()
+          .i("GENERATION PROOF nonRevProof executed in ${stopwatch.elapsed}");
 
       // hash of clatr, revtr, rootr
       treeState = await _getLatestStateUseCase.execute(
           param: GetLatestStateParam(
               did: param.did, privateKey: param.privateKey!));
-      print("GENERATION PROOF treeState executed in ${stopwatch.elapsed}");
+      logger().i("GENERATION PROOF treeState executed in ${stopwatch.elapsed}");
 
       gistProof = await _getGistMTProofUseCase.execute(param: param.did);
-      print("GENERATION PROOF gistProof executed in ${stopwatch.elapsed}");
+      logger().i("GENERATION PROOF gistProof executed in ${stopwatch.elapsed}");
 
       signature = await _signMessageUseCase.execute(
           param: SignMessageParam(param.privateKey!, param.challenge!));
-      print("GENERATION PROOF signature executed in ${stopwatch.elapsed}");
+      logger().i("GENERATION PROOF signature executed in ${stopwatch.elapsed}");
     }
 
     if (param.ethereumUrl != null &&
@@ -149,7 +153,7 @@ class GenerateIden3commProofUseCase
     }
 
     DidEntity didEntity = await _getDidUseCase.execute(param: param.did);
-    print("GENERATION PROOF didEntity executed in ${stopwatch.elapsed}");
+    logger().i("GENERATION PROOF didEntity executed in ${stopwatch.elapsed}");
 
     // Prepare atomic query inputs
     Uint8List res = await _proofRepository
@@ -174,7 +178,8 @@ class GenerateIden3commProofUseCase
 
       throw error;
     });
-    print("GENERATION PROOF calculateAtomicQueryInputs executed in ${stopwatch.elapsed}");
+    logger().i(
+        "GENERATION PROOF calculateAtomicQueryInputs executed in ${stopwatch.elapsed}");
 
     dynamic inputsJson = json.decode(Uint8ArrayUtils.uint8ListToString(res));
     Uint8List atomicQueryInputs =
@@ -185,7 +190,8 @@ class GenerateIden3commProofUseCase
       vpProof = Iden3commVPProof.fromJson(inputsJson["verifiablePresentation"]);
     }
 
-    print("GENERATION PROOF atomicQueryInputs executed in ${stopwatch.elapsed}");
+    logger().i(
+        "GENERATION PROOF atomicQueryInputs executed in ${stopwatch.elapsed}");
 
     // Prove
     return _proveUseCase

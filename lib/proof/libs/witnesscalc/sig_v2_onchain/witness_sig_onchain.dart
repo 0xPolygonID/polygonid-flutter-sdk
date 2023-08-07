@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 
 import 'native_witness_sig_v2_onchain.dart';
 
@@ -62,14 +63,11 @@ class WitnessSigV2OnchainLib {
     } else if (result == WITNESSCALC_ERROR) {
       ffi.Pointer<Utf8> jsonString = errorMsg.cast<Utf8>();
       String errormsg = jsonString.toDartString();
-      if (kDebugMode) {
-        print("$result: ${result.toString()}. Error: $errormsg");
-      }
+
+      logger().e("$result: ${result.toString()}. Error: $errormsg");
     } else if (result == WITNESSCALC_ERROR_SHORT_BUFFER) {
-      if (kDebugMode) {
-        print(
-            "$result: ${result.toString()}. Error: Short buffer for proof or public");
-      }
+      logger().e(
+          "$result: ${result.toString()}. Error: Short buffer for proof or public");
     }
     return null;
   }

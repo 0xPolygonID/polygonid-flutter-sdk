@@ -7,6 +7,7 @@ import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 
 import 'native_prover.dart';
 
@@ -25,39 +26,39 @@ class ProverLib {
     Map<String, dynamic> map = {};
 
     Stopwatch stopwatch = Stopwatch()..start();
-    print("PROVE stopwatch started");
+    logger().i("PROVE stopwatch started");
 
     int zkeySize = zkeyBytes.length;
     ffi.Pointer<ffi.Char> zkeyBuffer = malloc<ffi.Char>(zkeySize);
-    print("PROVE zkeyBuffer ${stopwatch.elapsedMilliseconds}");
+    logger().i("PROVE zkeyBuffer ${stopwatch.elapsedMilliseconds}");
     final data = zkeyBytes;
     for (int i = 0; i < zkeySize; i++) {
       zkeyBuffer[i] = data[i];
     }
-    print("PROVE zkeyBuffer ${stopwatch.elapsedMilliseconds}");
+    logger().i("PROVE zkeyBuffer ${stopwatch.elapsedMilliseconds}");
 
     int wtnsSize = wtnsBytes.length;
     ffi.Pointer<ffi.Char> wtnsBuffer = malloc<ffi.Char>(wtnsSize);
     final data2 = wtnsBytes.buffer.asUint8List();
-    print("PROVE wtnsBuffer ${stopwatch.elapsedMilliseconds}");
+    logger().i("PROVE wtnsBuffer ${stopwatch.elapsedMilliseconds}");
     for (int i = 0; i < wtnsSize; i++) {
       wtnsBuffer[i] = data2[i];
     }
-    print("PROVE wtnsBuffer ${stopwatch.elapsedMilliseconds}");
+    logger().i("PROVE wtnsBuffer ${stopwatch.elapsedMilliseconds}");
 
     ffi.Pointer<ffi.UnsignedLong> proofSize = malloc<ffi.UnsignedLong>();
     proofSize.value = 16384;
     ffi.Pointer<ffi.Char> proofBuffer = malloc<ffi.Char>(proofSize.value);
-    print("PROVE proofBuffer ${stopwatch.elapsedMilliseconds}");
+    logger().i("PROVE proofBuffer ${stopwatch.elapsedMilliseconds}");
     ffi.Pointer<ffi.UnsignedLong> publicSize = malloc<ffi.UnsignedLong>();
     publicSize.value = 16384;
     ffi.Pointer<ffi.Char> publicBuffer = malloc<ffi.Char>(publicSize.value);
-    print("PROVE publicBuffer ${stopwatch.elapsedMilliseconds}");
+    logger().i("PROVE publicBuffer ${stopwatch.elapsedMilliseconds}");
     int errorMaxSize = 256;
     ffi.Pointer<ffi.Char> errorMsg = malloc<ffi.Char>(errorMaxSize);
 
     DateTime start = DateTime.now();
-    print("PROVE start ${stopwatch.elapsedMilliseconds}");
+    logger().i("PROVE start ${stopwatch.elapsedMilliseconds}");
 
     int result = _nativeProverLib.groth16_prover(
         zkeyBuffer.cast(),
@@ -71,7 +72,7 @@ class ProverLib {
         errorMsg,
         errorMaxSize);
 
-    print("PROVE end ${stopwatch.elapsedMilliseconds}");
+    logger().i("PROVE end ${stopwatch.elapsedMilliseconds}");
 
     DateTime end = DateTime.now();
 
@@ -80,17 +81,16 @@ class ProverLib {
     if (result == PRPOVER_OK) {
       ffi.Pointer<Utf8> jsonString = proofBuffer.cast<Utf8>();
       String proofmsg = jsonString.toDartString();
-      print("PROVE proofmsg ${stopwatch.elapsedMilliseconds}");
+      logger().i("PROVE proofmsg ${stopwatch.elapsedMilliseconds}");
 
       ffi.Pointer<Utf8> jsonString2 = publicBuffer.cast<Utf8>();
       String publicmsg = jsonString2.toDartString();
-      print("PROVE publicmsg ${stopwatch.elapsedMilliseconds}");
+      logger().i("PROVE publicmsg ${stopwatch.elapsedMilliseconds}");
 
-      if (kDebugMode) {
-        print("Proof: $proofmsg");
-        print("Public: $publicmsg");
-        print("Time: $time");
-      }
+      logger().i("Proof: $proofmsg");
+      logger().i("Public: $publicmsg");
+      logger().i("Time: $time");
+
       map['circuitId'] = circuitId;
       map['proof'] = json.decode(proofmsg);
       (map['proof'] as Map<String, dynamic>)
@@ -100,14 +100,11 @@ class ProverLib {
     } else if (result == PPROVER_ERROR) {
       ffi.Pointer<Utf8> jsonString = errorMsg.cast<Utf8>();
       String errormsg = jsonString.toDartString();
-      if (kDebugMode) {
-        print("$result: ${result.toString()}. Error: $errormsg");
-      }
+
+      logger().i("$result: ${result.toString()}. Error: $errormsg");
     } else if (result == PPROVER_ERROR_SHORT_BUFFER) {
-      if (kDebugMode) {
-        print(
-            "$result: ${result.toString()}. Error: Short buffer for proof or public");
-      }
+      logger().i(
+          "$result: ${result.toString()}. Error: Short buffer for proof or public");
     }
 
     return null;
