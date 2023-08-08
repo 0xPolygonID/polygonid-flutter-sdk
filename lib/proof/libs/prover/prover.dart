@@ -7,8 +7,6 @@ import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 
 import 'native_prover.dart';
@@ -25,8 +23,6 @@ class ProverLib {
 
   Future<Map<String, dynamic>?> prove(
       String circuitId, Uint8List zkeyBytes, Uint8List wtnsBytes) async {
-    final StacktraceStreamManager _stacktraceStreamManager =
-        getItSdk<StacktraceStreamManager>();
     Map<String, dynamic> map = {};
 
     Stopwatch stopwatch = Stopwatch()..start();
@@ -81,8 +77,6 @@ class ProverLib {
     DateTime end = DateTime.now();
 
     int time = end.difference(start).inMicroseconds;
-    _stacktraceStreamManager.addTrace(
-        "[proverLib] groth16_prover: $time in microseconds, time in seconds: ${time / 1000000}");
 
     if (result == PRPOVER_OK) {
       ffi.Pointer<Utf8> jsonString = proofBuffer.cast<Utf8>();
@@ -97,13 +91,6 @@ class ProverLib {
       logger().i("Public: $publicmsg");
       logger().i("Time: $time");
 
-      _stacktraceStreamManager.addTrace(
-          "[proverLib] groth16_prover: result OK, proof: $proofmsg, public: $publicmsg");
-      if (kDebugMode) {
-        print("Proof: $proofmsg");
-        print("Public: $publicmsg");
-        print("Time: $time");
-      }
       map['circuitId'] = circuitId;
       map['proof'] = json.decode(proofmsg);
       (map['proof'] as Map<String, dynamic>)
@@ -113,20 +100,9 @@ class ProverLib {
     } else if (result == PPROVER_ERROR) {
       ffi.Pointer<Utf8> jsonString = errorMsg.cast<Utf8>();
       String errormsg = jsonString.toDartString();
-      _stacktraceStreamManager.addTrace(
-          "[proverLib] groth16_prover: result ERROR, error: $errormsg");
-      if (kDebugMode) {
-        print("$result: ${result.toString()}. Error: $errormsg");
-      }
 
       logger().i("$result: ${result.toString()}. Error: $errormsg");
     } else if (result == PPROVER_ERROR_SHORT_BUFFER) {
-      _stacktraceStreamManager.addTrace(
-          "[proverLib] groth16_prover: result ERROR, error: Short buffer for proof or public");
-      if (kDebugMode) {
-        print(
-            "$result: ${result.toString()}. Error: Short buffer for proof or public");
-      }
       logger().i(
           "$result: ${result.toString()}. Error: Short buffer for proof or public");
     }

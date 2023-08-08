@@ -34,7 +34,10 @@ class StacktraceStreamManager {
   /// we add a new trace to the stacktrace stream
   void addTrace(String stepDescription) {
     if (!isEnabled) return;
-    _stacktrace += stepDescription + '\n***\n***\n***';
-    _stacktraceStreamManagerController.add(_stacktrace);
+    _stacktrace += stepDescription + '\n***\n***';
+    _stacktraceStreamManagerController.add(stepDescription);
   }
+
+  /// get the stacktrace
+  String get stacktrace => _stacktrace;
 }

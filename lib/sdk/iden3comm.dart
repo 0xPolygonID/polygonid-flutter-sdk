@@ -58,9 +58,9 @@ abstract class PolygonIdSdkIden3comm {
   /// and also to realize operations like generating proofs
   Future<List<ClaimEntity>> fetchAndSaveClaims(
       {required Iden3MessageEntity message,
-      required String genesisDid,
-      BigInt? profileNonce,
-      required String privateKey});
+        required String genesisDid,
+        BigInt? profileNonce,
+        required String privateKey});
 
   /// Get a list of [ClaimEntity] stored in Polygon Id Sdk that fulfills
   /// the request from iden3comm message.
@@ -76,10 +76,10 @@ abstract class PolygonIdSdkIden3comm {
   /// and also to realize operations like generating proofs
   Future<List<ClaimEntity?>> getClaimsFromIden3Message(
       {required Iden3MessageEntity message,
-      required String genesisDid,
-      BigInt? profileNonce,
-      required String privateKey,
-      Map<int, Map<String, dynamic>>? nonRevocationProofs});
+        required String genesisDid,
+        BigInt? profileNonce,
+        required String privateKey,
+        Map<int, Map<String, dynamic>>? nonRevocationProofs});
 
   /// Get a list of [int] revocation nonces of claims stored in Polygon Id Sdk that fulfills
   /// the request from iden3comm message.
@@ -113,14 +113,14 @@ abstract class PolygonIdSdkIden3comm {
   /// and also to realize operations like generating proofs
   Future<List<Iden3commProofEntity>> getProofs(
       {required Iden3MessageEntity message,
-      required String genesisDid,
-      BigInt? profileNonce,
-      required String privateKey,
-      String? challenge,
-      String? ethereumUrl,
-      String? stateContractAddr,
-      String? ipfsNodeUrl,
-      Map<int, Map<String, dynamic>>? nonRevocationProofs});
+        required String genesisDid,
+        BigInt? profileNonce,
+        required String privateKey,
+        String? challenge,
+        String? ethereumUrl,
+        String? stateContractAddr,
+        String? ipfsNodeUrl,
+        Map<int, Map<String, dynamic>>? nonRevocationProofs});
 
   /// Authenticate response from iden3Message sharing the needed
   /// (if any) proofs requested by it
@@ -228,22 +228,20 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   final CleanSchemaCacheUseCase _cleanSchemaCacheUseCase;
   final StacktraceStreamManager _stacktraceStreamManager;
 
-  Iden3comm(
-    this._fetchAndSaveClaimsUseCase,
-    this._getIden3MessageUseCase,
-    this._getSchemasUseCase,
-    this._authenticateUseCase,
-    this._getFiltersUseCase,
-    this._getIden3commClaimsUseCase,
-    this._getIden3commClaimsRevNonceUseCase,
-    this._getIden3commProofsUseCase,
-    this._getInteractionsUseCase,
-    this._addInteractionUseCase,
-    this._removeInteractionsUseCase,
-    this._updateInteractionUseCase,
-    this._cleanSchemaCacheUseCase,
-    this._stacktraceStreamManager,
-  );
+  Iden3comm(this._fetchAndSaveClaimsUseCase,
+      this._getIden3MessageUseCase,
+      this._getSchemasUseCase,
+      this._authenticateUseCase,
+      this._getFiltersUseCase,
+      this._getIden3commClaimsUseCase,
+      this._getIden3commClaimsRevNonceUseCase,
+      this._getIden3commProofsUseCase,
+      this._getInteractionsUseCase,
+      this._addInteractionUseCase,
+      this._removeInteractionsUseCase,
+      this._updateInteractionUseCase,
+      this._cleanSchemaCacheUseCase,
+      this._stacktraceStreamManager,);
 
   @override
   Future<Iden3MessageEntity> getIden3Message({required String message}) {
@@ -267,9 +265,9 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   @override
   Future<List<ClaimEntity>> fetchAndSaveClaims(
       {required Iden3MessageEntity message,
-      required String genesisDid,
-      BigInt? profileNonce,
-      required String privateKey}) {
+        required String genesisDid,
+        BigInt? profileNonce,
+        required String privateKey}) {
     _stacktraceStreamManager.clear();
     if (message is! OfferIden3MessageEntity) {
       _stacktraceStreamManager.addTrace(
@@ -288,19 +286,19 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   @override
   Future<List<ClaimEntity?>> getClaimsFromIden3Message(
       {required Iden3MessageEntity message,
-      required String genesisDid,
-      BigInt? profileNonce,
-      required String privateKey,
-      Map<int, Map<String, dynamic>>? nonRevocationProofs}) {
+        required String genesisDid,
+        BigInt? profileNonce,
+        required String privateKey,
+        Map<int, Map<String, dynamic>>? nonRevocationProofs}) {
     _stacktraceStreamManager.clear();
     return _getIden3commClaimsUseCase.execute(
         param: GetIden3commClaimsParam(
-      message: message,
-      genesisDid: genesisDid,
-      profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
-      privateKey: privateKey,
-      nonRevocationProofs: nonRevocationProofs ?? {},
-    ));
+          message: message,
+          genesisDid: genesisDid,
+          profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
+          privateKey: privateKey,
+          nonRevocationProofs: nonRevocationProofs ?? {},
+        ));
   }
 
   @override
@@ -313,37 +311,37 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     _stacktraceStreamManager.clear();
     return _getIden3commClaimsRevNonceUseCase.execute(
         param: GetIden3commClaimsRevNonceParam(
-      message: message,
-      genesisDid: genesisDid,
-      profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
-      privateKey: privateKey,
-    ));
+          message: message,
+          genesisDid: genesisDid,
+          profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
+          privateKey: privateKey,
+        ));
   }
 
   @override
   Future<List<Iden3commProofEntity>> getProofs(
       {required Iden3MessageEntity message,
-      required String genesisDid,
-      BigInt? profileNonce,
-      required String privateKey,
-      String? challenge,
-      String? ethereumUrl,
-      String? stateContractAddr,
-      String? ipfsNodeUrl,
-      Map<int, Map<String, dynamic>>? nonRevocationProofs}) {
+        required String genesisDid,
+        BigInt? profileNonce,
+        required String privateKey,
+        String? challenge,
+        String? ethereumUrl,
+        String? stateContractAddr,
+        String? ipfsNodeUrl,
+        Map<int, Map<String, dynamic>>? nonRevocationProofs}) {
     _stacktraceStreamManager.clear();
     return _getIden3commProofsUseCase.execute(
         param: GetIden3commProofsParam(
-      message: message,
-      genesisDid: genesisDid,
-      profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
-      privateKey: privateKey,
-      challenge: challenge,
-      ethereumUrl: ethereumUrl,
-      stateContractAddr: stateContractAddr,
-      ipfsNodeUrl: ipfsNodeUrl,
-      nonRevocationProofs: nonRevocationProofs,
-    ));
+          message: message,
+          genesisDid: genesisDid,
+          profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
+          privateKey: privateKey,
+          challenge: challenge,
+          ethereumUrl: ethereumUrl,
+          stateContractAddr: stateContractAddr,
+          ipfsNodeUrl: ipfsNodeUrl,
+          nonRevocationProofs: nonRevocationProofs,
+        ));
   }
 
   @override
@@ -365,13 +363,13 @@ class Iden3comm implements PolygonIdSdkIden3comm {
 
     return _authenticateUseCase.execute(
         param: AuthenticateParam(
-      message: message,
-      genesisDid: genesisDid,
-      profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
-      privateKey: privateKey,
-      pushToken: pushToken,
-      nonRevocationProofs: nonRevocationProofs,
-    ));
+          message: message,
+          genesisDid: genesisDid,
+          profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
+          privateKey: privateKey,
+          pushToken: pushToken,
+          nonRevocationProofs: nonRevocationProofs,
+        ));
   }
 
   @override
@@ -386,12 +384,12 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     _stacktraceStreamManager.clear();
     return _getInteractionsUseCase.execute(
         param: GetInteractionsParam(
-      genesisDid: genesisDid,
-      profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
-      privateKey: privateKey,
-      types: types,
-      filters: filters,
-    ));
+          genesisDid: genesisDid,
+          profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
+          privateKey: privateKey,
+          types: types,
+          filters: filters,
+        ));
   }
 
   @override
@@ -431,12 +429,12 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     _stacktraceStreamManager.clear();
     return _updateInteractionUseCase.execute(
         param: UpdateInteractionParam(
-      genesisDid: genesisDid,
-      profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
-      privateKey: privateKey,
-      id: id,
-      state: state,
-    ));
+          genesisDid: genesisDid,
+          profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
+          privateKey: privateKey,
+          id: id,
+          state: state,
+        ));
   }
 
   @override
@@ -452,5 +450,10 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   ///
   void switchStacktrace({bool enabled = false}) {
     _stacktraceStreamManager.isEnabled = enabled;
+  }
+
+  ///
+  String getStacktrace() {
+    return _stacktraceStreamManager.stacktrace;
   }
 }

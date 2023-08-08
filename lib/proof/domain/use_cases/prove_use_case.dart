@@ -16,12 +16,8 @@ class ProveParam {
 
 class ProveUseCase extends FutureUseCase<ProveParam, ZKProofEntity> {
   final ProofRepository _proofRepository;
-  final StacktraceStreamManager _stacktraceStreamManager;
 
-  ProveUseCase(
-    this._proofRepository,
-    this._stacktraceStreamManager,
-  );
+  ProveUseCase(this._proofRepository);
 
   @override
   Future<ZKProofEntity> execute({required ProveParam param}) async {
@@ -35,7 +31,6 @@ class ProveUseCase extends FutureUseCase<ProveParam, ZKProofEntity> {
 
       return proof;
     }).catchError((error) {
-      _stacktraceStreamManager.addTrace("[ProveUseCase] Error: $error");
       logger().e("[ProveUseCase] Error: $error");
       throw error;
     });
