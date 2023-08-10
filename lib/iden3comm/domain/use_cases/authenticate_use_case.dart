@@ -145,6 +145,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
       );
     } catch (error) {
       _stacktraceStreamManager.addTrace("[AuthenticateUseCase] Error: $error");
+      _stacktraceStreamManager.addError("[AuthenticateUseCase] Error: $error");
       logger().d("[AuthenticateUseCase] Error: $error");
       rethrow;
     }

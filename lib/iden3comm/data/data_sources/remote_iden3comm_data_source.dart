@@ -44,6 +44,8 @@ class RemoteIden3commDataSource {
       if (response.statusCode != 200) {
         logger().d(
             'Auth Error: code: ${response.statusCode} msg: ${response.body}');
+        _stacktraceStreamManager.addError(
+            'Auth Error: $url response with\ncode: ${response.statusCode}\nmsg: ${response.body}');
         throw NetworkException(response);
       } else {
         return response;
@@ -82,11 +84,15 @@ class RemoteIden3commDataSource {
         } else {
           _stacktraceStreamManager.addTrace(
               "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException");
+          _stacktraceStreamManager.addError(
+              "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException");
           throw UnsupportedFetchClaimTypeException(response);
         }
       } else {
         logger().d(
             'fetchClaim Error: code: ${response.statusCode} msg: ${response.body}');
+        _stacktraceStreamManager.addError(
+            'fetchClaim Error: $url response with\ncode: ${response.statusCode}\nmsg: ${response.body}');
         throw NetworkException(response);
       }
     });
@@ -134,11 +140,17 @@ class RemoteIden3commDataSource {
 
         return schema;
       } else {
+        _stacktraceStreamManager.addTrace(
+            "[RemoteIden3commDataSource] fetchSchema: ${schemaResponse.statusCode} ${schemaResponse.data}");
+        _stacktraceStreamManager.addError(
+            "[RemoteIden3commDataSource] fetchSchema: ${schemaResponse.statusCode} ${schemaResponse.data}");
         throw NetworkException(schemaResponse);
       }
     } catch (error) {
-      _stacktraceStreamManager.addTrace(
-          "[RemoteIden3commDataSource] fetchSchema: $error");
+      _stacktraceStreamManager
+          .addTrace("[RemoteIden3commDataSource] fetchSchema: $error");
+      _stacktraceStreamManager
+          .addError("[RemoteIden3commDataSource] fetchSchema: $error");
       throw FetchSchemaException(error);
     }
   }
