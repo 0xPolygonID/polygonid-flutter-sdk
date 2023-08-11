@@ -35,11 +35,12 @@ class GetJWZUseCase extends FutureUseCase<GetJWZParam, String> {
         .then((jwz) => _iden3commRepository.encodeJWZ(jwz: jwz))
         .then((encoded) {
       logger().i("[GetJWZUseCase] JWZ: $encoded");
-
+      _stacktraceManager.addTrace("[GetJWZUseCase] JWZ: $encoded");
       return encoded;
     }).catchError((error) {
       logger().e("[GetJWZUseCase] Error: $error");
-
+      _stacktraceManager.addTrace("[GetJWZUseCase] Error: $error");
+      _stacktraceManager.addError("[GetJWZUseCase] Error: $error");
       throw error;
     });
   }
