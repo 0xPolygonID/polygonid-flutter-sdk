@@ -21,13 +21,13 @@ class GenerateNonRevProofUseCase
   final IdentityRepository _identityRepository;
   final CredentialRepository _credentialRepository;
   final FetchIdentityStateUseCase _fetchIdentityStateUseCase;
-  final StacktraceStreamManager _stacktraceStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   GenerateNonRevProofUseCase(
     this._identityRepository,
     this._credentialRepository,
     this._fetchIdentityStateUseCase,
-    this._stacktraceStreamManager,
+    this._stacktraceManager,
   );
 
   @override
@@ -40,7 +40,7 @@ class GenerateNonRevProofUseCase
       if (param.nonRevProof != null &&
           param.nonRevProof!.isNotEmpty &&
           identityState == param.nonRevProof!["issuer"]["state"]) {
-        _stacktraceStreamManager.addTrace(
+        _stacktraceManager.addTrace(
             "[GenerateNonRevProofUseCase] Non rev proof: ${param.nonRevProof}");
         return param.nonRevProof!;
       } else {
@@ -55,14 +55,14 @@ class GenerateNonRevProofUseCase
                 baseUrl: values[1],
                 cachedNonRevProof: param.nonRevProof))
             .then((nonRevProof) {
-          _stacktraceStreamManager.addTrace(
+          _stacktraceManager.addTrace(
               "[GenerateNonRevProofUseCase] Non rev proof: $nonRevProof");
           logger()
               .i("[GenerateNonRevProofUseCase] Non rev proof: $nonRevProof");
 
           return nonRevProof;
         }).catchError((error) {
-          _stacktraceStreamManager
+          _stacktraceManager
               .addTrace("[GenerateNonRevProofUseCase] Error: $error");
           logger().e("[GenerateNonRevProofUseCase] Error: $error");
           throw error;

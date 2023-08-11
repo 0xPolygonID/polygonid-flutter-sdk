@@ -6,23 +6,23 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 
 class RemoteClaimDataSource {
   final Client client;
-  final StacktraceStreamManager _stacktraceStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   RemoteClaimDataSource(
     this.client,
-    this._stacktraceStreamManager,
+    this._stacktraceManager,
   );
 
   Future<Map<String, dynamic>> getClaimRevocationStatus(
       String revStatusUrl) async {
     var revStatusUri = Uri.parse(revStatusUrl);
-    _stacktraceStreamManager.addTrace(
+    _stacktraceManager.addTrace(
         "[RemoteClaimDataSource] Getting revocation status from $revStatusUri");
     var revStatusResponse = await client.get(revStatusUri, headers: {
       HttpHeaders.acceptHeader: '*/*',
       HttpHeaders.contentTypeHeader: 'application/json',
     });
-    _stacktraceStreamManager.addTrace(
+    _stacktraceManager.addTrace(
         "[RemoteClaimDataSource] Revocation status response: ${revStatusResponse.statusCode} ${revStatusResponse.body}");
     if (revStatusResponse.statusCode == 200) {
       String revStatus = (revStatusResponse.body);

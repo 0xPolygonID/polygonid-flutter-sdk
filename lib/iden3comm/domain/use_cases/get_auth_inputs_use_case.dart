@@ -40,7 +40,7 @@ class GetAuthInputsUseCase
   final Iden3commRepository _iden3commRepository;
   final IdentityRepository _identityRepository;
   final SMTRepository _smtRepository;
-  final StacktraceStreamManager _stacktraceStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   GetAuthInputsUseCase(
     this._getIdentityUseCase,
@@ -51,7 +51,7 @@ class GetAuthInputsUseCase
     this._iden3commRepository,
     this._identityRepository,
     this._smtRepository,
-    this._stacktraceStreamManager,
+    this._stacktraceManager,
   );
 
   @override
@@ -60,16 +60,16 @@ class GetAuthInputsUseCase
         param: GetIdentityParam(
             genesisDid: param.genesisDid, privateKey: param.privateKey));
 
-    _stacktraceStreamManager
+    _stacktraceManager
         .addTrace("[GetAuthInputsUseCase] Identity: $identity");
 
     List<String> authClaim =
         await _getAuthClaimUseCase.execute(param: identity.publicKey);
-    _stacktraceStreamManager
+    _stacktraceManager
         .addTrace("[GetAuthInputsUseCase] Auth claim: ${authClaim.toString()}");
     NodeEntity authClaimNode =
         await _identityRepository.getAuthClaimNode(children: authClaim);
-    _stacktraceStreamManager.addTrace(
+    _stacktraceManager.addTrace(
         "[GetAuthInputsUseCase] Auth claim node: ${authClaimNode.toString()}");
 
     MTProofEntity incProof = await _smtRepository.generateProof(
@@ -77,7 +77,7 @@ class GetAuthInputsUseCase
         type: TreeType.claims,
         did: param.genesisDid,
         privateKey: param.privateKey);
-    _stacktraceStreamManager
+    _stacktraceManager
         .addTrace("[GetAuthInputsUseCase] Inc proof: ${incProof.toString()}");
 
     MTProofEntity nonRevProof = await _smtRepository.generateProof(
@@ -85,7 +85,7 @@ class GetAuthInputsUseCase
         type: TreeType.revocation,
         did: param.genesisDid,
         privateKey: param.privateKey);
-    _stacktraceStreamManager.addTrace(
+    _stacktraceManager.addTrace(
         "[GetAuthInputsUseCase] Non rev proof: ${nonRevProof.toString()}");
 
     // hash of clatr, revtr, rootr
@@ -93,12 +93,12 @@ class GetAuthInputsUseCase
         param: GetLatestStateParam(
             did: param.genesisDid, privateKey: param.privateKey));
 
-    _stacktraceStreamManager
+    _stacktraceManager
         .addTrace("[GetAuthInputsUseCase] Tree state: ${treeState.toString()}");
 
     GistMTProofEntity gistProof =
         await _getGistMTProofUseCase.execute(param: param.genesisDid);
-    _stacktraceStreamManager
+    _stacktraceManager
         .addTrace("[GetAuthInputsUseCase] Gist proof: ${gistProof.toString()}");
 
     return _signMessageUseCase
@@ -116,14 +116,14 @@ class GetAuthInputsUseCase
             treeState: treeState))
         .then((inputs) {
       logger().i("[GetAuthInputsUseCase] Auth inputs: $inputs");
-      _stacktraceStreamManager
+      _stacktraceManager
           .addTrace("[GetAuthInputsUseCase] Auth inputs: ${inputs.toString()}");
       return inputs;
     }).catchError((error) {
       logger().e("[GetAuthInputsUseCase] Error: $error");
-      _stacktraceStreamManager
+      _stacktraceManager
           .addTrace("[GetAuthInputsUseCase] Error: ${error.toString()}");
-      _stacktraceStreamManager.addError("[GetAuthInputsUseCase] Error: $error");
+      _stacktraceManager.addError("[GetAuthInputsUseCase] Error: $error");
       throw error;
     });
   }

@@ -31,7 +31,7 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
   final GetAuthChallengeUseCase _getAuthChallengeUseCase;
   final GetAuthInputsUseCase _getAuthInputsUseCase;
   final ProveUseCase _proveUseCase;
-  final StacktraceStreamManager _stacktraceStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   GetAuthTokenUseCase(
     this._loadCircuitUseCase,
@@ -39,7 +39,7 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
     this._getAuthChallengeUseCase,
     this._getAuthInputsUseCase,
     this._proveUseCase,
-    this._stacktraceStreamManager,
+    this._stacktraceManager,
   );
 
   @override
@@ -60,13 +60,13 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
             param: GetJWZParam(message: param.message, proof: proof)))
         .then((token) {
       logger().i("[GetAuthTokenUseCase] Message $param Auth token: $token");
-      _stacktraceStreamManager
+      _stacktraceManager
           .addTrace("[GetAuthTokenUseCase] Message $param Auth token: $token");
       return token;
     }).catchError((error) {
       logger().e("[GetAuthTokenUseCase] Error: $error");
-      _stacktraceStreamManager.addTrace("[GetAuthTokenUseCase] Error: $error");
-      _stacktraceStreamManager.addError("[GetAuthTokenUseCase] Error: $error");
+      _stacktraceManager.addTrace("[GetAuthTokenUseCase] Error: $error");
+      _stacktraceManager.addError("[GetAuthTokenUseCase] Error: $error");
       throw error;
     });
   }

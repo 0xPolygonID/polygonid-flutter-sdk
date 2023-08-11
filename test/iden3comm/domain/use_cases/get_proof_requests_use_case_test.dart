@@ -53,7 +53,7 @@ GetProofRequestsUseCase useCase = GetProofRequestsUseCase(
 @GenerateMocks([
   GetProofQueryUseCase,
   GetProofQueryContextUseCase,
-  StacktraceStreamManager,
+  StacktraceManager,
 ])
 void main() {
   setUp(() {

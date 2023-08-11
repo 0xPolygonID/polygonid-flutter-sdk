@@ -35,6 +35,6 @@ RemoteClaimDataSource dataSource = RemoteClaimDataSource(
 
 @GenerateMocks([
   Client,
-  StacktraceStreamManager,
+  StacktraceManager,
 ])
 void main() {}

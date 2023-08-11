@@ -39,7 +39,7 @@ class FetchAndSaveClaimsUseCase
   final GetAuthTokenUseCase _getAuthTokenUseCase;
   final SaveClaimsUseCase _saveClaimsUseCase;
   final GetClaimRevocationStatusUseCase _getClaimRevocationStatusUseCase;
-  final StacktraceStreamManager _stacktraceStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   FetchAndSaveClaimsUseCase(
     this._iden3commCredentialRepository,
@@ -50,7 +50,7 @@ class FetchAndSaveClaimsUseCase
     this._getAuthTokenUseCase,
     this._saveClaimsUseCase,
     this._getClaimRevocationStatusUseCase,
-    this._stacktraceStreamManager,
+    this._stacktraceManager,
   );
 
   @override
@@ -135,15 +135,15 @@ class FetchAndSaveClaimsUseCase
                 .then((_) {
               logger().i(
                   "[FetchAndSaveClaimsUseCase] All claims have been saved: $claims");
-              _stacktraceStreamManager.addTrace(
+              _stacktraceManager.addTrace(
                   "[FetchAndSaveClaimsUseCase] All claims have been saved: $claims");
               return claims;
             }))
         .catchError((error) {
           logger().e("[FetchAndSaveClaimsUseCase] Error: $error");
-          _stacktraceStreamManager
+          _stacktraceManager
               .addTrace("[FetchAndSaveClaimsUseCase] Error: $error");
-          _stacktraceStreamManager
+          _stacktraceManager
               .addError("[FetchAndSaveClaimsUseCase] Error: $error");
           throw error;
         });

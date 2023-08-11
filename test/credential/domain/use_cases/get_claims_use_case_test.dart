@@ -113,7 +113,7 @@ GetClaimsUseCase useCase = GetClaimsUseCase(
   CredentialRepository,
   GetCurrentEnvDidIdentifierUseCase,
   GetIdentityUseCase,
-  StacktraceStreamManager,
+  StacktraceManager,
 ])
 void main() {
   group("Get claims", () {

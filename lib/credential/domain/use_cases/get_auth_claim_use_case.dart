@@ -6,11 +6,11 @@ import '../../../common/domain/use_case.dart';
 
 class GetAuthClaimUseCase extends FutureUseCase<List<String>, List<String>> {
   final CredentialRepository _credentialRepository;
-  final StacktraceStreamManager _stacktraceStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   GetAuthClaimUseCase(
     this._credentialRepository,
-    this._stacktraceStreamManager,
+    this._stacktraceManager,
   );
 
   @override
@@ -19,13 +19,13 @@ class GetAuthClaimUseCase extends FutureUseCase<List<String>, List<String>> {
         .getAuthClaim(publicKey: param)
         .then((authClaim) {
       logger().i("[GetAuthClaimUseCase] auth claim: $authClaim");
-      _stacktraceStreamManager
+      _stacktraceManager
           .addTrace("[GetAuthClaimUseCase] auth claim: $authClaim");
       return authClaim;
     }).catchError((error) {
       logger().e("[GetAuthClaimUseCase] Error: $error");
-      _stacktraceStreamManager.addTrace("[GetAuthClaimUseCase] Error: $error");
-      _stacktraceStreamManager.addError("[GetAuthClaimUseCase] Error: $error");
+      _stacktraceManager.addTrace("[GetAuthClaimUseCase] Error: $error");
+      _stacktraceManager.addError("[GetAuthClaimUseCase] Error: $error");
       throw error;
     });
   }

@@ -29,11 +29,11 @@ class UpdateClaimParam {
 
 class UpdateClaimUseCase extends FutureUseCase<UpdateClaimParam, ClaimEntity> {
   final CredentialRepository _credentialRepository;
-  final StacktraceStreamManager _stacktraceStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   UpdateClaimUseCase(
     this._credentialRepository,
-    this._stacktraceStreamManager,
+    this._stacktraceManager,
   );
 
   @override
@@ -61,13 +61,13 @@ class UpdateClaimUseCase extends FutureUseCase<UpdateClaimParam, ClaimEntity> {
         .then((claim) {
       logger().i(
           "[UpdateClaimUseCase] Claim with id ${param.id} has been updated: $claim");
-      _stacktraceStreamManager.addTrace(
+      _stacktraceManager.addTrace(
           "[UpdateClaimUseCase] Claim with id ${param.id} has been updated: $claim");
       return claim;
     }).catchError((error) {
       logger().e("[UpdateClaimUseCase] Error: $error");
-      _stacktraceStreamManager.addTrace("[UpdateClaimUseCase] Error: $error");
-      _stacktraceStreamManager.addError("[UpdateClaimUseCase] Error: $error");
+      _stacktraceManager.addTrace("[UpdateClaimUseCase] Error: $error");
+      _stacktraceManager.addError("[UpdateClaimUseCase] Error: $error");
       throw error;
     });
   }

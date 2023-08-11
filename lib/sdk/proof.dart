@@ -54,7 +54,7 @@ class Proof implements PolygonIdSdkProof {
   final CircuitsFilesExistUseCase _circuitsFilesExistUseCase;
   final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
   final CancelDownloadCircuitsUseCase _cancelDownloadCircuitsUseCase;
-  final StacktraceStreamManager _stacktraceStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   Proof(
     this.generateZKProofUseCase,
@@ -62,7 +62,7 @@ class Proof implements PolygonIdSdkProof {
     this._circuitsFilesExistUseCase,
     this._proofGenerationStepsStreamManager,
     this._cancelDownloadCircuitsUseCase,
-    this._stacktraceStreamManager,
+    this._stacktraceManager,
   );
 
   @override
@@ -81,8 +81,8 @@ class Proof implements PolygonIdSdkProof {
       String? challenge,
       String? signature,
       Map<String, dynamic>? config}) {
-    _stacktraceStreamManager.clear();
-    _stacktraceStreamManager.addTrace("PolygonIdSdk.Proof.prove called");
+    _stacktraceManager.clear();
+    _stacktraceManager.addTrace("PolygonIdSdk.Proof.prove called");
     return generateZKProofUseCase.execute(
         param: GenerateZKProofParam(
             identifier,
@@ -104,8 +104,8 @@ class Proof implements PolygonIdSdkProof {
   ///
   @override
   Future<bool> isAlreadyDownloadedCircuitsFromServer() async {
-    _stacktraceStreamManager.clear();
-    _stacktraceStreamManager.addTrace(
+    _stacktraceManager.clear();
+    _stacktraceManager.addTrace(
         "PolygonIdSdk.Proof.isAlreadyDownloadedCircuitsFromServer called");
     return _circuitsFilesExistUseCase.execute();
   }
@@ -125,8 +125,8 @@ class Proof implements PolygonIdSdkProof {
   /// Cancel the download of circuits
   @override
   Future<void> cancelDownloadCircuits() async {
-    _stacktraceStreamManager.clear();
-    _stacktraceStreamManager.addTrace(
+    _stacktraceManager.clear();
+    _stacktraceManager.addTrace(
         "PolygonIdSdk.Proof.cancelDownloadCircuits called");
     return _cancelDownloadCircuitsUseCase.execute();
   }

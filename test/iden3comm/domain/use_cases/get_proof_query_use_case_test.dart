@@ -164,7 +164,7 @@ MockStacktraceStreamManager mockStacktraceStreamManager =
 GetProofQueryUseCase useCase =
     GetProofQueryUseCase(mockStacktraceStreamManager);
 
-@GenerateMocks([StacktraceStreamManager])
+@GenerateMocks([StacktraceManager])
 void main() {
   group("Get proof query", () {
     test(

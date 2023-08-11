@@ -21,7 +21,7 @@ GetEnvUseCase useCase = GetEnvUseCase(
 
 @GenerateMocks([
   ConfigRepository,
-  StacktraceStreamManager,
+  StacktraceManager,
 ])
 void main() {
   test("When I call execute, I expect an EnvEntity to be returned", () async {

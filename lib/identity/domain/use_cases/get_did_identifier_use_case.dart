@@ -23,12 +23,12 @@ class GetDidIdentifierUseCase
     extends FutureUseCase<GetDidIdentifierParam, String> {
   final IdentityRepository _identityRepository;
   final GetGenesisStateUseCase _getGenesisStateUseCase;
-  final StacktraceStreamManager _stacktraceStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   GetDidIdentifierUseCase(
     this._identityRepository,
     this._getGenesisStateUseCase,
-    this._stacktraceStreamManager,
+    this._stacktraceManager,
   );
 
   @override
@@ -49,7 +49,7 @@ class GetDidIdentifierUseCase
       return did;
     }).catchError((error) {
       logger().e("[GetDidIdentifierUseCase] Error: $error");
-      _stacktraceStreamManager
+      _stacktraceManager
           .addTrace("[GetDidIdentifierUseCase] Error: $error");
       throw error;
     });

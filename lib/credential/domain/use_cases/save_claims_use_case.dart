@@ -22,11 +22,11 @@ class SaveClaimsParam {
 class SaveClaimsUseCase
     extends FutureUseCase<SaveClaimsParam, List<ClaimEntity>> {
   final CredentialRepository _credentialRepository;
-  final StacktraceStreamManager _stacktraceStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   SaveClaimsUseCase(
     this._credentialRepository,
-    this._stacktraceStreamManager,
+    this._stacktraceManager,
   );
 
   @override
@@ -40,13 +40,13 @@ class SaveClaimsUseCase
         .then((_) {
       logger()
           .i("[SaveClaimsUseCase] All claims have been saved: ${param.claims}");
-      _stacktraceStreamManager.addTrace(
+      _stacktraceManager.addTrace(
           "[SaveClaimsUseCase] All claims have been saved: ${param.claims}");
       return param.claims;
     }).catchError((error) {
       logger().e("[SaveClaimsUseCase] Error: $error");
-      _stacktraceStreamManager.addTrace("[SaveClaimsUseCase] Error: $error");
-      _stacktraceStreamManager.addError("[SaveClaimsUseCase] Error: $error");
+      _stacktraceManager.addTrace("[SaveClaimsUseCase] Error: $error");
+      _stacktraceManager.addError("[SaveClaimsUseCase] Error: $error");
       throw error;
     });
   }

@@ -11,13 +11,13 @@ class GetNonRevProofUseCase
   final IdentityRepository _identityRepository;
   final CredentialRepository _credentialRepository;
   final FetchIdentityStateUseCase _fetchIdentityStateUseCase;
-  final StacktraceStreamManager _stacktraceStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   GetNonRevProofUseCase(
     this._identityRepository,
     this._credentialRepository,
     this._fetchIdentityStateUseCase,
-    this._stacktraceStreamManager,
+    this._stacktraceManager,
   );
 
   @override

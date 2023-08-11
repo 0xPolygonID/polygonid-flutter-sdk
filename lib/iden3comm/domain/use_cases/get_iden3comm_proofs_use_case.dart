@@ -56,7 +56,7 @@ class GetIden3commProofsUseCase
   final GetProofRequestsUseCase _getProofRequestsUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
   final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
-  final StacktraceStreamManager _stacktraceStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   GetIden3commProofsUseCase(
     this._proofRepository,
@@ -66,7 +66,7 @@ class GetIden3commProofsUseCase
     this._getProofRequestsUseCase,
     this._getIdentityUseCase,
     this._proofGenerationStepsStreamManager,
-    this._stacktraceStreamManager,
+    this._stacktraceManager,
   );
 
   @override
@@ -80,7 +80,7 @@ class GetIden3commProofsUseCase
       _proofGenerationStepsStreamManager.add("Getting proof requests");
       List<ProofRequestEntity> requests =
           await _getProofRequestsUseCase.execute(param: param.message);
-      _stacktraceStreamManager
+      _stacktraceManager
           .addTrace("[GetIden3commProofsUseCase] requests: $requests");
       logger().i(
           "STOPPE after _getProofRequestsUseCase ${stopwatch.elapsedMilliseconds}");
@@ -92,7 +92,7 @@ class GetIden3commProofsUseCase
               profileNonce: param.profileNonce,
               privateKey: param.privateKey,
               nonRevocationProofs: param.nonRevocationProofs ?? {}));
-      _stacktraceStreamManager
+      _stacktraceManager
           .addTrace("[GetIden3commProofsUseCase] claims: $claims");
       logger().i(
           "STOPPE after _getIden3commClaimsUseCase ${stopwatch.elapsedMilliseconds}");
@@ -153,7 +153,7 @@ class GetIden3commProofsUseCase
           }
         }
       } else {
-        _stacktraceStreamManager.addTrace(
+        _stacktraceManager.addTrace(
             "[GetIden3commProofsUseCase] CredentialsNotFoundException - requests: $requests");
         throw CredentialsNotFoundException(requests);
       }
@@ -162,14 +162,14 @@ class GetIden3commProofsUseCase
       /// as it could be we didn't find any associated [ClaimEntity]
       if (requests.isNotEmpty && proofs.isEmpty ||
           proofs.length != requests.length) {
-        _stacktraceStreamManager.addTrace(
+        _stacktraceManager.addTrace(
             "[GetIden3commProofsUseCase] ProofsNotFoundException - requests: $requests");
         throw ProofsNotFoundException(requests);
       }
 
       return proofs;
     } catch (e) {
-      _stacktraceStreamManager.addTrace(
+      _stacktraceManager.addTrace(
           "[GetIden3commProofsUseCase] Exception: $e");
       rethrow;
     }

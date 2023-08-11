@@ -28,13 +28,13 @@ class GetClaimsUseCase
   final CredentialRepository _credentialRepository;
   final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
-  final StacktraceStreamManager _stacktraceStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   GetClaimsUseCase(
     this._credentialRepository,
     this._getCurrentEnvDidIdentifierUseCase,
     this._getIdentityUseCase,
-    this._stacktraceStreamManager,
+    this._stacktraceManager,
   );
 
   @override
@@ -53,18 +53,18 @@ class GetClaimsUseCase
               privateKey: param.privateKey)
           .then((claims) {
         logger().i("[GetClaimsUseCase] Claims: $claims");
-        _stacktraceStreamManager.addTrace("[GetClaimsUseCase] Claims: $claims");
+        _stacktraceManager.addTrace("[GetClaimsUseCase] Claims: $claims");
         return claims;
       }).catchError((error) {
-        _stacktraceStreamManager.addTrace("[GetClaimsUseCase] Error: $error");
-        _stacktraceStreamManager.addError("[GetClaimsUseCase] Error: $error");
+        _stacktraceManager.addTrace("[GetClaimsUseCase] Error: $error");
+        _stacktraceManager.addError("[GetClaimsUseCase] Error: $error");
         logger().e("[GetClaimsUseCase] Error: $error");
         throw error;
       });
     } else {
-      _stacktraceStreamManager.addTrace(
+      _stacktraceManager.addTrace(
           "[GetClaimsUseCase] Invalid profile nonce: ${param.profileNonce}");
-      _stacktraceStreamManager.addError(
+      _stacktraceManager.addError(
           "[GetClaimsUseCase] Invalid profile nonce: ${param.profileNonce}");
       throw InvalidProfileException(param.profileNonce);
     }

@@ -7,11 +7,11 @@ import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repo
 
 class GetAuthChallengeUseCase extends FutureUseCase<String, String> {
   final Iden3commRepository _iden3commRepository;
-  final StacktraceStreamManager _stacktraceStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   GetAuthChallengeUseCase(
     this._iden3commRepository,
-    this._stacktraceStreamManager,
+    this._stacktraceManager,
   );
 
   @override
@@ -19,14 +19,14 @@ class GetAuthChallengeUseCase extends FutureUseCase<String, String> {
     return _iden3commRepository.getChallenge(message: param).then((challenge) {
       logger()
           .i("[GetAuthChallengeUseCase] Message $param challenge: $challenge");
-      _stacktraceStreamManager.addTrace(
+      _stacktraceManager.addTrace(
           "[GetAuthChallengeUseCase] Message $param challenge: $challenge");
       return challenge;
     }).catchError((error) {
       logger().e("[GetAuthChallengeUseCase] Error: $error");
-      _stacktraceStreamManager
+      _stacktraceManager
           .addTrace("[GetAuthChallengeUseCase] Error: $error");
-      _stacktraceStreamManager
+      _stacktraceManager
           .addError("[GetAuthChallengeUseCase] Error: $error");
       throw error;
     });

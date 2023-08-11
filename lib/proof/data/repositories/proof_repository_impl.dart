@@ -50,7 +50,7 @@ class ProofRepositoryImpl extends ProofRepository {
   final AuthProofMapper _authProofMapper;
   final GistMTProofMapper _gistMTProofMapper;
   final CircuitsFilesDataSource _circuitsFilesDataSource;
-  final StacktraceStreamManager _stacktraceStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   // FIXME: those mappers shouldn't be used here as they are part of Credential
   final ClaimMapper _claimMapper;
@@ -73,7 +73,7 @@ class ProofRepositoryImpl extends ProofRepository {
     this._authProofMapper,
     this._gistMTProofMapper,
     this._circuitsFilesDataSource,
-    this._stacktraceStreamManager,
+    this._stacktraceManager,
   );
 
   @override
@@ -134,7 +134,7 @@ class ProofRepositoryImpl extends ProofRepository {
       config: config,
     )
         .catchError((error) {
-      _stacktraceStreamManager.addTrace(
+      _stacktraceManager.addTrace(
           "[calculateAtomicQueryInputs/libPolygonIdCoreProof] exception $error");
       throw NullAtomicQueryInputsException(id);
     });
@@ -154,7 +154,7 @@ class ProofRepositoryImpl extends ProofRepository {
       }
     }
 
-    _stacktraceStreamManager.addTrace(
+    _stacktraceManager.addTrace(
         "[calculateAtomicQueryInputs/libPolygonIdCoreProof] NullAtomicQueryInputsException");
     throw NullAtomicQueryInputsException(id);
   }
@@ -167,7 +167,7 @@ class ProofRepositoryImpl extends ProofRepository {
     WitnessParam witnessParam =
         WitnessParam(wasm: circuitData.datFile, json: atomicQueryInputs);
 
-    _stacktraceStreamManager.addTrace(
+    _stacktraceManager.addTrace(
         "[calculateWitness] circuitData.circuitId ${circuitData.circuitId}");
     return _witnessDataSource
         .computeWitness(
@@ -175,7 +175,7 @@ class ProofRepositoryImpl extends ProofRepository {
             param: witnessParam)
         .then((witness) {
       if (witness == null) {
-        _stacktraceStreamManager
+        _stacktraceManager
             .addTrace("[calculateWitness] NullWitnessException");
         throw NullWitnessException(circuitData.circuitId);
       }
@@ -183,7 +183,7 @@ class ProofRepositoryImpl extends ProofRepository {
       return witness;
     }).catchError(
       (error) {
-        _stacktraceStreamManager.addTrace(
+        _stacktraceManager.addTrace(
             "[calculateWitness] NullWitnessException $error");
         throw NullWitnessException(circuitData.circuitId);
       },
@@ -197,7 +197,7 @@ class ProofRepositoryImpl extends ProofRepository {
         .prove(circuitData.circuitId, circuitData.zKeyFile, wtnsBytes)
         .then((proof) {
       if (proof == null) {
-        _stacktraceStreamManager.addTrace("[prove] NullProofException");
+        _stacktraceManager.addTrace("[prove] NullProofException");
         throw NullProofException(circuitData.circuitId);
       }
 

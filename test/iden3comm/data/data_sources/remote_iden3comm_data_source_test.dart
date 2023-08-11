@@ -49,7 +49,7 @@ RemoteIden3commDataSource dataSource = RemoteIden3commDataSource(
 
 @GenerateMocks([
   Client,
-  StacktraceStreamManager,
+  StacktraceManager,
 ])
 void main() {
   group("Authenticate with token", () {

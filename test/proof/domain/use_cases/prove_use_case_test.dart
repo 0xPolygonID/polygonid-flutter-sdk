@@ -17,7 +17,7 @@ ProveParam param = ProveParam(CommonMocks.aBytes, ProofMocks.circuitData);
 
 @GenerateMocks([
   ProofRepository,
-  StacktraceStreamManager,
+  StacktraceManager,
 ])
 void main() {
   setUp(() {

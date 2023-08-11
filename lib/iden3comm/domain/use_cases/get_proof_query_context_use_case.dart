@@ -8,30 +8,30 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_cr
 class GetProofQueryContextUseCase
     extends FutureUseCase<ProofScopeRequest, Map<String, dynamic>> {
   final Iden3commCredentialRepository _iden3commCredentialRepository;
-  final StacktraceStreamManager _stacktraceStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   GetProofQueryContextUseCase(
     this._iden3commCredentialRepository,
-    this._stacktraceStreamManager,
+    this._stacktraceManager,
   );
 
   @override
   Future<Map<String, dynamic>> execute(
       {required ProofScopeRequest param}) async {
     String schemaUrl = param.query.context!;
-    _stacktraceStreamManager
+    _stacktraceManager
         .addTrace("[GetProofQueryContextUseCase] schemaUrl: $schemaUrl");
 
     if (schemaUrl.isNotEmpty) {
       return _iden3commCredentialRepository
           .fetchSchema(url: schemaUrl)
           .catchError((error) {
-        _stacktraceStreamManager
+        _stacktraceManager
             .addTrace("[GetProofQueryContextUseCase] Error: $error");
         return <String, dynamic>{};
       });
     } else {
-      _stacktraceStreamManager.addTrace(
+      _stacktraceManager.addTrace(
           "[GetProofQueryContextUseCase] schemaUrl empty: $schemaUrl");
       return <String, dynamic>{};
     }

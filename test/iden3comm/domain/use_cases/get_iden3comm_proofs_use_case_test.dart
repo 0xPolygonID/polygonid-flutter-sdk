@@ -78,7 +78,7 @@ GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   GetProofRequestsUseCase,
   GetIdentityUseCase,
   ProofGenerationStepsStreamManager,
-  StacktraceStreamManager,
+  StacktraceManager,
 ])
 main() {
   setUp(() {

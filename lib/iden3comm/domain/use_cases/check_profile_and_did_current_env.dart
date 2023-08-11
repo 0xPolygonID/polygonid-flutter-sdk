@@ -25,13 +25,13 @@ class CheckProfileAndDidCurrentEnvUseCase
   final CheckProfileValidityUseCase _checkProfileValidityUseCase;
   final GetEnvUseCase _getEnvUseCase;
   final GetDidIdentifierUseCase _getDidIdentifierUseCase;
-  final StacktraceStreamManager _stacktraceStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   CheckProfileAndDidCurrentEnvUseCase(
     this._checkProfileValidityUseCase,
     this._getEnvUseCase,
     this._getDidIdentifierUseCase,
-    this._stacktraceStreamManager,
+    this._stacktraceManager,
   );
 
   @override
@@ -55,14 +55,14 @@ class CheckProfileAndDidCurrentEnvUseCase
         .then((identity) {
       logger().i(
           "[CheckProfileAndDidCurrentEnvUseCase] Profile ${param.profileNonce} and private key ${param.privateKey} are valid for current env");
-      _stacktraceStreamManager.addTrace(
+      _stacktraceManager.addTrace(
           "[CheckProfileAndDidCurrentEnvUseCase] Profile ${param.profileNonce} and private key ${param.privateKey} are valid for current env");
       return identity;
     }).catchError((error) {
       logger().e("[CheckProfileAndDidCurrentEnvUseCase] Error: $error");
-      _stacktraceStreamManager
+      _stacktraceManager
           .addTrace("[CheckProfileAndDidCurrentEnvUseCase] Error: $error");
-      _stacktraceStreamManager
+      _stacktraceManager
           .addError("[CheckProfileAndDidCurrentEnvUseCase] Error: $error");
       throw error;
     });

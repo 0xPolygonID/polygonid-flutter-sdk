@@ -62,7 +62,7 @@ AuthenticateParam param = AuthenticateParam(
   GetPackageNameUseCase,
   CheckProfileAndDidCurrentEnvUseCase,
   ProofGenerationStepsStreamManager,
-  StacktraceStreamManager,
+  StacktraceManager,
 ])
 void main() {
   group(

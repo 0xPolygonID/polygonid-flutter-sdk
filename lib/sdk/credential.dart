@@ -118,7 +118,7 @@ class Credential implements PolygonIdSdkCredential {
   final GetClaimRevocationStatusUseCase _getClaimRevocationStatusUseCase;
   final RemoveClaimsUseCase _removeClaimsUseCase;
   final UpdateClaimUseCase _updateClaimUseCase;
-  final StacktraceStreamManager _stacktraceStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   Credential(
     this._saveClaimsUseCase,
@@ -126,7 +126,7 @@ class Credential implements PolygonIdSdkCredential {
     this._removeClaimsUseCase,
     this._getClaimRevocationStatusUseCase,
     this._updateClaimUseCase,
-    this._stacktraceStreamManager,
+    this._stacktraceManager,
   );
 
   @override
@@ -134,8 +134,8 @@ class Credential implements PolygonIdSdkCredential {
       {required List<ClaimEntity> claims,
       required String genesisDid,
       required String privateKey}) {
-    _stacktraceStreamManager.clear();
-    _stacktraceStreamManager
+    _stacktraceManager.clear();
+    _stacktraceManager
         .addTrace("PolygonIdSdk.Credential.saveClaims called");
     return _saveClaimsUseCase.execute(
         param: SaveClaimsParam(
@@ -147,8 +147,8 @@ class Credential implements PolygonIdSdkCredential {
       {List<FilterEntity>? filters,
       required String genesisDid,
       required String privateKey}) {
-    _stacktraceStreamManager.clear();
-    _stacktraceStreamManager
+    _stacktraceManager.clear();
+    _stacktraceManager
         .addTrace("PolygonIdSdk.Credential.getClaims called");
     return _getClaimsUseCase.execute(
         param: GetClaimsParam(
@@ -164,8 +164,8 @@ class Credential implements PolygonIdSdkCredential {
       {required List<String> claimIds,
       required String genesisDid,
       required String privateKey}) {
-    _stacktraceStreamManager.clear();
-    _stacktraceStreamManager
+    _stacktraceManager.clear();
+    _stacktraceManager
         .addTrace("PolygonIdSdk.Credential.getClaimsByIds called");
     return _getClaimsUseCase.execute(
         param: GetClaimsParam(
@@ -186,8 +186,8 @@ class Credential implements PolygonIdSdkCredential {
     required String privateKey,
     Map<String, dynamic>? nonRevProof,
   }) async {
-    _stacktraceStreamManager.clear();
-    _stacktraceStreamManager
+    _stacktraceManager.clear();
+    _stacktraceManager
         .addTrace("PolygonIdSdk.Credential.getClaimRevocationStatus called");
     List<ClaimEntity> claimEntityList = await getClaimsByIds(
         claimIds: [claimId], genesisDid: genesisDid, privateKey: privateKey);
@@ -198,7 +198,7 @@ class Credential implements PolygonIdSdkCredential {
         nonRevProof: nonRevProof,
       ));
     } else {
-      _stacktraceStreamManager.addTrace(
+      _stacktraceManager.addTrace(
           "PolygonIdSdk.Credential.getClaimRevocationStatus claim not found");
       throw ClaimNotFoundException(claimId);
     }
@@ -209,8 +209,8 @@ class Credential implements PolygonIdSdkCredential {
       {required List<String> claimIds,
       required String genesisDid,
       required String privateKey}) {
-    _stacktraceStreamManager.clear();
-    _stacktraceStreamManager
+    _stacktraceManager.clear();
+    _stacktraceManager
         .addTrace("PolygonIdSdk.Credential.removeClaims called");
     return _removeClaimsUseCase.execute(
         param: RemoveClaimsParam(
@@ -225,8 +225,8 @@ class Credential implements PolygonIdSdkCredential {
       {required String claimId,
       required String genesisDid,
       required String privateKey}) {
-    _stacktraceStreamManager.clear();
-    _stacktraceStreamManager
+    _stacktraceManager.clear();
+    _stacktraceManager
         .addTrace("PolygonIdSdk.Credential.removeClaim called");
     return _removeClaimsUseCase.execute(
         param: RemoveClaimsParam(
@@ -247,8 +247,8 @@ class Credential implements PolygonIdSdkCredential {
     Map<String, dynamic>? data,
     required String privateKey,
   }) {
-    _stacktraceStreamManager.clear();
-    _stacktraceStreamManager
+    _stacktraceManager.clear();
+    _stacktraceManager
         .addTrace("PolygonIdSdk.Credential.updateClaim called");
     return _updateClaimUseCase.execute(
         param: UpdateClaimParam(

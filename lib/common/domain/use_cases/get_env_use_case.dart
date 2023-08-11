@@ -6,11 +6,11 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 
 class GetEnvUseCase extends FutureUseCase<void, EnvEntity> {
   final ConfigRepository _configRepository;
-  final StacktraceStreamManager _stacktraceStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   GetEnvUseCase(
     this._configRepository,
-    this._stacktraceStreamManager,
+    this._stacktraceManager,
   );
 
   @override
@@ -21,7 +21,7 @@ class GetEnvUseCase extends FutureUseCase<void, EnvEntity> {
       return env;
     }).catchError((error) {
       logger().e("[GetEnvUseCase] Error: $error");
-      _stacktraceStreamManager.addTrace("[GetEnvUseCase] Error: $error");
+      _stacktraceManager.addTrace("[GetEnvUseCase] Error: $error");
       throw error;
     });
   }

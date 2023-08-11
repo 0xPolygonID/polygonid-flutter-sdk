@@ -33,7 +33,7 @@ CheckProfileAndDidCurrentEnvUseCase useCase =
   CheckProfileValidityUseCase,
   GetEnvUseCase,
   GetDidIdentifierUseCase,
-  StacktraceStreamManager,
+  StacktraceManager,
 ])
 void main() {
   setUp(() {

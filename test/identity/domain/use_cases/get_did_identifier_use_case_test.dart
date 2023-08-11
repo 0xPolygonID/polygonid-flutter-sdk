@@ -34,7 +34,7 @@ GetDidIdentifierUseCase useCase = GetDidIdentifierUseCase(
 @GenerateMocks([
   IdentityRepository,
   GetGenesisStateUseCase,
-  StacktraceStreamManager,
+  StacktraceManager,
 ])
 void main() {
   setUp(() {

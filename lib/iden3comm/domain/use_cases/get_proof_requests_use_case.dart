@@ -11,12 +11,12 @@ class GetProofRequestsUseCase
     extends FutureUseCase<Iden3MessageEntity, List<ProofRequestEntity>> {
   final GetProofQueryContextUseCase _getProofQueryContextUseCase;
   final GetProofQueryUseCase _getProofQueryUseCase;
-  final StacktraceStreamManager _stacktraceStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   GetProofRequestsUseCase(
     this._getProofQueryContextUseCase,
     this._getProofQueryUseCase,
-    this._stacktraceStreamManager,
+    this._stacktraceManager,
   );
 
   @override
@@ -28,7 +28,7 @@ class GetProofRequestsUseCase
       Iden3MessageType.authRequest,
       Iden3MessageType.proofContractInvokeRequest
     ].contains(param.messageType)) {
-      _stacktraceStreamManager.addTrace(
+      _stacktraceManager.addTrace(
           "[GetProofRequestsUseCase] Error: Unsupported message type: ${param.messageType}");
       return Future.error(UnsupportedIden3MsgTypeException(param.messageType));
     }
@@ -36,11 +36,11 @@ class GetProofRequestsUseCase
     if (param.body.scope != null && param.body.scope!.isNotEmpty) {
       for (ProofScopeRequest scope in param.body.scope!) {
         var context = await _getProofQueryContextUseCase.execute(param: scope);
-        _stacktraceStreamManager
+        _stacktraceManager
             .addTrace("[GetProofRequestsUseCase] _getProofQueryContextUseCase: $context");
         ProofQueryParamEntity query =
             await _getProofQueryUseCase.execute(param: scope);
-        _stacktraceStreamManager.addTrace(
+        _stacktraceManager.addTrace(
             "[GetProofRequestsUseCase] _getProofQueryUseCase: $query");
         proofRequests.add(ProofRequestEntity(scope, context, query));
       }

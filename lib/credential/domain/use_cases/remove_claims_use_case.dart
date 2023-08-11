@@ -18,11 +18,11 @@ class RemoveClaimsParam {
 
 class RemoveClaimsUseCase extends FutureUseCase<RemoveClaimsParam, void> {
   final CredentialRepository _credentialRepository;
-  final StacktraceStreamManager _stacktraceStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   RemoveClaimsUseCase(
     this._credentialRepository,
-    this._stacktraceStreamManager,
+    this._stacktraceManager,
   );
 
   @override
@@ -36,12 +36,12 @@ class RemoveClaimsUseCase extends FutureUseCase<RemoveClaimsParam, void> {
         .then((_) {
       logger().i(
           "[RemoveClaimsUseCase] Claims with those ids have been removed: $param");
-      _stacktraceStreamManager.addTrace(
+      _stacktraceManager.addTrace(
           "[RemoveClaimsUseCase] Claims with those ids have been removed: $param");
     }).catchError((error) {
       logger().e("[RemoveClaimsUseCase] Error: $error");
-      _stacktraceStreamManager.addTrace("[RemoveClaimsUseCase] Error: $error");
-      _stacktraceStreamManager.addError("[RemoveClaimsUseCase] Error: $error");
+      _stacktraceManager.addTrace("[RemoveClaimsUseCase] Error: $error");
+      _stacktraceManager.addError("[RemoveClaimsUseCase] Error: $error");
       throw error;
     });
   }

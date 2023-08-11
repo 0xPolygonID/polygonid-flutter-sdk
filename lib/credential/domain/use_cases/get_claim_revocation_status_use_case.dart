@@ -23,13 +23,13 @@ class GetClaimRevocationStatusUseCase
   final CredentialRepository _credentialRepository;
   final GenerateNonRevProofUseCase _generateNonRevProofUseCase;
   final GetNonRevProofUseCase _getNonRevProofUseCase;
-  final StacktraceStreamManager _stacktraceStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   GetClaimRevocationStatusUseCase(
     this._credentialRepository,
     this._generateNonRevProofUseCase,
     this._getNonRevProofUseCase,
-    this._stacktraceStreamManager,
+    this._stacktraceManager,
   );
 
   @override
@@ -38,15 +38,15 @@ class GetClaimRevocationStatusUseCase
     bool useRHS = await _credentialRepository
         .isUsingRHS(claim: param.claim)
         .catchError((error) {
-      _stacktraceStreamManager
+      _stacktraceManager
           .addTrace("[GetClaimRevocationStatusUseCase] Error: $error");
-      _stacktraceStreamManager
+      _stacktraceManager
           .addError("[GetClaimRevocationStatusUseCase] Error: $error");
       logger().e("[GetClaimRevocationStatusUseCase] Error: $error");
       throw error;
     });
     if (useRHS) {
-      _stacktraceStreamManager.addTrace(
+      _stacktraceManager.addTrace(
           "[GetClaimRevocationStatusUseCase] Using RHS for revocation status");
       try {
         Map<String, dynamic> status = await _generateNonRevProofUseCase.execute(
@@ -57,32 +57,32 @@ class GetClaimRevocationStatusUseCase
         Map<String, dynamic> status = await _getNonRevProofUseCase
             .execute(param: param.claim)
             .catchError((error) {
-          _stacktraceStreamManager
+          _stacktraceManager
               .addTrace("[GetClaimRevocationStatusUseCase] Error: $error");
-          _stacktraceStreamManager
+          _stacktraceManager
               .addError("[GetClaimRevocationStatusUseCase] Error: $error");
           logger().e("[GetClaimRevocationStatusUseCase] Error: $error");
           throw error;
         });
-        _stacktraceStreamManager.addTrace(
+        _stacktraceManager.addTrace(
             "[GetClaimRevocationStatusUseCase] Revocation status: $status");
         logger()
             .i("[GetClaimRevocationStatusUseCase] Revocation status: $status");
         return status;
       }
     } else {
-      _stacktraceStreamManager.addTrace(
+      _stacktraceManager.addTrace(
           "[GetClaimRevocationStatusUseCase] Using non-RHS for revocation status");
       return _getNonRevProofUseCase.execute(param: param.claim).then((status) {
-        _stacktraceStreamManager.addTrace(
+        _stacktraceManager.addTrace(
             "[GetClaimRevocationStatusUseCase] Revocation status: $status");
         logger()
             .i("[GetClaimRevocationStatusUseCase] Revocation status: $status");
         return status;
       }).catchError((error) {
-        _stacktraceStreamManager
+        _stacktraceManager
             .addTrace("[GetClaimRevocationStatusUseCase] Error: $error");
-        _stacktraceStreamManager
+        _stacktraceManager
             .addError("[GetClaimRevocationStatusUseCase] Error: $error");
         logger().e("[GetClaimRevocationStatusUseCase] Error: $error");
         throw error;
