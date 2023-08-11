@@ -1,3 +1,5 @@
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
 import '../entities/claim_entity.dart';
@@ -27,8 +29,12 @@ class UpdateClaimParam {
 
 class UpdateClaimUseCase extends FutureUseCase<UpdateClaimParam, ClaimEntity> {
   final CredentialRepository _credentialRepository;
+  final StacktraceStreamManager _stacktraceStreamManager;
 
-  UpdateClaimUseCase(this._credentialRepository);
+  UpdateClaimUseCase(
+    this._credentialRepository,
+    this._stacktraceStreamManager,
+  );
 
   @override
   Future<ClaimEntity> execute({required UpdateClaimParam param}) async {
@@ -55,10 +61,13 @@ class UpdateClaimUseCase extends FutureUseCase<UpdateClaimParam, ClaimEntity> {
         .then((claim) {
       logger().i(
           "[UpdateClaimUseCase] Claim with id ${param.id} has been updated: $claim");
-
+      _stacktraceStreamManager.addTrace(
+          "[UpdateClaimUseCase] Claim with id ${param.id} has been updated: $claim");
       return claim;
     }).catchError((error) {
       logger().e("[UpdateClaimUseCase] Error: $error");
+      _stacktraceStreamManager.addTrace("[UpdateClaimUseCase] Error: $error");
+      _stacktraceStreamManager.addError("[UpdateClaimUseCase] Error: $error");
       throw error;
     });
   }

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_challenge_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_jwz_use_case.dart';
@@ -30,13 +31,16 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
   final GetAuthChallengeUseCase _getAuthChallengeUseCase;
   final GetAuthInputsUseCase _getAuthInputsUseCase;
   final ProveUseCase _proveUseCase;
+  final StacktraceStreamManager _stacktraceStreamManager;
 
   GetAuthTokenUseCase(
-      this._loadCircuitUseCase,
-      this._getJWZUseCase,
-      this._getAuthChallengeUseCase,
-      this._getAuthInputsUseCase,
-      this._proveUseCase);
+    this._loadCircuitUseCase,
+    this._getJWZUseCase,
+    this._getAuthChallengeUseCase,
+    this._getAuthInputsUseCase,
+    this._proveUseCase,
+    this._stacktraceStreamManager,
+  );
 
   @override
   Future<String> execute({required GetAuthTokenParam param}) {
@@ -56,11 +60,13 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
             param: GetJWZParam(message: param.message, proof: proof)))
         .then((token) {
       logger().i("[GetAuthTokenUseCase] Message $param Auth token: $token");
-
+      _stacktraceStreamManager
+          .addTrace("[GetAuthTokenUseCase] Message $param Auth token: $token");
       return token;
     }).catchError((error) {
       logger().e("[GetAuthTokenUseCase] Error: $error");
-
+      _stacktraceStreamManager.addTrace("[GetAuthTokenUseCase] Error: $error");
+      _stacktraceStreamManager.addError("[GetAuthTokenUseCase] Error: $error");
       throw error;
     });
   }

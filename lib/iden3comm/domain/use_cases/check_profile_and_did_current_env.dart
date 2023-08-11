@@ -55,11 +55,15 @@ class CheckProfileAndDidCurrentEnvUseCase
         .then((identity) {
       logger().i(
           "[CheckProfileAndDidCurrentEnvUseCase] Profile ${param.profileNonce} and private key ${param.privateKey} are valid for current env");
-
+      _stacktraceStreamManager.addTrace(
+          "[CheckProfileAndDidCurrentEnvUseCase] Profile ${param.profileNonce} and private key ${param.privateKey} are valid for current env");
       return identity;
     }).catchError((error) {
       logger().e("[CheckProfileAndDidCurrentEnvUseCase] Error: $error");
-      _stacktraceStreamManager.addTrace("[CheckProfileAndDidCurrentEnvUseCase] Error: $error");
+      _stacktraceStreamManager
+          .addTrace("[CheckProfileAndDidCurrentEnvUseCase] Error: $error");
+      _stacktraceStreamManager
+          .addError("[CheckProfileAndDidCurrentEnvUseCase] Error: $error");
       throw error;
     });
   }
