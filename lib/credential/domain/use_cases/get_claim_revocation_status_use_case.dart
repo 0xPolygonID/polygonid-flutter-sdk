@@ -40,6 +40,8 @@ class GetClaimRevocationStatusUseCase
         .catchError((error) {
       _stacktraceStreamManager
           .addTrace("[GetClaimRevocationStatusUseCase] Error: $error");
+      _stacktraceStreamManager
+          .addError("[GetClaimRevocationStatusUseCase] Error: $error");
       logger().e("[GetClaimRevocationStatusUseCase] Error: $error");
       throw error;
     });
@@ -57,6 +59,8 @@ class GetClaimRevocationStatusUseCase
             .catchError((error) {
           _stacktraceStreamManager
               .addTrace("[GetClaimRevocationStatusUseCase] Error: $error");
+          _stacktraceStreamManager
+              .addError("[GetClaimRevocationStatusUseCase] Error: $error");
           logger().e("[GetClaimRevocationStatusUseCase] Error: $error");
           throw error;
         });
@@ -78,6 +82,8 @@ class GetClaimRevocationStatusUseCase
       }).catchError((error) {
         _stacktraceStreamManager
             .addTrace("[GetClaimRevocationStatusUseCase] Error: $error");
+        _stacktraceStreamManager
+            .addError("[GetClaimRevocationStatusUseCase] Error: $error");
         logger().e("[GetClaimRevocationStatusUseCase] Error: $error");
         throw error;
       });

@@ -53,14 +53,18 @@ class GetClaimsUseCase
               privateKey: param.privateKey)
           .then((claims) {
         logger().i("[GetClaimsUseCase] Claims: $claims");
+        _stacktraceStreamManager.addTrace("[GetClaimsUseCase] Claims: $claims");
         return claims;
       }).catchError((error) {
         _stacktraceStreamManager.addTrace("[GetClaimsUseCase] Error: $error");
+        _stacktraceStreamManager.addError("[GetClaimsUseCase] Error: $error");
         logger().e("[GetClaimsUseCase] Error: $error");
         throw error;
       });
     } else {
       _stacktraceStreamManager.addTrace(
+          "[GetClaimsUseCase] Invalid profile nonce: ${param.profileNonce}");
+      _stacktraceStreamManager.addError(
           "[GetClaimsUseCase] Invalid profile nonce: ${param.profileNonce}");
       throw InvalidProfileException(param.profileNonce);
     }

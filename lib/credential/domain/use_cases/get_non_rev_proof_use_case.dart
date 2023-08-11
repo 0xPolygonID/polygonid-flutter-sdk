@@ -1,5 +1,6 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
@@ -10,9 +11,14 @@ class GetNonRevProofUseCase
   final IdentityRepository _identityRepository;
   final CredentialRepository _credentialRepository;
   final FetchIdentityStateUseCase _fetchIdentityStateUseCase;
+  final StacktraceStreamManager _stacktraceStreamManager;
 
-  GetNonRevProofUseCase(this._identityRepository, this._credentialRepository,
-      this._fetchIdentityStateUseCase);
+  GetNonRevProofUseCase(
+    this._identityRepository,
+    this._credentialRepository,
+    this._fetchIdentityStateUseCase,
+    this._stacktraceStreamManager,
+  );
 
   @override
   Future<Map<String, dynamic>> execute({required ClaimEntity param}) {
