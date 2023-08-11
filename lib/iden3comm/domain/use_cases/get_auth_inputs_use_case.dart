@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
@@ -53,34 +54,65 @@ class GetAuthInputsUseCase
 
   @override
   Future<Uint8List> execute({required GetAuthInputsParam param}) async {
+    Stopwatch stopwatch = Stopwatch()..start();
     IdentityEntity identity = await _getIdentityUseCase.execute(
         param: GetIdentityParam(
             genesisDid: param.genesisDid, privateKey: param.privateKey));
 
+    if (kDebugMode) {
+      print(
+          "[GetAuthInputsUseCase] after _getIdentityUseCase stopWatch: ${stopwatch.elapsedMilliseconds}");
+    }
+
     List<String> authClaim =
         await _getAuthClaimUseCase.execute(param: identity.publicKey);
+    if (kDebugMode) {
+      print(
+          "[GetAuthInputsUseCase] after _getAuthClaimUseCase stopWatch: ${stopwatch.elapsedMilliseconds}");
+    }
+
     NodeEntity authClaimNode =
         await _identityRepository.getAuthClaimNode(children: authClaim);
+    if (kDebugMode) {
+      print(
+          "[GetAuthInputsUseCase] after _identityRepository.getAuthClaimNode stopWatch: ${stopwatch.elapsedMilliseconds}");
+    }
 
     MTProofEntity incProof = await _smtRepository.generateProof(
         key: authClaimNode.hash,
         type: TreeType.claims,
         did: param.genesisDid,
         privateKey: param.privateKey);
+    if (kDebugMode) {
+      print(
+          "[GetAuthInputsUseCase] after _smtRepository.generateProof stopWatch: ${stopwatch.elapsedMilliseconds}");
+    }
 
     MTProofEntity nonRevProof = await _smtRepository.generateProof(
         key: authClaimNode.hash,
         type: TreeType.revocation,
         did: param.genesisDid,
         privateKey: param.privateKey);
+    if (kDebugMode) {
+      print(
+          "[GetAuthInputsUseCase] after _smtRepository.generateProof stopWatch: ${stopwatch.elapsedMilliseconds}");
+    }
 
     // hash of clatr, revtr, rootr
     Map<String, dynamic> treeState = await _getLatestStateUseCase.execute(
         param: GetLatestStateParam(
             did: param.genesisDid, privateKey: param.privateKey));
+    if (kDebugMode) {
+      print(
+          "[GetAuthInputsUseCase] after _getLatestStateUseCase stopWatch: ${stopwatch.elapsedMilliseconds}");
+    }
 
     GistMTProofEntity gistProof =
         await _getGistMTProofUseCase.execute(param: param.genesisDid);
+    if (kDebugMode) {
+      print(
+          "[GetAuthInputsUseCase] after _getGistMTProofUseCase stopWatch: ${stopwatch.elapsedMilliseconds}");
+    }
 
     return _signMessageUseCase
         .execute(param: SignMessageParam(param.privateKey, param.challenge))

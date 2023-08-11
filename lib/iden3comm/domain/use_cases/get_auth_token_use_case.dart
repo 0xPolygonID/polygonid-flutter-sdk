@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_challenge_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_jwz_use_case.dart';
@@ -40,21 +41,55 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
 
   @override
   Future<String> execute({required GetAuthTokenParam param}) {
+    Stopwatch stopwatch = Stopwatch()
+      ..start();
     return _getJWZUseCase
         .execute(param: GetJWZParam(message: param.message))
-        .then((encoded) => _getAuthChallengeUseCase.execute(param: encoded))
-        .then((challenge) => Future.wait([
-              _getAuthInputsUseCase.execute(
-                  param: GetAuthInputsParam(challenge, param.genesisDid,
-                      param.profileNonce, param.privateKey)),
-              _loadCircuitUseCase.execute(param: "authV2")
-            ]))
-        .then((values) => _proveUseCase.execute(
-            param: ProveParam(
-                values[0] as Uint8List, values[1] as CircuitDataEntity)))
-        .then((proof) => _getJWZUseCase.execute(
-            param: GetJWZParam(message: param.message, proof: proof)))
+        .then((encoded) {
+      if (kDebugMode) {
+        print("[GetAuthTokenUseCase] after getJWZUseCase stopWatch: ${stopwatch
+            .elapsedMilliseconds}");
+      }
+      return _getAuthChallengeUseCase.execute(param: encoded);
+    })
+        .then((challenge) {
+      if (kDebugMode) {
+        print(
+            "[GetAuthTokenUseCase] after _getAuthChallengeUseCase stopWatch: ${stopwatch
+                .elapsedMilliseconds}");
+      }
+      return Future.wait([
+        _getAuthInputsUseCase.execute(
+            param: GetAuthInputsParam(challenge, param.genesisDid,
+                param.profileNonce, param.privateKey)),
+        _loadCircuitUseCase.execute(param: "authV2")
+      ]);
+    })
+        .then((values) {
+      if (kDebugMode) {
+        print(
+            "[GetAuthTokenUseCase] after _getAuthInputsUseCase/_loadCircuit stopWatch: ${stopwatch
+                .elapsedMilliseconds}");
+      }
+      return _proveUseCase.execute(
+          param: ProveParam(
+              values[0] as Uint8List, values[1] as CircuitDataEntity));
+    })
+        .then((proof) {
+      if (kDebugMode) {
+        print(
+            "[GetAuthTokenUseCase] after _proveUseCase stopWatch: ${stopwatch
+                .elapsedMilliseconds}");
+      }
+      return _getJWZUseCase.execute(
+          param: GetJWZParam(message: param.message, proof: proof));
+    })
         .then((token) {
+      if (kDebugMode) {
+        print(
+            "[GetAuthTokenUseCase] after _getJWZUseCase stopWatch: ${stopwatch
+                .elapsedMilliseconds}");
+      }
       logger().i("[GetAuthTokenUseCase] Message $param Auth token: $token");
 
       return token;

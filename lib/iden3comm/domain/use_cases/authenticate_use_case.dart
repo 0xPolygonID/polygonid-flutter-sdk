@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
@@ -61,6 +62,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
       // we want to misure the time of the whole process
       Stopwatch stopwatch = Stopwatch()..start();
       logger().i("stopwatch started");
+      if (kDebugMode) print("stopwatch started");
 
       await _checkProfileAndDidCurrentEnvUseCase.execute(
           param: CheckProfileAndDidCurrentEnvParam(
@@ -69,10 +71,17 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
               profileNonce: param.profileNonce));
       logger().i(
           "stopwatch after checkProfileAndDidCurrentEnvUseCase ${stopwatch.elapsedMilliseconds}");
+      if (kDebugMode) {
+        print(
+            "stopwatch after checkProfileAndDidCurrentEnvUseCase ${stopwatch.elapsedMilliseconds}");
+      }
 
       EnvEntity env = await _getEnvUseCase.execute();
       logger()
           .i("stopwatch after getEnvUseCase ${stopwatch.elapsedMilliseconds}");
+      if (kDebugMode) {
+        print("stopwatch after getEnvUseCase ${stopwatch.elapsedMilliseconds}");
+      }
 
       String profileDid = await _getDidIdentifierUseCase.execute(
           param: GetDidIdentifierParam(
@@ -82,6 +91,10 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
               profileNonce: param.profileNonce));
       logger().i(
           "stopwatch after getDidIdentifierUseCase ${stopwatch.elapsedMilliseconds}");
+      if (kDebugMode) {
+        print(
+            "stopwatch after getDidIdentifierUseCase ${stopwatch.elapsedMilliseconds}");
+      }
 
       // get proofs from credentials of all the profiles of the identity
       List<Iden3commProofEntity> proofs =
@@ -97,12 +110,17 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
         nonRevocationProofs: param.nonRevocationProofs,
       ));
       logger().i("stopwatch after getProofs ${stopwatch.elapsedMilliseconds}");
+      print("stopwatch after getProofs ${stopwatch.elapsedMilliseconds}");
 
       String pushUrl = env.pushUrl;
 
       String packageName = await _getPackageNameUseCase.execute();
       logger().i(
           "stopwatch after getPackageNameUseCase ${stopwatch.elapsedMilliseconds}");
+      if (kDebugMode) {
+        print(
+            "stopwatch after getPackageNameUseCase ${stopwatch.elapsedMilliseconds}");
+      }
 
       _proofGenerationStepsStreamManager
           .add("preparing authentication parameters...");
@@ -115,6 +133,10 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
           packageName: packageName);
       logger().i(
           "stopwatch after getAuthResponse ${stopwatch.elapsedMilliseconds}");
+      if (kDebugMode) {
+        print(
+            "stopwatch after getAuthResponse ${stopwatch.elapsedMilliseconds}");
+      }
 
       _proofGenerationStepsStreamManager
           .add("preparing authentication token...");
@@ -126,6 +148,9 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
               message: authResponse));
       logger()
           .i("stopwatch after getAuthToken ${stopwatch.elapsedMilliseconds}");
+      if (kDebugMode) {
+        print("stopwatch after getAuthToken ${stopwatch.elapsedMilliseconds}");
+      }
 
       _proofGenerationStepsStreamManager.add("authenticating...");
       return _iden3commRepository.authenticate(
@@ -134,6 +159,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
       );
     } catch (error) {
       logger().d("[AuthenticateUseCase] Error: $error");
+      print("[AuthenticateUseCase] Error: $error");
 
       rethrow;
     }
