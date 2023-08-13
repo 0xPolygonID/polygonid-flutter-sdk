@@ -1,12 +1,12 @@
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 
-import '../../../../common/domain/domain_logger.dart';
-import '../../../../common/domain/use_case.dart';
-import '../../exceptions/identity_exceptions.dart';
-import '../../repositories/identity_repository.dart';
-import '../smt/create_identity_state_use_case.dart';
-import 'create_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/smt/create_identity_state_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/create_identity_use_case.dart';
 
 class AddIdentityParam {
   final String privateKey;

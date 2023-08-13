@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_auth_claim_use_case.dart';
@@ -67,10 +68,12 @@ class GenerateZKProofUseCase
     extends FutureUseCase<GenerateZKProofParam, ZKProofEntity> {
   final ProofRepository _proofRepository;
   final ProveUseCase _proveUseCase;
+  final StacktraceManager _stacktraceManager;
 
   GenerateZKProofUseCase(
     this._proofRepository,
     this._proveUseCase,
+    this._stacktraceManager,
   );
 
   @override
@@ -95,6 +98,8 @@ class GenerateZKProofUseCase
     )
         .catchError((error) {
       logger().e("[GenerateZKProofUseCase] Error: $error");
+      _stacktraceManager.addTrace("[GenerateZKProofUseCase] Error: $error");
+      _stacktraceManager.addError("[GenerateZKProofUseCase] Error: $error");
 
       throw error;
     });
@@ -108,9 +113,12 @@ class GenerateZKProofUseCase
         .execute(param: ProveParam(atomicQueryInputs, param.circuitData))
         .then((proof) {
       logger().i("[GenerateZKProofUseCase] proof: $proof");
+      _stacktraceManager.addTrace("[GenerateZKProofUseCase] proof: $proof");
 
       return proof;
     }).catchError((error) {
+      _stacktraceManager.addTrace("[GenerateZKProofUseCase] Error: $error");
+      _stacktraceManager.addError("[GenerateZKProofUseCase] Error: $error");
       logger().e("[GenerateZKProofUseCase] Error: $error");
 
       throw error;

@@ -1,5 +1,6 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
@@ -10,11 +11,13 @@ class GetGenesisStateUseCase extends FutureUseCase<String, TreeStateEntity> {
   final IdentityRepository _identityRepository;
   final SMTRepository _smtRepository;
   final GetIdentityAuthClaimUseCase _getIdentityAuthClaimUseCase;
+  final StacktraceManager _stacktraceManager;
 
   GetGenesisStateUseCase(
     this._identityRepository,
     this._smtRepository,
     this._getIdentityAuthClaimUseCase,
+    this._stacktraceManager,
   );
 
   @override
@@ -30,10 +33,13 @@ class GetGenesisStateUseCase extends FutureUseCase<String, TreeStateEntity> {
             .then((hash) => TreeStateEntity(hash, node.hash,
                 HashEntity(data: zero), HashEntity(data: zero))))
         .then((state) {
+      _stacktraceManager.addTrace("[GetGenesisStateUseCase] State: $state");
       logger().i("[GetGenesisStateUseCase] State: $state");
 
       return state;
     }).catchError((error) {
+      _stacktraceManager.addTrace("[GetGenesisStateUseCase] Error: $error");
+      _stacktraceManager.addError("[GetGenesisStateUseCase] Error: $error");
       logger().e("[GetGenesisStateUseCase] Error: $error");
 
       throw error;
