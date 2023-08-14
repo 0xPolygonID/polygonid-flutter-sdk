@@ -98,8 +98,7 @@ MockCredentialRepository credentialRepository = MockCredentialRepository();
 MockGetCurrentEnvDidIdentifierUseCase getCurrentEnvDidIdentifierUseCase =
     MockGetCurrentEnvDidIdentifierUseCase();
 MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
-MockStacktraceManager stacktraceStreamManager =
-    MockStacktraceManager();
+MockStacktraceManager stacktraceStreamManager = MockStacktraceManager();
 
 // Tested instance
 GetClaimsUseCase useCase = GetClaimsUseCase(

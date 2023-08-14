@@ -157,12 +157,10 @@ ProofScopeRequest mockProofScopeRequestInvalid = ProofScopeRequest(
   ),
 );
 
-MockStacktraceManager mockStacktraceManager =
-    MockStacktraceManager();
+MockStacktraceManager mockStacktraceManager = MockStacktraceManager();
 
 // Tested instance
-GetProofQueryUseCase useCase =
-    GetProofQueryUseCase(mockStacktraceManager);
+GetProofQueryUseCase useCase = GetProofQueryUseCase(mockStacktraceManager);
 
 @GenerateMocks([StacktraceManager])
 void main() {

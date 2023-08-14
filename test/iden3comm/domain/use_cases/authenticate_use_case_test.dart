@@ -30,8 +30,7 @@ MockCheckProfileAndDidCurrentEnvUseCase checkProfileAndDidCurrentEnvUseCase =
     MockCheckProfileAndDidCurrentEnvUseCase();
 MockProofGenerationStepsStreamManager proofGenerationStepsStreamManager =
     MockProofGenerationStepsStreamManager();
-MockStacktraceManager stacktraceStreamManager =
-    MockStacktraceManager();
+MockStacktraceManager stacktraceStreamManager = MockStacktraceManager();
 
 AuthenticateUseCase useCase = AuthenticateUseCase(
   iden3commRepository,

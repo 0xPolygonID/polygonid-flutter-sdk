@@ -10,8 +10,7 @@ import 'get_env_use_case_test.mocks.dart';
 
 // Dependencies
 MockConfigRepository configRepository = MockConfigRepository();
-MockStacktraceManager stacktraceStreamManager =
-    MockStacktraceManager();
+MockStacktraceManager stacktraceStreamManager = MockStacktraceManager();
 
 // Tested instance
 GetEnvUseCase useCase = GetEnvUseCase(

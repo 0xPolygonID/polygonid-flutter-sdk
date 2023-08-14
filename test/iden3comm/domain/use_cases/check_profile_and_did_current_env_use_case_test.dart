@@ -17,8 +17,7 @@ MockCheckProfileValidityUseCase checkProfileValidityUseCase =
 MockGetEnvUseCase getEnvUseCase = MockGetEnvUseCase();
 MockGetDidIdentifierUseCase getDidIdentifierUseCase =
     MockGetDidIdentifierUseCase();
-MockStacktraceManager stacktraceStreamManager =
-    MockStacktraceManager();
+MockStacktraceManager stacktraceStreamManager = MockStacktraceManager();
 
 // Tested instance
 CheckProfileAndDidCurrentEnvUseCase useCase =

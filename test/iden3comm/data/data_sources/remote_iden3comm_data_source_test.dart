@@ -39,8 +39,7 @@ final claim = ClaimDTO(
 
 //DEPENDENCIES
 MockClient client = MockClient();
-MockStacktraceManager stacktraceStreamManager =
-    MockStacktraceManager();
+MockStacktraceManager stacktraceStreamManager = MockStacktraceManager();
 
 RemoteIden3commDataSource dataSource = RemoteIden3commDataSource(
   client,

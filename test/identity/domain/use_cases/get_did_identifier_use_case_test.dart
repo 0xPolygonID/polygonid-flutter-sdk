@@ -14,8 +14,7 @@ import 'get_did_identifier_use_case_test.mocks.dart';
 MockIdentityRepository identityRepository = MockIdentityRepository();
 MockGetGenesisStateUseCase getGenesisStateUseCase =
     MockGetGenesisStateUseCase();
-MockStacktraceManager stacktraceStreamManager =
-    MockStacktraceManager();
+MockStacktraceManager stacktraceStreamManager = MockStacktraceManager();
 
 // Data
 GetDidIdentifierParam param = GetDidIdentifierParam(
