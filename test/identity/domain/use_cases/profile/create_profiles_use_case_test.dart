@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
@@ -30,17 +31,20 @@ MockIdentityRepository identityRepository = MockIdentityRepository();
 MockGetPublicKeysUseCase getPublicKeysUseCase = MockGetPublicKeysUseCase();
 MockGetCurrentEnvDidIdentifierUseCase getCurrentEnvDidIdentifierUseCase =
     MockGetCurrentEnvDidIdentifierUseCase();
+MockStacktraceManager stacktraceManager = MockStacktraceManager();
 
 // Tested instance
 CreateProfilesUseCase useCase = CreateProfilesUseCase(
   getPublicKeysUseCase,
   getCurrentEnvDidIdentifierUseCase,
+  stacktraceManager,
 );
 
 @GenerateMocks([
   IdentityRepository,
   GetPublicKeysUseCase,
   GetCurrentEnvDidIdentifierUseCase,
+  StacktraceManager,
 ])
 void main() {
   setUp(() {

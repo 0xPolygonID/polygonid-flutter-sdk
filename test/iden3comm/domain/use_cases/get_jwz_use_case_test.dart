@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_jwz_use_case.dart';
 
@@ -10,13 +11,21 @@ import '../../../common/proof_mocks.dart';
 import 'get_jwz_use_case_test.mocks.dart';
 
 MockIden3commRepository iden3commRepository = MockIden3commRepository();
-GetJWZUseCase useCase = GetJWZUseCase(iden3commRepository);
+MockStacktraceManager stacktraceManager = MockStacktraceManager();
+
+GetJWZUseCase useCase = GetJWZUseCase(
+  iden3commRepository,
+  stacktraceManager,
+);
 
 // Data
 GetJWZParam param =
     GetJWZParam(message: CommonMocks.message, proof: ProofMocks.zkProof);
 
-@GenerateMocks([Iden3commRepository])
+@GenerateMocks([
+  Iden3commRepository,
+  StacktraceManager,
+])
 void main() {
   setUp(() {
     when(iden3commRepository.encodeJWZ(jwz: anyNamed("jwz"))).thenAnswer(

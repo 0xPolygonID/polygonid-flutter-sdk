@@ -1,6 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
@@ -225,6 +226,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   final RemoveInteractionsUseCase _removeInteractionsUseCase;
   final UpdateInteractionUseCase _updateInteractionUseCase;
   final CleanSchemaCacheUseCase _cleanSchemaCacheUseCase;
+  final StacktraceManager _stacktraceManager;
 
   Iden3comm(
     this._fetchAndSaveClaimsUseCase,
@@ -240,21 +242,25 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     this._removeInteractionsUseCase,
     this._updateInteractionUseCase,
     this._cleanSchemaCacheUseCase,
+    this._stacktraceManager,
   );
 
   @override
   Future<Iden3MessageEntity> getIden3Message({required String message}) {
+    _stacktraceManager.clear();
     return _getIden3MessageUseCase.execute(param: message);
   }
 
   @override
   Future<List<Map<String, dynamic>>> getSchemas(
       {required Iden3MessageEntity message}) {
+    _stacktraceManager.clear();
     return _getSchemasUseCase.execute(param: message);
   }
 
   @override
   Future<List<FilterEntity>> getFilters({required Iden3MessageEntity message}) {
+    _stacktraceManager.clear();
     return _getFiltersUseCase.execute(param: message);
   }
 
@@ -264,7 +270,10 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       required String genesisDid,
       BigInt? profileNonce,
       required String privateKey}) {
+    _stacktraceManager.clear();
     if (message is! OfferIden3MessageEntity) {
+      _stacktraceManager.addTrace(
+          '[fetchAndSaveClaims] Invalid message type: ${message.messageType}');
       throw InvalidIden3MsgTypeException(
           Iden3MessageType.credentialOffer, message.messageType);
     }
@@ -283,6 +292,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       BigInt? profileNonce,
       required String privateKey,
       Map<int, Map<String, dynamic>>? nonRevocationProofs}) {
+    _stacktraceManager.clear();
     return _getIden3commClaimsUseCase.execute(
         param: GetIden3commClaimsParam(
       message: message,
@@ -300,6 +310,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     BigInt? profileNonce,
     required String privateKey,
   }) {
+    _stacktraceManager.clear();
     return _getIden3commClaimsRevNonceUseCase.execute(
         param: GetIden3commClaimsRevNonceParam(
       message: message,
@@ -320,6 +331,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       String? stateContractAddr,
       String? ipfsNodeUrl,
       Map<int, Map<String, dynamic>>? nonRevocationProofs}) {
+    _stacktraceManager.clear();
     return _getIden3commProofsUseCase.execute(
         param: GetIden3commProofsParam(
       message: message,
@@ -343,7 +355,10 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     String? pushToken,
     Map<int, Map<String, dynamic>>? nonRevocationProofs,
   }) {
+    _stacktraceManager.clear();
     if (message is! AuthIden3MessageEntity) {
+      _stacktraceManager.addTrace(
+          '[authenticate] Invalid message type: ${message.messageType}');
       throw InvalidIden3MsgTypeException(
           Iden3MessageType.authRequest, message.messageType);
     }
@@ -368,6 +383,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     List<InteractionState>? states,
     List<FilterEntity>? filters,
   }) {
+    _stacktraceManager.clear();
     return _getInteractionsUseCase.execute(
         param: GetInteractionsParam(
       genesisDid: genesisDid,
@@ -384,6 +400,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     String? privateKey,
     required List<String> ids,
   }) {
+    _stacktraceManager.clear();
     return _removeInteractionsUseCase.execute(
         param: RemoveInteractionsParam(
             genesisDid: genesisDid, privateKey: privateKey, ids: ids));
@@ -395,6 +412,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     String? genesisDid,
     String? privateKey,
   }) {
+    _stacktraceManager.clear();
     return _addInteractionUseCase.execute(
         param: AddInteractionParam(
             genesisDid: genesisDid,
@@ -410,6 +428,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     String? privateKey,
     InteractionState? state,
   }) {
+    _stacktraceManager.clear();
     return _updateInteractionUseCase.execute(
         param: UpdateInteractionParam(
       genesisDid: genesisDid,
@@ -423,5 +442,30 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   @override
   Future<void> cleanSchemaCache() {
     return _cleanSchemaCacheUseCase.execute(param: null);
+  }
+
+  ///
+  void switchStacktrace({bool enabled = false}) {
+    _stacktraceManager.isEnabled = enabled;
+  }
+
+  ///
+  Stream<String> stacktraceStream() {
+    return _stacktraceManager.stacktraceStream;
+  }
+
+  ///
+  String getStacktrace() {
+    return _stacktraceManager.stacktrace;
+  }
+
+  ///
+  Stream<String> errorTraceStream() {
+    return _stacktraceManager.errorStream;
+  }
+
+  ///
+  String getErrorTrace() {
+    return _stacktraceManager.errorTrace;
   }
 }

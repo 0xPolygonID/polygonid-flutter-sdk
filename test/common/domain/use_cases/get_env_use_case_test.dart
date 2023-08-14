@@ -3,17 +3,25 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/repositories/config_repository.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 
 import '../../common_mocks.dart';
 import 'get_env_use_case_test.mocks.dart';
 
 // Dependencies
 MockConfigRepository configRepository = MockConfigRepository();
+MockStacktraceManager stacktraceStreamManager = MockStacktraceManager();
 
 // Tested instance
-GetEnvUseCase useCase = GetEnvUseCase(configRepository);
+GetEnvUseCase useCase = GetEnvUseCase(
+  configRepository,
+  stacktraceStreamManager,
+);
 
-@GenerateMocks([ConfigRepository])
+@GenerateMocks([
+  ConfigRepository,
+  StacktraceManager,
+])
 void main() {
   test("When I call execute, I expect an EnvEntity to be returned", () async {
     // Given

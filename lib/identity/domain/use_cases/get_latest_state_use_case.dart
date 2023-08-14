@@ -1,5 +1,6 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
@@ -14,8 +15,12 @@ class GetLatestStateParam {
 class GetLatestStateUseCase
     extends FutureUseCase<GetLatestStateParam, Map<String, dynamic>> {
   final SMTRepository _smtRepository;
+  final StacktraceManager _stacktraceManager;
 
-  GetLatestStateUseCase(this._smtRepository);
+  GetLatestStateUseCase(
+    this._smtRepository,
+    this._stacktraceManager,
+  );
 
   @override
   Future<Map<String, dynamic>> execute({required GetLatestStateParam param}) {
@@ -45,10 +50,13 @@ class GetLatestStateUseCase
                 (hash) => TreeStateEntity(hash, trees[0], trees[1], trees[2])))
         .then((state) => _smtRepository.convertState(state: state))
         .then((state) {
+      _stacktraceManager.addTrace("[GetLatestStateUseCase] State");
       logger().i("[GetLatestStateUseCase] State: $state");
 
       return state;
     }).catchError((error) {
+      _stacktraceManager.addTrace("[GetLatestStateUseCase] Error: $error");
+      _stacktraceManager.addError("[GetLatestStateUseCase] Error: $error");
       logger().e("[GetLatestStateUseCase] Error: $error");
 
       throw error;

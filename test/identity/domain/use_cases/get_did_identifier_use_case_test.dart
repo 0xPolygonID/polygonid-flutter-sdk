@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_genesis_state_use_case.dart';
@@ -13,6 +14,7 @@ import 'get_did_identifier_use_case_test.mocks.dart';
 MockIdentityRepository identityRepository = MockIdentityRepository();
 MockGetGenesisStateUseCase getGenesisStateUseCase =
     MockGetGenesisStateUseCase();
+MockStacktraceManager stacktraceStreamManager = MockStacktraceManager();
 
 // Data
 GetDidIdentifierParam param = GetDidIdentifierParam(
@@ -25,11 +27,13 @@ GetDidIdentifierParam param = GetDidIdentifierParam(
 GetDidIdentifierUseCase useCase = GetDidIdentifierUseCase(
   identityRepository,
   getGenesisStateUseCase,
+  stacktraceStreamManager,
 );
 
 @GenerateMocks([
   IdentityRepository,
   GetGenesisStateUseCase,
+  StacktraceManager,
 ])
 void main() {
   setUp(() {

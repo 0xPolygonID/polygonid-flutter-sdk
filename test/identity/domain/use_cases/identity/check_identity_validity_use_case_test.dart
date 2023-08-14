@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/check_identity_validity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_private_key_use_case.dart';
@@ -12,16 +13,19 @@ import 'check_identity_validity_use_case_test.mocks.dart';
 MockGetPrivateKeyUseCase getPrivateKeyUseCase = MockGetPrivateKeyUseCase();
 MockGetCurrentEnvDidIdentifierUseCase getCurrentEnvDidIdentifierUseCase =
     MockGetCurrentEnvDidIdentifierUseCase();
+MockStacktraceManager stacktraceManager = MockStacktraceManager();
 
 // Tested instance
 CheckIdentityValidityUseCase useCase = CheckIdentityValidityUseCase(
   getPrivateKeyUseCase,
   getCurrentEnvDidIdentifierUseCase,
+  stacktraceManager,
 );
 
 @GenerateMocks([
   GetPrivateKeyUseCase,
   GetCurrentEnvDidIdentifierUseCase,
+  StacktraceManager,
 ])
 void main() {
   setUp(() {

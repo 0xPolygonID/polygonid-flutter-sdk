@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_all_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
@@ -25,6 +26,7 @@ MockRemoveAllClaimsUseCase removeAllClaimsUseCase =
 MockUpdateIdentityUseCase updateIdentityUseCase = MockUpdateIdentityUseCase();
 MockCheckProfileAndDidCurrentEnvUseCase checkProfileAndDidCurrentEnvUseCase =
     MockCheckProfileAndDidCurrentEnvUseCase();
+MockStacktraceManager stacktraceManager = MockStacktraceManager();
 
 RemoveProfileParam param = RemoveProfileParam(
   genesisDid: CommonMocks.did,
@@ -52,6 +54,7 @@ RemoveProfileUseCase useCase = RemoveProfileUseCase(
   createProfilesUseCase,
   removeIdentityStateUseCase,
   removeAllClaimsUseCase,
+  stacktraceManager,
 );
 
 @GenerateMocks([
@@ -61,6 +64,7 @@ RemoveProfileUseCase useCase = RemoveProfileUseCase(
   RemoveAllClaimsUseCase,
   UpdateIdentityUseCase,
   CheckProfileAndDidCurrentEnvUseCase,
+  StacktraceManager,
 ])
 void main() {
   setUp(() {

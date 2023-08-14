@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
@@ -49,6 +50,7 @@ class ProofRepositoryImpl extends ProofRepository {
   final AuthProofMapper _authProofMapper;
   final GistMTProofMapper _gistMTProofMapper;
   final CircuitsFilesDataSource _circuitsFilesDataSource;
+  final StacktraceManager _stacktraceManager;
 
   // FIXME: those mappers shouldn't be used here as they are part of Credential
   final ClaimMapper _claimMapper;
@@ -71,6 +73,7 @@ class ProofRepositoryImpl extends ProofRepository {
     this._authProofMapper,
     this._gistMTProofMapper,
     this._circuitsFilesDataSource,
+    this._stacktraceManager,
   );
 
   @override
@@ -115,22 +118,26 @@ class ProofRepositoryImpl extends ProofRepository {
 
     String? res = await _libPolygonIdCoreProofDataSource
         .getProofInputs(
-          id: id,
-          profileNonce: profileNonce,
-          claimSubjectProfileNonce: claimSubjectProfileNonce,
-          authClaim: authClaim,
-          incProof: incProofMap,
-          nonRevProof: nonRevProofMap,
-          gistProof: gistProofMap,
-          treeState: treeState,
-          challenge: challenge,
-          signature: signature,
-          credential: credentialDto.info,
-          request: proofScopeRequest,
-          circuitId: circuitId,
-          config: config,
-        )
-        .catchError((error) => throw NullAtomicQueryInputsException(id));
+      id: id,
+      profileNonce: profileNonce,
+      claimSubjectProfileNonce: claimSubjectProfileNonce,
+      authClaim: authClaim,
+      incProof: incProofMap,
+      nonRevProof: nonRevProofMap,
+      gistProof: gistProofMap,
+      treeState: treeState,
+      challenge: challenge,
+      signature: signature,
+      credential: credentialDto.info,
+      request: proofScopeRequest,
+      circuitId: circuitId,
+      config: config,
+    )
+        .catchError((error) {
+      _stacktraceManager.addTrace(
+          "[calculateAtomicQueryInputs/libPolygonIdCoreProof] exception $error");
+      throw NullAtomicQueryInputsException(id);
+    });
 
     if (res.isNotEmpty) {
       Uint8List inputsJsonBytes;
@@ -147,6 +154,8 @@ class ProofRepositoryImpl extends ProofRepository {
       }
     }
 
+    _stacktraceManager.addTrace(
+        "[calculateAtomicQueryInputs/libPolygonIdCoreProof] NullAtomicQueryInputsException");
     throw NullAtomicQueryInputsException(id);
   }
 
@@ -158,17 +167,26 @@ class ProofRepositoryImpl extends ProofRepository {
     WitnessParam witnessParam =
         WitnessParam(wasm: circuitData.datFile, json: atomicQueryInputs);
 
+    _stacktraceManager.addTrace(
+        "[calculateWitness] circuitData.circuitId ${circuitData.circuitId}");
     return _witnessDataSource
         .computeWitness(
             type: _circuitTypeMapper.mapTo(circuitData.circuitId),
             param: witnessParam)
         .then((witness) {
       if (witness == null) {
+        _stacktraceManager.addTrace("[calculateWitness] NullWitnessException");
         throw NullWitnessException(circuitData.circuitId);
       }
 
       return witness;
-    }).catchError((error) => throw NullWitnessException(circuitData.circuitId));
+    }).catchError(
+      (error) {
+        _stacktraceManager
+            .addTrace("[calculateWitness] NullWitnessException $error");
+        throw NullWitnessException(circuitData.circuitId);
+      },
+    );
   }
 
   @override
@@ -178,6 +196,7 @@ class ProofRepositoryImpl extends ProofRepository {
         .prove(circuitData.circuitId, circuitData.zKeyFile, wtnsBytes)
         .then((proof) {
       if (proof == null) {
+        _stacktraceManager.addTrace("[prove] NullProofException");
         throw NullProofException(circuitData.circuitId);
       }
 
