@@ -24,10 +24,8 @@ class GetAuthChallengeUseCase extends FutureUseCase<String, String> {
       return challenge;
     }).catchError((error) {
       logger().e("[GetAuthChallengeUseCase] Error: $error");
-      _stacktraceManager
-          .addTrace("[GetAuthChallengeUseCase] Error: $error");
-      _stacktraceManager
-          .addError("[GetAuthChallengeUseCase] Error: $error");
+      _stacktraceManager.addTrace("[GetAuthChallengeUseCase] Error: $error");
+      _stacktraceManager.addError("[GetAuthChallengeUseCase] Error: $error");
       throw error;
     });
   }

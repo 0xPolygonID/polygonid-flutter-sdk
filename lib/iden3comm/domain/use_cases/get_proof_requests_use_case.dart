@@ -36,8 +36,8 @@ class GetProofRequestsUseCase
     if (param.body.scope != null && param.body.scope!.isNotEmpty) {
       for (ProofScopeRequest scope in param.body.scope!) {
         var context = await _getProofQueryContextUseCase.execute(param: scope);
-        _stacktraceManager
-            .addTrace("[GetProofRequestsUseCase] _getProofQueryContextUseCase: $context");
+        _stacktraceManager.addTrace(
+            "[GetProofRequestsUseCase] _getProofQueryContextUseCase: $context");
         ProofQueryParamEntity query =
             await _getProofQueryUseCase.execute(param: scope);
         _stacktraceManager.addTrace(

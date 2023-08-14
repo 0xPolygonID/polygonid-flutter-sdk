@@ -1,3 +1,1 @@
-abstract class PolygonIdSdkStacktrace {
-
-}
+abstract class PolygonIdSdkStacktrace {}

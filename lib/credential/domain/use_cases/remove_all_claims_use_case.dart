@@ -32,14 +32,12 @@ class RemoveAllClaimsUseCase extends FutureUseCase<RemoveAllClaimsParam, void> {
     )
         .then((_) {
       logger().i("[RemoveAllClaimsUseCase] Claims have been removed: $param");
-      _stacktraceManager
-          .addTrace("[RemoveAllClaimsUseCase] Claims have been removed: $param");
+      _stacktraceManager.addTrace(
+          "[RemoveAllClaimsUseCase] Claims have been removed: $param");
     }).catchError((error) {
       logger().e("[RemoveAllClaimsUseCase] Error: $error");
-_stacktraceManager
-          .addTrace("[RemoveAllClaimsUseCase] Error: $error");
-      _stacktraceManager
-          .addError("[RemoveAllClaimsUseCase] Error: $error");
+      _stacktraceManager.addTrace("[RemoveAllClaimsUseCase] Error: $error");
+      _stacktraceManager.addError("[RemoveAllClaimsUseCase] Error: $error");
       throw error;
     });
   }

@@ -175,16 +175,15 @@ class ProofRepositoryImpl extends ProofRepository {
             param: witnessParam)
         .then((witness) {
       if (witness == null) {
-        _stacktraceManager
-            .addTrace("[calculateWitness] NullWitnessException");
+        _stacktraceManager.addTrace("[calculateWitness] NullWitnessException");
         throw NullWitnessException(circuitData.circuitId);
       }
 
       return witness;
     }).catchError(
       (error) {
-        _stacktraceManager.addTrace(
-            "[calculateWitness] NullWitnessException $error");
+        _stacktraceManager
+            .addTrace("[calculateWitness] NullWitnessException $error");
         throw NullWitnessException(circuitData.circuitId);
       },
     );

@@ -126,8 +126,8 @@ class Proof implements PolygonIdSdkProof {
   @override
   Future<void> cancelDownloadCircuits() async {
     _stacktraceManager.clear();
-    _stacktraceManager.addTrace(
-        "PolygonIdSdk.Proof.cancelDownloadCircuits called");
+    _stacktraceManager
+        .addTrace("PolygonIdSdk.Proof.cancelDownloadCircuits called");
     return _cancelDownloadCircuitsUseCase.execute();
   }
 }

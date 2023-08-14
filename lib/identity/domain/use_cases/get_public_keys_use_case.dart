@@ -18,8 +18,8 @@ class GetPublicKeysUseCase extends FutureUseCase<String, List<String>> {
         _identityRepository.getPublicKeys(privateKey: param).then((publicKeys) {
       logger()
           .i("[GetPublicKeysUseCase] Message $param publicKeys: $publicKeys");
-      _stacktraceManager.addTrace(
-          "[GetPublicKeysUseCase] Message $param publicKeys");
+      _stacktraceManager
+          .addTrace("[GetPublicKeysUseCase] Message $param publicKeys");
 
       return publicKeys;
     }).catchError((error) {

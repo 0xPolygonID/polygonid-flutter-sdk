@@ -49,8 +49,7 @@ class GetDidIdentifierUseCase
       return did;
     }).catchError((error) {
       logger().e("[GetDidIdentifierUseCase] Error: $error");
-      _stacktraceManager
-          .addTrace("[GetDidIdentifierUseCase] Error: $error");
+      _stacktraceManager.addTrace("[GetDidIdentifierUseCase] Error: $error");
       throw error;
     });
   }

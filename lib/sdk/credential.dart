@@ -135,8 +135,7 @@ class Credential implements PolygonIdSdkCredential {
       required String genesisDid,
       required String privateKey}) {
     _stacktraceManager.clear();
-    _stacktraceManager
-        .addTrace("PolygonIdSdk.Credential.saveClaims called");
+    _stacktraceManager.addTrace("PolygonIdSdk.Credential.saveClaims called");
     return _saveClaimsUseCase.execute(
         param: SaveClaimsParam(
             claims: claims, genesisDid: genesisDid, privateKey: privateKey));
@@ -148,8 +147,7 @@ class Credential implements PolygonIdSdkCredential {
       required String genesisDid,
       required String privateKey}) {
     _stacktraceManager.clear();
-    _stacktraceManager
-        .addTrace("PolygonIdSdk.Credential.getClaims called");
+    _stacktraceManager.addTrace("PolygonIdSdk.Credential.getClaims called");
     return _getClaimsUseCase.execute(
         param: GetClaimsParam(
       filters: filters,
@@ -210,8 +208,7 @@ class Credential implements PolygonIdSdkCredential {
       required String genesisDid,
       required String privateKey}) {
     _stacktraceManager.clear();
-    _stacktraceManager
-        .addTrace("PolygonIdSdk.Credential.removeClaims called");
+    _stacktraceManager.addTrace("PolygonIdSdk.Credential.removeClaims called");
     return _removeClaimsUseCase.execute(
         param: RemoveClaimsParam(
       claimIds: claimIds,
@@ -226,8 +223,7 @@ class Credential implements PolygonIdSdkCredential {
       required String genesisDid,
       required String privateKey}) {
     _stacktraceManager.clear();
-    _stacktraceManager
-        .addTrace("PolygonIdSdk.Credential.removeClaim called");
+    _stacktraceManager.addTrace("PolygonIdSdk.Credential.removeClaim called");
     return _removeClaimsUseCase.execute(
         param: RemoveClaimsParam(
       claimIds: [claimId],
@@ -248,8 +244,7 @@ class Credential implements PolygonIdSdkCredential {
     required String privateKey,
   }) {
     _stacktraceManager.clear();
-    _stacktraceManager
-        .addTrace("PolygonIdSdk.Credential.updateClaim called");
+    _stacktraceManager.addTrace("PolygonIdSdk.Credential.updateClaim called");
     return _updateClaimUseCase.execute(
         param: UpdateClaimParam(
             id: claimId,

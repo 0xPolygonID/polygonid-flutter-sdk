@@ -273,15 +273,13 @@ class Identity implements PolygonIdSdkIdentity {
   @override
   Future<String> getPrivateKey({required String secret}) {
     _stacktraceManager.clear();
-    _stacktraceManager
-        .addTrace("PolygonIdSdk.Identity.getPrivateKey called");
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.getPrivateKey called");
     return _getPrivateKeyUseCase.execute(param: secret);
   }
 
   Future<PrivateIdentityEntity> addIdentity({String? secret}) async {
     _stacktraceManager.clear();
-    _stacktraceManager
-        .addTrace("PolygonIdSdk.Identity.addIdentity called");
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.addIdentity called");
     return _addNewIdentityUseCase.execute(param: secret);
   }
 
@@ -291,8 +289,7 @@ class Identity implements PolygonIdSdkIdentity {
       required String privateKey,
       String? encryptedDb}) {
     _stacktraceManager.clear();
-    _stacktraceManager
-        .addTrace("PolygonIdSdk.Identity.restoreIdentity called");
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.restoreIdentity called");
     return _restoreIdentityUseCase.execute(
         param: RestoreIdentityParam(
             genesisDid: genesisDid,
@@ -305,8 +302,7 @@ class Identity implements PolygonIdSdkIdentity {
     required String privateKey,
   }) {
     _stacktraceManager.clear();
-    _stacktraceManager
-        .addTrace("PolygonIdSdk.Identity.backupIdentity called");
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.backupIdentity called");
     return _backupIdentityUseCase.execute(
         param: BackupIdentityParam(
             genesisDid: genesisDid, privateKey: privateKey));
@@ -316,8 +312,7 @@ class Identity implements PolygonIdSdkIdentity {
   Future<IdentityEntity> getIdentity(
       {required String genesisDid, String? privateKey}) async {
     _stacktraceManager.clear();
-    _stacktraceManager
-        .addTrace("PolygonIdSdk.Identity.getIdentity called");
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.getIdentity called");
     return _getIdentityUseCase.execute(
         param:
             GetIdentityParam(genesisDid: genesisDid, privateKey: privateKey));
@@ -326,8 +321,7 @@ class Identity implements PolygonIdSdkIdentity {
   @override
   Future<List<IdentityEntity>> getIdentities() {
     _stacktraceManager.clear();
-    _stacktraceManager
-        .addTrace("PolygonIdSdk.Identity.getIdentities called");
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.getIdentities called");
     return _getIdentitiesUseCase.execute();
   }
 
@@ -335,8 +329,7 @@ class Identity implements PolygonIdSdkIdentity {
   Future<void> removeIdentity(
       {required String genesisDid, required String privateKey}) {
     _stacktraceManager.clear();
-    _stacktraceManager
-        .addTrace("PolygonIdSdk.Identity.removeIdentity called");
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.removeIdentity called");
     return _removeIdentityUseCase.execute(
         param: RemoveIdentityParam(
             genesisDid: genesisDid, privateKey: privateKey));
@@ -372,8 +365,7 @@ class Identity implements PolygonIdSdkIdentity {
   @override
   Future<DidEntity> getDidEntity({required String did}) {
     _stacktraceManager.clear();
-    _stacktraceManager
-        .addTrace("PolygonIdSdk.Identity.getDidEntity called");
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.getDidEntity called");
     return _getDidUseCase.execute(param: did);
   }
 
@@ -390,8 +382,7 @@ class Identity implements PolygonIdSdkIdentity {
       required String privateKey,
       required BigInt profileNonce}) {
     _stacktraceManager.clear();
-    _stacktraceManager
-        .addTrace("PolygonIdSdk.Identity.addProfile called");
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.addProfile called");
     return _addProfileUseCase.execute(
         param: AddProfileParam(
             genesisDid: genesisDid,
@@ -405,8 +396,7 @@ class Identity implements PolygonIdSdkIdentity {
       required String privateKey,
       required BigInt profileNonce}) {
     _stacktraceManager.clear();
-    _stacktraceManager
-        .addTrace("PolygonIdSdk.Identity.removeProfile called");
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.removeProfile called");
     return _removeProfileUseCase.execute(
         param: RemoveProfileParam(
             genesisDid: genesisDid,
@@ -418,8 +408,7 @@ class Identity implements PolygonIdSdkIdentity {
   Future<Map<BigInt, String>> getProfiles(
       {required String genesisDid, required String privateKey}) {
     _stacktraceManager.clear();
-    _stacktraceManager
-        .addTrace("PolygonIdSdk.Identity.getProfiles called");
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.getProfiles called");
     return _getProfilesUseCase.execute(
         param:
             GetProfilesParam(genesisDid: genesisDid, privateKey: privateKey));
