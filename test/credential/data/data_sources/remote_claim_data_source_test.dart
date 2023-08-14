@@ -24,8 +24,8 @@ final exception = Exception();
 
 // Dependencies
 MockClient client = MockClient();
-MockStacktraceStreamManager stacktraceStreamManager =
-    MockStacktraceStreamManager();
+MockStacktraceManager stacktraceStreamManager =
+    MockStacktraceManager();
 
 // Tested instance
 RemoteClaimDataSource dataSource = RemoteClaimDataSource(

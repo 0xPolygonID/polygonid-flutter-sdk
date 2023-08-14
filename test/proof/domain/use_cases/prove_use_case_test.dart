@@ -10,7 +10,8 @@ import '../../../common/proof_mocks.dart';
 import 'prove_use_case_test.mocks.dart';
 
 MockProofRepository proofRepository = MockProofRepository();
-ProveUseCase useCase = ProveUseCase(proofRepository);
+MockStacktraceManager stacktraceManager = MockStacktraceManager();
+ProveUseCase useCase = ProveUseCase(proofRepository, stacktraceManager);
 
 // Data
 ProveParam param = ProveParam(CommonMocks.aBytes, ProofMocks.circuitData);

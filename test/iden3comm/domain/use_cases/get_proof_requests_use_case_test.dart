@@ -40,8 +40,8 @@ final exception = Exception();
 MockGetProofQueryContextUseCase getProofQueryContextUseCase =
     MockGetProofQueryContextUseCase();
 MockGetProofQueryUseCase getProofQueryUseCase = MockGetProofQueryUseCase();
-MockStacktraceStreamManager stacktraceStreamManager =
-    MockStacktraceStreamManager();
+MockStacktraceManager stacktraceStreamManager =
+    MockStacktraceManager();
 
 // Tested instance
 GetProofRequestsUseCase useCase = GetProofRequestsUseCase(

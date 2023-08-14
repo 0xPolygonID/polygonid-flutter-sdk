@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_challenge_use_case.dart';
@@ -29,17 +30,25 @@ MockGetAuthChallengeUseCase getAuthChallengeUseCase =
     MockGetAuthChallengeUseCase();
 MockGetAuthInputsUseCase getAuthInputsUseCase = MockGetAuthInputsUseCase();
 MockProveUseCase proveUseCase = MockProveUseCase();
+MockStacktraceManager stacktraceManager = MockStacktraceManager();
 
 // Tested instance
-GetAuthTokenUseCase useCase = GetAuthTokenUseCase(loadCircuitUseCase,
-    getJWZUseCase, getAuthChallengeUseCase, getAuthInputsUseCase, proveUseCase);
+GetAuthTokenUseCase useCase = GetAuthTokenUseCase(
+  loadCircuitUseCase,
+  getJWZUseCase,
+  getAuthChallengeUseCase,
+  getAuthInputsUseCase,
+  proveUseCase,
+  stacktraceManager,
+);
 
 @GenerateMocks([
   LoadCircuitUseCase,
   GetJWZUseCase,
   GetAuthChallengeUseCase,
   GetAuthInputsUseCase,
-  ProveUseCase
+  ProveUseCase,
+  StacktraceManager,
 ])
 void main() {
   setUp(() {

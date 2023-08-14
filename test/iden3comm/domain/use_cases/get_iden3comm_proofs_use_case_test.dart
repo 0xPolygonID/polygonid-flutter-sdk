@@ -55,8 +55,8 @@ MockGetProofRequestsUseCase getProofRequestsUseCase =
 MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
 MockProofGenerationStepsStreamManager proofGenerationStepsStreamManager =
     MockProofGenerationStepsStreamManager();
-MockStacktraceStreamManager stacktraceStreamManager =
-    MockStacktraceStreamManager();
+MockStacktraceManager stacktraceStreamManager =
+    MockStacktraceManager();
 
 // Tested instance
 GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
