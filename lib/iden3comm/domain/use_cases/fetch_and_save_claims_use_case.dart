@@ -136,7 +136,7 @@ class FetchAndSaveClaimsUseCase
               logger().i(
                   "[FetchAndSaveClaimsUseCase] All claims have been saved: $claims");
               _stacktraceManager.addTrace(
-                  "[FetchAndSaveClaimsUseCase] All claims have been saved: $claims");
+                  "[FetchAndSaveClaimsUseCase] All claims have been saved: claimsLength ${claims.length}");
               return claims;
             }))
         .catchError((error) {

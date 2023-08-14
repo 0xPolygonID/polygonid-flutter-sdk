@@ -50,7 +50,7 @@ class GetLatestStateUseCase
                 (hash) => TreeStateEntity(hash, trees[0], trees[1], trees[2])))
         .then((state) => _smtRepository.convertState(state: state))
         .then((state) {
-      _stacktraceManager.addTrace("[GetLatestStateUseCase] State: $state");
+      _stacktraceManager.addTrace("[GetLatestStateUseCase] State");
       logger().i("[GetLatestStateUseCase] State: $state");
 
       return state;

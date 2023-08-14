@@ -41,7 +41,7 @@ class GenerateNonRevProofUseCase
           param.nonRevProof!.isNotEmpty &&
           identityState == param.nonRevProof!["issuer"]["state"]) {
         _stacktraceManager.addTrace(
-            "[GenerateNonRevProofUseCase] Non rev proof: ${param.nonRevProof}");
+            "[GenerateNonRevProofUseCase] Non rev proof");
         return param.nonRevProof!;
       } else {
         return Future.wait<dynamic>([
@@ -56,7 +56,7 @@ class GenerateNonRevProofUseCase
                 cachedNonRevProof: param.nonRevProof))
             .then((nonRevProof) {
           _stacktraceManager.addTrace(
-              "[GenerateNonRevProofUseCase] Non rev proof: $nonRevProof");
+              "[GenerateNonRevProofUseCase] Non rev proof");
           logger()
               .i("[GenerateNonRevProofUseCase] Non rev proof: $nonRevProof");
 

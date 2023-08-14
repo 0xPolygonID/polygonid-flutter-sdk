@@ -102,7 +102,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
         ipfsNodeUrl: env.ipfsUrl,
         nonRevocationProofs: param.nonRevocationProofs,
       ));
-      _stacktraceManager.addTrace("[AuthenticateUseCase] _getIden3commProofsUseCase success\nproofs: ${proofs.toString()}");
+      _stacktraceManager.addTrace("[AuthenticateUseCase] _getIden3commProofsUseCase success");
       logger().i("stopwatch after getProofs ${stopwatch.elapsedMilliseconds}");
 
       String pushUrl = env.pushUrl;

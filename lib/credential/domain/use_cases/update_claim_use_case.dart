@@ -62,7 +62,7 @@ class UpdateClaimUseCase extends FutureUseCase<UpdateClaimParam, ClaimEntity> {
       logger().i(
           "[UpdateClaimUseCase] Claim with id ${param.id} has been updated: $claim");
       _stacktraceManager.addTrace(
-          "[UpdateClaimUseCase] Claim with id ${param.id} has been updated: $claim");
+          "[UpdateClaimUseCase] Claim with id ${param.id} has been updated");
       return claim;
     }).catchError((error) {
       logger().e("[UpdateClaimUseCase] Error: $error");

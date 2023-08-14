@@ -113,7 +113,7 @@ class GenerateZKProofUseCase
         .execute(param: ProveParam(atomicQueryInputs, param.circuitData))
         .then((proof) {
       logger().i("[GenerateZKProofUseCase] proof: $proof");
-      _stacktraceManager.addTrace("[GenerateZKProofUseCase] proof: $proof");
+      _stacktraceManager.addTrace("[GenerateZKProofUseCase] proof");
 
       return proof;
     }).catchError((error) {

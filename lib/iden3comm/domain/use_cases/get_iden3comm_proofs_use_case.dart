@@ -155,6 +155,8 @@ class GetIden3commProofsUseCase
       } else {
         _stacktraceManager.addTrace(
             "[GetIden3commProofsUseCase] CredentialsNotFoundException - requests: $requests");
+        _stacktraceManager.addError(
+            "[GetIden3commProofsUseCase] CredentialsNotFoundException - requests: $requests");
         throw CredentialsNotFoundException(requests);
       }
 
@@ -169,8 +171,7 @@ class GetIden3commProofsUseCase
 
       return proofs;
     } catch (e) {
-      _stacktraceManager.addTrace(
-          "[GetIden3commProofsUseCase] Exception: $e");
+      _stacktraceManager.addTrace("[GetIden3commProofsUseCase] Exception: $e");
       rethrow;
     }
   }

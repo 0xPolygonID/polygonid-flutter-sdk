@@ -53,7 +53,7 @@ class GetClaimsUseCase
               privateKey: param.privateKey)
           .then((claims) {
         logger().i("[GetClaimsUseCase] Claims: $claims");
-        _stacktraceManager.addTrace("[GetClaimsUseCase] Claims: $claims");
+        _stacktraceManager.addTrace("[GetClaimsUseCase] Claims length: ${claims.length}");
         return claims;
       }).catchError((error) {
         _stacktraceManager.addTrace("[GetClaimsUseCase] Error: $error");
@@ -63,7 +63,7 @@ class GetClaimsUseCase
       });
     } else {
       _stacktraceManager.addTrace(
-          "[GetClaimsUseCase] Invalid profile nonce: ${param.profileNonce}");
+          "[GetClaimsUseCase] Invalid profile nonce");
       _stacktraceManager.addError(
           "[GetClaimsUseCase] Invalid profile nonce: ${param.profileNonce}");
       throw InvalidProfileException(param.profileNonce);

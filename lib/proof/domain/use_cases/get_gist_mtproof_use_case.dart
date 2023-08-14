@@ -36,7 +36,7 @@ class GetGistMTProofUseCase extends FutureUseCase<String, GistMTProofEntity> {
             contractAddress: (values[0] as EnvEntity).idStateContract))
         .then((proof) {
       _stacktraceManager.addTrace(
-          "[GetGistMTProofUseCase] Gist proof $proof for identifier $param");
+          "[GetGistMTProofUseCase] Gist proof for identifier ${param}");
       logger()
           .i("[GetGistMTProofUseCase] Gist proof $proof for identifier $param");
 

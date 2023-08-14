@@ -19,7 +19,7 @@ class GetPublicKeysUseCase extends FutureUseCase<String, List<String>> {
       logger()
           .i("[GetPublicKeysUseCase] Message $param publicKeys: $publicKeys");
       _stacktraceManager.addTrace(
-          "[GetPublicKeysUseCase] Message $param publicKeys: $publicKeys");
+          "[GetPublicKeysUseCase] Message $param publicKeys");
 
       return publicKeys;
     }).catchError((error) {

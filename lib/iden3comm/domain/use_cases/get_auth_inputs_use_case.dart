@@ -70,7 +70,7 @@ class GetAuthInputsUseCase
     NodeEntity authClaimNode =
         await _identityRepository.getAuthClaimNode(children: authClaim);
     _stacktraceManager.addTrace(
-        "[GetAuthInputsUseCase] Auth claim node: ${authClaimNode.toString()}");
+        "[GetAuthInputsUseCase] Auth claim node");
 
     MTProofEntity incProof = await _smtRepository.generateProof(
         key: authClaimNode.hash,
@@ -86,7 +86,7 @@ class GetAuthInputsUseCase
         did: param.genesisDid,
         privateKey: param.privateKey);
     _stacktraceManager.addTrace(
-        "[GetAuthInputsUseCase] Non rev proof: ${nonRevProof.toString()}");
+        "[GetAuthInputsUseCase] Non rev proof");
 
     // hash of clatr, revtr, rootr
     Map<String, dynamic> treeState = await _getLatestStateUseCase.execute(

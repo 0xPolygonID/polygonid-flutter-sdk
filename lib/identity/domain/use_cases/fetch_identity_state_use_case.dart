@@ -30,7 +30,7 @@ class FetchIdentityStateUseCase extends FutureUseCase<String, String> {
                 identifier: id, contractAddress: env.idStateContract)))
         .then((state) {
       _stacktraceManager.addTrace(
-          "[FetchIdentityStateUseCase] Fetched state $state for identifier $param");
+          "[FetchIdentityStateUseCase] Fetched state for identifier $param");
       logger().i(
           "[FetchIdentityStateUseCase] Fetched state $state for identifier $param");
 

@@ -31,7 +31,7 @@ class ProveUseCase extends FutureUseCase<ProveParam, ZKProofEntity> {
 
     // Generate proof
     return _proofRepository.prove(param.circuitData, wtnsBytes).then((proof) {
-      _stacktraceManager.addTrace("[ProveUseCase] proof: $proof");
+      _stacktraceManager.addTrace("[ProveUseCase] proof");
       logger().i("[ProveUseCase] proof: $proof");
 
       return proof;

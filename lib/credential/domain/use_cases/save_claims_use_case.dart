@@ -41,7 +41,7 @@ class SaveClaimsUseCase
       logger()
           .i("[SaveClaimsUseCase] All claims have been saved: ${param.claims}");
       _stacktraceManager.addTrace(
-          "[SaveClaimsUseCase] All claims have been saved: ${param.claims}");
+          "[SaveClaimsUseCase] All claims have been saved");
       return param.claims;
     }).catchError((error) {
       logger().e("[SaveClaimsUseCase] Error: $error");

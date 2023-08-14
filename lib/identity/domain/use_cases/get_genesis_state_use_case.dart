@@ -33,7 +33,7 @@ class GetGenesisStateUseCase extends FutureUseCase<String, TreeStateEntity> {
             .then((hash) => TreeStateEntity(hash, node.hash,
                 HashEntity(data: zero), HashEntity(data: zero))))
         .then((state) {
-      _stacktraceManager.addTrace("[GetGenesisStateUseCase] State: $state");
+      _stacktraceManager.addTrace("[GetGenesisStateUseCase] State");
       logger().i("[GetGenesisStateUseCase] State: $state");
 
       return state;

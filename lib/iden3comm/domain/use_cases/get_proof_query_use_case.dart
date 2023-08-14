@@ -46,6 +46,8 @@ class GetProofQueryUseCase
               // lt, gt
               _stacktraceManager.addTrace(
                   "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
+              _stacktraceManager.addError(
+                  "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
               return Future.error(InvalidProofReqException());
             }
             try {
@@ -56,9 +58,13 @@ class GetProofQueryUseCase
               } catch (e) {
                 _stacktraceManager.addTrace(
                     "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
+                _stacktraceManager.addError(
+                    "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
                 return Future.error(InvalidProofReqException());
               }
               _stacktraceManager.addTrace(
+                  "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
+              _stacktraceManager.addError(
                   "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
               return Future.error(InvalidProofReqException());
             }
@@ -80,12 +86,16 @@ class GetProofQueryUseCase
           } else {
             _stacktraceManager.addTrace(
                 "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
+            _stacktraceManager.addError(
+                "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
             return Future.error(InvalidProofReqException());
           }
         }
       } else {
         _stacktraceManager.addTrace(
             "[GetProofQueryUseCase] InvalidProofReqException param: $param\nreqEntry: $reqEntry");
+        _stacktraceManager.addError(
+            "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $reqEntry");
         return Future.error(InvalidProofReqException());
       }
     }

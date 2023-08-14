@@ -110,18 +110,18 @@ class GenerateIden3commProofUseCase
           param: GetIdentityParam(
               genesisDid: param.did, privateKey: param.privateKey));
       _stacktraceManager.addTrace(
-          "[GenerateIden3commProofUseCase] identity: ${identity.toString()}");
+          "[GenerateIden3commProofUseCase] identity: ${identity.did}");
       logger().i(
           "GENERATION PROOF getIdentityUseCase executed in ${stopwatch.elapsed}");
       authClaim = await _getAuthClaimUseCase.execute(param: identity.publicKey);
       _stacktraceManager.addTrace(
-          "[GenerateIden3commProofUseCase] authClaim: ${authClaim.toString()}");
+          "[GenerateIden3commProofUseCase] authClaim");
       logger().i(
           "GENERATION PROOF getAuthClaimUseCase executed in ${stopwatch.elapsed}");
       NodeEntity authClaimNode =
           await _identityRepository.getAuthClaimNode(children: authClaim);
       _stacktraceManager.addTrace(
-          "[GenerateIden3commProofUseCase] authClaimNode: ${authClaimNode.toString()}");
+          "[GenerateIden3commProofUseCase] authClaimNode");
       logger().i(
           "GENERATION PROOF getAuthClaimNode executed in ${stopwatch.elapsed}");
 
@@ -131,7 +131,7 @@ class GenerateIden3commProofUseCase
           did: param.did,
           privateKey: param.privateKey!);
       _stacktraceManager.addTrace(
-          "[GenerateIden3commProofUseCase] incProof: ${incProof.toString()}");
+          "[GenerateIden3commProofUseCase] incProof");
       logger().i("GENERATION PROOF incProof executed in ${stopwatch.elapsed}");
 
       nonRevProof = await _smtRepository.generateProof(
@@ -140,7 +140,7 @@ class GenerateIden3commProofUseCase
           did: param.did,
           privateKey: param.privateKey!);
       _stacktraceManager.addTrace(
-          "[GenerateIden3commProofUseCase] nonRevProof: ${nonRevProof.toString()}");
+          "[GenerateIden3commProofUseCase] nonRevProof");
       logger()
           .i("GENERATION PROOF nonRevProof executed in ${stopwatch.elapsed}");
 
@@ -149,18 +149,18 @@ class GenerateIden3commProofUseCase
           param: GetLatestStateParam(
               did: param.did, privateKey: param.privateKey!));
       _stacktraceManager.addTrace(
-          "[GenerateIden3commProofUseCase] treeState: ${treeState.toString()}");
+          "[GenerateIden3commProofUseCase] treeState");
       logger().i("GENERATION PROOF treeState executed in ${stopwatch.elapsed}");
 
       gistProof = await _getGistMTProofUseCase.execute(param: param.did);
       _stacktraceManager.addTrace(
-          "[GenerateIden3commProofUseCase] gistProof: ${gistProof.toString()}");
+          "[GenerateIden3commProofUseCase] gistProof");
       logger().i("GENERATION PROOF gistProof executed in ${stopwatch.elapsed}");
 
       signature = await _signMessageUseCase.execute(
           param: SignMessageParam(param.privateKey!, param.challenge!));
       _stacktraceManager.addTrace(
-          "[GenerateIden3commProofUseCase] signature: ${signature.toString()}");
+          "[GenerateIden3commProofUseCase] signature");
       //onchain end
       logger().i("GENERATION PROOF signature executed in ${stopwatch.elapsed}");
     }
@@ -174,12 +174,12 @@ class GenerateIden3commProofUseCase
               ipfsNodeURL: param.ipfsNodeURL!)
           .toJson();
       _stacktraceManager.addTrace(
-          "[GenerateIden3commProofUseCase] config: ${config.toString()}");
+          "[GenerateIden3commProofUseCase] AtomicQueryInputsConfigParam: ${config.toString()}");
     }
 
     DidEntity didEntity = await _getDidUseCase.execute(param: param.did);
     _stacktraceManager.addTrace(
-        "[GenerateIden3commProofUseCase] didEntity: ${didEntity.toString()}");
+        "[GenerateIden3commProofUseCase] didEntity: ${didEntity.did}");
     logger().i("GENERATION PROOF didEntity executed in ${stopwatch.elapsed}");
 
     // Prepare atomic query inputs
@@ -229,7 +229,7 @@ class GenerateIden3commProofUseCase
         .execute(param: ProveParam(atomicQueryInputs, param.circuitData))
         .then((proof) {
       _stacktraceManager.addTrace(
-          "[GenerateIden3commProofUseCase] proof: ${proof.toString()}");
+          "[GenerateIden3commProofUseCase] proof");
       logger().i("[GenerateProofUseCase] proof: $proof");
 
       if (vpProof != null) {

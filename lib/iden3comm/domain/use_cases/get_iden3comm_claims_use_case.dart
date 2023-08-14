@@ -85,8 +85,8 @@ class GetIden3commClaimsUseCase
           }).then(
             (claims) async {
               if (claims.isEmpty) {
-                _stacktraceManager.addTrace(
-                    "[GetIden3commClaimsUseCase] claims is empty");
+                _stacktraceManager
+                    .addTrace("[GetIden3commClaimsUseCase] claims is empty");
                 return null;
               }
 
@@ -130,8 +130,8 @@ class GetIden3commClaimsUseCase
                 for (int i = 0; i < claims.length; i++) {
                   int revNonce = await _getClaimRevocationNonceUseCase.execute(
                       param: claims[i]);
-                  _stacktraceManager.addTrace(
-                      "[GetIden3commClaimsUseCase] revNonce: $revNonce");
+                  _stacktraceManager
+                      .addTrace("[GetIden3commClaimsUseCase] revNonce");
                   Map<String, dynamic>? savedNonRevProof;
                   if (param.nonRevocationProofs.isNotEmpty &&
                       param.nonRevocationProofs.containsKey(revNonce)) {
@@ -145,8 +145,8 @@ class GetIden3commClaimsUseCase
                                   claim: claims[i],
                                   nonRevProof: savedNonRevProof))
                           .catchError((_) => <String, dynamic>{});
-                  _stacktraceManager.addTrace(
-                      "[GetIden3commClaimsUseCase] nonRevProof: $nonRevProof");
+                  _stacktraceManager
+                      .addTrace("[GetIden3commClaimsUseCase] nonRevProof");
 
                   /// FIXME: define an entity for revocation and use it in repo impl
                   if (nonRevProof.isNotEmpty &&
@@ -179,7 +179,9 @@ class GetIden3commClaimsUseCase
     if (requests.isNotEmpty && claims.isEmpty ||
         claims.length != requests.length) {
       _stacktraceManager.addTrace(
-          "[GetIden3commClaimsUseCase] error claims: $claims, requests: $requests");
+          "[GetIden3commClaimsUseCase] error getting claims for requests: $requests");
+      _stacktraceManager.addError(
+          "[GetIden3commClaimsUseCase] error getting claims for requests: $requests");
       throw CredentialsNotFoundException(requests);
     }
 

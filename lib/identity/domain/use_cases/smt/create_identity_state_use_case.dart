@@ -73,7 +73,7 @@ class CreateIdentityStateUseCase
         )
         .then((_) {
       _stacktraceManager
-          .addTrace("[CreateIdentityStateUseCase] State created with: $param");
+          .addTrace("[CreateIdentityStateUseCase] State created");
       logger().i("[CreateIdentityStateUseCase] State created with: $param");
     }).catchError((error) {
       _stacktraceManager.addTrace("[CreateIdentityStateUseCase] Error: $error");
