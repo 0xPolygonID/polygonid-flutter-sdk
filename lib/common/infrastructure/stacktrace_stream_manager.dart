@@ -1,11 +1,12 @@
 import 'dart:async';
 
+import 'package:hive/hive.dart';
 import 'package:injectable/injectable.dart';
 
 @lazySingleton
 class StacktraceManager {
   bool isEnabled = false;
-  String _stacktrace = '';
+  var box = Hive.box('stacktrace');
   String _errorTrace = '';
   StreamController<String> _stacktraceStreamController =
       StreamController<String>.broadcast();
@@ -13,11 +14,9 @@ class StacktraceManager {
   StreamController<String> _errorStreamController =
       StreamController<String>.broadcast();
 
-  Stream<String> get stacktraceStream =>
-      _stacktraceStreamController.stream;
+  Stream<String> get stacktraceStream => _stacktraceStreamController.stream;
 
-  Stream<String> get errorStream =>
-      _errorStreamController.stream;
+  Stream<String> get errorStream => _errorStreamController.stream;
 
   /// we reset the stream
   /// so we can use it again
@@ -31,9 +30,9 @@ class StacktraceManager {
 
   /// we clear the stacktrace
   void clear() {
-    _stacktrace = '';
+    box.clear();
     _errorTrace = '';
-    _stacktraceStreamController.add(_stacktrace);
+    _stacktraceStreamController.add('');
     _errorStreamController.add(_errorTrace);
   }
 
@@ -46,7 +45,11 @@ class StacktraceManager {
   /// we add a new trace to the stacktrace stream
   void addTrace(String stepDescription) {
     if (!isEnabled) return;
+    //write string in an external txt file
+
+    String _stacktrace = box.get('stacktrace') ?? '';
     _stacktrace += stepDescription + '\n***\n***';
+    box.put('stacktrace', _stacktrace);
     _stacktraceStreamController.add(stepDescription);
   }
 
@@ -56,7 +59,10 @@ class StacktraceManager {
   }
 
   /// get the stacktrace
-  String get stacktrace => _stacktrace;
+  String get stacktrace {
+    String _stacktrace = box.get('stacktrace') ?? '';
+    return _stacktrace;
+  }
 
   /// get the error trace
   String get errorTrace => _errorTrace;
