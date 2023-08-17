@@ -22,17 +22,7 @@ class DefaultLogger implements PolygonIdSdkLogger {
   }
 
   @override
-  void v(message, [error, StackTrace? stackTrace]) {
-    _logger.v(message, error: error, stackTrace: stackTrace);
-  }
-
-  @override
   void w(message, [error, StackTrace? stackTrace]) {
     _logger.w(message, error: error, stackTrace: stackTrace);
-  }
-
-  @override
-  void wtf(message, [error, StackTrace? stackTrace]) {
-    _logger.wtf(message, error: error, stackTrace: stackTrace);
   }
 }

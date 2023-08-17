@@ -1,8 +1,8 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 
-import '../../../common/domain/use_case.dart';
-import '../repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 
 class GetDidUseCase extends FutureUseCase<String, DidEntity> {
   final IdentityRepository _identityRepository;

@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/update_claim_use_case.dart';
@@ -49,11 +50,15 @@ final otherClaimEntity = ClaimEntity(
 
 // Dependencies
 MockCredentialRepository credentialRepository = MockCredentialRepository();
+MockStacktraceManager stacktraceManager = MockStacktraceManager();
 
 // Tested instance
-UpdateClaimUseCase useCase = UpdateClaimUseCase(credentialRepository);
+UpdateClaimUseCase useCase = UpdateClaimUseCase(
+  credentialRepository,
+  stacktraceManager,
+);
 
-@GenerateMocks([CredentialRepository])
+@GenerateMocks([CredentialRepository, StacktraceManager])
 void main() {
   group("Update credential", () {
     setUp(() {

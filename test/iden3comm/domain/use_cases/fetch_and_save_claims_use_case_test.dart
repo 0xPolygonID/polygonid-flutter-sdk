@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
@@ -65,6 +66,7 @@ MockSaveClaimsUseCase saveClaimsUseCase = MockSaveClaimsUseCase();
 MockGetAuthTokenUseCase getAuthTokenUseCase = MockGetAuthTokenUseCase();
 MockGetClaimRevocationStatusUseCase getClaimRevocationStatusUseCase =
     MockGetClaimRevocationStatusUseCase();
+MockStacktraceManager stacktraceManager = MockStacktraceManager();
 
 // Tested instance
 FetchAndSaveClaimsUseCase useCase = FetchAndSaveClaimsUseCase(
@@ -76,6 +78,7 @@ FetchAndSaveClaimsUseCase useCase = FetchAndSaveClaimsUseCase(
   getAuthTokenUseCase,
   saveClaimsUseCase,
   getClaimRevocationStatusUseCase,
+  stacktraceManager,
 );
 
 @GenerateMocks([
@@ -87,6 +90,7 @@ FetchAndSaveClaimsUseCase useCase = FetchAndSaveClaimsUseCase(
   GetAuthTokenUseCase,
   SaveClaimsUseCase,
   GetClaimRevocationStatusUseCase,
+  StacktraceManager,
 ])
 void main() {
   group("Fetch and save claims", () {

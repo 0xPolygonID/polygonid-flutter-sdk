@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
@@ -97,15 +98,21 @@ MockCredentialRepository credentialRepository = MockCredentialRepository();
 MockGetCurrentEnvDidIdentifierUseCase getCurrentEnvDidIdentifierUseCase =
     MockGetCurrentEnvDidIdentifierUseCase();
 MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
+MockStacktraceManager stacktraceStreamManager = MockStacktraceManager();
 
 // Tested instance
-GetClaimsUseCase useCase = GetClaimsUseCase(credentialRepository,
-    getCurrentEnvDidIdentifierUseCase, getIdentityUseCase);
+GetClaimsUseCase useCase = GetClaimsUseCase(
+  credentialRepository,
+  getCurrentEnvDidIdentifierUseCase,
+  getIdentityUseCase,
+  stacktraceStreamManager,
+);
 
 @GenerateMocks([
   CredentialRepository,
   GetCurrentEnvDidIdentifierUseCase,
-  GetIdentityUseCase
+  GetIdentityUseCase,
+  StacktraceManager,
 ])
 void main() {
   group("Get claims", () {

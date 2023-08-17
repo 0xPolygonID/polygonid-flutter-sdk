@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_type_use_case.dart';
@@ -33,12 +34,18 @@ const types = [
 // Dependencies
 MockGetIden3MessageTypeUseCase getIden3MessageTypeUseCase =
     MockGetIden3MessageTypeUseCase();
+MockStacktraceManager stacktraceManager = MockStacktraceManager();
 
 // Tested instance
-GetIden3MessageUseCase useCase =
-    GetIden3MessageUseCase(getIden3MessageTypeUseCase);
+GetIden3MessageUseCase useCase = GetIden3MessageUseCase(
+  getIden3MessageTypeUseCase,
+  stacktraceManager,
+);
 
-@GenerateMocks([GetIden3MessageTypeUseCase])
+@GenerateMocks([
+  GetIden3MessageTypeUseCase,
+  StacktraceManager,
+])
 void main() {
   test(
     'Given a string, when I call execute, I expect a Iden3MessageType to be returned',

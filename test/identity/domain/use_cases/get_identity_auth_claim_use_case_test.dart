@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_auth_claim_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_auth_claim_use_case.dart';
@@ -11,15 +12,18 @@ import 'get_identity_auth_claim_use_case_test.mocks.dart';
 
 MockIdentityRepository identityRepository = MockIdentityRepository();
 MockGetAuthClaimUseCase getAuthClaimUseCase = MockGetAuthClaimUseCase();
+MockStacktraceManager stacktraceManager = MockStacktraceManager();
 
 GetIdentityAuthClaimUseCase useCase = GetIdentityAuthClaimUseCase(
   identityRepository,
   getAuthClaimUseCase,
+  stacktraceManager,
 );
 
 @GenerateMocks([
   IdentityRepository,
   GetAuthClaimUseCase,
+  StacktraceManager,
 ])
 void main() {
   setUp(() {

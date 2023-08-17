@@ -6,6 +6,7 @@ import 'package:http/http.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/credential/response/fetch_claim_response_dto.dart';
@@ -38,10 +39,17 @@ final claim = ClaimDTO(
 
 //DEPENDENCIES
 MockClient client = MockClient();
+MockStacktraceManager stacktraceStreamManager = MockStacktraceManager();
 
-RemoteIden3commDataSource dataSource = RemoteIden3commDataSource(client);
+RemoteIden3commDataSource dataSource = RemoteIden3commDataSource(
+  client,
+  stacktraceStreamManager,
+);
 
-@GenerateMocks([Client])
+@GenerateMocks([
+  Client,
+  StacktraceManager,
+])
 void main() {
   group("Authenticate with token", () {
     test(

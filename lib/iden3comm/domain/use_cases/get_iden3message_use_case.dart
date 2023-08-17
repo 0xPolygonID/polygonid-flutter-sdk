@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
@@ -11,8 +12,12 @@ import 'get_iden3message_type_use_case.dart';
 
 class GetIden3MessageUseCase extends FutureUseCase<String, Iden3MessageEntity> {
   final GetIden3MessageTypeUseCase _getIden3MessageTypeUseCase;
+  final StacktraceManager _stacktraceManager;
 
-  GetIden3MessageUseCase(this._getIden3MessageTypeUseCase);
+  GetIden3MessageUseCase(
+    this._getIden3MessageTypeUseCase,
+    this._stacktraceManager,
+  );
 
   @override
   Future<Iden3MessageEntity> execute({required String param}) {
@@ -37,6 +42,8 @@ class GetIden3MessageUseCase extends FutureUseCase<String, Iden3MessageEntity> {
         }
       });
     } catch (error) {
+      _stacktraceManager.addTrace("[GetIden3MessageUseCase] error: $error");
+      _stacktraceManager.addError("[GetIden3MessageUseCase] error: $error");
       return Future.error(error);
     }
   }

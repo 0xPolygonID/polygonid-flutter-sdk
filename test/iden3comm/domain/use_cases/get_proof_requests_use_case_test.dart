@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
@@ -39,12 +40,20 @@ final exception = Exception();
 MockGetProofQueryContextUseCase getProofQueryContextUseCase =
     MockGetProofQueryContextUseCase();
 MockGetProofQueryUseCase getProofQueryUseCase = MockGetProofQueryUseCase();
+MockStacktraceManager stacktraceStreamManager = MockStacktraceManager();
 
 // Tested instance
-GetProofRequestsUseCase useCase =
-    GetProofRequestsUseCase(getProofQueryContextUseCase, getProofQueryUseCase);
+GetProofRequestsUseCase useCase = GetProofRequestsUseCase(
+  getProofQueryContextUseCase,
+  getProofQueryUseCase,
+  stacktraceStreamManager,
+);
 
-@GenerateMocks([GetProofQueryUseCase, GetProofQueryContextUseCase])
+@GenerateMocks([
+  GetProofQueryUseCase,
+  GetProofQueryContextUseCase,
+  StacktraceManager,
+])
 void main() {
   setUp(() {
     // Given

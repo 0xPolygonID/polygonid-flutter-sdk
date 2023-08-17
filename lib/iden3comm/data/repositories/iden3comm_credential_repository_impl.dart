@@ -3,10 +3,10 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.da
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 
-import '../../../common/domain/entities/filter_entity.dart';
-import '../../domain/entities/common/request/proof_request_entity.dart';
-import '../../domain/exceptions/iden3comm_exceptions.dart';
-import '../mappers/proof_request_filters_mapper.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/proof_request_filters_mapper.dart';
 
 class Iden3commCredentialRepositoryImpl extends Iden3commCredentialRepository {
   final RemoteIden3commDataSource _remoteIden3commDataSource;

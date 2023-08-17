@@ -1,11 +1,12 @@
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 
-import '../../../../common/domain/domain_logger.dart';
-import '../../../../common/domain/use_case.dart';
-import '../../exceptions/identity_exceptions.dart';
-import '../../repositories/identity_repository.dart';
-import '../smt/create_identity_state_use_case.dart';
-import 'create_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/smt/create_identity_state_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/create_identity_use_case.dart';
 
 class AddIdentityParam {
   final String privateKey;
@@ -22,11 +23,13 @@ class AddIdentityUseCase
   final IdentityRepository _identityRepository;
   final CreateIdentityUseCase _createIdentityUseCase;
   final CreateIdentityStateUseCase _createIdentityStateUseCase;
+  final StacktraceManager _stacktraceManager;
 
   AddIdentityUseCase(
     this._identityRepository,
     this._createIdentityUseCase,
     this._createIdentityStateUseCase,
+    this._stacktraceManager,
   );
 
   @override
@@ -54,11 +57,14 @@ class AddIdentityUseCase
       }
     } catch (error) {
       logger().e("[AddIdentityUseCase] Error: $error");
-
+      _stacktraceManager.addTrace("[AddIdentityUseCase] Error: $error");
+      _stacktraceManager.addError("[AddIdentityUseCase] Error: $error");
       rethrow;
     }
 
     logger().i(
+        "[AddIdentityUseCase] Identity created and saved with did: ${identity.did}, for key ${param.privateKey}");
+    _stacktraceManager.addTrace(
         "[AddIdentityUseCase] Identity created and saved with did: ${identity.did}, for key ${param.privateKey}");
     return identity;
   }

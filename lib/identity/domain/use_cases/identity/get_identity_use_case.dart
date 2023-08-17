@@ -1,6 +1,7 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
@@ -25,11 +26,13 @@ class GetIdentityUseCase
   final IdentityRepository _identityRepository;
   final GetDidUseCase _getDidUseCase;
   final GetDidIdentifierUseCase _getDidIdentifierUseCase;
+  final StacktraceManager _stacktraceManager;
 
   GetIdentityUseCase(
     this._identityRepository,
     this._getDidUseCase,
     this._getDidIdentifierUseCase,
+    this._stacktraceManager,
   );
 
   @override
@@ -67,10 +70,13 @@ class GetIdentityUseCase
       }
 
       logger().i("[GetIdentityUseCase] Identity: $identity");
+      _stacktraceManager.addTrace("[GetIdentityUseCase] Identity: $identity");
 
       return identity;
     } catch (error) {
       logger().e("[GetIdentityUseCase] Error: $error");
+      _stacktraceManager.addTrace("[GetIdentityUseCase] Error: $error");
+      _stacktraceManager.addError("[GetIdentityUseCase] Error: $error");
 
       rethrow;
     }

@@ -6,6 +6,7 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
@@ -44,6 +45,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
   final CheckProfileAndDidCurrentEnvUseCase
       _checkProfileAndDidCurrentEnvUseCase;
   final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   AuthenticateUseCase(
     this._iden3commRepository,
@@ -54,6 +56,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
     this._getPackageNameUseCase,
     this._checkProfileAndDidCurrentEnvUseCase,
     this._proofGenerationStepsStreamManager,
+    this._stacktraceManager,
   );
 
   @override
@@ -69,6 +72,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
               did: param.genesisDid,
               privateKey: param.privateKey,
               profileNonce: param.profileNonce));
+      _stacktraceManager.addTrace(
+          "[AuthenticateUseCase] _checkProfileAndDidCurrentEnvUseCase success");
       logger().i(
           "stopwatch after checkProfileAndDidCurrentEnvUseCase ${stopwatch.elapsedMilliseconds}");
       if (kDebugMode) {
@@ -77,6 +82,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
       }
 
       EnvEntity env = await _getEnvUseCase.execute();
+      _stacktraceManager.addTrace(
+          "[AuthenticateUseCase] _getEnvUseCase success\nenv: ${env.toString()}");
       logger()
           .i("stopwatch after getEnvUseCase ${stopwatch.elapsedMilliseconds}");
       if (kDebugMode) {
@@ -89,6 +96,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
               blockchain: env.blockchain,
               network: env.network,
               profileNonce: param.profileNonce));
+      _stacktraceManager.addTrace(
+          "[AuthenticateUseCase] _getDidIdentifierUseCase success\ndid: $profileDid");
       logger().i(
           "stopwatch after getDidIdentifierUseCase ${stopwatch.elapsedMilliseconds}");
       if (kDebugMode) {
@@ -109,12 +118,17 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
         ipfsNodeUrl: env.ipfsUrl,
         nonRevocationProofs: param.nonRevocationProofs,
       ));
+      _stacktraceManager
+          .addTrace("[AuthenticateUseCase] _getIden3commProofsUseCase success");
       logger().i("stopwatch after getProofs ${stopwatch.elapsedMilliseconds}");
       print("stopwatch after getProofs ${stopwatch.elapsedMilliseconds}");
 
       String pushUrl = env.pushUrl;
+      _stacktraceManager.addTrace("[AuthenticateUseCase] pushUrl: $pushUrl");
 
       String packageName = await _getPackageNameUseCase.execute();
+      _stacktraceManager
+          .addTrace("[AuthenticateUseCase] packageName: $packageName");
       logger().i(
           "stopwatch after getPackageNameUseCase ${stopwatch.elapsedMilliseconds}");
       if (kDebugMode) {
@@ -131,6 +145,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
           pushUrl: pushUrl,
           pushToken: param.pushToken,
           packageName: packageName);
+      _stacktraceManager.addTrace(
+          "[AuthenticateUseCase] _iden3commRepository.getAuthResponse success\nauthResponse: $authResponse");
       logger().i(
           "stopwatch after getAuthResponse ${stopwatch.elapsedMilliseconds}");
       if (kDebugMode) {
@@ -151,6 +167,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
       if (kDebugMode) {
         print("stopwatch after getAuthToken ${stopwatch.elapsedMilliseconds}");
       }
+      _stacktraceManager.addTrace(
+          "[AuthenticateUseCase] _getAuthTokenUseCase success\nauthToken: $authToken");
 
       _proofGenerationStepsStreamManager.add("authenticating...");
       return _iden3commRepository.authenticate(
@@ -158,6 +176,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
         authToken: authToken,
       );
     } catch (error) {
+      _stacktraceManager.addTrace("[AuthenticateUseCase] Error: $error");
+      _stacktraceManager.addError("[AuthenticateUseCase] Error: $error");
       logger().d("[AuthenticateUseCase] Error: $error");
       print("[AuthenticateUseCase] Error: $error");
 

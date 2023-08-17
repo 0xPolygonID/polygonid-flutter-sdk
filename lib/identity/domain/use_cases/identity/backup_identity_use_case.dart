@@ -1,6 +1,7 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
@@ -21,11 +22,13 @@ class BackupIdentityUseCase extends FutureUseCase<BackupIdentityParam, String> {
   final GetIdentityUseCase _getIdentityUseCase;
   final IdentityRepository _identityRepository;
   final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
+  final StacktraceManager _stacktraceManager;
 
   BackupIdentityUseCase(
     this._getIdentityUseCase,
     this._identityRepository,
     this._getCurrentEnvDidIdentifierUseCase,
+    this._stacktraceManager,
   );
 
   @override
@@ -43,9 +46,13 @@ class BackupIdentityUseCase extends FutureUseCase<BackupIdentityParam, String> {
         .then((export) {
       logger().i(
           "[BackupIdentityUseCase] Identity backed up with did: ${identity.did}, for key $param");
+      _stacktraceManager.addTrace(
+          "[BackupIdentityUseCase] Identity backed up with did: ${identity.did}, for key $param");
       return export;
     }).catchError((error) {
       logger().e("[BackupIdentityUseCase] Error: $error");
+      _stacktraceManager.addTrace("[BackupIdentityUseCase] Error: $error");
+      _stacktraceManager.addError("[BackupIdentityUseCase] Error: $error");
       throw error;
     });
   }

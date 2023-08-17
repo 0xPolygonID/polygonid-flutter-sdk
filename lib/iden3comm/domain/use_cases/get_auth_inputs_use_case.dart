@@ -5,6 +5,7 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_auth_claim_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
@@ -40,6 +41,7 @@ class GetAuthInputsUseCase
   final Iden3commRepository _iden3commRepository;
   final IdentityRepository _identityRepository;
   final SMTRepository _smtRepository;
+  final StacktraceManager _stacktraceManager;
 
   GetAuthInputsUseCase(
     this._getIdentityUseCase,
@@ -50,6 +52,7 @@ class GetAuthInputsUseCase
     this._iden3commRepository,
     this._identityRepository,
     this._smtRepository,
+    this._stacktraceManager,
   );
 
   @override
@@ -64,8 +67,12 @@ class GetAuthInputsUseCase
           "[GetAuthInputsUseCase] after _getIdentityUseCase stopWatch: ${stopwatch.elapsedMilliseconds}");
     }
 
+    _stacktraceManager.addTrace("[GetAuthInputsUseCase] Identity: $identity");
+
     List<String> authClaim =
         await _getAuthClaimUseCase.execute(param: identity.publicKey);
+    _stacktraceManager
+        .addTrace("[GetAuthInputsUseCase] Auth claim: ${authClaim.toString()}");
     if (kDebugMode) {
       print(
           "[GetAuthInputsUseCase] after _getAuthClaimUseCase stopWatch: ${stopwatch.elapsedMilliseconds}");
@@ -73,6 +80,7 @@ class GetAuthInputsUseCase
 
     NodeEntity authClaimNode =
         await _identityRepository.getAuthClaimNode(children: authClaim);
+    _stacktraceManager.addTrace("[GetAuthInputsUseCase] Auth claim node");
     if (kDebugMode) {
       print(
           "[GetAuthInputsUseCase] after _identityRepository.getAuthClaimNode stopWatch: ${stopwatch.elapsedMilliseconds}");
@@ -87,6 +95,8 @@ class GetAuthInputsUseCase
       print(
           "[GetAuthInputsUseCase] after _smtRepository.generateProof stopWatch: ${stopwatch.elapsedMilliseconds}");
     }
+    _stacktraceManager
+        .addTrace("[GetAuthInputsUseCase] Inc proof: ${incProof.toString()}");
 
     MTProofEntity nonRevProof = await _smtRepository.generateProof(
         key: authClaimNode.hash,
@@ -97,6 +107,7 @@ class GetAuthInputsUseCase
       print(
           "[GetAuthInputsUseCase] after _smtRepository.generateProof stopWatch: ${stopwatch.elapsedMilliseconds}");
     }
+    _stacktraceManager.addTrace("[GetAuthInputsUseCase] Non rev proof");
 
     // hash of clatr, revtr, rootr
     Map<String, dynamic> treeState = await _getLatestStateUseCase.execute(
@@ -107,8 +118,13 @@ class GetAuthInputsUseCase
           "[GetAuthInputsUseCase] after _getLatestStateUseCase stopWatch: ${stopwatch.elapsedMilliseconds}");
     }
 
+    _stacktraceManager
+        .addTrace("[GetAuthInputsUseCase] Tree state: ${treeState.toString()}");
+
     GistMTProofEntity gistProof =
         await _getGistMTProofUseCase.execute(param: param.genesisDid);
+    _stacktraceManager
+        .addTrace("[GetAuthInputsUseCase] Gist proof: ${gistProof.toString()}");
     if (kDebugMode) {
       print(
           "[GetAuthInputsUseCase] after _getGistMTProofUseCase stopWatch: ${stopwatch.elapsedMilliseconds}");
@@ -129,11 +145,14 @@ class GetAuthInputsUseCase
             treeState: treeState))
         .then((inputs) {
       logger().i("[GetAuthInputsUseCase] Auth inputs: $inputs");
-
+      _stacktraceManager
+          .addTrace("[GetAuthInputsUseCase] Auth inputs: ${inputs.toString()}");
       return inputs;
     }).catchError((error) {
       logger().e("[GetAuthInputsUseCase] Error: $error");
-
+      _stacktraceManager
+          .addTrace("[GetAuthInputsUseCase] Error: ${error.toString()}");
+      _stacktraceManager.addError("[GetAuthInputsUseCase] Error: $error");
       throw error;
     });
   }

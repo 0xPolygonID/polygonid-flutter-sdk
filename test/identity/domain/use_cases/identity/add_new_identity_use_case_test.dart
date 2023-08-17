@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/add_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/add_new_identity_use_case.dart';
@@ -12,16 +13,19 @@ import 'add_new_identity_use_case_test.mocks.dart';
 // Dependencies
 MockIdentityRepository identityRepository = MockIdentityRepository();
 MockAddIdentityUseCase addIdentityUseCase = MockAddIdentityUseCase();
+MockStacktraceManager stacktraceManager = MockStacktraceManager();
 
 // Tested instance
 AddNewIdentityUseCase useCase = AddNewIdentityUseCase(
   identityRepository,
   addIdentityUseCase,
+  stacktraceManager,
 );
 
 @GenerateMocks([
   IdentityRepository,
   AddIdentityUseCase,
+  StacktraceManager,
 ])
 void main() {
   setUp(() {
