@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:encrypt/encrypt.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:pointycastle/api.dart';
 import 'package:pointycastle/asymmetric/api.dart';
@@ -92,6 +93,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     String? pushToken,
     String? packageName,
   }) async {
+    Stopwatch stopwatch = Stopwatch()..start();
     AuthBodyDidDocResponseDTO? didDocResponse;
     if (pushUrl != null &&
         pushUrl.isNotEmpty &&
@@ -101,6 +103,9 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
         packageName.isNotEmpty) {
       didDocResponse = await _iden3messageDataSource.getDidDocResponse(
           pushUrl, did, pushToken, packageName);
+      if (kDebugMode) {
+        print("[Iden3CommRepo] getDidDocResponse took ${stopwatch.elapsedMilliseconds}ms");
+      }
     }
 
     AuthResponseDTO authResponse = AuthResponseDTO(
@@ -121,6 +126,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
         did_doc: didDocResponse,
       ),
     );
+
     return _authResponseMapper.mapFrom(authResponse);
   }
 

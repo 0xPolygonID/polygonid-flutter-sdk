@@ -26,39 +26,39 @@ class ProverLib {
     Map<String, dynamic> map = {};
 
     Stopwatch stopwatch = Stopwatch()..start();
-    print("PROVE stopwatch started");
+    print("[Prover] stopwatch started");
 
     int zkeySize = zkeyBytes.length;
     ffi.Pointer<ffi.Char> zkeyBuffer = malloc<ffi.Char>(zkeySize);
-    print("PROVE zkeyBuffer ${stopwatch.elapsedMilliseconds}");
+    print("[Prover] zkeyBuffer ${stopwatch.elapsedMilliseconds}");
     final data = zkeyBytes;
     for (int i = 0; i < zkeySize; i++) {
       zkeyBuffer[i] = data[i];
     }
-    print("PROVE zkeyBuffer ${stopwatch.elapsedMilliseconds}");
+    print("[Prover] zkeyBuffer ${stopwatch.elapsedMilliseconds}");
 
     int wtnsSize = wtnsBytes.length;
     ffi.Pointer<ffi.Char> wtnsBuffer = malloc<ffi.Char>(wtnsSize);
     final data2 = wtnsBytes.buffer.asUint8List();
-    print("PROVE wtnsBuffer ${stopwatch.elapsedMilliseconds}");
+    print("[Prover] wtnsBuffer ${stopwatch.elapsedMilliseconds}");
     for (int i = 0; i < wtnsSize; i++) {
       wtnsBuffer[i] = data2[i];
     }
-    print("PROVE wtnsBuffer ${stopwatch.elapsedMilliseconds}");
+    print("[Prover] wtnsBuffer ${stopwatch.elapsedMilliseconds}");
 
     ffi.Pointer<ffi.UnsignedLong> proofSize = malloc<ffi.UnsignedLong>();
     proofSize.value = 16384;
     ffi.Pointer<ffi.Char> proofBuffer = malloc<ffi.Char>(proofSize.value);
-    print("PROVE proofBuffer ${stopwatch.elapsedMilliseconds}");
+    print("[Prover] proofBuffer ${stopwatch.elapsedMilliseconds}");
     ffi.Pointer<ffi.UnsignedLong> publicSize = malloc<ffi.UnsignedLong>();
     publicSize.value = 16384;
     ffi.Pointer<ffi.Char> publicBuffer = malloc<ffi.Char>(publicSize.value);
-    print("PROVE publicBuffer ${stopwatch.elapsedMilliseconds}");
+    print("[Prover] publicBuffer ${stopwatch.elapsedMilliseconds}");
     int errorMaxSize = 256;
     ffi.Pointer<ffi.Char> errorMsg = malloc<ffi.Char>(errorMaxSize);
 
     DateTime start = DateTime.now();
-    print("PROVE start ${stopwatch.elapsedMilliseconds}");
+    print("[Prover] start ${stopwatch.elapsedMilliseconds}");
 
     int result = _nativeProverLib.groth16_prover(
         zkeyBuffer.cast(),
@@ -72,7 +72,7 @@ class ProverLib {
         errorMsg,
         errorMaxSize);
 
-    print("PROVE end ${stopwatch.elapsedMilliseconds}");
+    print("[Prover] end ${stopwatch.elapsedMilliseconds}");
 
     DateTime end = DateTime.now();
 
@@ -81,15 +81,15 @@ class ProverLib {
     if (result == PRPOVER_OK) {
       ffi.Pointer<Utf8> jsonString = proofBuffer.cast<Utf8>();
       String proofmsg = jsonString.toDartString();
-      print("PROVE proofmsg ${stopwatch.elapsedMilliseconds}");
+      print("[Prover] proofmsg ${stopwatch.elapsedMilliseconds}");
 
       ffi.Pointer<Utf8> jsonString2 = publicBuffer.cast<Utf8>();
       String publicmsg = jsonString2.toDartString();
-      print("PROVE publicmsg ${stopwatch.elapsedMilliseconds}");
+      print("[Prover] publicmsg ${stopwatch.elapsedMilliseconds}");
 
-      print("Proof: $proofmsg");
-      print("Public: $publicmsg");
-      print("Time: $time");
+      //print("Proof: $proofmsg");
+      //print("Public: $publicmsg");
+      //print("Time: $time");
 
       map['circuitId'] = circuitId;
       map['proof'] = json.decode(proofmsg);

@@ -65,7 +65,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
       // we want to misure the time of the whole process
       Stopwatch stopwatch = Stopwatch()..start();
       logger().i("stopwatch started");
-      if (kDebugMode) print("stopwatch started");
+      if (kDebugMode) print("[AuthenticateUseCase] stopwatch started");
 
       await _checkProfileAndDidCurrentEnvUseCase.execute(
           param: CheckProfileAndDidCurrentEnvParam(
@@ -78,7 +78,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
           "stopwatch after checkProfileAndDidCurrentEnvUseCase ${stopwatch.elapsedMilliseconds}");
       if (kDebugMode) {
         print(
-            "stopwatch after checkProfileAndDidCurrentEnvUseCase ${stopwatch.elapsedMilliseconds}");
+            "[AuthenticateUseCase] stopwatch after checkProfileAndDidCurrentEnvUseCase ${stopwatch.elapsedMilliseconds}");
       }
 
       EnvEntity env = await _getEnvUseCase.execute();
@@ -87,7 +87,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
       logger()
           .i("stopwatch after getEnvUseCase ${stopwatch.elapsedMilliseconds}");
       if (kDebugMode) {
-        print("stopwatch after getEnvUseCase ${stopwatch.elapsedMilliseconds}");
+        print("[AuthenticateUseCase] stopwatch after getEnvUseCase ${stopwatch.elapsedMilliseconds}");
       }
 
       String profileDid = await _getDidIdentifierUseCase.execute(
@@ -102,7 +102,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
           "stopwatch after getDidIdentifierUseCase ${stopwatch.elapsedMilliseconds}");
       if (kDebugMode) {
         print(
-            "stopwatch after getDidIdentifierUseCase ${stopwatch.elapsedMilliseconds}");
+            "[AuthenticateUseCase] stopwatch after getDidIdentifierUseCase ${stopwatch.elapsedMilliseconds}");
       }
 
       // get proofs from credentials of all the profiles of the identity
@@ -121,7 +121,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
       _stacktraceManager
           .addTrace("[AuthenticateUseCase] _getIden3commProofsUseCase success");
       logger().i("stopwatch after getProofs ${stopwatch.elapsedMilliseconds}");
-      print("stopwatch after getProofs ${stopwatch.elapsedMilliseconds}");
+      print("[AuthenticateUseCase] stopwatch after getProofs ${stopwatch.elapsedMilliseconds}");
 
       String pushUrl = env.pushUrl;
       _stacktraceManager.addTrace("[AuthenticateUseCase] pushUrl: $pushUrl");
@@ -133,7 +133,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
           "stopwatch after getPackageNameUseCase ${stopwatch.elapsedMilliseconds}");
       if (kDebugMode) {
         print(
-            "stopwatch after getPackageNameUseCase ${stopwatch.elapsedMilliseconds}");
+            "[AuthenticateUseCase] stopwatch after getPackageNameUseCase ${stopwatch.elapsedMilliseconds}");
       }
 
       _proofGenerationStepsStreamManager
@@ -151,7 +151,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
           "stopwatch after getAuthResponse ${stopwatch.elapsedMilliseconds}");
       if (kDebugMode) {
         print(
-            "stopwatch after getAuthResponse ${stopwatch.elapsedMilliseconds}");
+            "[AuthenticateUseCase] stopwatch after getAuthResponse ${stopwatch.elapsedMilliseconds}");
       }
 
       _proofGenerationStepsStreamManager
@@ -165,7 +165,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
       logger()
           .i("stopwatch after getAuthToken ${stopwatch.elapsedMilliseconds}");
       if (kDebugMode) {
-        print("stopwatch after getAuthToken ${stopwatch.elapsedMilliseconds}");
+        print("[AuthenticateUseCase] stopwatch after getAuthToken ${stopwatch.elapsedMilliseconds}");
       }
       _stacktraceManager.addTrace(
           "[AuthenticateUseCase] _getAuthTokenUseCase success\nauthToken: $authToken");
