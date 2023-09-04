@@ -38,8 +38,27 @@ class GetIdentityUseCase
   @override
   Future<IdentityEntity> execute({required GetIdentityParam param}) async {
     try {
-      IdentityEntity identity;
 
+      IdentityEntity identity;
+      print("[IdentityEntity] end 0 ->>>>>>>>: ${param.toString()}");
+
+      Stopwatch stopwatch                 = Stopwatch()..start();
+
+      try {
+        identity = await _identityRepository.getIdentity(genesisDid: param.genesisDid);
+        if (identity != null) {
+          stopwatch.stop();
+          print("[IdentityEntity] find identity 1111 ->>>>>>>>: ${stopwatch.elapsed}");
+          return identity;
+        }
+      }catch(error){
+        if (error is UnknownIdentityException){
+          print("ERRR UnknownIdentityException");
+        }
+      }
+
+
+      print("Generate id from PK");
       // Check if we want [PrivateIdentityEntity] or [IdentityEntity]
       if (param.privateKey != null) {
         // Check if the did from param matches the did from the privateKey

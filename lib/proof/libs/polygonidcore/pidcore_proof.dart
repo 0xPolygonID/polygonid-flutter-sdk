@@ -10,6 +10,7 @@ import '../../../common/libs/polygonidcore/pidcore_base.dart';
 @injectable
 class PolygonIdCoreProof extends PolygonIdCore {
   String proofFromSmartContract(String input) {
+    Stopwatch stopwatch = Stopwatch()..start();
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<ffi.Char>> response =
         malloc<ffi.Pointer<ffi.Char>>();
@@ -26,11 +27,14 @@ class PolygonIdCoreProof extends PolygonIdCore {
     if (jsonString != ffi.nullptr) {
       result = jsonString.toDartString();
     }
+    stopwatch.stop();
+    print("-----------proofFromSmartContract ---------- ${stopwatch.elapsed}");
 
     return result;
   }
 
   String getSigProofInputs(String input, String? config) {
+    Stopwatch stopwatch = Stopwatch()..start();
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Char> cfg = ffi.nullptr;
     if (config != null) {
@@ -51,6 +55,8 @@ class PolygonIdCoreProof extends PolygonIdCore {
     if (jsonString != ffi.nullptr) {
       result = jsonString.toDartString();
     }
+    stopwatch.stop();
+    print("-----------getSigProofInputs ---------- ${stopwatch.elapsed}");
 
     return result;
   }
@@ -81,6 +87,7 @@ class PolygonIdCoreProof extends PolygonIdCore {
   }
 
   String getMTProofInputs(String input, String? config) {
+    Stopwatch stopwatch = Stopwatch()..start();
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Char> cfg = ffi.nullptr;
     if (config != null) {
@@ -101,6 +108,8 @@ class PolygonIdCoreProof extends PolygonIdCore {
     if (jsonString != ffi.nullptr) {
       result = jsonString.toDartString();
     }
+    stopwatch.stop();
+    print("-----------getMTProofInputs ---------- ${stopwatch.elapsed}");
 
     return result;
   }

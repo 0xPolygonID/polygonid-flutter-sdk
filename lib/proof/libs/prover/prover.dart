@@ -29,6 +29,7 @@ class ProverLib {
     print("[Prover] stopwatch started");
 
     int zkeySize = zkeyBytes.length;
+    print("[Prover] stopwatch started");
     ffi.Pointer<ffi.Char> zkeyBuffer = malloc<ffi.Char>(zkeySize);
     print("[Prover] zkeyBuffer ${stopwatch.elapsedMilliseconds}");
     final data = zkeyBytes;

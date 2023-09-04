@@ -25,6 +25,14 @@ class GetGistMTProofUseCase extends FutureUseCase<String, GistMTProofEntity> {
 
   @override
   Future<GistMTProofEntity> execute({required String param}) async {
+
+    print(
+        "[GistMTProofEntity] start -------------->>>>>>>");
+
+    final stopwatch = Stopwatch()..start();
+
+    print(param);
+
     return Future.wait([
       _getEnvUseCase.execute(),
       _getDidUseCase.execute(param: param).then(
@@ -35,10 +43,13 @@ class GetGistMTProofUseCase extends FutureUseCase<String, GistMTProofEntity> {
             idAsInt: values[1] as String,
             contractAddress: (values[0] as EnvEntity).idStateContract))
         .then((proof) {
+      print("[GistMTProofEntity] end -------------->>>>>>> ${stopwatch.elapsed}");
       _stacktraceManager
           .addTrace("[GetGistMTProofUseCase] Gist proof for identifier $param");
       logger()
           .i("[GetGistMTProofUseCase] Gist proof $proof for identifier $param");
+      stopwatch.stop();
+
 
       return proof;
     }).catchError((error) {

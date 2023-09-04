@@ -16,6 +16,10 @@ import 'package:polygonid_flutter_sdk/proof/libs/polygonidcore/pidcore_proof.dar
 @injectable
 class GistMTProofDataSource {
   GistMTProofDTO getGistMTProof(String gistProof) {
+
+    print('getGistMTProof started ----- >>>');
+    final stopwatch = Stopwatch()..start();
+
     // remove all quotes from the string values
     final gistProof2 = gistProof.replaceAll("\"", "");
 
@@ -27,7 +31,7 @@ class GistMTProofDataSource {
 
     var gistProofJson = jsonDecode(quotedString);
 
-    return GistMTProofDTO(
+    var res = GistMTProofDTO(
         root: gistProofJson["root"],
         proof: MTProofDTO(
             existence:
@@ -40,5 +44,10 @@ class GistMTProofDataSource {
                     key: gistProofJson["proof"]["node_aux"]["key"],
                     value: gistProofJson["proof"]["node_aux"]["value"])
                 : null));
+
+    stopwatch.stop();
+    print('getGistMTProof end ----- >>> ${stopwatch.elapsed}');
+
+    return res;
   }
 }

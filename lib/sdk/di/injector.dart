@@ -99,20 +99,34 @@ abstract class DatabaseModule {
     final dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
     final path = join(dir.path, databaseName);
+    print("DB path 1 ${path}");
     final database = await databaseFactoryIo.openDatabase(path);
 
     return database;
   }
 
+  final _databaseCache = <String, Database>{};
+
   @Named(identityDatabaseName)
   Future<Database> identityDatabase(@factoryParam String? identifier,
       @factoryParam String? privateKey) async {
+
+    final cacheKey = '$identifier';
+
+    if (_databaseCache.containsKey(cacheKey)) {
+      return _databaseCache[cacheKey]!;
+    }
+
     final dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
     final path = join(dir.path, identityDatabasePrefix + identifier! + '.db');
     // Initialize the encryption codec with the privateKey
+    print("DB path 2 ${path}");
     final codec = getItSdk.get<SembastCodec>(param1: privateKey!);
     final database = await databaseFactoryIo.openDatabase(path, codec: codec);
+
+    _databaseCache[cacheKey] = database;
+
     return database;
   }
 

@@ -20,9 +20,11 @@ class CircuitsFilesDataSource {
     var circuitZkeyFilePath = '$path/$circuitZkeyFileName';
     var circuitZkeyFile = File(circuitZkeyFilePath);
 
+    List res = await Future.wait([circuitDatFile.readAsBytes(), circuitZkeyFile.readAsBytes()]);
+
     return [
-      circuitDatFile.readAsBytesSync(),
-      circuitZkeyFile.readAsBytesSync()
+      res[0],
+      res[1]
     ];
   }
 

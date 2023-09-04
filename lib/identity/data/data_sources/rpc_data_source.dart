@@ -56,8 +56,14 @@ class RPCDataSource {
   ///
   /// @returns [String] gist proof
   Future<String> getGistProof(String id, DeployedContract gistContract) async {
+
+    print("--getGistProof--");
+    final stopwatch = Stopwatch()..start();
     EnvEntity env = await _getEnvUseCase.execute();
+    print("--getGistProof [env] time: ${stopwatch.elapsed}--");
+    print(env);
     Web3Client web3Client = getItSdk.get(param1: env);
+    print("--getGistProof [web3Client] time: ${stopwatch.elapsed}--");
     try {
       /// TODO: replace to autegenerated code to interact with SC
       //var state = State(address: gistContract.address, client: web3Client);
@@ -69,12 +75,13 @@ class RPCDataSource {
       logger().d(transactionParameters);
 
       List<dynamic> result;
-
+      print("--getGistProof [before call] time: ${stopwatch.elapsed}--");
       result = await web3Client.call(
           contract: gistContract,
           function: _getGistProof(gistContract),
           params: transactionParameters);
 
+      print("--getGistProof [after call] time: ${stopwatch.elapsed}--");
       if (result.isNotEmpty && result[0] is List && result[0].length == 8) {
         var siblings =
             (result[0][2] as List).map((bigInt) => bigInt.toString()).toList();
@@ -90,6 +97,8 @@ class RPCDataSource {
           "auxValue": result[0][7].toString(),
         });
         logger().d(resultString);
+        stopwatch.stop();
+        print("--getGistProof time: ${stopwatch.elapsed}--");
         return resultString;
       }
       return "";

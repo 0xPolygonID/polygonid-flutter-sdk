@@ -50,55 +50,55 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
 
     try {
       // get jwz
-      String jwz = await _getJWZUseCase.execute(
-          param: GetJWZParam(message: param.message));
-      if (kDebugMode) {
-        print(
-            "[GetAuthTokenUseCase] after getJWZUseCase stopWatch: ${stopwatch.elapsedMilliseconds}");
-      }
-
+      Stopwatch stopwatchjwz = Stopwatch()..start();
+      String jwz = await _getJWZUseCase.execute(param: GetJWZParam(message: param.message));
       // get auth challenge
       String challenge = await _getAuthChallengeUseCase.execute(param: jwz);
-      if (kDebugMode) {
-        print(
-            "[GetAuthTokenUseCase] after _getAuthChallengeUseCase stopWatch: ${stopwatch.elapsedMilliseconds}");
-      }
+      print("[GetAuthTokenUseCase] jwz + challenge -------->>>>: ${stopwatchjwz.elapsed}");
 
       // get auth inputs
-      Uint8List authInputs = await _getAuthInputsUseCase.execute(
-          param: GetAuthInputsParam(challenge, param.genesisDid,
-              param.profileNonce, param.privateKey));
-      if (kDebugMode) {
-        print(
-            "[GetAuthTokenUseCase] after _getAuthInputsUseCase stopWatch: ${stopwatch.elapsedMilliseconds}");
-      }
-
+      // Uint8List? authInputs = null;
+      Uint8List authInputs = await  _getAuthInputsUseCase.execute(param: GetAuthInputsParam(challenge, param.genesisDid, param.profileNonce, param.privateKey));
+      print("[GetAuthTokenUseCase] authInputs -------->>>>: ${stopwatchjwz.elapsed}");
       // load circuit
-      CircuitDataEntity circuitDataEntity =
-          await _loadCircuitUseCase.execute(param: "authV2");
-      if (kDebugMode) {
-        print(
-            "[GetAuthTokenUseCase] after _loadCircuit stopWatch: ${stopwatch.elapsedMilliseconds}");
-      }
+      // CircuitDataEntity? circuitDataEntity = null;
+      CircuitDataEntity circuitDataEntity = await _loadCircuitUseCase.execute(param: "authV2");
+
+      // List responses = await Future.wait([authInputsF, circuitDataEntityF]);
+      // authInputs = responses[0];
+      // circuitDataEntity = responses[1];
+      print("[GetAuthTokenUseCase] circuitDataEntity -------->>>>: ${stopwatchjwz.elapsed}");
 
       // prove
-      ZKProofEntity proof = await _proveUseCase.execute(
-        param: ProveParam(
-          authInputs,
-          circuitDataEntity,
-        ),
-      );
-      if (kDebugMode) {
-        print(
-            "[GetAuthTokenUseCase] after _proveUseCase stopWatch: ${stopwatch.elapsedMilliseconds}");
-      }
-
+      ZKProofEntity proof = await _proveUseCase.execute(param: ProveParam(authInputs!, circuitDataEntity!,),);
       // get authToken
-      String authToken = await _getJWZUseCase.execute(
-          param: GetJWZParam(message: param.message, proof: proof));
+      Future<String> authToken =  _getJWZUseCase.execute(param: GetJWZParam(message: param.message, proof: proof));
+
+      // final stopwatchAuth = Stopwatch()
+      //   ..start();
+      // print(
+      //     "[GetAuthTokenUseCase] started _getAuthInputsUseCase -------->>>>:");
+      //
+      // Uint8List? authInputs = null;
+      // Future<Uint8List> authInputsF = _getAuthInputsUseCase.execute(param: GetAuthInputsParam(challenge, param.genesisDid, param.profileNonce, param.privateKey));
+      // CircuitDataEntity? circuitDataEntity = null;
+      // Future<CircuitDataEntity> circuitDataEntityF = _loadCircuitUseCase.execute(param: "authV2");
+      //
+      // print(
+      //     "[GetAuthTokenUseCase] started _getAuthInputsUseCase -------->>>>: ${stopwatchAuth.elapsed}");
+      //
+      // List responses = await Future.wait([authInputsF, circuitDataEntityF]);
+      //
+      // authInputs = responses[0];
+      // circuitDataEntity = responses[1];
+      // stopwatchAuth.stop();
+      //
+      // print('[GetAuthTokenUseCase] ended _getAuthInputsUseCase -------->>>>:: ${stopwatchAuth.elapsed}');
+
+
       if (kDebugMode) {
         print(
-            "[GetAuthTokenUseCase] after _getJWZUseCase stopWatch: ${stopwatch.elapsedMilliseconds}");
+            "[GetAuthTokenUseCase] after _getJWZUseCase stopWatch: ${stopwatch.elapsed}");
       }
       return authToken;
     } catch (error) {

@@ -15,17 +15,6 @@ class LoadCircuitUseCase extends FutureUseCase<String, CircuitDataEntity> {
 
   @override
   Future<CircuitDataEntity> execute({required String param}) async {
-    return _proofRepository.loadCircuitFiles(param).then((circuit) {
-      logger().i("[LoadCircuitUseCase] Circuit: $circuit");
-      _stacktraceManager.addTrace("[LoadCircuitUseCase] Circuit");
-
-      return circuit;
-    }).catchError((error) {
-      logger().e("[LoadCircuitUseCase] Error: $error");
-      _stacktraceManager.addTrace("[LoadCircuitUseCase] Error: $error");
-      _stacktraceManager.addError("[LoadCircuitUseCase] Error: $error");
-
-      throw error;
-    });
+    return _proofRepository.loadCircuitFiles(param);
   }
 }

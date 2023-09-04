@@ -56,7 +56,8 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
         database
             .transaction((transaction) =>
                 storeClaimsTransact(transaction: transaction, claims: claims))
-            .whenComplete(() => database.close()));
+            //.whenComplete(() => database.close())
+        );
   }
 
   // For UT purpose
@@ -78,7 +79,8 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
         database
             .transaction((transaction) => removeClaimsTransact(
                 transaction: transaction, claimIds: claimIds))
-            .whenComplete(() => database.close()));
+        //    .whenComplete(() => database.close())
+    );
   }
 
   // For UT purpose
@@ -99,7 +101,8 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
         database
             .transaction((transaction) =>
                 removeAllClaimsTransact(transaction: transaction))
-            .whenComplete(() => database.close()));
+    //        .whenComplete(() => database.close())
+    );
   }
 
   // For UT purpose
@@ -116,6 +119,7 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
             .then((snapshots) => snapshots
                 .map((snapshot) => ClaimDTO.fromJson(snapshot.value))
                 .toList())
-            .whenComplete(() => database.close()));
+    //        .whenComplete(() => database.close())
+    );
   }
 }

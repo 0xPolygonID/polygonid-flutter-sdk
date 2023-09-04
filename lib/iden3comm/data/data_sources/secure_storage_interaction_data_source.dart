@@ -59,7 +59,8 @@ class SecureStorageInteractionDataSource
         database
             .transaction((transaction) => storeInteractionsTransact(
                 transaction: transaction, interactions: interactions))
-            .whenComplete(() => database.close()));
+            //.whenComplete(() => database.close())
+        );
   }
 
   // For UT purpose
@@ -98,7 +99,8 @@ class SecureStorageInteractionDataSource
         database
             .transaction((transaction) =>
                 removeInteractionsTransact(transaction: transaction, ids: ids))
-            .whenComplete(() => database.close()));
+    //        .whenComplete(() => database.close())
+    );
   }
 
   // For UT purpose
@@ -117,7 +119,8 @@ class SecureStorageInteractionDataSource
         database
             .transaction((transaction) =>
                 removeAllInteractionsTransact(transaction: transaction))
-            .whenComplete(() => database.close()));
+    //        .whenComplete(() => database.close())
+    );
   }
 
   // For UT purpose
@@ -133,6 +136,7 @@ class SecureStorageInteractionDataSource
             .find(database, finder: Finder(filter: filter))
             .then((snapshots) =>
                 snapshots.map((snapshot) => snapshot.value).toList())
-            .whenComplete(() => database.close()));
+    //        .whenComplete(() => database.close())
+    );
   }
 }

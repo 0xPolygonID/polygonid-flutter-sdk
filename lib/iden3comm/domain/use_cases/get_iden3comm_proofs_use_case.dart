@@ -1,6 +1,8 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
@@ -57,6 +59,7 @@ class GetIden3commProofsUseCase
   final GetIdentityUseCase _getIdentityUseCase;
   final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
   final StacktraceManager _stacktraceManager;
+  final GetEnvUseCase _getEnvUseCase;
 
   GetIden3commProofsUseCase(
     this._proofRepository,
@@ -67,6 +70,7 @@ class GetIden3commProofsUseCase
     this._getIdentityUseCase,
     this._proofGenerationStepsStreamManager,
     this._stacktraceManager,
+    this._getEnvUseCase,
   );
 
   @override
@@ -97,6 +101,10 @@ class GetIden3commProofsUseCase
       logger().i(
           "STOPPE after _getIden3commClaimsUseCase ${stopwatch.elapsedMilliseconds}");
 
+      var ipfsNodeUrl = param.ipfsNodeUrl;
+      var stateContractAddr = param.stateContractAddr;
+      var rpc= param.ethereumUrl;
+
       if ((requests.isNotEmpty &&
               claims.isNotEmpty &&
               requests.length == claims.length) ||
@@ -120,6 +128,11 @@ class GetIden3commProofsUseCase
                 circuitId == "credentialAtomicQueryMTPV2OnChain") {
               privKey = param.privateKey;
               challenge = param.challenge;
+
+              EnvEntity env = await _getEnvUseCase.execute();
+              ipfsNodeUrl = env.ipfsUrl;
+              stateContractAddr = env.idStateContract;
+              rpc = env.web3Url + env.web3ApiKey;
             }
 
             var identityEntity = await _getIdentityUseCase.execute(
@@ -144,9 +157,9 @@ class GetIden3commProofsUseCase
               circuitData,
               privKey,
               challenge,
-              param.ethereumUrl,
-              param.stateContractAddr,
-              param.ipfsNodeUrl,
+              rpc,
+              stateContractAddr,
+              ipfsNodeUrl,
             )));
             logger().i(
                 "STOPPE after _generateIden3commProofUseCase $i ${stopwatch.elapsedMilliseconds}");

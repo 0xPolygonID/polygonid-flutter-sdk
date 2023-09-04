@@ -58,79 +58,92 @@ class GetAuthInputsUseCase
   @override
   Future<Uint8List> execute({required GetAuthInputsParam param}) async {
     Stopwatch stopwatch = Stopwatch()..start();
-    IdentityEntity identity = await _getIdentityUseCase.execute(
-        param: GetIdentityParam(
-            genesisDid: param.genesisDid, privateKey: param.privateKey));
-
     if (kDebugMode) {
       print(
-          "[GetAuthInputsUseCase] after _getIdentityUseCase stopWatch: ${stopwatch.elapsedMilliseconds}");
-    }
-
-    _stacktraceManager.addTrace("[GetAuthInputsUseCase] Identity: $identity");
-
-    List<String> authClaim =
-        await _getAuthClaimUseCase.execute(param: identity.publicKey);
-    _stacktraceManager
-        .addTrace("[GetAuthInputsUseCase] Auth claim: ${authClaim.toString()}");
-    if (kDebugMode) {
+          "[GetAuthInputsUseCase] started ->>>>>>>>");
       print(
-          "[GetAuthInputsUseCase] after _getAuthClaimUseCase stopWatch: ${stopwatch.elapsedMilliseconds}");
+          "[GetAuthInputsUseCase] after _getIdentityUseCase stopWatch: ${stopwatch.elapsed}");
     }
+
+
+    Stopwatch stopwatchIdentity = Stopwatch()..start();
+    print("Print GetIdentityParam ${param.toString()}");
+    IdentityEntity identity = await _getIdentityUseCase.execute(param: GetIdentityParam(genesisDid: param.genesisDid, privateKey: param.privateKey));
+    stopwatchIdentity.stop();
+    print("Identity GetIdentityParam ${stopwatchIdentity.elapsed}");
+
+
+    // _stacktraceManager.addTrace("[GetAuthInputsUseCase] Identity: $identity");
+    List<String> authClaim = await _getAuthClaimUseCase.execute(param: identity.publicKey);
+
+    // _stacktraceManager
+    //     .addTrace("[GetAuthInputsUseCase] Auth claim: ${authClaim.toString()}");
+    // if (kDebugMode) {
+    //   print(
+    //       "[GetAuthInputsUseCase] after _getAuthClaimUseCase stopWatch: ${stopwatch.elapsed}");
+    // }
 
     NodeEntity authClaimNode =
         await _identityRepository.getAuthClaimNode(children: authClaim);
-    _stacktraceManager.addTrace("[GetAuthInputsUseCase] Auth claim node");
-    if (kDebugMode) {
-      print(
-          "[GetAuthInputsUseCase] after _identityRepository.getAuthClaimNode stopWatch: ${stopwatch.elapsedMilliseconds}");
-    }
+    // _stacktraceManager.addTrace("[GetAuthInputsUseCase] Auth claim node");
+    // if (kDebugMode) {
+    //   print(
+    //       "[GetAuthInputsUseCase] after _identityRepository.getAuthClaimNode stopWatch: ${stopwatch.elapsed}");
+    // }
 
     MTProofEntity incProof = await _smtRepository.generateProof(
         key: authClaimNode.hash,
         type: TreeType.claims,
         did: param.genesisDid,
         privateKey: param.privateKey);
-    if (kDebugMode) {
-      print(
-          "[GetAuthInputsUseCase] after _smtRepository.generateProof stopWatch: ${stopwatch.elapsedMilliseconds}");
-    }
-    _stacktraceManager
-        .addTrace("[GetAuthInputsUseCase] Inc proof: ${incProof.toString()}");
+    // if (kDebugMode) {
+    //   print(
+    //       "[GetAuthInputsUseCase] after _smtRepository.generateProof stopWatch: ${stopwatch.elapsed}");
+    // }
+    // _stacktraceManager
+    //     .addTrace("[GetAuthInputsUseCase] Inc proof: ${incProof.toString()}");
 
     MTProofEntity nonRevProof = await _smtRepository.generateProof(
         key: authClaimNode.hash,
         type: TreeType.revocation,
         did: param.genesisDid,
         privateKey: param.privateKey);
-    if (kDebugMode) {
-      print(
-          "[GetAuthInputsUseCase] after _smtRepository.generateProof stopWatch: ${stopwatch.elapsedMilliseconds}");
-    }
-    _stacktraceManager.addTrace("[GetAuthInputsUseCase] Non rev proof");
+    // if (kDebugMode) {
+    //   print(
+    //       "[GetAuthInputsUseCase] after _smtRepository.generateProof stopWatch: ${stopwatch.elapsed}");
+    // }
+    // _stacktraceManager.addTrace("[GetAuthInputsUseCase] Non rev proof");
 
     // hash of clatr, revtr, rootr
     Map<String, dynamic> treeState = await _getLatestStateUseCase.execute(
         param: GetLatestStateParam(
             did: param.genesisDid, privateKey: param.privateKey));
-    if (kDebugMode) {
-      print(
-          "[GetAuthInputsUseCase] after _getLatestStateUseCase stopWatch: ${stopwatch.elapsedMilliseconds}");
-    }
+    // if (kDebugMode) {
+    //   print(
+    //       "[GetAuthInputsUseCase] after _getLatestStateUseCase stopWatch: ${stopwatch.elapsed}");
+    // }
+    //
+    // _stacktraceManager
+    //     .addTrace("[GetAuthInputsUseCase] Tree state: ${treeState.toString()}");
+    // print(
+    //     "[GetAuthInputsUseCase] after _stacktraceManager stopWatch: ${stopwatch.elapsed}");
 
-    _stacktraceManager
-        .addTrace("[GetAuthInputsUseCase] Tree state: ${treeState.toString()}");
 
+
+    Stopwatch stopwatch1 = Stopwatch()..start();
     GistMTProofEntity gistProof =
         await _getGistMTProofUseCase.execute(param: param.genesisDid);
     _stacktraceManager
         .addTrace("[GetAuthInputsUseCase] Gist proof: ${gistProof.toString()}");
     if (kDebugMode) {
+      stopwatch1.stop();
       print(
-          "[GetAuthInputsUseCase] after _getGistMTProofUseCase stopWatch: ${stopwatch.elapsedMilliseconds}");
+          "[GetAuthInputsUseCase] after _getGistMTProofUseCase stopWatch: ${stopwatch1.elapsed}");
     }
+    print("[GetAuthInputsUseCase] end 8 ->>>>>>>>: ${stopwatch.elapsed}");
 
-    return _signMessageUseCase
+    Stopwatch stopwatch2 = Stopwatch()..start();
+     var inputs = _signMessageUseCase
         .execute(param: SignMessageParam(param.privateKey, param.challenge))
         .then((signature) => _iden3commRepository.getAuthInputs(
             genesisDid: param.genesisDid,
@@ -155,5 +168,13 @@ class GetAuthInputsUseCase
       _stacktraceManager.addError("[GetAuthInputsUseCase] Error: $error");
       throw error;
     });
+    stopwatch2.stop();
+    print(
+        "[GetAuthInputsUseCase] end ->>>>>>>>: ${stopwatch2.elapsed}");
+    stopwatch.stop();
+    print("[GetAuthInputsUseCase] end 9 ->>>>>>>>: ${stopwatch.elapsed}");
+
+    return inputs;
+
   }
 }

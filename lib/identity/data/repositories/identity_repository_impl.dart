@@ -204,8 +204,19 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
   @override
   Future<String> convertIdToBigInt({required String id}) {
+    final stopwatch = Stopwatch()..start();
     String idBigInt = _libPolygonIdCoreIdentityDataSource.genesisIdToBigInt(id);
+    stopwatch.stop();
+    print('convertIdToBigInt ${stopwatch.elapsed}');
     return Future.value(idBigInt);
+  }
+
+  void measureFunctionExecution(Function func) {
+    final stopwatch = Stopwatch()..start();
+    func();
+
+    stopwatch.stop();
+    print('Function executed in ${stopwatch.elapsed}');
   }
 
   @override

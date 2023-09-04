@@ -26,21 +26,25 @@ class ProveUseCase extends FutureUseCase<ProveParam, ZKProofEntity> {
 
   @override
   Future<ZKProofEntity> execute({required ProveParam param}) async {
-    Stopwatch stopwatch = Stopwatch()..start();
+
     // Calculate witness
     Uint8List wtnsBytes = await _proofRepository.calculateWitness(
         param.circuitData, param.inputs);
     if (kDebugMode) {
-      print(
-          "[ProveUseCase] after calculateWitness stopWatch: ${stopwatch.elapsedMilliseconds}");
+      // stopwatch.stop();
+      // print(
+      //     "[ProveUseCase] after calculateWitness stopWatch: ${stopwatch.elapsedMilliseconds}");
     }
 
+    Stopwatch stopwatch = Stopwatch()..start();
+    stopwatch.start();
     try {
       ZKProofEntity zkProofEntity =
           await _proofRepository.prove(param.circuitData, wtnsBytes);
       if (kDebugMode) {
+        stopwatch.stop();
         print(
-          "[ProveUseCase] after prove stopWatch: ${stopwatch.elapsedMilliseconds}",
+          "[ProveUseCase] after prove stopWatch: ${stopwatch.elapsed}",
         );
       }
       return zkProofEntity;

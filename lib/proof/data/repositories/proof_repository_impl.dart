@@ -78,11 +78,8 @@ class ProofRepositoryImpl extends ProofRepository {
 
   @override
   Future<CircuitDataEntity> loadCircuitFiles(String circuitId) async {
-    List<Uint8List> circuitFiles =
-        await _circuitsFilesDataSource.loadCircuitFiles(circuitId);
-    CircuitDataEntity circuitDataEntity =
-        CircuitDataEntity(circuitId, circuitFiles[0], circuitFiles[1]);
-    return circuitDataEntity;
+    List<Uint8List> circuitFiles = await _circuitsFilesDataSource.loadCircuitFiles(circuitId);
+    return CircuitDataEntity(circuitId, circuitFiles[0], circuitFiles[1]);
   }
 
   @override
@@ -213,13 +210,18 @@ class ProofRepositoryImpl extends ProofRepository {
   @override
   Future<GistMTProofEntity> getGistProof(
       {required String idAsInt, required String contractAddress}) async {
+
+    final stopwatch = Stopwatch()..start();
+
     String gistProofSC = await _getGistProofSC(
       identifier: idAsInt,
       contractAddress: contractAddress,
     );
-
     String gistProof =
         _libPolygonIdCoreProofDataSource.proofFromSC(gistProofSC);
+    stopwatch.stop();
+
+    print('proofFromSC ${stopwatch.elapsed}');
 
     return _gistMTProofMapper
         .mapFrom(_gistProofDataSource.getGistMTProof(gistProof));
