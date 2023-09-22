@@ -3,6 +3,10 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/add_did_profile_info_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_did_profile_info_list_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_did_profile_info_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_did_profile_info_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
@@ -208,7 +212,42 @@ abstract class PolygonIdSdkIden3comm {
   /// The [payload] is the notification payload
 // Future<void> handleNotification({required String payload});
 
+  /// Cleans the schema cache
   Future<void> cleanSchemaCache();
+
+  /// Add info about a did we interacted with
+  /// in case of backup restore we can know which dids we have interacted with
+  /// and use the correct profile
+  /// in the Map we actually use
+  /// * [profileNonce]
+  /// * [selectedProfileType]
+  Future<void> addDidProfileInfo({
+    required String did,
+    required String privateKey,
+    required String interactedWithDid,
+    required Map<String, dynamic> info,
+  });
+
+  ///
+  Future<Map<String, dynamic>> getDidProfileInfo({
+    required String did,
+    required String privateKey,
+    required String interactedWithDid,
+  });
+
+  ///
+  Future<List<Map<String, dynamic>>> getDidProfileInfoList({
+    required String did,
+    required String privateKey,
+    required List<FilterEntity>? filters,
+  });
+
+  ///
+  Future<void> removeDidProfileInfo({
+    required String did,
+    required String privateKey,
+    required String interactedWithDid,
+  });
 }
 
 @injectable
@@ -227,6 +266,10 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   final UpdateInteractionUseCase _updateInteractionUseCase;
   final CleanSchemaCacheUseCase _cleanSchemaCacheUseCase;
   final StacktraceManager _stacktraceManager;
+  final AddDidProfileInfoUseCase _addDidProfileInfoUseCase;
+  final GetDidProfileInfoUseCase _getDidProfileInfoUseCase;
+  final GetDidProfileInfoListUseCase _getDidProfileInfoListUseCase;
+  final RemoveDidProfileInfoUseCase _removeDidProfileInfoUseCase;
 
   Iden3comm(
     this._fetchAndSaveClaimsUseCase,
@@ -243,6 +286,10 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     this._updateInteractionUseCase,
     this._cleanSchemaCacheUseCase,
     this._stacktraceManager,
+    this._addDidProfileInfoUseCase,
+    this._getDidProfileInfoUseCase,
+    this._getDidProfileInfoListUseCase,
+    this._removeDidProfileInfoUseCase,
   );
 
   @override
@@ -467,5 +514,67 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   ///
   String getErrorTrace() {
     return _stacktraceManager.errorTrace;
+  }
+
+  @override
+  Future<void> addDidProfileInfo({
+    required String did,
+    required String privateKey,
+    required String interactedWithDid,
+    required Map<String, dynamic> info,
+  }) {
+    return _addDidProfileInfoUseCase.execute(
+      param: AddDidProfileInfoParam(
+        genesisDid: did,
+        privateKey: privateKey,
+        interactedWithDid: interactedWithDid,
+        didProfileInfo: info,
+      ),
+    );
+  }
+
+  @override
+  Future<Map<String, dynamic>> getDidProfileInfo({
+    required String did,
+    required String privateKey,
+    required String interactedWithDid,
+  }) {
+    return _getDidProfileInfoUseCase.execute(
+      param: GetDidProfileInfoParam(
+        genesisDid: did,
+        privateKey: privateKey,
+        interactedWithDid: interactedWithDid,
+      ),
+    );
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getDidProfileInfoList({
+    required String did,
+    required String privateKey,
+    required List<FilterEntity>? filters,
+  }) {
+    return _getDidProfileInfoListUseCase.execute(
+      param: GetDidProfileInfoListParam(
+        genesisDid: did,
+        privateKey: privateKey,
+        filters: filters,
+      ),
+    );
+  }
+
+  @override
+  Future<void> removeDidProfileInfo({
+    required String did,
+    required String privateKey,
+    required String interactedWithDid,
+  }) {
+    return _removeDidProfileInfoUseCase.execute(
+      param: RemoveDidProfileInfoParam(
+        genesisDid: did,
+        privateKey: privateKey,
+        interactedWithDid: interactedWithDid,
+      ),
+    );
   }
 }
