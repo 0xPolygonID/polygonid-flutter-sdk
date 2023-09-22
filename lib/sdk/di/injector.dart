@@ -22,9 +22,11 @@ import 'package:polygonid_flutter_sdk/common/utils/encrypt_sembast_codec.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/data/credential_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/did_profile_info_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/iden3comm_credential_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/iden3comm_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/repositories/interaction_repository_impl.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/did_profile_info_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart';
@@ -149,6 +151,14 @@ abstract class DatabaseModule {
   @Named(interactionStoreName)
   StoreRef<String, Map<String, Object?>> get interactionStore =>
       stringMapStoreFactory.store(interactionStoreName);
+
+  @Named(didProfileInfoStoreName)
+  StoreRef<String, Map<String, Object?>> get didProfileInfoStore =>
+      stringMapStoreFactory.store(didProfileInfoStoreName);
+
+  @Named(profilesStoreName)
+  StoreRef<String, Map<String, Object?>> get profileStore =>
+      stringMapStoreFactory.store(profilesStoreName);
 }
 
 @module
@@ -189,6 +199,10 @@ abstract class RepositoriesModule {
   InteractionRepository interactionRepository(
           InteractionRepositoryImpl interactionRepositoryImpl) =>
       interactionRepositoryImpl;
+
+  DidProfileInfoRepository didProfileInfoRepository(
+          DidProfileInfoRepositoryImpl didProfileInfoRepositoryImpl) =>
+      didProfileInfoRepositoryImpl;
 
   // SMT
   SMTRepository smtRepository(SMTRepositoryImpl smtRepositoryImpl) =>

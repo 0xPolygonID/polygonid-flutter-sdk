@@ -28,6 +28,12 @@ const claimStoreName = "claimStore";
 /// Iden3comm
 const interactionStoreName = "interactionStore";
 
+/// DID profile info
+const didProfileInfoStoreName = "didProfileInfoStore";
+
+/// profiles store
+const profilesStoreName = "profilesStore";
+
 /// State
 const stateAbiJson = '''
 {

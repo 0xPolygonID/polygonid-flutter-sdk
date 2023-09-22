@@ -45,6 +45,13 @@ class UpdateIdentityUseCase
       if (identity is PrivateIdentityEntity) {
         identity.profiles.clear();
         identity.profiles.addAll(param.profiles);
+        // we save the profiles in a separate store ref
+        await _identityRepository.putProfiles(
+          did: param.genesisDid,
+          privateKey: param.privateKey,
+          profiles: param.profiles,
+        );
+        // then we update the identity
         await _identityRepository.storeIdentity(identity: identity);
       } else {
         throw InvalidPrivateKeyException(param.privateKey);

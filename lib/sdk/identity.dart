@@ -12,14 +12,14 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/restore
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/add_profile_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/get_profiles_use_case.dart';
 
-import '../identity/domain/entities/identity_entity.dart';
-import '../identity/domain/entities/private_identity_entity.dart';
-import '../identity/domain/use_cases/fetch_identity_state_use_case.dart';
-import '../identity/domain/use_cases/get_did_identifier_use_case.dart';
-import '../identity/domain/use_cases/identity/check_identity_validity_use_case.dart';
-import '../identity/domain/use_cases/identity/remove_identity_use_case.dart';
-import '../identity/domain/use_cases/identity/sign_message_use_case.dart';
-import '../identity/domain/use_cases/profile/remove_profile_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/fetch_identity_state_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/check_identity_validity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/remove_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/sign_message_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/remove_profile_use_case.dart';
 
 abstract class PolygonIdSdkIdentity {
   /// Checks the identity validity from a secret
