@@ -35,28 +35,24 @@ class CreateIdentityStateUseCase
   @override
   Future<void> execute({required CreateIdentityStateParam param}) async {
     try {
-      await Future.wait(
-        [
-          _smtRepository.createSMT(
-            maxLevels: 40,
-            type: TreeType.claims,
-            did: param.did,
-            privateKey: param.privateKey,
-          ),
-          _smtRepository.createSMT(
-            maxLevels: 40,
-            type: TreeType.revocation,
-            did: param.did,
-            privateKey: param.privateKey,
-          ),
-          _smtRepository.createSMT(
-            maxLevels: 40,
-            type: TreeType.roots,
-            did: param.did,
-            privateKey: param.privateKey,
-          ),
-        ],
-        eagerError: true,
+
+      await _smtRepository.createSMT(
+        maxLevels: 40,
+        type: TreeType.claims,
+        did: param.did,
+        privateKey: param.privateKey,
+      );
+      await _smtRepository.createSMT(
+        maxLevels: 40,
+        type: TreeType.revocation,
+        did: param.did,
+        privateKey: param.privateKey,
+      );
+      await _smtRepository.createSMT(
+        maxLevels: 40,
+        type: TreeType.roots,
+        did: param.did,
+        privateKey: param.privateKey,
       );
 
       List<String> authClaim =

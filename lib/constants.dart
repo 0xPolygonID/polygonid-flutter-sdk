@@ -4,7 +4,7 @@ const CHANNEL_NAME = 'technology.polygon.polygonid_flutter_sdk';
 
 /// Database
 const databaseName = "polygonIdSdk.db";
-const sembastCodecName = "sembastCodec";
+//const sembastCodecName = "sembastCodec";
 
 /// Key value Database
 const keyValueStoreName = "keyValueStore";

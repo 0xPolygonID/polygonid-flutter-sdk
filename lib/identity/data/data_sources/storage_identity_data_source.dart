@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/data/data_sources/secure_identity_storage_data_source.dart';
+import 'package:polygonid_flutter_sdk/common/utils/encrypt_sembast_codec.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
@@ -79,6 +80,7 @@ class StorageIdentityDataSource extends SecureIdentityStorageDataSource {
   }
 
   Future<void> removeIdentity({required String did}) {
+    clearDatabaseCache();
     // TODO: get privateKey from param and obtain publicKey
     //  from identity and encrypt/decrypt a msg to allow removing the identity
     return _database.transaction((transaction) =>
@@ -109,15 +111,15 @@ class StorageIdentityDataSource extends SecureIdentityStorageDataSource {
     required String destinationPath,
     required String privateKey,
   }) async {
-    SembastCodec codec = getItSdk.get<SembastCodec>(param1: privateKey);
+    SembastCodec codec = getEncryptSembastCodec(password: privateKey);
 
     await importDatabase(
       exportableDb,
-
-      ///FIXME: should be injected
       databaseFactoryIo,
       destinationPath,
       codec: codec,
     );
+
+    clearDatabaseCache();
   }
 }

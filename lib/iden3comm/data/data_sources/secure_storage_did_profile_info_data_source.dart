@@ -59,8 +59,8 @@ class SecureStorageDidProfileInfoDataSource
                 didProfileInfo: didProfileInfo,
                 interactedDid: interactedDid,
               ),
-            )
-            .whenComplete(() => database.close()));
+            ));
+            //.whenComplete(() => database.close()));
   }
 
   Future<void> storeDidProfileInfoTransact({
@@ -115,7 +115,7 @@ class SecureStorageDidProfileInfoDataSource
         _storeRefWrapper
             .find(database, finder: Finder(filter: filter))
             .then((snapshots) =>
-                snapshots.map((snapshot) => snapshot.value).toList())
-            .whenComplete(() => database.close()));
+                snapshots.map((snapshot) => snapshot.value).toList()));
+            //.whenComplete(() => database.close()));
   }
 }
