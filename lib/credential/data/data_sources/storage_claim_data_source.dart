@@ -53,10 +53,9 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
       required String privateKey}) {
     // TODO check if identifiers inside each claim are from privateKey
     return getDatabase(did: did, privateKey: privateKey).then((database) =>
-        database
-            .transaction((transaction) =>
-                storeClaimsTransact(transaction: transaction, claims: claims))
-            .whenComplete(() => database.close()));
+        database.transaction((transaction) =>
+            storeClaimsTransact(transaction: transaction, claims: claims)));
+    //.whenComplete(() => database.close()));
   }
 
   // For UT purpose
@@ -75,10 +74,9 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
       required String did,
       required String privateKey}) {
     return getDatabase(did: did, privateKey: privateKey).then((database) =>
-        database
-            .transaction((transaction) => removeClaimsTransact(
-                transaction: transaction, claimIds: claimIds))
-            .whenComplete(() => database.close()));
+        database.transaction((transaction) => removeClaimsTransact(
+            transaction: transaction, claimIds: claimIds)));
+    //.whenComplete(() => database.close()));
   }
 
   // For UT purpose
@@ -96,10 +94,9 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
   Future<void> removeAllClaims(
       {required String did, required String privateKey}) {
     return getDatabase(did: did, privateKey: privateKey).then((database) =>
-        database
-            .transaction((transaction) =>
-                removeAllClaimsTransact(transaction: transaction))
-            .whenComplete(() => database.close()));
+        database.transaction((transaction) =>
+            removeAllClaimsTransact(transaction: transaction)));
+    //.whenComplete(() => database.close()));
   }
 
   // For UT purpose
@@ -111,11 +108,10 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
   Future<List<ClaimDTO>> getClaims(
       {Filter? filter, required String did, required String privateKey}) {
     return getDatabase(did: did, privateKey: privateKey).then((database) =>
-        _storeRefWrapper
-            .find(database, finder: Finder(filter: filter))
-            .then((snapshots) => snapshots
+        _storeRefWrapper.find(database, finder: Finder(filter: filter)).then(
+            (snapshots) => snapshots
                 .map((snapshot) => ClaimDTO.fromJson(snapshot.value))
-                .toList())
-            .whenComplete(() => database.close()));
+                .toList()));
+    //.whenComplete(() => database.close()));
   }
 }

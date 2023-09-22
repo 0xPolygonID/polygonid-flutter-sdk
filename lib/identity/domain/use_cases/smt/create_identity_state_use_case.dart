@@ -1,4 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_auth_claim_use_case.dart';
@@ -33,6 +34,52 @@ class CreateIdentityStateUseCase
 
   @override
   Future<void> execute({required CreateIdentityStateParam param}) async {
+    try {
+      await Future.wait(
+        [
+          _smtRepository.createSMT(
+            maxLevels: 40,
+            type: TreeType.claims,
+            did: param.did,
+            privateKey: param.privateKey,
+          ),
+          _smtRepository.createSMT(
+            maxLevels: 40,
+            type: TreeType.revocation,
+            did: param.did,
+            privateKey: param.privateKey,
+          ),
+          _smtRepository.createSMT(
+            maxLevels: 40,
+            type: TreeType.roots,
+            did: param.did,
+            privateKey: param.privateKey,
+          ),
+        ],
+        eagerError: true,
+      );
+
+      List<String> authClaim =
+          await _getIdentityAuthClaimUseCase.execute(param: param.privateKey);
+      NodeEntity authClaimNode =
+          await _identityRepository.getAuthClaimNode(children: authClaim);
+      await _smtRepository.addLeaf(
+        leaf: authClaimNode,
+        type: TreeType.claims,
+        did: param.did,
+        privateKey: param.privateKey,
+      );
+      _stacktraceManager.addTrace("[CreateIdentityStateUseCase] State created");
+      logger().i("[CreateIdentityStateUseCase] State created with: $param");
+
+      return;
+    } catch (error) {
+      _stacktraceManager.addTrace("[CreateIdentityStateUseCase] Error: $error");
+      _stacktraceManager.addError("[CreateIdentityStateUseCase] Error: $error");
+      logger().e("[CreateIdentityStateUseCase] Error: $error");
+      rethrow;
+    }
+    /*return;
     return Future.wait(
       [
         _smtRepository.createSMT(
@@ -79,6 +126,6 @@ class CreateIdentityStateUseCase
       _stacktraceManager.addError("[CreateIdentityStateUseCase] Error: $error");
       logger().e("[CreateIdentityStateUseCase] Error: $error");
       throw error;
-    });
+    });*/
   }
 }

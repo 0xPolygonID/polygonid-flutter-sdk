@@ -60,8 +60,8 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
         database
             .transaction((transaction) => getTransact(
                 storeName: storeName, transaction: transaction, key: key))
-            .then((snapshot) => NodeDTO.fromJson(snapshot!))
-            .whenComplete(() => database.close()));
+            .then((snapshot) => NodeDTO.fromJson(snapshot!)));
+            //.whenComplete(() => database.close()));
   }
 
   // For UT purpose
@@ -84,8 +84,8 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
                 storeName: storeName,
                 transaction: transaction,
                 key: key,
-                node: node))
-            .whenComplete(() => database.close()));
+                node: node)));
+            //.whenComplete(() => database.close()));
   }
 
   // For UT purpose
@@ -105,8 +105,8 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
     return getDatabase(did: did, privateKey: privateKey).then((database) =>
         database
             .transaction((transaction) =>
-                getRootTransact(transaction: transaction, storeName: storeName))
-            .whenComplete(() => database.close()));
+                getRootTransact(transaction: transaction, storeName: storeName)));
+            //.whenComplete(() => database.close()));
   }
 
   // For UT purpose
@@ -130,8 +130,8 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
     return getDatabase(did: did, privateKey: privateKey).then((database) =>
         database
             .transaction((transaction) => setRootTransact(
-                transaction: transaction, storeName: storeName, root: root))
-            .whenComplete(() => database.close()));
+                transaction: transaction, storeName: storeName, root: root)));
+            //.whenComplete(() => database.close()));
   }
 
   // For UT purpose
@@ -150,8 +150,8 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
         database
             .transaction((transaction) => getMaxLevelsTransact(
                 transaction: transaction, storeName: storeName))
-            .then((snapshot) => snapshot!["maxLevels"] as int)
-            .whenComplete(() => database.close()));
+            .then((snapshot) => snapshot!["maxLevels"] as int));
+            //.whenComplete(() => database.close()));
   }
 
   // For UT purpose
@@ -170,8 +170,8 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
             .transaction((transaction) => setMaxLevelsTransact(
                 transaction: transaction,
                 storeName: storeName,
-                maxLevels: maxLevels))
-            .whenComplete(() => database.close()));
+                maxLevels: maxLevels)));
+            //.whenComplete(() => database.close()));
   }
 
   // For UT purpose
@@ -190,8 +190,8 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
     return getDatabase(did: did, privateKey: privateKey).then((database) =>
         database
             .transaction((transaction) => removeSMTTransact(
-                transaction: transaction, storeName: storeName))
-            .whenComplete(() => database.close()));
+                transaction: transaction, storeName: storeName)));
+            //.whenComplete(() => database.close()));
   }
 
   // For UT purpose
