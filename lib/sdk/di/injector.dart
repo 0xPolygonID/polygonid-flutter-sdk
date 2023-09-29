@@ -19,8 +19,7 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/repositories/config_repository.dart';
 import 'package:polygonid_flutter_sdk/common/domain/repositories/package_info_repository.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
-import 'package:polygonid_flutter_sdk/common/utils/encrypt_codec.dart';
-//import 'package:polygonid_flutter_sdk/common/utils/encrypt_sembast_codec.dart';
+import 'package:polygonid_flutter_sdk/common/utils/encrypt_sembast_codec.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/data/credential_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
@@ -114,22 +113,15 @@ abstract class DatabaseModule {
     final dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
     final path = join(dir.path, identityDatabasePrefix + identifier! + '.db');
-
-    if (privateKey == null) {
-      final database = await databaseFactoryIo.openDatabase(
-        path, /*codec: codec*/
-      );
-      return database;
-    }
-
-    final codec = getEncryptSembastCodec(password: privateKey);
+    // Initialize the encryption codec with the privateKey
+    final codec = getItSdk.get<SembastCodec>(param1: privateKey!);
     final database = await databaseFactoryIo.openDatabase(path, codec: codec);
     return database;
   }
 
-  /*SembastCodec getCodec(@factoryParam String privateKey) {
+  SembastCodec getCodec(@factoryParam String privateKey) {
     return getEncryptSembastCodec(password: privateKey);
-  }*/
+  }
 
   // Identity
   @Named(identityStoreName)

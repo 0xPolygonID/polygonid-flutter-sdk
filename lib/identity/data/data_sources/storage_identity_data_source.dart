@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/data/data_sources/secure_identity_storage_data_source.dart';
+//import 'package:polygonid_flutter_sdk/common/utils/encrypt_codec.dart';
 import 'package:polygonid_flutter_sdk/common/utils/encrypt_sembast_codec.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
@@ -80,7 +81,7 @@ class StorageIdentityDataSource extends SecureIdentityStorageDataSource {
   }
 
   Future<void> removeIdentity({required String did}) {
-    clearDatabaseCache();
+    //clearDatabaseCache();
     // TODO: get privateKey from param and obtain publicKey
     //  from identity and encrypt/decrypt a msg to allow removing the identity
     return _database.transaction((transaction) =>
@@ -120,6 +121,6 @@ class StorageIdentityDataSource extends SecureIdentityStorageDataSource {
       codec: codec,
     );
 
-    clearDatabaseCache();
+    //clearDatabaseCache();
   }
 }
