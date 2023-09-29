@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:encrypt/encrypt.dart';
-import 'package:injectable/injectable.dart';
 import 'package:sembast/sembast.dart';
 
 enum EncryptType { salsa20, aes, fernet }
@@ -91,8 +90,12 @@ class _EncryptCodec extends Codec<Map<String, dynamic>, String> {
 
 // Salsa20 (16 length key required) or AES (32 length key required)
 SembastCodec getEncryptSembastCodec(
-        {required String password,
-        EncryptType signature = EncryptType.salsa20}) =>
-    SembastCodec(
-        signature: signature.toString(),
-        codec: _EncryptCodec(password, signature));
+    {required String password, EncryptType signature = EncryptType.salsa20}) {
+  String signatureString = signature.toString();
+  String signatureName = signature.name;
+  print("signatureString  $signatureString");
+  print("signatureName  $signatureName");
+  return SembastCodec(
+      signature: "Salsa20",
+      codec: _EncryptCodec(password, signature));
+}

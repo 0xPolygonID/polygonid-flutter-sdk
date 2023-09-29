@@ -383,7 +383,7 @@ import 'package:sembast/sembast.dart' as _i13;
 import 'package:web3dart/web3dart.dart' as _i68;
 
 extension GetItInjectableX on _i1.GetIt {
-  // initializes the registration of main-scope dependencies inside of GetIt
+// initializes the registration of main-scope dependencies inside of GetIt
   _i1.GetIt $initSDKGetIt({
     String? environment,
     _i2.EnvironmentFilter? environmentFilter,
@@ -412,7 +412,6 @@ extension GetItInjectableX on _i1.GetIt {
     gh.factory<_i10.ClaimStateMapper>(() => _i10.ClaimStateMapper());
     gh.factory<_i11.Client>(() => networkModule.client);
     gh.factory<_i12.CreatePathWrapper>(() => _i12.CreatePathWrapper());
-    gh.lazySingletonAsync<_i13.Database>(() => databaseModule.database());
     gh.factoryParamAsync<_i13.Database, String?, String?>(
       (
         identifier,
@@ -424,6 +423,7 @@ extension GetItInjectableX on _i1.GetIt {
       ),
       instanceName: 'polygonIdSdkIdentity',
     );
+    gh.lazySingletonAsync<_i13.Database>(() => databaseModule.database());
     gh.factory<_i12.DestinationPathDataSource>(
         () => _i12.DestinationPathDataSource(gh<_i12.CreatePathWrapper>()));
     gh.factory<_i14.Dio>(() => networkModule.dio);
@@ -509,28 +509,23 @@ extension GetItInjectableX on _i1.GetIt {
     gh.factory<_i61.RevocationStatusMapper>(
         () => _i61.RevocationStatusMapper());
     gh.factory<_i62.RhsNodeTypeMapper>(() => _i62.RhsNodeTypeMapper());
-    gh.factoryParam<_i13.SembastCodec, String, dynamic>((
-      privateKey,
-      _,
-    ) =>
-        databaseModule.getCodec(privateKey));
     gh.lazySingleton<_i63.StacktraceManager>(() => _i63.StacktraceManager());
     gh.factory<_i64.StateIdentifierMapper>(() => _i64.StateIdentifierMapper());
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.interactionStore,
-      instanceName: 'interactionStore',
-    );
-    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.claimStore,
-      instanceName: 'claimStore',
+      () => databaseModule.identityStore,
+      instanceName: 'identityStore',
     );
     gh.factory<_i13.StoreRef<String, dynamic>>(
       () => databaseModule.keyValueStore,
       instanceName: 'keyValueStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.identityStore,
-      instanceName: 'identityStore',
+      () => databaseModule.claimStore,
+      instanceName: 'claimStore',
+    );
+    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
+      () => databaseModule.interactionStore,
+      instanceName: 'interactionStore',
     );
     gh.factory<_i65.TreeStateMapper>(() => _i65.TreeStateMapper());
     gh.factory<_i66.TreeTypeMapper>(() => _i66.TreeTypeMapper());
@@ -1248,18 +1243,18 @@ extension GetItInjectableX on _i1.GetIt {
   }
 }
 
-class _$LoggerModule extends _i196.LoggerModule {}
-
-class _$ChannelModule extends _i196.ChannelModule {}
-
 class _$PlatformModule extends _i196.PlatformModule {}
 
 class _$NetworkModule extends _i196.NetworkModule {}
 
 class _$DatabaseModule extends _i196.DatabaseModule {}
 
-class _$RepositoriesModule extends _i196.RepositoriesModule {}
+class _$FilesManagerModule extends _i196.FilesManagerModule {}
 
 class _$EncryptionModule extends _i196.EncryptionModule {}
 
-class _$FilesManagerModule extends _i196.FilesManagerModule {}
+class _$LoggerModule extends _i196.LoggerModule {}
+
+class _$ChannelModule extends _i196.ChannelModule {}
+
+class _$RepositoriesModule extends _i196.RepositoriesModule {}
