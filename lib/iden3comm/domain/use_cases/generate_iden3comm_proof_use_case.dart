@@ -169,7 +169,7 @@ class GenerateIden3commProofUseCase
               ipfsNodeURL: param.ipfsNodeURL!)
           .toJson();
       _stacktraceManager.addTrace(
-          "[GenerateIden3commProofUseCase] AtomicQueryInputsConfigParam: ${config.toString()}");
+          "[GenerateIden3commProofUseCase] AtomicQueryInputsConfigParam: success");
     }
 
     DidEntity didEntity = await _getDidUseCase.execute(param: param.did);

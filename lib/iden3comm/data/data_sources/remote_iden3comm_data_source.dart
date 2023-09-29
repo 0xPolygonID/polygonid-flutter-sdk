@@ -104,7 +104,9 @@ class RemoteIden3commDataSource {
 
       if (schemaUrl.toLowerCase().startsWith("ipfs://")) {
         String fileHash = schemaUrl.replaceFirst("ipfs://", "");
-        schemaUrl = "https://ipfs.io/ipfs/$fileHash";
+        //https://peach-remote-skink-451.mypinata.cloud/ipfs/QmZw7cZnqYk9jDYQWgHDC5sX1CSBLK4xkbBhCMgX6YMJ1S
+        //schemaUrl = "https://ipfs.io/ipfs/$fileHash";
+        schemaUrl = "https://peach-remote-skink-451.mypinata.cloud/ipfs/$fileHash?pinataGatewayToken=uAxxPNJ1mlu0qlyGJHIlm8LbfWHeUUisXCpOQgpPKFtvCTAq_it4u1WNa35LD177";
       }
 
       var schemaUri = Uri.parse(schemaUrl);

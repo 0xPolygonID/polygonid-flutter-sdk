@@ -2,8 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:dio/dio.dart';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
+import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_store.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:http/http.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pointycastle/api.dart';
 import 'package:pointycastle/asymmetric/api.dart';
 import 'package:pointycastle/asymmetric/oaep.dart';
@@ -47,10 +51,26 @@ class Iden3MessageDataSource {
       "pushkey": pushToken,
     };
 
-    Response publicKeyResponse =
-        await get(Uri.parse("$serviceEndpoint/public"));
+    Dio dio = Dio();
+    final dir = await getApplicationDocumentsDirectory();
+    final path = dir.path;
+    dio.interceptors.add(
+      DioCacheInterceptor(
+        options: CacheOptions(
+          store: HiveCacheStore(path),
+          policy: CachePolicy.refreshForceCache,
+          hitCacheOnErrorExcept: [],
+          maxStale: const Duration(days: 7),
+          priority: CachePriority.high,
+        ),
+      ),
+    );
+
+    var publicKeyResponse =
+        await dio.get(Uri.parse("$serviceEndpoint/public").toString());
+
     if (publicKeyResponse.statusCode == 200) {
-      String publicKeyPem = publicKeyResponse.body;
+      String publicKeyPem = publicKeyResponse.data;
       var publicKey = RSAKeyParser().parse(publicKeyPem) as RSAPublicKey;
       final encrypter =
           OAEPEncoding.withCustomDigest(() => SHA512Digest(), RSAEngine());
@@ -60,7 +80,7 @@ class Iden3MessageDataSource {
       return base64.encode(encrypted);
     } else {
       logger().d(
-          'getPublicKey Error: code: ${publicKeyResponse.statusCode} msg: ${publicKeyResponse.body}');
+          'getPublicKey Error: code: ${publicKeyResponse.statusCode} msg: ${publicKeyResponse.data}');
       throw NetworkException(publicKeyResponse);
     }
   }

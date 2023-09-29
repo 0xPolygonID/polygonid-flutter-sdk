@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -38,8 +40,16 @@ class PolygonIdSdk {
     // platform is initialized
     WidgetsFlutterBinding.ensureInitialized();
 
-    await Hive.initFlutter();
-    await Hive.openBox('stacktrace');
+    String? stacktraceEncryptionKey = env?.stacktraceEncryptionKey;
+    if (stacktraceEncryptionKey != null &&
+        stacktraceEncryptionKey.isNotEmpty &&
+        utf8.encode(stacktraceEncryptionKey).length == 32) {
+      await Hive.initFlutter();
+      await Hive.openBox(
+        'stacktrace',
+        encryptionCipher: HiveAesCipher(utf8.encode(stacktraceEncryptionKey)),
+      );
+    }
 
     // Init injection
     await configureInjection();

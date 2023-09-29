@@ -58,8 +58,8 @@ class SecureStorageInteractionDataSource
     return getDatabase(did: did, privateKey: privateKey).then((database) =>
         database
             .transaction((transaction) => storeInteractionsTransact(
-                transaction: transaction, interactions: interactions))
-            .whenComplete(() => database.close()));
+                transaction: transaction, interactions: interactions)));
+            //.whenComplete(() => database.close()));
   }
 
   // For UT purpose
@@ -97,8 +97,8 @@ class SecureStorageInteractionDataSource
     return getDatabase(did: did, privateKey: privateKey).then((database) =>
         database
             .transaction((transaction) =>
-                removeInteractionsTransact(transaction: transaction, ids: ids))
-            .whenComplete(() => database.close()));
+                removeInteractionsTransact(transaction: transaction, ids: ids)));
+            //.whenComplete(() => database.close()));
   }
 
   // For UT purpose
@@ -116,8 +116,8 @@ class SecureStorageInteractionDataSource
     return getDatabase(did: did, privateKey: privateKey).then((database) =>
         database
             .transaction((transaction) =>
-                removeAllInteractionsTransact(transaction: transaction))
-            .whenComplete(() => database.close()));
+                removeAllInteractionsTransact(transaction: transaction)));
+            //.whenComplete(() => database.close()));
   }
 
   // For UT purpose
@@ -132,7 +132,7 @@ class SecureStorageInteractionDataSource
         _storeRefWrapper
             .find(database, finder: Finder(filter: filter))
             .then((snapshots) =>
-                snapshots.map((snapshot) => snapshot.value).toList())
-            .whenComplete(() => database.close()));
+                snapshots.map((snapshot) => snapshot.value).toList()));
+            //.whenComplete(() => database.close()));
   }
 }
