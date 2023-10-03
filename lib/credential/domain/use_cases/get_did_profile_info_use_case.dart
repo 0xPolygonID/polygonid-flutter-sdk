@@ -24,8 +24,8 @@ class GetDidProfileInfoUseCase
   @override
   Future<Map<String, dynamic>> execute(
       {required GetDidProfileInfoParam param}) {
-    return _didProfileInfoRepository.getDidProfileInfo(
-      interactedDid: param.interactedWithDid,
+    return _didProfileInfoRepository.getDidProfileInfoByInteractedWithDid(
+      interactedWithDid: param.interactedWithDid,
       genesisDid: param.genesisDid,
       privateKey: param.privateKey,
     );

@@ -111,7 +111,7 @@ class RemoteIden3commDataSource {
 
       var schemaUri = Uri.parse(schemaUrl);
       _stacktraceManager
-          .addTrace("[RemoteIden3commDataSource] fetchSchema url: $schemaUri");
+          .addTrace("[RemoteIden3commDataSource] fetchSchema original url: $url");
 
       Dio dio = Dio();
       final dir = await getApplicationDocumentsDirectory();

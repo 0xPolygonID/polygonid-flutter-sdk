@@ -531,6 +531,11 @@ extension GetItInjectableX on _i1.GetIt {
     gh.factory<_i62.RevocationStatusMapper>(
         () => _i62.RevocationStatusMapper());
     gh.factory<_i63.RhsNodeTypeMapper>(() => _i63.RhsNodeTypeMapper());
+    gh.factoryParam<_i13.SembastCodec, String, dynamic>((
+      privateKey,
+      _,
+    ) =>
+        databaseModule.getCodec(privateKey));
     gh.lazySingleton<_i64.StacktraceManager>(() => _i64.StacktraceManager());
     gh.factory<_i65.StateIdentifierMapper>(() => _i65.StateIdentifierMapper());
     gh.factory<_i13.StoreRef<String, dynamic>>(
@@ -538,24 +543,24 @@ extension GetItInjectableX on _i1.GetIt {
       instanceName: 'keyValueStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.claimStore,
-      instanceName: 'claimStore',
-    );
-    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.identityStore,
-      instanceName: 'identityStore',
+      () => databaseModule.didProfileInfoStore,
+      instanceName: 'didProfileInfoStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.interactionStore,
       instanceName: 'interactionStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.didProfileInfoStore,
-      instanceName: 'didProfileInfoStore',
-    );
-    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.profileStore,
       instanceName: 'profilesStore',
+    );
+    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
+      () => databaseModule.identityStore,
+      instanceName: 'identityStore',
+    );
+    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
+      () => databaseModule.claimStore,
+      instanceName: 'claimStore',
     );
     gh.factory<_i66.TreeStateMapper>(() => _i66.TreeStateMapper());
     gh.factory<_i67.TreeTypeMapper>(() => _i67.TreeTypeMapper());

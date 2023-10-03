@@ -81,7 +81,7 @@ class StorageIdentityDataSource extends SecureIdentityStorageDataSource {
   }
 
   Future<void> removeIdentity({required String did}) {
-    //clearDatabaseCache();
+    clearDatabaseCache();
     // TODO: get privateKey from param and obtain publicKey
     //  from identity and encrypt/decrypt a msg to allow removing the identity
     return _database.transaction((transaction) =>
@@ -121,6 +121,6 @@ class StorageIdentityDataSource extends SecureIdentityStorageDataSource {
       codec: codec,
     );
 
-    //clearDatabaseCache();
+    clearDatabaseCache();
   }
 }

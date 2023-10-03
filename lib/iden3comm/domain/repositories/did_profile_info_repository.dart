@@ -15,7 +15,12 @@ abstract class DidProfileInfoRepository {
   });
 
   Future<Map<String, dynamic>> getDidProfileInfo({
-    required String interactedDid,
+    required String genesisDid,
+    required String privateKey,
+  });
+
+  Future<Map<String, dynamic>> getDidProfileInfoByInteractedWithDid({
+    required String interactedWithDid,
     required String genesisDid,
     required String privateKey,
   });
