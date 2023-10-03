@@ -27,11 +27,11 @@ dependencies:
   # Path provider 2.0.12 is giving problems with iOS, forced to use 2.0.11
   path_provider: ^2.0.15
   archive: ^3.3.7
-  sembast: ^3.4.9
+  sembast: 3.5.0+1
   fast_base58: 0.2.1
   uuid: ^3.0.6
-  encrypt: ^5.0.1
-  pointycastle: ^3.6.1
+  encrypt: 5.0.3
+  pointycastle: 3.7.3
   package_info_plus: ^4.0.1
   bip32: ^2.0.0
   dio: ^5.3.0
