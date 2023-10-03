@@ -55,8 +55,8 @@ class SecureStorageProfilesDataSource extends SecureIdentityStorageDataSource {
                 transaction: transaction,
                 profiles: profiles,
               ),
-            ));
-        //.whenComplete(() => database.close()));
+            )
+            .whenComplete(() => database.close()));
   }
 
   Future<void> storeProfilesTransact({
@@ -86,6 +86,6 @@ class SecureStorageProfilesDataSource extends SecureIdentityStorageDataSource {
               Map<BigInt, String> profiles = snapshot.map(
                   (key, value) => MapEntry(BigInt.parse(key), value as String));
               return profiles;
-            })); //.whenComplete(() => database.close()));
+            }).whenComplete(() => database.close()));
   }
 }

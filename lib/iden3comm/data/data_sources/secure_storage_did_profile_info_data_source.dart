@@ -52,14 +52,15 @@ class SecureStorageDidProfileInfoDataSource
     required String privateKey,
   }) {
     return getDatabase(did: did, privateKey: privateKey)
-        .then((database) => database.transaction(
+        .then((database) => database
+            .transaction(
               (transaction) => storeDidProfileInfoTransact(
                 transaction: transaction,
                 didProfileInfo: didProfileInfo,
                 interactedDid: interactedDid,
               ),
-            ));
-    //.whenComplete(() => database.close()));
+            )
+            .whenComplete(() => database.close()));
   }
 
   Future<void> storeDidProfileInfoTransact({
@@ -123,9 +124,10 @@ class SecureStorageDidProfileInfoDataSource
     required String privateKey,
   }) {
     return getDatabase(did: did, privateKey: privateKey).then((database) =>
-        _storeRefWrapper.find(database, finder: Finder(filter: filter)).then(
-            (snapshots) =>
-                snapshots.map((snapshot) => snapshot.value).toList()));
-    //.whenComplete(() => database.close()));
+        _storeRefWrapper
+            .find(database, finder: Finder(filter: filter))
+            .then((snapshots) =>
+                snapshots.map((snapshot) => snapshot.value).toList())
+            .whenComplete(() => database.close()));
   }
 }

@@ -95,13 +95,6 @@ abstract class NetworkModule {
   }
 }
 
-final _databaseCache = <String, Database>{};
-
-@injectable
-clearDatabaseCache() {
-  _databaseCache.clear();
-}
-
 @module
 abstract class DatabaseModule {
   @lazySingleton
@@ -117,26 +110,12 @@ abstract class DatabaseModule {
   @Named(identityDatabaseName)
   Future<Database> identityDatabase(@factoryParam String? identifier,
       @factoryParam String? privateKey) async {
-    final cacheKey = '$identifier';
-
-    if (_databaseCache.containsKey(cacheKey)) {
-      return _databaseCache[cacheKey]!;
-    }
-
     final dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
     final path = join(dir.path, identityDatabasePrefix + identifier! + '.db');
     // Initialize the encryption codec with the privateKey
-
-    final codec = getEncryptSembastCodec(
-      password: privateKey!,
-      signature: EncryptType.salsa20,
-    );
-
+    final codec = getItSdk.get<SembastCodec>(param1: privateKey!);
     final database = await databaseFactoryIo.openDatabase(path, codec: codec);
-
-    _databaseCache[cacheKey] = database;
-
     return database;
   }
 
