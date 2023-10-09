@@ -52,7 +52,7 @@ class Iden3MessageDataSource {
     };
 
     Dio dio = Dio();
-    final dir = await getApplicationDocumentsDirectory();
+    /*final dir = await getApplicationDocumentsDirectory();
     final path = dir.path;
     dio.interceptors.add(
       DioCacheInterceptor(
@@ -64,7 +64,7 @@ class Iden3MessageDataSource {
           priority: CachePriority.high,
         ),
       ),
-    );
+    );*/
 
     var publicKeyResponse =
         await dio.get(Uri.parse("$serviceEndpoint/public").toString());

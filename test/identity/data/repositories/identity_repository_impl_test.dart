@@ -14,6 +14,7 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_ide
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/secure_storage_profiles_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
@@ -163,6 +164,8 @@ MockRhsNodeMapper rhsNodeMapper = MockRhsNodeMapper();
 MockStateIdentifierMapper stateIdentifierMapper = MockStateIdentifierMapper();
 MockNodeMapper nodeMapper = MockNodeMapper();
 MockEncryptionKeyMapper encryptionKeyMapper = MockEncryptionKeyMapper();
+MockSecureStorageProfilesDataSource secureStorageProfilesDataSource =
+    MockSecureStorageProfilesDataSource();
 
 // Tested instance
 IdentityRepository repository = IdentityRepositoryImpl(
@@ -182,6 +185,7 @@ IdentityRepository repository = IdentityRepositoryImpl(
   stateIdentifierMapper,
   nodeMapper,
   encryptionKeyMapper,
+  secureStorageProfilesDataSource,
 );
 
 @GenerateMocks([
@@ -202,6 +206,7 @@ IdentityRepository repository = IdentityRepositoryImpl(
   StateIdentifierMapper,
   NodeMapper,
   EncryptionKeyMapper,
+  SecureStorageProfilesDataSource,
 ])
 void main() {
   group("Get identity", () {

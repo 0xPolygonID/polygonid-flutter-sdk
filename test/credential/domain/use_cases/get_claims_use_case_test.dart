@@ -104,7 +104,6 @@ MockStacktraceManager stacktraceStreamManager = MockStacktraceManager();
 GetClaimsUseCase useCase = GetClaimsUseCase(
   credentialRepository,
   getCurrentEnvDidIdentifierUseCase,
-  getIdentityUseCase,
   stacktraceStreamManager,
 );
 
