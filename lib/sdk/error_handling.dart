@@ -20,7 +20,7 @@ abstract class PolygonIdSdkErrorHandling {
 }
 
 @injectable
-class ErrorHandling implements PolygonIdSdkErrorHandling{
+class ErrorHandling implements PolygonIdSdkErrorHandling {
   final StacktraceManager _stacktraceManager;
 
   ErrorHandling(this._stacktraceManager);

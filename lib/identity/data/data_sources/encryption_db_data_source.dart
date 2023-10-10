@@ -16,7 +16,8 @@ class EncryptionDbDataSource {
       param1: key,
     );
 
-    final decrypted = encrypter.decrypt64(encryptedData, iv: IV.allZerosOfLength(16));
+    final decrypted =
+        encrypter.decrypt64(encryptedData, iv: IV.allZerosOfLength(16));
 
     Map<String, Object?> decryptedDbMap = jsonDecode(decrypted);
     return decryptedDbMap;

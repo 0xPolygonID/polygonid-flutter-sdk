@@ -35,7 +35,6 @@ class CreateIdentityStateUseCase
   @override
   Future<void> execute({required CreateIdentityStateParam param}) async {
     try {
-
       await _smtRepository.createSMT(
         maxLevels: 40,
         type: TreeType.claims,

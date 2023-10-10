@@ -202,8 +202,8 @@ class GenerateIden3commProofUseCase
 
       throw error;
     });
-    _stacktraceManager.addTrace(
-        "[GenerateIden3commProofUseCase] atomicQueryInputs: success");
+    _stacktraceManager
+        .addTrace("[GenerateIden3commProofUseCase] atomicQueryInputs: success");
     logger().i(
         "GENERATION PROOF calculateAtomicQueryInputs executed in ${stopwatch.elapsed}");
 

@@ -34,12 +34,14 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
   final ProveUseCase _proveUseCase;
   final StacktraceManager _stacktraceManager;
 
-  GetAuthTokenUseCase(this._loadCircuitUseCase,
-      this._getJWZUseCase,
-      this._getAuthChallengeUseCase,
-      this._getAuthInputsUseCase,
-      this._proveUseCase,
-      this._stacktraceManager,);
+  GetAuthTokenUseCase(
+    this._loadCircuitUseCase,
+    this._getJWZUseCase,
+    this._getAuthChallengeUseCase,
+    this._getAuthInputsUseCase,
+    this._proveUseCase,
+    this._stacktraceManager,
+  );
 
   @override
   Future<String> execute({required GetAuthTokenParam param}) async {
@@ -48,15 +50,19 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
           param: GetJWZParam(message: param.message));
 
       String authChallenge =
-      await _getAuthChallengeUseCase.execute(param: encodedJwz);
+          await _getAuthChallengeUseCase.execute(param: encodedJwz);
 
       Uint8List authInputs = await _getAuthInputsUseCase.execute(
-        param: GetAuthInputsParam(authChallenge, param.genesisDid,
-          param.profileNonce, param.privateKey,),
+        param: GetAuthInputsParam(
+          authChallenge,
+          param.genesisDid,
+          param.profileNonce,
+          param.privateKey,
+        ),
       );
 
-      CircuitDataEntity circuit = await _loadCircuitUseCase.execute(
-          param: "authV2");
+      CircuitDataEntity circuit =
+          await _loadCircuitUseCase.execute(param: "authV2");
 
       ZKProofEntity zkProofEntity = await _proveUseCase.execute(
         param: ProveParam(

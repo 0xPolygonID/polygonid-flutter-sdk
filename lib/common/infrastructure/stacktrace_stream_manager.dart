@@ -41,8 +41,6 @@ class StacktraceManager {
       var box = Hive.box(stacktraceBoxName);
       box.clear();
     }
-
-
   }
 
   /// we close the stream

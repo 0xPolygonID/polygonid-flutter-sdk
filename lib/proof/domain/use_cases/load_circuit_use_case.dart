@@ -8,14 +8,16 @@ class LoadCircuitUseCase extends FutureUseCase<String, CircuitDataEntity> {
   final ProofRepository _proofRepository;
   final StacktraceManager _stacktraceManager;
 
-  LoadCircuitUseCase(this._proofRepository,
-      this._stacktraceManager,);
+  LoadCircuitUseCase(
+    this._proofRepository,
+    this._stacktraceManager,
+  );
 
   @override
   Future<CircuitDataEntity> execute({required String param}) async {
     try {
-      CircuitDataEntity circuitDataEntity = await _proofRepository
-          .loadCircuitFiles(param);
+      CircuitDataEntity circuitDataEntity =
+          await _proofRepository.loadCircuitFiles(param);
       return circuitDataEntity;
     } catch (error) {
       logger().e("[LoadCircuitUseCase] Error: $error");

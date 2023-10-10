@@ -140,5 +140,4 @@ class WitnessAuthV2Lib {
 
     return wtnsBytes;
   }*/
-
 }

@@ -30,11 +30,13 @@ class RestoreIdentityUseCase
   final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
   final RestoreProfilesUseCase _restoreProfilesUseCase;
 
-  RestoreIdentityUseCase(this._addIdentityUseCase,
-      this._getIdentityUseCase,
-      this._identityRepository,
-      this._getCurrentEnvDidIdentifierUseCase,
-      this._restoreProfilesUseCase,);
+  RestoreIdentityUseCase(
+    this._addIdentityUseCase,
+    this._getIdentityUseCase,
+    this._identityRepository,
+    this._getCurrentEnvDidIdentifierUseCase,
+    this._restoreProfilesUseCase,
+  );
 
   @override
   Future<PrivateIdentityEntity> execute(
@@ -61,22 +63,20 @@ class RestoreIdentityUseCase
 
     try {
       if (param.encryptedDb != null) {
-        await _identityRepository
-            .importIdentity(
+        await _identityRepository.importIdentity(
           did: privateIdentity.did,
           privateKey: param.privateKey,
           encryptedDb: param.encryptedDb!,
         );
         await _restoreProfilesUseCase.execute(
             param: RestoreProfilesParam(
-              privateIdentity.did,
-              param.privateKey,
-            ));
+          privateIdentity.did,
+          param.privateKey,
+        ));
       }
 
       logger().i(
-          "[RestoreIdentityUseCase] Identity restored with did: ${privateIdentity
-              .did}, for key $param");
+          "[RestoreIdentityUseCase] Identity restored with did: ${privateIdentity.did}, for key $param");
       return privateIdentity;
     } catch (error) {
       logger().e("[RestoreIdentityUseCase] Error: $error");
