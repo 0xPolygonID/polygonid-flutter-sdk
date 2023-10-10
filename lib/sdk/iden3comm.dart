@@ -491,31 +491,6 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     return _cleanSchemaCacheUseCase.execute(param: null);
   }
 
-  ///
-  void switchStacktrace({bool enabled = false}) {
-    _stacktraceManager.isEnabled = enabled;
-  }
-
-  ///
-  Stream<String> stacktraceStream() {
-    return _stacktraceManager.stacktraceStream;
-  }
-
-  ///
-  String getStacktrace() {
-    return _stacktraceManager.stacktrace;
-  }
-
-  ///
-  Stream<String> errorTraceStream() {
-    return _stacktraceManager.errorStream;
-  }
-
-  ///
-  String getErrorTrace() {
-    return _stacktraceManager.errorTrace;
-  }
-
   @override
   Future<void> addDidProfileInfo({
     required String did,
