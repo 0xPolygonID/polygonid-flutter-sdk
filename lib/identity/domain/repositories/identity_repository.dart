@@ -55,4 +55,15 @@ abstract class IdentityRepository {
     required String privateKey,
     required String encryptedDb,
   });
+
+  Future<void> putProfiles({
+    required String did,
+    required String privateKey,
+    required Map<BigInt, String> profiles,
+  });
+
+  Future<Map<BigInt, String>> getProfiles({
+    required String did,
+    required String privateKey,
+  });
 }

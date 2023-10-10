@@ -77,7 +77,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
 
       EnvEntity env = await _getEnvUseCase.execute();
       _stacktraceManager.addTrace(
-          "[AuthenticateUseCase] _getEnvUseCase success\nenv: ${env.toString()}");
+          "[AuthenticateUseCase] _getEnvUseCase success\nenv: ${env.blockchain} ${env.network}");
       logger()
           .i("stopwatch after getEnvUseCase ${stopwatch.elapsedMilliseconds}");
 

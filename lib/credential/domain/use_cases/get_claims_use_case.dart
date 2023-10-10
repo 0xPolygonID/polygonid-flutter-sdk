@@ -27,13 +27,11 @@ class GetClaimsUseCase
     extends FutureUseCase<GetClaimsParam, List<ClaimEntity>> {
   final CredentialRepository _credentialRepository;
   final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
-  final GetIdentityUseCase _getIdentityUseCase;
   final StacktraceManager _stacktraceManager;
 
   GetClaimsUseCase(
     this._credentialRepository,
     this._getCurrentEnvDidIdentifierUseCase,
-    this._getIdentityUseCase,
     this._stacktraceManager,
   );
 
@@ -43,9 +41,9 @@ class GetClaimsUseCase
     // if profileNonce > 0 then return only credentials from that profile
     if (param.profileNonce >= GENESIS_PROFILE_NONCE) {
       // TODO check param.did and did from profile nonce are the same or return exception
-      String did = await _getCurrentEnvDidIdentifierUseCase.execute(
+      /*String did = await _getCurrentEnvDidIdentifierUseCase.execute(
           param: GetCurrentEnvDidIdentifierParam(
-              privateKey: param.privateKey, profileNonce: param.profileNonce));
+              privateKey: param.privateKey, profileNonce: param.profileNonce));*/
       return _credentialRepository
           .getClaims(
               filters: param.filters,

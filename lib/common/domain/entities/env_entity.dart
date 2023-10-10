@@ -7,6 +7,7 @@ class EnvEntity {
   final String idStateContract;
   final String pushUrl;
   final String ipfsUrl;
+  final String? stacktraceEncryptionKey;
 
   EnvEntity({
     required this.blockchain,
@@ -17,6 +18,7 @@ class EnvEntity {
     required this.idStateContract,
     required this.pushUrl,
     required this.ipfsUrl,
+    this.stacktraceEncryptionKey,
   });
 
   factory EnvEntity.fromJson(Map<String, dynamic> json) {
@@ -29,6 +31,7 @@ class EnvEntity {
       idStateContract: json['idStateContract'],
       pushUrl: json['pushUrl'],
       ipfsUrl: json['ipfsUrl'],
+      stacktraceEncryptionKey: json['stacktraceEncryptionKey'],
     );
   }
 
@@ -42,11 +45,12 @@ class EnvEntity {
         'idStateContract': idStateContract,
         'pushUrl': pushUrl,
         'ipfsUrl': ipfsUrl,
+        'stacktraceEncryptionKey': stacktraceEncryptionKey,
       };
 
   @override
   String toString() =>
-      "[EnvEntity] {blockchain: $blockchain, network: $network, web3Url: $web3Url, web3RdpUrl: $web3RdpUrl, web3ApiKey: $web3ApiKey, idStateContract: $idStateContract, pushUrl: $pushUrl, ipfsUrl: $ipfsUrl}";
+      "[EnvEntity] {blockchain: $blockchain, network: $network, web3Url: $web3Url, web3RdpUrl: $web3RdpUrl, web3ApiKey: $web3ApiKey, idStateContract: $idStateContract, pushUrl: $pushUrl, ipfsUrl: $ipfsUrl, stacktraceEncryptionKey: $stacktraceEncryptionKey}";
 
   @override
   bool operator ==(Object other) =>
@@ -59,7 +63,8 @@ class EnvEntity {
           web3ApiKey == other.web3ApiKey &&
           idStateContract == other.idStateContract &&
           pushUrl == other.pushUrl &&
-          ipfsUrl == other.ipfsUrl;
+          ipfsUrl == other.ipfsUrl &&
+          stacktraceEncryptionKey == other.stacktraceEncryptionKey;
 
   @override
   int get hashCode => runtimeType.hashCode;

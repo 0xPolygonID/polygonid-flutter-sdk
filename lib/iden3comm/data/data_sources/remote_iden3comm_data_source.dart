@@ -105,11 +105,12 @@ class RemoteIden3commDataSource {
       if (schemaUrl.toLowerCase().startsWith("ipfs://")) {
         String fileHash = schemaUrl.replaceFirst("ipfs://", "");
         schemaUrl = "https://ipfs.io/ipfs/$fileHash";
+
       }
 
       var schemaUri = Uri.parse(schemaUrl);
-      _stacktraceManager
-          .addTrace("[RemoteIden3commDataSource] fetchSchema url: $schemaUri");
+      _stacktraceManager.addTrace(
+          "[RemoteIden3commDataSource] fetchSchema original url: $url");
 
       Dio dio = Dio();
       final dir = await getApplicationDocumentsDirectory();

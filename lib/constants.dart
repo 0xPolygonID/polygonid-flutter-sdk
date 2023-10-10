@@ -4,7 +4,7 @@ const CHANNEL_NAME = 'technology.polygon.polygonid_flutter_sdk';
 
 /// Database
 const databaseName = "polygonIdSdk.db";
-const sembastCodecName = "sembastCodec";
+//const sembastCodecName = "sembastCodec";
 
 /// Key value Database
 const keyValueStoreName = "keyValueStore";
@@ -27,6 +27,12 @@ const claimStoreName = "claimStore";
 
 /// Iden3comm
 const interactionStoreName = "interactionStore";
+
+/// DID profile info
+const didProfileInfoStoreName = "didProfileInfoStore";
+
+/// profiles store
+const profilesStoreName = "profilesStore";
 
 /// State
 const stateAbiJson = '''

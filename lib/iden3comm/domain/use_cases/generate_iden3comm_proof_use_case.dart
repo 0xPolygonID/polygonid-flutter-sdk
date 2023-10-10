@@ -169,7 +169,7 @@ class GenerateIden3commProofUseCase
               ipfsNodeURL: param.ipfsNodeURL!)
           .toJson();
       _stacktraceManager.addTrace(
-          "[GenerateIden3commProofUseCase] AtomicQueryInputsConfigParam: ${config.toString()}");
+          "[GenerateIden3commProofUseCase] AtomicQueryInputsConfigParam: success");
     }
 
     DidEntity didEntity = await _getDidUseCase.execute(param: param.did);
@@ -202,8 +202,8 @@ class GenerateIden3commProofUseCase
 
       throw error;
     });
-    _stacktraceManager.addTrace(
-        "[GenerateIden3commProofUseCase] atomicQueryInputs: ${res.toString()}");
+    _stacktraceManager
+        .addTrace("[GenerateIden3commProofUseCase] atomicQueryInputs: success");
     logger().i(
         "GENERATION PROOF calculateAtomicQueryInputs executed in ${stopwatch.elapsed}");
 

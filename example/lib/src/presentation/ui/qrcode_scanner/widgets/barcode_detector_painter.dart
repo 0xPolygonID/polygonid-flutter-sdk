@@ -1,3 +1,4 @@
+/*
 import 'dart:math';
 import 'dart:ui';
 import 'dart:ui' as ui;
@@ -96,3 +97,4 @@ class BarcodeDetectorPainter extends CustomPainter {
         oldDelegate.barcodes != barcodes;
   }
 }
+*/

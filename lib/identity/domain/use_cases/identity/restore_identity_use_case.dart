@@ -8,6 +8,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repo
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/add_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/restore_profiles_use_case.dart';
 
 class RestoreIdentityParam {
   final String genesisDid;
@@ -27,12 +28,14 @@ class RestoreIdentityUseCase
   final GetIdentityUseCase _getIdentityUseCase;
   final IdentityRepository _identityRepository;
   final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
+  final RestoreProfilesUseCase _restoreProfilesUseCase;
 
   RestoreIdentityUseCase(
     this._addIdentityUseCase,
     this._getIdentityUseCase,
     this._identityRepository,
     this._getCurrentEnvDidIdentifierUseCase,
+    this._restoreProfilesUseCase,
   );
 
   @override
@@ -60,20 +63,16 @@ class RestoreIdentityUseCase
 
     try {
       if (param.encryptedDb != null) {
-        await _identityRepository
-            .importIdentity(
+        await _identityRepository.importIdentity(
           did: privateIdentity.did,
           privateKey: param.privateKey,
           encryptedDb: param.encryptedDb!,
-        )
-            .then((_) {
-          logger().i(
-              "[ImportProfileUseCase] Profile for did ${privateIdentity.did} has been imported");
-        }).catchError((error) {
-          logger().e("[ImportProfileUseCase] Error: $error");
-
-          throw error;
-        });
+        );
+        await _restoreProfilesUseCase.execute(
+            param: RestoreProfilesParam(
+          privateIdentity.did,
+          param.privateKey,
+        ));
       }
 
       logger().i(

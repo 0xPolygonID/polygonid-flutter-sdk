@@ -23,25 +23,33 @@ class GetJWZUseCase extends FutureUseCase<GetJWZParam, String> {
   );
 
   @override
-  Future<String> execute({required GetJWZParam param}) {
-    return Future.value(JWZEntity(
-            header: JWZHeader(
-                circuitId: "authV2",
-                crit: ["circuitId"],
-                typ: "application/iden3-zkp-json",
-                alg: "groth16"),
-            payload: JWZPayload(payload: param.message),
-            proof: param.proof))
-        .then((jwz) => _iden3commRepository.encodeJWZ(jwz: jwz))
-        .then((encoded) {
-      logger().i("[GetJWZUseCase] JWZ: $encoded");
-      _stacktraceManager.addTrace("[GetJWZUseCase] JWZ: $encoded");
-      return encoded;
-    }).catchError((error) {
+  Future<String> execute({required GetJWZParam param}) async {
+    try {
+      JWZHeader header = JWZHeader(
+        circuitId: "authV2",
+        crit: ["circuitId"],
+        typ: "application/iden3-zkp-json",
+        alg: "groth16",
+      );
+
+      JWZPayload payload = JWZPayload(payload: param.message);
+
+      JWZEntity jwz = JWZEntity(
+        header: header,
+        payload: payload,
+        proof: param.proof,
+      );
+
+      String encodedJwz = await _iden3commRepository.encodeJWZ(jwz: jwz);
+
+      logger().i("[GetJWZUseCase] JWZ: $encodedJwz");
+      _stacktraceManager.addTrace("[GetJWZUseCase] JWZ: $encodedJwz");
+      return encodedJwz;
+    } catch (error) {
       logger().e("[GetJWZUseCase] Error: $error");
       _stacktraceManager.addTrace("[GetJWZUseCase] Error: $error");
       _stacktraceManager.addError("[GetJWZUseCase] Error: $error");
-      throw error;
-    });
+      rethrow;
+    }
   }
 }

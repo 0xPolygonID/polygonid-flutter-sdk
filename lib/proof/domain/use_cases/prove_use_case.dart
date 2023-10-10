@@ -25,21 +25,28 @@ class ProveUseCase extends FutureUseCase<ProveParam, ZKProofEntity> {
 
   @override
   Future<ZKProofEntity> execute({required ProveParam param}) async {
-    // Calculate witness
-    Uint8List wtnsBytes = await _proofRepository.calculateWitness(
-        param.circuitData, param.inputs);
+    try {
+      // Calculate witness
+      Uint8List wtnsBytes = await _proofRepository.calculateWitness(
+        param.circuitData,
+        param.inputs,
+      );
 
-    // Generate proof
-    return _proofRepository.prove(param.circuitData, wtnsBytes).then((proof) {
+      // Generate proof
+      ZKProofEntity zkProofEntity = await _proofRepository.prove(
+        param.circuitData,
+        wtnsBytes,
+      );
+
       _stacktraceManager.addTrace("[ProveUseCase] proof");
-      logger().i("[ProveUseCase] proof: $proof");
+      logger().i("[ProveUseCase] proof: $zkProofEntity");
 
-      return proof;
-    }).catchError((error) {
+      return zkProofEntity;
+    } catch (error) {
       _stacktraceManager.addTrace("[ProveUseCase] Error: $error");
       _stacktraceManager.addError("[ProveUseCase] Error: $error");
       logger().e("[ProveUseCase] Error: $error");
-      throw error;
-    });
+      rethrow;
+    }
   }
 }

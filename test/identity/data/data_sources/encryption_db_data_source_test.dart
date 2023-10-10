@@ -13,7 +13,7 @@ import 'encryption_db_data_source_test.mocks.dart';
 final Map<String, Object?> data = {"theField": "theValue"};
 final key = Key.fromBase16("12345678901234567890123456789012");
 const String encryptedData = "theEncryptedData";
-final iv = IV.fromLength(16);
+final iv = IV.allZerosOfLength(16);
 
 MockEncrypter encrypter = MockEncrypter();
 

@@ -114,7 +114,7 @@ class GetAuthInputsUseCase
         .then((inputs) {
       logger().i("[GetAuthInputsUseCase] Auth inputs: $inputs");
       _stacktraceManager
-          .addTrace("[GetAuthInputsUseCase] Auth inputs: ${inputs.toString()}");
+          .addTrace("[GetAuthInputsUseCase] Auth inputs: success");
       return inputs;
     }).catchError((error) {
       logger().e("[GetAuthInputsUseCase] Error: $error");

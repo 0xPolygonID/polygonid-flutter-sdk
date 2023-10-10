@@ -4,6 +4,7 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_challenge_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_jwz_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/load_circuit_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/prove_use_case.dart';
 
@@ -43,8 +44,49 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
   );
 
   @override
-  Future<String> execute({required GetAuthTokenParam param}) {
-    return _getJWZUseCase
+  Future<String> execute({required GetAuthTokenParam param}) async {
+    try {
+      String encodedJwz = await _getJWZUseCase.execute(
+          param: GetJWZParam(message: param.message));
+
+      String authChallenge =
+          await _getAuthChallengeUseCase.execute(param: encodedJwz);
+
+      Uint8List authInputs = await _getAuthInputsUseCase.execute(
+        param: GetAuthInputsParam(
+          authChallenge,
+          param.genesisDid,
+          param.profileNonce,
+          param.privateKey,
+        ),
+      );
+
+      CircuitDataEntity circuit =
+          await _loadCircuitUseCase.execute(param: "authV2");
+
+      ZKProofEntity zkProofEntity = await _proveUseCase.execute(
+        param: ProveParam(
+          authInputs,
+          circuit,
+        ),
+      );
+
+      String authToken = await _getJWZUseCase.execute(
+        param: GetJWZParam(
+          message: param.message,
+          proof: zkProofEntity,
+        ),
+      );
+
+      return authToken;
+    } catch (error) {
+      logger().e("[GetAuthTokenUseCase] Error: $error");
+      _stacktraceManager.addTrace("[GetAuthTokenUseCase] Error: $error");
+      _stacktraceManager.addError("[GetAuthTokenUseCase] Error: $error");
+      rethrow;
+    }
+
+    /*return _getJWZUseCase
         .execute(param: GetJWZParam(message: param.message))
         .then((encoded) => _getAuthChallengeUseCase.execute(param: encoded))
         .then((challenge) => Future.wait([
@@ -68,6 +110,6 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
       _stacktraceManager.addTrace("[GetAuthTokenUseCase] Error: $error");
       _stacktraceManager.addError("[GetAuthTokenUseCase] Error: $error");
       throw error;
-    });
+    });*/
   }
 }
