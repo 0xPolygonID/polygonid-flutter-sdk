@@ -93,7 +93,7 @@ class GetIden3commProofsUseCase
               privateKey: param.privateKey,
               nonRevocationProofs: param.nonRevocationProofs ?? {}));
       _stacktraceManager
-          .addTrace("[GetIden3commProofsUseCase] claims: $claims");
+          .addTrace("[GetIden3commProofsUseCase] claims found: ${claims.length}");
       logger().i(
           "STOPPE after _getIden3commClaimsUseCase ${stopwatch.elapsedMilliseconds}");
 

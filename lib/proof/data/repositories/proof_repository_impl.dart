@@ -156,9 +156,8 @@ class ProofRepositoryImpl extends ProofRepository {
       throw NullAtomicQueryInputsException(id);
     });
 
-    _stacktraceManager.addTrace("atomicQueryInputs result: $res");
-
     if (res.isNotEmpty) {
+      _stacktraceManager.addTrace("atomicQueryInputs result: success");
       Uint8List inputsJsonBytes;
       dynamic inputsJson = json.decode(res);
       _stacktraceManager.addTrace("inputJsonType: ${inputsJson.runtimeType}");

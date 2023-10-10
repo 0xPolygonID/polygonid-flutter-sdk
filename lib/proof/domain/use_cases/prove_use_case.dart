@@ -26,7 +26,6 @@ class ProveUseCase extends FutureUseCase<ProveParam, ZKProofEntity> {
   @override
   Future<ZKProofEntity> execute({required ProveParam param}) async {
     try {
-      print(param.inputs);
       // Calculate witness
       Uint8List wtnsBytes = await _proofRepository.calculateWitness(
         param.circuitData,
