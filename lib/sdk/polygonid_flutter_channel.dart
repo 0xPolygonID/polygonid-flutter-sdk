@@ -445,14 +445,17 @@ class PolygonIdFlutterChannel
     required String privateKey,
     String? pushToken,
     Map<int, Map<String, dynamic>>? nonRevocationProofs,
+    String? challenge,
   }) {
     return _polygonIdSdk.iden3comm.authenticate(
-        message: message,
-        genesisDid: genesisDid,
-        profileNonce: profileNonce,
-        privateKey: privateKey,
-        pushToken: pushToken,
-        nonRevocationProofs: nonRevocationProofs);
+      message: message,
+      genesisDid: genesisDid,
+      profileNonce: profileNonce,
+      privateKey: privateKey,
+      pushToken: pushToken,
+      nonRevocationProofs: nonRevocationProofs,
+      challenge: challenge,
+    );
   }
 
   @override
