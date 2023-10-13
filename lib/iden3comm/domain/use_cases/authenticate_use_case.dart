@@ -24,14 +24,17 @@ class AuthenticateParam {
   final String privateKey;
   final String? pushToken;
   final Map<int, Map<String, dynamic>>? nonRevocationProofs;
+  final String? challenge;
 
-  AuthenticateParam(
-      {required this.message,
-      required this.genesisDid,
-      required this.profileNonce,
-      required this.privateKey,
-      this.pushToken,
-      this.nonRevocationProofs});
+  AuthenticateParam({
+    required this.message,
+    required this.genesisDid,
+    required this.profileNonce,
+    required this.privateKey,
+    this.pushToken,
+    this.nonRevocationProofs,
+    this.challenge,
+  });
 }
 
 class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
@@ -104,6 +107,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
         stateContractAddr: env.idStateContract,
         ipfsNodeUrl: env.ipfsUrl,
         nonRevocationProofs: param.nonRevocationProofs,
+        challenge: param.challenge,
       ));
       _stacktraceManager
           .addTrace("[AuthenticateUseCase] _getIden3commProofsUseCase success");
