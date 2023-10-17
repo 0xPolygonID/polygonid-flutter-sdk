@@ -16,7 +16,11 @@ class InvalidIden3MsgTypeException implements Exception {
   InvalidIden3MsgTypeException(this.expected, this.actual);
 }
 
-class InvalidProofReqException implements Exception {}
+class InvalidProofReqException implements Exception {
+  final String message;
+
+  InvalidProofReqException(this.message);
+}
 
 class ProofsNotFoundException implements Exception {
   final List<ProofRequestEntity> proofRequests;
@@ -29,6 +33,8 @@ class CredentialsNotFoundException implements Exception {
 
   CredentialsNotFoundException(this.proofRequests);
 }
+
+class UnsupportedSchemaException implements Exception {}
 
 class NullAuthenticateCallbackException implements Exception {
   final AuthIden3MessageEntity authRequest;
