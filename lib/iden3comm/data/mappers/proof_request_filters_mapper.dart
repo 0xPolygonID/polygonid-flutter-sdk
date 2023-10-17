@@ -3,6 +3,7 @@ import 'package:polygonid_flutter_sdk/common/mappers/from_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_query_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 
 class ProofRequestFiltersMapper
     extends FromMapper<ProofRequestEntity, List<FilterEntity>> {
@@ -10,8 +11,12 @@ class ProofRequestFiltersMapper
   List<FilterEntity> mapFrom(ProofRequestEntity from) {
     ProofScopeQueryRequest query = from.scope.query;
 
-    Map<String, dynamic>? context =
-        from.context["@context"][0][query.type]["@context"];
+    Map<String, dynamic>? context;
+    try {
+      context = from.context["@context"][0][query.type]["@context"];
+    } catch (e) {
+      throw UnsupportedSchemaException();
+    }
 
     List<FilterEntity> filters = [
       FilterEntity(

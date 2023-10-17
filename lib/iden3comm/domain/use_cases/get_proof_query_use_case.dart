@@ -48,7 +48,8 @@ class GetProofQueryUseCase
                   "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
               _stacktraceManager.addError(
                   "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
-              return Future.error(InvalidProofReqException());
+              return Future.error(InvalidProofReqException(
+                  "InvalidProofReqException param: $param\nentry: $entry"));
             }
             try {
               values = entry.value.cast<int>();
@@ -60,20 +61,23 @@ class GetProofQueryUseCase
                     "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
                 _stacktraceManager.addError(
                     "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
-                return Future.error(InvalidProofReqException());
+                return Future.error(InvalidProofReqException(
+                    "InvalidProofReqException param: $param\nentry: $entry"));
               }
               _stacktraceManager.addTrace(
                   "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
               _stacktraceManager.addError(
                   "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
-              return Future.error(InvalidProofReqException());
+              return Future.error(InvalidProofReqException(
+                  "InvalidProofReqException param: $param\nentry: $entry"));
             }
           } else if (entry.value is String) {
             if (!_isDateTime(entry.value) && (operator == 2 || operator == 3)) {
               // lt, gt
               _stacktraceManager.addTrace(
                   "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
-              return Future.error(InvalidProofReqException());
+              return Future.error(InvalidProofReqException(
+                  "InvalidProofReqException param: $param\nentry: $entry"));
             }
 
             values = [entry.value];
@@ -88,7 +92,8 @@ class GetProofQueryUseCase
                 "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
             _stacktraceManager.addError(
                 "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
-            return Future.error(InvalidProofReqException());
+            return Future.error(InvalidProofReqException(
+                "InvalidProofReqException param: $param\nentry: $entry"));
           }
         }
       } else {
@@ -96,7 +101,8 @@ class GetProofQueryUseCase
             "[GetProofQueryUseCase] InvalidProofReqException param: $param\nreqEntry: $reqEntry");
         _stacktraceManager.addError(
             "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $reqEntry");
-        return Future.error(InvalidProofReqException());
+        return Future.error(InvalidProofReqException(
+            "InvalidProofReqException param: $param\nentry: $reqEntry"));
       }
     }
 
@@ -106,11 +112,22 @@ class GetProofQueryUseCase
   bool _isDateTime(String input) {
     final dateFormat = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
     final timeZoneFormat = RegExp(r'.*\+\d{2}:\d{2}$');
+    final utcFormat = RegExp(r'.*Z$');
 
-    // Check if the input string matches the timezone format
-    if (timeZoneFormat.hasMatch(input)) {
-      // Remove the timezone from the input
-      final noTimeZoneInput = input.substring(0, input.length - 6);
+    // Controlla se la stringa di input corrisponde al formato UTC
+    if (utcFormat.hasMatch(input)) {
+      final noUtcInput = input.substring(0, input.length - 1); // Rimuovi la "Z"
+      try {
+        dateFormat.parseStrict(noUtcInput);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+    // Controlla se la stringa di input corrisponde al formato del fuso orario
+    else if (timeZoneFormat.hasMatch(input)) {
+      final noTimeZoneInput =
+          input.substring(0, input.length - 6); // Rimuovi il fuso orario
       try {
         dateFormat.parseStrict(noTimeZoneInput);
         return true;
