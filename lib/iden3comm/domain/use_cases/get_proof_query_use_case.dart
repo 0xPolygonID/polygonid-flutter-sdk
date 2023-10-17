@@ -106,11 +106,21 @@ class GetProofQueryUseCase
   bool _isDateTime(String input) {
     final dateFormat = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
     final timeZoneFormat = RegExp(r'.*\+\d{2}:\d{2}$');
+    final utcFormat = RegExp(r'.*Z$');
 
-    // Check if the input string matches the timezone format
-    if (timeZoneFormat.hasMatch(input)) {
-      // Remove the timezone from the input
-      final noTimeZoneInput = input.substring(0, input.length - 6);
+    // Controlla se la stringa di input corrisponde al formato UTC
+    if (utcFormat.hasMatch(input)) {
+      final noUtcInput = input.substring(0, input.length - 1);  // Rimuovi la "Z"
+      try {
+        dateFormat.parseStrict(noUtcInput);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+    // Controlla se la stringa di input corrisponde al formato del fuso orario
+    else if (timeZoneFormat.hasMatch(input)) {
+      final noTimeZoneInput = input.substring(0, input.length - 6);  // Rimuovi il fuso orario
       try {
         dateFormat.parseStrict(noTimeZoneInput);
         return true;
