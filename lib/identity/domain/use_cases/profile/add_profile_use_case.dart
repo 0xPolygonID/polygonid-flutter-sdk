@@ -1,4 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
@@ -25,12 +26,14 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
   final CheckProfileAndDidCurrentEnvUseCase
       _checkProfileAndDidCurrentEnvUseCase;
   final CreateProfilesUseCase _createProfilesUseCase;
+  final StacktraceManager _stacktraceManager;
 
   AddProfileUseCase(
     this._getIdentityUseCase,
     this._updateIdentityUseCase,
     this._checkProfileAndDidCurrentEnvUseCase,
     this._createProfilesUseCase,
+    this._stacktraceManager,
   );
 
   @override
@@ -48,6 +51,10 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
     if (identityEntity is PrivateIdentityEntity) {
       Map<BigInt, String> profiles = identityEntity.profiles;
       if (profiles.containsKey(param.profileNonce)) {
+        _stacktraceManager
+            .addTrace('ProfileAlreadyExistsException: ${param.profileNonce}');
+        _stacktraceManager
+            .addError('ProfileAlreadyExistsException: ${param.profileNonce}');
         throw ProfileAlreadyExistsException(
             param.genesisDid, param.profileNonce);
       } else {
@@ -60,6 +67,10 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
         if (profileDid != null) {
           profiles[param.profileNonce] = profileDid;
         } else {
+          _stacktraceManager
+              .addTrace('UnknownProfileException: ${param.profileNonce}');
+          _stacktraceManager
+              .addError('UnknownProfileException: ${param.profileNonce}');
           throw UnknownProfileException(param.profileNonce);
         }
 
@@ -72,6 +83,10 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
         ));
       }
     } else {
+      _stacktraceManager
+          .addTrace('InvalidPrivateKeyException: ${param.privateKey}');
+      _stacktraceManager
+          .addError('InvalidPrivateKeyException: ${param.privateKey}');
       throw InvalidPrivateKeyException(param.privateKey);
     }
   }

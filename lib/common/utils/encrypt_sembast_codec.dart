@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:encrypt/encrypt.dart';
-import 'package:injectable/injectable.dart';
 import 'package:sembast/sembast.dart';
 
 enum EncryptType { salsa20, aes, fernet }
@@ -18,18 +17,18 @@ class _EncryptEncoder extends Converter<Map<String, dynamic>, String> {
     switch (signature) {
       case EncryptType.salsa20:
         encoded = Encrypter(Salsa20(Key.fromUtf8(key)))
-            .encrypt(json.encode(input), iv: IV.fromLength(8))
+            .encrypt(json.encode(input), iv: IV.allZerosOfLength(8))
             .base64;
         break;
       case EncryptType.aes:
         encoded = Encrypter(AES(Key.fromUtf8(key)))
-            .encrypt(json.encode(input), iv: IV.fromLength(16))
+            .encrypt(json.encode(input), iv: IV.allZerosOfLength(16))
             .base64;
         break;
       case EncryptType.fernet:
         encoded = Encrypter(
                 Fernet(Key.fromUtf8(base64Url.encode(Key.fromUtf8(key).bytes))))
-            .encrypt(json.encode(input), iv: IV.fromLength(16))
+            .encrypt(json.encode(input), iv: IV.allZerosOfLength(16))
             .base64;
         break;
       default:
@@ -51,16 +50,16 @@ class _EncryptDecoder extends Converter<String, Map<String, dynamic>> {
     switch (signature) {
       case EncryptType.salsa20:
         decoded = json.decode(Encrypter(Salsa20(Key.fromUtf8(key)))
-            .decrypt64(input, iv: IV.fromLength(8)));
+            .decrypt64(input, iv: IV.allZerosOfLength(8)));
         break;
       case EncryptType.aes:
         decoded = json.decode(Encrypter(AES(Key.fromUtf8(key)))
-            .decrypt64(input, iv: IV.fromLength(16)));
+            .decrypt64(input, iv: IV.allZerosOfLength(16)));
         break;
       case EncryptType.fernet:
         decoded = json.decode(Encrypter(
                 Fernet(Key.fromUtf8(base64Url.encode(Key.fromUtf8(key).bytes))))
-            .decrypt64(input, iv: IV.fromLength(16)));
+            .decrypt64(input, iv: IV.allZerosOfLength(16)));
         break;
       default:
         break;

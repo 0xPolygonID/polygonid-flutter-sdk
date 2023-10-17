@@ -1,5 +1,7 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
@@ -54,6 +56,7 @@ class GetIden3commProofsUseCase
   final GetProofRequestsUseCase _getProofRequestsUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
   final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
+  final StacktraceManager _stacktraceManager;
 
   GetIden3commProofsUseCase(
     this._proofRepository,
@@ -63,6 +66,7 @@ class GetIden3commProofsUseCase
     this._getProofRequestsUseCase,
     this._getIdentityUseCase,
     this._proofGenerationStepsStreamManager,
+    this._stacktraceManager,
   );
 
   @override
@@ -71,9 +75,15 @@ class GetIden3commProofsUseCase
     try {
       List<Iden3commProofEntity> proofs = [];
 
+      Stopwatch stopwatch = Stopwatch()..start();
+
       _proofGenerationStepsStreamManager.add("Getting proof requests");
       List<ProofRequestEntity> requests =
           await _getProofRequestsUseCase.execute(param: param.message);
+      _stacktraceManager
+          .addTrace("[GetIden3commProofsUseCase] requests: $requests");
+      logger().i(
+          "STOPPE after _getProofRequestsUseCase ${stopwatch.elapsedMilliseconds}");
 
       List<ClaimEntity?> claims = await _getIden3commClaimsUseCase.execute(
           param: GetIden3commClaimsParam(
@@ -82,6 +92,10 @@ class GetIden3commProofsUseCase
               profileNonce: param.profileNonce,
               privateKey: param.privateKey,
               nonRevocationProofs: param.nonRevocationProofs ?? {}));
+      _stacktraceManager.addTrace(
+          "[GetIden3commProofsUseCase] claims found: ${claims.length}");
+      logger().i(
+          "STOPPE after _getIden3commClaimsUseCase ${stopwatch.elapsedMilliseconds}");
 
       if ((requests.isNotEmpty &&
               claims.isNotEmpty &&
@@ -134,9 +148,15 @@ class GetIden3commProofsUseCase
               param.stateContractAddr,
               param.ipfsNodeUrl,
             )));
+            logger().i(
+                "STOPPE after _generateIden3commProofUseCase $i ${stopwatch.elapsedMilliseconds}");
           }
         }
       } else {
+        _stacktraceManager.addTrace(
+            "[GetIden3commProofsUseCase] CredentialsNotFoundException - requests: $requests");
+        _stacktraceManager.addError(
+            "[GetIden3commProofsUseCase] CredentialsNotFoundException - requests: $requests");
         throw CredentialsNotFoundException(requests);
       }
 
@@ -144,11 +164,14 @@ class GetIden3commProofsUseCase
       /// as it could be we didn't find any associated [ClaimEntity]
       if (requests.isNotEmpty && proofs.isEmpty ||
           proofs.length != requests.length) {
+        _stacktraceManager.addTrace(
+            "[GetIden3commProofsUseCase] ProofsNotFoundException - requests: $requests");
         throw ProofsNotFoundException(requests);
       }
 
       return proofs;
     } catch (e) {
+      _stacktraceManager.addTrace("[GetIden3commProofsUseCase] Exception: $e");
       rethrow;
     }
   }

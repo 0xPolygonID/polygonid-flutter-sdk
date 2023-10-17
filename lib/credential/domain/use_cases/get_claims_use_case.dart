@@ -2,6 +2,7 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
@@ -26,10 +27,13 @@ class GetClaimsUseCase
     extends FutureUseCase<GetClaimsParam, List<ClaimEntity>> {
   final CredentialRepository _credentialRepository;
   final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
-  final GetIdentityUseCase _getIdentityUseCase;
+  final StacktraceManager _stacktraceManager;
 
-  GetClaimsUseCase(this._credentialRepository,
-      this._getCurrentEnvDidIdentifierUseCase, this._getIdentityUseCase);
+  GetClaimsUseCase(
+    this._credentialRepository,
+    this._getCurrentEnvDidIdentifierUseCase,
+    this._stacktraceManager,
+  );
 
   @override
   Future<List<ClaimEntity>> execute({required GetClaimsParam param}) async {
@@ -37,9 +41,9 @@ class GetClaimsUseCase
     // if profileNonce > 0 then return only credentials from that profile
     if (param.profileNonce >= GENESIS_PROFILE_NONCE) {
       // TODO check param.did and did from profile nonce are the same or return exception
-      String did = await _getCurrentEnvDidIdentifierUseCase.execute(
+      /*String did = await _getCurrentEnvDidIdentifierUseCase.execute(
           param: GetCurrentEnvDidIdentifierParam(
-              privateKey: param.privateKey, profileNonce: param.profileNonce));
+              privateKey: param.privateKey, profileNonce: param.profileNonce));*/
       return _credentialRepository
           .getClaims(
               filters: param.filters,
@@ -47,12 +51,19 @@ class GetClaimsUseCase
               privateKey: param.privateKey)
           .then((claims) {
         logger().i("[GetClaimsUseCase] Claims: $claims");
+        _stacktraceManager
+            .addTrace("[GetClaimsUseCase] Claims length: ${claims.length}");
         return claims;
       }).catchError((error) {
+        _stacktraceManager.addTrace("[GetClaimsUseCase] Error: $error");
+        _stacktraceManager.addError("[GetClaimsUseCase] Error: $error");
         logger().e("[GetClaimsUseCase] Error: $error");
         throw error;
       });
     } else {
+      _stacktraceManager.addTrace("[GetClaimsUseCase] Invalid profile nonce");
+      _stacktraceManager.addError(
+          "[GetClaimsUseCase] Invalid profile nonce: ${param.profileNonce}");
       throw InvalidProfileException(param.profileNonce);
     }
   }

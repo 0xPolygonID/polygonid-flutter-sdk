@@ -105,6 +105,7 @@ void main() {
         await widgetTester
             .tap(find.byKey(CustomWidgetsKeys.authScreenButtonConnect));
         await widgetTester.pumpAndSettle();
+
         key.currentState?.pop(iden3Message);
         await widgetTester.pumpAndSettle();
 

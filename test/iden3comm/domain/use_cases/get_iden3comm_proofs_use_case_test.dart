@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_sd_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
@@ -54,6 +55,7 @@ MockGetProofRequestsUseCase getProofRequestsUseCase =
 MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
 MockProofGenerationStepsStreamManager proofGenerationStepsStreamManager =
     MockProofGenerationStepsStreamManager();
+MockStacktraceManager stacktraceStreamManager = MockStacktraceManager();
 
 // Tested instance
 GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
@@ -64,6 +66,7 @@ GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   getProofRequestsUseCase,
   getIdentityUseCase,
   proofGenerationStepsStreamManager,
+  stacktraceStreamManager,
 );
 
 @GenerateMocks([
@@ -74,6 +77,7 @@ GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   GetProofRequestsUseCase,
   GetIdentityUseCase,
   ProofGenerationStepsStreamManager,
+  StacktraceManager,
 ])
 main() {
   setUp(() {

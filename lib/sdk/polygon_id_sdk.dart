@@ -1,9 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/set_env_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
+import 'package:polygonid_flutter_sdk/sdk/error_handling.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygonid_flutter_channel.dart';
 
 import 'credential.dart';
@@ -35,6 +41,17 @@ class PolygonIdSdk {
     // platform is initialized
     WidgetsFlutterBinding.ensureInitialized();
 
+    String? stacktraceEncryptionKey = env?.stacktraceEncryptionKey;
+    if (stacktraceEncryptionKey != null &&
+        stacktraceEncryptionKey.isNotEmpty &&
+        utf8.encode(stacktraceEncryptionKey).length == 32) {
+      await Hive.initFlutter();
+      await Hive.openBox(
+        'stacktrace',
+        encryptionCipher: HiveAesCipher(utf8.encode(stacktraceEncryptionKey)),
+      );
+    }
+
     // Init injection
     await configureInjection();
     await getItSdk.allReady();
@@ -52,6 +69,7 @@ class PolygonIdSdk {
     _ref!.credential = await getItSdk.getAsync<Credential>();
     _ref!.proof = await getItSdk.getAsync<Proof>();
     _ref!.iden3comm = await getItSdk.getAsync<Iden3comm>();
+    _ref!.errorHandling = getItSdk.get<ErrorHandling>();
 
     // Channel
     getItSdk<PolygonIdFlutterChannel>();
@@ -64,6 +82,7 @@ class PolygonIdSdk {
   late Credential credential;
   late Proof proof;
   late Iden3comm iden3comm;
+  late ErrorHandling errorHandling;
 
   PolygonIdSdk._();
 

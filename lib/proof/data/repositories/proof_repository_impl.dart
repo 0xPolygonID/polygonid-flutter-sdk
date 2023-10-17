@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
@@ -33,6 +34,7 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart'
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
+import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/auth_v2/witness_auth.dart';
 
 class ProofRepositoryImpl extends ProofRepository {
   final WitnessDataSource _witnessDataSource;
@@ -49,6 +51,7 @@ class ProofRepositoryImpl extends ProofRepository {
   final AuthProofMapper _authProofMapper;
   final GistMTProofMapper _gistMTProofMapper;
   final CircuitsFilesDataSource _circuitsFilesDataSource;
+  final StacktraceManager _stacktraceManager;
 
   // FIXME: those mappers shouldn't be used here as they are part of Credential
   final ClaimMapper _claimMapper;
@@ -71,6 +74,7 @@ class ProofRepositoryImpl extends ProofRepository {
     this._authProofMapper,
     this._gistMTProofMapper,
     this._circuitsFilesDataSource,
+    this._stacktraceManager,
   );
 
   @override
@@ -113,28 +117,50 @@ class ProofRepositoryImpl extends ProofRepository {
       nonRevProofMap = _authProofMapper.mapTo(nonRevProof);
     }
 
+    _stacktraceManager.addTrace("getProofInputs id: $id");
+    _stacktraceManager.addTrace("getProofInputs profileNonce: $profileNonce");
+    _stacktraceManager.addTrace(
+        "getProofInputs claimSubjectProfileNonce: $claimSubjectProfileNonce");
+    _stacktraceManager.addTrace("getProofInputs authClaim: $authClaim");
+    _stacktraceManager.addTrace("getProofInputs incProof: $incProofMap");
+    _stacktraceManager.addTrace("getProofInputs nonRevProof: $nonRevProofMap");
+    _stacktraceManager.addTrace("getProofInputs gistProof: $gistProofMap");
+    _stacktraceManager.addTrace("getProofInputs treeState: $treeState");
+    _stacktraceManager.addTrace("getProofInputs challenge: $challenge");
+    _stacktraceManager.addTrace("getProofInputs signature: $signature");
+    _stacktraceManager
+        .addTrace("getProofInputs credential: ${credentialDto.info}");
+    _stacktraceManager.addTrace("getProofInputs request: $proofScopeRequest");
+    _stacktraceManager.addTrace("getProofInputs circuitId: $circuitId");
+
     String? res = await _libPolygonIdCoreProofDataSource
         .getProofInputs(
-          id: id,
-          profileNonce: profileNonce,
-          claimSubjectProfileNonce: claimSubjectProfileNonce,
-          authClaim: authClaim,
-          incProof: incProofMap,
-          nonRevProof: nonRevProofMap,
-          gistProof: gistProofMap,
-          treeState: treeState,
-          challenge: challenge,
-          signature: signature,
-          credential: credentialDto.info,
-          request: proofScopeRequest,
-          circuitId: circuitId,
-          config: config,
-        )
-        .catchError((error) => throw NullAtomicQueryInputsException(id));
+      id: id,
+      profileNonce: profileNonce,
+      claimSubjectProfileNonce: claimSubjectProfileNonce,
+      authClaim: authClaim,
+      incProof: incProofMap,
+      nonRevProof: nonRevProofMap,
+      gistProof: gistProofMap,
+      treeState: treeState,
+      challenge: challenge,
+      signature: signature,
+      credential: credentialDto.info,
+      request: proofScopeRequest,
+      circuitId: circuitId,
+      config: config,
+    )
+        .catchError((error) {
+      _stacktraceManager.addTrace(
+          "[calculateAtomicQueryInputs/libPolygonIdCoreProof] exception $error");
+      throw NullAtomicQueryInputsException(id);
+    });
 
     if (res.isNotEmpty) {
+      _stacktraceManager.addTrace("atomicQueryInputs result: success");
       Uint8List inputsJsonBytes;
       dynamic inputsJson = json.decode(res);
+      _stacktraceManager.addTrace("inputJsonType: ${inputsJson.runtimeType}");
       if (inputsJson is Map<String, dynamic>) {
         //Map<String, dynamic> inputs = json.decode(res);
         Uint8List inputsJsonBytes = Uint8ArrayUtils.uint8ListfromString(
@@ -147,6 +173,8 @@ class ProofRepositoryImpl extends ProofRepository {
       }
     }
 
+    _stacktraceManager.addTrace(
+        "[calculateAtomicQueryInputs/libPolygonIdCoreProof] NullAtomicQueryInputsException");
     throw NullAtomicQueryInputsException(id);
   }
 
@@ -154,21 +182,27 @@ class ProofRepositoryImpl extends ProofRepository {
   Future<Uint8List> calculateWitness(
     CircuitDataEntity circuitData,
     Uint8List atomicQueryInputs,
-  ) {
+  ) async {
     WitnessParam witnessParam =
         WitnessParam(wasm: circuitData.datFile, json: atomicQueryInputs);
 
-    return _witnessDataSource
-        .computeWitness(
-            type: _circuitTypeMapper.mapTo(circuitData.circuitId),
-            param: witnessParam)
-        .then((witness) {
+    _stacktraceManager.addTrace(
+        "[calculateWitness] circuitData.circuitId ${circuitData.circuitId}");
+    CircuitType circuitType = _circuitTypeMapper.mapTo(circuitData.circuitId);
+    try {
+      Uint8List? witness = await _witnessDataSource.computeWitness(
+        type: circuitType,
+        param: witnessParam,
+      );
       if (witness == null) {
         throw NullWitnessException(circuitData.circuitId);
+      } else {
+        return witness;
       }
-
-      return witness;
-    }).catchError((error) => throw NullWitnessException(circuitData.circuitId));
+    } catch (e) {
+      _stacktraceManager.addTrace("[calculateWitness] NullWitnessException");
+      throw NullWitnessException(circuitData.circuitId);
+    }
   }
 
   @override
@@ -178,6 +212,7 @@ class ProofRepositoryImpl extends ProofRepository {
         .prove(circuitData.circuitId, circuitData.zKeyFile, wtnsBytes)
         .then((proof) {
       if (proof == null) {
+        _stacktraceManager.addTrace("[prove] NullProofException");
         throw NullProofException(circuitData.circuitId);
       }
 

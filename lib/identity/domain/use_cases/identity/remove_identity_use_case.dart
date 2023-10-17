@@ -1,6 +1,7 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_all_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
@@ -26,6 +27,7 @@ class RemoveIdentityUseCase extends FutureUseCase<RemoveIdentityParam, void> {
   final RemoveAllClaimsUseCase _removeAllClaimsUseCase;
   final CheckProfileAndDidCurrentEnvUseCase
       _checkProfileAndDidCurrentEnvUseCase;
+  final StacktraceManager _stacktraceManager;
 
   RemoveIdentityUseCase(
     this._identityRepository,
@@ -34,6 +36,7 @@ class RemoveIdentityUseCase extends FutureUseCase<RemoveIdentityParam, void> {
     this._removeIdentityStateUseCase,
     this._removeAllClaimsUseCase,
     this._checkProfileAndDidCurrentEnvUseCase,
+    this._stacktraceManager,
   );
 
   @override
@@ -72,8 +75,11 @@ class RemoveIdentityUseCase extends FutureUseCase<RemoveIdentityParam, void> {
 
       // Remove the identity
       await _identityRepository.removeIdentity(genesisDid: param.genesisDid);
+      _stacktraceManager.addTrace("[RemoveIdentityUseCase] Identity removed");
     } catch (error) {
       logger().e("[RemoveIdentityUseCase] Error: $error");
+      _stacktraceManager.addTrace("[RemoveIdentityUseCase] Error: $error");
+      _stacktraceManager.addError("[RemoveIdentityUseCase] Error: $error");
 
       rethrow;
     }

@@ -1,7 +1,12 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/add_did_profile_info_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_did_profile_info_list_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_did_profile_info_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_did_profile_info_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
@@ -10,6 +15,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/reque
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/clean_schema_cache_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_filters_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_rev_nonce_use_case.dart';
@@ -141,6 +147,7 @@ abstract class PolygonIdSdkIden3comm {
     BigInt? profileNonce,
     required String privateKey,
     String? pushToken,
+    String? challenge,
   });
 
   /// Gets a list of [InteractionEntity] associated to the identity previously stored
@@ -205,6 +212,43 @@ abstract class PolygonIdSdkIden3comm {
   ///
   /// The [payload] is the notification payload
 // Future<void> handleNotification({required String payload});
+
+  /// Cleans the schema cache
+  Future<void> cleanSchemaCache();
+
+  /// Add info about a did we interacted with
+  /// in case of backup restore we can know which dids we have interacted with
+  /// and use the correct profile
+  /// in the Map we actually use
+  /// * [profileNonce]
+  /// * [selectedProfileType]
+  Future<void> addDidProfileInfo({
+    required String did,
+    required String privateKey,
+    required String interactedWithDid,
+    required Map<String, dynamic> info,
+  });
+
+  ///
+  Future<Map<String, dynamic>> getDidProfileInfo({
+    required String did,
+    required String privateKey,
+    required String interactedWithDid,
+  });
+
+  ///
+  Future<List<Map<String, dynamic>>> getDidProfileInfoList({
+    required String did,
+    required String privateKey,
+    required List<FilterEntity>? filters,
+  });
+
+  ///
+  Future<void> removeDidProfileInfo({
+    required String did,
+    required String privateKey,
+    required String interactedWithDid,
+  });
 }
 
 @injectable
@@ -221,6 +265,12 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   final AddInteractionUseCase _addInteractionUseCase;
   final RemoveInteractionsUseCase _removeInteractionsUseCase;
   final UpdateInteractionUseCase _updateInteractionUseCase;
+  final CleanSchemaCacheUseCase _cleanSchemaCacheUseCase;
+  final StacktraceManager _stacktraceManager;
+  final AddDidProfileInfoUseCase _addDidProfileInfoUseCase;
+  final GetDidProfileInfoUseCase _getDidProfileInfoUseCase;
+  final GetDidProfileInfoListUseCase _getDidProfileInfoListUseCase;
+  final RemoveDidProfileInfoUseCase _removeDidProfileInfoUseCase;
 
   Iden3comm(
     this._fetchAndSaveClaimsUseCase,
@@ -235,21 +285,30 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     this._addInteractionUseCase,
     this._removeInteractionsUseCase,
     this._updateInteractionUseCase,
+    this._cleanSchemaCacheUseCase,
+    this._stacktraceManager,
+    this._addDidProfileInfoUseCase,
+    this._getDidProfileInfoUseCase,
+    this._getDidProfileInfoListUseCase,
+    this._removeDidProfileInfoUseCase,
   );
 
   @override
   Future<Iden3MessageEntity> getIden3Message({required String message}) {
+    _stacktraceManager.clear();
     return _getIden3MessageUseCase.execute(param: message);
   }
 
   @override
   Future<List<Map<String, dynamic>>> getSchemas(
       {required Iden3MessageEntity message}) {
+    _stacktraceManager.clear();
     return _getSchemasUseCase.execute(param: message);
   }
 
   @override
   Future<List<FilterEntity>> getFilters({required Iden3MessageEntity message}) {
+    _stacktraceManager.clear();
     return _getFiltersUseCase.execute(param: message);
   }
 
@@ -259,7 +318,10 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       required String genesisDid,
       BigInt? profileNonce,
       required String privateKey}) {
+    _stacktraceManager.clear();
     if (message is! OfferIden3MessageEntity) {
+      _stacktraceManager.addTrace(
+          '[fetchAndSaveClaims] Invalid message type: ${message.messageType}');
       throw InvalidIden3MsgTypeException(
           Iden3MessageType.credentialOffer, message.messageType);
     }
@@ -278,6 +340,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       BigInt? profileNonce,
       required String privateKey,
       Map<int, Map<String, dynamic>>? nonRevocationProofs}) {
+    _stacktraceManager.clear();
     return _getIden3commClaimsUseCase.execute(
         param: GetIden3commClaimsParam(
       message: message,
@@ -295,6 +358,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     BigInt? profileNonce,
     required String privateKey,
   }) {
+    _stacktraceManager.clear();
     return _getIden3commClaimsRevNonceUseCase.execute(
         param: GetIden3commClaimsRevNonceParam(
       message: message,
@@ -315,6 +379,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       String? stateContractAddr,
       String? ipfsNodeUrl,
       Map<int, Map<String, dynamic>>? nonRevocationProofs}) {
+    _stacktraceManager.clear();
     return _getIden3commProofsUseCase.execute(
         param: GetIden3commProofsParam(
       message: message,
@@ -337,21 +402,27 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     required String privateKey,
     String? pushToken,
     Map<int, Map<String, dynamic>>? nonRevocationProofs,
+    String? challenge,
   }) {
+    _stacktraceManager.clear();
     if (message is! AuthIden3MessageEntity) {
+      _stacktraceManager.addTrace(
+          '[authenticate] Invalid message type: ${message.messageType}');
       throw InvalidIden3MsgTypeException(
           Iden3MessageType.authRequest, message.messageType);
     }
 
     return _authenticateUseCase.execute(
-        param: AuthenticateParam(
-      message: message,
-      genesisDid: genesisDid,
-      profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
-      privateKey: privateKey,
-      pushToken: pushToken,
-      nonRevocationProofs: nonRevocationProofs,
-    ));
+      param: AuthenticateParam(
+        message: message,
+        genesisDid: genesisDid,
+        profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
+        privateKey: privateKey,
+        pushToken: pushToken,
+        nonRevocationProofs: nonRevocationProofs,
+        challenge: challenge,
+      ),
+    );
   }
 
   @override
@@ -363,6 +434,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     List<InteractionState>? states,
     List<FilterEntity>? filters,
   }) {
+    _stacktraceManager.clear();
     return _getInteractionsUseCase.execute(
         param: GetInteractionsParam(
       genesisDid: genesisDid,
@@ -379,6 +451,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     String? privateKey,
     required List<String> ids,
   }) {
+    _stacktraceManager.clear();
     return _removeInteractionsUseCase.execute(
         param: RemoveInteractionsParam(
             genesisDid: genesisDid, privateKey: privateKey, ids: ids));
@@ -390,6 +463,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     String? genesisDid,
     String? privateKey,
   }) {
+    _stacktraceManager.clear();
     return _addInteractionUseCase.execute(
         param: AddInteractionParam(
             genesisDid: genesisDid,
@@ -405,6 +479,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     String? privateKey,
     InteractionState? state,
   }) {
+    _stacktraceManager.clear();
     return _updateInteractionUseCase.execute(
         param: UpdateInteractionParam(
       genesisDid: genesisDid,
@@ -413,5 +488,72 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       id: id,
       state: state,
     ));
+  }
+
+  @override
+  Future<void> cleanSchemaCache() {
+    return _cleanSchemaCacheUseCase.execute(param: null);
+  }
+
+  @override
+  Future<void> addDidProfileInfo({
+    required String did,
+    required String privateKey,
+    required String interactedWithDid,
+    required Map<String, dynamic> info,
+  }) {
+    return _addDidProfileInfoUseCase.execute(
+      param: AddDidProfileInfoParam(
+        genesisDid: did,
+        privateKey: privateKey,
+        interactedWithDid: interactedWithDid,
+        didProfileInfo: info,
+      ),
+    );
+  }
+
+  @override
+  Future<Map<String, dynamic>> getDidProfileInfo({
+    required String did,
+    required String privateKey,
+    required String interactedWithDid,
+  }) {
+    return _getDidProfileInfoUseCase.execute(
+      param: GetDidProfileInfoParam(
+        genesisDid: did,
+        privateKey: privateKey,
+        interactedWithDid: interactedWithDid,
+      ),
+    );
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getDidProfileInfoList({
+    required String did,
+    required String privateKey,
+    required List<FilterEntity>? filters,
+  }) {
+    return _getDidProfileInfoListUseCase.execute(
+      param: GetDidProfileInfoListParam(
+        genesisDid: did,
+        privateKey: privateKey,
+        filters: filters,
+      ),
+    );
+  }
+
+  @override
+  Future<void> removeDidProfileInfo({
+    required String did,
+    required String privateKey,
+    required String interactedWithDid,
+  }) {
+    return _removeDidProfileInfoUseCase.execute(
+      param: RemoveDidProfileInfoParam(
+        genesisDid: did,
+        privateKey: privateKey,
+        interactedWithDid: interactedWithDid,
+      ),
+    );
   }
 }

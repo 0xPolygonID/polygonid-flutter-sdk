@@ -7,6 +7,7 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_ide
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/secure_storage_profiles_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
@@ -42,6 +43,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final StateIdentifierMapper _stateIdentifierMapper;
   final NodeMapper _nodeMapper;
   final EncryptionKeyMapper _encryptionKeyMapper;
+  final SecureStorageProfilesDataSource _secureStorageProfilesDataSource;
 
   IdentityRepositoryImpl(
     this._walletDataSource,
@@ -60,6 +62,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._stateIdentifierMapper,
     this._nodeMapper,
     this._encryptionKeyMapper,
+    this._secureStorageProfilesDataSource,
   );
 
   @override
@@ -244,6 +247,29 @@ class IdentityRepositoryImpl extends IdentityRepository {
       exportableDb: decryptedDb,
       destinationPath: destinationPath,
       privateKey: privateKey,
+    );
+  }
+
+  @override
+  Future<Map<BigInt, String>> getProfiles({
+    required String did,
+    required String privateKey,
+  }) {
+    return _secureStorageProfilesDataSource.getProfiles(
+      did: did,
+      privateKey: privateKey,
+    );
+  }
+
+  @override
+  Future<void> putProfiles(
+      {required String did,
+      required String privateKey,
+      required Map<BigInt, String> profiles}) {
+    return _secureStorageProfilesDataSource.storeProfiles(
+      did: did,
+      privateKey: privateKey,
+      profiles: profiles,
     );
   }
 }

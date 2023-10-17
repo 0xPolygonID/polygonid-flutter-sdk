@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_latest_state_use_case.dart';
@@ -10,8 +11,12 @@ import '../../../common/identity_mocks.dart';
 import 'get_latest_state_use_case_test.mocks.dart';
 
 MockSMTRepository smtRepository = MockSMTRepository();
+MockStacktraceManager stacktraceManager = MockStacktraceManager();
 
-GetLatestStateUseCase useCase = GetLatestStateUseCase(smtRepository);
+GetLatestStateUseCase useCase = GetLatestStateUseCase(
+  smtRepository,
+  stacktraceManager,
+);
 
 // Data
 GetLatestStateParam param = GetLatestStateParam(
@@ -19,7 +24,7 @@ GetLatestStateParam param = GetLatestStateParam(
   privateKey: CommonMocks.privateKey,
 );
 
-@GenerateMocks([SMTRepository])
+@GenerateMocks([SMTRepository, StacktraceManager])
 void main() {
   group(
     "Get latest state",

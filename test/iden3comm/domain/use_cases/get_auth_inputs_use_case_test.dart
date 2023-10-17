@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_auth_claim_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs_use_case.dart';
@@ -26,6 +27,7 @@ MockGetLatestStateUseCase getLatestStateUseCase = MockGetLatestStateUseCase();
 MockIden3commRepository iden3commRepository = MockIden3commRepository();
 MockIdentityRepository identityRepository = MockIdentityRepository();
 MockSMTRepository smtRepository = MockSMTRepository();
+MockStacktraceManager stacktraceManager = MockStacktraceManager();
 
 // Data
 GetAuthInputsParam param = GetAuthInputsParam(CommonMocks.challenge,
@@ -42,6 +44,7 @@ GetAuthInputsUseCase useCase = GetAuthInputsUseCase(
   iden3commRepository,
   identityRepository,
   smtRepository,
+  stacktraceManager,
 );
 
 @GenerateMocks([
@@ -53,6 +56,7 @@ GetAuthInputsUseCase useCase = GetAuthInputsUseCase(
   Iden3commRepository,
   IdentityRepository,
   SMTRepository,
+  StacktraceManager,
 ])
 void main() {
   setUp(() {

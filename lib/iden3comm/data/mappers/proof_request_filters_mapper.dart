@@ -3,6 +3,7 @@ import 'package:polygonid_flutter_sdk/common/mappers/from_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_query_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 
 class ProofRequestFiltersMapper
     extends FromMapper<ProofRequestEntity, List<FilterEntity>> {
@@ -10,16 +11,20 @@ class ProofRequestFiltersMapper
   List<FilterEntity> mapFrom(ProofRequestEntity from) {
     ProofScopeQueryRequest query = from.scope.query;
 
-    Map<String, dynamic>? context =
-        from.context["@context"][0][query.type]["@context"];
+    Map<String, dynamic>? context;
+    try {
+      context = from.context["@context"][0][query.type]["@context"];
+    } catch (e) {
+      throw UnsupportedSchemaException();
+    }
 
     List<FilterEntity> filters = [
       FilterEntity(
           name: 'credential.credentialSubject.type', value: query.type!),
-      FilterEntity(
+      /*FilterEntity(
           operator: FilterOperator.equalsAnyInList,
           name: 'credential.@context',
-          value: query.context!),
+          value: query.context!),*/
     ];
     if (query.allowedIssuers != null &&
         query.allowedIssuers is List &&
@@ -43,21 +48,8 @@ class ProofRequestFiltersMapper
     if (query.credentialSubject != null) {
       Map<String, dynamic> request = query.credentialSubject!;
       request.forEach((key, map) {
-        if (map != null &&
-            map is Map &&
-            map.isNotEmpty &&
-            context != null &&
-            context[key] != null &&
-            context[key]["@type"] != null) {
-          String type = context[key]["@type"];
-          if (type.contains("double")) {
-            // double not supported
-            filters.add(FilterEntity(
-                operator: FilterOperator.nonEqual,
-                name:
-                    'schema.properties.credentialSubject.properties.$key.type',
-                value: "number"));
-          }
+        if (map != null && map is Map && map.isNotEmpty && context != null) {
+          String type = getValueFromNestedString(context, key);
           map.forEach((operator, value) {
             if (type.contains("boolean")) {
               FilterEntity? booleanFilter =
@@ -84,6 +76,25 @@ class ProofRequestFiltersMapper
     }
 
     return filters;
+  }
+
+  ///
+  String getValueFromNestedString(
+      Map<String, dynamic> contextMap, String nestedKey) {
+    List<String> keys = nestedKey.split('.');
+    dynamic value = contextMap;
+    for (String key in keys) {
+      if (value is Map<String, dynamic> && value[key].containsKey("@context")) {
+        value = value[key]["@context"];
+      } else if (value is Map<String, dynamic> &&
+          value[key].containsKey("@type")) {
+        value = value[key]["@type"];
+        break;
+      } else {
+        break;
+      }
+    }
+    return value;
   }
 
   List<FilterEntity> _getFilterByOperator(field, operator, value) {

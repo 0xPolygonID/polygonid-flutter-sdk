@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
@@ -11,14 +12,14 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/restore
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/add_profile_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/get_profiles_use_case.dart';
 
-import '../identity/domain/entities/identity_entity.dart';
-import '../identity/domain/entities/private_identity_entity.dart';
-import '../identity/domain/use_cases/fetch_identity_state_use_case.dart';
-import '../identity/domain/use_cases/get_did_identifier_use_case.dart';
-import '../identity/domain/use_cases/identity/check_identity_validity_use_case.dart';
-import '../identity/domain/use_cases/identity/remove_identity_use_case.dart';
-import '../identity/domain/use_cases/identity/sign_message_use_case.dart';
-import '../identity/domain/use_cases/profile/remove_profile_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/fetch_identity_state_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/check_identity_validity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/remove_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/sign_message_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/remove_profile_use_case.dart';
 
 abstract class PolygonIdSdkIdentity {
   /// Checks the identity validity from a secret
@@ -240,6 +241,8 @@ class Identity implements PolygonIdSdkIdentity {
 
   final GetDidUseCase _getDidUseCase;
 
+  final StacktraceManager _stacktraceManager;
+
   Identity(
     this._checkIdentityValidityUseCase,
     this._getPrivateKeyUseCase,
@@ -256,19 +259,27 @@ class Identity implements PolygonIdSdkIdentity {
     this._getProfilesUseCase,
     this._removeProfileUseCase,
     this._getDidUseCase,
+    this._stacktraceManager,
   );
 
   @override
   Future<void> checkIdentityValidity({required String secret}) async {
+    _stacktraceManager.clear();
+    _stacktraceManager
+        .addTrace("PolygonIdSdk.Identity.checkIdentityValidity called");
     return _checkIdentityValidityUseCase.execute(param: secret);
   }
 
   @override
   Future<String> getPrivateKey({required String secret}) {
+    _stacktraceManager.clear();
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.getPrivateKey called");
     return _getPrivateKeyUseCase.execute(param: secret);
   }
 
   Future<PrivateIdentityEntity> addIdentity({String? secret}) async {
+    _stacktraceManager.clear();
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.addIdentity called");
     return _addNewIdentityUseCase.execute(param: secret);
   }
 
@@ -277,6 +288,8 @@ class Identity implements PolygonIdSdkIdentity {
       {required String genesisDid,
       required String privateKey,
       String? encryptedDb}) {
+    _stacktraceManager.clear();
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.restoreIdentity called");
     return _restoreIdentityUseCase.execute(
         param: RestoreIdentityParam(
             genesisDid: genesisDid,
@@ -288,6 +301,8 @@ class Identity implements PolygonIdSdkIdentity {
     required String genesisDid,
     required String privateKey,
   }) {
+    _stacktraceManager.clear();
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.backupIdentity called");
     return _backupIdentityUseCase.execute(
         param: BackupIdentityParam(
             genesisDid: genesisDid, privateKey: privateKey));
@@ -296,6 +311,8 @@ class Identity implements PolygonIdSdkIdentity {
   @override
   Future<IdentityEntity> getIdentity(
       {required String genesisDid, String? privateKey}) async {
+    _stacktraceManager.clear();
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.getIdentity called");
     return _getIdentityUseCase.execute(
         param:
             GetIdentityParam(genesisDid: genesisDid, privateKey: privateKey));
@@ -303,12 +320,16 @@ class Identity implements PolygonIdSdkIdentity {
 
   @override
   Future<List<IdentityEntity>> getIdentities() {
+    _stacktraceManager.clear();
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.getIdentities called");
     return _getIdentitiesUseCase.execute();
   }
 
   @override
   Future<void> removeIdentity(
       {required String genesisDid, required String privateKey}) {
+    _stacktraceManager.clear();
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.removeIdentity called");
     return _removeIdentityUseCase.execute(
         param: RemoveIdentityParam(
             genesisDid: genesisDid, privateKey: privateKey));
@@ -317,6 +338,8 @@ class Identity implements PolygonIdSdkIdentity {
   @override
   Future<String> sign(
       {required String privateKey, required String message}) async {
+    _stacktraceManager.clear();
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.sign called");
     return _signMessageUseCase.execute(
         param: SignMessageParam(privateKey, message));
   }
@@ -328,6 +351,9 @@ class Identity implements PolygonIdSdkIdentity {
     required String network,
     BigInt? profileNonce,
   }) {
+    _stacktraceManager.clear();
+    _stacktraceManager
+        .addTrace("PolygonIdSdk.Identity.getDidIdentifier called");
     return _getDidIdentifierUseCase.execute(
         param: GetDidIdentifierParam(
             privateKey: privateKey,
@@ -338,11 +364,15 @@ class Identity implements PolygonIdSdkIdentity {
 
   @override
   Future<DidEntity> getDidEntity({required String did}) {
+    _stacktraceManager.clear();
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.getDidEntity called");
     return _getDidUseCase.execute(param: did);
   }
 
   @override
   Future<String> getState({required String did}) {
+    _stacktraceManager.clear();
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.getState called");
     return _fetchIdentityStateUseCase.execute(param: did);
   }
 
@@ -351,6 +381,8 @@ class Identity implements PolygonIdSdkIdentity {
       {required String genesisDid,
       required String privateKey,
       required BigInt profileNonce}) {
+    _stacktraceManager.clear();
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.addProfile called");
     return _addProfileUseCase.execute(
         param: AddProfileParam(
             genesisDid: genesisDid,
@@ -363,6 +395,8 @@ class Identity implements PolygonIdSdkIdentity {
       {required String genesisDid,
       required String privateKey,
       required BigInt profileNonce}) {
+    _stacktraceManager.clear();
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.removeProfile called");
     return _removeProfileUseCase.execute(
         param: RemoveProfileParam(
             genesisDid: genesisDid,
@@ -373,6 +407,8 @@ class Identity implements PolygonIdSdkIdentity {
   @override
   Future<Map<BigInt, String>> getProfiles(
       {required String genesisDid, required String privateKey}) {
+    _stacktraceManager.clear();
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.getProfiles called");
     return _getProfilesUseCase.execute(
         param:
             GetProfilesParam(genesisDid: genesisDid, privateKey: privateKey));

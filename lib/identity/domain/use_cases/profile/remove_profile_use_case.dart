@@ -1,4 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_all_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
@@ -28,6 +29,7 @@ class RemoveProfileUseCase extends FutureUseCase<RemoveProfileParam, void> {
   final RemoveIdentityStateUseCase _removeIdentityStateUseCase;
   final RemoveAllClaimsUseCase _removeAllClaimsUseCase;
   final UpdateIdentityUseCase _updateIdentityUseCase;
+  final StacktraceManager _stacktraceManager;
 
   RemoveProfileUseCase(
     this._getIdentityUseCase,
@@ -36,23 +38,33 @@ class RemoveProfileUseCase extends FutureUseCase<RemoveProfileParam, void> {
     this._createProfilesUseCase,
     this._removeIdentityStateUseCase,
     this._removeAllClaimsUseCase,
+    this._stacktraceManager,
   );
 
   @override
   Future<void> execute({required RemoveProfileParam param}) async {
     await _checkProfileAndDidCurrentEnvUseCase.execute(
-        param: CheckProfileAndDidCurrentEnvParam(
-            did: param.genesisDid,
-            privateKey: param.privateKey,
-            profileNonce: BigInt.zero,
-            excludeGenesisProfile: true));
+      param: CheckProfileAndDidCurrentEnvParam(
+        did: param.genesisDid,
+        privateKey: param.privateKey,
+        profileNonce: BigInt.zero,
+        excludeGenesisProfile: true,
+      ),
+    );
     var identityEntity = await _getIdentityUseCase.execute(
-        param: GetIdentityParam(
-            genesisDid: param.genesisDid, privateKey: param.privateKey));
+      param: GetIdentityParam(
+        genesisDid: param.genesisDid,
+        privateKey: param.privateKey,
+      ),
+    );
 
     if (identityEntity is PrivateIdentityEntity) {
       Map<BigInt, String> profiles = identityEntity.profiles;
       if (!profiles.containsKey(param.profileNonce)) {
+        _stacktraceManager.addTrace(
+            "[RemoveProfileUseCase] UnknownProfileException - profileNonce: ${param.profileNonce}");
+        _stacktraceManager.addError(
+            "[RemoveProfileUseCase] UnknownProfileException - profileNonce: ${param.profileNonce}");
         throw UnknownProfileException(param.profileNonce);
       } else {
         Map<BigInt, String> newProfiles = await _createProfilesUseCase.execute(
@@ -72,6 +84,10 @@ class RemoveProfileUseCase extends FutureUseCase<RemoveProfileParam, void> {
 
           profiles.remove(param.profileNonce);
         } else {
+          _stacktraceManager.addTrace(
+              "[RemoveProfileUseCase] UnknownProfileException - profileNonce: ${param.profileNonce}");
+          _stacktraceManager.addError(
+              "[RemoveProfileUseCase] UnknownProfileException - profileNonce: ${param.profileNonce}");
           throw UnknownProfileException(param.profileNonce);
         }
 
@@ -83,6 +99,10 @@ class RemoveProfileUseCase extends FutureUseCase<RemoveProfileParam, void> {
         ));
       }
     } else {
+      _stacktraceManager.addTrace(
+          "[RemoveProfileUseCase] InvalidPrivateKeyException - privateKey: ${param.privateKey}");
+      _stacktraceManager.addError(
+          "[RemoveProfileUseCase] InvalidPrivateKeyException - privateKey: ${param.privateKey}");
       throw InvalidPrivateKeyException(param.privateKey);
     }
   }

@@ -1,7 +1,7 @@
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart';
 
-import '../repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 
 class FetchStateRootsParam {
   final String rhsBaseUrl;

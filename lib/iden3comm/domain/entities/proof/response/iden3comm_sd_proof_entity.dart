@@ -64,6 +64,7 @@
 
 import 'dart:convert';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_vp_proof.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 
 /// Sample
@@ -83,60 +84,16 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart'
 ///       }
 ///     }
 /// ```
-class Iden3commVPProof {
-  final List<String> context;
-  final String type;
-  final Map<String, dynamic> verifiableCredential;
-
-  const Iden3commVPProof({
-    required this.context,
-    required this.type,
-    required this.verifiableCredential,
-  });
-
-  factory Iden3commVPProof.fromJson(Map<String, dynamic> json) =>
-      Iden3commVPProof(
-        context: (json['@context'] as List<dynamic>)
-            .map((e) => e as String)
-            .toList(),
-        type: json['@type'] as String,
-        verifiableCredential:
-            (json['verifiableCredential'] as Map<String, dynamic>),
-      );
-
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        '@type': type,
-        '@context': context,
-        'verifiableCredential': verifiableCredential,
-      };
-
-  @override
-  String toString() =>
-      "[Iden3commVPProof] {type: $type, context: $context, verifiableCredential: $verifiableCredential}";
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Iden3commVPProof &&
-          runtimeType == other.runtimeType &&
-          verifiableCredential == other.verifiableCredential &&
-          type == other.type &&
-          context == other.context;
-
-  @override
-  int get hashCode => runtimeType.hashCode;
-}
-
 class Iden3commSDProofEntity extends Iden3commProofEntity {
   final Iden3commVPProof vp;
 
-  Iden3commSDProofEntity(
-      {required int id,
-      required String circuitId,
-      required ZKProofBaseEntity proof,
-      required List<String> pubSignals,
-      required this.vp})
-      : super(
+  Iden3commSDProofEntity({
+    required this.vp,
+    required int id,
+    required String circuitId,
+    required ZKProofBaseEntity proof,
+    required List<String> pubSignals,
+  }) : super(
             id: id, circuitId: circuitId, proof: proof, pubSignals: pubSignals);
 
   /// Creates an instance from the given json
@@ -146,7 +103,7 @@ class Iden3commSDProofEntity extends Iden3commProofEntity {
   factory Iden3commSDProofEntity.fromJson(Map<String, dynamic> json) {
     ZKProofBaseEntity proof = ZKProofBaseEntity.fromJson(json['proof']);
     List<String> pubSig = List.from(jsonDecode(json['pub_signals']));
-    Iden3commVPProof vp = Iden3commVPProof.fromJson(json['vp']);
+    Iden3commVPProof vp = Iden3commVPProof.fromJson(json["vp"]);
 
     return Iden3commSDProofEntity(
         id: json['id'],

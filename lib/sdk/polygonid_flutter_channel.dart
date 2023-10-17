@@ -445,14 +445,17 @@ class PolygonIdFlutterChannel
     required String privateKey,
     String? pushToken,
     Map<int, Map<String, dynamic>>? nonRevocationProofs,
+    String? challenge,
   }) {
     return _polygonIdSdk.iden3comm.authenticate(
-        message: message,
-        genesisDid: genesisDid,
-        profileNonce: profileNonce,
-        privateKey: privateKey,
-        pushToken: pushToken,
-        nonRevocationProofs: nonRevocationProofs);
+      message: message,
+      genesisDid: genesisDid,
+      profileNonce: profileNonce,
+      privateKey: privateKey,
+      pushToken: pushToken,
+      nonRevocationProofs: nonRevocationProofs,
+      challenge: challenge,
+    );
   }
 
   @override
@@ -813,5 +816,61 @@ class PolygonIdFlutterChannel
         gistProof: gistProof,
         treeState: treeState,
         config: config);
+  }
+
+  @override
+  Future<void> cleanSchemaCache() {
+    // TODO: implement cleanSchemaCache
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> addDidProfileInfo({
+    required String did,
+    required String privateKey,
+    required String interactedWithDid,
+    required Map<String, dynamic> info,
+  }) {
+    // TODO: implement addDidProfileInfo
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Map<String, dynamic>> getDidProfileInfo({
+    required String did,
+    required String privateKey,
+    required String interactedWithDid,
+  }) {
+    // TODO: implement getDidProfileInfo
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getDidProfileInfoList({
+    required String did,
+    required String privateKey,
+    required List<FilterEntity>? filters,
+  }) {
+    // TODO: implement getDidProfileInfoList
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> removeDidProfileInfo({
+    required String did,
+    required String privateKey,
+    required String interactedWithDid,
+  }) {
+    // TODO: implement removeDidProfileInfo
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> restoreProfiles({
+    required String genesisDid,
+    required String privateKey,
+  }) {
+    // TODO: implement restoreProfiles
+    throw UnimplementedError();
   }
 }
