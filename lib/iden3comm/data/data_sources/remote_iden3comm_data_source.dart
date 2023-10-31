@@ -105,7 +105,6 @@ class RemoteIden3commDataSource {
       if (schemaUrl.toLowerCase().startsWith("ipfs://")) {
         String fileHash = schemaUrl.replaceFirst("ipfs://", "");
         schemaUrl = "https://ipfs.io/ipfs/$fileHash";
-
       }
 
       var schemaUri = Uri.parse(schemaUrl);

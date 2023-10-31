@@ -1,4 +1,3 @@
-/*
 import 'dart:io';
 
 import 'package:camera/camera.dart';
@@ -461,4 +460,3 @@ class _CameraViewState extends State<CameraView> {
     });
   }
 }
-*/

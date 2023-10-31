@@ -42,9 +42,9 @@ dependencies:
   http: ^0.13.5
   flutter_secure_storage: ^8.0.0
   logger: ^2.0.1
-  #google_mlkit_barcode_scanning: ^0.7.0
-  #camera: ^0.10.3+2
-  qr_code_scanner: ^1.0.1
+  google_mlkit_barcode_scanning: ^0.7.0
+  camera: ^0.10.3+2
+  #qr_code_scanner: ^1.0.1
   image_picker: ^1.0.0
   envied: ^0.3.0+3
   scan: ^1.6.0

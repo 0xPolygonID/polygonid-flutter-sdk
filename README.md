@@ -4,7 +4,7 @@
  
 # Polygon ID Flutter SDK
 
-[![pub package](https://img.shields.io/badge/pub-2.2.8-blueviolet)](https://pub.dev/packages/polygonid_flutter_sdk)
+[![pub package](https://img.shields.io/badge/pub-2.2.8+1-blueviolet)](https://pub.dev/packages/polygonid_flutter_sdk)
 [![build](https://github.com/iden3/polygonid-flutter-sdk/workflows/polygonid_flutter_sdk/badge.svg)](https://github.com/iden3/polygonid-flutter-sdk/actions?query=workflow%3Apolygonid_flutter_sdk)
 [![codecov](https://codecov.io/gh/iden3/polygonid-flutter-sdk/branch/develop/graph/badge.svg?token=0SI0XWGXKL)](https://codecov.io/gh/iden3/polygonid-flutter-sdk)
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://github.com/iden3/polygonid-flutter-sdk/blob/master/LICENSE-APACHE)
@@ -13,6 +13,8 @@
 ## Description
 
 This is a Flutter plugin for the [Polygon ID SDK](https://polygon.technology/polygon-id), which allows you to integrate Polygon ID identity system into your Flutter apps.
+
+Please see the [example app](https://github.com/iden3/polygonid-flutter-sdk/tree/develop/example) included in the repository and follow the [Polygon ID Wallet SDK Documentation](https://0xpolygonid.github.io/tutorials/wallet/wallet-sdk/polygonid-sdk/polygonid-sdk-overview/).
 
 ## Installation
 
@@ -34,25 +36,17 @@ dependencies:
         ref: branchPathName
 ```
 
-# Environment
-### App side
-You need to set the environment you are working on in the SDK.
+## Usage
 
-You can either set the environment during initialization (with `env` parameter) or later with [PolygonIdSdk.setEnv()](lib/sdk/polygon_id_sdk.dart#L70).
+To integrate Polygon ID Flutter SDK into your Flutter app, follow these steps:
 
-The environment object is [EnvEntity](lib/common/domain/entities/env_entity.dart) with:
+1. Import the `polygonid_flutter_sdk` package:
+
+```dart
+import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 ```
-  final String blockchain; # The name of the blockchain (eg: polygon)
-  final String network; # The network of the blockchain (eg: mumbai)
-  final String web3Url; # URL of the blockchain (eg: https://polygon-mumbai.infura.io/v3/)
-  final String web3RdpUrl; # RDP URL (eg: wss://polygon-mumbai.infura.io/v3/)
-  final String web3ApiKey; # The API key of the web3 URL service (eg: YOUR-INFURA-API-KEY)
-  final String idStateContract; # The ID state contract (eg: 0x134B1BE34911E39A8397ec6289782989729807a4)
-  final String pushUrl; # The push notification URL (eg: https://push-staging.polygonid.com/api/v1)
-  final String ipfsUrl; # The ipfs API URL (eg: https://[YOUR-IPFS-API-KEY]:[YOUR-IPFS-API-KEY-SECRET]@ipfs.infura.io:5001)
-```
+2. Initialize the Polygon ID Flutter SDK with your environment:
 
-An example of initialization:
 ```dart
 import 'package:flutter/material.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
@@ -70,6 +64,35 @@ Future<void> main() async {
   ));
   runApp(const App());
 }
+```
+
+See [below](#environment) for details about setting up the environment.
+
+3. To be able to authenticate with issuers or verifiers, fetch credentials and generate proofs, you need to download the proof circuit files.
+
+```dart
+Stream<DownloadInfo> stream =
+        await PolygonIdSdk.I.proof.initCircuitsDownloadAndGetInfoStream;
+```
+For more information on how to use the PolygonID Flutter SDK, please check the [example app](https://github.com/iden3/polygonid-flutter-sdk/tree/develop/example) included in the repository and follow the [Polygon ID Wallet SDK Documentation](https://0xpolygonid.github.io/tutorials/wallet/wallet-sdk/polygonid-sdk/polygonid-sdk-overview/)
+
+<a href="env"></a>
+# Environment
+### App side
+You need to set the environment you are working on in the SDK.
+
+You can either set the environment during initialization (with `env` parameter) or later with [PolygonIdSdk.setEnv()](lib/sdk/polygon_id_sdk.dart#L70).
+
+The environment object is [EnvEntity](lib/common/domain/entities/env_entity.dart) with:
+```
+  final String blockchain; # The name of the blockchain (eg: polygon)
+  final String network; # The network of the blockchain (eg: mumbai)
+  final String web3Url; # URL of the blockchain (eg: https://polygon-mumbai.infura.io/v3/)
+  final String web3RdpUrl; # RDP URL (eg: wss://polygon-mumbai.infura.io/v3/)
+  final String web3ApiKey; # The API key of the web3 URL service (eg: YOUR-INFURA-API-KEY)
+  final String idStateContract; # The ID state contract (eg: 0x134B1BE34911E39A8397ec6289782989729807a4)
+  final String pushUrl; # The push notification URL (eg: https://push-staging.polygonid.com/api/v1)
+  final String ipfsUrl; # The ipfs API URL (eg: https://[YOUR-IPFS-API-KEY]:[YOUR-IPFS-API-KEY-SECRET]@ipfs.infura.io:5001)
 ```
 
 ### Supported Environments
@@ -127,36 +150,6 @@ post_install do |installer|
   end
 end
 ```
-## Usage
-
-To integrate Polygon ID Flutter SDK into your Flutter app, follow these steps:
-
-1. Import the `polygonid_flutter_sdk` package:
-
-```dart
-import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
-```
-2. Initialize the Polygon ID Flutter SDK with your environment:
-
-```dart
-await PolygonIdSdk.init(env: EnvEntity(
-      blockchain: 'polygon',
-      network: 'mumbai',
-      web3Url: 'https://polygon-mumbai.infura.io/v3/',
-      web3RdpUrl: 'wss://polygon-mumbai.infura.io/v3/',
-      web3ApiKey: 'YOUR-INFURA-API-KEY',
-      idStateContract: '0x134B1BE34911E39A8397ec6289782989729807a4',
-      pushUrl: 'https://push-staging.polygonid.com/api/v1',
-      ipfsUrl: "https://[YOUR-IPFS-API-KEY]:[YOUR-IPFS-API-KEY-SECRET]@ipfs.infura.io:5001",
-  ));
-```
-3. To be able to authenticate with issuers or verifiers, fetch credentials and generate proofs, you need to download the proof circuit files.
-
-```dart
-Stream<DownloadInfo> stream =
-        await PolygonIdSdk.I.proof.initCircuitsDownloadAndGetInfoStream;
-```
-For more information on how to use the PolygonID Flutter SDK, please check the [example app](https://github.com/iden3/polygonid-flutter-sdk/tree/develop/example) included in the repository and follow the [Polygon ID Wallet SDK Documentation](https://0xpolygonid.github.io/tutorials/wallet/wallet-sdk/polygonid-sdk/polygonid-sdk-overview/)
 
 ## Issues and Contributions
 
