@@ -10,8 +10,7 @@ class CustomStrings {
   static const String homeIdentifierSectionPrefix =
       "identity.getDidIdentifier()\nIdentifier:";
   static const String homeIdentifierSectionPlaceHolder = "Not yet created";
-  static const String homeButtonCTA =
-      "Create identity\nidentity.addIdentity()";
+  static const String homeButtonCTA = "Create identity\nidentity.addIdentity()";
   static const String homeButtonRemoveIdentityCTA =
       "Remove identity\nidentity.removeIdentity() ";
   static const String homeFeatureCardDisabledReason =
