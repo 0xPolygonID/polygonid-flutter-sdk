@@ -59,7 +59,7 @@ class Routes {
 
   ///
   static WidgetBuilder _qrCodeScannerRoute() {
-    return (BuildContext context) => const QRViewExample();
+    return (BuildContext context) => const QRCodeScannerPage();
   }
 
   ///
