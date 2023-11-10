@@ -161,7 +161,7 @@ If you encounter any issues with this SDK, please file an [issue][tracker]. Cont
 
 - [Polygon ID website](https://polygon.technology/polygon-id/)
 - [Polygon ID GitHub repository](https://github.com/0xPolygonId/)
-- [Polygon ID Documentation](https://0xpolygonid.github.io/tutorials/)
+- [Polygon ID Documentation](https://devs.polygonid.com)
 - [Flutter documentation](https://flutter.dev/docs)
 - [Polygon ID SDK FAQ](https://github.com/0xPolygonID/polygonid-flutter-sdk/blob/develop/FAQ.md)
 - [Polygon ID SDK Authentication guideline](https://github.com/0xPolygonID/polygonid-flutter-sdk/blob/develop/AUTH.md)
