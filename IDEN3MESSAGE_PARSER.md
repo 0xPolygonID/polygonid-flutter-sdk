@@ -8,7 +8,7 @@ With the latest update, the content of the QR code provided by the Issuer or Ver
 - RAW Json format (json)
 
 ## Code Snippet
-to parse the qr code content, you can use the following code snippet as an example:
+To parse the QR code content, you can use the following code snippet as an example:
 
 ```dart
 class QrcodeParserUtils {
