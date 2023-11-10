@@ -18,23 +18,20 @@ class PolygonIdCore {
 
   PolygonIdCore();
 
-  bool consumeStatus(ffi.Pointer<ffi.Pointer<PLGNStatus>> status, String msg) {
+  String? consumeStatus(ffi.Pointer<ffi.Pointer<PLGNStatus>> status, String msg) {
     if (status == ffi.nullptr || status.value == ffi.nullptr) {
       if (kDebugMode) {
         print("unable to allocate status\n");
       }
-      return false;
+      return "unable to allocate status";
     }
-    bool result = true;
+    String? result;
 
     if (status.value.ref.status >= 0) {
-      result = false;
       if (msg.isEmpty) {
-        msg = "status is not OK";
+        msg = "status is not OK with code ${status.value.ref.status}";
       }
-      if (kDebugMode) {
-        print("Status: ${status.value.ref.status.toString()}");
-      }
+
       if (status.value.ref.error_msg == ffi.nullptr) {
         if (kDebugMode) {
           print("$msg: ${status.value.ref.status.toString()}");
@@ -44,6 +41,7 @@ class PolygonIdCore {
         ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
         try {
           String errormsg = jsonString.toDartString();
+          msg = "$msg: $errormsg";
           if (kDebugMode) {
             print(
                 "$msg: ${status.value.ref.status.toString()}. Error: $errormsg");
@@ -54,6 +52,7 @@ class PolygonIdCore {
           }
         }
       }
+      result = msg;
     }
     nativePolygonIdCoreLib.PLGNFreeStatus(status.value);
     return result;

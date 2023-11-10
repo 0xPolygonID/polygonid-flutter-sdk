@@ -31,8 +31,15 @@ class LibPolygonIdCoreWrapper {
     ComputeAtomicQueryInputs param = ComputeAtomicQueryInputs(
         param: atomicQueryInputsParam,
         configParam: atomicQueryInputsConfigParam);
-    return compute(_computeAtomicQueryInputs, param).catchError((error) =>
-        throw NullAtomicQueryInputsException(atomicQueryInputsParam.id));
+    try {
+      String proofInputs = await compute(
+        _computeAtomicQueryInputs,
+        param,
+      );
+      return proofInputs;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<String> _computeAtomicQueryInputs(
@@ -66,6 +73,11 @@ class LibPolygonIdCoreWrapper {
       }
 
       return Future.value(result);
+    } on ProofInputsException catch (error) {
+      throw NullAtomicQueryInputsException(
+        computeParam.param.id,
+        errorMessage: error.errorMessage,
+      );
     } catch (error) {
       throw NullAtomicQueryInputsException(computeParam.param.id);
     }
@@ -169,21 +181,22 @@ class LibPolygonIdCoreProofDataSource {
     }
 
     return _libPolygonIdCoreWrapper.getProofInputs(
-        AtomicQueryInputsParam(
-          type: type,
-          id: id,
-          profileNonce: profileNonce,
-          claimSubjectProfileNonce: claimSubjectProfileNonce,
-          authClaim: authClaim,
-          incProof: incProof,
-          nonRevProof: nonRevProof,
-          treeState: treeState,
-          gistProof: gistProof,
-          challenge: challenge,
-          signature: signature,
-          credential: credential,
-          request: request,
-        ),
-        configParam);
+      AtomicQueryInputsParam(
+        type: type,
+        id: id,
+        profileNonce: profileNonce,
+        claimSubjectProfileNonce: claimSubjectProfileNonce,
+        authClaim: authClaim,
+        incProof: incProof,
+        nonRevProof: nonRevProof,
+        treeState: treeState,
+        gistProof: gistProof,
+        challenge: challenge,
+        signature: signature,
+        credential: credential,
+        request: request,
+      ),
+      configParam,
+    );
   }
 }

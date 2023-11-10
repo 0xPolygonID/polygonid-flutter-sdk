@@ -6,8 +6,9 @@ class ProofGenerationException extends ErrorException {
 
 class NullAtomicQueryInputsException implements Exception {
   final String? id;
+  final String? errorMessage;
 
-  NullAtomicQueryInputsException(this.id);
+  NullAtomicQueryInputsException(this.id, {this.errorMessage});
 }
 
 class NullWitnessException implements Exception {
@@ -28,4 +29,11 @@ class NullProofException implements Exception {
 
 class FetchGistProofException extends ErrorException {
   FetchGistProofException(error) : super(error);
+}
+
+class ProofInputsException implements Exception {
+  final String? errorMessage;
+
+  ProofInputsException(this.errorMessage);
+
 }
