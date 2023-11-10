@@ -4,11 +4,15 @@
  
 # Polygon ID Flutter SDK
 
-[![pub package](https://img.shields.io/badge/pub-2.2.8+1-blueviolet)](https://pub.dev/packages/polygonid_flutter_sdk)
+[![pub package](https://img.shields.io/badge/pub-2.2.8+2-blueviolet)](https://pub.dev/packages/polygonid_flutter_sdk)
 [![build](https://github.com/iden3/polygonid-flutter-sdk/workflows/polygonid_flutter_sdk/badge.svg)](https://github.com/iden3/polygonid-flutter-sdk/actions?query=workflow%3Apolygonid_flutter_sdk)
 [![codecov](https://codecov.io/gh/iden3/polygonid-flutter-sdk/branch/develop/graph/badge.svg?token=0SI0XWGXKL)](https://codecov.io/gh/iden3/polygonid-flutter-sdk)
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://github.com/iden3/polygonid-flutter-sdk/blob/master/LICENSE-APACHE)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/iden3/polygonid-flutter-sdk/blob/master/LICENSE-MIT)
+
+# Breaking change
+The content of the QR code provided by the Issuer or Verifier will change with the actual release of the [Issuer node](https://github.com/0xPolygonID/issuer-node/releases/tag/v2.3.0). 
+Please check the [IDEN3MESSAGE_PARSER.md](IDEN3MESSAGE_PARSER.md) file for more information on how to parse the new QR code content.
 
 ## Description
 
@@ -161,7 +165,7 @@ If you encounter any issues with this SDK, please file an [issue][tracker]. Cont
 
 - [Polygon ID website](https://polygon.technology/polygon-id/)
 - [Polygon ID GitHub repository](https://github.com/0xPolygonId/)
-- [Polygon ID Documentation](https://0xpolygonid.github.io/tutorials/)
+- [Polygon ID Documentation](https://devs.polygonid.com)
 - [Flutter documentation](https://flutter.dev/docs)
 - [Polygon ID SDK FAQ](https://github.com/0xPolygonID/polygonid-flutter-sdk/blob/develop/FAQ.md)
 - [Polygon ID SDK Authentication guideline](https://github.com/0xPolygonID/polygonid-flutter-sdk/blob/develop/AUTH.md)

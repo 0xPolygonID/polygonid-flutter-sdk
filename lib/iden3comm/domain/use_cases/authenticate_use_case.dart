@@ -15,6 +15,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 
 class AuthenticateParam {
@@ -155,9 +156,18 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
         authToken: authToken,
       );
     } catch (error) {
-      _stacktraceManager.addTrace("[AuthenticateUseCase] Error: $error");
-      _stacktraceManager.addError("[AuthenticateUseCase] Error: $error");
-      logger().d("[AuthenticateUseCase] Error: $error");
+      if (error is NullAtomicQueryInputsException) {
+        _stacktraceManager.addTrace(
+            "[AuthenticateUseCase] Error: $error\nerror: ${error.errorMessage}");
+        _stacktraceManager.addError(
+            "[AuthenticateUseCase] error: ${error.errorMessage}");
+        logger().d(
+            "[AuthenticateUseCase] Error: $error\nerror: ${error.errorMessage}");
+      } else {
+        _stacktraceManager.addTrace("[AuthenticateUseCase] Error: $error");
+        _stacktraceManager.addError("[AuthenticateUseCase] Error: $error");
+        logger().d("[AuthenticateUseCase] Error: $error");
+      }
       rethrow;
     }
   }

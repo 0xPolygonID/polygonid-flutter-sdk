@@ -96,7 +96,7 @@ class FetchAndSaveClaimsUseCase
                     authToken: authToken,
                     url: param.message.body.url))
                 .then((claim) async {
-              Map<String, dynamic> revStatus =
+              /*Map<String, dynamic> revStatus =
                   await _getClaimRevocationStatusUseCase
                       .execute(
                           param: GetClaimRevocationStatusParam(claim: claim))
@@ -117,7 +117,7 @@ class FetchAndSaveClaimsUseCase
                   type: claim.type,
                   info: claim.info,
                 );
-              }
+              }*/
               claims.add(claim);
             });
           }

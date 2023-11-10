@@ -139,8 +139,9 @@ Future<void> restoreIdentity({
 
 #### Check identity validity
 To check if an identity is valid call `identity.checkIdentityValidity()`, with the `secret`.
+if the identity is valid, the method will complete successfully, otherwise an Exception will be thrown.
 ```dart
-Future<bool> checkIdentityValidity({
+Future<void> checkIdentityValidity({
   required String secret,
 }) async {
   return PolygonIdSdk.I.identity.checkIdentityValidity(

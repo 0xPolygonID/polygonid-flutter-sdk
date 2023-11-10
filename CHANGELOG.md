@@ -1,3 +1,6 @@
+## 2.2.8+2
+- Fixed protocol library method for revocation status check
+
 ## 2.2.8+1
 - Fixed protocol libraries that caused issues with iOS devices
 
