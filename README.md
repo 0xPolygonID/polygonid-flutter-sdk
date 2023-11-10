@@ -11,7 +11,7 @@
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/iden3/polygonid-flutter-sdk/blob/master/LICENSE-MIT)
 
 # Breaking change
-The content of the QR code provided by the Issuer or Verifier will change with the actual release of the [Issuer node](https://github.com/0xPolygonID/issuer-node/releases/tag/v2.3.0). 
+The content of the QR code provided by the Issuer or Verifier will change with the current release of the [Issuer node](https://github.com/0xPolygonID/issuer-node/releases/tag/v2.3.0). 
 Please check the [IDEN3MESSAGE_PARSER.md](IDEN3MESSAGE_PARSER.md) file for more information on how to parse the new QR code content.
 
 ## Description
