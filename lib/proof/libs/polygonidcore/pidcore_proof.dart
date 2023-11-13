@@ -3,6 +3,7 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 
 import '../../../common/libs/polygonidcore/native_polygonidcore.dart';
 import '../../../common/libs/polygonidcore/pidcore_base.dart';
@@ -18,7 +19,10 @@ class PolygonIdCoreProof extends PolygonIdCore {
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNProofFromSmartContract(response, in1, status);
     if (res == 0) {
-      consumeStatus(status, "");
+      String? consumedStatus = consumeStatus(status, "");
+      if (consumedStatus != null) {
+        throw ProofInputsException(consumedStatus);
+      }
     }
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;
@@ -43,7 +47,10 @@ class PolygonIdCoreProof extends PolygonIdCore {
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNAtomicQuerySigV2Inputs(response, in1, cfg, status);
     if (res == 0) {
-      consumeStatus(status, "");
+      String? consumedStatus = consumeStatus(status, "");
+      if (consumedStatus != null) {
+        throw ProofInputsException(consumedStatus);
+      }
     }
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;
@@ -68,7 +75,10 @@ class PolygonIdCoreProof extends PolygonIdCore {
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNAtomicQuerySigV2OnChainInputs(response, in1, cfg, status);
     if (res == 0) {
-      consumeStatus(status, "");
+      String? consumedStatus = consumeStatus(status, "");
+      if (consumedStatus != null) {
+        throw ProofInputsException(consumedStatus);
+      }
     }
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;
@@ -93,7 +103,10 @@ class PolygonIdCoreProof extends PolygonIdCore {
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNAtomicQueryMtpV2Inputs(response, in1, cfg, status);
     if (res == 0) {
-      consumeStatus(status, "");
+      String? consumedStatus = consumeStatus(status, "");
+      if (consumedStatus != null) {
+        throw ProofInputsException(consumedStatus);
+      }
     }
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;
@@ -118,7 +131,10 @@ class PolygonIdCoreProof extends PolygonIdCore {
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNAtomicQueryMtpV2OnChainInputs(response, in1, cfg, status);
     if (res == 0) {
-      consumeStatus(status, "");
+      String? consumedStatus = consumeStatus(status, "");
+      if (consumedStatus != null) {
+        throw ProofInputsException(consumedStatus);
+      }
     }
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;

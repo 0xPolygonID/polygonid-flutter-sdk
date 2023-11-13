@@ -123,7 +123,7 @@ class GetIden3commClaimsUseCase
                 return null;
               }
 
-              if (request.scope.query.skipClaimRevocationCheck == null ||
+              /*if (request.scope.query.skipClaimRevocationCheck == null ||
                   request.scope.query.skipClaimRevocationCheck == false) {
                 _stacktraceManager.addTrace(
                     "[GetIden3commClaimsUseCase] claims has valid proof type, checking revocation status");
@@ -165,9 +165,9 @@ class GetIden3commClaimsUseCase
                     .where((claim) => claim.state != ClaimState.revoked)
                     .toList()
                     .first;
-              } else {
+              } else {*/
                 return claims.first;
-              }
+              /*}*/
             },
           ),
         );

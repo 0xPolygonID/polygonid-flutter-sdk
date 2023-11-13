@@ -133,28 +133,29 @@ class ProofRepositoryImpl extends ProofRepository {
     _stacktraceManager.addTrace("getProofInputs request: $proofScopeRequest");
     _stacktraceManager.addTrace("getProofInputs circuitId: $circuitId");
 
-    String? res = await _libPolygonIdCoreProofDataSource
-        .getProofInputs(
-      id: id,
-      profileNonce: profileNonce,
-      claimSubjectProfileNonce: claimSubjectProfileNonce,
-      authClaim: authClaim,
-      incProof: incProofMap,
-      nonRevProof: nonRevProofMap,
-      gistProof: gistProofMap,
-      treeState: treeState,
-      challenge: challenge,
-      signature: signature,
-      credential: credentialDto.info,
-      request: proofScopeRequest,
-      circuitId: circuitId,
-      config: config,
-    )
-        .catchError((error) {
+    String? res;
+    try {
+      res = await _libPolygonIdCoreProofDataSource.getProofInputs(
+        id: id,
+        profileNonce: profileNonce,
+        claimSubjectProfileNonce: claimSubjectProfileNonce,
+        authClaim: authClaim,
+        incProof: incProofMap,
+        nonRevProof: nonRevProofMap,
+        gistProof: gistProofMap,
+        treeState: treeState,
+        challenge: challenge,
+        signature: signature,
+        credential: credentialDto.info,
+        request: proofScopeRequest,
+        circuitId: circuitId,
+        config: config,
+      );
+    } catch (e) {
       _stacktraceManager.addTrace(
-          "[calculateAtomicQueryInputs/libPolygonIdCoreProof] exception $error");
-      throw NullAtomicQueryInputsException(id);
-    });
+          "[calculateAtomicQueryInputs/libPolygonIdCoreProof] exception $e");
+      rethrow;
+    }
 
     if (res.isNotEmpty) {
       _stacktraceManager.addTrace("atomicQueryInputs result: success");
@@ -175,7 +176,8 @@ class ProofRepositoryImpl extends ProofRepository {
 
     _stacktraceManager.addTrace(
         "[calculateAtomicQueryInputs/libPolygonIdCoreProof] NullAtomicQueryInputsException");
-    throw NullAtomicQueryInputsException(id);
+    throw NullAtomicQueryInputsException(id,
+        errorMessage: "Empty inputs result");
   }
 
   @override
