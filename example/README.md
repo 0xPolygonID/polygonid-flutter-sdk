@@ -17,7 +17,7 @@ Demonstrates how to use the polygonid_flutter_sdk plugin.
 2. Run `flutter pub get` from example directory.
 3. Run `build_runner` to generate `.g.dart` files:
 ```bash
-flutter pub run build_runner build --delete-conflicting-outputs
+dart run build_runner build --delete-conflicting-outputs
 ```
 4. After the previous steps, build and run the project.
 
