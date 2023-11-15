@@ -37,17 +37,20 @@ Future<void> init() async {
 }
 
 void registerEnv() {
-  Map<String, dynamic> polygonMumbai = jsonDecode(Env.polygonMumbai);
+  // Uncomment the appropriate line to pick which network to use
+  Map<String, dynamic> polygon = jsonDecode(Env.polygonMumbai);
+  // Map<String, dynamic> polygon = jsonDecode(Env.polygonMainnet);
+
   List<EnvEntity> env = [
     EnvEntity(
-      blockchain: polygonMumbai['blockchain'],
-      network: polygonMumbai['network'],
-      web3Url: polygonMumbai['web3Url'],
-      web3RdpUrl: polygonMumbai['web3RdpUrl'],
-      web3ApiKey: polygonMumbai['web3ApiKey'],
-      idStateContract: polygonMumbai['idStateContract'],
-      pushUrl: polygonMumbai['pushUrl'],
-      ipfsUrl: polygonMumbai['ipfsUrl'],
+      blockchain: polygon['blockchain'],
+      network: polygon['network'],
+      web3Url: polygon['web3Url'],
+      web3RdpUrl: polygon['web3RdpUrl'],
+      web3ApiKey: polygon['web3ApiKey'],
+      idStateContract: polygon['idStateContract'],
+      pushUrl: polygon['pushUrl'],
+      ipfsUrl: polygon['ipfsUrl'],
     ),
   ];
   getIt.registerSingleton<List<EnvEntity>>(env);
