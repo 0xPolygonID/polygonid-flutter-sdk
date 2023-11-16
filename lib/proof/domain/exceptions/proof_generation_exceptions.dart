@@ -35,5 +35,4 @@ class ProofInputsException implements Exception {
   final String? errorMessage;
 
   ProofInputsException(this.errorMessage);
-
 }

@@ -159,8 +159,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
       if (error is NullAtomicQueryInputsException) {
         _stacktraceManager.addTrace(
             "[AuthenticateUseCase] Error: $error\nerror: ${error.errorMessage}");
-        _stacktraceManager.addError(
-            "[AuthenticateUseCase] error: ${error.errorMessage}");
+        _stacktraceManager
+            .addError("[AuthenticateUseCase] error: ${error.errorMessage}");
         logger().d(
             "[AuthenticateUseCase] Error: $error\nerror: ${error.errorMessage}");
       } else {
