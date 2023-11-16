@@ -14,6 +14,7 @@ import 'package:polygonid_flutter_sdk_example/utils/secure_storage_keys.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final PolygonIdSdk _polygonIdSdk;
+  static const PROFILE_NONCE_KEY = "profileNonce";
 
   AuthBloc(this._polygonIdSdk) : super(const AuthState.initial()) {
     on<ClickScanQrCodeEvent>(_handleClickScanQrCode);
@@ -100,23 +101,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         did: did, privateKey: privateKey, interactedWithDid: from);
   }
 
-  Future<BigInt> _getPrivateProfileNonce({
+  Future<BigInt?> _lookupNonce({
     required String did,
     required String privateKey,
     required String from,
   }) async {
-    const String profileNonceKey = "profileNonce";
-
     Map readInfo = await _polygonIdSdk.iden3comm.getDidProfileInfo(
         did: did, privateKey: privateKey, interactedWithDid: from);
     logger().d("info from $from: $readInfo");
 
-    if (readInfo.containsKey(profileNonceKey)) {
-      logger().i("Found nonce for $from: ${readInfo[profileNonceKey]}");
-      // return BigInt.zero;
-      return BigInt.parse(readInfo[profileNonceKey]);
+    return (readInfo[PROFILE_NONCE_KEY] != null)
+        ? BigInt.parse(readInfo[PROFILE_NONCE_KEY])
+        : null;
     }
 
+  Future<BigInt> _generateNewNonce({
+    required String did,
+    required String privateKey,
+    required String from,
+  }) async {
     BigInt nonce = _randomNonce();
     logger().i("Generating new nonce for $from: $nonce");
 
@@ -124,13 +127,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         genesisDid: did, privateKey: privateKey, profileNonce: nonce);
 
     Map<String, dynamic> info = {
-      profileNonceKey: nonce.toString(),
+      PROFILE_NONCE_KEY: nonce.toString(),
     };
     await _polygonIdSdk.iden3comm.addDidProfileInfo(
         did: did, privateKey: privateKey, interactedWithDid: from, info: info);
 
     // return BigInt.zero;
     return nonce;
+  }
+
+  Future<BigInt> _getPrivateProfileNonce({
+    required String did,
+    required String privateKey,
+    required String from,
+  }) async {
+    final nonceLookup =
+        await _lookupNonce(did: did, privateKey: privateKey, from: from);
+
+    if (nonceLookup != null) {
+      logger().i("Found nonce for $from: $nonceLookup");
+      return nonceLookup;
+    }
+
+    return _generateNewNonce(did: did, privateKey: privateKey, from: from);
   }
 
   ///
@@ -149,10 +168,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         network: envEntity.network);
 
     try {
+      final BigInt nonce = await _getPrivateProfileNonce(
+          did: did, privateKey: privateKey, from: iden3message.from);
       await _polygonIdSdk.iden3comm.authenticate(
         message: iden3message,
         genesisDid: did,
         privateKey: privateKey,
+        profileNonce: nonce,
       );
 
       emit(const AuthState.authenticated());
