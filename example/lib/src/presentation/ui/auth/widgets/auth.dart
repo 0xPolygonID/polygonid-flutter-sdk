@@ -6,6 +6,7 @@ import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_bloc
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_state.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/common/widgets/button_next_action.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/common/widgets/profile_radio_button.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_button_style.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_colors.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
@@ -24,6 +25,11 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
+  SelectedProfile _profile = SelectedProfile.public;
+  void _selectProfile(SelectedProfile profile) {
+    setState(() => _profile = profile);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,7 +70,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   ],
                 ),
               ),
-            const Expanded(child: _ProfileRadio()),
+            Expanded(child: ProfileRadio(_profile, _selectProfile)),
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: Stack(
@@ -217,45 +223,6 @@ class _AuthScreenState extends State<AuthScreen> {
                 .copyWith(color: CustomColors.redError),
           ),
         );
-      },
-    );
-  }
-}
-
-enum SelectedProfile { public, private }
-
-class ProfileRadio extends StatefulWidget {
-  const ProfileRadio({super.key});
-
-  @override
-  State<ProfileRadio> createState() => _ProfileRadioState();
-}
-
-class _ProfileRadioState extends State<ProfileRadio> {
-  SelectedProfile? _profile = SelectedProfile.public;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        _makeRadioListTile(
-            CustomStrings.authPublicProfile, SelectedProfile.public),
-        _makeRadioListTile(
-            CustomStrings.authPrivateProfile, SelectedProfile.private),
-      ],
-    );
-  }
-
-  Widget _makeRadioListTile(String text, SelectedProfile value) {
-    return RadioListTile(
-      title: Text(text),
-      value: value,
-      groupValue: _profile,
-      activeColor: CustomColors.primaryButton,
-      onChanged: (SelectedProfile? value) {
-        setState(() {
-          _profile = value;
-        });
       },
     );
   }
