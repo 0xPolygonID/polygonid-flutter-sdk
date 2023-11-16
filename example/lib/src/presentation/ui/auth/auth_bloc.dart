@@ -108,12 +108,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }) async {
     Map readInfo = await _polygonIdSdk.iden3comm.getDidProfileInfo(
         did: did, privateKey: privateKey, interactedWithDid: from);
-    logger().d("info from $from: $readInfo");
+    logger().i("info from $from: $readInfo");
 
     return (readInfo[PROFILE_NONCE_KEY] != null)
         ? BigInt.parse(readInfo[PROFILE_NONCE_KEY])
         : null;
-    }
+  }
 
   Future<BigInt> _generateNewNonce({
     required String did,
