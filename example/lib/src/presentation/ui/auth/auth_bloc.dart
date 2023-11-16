@@ -73,13 +73,34 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     return value;
   }
 
-  Future<BigInt> _lookupNonce({
+  // TODO: Delete this
+  Future<void> _cleanupProfileInfo({
+    required String did,
+    required String privateKey,
+    required String from,
+  }) async {
+    Map<BigInt, String> profilesToDelete = await _polygonIdSdk.identity
+        .getProfiles(genesisDid: did, privateKey: privateKey);
+    for (var nonce in profilesToDelete.keys) {
+      if (nonce != BigInt.zero) {
+        await _polygonIdSdk.identity.removeProfile(
+            genesisDid: did, privateKey: privateKey, profileNonce: nonce);
+      }
+    }
+    profilesToDelete = await _polygonIdSdk.identity
+        .getProfiles(genesisDid: did, privateKey: privateKey);
+    logger().i("profilesToDelete: $profilesToDelete");
+
+    await _polygonIdSdk.iden3comm.removeDidProfileInfo(
+        did: did, privateKey: privateKey, interactedWithDid: from);
+  }
+
+  Future<BigInt> _getPrivateProfileNonce({
     required String did,
     required String privateKey,
     required String from,
   }) async {
     const String profileNonceKey = "profileNonce";
-
 
     Map readInfo = await _polygonIdSdk.iden3comm.getDidProfileInfo(
         did: did, privateKey: privateKey, interactedWithDid: from);
