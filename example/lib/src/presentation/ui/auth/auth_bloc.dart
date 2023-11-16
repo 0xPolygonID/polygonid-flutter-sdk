@@ -11,13 +11,17 @@ import 'package:polygonid_flutter_sdk_example/src/data/secure_storage.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_state.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/common/widgets/profile_radio_button.dart';
+import 'package:polygonid_flutter_sdk_example/utils/nonce_utils.dart';
 import 'package:polygonid_flutter_sdk_example/utils/secure_storage_keys.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final PolygonIdSdk _polygonIdSdk;
   static const PROFILE_NONCE_KEY = "profileNonce";
+  final NonceUtils _nonceUtils;
 
-  AuthBloc(this._polygonIdSdk) : super(const AuthState.initial()) {
+  AuthBloc(this._polygonIdSdk)
+      : _nonceUtils = NonceUtils(_polygonIdSdk),
+        super(const AuthState.initial()) {
     on<ClickScanQrCodeEvent>(_handleClickScanQrCode);
     on<ScanQrCodeResponse>(_handleScanQrCodeResponse);
   }
@@ -65,94 +69,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  BigInt _randomNonce() {
-    final random = Random.secure();
-    const int size = 248;
-    BigInt value = BigInt.from(0);
-    for (var i = 0; i < size; i++) {
-      value = value << 1;
-      if (random.nextBool()) {
-        value = value | BigInt.from(1);
-      }
-    }
-    if (value == BigInt.from(0)) {
-      return _randomNonce();
-    }
-    return value;
-  }
-
-  // TODO: Delete this
-  Future<void> _cleanupProfileInfo({
-    required String did,
-    required String privateKey,
-    required String from,
-  }) async {
-    Map<BigInt, String> profilesToDelete = await _polygonIdSdk.identity
-        .getProfiles(genesisDid: did, privateKey: privateKey);
-    for (var nonce in profilesToDelete.keys) {
-      if (nonce != BigInt.zero) {
-        await _polygonIdSdk.identity.removeProfile(
-            genesisDid: did, privateKey: privateKey, profileNonce: nonce);
-      }
-    }
-    profilesToDelete = await _polygonIdSdk.identity
-        .getProfiles(genesisDid: did, privateKey: privateKey);
-    logger().i("profilesToDelete: $profilesToDelete");
-
-    await _polygonIdSdk.iden3comm.removeDidProfileInfo(
-        did: did, privateKey: privateKey, interactedWithDid: from);
-  }
-
-  Future<BigInt?> _lookupNonce({
-    required String did,
-    required String privateKey,
-    required String from,
-  }) async {
-    Map readInfo = await _polygonIdSdk.iden3comm.getDidProfileInfo(
-        did: did, privateKey: privateKey, interactedWithDid: from);
-    logger().i("info from $from: $readInfo");
-
-    return (readInfo[PROFILE_NONCE_KEY] != null)
-        ? BigInt.parse(readInfo[PROFILE_NONCE_KEY])
-        : null;
-  }
-
-  Future<BigInt> _generateNewNonce({
-    required String did,
-    required String privateKey,
-    required String from,
-  }) async {
-    BigInt nonce = _randomNonce();
-    logger().i("Generating new nonce for $from: $nonce");
-
-    await _polygonIdSdk.identity.addProfile(
-        genesisDid: did, privateKey: privateKey, profileNonce: nonce);
-
-    Map<String, dynamic> info = {
-      PROFILE_NONCE_KEY: nonce.toString(),
-    };
-    await _polygonIdSdk.iden3comm.addDidProfileInfo(
-        did: did, privateKey: privateKey, interactedWithDid: from, info: info);
-
-    return nonce;
-  }
-
-  Future<BigInt> _getPrivateProfileNonce({
-    required String did,
-    required String privateKey,
-    required String from,
-  }) async {
-    final nonceLookup =
-        await _lookupNonce(did: did, privateKey: privateKey, from: from);
-
-    if (nonceLookup != null) {
-      logger().i("Found nonce for $from: $nonceLookup");
-      return nonceLookup;
-    }
-
-    return _generateNewNonce(did: did, privateKey: privateKey, from: from);
-  }
-
   ///
   Future<void> _authenticate({
     required Iden3MessageEntity iden3message,
@@ -172,7 +88,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       final BigInt nonce = profile == SelectedProfile.public
           ? GENESIS_PROFILE_NONCE
-          : await _getPrivateProfileNonce(
+          : await _nonceUtils.getPrivateProfileNonce(
               did: did, privateKey: privateKey, from: iden3message.from);
       await _polygonIdSdk.iden3comm.authenticate(
         message: iden3message,
