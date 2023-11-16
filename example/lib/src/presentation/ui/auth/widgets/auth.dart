@@ -49,8 +49,7 @@ class _AuthScreenState extends State<AuthScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Expanded(
-              child: SingleChildScrollView(
+            SingleChildScrollView(
                 child: Column(
                   children: [
                     const SizedBox(height: 50),
@@ -65,7 +64,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   ],
                 ),
               ),
-            ),
+            const Expanded(child: _ProfileRadio()),
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: Stack(
@@ -218,6 +217,46 @@ class _AuthScreenState extends State<AuthScreen> {
                 .copyWith(color: CustomColors.redError),
           ),
         );
+      },
+    );
+  }
+}
+
+enum SelectedProfile { public, private }
+
+class _ProfileRadio extends StatefulWidget {
+  const _ProfileRadio({super.key});
+
+  @override
+  State<_ProfileRadio> createState() => _ProfileRadioState();
+}
+
+// TODO: string constants
+class _ProfileRadioState extends State<_ProfileRadio> {
+  SelectedProfile? _profile = SelectedProfile.public;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        _makeRadioListTile(
+            CustomStrings.authPublicProfile, SelectedProfile.public),
+        _makeRadioListTile(
+            CustomStrings.authPrivateProfile, SelectedProfile.private),
+      ],
+    );
+  }
+
+  Widget _makeRadioListTile(String text, SelectedProfile value) {
+    return RadioListTile(
+      title: Text(text),
+      value: value,
+      groupValue: _profile,
+      activeColor: CustomColors.primaryButton,
+      onChanged: (SelectedProfile? value) {
+        setState(() {
+          _profile = value;
+        });
       },
     );
   }

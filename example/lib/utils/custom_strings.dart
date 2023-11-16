@@ -17,6 +17,8 @@ class CustomStrings {
       "You need to create an identity first";
 
   // AUTH
+  static const String authPrivateProfile = "Private Profile";
+  static const String authPublicProfile = "Public Profile";
   static const String authButtonCTA = "Connect";
   static const String authDescription =
       "Authenticate through verifier provider by scanning QR Code.\nIf you are already authenticated, you can skip this step";
