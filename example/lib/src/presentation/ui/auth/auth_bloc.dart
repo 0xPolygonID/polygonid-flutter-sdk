@@ -57,6 +57,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
+  BigInt _randomNonce() {
+    final random = Random.secure();
+    const int size = 248;
+    BigInt value = BigInt.from(0);
+    for (var i = 0; i < size; i++) {
+      value = value << 1;
+      if (random.nextBool()) {
+        value = value | BigInt.from(1);
+      }
+    }
+    if (value == BigInt.from(0)) {
+      return _randomNonce();
+    }
+    return value;
+  }
   ///
   Future<void> _authenticate({
     required Iden3MessageEntity iden3message,
