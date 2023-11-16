@@ -72,6 +72,41 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
     return value;
   }
+
+  Future<BigInt> _lookupNonce({
+    required String did,
+    required String privateKey,
+    required String from,
+  }) async {
+    const String profileNonceKey = "profileNonce";
+
+
+    Map readInfo = await _polygonIdSdk.iden3comm.getDidProfileInfo(
+        did: did, privateKey: privateKey, interactedWithDid: from);
+    logger().d("info from $from: $readInfo");
+
+    if (readInfo.containsKey(profileNonceKey)) {
+      logger().i("Found nonce for $from: ${readInfo[profileNonceKey]}");
+      // return BigInt.zero;
+      return BigInt.parse(readInfo[profileNonceKey]);
+    }
+
+    BigInt nonce = _randomNonce();
+    logger().i("Generating new nonce for $from: $nonce");
+
+    await _polygonIdSdk.identity.addProfile(
+        genesisDid: did, privateKey: privateKey, profileNonce: nonce);
+
+    Map<String, dynamic> info = {
+      profileNonceKey: nonce.toString(),
+    };
+    await _polygonIdSdk.iden3comm.addDidProfileInfo(
+        did: did, privateKey: privateKey, interactedWithDid: from, info: info);
+
+    // return BigInt.zero;
+    return nonce;
+  }
+
   ///
   Future<void> _authenticate({
     required Iden3MessageEntity iden3message,
