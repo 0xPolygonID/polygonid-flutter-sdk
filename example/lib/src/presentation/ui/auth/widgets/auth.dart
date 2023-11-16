@@ -94,7 +94,7 @@ class _AuthScreenState extends State<AuthScreen> {
       child: ElevatedButton(
         key: CustomWidgetsKeys.authScreenButtonConnect,
         onPressed: () {
-          widget._bloc.add(AuthEvent.clickScanQrCode());
+          widget._bloc.add(const AuthEvent.clickScanQrCode());
         },
         style: CustomButtonStyle.primaryButtonStyle,
         child: const Text(
