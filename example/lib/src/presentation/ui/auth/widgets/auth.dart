@@ -224,15 +224,14 @@ class _AuthScreenState extends State<AuthScreen> {
 
 enum SelectedProfile { public, private }
 
-class _ProfileRadio extends StatefulWidget {
-  const _ProfileRadio({super.key});
+class ProfileRadio extends StatefulWidget {
+  const ProfileRadio({super.key});
 
   @override
-  State<_ProfileRadio> createState() => _ProfileRadioState();
+  State<ProfileRadio> createState() => _ProfileRadioState();
 }
 
-// TODO: string constants
-class _ProfileRadioState extends State<_ProfileRadio> {
+class _ProfileRadioState extends State<ProfileRadio> {
   SelectedProfile? _profile = SelectedProfile.public;
 
   @override
