@@ -10,6 +10,7 @@ import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/data/secure_storage.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_state.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/common/widgets/profile_radio_button.dart';
 import 'package:polygonid_flutter_sdk_example/utils/secure_storage_keys.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
@@ -56,6 +57,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await _authenticate(
         iden3message: iden3message,
         privateKey: privateKey,
+        profile: event.profile,
         emit: emit,
       );
     } catch (error) {
@@ -132,7 +134,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     await _polygonIdSdk.iden3comm.addDidProfileInfo(
         did: did, privateKey: privateKey, interactedWithDid: from, info: info);
 
-    // return BigInt.zero;
     return nonce;
   }
 
@@ -156,6 +157,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _authenticate({
     required Iden3MessageEntity iden3message,
     required String privateKey,
+    required SelectedProfile profile,
     required Emitter<AuthState> emit,
   }) async {
     emit(const AuthState.loading());
@@ -168,8 +170,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         network: envEntity.network);
 
     try {
-      final BigInt nonce = await _getPrivateProfileNonce(
-          did: did, privateKey: privateKey, from: iden3message.from);
+      final BigInt nonce = profile == SelectedProfile.public
+          ? GENESIS_PROFILE_NONCE
+          : await _getPrivateProfileNonce(
+              did: did, privateKey: privateKey, from: iden3message.from);
       await _polygonIdSdk.iden3comm.authenticate(
         message: iden3message,
         genesisDid: did,

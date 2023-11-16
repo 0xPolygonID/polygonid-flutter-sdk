@@ -56,20 +56,20 @@ class _AuthScreenState extends State<AuthScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SingleChildScrollView(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 50),
-                    _buildDescription(),
-                    const SizedBox(height: 24),
-                    _buildProgress(),
-                    const SizedBox(height: 24),
-                    _buildAuthenticationSuccessSection(),
-                    const SizedBox(height: 24),
-                    _buildErrorSection(),
-                    const SizedBox(height: 48),
-                  ],
-                ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 50),
+                  _buildDescription(),
+                  const SizedBox(height: 24),
+                  _buildProgress(),
+                  const SizedBox(height: 24),
+                  _buildAuthenticationSuccessSection(),
+                  const SizedBox(height: 24),
+                  _buildErrorSection(),
+                  const SizedBox(height: 48),
+                ],
               ),
+            ),
             Expanded(child: ProfileRadio(_profile, _selectProfile)),
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
@@ -94,7 +94,7 @@ class _AuthScreenState extends State<AuthScreen> {
       child: ElevatedButton(
         key: CustomWidgetsKeys.authScreenButtonConnect,
         onPressed: () {
-          widget._bloc.add(const AuthEvent.clickScanQrCode());
+          widget._bloc.add(AuthEvent.clickScanQrCode(_profile));
         },
         style: CustomButtonStyle.primaryButtonStyle,
         child: const Text(
@@ -151,7 +151,8 @@ class _AuthScreenState extends State<AuthScreen> {
   Future<void> _handleNavigateToQrCodeScannerAuthState() async {
     String? qrCodeScanningResult =
         await Navigator.pushNamed(context, Routes.qrCodeScannerPath) as String?;
-    widget._bloc.add(AuthEvent.onScanQrCodeResponse(qrCodeScanningResult));
+    widget._bloc
+        .add(AuthEvent.onScanQrCodeResponse(qrCodeScanningResult, _profile));
   }
 
   ///
