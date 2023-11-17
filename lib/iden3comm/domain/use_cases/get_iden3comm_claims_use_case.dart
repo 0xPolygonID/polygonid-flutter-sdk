@@ -166,7 +166,7 @@ class GetIden3commClaimsUseCase
                     .toList()
                     .first;
               } else {*/
-                return claims.first;
+              return claims.first;
               /*}*/
             },
           ),
