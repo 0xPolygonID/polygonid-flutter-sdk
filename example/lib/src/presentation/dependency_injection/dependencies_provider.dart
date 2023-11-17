@@ -37,28 +37,37 @@ Future<void> init() async {
 }
 
 void registerEnv() {
-  // Uncomment the appropriate line to pick which network to use
-  Map<String, dynamic> polygon = jsonDecode(Env.polygonMumbai);
-  // Map<String, dynamic> polygon = jsonDecode(Env.polygonMainnet);
+  Map<String, dynamic> polygonMumbai = jsonDecode(Env.polygonMumbai);
+  Map<String, dynamic> polygonMainnet = jsonDecode(Env.polygonMainnet);
 
-  List<EnvEntity> env = [
-    EnvEntity(
-      blockchain: polygon['blockchain'],
-      network: polygon['network'],
-      web3Url: polygon['web3Url'],
-      web3RdpUrl: polygon['web3RdpUrl'],
-      web3ApiKey: polygon['web3ApiKey'],
-      idStateContract: polygon['idStateContract'],
-      pushUrl: polygon['pushUrl'],
-      ipfsUrl: polygon['ipfsUrl'],
+  Map<String, EnvEntity> env = {
+    "mumbai": EnvEntity(
+      blockchain: polygonMumbai['blockchain'],
+      network: polygonMumbai['network'],
+      web3Url: polygonMumbai['web3Url'],
+      web3RdpUrl: polygonMumbai['web3RdpUrl'],
+      web3ApiKey: polygonMumbai['web3ApiKey'],
+      idStateContract: polygonMumbai['idStateContract'],
+      pushUrl: polygonMumbai['pushUrl'],
+      ipfsUrl: polygonMumbai['ipfsUrl'],
     ),
-  ];
-  getIt.registerSingleton<List<EnvEntity>>(env);
+    "mainnet": EnvEntity(
+      blockchain: polygonMainnet['blockchain'],
+      network: polygonMainnet['network'],
+      web3Url: polygonMainnet['web3Url'],
+      web3RdpUrl: polygonMainnet['web3RdpUrl'],
+      web3ApiKey: polygonMainnet['web3ApiKey'],
+      idStateContract: polygonMainnet['idStateContract'],
+      pushUrl: polygonMainnet['pushUrl'],
+      ipfsUrl: polygonMainnet['ipfsUrl'],
+    )
+  };
+  getIt.registerSingleton<Map<String, EnvEntity>>(env);
 }
 
 ///
 Future<void> registerProviders() async {
-  await PolygonIdSdk.init(env: getIt<List<EnvEntity>>()[0]);
+  await PolygonIdSdk.init(env: getIt<Map<String, EnvEntity>>()["mumbai"]);
   getIt.registerLazySingleton<PolygonIdSdk>(() => PolygonIdSdk.I);
 }
 
