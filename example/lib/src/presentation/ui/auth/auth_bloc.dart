@@ -8,6 +8,7 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/data/secure_storage.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_state.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/common/widgets/profile_radio_button.dart';
@@ -20,7 +21,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final NonceUtils _nonceUtils;
 
   AuthBloc(this._polygonIdSdk)
-      : _nonceUtils = NonceUtils(_polygonIdSdk),
+      : _nonceUtils = NonceUtils(getIt()),
         super(const AuthState.initial()) {
     on<ClickScanQrCodeEvent>(_handleClickScanQrCode);
     on<ScanQrCodeResponse>(_handleScanQrCodeResponse);
