@@ -17,13 +17,20 @@ import 'package:polygonid_flutter_sdk_example/utils/secure_storage_keys.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final PolygonIdSdk _polygonIdSdk;
-  final NonceUtils _nonceUtils;
 
-  AuthBloc(this._polygonIdSdk)
-      : _nonceUtils = NonceUtils(getIt()),
-        super(const AuthState.initial()) {
+  static const SelectedProfile _defaultProfile = SelectedProfile.public;
+  SelectedProfile selectedProfile = _defaultProfile;
+
+  AuthBloc(this._polygonIdSdk) : super(const AuthState.initial()) {
     on<ClickScanQrCodeEvent>(_handleClickScanQrCode);
     on<ScanQrCodeResponse>(_handleScanQrCodeResponse);
+    on<ProfileSelectedEvent>(_handleProfileSelected);
+  }
+
+  void _handleProfileSelected(
+      ProfileSelectedEvent event, Emitter<AuthState> emit) {
+    selectedProfile = event.profile;
+    emit(AuthState.profileSelected(event.profile));
   }
 
   ///
@@ -61,7 +68,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await _authenticate(
         iden3message: iden3message,
         privateKey: privateKey,
-        profile: event.profile,
         emit: emit,
       );
     } catch (error) {
@@ -73,7 +79,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _authenticate({
     required Iden3MessageEntity iden3message,
     required String privateKey,
-    required SelectedProfile profile,
     required Emitter<AuthState> emit,
   }) async {
     emit(const AuthState.loading());
@@ -86,9 +91,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         network: envEntity.network);
 
     try {
-      final BigInt nonce = profile == SelectedProfile.public
+      final BigInt nonce = selectedProfile == SelectedProfile.public
           ? GENESIS_PROFILE_NONCE
-          : await _nonceUtils.getPrivateProfileNonce(
+          : await NonceUtils(getIt()).getPrivateProfileNonce(
               did: did, privateKey: privateKey, from: iden3message.from);
       await _polygonIdSdk.iden3comm.authenticate(
         message: iden3message,

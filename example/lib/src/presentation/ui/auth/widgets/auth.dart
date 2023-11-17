@@ -25,11 +25,6 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  SelectedProfile _profile = SelectedProfile.public;
-  void _selectProfile(SelectedProfile profile) {
-    setState(() => _profile = profile);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,7 +65,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 ],
               ),
             ),
-            Expanded(child: ProfileRadio(_profile, _selectProfile)),
+            Expanded(child: _buildRadioButtons()),
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: Stack(
@@ -151,8 +146,7 @@ class _AuthScreenState extends State<AuthScreen> {
   Future<void> _handleNavigateToQrCodeScannerAuthState() async {
     String? qrCodeScanningResult =
         await Navigator.pushNamed(context, Routes.qrCodeScannerPath) as String?;
-    widget._bloc
-        .add(AuthEvent.onScanQrCodeResponse(qrCodeScanningResult, _profile));
+    widget._bloc.add(AuthEvent.onScanQrCodeResponse(qrCodeScanningResult));
   }
 
   ///
@@ -226,5 +220,18 @@ class _AuthScreenState extends State<AuthScreen> {
         );
       },
     );
+  }
+
+  ///
+  Widget _buildRadioButtons() {
+    void _selectProfile(SelectedProfile profile) {
+      widget._bloc.add(AuthEvent.profileSelected(profile));
+    }
+
+    return BlocBuilder(
+        bloc: widget._bloc,
+        builder: (BuildContext context, AuthState state) {
+          return ProfileRadio(widget._bloc.selectedProfile, _selectProfile);
+        });
   }
 }

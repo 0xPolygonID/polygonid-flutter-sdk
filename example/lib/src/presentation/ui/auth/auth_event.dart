@@ -5,7 +5,9 @@ part 'auth_event.freezed.dart';
 
 @freezed
 class AuthEvent with _$AuthEvent {
+  const factory AuthEvent.profileSelected(SelectedProfile profile) =
+      ProfileSelectedEvent;
   const factory AuthEvent.clickScanQrCode() = ClickScanQrCodeEvent;
-  const factory AuthEvent.onScanQrCodeResponse(
-      String? response, SelectedProfile profile) = ScanQrCodeResponse;
+  const factory AuthEvent.onScanQrCodeResponse(String? response) =
+      ScanQrCodeResponse;
 }
