@@ -17,7 +17,6 @@ import 'package:polygonid_flutter_sdk_example/utils/secure_storage_keys.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final PolygonIdSdk _polygonIdSdk;
-  static const PROFILE_NONCE_KEY = "profileNonce";
   final NonceUtils _nonceUtils;
 
   AuthBloc(this._polygonIdSdk)
