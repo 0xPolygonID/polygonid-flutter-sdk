@@ -177,8 +177,9 @@ void main() {
         j++;
       }
 
-      var revStatusVerify = verify(getClaimRevocationStatusUseCase.execute(
-          param: captureAnyNamed('param')));
+      // FIXME: This is verifying code that is currently commented out.
+      // var revStatusVerify = verify(getClaimRevocationStatusUseCase.execute(
+      //     param: captureAnyNamed('param')));
     });
 
     test(
