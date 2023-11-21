@@ -13,4 +13,10 @@ abstract class Iden3commCredentialRepository {
   });
 
   Future<Map<String, dynamic>> fetchSchema({required String url});
+
+  Future<ClaimEntity> refreshCredential({
+    required String url,
+    required String authToken,
+    required String profileDid,
+  });
 }

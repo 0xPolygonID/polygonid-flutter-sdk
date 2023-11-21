@@ -539,29 +539,29 @@ extension GetItInjectableX on _i1.GetIt {
         databaseModule.getCodec(privateKey));
     gh.lazySingleton<_i64.StacktraceManager>(() => _i64.StacktraceManager());
     gh.factory<_i65.StateIdentifierMapper>(() => _i65.StateIdentifierMapper());
-    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.interactionStore,
-      instanceName: 'interactionStore',
+    gh.factory<_i13.StoreRef<String, dynamic>>(
+      () => databaseModule.keyValueStore,
+      instanceName: 'keyValueStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.didProfileInfoStore,
       instanceName: 'didProfileInfoStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.profileStore,
-      instanceName: 'profilesStore',
+      () => databaseModule.claimStore,
+      instanceName: 'claimStore',
     );
-    gh.factory<_i13.StoreRef<String, dynamic>>(
-      () => databaseModule.keyValueStore,
-      instanceName: 'keyValueStore',
+    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
+      () => databaseModule.interactionStore,
+      instanceName: 'interactionStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.identityStore,
       instanceName: 'identityStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.claimStore,
-      instanceName: 'claimStore',
+      () => databaseModule.profileStore,
+      instanceName: 'profilesStore',
     );
     gh.factory<_i66.TreeStateMapper>(() => _i66.TreeStateMapper());
     gh.factory<_i67.TreeTypeMapper>(() => _i67.TreeTypeMapper());
@@ -1201,6 +1201,9 @@ extension GetItInjectableX on _i1.GetIt {
               await getAsync<_i175.GetIdentityUseCase>(),
               gh<_i56.ProofGenerationStepsStreamManager>(),
               gh<_i64.StacktraceManager>(),
+              await getAsync<_i182.GetAuthTokenUseCase>(),
+              gh<_i126.Iden3commCredentialRepository>(),
+              gh<_i137.UpdateClaimUseCase>(),
             ));
     gh.factoryAsync<_i195.UpdateIdentityUseCase>(
         () async => _i195.UpdateIdentityUseCase(

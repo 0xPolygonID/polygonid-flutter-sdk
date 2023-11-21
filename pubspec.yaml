@@ -32,7 +32,7 @@ dependencies:
   uuid: ^3.0.6
   encrypt: 5.0.3
   pointycastle: 3.7.3
-  package_info_plus: ^4.0.1
+  package_info_plus: ^4.2.0
   bip32: ^2.0.0
   dio: ^5.3.0
   dio_cache_interceptor: ^3.4.2
