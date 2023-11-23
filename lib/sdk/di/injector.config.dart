@@ -121,7 +121,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.d
     as _i80;
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_response_mapper.dart'
     as _i5;
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/didProfileInfoInteractedDidFilterMapper.dart'
+import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/did_profile_info_interacted_did_filter_mapper.dart'
     as _i14;
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/iden3_message_type_mapper.dart'
     as _i30;
@@ -433,7 +433,6 @@ extension GetItInjectableX on _i1.GetIt {
     gh.factory<_i10.ClaimStateMapper>(() => _i10.ClaimStateMapper());
     gh.factory<_i11.Client>(() => networkModule.client);
     gh.factory<_i12.CreatePathWrapper>(() => _i12.CreatePathWrapper());
-    gh.lazySingletonAsync<_i13.Database>(() => databaseModule.database());
     gh.factoryParamAsync<_i13.Database, String?, String?>(
       (
         identifier,
@@ -445,6 +444,7 @@ extension GetItInjectableX on _i1.GetIt {
       ),
       instanceName: 'polygonIdSdkIdentity',
     );
+    gh.lazySingletonAsync<_i13.Database>(() => databaseModule.database());
     gh.factory<_i12.DestinationPathDataSource>(
         () => _i12.DestinationPathDataSource(gh<_i12.CreatePathWrapper>()));
     gh.factory<_i14.DidProfileInfoInteractedDidFilterMapper>(
@@ -540,16 +540,20 @@ extension GetItInjectableX on _i1.GetIt {
     gh.lazySingleton<_i64.StacktraceManager>(() => _i64.StacktraceManager());
     gh.factory<_i65.StateIdentifierMapper>(() => _i65.StateIdentifierMapper());
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.interactionStore,
-      instanceName: 'interactionStore',
+      () => databaseModule.profileStore,
+      instanceName: 'profilesStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.didProfileInfoStore,
       instanceName: 'didProfileInfoStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.profileStore,
-      instanceName: 'profilesStore',
+      () => databaseModule.interactionStore,
+      instanceName: 'interactionStore',
+    );
+    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
+      () => databaseModule.claimStore,
+      instanceName: 'claimStore',
     );
     gh.factory<_i13.StoreRef<String, dynamic>>(
       () => databaseModule.keyValueStore,
@@ -558,10 +562,6 @@ extension GetItInjectableX on _i1.GetIt {
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.identityStore,
       instanceName: 'identityStore',
-    );
-    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.claimStore,
-      instanceName: 'claimStore',
     );
     gh.factory<_i66.TreeStateMapper>(() => _i66.TreeStateMapper());
     gh.factory<_i67.TreeTypeMapper>(() => _i67.TreeTypeMapper());
