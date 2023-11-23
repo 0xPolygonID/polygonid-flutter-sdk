@@ -69,6 +69,7 @@ class GetIden3commClaimsUseCase
     for (ProofRequestEntity request in requests) {
       if (await _isProofCircuitSupported.execute(
           param: request.scope.circuitId)) {
+
         List<FilterEntity> filters =
             await _iden3commCredentialRepository.getFilters(request: request);
         _stacktraceManager
@@ -80,8 +81,8 @@ class GetIden3commClaimsUseCase
             genesisDid: param.genesisDid,
             profileNonce: param.profileNonce,
             privateKey: param.privateKey,
-          ),
-        );
+            ),
+          );
 
         // filter manually positive integer
         claimsFiltered = _filterManuallyIfPositiveInteger(

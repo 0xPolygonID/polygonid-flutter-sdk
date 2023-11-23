@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
@@ -14,6 +16,7 @@ import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/claims_
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/mappers/claim_model_mapper.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/models/claim_model.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
+import 'package:polygonid_flutter_sdk_example/utils/nonce_utils.dart';
 import 'package:polygonid_flutter_sdk_example/utils/secure_storage_keys.dart';
 
 class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
@@ -58,17 +61,23 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     emit(const ClaimsState.loading());
 
     Iden3MessageEntity iden3message = event.iden3message;
-
     if (event.iden3message.messageType != Iden3MessageType.credentialOffer) {
       emit(const ClaimsState.error("Read message is not of type offer"));
       return;
     }
+
+    BigInt nonce = await NonceUtils(_polygonIdSdk).lookupNonce(
+            did: didIdentifier,
+            privateKey: privateKey,
+            from: iden3message.from) ??
+        GENESIS_PROFILE_NONCE;
 
     try {
       List<ClaimEntity> claimList =
           await _polygonIdSdk.iden3comm.fetchAndSaveClaims(
         message: event.iden3message as OfferIden3MessageEntity,
         genesisDid: didIdentifier,
+        profileNonce: nonce,
         privateKey: privateKey,
       );
 

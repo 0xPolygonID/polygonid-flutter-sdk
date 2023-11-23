@@ -18,7 +18,8 @@ class PolygonIdCore {
 
   PolygonIdCore();
 
-  String? consumeStatus(ffi.Pointer<ffi.Pointer<PLGNStatus>> status, String msg) {
+  String? consumeStatus(
+      ffi.Pointer<ffi.Pointer<PLGNStatus>> status, String msg) {
     if (status == ffi.nullptr || status.value == ffi.nullptr) {
       if (kDebugMode) {
         print("unable to allocate status\n");

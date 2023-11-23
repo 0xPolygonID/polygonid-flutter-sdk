@@ -1,18 +1,36 @@
+import 'dart:typed_data';
+
 import 'package:bloc/bloc.dart';
+import 'dart:math';
+import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/data/secure_storage.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_state.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/common/widgets/profile_radio_button.dart';
+import 'package:polygonid_flutter_sdk_example/utils/nonce_utils.dart';
 import 'package:polygonid_flutter_sdk_example/utils/secure_storage_keys.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final PolygonIdSdk _polygonIdSdk;
 
+  static const SelectedProfile _defaultProfile = SelectedProfile.public;
+  SelectedProfile selectedProfile = _defaultProfile;
+
   AuthBloc(this._polygonIdSdk) : super(const AuthState.initial()) {
     on<ClickScanQrCodeEvent>(_handleClickScanQrCode);
     on<ScanQrCodeResponse>(_handleScanQrCodeResponse);
+    on<ProfileSelectedEvent>(_handleProfileSelected);
+  }
+
+  void _handleProfileSelected(
+      ProfileSelectedEvent event, Emitter<AuthState> emit) {
+    selectedProfile = event.profile;
+    emit(AuthState.profileSelected(event.profile));
   }
 
   ///
@@ -73,10 +91,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         network: envEntity.network);
 
     try {
+      final BigInt nonce = selectedProfile == SelectedProfile.public
+          ? GENESIS_PROFILE_NONCE
+          : await NonceUtils(getIt()).getPrivateProfileNonce(
+              did: did, privateKey: privateKey, from: iden3message.from);
       await _polygonIdSdk.iden3comm.authenticate(
         message: iden3message,
         genesisDid: did,
         privateKey: privateKey,
+        profileNonce: nonce,
       );
 
       emit(const AuthState.authenticated());
