@@ -6,6 +6,7 @@ import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_bloc
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_state.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/common/widgets/button_next_action.dart';
+import 'package:polygonid_flutter_sdk_example/src/presentation/ui/common/widgets/profile_radio_button.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_button_style.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_colors.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
@@ -49,23 +50,22 @@ class _AuthScreenState extends State<AuthScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 50),
-                    _buildDescription(),
-                    const SizedBox(height: 24),
-                    _buildProgress(),
-                    const SizedBox(height: 24),
-                    _buildAuthenticationSuccessSection(),
-                    const SizedBox(height: 24),
-                    _buildErrorSection(),
-                    const SizedBox(height: 48),
-                  ],
-                ),
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 50),
+                  _buildDescription(),
+                  const SizedBox(height: 24),
+                  _buildProgress(),
+                  const SizedBox(height: 24),
+                  _buildAuthenticationSuccessSection(),
+                  const SizedBox(height: 24),
+                  _buildErrorSection(),
+                  const SizedBox(height: 48),
+                ],
               ),
             ),
+            Expanded(child: _buildRadioButtons()),
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: Stack(
@@ -220,5 +220,18 @@ class _AuthScreenState extends State<AuthScreen> {
         );
       },
     );
+  }
+
+  ///
+  Widget _buildRadioButtons() {
+    void _selectProfile(SelectedProfile profile) {
+      widget._bloc.add(AuthEvent.profileSelected(profile));
+    }
+
+    return BlocBuilder(
+        bloc: widget._bloc,
+        builder: (BuildContext context, AuthState state) {
+          return ProfileRadio(widget._bloc.selectedProfile, _selectProfile);
+        });
   }
 }

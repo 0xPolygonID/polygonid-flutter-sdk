@@ -38,8 +38,10 @@ Future<void> init() async {
 
 void registerEnv() {
   Map<String, dynamic> polygonMumbai = jsonDecode(Env.polygonMumbai);
-  List<EnvEntity> env = [
-    EnvEntity(
+  Map<String, dynamic> polygonMainnet = jsonDecode(Env.polygonMainnet);
+
+  Map<String, EnvEntity> env = {
+    "mumbai": EnvEntity(
       blockchain: polygonMumbai['blockchain'],
       network: polygonMumbai['network'],
       web3Url: polygonMumbai['web3Url'],
@@ -49,13 +51,23 @@ void registerEnv() {
       pushUrl: polygonMumbai['pushUrl'],
       ipfsUrl: polygonMumbai['ipfsUrl'],
     ),
-  ];
-  getIt.registerSingleton<List<EnvEntity>>(env);
+    "mainnet": EnvEntity(
+      blockchain: polygonMainnet['blockchain'],
+      network: polygonMainnet['network'],
+      web3Url: polygonMainnet['web3Url'],
+      web3RdpUrl: polygonMainnet['web3RdpUrl'],
+      web3ApiKey: polygonMainnet['web3ApiKey'],
+      idStateContract: polygonMainnet['idStateContract'],
+      pushUrl: polygonMainnet['pushUrl'],
+      ipfsUrl: polygonMainnet['ipfsUrl'],
+    )
+  };
+  getIt.registerSingleton<Map<String, EnvEntity>>(env);
 }
 
 ///
 Future<void> registerProviders() async {
-  await PolygonIdSdk.init(env: getIt<List<EnvEntity>>()[0]);
+  await PolygonIdSdk.init(env: getIt<Map<String, EnvEntity>>()["mumbai"]);
   getIt.registerLazySingleton<PolygonIdSdk>(() => PolygonIdSdk.I);
 }
 

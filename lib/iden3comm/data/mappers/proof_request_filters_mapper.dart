@@ -67,6 +67,10 @@ class ProofRequestFiltersMapper
                 filters.addAll(
                     _getFilterByOperator(key, operator, value.toString()));
               }
+            } else if (type.contains("positiveInteger")) {
+              // PositiveInteger is not supported by the filter 'cause this type
+              // is stored as a string in the database. So we need to filter manually
+              // this is why we don't add the filter here
             } else {
               filters.addAll(_getFilterByOperator(key, operator, value));
             }
