@@ -1201,6 +1201,9 @@ extension GetItInjectableX on _i1.GetIt {
               await getAsync<_i175.GetIdentityUseCase>(),
               gh<_i56.ProofGenerationStepsStreamManager>(),
               gh<_i64.StacktraceManager>(),
+              await getAsync<_i182.GetAuthTokenUseCase>(),
+              gh<_i126.Iden3commCredentialRepository>(),
+              gh<_i137.UpdateClaimUseCase>(),
             ));
     gh.factoryAsync<_i195.UpdateIdentityUseCase>(
         () async => _i195.UpdateIdentityUseCase(

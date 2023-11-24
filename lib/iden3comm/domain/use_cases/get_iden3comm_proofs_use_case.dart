@@ -44,16 +44,17 @@ class GetIden3commProofsParam {
   final String? ipfsNodeUrl;
   final Map<int, Map<String, dynamic>>? nonRevocationProofs;
 
-  GetIden3commProofsParam(
-      {required this.message,
-      required this.genesisDid,
-      required this.profileNonce,
-      required this.privateKey,
-      this.challenge,
-      this.ethereumUrl,
-      this.stateContractAddr,
-      this.ipfsNodeUrl,
-      this.nonRevocationProofs});
+  GetIden3commProofsParam({
+    required this.message,
+    required this.genesisDid,
+    required this.profileNonce,
+    required this.privateKey,
+    this.challenge,
+    this.ethereumUrl,
+    this.stateContractAddr,
+    this.ipfsNodeUrl,
+    this.nonRevocationProofs,
+  });
 }
 
 class GetIden3commProofsUseCase
@@ -92,15 +93,11 @@ class GetIden3commProofsUseCase
     try {
       List<Iden3commProofEntity> proofs = [];
 
-      Stopwatch stopwatch = Stopwatch()..start();
-
       _proofGenerationStepsStreamManager.add("Getting proof requests");
       List<ProofRequestEntity> requests =
           await _getProofRequestsUseCase.execute(param: param.message);
       _stacktraceManager
           .addTrace("[GetIden3commProofsUseCase] requests: $requests");
-      logger().i(
-          "STOPPE after _getProofRequestsUseCase ${stopwatch.elapsedMilliseconds}");
 
       List<ClaimEntity?> claims = await _getIden3commClaimsUseCase.execute(
           param: GetIden3commClaimsParam(
@@ -111,8 +108,6 @@ class GetIden3commProofsUseCase
               nonRevocationProofs: param.nonRevocationProofs ?? {}));
       _stacktraceManager.addTrace(
           "[GetIden3commProofsUseCase] claims found: ${claims.length}");
-      logger().i(
-          "STOPPE after _getIden3commClaimsUseCase ${stopwatch.elapsedMilliseconds}");
 
       if ((requests.isNotEmpty &&
               claims.isNotEmpty &&
@@ -243,8 +238,6 @@ class GetIden3commProofsUseCase
               param.stateContractAddr,
               param.ipfsNodeUrl,
             )));
-            logger().i(
-                "STOPPE after _generateIden3commProofUseCase $i ${stopwatch.elapsedMilliseconds}");
           }
         }
       } else {
