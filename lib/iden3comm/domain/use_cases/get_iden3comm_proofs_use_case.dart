@@ -7,6 +7,7 @@ import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/credential_refresh_iden3_message_entity.dart';
@@ -72,6 +73,8 @@ class GetIden3commProofsUseCase
 
   final Iden3commCredentialRepository _iden3commCredentialRepository;
   final UpdateClaimUseCase _updateClaimUseCase;
+  final RemoveClaimsUseCase _removeClaimsUseCase;
+  final SaveClaimsUseCase _saveClaimsUseCase;
 
   GetIden3commProofsUseCase(
     this._proofRepository,
@@ -85,6 +88,8 @@ class GetIden3commProofsUseCase
     this._getAuthTokenUseCase,
     this._iden3commCredentialRepository,
     this._updateClaimUseCase,
+    this._removeClaimsUseCase,
+    this._saveClaimsUseCase,
   );
 
   @override
@@ -124,7 +129,7 @@ class GetIden3commProofsUseCase
           }
 
           if (claim.expiration != null) {
-            var now = DateTime.now();
+            var now = DateTime.now().toUtc();
             DateTime expirationTime =
                 DateFormat("yyyy-MM-ddThh:mm:ssZ").parse(claim.expiration!);
             bool isExpired = now.isAfter(expirationTime) ||
@@ -171,6 +176,22 @@ class GetIden3commProofsUseCase
                 authToken: authToken,
                 url: refreshServiceUrl,
                 profileDid: claim.did,
+              );
+
+              await _removeClaimsUseCase.execute(
+                param: RemoveClaimsParam(
+                  claimIds: [claim.id],
+                  genesisDid: param.genesisDid,
+                  privateKey: param.privateKey,
+                ),
+              );
+
+              await _saveClaimsUseCase.execute(
+                param: SaveClaimsParam(
+                  claims: [claimEntity],
+                  genesisDid: param.genesisDid,
+                  privateKey: param.privateKey,
+                ),
               );
 
               claim = claimEntity;
