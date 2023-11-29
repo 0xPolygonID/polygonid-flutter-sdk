@@ -20,6 +20,7 @@ import 'package:polygonid_flutter_sdk/proof/data/data_sources/lib_pidcore_proof_
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/proof_circuit_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/prover_lib_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/witness_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/circuits_to_download_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
@@ -253,13 +254,8 @@ class ProofRepositoryImpl extends ProofRepository {
   }
 
   @override
-  Stream<DownloadInfo> get circuitsDownloadInfoStream async* {
-    String pathForZipFileTemp =
-        await _circuitsFilesDataSource.getPathToCircuitZipFileTemp();
-    String pathForZipFile =
-        await _circuitsFilesDataSource.getPathToCircuitZipFile();
-    String pathForCircuits = await _circuitsFilesDataSource.getPath();
-
+  Stream<DownloadInfo> circuitsDownloadInfoStream(
+      {required List<CircuitsToDownloadParam> circuitsToDownload}) async* {
     await for (final downloadResponse
         in _circuitsDownloadDataSource.downloadStream) {
       int progress = downloadResponse.progress;
@@ -274,29 +270,49 @@ class ProofRepositoryImpl extends ProofRepository {
       if (downloadResponse.done) {
         final int downloadSize = _circuitsDownloadDataSource.downloadSize;
 
-        // we get the size of the temp zip file
-        int zipFileSize = _circuitsFilesDataSource.zipFileSize(
-            pathToFile: pathForZipFileTemp);
+        int totalZipFileSize = 0;
 
-        if (downloadSize != 0 && zipFileSize != downloadSize) {
+        for(CircuitsToDownloadParam param in circuitsToDownload){
+          if(param.downloadPath == null){
+            continue;
+          }
+          String pathForZipFileTemp = param.downloadPath!;
+          String pathForZipFile = await _circuitsFilesDataSource
+              .getPathToCircuitZipFile(circuitsFileName: param.circuitsName);
+          String pathForCircuits = await _circuitsFilesDataSource.getPath();
+
+          // we get the size of the temp zip file
+          int zipFileSize = _circuitsFilesDataSource.zipFileSize(
+              pathToFile: pathForZipFileTemp);
+
+          totalZipFileSize += zipFileSize;
+
+          await _completeWritingFile(
+            pathForCircuits: pathForCircuits,
+            pathForZipFile: pathForZipFile,
+            pathForZipFileTemp: pathForZipFileTemp,
+          );
+        }
+
+        if (downloadSize != 0 && totalZipFileSize != downloadSize) {
           try {
             // if error we delete the temp file
-            _circuitsFilesDataSource.deleteFile(pathForZipFileTemp);
+            for(CircuitsToDownloadParam param in circuitsToDownload){
+              if(param.downloadPath == null){
+                continue;
+              }
+              String pathForZipFileTemp = param.downloadPath!;
+              _circuitsFilesDataSource.deleteFile(pathForZipFileTemp);
+            }
           } catch (_) {}
 
           yield DownloadInfo.onError(
               errorMessage: "Downloaded files incorrect");
         }
 
-        await _completeWritingFile(
-          pathForCircuits: pathForCircuits,
-          pathForZipFile: pathForZipFile,
-          pathForZipFileTemp: pathForZipFileTemp,
-        );
-
         yield DownloadInfo.onDone(
           contentLength: downloadSize,
-          downloaded: zipFileSize,
+          downloaded: totalZipFileSize,
         );
       }
 
@@ -309,20 +325,28 @@ class ProofRepositoryImpl extends ProofRepository {
 
   ///
   @override
-  Future<void> initCircuitsDownloadFromServer() {
-    return _circuitsFilesDataSource.getPathToCircuitZipFileTemp().then(
-        (pathForZipFileTemp) =>
-            // We delete eventual temp zip file downloaded before
-            _circuitsFilesDataSource.deleteFile(pathForZipFileTemp).then((_) =>
-                // Init download
-                _circuitsDownloadDataSource
-                    .initStreamedResponseFromServer(pathForZipFileTemp)));
+  Future<void> initCircuitsDownloadFromServer({
+    required List<CircuitsToDownloadParam> circuitsToDownload,
+  }) async {
+
+    for (int i = 0; i < circuitsToDownload.length; i++) {
+      CircuitsToDownloadParam param = circuitsToDownload[i];
+      String path = await _circuitsFilesDataSource.getPathToCircuitZipFileTemp(
+          circuitsFileName: param.circuitsName);
+      // we delete the file if it exists
+      await _circuitsFilesDataSource.deleteFile(path);
+      circuitsToDownload[i].downloadPath = path;
+    }
+    return _circuitsDownloadDataSource.initStreamedResponseFromServer(
+      circuitsToDownload: circuitsToDownload,
+    );
   }
 
   ///
   @override
-  Future<bool> circuitsFilesExist() {
-    return _circuitsFilesDataSource.circuitsFilesExist();
+  Future<bool> circuitsFilesExist({required String circuitsFileName}) {
+    return _circuitsFilesDataSource.circuitsFilesExist(
+        circuitsFileName: circuitsFileName);
   }
 
   ///
