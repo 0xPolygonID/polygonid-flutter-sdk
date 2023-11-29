@@ -3,6 +3,8 @@ import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/witness_param.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/mtp_v2/witness_mtp.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/sig_v2/witness_sig.dart';
+import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/v3/witness_v3.dart';
+import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/v3_onchain/witness_v3_onchain.dart';
 
 import '../../libs/witnesscalc/auth_v2/witness_auth.dart';
 import '../../libs/witnesscalc/mtp_v2_onchain/witness_mtp_onchain.dart';
@@ -25,6 +27,9 @@ class WitnessIsolatesWrapper {
 
   Future<Uint8List?> computeWitnessSigOnchain(WitnessParam param) =>
       compute(_computeWitnessSigOnchain, param);
+
+  Future<Uint8List?> computeWitnessV3(WitnessParam param) =>
+      compute(_computeWitnessV3, param);
 }
 
 /// As this is running in a separate thread, we cannot inject [WitnessAuthLib]
@@ -69,6 +74,15 @@ Future<Uint8List?> _computeWitnessSigOnchain(WitnessParam param) async {
   return witnessBytes;
 }
 
+Future<Uint8List?> _computeWitnessV3(WitnessParam param) async {
+  final WitnessV3Lib witnessLib = WitnessV3Lib();
+  final Uint8List? witnessBytes = await witnessLib.calculateWitness(
+    param.wasm,
+    param.json,
+  );
+  return witnessBytes;
+}
+
 class WitnessDataSource {
   final WitnessIsolatesWrapper _witnessIsolatesWrapper;
 
@@ -87,6 +101,8 @@ class WitnessDataSource {
         return _witnessIsolatesWrapper.computeWitnessMtpOnchain(param);
       case CircuitType.sigonchain:
         return _witnessIsolatesWrapper.computeWitnessSigOnchain(param);
+      case CircuitType.circuitsV3:
+        return _witnessIsolatesWrapper.computeWitnessV3(param);
       default:
         return Future.value(null);
     }

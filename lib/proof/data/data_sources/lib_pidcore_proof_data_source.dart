@@ -68,6 +68,11 @@ class LibPolygonIdCoreWrapper {
               jsonEncode(computeParam.param.toJson()),
               jsonEncode(computeParam.configParam?.toJson()));
           break;
+        case AtomicQueryInputsType.v3:
+          result = _polygonIdCoreProof.getV3ProofInputs(
+              jsonEncode(computeParam.param.toJson()),
+              jsonEncode(computeParam.configParam?.toJson()));
+          break;
         case AtomicQueryInputsType.unknown:
           throw NullAtomicQueryInputsException(computeParam.param.id);
       }
@@ -174,6 +179,8 @@ class LibPolygonIdCoreProofDataSource {
       type = AtomicQueryInputsType.sig;
     } else if (circuitId == "credentialAtomicQuerySigV2OnChain") {
       type = AtomicQueryInputsType.sigonchain;
+    } else if (circuitId == "credentialAtomicQueryV3") {
+      type = AtomicQueryInputsType.v3;
     }
     AtomicQueryInputsConfigParam? configParam;
     if (config != null) {

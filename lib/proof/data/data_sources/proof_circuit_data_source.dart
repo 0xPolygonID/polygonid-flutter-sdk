@@ -5,7 +5,8 @@ class ProofCircuitDataSource {
     CircuitType.mtp,
     CircuitType.sig,
     CircuitType.mtponchain,
-    CircuitType.sigonchain
+    CircuitType.sigonchain,
+    CircuitType.circuitsV3,
   ];
 
   Future<bool> isCircuitSupported({required CircuitType circuit}) {
