@@ -30,6 +30,9 @@ class WitnessIsolatesWrapper {
 
   Future<Uint8List?> computeWitnessV3(WitnessParam param) =>
       compute(_computeWitnessV3, param);
+
+  Future<Uint8List?> computeWitnessV3Onchain(WitnessParam param) =>
+      compute(_computeWitnessV3Onchain, param);
 }
 
 /// As this is running in a separate thread, we cannot inject [WitnessAuthLib]
@@ -83,6 +86,15 @@ Future<Uint8List?> _computeWitnessV3(WitnessParam param) async {
   return witnessBytes;
 }
 
+Future<Uint8List?> _computeWitnessV3Onchain(WitnessParam param) async {
+  final WitnessV3OnchainLib witnessLib = WitnessV3OnchainLib();
+  final Uint8List? witnessBytes = await witnessLib.calculateWitness(
+    param.wasm,
+    param.json,
+  );
+  return witnessBytes;
+}
+
 class WitnessDataSource {
   final WitnessIsolatesWrapper _witnessIsolatesWrapper;
 
@@ -103,6 +115,8 @@ class WitnessDataSource {
         return _witnessIsolatesWrapper.computeWitnessSigOnchain(param);
       case CircuitType.circuitsV3:
         return _witnessIsolatesWrapper.computeWitnessV3(param);
+      case CircuitType.circuitsV3onchain:
+        return _witnessIsolatesWrapper.computeWitnessV3Onchain(param);
       default:
         return Future.value(null);
     }

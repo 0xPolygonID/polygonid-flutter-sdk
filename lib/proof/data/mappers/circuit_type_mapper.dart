@@ -1,6 +1,15 @@
 import 'package:polygonid_flutter_sdk/common/mappers/to_mapper.dart';
 
-enum CircuitType { auth, mtp, sig, mtponchain, sigonchain, unknown, circuitsV3 }
+enum CircuitType {
+  auth,
+  mtp,
+  sig,
+  mtponchain,
+  sigonchain,
+  unknown,
+  circuitsV3,
+  circuitsV3onchain,
+}
 
 class CircuitTypeMapper extends ToMapper<CircuitType, String> {
   @override
@@ -23,6 +32,9 @@ class CircuitTypeMapper extends ToMapper<CircuitType, String> {
 
       case "credentialAtomicQueryV3":
         return CircuitType.circuitsV3;
+
+      case "credentialAtomicQueryV3OnChain":
+        return CircuitType.circuitsV3onchain;
 
       default:
         return CircuitType.unknown;

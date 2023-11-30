@@ -1,6 +1,14 @@
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 
-enum AtomicQueryInputsType { mtp, sig, mtponchain, sigonchain, unknown, v3 }
+enum AtomicQueryInputsType {
+  mtp,
+  sig,
+  mtponchain,
+  sigonchain,
+  unknown,
+  v3,
+  v3onchain,
+}
 
 class AtomicQueryInputsParam {
   final AtomicQueryInputsType type;

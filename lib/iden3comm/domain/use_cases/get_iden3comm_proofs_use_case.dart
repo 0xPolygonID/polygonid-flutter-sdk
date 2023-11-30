@@ -117,7 +117,8 @@ class GetIden3commProofsUseCase
             String? challenge;
             String? privKey;
             if (circuitId == "credentialAtomicQuerySigV2OnChain" ||
-                circuitId == "credentialAtomicQueryMTPV2OnChain") {
+                circuitId == "credentialAtomicQueryMTPV2OnChain" ||
+                circuitId == "credentialAtomicQueryV3OnChain") {
               privKey = param.privateKey;
               challenge = param.challenge;
             }

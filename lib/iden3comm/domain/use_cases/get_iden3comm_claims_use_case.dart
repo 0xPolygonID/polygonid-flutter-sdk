@@ -119,6 +119,7 @@ class GetIden3commClaimsUseCase
             case CircuitType.unknown:
               break;
             case CircuitType.circuitsV3:
+            case CircuitType.circuitsV3onchain:
               bool success = [
                 'Iden3SparseMerkleProof',
                 'Iden3SparseMerkleTreeProof',

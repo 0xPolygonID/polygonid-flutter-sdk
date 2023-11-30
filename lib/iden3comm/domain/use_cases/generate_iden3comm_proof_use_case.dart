@@ -102,7 +102,8 @@ class GenerateIden3commProofUseCase
     Stopwatch stopwatch = Stopwatch()..start();
 
     if (param.request.circuitId == "credentialAtomicQueryMTPV2OnChain" ||
-        param.request.circuitId == "credentialAtomicQuerySigV2OnChain") {
+        param.request.circuitId == "credentialAtomicQuerySigV2OnChain" ||
+        param.request.circuitId == "credentialAtomicQueryV3OnChain") {
       //on chain start
       _stacktraceManager.addTrace(
           "[GenerateIden3commProofUseCase] OnChain ${param.request.circuitId}");
