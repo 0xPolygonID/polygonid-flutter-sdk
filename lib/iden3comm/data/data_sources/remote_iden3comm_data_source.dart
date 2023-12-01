@@ -63,19 +63,21 @@ class RemoteIden3commDataSource {
         "[RemoteIden3commDataSource] fetchClaim: did:$did\nurl: $url\nauthToken: $authToken");
 
     Dio dio = Dio();
-    Response response = await dio.post(url,
-        data: authToken,
-        options: Options(
-          headers: {
-            HttpHeaders.acceptHeader: '*/*',
-            HttpHeaders.contentTypeHeader: 'application/json',
-            HttpHeaders.acceptCharsetHeader: 'utf-8',
-          },
-        ));
+    Response response = await dio.post(
+      url,
+      data: authToken,
+      options: Options(
+        headers: {
+          HttpHeaders.acceptHeader: '*/*',
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.acceptCharsetHeader: 'utf-8',
+        },
+      ),
+    );
 
     _stacktraceManager.addTrace(
         "[RemoteIden3commDataSource] fetchClaim: ${response.statusCode} ${response.data}");
-    if( response.statusCode != 200){
+    if (response.statusCode != 200) {
       logger().d(
           'fetchClaim Error: code: ${response.statusCode} msg: ${response.data}');
       _stacktraceManager.addError(
@@ -84,7 +86,7 @@ class RemoteIden3commDataSource {
     }
 
     FetchClaimResponseDTO fetchResponse =
-    FetchClaimResponseDTO.fromJson(json.decode(response.data));
+        FetchClaimResponseDTO.fromJson(response.data);
 
     if (fetchResponse.type != FetchClaimResponseType.issuance) {
       _stacktraceManager.addTrace(
@@ -95,12 +97,13 @@ class RemoteIden3commDataSource {
     }
 
     return ClaimDTO(
-        id: fetchResponse.credential.id,
-        issuer: fetchResponse.from,
-        did: did,
-        type: fetchResponse.credential.credentialSubject.type,
-        expiration: fetchResponse.credential.expirationDate,
-        info: fetchResponse.credential);
+      id: fetchResponse.credential.id,
+      issuer: fetchResponse.from,
+      did: did,
+      type: fetchResponse.credential.credentialSubject.type,
+      expiration: fetchResponse.credential.expirationDate,
+      info: fetchResponse.credential,
+    );
   }
 
   Future<Map<String, dynamic>> fetchSchema({required String url}) async {
