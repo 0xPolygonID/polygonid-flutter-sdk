@@ -21,6 +21,7 @@ class RemoteClaimDataSource {
     var revStatusResponse = await client.get(revStatusUri, headers: {
       HttpHeaders.acceptHeader: '*/*',
       HttpHeaders.contentTypeHeader: 'application/json',
+      HttpHeaders.acceptCharsetHeader: 'utf-8',
     });
     _stacktraceManager.addTrace(
         "[RemoteClaimDataSource] Revocation status response: ${revStatusResponse.statusCode} ${revStatusResponse.body}");

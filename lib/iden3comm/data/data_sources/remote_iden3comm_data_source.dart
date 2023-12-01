@@ -36,6 +36,7 @@ class RemoteIden3commDataSource {
         headers: {
           HttpHeaders.acceptHeader: '*/*',
           HttpHeaders.contentTypeHeader: 'text/plain',
+          HttpHeaders.acceptCharsetHeader: 'utf-8',
         },
       );
     }).then((response) {
@@ -64,6 +65,7 @@ class RemoteIden3commDataSource {
               headers: {
                 HttpHeaders.acceptHeader: '*/*',
                 HttpHeaders.contentTypeHeader: 'text/plain',
+                HttpHeaders.acceptCharsetHeader: 'utf-8',
               },
             ))
         .then((response) {

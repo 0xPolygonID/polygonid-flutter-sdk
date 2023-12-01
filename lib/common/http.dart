@@ -30,6 +30,7 @@ Future<http.Response> get(String baseAddress, String endpoint,
       uri,
       headers: {
         HttpHeaders.acceptHeader: 'application/json',
+        HttpHeaders.acceptCharsetHeader: 'utf-8',
       },
     );
 
@@ -54,6 +55,7 @@ Future<http.Response> post(String baseAddress, String endpoint,
       headers: {
         HttpHeaders.acceptHeader: '*/*',
         HttpHeaders.contentTypeHeader: 'application/json',
+        HttpHeaders.acceptCharsetHeader: 'utf-8',
       },
     );
 
