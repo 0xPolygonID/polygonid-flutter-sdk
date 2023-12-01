@@ -54,50 +54,53 @@ class RemoteIden3commDataSource {
     });
   }
 
-  Future<ClaimDTO> fetchClaim(
-      {required String authToken, required String url, required String did}) {
+  Future<ClaimDTO> fetchClaim({
+    required String authToken,
+    required String url,
+    required String did,
+  }) async {
     _stacktraceManager.addTrace(
         "[RemoteIden3commDataSource] fetchClaim: did:$did\nurl: $url\nauthToken: $authToken");
-    return Future.value(Uri.parse(url))
-        .then((uri) => client.post(
-              uri,
-              body: authToken,
-              headers: {
-                HttpHeaders.acceptHeader: '*/*',
-                HttpHeaders.contentTypeHeader: 'application/json',
-                HttpHeaders.acceptCharsetHeader: 'utf-8',
-              },
-            ))
-        .then((response) {
-      _stacktraceManager.addTrace(
-          "[RemoteIden3commDataSource] fetchClaim: ${response.statusCode} ${response.body}");
-      if (response.statusCode == 200) {
-        FetchClaimResponseDTO fetchResponse =
-            FetchClaimResponseDTO.fromJson(json.decode(response.body));
 
-        if (fetchResponse.type == FetchClaimResponseType.issuance) {
-          return ClaimDTO(
-              id: fetchResponse.credential.id,
-              issuer: fetchResponse.from,
-              did: did,
-              type: fetchResponse.credential.credentialSubject.type,
-              expiration: fetchResponse.credential.expirationDate,
-              info: fetchResponse.credential);
-        } else {
-          _stacktraceManager.addTrace(
-              "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException");
-          _stacktraceManager.addError(
-              "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException");
-          throw UnsupportedFetchClaimTypeException(response);
-        }
-      } else {
-        logger().d(
-            'fetchClaim Error: code: ${response.statusCode} msg: ${response.body}');
-        _stacktraceManager.addError(
-            'fetchClaim Error: $url response with\ncode: ${response.statusCode}\nmsg: ${response.body}');
-        throw NetworkException(response);
-      }
-    });
+    Dio dio = Dio();
+    Response response = await dio.post(url,
+        data: authToken,
+        options: Options(
+          headers: {
+            HttpHeaders.acceptHeader: '*/*',
+            HttpHeaders.contentTypeHeader: 'application/json',
+            HttpHeaders.acceptCharsetHeader: 'utf-8',
+          },
+        ));
+
+    _stacktraceManager.addTrace(
+        "[RemoteIden3commDataSource] fetchClaim: ${response.statusCode} ${response.data}");
+    if( response.statusCode != 200){
+      logger().d(
+          'fetchClaim Error: code: ${response.statusCode} msg: ${response.data}');
+      _stacktraceManager.addError(
+          'fetchClaim Error: $url response with\ncode: ${response.statusCode}\nmsg: ${response.data}');
+      throw NetworkException(response);
+    }
+
+    FetchClaimResponseDTO fetchResponse =
+    FetchClaimResponseDTO.fromJson(json.decode(response.data));
+
+    if (fetchResponse.type != FetchClaimResponseType.issuance) {
+      _stacktraceManager.addTrace(
+          "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException");
+      _stacktraceManager.addError(
+          "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException");
+      throw UnsupportedFetchClaimTypeException(response);
+    }
+
+    return ClaimDTO(
+        id: fetchResponse.credential.id,
+        issuer: fetchResponse.from,
+        did: did,
+        type: fetchResponse.credential.credentialSubject.type,
+        expiration: fetchResponse.credential.expirationDate,
+        info: fetchResponse.credential);
   }
 
   Future<Map<String, dynamic>> fetchSchema({required String url}) async {
