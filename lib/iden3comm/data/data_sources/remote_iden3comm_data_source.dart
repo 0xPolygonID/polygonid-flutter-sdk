@@ -64,7 +64,7 @@ class RemoteIden3commDataSource {
               body: authToken,
               headers: {
                 HttpHeaders.acceptHeader: '*/*',
-                HttpHeaders.contentTypeHeader: 'text/plain',
+                HttpHeaders.contentTypeHeader: 'application/json',
                 HttpHeaders.acceptCharsetHeader: 'utf-8',
               },
             ))
