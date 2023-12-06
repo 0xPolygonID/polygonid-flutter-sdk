@@ -63,7 +63,7 @@ class Iden3commCredentialRepositoryImpl extends Iden3commCredentialRepository {
         .refreshCredential(
           url: url,
           authToken: authToken,
-      profileDid: profileDid,
+          profileDid: profileDid,
         )
         .catchError((error) => throw Exception(error));
 

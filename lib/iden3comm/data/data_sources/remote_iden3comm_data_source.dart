@@ -124,7 +124,7 @@ class RemoteIden3commDataSource {
       _stacktraceManager.addTrace(
           "[RemoteIden3commDataSource] fetchClaim: ${response.statusCode} ${response.body}");
       if (response.statusCode == 200) {
-        Map<String,dynamic> jsonResponse = json.decode(response.body);
+        Map<String, dynamic> jsonResponse = json.decode(response.body);
         FetchClaimResponseDTO fetchResponse =
             FetchClaimResponseDTO.fromJson(jsonResponse);
 

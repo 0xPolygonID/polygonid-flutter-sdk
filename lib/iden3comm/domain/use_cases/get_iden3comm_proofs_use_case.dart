@@ -70,9 +70,7 @@ class GetIden3commProofsUseCase
   final StacktraceManager _stacktraceManager;
 
   final GetAuthTokenUseCase _getAuthTokenUseCase;
-
   final Iden3commCredentialRepository _iden3commCredentialRepository;
-  final UpdateClaimUseCase _updateClaimUseCase;
   final RemoveClaimsUseCase _removeClaimsUseCase;
   final SaveClaimsUseCase _saveClaimsUseCase;
 
@@ -87,7 +85,6 @@ class GetIden3commProofsUseCase
     this._stacktraceManager,
     this._getAuthTokenUseCase,
     this._iden3commCredentialRepository,
-    this._updateClaimUseCase,
     this._removeClaimsUseCase,
     this._saveClaimsUseCase,
   );
@@ -105,12 +102,14 @@ class GetIden3commProofsUseCase
           .addTrace("[GetIden3commProofsUseCase] requests: $requests");
 
       List<ClaimEntity?> claims = await _getIden3commClaimsUseCase.execute(
-          param: GetIden3commClaimsParam(
-              message: param.message,
-              genesisDid: param.genesisDid,
-              profileNonce: param.profileNonce,
-              privateKey: param.privateKey,
-              nonRevocationProofs: param.nonRevocationProofs ?? {}));
+        param: GetIden3commClaimsParam(
+          message: param.message,
+          genesisDid: param.genesisDid,
+          profileNonce: param.profileNonce,
+          privateKey: param.privateKey,
+          nonRevocationProofs: param.nonRevocationProofs ?? {},
+        ),
+      );
       _stacktraceManager.addTrace(
           "[GetIden3commProofsUseCase] claims found: ${claims.length}");
 
@@ -129,98 +128,18 @@ class GetIden3commProofsUseCase
           }
 
           if (claim.expiration != null) {
-            var now = DateTime.now().toUtc();
-            DateTime expirationTime =
-                DateFormat("yyyy-MM-ddThh:mm:ssZ").parse(claim.expiration!);
-            bool isExpired = now.isAfter(expirationTime) ||
-                claim.state == ClaimState.expired;
-
-            if (isExpired && claim.info.containsKey("refreshService")) {
-              var identityEntity = await _getIdentityUseCase.execute(
-                  param: GetIdentityParam(
-                      genesisDid: param.genesisDid,
-                      privateKey: param.privateKey));
-
-              BigInt claimSubjectProfileNonce = identityEntity.profiles.keys
-                  .firstWhere((k) => identityEntity.profiles[k] == claim!.did,
-                      orElse: () => GENESIS_PROFILE_NONCE);
-
-              RefreshServiceDTO refreshService =
-                  RefreshServiceDTO.fromJson(claim.info["refreshService"]);
-              String refreshServiceUrl = refreshService.id;
-              CredentialRefreshIden3MessageEntity credentialRefreshEntity =
-                  CredentialRefreshIden3MessageEntity(
-                id: const Uuid().v4(),
-                typ: param.message.typ,
-                type: "https://iden3-communication.io/credentials/1.0/refresh",
-                thid: param.message.thid,
-                body: CredentialRefreshBodyRequest(
-                  claim.id.replaceAll("urn:uuid:", ""),
-                  "expired",
-                ),
-                from: claim.did,
-                to: claim.issuer,
-              );
-
-              String authToken = await _getAuthTokenUseCase.execute(
-                param: GetAuthTokenParam(
-                  genesisDid: param.genesisDid,
-                  profileNonce: claimSubjectProfileNonce,
-                  privateKey: param.privateKey,
-                  message: jsonEncode(credentialRefreshEntity),
-                ),
-              );
-
-              ClaimEntity claimEntity =
-                  await _iden3commCredentialRepository.refreshCredential(
-                authToken: authToken,
-                url: refreshServiceUrl,
-                profileDid: claim.did,
-              );
-
-              await _removeClaimsUseCase.execute(
-                param: RemoveClaimsParam(
-                  claimIds: [claim.id],
-                  genesisDid: param.genesisDid,
-                  privateKey: param.privateKey,
-                ),
-              );
-
-              await _saveClaimsUseCase.execute(
-                param: SaveClaimsParam(
-                  claims: [claimEntity],
-                  genesisDid: param.genesisDid,
-                  privateKey: param.privateKey,
-                ),
-              );
-
-              claim = claimEntity;
-
-              /*claim = await _updateClaimUseCase.execute(
-                param: UpdateClaimParam(
-              id: claim.id,
-              issuer: claimEntity.issuer,
-              genesisDid: claimEntity.did,
-              privateKey: param.privateKey,
-              state: claimEntity.state,
-              expiration: claimEntity.expiration,
-              type: claimEntity.type,
-              data: claimEntity.info,
-            ));*/
-
-              /*await _saveClaimsUseCase.execute(
-              param: SaveClaimsParam(
-                claims: [claim],
-                genesisDid: param.genesisDid,
-                privateKey: param.privateKey,
-              ),
-            );*/
-            }
+            claim = await _checkCredentialExpirationAndTryRefreshIfExpired(
+              claim: claim,
+              param: param,
+            );
           }
 
-          if (claim.type == request.scope.query.type &&
-              await _isProofCircuitSupported.execute(
-                  param: request.scope.circuitId)) {
+          bool isCircuitSupported = await _isProofCircuitSupported.execute(
+            param: request.scope.circuitId,
+          );
+          bool isCorrectType = claim.type == request.scope.query.type;
+
+          if (isCorrectType && isCircuitSupported) {
             String circuitId = request.scope.circuitId;
             CircuitDataEntity circuitData =
                 await _proofRepository.loadCircuitFiles(circuitId);
@@ -244,9 +163,9 @@ class GetIden3commProofsUseCase
 
             _proofGenerationStepsStreamManager
                 .add("Generating proof for ${claim.type}");
+
             // Generate proof
-            proofs.add(await _generateIden3commProofUseCase.execute(
-                param: GenerateIden3commProofParam(
+            var generateProofParam = GenerateIden3commProofParam(
               param.genesisDid,
               param.profileNonce,
               claimSubjectProfileNonce,
@@ -258,7 +177,12 @@ class GetIden3commProofsUseCase
               param.ethereumUrl,
               param.stateContractAddr,
               param.ipfsNodeUrl,
-            )));
+            );
+
+            Iden3commProofEntity proof = await _generateIden3commProofUseCase
+                .execute(param: generateProofParam);
+
+            proofs.add(proof);
           }
         }
       } else {
@@ -283,5 +207,85 @@ class GetIden3commProofsUseCase
       _stacktraceManager.addTrace("[GetIden3commProofsUseCase] Exception: $e");
       rethrow;
     }
+  }
+
+  /// Check if the credential is expired and try to refresh it if it is
+  /// and if it has a refresh service
+  Future<ClaimEntity> _checkCredentialExpirationAndTryRefreshIfExpired({
+    required ClaimEntity claim,
+    required GetIden3commProofsParam param,
+  }) async {
+    var now = DateTime.now().toUtc();
+    DateTime expirationTime =
+        DateFormat("yyyy-MM-ddThh:mm:ssZ").parse(claim.expiration!);
+    bool isExpired =
+        now.isAfter(expirationTime) || claim.state == ClaimState.expired;
+
+    if (isExpired && claim.info.containsKey("refreshService")) {
+      _proofGenerationStepsStreamManager
+          .add("Refreshing expired credential...");
+
+      var identityEntity = await _getIdentityUseCase.execute(
+          param: GetIdentityParam(
+              genesisDid: param.genesisDid, privateKey: param.privateKey));
+
+      BigInt claimSubjectProfileNonce = identityEntity.profiles.keys.firstWhere(
+          (k) => identityEntity.profiles[k] == claim.did,
+          orElse: () => GENESIS_PROFILE_NONCE);
+
+      RefreshServiceDTO refreshService =
+          RefreshServiceDTO.fromJson(claim.info["refreshService"]);
+      String refreshServiceUrl = refreshService.id;
+      CredentialRefreshIden3MessageEntity credentialRefreshEntity =
+          CredentialRefreshIden3MessageEntity(
+        id: const Uuid().v4(),
+        typ: param.message.typ,
+        type: "https://iden3-communication.io/credentials/1.0/refresh",
+        thid: param.message.thid,
+        body: CredentialRefreshBodyRequest(
+          claim.id.replaceAll("urn:uuid:", ""),
+          "expired",
+        ),
+        from: claim.did,
+        to: claim.issuer,
+      );
+
+      String authToken = await _getAuthTokenUseCase.execute(
+        param: GetAuthTokenParam(
+          genesisDid: param.genesisDid,
+          profileNonce: claimSubjectProfileNonce,
+          privateKey: param.privateKey,
+          message: jsonEncode(credentialRefreshEntity),
+        ),
+      );
+
+      ClaimEntity claimEntity =
+          await _iden3commCredentialRepository.refreshCredential(
+        authToken: authToken,
+        url: refreshServiceUrl,
+        profileDid: claim.did,
+      );
+
+      if (claimEntity.id != claim.id) {
+        await _removeClaimsUseCase.execute(
+          param: RemoveClaimsParam(
+            claimIds: [claim.id],
+            genesisDid: param.genesisDid,
+            privateKey: param.privateKey,
+          ),
+        );
+      }
+
+      await _saveClaimsUseCase.execute(
+        param: SaveClaimsParam(
+          claims: [claimEntity],
+          genesisDid: param.genesisDid,
+          privateKey: param.privateKey,
+        ),
+      );
+
+      claim = claimEntity;
+    }
+    return claim;
   }
 }
