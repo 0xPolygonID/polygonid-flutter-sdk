@@ -218,8 +218,12 @@ class GetIden3commProofsUseCase
     var now = DateTime.now().toUtc();
     DateTime expirationTime =
         DateFormat("yyyy-MM-ddThh:mm:ssZ").parse(claim.expiration!);
-    bool isExpired =
-        now.isAfter(expirationTime) || claim.state == ClaimState.expired;
+
+    var nowFormatted = DateFormat("yyyy-MM-dd HH:mm:ss").format(now);
+    var expirationTimeFormatted =
+        DateFormat("yyyy-MM-dd HH:mm:ss").format(expirationTime);
+    bool isExpired = nowFormatted.compareTo(expirationTimeFormatted) > 0 ||
+        claim.state == ClaimState.expired;
 
     if (isExpired && claim.info.containsKey("refreshService")) {
       _proofGenerationStepsStreamManager
