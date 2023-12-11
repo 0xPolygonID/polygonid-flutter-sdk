@@ -45,6 +45,14 @@ class ProofRequestFiltersMapper
           value: ClaimState.revoked.name));
     }
 
+
+    if(query.proofType != null && query.proofType!.isNotEmpty) {
+      filters.add(FilterEntity(
+          operator: FilterOperator.equal,
+          name: 'credential.proof.type',
+          value: "BJJSignature2021"));
+    }
+
     if (query.credentialSubject != null) {
       Map<String, dynamic> request = query.credentialSubject!;
       request.forEach((key, map) {

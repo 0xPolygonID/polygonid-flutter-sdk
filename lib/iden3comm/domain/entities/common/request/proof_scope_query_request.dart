@@ -112,6 +112,8 @@ class ProofScopeQueryRequest {
   final bool? skipClaimRevocationCheck;
   final Map<String, dynamic>? credentialSubject;
 
+  final String? proofType;
+
   //final ProofScopeRulesQuerySchemaRequest? schema;
 
   ProofScopeQueryRequest({
@@ -121,7 +123,7 @@ class ProofScopeQueryRequest {
     this.challenge,
     this.credentialSubject,
     this.skipClaimRevocationCheck,
-    /*this.schema*/
+    this.proofType,
   });
 
   /// Creates an instance from the given json
@@ -137,6 +139,7 @@ class ProofScopeQueryRequest {
         context: json['context'],
         type: json['type'],
         challenge: json['challenge'],
+        proofType: json['proofType'],
 
         /// FIXME: flooring doubles without decimals to ints, this is because of protobuf
         /// only use number_value for google.protobuf.Value and turn int to float
@@ -157,13 +160,13 @@ class ProofScopeQueryRequest {
         'challenge': challenge,
         'credentialSubject': credentialSubject,
         'skipClaimRevocationCheck': skipClaimRevocationCheck,
-        //'schema': schema!.toJson()
+        'proofType': proofType,
       }..removeWhere(
           (dynamic key, dynamic value) => key == null || value == null);
 
   @override
   String toString() =>
-      "[ProofScopeRulesQueryRequest] {allowedIssuers: $allowedIssuers, challenge: $challenge, credentialSubject: $credentialSubject, context: $context, type: $type, skipClaimRevocationCheck: $skipClaimRevocationCheck}";
+      "[ProofScopeRulesQueryRequest] {allowedIssuers: $allowedIssuers, challenge: $challenge, credentialSubject: $credentialSubject, context: $context, type: $type, skipClaimRevocationCheck: $skipClaimRevocationCheck, proofType: $proofType}";
 
   @override
   bool operator ==(Object other) =>
@@ -174,6 +177,7 @@ class ProofScopeQueryRequest {
           challenge == other.challenge &&
           context == other.context &&
           type == other.type &&
+          proofType == other.proofType &&
           skipClaimRevocationCheck == other.skipClaimRevocationCheck &&
           const DeepCollectionEquality()
               .equals(credentialSubject, other.credentialSubject);
