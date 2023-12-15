@@ -25,6 +25,11 @@ class AtomicQueryInputsParam {
   final ClaimInfoDTO credential;
   final Map<String, dynamic> request;
 
+  final String? verifierId;
+  final String? linkNonce;
+
+  final Map<String, dynamic>? params;
+
   AtomicQueryInputsParam({
     required this.type,
     required this.id,
@@ -39,6 +44,9 @@ class AtomicQueryInputsParam {
     this.signature,
     required this.credential,
     required this.request,
+    this.verifierId,
+    this.linkNonce,
+    this.params,
   });
 
   Map<String, dynamic> toJson() => {
@@ -54,6 +62,9 @@ class AtomicQueryInputsParam {
         "signature": signature,
         "verifiableCredentials": credential.toJson(),
         "request": request,
+        "verifierId": verifierId,
+        "linkNonce": linkNonce,
+        "params": params,
       }..removeWhere(
           (dynamic key, dynamic value) => key == null || value == null);
 }

@@ -89,6 +89,12 @@ class GetIden3commClaimsUseCase
           claimsFiltered: claimsFiltered,
         );
 
+        //filter manually proof type
+        claimsFiltered = _filterManuallyIfQueryContainsProofType(
+          request: request,
+          claimsFiltered: claimsFiltered,
+        );
+
         if (claimsFiltered.isEmpty) {
           _stacktraceManager
               .addTrace("[GetIden3commClaimsUseCase] claims is empty");
@@ -255,5 +261,26 @@ class GetIden3commClaimsUseCase
       }
       return false;
     });
+  }
+
+  List<ClaimEntity> _filterManuallyIfQueryContainsProofType({
+    required ProofRequestEntity request,
+    required List<ClaimEntity> claimsFiltered,
+  }) {
+    try {
+      if (request.scope.query.proofType == null ||
+          request.scope.query.proofType!.isEmpty) return claimsFiltered;
+
+      String proofType = request.scope.query.proofType!;
+      claimsFiltered.removeWhere((element) {
+        List<Map<String, dynamic>> proofs = element.info["proof"];
+        List<String> proofTypes =
+            proofs.map((e) => e["type"] as String).toList();
+        return !proofTypes.contains(proofType);
+      });
+    } catch (ignored) {
+      // Consider logging the exception
+    }
+    return claimsFiltered;
   }
 }

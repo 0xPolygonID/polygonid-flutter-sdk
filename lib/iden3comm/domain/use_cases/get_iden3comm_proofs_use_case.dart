@@ -1,3 +1,7 @@
+import 'dart:math';
+
+import 'package:flutter/foundation.dart';
+import 'package:ninja_prime/ninja_prime.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
@@ -74,6 +78,7 @@ class GetIden3commProofsUseCase
       {required GetIden3commProofsParam param}) async {
     try {
       List<Iden3commProofEntity> proofs = [];
+      Map<int, String> groupIdLinkNonceMap = {};
 
       Stopwatch stopwatch = Stopwatch()..start();
 
@@ -132,25 +137,49 @@ class GetIden3commProofsUseCase
                 .firstWhere((k) => identityEntity.profiles[k] == claim.did,
                     orElse: () => GENESIS_PROFILE_NONCE);
 
+            int? groupId = request.scope.query.groupId;
+            String linkNonce = "0";
+            // Check if groupId exists in the map
+            if (groupId != null) {
+              if (groupIdLinkNonceMap.containsKey(groupId)) {
+                // Use the existing linkNonce for this groupId
+                linkNonce = groupIdLinkNonceMap[groupId]!;
+              } else {
+                // Generate a new linkNonce for this groupId
+                linkNonce =
+                    generateLinkNonce(); // Replace this with your linkNonce generation logic
+                groupIdLinkNonceMap[groupId] = linkNonce;
+              }
+            }
+
             _proofGenerationStepsStreamManager
                 .add("Generating proof for ${claim.type}");
+
+            // Generate proof param
+            GenerateIden3commProofParam proofParam =
+                GenerateIden3commProofParam(
+              did: param.genesisDid,
+              profileNonce: param.profileNonce,
+              claimSubjectProfileNonce: claimSubjectProfileNonce,
+              credential: claim,
+              request: request.scope,
+              circuitData: circuitData,
+              privateKey: privKey,
+              challenge: challenge,
+              ethereumUrl: param.ethereumUrl,
+              stateContractAddr: param.stateContractAddr,
+              ipfsNodeURL: param.ipfsNodeUrl,
+              verifierId: param.message.from,
+              linkNonce: linkNonce,
+            );
+
             // Generate proof
-            proofs.add(await _generateIden3commProofUseCase.execute(
-                param: GenerateIden3commProofParam(
-              param.genesisDid,
-              param.profileNonce,
-              claimSubjectProfileNonce,
-              claim,
-              request.scope,
-              circuitData,
-              privKey,
-              challenge,
-              param.ethereumUrl,
-              param.stateContractAddr,
-              param.ipfsNodeUrl,
-            )));
-            logger().i(
-                "STOPPE after _generateIden3commProofUseCase $i ${stopwatch.elapsedMilliseconds}");
+            Iden3commProofEntity proof =
+                await _generateIden3commProofUseCase.execute(
+              param: proofParam,
+            );
+
+            proofs.add(proof);
           }
         }
       } else {
@@ -175,5 +204,26 @@ class GetIden3commProofsUseCase
       _stacktraceManager.addTrace("[GetIden3commProofsUseCase] Exception: $e");
       rethrow;
     }
+  }
+
+  /// We generate a random linkNonce for each groupId
+  String generateLinkNonce() {
+    final BigInt safeMaxVal = BigInt.parse(
+        "21888242871839275222246405745257275088548364400416034343698204186575808495617");
+    // get max value of 2 ^ 248
+    BigInt base = BigInt.parse('2');
+    int exponent = 248;
+    final maxVal = base.pow(exponent) - BigInt.one;
+    final random = Random.secure();
+    BigInt randomNumber;
+    do {
+      randomNumber = randomBigInt(248, max: maxVal, random: random);
+      if (kDebugMode) {
+        print("random number $randomNumber");
+        print("less than safeMax ${randomNumber < safeMaxVal}");
+      }
+    } while (randomNumber >= safeMaxVal);
+
+    return randomNumber.toString();
   }
 }

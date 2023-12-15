@@ -45,19 +45,24 @@ class GenerateIden3commProofParam {
   final String? stateContractAddr;
   final String? ipfsNodeURL;
 
-  GenerateIden3commProofParam(
-    this.did,
-    this.profileNonce,
-    this.claimSubjectProfileNonce,
-    this.credential,
-    this.request,
-    this.circuitData,
+  final String? verifierId;
+  final String? linkNonce;
+
+  GenerateIden3commProofParam({
+    required this.did,
+    required this.profileNonce,
+    required this.claimSubjectProfileNonce,
+    required this.credential,
+    required this.request,
+    required this.circuitData,
     this.privateKey,
     this.challenge,
     this.ethereumUrl,
     this.stateContractAddr,
     this.ipfsNodeURL,
-  );
+    this.verifierId,
+    this.linkNonce,
+  });
 }
 
 class GenerateIden3commProofUseCase
@@ -195,6 +200,9 @@ class GenerateIden3commProofUseCase
       proofScopeRequest: param.request.toJson(),
       circuitId: param.request.circuitId,
       config: config,
+      verifierId: param.verifierId,
+      linkNonce: param.linkNonce,
+      scopeParams: param.request.params,
     )
         .catchError((error) {
       _stacktraceManager

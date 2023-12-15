@@ -173,6 +173,9 @@ class LibPolygonIdCoreProofDataSource {
     required Map<String, dynamic> request,
     required String circuitId, //ProofScopeRequest request,
     Map<String, dynamic>? config,
+    String? verifierId,
+    String? linkNonce,
+    Map<String,dynamic>? scopeParams,
   }) {
     AtomicQueryInputsType type = AtomicQueryInputsType.unknown;
 
@@ -209,6 +212,9 @@ class LibPolygonIdCoreProofDataSource {
         signature: signature,
         credential: credential,
         request: request,
+        verifierId: verifierId,
+        linkNonce: linkNonce,
+        params: scopeParams,
       ),
       configParam,
     );

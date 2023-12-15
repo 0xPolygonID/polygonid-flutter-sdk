@@ -29,6 +29,9 @@ abstract class ProofRepository {
     String? challenge,
     String? signature,
     Map<String, dynamic>? config,
+    String? verifierId,
+    String? linkNonce,
+    Map<String, dynamic>? scopeParams,
   });
 
   Future<Uint8List> calculateWitness(

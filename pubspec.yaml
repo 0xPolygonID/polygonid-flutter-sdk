@@ -41,6 +41,7 @@ dependencies:
   intl: ^0.18.1
   hive: ^2.2.3
   hive_flutter: ^1.1.0
+  ninja_prime: ^2.0.0
 
 dev_dependencies:
   flutter_test:

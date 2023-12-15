@@ -114,7 +114,9 @@ class ProofScopeQueryRequest {
 
   final String? proofType;
 
-  //final ProofScopeRulesQuerySchemaRequest? schema;
+  final int? groupId;
+
+
 
   ProofScopeQueryRequest({
     this.allowedIssuers,
@@ -124,6 +126,7 @@ class ProofScopeQueryRequest {
     this.credentialSubject,
     this.skipClaimRevocationCheck,
     this.proofType,
+    this.groupId,
   });
 
   /// Creates an instance from the given json
@@ -132,8 +135,6 @@ class ProofScopeQueryRequest {
   /// @returns [ProofScopeRulesQueryRequest]
   factory ProofScopeQueryRequest.fromJson(Map<String, dynamic>? json) {
     if (json != null) {
-      //ProofScopeRulesQuerySchemaRequest? schema =
-      //    ProofScopeRulesQuerySchemaRequest.fromJson(json['schema']);
       return ProofScopeQueryRequest(
         allowedIssuers: List<String>.from(json['allowedIssuers']),
         context: json['context'],
@@ -146,6 +147,8 @@ class ProofScopeQueryRequest {
         credentialSubject: (json['credentialSubject'] as Map<String, dynamic>?)
             ?.deepDoubleToInt(),
         skipClaimRevocationCheck: json['skipClaimRevocationCheck'],
+
+        groupId: json['groupId'],
       );
       //schema: schema);
     } else {
@@ -161,12 +164,13 @@ class ProofScopeQueryRequest {
         'credentialSubject': credentialSubject,
         'skipClaimRevocationCheck': skipClaimRevocationCheck,
         'proofType': proofType,
+        'groupId': groupId,
       }..removeWhere(
           (dynamic key, dynamic value) => key == null || value == null);
 
   @override
   String toString() =>
-      "[ProofScopeRulesQueryRequest] {allowedIssuers: $allowedIssuers, challenge: $challenge, credentialSubject: $credentialSubject, context: $context, type: $type, skipClaimRevocationCheck: $skipClaimRevocationCheck, proofType: $proofType}";
+      "[ProofScopeRulesQueryRequest] {allowedIssuers: $allowedIssuers, challenge: $challenge, credentialSubject: $credentialSubject, context: $context, type: $type, skipClaimRevocationCheck: $skipClaimRevocationCheck, proofType: $proofType, groupId: $groupId}";
 
   @override
   bool operator ==(Object other) =>
@@ -179,6 +183,7 @@ class ProofScopeQueryRequest {
           type == other.type &&
           proofType == other.proofType &&
           skipClaimRevocationCheck == other.skipClaimRevocationCheck &&
+          groupId == other.groupId &&
           const DeepCollectionEquality()
               .equals(credentialSubject, other.credentialSubject);
 

@@ -21,10 +21,10 @@ class ProofRequestFiltersMapper
     List<FilterEntity> filters = [
       FilterEntity(
           name: 'credential.credentialSubject.type', value: query.type!),
-      /*FilterEntity(
+      FilterEntity(
           operator: FilterOperator.equalsAnyInList,
           name: 'credential.@context',
-          value: query.context!),*/
+          value: query.context!),
     ];
     if (query.allowedIssuers != null &&
         query.allowedIssuers is List &&
@@ -43,14 +43,6 @@ class ProofRequestFiltersMapper
           operator: FilterOperator.nonEqual,
           name: 'state',
           value: ClaimState.revoked.name));
-    }
-
-
-    if(query.proofType != null && query.proofType!.isNotEmpty) {
-      filters.add(FilterEntity(
-          operator: FilterOperator.equal,
-          name: 'credential.proof.type',
-          value: "BJJSignature2021"));
     }
 
     if (query.credentialSubject != null) {

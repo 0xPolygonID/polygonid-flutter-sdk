@@ -88,21 +88,25 @@ class ProofRepositoryImpl extends ProofRepository {
   }
 
   @override
-  Future<Uint8List> calculateAtomicQueryInputs(
-      {required String id,
-      required BigInt profileNonce,
-      required BigInt claimSubjectProfileNonce,
-      required ClaimEntity claim,
-      required Map<String, dynamic> proofScopeRequest,
-      required String circuitId,
-      MTProofEntity? incProof,
-      MTProofEntity? nonRevProof,
-      GistMTProofEntity? gistProof,
-      List<String>? authClaim,
-      Map<String, dynamic>? treeState,
-      Map<String, dynamic>? config,
-      String? challenge,
-      String? signature}) async {
+  Future<Uint8List> calculateAtomicQueryInputs({
+    required String id,
+    required BigInt profileNonce,
+    required BigInt claimSubjectProfileNonce,
+    required ClaimEntity claim,
+    required Map<String, dynamic> proofScopeRequest,
+    required String circuitId,
+    MTProofEntity? incProof,
+    MTProofEntity? nonRevProof,
+    GistMTProofEntity? gistProof,
+    List<String>? authClaim,
+    Map<String, dynamic>? treeState,
+    Map<String, dynamic>? config,
+    String? challenge,
+    String? signature,
+    String? verifierId,
+    String? linkNonce,
+    Map<String, dynamic>? scopeParams,
+  }) async {
     ClaimDTO credentialDto = _claimMapper.mapTo(claim);
     Map<String, dynamic>? gistProofMap;
     if (gistProof != null) {
@@ -151,6 +155,9 @@ class ProofRepositoryImpl extends ProofRepository {
         request: proofScopeRequest,
         circuitId: circuitId,
         config: config,
+        verifierId: verifierId,
+        linkNonce: linkNonce,
+        scopeParams: scopeParams,
       );
     } catch (e) {
       _stacktraceManager.addTrace(
@@ -272,8 +279,8 @@ class ProofRepositoryImpl extends ProofRepository {
 
         int totalZipFileSize = 0;
 
-        for(CircuitsToDownloadParam param in circuitsToDownload){
-          if(param.downloadPath == null){
+        for (CircuitsToDownloadParam param in circuitsToDownload) {
+          if (param.downloadPath == null) {
             continue;
           }
           String pathForZipFileTemp = param.downloadPath!;
@@ -297,8 +304,8 @@ class ProofRepositoryImpl extends ProofRepository {
         if (downloadSize != 0 && totalZipFileSize != downloadSize) {
           try {
             // if error we delete the temp file
-            for(CircuitsToDownloadParam param in circuitsToDownload){
-              if(param.downloadPath == null){
+            for (CircuitsToDownloadParam param in circuitsToDownload) {
+              if (param.downloadPath == null) {
                 continue;
               }
               String pathForZipFileTemp = param.downloadPath!;
@@ -328,7 +335,6 @@ class ProofRepositoryImpl extends ProofRepository {
   Future<void> initCircuitsDownloadFromServer({
     required List<CircuitsToDownloadParam> circuitsToDownload,
   }) async {
-
     for (int i = 0; i < circuitsToDownload.length; i++) {
       CircuitsToDownloadParam param = circuitsToDownload[i];
       String path = await _circuitsFilesDataSource.getPathToCircuitZipFileTemp(
