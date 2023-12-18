@@ -27,6 +27,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/add
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/get_interactions_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/remove_interactions_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/update_interaction_use_case.dart';
+import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 
 abstract class PolygonIdSdkIden3comm {
   /// Returns a [Iden3MessageEntity] from an iden3comm message string.

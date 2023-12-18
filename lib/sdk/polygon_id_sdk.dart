@@ -8,9 +8,13 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/set_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/sdk/credential_usecases.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:polygonid_flutter_sdk/sdk/error_handling.dart';
+import 'package:polygonid_flutter_sdk/sdk/iden3comm_usecases.dart';
+import 'package:polygonid_flutter_sdk/sdk/identity_usecases.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygonid_flutter_channel.dart';
+import 'package:polygonid_flutter_sdk/sdk/proof_usecases.dart';
 
 import 'credential.dart';
 import 'iden3comm.dart';
@@ -70,6 +74,10 @@ class PolygonIdSdk {
     _ref!.proof = await getItSdk.getAsync<Proof>();
     _ref!.iden3comm = await getItSdk.getAsync<Iden3comm>();
     _ref!.errorHandling = getItSdk.get<ErrorHandling>();
+    _ref!.usecasesIden3comm = await getItSdk.getAsync<Iden3commUsecases>();
+    _ref!.usecasesCredential = await getItSdk.getAsync<CredentialUsecases>();
+    _ref!.usecasesIdentity = await getItSdk.getAsync<IdentityUsecases>();
+    _ref!.usecasesProof = await getItSdk.getAsync<ProofUsecases>();
 
     // Channel
     getItSdk<PolygonIdFlutterChannel>();
@@ -83,6 +91,10 @@ class PolygonIdSdk {
   late Proof proof;
   late Iden3comm iden3comm;
   late ErrorHandling errorHandling;
+  late Iden3commUsecases usecasesIden3comm;
+  late CredentialUsecases usecasesCredential;
+  late IdentityUsecases usecasesIdentity;
+  late ProofUsecases usecasesProof;
 
   PolygonIdSdk._();
 
