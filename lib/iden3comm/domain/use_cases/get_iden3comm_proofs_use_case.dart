@@ -270,7 +270,7 @@ class GetIden3commProofsUseCase
         profileDid: claim.did,
       );
 
-      if (claimEntity.id != claim.id) {
+      if (claimEntity.id == claim.id) {
         await _removeClaimsUseCase.execute(
           param: RemoveClaimsParam(
             claimIds: [claim.id],
