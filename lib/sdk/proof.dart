@@ -70,39 +70,47 @@ class Proof implements PolygonIdSdkProof {
   );
 
   @override
-  Future<ZKProofEntity> prove(
-      {required String identifier,
-      required BigInt profileNonce,
-      required BigInt claimSubjectProfileNonce,
-      required ClaimEntity credential,
-      required CircuitDataEntity circuitData,
-      required Map<String, dynamic> proofScopeRequest,
-      List<String>? authClaim,
-      MTProofEntity? incProof,
-      MTProofEntity? nonRevProof,
-      GistMTProofEntity? gistProof,
-      Map<String, dynamic>? treeState,
-      String? challenge,
-      String? signature,
-      Map<String, dynamic>? config}) {
+  Future<ZKProofEntity> prove({
+    required String identifier,
+    required BigInt profileNonce,
+    required BigInt claimSubjectProfileNonce,
+    required ClaimEntity credential,
+    required CircuitDataEntity circuitData,
+    required Map<String, dynamic> proofScopeRequest,
+    List<String>? authClaim,
+    MTProofEntity? incProof,
+    MTProofEntity? nonRevProof,
+    GistMTProofEntity? gistProof,
+    Map<String, dynamic>? treeState,
+    String? challenge,
+    String? signature,
+    Map<String, dynamic>? config,
+    String? verifierId,
+    String? linkNonce,
+    Map<String, dynamic>? transactionData,
+  }) {
     _stacktraceManager.clear();
     _stacktraceManager.addTrace("PolygonIdSdk.Proof.prove called");
     return generateZKProofUseCase.execute(
         param: GenerateZKProofParam(
-            identifier,
-            profileNonce,
-            claimSubjectProfileNonce,
-            credential,
-            circuitData,
-            authClaim,
-            incProof,
-            nonRevProof,
-            gistProof,
-            treeState,
-            challenge,
-            signature,
-            proofScopeRequest,
-            config));
+      identifier,
+      profileNonce,
+      claimSubjectProfileNonce,
+      credential,
+      circuitData,
+      authClaim,
+      incProof,
+      nonRevProof,
+      gistProof,
+      treeState,
+      challenge,
+      signature,
+      proofScopeRequest,
+      config,
+      verifierId,
+      linkNonce,
+      transactionData,
+    ));
   }
 
   ///

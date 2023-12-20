@@ -32,6 +32,7 @@ abstract class ProofRepository {
     String? verifierId,
     String? linkNonce,
     Map<String, dynamic>? scopeParams,
+    Map<String, dynamic>? transactionData,
   });
 
   Future<Uint8List> calculateWitness(

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
@@ -48,6 +49,8 @@ class GenerateIden3commProofParam {
   final String? verifierId;
   final String? linkNonce;
 
+  final Map<String, dynamic>? transactionData;
+
   GenerateIden3commProofParam({
     required this.did,
     required this.profileNonce,
@@ -62,6 +65,7 @@ class GenerateIden3commProofParam {
     this.ipfsNodeURL,
     this.verifierId,
     this.linkNonce,
+    this.transactionData,
   });
 }
 
@@ -203,6 +207,7 @@ class GenerateIden3commProofUseCase
       verifierId: param.verifierId,
       linkNonce: param.linkNonce,
       scopeParams: param.request.params,
+      transactionData: param.transactionData,
     )
         .catchError((error) {
       _stacktraceManager
@@ -219,6 +224,11 @@ class GenerateIden3commProofUseCase
     dynamic inputsJson = json.decode(Uint8ArrayUtils.uint8ListToString(res));
     Uint8List atomicQueryInputs =
         Uint8ArrayUtils.uint8ListfromString(json.encode(inputsJson["inputs"]));
+
+    if (kDebugMode) {
+      //just for debug
+      String inputs = Uint8ArrayUtils.uint8ListToString(atomicQueryInputs);
+    }
 
     var vpProof;
     if (inputsJson["verifiablePresentation"] != null) {

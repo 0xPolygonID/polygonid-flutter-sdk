@@ -175,7 +175,8 @@ class LibPolygonIdCoreProofDataSource {
     Map<String, dynamic>? config,
     String? verifierId,
     String? linkNonce,
-    Map<String,dynamic>? scopeParams,
+    Map<String, dynamic>? scopeParams,
+    Map<String, dynamic>? transactionData,
   }) {
     AtomicQueryInputsType type = AtomicQueryInputsType.unknown;
 
@@ -215,6 +216,7 @@ class LibPolygonIdCoreProofDataSource {
         verifierId: verifierId,
         linkNonce: linkNonce,
         params: scopeParams,
+        transactionData: transactionData,
       ),
       configParam,
     );

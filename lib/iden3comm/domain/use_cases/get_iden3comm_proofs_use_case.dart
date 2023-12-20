@@ -39,16 +39,20 @@ class GetIden3commProofsParam {
   final String? ipfsNodeUrl;
   final Map<int, Map<String, dynamic>>? nonRevocationProofs;
 
-  GetIden3commProofsParam(
-      {required this.message,
-      required this.genesisDid,
-      required this.profileNonce,
-      required this.privateKey,
-      this.challenge,
-      this.ethereumUrl,
-      this.stateContractAddr,
-      this.ipfsNodeUrl,
-      this.nonRevocationProofs});
+  final Map<String, dynamic>? transactionData;
+
+  GetIden3commProofsParam({
+    required this.message,
+    required this.genesisDid,
+    required this.profileNonce,
+    required this.privateKey,
+    this.challenge,
+    this.ethereumUrl,
+    this.stateContractAddr,
+    this.ipfsNodeUrl,
+    this.nonRevocationProofs,
+    this.transactionData,
+  });
 }
 
 class GetIden3commProofsUseCase
@@ -171,6 +175,7 @@ class GetIden3commProofsUseCase
               ipfsNodeURL: param.ipfsNodeUrl,
               verifierId: param.message.from,
               linkNonce: linkNonce,
+              transactionData: param.transactionData,
             );
 
             // Generate proof

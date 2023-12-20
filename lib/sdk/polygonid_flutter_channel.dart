@@ -375,11 +375,11 @@ class PolygonIdFlutterChannel
           return _listen(
               name: downloadCircuitsName,
               stream: initCircuitsDownloadAndGetInfoStream(
-                circuitsToDownload: (call.arguments['circuitsToDownload']
-                        as List)
-                    .map((e) => CircuitsToDownloadParam.fromJson(
-                        jsonDecode(e as String)))
-                    .toList(),
+                circuitsToDownload:
+                    (call.arguments['circuitsToDownload'] as List)
+                        .map((e) => CircuitsToDownloadParam.fromJson(
+                            jsonDecode(e as String)))
+                        .toList(),
               ),
               onDone: () {
                 _closeSubscription('downloadCircuits')
@@ -542,26 +542,30 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<List<Iden3commProofEntity>> getProofs(
-      {required Iden3MessageEntity message,
-      required String genesisDid,
-      BigInt? profileNonce,
-      required String privateKey,
-      String? challenge,
-      String? ethereumUrl,
-      String? stateContractAddr,
-      String? ipfsNodeUrl,
-      Map<int, Map<String, dynamic>>? nonRevocationProofs}) {
+  Future<List<Iden3commProofEntity>> getProofs({
+    required Iden3MessageEntity message,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String privateKey,
+    String? challenge,
+    String? ethereumUrl,
+    String? stateContractAddr,
+    String? ipfsNodeUrl,
+    Map<int, Map<String, dynamic>>? nonRevocationProofs,
+    Map<String, dynamic>? transactionData,
+  }) {
     return _polygonIdSdk.iden3comm.getProofs(
-        message: message,
-        genesisDid: genesisDid,
-        profileNonce: profileNonce,
-        privateKey: privateKey,
-        challenge: challenge,
-        ethereumUrl: ethereumUrl,
-        stateContractAddr: stateContractAddr,
-        ipfsNodeUrl: ipfsNodeUrl,
-        nonRevocationProofs: nonRevocationProofs);
+      message: message,
+      genesisDid: genesisDid,
+      profileNonce: profileNonce,
+      privateKey: privateKey,
+      challenge: challenge,
+      ethereumUrl: ethereumUrl,
+      stateContractAddr: stateContractAddr,
+      ipfsNodeUrl: ipfsNodeUrl,
+      nonRevocationProofs: nonRevocationProofs,
+      transactionData: transactionData,
+    );
   }
 
   @override

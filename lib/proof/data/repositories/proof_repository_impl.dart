@@ -106,6 +106,7 @@ class ProofRepositoryImpl extends ProofRepository {
     String? verifierId,
     String? linkNonce,
     Map<String, dynamic>? scopeParams,
+    Map<String, dynamic>? transactionData,
   }) async {
     ClaimDTO credentialDto = _claimMapper.mapTo(claim);
     Map<String, dynamic>? gistProofMap;
@@ -158,6 +159,7 @@ class ProofRepositoryImpl extends ProofRepository {
         verifierId: verifierId,
         linkNonce: linkNonce,
         scopeParams: scopeParams,
+        transactionData: transactionData,
       );
     } catch (e) {
       _stacktraceManager.addTrace(
