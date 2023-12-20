@@ -3712,7 +3712,7 @@ class NativePolygonIdCoreLib {
       _PLGNFreeStatusPtr.asFunction<void Function(ffi.Pointer<PLGNStatus>)>();
 }
 
- class __mbstate_t extends ffi.Union {
+class __mbstate_t extends ffi.Union {
   @ffi.Array.multi([128])
   external ffi.Array<ffi.Char> __mbstate8;
 
@@ -3720,7 +3720,7 @@ class NativePolygonIdCoreLib {
   external int _mbstateL;
 }
 
- class __darwin_pthread_handler_rec extends ffi.Struct {
+class __darwin_pthread_handler_rec extends ffi.Struct {
   external ffi
       .Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>
       __routine;
@@ -3730,7 +3730,7 @@ class NativePolygonIdCoreLib {
   external ffi.Pointer<__darwin_pthread_handler_rec> __next;
 }
 
- class _opaque_pthread_attr_t extends ffi.Struct {
+class _opaque_pthread_attr_t extends ffi.Struct {
   @ffi.Long()
   external int __sig;
 
@@ -3738,7 +3738,7 @@ class NativePolygonIdCoreLib {
   external ffi.Array<ffi.Char> __opaque;
 }
 
- class _opaque_pthread_cond_t extends ffi.Struct {
+class _opaque_pthread_cond_t extends ffi.Struct {
   @ffi.Long()
   external int __sig;
 
@@ -3746,7 +3746,7 @@ class NativePolygonIdCoreLib {
   external ffi.Array<ffi.Char> __opaque;
 }
 
- class _opaque_pthread_condattr_t extends ffi.Struct {
+class _opaque_pthread_condattr_t extends ffi.Struct {
   @ffi.Long()
   external int __sig;
 
@@ -3754,7 +3754,7 @@ class NativePolygonIdCoreLib {
   external ffi.Array<ffi.Char> __opaque;
 }
 
- class _opaque_pthread_mutex_t extends ffi.Struct {
+class _opaque_pthread_mutex_t extends ffi.Struct {
   @ffi.Long()
   external int __sig;
 
@@ -3762,7 +3762,7 @@ class NativePolygonIdCoreLib {
   external ffi.Array<ffi.Char> __opaque;
 }
 
- class _opaque_pthread_mutexattr_t extends ffi.Struct {
+class _opaque_pthread_mutexattr_t extends ffi.Struct {
   @ffi.Long()
   external int __sig;
 
@@ -3770,7 +3770,7 @@ class NativePolygonIdCoreLib {
   external ffi.Array<ffi.Char> __opaque;
 }
 
- class _opaque_pthread_once_t extends ffi.Struct {
+class _opaque_pthread_once_t extends ffi.Struct {
   @ffi.Long()
   external int __sig;
 
@@ -3778,7 +3778,7 @@ class NativePolygonIdCoreLib {
   external ffi.Array<ffi.Char> __opaque;
 }
 
- class _opaque_pthread_rwlock_t extends ffi.Struct {
+class _opaque_pthread_rwlock_t extends ffi.Struct {
   @ffi.Long()
   external int __sig;
 
@@ -3786,7 +3786,7 @@ class NativePolygonIdCoreLib {
   external ffi.Array<ffi.Char> __opaque;
 }
 
- class _opaque_pthread_rwlockattr_t extends ffi.Struct {
+class _opaque_pthread_rwlockattr_t extends ffi.Struct {
   @ffi.Long()
   external int __sig;
 
@@ -3794,7 +3794,7 @@ class NativePolygonIdCoreLib {
   external ffi.Array<ffi.Char> __opaque;
 }
 
- class _opaque_pthread_t extends ffi.Struct {
+class _opaque_pthread_t extends ffi.Struct {
   @ffi.Long()
   external int __sig;
 
@@ -3804,7 +3804,7 @@ class NativePolygonIdCoreLib {
   external ffi.Array<ffi.Char> __opaque;
 }
 
- class _GoString_ extends ffi.Struct {
+class _GoString_ extends ffi.Struct {
   external ffi.Pointer<ffi.Char> p;
 
   @ptrdiff_t()
@@ -3820,7 +3820,7 @@ abstract class idtype_t {
   static const int P_PGID = 2;
 }
 
- class __darwin_arm_exception_state extends ffi.Struct {
+class __darwin_arm_exception_state extends ffi.Struct {
   @__uint32_t()
   external int __exception;
 
@@ -3833,7 +3833,7 @@ abstract class idtype_t {
 
 typedef __uint32_t = ffi.UnsignedInt;
 
- class __darwin_arm_exception_state64 extends ffi.Struct {
+class __darwin_arm_exception_state64 extends ffi.Struct {
   @__uint64_t()
   external int __far;
 
@@ -3846,7 +3846,7 @@ typedef __uint32_t = ffi.UnsignedInt;
 
 typedef __uint64_t = ffi.UnsignedLongLong;
 
- class __darwin_arm_thread_state extends ffi.Struct {
+class __darwin_arm_thread_state extends ffi.Struct {
   @ffi.Array.multi([13])
   external ffi.Array<__uint32_t> __r;
 
@@ -3863,7 +3863,7 @@ typedef __uint64_t = ffi.UnsignedLongLong;
   external int __cpsr;
 }
 
- class __darwin_arm_thread_state64 extends ffi.Struct {
+class __darwin_arm_thread_state64 extends ffi.Struct {
   @ffi.Array.multi([29])
   external ffi.Array<__uint64_t> __x;
 
@@ -3886,7 +3886,7 @@ typedef __uint64_t = ffi.UnsignedLongLong;
   external int __pad;
 }
 
- class __darwin_arm_vfp_state extends ffi.Struct {
+class __darwin_arm_vfp_state extends ffi.Struct {
   @ffi.Array.multi([64])
   external ffi.Array<__uint32_t> __r;
 
@@ -3894,16 +3894,16 @@ typedef __uint64_t = ffi.UnsignedLongLong;
   external int __fpscr;
 }
 
- class __darwin_arm_neon_state64 extends ffi.Opaque {}
+class __darwin_arm_neon_state64 extends ffi.Opaque {}
 
- class __darwin_arm_neon_state extends ffi.Opaque {}
+class __darwin_arm_neon_state extends ffi.Opaque {}
 
- class __arm_pagein_state extends ffi.Struct {
+class __arm_pagein_state extends ffi.Struct {
   @ffi.Int()
   external int __pagein_error;
 }
 
- class __arm_legacy_debug_state extends ffi.Struct {
+class __arm_legacy_debug_state extends ffi.Struct {
   @ffi.Array.multi([16])
   external ffi.Array<__uint32_t> __bvr;
 
@@ -3917,7 +3917,7 @@ typedef __uint64_t = ffi.UnsignedLongLong;
   external ffi.Array<__uint32_t> __wcr;
 }
 
- class __darwin_arm_debug_state32 extends ffi.Struct {
+class __darwin_arm_debug_state32 extends ffi.Struct {
   @ffi.Array.multi([16])
   external ffi.Array<__uint32_t> __bvr;
 
@@ -3934,7 +3934,7 @@ typedef __uint64_t = ffi.UnsignedLongLong;
   external int __mdscr_el1;
 }
 
- class __darwin_arm_debug_state64 extends ffi.Struct {
+class __darwin_arm_debug_state64 extends ffi.Struct {
   @ffi.Array.multi([16])
   external ffi.Array<__uint64_t> __bvr;
 
@@ -3951,12 +3951,12 @@ typedef __uint64_t = ffi.UnsignedLongLong;
   external int __mdscr_el1;
 }
 
- class __darwin_arm_cpmu_state64 extends ffi.Struct {
+class __darwin_arm_cpmu_state64 extends ffi.Struct {
   @ffi.Array.multi([16])
   external ffi.Array<__uint64_t> __ctrs;
 }
 
- class __darwin_mcontext32 extends ffi.Struct {
+class __darwin_mcontext32 extends ffi.Struct {
   external __darwin_arm_exception_state __es;
 
   external __darwin_arm_thread_state __ss;
@@ -3964,9 +3964,9 @@ typedef __uint64_t = ffi.UnsignedLongLong;
   external __darwin_arm_vfp_state __fs;
 }
 
- class __darwin_mcontext64 extends ffi.Opaque {}
+class __darwin_mcontext64 extends ffi.Opaque {}
 
- class __darwin_sigaltstack extends ffi.Struct {
+class __darwin_sigaltstack extends ffi.Struct {
   external ffi.Pointer<ffi.Void> ss_sp;
 
   @__darwin_size_t()
@@ -3978,7 +3978,7 @@ typedef __uint64_t = ffi.UnsignedLongLong;
 
 typedef __darwin_size_t = ffi.UnsignedLong;
 
- class __darwin_ucontext extends ffi.Struct {
+class __darwin_ucontext extends ffi.Struct {
   @ffi.Int()
   external int uc_onstack;
 
@@ -3997,14 +3997,14 @@ typedef __darwin_size_t = ffi.UnsignedLong;
 
 typedef __darwin_sigset_t = __uint32_t;
 
- class sigval extends ffi.Union {
+class sigval extends ffi.Union {
   @ffi.Int()
   external int sival_int;
 
   external ffi.Pointer<ffi.Void> sival_ptr;
 }
 
- class sigevent extends ffi.Struct {
+class sigevent extends ffi.Struct {
   @ffi.Int()
   external int sigev_notify;
 
@@ -4022,7 +4022,7 @@ typedef __darwin_sigset_t = __uint32_t;
 typedef pthread_attr_t = __darwin_pthread_attr_t;
 typedef __darwin_pthread_attr_t = _opaque_pthread_attr_t;
 
- class __siginfo extends ffi.Struct {
+class __siginfo extends ffi.Struct {
   @ffi.Int()
   external int si_signo;
 
@@ -4058,7 +4058,7 @@ typedef __int32_t = ffi.Int;
 typedef uid_t = __darwin_uid_t;
 typedef __darwin_uid_t = __uint32_t;
 
- class __sigaction_u extends ffi.Union {
+class __sigaction_u extends ffi.Union {
   external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int)>>
       __sa_handler;
 
@@ -4069,7 +4069,7 @@ typedef __darwin_uid_t = __uint32_t;
       __sa_sigaction;
 }
 
- class __sigaction extends ffi.Struct {
+class __sigaction extends ffi.Struct {
   external __sigaction_u __sigaction_u1;
 
   external ffi.Pointer<
@@ -4087,7 +4087,7 @@ typedef __darwin_uid_t = __uint32_t;
 typedef siginfo_t = __siginfo;
 typedef sigset_t = __darwin_sigset_t;
 
- class sigaction extends ffi.Struct {
+class sigaction extends ffi.Struct {
   external __sigaction_u __sigaction_u1;
 
   @sigset_t()
@@ -4097,7 +4097,7 @@ typedef sigset_t = __darwin_sigset_t;
   external int sa_flags;
 }
 
- class sigvec extends ffi.Struct {
+class sigvec extends ffi.Struct {
   external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int)>>
       sv_handler;
 
@@ -4108,14 +4108,14 @@ typedef sigset_t = __darwin_sigset_t;
   external int sv_flags;
 }
 
- class sigstack extends ffi.Struct {
+class sigstack extends ffi.Struct {
   external ffi.Pointer<ffi.Char> ss_sp;
 
   @ffi.Int()
   external int ss_onstack;
 }
 
- class timeval extends ffi.Struct {
+class timeval extends ffi.Struct {
   @__darwin_time_t()
   external int tv_sec;
 
@@ -4126,7 +4126,7 @@ typedef sigset_t = __darwin_sigset_t;
 typedef __darwin_time_t = ffi.Long;
 typedef __darwin_suseconds_t = __int32_t;
 
- class rusage extends ffi.Struct {
+class rusage extends ffi.Struct {
   external timeval ru_utime;
 
   external timeval ru_stime;
@@ -4174,7 +4174,7 @@ typedef __darwin_suseconds_t = __int32_t;
   external int ru_nivcsw;
 }
 
- class rusage_info_v0 extends ffi.Struct {
+class rusage_info_v0 extends ffi.Struct {
   @ffi.Array.multi([16])
   external ffi.Array<ffi.Uint8> ri_uuid;
 
@@ -4209,7 +4209,7 @@ typedef __darwin_suseconds_t = __int32_t;
   external int ri_proc_exit_abstime;
 }
 
- class rusage_info_v1 extends ffi.Struct {
+class rusage_info_v1 extends ffi.Struct {
   @ffi.Array.multi([16])
   external ffi.Array<ffi.Uint8> ri_uuid;
 
@@ -4262,7 +4262,7 @@ typedef __darwin_suseconds_t = __int32_t;
   external int ri_child_elapsed_abstime;
 }
 
- class rusage_info_v2 extends ffi.Struct {
+class rusage_info_v2 extends ffi.Struct {
   @ffi.Array.multi([16])
   external ffi.Array<ffi.Uint8> ri_uuid;
 
@@ -4321,7 +4321,7 @@ typedef __darwin_suseconds_t = __int32_t;
   external int ri_diskio_byteswritten;
 }
 
- class rusage_info_v3 extends ffi.Struct {
+class rusage_info_v3 extends ffi.Struct {
   @ffi.Array.multi([16])
   external ffi.Array<ffi.Uint8> ri_uuid;
 
@@ -4407,7 +4407,7 @@ typedef __darwin_suseconds_t = __int32_t;
   external int ri_serviced_system_time;
 }
 
- class rusage_info_v4 extends ffi.Struct {
+class rusage_info_v4 extends ffi.Struct {
   @ffi.Array.multi([16])
   external ffi.Array<ffi.Uint8> ri_uuid;
 
@@ -4517,7 +4517,7 @@ typedef __darwin_suseconds_t = __int32_t;
   external int ri_runnable_time;
 }
 
- class rusage_info_v5 extends ffi.Struct {
+class rusage_info_v5 extends ffi.Struct {
   @ffi.Array.multi([16])
   external ffi.Array<ffi.Uint8> ri_uuid;
 
@@ -4630,7 +4630,7 @@ typedef __darwin_suseconds_t = __int32_t;
   external int ri_flags;
 }
 
- class rusage_info_v6 extends ffi.Struct {
+class rusage_info_v6 extends ffi.Struct {
   @ffi.Array.multi([16])
   external ffi.Array<ffi.Uint8> ri_uuid;
 
@@ -4764,7 +4764,7 @@ typedef __darwin_suseconds_t = __int32_t;
   external ffi.Array<ffi.Uint64> ri_reserved;
 }
 
- class rlimit extends ffi.Struct {
+class rlimit extends ffi.Struct {
   @rlim_t()
   external int rlim_cur;
 
@@ -4774,7 +4774,7 @@ typedef __darwin_suseconds_t = __int32_t;
 
 typedef rlim_t = __uint64_t;
 
- class proc_rlimit_control_wakeupmon extends ffi.Struct {
+class proc_rlimit_control_wakeupmon extends ffi.Struct {
   @ffi.Uint32()
   external int wm_flags;
 
@@ -4786,26 +4786,26 @@ typedef id_t = __darwin_id_t;
 typedef __darwin_id_t = __uint32_t;
 
 @ffi.Packed(1)
- class _OSUnalignedU16 extends ffi.Struct {
+class _OSUnalignedU16 extends ffi.Struct {
   @ffi.Uint16()
   external int __val;
 }
 
 @ffi.Packed(1)
- class _OSUnalignedU32 extends ffi.Struct {
+class _OSUnalignedU32 extends ffi.Struct {
   @ffi.Uint32()
   external int __val;
 }
 
 @ffi.Packed(1)
- class _OSUnalignedU64 extends ffi.Struct {
+class _OSUnalignedU64 extends ffi.Struct {
   @ffi.Uint64()
   external int __val;
 }
 
- class wait extends ffi.Opaque {}
+class wait extends ffi.Opaque {}
 
- class div_t extends ffi.Struct {
+class div_t extends ffi.Struct {
   @ffi.Int()
   external int quot;
 
@@ -4813,7 +4813,7 @@ typedef __darwin_id_t = __uint32_t;
   external int rem;
 }
 
- class ldiv_t extends ffi.Struct {
+class ldiv_t extends ffi.Struct {
   @ffi.Long()
   external int quot;
 
@@ -4821,7 +4821,7 @@ typedef __darwin_id_t = __uint32_t;
   external int rem;
 }
 
- class lldiv_t extends ffi.Struct {
+class lldiv_t extends ffi.Struct {
   @ffi.LongLong()
   external int quot;
 
@@ -4831,7 +4831,7 @@ typedef __darwin_id_t = __uint32_t;
 
 typedef malloc_type_id_t = ffi.UnsignedLongLong;
 
- class _malloc_zone_t extends ffi.Opaque {}
+class _malloc_zone_t extends ffi.Opaque {}
 
 typedef malloc_zone_t = _malloc_zone_t;
 typedef dev_t = __darwin_dev_t;
@@ -4849,14 +4849,14 @@ abstract class PLGNStatusCode {
   static const int PLGNSTATUSCODE_NIL_POINTER = 1;
 }
 
- class _PLGNStatus extends ffi.Struct {
+class _PLGNStatus extends ffi.Struct {
   @ffi.Int32()
   external int status;
 
   external ffi.Pointer<ffi.Char> error_msg;
 }
 
- class GoInterface extends ffi.Struct {
+class GoInterface extends ffi.Struct {
   external ffi.Pointer<ffi.Void> t;
 
   external ffi.Pointer<ffi.Void> v;

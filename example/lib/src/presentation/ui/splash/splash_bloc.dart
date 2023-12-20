@@ -63,7 +63,7 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
       _subscription?.cancel();
       emit(SplashState.error(
           errorMessage:
-          (event.downloadInfo as DownloadInfoOnError).errorMessage));
+              (event.downloadInfo as DownloadInfoOnError).errorMessage));
     }
   }
 

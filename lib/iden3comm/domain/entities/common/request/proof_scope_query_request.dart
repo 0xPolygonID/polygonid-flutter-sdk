@@ -116,8 +116,6 @@ class ProofScopeQueryRequest {
 
   final int? groupId;
 
-
-
   ProofScopeQueryRequest({
     this.allowedIssuers,
     this.context,
