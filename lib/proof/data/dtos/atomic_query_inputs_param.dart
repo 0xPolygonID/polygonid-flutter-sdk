@@ -54,11 +54,6 @@ class AtomicQueryInputsParam {
   });
 
   Map<String, dynamic> toJson() {
-    if (transactionData?.isNotEmpty ?? false) {
-      request['transactionData'] =
-          FormatUtils.convertSnakeCaseToCamelCase(transactionData!);
-    }
-
     Map<String, dynamic> inputs = {
       "id": id,
       "profileNonce": profileNonce.toString(),
@@ -76,6 +71,11 @@ class AtomicQueryInputsParam {
       "linkNonce": linkNonce,
       "params": params,
     }..removeWhere((dynamic key, dynamic value) => value == null);
+
+    if (transactionData?.isNotEmpty ?? false) {
+      inputs['transactionData'] =
+          FormatUtils.convertSnakeCaseToCamelCase(transactionData!);
+    }
 
     if (verifierId?.isEmpty ?? true) {
       inputs.remove('verifierId');
