@@ -32,6 +32,10 @@ class LibPolygonIdCoreWrapper {
         param: atomicQueryInputsParam,
         configParam: atomicQueryInputsConfigParam);
     try {
+      logger().i("[LibPolygonIdCoreWrapper] getProofInputs");
+      logger().i(param.param.toJson());
+      logger().i(param.configParam?.toJson());
+
       String proofInputs = await compute(
         _computeAtomicQueryInputs,
         param,

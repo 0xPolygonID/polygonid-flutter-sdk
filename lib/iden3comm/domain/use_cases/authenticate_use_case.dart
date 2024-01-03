@@ -65,6 +65,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
   @override
   Future<void> execute({required AuthenticateParam param}) async {
     try {
+      logger().i("[AuthenticateUseCase] auth request: " + param.message.toString());
+
       // we want to misure the time of the whole process
       Stopwatch stopwatch = Stopwatch()..start();
       logger().i("stopwatch started");
