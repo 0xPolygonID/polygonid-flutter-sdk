@@ -89,8 +89,9 @@ class GenerateIden3commProofUseCase
   );
 
   @override
-  Future<Iden3commProofEntity> execute(
-      {required GenerateIden3commProofParam param}) async {
+  Future<Iden3commProofEntity> execute({
+    required GenerateIden3commProofParam param,
+  }) async {
     List<String>? authClaim;
     MTProofEntity? incProof;
     MTProofEntity? nonRevProof;
@@ -98,6 +99,9 @@ class GenerateIden3commProofUseCase
     Map<String, dynamic>? treeState;
     Map<String, dynamic>? config;
     String? signature;
+
+    logger().i("[GenerateIden3commProofUseCase] claim:");
+    logger().i(param.credential.toJson());
 
     Stopwatch stopwatch = Stopwatch()..start();
 
@@ -208,6 +212,10 @@ class GenerateIden3commProofUseCase
         "GENERATION PROOF calculateAtomicQueryInputs executed in ${stopwatch.elapsed}");
 
     dynamic inputsJson = json.decode(Uint8ArrayUtils.uint8ListToString(res));
+
+    logger().i("[GenerateIden3commProofUseCase] atomic inputs JSON:");
+    logger().i(inputsJson);
+
     Uint8List atomicQueryInputs =
         Uint8ArrayUtils.uint8ListfromString(json.encode(inputsJson["inputs"]));
 
@@ -215,6 +223,9 @@ class GenerateIden3commProofUseCase
     if (inputsJson["verifiablePresentation"] != null) {
       vpProof = Iden3commVPProof.fromJson(inputsJson["verifiablePresentation"]);
     }
+
+    logger().i('[GenerateIden3commProofUseCase] verifiablePresentation:');
+    logger().i(vpProof ?? inputsJson["verifiablePresentation"]);
 
     logger().i(
         "GENERATION PROOF atomicQueryInputs executed in ${stopwatch.elapsed}");
