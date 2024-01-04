@@ -110,6 +110,7 @@ class GenerateIden3commProofUseCase
       //on chain start
       _stacktraceManager.addTrace(
           "[GenerateIden3commProofUseCase] OnChain ${param.request.circuitId}");
+
       IdentityEntity identity = await _getIdentityUseCase.execute(
           param: GetIdentityParam(
               genesisDid: param.did, privateKey: param.privateKey));
@@ -117,12 +118,14 @@ class GenerateIden3commProofUseCase
           "[GenerateIden3commProofUseCase] identity: ${identity.did}");
       logger().i(
           "GENERATION PROOF getIdentityUseCase executed in ${stopwatch.elapsed}");
+
       authClaim = await _getAuthClaimUseCase.execute(param: identity.publicKey);
-      _stacktraceManager.addTrace("[GenerateIden3commProofUseCase] authClaim");
       logger().i(
           "GENERATION PROOF getAuthClaimUseCase executed in ${stopwatch.elapsed}");
+
       NodeEntity authClaimNode =
           await _identityRepository.getAuthClaimNode(children: authClaim);
+
       _stacktraceManager
           .addTrace("[GenerateIden3commProofUseCase] authClaimNode");
       logger().i(
@@ -211,10 +214,13 @@ class GenerateIden3commProofUseCase
     logger().i(
         "GENERATION PROOF calculateAtomicQueryInputs executed in ${stopwatch.elapsed}");
 
-    dynamic inputsJson = json.decode(Uint8ArrayUtils.uint8ListToString(res));
+    final inputsString = Uint8ArrayUtils.uint8ListToString(res);
+    dynamic inputsJson = json.decode(inputsString);
 
-    logger().i("[GenerateIden3commProofUseCase] atomic inputs JSON:");
-    logger().i(inputsJson);
+    _stacktraceManager.addTrace(
+      "[GenerateIden3commProofUseCase][MainFlow] atomic inputs JSON:$inputsString",
+      log: true,
+    );
 
     Uint8List atomicQueryInputs =
         Uint8ArrayUtils.uint8ListfromString(json.encode(inputsJson["inputs"]));
@@ -234,8 +240,10 @@ class GenerateIden3commProofUseCase
     return _proveUseCase
         .execute(param: ProveParam(atomicQueryInputs, param.circuitData))
         .then((proof) {
-      _stacktraceManager.addTrace("[GenerateIden3commProofUseCase] proof");
-      logger().i("[GenerateProofUseCase] proof: $proof");
+      _stacktraceManager.addTrace(
+        "[GenerateIden3commProofUseCase][MainFlow] proof: ${jsonEncode(proof.toJson())}",
+        log: true,
+      );
 
       if (vpProof != null) {
         return Iden3commSDProofEntity(

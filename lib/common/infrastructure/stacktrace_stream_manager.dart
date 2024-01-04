@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:hive/hive.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 
 const _stacktraceBoxName = 'stacktrace';
 
@@ -31,7 +32,11 @@ class StacktraceManager {
   String get errorTrace => _errorTrace;
 
   /// Add new trace to the stacktrace
-  void addTrace(String stepDescription) {
+  void addTrace(String stepDescription, {bool log = false}) {
+    if (log) {
+      logger().i(stepDescription);
+    }
+
     if (!isEnabled || !_isBoxOpen()) return;
 
     // write string in an encrypted Hive box
@@ -59,6 +64,22 @@ class StacktraceManager {
 
   /// Clear the stacktrace
   void clear() {
+    return;
+    _stacktrace = '';
+    _errorTrace = '';
+    _stacktraceStreamController.add('');
+    _errorStreamController.add(_errorTrace);
+    if (!isEnabled) {
+      return;
+    }
+
+    if (_isBoxOpen()) {
+      final box = Hive.box(_stacktraceBoxName);
+      box.clear();
+    }
+  }
+
+  void clearStacktrace() {
     _stacktrace = '';
     _errorTrace = '';
     _stacktraceStreamController.add('');

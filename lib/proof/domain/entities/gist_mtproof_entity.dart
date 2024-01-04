@@ -19,4 +19,9 @@ class GistMTProofEntity {
 
   @override
   int get hashCode => runtimeType.hashCode;
+
+  Map<String, dynamic> toJson() => {
+        'root': root,
+        'proof': proof.toJson(),
+      };
 }
