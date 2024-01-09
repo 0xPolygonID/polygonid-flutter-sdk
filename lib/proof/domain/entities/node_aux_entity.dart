@@ -17,4 +17,9 @@ class NodeAuxEntity {
 
   @override
   int get hashCode => runtimeType.hashCode;
+
+  Map<String, dynamic> toJson() => {
+        'key': key,
+        'value': value,
+      };
 }

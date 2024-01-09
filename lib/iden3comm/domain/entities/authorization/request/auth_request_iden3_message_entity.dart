@@ -101,6 +101,13 @@ class AuthIden3MessageEntity extends Iden3MessageEntity {
   }
 
   @override
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = super.toJson();
+    data['body'] = body.toJson();
+    return data;
+  }
+
+  @override
   String toString() => "[AuthIden3MessageEntity] {${super.toString()}}";
 
   @override
