@@ -24,6 +24,7 @@ extern crate lazy_static;
 use ff::*;
 use std::str;
 
+
 use crate::eddsa::{Signature, decompress_point, Point, PrivateKey, verify, decompress_signature, /*compress_point,*/ PointProjective, Q, B8, new_key};
 use num_bigint::{Sign, BigInt, ToBigInt};
 use std::os::raw::{c_char};
@@ -33,6 +34,7 @@ use std::str::FromStr;
 use num_traits::{Num, ToPrimitive};
 use rustc_hex::{FromHex, ToHex};
 use num::Zero;
+use std::panic::catch_unwind;
 
 /*lazy_static! {
  static ref B8: Point = Point {
@@ -49,7 +51,7 @@ use num::Zero;
 }*/
 
 #[no_mangle]
-pub extern fn pack_signature(signature: *const c_char) -> *mut c_char {
+pub /*extern*/ fn pack_signature_internal(signature: *const c_char) -> *mut c_char {
     let signature_cstr = unsafe { CStr::from_ptr(signature) };
     let signature_str = match signature_cstr.to_str() {
         Err(_) => "there",
@@ -90,13 +92,17 @@ pub extern fn pack_signature(signature: *const c_char) -> *mut c_char {
     let y_big: BigInt = BigInt::from_bytes_le(Sign::Plus, &r_b8_bytes[15..32]);
     //let y_big = x_big.clone();
 
-    let r_b8: Point = Point {
-        x: Fr::from_str(
+    let x:Fr = Fr::from_str(
             &x_big.to_string(),
-        ).unwrap(),
-        y: Fr::from_str(
+        ).unwrap();
+
+    let y:Fr = Fr::from_str(
             &y_big.to_string(),
-        ).unwrap(),
+        ).unwrap();
+
+    let r_b8: Point = Point {
+        x: x,
+        y: y,
     };
 
     let sig = Signature { r_b8 : r_b8.clone(), s };
@@ -107,7 +113,19 @@ pub extern fn pack_signature(signature: *const c_char) -> *mut c_char {
 }
 
 #[no_mangle]
-pub extern fn unpack_signature(compressed_signature: *const c_char) -> *mut c_char {
+pub extern fn pack_signature(signature: *const c_char) -> *mut c_char {
+    let result = catch_unwind(|| pack_signature_internal(signature));
+    match result {
+        Ok(res) => res,
+        Err(e) => {
+            println!("pack_signature Rust Err: {:?}", e);
+            std::ptr::null_mut()
+        }
+    }
+}
+
+#[no_mangle]
+pub /*extern*/ fn unpack_signature_internal(compressed_signature: *const c_char) -> *mut c_char {
     let compressed_signature_cstr = unsafe { CStr::from_ptr(compressed_signature) };
     let compressed_signature_str = match compressed_signature_cstr.to_str() {
         Err(_) => "there",
@@ -149,6 +167,20 @@ pub extern fn unpack_signature(compressed_signature: *const c_char) -> *mut c_ch
     CString::new(hex_string.as_str()).unwrap().into_raw()
 }
 
+#[no_mangle]
+pub extern fn unpack_signature(compressed_signature: *const c_char) -> *mut c_char {
+    println!("Rust unpack_signature");
+    let result = catch_unwind(|| unpack_signature_internal(compressed_signature));
+    match result {
+        Ok(res) => res,
+        Err(e) => {
+            println!("unpack_signature Rust Err: {:?}", e);
+            std::ptr::null_mut()
+        }
+    }
+}
+
+
 fn vector_as_u8_64_array(vector: Vec<u8>) -> [u8; 64] {
     let mut arr = [0u8;64];
     for (place, element) in arr.iter_mut().zip(vector.iter()) {
@@ -158,7 +190,7 @@ fn vector_as_u8_64_array(vector: Vec<u8>) -> [u8; 64] {
 }
 
 #[no_mangle]
-pub extern fn pack_point(point_x: *const c_char, point_y: *const c_char) -> *mut c_char {
+pub /*extern*/ fn pack_point_internal(point_x: *const c_char, point_y: *const c_char) -> *mut c_char {
     let point_x_cstr = unsafe { CStr::from_ptr(point_x) };
     let point_x_str = match point_x_cstr.to_str() {
         Err(_) => "there",
@@ -179,6 +211,18 @@ pub extern fn pack_point(point_x: *const c_char, point_y: *const c_char) -> *mut
     CString::new(hex_string.as_str()).unwrap().into_raw()
 }
 
+#[no_mangle]
+pub extern fn pack_point(point_x: *const c_char, point_y: *const c_char) -> *mut c_char {
+    let result = catch_unwind(|| pack_point_internal(point_x, point_y));
+    match result {
+        Ok(res) => res,
+        Err(e) => {
+            println!("pack_point Rust Err: {:?}", e);
+            std::ptr::null_mut()
+        }
+    }
+}
+
 pub fn to_hex_string(bytes: Vec<u8>) -> String {
     let strs: Vec<String> = bytes.iter()
         .map(|b| format!("{:02X}", b))
@@ -187,7 +231,7 @@ pub fn to_hex_string(bytes: Vec<u8>) -> String {
 }
 
 #[no_mangle]
-pub extern fn unpack_point(compressed_point: *const c_char) ->  *mut c_char {
+pub /*extern*/ fn unpack_point_internal(compressed_point: *const c_char) ->  *mut c_char {
     let compressed_point_str = unsafe { CStr::from_ptr(compressed_point) }.to_str().unwrap();
     let y_bytes_raw = compressed_point_str.from_hex().unwrap();
     let mut y_bytes: [u8; 32] = [0; 32];
@@ -203,7 +247,19 @@ pub extern fn unpack_point(compressed_point: *const c_char) ->  *mut c_char {
 }
 
 #[no_mangle]
-pub extern fn prv2pub(private_key: *const c_char) -> *mut c_char {
+pub extern fn unpack_point(compressed_point: *const c_char) -> *mut c_char {
+    let result = catch_unwind(|| unpack_point_internal(compressed_point));
+    match result {
+        Ok(res) => res,
+        Err(e) => {
+            println!("unpack_point Rust Err: {:?}", e);
+            std::ptr::null_mut()
+        }
+    }
+}
+
+#[no_mangle]
+pub /*extern*/ fn prv2pub_internal(private_key: *const c_char) -> *mut c_char {
     /*let private_key_bytes: [u8; 32] = *array_ref!(private_key[..32], 0, 32);
     let private_key = PrivateKey::import(private_key_bytes.to_vec()).unwrap();*/
     let private_key_str = unsafe { CStr::from_ptr(private_key) }.to_str().unwrap();
@@ -221,7 +277,20 @@ pub extern fn prv2pub(private_key: *const c_char) -> *mut c_char {
 }
 
 #[no_mangle]
-pub extern fn poseidon_hash(input: *const c_char) -> *mut c_char {
+pub extern fn prv2pub(private_key: *const c_char) -> *mut c_char {
+    let result = catch_unwind(|| prv2pub_internal(private_key));
+    match result {
+        Ok(res) => res,
+        Err(e) => {
+            println!("prv2pub Rust Err: {:?}", e);
+            std::ptr::null_mut()
+        }
+    }
+}
+
+
+#[no_mangle]
+pub /*extern*/ fn poseidon_hash_internal(input: *const c_char) -> *mut c_char {
 
     let input_str = unsafe { CStr::from_ptr(input) }.to_str().unwrap();
     let b0: Fr = Fr::from_str(input_str).unwrap();
@@ -230,12 +299,117 @@ pub extern fn poseidon_hash(input: *const c_char) -> *mut c_char {
     //let hm_input = vec![x.clone(), y.clone(), z.clone()];
     let poseidon = Poseidon::new();
     let hm = poseidon.hash(hm_input).unwrap();
+    //hm.to_string: Fr(0x29176100eaa962bdc1fe6c654d6a3c130e96a4d1168b33848b897dc502820133)
+    return CString::new(to_hex(&hm).as_str()).unwrap().into_raw();
+    //return CString::new(hm.to_string()).unwrap().into_raw();
+}
+
+#[no_mangle]
+pub extern fn poseidon_hash(input: *const c_char) -> *mut c_char {
+    let result = catch_unwind(|| poseidon_hash_internal(input));
+    match result {
+        Ok(res) => res,
+        Err(e) => {
+            println!("poseidon_hash Rust Err: {:?}", e);
+            std::ptr::null_mut()
+        }
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn poseidon_hash2_internal(input1: *const c_char, input2: *const c_char) -> *mut c_char {
+    let input_str1 = unsafe { CStr::from_ptr(input1) }.to_str().unwrap();
+    let input_str2 = unsafe { CStr::from_ptr(input2) }.to_str().unwrap();
+
+    let b1: Fr = Fr::from_str(input_str1).unwrap();
+    let b2: Fr = Fr::from_str(input_str2).unwrap();
+
+    let hm_input = vec![b1.clone(), b2.clone()];
+
+    let poseidon = Poseidon::new();
+    let hm = poseidon.hash(hm_input).unwrap();
+
     return CString::new(to_hex(&hm).as_str()).unwrap().into_raw();
 }
 
 #[no_mangle]
+pub extern "C" fn poseidon_hash2(input1: *const c_char, input2: *const c_char) -> *mut c_char {
+    let result = catch_unwind(|| poseidon_hash2_internal(input1, input2));
+    match result {
+        Ok(res) => res,
+        Err(e) => {
+            println!("poseidon_hash2 Rust Err: {:?}", e);
+            std::ptr::null_mut()
+        }
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn poseidon_hash3_internal(input1: *const c_char, input2: *const c_char, input3: *const c_char) -> *mut c_char {
+    let input_str1 = unsafe { CStr::from_ptr(input1) }.to_str().unwrap();
+    let input_str2 = unsafe { CStr::from_ptr(input2) }.to_str().unwrap();
+    let input_str3 = unsafe { CStr::from_ptr(input3) }.to_str().unwrap();
+
+    let b1: Fr = Fr::from_str(input_str1).unwrap();
+    let b2: Fr = Fr::from_str(input_str2).unwrap();
+    let b3: Fr = Fr::from_str(input_str3).unwrap();
+
+    let hm_input = vec![b1.clone(), b2.clone(), b3.clone()];
+
+    let poseidon = Poseidon::new();
+    let hm = poseidon.hash(hm_input).unwrap();
+
+    return CString::new(to_hex(&hm).as_str()).unwrap().into_raw();
+}
+
+#[no_mangle]
+pub extern "C" fn poseidon_hash3(input1: *const c_char, input2: *const c_char, input3: *const c_char) -> *mut c_char {
+    let result = catch_unwind(|| poseidon_hash3_internal(input1, input2, input3));
+    match result {
+        Ok(res) => res,
+        Err(e) => {
+            println!("poseidon_hash3 Rust Err: {:?}", e);
+            std::ptr::null_mut()
+        }
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn poseidon_hash4_internal(input1: *const c_char, input2: *const c_char, input3: *const c_char, input4: *const c_char) -> *mut c_char {
+    let input_str1 = unsafe { CStr::from_ptr(input1) }.to_str().unwrap();
+    let input_str2 = unsafe { CStr::from_ptr(input2) }.to_str().unwrap();
+    let input_str3 = unsafe { CStr::from_ptr(input3) }.to_str().unwrap();
+    let input_str4 = unsafe { CStr::from_ptr(input4) }.to_str().unwrap();
+
+    let b1: Fr = Fr::from_str(input_str1).unwrap();
+    let b2: Fr = Fr::from_str(input_str2).unwrap();
+    let b3: Fr = Fr::from_str(input_str3).unwrap();
+    let b4: Fr = Fr::from_str(input_str4).unwrap();
+
+    let hm_input = vec![b1.clone(), b2.clone(), b3.clone(), b4.clone()];
+
+    let poseidon = Poseidon::new();
+    let hm = poseidon.hash(hm_input).unwrap();
+
+    return CString::new(to_hex(&hm).as_str()).unwrap().into_raw();
+}
+
+#[no_mangle]
+pub extern "C" fn poseidon_hash4(input1: *const c_char, input2: *const c_char, input3: *const c_char, input4: *const c_char) -> *mut c_char {
+    let result = catch_unwind(|| poseidon_hash4_internal(input1, input2, input3, input4));
+    match result {
+        Ok(res) => res,
+        Err(e) => {
+            println!("poseidon_hash4 Rust Err: {:?}", e);
+            std::ptr::null_mut()
+        }
+    }
+}
+
+
+#[no_mangle]
 //pub extern fn hash_poseidon(tx_compressed_data: *const c_char, to_eth_addr: *const c_char, to_bjj_ay: *const c_char, rq_txcompressed_data_v2: *const c_char, rq_to_eth_addr: *const c_char, rq_to_bjj_ay: *const c_char) -> *mut c_char {
-pub extern fn hash_poseidon(claims_tree: *const c_char, revocation_tree: *const c_char, roots_tree_root: *const c_char) -> *mut c_char {
+pub /*extern*/ fn hash_poseidon_internal(claims_tree: *const c_char, revocation_tree: *const c_char, roots_tree_root: *const c_char) -> *mut c_char {
     //let claims_tree_str = unsafe { CStr::from_ptr(claims_tree) }.to_str().unwrap();
     //let claims_tree_bigint = match claims_tree_str.parse::<i32>() {
     //        Ok(n) => BigInt::from(n),
@@ -322,8 +496,21 @@ pub extern fn hash_poseidon(claims_tree: *const c_char, revocation_tree: *const 
     return CString::new(to_hex(&hm).as_str()).unwrap().into_raw();
 }
 
+
 #[no_mangle]
-pub extern fn sign_poseidon(private_key: *const c_char, msg: *const c_char) -> *mut c_char {
+pub extern fn hash_poseidon(claims_tree: *const c_char, revocation_tree: *const c_char, roots_tree_root: *const c_char) -> *mut c_char {
+    let result = catch_unwind(|| hash_poseidon_internal(claims_tree, revocation_tree, roots_tree_root));
+    match result {
+        Ok(res) => res,
+        Err(e) => {
+            println!("hash_poseidon Rust Err: {:?}", e);
+            std::ptr::null_mut()
+        }
+    }
+}
+
+#[no_mangle]
+pub /*extern*/ fn sign_poseidon_internal(private_key: *const c_char, msg: *const c_char) -> *mut c_char {
     let private_key_str = unsafe { CStr::from_ptr(private_key) }.to_str().unwrap();
     //let pk_bigint = BigInt::from_str(private_key_str).unwrap();
     let pk_bytes_raw = private_key_str.from_hex().unwrap();
@@ -339,7 +526,19 @@ pub extern fn sign_poseidon(private_key: *const c_char, msg: *const c_char) -> *
 }
 
 #[no_mangle]
-pub extern fn verify_poseidon(private_key: *const c_char, compressed_signature: *const c_char, message: *const c_char) ->  *mut c_char {
+pub extern fn sign_poseidon(private_key: *const c_char, msg: *const c_char) -> *mut c_char {
+    let result = catch_unwind(|| sign_poseidon_internal(private_key, msg));
+    match result {
+        Ok(res) => res,
+        Err(e) => {
+            println!("sign_poseidon Rust Err: {:?}", e);
+            std::ptr::null_mut()
+        }
+    }
+}
+
+#[no_mangle]
+pub /*extern*/ fn verify_poseidon_internal(private_key: *const c_char, compressed_signature: *const c_char, message: *const c_char) ->  *mut c_char {
     let private_key_str = unsafe { CStr::from_ptr(private_key) }.to_str().unwrap();
     // let pk_bigint = BigInt::from_str(private_key_str).unwrap();
     let pk_bytes_raw = private_key_str.from_hex().unwrap();
@@ -365,6 +564,19 @@ pub extern fn verify_poseidon(private_key: *const c_char, compressed_signature: 
         CString::new("1".to_owned()).unwrap().into_raw()
     } else {
         CString::new("0".to_owned()).unwrap().into_raw()
+    }
+}
+
+
+#[no_mangle]
+pub extern fn verify_poseidon(private_key: *const c_char, compressed_signature: *const c_char, message: *const c_char) -> *mut c_char {
+    let result = catch_unwind(|| verify_poseidon_internal(private_key, compressed_signature, message));
+    match result {
+        Ok(res) => res,
+        Err(e) => {
+            println!("verify_poseidon Rust Err: {:?}", e);
+            std::ptr::null_mut()
+        }
     }
 }
 
