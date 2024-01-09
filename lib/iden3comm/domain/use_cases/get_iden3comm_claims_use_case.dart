@@ -57,8 +57,9 @@ class GetIden3commClaimsUseCase
   );
 
   @override
-  Future<List<ClaimEntity?>> execute(
-      {required GetIden3commClaimsParam param}) async {
+  Future<List<ClaimEntity?>> execute({
+    required GetIden3commClaimsParam param,
+  }) async {
     List<ClaimEntity?> claims = [];
 
     List<ProofRequestEntity> requests =

@@ -297,20 +297,20 @@ class Iden3comm implements PolygonIdSdkIden3comm {
 
   @override
   Future<Iden3MessageEntity> getIden3Message({required String message}) {
-    _stacktraceManager.clear();
+    _stacktraceManager.clearStacktrace();
     return _getIden3MessageUseCase.execute(param: message);
   }
 
   @override
   Future<List<Map<String, dynamic>>> getSchemas(
       {required Iden3MessageEntity message}) {
-    _stacktraceManager.clear();
+    _stacktraceManager.clearStacktrace();
     return _getSchemasUseCase.execute(param: message);
   }
 
   @override
   Future<List<FilterEntity>> getFilters({required Iden3MessageEntity message}) {
-    _stacktraceManager.clear();
+    _stacktraceManager.clearStacktrace();
     return _getFiltersUseCase.execute(param: message);
   }
 
@@ -320,7 +320,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       required String genesisDid,
       BigInt? profileNonce,
       required String privateKey}) {
-    _stacktraceManager.clear();
+    _stacktraceManager.clearStacktrace();
     if (message is! OfferIden3MessageEntity) {
       _stacktraceManager.addTrace(
           '[fetchAndSaveClaims] Invalid message type: ${message.messageType}');
@@ -342,7 +342,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       BigInt? profileNonce,
       required String privateKey,
       Map<int, Map<String, dynamic>>? nonRevocationProofs}) {
-    _stacktraceManager.clear();
+    _stacktraceManager.clearStacktrace();
     return _getIden3commClaimsUseCase.execute(
         param: GetIden3commClaimsParam(
       message: message,
@@ -360,7 +360,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     BigInt? profileNonce,
     required String privateKey,
   }) {
-    _stacktraceManager.clear();
+    _stacktraceManager.clearStacktrace();
     return _getIden3commClaimsRevNonceUseCase.execute(
         param: GetIden3commClaimsRevNonceParam(
       message: message,
@@ -383,7 +383,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     Map<int, Map<String, dynamic>>? nonRevocationProofs,
     Map<String, dynamic>? transactionData,
   }) {
-    _stacktraceManager.clear();
+    _stacktraceManager.clearStacktrace();
     return _getIden3commProofsUseCase.execute(
         param: GetIden3commProofsParam(
       message: message,
@@ -409,7 +409,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     Map<int, Map<String, dynamic>>? nonRevocationProofs,
     String? challenge,
   }) {
-    _stacktraceManager.clear();
+    _stacktraceManager.clearStacktrace();
     if (message is! AuthIden3MessageEntity) {
       _stacktraceManager.addTrace(
           '[authenticate] Invalid message type: ${message.messageType}');
@@ -439,7 +439,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     List<InteractionState>? states,
     List<FilterEntity>? filters,
   }) {
-    _stacktraceManager.clear();
+    _stacktraceManager.clearStacktrace();
     return _getInteractionsUseCase.execute(
         param: GetInteractionsParam(
       genesisDid: genesisDid,
@@ -456,7 +456,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     String? privateKey,
     required List<String> ids,
   }) {
-    _stacktraceManager.clear();
+    _stacktraceManager.clearStacktrace();
     return _removeInteractionsUseCase.execute(
         param: RemoveInteractionsParam(
             genesisDid: genesisDid, privateKey: privateKey, ids: ids));
@@ -468,7 +468,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     String? genesisDid,
     String? privateKey,
   }) {
-    _stacktraceManager.clear();
+    _stacktraceManager.clearStacktrace();
     return _addInteractionUseCase.execute(
         param: AddInteractionParam(
             genesisDid: genesisDid,
@@ -484,7 +484,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     String? privateKey,
     InteractionState? state,
   }) {
-    _stacktraceManager.clear();
+    _stacktraceManager.clearStacktrace();
     return _updateInteractionUseCase.execute(
         param: UpdateInteractionParam(
       genesisDid: genesisDid,

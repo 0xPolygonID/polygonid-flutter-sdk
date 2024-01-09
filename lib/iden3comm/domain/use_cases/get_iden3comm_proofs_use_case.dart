@@ -79,8 +79,9 @@ class GetIden3commProofsUseCase
   );
 
   @override
-  Future<List<Iden3commProofEntity>> execute(
-      {required GetIden3commProofsParam param}) async {
+  Future<List<Iden3commProofEntity>> execute({
+    required GetIden3commProofsParam param,
+  }) async {
     try {
       List<Iden3commProofEntity> proofs = [];
       Map<int, String> groupIdLinkNonceMap = {};
