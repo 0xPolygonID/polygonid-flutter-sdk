@@ -15,32 +15,33 @@ class DownloadCircuitsUseCase
 
   @override
   Stream<DownloadInfo> execute({required DownloadCircuitsParam param}) async* {
-    bool exist = true;
-    for (CircuitsToDownloadParam circuitsToDownloadParam
-        in param.circuitsToDownloadParam) {
-      exist = await _proofRepository.circuitsFilesExist(
-        circuitsFileName: circuitsToDownloadParam.circuitsName,
+    final missingCircuits = <CircuitsToDownloadParam>[];
+    for (final circuit in param.circuitsToDownload) {
+      final exist = await _proofRepository.circuitsFilesExist(
+        circuitsFileName: circuit.circuitsName,
       );
       if (!exist) {
-        break;
+        missingCircuits.add(circuit);
       }
     }
 
-    if (exist) {
+    if (missingCircuits.isEmpty) {
       yield* Stream.value(DownloadInfo.onDone(contentLength: 0, downloaded: 0));
       return;
     }
 
+    // intentionally not awaited
     _proofRepository.initCircuitsDownloadFromServer(
-      circuitsToDownload: param.circuitsToDownloadParam,
+      circuitsToDownload: missingCircuits,
     );
     yield* _proofRepository.circuitsDownloadInfoStream(
-        circuitsToDownload: param.circuitsToDownloadParam);
+      circuitsToDownload: missingCircuits,
+    );
   }
 }
 
 class DownloadCircuitsParam {
-  List<CircuitsToDownloadParam> circuitsToDownloadParam;
+  List<CircuitsToDownloadParam> circuitsToDownload;
 
-  DownloadCircuitsParam({required this.circuitsToDownloadParam});
+  DownloadCircuitsParam({required this.circuitsToDownload});
 }
