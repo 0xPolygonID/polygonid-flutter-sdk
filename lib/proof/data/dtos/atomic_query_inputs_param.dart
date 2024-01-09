@@ -6,9 +6,9 @@ enum AtomicQueryInputsType {
   sig,
   mtponchain,
   sigonchain,
-  unknown,
   v3,
   v3onchain,
+  unknown;
 }
 
 class AtomicQueryInputsParam {

@@ -12,6 +12,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.d
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_download_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_data_source.dart';

@@ -12,6 +12,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/p
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_sd_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_vp_proof.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
@@ -110,9 +111,20 @@ class GenerateIden3commProofUseCase
 
     Stopwatch stopwatch = Stopwatch()..start();
 
-    if (param.request.circuitId == "credentialAtomicQueryMTPV2OnChain" ||
-        param.request.circuitId == "credentialAtomicQuerySigV2OnChain" ||
-        param.request.circuitId == "credentialAtomicQueryV3OnChain") {
+    final circuitId = param.request.circuitId;
+
+    // TODO (moria): remove this with v3 circuit release
+    if (circuitId.startsWith(CircuitType.v3CircuitPrefix) &&
+        !circuitId.endsWith(CircuitType.currentCircuitBetaPostfix)) {
+      _stacktraceManager.addTrace(
+          "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
+      throw Exception(
+          "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
+    }
+
+    if (circuitId == CircuitType.mtponchain.name ||
+        circuitId == CircuitType.sigonchain.name ||
+        circuitId == CircuitType.circuitsV3onchain.name) {
       //on chain start
       _stacktraceManager.addTrace(
           "[GenerateIden3commProofUseCase] OnChain ${param.request.circuitId}");

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_dto.dart';
@@ -180,17 +181,17 @@ class LibPolygonIdCoreProofDataSource {
   }) {
     AtomicQueryInputsType type = AtomicQueryInputsType.unknown;
 
-    if (circuitId == "credentialAtomicQueryMTPV2") {
+    if (circuitId == CircuitType.mtp.name) {
       type = AtomicQueryInputsType.mtp;
-    } else if (circuitId == "credentialAtomicQueryMTPV2OnChain") {
+    } else if (circuitId == CircuitType.mtponchain.name) {
       type = AtomicQueryInputsType.mtponchain;
-    } else if (circuitId == "credentialAtomicQuerySigV2") {
+    } else if (circuitId == CircuitType.sig.name) {
       type = AtomicQueryInputsType.sig;
-    } else if (circuitId == "credentialAtomicQuerySigV2OnChain") {
+    } else if (circuitId == CircuitType.sigonchain.name) {
       type = AtomicQueryInputsType.sigonchain;
-    } else if (circuitId == "credentialAtomicQueryV3") {
+    } else if (circuitId == CircuitType.circuitsV3.name) {
       type = AtomicQueryInputsType.v3;
-    } else if (circuitId == "credentialAtomicQueryV3OnChain") {
+    } else if (circuitId == CircuitType.circuitsV3onchain.name) {
       type = AtomicQueryInputsType.v3onchain;
     }
     AtomicQueryInputsConfigParam? configParam;

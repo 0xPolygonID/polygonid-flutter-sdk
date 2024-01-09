@@ -13,6 +13,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/p
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
@@ -125,9 +126,9 @@ class GetIden3commProofsUseCase
 
             String? challenge;
             String? privKey;
-            if (circuitId == "credentialAtomicQuerySigV2OnChain" ||
-                circuitId == "credentialAtomicQueryMTPV2OnChain" ||
-                circuitId == "credentialAtomicQueryV3OnChain") {
+            if (circuitId == CircuitType.mtponchain.name ||
+                circuitId == CircuitType.sigonchain.name ||
+                circuitId == CircuitType.circuitsV3onchain.name) {
               privKey = param.privateKey;
               challenge = param.challenge;
             }

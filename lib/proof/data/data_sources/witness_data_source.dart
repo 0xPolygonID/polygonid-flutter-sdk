@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/witness_param.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/mtp_v2/witness_mtp.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/sig_v2/witness_sig.dart';

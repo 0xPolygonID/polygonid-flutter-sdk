@@ -1,4 +1,4 @@
-import 'package:polygonid_flutter_sdk/proof/data/mappers/circuit_type_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 
 class ProofCircuitDataSource {
   static const List<CircuitType> _supportedCircuits = [

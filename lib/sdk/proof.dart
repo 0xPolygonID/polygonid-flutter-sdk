@@ -129,7 +129,7 @@ class Proof implements PolygonIdSdkProof {
     required List<CircuitsToDownloadParam> circuitsToDownload,
   }) {
     return _downloadCircuitsUseCase.execute(
-      param: DownloadCircuitsParam(circuitsToDownloadParam: circuitsToDownload),
+      param: DownloadCircuitsParam(circuitsToDownload: circuitsToDownload),
     );
   }
 
