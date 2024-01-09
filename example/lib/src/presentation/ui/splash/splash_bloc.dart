@@ -22,7 +22,6 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
       StartDownloadSplashEvent event, Emitter<SplashState> emit) async {
     //https://iden3-circuits-bucket.s3.eu-west-1.amazonaws.com/tmpv3.zip
     //"https://circuits.polygonid.me/circuits/v1.0.0/polygonid-keys.zip"
-    //"https://firebasestorage.googleapis.com/v0/b/polygon-id.appspot.com/o/tempzkey.zip?alt=media&token=717be4b2-74d2-4bf1-87dc-687844f413a8"
 
     Stream<DownloadInfo> stream =
         PolygonIdSdk.I.proof.initCircuitsDownloadAndGetInfoStream(
