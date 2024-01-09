@@ -16,6 +16,7 @@ import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_us
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_fetch_requests_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 
 class FetchAndSaveClaimsParam {
   final OfferIden3MessageEntity message;
@@ -146,6 +147,12 @@ class FetchAndSaveClaimsUseCase
               return claims;
             }))
         .then((claims) async {
+          final config = AtomicQueryInputsConfigParam(
+            ethereumUrl: env.web3Url + env.web3ApiKey,
+            stateContractAddr: env.idStateContract,
+            ipfsNodeURL: env.ipfsUrl,
+          );
+
           for (final claim in claims) {
             // cache claim
             try {
@@ -156,6 +163,7 @@ class FetchAndSaveClaimsUseCase
                       "verifiableCredentials": claim.toJson(),
                     },
                   ),
+                  config: jsonEncode(config.toJson()),
                 ),
               );
             } catch (e) {
