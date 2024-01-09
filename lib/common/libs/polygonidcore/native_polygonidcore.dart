@@ -3710,6 +3710,26 @@ class NativePolygonIdCoreLib {
           'PLGNFreeStatus');
   late final _PLGNFreeStatus =
       _PLGNFreeStatusPtr.asFunction<void Function(ffi.Pointer<PLGNStatus>)>();
+
+  int PLGNCacheCredentials(
+    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> cfg,
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNCacheCredentials(
+      in1,
+      cfg,
+      status,
+    );
+  }
+
+  late final _PLGNCacheCredentialsPtr = _lookup<
+      ffi.NativeFunction<
+          GoUint8 Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNCacheCredentials');
+  late final _PLGNCacheCredentials = _PLGNCacheCredentialsPtr.asFunction<
+      int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
 }
 
 class __mbstate_t extends ffi.Union {

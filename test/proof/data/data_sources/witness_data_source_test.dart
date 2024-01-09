@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/witness_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/witness_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/circuit_type_mapper.dart';

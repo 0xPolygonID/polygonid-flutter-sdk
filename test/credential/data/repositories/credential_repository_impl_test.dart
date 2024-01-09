@@ -9,6 +9,7 @@ import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/filters_m
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/data/credential_repository_impl.dart';
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/cache_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/local_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/remote_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
@@ -84,6 +85,7 @@ MockRemoteClaimDataSource remoteClaimDataSource = MockRemoteClaimDataSource();
 MockStorageClaimDataSource storageClaimDataSource =
     MockStorageClaimDataSource();
 MockLocalClaimDataSource localClaimDataSource = MockLocalClaimDataSource();
+MockCacheCredentialDataSource cacheCredentialDataSource = MockCacheCredentialDataSource();
 MockClaimMapper claimMapper = MockClaimMapper();
 MockFiltersMapper filtersMapper = MockFiltersMapper();
 MockIdFilterMapper idFilterMapper = MockIdFilterMapper();
@@ -93,6 +95,7 @@ CredentialRepositoryImpl repository = CredentialRepositoryImpl(
   remoteClaimDataSource,
   storageClaimDataSource,
   localClaimDataSource,
+  cacheCredentialDataSource,
   claimMapper,
   filtersMapper,
   idFilterMapper,
@@ -102,6 +105,7 @@ CredentialRepositoryImpl repository = CredentialRepositoryImpl(
   RemoteClaimDataSource,
   StorageClaimDataSource,
   LocalClaimDataSource,
+  CacheCredentialDataSource,
   ClaimMapper,
   FiltersMapper,
   IdFilterMapper,

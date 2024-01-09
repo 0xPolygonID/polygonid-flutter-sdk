@@ -29,4 +29,23 @@ class PolygonIdCoreCredential extends PolygonIdCore {
 
     return result;
   }
+
+  String? cacheCredentials(String input, String? config) {
+    ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
+    ffi.Pointer<ffi.Char> cfg = ffi.nullptr;
+    if (config != null) {
+      cfg = config.toNativeUtf8().cast<ffi.Char>();
+    }
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
+    malloc<ffi.Pointer<PLGNStatus>>();
+    int res = PolygonIdCore.nativePolygonIdCoreLib
+        .PLGNCacheCredentials(in1, cfg, status);
+    if (res == 0) {
+      String? consumedStatus = consumeStatus(status, "");
+      if (consumedStatus != null) {
+        return consumedStatus;
+      }
+    }
+    return "";
+  }
 }
