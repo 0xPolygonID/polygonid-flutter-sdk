@@ -65,18 +65,6 @@ class StacktraceManager {
   /// Clear the stacktrace
   void clear() {
     return;
-    _stacktrace = '';
-    _errorTrace = '';
-    _stacktraceStreamController.add('');
-    _errorStreamController.add(_errorTrace);
-    if (!isEnabled) {
-      return;
-    }
-
-    if (_isBoxOpen()) {
-      final box = Hive.box(_stacktraceBoxName);
-      box.clear();
-    }
   }
 
   void clearStacktrace() {

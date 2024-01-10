@@ -58,8 +58,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
 
     try {
-      final Iden3MessageEntity iden3message = await _qrcodeParserUtils
-          .getIden3MessageFromQrCode(qrCodeResponse);
+      final Iden3MessageEntity iden3message =
+          await _qrcodeParserUtils.getIden3MessageFromQrCode(qrCodeResponse);
       emit(AuthState.loaded(iden3message));
 
       String? privateKey =

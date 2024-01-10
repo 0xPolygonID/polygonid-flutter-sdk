@@ -70,7 +70,6 @@ class GetIden3commClaimsUseCase
     for (ProofRequestEntity request in requests) {
       if (await _isProofCircuitSupported.execute(
           param: request.scope.circuitId)) {
-
         List<FilterEntity> filters =
             await _iden3commCredentialRepository.getFilters(request: request);
         _stacktraceManager
@@ -82,8 +81,8 @@ class GetIden3commClaimsUseCase
             genesisDid: param.genesisDid,
             profileNonce: param.profileNonce,
             privateKey: param.privateKey,
-            ),
-          );
+          ),
+        );
 
         // filter manually positive integer
         claimsFiltered = _filterManuallyIfPositiveInteger(
@@ -191,7 +190,7 @@ class GetIden3commClaimsUseCase
 
       ProofScopeQueryRequest query = request.scope.query;
       Map<String, dynamic>? context =
-      request.context["@context"][0][query.type]["@context"];
+          request.context["@context"][0][query.type]["@context"];
       if (context == null) return claimsFiltered;
 
       Map<String, dynamic> requestMap = request.scope.query.credentialSubject!;
@@ -215,11 +214,12 @@ class GetIden3commClaimsUseCase
     });
   }
 
-  void _filterClaims(String operator, dynamic needle, String key, List<ClaimEntity> claimsFiltered) {
+  void _filterClaims(String operator, dynamic needle, String key,
+      List<ClaimEntity> claimsFiltered) {
     // Implement the filtering logic here, similar to what you have in your switch case
     claimsFiltered.removeWhere((element) {
       Map<String, dynamic> credentialSubject =
-      element.info["credentialSubject"];
+          element.info["credentialSubject"];
       dynamic value = _getNestedValue(credentialSubject, key);
       if (value != null) {
         BigInt valueBigInt = BigInt.parse(value);
@@ -238,13 +238,11 @@ class GetIden3commClaimsUseCase
             return valueBigInt == BigInt.from(needle);
           case '\$in':
             List<dynamic> values = List.from(needle);
-            List<String> stringList =
-            values.map((e) => e.toString()).toList();
+            List<String> stringList = values.map((e) => e.toString()).toList();
             return !stringList.contains(value);
           case '\$nin':
             List<dynamic> values = List.from(needle);
-            List<String> stringList =
-            values.map((e) => e.toString()).toList();
+            List<String> stringList = values.map((e) => e.toString()).toList();
             return stringList.contains(value);
         }
       }
