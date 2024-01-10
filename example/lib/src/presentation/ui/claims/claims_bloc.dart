@@ -325,8 +325,8 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     }
 
     try {
-      final Iden3MessageEntity iden3message = await _qrcodeParserUtils
-          .getIden3MessageFromQrCode(qrCodeResponse!);
+      final Iden3MessageEntity iden3message =
+          await _qrcodeParserUtils.getIden3MessageFromQrCode(qrCodeResponse!);
       emit(ClaimsState.qrCodeScanned(iden3message));
     } catch (error) {
       emit(const ClaimsState.error("Scanned code is not valid"));
