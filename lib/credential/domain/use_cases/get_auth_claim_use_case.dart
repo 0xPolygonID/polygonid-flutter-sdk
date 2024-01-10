@@ -19,8 +19,6 @@ class GetAuthClaimUseCase extends FutureUseCase<List<String>, List<String>> {
         .getAuthClaim(publicKey: param)
         .then((authClaim) {
       logger().i("[GetAuthClaimUseCase] auth claim: $authClaim");
-      _stacktraceManager
-          .addTrace("[GetAuthClaimUseCase] auth claim: $authClaim");
       return authClaim;
     }).catchError((error) {
       logger().e("[GetAuthClaimUseCase] Error: $error");

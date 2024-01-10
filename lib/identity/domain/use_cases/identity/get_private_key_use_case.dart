@@ -17,9 +17,6 @@ class GetPrivateKeyUseCase extends FutureUseCase<String, String> {
   @override
   Future<String> execute({required String param}) async {
     return _identityRepository.getPrivateKey(secret: param).then((privateKey) {
-      logger().i("[GetPrivateKeyUseCase] private key: $privateKey");
-      _stacktraceManager
-          .addTrace("[GetPrivateKeyUseCase] private key: $privateKey");
       return privateKey;
     }).catchError((error) {
       logger().e("[GetPrivateKeyUseCase] Error: $error");

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
@@ -60,12 +61,8 @@ class GetAuthInputsUseCase
         param: GetIdentityParam(
             genesisDid: param.genesisDid, privateKey: param.privateKey));
 
-    _stacktraceManager.addTrace("[GetAuthInputsUseCase] Identity: $identity");
-
     List<String> authClaim =
         await _getAuthClaimUseCase.execute(param: identity.publicKey);
-    _stacktraceManager
-        .addTrace("[GetAuthInputsUseCase] Auth claim: ${authClaim.toString()}");
     NodeEntity authClaimNode =
         await _identityRepository.getAuthClaimNode(children: authClaim);
     _stacktraceManager.addTrace("[GetAuthInputsUseCase] Auth claim node");
@@ -90,13 +87,13 @@ class GetAuthInputsUseCase
         param: GetLatestStateParam(
             did: param.genesisDid, privateKey: param.privateKey));
 
-    _stacktraceManager
-        .addTrace("[GetAuthInputsUseCase] Tree state: ${treeState.toString()}");
+    _stacktraceManager.addTrace(
+        "[GetAuthInputsUseCase][MainFlow] Tree state: ${jsonEncode(treeState)}");
 
     GistMTProofEntity gistProof =
         await _getGistMTProofUseCase.execute(param: param.genesisDid);
-    _stacktraceManager
-        .addTrace("[GetAuthInputsUseCase] Gist proof: ${gistProof.toString()}");
+    _stacktraceManager.addTrace(
+        "[GetAuthInputsUseCase][MainFlow] Gist proof: ${jsonEncode(gistProof.toJson())}");
 
     return _signMessageUseCase
         .execute(param: SignMessageParam(param.privateKey, param.challenge))

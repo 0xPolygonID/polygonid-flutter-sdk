@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
@@ -11,6 +12,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/p
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_sd_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_vp_proof.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
@@ -45,19 +47,27 @@ class GenerateIden3commProofParam {
   final String? stateContractAddr;
   final String? ipfsNodeURL;
 
-  GenerateIden3commProofParam(
-    this.did,
-    this.profileNonce,
-    this.claimSubjectProfileNonce,
-    this.credential,
-    this.request,
-    this.circuitData,
+  final String? verifierId;
+  final String? linkNonce;
+
+  final Map<String, dynamic>? transactionData;
+
+  GenerateIden3commProofParam({
+    required this.did,
+    required this.profileNonce,
+    required this.claimSubjectProfileNonce,
+    required this.credential,
+    required this.request,
+    required this.circuitData,
     this.privateKey,
     this.challenge,
     this.ethereumUrl,
     this.stateContractAddr,
     this.ipfsNodeURL,
-  );
+    this.verifierId,
+    this.linkNonce,
+    this.transactionData,
+  });
 }
 
 class GenerateIden3commProofUseCase
@@ -89,8 +99,9 @@ class GenerateIden3commProofUseCase
   );
 
   @override
-  Future<Iden3commProofEntity> execute(
-      {required GenerateIden3commProofParam param}) async {
+  Future<Iden3commProofEntity> execute({
+    required GenerateIden3commProofParam param,
+  }) async {
     List<String>? authClaim;
     MTProofEntity? incProof;
     MTProofEntity? nonRevProof;
@@ -99,13 +110,29 @@ class GenerateIden3commProofUseCase
     Map<String, dynamic>? config;
     String? signature;
 
+    logger().i("[GenerateIden3commProofUseCase] claim:");
+    logger().i(param.credential.toJson());
+
     Stopwatch stopwatch = Stopwatch()..start();
 
-    if (param.request.circuitId == "credentialAtomicQueryMTPV2OnChain" ||
-        param.request.circuitId == "credentialAtomicQuerySigV2OnChain") {
+    final circuitId = param.request.circuitId;
+
+    // TODO (moria): remove this with v3 circuit release
+    if (circuitId.startsWith(CircuitType.v3CircuitPrefix) &&
+        !circuitId.endsWith(CircuitType.currentCircuitBetaPostfix)) {
+      _stacktraceManager.addTrace(
+          "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
+      throw Exception(
+          "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
+    }
+
+    if (circuitId == CircuitType.mtponchain.name ||
+        circuitId == CircuitType.sigonchain.name ||
+        circuitId == CircuitType.circuitsV3onchain.name) {
       //on chain start
       _stacktraceManager.addTrace(
           "[GenerateIden3commProofUseCase] OnChain ${param.request.circuitId}");
+
       IdentityEntity identity = await _getIdentityUseCase.execute(
           param: GetIdentityParam(
               genesisDid: param.did, privateKey: param.privateKey));
@@ -113,12 +140,14 @@ class GenerateIden3commProofUseCase
           "[GenerateIden3commProofUseCase] identity: ${identity.did}");
       logger().i(
           "GENERATION PROOF getIdentityUseCase executed in ${stopwatch.elapsed}");
+
       authClaim = await _getAuthClaimUseCase.execute(param: identity.publicKey);
-      _stacktraceManager.addTrace("[GenerateIden3commProofUseCase] authClaim");
       logger().i(
           "GENERATION PROOF getAuthClaimUseCase executed in ${stopwatch.elapsed}");
+
       NodeEntity authClaimNode =
           await _identityRepository.getAuthClaimNode(children: authClaim);
+
       _stacktraceManager
           .addTrace("[GenerateIden3commProofUseCase] authClaimNode");
       logger().i(
@@ -194,6 +223,10 @@ class GenerateIden3commProofUseCase
       proofScopeRequest: param.request.toJson(),
       circuitId: param.request.circuitId,
       config: config,
+      verifierId: param.verifierId,
+      linkNonce: param.linkNonce,
+      scopeParams: param.request.params,
+      transactionData: param.transactionData,
     )
         .catchError((error) {
       _stacktraceManager
@@ -207,14 +240,29 @@ class GenerateIden3commProofUseCase
     logger().i(
         "GENERATION PROOF calculateAtomicQueryInputs executed in ${stopwatch.elapsed}");
 
-    dynamic inputsJson = json.decode(Uint8ArrayUtils.uint8ListToString(res));
+    final inputsString = Uint8ArrayUtils.uint8ListToString(res);
+    dynamic inputsJson = json.decode(inputsString);
+
+    _stacktraceManager.addTrace(
+      "[GenerateIden3commProofUseCase][MainFlow] atomic inputs JSON:$inputsString",
+      log: true,
+    );
+
     Uint8List atomicQueryInputs =
         Uint8ArrayUtils.uint8ListfromString(json.encode(inputsJson["inputs"]));
+
+    if (kDebugMode) {
+      //just for debug
+      String inputs = Uint8ArrayUtils.uint8ListToString(atomicQueryInputs);
+    }
 
     var vpProof;
     if (inputsJson["verifiablePresentation"] != null) {
       vpProof = Iden3commVPProof.fromJson(inputsJson["verifiablePresentation"]);
     }
+
+    logger().i('[GenerateIden3commProofUseCase] verifiablePresentation:');
+    logger().i(vpProof ?? inputsJson["verifiablePresentation"]);
 
     logger().i(
         "GENERATION PROOF atomicQueryInputs executed in ${stopwatch.elapsed}");
@@ -223,8 +271,10 @@ class GenerateIden3commProofUseCase
     return _proveUseCase
         .execute(param: ProveParam(atomicQueryInputs, param.circuitData))
         .then((proof) {
-      _stacktraceManager.addTrace("[GenerateIden3commProofUseCase] proof");
-      logger().i("[GenerateProofUseCase] proof: $proof");
+      _stacktraceManager.addTrace(
+        "[GenerateIden3commProofUseCase][MainFlow] proof: ${jsonEncode(proof.toJson())}",
+        log: true,
+      );
 
       if (vpProof != null) {
         return Iden3commSDProofEntity(

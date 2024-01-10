@@ -70,7 +70,8 @@ class GetIdentityUseCase
       }
 
       logger().i("[GetIdentityUseCase] Identity: $identity");
-      _stacktraceManager.addTrace("[GetIdentityUseCase] Identity: $identity");
+      _stacktraceManager.addTrace(
+          "[GetIdentityUseCase] Identity DID: ${identity.did}, public key: ${identity.publicKey}, profiles: ${identity.profiles}");
 
       return identity;
     } catch (error) {

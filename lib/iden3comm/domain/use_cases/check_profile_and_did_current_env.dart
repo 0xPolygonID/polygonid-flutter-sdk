@@ -54,9 +54,9 @@ class CheckProfileAndDidCurrentEnvUseCase
             })))
         .then((identity) {
       logger().i(
-          "[CheckProfileAndDidCurrentEnvUseCase] Profile ${param.profileNonce} and private key ${param.privateKey} are valid for current env");
+          "[CheckProfileAndDidCurrentEnvUseCase] Profile ${param.profileNonce} and private key are valid for current env");
       _stacktraceManager.addTrace(
-          "[CheckProfileAndDidCurrentEnvUseCase] Profile ${param.profileNonce} and private key ${param.privateKey} are valid for current env");
+          "[CheckProfileAndDidCurrentEnvUseCase] Profile ${param.profileNonce} and private key are valid for current env");
       return identity;
     }).catchError((error) {
       logger().e("[CheckProfileAndDidCurrentEnvUseCase] Error: $error");

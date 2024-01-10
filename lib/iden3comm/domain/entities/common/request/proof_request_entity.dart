@@ -47,4 +47,10 @@ class ProofQueryParamEntity {
 
   @override
   int get hashCode => runtimeType.hashCode;
+
+  Map<String, dynamic> toJson() => {
+        'field': field,
+        'values': values,
+        'operator': operator,
+      };
 }

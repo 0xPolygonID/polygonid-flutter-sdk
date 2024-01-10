@@ -30,4 +30,8 @@ class LibPolygonIdCoreCredentialDataSource {
     logger().d("issueAuthClaim: $output");
     return output;
   }
+
+  String? cacheCredentials(String input, String? config) {
+    return _polygonIdCoreCredential.cacheCredentials(input, config);
+  }
 }

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
@@ -37,11 +39,11 @@ class GetProofRequestsUseCase
       for (ProofScopeRequest scope in param.body.scope!) {
         var context = await _getProofQueryContextUseCase.execute(param: scope);
         _stacktraceManager.addTrace(
-            "[GetProofRequestsUseCase] _getProofQueryContextUseCase: $context");
+            "[GetProofRequestsUseCase] _getProofQueryContextUseCase: ${jsonEncode(context)}");
         ProofQueryParamEntity query =
             await _getProofQueryUseCase.execute(param: scope);
         _stacktraceManager.addTrace(
-            "[GetProofRequestsUseCase] _getProofQueryUseCase: $query");
+            "[GetProofRequestsUseCase] _getProofQueryUseCase: ${jsonEncode(query.toJson())}");
         proofRequests.add(ProofRequestEntity(scope, context, query));
       }
     }

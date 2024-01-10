@@ -1,5 +1,6 @@
 import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/cache_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/remote_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
@@ -22,6 +23,7 @@ class CredentialRepositoryImpl extends CredentialRepository {
   final RemoteClaimDataSource _remoteClaimDataSource;
   final StorageClaimDataSource _storageClaimDataSource;
   final LocalClaimDataSource _localClaimDataSource;
+  final CacheCredentialDataSource _cacheCredentialDataSource;
   final ClaimMapper _claimMapper;
   final FiltersMapper _filtersMapper;
   final IdFilterMapper _idFilterMapper;
@@ -30,6 +32,7 @@ class CredentialRepositoryImpl extends CredentialRepository {
     this._remoteClaimDataSource,
     this._storageClaimDataSource,
     this._localClaimDataSource,
+    this._cacheCredentialDataSource,
     this._claimMapper,
     this._filtersMapper,
     this._idFilterMapper,
@@ -169,5 +172,16 @@ class CredentialRepositoryImpl extends CredentialRepository {
   @override
   Future<List<String>> getAuthClaim({required List<String> publicKey}) {
     return _localClaimDataSource.getAuthClaim(publicKey: publicKey);
+  }
+
+  @override
+  Future<String?> cacheCredential({
+    required String credential,
+    String? config,
+  }) {
+    return _cacheCredentialDataSource.cacheCredential(
+      credential: credential,
+      config: config,
+    );
   }
 }

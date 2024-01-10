@@ -40,6 +40,7 @@ dependencies:
   intl: ^0.18.1
   hive: ^2.2.3
   hive_flutter: ^1.1.0
+  ninja_prime: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +57,20 @@ dev_dependencies:
   build_runner: ^2.4.6
 
 ffigen:
+  #name: NativeWitnessV3OnchainLib
+  #description: Bindings to `ios/Classes/witnesscalc_credentialAtomicQueryV3OnChain.h`.
+  #output: 'lib/proof/libs/witnesscalc/v3_onchain/native_witness_v3_onchain.dart'
+  #headers:
+  #  entry-points:
+  #    - 'ios/Classes/witnesscalc_credentialAtomicQueryV3OnChain.h'
+
+  #name: NativeWitnessV3Lib
+  #description: Bindings to `ios/Classes/witnesscalc_credentialAtomicQueryV3.h`.
+  #output: 'lib/proof/libs/witnesscalc/v3/native_witness_v3.dart'
+  #headers:
+  #  entry-points:
+  #    - 'ios/Classes/witnesscalc_credentialAtomicQueryV3.h'
+
   name: NativePolygonIdCoreLib
   description: Bindings to `ios/Classes/libpolygonid.h`.
   output: 'lib/common/libs/polygonidcore/native_polygonidcore.dart'

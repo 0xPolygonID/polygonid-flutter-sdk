@@ -23,8 +23,6 @@ class GetIdentityAuthClaimUseCase extends FutureUseCase<String, List<String>> {
         .getPublicKeys(privateKey: param)
         .then((pubKeys) => _getAuthClaimUseCase.execute(param: pubKeys))
         .then((authClaim) {
-      _stacktraceManager
-          .addTrace("[GetIdentityAuthClaimUseCase] AuthClaim is $authClaim");
       logger().i("[GetIdentityAuthClaimUseCase] AuthClaim is $authClaim");
 
       return authClaim;

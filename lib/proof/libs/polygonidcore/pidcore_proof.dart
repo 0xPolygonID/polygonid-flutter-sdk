@@ -145,4 +145,60 @@ class PolygonIdCoreProof extends PolygonIdCore {
 
     return result;
   }
+
+  String getV3ProofInputs(String input, String? config) {
+    ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
+    ffi.Pointer<ffi.Char> cfg = ffi.nullptr;
+    if (config != null) {
+      cfg = config.toNativeUtf8().cast<ffi.Char>();
+    }
+    ffi.Pointer<ffi.Pointer<ffi.Char>> response =
+        malloc<ffi.Pointer<ffi.Char>>();
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
+        malloc<ffi.Pointer<PLGNStatus>>();
+    int res = PolygonIdCore.nativePolygonIdCoreLib
+        .PLGNAtomicQueryV3Inputs(response, in1, cfg, status);
+    if (res == 0) {
+      String? consumedStatus = consumeStatus(status, "");
+      if (consumedStatus != null) {
+        throw ProofInputsException(consumedStatus);
+      }
+    }
+    String result = "";
+    ffi.Pointer<ffi.Char> jsonResponse = response.value;
+    ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
+    if (jsonString != ffi.nullptr) {
+      result = jsonString.toDartString();
+    }
+
+    return result;
+  }
+
+  String getV3OnchainProofInputs(String input, String? config) {
+    ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
+    ffi.Pointer<ffi.Char> cfg = ffi.nullptr;
+    if (config != null) {
+      cfg = config.toNativeUtf8().cast<ffi.Char>();
+    }
+    ffi.Pointer<ffi.Pointer<ffi.Char>> response =
+        malloc<ffi.Pointer<ffi.Char>>();
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
+        malloc<ffi.Pointer<PLGNStatus>>();
+    int res = PolygonIdCore.nativePolygonIdCoreLib
+        .PLGNAtomicQueryV3OnChainInputs(response, in1, cfg, status);
+    if (res == 0) {
+      String? consumedStatus = consumeStatus(status, "");
+      if (consumedStatus != null) {
+        throw ProofInputsException(consumedStatus);
+      }
+    }
+    String result = "";
+    ffi.Pointer<ffi.Char> jsonResponse = response.value;
+    ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
+    if (jsonString != ffi.nullptr) {
+      result = jsonString.toDartString();
+    }
+
+    return result;
+  }
 }

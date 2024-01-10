@@ -42,8 +42,8 @@ class GetJWZUseCase extends FutureUseCase<GetJWZParam, String> {
 
       String encodedJwz = await _iden3commRepository.encodeJWZ(jwz: jwz);
 
-      logger().i("[GetJWZUseCase] JWZ: $encodedJwz");
-      _stacktraceManager.addTrace("[GetJWZUseCase] JWZ: $encodedJwz");
+      logger().i("[GetJWZUseCase][MainFlow] JWZ: $encodedJwz");
+      _stacktraceManager.addTrace("[GetJWZUseCase][MainFlow] JWZ: $encodedJwz");
       return encodedJwz;
     } catch (error) {
       logger().e("[GetJWZUseCase] Error: $error");

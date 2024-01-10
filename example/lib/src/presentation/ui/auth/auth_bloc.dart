@@ -13,15 +13,20 @@ import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_even
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/auth/auth_state.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/common/widgets/profile_radio_button.dart';
 import 'package:polygonid_flutter_sdk_example/utils/nonce_utils.dart';
+import 'package:polygonid_flutter_sdk_example/utils/qr_code_parser_utils.dart';
 import 'package:polygonid_flutter_sdk_example/utils/secure_storage_keys.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final PolygonIdSdk _polygonIdSdk;
+  final QrcodeParserUtils _qrcodeParserUtils;
 
   static const SelectedProfile _defaultProfile = SelectedProfile.public;
   SelectedProfile selectedProfile = _defaultProfile;
 
-  AuthBloc(this._polygonIdSdk) : super(const AuthState.initial()) {
+  AuthBloc(
+    this._polygonIdSdk,
+    this._qrcodeParserUtils,
+  ) : super(const AuthState.initial()) {
     on<ClickScanQrCodeEvent>(_handleClickScanQrCode);
     on<ScanQrCodeResponse>(_handleScanQrCodeResponse);
     on<ProfileSelectedEvent>(_handleProfileSelected);
@@ -53,8 +58,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
 
     try {
-      final Iden3MessageEntity iden3message = await _polygonIdSdk.iden3comm
-          .getIden3Message(message: qrCodeResponse);
+      final Iden3MessageEntity iden3message =
+          await _qrcodeParserUtils.getIden3MessageFromQrCode(qrCodeResponse);
       emit(AuthState.loaded(iden3message));
 
       String? privateKey =

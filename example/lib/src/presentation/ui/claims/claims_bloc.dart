@@ -17,15 +17,18 @@ import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/mappers
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/models/claim_model.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
 import 'package:polygonid_flutter_sdk_example/utils/nonce_utils.dart';
+import 'package:polygonid_flutter_sdk_example/utils/qr_code_parser_utils.dart';
 import 'package:polygonid_flutter_sdk_example/utils/secure_storage_keys.dart';
 
 class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
   final ClaimModelMapper _mapper;
   final PolygonIdSdk _polygonIdSdk;
+  final QrcodeParserUtils _qrcodeParserUtils;
 
   ClaimsBloc(
     this._mapper,
     this._polygonIdSdk,
+    this._qrcodeParserUtils,
   ) : super(const ClaimsState.initial()) {
     on<FetchAndSaveClaimsEvent>(_fetchAndSaveClaims);
     on<GetClaimsEvent>(_getClaims);
@@ -322,8 +325,8 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     }
 
     try {
-      final Iden3MessageEntity iden3message = await _polygonIdSdk.iden3comm
-          .getIden3Message(message: qrCodeResponse!);
+      final Iden3MessageEntity iden3message =
+          await _qrcodeParserUtils.getIden3MessageFromQrCode(qrCodeResponse!);
       emit(ClaimsState.qrCodeScanned(iden3message));
     } catch (error) {
       emit(const ClaimsState.error("Scanned code is not valid"));

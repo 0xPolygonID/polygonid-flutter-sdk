@@ -1,6 +1,15 @@
+import 'package:polygonid_flutter_sdk/common/utils/format_utils.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 
-enum AtomicQueryInputsType { mtp, sig, mtponchain, sigonchain, unknown }
+enum AtomicQueryInputsType {
+  mtp,
+  sig,
+  mtponchain,
+  sigonchain,
+  v3,
+  v3onchain,
+  unknown;
+}
 
 class AtomicQueryInputsParam {
   final AtomicQueryInputsType type;
@@ -17,6 +26,13 @@ class AtomicQueryInputsParam {
   final ClaimInfoDTO credential;
   final Map<String, dynamic> request;
 
+  final String? verifierId;
+  final String? linkNonce;
+
+  final Map<String, dynamic>? params;
+
+  final Map<String, dynamic>? transactionData;
+
   AtomicQueryInputsParam({
     required this.type,
     required this.id,
@@ -31,21 +47,40 @@ class AtomicQueryInputsParam {
     this.signature,
     required this.credential,
     required this.request,
+    this.verifierId,
+    this.linkNonce,
+    this.params,
+    this.transactionData,
   });
 
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "profileNonce": profileNonce.toString(),
-        "claimSubjectProfileNonce": claimSubjectProfileNonce.toString(),
-        "authClaim": authClaim,
-        "authClaimIncMtp": incProof,
-        "authClaimNonRevMtp": nonRevProof,
-        "gistProof": gistProof,
-        "treeState": treeState,
-        "challenge": challenge,
-        "signature": signature,
-        "verifiableCredentials": credential.toJson(),
-        "request": request,
-      }..removeWhere(
-          (dynamic key, dynamic value) => key == null || value == null);
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> inputs = {
+      "id": id,
+      "profileNonce": profileNonce.toString(),
+      "claimSubjectProfileNonce": claimSubjectProfileNonce.toString(),
+      "authClaim": authClaim,
+      "authClaimIncMtp": incProof,
+      "authClaimNonRevMtp": nonRevProof,
+      "gistProof": gistProof,
+      "treeState": treeState,
+      "challenge": challenge,
+      "signature": signature,
+      "verifiableCredentials": credential.toJson(),
+      "request": request,
+      "verifierId": verifierId,
+      "linkNonce": linkNonce,
+      "params": params,
+    }..removeWhere((dynamic key, dynamic value) => value == null);
+
+    if (transactionData?.isNotEmpty ?? false) {
+      inputs['transactionData'] =
+          FormatUtils.convertSnakeCaseToCamelCase(transactionData!);
+    }
+
+    if (verifierId?.isEmpty ?? true) {
+      inputs.remove('verifierId');
+    }
+
+    return inputs;
+  }
 }

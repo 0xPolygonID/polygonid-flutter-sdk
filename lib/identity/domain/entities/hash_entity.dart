@@ -15,4 +15,8 @@ class HashEntity {
 
   @override
   int get hashCode => runtimeType.hashCode;
+
+  Map<String, dynamic> toJson() => {
+        'data': data,
+      };
 }

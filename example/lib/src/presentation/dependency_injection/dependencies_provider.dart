@@ -17,6 +17,7 @@ import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_bloc
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/restore_identity/bloc/restore_identity_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/sign/sign_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/splash_bloc.dart';
+import 'package:polygonid_flutter_sdk_example/utils/qr_code_parser_utils.dart';
 
 final getIt = GetIt.instance;
 
@@ -34,6 +35,7 @@ Future<void> init() async {
   registerIdentityDependencies();
   registerBackupIdentityDependencies();
   registerRestoreIdentityDependencies();
+  registerUtilities();
 }
 
 void registerEnv() {
@@ -83,7 +85,11 @@ void registerHomeDependencies() {
 
 ///
 void registerClaimsDependencies() {
-  getIt.registerFactory(() => ClaimsBloc(getIt(), getIt()));
+  getIt.registerFactory(() => ClaimsBloc(
+        getIt(),
+        getIt(),
+        getIt(),
+      ));
 }
 
 ///
@@ -93,7 +99,7 @@ void registerClaimDetailDependencies() {
 
 ///
 void registerAuthDependencies() {
-  getIt.registerFactory(() => AuthBloc(getIt()));
+  getIt.registerFactory(() => AuthBloc(getIt(), getIt()));
 }
 
 ///
@@ -124,4 +130,10 @@ void registerBackupIdentityDependencies() {
 void registerRestoreIdentityDependencies() {
   getIt
       .registerFactory<RestoreIdentityBloc>(() => RestoreIdentityBloc(getIt()));
+}
+
+/// Register utilities
+void registerUtilities() {
+  getIt.registerLazySingleton<QrcodeParserUtils>(
+      () => QrcodeParserUtils(getIt()));
 }
