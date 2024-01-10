@@ -92,4 +92,5 @@ class CustomStrings {
   static const String restoreIdentityScreenInitialState = "Not restored yet";
   static const String restoreIdentityScreenSuccess =
       "Identity restored successfully";
+  static const String refreshClaimButtonCTA = "Refresh credential";
 }

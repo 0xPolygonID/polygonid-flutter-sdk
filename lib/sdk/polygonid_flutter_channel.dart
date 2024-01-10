@@ -873,4 +873,14 @@ class PolygonIdFlutterChannel
     // TODO: implement restoreProfiles
     throw UnimplementedError();
   }
+
+  @override
+  Future<ClaimEntity> refreshCredential({
+    required String genesisDid,
+    required String privateKey,
+    required ClaimEntity credential,
+  }) {
+    // TODO: implement refreshCredential
+    throw UnimplementedError();
+  }
 }

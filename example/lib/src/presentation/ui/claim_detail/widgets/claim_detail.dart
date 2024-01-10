@@ -63,6 +63,7 @@ class _ClaimDetailScreenState extends State<ClaimDetailScreen> {
               ),
             ),
             const SizedBox(height: 24),
+            _buildRefreshCredentialButton(),
             _buildRemoveClaimButton(),
             _buildBlocListener(),
           ],
@@ -138,6 +139,29 @@ class _ClaimDetailScreenState extends State<ClaimDetailScreen> {
         }
       },
       child: const SizedBox.shrink(),
+    );
+  }
+
+  Widget _buildRefreshCredentialButton() {
+    return Visibility(
+      visible: widget.claimModel.refreshable,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Align(
+          alignment: Alignment.center,
+          child: ElevatedButton(
+            onPressed: () {
+              widget._bloc.add(
+                  ClaimDetailEvent.refreshClaim(claimId: widget.claimModel.id));
+            },
+            style: CustomButtonStyle.primaryButtonStyle,
+            child: const Text(
+              CustomStrings.refreshClaimButtonCTA,
+              style: CustomTextStyles.primaryButtonTextStyle,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

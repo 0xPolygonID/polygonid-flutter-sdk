@@ -35,3 +35,9 @@ class NullRevocationStatusException implements Exception {
 
   NullRevocationStatusException(this.claim);
 }
+
+class RefreshCredentialException extends ErrorException {
+  final String errorMessage;
+
+  RefreshCredentialException(this.errorMessage, [dynamic error]) : super(error);
+}

@@ -7,6 +7,7 @@ import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
@@ -73,6 +74,7 @@ class GetIden3commProofsUseCase
   final Iden3commCredentialRepository _iden3commCredentialRepository;
   final RemoveClaimsUseCase _removeClaimsUseCase;
   final SaveClaimsUseCase _saveClaimsUseCase;
+  final RefreshCredentialUseCase _refreshCredentialUseCase;
 
   GetIden3commProofsUseCase(
     this._proofRepository,
@@ -87,6 +89,7 @@ class GetIden3commProofsUseCase
     this._iden3commCredentialRepository,
     this._removeClaimsUseCase,
     this._saveClaimsUseCase,
+    this._refreshCredentialUseCase,
   );
 
   @override
@@ -217,7 +220,7 @@ class GetIden3commProofsUseCase
   }) async {
     var now = DateTime.now().toUtc();
     DateTime expirationTime =
-        DateFormat("yyyy-MM-ddThh:mm:ssZ").parse(claim.expiration!);
+        DateFormat("yyyy-MM-ddTHH:mm:ssZ").parse(claim.expiration!);
 
     var nowFormatted = DateFormat("yyyy-MM-dd HH:mm:ss").format(now);
     var expirationTimeFormatted =
@@ -229,66 +232,15 @@ class GetIden3commProofsUseCase
       _proofGenerationStepsStreamManager
           .add("Refreshing expired credential...");
 
-      var identityEntity = await _getIdentityUseCase.execute(
-          param: GetIdentityParam(
-              genesisDid: param.genesisDid, privateKey: param.privateKey));
+      ClaimEntity refreshedClaimEntity =
+          await _refreshCredentialUseCase.execute(
+              param: RefreshCredentialParam(
+        credential: claim,
+        genesisDid: param.genesisDid,
+        privateKey: param.privateKey,
+      ));
 
-      BigInt claimSubjectProfileNonce = identityEntity.profiles.keys.firstWhere(
-          (k) => identityEntity.profiles[k] == claim.did,
-          orElse: () => GENESIS_PROFILE_NONCE);
-
-      RefreshServiceDTO refreshService =
-          RefreshServiceDTO.fromJson(claim.info["refreshService"]);
-      String refreshServiceUrl = refreshService.id;
-      CredentialRefreshIden3MessageEntity credentialRefreshEntity =
-          CredentialRefreshIden3MessageEntity(
-        id: const Uuid().v4(),
-        typ: param.message.typ,
-        type: "https://iden3-communication.io/credentials/1.0/refresh",
-        thid: param.message.thid,
-        body: CredentialRefreshBodyRequest(
-          claim.id.replaceAll("urn:uuid:", ""),
-          "expired",
-        ),
-        from: claim.did,
-        to: claim.issuer,
-      );
-
-      String authToken = await _getAuthTokenUseCase.execute(
-        param: GetAuthTokenParam(
-          genesisDid: param.genesisDid,
-          profileNonce: claimSubjectProfileNonce,
-          privateKey: param.privateKey,
-          message: jsonEncode(credentialRefreshEntity),
-        ),
-      );
-
-      ClaimEntity claimEntity =
-          await _iden3commCredentialRepository.refreshCredential(
-        authToken: authToken,
-        url: refreshServiceUrl,
-        profileDid: claim.did,
-      );
-
-      if (claimEntity.id == claim.id) {
-        await _removeClaimsUseCase.execute(
-          param: RemoveClaimsParam(
-            claimIds: [claim.id],
-            genesisDid: param.genesisDid,
-            privateKey: param.privateKey,
-          ),
-        );
-      }
-
-      await _saveClaimsUseCase.execute(
-        param: SaveClaimsParam(
-          claims: [claimEntity],
-          genesisDid: param.genesisDid,
-          privateKey: param.privateKey,
-        ),
-      );
-
-      claim = claimEntity;
+      claim = refreshedClaimEntity;
     }
     return claim;
   }

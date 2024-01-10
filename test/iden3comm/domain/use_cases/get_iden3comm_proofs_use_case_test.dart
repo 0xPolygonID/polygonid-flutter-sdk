@@ -4,6 +4,7 @@ import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_sd_proof_entity.dart';
@@ -65,6 +66,8 @@ MockIden3commCredentialRepository iden3commCredentialRepository =
     MockIden3commCredentialRepository();
 MockRemoveClaimsUseCase removeClaimsUseCase = MockRemoveClaimsUseCase();
 MockSaveClaimsUseCase saveClaimsUseCase = MockSaveClaimsUseCase();
+MockRefreshCredentialUseCase refreshCredentialUseCase =
+    MockRefreshCredentialUseCase();
 
 // Tested instance
 GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
@@ -80,6 +83,7 @@ GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   iden3commCredentialRepository,
   removeClaimsUseCase,
   saveClaimsUseCase,
+  refreshCredentialUseCase,
 );
 
 @GenerateMocks([
@@ -95,6 +99,7 @@ GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   Iden3commCredentialRepository,
   RemoveClaimsUseCase,
   SaveClaimsUseCase,
+  RefreshCredentialUseCase,
 ])
 main() {
   setUp(() {

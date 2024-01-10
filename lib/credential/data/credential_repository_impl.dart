@@ -67,15 +67,16 @@ class CredentialRepositoryImpl extends CredentialRepository {
   Future<ClaimEntity> getClaim(
       {required String claimId,
       required String genesisDid,
-      required String privateKey}) {
-    return _storageClaimDataSource
-        .getClaims(
-            filter: _idFilterMapper.mapTo(claimId),
-            did: genesisDid,
-            privateKey: privateKey)
-        .then((claims) => claims.isEmpty
-            ? throw ClaimNotFoundException(claimId)
-            : _claimMapper.mapFrom(claims.first));
+      required String privateKey}) async {
+    try {
+      ClaimDTO claimDTO = await _storageClaimDataSource.getClaim(
+          credentialId: claimId, did: genesisDid, privateKey: privateKey);
+
+      ClaimEntity claimEntity = _claimMapper.mapFrom(claimDTO);
+      return claimEntity;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override

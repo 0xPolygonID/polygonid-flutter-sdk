@@ -15,6 +15,7 @@ class ClaimDetailBloc extends Bloc<ClaimDetailEvent, ClaimDetailState> {
   ClaimDetailBloc(this._polygonIdSdk)
       : super(const ClaimDetailState.initial()) {
     on<DeleteClaimEvent>(_deleteClaimEvent);
+    on<RefreshClaimEvent>(_refreshClaimEvent);
   }
 
   ///
@@ -51,4 +52,7 @@ class ClaimDetailBloc extends Bloc<ClaimDetailEvent, ClaimDetailState> {
       emit(const ClaimDetailState.error(CustomStrings.claimRemovingError));
     }
   }
+
+  Future<void> _refreshClaimEvent(
+      RefreshClaimEvent event, Emitter<ClaimDetailState> emit) async {}
 }
