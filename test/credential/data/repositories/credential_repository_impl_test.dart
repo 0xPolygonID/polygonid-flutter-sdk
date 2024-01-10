@@ -85,7 +85,8 @@ MockRemoteClaimDataSource remoteClaimDataSource = MockRemoteClaimDataSource();
 MockStorageClaimDataSource storageClaimDataSource =
     MockStorageClaimDataSource();
 MockLocalClaimDataSource localClaimDataSource = MockLocalClaimDataSource();
-MockCacheCredentialDataSource cacheCredentialDataSource = MockCacheCredentialDataSource();
+MockCacheCredentialDataSource cacheCredentialDataSource =
+    MockCacheCredentialDataSource();
 MockClaimMapper claimMapper = MockClaimMapper();
 MockFiltersMapper filtersMapper = MockFiltersMapper();
 MockIdFilterMapper idFilterMapper = MockIdFilterMapper();

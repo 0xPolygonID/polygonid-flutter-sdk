@@ -37,7 +37,7 @@ class PolygonIdCoreCredential extends PolygonIdCore {
       cfg = config.toNativeUtf8().cast<ffi.Char>();
     }
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
-    malloc<ffi.Pointer<PLGNStatus>>();
+        malloc<ffi.Pointer<PLGNStatus>>();
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNCacheCredentials(in1, cfg, status);
     if (res == 0) {
