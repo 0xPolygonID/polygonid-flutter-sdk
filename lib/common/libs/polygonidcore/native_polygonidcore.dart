@@ -1390,9 +1390,9 @@ class NativePolygonIdCoreLib {
   }
 
   late final _arc4random_bufPtr = _lookup<
-          ffi
-          .NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Size)>>(
-      'arc4random_buf');
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Void>, ffi.Size)>>('arc4random_buf');
   late final _arc4random_buf = _arc4random_bufPtr
       .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
 
@@ -3408,7 +3408,7 @@ class __mbstate_t extends ffi.Union {
 
 class __darwin_pthread_handler_rec extends ffi.Struct {
   external ffi
-      .Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>
+          .Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>
       __routine;
 
   external ffi.Pointer<ffi.Void> __arg;
