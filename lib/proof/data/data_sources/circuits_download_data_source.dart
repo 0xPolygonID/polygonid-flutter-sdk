@@ -2,9 +2,10 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/circuits_to_download_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/download_response_dto.dart';
 
-@lazySingleton
+@injectable
 class CircuitsDownloadDataSource {
   final Dio _client;
   late CancelToken _cancelToken;
@@ -22,17 +23,21 @@ class CircuitsDownloadDataSource {
   int get downloadSize => _downloadSize;
 
   ///
-  Future<void> initStreamedResponseFromServer(String downloadPath) async {
+  Future<void> initStreamedResponseFromServer({
+    required List<CircuitsToDownloadParam> circuitsToDownload,
+  }) async {
     _cancelToken = CancelToken();
-    const bucketUrl =
-        "https://circuits.polygonid.me/circuits/v1.0.0/polygonid-keys.zip";
 
     // first we get the file size
     try {
-      Response headResponse = await _client.head(bucketUrl);
-      int contentLength =
-          int.parse(headResponse.headers.value('content-length') ?? "0");
-      _downloadSize = contentLength;
+      int totalContentLength = 0;
+      for (CircuitsToDownloadParam param in circuitsToDownload) {
+        Response headResponse = await _client.head(param.bucketUrl);
+        int contentLength =
+            int.parse(headResponse.headers.value('content-length') ?? "0");
+        totalContentLength += contentLength;
+      }
+      _downloadSize = totalContentLength;
     } catch (e) {
       _cancelToken.cancel();
       _controller.add(DownloadResponseDTO(
@@ -45,30 +50,32 @@ class CircuitsDownloadDataSource {
     }
 
     try {
-      await _client.download(
-        bucketUrl,
-        downloadPath,
-        deleteOnError: true,
-        cancelToken: _cancelToken,
-        onReceiveProgress: (received, total) {
-          if (total <= 0) {
-            _cancelToken.cancel();
-            _controller.add(DownloadResponseDTO(
-              progress: 0,
-              total: 0,
-              errorOccurred: true,
-              errorMessage: "Error occurred while downloading circuits",
-            ));
-            return;
-          }
-          _controller.add(
-            DownloadResponseDTO(
-              progress: received,
-              total: total,
-            ),
-          );
-        },
-      );
+      for (CircuitsToDownloadParam param in circuitsToDownload) {
+        await _client.download(
+          param.bucketUrl,
+          param.downloadPath,
+          deleteOnError: true,
+          cancelToken: _cancelToken,
+          onReceiveProgress: (received, total) {
+            if (total <= 0) {
+              _cancelToken.cancel();
+              _controller.add(DownloadResponseDTO(
+                progress: 0,
+                total: 0,
+                errorOccurred: true,
+                errorMessage: "Error occurred while downloading circuits",
+              ));
+              return;
+            }
+            _controller.add(
+              DownloadResponseDTO(
+                progress: received,
+                total: total,
+              ),
+            );
+          },
+        );
+      }
     } catch (e) {
       _cancelToken.cancel();
       _controller.add(DownloadResponseDTO(

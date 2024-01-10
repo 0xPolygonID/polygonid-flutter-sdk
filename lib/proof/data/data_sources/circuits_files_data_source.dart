@@ -27,24 +27,26 @@ class CircuitsFilesDataSource {
   }
 
   ///
-  Future<bool> circuitsFilesExist() {
-    String fileName = 'circuits.zip';
+  Future<bool> circuitsFilesExist({required String circuitsFileName}) async {
+    String fileName = '${circuitsFileName.trim()}.zip';
     String path = directory.path;
     var file = File('$path/$fileName');
 
     return file.exists();
   }
 
-  Future<String> getPathToCircuitZipFile() async {
+  Future<String> getPathToCircuitZipFile(
+      {required String circuitsFileName}) async {
     String path = directory.path;
-    String fileName = 'circuits.zip';
+    String fileName = '${circuitsFileName.trim()}.zip';
 
     return '$path/$fileName';
   }
 
-  Future<String> getPathToCircuitZipFileTemp() async {
+  Future<String> getPathToCircuitZipFileTemp(
+      {required String circuitsFileName}) async {
     String path = directory.path;
-    String fileName = 'circuits_temp.zip';
+    String fileName = '${circuitsFileName.trim()}_temp.zip';
 
     return '$path/$fileName';
   }

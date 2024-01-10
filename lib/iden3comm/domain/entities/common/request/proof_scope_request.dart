@@ -83,11 +83,14 @@ class ProofScopeRequest {
   final bool? optional;
   final ProofScopeQueryRequest query;
 
+  final Map<String, dynamic>? params;
+
   ProofScopeRequest({
     required this.id,
     required this.circuitId,
     this.optional,
     required this.query,
+    this.params,
   });
 
   /// Creates an instance from the given json
@@ -102,6 +105,7 @@ class ProofScopeRequest {
       circuitId: json['circuitId'],
       optional: json['optional'],
       query: query,
+      params: json['params'],
     );
   }
 
@@ -110,12 +114,13 @@ class ProofScopeRequest {
         'circuitId': circuitId,
         'optional': optional,
         'query': query.toJson(),
+        'params': params,
       }..removeWhere(
           (dynamic key, dynamic value) => key == null || value == null);
 
   @override
   String toString() =>
-      "[ProofScopeRequest] {id: $id, circuitId: $circuitId, optional: $optional, query: $query}";
+      "[ProofScopeRequest] {id: $id, circuitId: $circuitId, optional: $optional, query: $query, params: $params}";
 
   @override
   bool operator ==(Object other) =>
@@ -125,7 +130,8 @@ class ProofScopeRequest {
           id == other.id &&
           circuitId == other.circuitId &&
           optional == other.optional &&
-          query == other.query;
+          query == other.query &&
+          params == other.params;
 
   @override
   int get hashCode => runtimeType.hashCode;

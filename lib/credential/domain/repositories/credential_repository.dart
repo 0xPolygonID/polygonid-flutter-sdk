@@ -45,4 +45,9 @@ abstract class CredentialRepository {
       {required ClaimEntity claim, required bool rhs});
 
   Future<List<String>> getAuthClaim({required List<String> publicKey});
+
+  Future<String?> cacheCredential({
+    required String credential,
+    String? config,
+  });
 }

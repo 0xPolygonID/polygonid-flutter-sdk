@@ -115,16 +115,18 @@ abstract class PolygonIdSdkIden3comm {
   ///
   /// The [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
-  Future<List<Iden3commProofEntity>> getProofs(
-      {required Iden3MessageEntity message,
-      required String genesisDid,
-      BigInt? profileNonce,
-      required String privateKey,
-      String? challenge,
-      String? ethereumUrl,
-      String? stateContractAddr,
-      String? ipfsNodeUrl,
-      Map<int, Map<String, dynamic>>? nonRevocationProofs});
+  Future<List<Iden3commProofEntity>> getProofs({
+    required Iden3MessageEntity message,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String privateKey,
+    String? challenge,
+    String? ethereumUrl,
+    String? stateContractAddr,
+    String? ipfsNodeUrl,
+    Map<int, Map<String, dynamic>>? nonRevocationProofs,
+    Map<String, dynamic>? transactionData,
+  });
 
   /// Authenticate response from iden3Message sharing the needed
   /// (if any) proofs requested by it
@@ -369,16 +371,18 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }
 
   @override
-  Future<List<Iden3commProofEntity>> getProofs(
-      {required Iden3MessageEntity message,
-      required String genesisDid,
-      BigInt? profileNonce,
-      required String privateKey,
-      String? challenge,
-      String? ethereumUrl,
-      String? stateContractAddr,
-      String? ipfsNodeUrl,
-      Map<int, Map<String, dynamic>>? nonRevocationProofs}) {
+  Future<List<Iden3commProofEntity>> getProofs({
+    required Iden3MessageEntity message,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String privateKey,
+    String? challenge,
+    String? ethereumUrl,
+    String? stateContractAddr,
+    String? ipfsNodeUrl,
+    Map<int, Map<String, dynamic>>? nonRevocationProofs,
+    Map<String, dynamic>? transactionData,
+  }) {
     _stacktraceManager.clearStacktrace();
     return _getIden3commProofsUseCase.execute(
         param: GetIden3commProofsParam(
@@ -391,6 +395,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       stateContractAddr: stateContractAddr,
       ipfsNodeUrl: ipfsNodeUrl,
       nonRevocationProofs: nonRevocationProofs,
+      transactionData: transactionData,
     ));
   }
 

@@ -13,6 +13,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/p
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/circuit_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
 
@@ -90,6 +91,12 @@ class GetIden3commClaimsUseCase
           claimsFiltered: claimsFiltered,
         );
 
+        //filter manually proof type
+        claimsFiltered = _filterManuallyIfQueryContainsProofType(
+          request: request,
+          claimsFiltered: claimsFiltered,
+        );
+
         if (claimsFiltered.isEmpty) {
           _stacktraceManager
               .addTrace("[GetIden3commClaimsUseCase] claims is empty");
@@ -101,8 +108,17 @@ class GetIden3commClaimsUseCase
           List<String> proofTypes =
               proofs.map((e) => e["type"] as String).toList();
 
-          CircuitType circuitType =
-              _circuitTypeMapper.mapTo(request.scope.circuitId);
+          final circuitId = request.scope.circuitId;
+          // TODO (moria): remove this with v3 circuit release
+          if (circuitId.startsWith(CircuitType.v3CircuitPrefix) &&
+              !circuitId.endsWith(CircuitType.currentCircuitBetaPostfix)) {
+            _stacktraceManager.addTrace(
+                "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
+            throw Exception(
+                "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
+          }
+
+          CircuitType circuitType = _circuitTypeMapper.mapTo(circuitId);
 
           switch (circuitType) {
             case CircuitType.mtp:
@@ -119,6 +135,14 @@ class GetIden3commClaimsUseCase
             case CircuitType.auth:
             case CircuitType.unknown:
               break;
+            case CircuitType.circuitsV3:
+            case CircuitType.circuitsV3onchain:
+              bool success = [
+                'Iden3SparseMerkleProof',
+                'Iden3SparseMerkleTreeProof',
+                'BJJSignature2021',
+              ].any((element) => proofTypes.contains(element));
+              return success;
           }
           return false;
         });
@@ -248,5 +272,26 @@ class GetIden3commClaimsUseCase
       }
       return false;
     });
+  }
+
+  List<ClaimEntity> _filterManuallyIfQueryContainsProofType({
+    required ProofRequestEntity request,
+    required List<ClaimEntity> claimsFiltered,
+  }) {
+    try {
+      if (request.scope.query.proofType == null ||
+          request.scope.query.proofType!.isEmpty) return claimsFiltered;
+
+      String proofType = request.scope.query.proofType!;
+      claimsFiltered.removeWhere((element) {
+        List<Map<String, dynamic>> proofs = element.info["proof"];
+        List<String> proofTypes =
+            proofs.map((e) => e["type"] as String).toList();
+        return !proofTypes.contains(proofType);
+      });
+    } catch (ignored) {
+      // Consider logging the exception
+    }
+    return claimsFiltered;
   }
 }

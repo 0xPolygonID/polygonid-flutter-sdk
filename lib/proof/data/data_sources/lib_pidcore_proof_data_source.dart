@@ -5,6 +5,7 @@ import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_dto.dart';
@@ -75,6 +76,16 @@ class LibPolygonIdCoreWrapper {
           break;
         case AtomicQueryInputsType.sigonchain:
           result = _polygonIdCoreProof.getSigOnchainProofInputs(
+              jsonEncode(computeParam.param.toJson()),
+              jsonEncode(computeParam.configParam?.toJson()));
+          break;
+        case AtomicQueryInputsType.v3:
+          result = _polygonIdCoreProof.getV3ProofInputs(
+              jsonEncode(computeParam.param.toJson()),
+              jsonEncode(computeParam.configParam?.toJson()));
+          break;
+        case AtomicQueryInputsType.v3onchain:
+          result = _polygonIdCoreProof.getV3OnchainProofInputs(
               jsonEncode(computeParam.param.toJson()),
               jsonEncode(computeParam.configParam?.toJson()));
           break;
@@ -175,17 +186,25 @@ class LibPolygonIdCoreProofDataSource {
     required Map<String, dynamic> request,
     required String circuitId, //ProofScopeRequest request,
     Map<String, dynamic>? config,
+    String? verifierId,
+    String? linkNonce,
+    Map<String, dynamic>? scopeParams,
+    Map<String, dynamic>? transactionData,
   }) {
     AtomicQueryInputsType type = AtomicQueryInputsType.unknown;
 
-    if (circuitId == "credentialAtomicQueryMTPV2") {
+    if (circuitId == CircuitType.mtp.name) {
       type = AtomicQueryInputsType.mtp;
-    } else if (circuitId == "credentialAtomicQueryMTPV2OnChain") {
+    } else if (circuitId == CircuitType.mtponchain.name) {
       type = AtomicQueryInputsType.mtponchain;
-    } else if (circuitId == "credentialAtomicQuerySigV2") {
+    } else if (circuitId == CircuitType.sig.name) {
       type = AtomicQueryInputsType.sig;
-    } else if (circuitId == "credentialAtomicQuerySigV2OnChain") {
+    } else if (circuitId == CircuitType.sigonchain.name) {
       type = AtomicQueryInputsType.sigonchain;
+    } else if (circuitId == CircuitType.circuitsV3.name) {
+      type = AtomicQueryInputsType.v3;
+    } else if (circuitId == CircuitType.circuitsV3onchain.name) {
+      type = AtomicQueryInputsType.v3onchain;
     }
     final inputParam = AtomicQueryInputsParam(
       type: type,
@@ -201,6 +220,10 @@ class LibPolygonIdCoreProofDataSource {
       signature: signature,
       credential: credential,
       request: request,
+      verifierId: verifierId,
+      linkNonce: linkNonce,
+      params: scopeParams,
+      transactionData: transactionData,
     );
 
     logger().i(

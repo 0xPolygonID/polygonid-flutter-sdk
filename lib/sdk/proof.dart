@@ -7,6 +7,7 @@ import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/circuits_to_download_param.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
@@ -38,9 +39,12 @@ abstract class PolygonIdSdkProof {
       String? signature,
       Map<String, dynamic>? config});
 
-  Stream<DownloadInfo> get initCircuitsDownloadAndGetInfoStream;
+  Stream<DownloadInfo> initCircuitsDownloadAndGetInfoStream({
+    required List<CircuitsToDownloadParam> circuitsToDownload,
+  });
 
-  Future<bool> isAlreadyDownloadedCircuitsFromServer();
+  Future<bool> isAlreadyDownloadedCircuitsFromServer(
+      {required String circuitsFileName});
 
   Stream<String> proofGenerationStepsStream();
 
@@ -66,54 +70,67 @@ class Proof implements PolygonIdSdkProof {
   );
 
   @override
-  Future<ZKProofEntity> prove(
-      {required String identifier,
-      required BigInt profileNonce,
-      required BigInt claimSubjectProfileNonce,
-      required ClaimEntity credential,
-      required CircuitDataEntity circuitData,
-      required Map<String, dynamic> proofScopeRequest,
-      List<String>? authClaim,
-      MTProofEntity? incProof,
-      MTProofEntity? nonRevProof,
-      GistMTProofEntity? gistProof,
-      Map<String, dynamic>? treeState,
-      String? challenge,
-      String? signature,
-      Map<String, dynamic>? config}) {
+  Future<ZKProofEntity> prove({
+    required String identifier,
+    required BigInt profileNonce,
+    required BigInt claimSubjectProfileNonce,
+    required ClaimEntity credential,
+    required CircuitDataEntity circuitData,
+    required Map<String, dynamic> proofScopeRequest,
+    List<String>? authClaim,
+    MTProofEntity? incProof,
+    MTProofEntity? nonRevProof,
+    GistMTProofEntity? gistProof,
+    Map<String, dynamic>? treeState,
+    String? challenge,
+    String? signature,
+    Map<String, dynamic>? config,
+    String? verifierId,
+    String? linkNonce,
+    Map<String, dynamic>? transactionData,
+  }) {
     _stacktraceManager.clear();
     _stacktraceManager.addTrace("PolygonIdSdk.Proof.prove called");
     return generateZKProofUseCase.execute(
         param: GenerateZKProofParam(
-            identifier,
-            profileNonce,
-            claimSubjectProfileNonce,
-            credential,
-            circuitData,
-            authClaim,
-            incProof,
-            nonRevProof,
-            gistProof,
-            treeState,
-            challenge,
-            signature,
-            proofScopeRequest,
-            config));
+      identifier,
+      profileNonce,
+      claimSubjectProfileNonce,
+      credential,
+      circuitData,
+      authClaim,
+      incProof,
+      nonRevProof,
+      gistProof,
+      treeState,
+      challenge,
+      signature,
+      proofScopeRequest,
+      config,
+      verifierId,
+      linkNonce,
+      transactionData,
+    ));
   }
 
   ///
   @override
-  Future<bool> isAlreadyDownloadedCircuitsFromServer() async {
+  Future<bool> isAlreadyDownloadedCircuitsFromServer(
+      {required String circuitsFileName}) async {
     _stacktraceManager.clear();
     _stacktraceManager.addTrace(
         "PolygonIdSdk.Proof.isAlreadyDownloadedCircuitsFromServer called");
-    return _circuitsFilesExistUseCase.execute();
+    return _circuitsFilesExistUseCase.execute(param: circuitsFileName);
   }
 
   ///
   @override
-  Stream<DownloadInfo> get initCircuitsDownloadAndGetInfoStream {
-    return _downloadCircuitsUseCase.execute();
+  Stream<DownloadInfo> initCircuitsDownloadAndGetInfoStream({
+    required List<CircuitsToDownloadParam> circuitsToDownload,
+  }) {
+    return _downloadCircuitsUseCase.execute(
+      param: DownloadCircuitsParam(circuitsToDownload: circuitsToDownload),
+    );
   }
 
   /// Returns a [Stream] of [String] of proof generation steps
