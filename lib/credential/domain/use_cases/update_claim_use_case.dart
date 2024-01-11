@@ -49,7 +49,7 @@ class UpdateClaimUseCase extends FutureUseCase<UpdateClaimParam, ClaimEntity> {
         .then((claim) => ClaimEntity(
             id: param.id,
             issuer: param.issuer ?? claim.issuer,
-            did: param.genesisDid,
+            did: claim.did,
             state: param.state ?? claim.state,
             expiration: param.expiration ?? claim.expiration,
             type: param.type ?? claim.type,

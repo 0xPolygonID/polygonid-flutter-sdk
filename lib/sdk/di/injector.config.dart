@@ -88,13 +88,15 @@ import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revo
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_status_use_case.dart'
     as _i177;
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart'
-    as _i195;
+    as _i196;
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_did_profile_info_list_use_case.dart'
     as _i126;
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_did_profile_info_use_case.dart'
     as _i127;
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_non_rev_proof_use_case.dart'
     as _i176;
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart'
+    as _i189;
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_all_claims_use_case.dart'
     as _i134;
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart'
@@ -158,13 +160,13 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_re
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart'
     as _i131;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart'
-    as _i203;
+    as _i204;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart'
     as _i183;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/clean_schema_cache_use_case.dart'
     as _i143;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_claims_use_case.dart'
-    as _i194;
+    as _i195;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart'
     as _i184;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_challenge_use_case.dart'
@@ -178,11 +180,11 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_fetch_reque
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_filters_use_case.dart'
     as _i174;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_rev_nonce_use_case.dart'
-    as _i196;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart'
     as _i197;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart'
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart'
     as _i198;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart'
+    as _i199;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_type_use_case.dart'
     as _i24;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart'
@@ -204,7 +206,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/get
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/remove_interactions_use_case.dart'
     as _i181;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/update_interaction_use_case.dart'
-    as _i189;
+    as _i190;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/listen_and_store_notification_use_case.dart'
     as _i132;
 import 'package:polygonid_flutter_sdk/iden3comm/libs/polygonidcore/pidcore_iden3comm.dart'
@@ -292,15 +294,15 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_latest_state
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_public_keys_use_case.dart'
     as _i167;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/add_identity_use_case.dart'
-    as _i200;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/add_new_identity_use_case.dart'
     as _i201;
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/add_new_identity_use_case.dart'
+    as _i202;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/backup_identity_use_case.dart'
-    as _i190;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/check_identity_validity_use_case.dart'
     as _i191;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/create_identity_use_case.dart'
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/check_identity_validity_use_case.dart'
     as _i192;
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/create_identity_use_case.dart'
+    as _i193;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identities_use_case.dart'
     as _i164;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart'
@@ -308,25 +310,25 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_ide
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_private_key_use_case.dart'
     as _i166;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/remove_identity_use_case.dart'
-    as _i208;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/restore_identity_use_case.dart'
     as _i209;
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/restore_identity_use_case.dart'
+    as _i210;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/sign_message_use_case.dart'
     as _i156;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/update_identity_use_case.dart'
-    as _i199;
+    as _i200;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/add_profile_use_case.dart'
-    as _i202;
+    as _i203;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/check_profile_validity_use_case.dart'
     as _i7;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/create_profiles_use_case.dart'
-    as _i193;
+    as _i194;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/get_profiles_use_case.dart'
     as _i188;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/remove_profile_use_case.dart'
-    as _i206;
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/restore_profiles_use_case.dart'
     as _i207;
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/restore_profiles_use_case.dart'
+    as _i208;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/smt/create_identity_state_use_case.dart'
     as _i171;
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/smt/remove_identity_state_use_case.dart'
@@ -399,11 +401,11 @@ import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/v3/witness_v3.dart'
     as _i77;
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/v3_onchain/witness_v3_onchain.dart'
     as _i78;
-import 'package:polygonid_flutter_sdk/sdk/credential.dart' as _i204;
-import 'package:polygonid_flutter_sdk/sdk/di/injector.dart' as _i211;
+import 'package:polygonid_flutter_sdk/sdk/credential.dart' as _i205;
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart' as _i212;
 import 'package:polygonid_flutter_sdk/sdk/error_handling.dart' as _i87;
-import 'package:polygonid_flutter_sdk/sdk/iden3comm.dart' as _i205;
-import 'package:polygonid_flutter_sdk/sdk/identity.dart' as _i210;
+import 'package:polygonid_flutter_sdk/sdk/iden3comm.dart' as _i206;
+import 'package:polygonid_flutter_sdk/sdk/identity.dart' as _i211;
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart' as _i51;
 import 'package:polygonid_flutter_sdk/sdk/polygonid_flutter_channel.dart'
     as _i103;
@@ -441,7 +443,6 @@ extension GetItInjectableX on _i1.GetIt {
     gh.factory<_i10.ClaimStateMapper>(() => _i10.ClaimStateMapper());
     gh.factory<_i11.Client>(() => networkModule.client);
     gh.factory<_i12.CreatePathWrapper>(() => _i12.CreatePathWrapper());
-    gh.lazySingletonAsync<_i13.Database>(() => databaseModule.database());
     gh.factoryParamAsync<_i13.Database, String?, String?>(
       (
         identifier,
@@ -453,6 +454,7 @@ extension GetItInjectableX on _i1.GetIt {
       ),
       instanceName: 'polygonIdSdkIdentity',
     );
+    gh.lazySingletonAsync<_i13.Database>(() => databaseModule.database());
     gh.factory<_i12.DestinationPathDataSource>(
         () => _i12.DestinationPathDataSource(gh<_i12.CreatePathWrapper>()));
     gh.factory<_i14.DidProfileInfoInteractedDidFilterMapper>(
@@ -547,25 +549,25 @@ extension GetItInjectableX on _i1.GetIt {
         databaseModule.getCodec(privateKey));
     gh.lazySingleton<_i64.StacktraceManager>(() => _i64.StacktraceManager());
     gh.factory<_i65.StateIdentifierMapper>(() => _i65.StateIdentifierMapper());
-    gh.factory<_i13.StoreRef<String, dynamic>>(
-      () => databaseModule.keyValueStore,
-      instanceName: 'keyValueStore',
-    );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.claimStore,
-      instanceName: 'claimStore',
-    );
-    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.interactionStore,
-      instanceName: 'interactionStore',
+      () => databaseModule.profileStore,
+      instanceName: 'profilesStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.didProfileInfoStore,
       instanceName: 'didProfileInfoStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.profileStore,
-      instanceName: 'profilesStore',
+      () => databaseModule.interactionStore,
+      instanceName: 'interactionStore',
+    );
+    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
+      () => databaseModule.claimStore,
+      instanceName: 'claimStore',
+    );
+    gh.factory<_i13.StoreRef<String, dynamic>>(
+      () => databaseModule.keyValueStore,
+      instanceName: 'keyValueStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.identityStore,
@@ -1140,40 +1142,50 @@ extension GetItInjectableX on _i1.GetIt {
               await getAsync<_i183.CheckProfileAndDidCurrentEnvUseCase>(),
               gh<_i64.StacktraceManager>(),
             ));
-    gh.factoryAsync<_i189.UpdateInteractionUseCase>(
-        () async => _i189.UpdateInteractionUseCase(
+    gh.factoryAsync<_i189.RefreshCredentialUseCase>(
+        () async => _i189.RefreshCredentialUseCase(
+              gh<_i122.CredentialRepository>(),
+              gh<_i64.StacktraceManager>(),
+              await getAsync<_i179.GetIdentityUseCase>(),
+              await getAsync<_i186.GetAuthTokenUseCase>(),
+              gh<_i129.Iden3commCredentialRepository>(),
+              gh<_i135.RemoveClaimsUseCase>(),
+              gh<_i138.SaveClaimsUseCase>(),
+            ));
+    gh.factoryAsync<_i190.UpdateInteractionUseCase>(
+        () async => _i190.UpdateInteractionUseCase(
               await getAsync<_i131.InteractionRepository>(),
               gh<_i7.CheckProfileValidityUseCase>(),
               await getAsync<_i179.GetIdentityUseCase>(),
               await getAsync<_i182.AddInteractionUseCase>(),
             ));
-    gh.factoryAsync<_i190.BackupIdentityUseCase>(
-        () async => _i190.BackupIdentityUseCase(
+    gh.factoryAsync<_i191.BackupIdentityUseCase>(
+        () async => _i191.BackupIdentityUseCase(
               await getAsync<_i179.GetIdentityUseCase>(),
               await getAsync<_i153.IdentityRepository>(),
               await getAsync<_i187.GetCurrentEnvDidIdentifierUseCase>(),
               gh<_i64.StacktraceManager>(),
             ));
-    gh.factoryAsync<_i191.CheckIdentityValidityUseCase>(
-        () async => _i191.CheckIdentityValidityUseCase(
+    gh.factoryAsync<_i192.CheckIdentityValidityUseCase>(
+        () async => _i192.CheckIdentityValidityUseCase(
               await getAsync<_i166.GetPrivateKeyUseCase>(),
               await getAsync<_i187.GetCurrentEnvDidIdentifierUseCase>(),
               gh<_i64.StacktraceManager>(),
             ));
-    gh.factoryAsync<_i192.CreateIdentityUseCase>(
-        () async => _i192.CreateIdentityUseCase(
+    gh.factoryAsync<_i193.CreateIdentityUseCase>(
+        () async => _i193.CreateIdentityUseCase(
               await getAsync<_i167.GetPublicKeysUseCase>(),
               await getAsync<_i187.GetCurrentEnvDidIdentifierUseCase>(),
               gh<_i64.StacktraceManager>(),
             ));
-    gh.factoryAsync<_i193.CreateProfilesUseCase>(
-        () async => _i193.CreateProfilesUseCase(
+    gh.factoryAsync<_i194.CreateProfilesUseCase>(
+        () async => _i194.CreateProfilesUseCase(
               await getAsync<_i167.GetPublicKeysUseCase>(),
               await getAsync<_i187.GetCurrentEnvDidIdentifierUseCase>(),
               gh<_i64.StacktraceManager>(),
             ));
-    gh.factoryAsync<_i194.FetchAndSaveClaimsUseCase>(
-        () async => _i194.FetchAndSaveClaimsUseCase(
+    gh.factoryAsync<_i195.FetchAndSaveClaimsUseCase>(
+        () async => _i195.FetchAndSaveClaimsUseCase(
               gh<_i129.Iden3commCredentialRepository>(),
               await getAsync<_i183.CheckProfileAndDidCurrentEnvUseCase>(),
               await getAsync<_i128.GetEnvUseCase>(),
@@ -1185,23 +1197,23 @@ extension GetItInjectableX on _i1.GetIt {
               gh<_i142.CacheCredentialUseCase>(),
               gh<_i64.StacktraceManager>(),
             ));
-    gh.factoryAsync<_i195.GetClaimsUseCase>(() async => _i195.GetClaimsUseCase(
+    gh.factoryAsync<_i196.GetClaimsUseCase>(() async => _i196.GetClaimsUseCase(
           gh<_i122.CredentialRepository>(),
           await getAsync<_i187.GetCurrentEnvDidIdentifierUseCase>(),
           gh<_i64.StacktraceManager>(),
         ));
-    gh.factoryAsync<_i196.GetIden3commClaimsRevNonceUseCase>(
-        () async => _i196.GetIden3commClaimsRevNonceUseCase(
+    gh.factoryAsync<_i197.GetIden3commClaimsRevNonceUseCase>(
+        () async => _i197.GetIden3commClaimsRevNonceUseCase(
               gh<_i129.Iden3commCredentialRepository>(),
-              await getAsync<_i195.GetClaimsUseCase>(),
+              await getAsync<_i196.GetClaimsUseCase>(),
               gh<_i125.GetClaimRevocationNonceUseCase>(),
               await getAsync<_i168.IsProofCircuitSupportedUseCase>(),
               gh<_i148.GetProofRequestsUseCase>(),
             ));
-    gh.factoryAsync<_i197.GetIden3commClaimsUseCase>(
-        () async => _i197.GetIden3commClaimsUseCase(
+    gh.factoryAsync<_i198.GetIden3commClaimsUseCase>(
+        () async => _i198.GetIden3commClaimsUseCase(
               gh<_i129.Iden3commCredentialRepository>(),
-              await getAsync<_i195.GetClaimsUseCase>(),
+              await getAsync<_i196.GetClaimsUseCase>(),
               await getAsync<_i177.GetClaimRevocationStatusUseCase>(),
               gh<_i125.GetClaimRevocationNonceUseCase>(),
               gh<_i140.UpdateClaimUseCase>(),
@@ -1210,48 +1222,53 @@ extension GetItInjectableX on _i1.GetIt {
               gh<_i8.CircuitTypeMapper>(),
               gh<_i64.StacktraceManager>(),
             ));
-    gh.factoryAsync<_i198.GetIden3commProofsUseCase>(
-        () async => _i198.GetIden3commProofsUseCase(
+    gh.factoryAsync<_i199.GetIden3commProofsUseCase>(
+        () async => _i199.GetIden3commProofsUseCase(
               await getAsync<_i154.ProofRepository>(),
-              await getAsync<_i197.GetIden3commClaimsUseCase>(),
+              await getAsync<_i198.GetIden3commClaimsUseCase>(),
               await getAsync<_i184.GenerateIden3commProofUseCase>(),
               await getAsync<_i168.IsProofCircuitSupportedUseCase>(),
               gh<_i148.GetProofRequestsUseCase>(),
               await getAsync<_i179.GetIdentityUseCase>(),
               gh<_i56.ProofGenerationStepsStreamManager>(),
               gh<_i64.StacktraceManager>(),
+              await getAsync<_i186.GetAuthTokenUseCase>(),
+              gh<_i129.Iden3commCredentialRepository>(),
+              gh<_i135.RemoveClaimsUseCase>(),
+              gh<_i138.SaveClaimsUseCase>(),
+              await getAsync<_i189.RefreshCredentialUseCase>(),
             ));
-    gh.factoryAsync<_i199.UpdateIdentityUseCase>(
-        () async => _i199.UpdateIdentityUseCase(
+    gh.factoryAsync<_i200.UpdateIdentityUseCase>(
+        () async => _i200.UpdateIdentityUseCase(
               await getAsync<_i153.IdentityRepository>(),
-              await getAsync<_i192.CreateIdentityUseCase>(),
+              await getAsync<_i193.CreateIdentityUseCase>(),
               await getAsync<_i179.GetIdentityUseCase>(),
             ));
-    gh.factoryAsync<_i200.AddIdentityUseCase>(
-        () async => _i200.AddIdentityUseCase(
+    gh.factoryAsync<_i201.AddIdentityUseCase>(
+        () async => _i201.AddIdentityUseCase(
               await getAsync<_i153.IdentityRepository>(),
-              await getAsync<_i192.CreateIdentityUseCase>(),
+              await getAsync<_i193.CreateIdentityUseCase>(),
               await getAsync<_i171.CreateIdentityStateUseCase>(),
               gh<_i64.StacktraceManager>(),
             ));
-    gh.factoryAsync<_i201.AddNewIdentityUseCase>(
-        () async => _i201.AddNewIdentityUseCase(
+    gh.factoryAsync<_i202.AddNewIdentityUseCase>(
+        () async => _i202.AddNewIdentityUseCase(
               await getAsync<_i153.IdentityRepository>(),
-              await getAsync<_i200.AddIdentityUseCase>(),
+              await getAsync<_i201.AddIdentityUseCase>(),
               gh<_i64.StacktraceManager>(),
             ));
-    gh.factoryAsync<_i202.AddProfileUseCase>(
-        () async => _i202.AddProfileUseCase(
+    gh.factoryAsync<_i203.AddProfileUseCase>(
+        () async => _i203.AddProfileUseCase(
               await getAsync<_i179.GetIdentityUseCase>(),
-              await getAsync<_i199.UpdateIdentityUseCase>(),
+              await getAsync<_i200.UpdateIdentityUseCase>(),
               await getAsync<_i183.CheckProfileAndDidCurrentEnvUseCase>(),
-              await getAsync<_i193.CreateProfilesUseCase>(),
+              await getAsync<_i194.CreateProfilesUseCase>(),
               gh<_i64.StacktraceManager>(),
             ));
-    gh.factoryAsync<_i203.AuthenticateUseCase>(
-        () async => _i203.AuthenticateUseCase(
+    gh.factoryAsync<_i204.AuthenticateUseCase>(
+        () async => _i204.AuthenticateUseCase(
               gh<_i130.Iden3commRepository>(),
-              await getAsync<_i198.GetIden3commProofsUseCase>(),
+              await getAsync<_i199.GetIden3commProofsUseCase>(),
               await getAsync<_i178.GetDidIdentifierUseCase>(),
               await getAsync<_i186.GetAuthTokenUseCase>(),
               await getAsync<_i128.GetEnvUseCase>(),
@@ -1260,27 +1277,28 @@ extension GetItInjectableX on _i1.GetIt {
               gh<_i56.ProofGenerationStepsStreamManager>(),
               gh<_i64.StacktraceManager>(),
             ));
-    gh.factoryAsync<_i204.Credential>(() async => _i204.Credential(
+    gh.factoryAsync<_i205.Credential>(() async => _i205.Credential(
           gh<_i138.SaveClaimsUseCase>(),
-          await getAsync<_i195.GetClaimsUseCase>(),
+          await getAsync<_i196.GetClaimsUseCase>(),
           gh<_i135.RemoveClaimsUseCase>(),
           await getAsync<_i177.GetClaimRevocationStatusUseCase>(),
           gh<_i140.UpdateClaimUseCase>(),
           gh<_i64.StacktraceManager>(),
+          await getAsync<_i189.RefreshCredentialUseCase>(),
         ));
-    gh.factoryAsync<_i205.Iden3comm>(() async => _i205.Iden3comm(
-          await getAsync<_i194.FetchAndSaveClaimsUseCase>(),
+    gh.factoryAsync<_i206.Iden3comm>(() async => _i206.Iden3comm(
+          await getAsync<_i195.FetchAndSaveClaimsUseCase>(),
           gh<_i88.GetIden3MessageUseCase>(),
           gh<_i149.GetSchemasUseCase>(),
-          await getAsync<_i203.AuthenticateUseCase>(),
+          await getAsync<_i204.AuthenticateUseCase>(),
           await getAsync<_i174.GetFiltersUseCase>(),
-          await getAsync<_i197.GetIden3commClaimsUseCase>(),
-          await getAsync<_i196.GetIden3commClaimsRevNonceUseCase>(),
-          await getAsync<_i198.GetIden3commProofsUseCase>(),
+          await getAsync<_i198.GetIden3commClaimsUseCase>(),
+          await getAsync<_i197.GetIden3commClaimsRevNonceUseCase>(),
+          await getAsync<_i199.GetIden3commProofsUseCase>(),
           await getAsync<_i180.GetInteractionsUseCase>(),
           await getAsync<_i182.AddInteractionUseCase>(),
           await getAsync<_i181.RemoveInteractionsUseCase>(),
-          await getAsync<_i189.UpdateInteractionUseCase>(),
+          await getAsync<_i190.UpdateInteractionUseCase>(),
           gh<_i143.CleanSchemaCacheUseCase>(),
           gh<_i64.StacktraceManager>(),
           gh<_i141.AddDidProfileInfoUseCase>(),
@@ -1288,54 +1306,54 @@ extension GetItInjectableX on _i1.GetIt {
           gh<_i126.GetDidProfileInfoListUseCase>(),
           gh<_i136.RemoveDidProfileInfoUseCase>(),
         ));
-    gh.factoryAsync<_i206.RemoveProfileUseCase>(
-        () async => _i206.RemoveProfileUseCase(
+    gh.factoryAsync<_i207.RemoveProfileUseCase>(
+        () async => _i207.RemoveProfileUseCase(
               await getAsync<_i179.GetIdentityUseCase>(),
-              await getAsync<_i199.UpdateIdentityUseCase>(),
+              await getAsync<_i200.UpdateIdentityUseCase>(),
               await getAsync<_i183.CheckProfileAndDidCurrentEnvUseCase>(),
-              await getAsync<_i193.CreateProfilesUseCase>(),
+              await getAsync<_i194.CreateProfilesUseCase>(),
               gh<_i152.RemoveIdentityStateUseCase>(),
               gh<_i134.RemoveAllClaimsUseCase>(),
               gh<_i64.StacktraceManager>(),
             ));
-    gh.factoryAsync<_i207.RestoreProfilesUseCase>(
-        () async => _i207.RestoreProfilesUseCase(
+    gh.factoryAsync<_i208.RestoreProfilesUseCase>(
+        () async => _i208.RestoreProfilesUseCase(
               await getAsync<_i153.IdentityRepository>(),
-              await getAsync<_i199.UpdateIdentityUseCase>(),
+              await getAsync<_i200.UpdateIdentityUseCase>(),
             ));
-    gh.factoryAsync<_i208.RemoveIdentityUseCase>(
-        () async => _i208.RemoveIdentityUseCase(
+    gh.factoryAsync<_i209.RemoveIdentityUseCase>(
+        () async => _i209.RemoveIdentityUseCase(
               await getAsync<_i153.IdentityRepository>(),
               await getAsync<_i188.GetProfilesUseCase>(),
-              await getAsync<_i206.RemoveProfileUseCase>(),
+              await getAsync<_i207.RemoveProfileUseCase>(),
               gh<_i152.RemoveIdentityStateUseCase>(),
               gh<_i134.RemoveAllClaimsUseCase>(),
               await getAsync<_i183.CheckProfileAndDidCurrentEnvUseCase>(),
               gh<_i64.StacktraceManager>(),
             ));
-    gh.factoryAsync<_i209.RestoreIdentityUseCase>(
-        () async => _i209.RestoreIdentityUseCase(
-              await getAsync<_i200.AddIdentityUseCase>(),
+    gh.factoryAsync<_i210.RestoreIdentityUseCase>(
+        () async => _i210.RestoreIdentityUseCase(
+              await getAsync<_i201.AddIdentityUseCase>(),
               await getAsync<_i179.GetIdentityUseCase>(),
               await getAsync<_i153.IdentityRepository>(),
               await getAsync<_i187.GetCurrentEnvDidIdentifierUseCase>(),
-              await getAsync<_i207.RestoreProfilesUseCase>(),
+              await getAsync<_i208.RestoreProfilesUseCase>(),
             ));
-    gh.factoryAsync<_i210.Identity>(() async => _i210.Identity(
-          await getAsync<_i191.CheckIdentityValidityUseCase>(),
+    gh.factoryAsync<_i211.Identity>(() async => _i211.Identity(
+          await getAsync<_i192.CheckIdentityValidityUseCase>(),
           await getAsync<_i166.GetPrivateKeyUseCase>(),
-          await getAsync<_i201.AddNewIdentityUseCase>(),
-          await getAsync<_i209.RestoreIdentityUseCase>(),
-          await getAsync<_i190.BackupIdentityUseCase>(),
+          await getAsync<_i202.AddNewIdentityUseCase>(),
+          await getAsync<_i210.RestoreIdentityUseCase>(),
+          await getAsync<_i191.BackupIdentityUseCase>(),
           await getAsync<_i179.GetIdentityUseCase>(),
           await getAsync<_i164.GetIdentitiesUseCase>(),
-          await getAsync<_i208.RemoveIdentityUseCase>(),
+          await getAsync<_i209.RemoveIdentityUseCase>(),
           await getAsync<_i178.GetDidIdentifierUseCase>(),
           await getAsync<_i156.SignMessageUseCase>(),
           await getAsync<_i172.FetchIdentityStateUseCase>(),
-          await getAsync<_i202.AddProfileUseCase>(),
+          await getAsync<_i203.AddProfileUseCase>(),
           await getAsync<_i188.GetProfilesUseCase>(),
-          await getAsync<_i206.RemoveProfileUseCase>(),
+          await getAsync<_i207.RemoveProfileUseCase>(),
           await getAsync<_i162.GetDidUseCase>(),
           gh<_i64.StacktraceManager>(),
         ));
@@ -1343,18 +1361,18 @@ extension GetItInjectableX on _i1.GetIt {
   }
 }
 
-class _$PlatformModule extends _i211.PlatformModule {}
+class _$PlatformModule extends _i212.PlatformModule {}
 
-class _$NetworkModule extends _i211.NetworkModule {}
+class _$NetworkModule extends _i212.NetworkModule {}
 
-class _$DatabaseModule extends _i211.DatabaseModule {}
+class _$DatabaseModule extends _i212.DatabaseModule {}
 
-class _$FilesManagerModule extends _i211.FilesManagerModule {}
+class _$FilesManagerModule extends _i212.FilesManagerModule {}
 
-class _$EncryptionModule extends _i211.EncryptionModule {}
+class _$EncryptionModule extends _i212.EncryptionModule {}
 
-class _$LoggerModule extends _i211.LoggerModule {}
+class _$LoggerModule extends _i212.LoggerModule {}
 
-class _$ChannelModule extends _i211.ChannelModule {}
+class _$ChannelModule extends _i212.ChannelModule {}
 
-class _$RepositoriesModule extends _i211.RepositoriesModule {}
+class _$RepositoriesModule extends _i212.RepositoriesModule {}

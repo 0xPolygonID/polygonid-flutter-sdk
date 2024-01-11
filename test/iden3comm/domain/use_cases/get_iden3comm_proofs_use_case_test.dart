@@ -4,10 +4,15 @@ import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_sd_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
@@ -56,6 +61,13 @@ MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
 MockProofGenerationStepsStreamManager proofGenerationStepsStreamManager =
     MockProofGenerationStepsStreamManager();
 MockStacktraceManager stacktraceStreamManager = MockStacktraceManager();
+MockGetAuthTokenUseCase getAuthTokenUseCase = MockGetAuthTokenUseCase();
+MockIden3commCredentialRepository iden3commCredentialRepository =
+    MockIden3commCredentialRepository();
+MockRemoveClaimsUseCase removeClaimsUseCase = MockRemoveClaimsUseCase();
+MockSaveClaimsUseCase saveClaimsUseCase = MockSaveClaimsUseCase();
+MockRefreshCredentialUseCase refreshCredentialUseCase =
+    MockRefreshCredentialUseCase();
 
 // Tested instance
 GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
@@ -67,6 +79,11 @@ GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   getIdentityUseCase,
   proofGenerationStepsStreamManager,
   stacktraceStreamManager,
+  getAuthTokenUseCase,
+  iden3commCredentialRepository,
+  removeClaimsUseCase,
+  saveClaimsUseCase,
+  refreshCredentialUseCase,
 );
 
 @GenerateMocks([
@@ -78,6 +95,11 @@ GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   GetIdentityUseCase,
   ProofGenerationStepsStreamManager,
   StacktraceManager,
+  GetAuthTokenUseCase,
+  Iden3commCredentialRepository,
+  RemoveClaimsUseCase,
+  SaveClaimsUseCase,
+  RefreshCredentialUseCase,
 ])
 main() {
   setUp(() {

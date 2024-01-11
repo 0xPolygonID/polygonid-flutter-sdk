@@ -12,13 +12,17 @@ class ClaimModel {
   final String type;
   final List<ClaimDetailModel> details;
 
-  ClaimModel(
-      {required this.id,
-      required this.value,
-      required this.expiration,
-      required this.issuer,
-      required this.type,
-      required this.state,
-      required this.name,
-      required this.details});
+  final bool refreshable;
+
+  ClaimModel({
+    required this.id,
+    required this.value,
+    required this.expiration,
+    required this.issuer,
+    required this.type,
+    required this.state,
+    required this.name,
+    required this.details,
+    required this.refreshable,
+  });
 }

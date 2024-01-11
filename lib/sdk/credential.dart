@@ -6,6 +6,7 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.da
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/update_claim_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
@@ -109,6 +110,12 @@ abstract class PolygonIdSdkCredential {
     String? type,
     Map<String, dynamic>? data,
   });
+
+  Future<ClaimEntity> refreshCredential({
+    required String genesisDid,
+    required String privateKey,
+    required ClaimEntity credential,
+  });
 }
 
 @injectable
@@ -120,6 +127,8 @@ class Credential implements PolygonIdSdkCredential {
   final UpdateClaimUseCase _updateClaimUseCase;
   final StacktraceManager _stacktraceManager;
 
+  final RefreshCredentialUseCase _refreshCredentialUseCase;
+
   Credential(
     this._saveClaimsUseCase,
     this._getClaimsUseCase,
@@ -127,6 +136,7 @@ class Credential implements PolygonIdSdkCredential {
     this._getClaimRevocationStatusUseCase,
     this._updateClaimUseCase,
     this._stacktraceManager,
+    this._refreshCredentialUseCase,
   );
 
   @override
@@ -255,5 +265,19 @@ class Credential implements PolygonIdSdkCredential {
             type: type,
             data: data,
             privateKey: privateKey));
+  }
+
+  @override
+  Future<ClaimEntity> refreshCredential({
+    required String genesisDid,
+    required String privateKey,
+    required ClaimEntity credential,
+  }) {
+    return _refreshCredentialUseCase.execute(
+        param: RefreshCredentialParam(
+      credential: credential,
+      genesisDid: genesisDid,
+      privateKey: privateKey,
+    ));
   }
 }
