@@ -76,7 +76,7 @@ void main() {
           .then((_) => expect(true, false))
           .catchError((error) {
         expect(error, isA<UnsupportedIden3MsgTypeException>());
-        expect(error.type, Iden3MessageType.unknown);
+        expect(error.typeName, Iden3MessageType.unknown);
       });
     },
   );

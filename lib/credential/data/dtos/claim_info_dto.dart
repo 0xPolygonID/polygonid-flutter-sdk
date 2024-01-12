@@ -22,6 +22,7 @@ class ClaimInfoDTO extends Equatable {
   @JsonKey(name: 'proof')
   final List<ClaimProofDTO> proofs;
   final RefreshServiceDTO? refreshService;
+  final DisplayMethodDTO? displayMethod;
 
   const ClaimInfoDTO(
     this.id,
@@ -35,6 +36,7 @@ class ClaimInfoDTO extends Equatable {
     this.credentialSchema,
     this.proofs,
     this.refreshService,
+    this.displayMethod,
   );
 
   factory ClaimInfoDTO.fromJson(Map<String, dynamic> json) =>
@@ -168,6 +170,23 @@ class CredentialSchemaDTO extends Equatable {
       _$CredentialSchemaDTOFromJson(json);
 
   Map<String, dynamic> toJson() => _$CredentialSchemaDTOToJson(this);
+
+  @override
+  List<Object?> get props => [id, type];
+}
+
+@JsonSerializable()
+class DisplayMethodDTO {
+  /// Contains url.
+  final String id;
+  final String type;
+
+  DisplayMethodDTO(this.id, this.type);
+
+  factory DisplayMethodDTO.fromJson(Map<String, dynamic> json) =>
+      _$DisplayMethodDTOFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DisplayMethodDTOToJson(this);
 
   @override
   List<Object?> get props => [id, type];

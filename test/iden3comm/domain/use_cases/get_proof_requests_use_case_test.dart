@@ -92,7 +92,7 @@ void main() {
           .then((_) => expect(true, false))
           .catchError((error) {
         expect(error, isA<UnsupportedIden3MsgTypeException>());
-        expect(error.type, Iden3MessageType.credentialIssuanceResponse);
+        expect(error.typeName, Iden3MessageType.credentialIssuanceResponse);
       });
 
       // Then

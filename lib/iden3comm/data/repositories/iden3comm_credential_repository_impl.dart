@@ -34,15 +34,29 @@ class Iden3commCredentialRepositoryImpl extends Iden3commCredentialRepository {
     return _remoteIden3commDataSource
         .fetchClaim(authToken: authToken, url: url, did: did)
         .then((dto) {
-      /// Error in fetching schema is not blocking
-      return _remoteIden3commDataSource
-          .fetchSchema(url: dto.info.credentialSchema.id)
-          .then((schema) {
-            dto.schema = schema;
+      final displayMethod = dto.info.displayMethod;
+
+      /// Error in fetching schema or displayType is not blocking
+      final futures = Future.wait([
+        _remoteIden3commDataSource
+            .fetchSchema(url: dto.info.credentialSchema.id)
+            .then((schema) {
+          dto.schema = schema;
+          return dto;
+        }).catchError((_) => dto),
+        if (displayMethod != null)
+          _remoteIden3commDataSource
+              .fetchDisplayType(url: displayMethod.id)
+              .then((displayType) {
+            displayType['type'] = displayMethod.type;
+            dto.displayType = displayType;
             return dto;
-          })
-          .catchError((_) => dto)
-          .then((value) => _claimMapper.mapFrom(dto));
+          }).catchError((_) {
+            return dto;
+          }),
+      ]);
+
+      return futures.then((_) => _claimMapper.mapFrom(dto));
     }).catchError((error) => throw FetchClaimException(error));
   }
 

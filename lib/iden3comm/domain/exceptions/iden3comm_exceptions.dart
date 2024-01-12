@@ -50,6 +50,10 @@ class FetchSchemaException extends ErrorException {
   FetchSchemaException(error) : super(error);
 }
 
+class FetchDisplayTypeException extends ErrorException {
+  FetchDisplayTypeException(error) : super(error);
+}
+
 class UnsupportedFetchClaimTypeException extends ErrorException {
   UnsupportedFetchClaimTypeException(error) : super(error);
 }

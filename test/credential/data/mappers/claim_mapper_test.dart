@@ -7,6 +7,7 @@ import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_info_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_state_mapper.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/display_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/credential/response/fetch_claim_response_dto.dart';
 
@@ -42,10 +43,11 @@ final entity = ClaimEntity(
 // Dependencies
 MockClaimStateMapper stateMapper = MockClaimStateMapper();
 MockClaimInfoMapper infoMapper = MockClaimInfoMapper();
+MockDisplayTypeMapper displayTypeMapper = MockDisplayTypeMapper();
 // Tested instance
-ClaimMapper mapper = ClaimMapper(stateMapper, infoMapper);
+ClaimMapper mapper = ClaimMapper(stateMapper, infoMapper, displayTypeMapper);
 
-@GenerateMocks([ClaimStateMapper, ClaimInfoMapper])
+@GenerateMocks([ClaimStateMapper, ClaimInfoMapper, DisplayTypeMapper])
 void main() {
   setUp(() {});
 
