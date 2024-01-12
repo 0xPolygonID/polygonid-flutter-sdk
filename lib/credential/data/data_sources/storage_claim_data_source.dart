@@ -26,8 +26,8 @@ class ClaimStoreRefWrapper {
     return _store.record(key).get(database);
   }
 
-  Future<Map<String, Object?>> put(DatabaseClient database, String key,
-      Map<String, Object?> value,
+  Future<Map<String, Object?>> put(
+      DatabaseClient database, String key, Map<String, Object?> value,
       {bool? merge}) {
     return _store.record(key).put(database, value, merge: merge);
   }
@@ -48,20 +48,22 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
 
   /// Store all claims in a single transaction
   /// If one storing fails, they will all be reverted
-  Future<void> storeClaims({required List<ClaimDTO> claims,
-    required String did,
-    required String privateKey}) {
+  Future<void> storeClaims(
+      {required List<ClaimDTO> claims,
+      required String did,
+      required String privateKey}) {
     // TODO check if identifiers inside each claim are from privateKey
     return getDatabase(did: did, privateKey: privateKey).then((database) =>
         database
             .transaction((transaction) =>
-            storeClaimsTransact(transaction: transaction, claims: claims))
+                storeClaimsTransact(transaction: transaction, claims: claims))
             .whenComplete(() => database.close()));
   }
 
   // For UT purpose
-  Future<void> storeClaimsTransact({required DatabaseClient transaction,
-    required List<ClaimDTO> claims}) async {
+  Future<void> storeClaimsTransact(
+      {required DatabaseClient transaction,
+      required List<ClaimDTO> claims}) async {
     for (ClaimDTO claim in claims) {
       await _storeRefWrapper.put(transaction, claim.id, claim.toJson());
     }
@@ -69,20 +71,21 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
 
   /// Remove all claims in a single transaction
   /// If one removing fails, they will all be reverted
-  Future<void> removeClaims({required List<String> claimIds,
-    required String did,
-    required String privateKey}) {
+  Future<void> removeClaims(
+      {required List<String> claimIds,
+      required String did,
+      required String privateKey}) {
     return getDatabase(did: did, privateKey: privateKey).then((database) =>
         database
-            .transaction((transaction) =>
-            removeClaimsTransact(
+            .transaction((transaction) => removeClaimsTransact(
                 transaction: transaction, claimIds: claimIds))
             .whenComplete(() => database.close()));
   }
 
   // For UT purpose
-  Future<void> removeClaimsTransact({required DatabaseClient transaction,
-    required List<String> claimIds}) async {
+  Future<void> removeClaimsTransact(
+      {required DatabaseClient transaction,
+      required List<String> claimIds}) async {
     for (String claimId in claimIds) {
       // TODO check if identifiers inside each claim are from privateKey
       await _storeRefWrapper.remove(transaction, claimId);
@@ -96,7 +99,7 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
     return getDatabase(did: did, privateKey: privateKey).then((database) =>
         database
             .transaction((transaction) =>
-            removeAllClaimsTransact(transaction: transaction))
+                removeAllClaimsTransact(transaction: transaction))
             .whenComplete(() => database.close()));
   }
 
@@ -115,14 +118,10 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
         _storeRefWrapper
             .find(database, finder: Finder(filter: filter))
             .then((snapshots) {
-              return snapshots
-                  .map((snapshot) {
-                return ClaimDTO.fromJson(snapshot.value);
-              })
-                  .toList();
-        }
-            )
-            .whenComplete(() => database.close()));
+          return snapshots.map((snapshot) {
+            return ClaimDTO.fromJson(snapshot.value);
+          }).toList();
+        }).whenComplete(() => database.close()));
   }
 
   /// Get a [ClaimDTO] filtered by id associated to the identity previously stored
