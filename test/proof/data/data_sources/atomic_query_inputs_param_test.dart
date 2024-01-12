@@ -67,7 +67,7 @@ void main() {
 
       final json = param.toJson();
 
-      expect(json['request']['transactionData'], {'snakeCaseKey': 'value'});
+      expect(json['transactionData'], {'snakeCaseKey': 'value'});
     });
 
     test('toJson excludes verifierId if it is empty', () {
