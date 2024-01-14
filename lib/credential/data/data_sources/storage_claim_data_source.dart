@@ -117,10 +117,11 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
     return getDatabase(did: did, privateKey: privateKey).then((database) =>
         _storeRefWrapper
             .find(database, finder: Finder(filter: filter))
-            .then((snapshots) => snapshots
-                .map((snapshot) => ClaimDTO.fromJson(snapshot.value))
-                .toList())
-            .whenComplete(() => database.close()));
+            .then((snapshots) {
+          return snapshots.map((snapshot) {
+            return ClaimDTO.fromJson(snapshot.value);
+          }).toList();
+        }).whenComplete(() => database.close()));
   }
 
   /// Get a [ClaimDTO] filtered by id associated to the identity previously stored
