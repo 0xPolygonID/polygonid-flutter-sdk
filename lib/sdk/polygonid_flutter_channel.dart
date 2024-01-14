@@ -902,4 +902,13 @@ class PolygonIdFlutterChannel
     // TODO: implement refreshCredential
     throw UnimplementedError();
   }
+
+  @override
+  Future<ClaimEntity>? getCredentialById(
+      {required String credentialId,
+      required String genesisDid,
+      required String privateKey}) {
+    // TODO: implement getCredentialById
+    throw UnimplementedError();
+  }
 }
