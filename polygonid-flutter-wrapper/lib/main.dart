@@ -8,8 +8,6 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 }
 
-
-
 /// Initialize the Flutter SDK wrapper
 /// This method is called from the native side
 @pragma('vm:entry-point')
