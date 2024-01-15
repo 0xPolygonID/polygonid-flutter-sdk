@@ -50,7 +50,9 @@ class CredentialStatusUpdateMessageEntity extends Iden3MessageEntity {
       super == other && other is CredentialStatusUpdateMessageEntity;
 
   @override
-  int get hashCode => super.hashCode;
+  int get hashCode => runtimeType.hashCode;
+
+
 }
 
 class CredentialStatusUpdateBody {
