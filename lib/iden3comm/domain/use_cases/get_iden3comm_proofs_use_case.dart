@@ -153,7 +153,9 @@ class GetIden3commProofsUseCase
           bool isCorrectType = claim.type == request.scope.query.type;
 
           if (isCorrectType && isCircuitSupported) {
-            String circuitId = request.scope.circuitId;
+            String circuitId = request.scope.circuitId
+                .replaceAll(CircuitType.currentCircuitBetaPostfix, '');
+
             CircuitDataEntity circuitData =
                 await _proofRepository.loadCircuitFiles(circuitId);
 
