@@ -76,7 +76,9 @@ enum ClaimProofIssuerCredStatusType {
   @JsonValue("SparseMerkleTreeProof")
   sparseMerkleTreeProof,
   @JsonValue("Iden3OnchainSparseMerkleTreeProof2023")
-  iden3OnchainSparseMerkleTreeProof2023
+  iden3OnchainSparseMerkleTreeProof2023,
+  @JsonValue("Iden3commRevocationStatusV1.0")
+  iden3commRevocationStatusV1
 }
 
 @JsonSerializable(explicitToJson: true)
