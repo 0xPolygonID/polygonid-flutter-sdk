@@ -101,11 +101,14 @@ class RemoteIden3commDataSource {
     }
   }
 
-  Future<ClaimDTO> fetchClaim(
-      {required String authToken, required String url, required String did}) {
+  Future<ClaimDTO> fetchClaim({
+    required String authToken,
+    required String url,
+    required String did,
+  }) {
     _stacktraceManager.addTrace(
         "[RemoteIden3commDataSource] fetchClaim: did:$did\nurl: $url\nauthToken: $authToken");
-    print(
+    logger().i(
         "[RemoteIden3commDataSource] fetchClaim: did:$did\nurl: $url\nauthToken: $authToken");
     return Future.value(Uri.parse(url))
         .then((uri) => client.post(
@@ -117,37 +120,28 @@ class RemoteIden3commDataSource {
               },
             ))
         .then((response) {
-      print(
-          "[RemoteIden3commDataSource] fetchClaim: code: ${response.statusCode} msg: ${response.body}");
       logger()
           .d("fetchClaim: code: ${response.statusCode} msg: ${response.body}");
       _stacktraceManager.addTrace(
           "[RemoteIden3commDataSource] fetchClaim: ${response.statusCode} ${response.body}");
       if (response.statusCode == 200) {
         Map<String, dynamic> jsonResponse = json.decode(response.body);
-        FetchClaimResponseDTO fetchResponse =
-            FetchClaimResponseDTO.fromJson(jsonResponse);
+        final fetchResponse = FetchClaimResponseDTO.fromJson(jsonResponse);
 
         if (fetchResponse.type == FetchClaimResponseType.issuance) {
-          print(
+          logger().i(
               "[RemoteIden3commDataSource] fetchClaim: ${fetchResponse.credential.toJson()}");
-          ClaimDTO claimDTO = ClaimDTO(
-              id: fetchResponse.credential.id,
-              issuer: fetchResponse.from,
-              did: did,
-              type: fetchResponse.credential.credentialSubject.type,
-              expiration: fetchResponse.credential.expirationDate,
-              info: fetchResponse.credential);
-          print(
+          final claimDTO = ClaimDTO(
+            id: fetchResponse.credential.id,
+            issuer: fetchResponse.from,
+            did: did,
+            type: fetchResponse.credential.credentialSubject.type,
+            expiration: fetchResponse.credential.expirationDate,
+            info: fetchResponse.credential,
+          );
+          logger().i(
               "[RemoteIden3commDataSource] fetchClaim: ${claimDTO.info.toJson()}");
           return claimDTO;
-          /*return ClaimDTO(
-              id: fetchResponse.credential.id,
-              issuer: fetchResponse.from,
-              did: did,
-              type: fetchResponse.credential.credentialSubject.type,
-              expiration: fetchResponse.credential.expirationDate,
-              info: fetchResponse.credential);*/
         } else {
           _stacktraceManager.addTrace(
               "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException");
@@ -177,7 +171,7 @@ class RemoteIden3commDataSource {
       var schemaUri = Uri.parse(schemaUrl);
       _stacktraceManager.addTrace(
           "[RemoteIden3commDataSource] fetchSchema original url: $url");
-      print(
+      logger().i(
           "[RemoteIden3commDataSource] fetchSchema original url: $url\nschemaUrl: $schemaUrl");
 
       Dio dio = Dio();
@@ -195,10 +189,8 @@ class RemoteIden3commDataSource {
         ),
       );
 
-      var schemaResponse = await dio.get(schemaUri.toString());
+      final schemaResponse = await dio.get(schemaUri.toString());
       logger().d(
-          'fetchSchema: code: ${schemaResponse.statusCode} msg: ${schemaResponse.data}');
-      print(
           'fetchSchema: code: ${schemaResponse.statusCode} msg: ${schemaResponse.data}');
       _stacktraceManager.addTrace(
           "[RemoteIden3commDataSource] fetchSchema: ${schemaResponse.statusCode} ${schemaResponse.data}");
@@ -225,6 +217,63 @@ class RemoteIden3commDataSource {
       _stacktraceManager
           .addError("[RemoteIden3commDataSource] fetchSchema: $error");
       throw FetchSchemaException(error);
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchDisplayType({required String url}) async {
+    try {
+      String displayTypeUrl = url;
+
+      if (displayTypeUrl.toLowerCase().startsWith("ipfs://")) {
+        String ipfsHash = displayTypeUrl.replaceFirst("ipfs://", "");
+        displayTypeUrl = "https://ipfs.io/ipfs/$ipfsHash";
+      }
+
+      final displayTypeUri = Uri.parse(displayTypeUrl);
+      _stacktraceManager.addTrace(
+          "[RemoteIden3commDataSource] fetchDisplayType original url: $url");
+
+      final dio = Dio();
+      final dir = await getApplicationDocumentsDirectory();
+      final path = dir.path;
+      dio.interceptors.add(
+        DioCacheInterceptor(
+          options: CacheOptions(
+            store: HiveCacheStore(path),
+            policy: CachePolicy.refreshForceCache,
+            hitCacheOnErrorExcept: [],
+            maxStale: const Duration(days: 14),
+            priority: CachePriority.high,
+          ),
+        ),
+      );
+
+      final response = await dio.get(displayTypeUri.toString());
+      _stacktraceManager.addTrace(
+          "[RemoteIden3commDataSource] fetchDisplayType: ${response.statusCode} ${response.data}");
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = {};
+        bool isMap = response.data is Map<String, dynamic>;
+        if (!isMap) {
+          data = json.decode(response.data);
+        } else {
+          data = response.data;
+        }
+
+        return data;
+      } else {
+        _stacktraceManager.addTrace(
+            "[RemoteIden3commDataSource] fetchDisplayType: ${response.statusCode} ${response.data}");
+        _stacktraceManager.addError(
+            "[RemoteIden3commDataSource] fetchDisplayType: ${response.statusCode} ${response.data}");
+        throw NetworkException(response);
+      }
+    } catch (error) {
+      _stacktraceManager
+          .addTrace("[RemoteIden3commDataSource] fetchDisplayType: $error");
+      _stacktraceManager
+          .addError("[RemoteIden3commDataSource] fetchDisplayType: $error");
+      throw FetchDisplayTypeException(error);
     }
   }
 

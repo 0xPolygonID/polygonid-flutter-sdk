@@ -26,6 +26,10 @@ String data = '''
     "id": "did:polygonid:polygon:mumbai:2qGJnNTaHyvZwcTG4jWDif2E5GnWuLGfuWb2misbrC",
     "type": "KYCAgeCredential"
   },
+  "displayMethod": {
+    "id": "https://cornhub.com/test",
+    "type": "Iden3BasicDisplayMethodV1"
+  },
   "expirationDate": "2030-01-01T00:00:00Z",
   "id": "http://52.213.238.159/api/v1/identities/did:polygonid:polygon:mumbai:2qJNoD4vLiuoaM6B5rEidsSR4Kj9ZTJp1wgvhB6wBB/claims/3f43b616-9d57-11ed-a2b8-0242ac120004",
   "issuanceDate": "2023-01-26T08:55:56.747082936Z",

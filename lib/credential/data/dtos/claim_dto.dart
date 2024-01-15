@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/display_type/display_type.dart';
 
 import 'claim_info_dto.dart';
 
@@ -16,16 +17,19 @@ class ClaimDTO extends Equatable {
   final String? expiration;
   final String type;
   Map<String, dynamic>? schema;
+  Map<String, dynamic>? displayType;
 
-  ClaimDTO(
-      {required this.id,
-      required this.issuer,
-      required this.did,
-      required this.type,
-      this.state = '',
-      this.expiration,
-      required this.info,
-      this.schema});
+  ClaimDTO({
+    required this.id,
+    required this.issuer,
+    required this.did,
+    required this.type,
+    this.state = '',
+    this.expiration,
+    required this.info,
+    this.schema,
+    this.displayType,
+  });
 
   factory ClaimDTO.fromJson(Map<String, dynamic> json) =>
       _$ClaimDTOFromJson(json);
