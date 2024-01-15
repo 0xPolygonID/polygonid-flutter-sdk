@@ -7,6 +7,7 @@ import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_ex
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_credential_by_id_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_credential_by_partial_id_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/update_claim_use_case.dart';
@@ -31,6 +32,12 @@ abstract class PolygonIdSdkCredential {
 
   Future<ClaimEntity>? getCredentialById({
     required String credentialId,
+    required String genesisDid,
+    required String privateKey,
+  });
+
+  Future<ClaimEntity>? getCredentialByPartialId({
+    required String partialCredentialId,
     required String genesisDid,
     required String privateKey,
   });
@@ -136,6 +143,8 @@ class Credential implements PolygonIdSdkCredential {
   final RefreshCredentialUseCase _refreshCredentialUseCase;
   final GetCredentialByIdUseCase _getCredentialByIdUseCase;
 
+  final GetCredentialByPartialIdUseCase _getCredentialByPartialIdUseCase;
+
   Credential(
     this._saveClaimsUseCase,
     this._getClaimsUseCase,
@@ -145,6 +154,7 @@ class Credential implements PolygonIdSdkCredential {
     this._stacktraceManager,
     this._refreshCredentialUseCase,
     this._getCredentialByIdUseCase,
+    this._getCredentialByPartialIdUseCase,
   );
 
   @override
@@ -173,6 +183,23 @@ class Credential implements PolygonIdSdkCredential {
       genesisDid: genesisDid,
       privateKey: privateKey,
       id: credentialId,
+    ));
+  }
+
+  @override
+  Future<ClaimEntity> getCredentialByPartialId({
+    required String partialCredentialId,
+    required String genesisDid,
+    required String privateKey,
+  }) {
+    _stacktraceManager.clear();
+    _stacktraceManager
+        .addTrace("PolygonIdSdk.Credential.getCredentialByPartialId called");
+    return _getCredentialByPartialIdUseCase.execute(
+        param: GetCredentialByPartialIdParam(
+      genesisDid: genesisDid,
+      privateKey: privateKey,
+      partialId: partialCredentialId,
     ));
   }
 

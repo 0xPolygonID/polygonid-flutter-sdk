@@ -124,6 +124,27 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
         }).whenComplete(() => database.close()));
   }
 
+  Future<List<ClaimDTO>> getCredentialByPartialId({
+    required String did,
+    required String privateKey,
+    required String partialId,
+  }) {
+    return getDatabase(did: did, privateKey: privateKey).then((database) =>
+        _storeRefWrapper
+            .find(database,
+                finder: Finder(
+                    filter: Filter.custom((record) =>
+                        (record.value as Map<String, Object?>)['id']
+                            ?.toString()
+                            .contains(partialId) ??
+                        false)))
+            .then((snapshots) {
+          return snapshots.map((snapshot) {
+            return ClaimDTO.fromJson(snapshot.value);
+          }).toList();
+        }).whenComplete(() => database.close()));
+  }
+
   /// Get a [ClaimDTO] filtered by id associated to the identity previously stored
   Future<ClaimDTO> getClaim({
     required String credentialId,
