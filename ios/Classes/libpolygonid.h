@@ -194,6 +194,8 @@ extern GoUint8 PLGNAtomicQueryV3Inputs(char** jsonResponse, char* in, char* cfg,
 //
 extern GoUint8 PLGNAtomicQueryV3OnChainInputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern void PLGNFreeStatus(PLGNStatus* status);
+extern GoUint8 PLGNCleanCache(PLGNStatus** status);
+extern GoUint8 PLGNCacheCredentials(char* in, char* cfg, PLGNStatus** status);
 
 #ifdef __cplusplus
 }
