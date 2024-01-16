@@ -51,8 +51,6 @@ class CredentialStatusUpdateMessageEntity extends Iden3MessageEntity {
 
   @override
   int get hashCode => runtimeType.hashCode;
-
-
 }
 
 class CredentialStatusUpdateBody {
