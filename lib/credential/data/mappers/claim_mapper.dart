@@ -32,7 +32,7 @@ class ClaimMapper extends Mapper<ClaimDTO, ClaimEntity> {
       displayType: from.displayType == null
           ? _displayTypeMapper.mapFrom(displayType)
           : null,
-      rawValue: from.rawValue,
+      credentialRawValue: from.credentialRawValue,
     );
   }
 
@@ -50,7 +50,7 @@ class ClaimMapper extends Mapper<ClaimDTO, ClaimEntity> {
       info: _claimInfoMapper.mapTo(to.info),
       displayType:
           to.displayType == null ? null : _displayTypeMapper.mapTo(displayType),
-      rawValue: to.rawValue,
+      credentialRawValue: to.credentialRawValue,
     );
   }
 }

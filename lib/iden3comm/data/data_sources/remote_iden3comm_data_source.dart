@@ -91,7 +91,7 @@ class RemoteIden3commDataSource {
           type: fetchResponse.credential.credentialSubject.type,
           expiration: fetchResponse.credential.expirationDate,
           info: fetchResponse.credential,
-          rawValue: response.body,
+          credentialRawValue: response.body,
         );
       } else {
         _stacktraceManager.addTrace(
@@ -140,7 +140,7 @@ class RemoteIden3commDataSource {
             type: fetchResponse.credential.credentialSubject.type,
             expiration: fetchResponse.credential.expirationDate,
             info: fetchResponse.credential,
-            rawValue: response.body,
+            credentialRawValue: response.body,
           );
           logger().i(
               "[RemoteIden3commDataSource] fetchClaim: ${claimDTO.info.toJson()}");

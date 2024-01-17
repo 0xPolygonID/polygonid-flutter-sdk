@@ -54,7 +54,7 @@ class UpdateClaimUseCase extends FutureUseCase<UpdateClaimParam, ClaimEntity> {
               expiration: param.expiration ?? claim.expiration,
               type: param.type ?? claim.type,
               info: param.data ?? claim.info,
-              rawValue: claim.rawValue,
+              credentialRawValue: claim.credentialRawValue,
             ))
         .then((updated) => _credentialRepository.saveClaims(
             claims: [updated],
