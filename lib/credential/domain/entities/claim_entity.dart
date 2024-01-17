@@ -13,6 +13,8 @@ class ClaimEntity {
   final Map<String, dynamic> info;
   final DisplayType? displayType;
 
+  final String rawValue;
+
   ClaimEntity({
     required this.id,
     required this.issuer,
@@ -23,6 +25,7 @@ class ClaimEntity {
     required this.type,
     required this.info,
     this.displayType,
+    required this.rawValue,
   });
 
   factory ClaimEntity.fromJson(Map<String, dynamic> json) {
@@ -36,6 +39,7 @@ class ClaimEntity {
       type: json['type'],
       info: json['info'],
       displayType: json['displayType'],
+      rawValue: json['rawValue'],
     );
   }
 
@@ -50,6 +54,7 @@ class ClaimEntity {
         'type': type,
         'info': info,
         'displayType': displayType?.toJson(),
+        'rawValue': rawValue,
       };
 
   @override

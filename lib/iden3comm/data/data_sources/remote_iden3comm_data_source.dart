@@ -85,12 +85,14 @@ class RemoteIden3commDataSource {
 
       if (fetchResponse.type == FetchClaimResponseType.issuance) {
         return ClaimDTO(
-            id: fetchResponse.credential.id,
-            issuer: fetchResponse.from,
-            did: profileDid,
-            type: fetchResponse.credential.credentialSubject.type,
-            expiration: fetchResponse.credential.expirationDate,
-            info: fetchResponse.credential);
+          id: fetchResponse.credential.id,
+          issuer: fetchResponse.from,
+          did: profileDid,
+          type: fetchResponse.credential.credentialSubject.type,
+          expiration: fetchResponse.credential.expirationDate,
+          info: fetchResponse.credential,
+          rawValue: response.body,
+        );
       } else {
         _stacktraceManager.addTrace(
             "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException");
@@ -138,6 +140,7 @@ class RemoteIden3commDataSource {
             type: fetchResponse.credential.credentialSubject.type,
             expiration: fetchResponse.credential.expirationDate,
             info: fetchResponse.credential,
+            rawValue: response.body,
           );
           logger().i(
               "[RemoteIden3commDataSource] fetchClaim: ${claimDTO.info.toJson()}");
