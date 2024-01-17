@@ -6,6 +6,10 @@
 extern "C" {
 #endif
 
+#define WITNESSCALC_OK                  0x0
+#define WITNESSCALC_ERROR               0x1
+#define WITNESSCALC_ERROR_SHORT_BUFFER  0x2
+
 /**
  *
  * @return error code:
@@ -20,7 +24,7 @@ extern "C" {
  *
  */
 
-extern int
+int
 witnesscalc_authV2(
     const char *circuit_buffer,  unsigned long  circuit_size,
     const char *json_buffer,     unsigned long  json_size,
