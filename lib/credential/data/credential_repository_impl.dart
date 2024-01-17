@@ -15,6 +15,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/reque
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/encryption_key_mapper.dart';
+import 'package:sembast/sembast.dart';
 
 import 'data_sources/local_claim_data_source.dart';
 import 'dtos/claim_info_dto.dart';
@@ -76,6 +77,31 @@ class CredentialRepositoryImpl extends CredentialRepository {
           credentialId: claimId, did: genesisDid, privateKey: privateKey);
 
       ClaimEntity claimEntity = _claimMapper.mapFrom(claimDTO);
+      return claimEntity;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<ClaimEntity> getCredentialByPartialId({
+    required String partialId,
+    required String genesisDid,
+    required String privateKey,
+  }) async {
+    try {
+      List<ClaimDTO> claimDTOlist =
+          await _storageClaimDataSource.getCredentialByPartialId(
+        partialId: partialId,
+        did: genesisDid,
+        privateKey: privateKey,
+      );
+
+      if (claimDTOlist.isEmpty || claimDTOlist.length > 1) {
+        throw ClaimNotFoundException(partialId);
+      }
+
+      ClaimEntity claimEntity = _claimMapper.mapFrom(claimDTOlist.first);
       return claimEntity;
     } catch (e) {
       rethrow;

@@ -74,6 +74,8 @@ const _$CredentialStatusTypeEnumMap = {
   CredentialStatusType.sparseMerkleTreeProof: 'SparseMerkleTreeProof',
   CredentialStatusType.iden3OnchainSparseMerkleTreeProof2023:
       'Iden3OnchainSparseMerkleTreeProof2023',
+  CredentialStatusType.iden3commRevocationStatusV1:
+      'Iden3commRevocationStatusV1.0',
 };
 
 CredentialSchemaDTO _$CredentialSchemaDTOFromJson(Map<String, dynamic> json) =>
