@@ -24,6 +24,9 @@ class GetIden3MessageTypeUseCase
       case "https://iden3-communication.io/proofs/1.0/contract-invoke-request":
         type = Iden3MessageType.proofContractInvokeRequest;
         break;
+      case "https://iden3-communication.io/credentials/1.0/status-update":
+        type = Iden3MessageType.credentialStatusUpdate;
+        break;
     }
 
     return Future.value(type);

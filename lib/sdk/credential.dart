@@ -6,6 +6,8 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.da
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_credential_by_id_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_credential_by_partial_id_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/update_claim_use_case.dart';
@@ -27,6 +29,18 @@ abstract class PolygonIdSdkCredential {
       {required List<ClaimEntity> claims,
       required String genesisDid,
       required String privateKey});
+
+  Future<ClaimEntity>? getCredentialById({
+    required String credentialId,
+    required String genesisDid,
+    required String privateKey,
+  });
+
+  Future<ClaimEntity>? getCredentialByPartialId({
+    required String partialCredentialId,
+    required String genesisDid,
+    required String privateKey,
+  });
 
   /// Get a list of [ClaimEntity] associated to the identity previously stored
   /// in the the Polygon ID Sdk.
@@ -126,8 +140,10 @@ class Credential implements PolygonIdSdkCredential {
   final RemoveClaimsUseCase _removeClaimsUseCase;
   final UpdateClaimUseCase _updateClaimUseCase;
   final StacktraceManager _stacktraceManager;
-
   final RefreshCredentialUseCase _refreshCredentialUseCase;
+  final GetCredentialByIdUseCase _getCredentialByIdUseCase;
+
+  final GetCredentialByPartialIdUseCase _getCredentialByPartialIdUseCase;
 
   Credential(
     this._saveClaimsUseCase,
@@ -137,6 +153,8 @@ class Credential implements PolygonIdSdkCredential {
     this._updateClaimUseCase,
     this._stacktraceManager,
     this._refreshCredentialUseCase,
+    this._getCredentialByIdUseCase,
+    this._getCredentialByPartialIdUseCase,
   );
 
   @override
@@ -149,6 +167,40 @@ class Credential implements PolygonIdSdkCredential {
     return _saveClaimsUseCase.execute(
         param: SaveClaimsParam(
             claims: claims, genesisDid: genesisDid, privateKey: privateKey));
+  }
+
+  @override
+  Future<ClaimEntity> getCredentialById({
+    required String credentialId,
+    required String genesisDid,
+    required String privateKey,
+  }) {
+    _stacktraceManager.clear();
+    _stacktraceManager
+        .addTrace("PolygonIdSdk.Credential.getCredentialById called");
+    return _getCredentialByIdUseCase.execute(
+        param: GetCredentialByIdParam(
+      genesisDid: genesisDid,
+      privateKey: privateKey,
+      id: credentialId,
+    ));
+  }
+
+  @override
+  Future<ClaimEntity> getCredentialByPartialId({
+    required String partialCredentialId,
+    required String genesisDid,
+    required String privateKey,
+  }) {
+    _stacktraceManager.clear();
+    _stacktraceManager
+        .addTrace("PolygonIdSdk.Credential.getCredentialByPartialId called");
+    return _getCredentialByPartialIdUseCase.execute(
+        param: GetCredentialByPartialIdParam(
+      genesisDid: genesisDid,
+      privateKey: privateKey,
+      partialId: partialCredentialId,
+    ));
   }
 
   @override
