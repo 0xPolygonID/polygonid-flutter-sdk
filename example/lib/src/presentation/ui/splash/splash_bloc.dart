@@ -34,7 +34,7 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
         CircuitsToDownloadParam(
           circuitsName: "circuitsV3",
           bucketUrl:
-              "https://iden3-circuits-bucket.s3.eu-west-1.amazonaws.com/tmpv3.zip",
+              "https://iden3-circuits-bucket.s3.eu-west-1.amazonaws.com/circuitsv3-beta-0.zip",
         ),
       ],
     );
