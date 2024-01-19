@@ -31,6 +31,7 @@ final dto = ClaimDTO(
   expiration: fetchClaimDTO.credential.expirationDate,
   type: fetchClaimDTO.credential.credentialSubject.type,
   info: fetchClaimDTO.credential,
+  credentialRawValue: mockFetchClaim,
 );
 final entity = ClaimEntity(
   issuer: fetchClaimDTO.from,
@@ -40,6 +41,7 @@ final entity = ClaimEntity(
   type: fetchClaimDTO.credential.credentialSubject.type,
   state: ClaimState.active,
   id: fetchClaimDTO.credential.id,
+  credentialRawValue: mockFetchClaim,
 );
 
 // Dependencies

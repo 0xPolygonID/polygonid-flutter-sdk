@@ -21,6 +21,7 @@ const type = "theType";
 const data = {"some": "data"};
 const otherData = {"some": "otherData"};
 final exception = Exception();
+const credentialRawValue = "theCredentialRawValue";
 
 final UpdateClaimParam param = UpdateClaimParam(
     id: id,
@@ -31,22 +32,26 @@ final UpdateClaimParam param = UpdateClaimParam(
     data: otherData);
 
 final claimEntity = ClaimEntity(
-    issuer: issuer,
-    did: identifier,
-    expiration: expiration,
-    info: data,
-    type: type,
-    state: ClaimState.active,
-    id: id);
+  issuer: issuer,
+  did: identifier,
+  expiration: expiration,
+  info: data,
+  type: type,
+  state: ClaimState.active,
+  id: id,
+  credentialRawValue: credentialRawValue,
+);
 
 final otherClaimEntity = ClaimEntity(
-    issuer: otherIssuer,
-    did: identifier,
-    expiration: otherExpiration,
-    info: otherData,
-    type: type,
-    state: ClaimState.active,
-    id: id);
+  issuer: otherIssuer,
+  did: identifier,
+  expiration: otherExpiration,
+  info: otherData,
+  type: type,
+  state: ClaimState.active,
+  id: id,
+  credentialRawValue: credentialRawValue,
+);
 
 // Dependencies
 MockCredentialRepository credentialRepository = MockCredentialRepository();

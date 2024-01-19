@@ -37,13 +37,15 @@ final revStatus = {
 };
 
 final claimEntity = ClaimEntity(
-    issuer: "",
-    did: "",
-    expiration: "",
-    info: {},
-    type: "",
-    state: ClaimState.active,
-    id: "id");
+  issuer: "",
+  did: "",
+  expiration: "",
+  info: {},
+  type: "",
+  state: ClaimState.active,
+  id: "id",
+  credentialRawValue: "",
+);
 
 final result = [claimEntity, claimEntity, claimEntity];
 
