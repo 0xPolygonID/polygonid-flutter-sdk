@@ -132,94 +132,111 @@ class GetIden3commProofsUseCase
           requests.isEmpty) {
         /// We got [ProofRequestEntity], let's find the associated [ClaimEntity]
         /// and generate [ProofEntity]
+        List<Future<Iden3commProofEntity?> Function()> getProofEntityClosures =
+            [];
         for (int i = 0; i < requests.length; i++) {
-          ProofRequestEntity request = requests[i];
-          ClaimEntity? claim = claims[i];
+          getProofEntityClosures.add(() async {
+            ProofRequestEntity request = requests[i];
+            ClaimEntity? claim = claims[i];
 
-          if (claim == null) {
-            continue;
-          }
-
-          if (claim.expiration != null) {
-            claim = await _checkCredentialExpirationAndTryRefreshIfExpired(
-              claim: claim,
-              param: param,
-            );
-          }
-
-          bool isCircuitSupported = await _isProofCircuitSupported.execute(
-            param: request.scope.circuitId,
-          );
-          bool isCorrectType = claim.type == request.scope.query.type;
-
-          if (isCorrectType && isCircuitSupported) {
-            String circuitId = request.scope.circuitId;
-            CircuitDataEntity circuitData =
-                await _proofRepository.loadCircuitFiles(circuitId);
-
-            String? challenge;
-            String? privKey;
-            if (circuitId == CircuitType.mtponchain.name ||
-                circuitId == CircuitType.sigonchain.name ||
-                circuitId == CircuitType.circuitsV3onchain.name) {
-              privKey = param.privateKey;
-              challenge = param.challenge;
+            if (claim == null) {
+              return null;
             }
 
-            var identityEntity = await _getIdentityUseCase.execute(
-                param: GetIdentityParam(
-                    genesisDid: param.genesisDid,
-                    privateKey: param.privateKey));
+            if (claim.expiration != null) {
+              claim = await _checkCredentialExpirationAndTryRefreshIfExpired(
+                claim: claim,
+                param: param,
+              );
+            }
 
-            BigInt claimSubjectProfileNonce = identityEntity.profiles.keys
-                .firstWhere((k) => identityEntity.profiles[k] == claim!.did,
-                    orElse: () => GENESIS_PROFILE_NONCE);
+            bool isCircuitSupported = await _isProofCircuitSupported.execute(
+              param: request.scope.circuitId,
+            );
+            bool isCorrectType = claim.type == request.scope.query.type;
 
-            int? groupId = request.scope.query.groupId;
-            String linkNonce = "0";
-            // Check if groupId exists in the map
-            if (groupId != null) {
-              if (groupIdLinkNonceMap.containsKey(groupId)) {
-                // Use the existing linkNonce for this groupId
-                linkNonce = groupIdLinkNonceMap[groupId]!;
-              } else {
-                // Generate a new linkNonce for this groupId
-                linkNonce =
-                    generateLinkNonce(); // Replace this with your linkNonce generation logic
-                groupIdLinkNonceMap[groupId] = linkNonce;
+            if (isCorrectType && isCircuitSupported) {
+              String circuitId = request.scope.circuitId;
+              CircuitDataEntity circuitData =
+                  await _proofRepository.loadCircuitFiles(circuitId);
+
+              String? challenge;
+              String? privKey;
+              if (circuitId == CircuitType.mtponchain.name ||
+                  circuitId == CircuitType.sigonchain.name ||
+                  circuitId == CircuitType.circuitsV3onchain.name) {
+                privKey = param.privateKey;
+                challenge = param.challenge;
               }
+
+              var identityEntity = await _getIdentityUseCase.execute(
+                  param: GetIdentityParam(
+                      genesisDid: param.genesisDid,
+                      privateKey: param.privateKey));
+
+              BigInt claimSubjectProfileNonce = identityEntity.profiles.keys
+                  .firstWhere((k) => identityEntity.profiles[k] == claim!.did,
+                      orElse: () => GENESIS_PROFILE_NONCE);
+
+              int? groupId = request.scope.query.groupId;
+              String linkNonce = "0";
+              // Check if groupId exists in the map
+              if (groupId != null) {
+                if (groupIdLinkNonceMap.containsKey(groupId)) {
+                  // Use the existing linkNonce for this groupId
+                  linkNonce = groupIdLinkNonceMap[groupId]!;
+                } else {
+                  // Generate a new linkNonce for this groupId
+                  linkNonce =
+                      generateLinkNonce(); // Replace this with your linkNonce generation logic
+                  groupIdLinkNonceMap[groupId] = linkNonce;
+                }
+              }
+
+              _proofGenerationStepsStreamManager
+                  .add("Generating proof for ${claim.type}");
+
+              // Generate proof param
+              GenerateIden3commProofParam proofParam =
+                  GenerateIden3commProofParam(
+                did: param.genesisDid,
+                profileNonce: param.profileNonce,
+                claimSubjectProfileNonce: claimSubjectProfileNonce,
+                credential: claim,
+                request: request.scope,
+                circuitData: circuitData,
+                privateKey: privKey,
+                challenge: challenge,
+                ethereumUrl: param.ethereumUrl,
+                stateContractAddr: param.stateContractAddr,
+                ipfsNodeURL: param.ipfsNodeUrl,
+                verifierId: param.message.from,
+                linkNonce: linkNonce,
+                transactionData: param.transactionData,
+              );
+
+              // Generate proof
+              Iden3commProofEntity proof =
+                  await _generateIden3commProofUseCase.execute(
+                param: proofParam,
+              );
+
+              return proof;
             }
+            return null;
+          });
 
-            _proofGenerationStepsStreamManager
-                .add("Generating proof for ${claim.type}");
+          List<Iden3commProofEntity?> getProofEntityClosuresResults =
+              await Future.wait(
+                  getProofEntityClosures.map((closure) => closure()));
 
-            // Generate proof param
-            GenerateIden3commProofParam proofParam =
-                GenerateIden3commProofParam(
-              did: param.genesisDid,
-              profileNonce: param.profileNonce,
-              claimSubjectProfileNonce: claimSubjectProfileNonce,
-              credential: claim,
-              request: request.scope,
-              circuitData: circuitData,
-              privateKey: privKey,
-              challenge: challenge,
-              ethereumUrl: param.ethereumUrl,
-              stateContractAddr: param.stateContractAddr,
-              ipfsNodeURL: param.ipfsNodeUrl,
-              verifierId: param.message.from,
-              linkNonce: linkNonce,
-              transactionData: param.transactionData,
-            );
-
-            // Generate proof
-            Iden3commProofEntity proof =
-                await _generateIden3commProofUseCase.execute(
-              param: proofParam,
-            );
-
-            proofs.add(proof);
-          }
+          // Filter out null values
+          List<Iden3commProofEntity> nonNullResults =
+              getProofEntityClosuresResults
+                  .where((result) => result != null)
+                  .map((result) => result!)
+                  .toList();
+          proofs.addAll(nonNullResults);
         }
       } else {
         _stacktraceManager.addTrace(
