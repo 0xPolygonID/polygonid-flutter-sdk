@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 class CircuitsFilesDataSource {
@@ -12,18 +13,27 @@ class CircuitsFilesDataSource {
   Future<List<Uint8List>> loadCircuitFiles(String circuitId) async {
     String path = directory.path;
 
-    var circuitDatFileName = '$circuitId.dat';
-    var circuitDatFilePath = '$path/$circuitDatFileName';
-    var circuitDatFile = File(circuitDatFilePath);
+    try {
+      var circuitDatFileName = '$circuitId.dat';
+      var circuitDatFilePath = '$path/$circuitDatFileName';
+      var circuitDatFile = File(circuitDatFilePath);
 
-    var circuitZkeyFileName = '$circuitId.zkey';
-    var circuitZkeyFilePath = '$path/$circuitZkeyFileName';
-    var circuitZkeyFile = File(circuitZkeyFilePath);
+      var circuitZkeyFileName = '$circuitId.zkey';
+      var circuitZkeyFilePath = '$path/$circuitZkeyFileName';
+      var circuitZkeyFile = File(circuitZkeyFilePath);
 
-    return [
-      circuitDatFile.readAsBytesSync(),
-      circuitZkeyFile.readAsBytesSync()
-    ];
+      return [
+        circuitDatFile.readAsBytesSync(),
+        circuitZkeyFile.readAsBytesSync()
+      ];
+    } on PathNotFoundException catch (error) {
+      throw CircuitNotDownloadedException(
+        circuit: circuitId,
+        errorMessage: error.message,
+      );
+    } catch (_) {
+      rethrow;
+    }
   }
 
   ///

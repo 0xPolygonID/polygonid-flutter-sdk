@@ -36,3 +36,13 @@ class ProofInputsException implements Exception {
 
   ProofInputsException(this.errorMessage);
 }
+
+class CircuitNotDownloadedException implements Exception {
+  final String circuit;
+  final String errorMessage;
+
+  CircuitNotDownloadedException({
+    required this.circuit,
+    required this.errorMessage,
+  });
+}
