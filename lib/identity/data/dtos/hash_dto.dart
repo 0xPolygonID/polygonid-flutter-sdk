@@ -83,6 +83,9 @@ class HashDTO extends Equatable {
   @override
   bool operator ==(Object other) {
     if (other is HashDTO) {
+      if (data.length != other.data.length) {
+        return false;
+      }
       for (int i = 0; i < data.length; i++) {
         if (data[i] != other.data[i]) {
           return false;
