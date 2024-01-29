@@ -162,11 +162,12 @@ jobs:
     # script: cd example&&flutter test integration_test/libpolygonid_test.dart --verbose
 
   # job responsible for publishing the package to pub.dev
-  publish:
-    needs: [ common ] #, ios , android ]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Publish dry run
-        if: github.base_ref == 'main'
-        run: flutter pub publish --dry-run
+  # enable it once published for the first time on pub.dev otherwise it will fail
+  #publish:
+  #  needs: [ common ] #, ios , android ]
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - name: Publish dry run
+  #      if: github.base_ref == 'main'
+  #      run: flutter pub publish --dry-run
 
