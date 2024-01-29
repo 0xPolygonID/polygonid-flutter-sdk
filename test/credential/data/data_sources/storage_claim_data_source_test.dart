@@ -56,26 +56,32 @@ final credential =
     FetchClaimResponseDTO.fromJson(jsonDecode(mockFetchClaim)).credential;
 final mockClaims = [
   ClaimDTO(
-      id: credential.id,
-      issuer: issuers[0],
-      did: identifiers[0],
-      expiration: expirations[0],
-      type: types[0],
-      info: credential),
+    id: credential.id,
+    issuer: issuers[0],
+    did: identifiers[0],
+    expiration: expirations[0],
+    type: types[0],
+    info: credential,
+    credentialRawValue: mockFetchClaim,
+  ),
   ClaimDTO(
-      id: credential.id,
-      issuer: issuers[1],
-      did: identifiers[1],
-      expiration: expirations[1],
-      type: types[1],
-      info: credential),
+    id: credential.id,
+    issuer: issuers[1],
+    did: identifiers[1],
+    expiration: expirations[1],
+    type: types[1],
+    info: credential,
+    credentialRawValue: mockFetchClaim,
+  ),
   ClaimDTO(
-      id: credential.id,
-      issuer: issuers[2],
-      did: identifiers[2],
-      expiration: expirations[2],
-      type: types[2],
-      info: credential)
+    id: credential.id,
+    issuer: issuers[2],
+    did: identifiers[2],
+    expiration: expirations[2],
+    type: types[2],
+    info: credential,
+    credentialRawValue: mockFetchClaim,
+  )
 ];
 final exception = Exception();
 

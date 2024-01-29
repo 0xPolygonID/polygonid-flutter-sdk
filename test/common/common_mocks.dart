@@ -75,4 +75,8 @@ class CommonMocks {
     pushUrl: url,
     ipfsUrl: url,
   );
+
+  static String expiration = "2050-01-01T00:00:00Z";
+
+  static String credentialRawValue = "{\"the\": \"value\"}";
 }

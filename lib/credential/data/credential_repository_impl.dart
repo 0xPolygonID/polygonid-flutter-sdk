@@ -56,15 +56,21 @@ class CredentialRepositoryImpl extends CredentialRepository {
   Future<List<ClaimEntity>> getClaims(
       {List<FilterEntity>? filters,
       required String genesisDid,
-      required String privateKey}) {
-    return _storageClaimDataSource
-        .getClaims(
-            filter: filters == null ? null : _filtersMapper.mapTo(filters),
-            did: genesisDid,
-            privateKey: privateKey)
-        .then((claims) =>
-            claims.map((claim) => _claimMapper.mapFrom(claim)).toList())
-        .catchError((error) => throw GetClaimsException(error));
+      required String privateKey}) async {
+    try {
+      final List<ClaimDTO> claimDTOlist =
+          await _storageClaimDataSource.getClaims(
+        filter: filters == null ? null : _filtersMapper.mapTo(filters),
+        did: genesisDid,
+        privateKey: privateKey,
+      );
+
+      final List<ClaimEntity> claimEntityList =
+          claimDTOlist.map((claim) => _claimMapper.mapFrom(claim)).toList();
+      return claimEntityList;
+    } catch (error) {
+      throw GetClaimsException(error);
+    }
   }
 
   @override

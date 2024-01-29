@@ -17,6 +17,8 @@ class CredentialMocks {
     type: CommonMocks.type,
     info: CommonMocks.aMap,
     schema: CommonMocks.aMap,
+    expiration: CommonMocks.expiration,
+    credentialRawValue: CommonMocks.credentialRawValue,
   );
 
   /// We assume [ClaimInfoDTO] has been tested
@@ -110,5 +112,6 @@ class CredentialMocks {
     did: CommonMocks.did,
     type: CommonMocks.type,
     info: ClaimInfoDTO.fromJson(jsonDecode(claimInfoJson)),
+    credentialRawValue: CommonMocks.credentialRawValue,
   );
 }

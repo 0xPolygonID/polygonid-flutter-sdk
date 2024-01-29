@@ -41,27 +41,43 @@ final fetchClaimDTO =
     FetchClaimResponseDTO.fromJson(jsonDecode(mockFetchClaim));
 final claimDTOs = [
   ClaimDTO(
-      id: "id1", issuer: "", did: "", type: '', info: fetchClaimDTO.credential),
+    id: "id1",
+    issuer: "",
+    did: "",
+    type: '',
+    info: fetchClaimDTO.credential,
+    credentialRawValue: mockFetchClaim,
+  ),
   ClaimDTO(
-      id: "id2", issuer: "", did: "", type: '', info: fetchClaimDTO.credential),
+    id: "id2",
+    issuer: "",
+    did: "",
+    type: '',
+    info: fetchClaimDTO.credential,
+    credentialRawValue: mockFetchClaim,
+  ),
 ];
 final claimEntities = [
   ClaimEntity(
-      issuer: "",
-      did: "",
-      expiration: "",
-      info: {},
-      type: "",
-      state: ClaimState.active,
-      id: "id1"),
+    issuer: "",
+    did: "",
+    expiration: "",
+    info: {},
+    type: "",
+    state: ClaimState.active,
+    id: "id1",
+    credentialRawValue: mockFetchClaim,
+  ),
   ClaimEntity(
-      issuer: "",
-      did: "",
-      expiration: "",
-      info: {},
-      type: "",
-      state: ClaimState.active,
-      id: "id2")
+    issuer: "",
+    did: "",
+    expiration: "",
+    info: {},
+    type: "",
+    state: ClaimState.active,
+    id: "id2",
+    credentialRawValue: mockFetchClaim,
+  )
 ];
 final filters = [
   FilterEntity(name: "theName", value: "theValue"),

@@ -113,15 +113,19 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
     Filter? filter,
     required String did,
     required String privateKey,
-  }) {
-    return getDatabase(did: did, privateKey: privateKey).then((database) =>
-        _storeRefWrapper
-            .find(database, finder: Finder(filter: filter))
-            .then((snapshots) {
-          return snapshots.map((snapshot) {
-            return ClaimDTO.fromJson(snapshot.value);
-          }).toList();
-        }).whenComplete(() => database.close()));
+  }) async {
+    Database database = await getDatabase(did: did, privateKey: privateKey);
+
+    List<RecordSnapshot<String, Map<String, Object?>>> snapshots =
+        await _storeRefWrapper.find(database, finder: Finder(filter: filter));
+
+    List<ClaimDTO> claims = snapshots.map((snapshot) {
+      ClaimDTO claimDTO = ClaimDTO.fromJson(snapshot.value);
+      return claimDTO;
+    }).toList();
+
+    database.close();
+    return claims;
   }
 
   Future<List<ClaimDTO>> getCredentialByPartialId({
