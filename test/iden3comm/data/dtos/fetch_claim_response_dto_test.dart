@@ -190,7 +190,56 @@ String mockOtherTypeFetchClaim = '''
   "type": "https://iden3-communication.io/credentials/1.0/other-response"
 }
 ''';
+
+String mockFetchCredentialMTP = '''
+{
+  "body": {
+    "credential": {
+      "id": "https://issuer-admin.polygonid.me/v1/credentials/69b66264-a0b2-11ee-93b5-0242ac120009",
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://schema.iden3.io/core/jsonld/iden3proofs.jsonld",
+        "ipfs://QmdH1Vu79p2NcZLFbHxzJnLuUHJiMZnBeT7SNpLaqK7k9X"
+      ],
+      "type": [
+        "VerifiableCredential",
+        "POAP01"
+      ],
+      "issuanceDate": "2023-12-22T10:11:03.325197614Z",
+      "credentialSubject": {
+        "city": "affasfsg",
+        "id": "did:polygonid:polygon:mumbai:2qFXVU2SPH9WvhPW1S4nqrY2zc9q8124hoj5hr2Tmy",
+        "type": "POAP01"
+      },
+      "credentialStatus": {
+        "id": "https://rhs-staging.polygonid.me/node?state=cf4d52e845a60ab1c442546eddfefa3ec3c01e04db239a5bac170e7fc1bd6b19",
+        "revocationNonce": 3135116222,
+        "statusIssuer": {
+          "id": "https://issuer-admin.polygonid.me/v1/credentials/revocation/status/3135116222",
+          "revocationNonce": 3135116222,
+          "type": "SparseMerkleTreeProof"
+        },
+        "type": "Iden3ReverseSparseMerkleTreeProof"
+      },
+      "issuer": "did:polygonid:polygon:mumbai:2qMCebtitXNzau92r4JNV3y162hkzVZPn75UPMiE1G",
+      "credentialSchema": {
+        "id": "ipfs://QmTSwnuCB9grYMB2z5EKXDagfChurK5MiMCS6efrRbsyVX",
+        "type": "JsonSchema2023"
+      },
+      "proof" : []
+    }
+  },
+  "from": "did:polygonid:polygon:mumbai:2qMCebtitXNzau92r4JNV3y162hkzVZPn75UPMiE1G",
+  "id": "166aa1b4-69d2-4355-aea1-d802c2341186",
+  "threadID": "5a23c836-8e4c-4c2b-bbdf-df3dd342884d",
+  "to": "did:polygonid:polygon:mumbai:2qFXVU2SPH9WvhPW1S4nqrY2zc9q8124hoj5hr2Tmy",
+  "typ": "application/iden3comm-plain-json",
+  "type": "https://iden3-communication.io/credentials/1.0/issuance-response"
+}
+''';
+
 var json = jsonDecode(mockFetchClaim);
+var jsonMTP = jsonDecode(mockFetchCredentialMTP);
 
 // Dependencies
 
@@ -202,6 +251,17 @@ void main() {
 
     test("Serializable", () {
       FetchClaimResponseDTO dto = FetchClaimResponseDTO.fromJson(json);
+    });
+  });
+
+  group("FetchClaimResponseDTO with MTP", () {
+    test("should parse valid JSON with MTP correctly", () {
+      var dto = FetchClaimResponseDTO.fromJson(jsonMTP);
+      expect(dto.type, FetchClaimResponseType.issuance);
+      expect(dto.from,
+          "did:polygonid:polygon:mumbai:2qMCebtitXNzau92r4JNV3y162hkzVZPn75UPMiE1G");
+      expect(dto.credential.id,
+          "https://issuer-admin.polygonid.me/v1/credentials/69b66264-a0b2-11ee-93b5-0242ac120009");
     });
   });
 }

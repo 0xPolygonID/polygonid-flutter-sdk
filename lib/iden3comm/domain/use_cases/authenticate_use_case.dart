@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
@@ -65,6 +66,12 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
   @override
   Future<void> execute({required AuthenticateParam param}) async {
     try {
+      _stacktraceManager.addTrace(
+        "[AuthenticateUseCase][MainFlow] auth request: " +
+            jsonEncode(param.message.toJson()),
+        log: true,
+      );
+
       // we want to misure the time of the whole process
       Stopwatch stopwatch = Stopwatch()..start();
       logger().i("stopwatch started");
@@ -159,8 +166,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
       if (error is NullAtomicQueryInputsException) {
         _stacktraceManager.addTrace(
             "[AuthenticateUseCase] Error: $error\nerror: ${error.errorMessage}");
-        _stacktraceManager.addError(
-            "[AuthenticateUseCase] error: ${error.errorMessage}");
+        _stacktraceManager
+            .addError("[AuthenticateUseCase] error: ${error.errorMessage}");
         logger().d(
             "[AuthenticateUseCase] Error: $error\nerror: ${error.errorMessage}");
       } else {

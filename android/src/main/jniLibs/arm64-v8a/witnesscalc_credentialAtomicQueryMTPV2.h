@@ -24,7 +24,7 @@ extern "C" {
  *
  */
 
-extern int
+int
 witnesscalc_credentialAtomicQueryMTPV2(
     const char *circuit_buffer,  unsigned long  circuit_size,
     const char *json_buffer,     unsigned long  json_size,

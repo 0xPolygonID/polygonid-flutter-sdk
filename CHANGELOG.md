@@ -1,3 +1,10 @@
+## 2.2.9
+- Multiple circuits download and circuit V3 support
+- Credential rawValue field on the claimDTO and claimEntity
+- Credential refresh service
+- Credential DisplayType capability
+- Minor fixes
+
 ## 2.2.8+2
 - Fixed protocol library method for revocation status check
 

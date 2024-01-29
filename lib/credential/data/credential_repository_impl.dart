@@ -1,5 +1,6 @@
 import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/cache_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/remote_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
@@ -14,6 +15,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/reque
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/encryption_key_mapper.dart';
+import 'package:sembast/sembast.dart';
 
 import 'data_sources/local_claim_data_source.dart';
 import 'dtos/claim_info_dto.dart';
@@ -22,6 +24,7 @@ class CredentialRepositoryImpl extends CredentialRepository {
   final RemoteClaimDataSource _remoteClaimDataSource;
   final StorageClaimDataSource _storageClaimDataSource;
   final LocalClaimDataSource _localClaimDataSource;
+  final CacheCredentialDataSource _cacheCredentialDataSource;
   final ClaimMapper _claimMapper;
   final FiltersMapper _filtersMapper;
   final IdFilterMapper _idFilterMapper;
@@ -30,6 +33,7 @@ class CredentialRepositoryImpl extends CredentialRepository {
     this._remoteClaimDataSource,
     this._storageClaimDataSource,
     this._localClaimDataSource,
+    this._cacheCredentialDataSource,
     this._claimMapper,
     this._filtersMapper,
     this._idFilterMapper,
@@ -52,30 +56,62 @@ class CredentialRepositoryImpl extends CredentialRepository {
   Future<List<ClaimEntity>> getClaims(
       {List<FilterEntity>? filters,
       required String genesisDid,
-      required String privateKey}) {
-    return _storageClaimDataSource
-        .getClaims(
-            filter: filters == null ? null : _filtersMapper.mapTo(filters),
-            did: genesisDid,
-            privateKey: privateKey)
-        .then((claims) =>
-            claims.map((claim) => _claimMapper.mapFrom(claim)).toList())
-        .catchError((error) => throw GetClaimsException(error));
+      required String privateKey}) async {
+    try {
+      final List<ClaimDTO> claimDTOlist =
+          await _storageClaimDataSource.getClaims(
+        filter: filters == null ? null : _filtersMapper.mapTo(filters),
+        did: genesisDid,
+        privateKey: privateKey,
+      );
+
+      final List<ClaimEntity> claimEntityList =
+          claimDTOlist.map((claim) => _claimMapper.mapFrom(claim)).toList();
+      return claimEntityList;
+    } catch (error) {
+      throw GetClaimsException(error);
+    }
   }
 
   @override
   Future<ClaimEntity> getClaim(
       {required String claimId,
       required String genesisDid,
-      required String privateKey}) {
-    return _storageClaimDataSource
-        .getClaims(
-            filter: _idFilterMapper.mapTo(claimId),
-            did: genesisDid,
-            privateKey: privateKey)
-        .then((claims) => claims.isEmpty
-            ? throw ClaimNotFoundException(claimId)
-            : _claimMapper.mapFrom(claims.first));
+      required String privateKey}) async {
+    try {
+      ClaimDTO claimDTO = await _storageClaimDataSource.getClaim(
+          credentialId: claimId, did: genesisDid, privateKey: privateKey);
+
+      ClaimEntity claimEntity = _claimMapper.mapFrom(claimDTO);
+      return claimEntity;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<ClaimEntity> getCredentialByPartialId({
+    required String partialId,
+    required String genesisDid,
+    required String privateKey,
+  }) async {
+    try {
+      List<ClaimDTO> claimDTOlist =
+          await _storageClaimDataSource.getCredentialByPartialId(
+        partialId: partialId,
+        did: genesisDid,
+        privateKey: privateKey,
+      );
+
+      if (claimDTOlist.isEmpty || claimDTOlist.length > 1) {
+        throw ClaimNotFoundException(partialId);
+      }
+
+      ClaimEntity claimEntity = _claimMapper.mapFrom(claimDTOlist.first);
+      return claimEntity;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
@@ -168,5 +204,16 @@ class CredentialRepositoryImpl extends CredentialRepository {
   @override
   Future<List<String>> getAuthClaim({required List<String> publicKey}) {
     return _localClaimDataSource.getAuthClaim(publicKey: publicKey);
+  }
+
+  @override
+  Future<String?> cacheCredential({
+    required String credential,
+    String? config,
+  }) {
+    return _cacheCredentialDataSource.cacheCredential(
+      credential: credential,
+      config: config,
+    );
   }
 }

@@ -24,4 +24,10 @@ class MTProofEntity {
 
   @override
   int get hashCode => runtimeType.hashCode;
+
+  Map<String, dynamic> toJson() => {
+        'existence': existence,
+        'siblings': siblings.map((e) => e.toJson()).toList(),
+        'nodeAux': nodeAux?.toJson(),
+      };
 }

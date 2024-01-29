@@ -35,7 +35,8 @@ final claim = ClaimDTO(
     did: identifier,
     expiration: fetchClaimDTO.credential.expirationDate,
     type: fetchClaimDTO.credential.credentialSubject.type,
-    info: fetchClaimDTO.credential);
+    info: fetchClaimDTO.credential,
+    credentialRawValue: mockFetchClaim);
 
 //DEPENDENCIES
 MockClient client = MockClient();

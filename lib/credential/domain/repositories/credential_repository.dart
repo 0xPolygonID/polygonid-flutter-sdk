@@ -21,6 +21,12 @@ abstract class CredentialRepository {
       required String genesisDid,
       required String privateKey});
 
+  Future<ClaimEntity> getCredentialByPartialId({
+    required String partialId,
+    required String genesisDid,
+    required String privateKey,
+  });
+
   Future<void> removeClaims(
       {required List<String> claimIds,
       required String genesisDid,
@@ -45,4 +51,9 @@ abstract class CredentialRepository {
       {required ClaimEntity claim, required bool rhs});
 
   Future<List<String>> getAuthClaim({required List<String> publicKey});
+
+  Future<String?> cacheCredential({
+    required String credential,
+    String? config,
+  });
 }

@@ -183,7 +183,19 @@ extern GoUint8 PLGNAtomicQuerySigV2OnChainInputs(char** jsonResponse, char* in, 
 //	}
 //
 extern GoUint8 PLGNAtomicQueryMtpV2OnChainInputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
+// PLGNAtomicQueryV3Inputs returns the inputs for the credentialAtomicQueryV3
+// circuit with optional selective disclosure.
+//
+extern GoUint8 PLGNAtomicQueryV3Inputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
+// PLGNAtomicQueryV3OnChainInputs returns the inputs for the
+// credentialAtomicQueryV3OnChain circuit with optional selective disclosure.
+//
+extern GoUint8 PLGNAtomicQueryV3OnChainInputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern void PLGNFreeStatus(PLGNStatus* status);
+extern GoUint8 PLGNCleanCache(PLGNStatus** status);
+extern GoUint8 PLGNCacheCredentials(char* in, char* cfg, PLGNStatus** status);
 
 #ifdef __cplusplus
 }

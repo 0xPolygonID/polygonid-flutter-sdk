@@ -21,6 +21,8 @@ class ClaimInfoDTO extends Equatable {
   final CredentialSchemaDTO credentialSchema;
   @JsonKey(name: 'proof')
   final List<ClaimProofDTO> proofs;
+  final RefreshServiceDTO? refreshService;
+  final DisplayMethodDTO? displayMethod;
 
   const ClaimInfoDTO(
     this.id,
@@ -33,6 +35,8 @@ class ClaimInfoDTO extends Equatable {
     this.issuer,
     this.credentialSchema,
     this.proofs,
+    this.refreshService,
+    this.displayMethod,
   );
 
   factory ClaimInfoDTO.fromJson(Map<String, dynamic> json) =>
@@ -53,7 +57,40 @@ class ClaimInfoDTO extends Equatable {
         issuer,
         credentialSchema,
         proofs,
+        refreshService,
       ];
+}
+
+/// If credential is refreshable, this is the data needed to refresh it
+class RefreshServiceDTO {
+  final String id;
+  final String type;
+
+  const RefreshServiceDTO(this.id, this.type);
+
+  factory RefreshServiceDTO.fromJson(Map<String, dynamic> json) {
+    String id = json['id'] as String;
+    String type = json['type'] as String;
+
+    return RefreshServiceDTO(id, type);
+  }
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> result = {
+      'id': id,
+      'type': type,
+    };
+
+    return result;
+  }
+
+  @override
+  List<Object?> get props => [id, type];
+
+  @override
+  String toString() {
+    return 'RefreshServiceDTO{id: $id, type: $type}';
+  }
 }
 
 class CredentialSubjectDTO extends Equatable {
@@ -98,7 +135,9 @@ enum CredentialStatusType {
   @JsonValue("SparseMerkleTreeProof")
   sparseMerkleTreeProof,
   @JsonValue("Iden3OnchainSparseMerkleTreeProof2023")
-  iden3OnchainSparseMerkleTreeProof2023
+  iden3OnchainSparseMerkleTreeProof2023,
+  @JsonValue("Iden3commRevocationStatusV1.0")
+  iden3commRevocationStatusV1
 }
 
 @JsonSerializable(explicitToJson: true)
@@ -133,6 +172,23 @@ class CredentialSchemaDTO extends Equatable {
       _$CredentialSchemaDTOFromJson(json);
 
   Map<String, dynamic> toJson() => _$CredentialSchemaDTOToJson(this);
+
+  @override
+  List<Object?> get props => [id, type];
+}
+
+@JsonSerializable()
+class DisplayMethodDTO {
+  /// Contains url.
+  final String id;
+  final String type;
+
+  DisplayMethodDTO(this.id, this.type);
+
+  factory DisplayMethodDTO.fromJson(Map<String, dynamic> json) =>
+      _$DisplayMethodDTOFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DisplayMethodDTOToJson(this);
 
   @override
   List<Object?> get props => [id, type];

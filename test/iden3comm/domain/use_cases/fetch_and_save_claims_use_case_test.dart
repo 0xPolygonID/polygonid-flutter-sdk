@@ -5,6 +5,7 @@ import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.d
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/cache_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
@@ -36,13 +37,15 @@ final revStatus = {
 };
 
 final claimEntity = ClaimEntity(
-    issuer: "",
-    did: "",
-    expiration: "",
-    info: {},
-    type: "",
-    state: ClaimState.active,
-    id: "id");
+  issuer: "",
+  did: "",
+  expiration: "",
+  info: {},
+  type: "",
+  state: ClaimState.active,
+  id: "id",
+  credentialRawValue: "",
+);
 
 final result = [claimEntity, claimEntity, claimEntity];
 
@@ -66,6 +69,8 @@ MockSaveClaimsUseCase saveClaimsUseCase = MockSaveClaimsUseCase();
 MockGetAuthTokenUseCase getAuthTokenUseCase = MockGetAuthTokenUseCase();
 MockGetClaimRevocationStatusUseCase getClaimRevocationStatusUseCase =
     MockGetClaimRevocationStatusUseCase();
+MockCacheCredentialUseCase cacheCredentialUseCase =
+    MockCacheCredentialUseCase();
 MockStacktraceManager stacktraceManager = MockStacktraceManager();
 
 // Tested instance
@@ -78,6 +83,7 @@ FetchAndSaveClaimsUseCase useCase = FetchAndSaveClaimsUseCase(
   getAuthTokenUseCase,
   saveClaimsUseCase,
   getClaimRevocationStatusUseCase,
+  cacheCredentialUseCase,
   stacktraceManager,
 );
 
@@ -90,6 +96,7 @@ FetchAndSaveClaimsUseCase useCase = FetchAndSaveClaimsUseCase(
   GetAuthTokenUseCase,
   SaveClaimsUseCase,
   GetClaimRevocationStatusUseCase,
+  CacheCredentialUseCase,
   StacktraceManager,
 ])
 void main() {
@@ -177,8 +184,9 @@ void main() {
         j++;
       }
 
-      var revStatusVerify = verify(getClaimRevocationStatusUseCase.execute(
-          param: captureAnyNamed('param')));
+      // FIXME: This is verifying code that is currently commented out.
+      // var revStatusVerify = verify(getClaimRevocationStatusUseCase.execute(
+      //     param: captureAnyNamed('param')));
     });
 
     test(

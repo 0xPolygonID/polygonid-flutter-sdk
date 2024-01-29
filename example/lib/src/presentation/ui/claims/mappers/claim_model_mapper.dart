@@ -51,7 +51,10 @@ class ClaimModelMapper implements FromMapper<ClaimEntity, ClaimModel> {
       proofType = proofType.substring(0, proofType.length - 1);
     }
 
+    bool refreshable = from.info.containsKey(["refreshService"]);
+
     String value = '';
+
     // Details
     List<ClaimDetailModel> details = [];
 
@@ -89,13 +92,15 @@ class ClaimModelMapper implements FromMapper<ClaimEntity, ClaimModel> {
     ]);
 
     return ClaimModel(
-        id: from.id,
-        name: name,
-        issuer: from.issuer,
-        expiration: from.expiration,
-        state: stateMapper.mapFrom(from.state),
-        type: from.type,
-        value: value,
-        details: details);
+      id: from.id,
+      name: name,
+      issuer: from.issuer,
+      expiration: from.expiration,
+      state: stateMapper.mapFrom(from.state),
+      type: from.type,
+      value: value,
+      details: details,
+      refreshable: refreshable,
+    );
   }
 }

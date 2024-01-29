@@ -4,7 +4,9 @@ enum Iden3MessageType {
   authResponse,
   credentialOffer,
   credentialIssuanceResponse,
-  proofContractInvokeRequest
+  proofContractInvokeRequest,
+  credentialRefresh,
+  credentialStatusUpdate,
 }
 
 /// Represents an iden3 message.

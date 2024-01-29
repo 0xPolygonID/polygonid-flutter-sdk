@@ -32,6 +32,8 @@ class ProveUseCase extends FutureUseCase<ProveParam, ZKProofEntity> {
         param.inputs,
       );
 
+      Stopwatch stopwatch = Stopwatch()..start();
+
       // Generate proof
       ZKProofEntity zkProofEntity = await _proofRepository.prove(
         param.circuitData,
@@ -39,6 +41,8 @@ class ProveUseCase extends FutureUseCase<ProveParam, ZKProofEntity> {
       );
 
       _stacktraceManager.addTrace("[ProveUseCase] proof");
+      _stacktraceManager.addTrace(
+          "[ProveUseCase][MainFlow] proof generated in ${stopwatch.elapsedMilliseconds} ms");
       logger().i("[ProveUseCase] proof: $zkProofEntity");
 
       return zkProofEntity;

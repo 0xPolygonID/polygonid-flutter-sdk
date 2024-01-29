@@ -1,6 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/data/data_sources/secure_identity_storage_data_source.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:sembast/sembast.dart';
 
@@ -108,14 +109,62 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
     await _storeRefWrapper.removeAll(transaction);
   }
 
-  Future<List<ClaimDTO>> getClaims(
-      {Filter? filter, required String did, required String privateKey}) {
+  Future<List<ClaimDTO>> getClaims({
+    Filter? filter,
+    required String did,
+    required String privateKey,
+  }) async {
+    Database database = await getDatabase(did: did, privateKey: privateKey);
+
+    List<RecordSnapshot<String, Map<String, Object?>>> snapshots =
+        await _storeRefWrapper.find(database, finder: Finder(filter: filter));
+
+    List<ClaimDTO> claims = snapshots.map((snapshot) {
+      ClaimDTO claimDTO = ClaimDTO.fromJson(snapshot.value);
+      return claimDTO;
+    }).toList();
+
+    database.close();
+    return claims;
+  }
+
+  Future<List<ClaimDTO>> getCredentialByPartialId({
+    required String did,
+    required String privateKey,
+    required String partialId,
+  }) {
     return getDatabase(did: did, privateKey: privateKey).then((database) =>
         _storeRefWrapper
-            .find(database, finder: Finder(filter: filter))
-            .then((snapshots) => snapshots
-                .map((snapshot) => ClaimDTO.fromJson(snapshot.value))
-                .toList())
-            .whenComplete(() => database.close()));
+            .find(database,
+                finder: Finder(
+                    filter: Filter.custom((record) =>
+                        (record.value as Map<String, Object?>)['id']
+                            ?.toString()
+                            .contains(partialId) ??
+                        false)))
+            .then((snapshots) {
+          return snapshots.map((snapshot) {
+            return ClaimDTO.fromJson(snapshot.value);
+          }).toList();
+        }).whenComplete(() => database.close()));
+  }
+
+  /// Get a [ClaimDTO] filtered by id associated to the identity previously stored
+  Future<ClaimDTO> getClaim({
+    required String credentialId,
+    required String did,
+    required String privateKey,
+  }) async {
+    Database db = await getDatabase(did: did, privateKey: privateKey);
+
+    Map<String, Object?>? credential =
+        await _storeRefWrapper.get(db, credentialId);
+    if (credential == null) {
+      throw ClaimNotFoundException(credentialId);
+    }
+
+    ClaimDTO claimDTO = ClaimDTO.fromJson(credential);
+    db.close();
+    return claimDTO;
   }
 }

@@ -17,6 +17,8 @@ class CustomStrings {
       "You need to create an identity first";
 
   // AUTH
+  static const String authPrivateProfile = "Private Profile";
+  static const String authPublicProfile = "Public Profile";
   static const String authButtonCTA = "Connect";
   static const String authDescription =
       "Authenticate through verifier provider by scanning QR Code.\nIf you are already authenticated, you can skip this step";
@@ -45,7 +47,7 @@ class CustomStrings {
 
   // ERROR
   static const String genericError = "A generic error occurred, try again";
-  static const String iden3messageGenericError = "Error in the readed message";
+  static const String iden3messageGenericError = "Error in the read message";
 
   // SIGN MESSAGE FEATURE CARD
   static const String signMessageMethod = "identity.sign()";
@@ -90,4 +92,5 @@ class CustomStrings {
   static const String restoreIdentityScreenInitialState = "Not restored yet";
   static const String restoreIdentityScreenSuccess =
       "Identity restored successfully";
+  static const String refreshClaimButtonCTA = "Refresh credential";
 }

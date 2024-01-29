@@ -1,3 +1,5 @@
+import 'package:polygonid_flutter_sdk/credential/data/dtos/display_type/display_type.dart';
+
 enum ClaimState { active, expired, pending, revoked }
 
 class ClaimEntity {
@@ -9,16 +11,22 @@ class ClaimEntity {
   final Map<String, dynamic>? schema;
   final String type;
   final Map<String, dynamic> info;
+  final DisplayType? displayType;
 
-  ClaimEntity(
-      {required this.id,
-      required this.issuer,
-      required this.did,
-      required this.state,
-      this.expiration,
-      this.schema,
-      required this.type,
-      required this.info});
+  final String credentialRawValue;
+
+  ClaimEntity({
+    required this.id,
+    required this.issuer,
+    required this.did,
+    required this.state,
+    this.expiration,
+    this.schema,
+    required this.type,
+    required this.info,
+    this.displayType,
+    required this.credentialRawValue,
+  });
 
   factory ClaimEntity.fromJson(Map<String, dynamic> json) {
     return ClaimEntity(
@@ -30,6 +38,8 @@ class ClaimEntity {
       schema: json['schema'],
       type: json['type'],
       info: json['info'],
+      displayType: json['displayType'],
+      credentialRawValue: json['credentialRawValue'],
     );
   }
 
@@ -43,12 +53,15 @@ class ClaimEntity {
         'schema': schema,
         'type': type,
         'info': info,
+        'displayType': displayType?.toJson(),
+        'credentialRawValue': credentialRawValue,
       };
 
   @override
   String toString() => "[ClaimEntity] {id: $id, "
       "issuer: $issuer, did: $did, state: $state, "
-      "expiration: $expiration, schema: $schema, type: $type, info: $info}";
+      "expiration: $expiration, schema: $schema, type: $type, info: $info, "
+      "displayType: $displayType}";
 
   @override
   bool operator ==(Object other) =>
@@ -62,7 +75,8 @@ class ClaimEntity {
           expiration == other.expiration &&
           schema == other.schema &&
           type == other.type &&
-          info.toString() == other.info.toString();
+          info.toString() == other.info.toString() &&
+          displayType == other.displayType;
 
   @override
   int get hashCode => runtimeType.hashCode;

@@ -10,6 +10,7 @@ import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_even
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_state.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
 import 'package:polygonid_flutter_sdk_example/utils/secure_storage_keys.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final PolygonIdSdk _polygonIdSdk;
@@ -50,7 +51,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       PrivateIdentityEntity identity =
           await _polygonIdSdk.identity.addIdentity();
-      print("identity: ${identity.privateKey}");
+      logger().i("identity: ${identity.privateKey}");
       await SecureStorage.write(
           key: SecureStorageKeys.privateKey, value: identity.privateKey);
       emit(HomeState.loaded(identifier: identity.did));

@@ -17,6 +17,7 @@ import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_bloc
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/restore_identity/bloc/restore_identity_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/sign/sign_bloc.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/splash_bloc.dart';
+import 'package:polygonid_flutter_sdk_example/utils/qr_code_parser_utils.dart';
 
 final getIt = GetIt.instance;
 
@@ -34,12 +35,15 @@ Future<void> init() async {
   registerIdentityDependencies();
   registerBackupIdentityDependencies();
   registerRestoreIdentityDependencies();
+  registerUtilities();
 }
 
 void registerEnv() {
   Map<String, dynamic> polygonMumbai = jsonDecode(Env.polygonMumbai);
-  List<EnvEntity> env = [
-    EnvEntity(
+  Map<String, dynamic> polygonMainnet = jsonDecode(Env.polygonMainnet);
+
+  Map<String, EnvEntity> env = {
+    "mumbai": EnvEntity(
       blockchain: polygonMumbai['blockchain'],
       network: polygonMumbai['network'],
       web3Url: polygonMumbai['web3Url'],
@@ -49,13 +53,23 @@ void registerEnv() {
       pushUrl: polygonMumbai['pushUrl'],
       ipfsUrl: polygonMumbai['ipfsUrl'],
     ),
-  ];
-  getIt.registerSingleton<List<EnvEntity>>(env);
+    "mainnet": EnvEntity(
+      blockchain: polygonMainnet['blockchain'],
+      network: polygonMainnet['network'],
+      web3Url: polygonMainnet['web3Url'],
+      web3RdpUrl: polygonMainnet['web3RdpUrl'],
+      web3ApiKey: polygonMainnet['web3ApiKey'],
+      idStateContract: polygonMainnet['idStateContract'],
+      pushUrl: polygonMainnet['pushUrl'],
+      ipfsUrl: polygonMainnet['ipfsUrl'],
+    )
+  };
+  getIt.registerSingleton<Map<String, EnvEntity>>(env);
 }
 
 ///
 Future<void> registerProviders() async {
-  await PolygonIdSdk.init(env: getIt<List<EnvEntity>>()[0]);
+  await PolygonIdSdk.init(env: getIt<Map<String, EnvEntity>>()["mumbai"]);
   getIt.registerLazySingleton<PolygonIdSdk>(() => PolygonIdSdk.I);
 }
 
@@ -71,7 +85,11 @@ void registerHomeDependencies() {
 
 ///
 void registerClaimsDependencies() {
-  getIt.registerFactory(() => ClaimsBloc(getIt(), getIt()));
+  getIt.registerFactory(() => ClaimsBloc(
+        getIt(),
+        getIt(),
+        getIt(),
+      ));
 }
 
 ///
@@ -81,7 +99,7 @@ void registerClaimDetailDependencies() {
 
 ///
 void registerAuthDependencies() {
-  getIt.registerFactory(() => AuthBloc(getIt()));
+  getIt.registerFactory(() => AuthBloc(getIt(), getIt()));
 }
 
 ///
@@ -112,4 +130,10 @@ void registerBackupIdentityDependencies() {
 void registerRestoreIdentityDependencies() {
   getIt
       .registerFactory<RestoreIdentityBloc>(() => RestoreIdentityBloc(getIt()));
+}
+
+/// Register utilities
+void registerUtilities() {
+  getIt.registerLazySingleton<QrcodeParserUtils>(
+      () => QrcodeParserUtils(getIt()));
 }

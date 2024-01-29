@@ -46,6 +46,11 @@ class GenerateZKProofParam {
   final Map<String, dynamic> proofScopeRequest;
   final Map<String, dynamic>? config;
 
+  final String? verifierId;
+  final String? linkNonce;
+
+  final Map<String, dynamic>? transactionData;
+
   GenerateZKProofParam(
     this.identifier,
     this.profileNonce,
@@ -61,6 +66,9 @@ class GenerateZKProofParam {
     this.signature,
     this.proofScopeRequest,
     this.config,
+    this.verifierId,
+    this.linkNonce,
+    this.transactionData,
   );
 }
 
@@ -95,6 +103,12 @@ class GenerateZKProofUseCase
       proofScopeRequest: param.proofScopeRequest,
       circuitId: param.circuitData.circuitId,
       config: param.config,
+      verifierId: param.verifierId,
+      linkNonce: param.linkNonce,
+      scopeParams: param.proofScopeRequest.containsKey('params')
+          ? param.proofScopeRequest['params']
+          : null,
+      transactionData: param.transactionData,
     )
         .catchError((error) {
       logger().e("[GenerateZKProofUseCase] Error: $error");
