@@ -11,10 +11,15 @@ abstract class CredentialRepository {
     required String privateKey,
   });
 
-  Future<List<ClaimEntity>> getClaims(
-      {List<FilterEntity>? filters,
-      required String genesisDid,
-      required String privateKey});
+  Future<List<ClaimEntity>> getClaims({
+    List<FilterEntity>? filters,
+    required String genesisDid,
+    required String privateKey,
+    bool sortByExpiration = false,
+    bool sortByExpirationAscending = false,
+    bool sortByIssuanceDate = false,
+    bool sortByIssuanceDateAscending = false,
+  });
 
   Future<ClaimEntity> getClaim(
       {required String claimId,

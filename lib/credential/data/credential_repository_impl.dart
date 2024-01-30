@@ -53,16 +53,25 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<List<ClaimEntity>> getClaims(
-      {List<FilterEntity>? filters,
-      required String genesisDid,
-      required String privateKey}) async {
+  Future<List<ClaimEntity>> getClaims({
+    List<FilterEntity>? filters,
+    required String genesisDid,
+    required String privateKey,
+    bool sortByExpiration = false,
+    bool sortByExpirationAscending = false,
+    bool sortByIssuanceDate = false,
+    bool sortByIssuanceDateAscending = false,
+  }) async {
     try {
       final List<ClaimDTO> claimDTOlist =
           await _storageClaimDataSource.getClaims(
         filter: filters == null ? null : _filtersMapper.mapTo(filters),
         did: genesisDid,
         privateKey: privateKey,
+        sortByExpiration: sortByExpiration,
+        sortByExpirationAscending: sortByExpirationAscending,
+        sortByIssuanceDate: sortByIssuanceDate,
+        sortByIssuanceDateAscending: sortByIssuanceDateAscending,
       );
 
       final List<ClaimEntity> claimEntityList =

@@ -51,10 +51,15 @@ abstract class PolygonIdSdkCredential {
   ///
   /// The [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
-  Future<List<ClaimEntity>> getClaims(
-      {List<FilterEntity>? filters,
-      required String genesisDid,
-      required String privateKey});
+  Future<List<ClaimEntity>> getClaims({
+    List<FilterEntity>? filters,
+    required String genesisDid,
+    required String privateKey,
+    bool sortByExpiration = false,
+    bool sortByExpirationAscending = false,
+    bool sortByIssuanceDate = false,
+    bool sortByIssuanceDateAscending = false,
+  });
 
   /// Get a list of [ClaimEntity] filtered by ids associated to the identity previously stored
   /// in the the Polygon ID Sdk.
@@ -204,10 +209,15 @@ class Credential implements PolygonIdSdkCredential {
   }
 
   @override
-  Future<List<ClaimEntity>> getClaims(
-      {List<FilterEntity>? filters,
-      required String genesisDid,
-      required String privateKey}) {
+  Future<List<ClaimEntity>> getClaims({
+    List<FilterEntity>? filters,
+    required String genesisDid,
+    required String privateKey,
+    bool sortByExpiration = false,
+    bool sortByExpirationAscending = false,
+    bool sortByIssuanceDate = false,
+    bool sortByIssuanceDateAscending = false,
+  }) {
     _stacktraceManager.clear();
     _stacktraceManager.addTrace("PolygonIdSdk.Credential.getClaims called");
     return _getClaimsUseCase.execute(
@@ -216,6 +226,10 @@ class Credential implements PolygonIdSdkCredential {
       genesisDid: genesisDid,
       profileNonce: GENESIS_PROFILE_NONCE,
       privateKey: privateKey,
+      sortByExpiration: sortByExpiration,
+      sortByExpirationAscending: sortByExpirationAscending,
+      sortByIssuanceDate: sortByIssuanceDate,
+      sortByIssuanceDateAscending: sortByIssuanceDateAscending,
     ));
   }
 

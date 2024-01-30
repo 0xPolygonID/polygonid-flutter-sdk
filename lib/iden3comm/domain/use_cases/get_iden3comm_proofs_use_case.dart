@@ -121,6 +121,7 @@ class GetIden3commProofsUseCase
           profileNonce: param.profileNonce,
           privateKey: param.privateKey,
           nonRevocationProofs: param.nonRevocationProofs ?? {},
+          sortByExpiration: true,
         ),
       );
       _stacktraceManager.addTrace(
