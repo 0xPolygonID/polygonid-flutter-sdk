@@ -71,8 +71,7 @@ void main() {
       expect(verify(infoMapper.mapFrom(captureAny)).captured.first,
           fetchClaimDTO.credential);
       expect(verify(stateMapper.mapFrom(captureAny)).captured.first, '');
-      expect(
-          verify(displayTypeMapper.mapFrom(captureAny)).captured.first, null);
+      verifyNever(displayTypeMapper.mapFrom(captureAny));
     });
   });
 
