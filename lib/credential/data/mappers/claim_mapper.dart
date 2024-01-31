@@ -29,7 +29,7 @@ class ClaimMapper extends Mapper<ClaimDTO, ClaimEntity> {
       schema: from.schema,
       type: from.type,
       info: _claimInfoMapper.mapFrom(from.info),
-      displayType: from.displayType == null
+      displayType: displayType != null
           ? _displayTypeMapper.mapFrom(displayType)
           : null,
       credentialRawValue: from.credentialRawValue,
@@ -49,7 +49,7 @@ class ClaimMapper extends Mapper<ClaimDTO, ClaimEntity> {
       schema: to.schema,
       info: _claimInfoMapper.mapTo(to.info),
       displayType:
-          to.displayType == null ? null : _displayTypeMapper.mapTo(displayType),
+          to.displayType != null ? _displayTypeMapper.mapTo(displayType) : null,
       credentialRawValue: to.credentialRawValue,
     );
   }
