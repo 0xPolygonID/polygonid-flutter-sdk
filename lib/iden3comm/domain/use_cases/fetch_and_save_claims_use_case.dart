@@ -122,7 +122,7 @@ class FetchAndSaveClaimsUseCase
           "[FetchAndSaveClaimsUseCase] All claims have been saved: claimsLength ${claims.length}");
 
       final config = AtomicQueryInputsConfigParam(
-        ethereumUrl: env.web3Url + env.web3ApiKey,
+        ethereumUrl: env.rpcUrl,
         stateContractAddr: env.idStateContract,
         ipfsNodeURL: env.ipfsUrl,
       );

@@ -4,9 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/set_env_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/set_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:polygonid_flutter_sdk/sdk/error_handling.dart';
@@ -96,6 +99,18 @@ class PolygonIdSdk {
     return getItSdk
         .getAsync<GetEnvUseCase>()
         .then((instance) => instance.execute());
+  }
+
+  Future<ChainConfigEntity> getSelectedChain() {
+    return getItSdk
+        .getAsync<GetSelectedChainUseCase>()
+        .then((instance) => instance.execute());
+  }
+
+  Future<void> setSelectedChain({required String chainConfigId}) {
+    return getItSdk
+        .getAsync<SetSelectedChainUseCase>()
+        .then((instance) => instance.execute(param: chainConfigId));
   }
 
   Future<void> switchLog({required bool enabled}) async {

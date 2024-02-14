@@ -87,11 +87,10 @@ abstract class NetworkModule {
   Dio get dio => Dio();
 
   Web3Client web3client(@factoryParam EnvEntity env) {
-    return Web3Client(env.web3Url + env.web3ApiKey, client,
-        socketConnector: () {
-      return IOWebSocketChannel.connect(env.web3RdpUrl + env.web3ApiKey)
-          .cast<String>();
-    });
+    return Web3Client(
+      env.rpcUrl,
+      client,
+    );
   }
 }
 

@@ -10,8 +10,13 @@ class SetEnvUseCase extends FutureUseCase<EnvEntity, void> {
 
   @override
   Future<void> execute({required EnvEntity param}) {
-    return _configRepository.setEnv(env: param).then((_) {
+    return _configRepository.setEnv(env: param).then((_) async {
       logger().i("[SetEnvUseCase] $param env has been set");
+
+      if (param.chainConfig.isNotEmpty) {
+        await _configRepository.setSelectedChainId(
+            chainId: param.chainConfig.entries.first.key);
+      }
     }).catchError((error) {
       logger().e("[SetEnvUseCase] Error: $error");
 

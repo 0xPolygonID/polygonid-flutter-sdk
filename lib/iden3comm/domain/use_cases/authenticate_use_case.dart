@@ -111,7 +111,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
         genesisDid: param.genesisDid,
         profileNonce: param.profileNonce,
         privateKey: param.privateKey,
-        ethereumUrl: env.web3Url + env.web3ApiKey,
+        ethereumUrl: env.rpcUrl,
         stateContractAddr: env.idStateContract,
         ipfsNodeUrl: env.ipfsUrl,
         nonRevocationProofs: param.nonRevocationProofs,
