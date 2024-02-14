@@ -14,6 +14,16 @@ class GetSelectedChainUseCase extends FutureUseCase<void, ChainConfigEntity> {
     final selectedChainId = await _configRepository.getSelectedChainId();
     final env = await _getEnvUseCase.execute();
 
-    return env.chainConfig[selectedChainId]!;
+    if (selectedChainId != null) {
+      return env.chainConfig[selectedChainId]!;
+    }
+
+    return ChainConfigEntity(
+      name: env.blockchain + " " + env.network,
+      blockchain: env.blockchain,
+      network: env.network,
+      rpcUrl: env.rpcUrl,
+      stateContractAddr: env.idStateContract,
+    );
   }
 }

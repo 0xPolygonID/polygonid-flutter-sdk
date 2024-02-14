@@ -99,6 +99,15 @@ class PolygonIdFlutterChannel
         case 'getEnv':
           return _polygonIdSdk.getEnv().then((env) => jsonEncode(env));
 
+        case 'setSelectedChain':
+          return _polygonIdSdk.setSelectedChain(
+              chainConfigId: call.arguments['chainConfigId'] as String);
+
+        case 'getSelectedChain':
+          return _polygonIdSdk
+              .getSelectedChain()
+              .then((chain) => jsonEncode(chain));
+
         case 'switchLog':
           return _polygonIdSdk.switchLog(enabled: call.arguments['enabled']);
 

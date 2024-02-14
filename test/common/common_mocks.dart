@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:encrypt/encrypt.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 
@@ -72,6 +73,14 @@ class CommonMocks {
     idStateContract: message,
     pushUrl: url,
     ipfsUrl: url,
+  );
+
+  static ChainConfigEntity chain = ChainConfigEntity(
+    name: name,
+    blockchain: name,
+    network: network,
+    rpcUrl: url,
+    stateContractAddr: message,
   );
 
   static String expiration = "2050-01-01T00:00:00Z";

@@ -86,9 +86,9 @@ abstract class NetworkModule {
 
   Dio get dio => Dio();
 
-  Web3Client web3client(@factoryParam EnvEntity env) {
+  Web3Client web3client(@factoryParam String rpcUrl) {
     return Web3Client(
-      env.rpcUrl,
+      rpcUrl,
       client,
     );
   }

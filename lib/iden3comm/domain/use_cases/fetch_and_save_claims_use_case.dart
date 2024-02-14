@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/cache_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
@@ -38,6 +39,7 @@ class FetchAndSaveClaimsUseCase
   final CheckProfileAndDidCurrentEnvUseCase
       _checkProfileAndDidCurrentEnvUseCase;
   final GetEnvUseCase _getEnvUseCase;
+  final GetSelectedChainUseCase _getSelectedChainUseCase;
   final GetDidIdentifierUseCase _getDidIdentifierUseCase;
   final GetFetchRequestsUseCase _getFetchRequestsUseCase;
   final GetAuthTokenUseCase _getAuthTokenUseCase;
@@ -50,6 +52,7 @@ class FetchAndSaveClaimsUseCase
     this._iden3commCredentialRepository,
     this._checkProfileAndDidCurrentEnvUseCase,
     this._getEnvUseCase,
+    this._getSelectedChainUseCase,
     this._getDidIdentifierUseCase,
     this._getFetchRequestsUseCase,
     this._getAuthTokenUseCase,
@@ -75,13 +78,14 @@ class FetchAndSaveClaimsUseCase
               privateKey: param.privateKey,
               profileNonce: param.profileNonce));
 
-      EnvEntity env = await _getEnvUseCase.execute();
+      final env = await _getEnvUseCase.execute();
+      final chain = await _getSelectedChainUseCase.execute();
 
       String profileDid = await _getDidIdentifierUseCase.execute(
           param: GetDidIdentifierParam(
               privateKey: param.privateKey,
-              blockchain: env.blockchain,
-              network: env.network,
+              blockchain: chain.blockchain,
+              network: chain.network,
               profileNonce: param.profileNonce));
 
       final List<String> requests = await _getFetchRequestsUseCase.execute(
@@ -122,8 +126,8 @@ class FetchAndSaveClaimsUseCase
           "[FetchAndSaveClaimsUseCase] All claims have been saved: claimsLength ${claims.length}");
 
       final config = AtomicQueryInputsConfigParam(
-        ethereumUrl: env.rpcUrl,
-        stateContractAddr: env.idStateContract,
+        ethereumUrl: chain.rpcUrl,
+        stateContractAddr: chain.stateContractAddr,
         ipfsNodeURL: env.ipfsUrl,
       );
 

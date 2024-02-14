@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response_iden3_message_entity.dart';
@@ -45,6 +47,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
   final GetIden3commProofsUseCase _getIden3commProofsUseCase;
   final GetDidIdentifierUseCase _getDidIdentifierUseCase;
   final GetEnvUseCase _getEnvUseCase;
+  final GetSelectedChainUseCase _getSelectedChainUseCase;
   final GetPackageNameUseCase _getPackageNameUseCase;
   final CheckProfileAndDidCurrentEnvUseCase
       _checkProfileAndDidCurrentEnvUseCase;
@@ -57,6 +60,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
     this._getDidIdentifierUseCase,
     this._getAuthTokenUseCase,
     this._getEnvUseCase,
+    this._getSelectedChainUseCase,
     this._getPackageNameUseCase,
     this._checkProfileAndDidCurrentEnvUseCase,
     this._proofGenerationStepsStreamManager,
@@ -87,16 +91,20 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
           "stopwatch after checkProfileAndDidCurrentEnvUseCase ${stopwatch.elapsedMilliseconds}");
 
       EnvEntity env = await _getEnvUseCase.execute();
+
+      ChainConfigEntity chain = await _getSelectedChainUseCase.execute();
       _stacktraceManager.addTrace(
-          "[AuthenticateUseCase] _getEnvUseCase success\nenv: ${env.blockchain} ${env.network}");
+          "[AuthenticateUseCase] _getEnvUseCase success\nenv: ${chain.blockchain} ${chain.network}");
       logger()
           .i("stopwatch after getEnvUseCase ${stopwatch.elapsedMilliseconds}");
+
+      final blockchain = chain.blockchain;
 
       String profileDid = await _getDidIdentifierUseCase.execute(
           param: GetDidIdentifierParam(
               privateKey: param.privateKey,
-              blockchain: env.blockchain,
-              network: env.network,
+              blockchain: chain.blockchain,
+              network: chain.network,
               profileNonce: param.profileNonce));
       _stacktraceManager.addTrace(
           "[AuthenticateUseCase] _getDidIdentifierUseCase success\ndid: $profileDid");
@@ -111,8 +119,8 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
         genesisDid: param.genesisDid,
         profileNonce: param.profileNonce,
         privateKey: param.privateKey,
-        ethereumUrl: env.rpcUrl,
-        stateContractAddr: env.idStateContract,
+        ethereumUrl: chain.rpcUrl,
+        stateContractAddr: chain.stateContractAddr,
         ipfsNodeUrl: env.ipfsUrl,
         nonRevocationProofs: param.nonRevocationProofs,
         challenge: param.challenge,

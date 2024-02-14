@@ -27,18 +27,15 @@ class ConfigRepositoryImpl implements ConfigRepository {
   }
 
   @override
-  Future<String> getSelectedChainId() {
+  Future<String?> getSelectedChainId() {
     return _storageKeyValueDataSource.get(key: "selected_chain").then((value) {
-      if (value == null) {
-        return Future.error(ChainNotSetException());
-      }
-
       return value;
     });
   }
 
   @override
   Future<void> setSelectedChainId({required String chainId}) {
-    return _storageKeyValueDataSource.store(key: "selected_chain", value: chainId);
+    return _storageKeyValueDataSource.store(
+        key: "selected_chain", value: chainId);
   }
 }
