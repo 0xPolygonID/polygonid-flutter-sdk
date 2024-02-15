@@ -48,10 +48,15 @@ class EnvEntity {
     required this.chainConfig,
     required this.didMethods,
     this.stacktraceEncryptionKey,
+    @Deprecated("Use chainConfig")
     this.blockchain = '',
+    @Deprecated("Use chainConfig")
     this.network = '',
+    @Deprecated("Use chainConfig")
     this.web3Url = '',
+    @Deprecated("Use chainConfig")
     this.web3ApiKey = '',
+    @Deprecated("Use chainConfig")
     this.idStateContract = '',
   })
       : rpcUrl = '',
@@ -96,6 +101,7 @@ class EnvEntity {
   @override
   Map<String, dynamic> toJson() =>
       {
+        // TODO: Remove these fields with new release
         'blockchain': blockchain,
         'network': network,
         'web3Url': web3Url,
