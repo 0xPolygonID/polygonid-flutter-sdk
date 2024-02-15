@@ -6,9 +6,7 @@ import 'package:polygonid_flutter_sdk/common/domain/repositories/config_reposito
 class ConfigRepositoryImpl implements ConfigRepository {
   final StorageKeyValueDataSource _storageKeyValueDataSource;
 
-  ConfigRepositoryImpl(
-    this._storageKeyValueDataSource,
-  );
+  ConfigRepositoryImpl(this._storageKeyValueDataSource,);
 
   @override
   Future<EnvEntity> getEnv() {
@@ -17,13 +15,13 @@ class ConfigRepositoryImpl implements ConfigRepository {
         return Future.error(EnvNotSetException());
       }
 
-      return value;
+      return EnvEntity.fromJsonV1(value);
     });
   }
 
   @override
   Future<void> setEnv({required EnvEntity env}) {
-    return _storageKeyValueDataSource.store(key: "env", value: env);
+    return _storageKeyValueDataSource.store(key: "env", value: env.toJson());
   }
 
   @override

@@ -6,6 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/repositories/config_repository.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/set_env_use_case.dart';
@@ -109,6 +110,12 @@ class PolygonIdSdk {
     return getItSdk
         .getAsync<GetSelectedChainUseCase>()
         .then((instance) => instance.execute());
+  }
+
+  Future<String?> getSelectedChainId() {
+    return getItSdk
+        .getAsync<ConfigRepository>()
+        .then((instance) => instance.getSelectedChainId());
   }
 
   Future<void> setSelectedChain({required String chainConfigId}) {
