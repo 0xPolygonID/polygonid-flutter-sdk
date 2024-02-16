@@ -76,7 +76,6 @@ class CommonMocks {
   );
 
   static ChainConfigEntity chain = ChainConfigEntity(
-    name: name,
     blockchain: name,
     network: network,
     rpcUrl: url,

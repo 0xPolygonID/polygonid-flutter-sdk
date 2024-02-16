@@ -1,5 +1,4 @@
 class ChainConfigEntity {
-  final String name;
   final String blockchain;
   final String network;
 
@@ -7,7 +6,6 @@ class ChainConfigEntity {
   final String stateContractAddr;
 
   ChainConfigEntity({
-    required this.name,
     required this.blockchain,
     required this.network,
     required this.rpcUrl,
@@ -16,7 +14,6 @@ class ChainConfigEntity {
 
   factory ChainConfigEntity.fromJson(Map<String, dynamic> json) {
     return ChainConfigEntity(
-      name: json['name'],
       blockchain: json['blockchain'],
       network: json['network'],
       rpcUrl: json['rpcUrl'],
@@ -25,7 +22,6 @@ class ChainConfigEntity {
   }
 
   Map<String, dynamic> toJson() => {
-        'name': name,
         'blockchain': blockchain,
         'network': network,
         'rpcUrl': rpcUrl,
@@ -34,7 +30,7 @@ class ChainConfigEntity {
 
   @override
   String toString() {
-    return 'ChainConfigEntity{name: $name, blockchain: $blockchain, network: $network, rpcUrl: $rpcUrl, stateContractAddr: $stateContractAddr}';
+    return 'ChainConfigEntity{blockchain: $blockchain, network: $network, rpcUrl: $rpcUrl, stateContractAddr: $stateContractAddr}';
   }
 
   @override
@@ -42,7 +38,6 @@ class ChainConfigEntity {
     if (identical(this, other)) return true;
 
     return other is ChainConfigEntity &&
-        other.name == name &&
         other.blockchain == blockchain &&
         other.network == network &&
         other.rpcUrl == rpcUrl &&

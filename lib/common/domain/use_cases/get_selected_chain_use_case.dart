@@ -19,7 +19,6 @@ class GetSelectedChainUseCase extends FutureUseCase<void, ChainConfigEntity> {
     }
 
     return ChainConfigEntity(
-      name: env.blockchain + " " + env.network,
       blockchain: env.blockchain,
       network: env.network,
       rpcUrl: env.rpcUrl,
