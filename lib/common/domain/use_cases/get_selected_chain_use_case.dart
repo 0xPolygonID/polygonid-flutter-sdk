@@ -15,7 +15,7 @@ class GetSelectedChainUseCase extends FutureUseCase<void, ChainConfigEntity> {
     final env = await _getEnvUseCase.execute();
 
     if (selectedChainId != null) {
-      return env.chainConfig[selectedChainId]!;
+      return env.chainConfigs[selectedChainId]!;
     }
 
     return ChainConfigEntity(

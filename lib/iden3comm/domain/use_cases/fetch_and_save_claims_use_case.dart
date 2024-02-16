@@ -126,9 +126,8 @@ class FetchAndSaveClaimsUseCase
           "[FetchAndSaveClaimsUseCase] All claims have been saved: claimsLength ${claims.length}");
 
       final config = AtomicQueryInputsConfigParam(
-        ethereumUrl: chain.rpcUrl,
-        stateContractAddr: chain.stateContractAddr,
         ipfsNodeURL: env.ipfsUrl,
+        chainConfigs: env.chainConfigs,
       );
 
       for (final claim in claims) {

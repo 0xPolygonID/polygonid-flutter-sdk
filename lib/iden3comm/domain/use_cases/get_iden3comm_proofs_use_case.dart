@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
@@ -46,9 +47,8 @@ class GetIden3commProofsParam {
   final BigInt profileNonce;
   final String privateKey;
   final String? challenge;
-  final String? ethereumUrl;
-  final String? stateContractAddr;
   final String? ipfsNodeUrl;
+  final Map<String, ChainConfigEntity> chainConfigs;
   final Map<int, Map<String, dynamic>>? nonRevocationProofs;
 
   final Map<String, dynamic>? transactionData;
@@ -59,9 +59,8 @@ class GetIden3commProofsParam {
     required this.profileNonce,
     required this.privateKey,
     this.challenge,
-    this.ethereumUrl,
-    this.stateContractAddr,
     this.ipfsNodeUrl,
+    this.chainConfigs = const {},
     this.nonRevocationProofs,
     this.transactionData,
   });
@@ -204,8 +203,7 @@ class GetIden3commProofsUseCase
               circuitData: circuitData,
               privateKey: privKey,
               challenge: challenge,
-              ethereumUrl: param.ethereumUrl,
-              stateContractAddr: param.stateContractAddr,
+              chainConfigs: param.chainConfigs,
               ipfsNodeURL: param.ipfsNodeUrl,
               verifierId: param.message.from,
               linkNonce: linkNonce,

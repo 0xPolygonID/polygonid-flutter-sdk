@@ -66,9 +66,9 @@ class PolygonIdSdk {
           .getAsync<SetEnvUseCase>()
           .then((instance) => instance.execute(param: env));
     }
-    if (env?.chainConfig.entries.isNotEmpty ?? false) {
+    if (env?.chainConfigs.entries.isNotEmpty ?? false) {
       await getItSdk.getAsync<SetSelectedChainUseCase>().then(
-          (instance) => instance.execute(param: env!.chainConfig.keys.first));
+          (instance) => instance.execute(param: env!.chainConfigs.keys.first));
     }
 
     // SDK singleton

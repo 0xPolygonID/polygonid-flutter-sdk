@@ -21,10 +21,25 @@ class EnvEntity {
   final String pushUrl;
   final String ipfsUrl;
 
-  final Map<String, ChainConfigEntity> chainConfig;
+  final Map<String, ChainConfigEntity> chainConfigs;
   final List<DidMethodEntity> didMethods;
 
   final String? stacktraceEncryptionKey;
+
+  EnvEntity._({
+    this.web3Url = '',
+    this.web3ApiKey = '',
+    this.web3RdpUrl = '',
+    this.blockchain = '',
+    this.network = '',
+    this.idStateContract = '',
+    this.rpcUrl = '',
+    required this.pushUrl,
+    required this.ipfsUrl,
+    this.chainConfigs = const {},
+    this.didMethods = const [],
+    this.stacktraceEncryptionKey,
+  });
 
   @Deprecated("Use EnvEntity.v1 instead of EnvEntity")
   EnvEntity({
@@ -37,29 +52,22 @@ class EnvEntity {
     required this.pushUrl,
     required this.ipfsUrl,
     this.stacktraceEncryptionKey,
-  })
-      : rpcUrl = web3Url + web3ApiKey,
-        chainConfig = const {},
+  })  : rpcUrl = web3Url + web3ApiKey,
+        chainConfigs = const {},
         didMethods = const [];
 
   EnvEntity.v1({
     required this.pushUrl,
     required this.ipfsUrl,
-    required this.chainConfig,
+    required this.chainConfigs,
     required this.didMethods,
     this.stacktraceEncryptionKey,
-    @Deprecated("Use chainConfig")
-    this.blockchain = '',
-    @Deprecated("Use chainConfig")
-    this.network = '',
-    @Deprecated("Use chainConfig")
-    this.web3Url = '',
-    @Deprecated("Use chainConfig")
-    this.web3ApiKey = '',
-    @Deprecated("Use chainConfig")
-    this.idStateContract = '',
-  })
-      : rpcUrl = '',
+    @Deprecated("Use chainConfig") this.blockchain = '',
+    @Deprecated("Use chainConfig") this.network = '',
+    @Deprecated("Use chainConfig") this.web3Url = '',
+    @Deprecated("Use chainConfig") this.web3ApiKey = '',
+    @Deprecated("Use chainConfig") this.idStateContract = '',
+  })  : rpcUrl = '',
         web3RdpUrl = '';
 
   factory EnvEntity.fromJson(Map<String, dynamic> json) {
@@ -84,12 +92,11 @@ class EnvEntity {
       idStateContract: json['idStateContract'] ?? '',
       pushUrl: json['pushUrl'],
       ipfsUrl: json['ipfsUrl'],
-      chainConfig: (json['chainConfig'] as Map<String, dynamic>).map(
-            (key, value) =>
-            MapEntry(
-              key,
-              ChainConfigEntity.fromJson(value),
-            ),
+      chainConfigs: (json['chainConfigs'] as Map<String, dynamic>).map(
+        (key, value) => MapEntry(
+          key,
+          ChainConfigEntity.fromJson(value),
+        ),
       ),
       didMethods: (json['didMethods'] as List<dynamic>)
           .map((e) => DidMethodEntity.fromJson(e))
@@ -99,8 +106,7 @@ class EnvEntity {
   }
 
   @override
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         // TODO: Remove these fields with new release
         'blockchain': blockchain,
         'network': network,
@@ -110,12 +116,11 @@ class EnvEntity {
 
         'pushUrl': pushUrl,
         'ipfsUrl': ipfsUrl,
-        'chainConfig': chainConfig.map(
-              (key, value) =>
-              MapEntry(
-                key,
-                value.toJson(),
-              ),
+        'chainConfigs': chainConfigs.map(
+          (key, value) => MapEntry(
+            key,
+            value.toJson(),
+          ),
         ),
         'didMethods': didMethods.map((e) => e.toJson()).toList(),
         'stacktraceEncryptionKey': stacktraceEncryptionKey,
@@ -123,22 +128,22 @@ class EnvEntity {
 
   @override
   String toString() {
-    return 'EnvEntity{blockchain: $blockchain, network: $network, rpcUrl: $rpcUrl, idStateContract: $idStateContract, pushUrl: $pushUrl, ipfsUrl: $ipfsUrl, chainConfig: $chainConfig, didMethods: $didMethods, stacktraceEncryptionKey: $stacktraceEncryptionKey}';
+    return 'EnvEntity{blockchain: $blockchain, network: $network, rpcUrl: $rpcUrl, idStateContract: $idStateContract, pushUrl: $pushUrl, ipfsUrl: $ipfsUrl, chainConfig: $chainConfigs, didMethods: $didMethods, stacktraceEncryptionKey: $stacktraceEncryptionKey}';
   }
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is EnvEntity &&
-              blockchain == other.blockchain &&
-              network == other.network &&
-              rpcUrl == other.rpcUrl &&
-              idStateContract == other.idStateContract &&
-              pushUrl == other.pushUrl &&
-              ipfsUrl == other.ipfsUrl &&
-              mapEquals(chainConfig, other.chainConfig) &&
-              listEquals(didMethods, other.didMethods) &&
-              stacktraceEncryptionKey == other.stacktraceEncryptionKey;
+      other is EnvEntity &&
+          blockchain == other.blockchain &&
+          network == other.network &&
+          rpcUrl == other.rpcUrl &&
+          idStateContract == other.idStateContract &&
+          pushUrl == other.pushUrl &&
+          ipfsUrl == other.ipfsUrl &&
+          mapEquals(chainConfigs, other.chainConfigs) &&
+          listEquals(didMethods, other.didMethods) &&
+          stacktraceEncryptionKey == other.stacktraceEncryptionKey;
 
   @override
   int get hashCode => runtimeType.hashCode;
@@ -150,11 +155,11 @@ class EnvEntity {
     String? idStateContract,
     String? pushUrl,
     String? ipfsUrl,
-    Map<String, ChainConfigEntity>? chainConfig,
+    Map<String, ChainConfigEntity>? chainConfigs,
     List<DidMethodEntity>? didMethods,
     String? stacktraceEncryptionKey,
   }) {
-    return EnvEntity(
+    return EnvEntity._(
       blockchain: blockchain ?? this.blockchain,
       network: network ?? this.network,
       web3Url: rpcUrl ?? this.rpcUrl,
@@ -162,8 +167,10 @@ class EnvEntity {
       idStateContract: idStateContract ?? this.idStateContract,
       pushUrl: pushUrl ?? this.pushUrl,
       ipfsUrl: ipfsUrl ?? this.ipfsUrl,
+      chainConfigs: chainConfigs ?? this.chainConfigs,
+      didMethods: didMethods ?? this.didMethods,
       stacktraceEncryptionKey:
-      stacktraceEncryptionKey ?? this.stacktraceEncryptionKey,
+          stacktraceEncryptionKey ?? this.stacktraceEncryptionKey,
     );
   }
 }
