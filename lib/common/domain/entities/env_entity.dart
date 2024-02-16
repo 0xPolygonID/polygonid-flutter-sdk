@@ -54,7 +54,9 @@ class EnvEntity {
     this.stacktraceEncryptionKey,
   })  : rpcUrl = web3Url + web3ApiKey,
         chainConfigs = const {},
-        didMethods = const [];
+        didMethods = const [] {
+
+  }
 
   EnvEntity.v1({
     required this.pushUrl,

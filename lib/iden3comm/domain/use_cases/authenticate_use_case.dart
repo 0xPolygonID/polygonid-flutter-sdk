@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
@@ -119,8 +120,11 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
         genesisDid: param.genesisDid,
         profileNonce: param.profileNonce,
         privateKey: param.privateKey,
-        chainConfigs: env.chainConfigs,
-        ipfsNodeUrl: env.ipfsUrl,
+        config: EnvConfigEntity(
+          ipfsNodeUrl: env.ipfsUrl,
+          chainConfigs: env.chainConfigs,
+          didMethods: env.didMethods,
+        ),
         nonRevocationProofs: param.nonRevocationProofs,
         challenge: param.challenge,
       ));

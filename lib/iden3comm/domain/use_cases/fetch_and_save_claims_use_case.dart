@@ -128,6 +128,7 @@ class FetchAndSaveClaimsUseCase
       final config = AtomicQueryInputsConfigParam(
         ipfsNodeURL: env.ipfsUrl,
         chainConfigs: env.chainConfigs,
+        didMethods: env.didMethods,
       );
 
       for (final claim in claims) {

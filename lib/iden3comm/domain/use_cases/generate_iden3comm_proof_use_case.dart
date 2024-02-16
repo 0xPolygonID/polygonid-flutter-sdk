@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/did_method_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
@@ -44,8 +46,7 @@ class GenerateIden3commProofParam {
   final String? privateKey;
   final String? challenge;
 
-  final String? ipfsNodeURL;
-  final Map<String, ChainConfigEntity> chainConfigs;
+  final EnvConfigEntity? config;
 
   final String? verifierId;
   final String? linkNonce;
@@ -61,8 +62,7 @@ class GenerateIden3commProofParam {
     required this.circuitData,
     this.privateKey,
     this.challenge,
-    this.ipfsNodeURL,
-    this.chainConfigs = const {},
+    this.config,
     this.verifierId,
     this.linkNonce,
     this.transactionData,
@@ -188,11 +188,12 @@ class GenerateIden3commProofUseCase
       logger().i("GENERATION PROOF signature executed in ${stopwatch.elapsed}");
     }
 
-    final ipfsNodeURL = param.ipfsNodeURL;
-    if (ipfsNodeURL != null) {
+    final envConfig = param.config;
+    if (envConfig != null) {
       config = AtomicQueryInputsConfigParam(
-        ipfsNodeURL: ipfsNodeURL,
-        chainConfigs: param.chainConfigs,
+        ipfsNodeURL: envConfig.ipfsNodeUrl,
+        chainConfigs: envConfig.chainConfigs,
+        didMethods: envConfig.didMethods,
       ).toJson();
       _stacktraceManager.addTrace(
           "[GenerateIden3commProofUseCase] AtomicQueryInputsConfigParam: success");

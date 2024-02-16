@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/did_method_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
@@ -558,8 +560,7 @@ class PolygonIdFlutterChannel
     BigInt? profileNonce,
     required String privateKey,
     String? challenge,
-    String? ipfsNodeUrl,
-    Map<String, ChainConfigEntity> chainConfigs = const {},
+    EnvConfigEntity? config,
     Map<int, Map<String, dynamic>>? nonRevocationProofs,
     Map<String, dynamic>? transactionData,
   }) {
@@ -569,8 +570,7 @@ class PolygonIdFlutterChannel
       profileNonce: profileNonce,
       privateKey: privateKey,
       challenge: challenge,
-      ipfsNodeUrl: ipfsNodeUrl,
-      chainConfigs: chainConfigs,
+      config: config,
       nonRevocationProofs: nonRevocationProofs,
       transactionData: transactionData,
     );
