@@ -17,7 +17,7 @@ class AtomicQueryInputsConfigParam {
         "IPFSNodeURL": ipfsNodeURL,
         "chainConfigs":
             chainConfigs.map((key, value) => MapEntry(key, value.toJson())),
-        "didMethods": didMethods.map((value) => value.toJson()),
+        "didMethods": didMethods.map((value) => value.toJson()).toList(),
       }..removeWhere(
           (dynamic key, dynamic value) => key == null || value == null);
 
