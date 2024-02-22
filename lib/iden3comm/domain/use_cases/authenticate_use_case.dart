@@ -99,8 +99,6 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
       logger()
           .i("stopwatch after getEnvUseCase ${stopwatch.elapsedMilliseconds}");
 
-      final blockchain = chain.blockchain;
-
       String profileDid = await _getDidIdentifierUseCase.execute(
           param: GetDidIdentifierParam(
               privateKey: param.privateKey,
@@ -120,11 +118,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
         genesisDid: param.genesisDid,
         profileNonce: param.profileNonce,
         privateKey: param.privateKey,
-        config: EnvConfigEntity(
-          ipfsNodeUrl: env.ipfsUrl,
-          chainConfigs: env.chainConfigs,
-          didMethods: env.didMethods,
-        ),
+        config: env.config,
         nonRevocationProofs: param.nonRevocationProofs,
         challenge: param.challenge,
       ));

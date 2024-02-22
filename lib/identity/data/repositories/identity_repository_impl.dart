@@ -1,5 +1,7 @@
 import 'package:encrypt/encrypt.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
@@ -186,11 +188,16 @@ class IdentityRepositoryImpl extends IdentityRepository {
     required String network,
     required String claimsRoot,
     required BigInt profileNonce,
+    required EnvConfigEntity config,
   }) {
     try {
       // Get the genesis id
-      String genesisDid = _libPolygonIdCoreIdentityDataSource
-          .calculateGenesisId(claimsRoot, blockchain, network);
+      final genesisDid = _libPolygonIdCoreIdentityDataSource.newGenesisId(
+        claimsRoot,
+        blockchain,
+        network,
+        config.toJson(),
+      );
 
       if (profileNonce == GENESIS_PROFILE_NONCE) {
         return Future.value(genesisDid);

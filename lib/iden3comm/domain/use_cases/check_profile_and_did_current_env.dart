@@ -46,12 +46,13 @@ class CheckProfileAndDidCurrentEnvUseCase
       final chain = await _getSelectedChainUseCase.execute();
 
       final did = await _getDidIdentifierUseCase.execute(
-          param: GetDidIdentifierParam(
-        privateKey: param.privateKey,
-        blockchain: chain.blockchain,
-        network: chain.network,
-        profileNonce: GENESIS_PROFILE_NONCE,
-      ));
+        param: GetDidIdentifierParam(
+          privateKey: param.privateKey,
+          blockchain: chain.blockchain,
+          network: chain.network,
+          profileNonce: GENESIS_PROFILE_NONCE,
+        ),
+      );
 
       if (did != param.did) {
         throw DidNotMatchCurrentEnvException(param.did, did);

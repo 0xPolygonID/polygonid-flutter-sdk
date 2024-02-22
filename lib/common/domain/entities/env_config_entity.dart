@@ -11,4 +11,13 @@ class EnvConfigEntity {
     this.chainConfigs = const {},
     this.didMethods = const [],
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'ipfsNodeUrl': ipfsNodeUrl,
+      'chainConfigs':
+          chainConfigs.map((key, value) => MapEntry(key, value.toJson())),
+      'didMethods': didMethods.map((e) => e.toJson()).toList(),
+    };
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/did_method_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 
 class EnvEntity {
   @Deprecated("Use EnvEntity.v1 instead of EnvEntity")
@@ -173,6 +174,16 @@ class EnvEntity {
       didMethods: didMethods ?? this.didMethods,
       stacktraceEncryptionKey:
           stacktraceEncryptionKey ?? this.stacktraceEncryptionKey,
+    );
+  }
+}
+
+extension EnvEntityExtension on EnvEntity {
+  EnvConfigEntity get config {
+    return EnvConfigEntity(
+      ipfsNodeUrl: ipfsUrl,
+      chainConfigs: chainConfigs,
+      didMethods: didMethods,
     );
   }
 }
