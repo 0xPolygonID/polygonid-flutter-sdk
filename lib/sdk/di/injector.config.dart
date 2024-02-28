@@ -4,8 +4,7 @@
 // InjectableConfigGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_lambdas
-// ignore_for_file: lines_longer_than_80_chars
+// ignore_for_file: type=lint
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
@@ -557,28 +556,28 @@ extension GetItInjectableX on _i1.GetIt {
     gh.lazySingleton<_i65.StacktraceManager>(() => _i65.StacktraceManager());
     gh.factory<_i66.StateIdentifierMapper>(() => _i66.StateIdentifierMapper());
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.profileStore,
-      instanceName: 'profilesStore',
+      () => databaseModule.interactionStore,
+      instanceName: 'interactionStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.didProfileInfoStore,
       instanceName: 'didProfileInfoStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.interactionStore,
-      instanceName: 'interactionStore',
+      () => databaseModule.profileStore,
+      instanceName: 'profilesStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.claimStore,
-      instanceName: 'claimStore',
+      () => databaseModule.identityStore,
+      instanceName: 'identityStore',
     );
     gh.factory<_i13.StoreRef<String, dynamic>>(
       () => databaseModule.keyValueStore,
       instanceName: 'keyValueStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.identityStore,
-      instanceName: 'identityStore',
+      () => databaseModule.claimStore,
+      instanceName: 'claimStore',
     );
     gh.factory<_i67.TreeStateMapper>(() => _i67.TreeStateMapper());
     gh.factory<_i68.TreeTypeMapper>(() => _i68.TreeTypeMapper());
@@ -778,6 +777,7 @@ extension GetItInjectableX on _i1.GetIt {
               gh<_i61.QMapper>(),
               gh<_i36.JWZMapper>(),
               gh<_i91.Iden3commProofMapper>(),
+              gh<_i89.GetIden3MessageUseCase>(),
             ));
     gh.factoryAsync<_i119.InteractionRepositoryImpl>(
         () async => _i119.InteractionRepositoryImpl(

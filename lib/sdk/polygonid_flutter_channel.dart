@@ -446,7 +446,7 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<void> authenticate({
+  Future<Iden3MessageEntity?> authenticate({
     required Iden3MessageEntity message,
     required String genesisDid,
     BigInt? profileNonce,

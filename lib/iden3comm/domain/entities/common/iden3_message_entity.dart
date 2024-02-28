@@ -19,19 +19,22 @@ abstract class Iden3MessageEntity {
   abstract final body;
   final String from;
   final String? to;
+  final Map<String, dynamic>? nextRequest;
 
-  const Iden3MessageEntity(
-      {required this.id,
-      required this.typ,
-      required this.type,
-      this.messageType = Iden3MessageType.unknown,
-      required this.thid,
-      required this.from,
-      this.to});
+  const Iden3MessageEntity({
+    required this.id,
+    required this.typ,
+    required this.type,
+    this.messageType = Iden3MessageType.unknown,
+    required this.thid,
+    required this.from,
+    this.to,
+    this.nextRequest,
+  });
 
   @override
   String toString() =>
-      "[Iden3MessageEntity] {id: $id, typ: $typ, type: $type, messageType: $messageType, thid: $thid, body: $body, from: $from, to: $to}";
+      "[Iden3MessageEntity] {id: $id, typ: $typ, type: $type, messageType: $messageType, thid: $thid, body: $body, from: $from, to: $to, nextRequest: $nextRequest}";
 
   @override
   Map<String, dynamic> toJson() => {
@@ -43,6 +46,7 @@ abstract class Iden3MessageEntity {
         'body': body.toJson(),
         'from': from,
         'to': to,
+        'nextRequest': nextRequest,
       }..removeWhere(
           (dynamic key, dynamic value) => key == null || value == null);
 
@@ -58,7 +62,8 @@ abstract class Iden3MessageEntity {
           thid == other.thid &&
           body == other.body &&
           from == other.from &&
-          to == other.to;
+          to == other.to &&
+          nextRequest == other.nextRequest;
 
   @override
   int get hashCode => runtimeType.hashCode;

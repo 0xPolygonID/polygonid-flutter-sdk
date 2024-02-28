@@ -7,6 +7,7 @@ import 'package:polygonid_flutter_sdk/credential/domain/use_cases/add_did_profil
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_did_profile_info_list_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_did_profile_info_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_did_profile_info_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
@@ -143,7 +144,7 @@ abstract class PolygonIdSdkIden3comm {
   ///
   /// The [pushToken] is the push notification registration token so the issuer/verifer
   /// can send notifications to the identity.
-  Future<void> authenticate({
+  Future<Iden3MessageEntity?> authenticate({
     required Iden3MessageEntity message,
     required String genesisDid,
     BigInt? profileNonce,
@@ -400,7 +401,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }
 
   @override
-  Future<void> authenticate({
+  Future<Iden3MessageEntity?> authenticate({
     required Iden3MessageEntity message,
     required String genesisDid,
     BigInt? profileNonce,
