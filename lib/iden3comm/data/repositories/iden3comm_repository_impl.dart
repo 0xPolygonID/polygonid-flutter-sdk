@@ -41,9 +41,9 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   final Iden3MessageDataSource _iden3messageDataSource;
   final RemoteIden3commDataSource _remoteIden3commDataSource;
   final LibPolygonIdCoreIden3commDataSource
-  _libPolygonIdCoreIden3commDataSource;
+      _libPolygonIdCoreIden3commDataSource;
   final LibBabyJubJubDataSource
-  _libBabyJubJubDataSource; // TODO move bjj DS to common
+      _libBabyJubJubDataSource; // TODO move bjj DS to common
   final AuthResponseMapper _authResponseMapper;
   final AuthInputsMapper _authInputsMapper;
   final AuthProofMapper _authProofMapper;
@@ -53,18 +53,20 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   final Iden3commProofMapper _iden3commProofMapper;
   final GetIden3MessageUseCase _getIden3MessageUseCase;
 
-  Iden3commRepositoryImpl(this._iden3messageDataSource,
-      this._remoteIden3commDataSource,
-      this._libPolygonIdCoreIden3commDataSource,
-      this._libBabyJubJubDataSource,
-      this._authResponseMapper,
-      this._authInputsMapper,
-      this._authProofMapper,
-      this._gistProofMapper,
-      this._qMapper,
-      this._jwzMapper,
-      this._iden3commProofMapper,
-      this._getIden3MessageUseCase,);
+  Iden3commRepositoryImpl(
+    this._iden3messageDataSource,
+    this._remoteIden3commDataSource,
+    this._libPolygonIdCoreIden3commDataSource,
+    this._libBabyJubJubDataSource,
+    this._authResponseMapper,
+    this._authInputsMapper,
+    this._authProofMapper,
+    this._gistProofMapper,
+    this._qMapper,
+    this._jwzMapper,
+    this._iden3commProofMapper,
+    this._getIden3MessageUseCase,
+  );
 
   @override
   Future<Iden3MessageEntity?> authenticate({
@@ -82,14 +84,17 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       url: url,
     );
 
-    final responseJson = jsonDecode(response.body);
-    final authResponseJson = responseJson["nextRequest"] as Map<String,
-        dynamic>?;
-    if (authResponseJson == null) {
+    if (response.body.isEmpty) {
       return null;
     }
-    final authResponse = await _getIden3MessageUseCase.execute(
-        param: jsonEncode(authResponseJson));
+
+    final messageJson = jsonDecode(response.body);
+    if (messageJson is! Map<String, dynamic> || messageJson.isEmpty) {
+      return null;
+    }
+
+    final authResponse =
+        await _getIden3MessageUseCase.execute(param: jsonEncode(messageJson));
     return authResponse;
   }
 
@@ -131,7 +136,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
         message: request.body.message,
         scope: scope
             .map((iden3commProofEntity) =>
-            _iden3commProofMapper.mapTo(iden3commProofEntity))
+                _iden3commProofMapper.mapTo(iden3commProofEntity))
             .toList(),
         did_doc: didDocResponse,
       ),
@@ -140,26 +145,27 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   }
 
   @override
-  Future<Uint8List> getAuthInputs({required String genesisDid,
-    required BigInt profileNonce,
-    required String challenge,
-    required List<String> authClaim,
-    required IdentityEntity identity,
-    required String signature,
-    required MTProofEntity incProof,
-    required MTProofEntity nonRevProof,
-    required GistMTProofEntity gistProof,
-    required Map<String, dynamic> treeState}) {
+  Future<Uint8List> getAuthInputs(
+      {required String genesisDid,
+      required BigInt profileNonce,
+      required String challenge,
+      required List<String> authClaim,
+      required IdentityEntity identity,
+      required String signature,
+      required MTProofEntity incProof,
+      required MTProofEntity nonRevProof,
+      required GistMTProofEntity gistProof,
+      required Map<String, dynamic> treeState}) {
     return Future.value(_libPolygonIdCoreIden3commDataSource.getAuthInputs(
-        genesisDid: genesisDid,
-        profileNonce: profileNonce,
-        authClaim: authClaim,
-        incProof: _authProofMapper.mapTo(incProof),
-        nonRevProof: _authProofMapper.mapTo(nonRevProof),
-        gistProof: _gistProofMapper.mapTo(gistProof),
-        treeState: treeState,
-        challenge: challenge,
-        signature: signature))
+            genesisDid: genesisDid,
+            profileNonce: profileNonce,
+            authClaim: authClaim,
+            incProof: _authProofMapper.mapTo(incProof),
+            nonRevProof: _authProofMapper.mapTo(nonRevProof),
+            gistProof: _gistProofMapper.mapTo(gistProof),
+            treeState: treeState,
+            challenge: challenge,
+            signature: signature))
         .then((inputs) => _authInputsMapper.mapFrom(inputs));
   }
 
