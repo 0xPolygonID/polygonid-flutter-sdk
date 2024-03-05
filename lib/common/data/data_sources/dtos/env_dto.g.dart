@@ -15,6 +15,9 @@ EnvDTO _$EnvDTOFromJson(Map<String, dynamic> json) => EnvDTO(
       idStateContract: json['idStateContract'] as String,
       pushUrl: json['pushUrl'] as String,
       ipfsUrl: json['ipfsUrl'] as String,
+      stacktraceEncryptionKey: json['stacktraceEncryptionKey'] as String?,
+      pinataGateway: json['pinataGateway'] as String?,
+      pinataGatewayToken: json['pinataGatewayToken'] as String?,
     );
 
 Map<String, dynamic> _$EnvDTOToJson(EnvDTO instance) => <String, dynamic>{
@@ -26,4 +29,7 @@ Map<String, dynamic> _$EnvDTOToJson(EnvDTO instance) => <String, dynamic>{
       'idStateContract': instance.idStateContract,
       'pushUrl': instance.pushUrl,
       'ipfsUrl': instance.ipfsUrl,
+      'stacktraceEncryptionKey': instance.stacktraceEncryptionKey,
+      'pinataGateway': instance.pinataGateway,
+      'pinataGatewayToken': instance.pinataGatewayToken,
     };

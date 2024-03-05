@@ -8,6 +8,8 @@ class EnvEntity {
   final String pushUrl;
   final String ipfsUrl;
   final String? stacktraceEncryptionKey;
+  final String? pinataGateway;
+  final String? pinataGatewayToken;
 
   EnvEntity({
     required this.blockchain,
@@ -19,6 +21,8 @@ class EnvEntity {
     required this.pushUrl,
     required this.ipfsUrl,
     this.stacktraceEncryptionKey,
+    this.pinataGateway,
+    this.pinataGatewayToken,
   });
 
   factory EnvEntity.fromJson(Map<String, dynamic> json) {
@@ -32,6 +36,8 @@ class EnvEntity {
       pushUrl: json['pushUrl'],
       ipfsUrl: json['ipfsUrl'],
       stacktraceEncryptionKey: json['stacktraceEncryptionKey'],
+      pinataGateway: json['pinataGateway'],
+      pinataGatewayToken: json['pinataGatewayToken'],
     );
   }
 
@@ -46,11 +52,13 @@ class EnvEntity {
         'pushUrl': pushUrl,
         'ipfsUrl': ipfsUrl,
         'stacktraceEncryptionKey': stacktraceEncryptionKey,
+        'pinataGateway': pinataGateway,
+        'pinataGatewayToken': pinataGatewayToken,
       };
 
   @override
   String toString() =>
-      "[EnvEntity] {blockchain: $blockchain, network: $network, web3Url: $web3Url, web3RdpUrl: $web3RdpUrl, web3ApiKey: $web3ApiKey, idStateContract: $idStateContract, pushUrl: $pushUrl, ipfsUrl: $ipfsUrl, stacktraceEncryptionKey: $stacktraceEncryptionKey}";
+      "[EnvEntity] {blockchain: $blockchain, network: $network, web3Url: $web3Url, web3RdpUrl: $web3RdpUrl, web3ApiKey: $web3ApiKey, idStateContract: $idStateContract, pushUrl: $pushUrl, ipfsUrl: $ipfsUrl, stacktraceEncryptionKey: $stacktraceEncryptionKey, pinataGateway: $pinataGateway, pinataGatewayToken: $pinataGatewayToken}";
 
   @override
   bool operator ==(Object other) =>
@@ -64,7 +72,9 @@ class EnvEntity {
           idStateContract == other.idStateContract &&
           pushUrl == other.pushUrl &&
           ipfsUrl == other.ipfsUrl &&
-          stacktraceEncryptionKey == other.stacktraceEncryptionKey;
+          stacktraceEncryptionKey == other.stacktraceEncryptionKey &&
+          pinataGateway == other.pinataGateway &&
+          pinataGatewayToken == other.pinataGatewayToken;
 
   @override
   int get hashCode => runtimeType.hashCode;

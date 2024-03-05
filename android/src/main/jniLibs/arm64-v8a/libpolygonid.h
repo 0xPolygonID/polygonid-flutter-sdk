@@ -93,7 +93,12 @@ extern "C" {
 #endif
 
 extern GoUint8 PLGNAuthV2InputsMarshal(char** jsonResponse, char* in, PLGNStatus** status);
+
+// Deprecated: Use PLGNNewGenesisID instead. It supports environment
+// configuration, giving the ability to register custom DID methods.
+//
 extern GoUint8 PLGNCalculateGenesisID(char** jsonResponse, char* in, PLGNStatus** status);
+extern GoUint8 PLGNNewGenesisID(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern GoUint8 PLGNCreateClaim(char** jsonResponse, char* in, PLGNStatus** status);
 
 // PLGNIDToInt returns the ID as a big int string
@@ -110,13 +115,9 @@ extern GoUint8 PLGNProfileID(char** jsonResponse, char* in, PLGNStatus** status)
 // Additional configuration may be required for Reverse Hash Service
 // revocation validation. In other case cfg may be nil.
 //
-// Sample configuration:
+// The configuration example may be found in the [README.md] file.
 //
-//	{
-//	 "ethereumUrl": "http://localhost:8545",
-//	 "stateContractAddr": "0xEA9aF2088B4a9770fC32A12fD42E61BDD317E655",
-//	 "reverseHashServiceUrl": "http://localhost:8003"
-//	}
+// [README.md]: https://github.com/0xPolygonID/c-polygonid/blob/main/README.md#configuration
 //
 extern GoUint8 PLGNAtomicQuerySigV2Inputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 
@@ -134,13 +135,9 @@ extern GoUint8 PLGNSigV2Inputs(char** jsonResponse, char* in, PLGNStatus** statu
 // Additional configuration may be required for Reverse Hash Service
 // revocation validation. In other case cfg may be nil.
 //
-// Sample configuration:
+// The configuration example may be found in the [README.md] file.
 //
-//	{
-//	  "ethereumUrl": "http://localhost:8545",
-//	  "stateContractAddr": "0xEA9aF2088B4a9770fC32A12fD42E61BDD317E655",
-//	  "reverseHashServiceUrl": "http://localhost:8003"
-//	}
+// [README.md]: https://github.com/0xPolygonID/c-polygonid/blob/main/README.md#configuration
 //
 extern GoUint8 PLGNAtomicQueryMtpV2Inputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 
@@ -158,13 +155,9 @@ extern GoUint8 PLGNMtpV2Inputs(char** jsonResponse, char* in, PLGNStatus** statu
 // Additional configuration may be required for Reverse Hash Service
 // revocation validation. In other case cfg may be nil.
 //
-// Sample configuration:
+// The configuration example may be found in the [README.md] file.
 //
-//	{
-//	  "ethereumUrl": "http://localhost:8545",
-//	  "stateContractAddr": "0xEA9aF2088B4a9770fC32A12fD42E61BDD317E655",
-//	  "reverseHashServiceUrl": "http://localhost:8003"
-//	}
+// [README.md]: https://github.com/0xPolygonID/c-polygonid/blob/main/README.md#configuration
 //
 extern GoUint8 PLGNAtomicQuerySigV2OnChainInputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 
@@ -174,13 +167,9 @@ extern GoUint8 PLGNAtomicQuerySigV2OnChainInputs(char** jsonResponse, char* in, 
 // Additional configuration may be required for Reverse Hash Service
 // revocation validation. In other case cfg may be nil.
 //
-// Sample configuration:
+// The configuration example may be found in the [README.md] file.
 //
-//	{
-//	  "ethereumUrl": "http://localhost:8545",
-//	  "stateContractAddr": "0xEA9aF2088B4a9770fC32A12fD42E61BDD317E655",
-//	  "reverseHashServiceUrl": "http://localhost:8003"
-//	}
+// [README.md]: https://github.com/0xPolygonID/c-polygonid/blob/main/README.md#configuration
 //
 extern GoUint8 PLGNAtomicQueryMtpV2OnChainInputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 
@@ -196,6 +185,22 @@ extern GoUint8 PLGNAtomicQueryV3OnChainInputs(char** jsonResponse, char* in, cha
 extern void PLGNFreeStatus(PLGNStatus* status);
 extern GoUint8 PLGNCleanCache(PLGNStatus** status);
 extern GoUint8 PLGNCacheCredentials(char* in, char* cfg, PLGNStatus** status);
+
+// PLGNW3CCredentialFromOnchainHex returns a verifiable credential from an onchain data hex string.
+//
+// Sample input:
+//
+//	{
+//	   "issuerDID": "did:polygonid:polygon:mumbai:2qCU58EJgrEMJvPfhUCnFCwuKQTkX8VmJX2sJCH6C8",
+//	   "hexdata": "0x0...",
+//	   "version": "0.0.1"
+//	}
+//
+// The configuration example may be found in the [README.md] file.
+//
+// [README.md]: https://github.com/0xPolygonID/c-polygonid/blob/main/README.md#configuration
+//
+extern GoUint8 PLGNW3CCredentialFromOnchainHex(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 
 #ifdef __cplusplus
 }

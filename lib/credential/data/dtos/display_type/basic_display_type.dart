@@ -51,6 +51,11 @@ class Iden3BasicDisplayType extends DisplayType {
         backgroundColor,
         logo,
       ];
+
+  @override
+  toString() {
+    return 'Iden3BasicDisplayType: {title: $title, description: $description, issuerName: $issuerName, titleTextColor: $titleTextColor, descriptionTextColor: $descriptionTextColor, issuerTextColor: $issuerTextColor, backgroundImageUrl: $backgroundImageUrl, backgroundColor: $backgroundColor, logo: $logo}';
+  }
 }
 
 @JsonSerializable()

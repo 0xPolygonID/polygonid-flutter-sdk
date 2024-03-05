@@ -6,14 +6,18 @@ class EnvMapper extends Mapper<Map<String, dynamic>, EnvEntity> {
   @override
   EnvEntity mapFrom(Map<String, dynamic> from) {
     return EnvEntity(
-        blockchain: from['blockchain'],
-        network: from['network'],
-        web3Url: from['web3Url'],
-        web3RdpUrl: from['web3RdpUrl'],
-        web3ApiKey: from['web3ApiKey'],
-        idStateContract: from['idStateContract'],
-        pushUrl: from['pushUrl'],
-        ipfsUrl: from['ipfsUrl']);
+      blockchain: from['blockchain'],
+      network: from['network'],
+      web3Url: from['web3Url'],
+      web3RdpUrl: from['web3RdpUrl'],
+      web3ApiKey: from['web3ApiKey'],
+      idStateContract: from['idStateContract'],
+      pushUrl: from['pushUrl'],
+      ipfsUrl: from['ipfsUrl'],
+      stacktraceEncryptionKey: from['stacktraceEncryptionKey'],
+      pinataGateway: from['pinataGateway'],
+      pinataGatewayToken: from['pinataGatewayToken'],
+    );
   }
 
   @override
@@ -27,6 +31,9 @@ class EnvMapper extends Mapper<Map<String, dynamic>, EnvEntity> {
       idStateContract: to.idStateContract,
       pushUrl: to.pushUrl,
       ipfsUrl: to.ipfsUrl,
+      stacktraceEncryptionKey: to.stacktraceEncryptionKey,
+      pinataGateway: to.pinataGateway,
+      pinataGatewayToken: to.pinataGatewayToken,
     ).toJson();
   }
 }

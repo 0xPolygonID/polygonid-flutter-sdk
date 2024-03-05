@@ -52,6 +52,9 @@ void registerEnv() {
       idStateContract: polygonMumbai['idStateContract'],
       pushUrl: polygonMumbai['pushUrl'],
       ipfsUrl: polygonMumbai['ipfsUrl'],
+      stacktraceEncryptionKey: polygonMumbai['stacktraceEncryptionKey'],
+      pinataGateway: polygonMumbai['pinataGateway'],
+      pinataGatewayToken: polygonMumbai['pinataGatewayToken'],
     ),
     "mainnet": EnvEntity(
       blockchain: polygonMainnet['blockchain'],
@@ -62,6 +65,9 @@ void registerEnv() {
       idStateContract: polygonMainnet['idStateContract'],
       pushUrl: polygonMainnet['pushUrl'],
       ipfsUrl: polygonMainnet['ipfsUrl'],
+      stacktraceEncryptionKey: polygonMainnet['stacktraceEncryptionKey'],
+      pinataGateway: polygonMainnet['pinataGateway'],
+      pinataGatewayToken: polygonMainnet['pinataGatewayToken'],
     )
   };
   getIt.registerSingleton<Map<String, EnvEntity>>(env);

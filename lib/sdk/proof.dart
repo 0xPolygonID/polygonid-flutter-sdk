@@ -1,12 +1,16 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:archive/archive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/circuits_to_download_param.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_mtproof_entity.dart';
@@ -20,7 +24,10 @@ import 'package:polygonid_flutter_sdk/common/domain/tuples.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_sd_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/generate_zkproof_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/gist_proof_cache.dart';
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
+import 'package:web3dart/web3dart.dart';
 
 abstract class PolygonIdSdkProof {
   Future<ZKProofEntity> prove(
@@ -146,5 +153,37 @@ class Proof implements PolygonIdSdkProof {
     _stacktraceManager
         .addTrace("PolygonIdSdk.Proof.cancelDownloadCircuits called");
     return _cancelDownloadCircuitsUseCase.execute();
+  }
+
+  /// use getGistProof method to get the gist proof, inside the method it will check if the proof is already cached
+  /// if not, it will download the Gist from the SC and cache it
+  /// [genesisDid]: the genesis DID
+  /// [env]: the environment
+  Future<String?> preCacheGistProof({
+    required String genesisDid,
+    required EnvEntity env,
+  }) async {
+    try {
+      List<String> splittedDid = genesisDid.split(":");
+      String id = splittedDid[4];
+      var libPolygonIdIdentity = getItSdk<LibPolygonIdCoreIdentityDataSource>();
+      String convertedId = libPolygonIdIdentity.genesisIdToBigInt(id);
+      ContractAbi contractAbi = ContractAbi.fromJson(
+          jsonEncode(jsonDecode(stateAbiJson)["abi"]), 'State');
+      EthereumAddress ethereumAddress =
+          EthereumAddress.fromHex(env.idStateContract);
+      DeployedContract contract =
+          DeployedContract(contractAbi, ethereumAddress);
+      String? cachedGistProof = await GistProofCache().getGistProof(
+        id: convertedId,
+        deployedContract: contract,
+        envEntity: env,
+      );
+      return cachedGistProof;
+    } catch (e) {
+      _stacktraceManager
+          .addTrace("PolygonIdSdk.Proof.preCacheGistProof error: $e");
+      return null;
+    }
   }
 }

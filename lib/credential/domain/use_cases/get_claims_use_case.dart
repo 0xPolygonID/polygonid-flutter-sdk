@@ -15,11 +15,21 @@ class GetClaimsParam {
   final BigInt profileNonce;
   final String privateKey;
 
+  bool sortByExpiration;
+  bool sortByExpirationAscending;
+  bool sortByIssuanceDate;
+
+  bool sortByIssuanceDateAscending;
+
   GetClaimsParam({
     this.filters,
     required this.genesisDid,
     required this.profileNonce,
     required this.privateKey,
+    this.sortByExpiration = false,
+    this.sortByExpirationAscending = false,
+    this.sortByIssuanceDate = false,
+    this.sortByIssuanceDateAscending = false,
   });
 }
 
@@ -42,9 +52,14 @@ class GetClaimsUseCase
     if (param.profileNonce >= GENESIS_PROFILE_NONCE) {
       return _credentialRepository
           .getClaims(
-              filters: param.filters,
-              genesisDid: param.genesisDid,
-              privateKey: param.privateKey)
+        filters: param.filters,
+        genesisDid: param.genesisDid,
+        privateKey: param.privateKey,
+        sortByExpiration: param.sortByExpiration,
+        sortByExpirationAscending: param.sortByExpirationAscending,
+        sortByIssuanceDate: param.sortByIssuanceDate,
+        sortByIssuanceDateAscending: param.sortByIssuanceDateAscending,
+      )
           .then((claims) {
         logger().i("[GetClaimsUseCase] Claims: $claims");
         _stacktraceManager

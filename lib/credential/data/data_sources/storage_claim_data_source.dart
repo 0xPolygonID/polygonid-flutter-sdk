@@ -113,11 +113,39 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
     Filter? filter,
     required String did,
     required String privateKey,
+    bool sortByExpiration = false,
+    bool sortByExpirationAscending = false,
+    bool sortByIssuanceDate = false,
+    bool sortByIssuanceDateAscending = false,
   }) async {
     Database database = await getDatabase(did: did, privateKey: privateKey);
 
+    List<SortOrder> sortOrders = [];
+
+    if (sortByExpiration) {
+      sortOrders.add(SortOrder(
+        'expiration',
+        sortByExpirationAscending,
+        true,
+      ));
+    }
+
+    if (sortByIssuanceDate) {
+      sortOrders.add(SortOrder(
+        'credential.issuanceDate',
+        sortByIssuanceDateAscending,
+        true,
+      ));
+    }
+
     List<RecordSnapshot<String, Map<String, Object?>>> snapshots =
-        await _storeRefWrapper.find(database, finder: Finder(filter: filter));
+        await _storeRefWrapper.find(
+      database,
+      finder: Finder(
+        filter: filter,
+        sortOrders: sortOrders,
+      ),
+    );
 
     List<ClaimDTO> claims = snapshots.map((snapshot) {
       ClaimDTO claimDTO = ClaimDTO.fromJson(snapshot.value);

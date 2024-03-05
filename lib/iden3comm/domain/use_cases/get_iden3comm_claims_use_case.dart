@@ -25,12 +25,23 @@ class GetIden3commClaimsParam {
   final String privateKey;
   final Map<int, Map<String, dynamic>> nonRevocationProofs;
 
-  GetIden3commClaimsParam(
-      {required this.message,
-      required this.genesisDid,
-      required this.profileNonce,
-      required this.privateKey,
-      required this.nonRevocationProofs});
+  bool sortByExpiration;
+  bool sortByExpirationAscending;
+  bool sortByIssuanceDate;
+
+  bool sortByIssuanceDateAscending;
+
+  GetIden3commClaimsParam({
+    required this.message,
+    required this.genesisDid,
+    required this.profileNonce,
+    required this.privateKey,
+    required this.nonRevocationProofs,
+    this.sortByExpiration = false,
+    this.sortByExpirationAscending = false,
+    this.sortByIssuanceDate = false,
+    this.sortByIssuanceDateAscending = false,
+  });
 }
 
 class GetIden3commClaimsUseCase
@@ -83,6 +94,10 @@ class GetIden3commClaimsUseCase
             genesisDid: param.genesisDid,
             profileNonce: param.profileNonce,
             privateKey: param.privateKey,
+            sortByExpiration: param.sortByExpiration,
+            sortByExpirationAscending: param.sortByExpirationAscending,
+            sortByIssuanceDate: param.sortByIssuanceDate,
+            sortByIssuanceDateAscending: param.sortByIssuanceDateAscending,
           ),
         );
 

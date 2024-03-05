@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
@@ -7,6 +8,7 @@ import 'package:polygonid_flutter_sdk/credential/domain/use_cases/add_did_profil
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_did_profile_info_list_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_did_profile_info_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_did_profile_info_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/authenticate.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
@@ -27,6 +29,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/add
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/get_interactions_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/remove_interactions_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/update_interaction_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 
 abstract class PolygonIdSdkIden3comm {
   /// Returns a [Iden3MessageEntity] from an iden3comm message string.
@@ -427,6 +430,28 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         nonRevocationProofs: nonRevocationProofs,
         challenge: challenge,
       ),
+    );
+  }
+
+  Future<void> authenticateNew({
+    required String privateKey,
+    required String genesisDid,
+    required BigInt profileNonce,
+    required IdentityEntity identityEntity,
+    required Iden3MessageEntity message,
+    required EnvEntity env,
+    String? pushToken,
+    String? challenge,
+
+  }) async {
+    await Authenticate().authenticate(
+      privateKey: privateKey,
+      genesisDid: genesisDid,
+      profileNonce: profileNonce,
+      identityEntity: identityEntity,
+      message: message,
+      env: env,
+      pushToken: pushToken,
     );
   }
 

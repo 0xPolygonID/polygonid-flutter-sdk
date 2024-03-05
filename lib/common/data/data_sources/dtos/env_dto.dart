@@ -14,6 +14,10 @@ class EnvDTO extends Equatable {
   final String pushUrl;
   final String ipfsUrl;
 
+  final String? stacktraceEncryptionKey;
+  final String? pinataGateway;
+  final String? pinataGatewayToken;
+
   EnvDTO({
     required this.blockchain,
     required this.network,
@@ -23,6 +27,9 @@ class EnvDTO extends Equatable {
     required this.idStateContract,
     required this.pushUrl,
     required this.ipfsUrl,
+    required this.stacktraceEncryptionKey,
+    required this.pinataGateway,
+    required this.pinataGatewayToken,
   });
 
   factory EnvDTO.fromJson(Map<String, dynamic> json) => _$EnvDTOFromJson(json);
@@ -39,5 +46,8 @@ class EnvDTO extends Equatable {
         idStateContract,
         pushUrl,
         ipfsUrl,
+        stacktraceEncryptionKey,
+        pinataGateway,
+        pinataGatewayToken,
       ];
 }

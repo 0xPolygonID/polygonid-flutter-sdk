@@ -703,12 +703,24 @@ class PolygonIdFlutterChannel
 
   /// Credential
   @override
-  Future<List<ClaimEntity>> getClaims(
-      {List<FilterEntity>? filters,
-      required String genesisDid,
-      required String privateKey}) {
+  Future<List<ClaimEntity>> getClaims({
+    List<FilterEntity>? filters,
+    required String genesisDid,
+    required String privateKey,
+    bool sortByExpiration = false,
+    bool sortByExpirationAscending = false,
+    bool sortByIssuanceDate = false,
+    bool sortByIssuanceDateAscending = false,
+  }) {
     return _polygonIdSdk.credential.getClaims(
-        filters: filters, genesisDid: genesisDid, privateKey: privateKey);
+      filters: filters,
+      genesisDid: genesisDid,
+      privateKey: privateKey,
+      sortByExpiration: sortByExpiration,
+      sortByExpirationAscending: sortByExpirationAscending,
+      sortByIssuanceDate: sortByIssuanceDate,
+      sortByIssuanceDateAscending: sortByIssuanceDateAscending,
+    );
   }
 
   @override

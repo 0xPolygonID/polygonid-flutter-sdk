@@ -557,16 +557,16 @@ extension GetItInjectableX on _i1.GetIt {
     gh.lazySingleton<_i65.StacktraceManager>(() => _i65.StacktraceManager());
     gh.factory<_i66.StateIdentifierMapper>(() => _i66.StateIdentifierMapper());
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
+      () => databaseModule.interactionStore,
+      instanceName: 'interactionStore',
+    );
+    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.profileStore,
       instanceName: 'profilesStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.didProfileInfoStore,
       instanceName: 'didProfileInfoStore',
-    );
-    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.interactionStore,
-      instanceName: 'interactionStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.claimStore,
