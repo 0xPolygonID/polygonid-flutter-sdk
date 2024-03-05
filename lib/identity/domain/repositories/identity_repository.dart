@@ -1,3 +1,7 @@
+import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
+
 import '../entities/identity_entity.dart';
 import '../entities/node_entity.dart';
 import '../entities/rhs_node_entity.dart';
@@ -27,6 +31,7 @@ abstract class IdentityRepository {
     required String network,
     required String claimsRoot,
     required BigInt profileNonce,
+    required EnvConfigEntity config,
   });
 
   // RHS

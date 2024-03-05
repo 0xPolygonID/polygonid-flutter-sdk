@@ -39,43 +39,16 @@ Future<void> init() async {
 }
 
 void registerEnv() {
-  Map<String, dynamic> polygonMumbai = jsonDecode(Env.polygonMumbai);
-  Map<String, dynamic> polygonMainnet = jsonDecode(Env.polygonMainnet);
+  Map<String, dynamic> polygonEnv = jsonDecode(Env.polygonEnv);
 
-  Map<String, EnvEntity> env = {
-    "mumbai": EnvEntity(
-      blockchain: polygonMumbai['blockchain'],
-      network: polygonMumbai['network'],
-      web3Url: polygonMumbai['web3Url'],
-      web3RdpUrl: polygonMumbai['web3RdpUrl'],
-      web3ApiKey: polygonMumbai['web3ApiKey'],
-      idStateContract: polygonMumbai['idStateContract'],
-      pushUrl: polygonMumbai['pushUrl'],
-      ipfsUrl: polygonMumbai['ipfsUrl'],
-      stacktraceEncryptionKey: polygonMumbai['stacktraceEncryptionKey'],
-      pinataGateway: polygonMumbai['pinataGateway'],
-      pinataGatewayToken: polygonMumbai['pinataGatewayToken'],
-    ),
-    "mainnet": EnvEntity(
-      blockchain: polygonMainnet['blockchain'],
-      network: polygonMainnet['network'],
-      web3Url: polygonMainnet['web3Url'],
-      web3RdpUrl: polygonMainnet['web3RdpUrl'],
-      web3ApiKey: polygonMainnet['web3ApiKey'],
-      idStateContract: polygonMainnet['idStateContract'],
-      pushUrl: polygonMainnet['pushUrl'],
-      ipfsUrl: polygonMainnet['ipfsUrl'],
-      stacktraceEncryptionKey: polygonMainnet['stacktraceEncryptionKey'],
-      pinataGateway: polygonMainnet['pinataGateway'],
-      pinataGatewayToken: polygonMainnet['pinataGatewayToken'],
-    )
-  };
-  getIt.registerSingleton<Map<String, EnvEntity>>(env);
+  final envV1 = EnvEntity.fromJsonV1(polygonEnv);
+
+  getIt.registerSingleton<EnvEntity>(envV1);
 }
 
 ///
 Future<void> registerProviders() async {
-  await PolygonIdSdk.init(env: getIt<Map<String, EnvEntity>>()["mumbai"]);
+  await PolygonIdSdk.init(env: getIt<EnvEntity>());
   getIt.registerLazySingleton<PolygonIdSdk>(() => PolygonIdSdk.I);
 }
 

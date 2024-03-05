@@ -1,3 +1,6 @@
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_genesis_state_use_case.dart';
 
@@ -22,17 +25,21 @@ class GetDidIdentifierParam {
 class GetDidIdentifierUseCase
     extends FutureUseCase<GetDidIdentifierParam, String> {
   final IdentityRepository _identityRepository;
+  final GetEnvUseCase _getEnvUseCase;
   final GetGenesisStateUseCase _getGenesisStateUseCase;
   final StacktraceManager _stacktraceManager;
 
   GetDidIdentifierUseCase(
     this._identityRepository,
+    this._getEnvUseCase,
     this._getGenesisStateUseCase,
     this._stacktraceManager,
   );
 
   @override
-  Future<String> execute({required GetDidIdentifierParam param}) {
+  Future<String> execute({required GetDidIdentifierParam param}) async {
+    EnvEntity env = await _getEnvUseCase.execute();
+
     return _getGenesisStateUseCase
         .execute(param: param.privateKey)
         .then(
@@ -41,6 +48,7 @@ class GetDidIdentifierUseCase
             network: param.network,
             claimsRoot: genesisState.claimsTree.data,
             profileNonce: param.profileNonce,
+            config: env.config,
           ),
         )
         .then((did) {

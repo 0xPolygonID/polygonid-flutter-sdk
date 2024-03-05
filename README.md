@@ -60,7 +60,6 @@ Future<void> main() async {
       blockchain: 'polygon',
       network: 'mumbai',
       web3Url: 'https://polygon-mumbai.infura.io/v3/',
-      web3RdpUrl: 'wss://polygon-mumbai.infura.io/v3/',
       web3ApiKey: 'YOUR-INFURA-API-KEY',
       idStateContract: '0x134B1BE34911E39A8397ec6289782989729807a4',
       pushUrl: 'https://push-staging.polygonid.com/api/v1',
@@ -92,7 +91,6 @@ The environment object is [EnvEntity](lib/common/domain/entities/env_entity.dart
   final String blockchain; # The name of the blockchain (eg: polygon)
   final String network; # The network of the blockchain (eg: mumbai)
   final String web3Url; # URL of the blockchain (eg: https://polygon-mumbai.infura.io/v3/)
-  final String web3RdpUrl; # RDP URL (eg: wss://polygon-mumbai.infura.io/v3/)
   final String web3ApiKey; # The API key of the web3 URL service (eg: YOUR-INFURA-API-KEY)
   final String idStateContract; # The ID state contract (eg: 0x134B1BE34911E39A8397ec6289782989729807a4)
   final String pushUrl; # The push notification URL (eg: https://push-staging.polygonid.com/api/v1)
@@ -106,7 +104,6 @@ The environment object is [EnvEntity](lib/common/domain/entities/env_entity.dart
 | blockchain     |         polygon                            |  polygon  |
 | network        |         mumbai                             |  main  |
 | web3Url        | https://polygon-mumbai.infura.io/v3/       |  https://polygon-mainnet.infura.io/v3/  |
-| web3RdpUrl     | wss://polygon-mumbai.infura.io/v3/         |  wss://polygon-mainnet.infura.io/v3/  |
 | idStateContract | 0x134B1BE34911E39A8397ec6289782989729807a4 |  0x624ce98D2d27b20b8f8d521723Df8fC4db71D79D  |
 | pushUrl        | https://push-staging.polygonid.com/api/v1  |  https://push-staging.polygonid.com/api/v1  |
 | ipfsUrl        | https://[YOUR-IPFS-API-KEY]:[YOUR-IPFS-API-KEY-SECRET]@ipfs.infura.io:5001  |  https://[YOUR-IPFS-API-KEY]:[YOUR-IPFS-API-KEY-SECRET]@ipfs.infura.io:5001  |

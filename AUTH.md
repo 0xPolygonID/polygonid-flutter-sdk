@@ -21,7 +21,6 @@ This document provides an explanation on how to authenticate with the Polygon ID
    blockchain: "polygon",
    network: "mumbai",
    web3Url: "https://polygon-mumbai.infura.io/v3/",
-   web3RdpUrl: "wss://polygon-mumbai.infura.io/v3/",
    web3ApiKey: "YOUR_API_KEY"
    idStateContract: 0x134B1BE34911E39A8397ec6289782989729807a4),
   ```

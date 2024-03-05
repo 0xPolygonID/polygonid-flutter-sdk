@@ -603,7 +603,8 @@ void main() {
               blockchain: CommonMocks.blockchain,
               network: CommonMocks.network,
               claimsRoot: CommonMocks.message,
-              profileNonce: CommonMocks.genesisNonce),
+              profileNonce: CommonMocks.genesisNonce,
+              config: CommonMocks.envConfig),
           CommonMocks.did);
 
       // Then
@@ -628,7 +629,8 @@ void main() {
               blockchain: CommonMocks.blockchain,
               network: CommonMocks.network,
               claimsRoot: CommonMocks.message,
-              profileNonce: CommonMocks.nonce),
+              profileNonce: CommonMocks.nonce,
+              config: CommonMocks.envConfig),
           CommonMocks.did);
 
       // Then
@@ -659,7 +661,8 @@ void main() {
               blockchain: CommonMocks.blockchain,
               network: CommonMocks.network,
               claimsRoot: CommonMocks.message,
-              profileNonce: CommonMocks.nonce),
+              profileNonce: CommonMocks.nonce,
+              config: CommonMocks.envConfig),
           throwsA(CommonMocks.exception));
 
       // Then

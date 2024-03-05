@@ -53,8 +53,8 @@ class Iden3BasicDisplayType extends DisplayType {
       ];
 
   @override
-  toString() {
-    return 'Iden3BasicDisplayType: {title: $title, description: $description, issuerName: $issuerName, titleTextColor: $titleTextColor, descriptionTextColor: $descriptionTextColor, issuerTextColor: $issuerTextColor, backgroundImageUrl: $backgroundImageUrl, backgroundColor: $backgroundColor, logo: $logo}';
+  String toString() {
+    return '[Iden3BasicDisplayType] {title: $title, description: $description, issuerName: $issuerName, titleTextColor: $titleTextColor, descriptionTextColor: $descriptionTextColor, issuerTextColor: $issuerTextColor, backgroundImageUrl: $backgroundImageUrl, backgroundColor: $backgroundColor, logo: $logo}';
   }
 }
 
@@ -72,6 +72,11 @@ class Iden3BasicDisplayTypeLogo {
 
   @override
   List<Object?> get props => [uri, alt];
+
+  @override
+  String toString() {
+    return "Iden3BasicDisplayTypeLogo{uri: $uri, alt: $alt}";
+  }
 }
 
 Map<String, dynamic>? _logoToJson(Iden3BasicDisplayTypeLogo? logo) {

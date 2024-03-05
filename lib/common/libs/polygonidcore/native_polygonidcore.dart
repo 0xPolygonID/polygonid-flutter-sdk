@@ -3387,6 +3387,31 @@ class NativePolygonIdCoreLib {
       int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
 
+  int PLGNNewGenesisID(
+    ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
+    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> cfg,
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNNewGenesisID(
+      jsonResponse,
+      in1,
+      cfg,
+      status,
+    );
+  }
+
+  late final _PLGNNewGenesisIDPtr = _lookup<
+      ffi.NativeFunction<
+          GoUint8 Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNNewGenesisID');
+  late final _PLGNNewGenesisID = _PLGNNewGenesisIDPtr.asFunction<
+      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+
   int PLGNCreateClaim(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
     ffi.Pointer<ffi.Char> in1,
