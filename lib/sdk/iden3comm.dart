@@ -1,5 +1,8 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/did_method_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
@@ -27,6 +30,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/add
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/get_interactions_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/remove_interactions_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/update_interaction_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 
 abstract class PolygonIdSdkIden3comm {
   /// Returns a [Iden3MessageEntity] from an iden3comm message string.
@@ -121,9 +125,7 @@ abstract class PolygonIdSdkIden3comm {
     BigInt? profileNonce,
     required String privateKey,
     String? challenge,
-    String? ethereumUrl,
-    String? stateContractAddr,
-    String? ipfsNodeUrl,
+    EnvConfigEntity config,
     Map<int, Map<String, dynamic>>? nonRevocationProofs,
     Map<String, dynamic>? transactionData,
   });
@@ -377,9 +379,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     BigInt? profileNonce,
     required String privateKey,
     String? challenge,
-    String? ethereumUrl,
-    String? stateContractAddr,
-    String? ipfsNodeUrl,
+    EnvConfigEntity? config,
     Map<int, Map<String, dynamic>>? nonRevocationProofs,
     Map<String, dynamic>? transactionData,
   }) {
@@ -391,9 +391,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
       privateKey: privateKey,
       challenge: challenge,
-      ethereumUrl: ethereumUrl,
-      stateContractAddr: stateContractAddr,
-      ipfsNodeUrl: ipfsNodeUrl,
+      config: config,
       nonRevocationProofs: nonRevocationProofs,
       transactionData: transactionData,
     ));

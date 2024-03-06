@@ -88,12 +88,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }) async {
     emit(const AuthState.loading());
 
-    EnvEntity envEntity = await _polygonIdSdk.getEnv();
+    final currentChain = await _polygonIdSdk.getSelectedChain();
 
     String? did = await _polygonIdSdk.identity.getDidIdentifier(
-        privateKey: privateKey,
-        blockchain: envEntity.blockchain,
-        network: envEntity.network);
+      privateKey: privateKey,
+      blockchain: currentChain.blockchain,
+      network: currentChain.network,
+    );
 
     try {
       final BigInt nonce = selectedProfile == SelectedProfile.public

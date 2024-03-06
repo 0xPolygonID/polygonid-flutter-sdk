@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:encrypt/encrypt.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 
@@ -49,6 +51,7 @@ class CommonMocks {
   static Exception exception = Exception(message);
   static String blockchain = "theBlockchain";
   static String network = "theNetwork";
+  static EnvConfigEntity envConfig = EnvConfigEntity(ipfsNodeUrl: '');
 
   static FilterEntity filter = FilterEntity(name: name, value: aMap);
 
@@ -58,7 +61,6 @@ class CommonMocks {
     'blockchain': name,
     'network': network,
     'web3Url': url,
-    'web3RdpUrl': url,
     'web3ApiKey': id,
     'idStateContract': message,
     'pushUrl': url,
@@ -69,11 +71,17 @@ class CommonMocks {
     blockchain: name,
     network: network,
     web3Url: url,
-    web3RdpUrl: url,
     web3ApiKey: id,
     idStateContract: message,
     pushUrl: url,
     ipfsUrl: url,
+  );
+
+  static ChainConfigEntity chain = ChainConfigEntity(
+    blockchain: name,
+    network: network,
+    rpcUrl: url,
+    stateContractAddr: message,
   );
 
   static String expiration = "2050-01-01T00:00:00Z";
