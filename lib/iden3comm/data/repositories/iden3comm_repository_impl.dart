@@ -93,9 +93,15 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       return null;
     }
 
-    final authResponse =
-        await _getIden3MessageUseCase.execute(param: jsonEncode(messageJson));
-    return authResponse;
+    try {
+      final nextRequest = await _getIden3MessageUseCase.execute(
+        param: jsonEncode(messageJson),
+      );
+
+      return nextRequest;
+    } catch (e) {
+      return null;
+    }
   }
 
   @override
