@@ -68,17 +68,14 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_mes
 
 import 'fetch_body_request.dart';
 
-class FetchIden3MessageEntity extends Iden3MessageEntity {
-  @override
-  final FetchBodyRequest body;
-
+class FetchIden3MessageEntity extends Iden3MessageEntity<FetchBodyRequest> {
   FetchIden3MessageEntity({
     required super.id,
     required super.typ,
     required super.type,
     required super.thid,
     required super.from,
-    required this.body,
+    required super.body,
     required super.to,
     super.nextRequest,
   }) : super(messageType: Iden3MessageType.credentialIssuanceResponse);

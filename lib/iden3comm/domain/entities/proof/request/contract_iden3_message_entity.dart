@@ -41,16 +41,14 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_mes
 
 import '../../proof/request/contract_function_call_body_request.dart';
 
-class ContractIden3MessageEntity extends Iden3MessageEntity {
-  @override
-  final ContractFunctionCallBodyRequest body;
-
+class ContractIden3MessageEntity
+    extends Iden3MessageEntity<ContractFunctionCallBodyRequest> {
   ContractIden3MessageEntity({
     required super.id,
     String? typ,
     required super.type,
     String? thid,
-    required this.body,
+    required super.body,
     super.nextRequest,
   }) : super(
           from: '',

@@ -13,6 +13,7 @@ import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_did_pro
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
@@ -65,11 +66,12 @@ abstract class PolygonIdSdkIden3comm {
   ///
   /// The [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
-  Future<List<ClaimEntity>> fetchAndSaveClaims(
-      {required Iden3MessageEntity message,
-      required String genesisDid,
-      BigInt? profileNonce,
-      required String privateKey});
+  Future<List<ClaimEntity>> fetchAndSaveClaims({
+    required CredentialOfferMessageEntity message,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String privateKey,
+  });
 
   /// Get a list of [ClaimEntity] stored in Polygon Id Sdk that fulfills
   /// the request from iden3comm message.
@@ -318,24 +320,22 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }
 
   @override
-  Future<List<ClaimEntity>> fetchAndSaveClaims(
-      {required Iden3MessageEntity message,
-      required String genesisDid,
-      BigInt? profileNonce,
-      required String privateKey}) {
+  Future<List<ClaimEntity>> fetchAndSaveClaims({
+    required CredentialOfferMessageEntity message,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String privateKey,
+  }) {
     _stacktraceManager.clearStacktrace();
-    if (message is! OfferIden3MessageEntity) {
-      _stacktraceManager.addTrace(
-          '[fetchAndSaveClaims] Invalid message type: ${message.messageType}');
-      throw InvalidIden3MsgTypeException(
-          Iden3MessageType.credentialOffer, message.messageType);
-    }
+
     return _fetchAndSaveClaimsUseCase.execute(
-        param: FetchAndSaveClaimsParam(
-            message: message,
-            genesisDid: genesisDid,
-            profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
-            privateKey: privateKey));
+      param: FetchAndSaveClaimsParam(
+        message: message,
+        genesisDid: genesisDid,
+        profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
+        privateKey: privateKey,
+      ),
+    );
   }
 
   @override

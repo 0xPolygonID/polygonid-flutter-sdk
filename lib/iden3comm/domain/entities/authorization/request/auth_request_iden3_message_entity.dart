@@ -68,17 +68,14 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_mes
 
 import '../../authorization/request/auth_body_request.dart';
 
-class AuthIden3MessageEntity extends Iden3MessageEntity {
-  @override
-  final AuthBodyRequest body;
-
+class AuthIden3MessageEntity extends Iden3MessageEntity<AuthBodyRequest> {
   AuthIden3MessageEntity({
     required super.id,
     required super.typ,
     required super.type,
     required super.thid,
     required super.from,
-    required this.body,
+    required super.body,
     super.to,
     super.nextRequest,
   }) : super(messageType: Iden3MessageType.authRequest);
