@@ -4,4 +4,8 @@ abstract class ConfigRepository {
   Future<EnvEntity> getEnv();
 
   Future<void> setEnv({required EnvEntity env});
+
+  Future<String?> getSelectedChainId();
+
+  Future<void> setSelectedChainId({required String chainId});
 }

@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
@@ -65,6 +66,7 @@ MockCheckProfileAndDidCurrentEnvUseCase checkProfileAndDidCurrentEnvUseCase =
 MockGetDidIdentifierUseCase getDidIdentifierUseCase =
     MockGetDidIdentifierUseCase();
 MockGetEnvUseCase getEnvUseCase = MockGetEnvUseCase();
+MockGetSelectedChainUseCase getSelectedChainUseCase = MockGetSelectedChainUseCase();
 MockSaveClaimsUseCase saveClaimsUseCase = MockSaveClaimsUseCase();
 MockGetAuthTokenUseCase getAuthTokenUseCase = MockGetAuthTokenUseCase();
 MockGetClaimRevocationStatusUseCase getClaimRevocationStatusUseCase =
@@ -78,6 +80,7 @@ FetchAndSaveClaimsUseCase useCase = FetchAndSaveClaimsUseCase(
   iden3commCredentialRepository,
   checkProfileAndDidCurrentEnvUseCase,
   getEnvUseCase,
+  getSelectedChainUseCase,
   getDidIdentifierUseCase,
   getFetchRequestsUseCase,
   getAuthTokenUseCase,
@@ -91,6 +94,7 @@ FetchAndSaveClaimsUseCase useCase = FetchAndSaveClaimsUseCase(
   Iden3commCredentialRepository,
   CheckProfileAndDidCurrentEnvUseCase,
   GetEnvUseCase,
+  GetSelectedChainUseCase,
   GetDidIdentifierUseCase,
   GetFetchRequestsUseCase,
   GetAuthTokenUseCase,
@@ -126,6 +130,8 @@ void main() {
           .thenAnswer((realInvocation) => Future.value(CommonMocks.did));
       when(getEnvUseCase.execute(param: anyNamed('param')))
           .thenAnswer((realInvocation) => Future.value(CommonMocks.env));
+      when(getSelectedChainUseCase.execute(param: anyNamed('param')))
+          .thenAnswer((realInvocation) => Future.value(CommonMocks.chain));
       when(checkProfileAndDidCurrentEnvUseCase.execute(
               param: anyNamed('param')))
           .thenAnswer((realInvocation) => Future.value(null));

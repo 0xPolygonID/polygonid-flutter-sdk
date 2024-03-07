@@ -93,7 +93,12 @@ extern "C" {
 #endif
 
 extern GoUint8 PLGNAuthV2InputsMarshal(char** jsonResponse, char* in, PLGNStatus** status);
+
+// Deprecated: Use PLGNNewGenesisID instead. It supports environment
+// configuration, giving the ability to register custom DID methods.
+//
 extern GoUint8 PLGNCalculateGenesisID(char** jsonResponse, char* in, PLGNStatus** status);
+extern GoUint8 PLGNNewGenesisID(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern GoUint8 PLGNCreateClaim(char** jsonResponse, char* in, PLGNStatus** status);
 
 // PLGNIDToInt returns the ID as a big int string

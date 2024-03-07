@@ -37,11 +37,14 @@ class LibPolygonIdCoreWrapper {
     this._polygonIdCoreProof,
   );
 
-  Future<String> getProofInputs(AtomicQueryInputsParam atomicQueryInputsParam,
-      AtomicQueryInputsConfigParam? atomicQueryInputsConfigParam) async {
+  Future<String> getProofInputs(
+    AtomicQueryInputsParam atomicQueryInputsParam,
+    AtomicQueryInputsConfigParam? atomicQueryInputsConfigParam,
+  ) async {
     ComputeAtomicQueryInputs param = ComputeAtomicQueryInputs(
-        param: atomicQueryInputsParam,
-        configParam: atomicQueryInputsConfigParam);
+      param: atomicQueryInputsParam,
+      configParam: atomicQueryInputsConfigParam,
+    );
     try {
       String proofInputs = await compute(
         _computeAtomicQueryInputs,
@@ -54,7 +57,8 @@ class LibPolygonIdCoreWrapper {
   }
 
   Future<String> _computeAtomicQueryInputs(
-      ComputeAtomicQueryInputs computeParam) {
+    ComputeAtomicQueryInputs computeParam,
+  ) {
     try {
       String result;
 

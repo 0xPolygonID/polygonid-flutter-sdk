@@ -1,32 +1,83 @@
+import 'package:flutter/foundation.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/did_method_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
+
 class EnvEntity {
-  final String blockchain;
-  final String network;
+  @Deprecated("Use EnvEntity.v1 instead of EnvEntity")
   final String web3Url;
-  final String web3RdpUrl;
+  @Deprecated("Use EnvEntity.v1 instead of EnvEntity")
   final String web3ApiKey;
+  @Deprecated("Use EnvEntity.v1 instead of EnvEntity")
+  final String web3RdpUrl;
+  @Deprecated("Use EnvEntity.v1 instead of EnvEntity")
+  final String blockchain;
+  @Deprecated("Use EnvEntity.v1 instead of EnvEntity")
+  final String network;
+  @Deprecated("Use EnvEntity.v1 instead of EnvEntity")
+  final String rpcUrl;
+  @Deprecated("Use EnvEntity.v1 instead of EnvEntity")
   final String idStateContract;
+
   final String pushUrl;
   final String ipfsUrl;
+
+  final Map<String, ChainConfigEntity> chainConfigs;
+  final List<DidMethodEntity> didMethods;
+
   final String? stacktraceEncryptionKey;
 
+  EnvEntity._({
+    this.web3Url = '',
+    this.web3ApiKey = '',
+    this.web3RdpUrl = '',
+    this.blockchain = '',
+    this.network = '',
+    this.idStateContract = '',
+    this.rpcUrl = '',
+    required this.pushUrl,
+    required this.ipfsUrl,
+    this.chainConfigs = const {},
+    this.didMethods = const [],
+    this.stacktraceEncryptionKey,
+  });
+
+  @Deprecated("Use EnvEntity.v1 instead of EnvEntity")
   EnvEntity({
     required this.blockchain,
     required this.network,
     required this.web3Url,
-    required this.web3RdpUrl,
     required this.web3ApiKey,
+    this.web3RdpUrl = '',
     required this.idStateContract,
     required this.pushUrl,
     required this.ipfsUrl,
     this.stacktraceEncryptionKey,
-  });
+  })  : rpcUrl = web3Url + web3ApiKey,
+        chainConfigs = const {},
+        didMethods = const [] {
+
+  }
+
+  EnvEntity.v1({
+    required this.pushUrl,
+    required this.ipfsUrl,
+    required this.chainConfigs,
+    required this.didMethods,
+    this.stacktraceEncryptionKey,
+    @Deprecated("Use chainConfig") this.blockchain = '',
+    @Deprecated("Use chainConfig") this.network = '',
+    @Deprecated("Use chainConfig") this.web3Url = '',
+    @Deprecated("Use chainConfig") this.web3ApiKey = '',
+    @Deprecated("Use chainConfig") this.idStateContract = '',
+  })  : rpcUrl = '',
+        web3RdpUrl = '';
 
   factory EnvEntity.fromJson(Map<String, dynamic> json) {
     return EnvEntity(
       blockchain: json['blockchain'],
       network: json['network'],
       web3Url: json['web3Url'],
-      web3RdpUrl: json['web3RdpUrl'],
       web3ApiKey: json['web3ApiKey'],
       idStateContract: json['idStateContract'],
       pushUrl: json['pushUrl'],
@@ -35,22 +86,53 @@ class EnvEntity {
     );
   }
 
+  factory EnvEntity.fromJsonV1(Map<String, dynamic> json) {
+    return EnvEntity.v1(
+      blockchain: json['blockchain'] ?? '',
+      network: json['network'] ?? '',
+      web3Url: json['web3Url'] ?? '',
+      web3ApiKey: json['web3ApiKey'] ?? '',
+      idStateContract: json['idStateContract'] ?? '',
+      pushUrl: json['pushUrl'],
+      ipfsUrl: json['ipfsUrl'],
+      chainConfigs: (json['chainConfigs'] as Map<String, dynamic>).map(
+        (key, value) => MapEntry(
+          key,
+          ChainConfigEntity.fromJson(value),
+        ),
+      ),
+      didMethods: (json['didMethods'] as List<dynamic>)
+          .map((e) => DidMethodEntity.fromJson(e))
+          .toList(),
+      stacktraceEncryptionKey: json['stacktraceEncryptionKey'],
+    );
+  }
+
   @override
   Map<String, dynamic> toJson() => {
+        // TODO: Remove these fields with new release
         'blockchain': blockchain,
         'network': network,
         'web3Url': web3Url,
-        'web3RdpUrl': web3RdpUrl,
         'web3ApiKey': web3ApiKey,
         'idStateContract': idStateContract,
+
         'pushUrl': pushUrl,
         'ipfsUrl': ipfsUrl,
+        'chainConfigs': chainConfigs.map(
+          (key, value) => MapEntry(
+            key,
+            value.toJson(),
+          ),
+        ),
+        'didMethods': didMethods.map((e) => e.toJson()).toList(),
         'stacktraceEncryptionKey': stacktraceEncryptionKey,
       };
 
   @override
-  String toString() =>
-      "[EnvEntity] {blockchain: $blockchain, network: $network, web3Url: $web3Url, web3RdpUrl: $web3RdpUrl, web3ApiKey: $web3ApiKey, idStateContract: $idStateContract, pushUrl: $pushUrl, ipfsUrl: $ipfsUrl, stacktraceEncryptionKey: $stacktraceEncryptionKey}";
+  String toString() {
+    return 'EnvEntity{blockchain: $blockchain, network: $network, rpcUrl: $rpcUrl, idStateContract: $idStateContract, pushUrl: $pushUrl, ipfsUrl: $ipfsUrl, chainConfig: $chainConfigs, didMethods: $didMethods, stacktraceEncryptionKey: $stacktraceEncryptionKey}';
+  }
 
   @override
   bool operator ==(Object other) =>
@@ -58,14 +140,50 @@ class EnvEntity {
       other is EnvEntity &&
           blockchain == other.blockchain &&
           network == other.network &&
-          web3Url == other.web3Url &&
-          web3RdpUrl == other.web3RdpUrl &&
-          web3ApiKey == other.web3ApiKey &&
+          rpcUrl == other.rpcUrl &&
           idStateContract == other.idStateContract &&
           pushUrl == other.pushUrl &&
           ipfsUrl == other.ipfsUrl &&
+          mapEquals(chainConfigs, other.chainConfigs) &&
+          listEquals(didMethods, other.didMethods) &&
           stacktraceEncryptionKey == other.stacktraceEncryptionKey;
 
   @override
   int get hashCode => runtimeType.hashCode;
+
+  EnvEntity copyWith({
+    String? blockchain,
+    String? network,
+    String? rpcUrl,
+    String? idStateContract,
+    String? pushUrl,
+    String? ipfsUrl,
+    Map<String, ChainConfigEntity>? chainConfigs,
+    List<DidMethodEntity>? didMethods,
+    String? stacktraceEncryptionKey,
+  }) {
+    return EnvEntity._(
+      blockchain: blockchain ?? this.blockchain,
+      network: network ?? this.network,
+      web3Url: rpcUrl ?? this.rpcUrl,
+      web3ApiKey: rpcUrl ?? this.rpcUrl,
+      idStateContract: idStateContract ?? this.idStateContract,
+      pushUrl: pushUrl ?? this.pushUrl,
+      ipfsUrl: ipfsUrl ?? this.ipfsUrl,
+      chainConfigs: chainConfigs ?? this.chainConfigs,
+      didMethods: didMethods ?? this.didMethods,
+      stacktraceEncryptionKey:
+          stacktraceEncryptionKey ?? this.stacktraceEncryptionKey,
+    );
+  }
+}
+
+extension EnvEntityExtension on EnvEntity {
+  EnvConfigEntity get config {
+    return EnvConfigEntity(
+      ipfsNodeUrl: ipfsUrl,
+      chainConfigs: chainConfigs,
+      didMethods: didMethods,
+    );
+  }
 }
