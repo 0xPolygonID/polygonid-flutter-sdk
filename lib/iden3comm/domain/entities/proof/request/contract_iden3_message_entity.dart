@@ -45,13 +45,14 @@ class ContractIden3MessageEntity extends Iden3MessageEntity {
   @override
   final ContractFunctionCallBodyRequest body;
 
-  ContractIden3MessageEntity(
-      {required super.id,
-      String? typ,
-      required super.type,
-      String? thid,
-      required this.body})
-      : super(
+  ContractIden3MessageEntity({
+    required super.id,
+    String? typ,
+    required super.type,
+    String? thid,
+    required this.body,
+    super.nextRequest,
+  }) : super(
           from: '',
           messageType: Iden3MessageType.proofContractInvokeRequest,
           thid: thid ?? '',
@@ -71,6 +72,7 @@ class ContractIden3MessageEntity extends Iden3MessageEntity {
       type: json['type'],
       thid: json['thid'] ?? '',
       body: body,
+      nextRequest: json['next_request'],
     );
   }
 

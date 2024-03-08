@@ -12,6 +12,7 @@ class CredentialRefreshIden3MessageEntity extends Iden3MessageEntity {
     required super.from,
     required this.body,
     required super.to,
+    super.nextRequest,
   }) : super(messageType: Iden3MessageType.credentialRefresh);
 
   factory CredentialRefreshIden3MessageEntity.fromJson(
@@ -27,6 +28,7 @@ class CredentialRefreshIden3MessageEntity extends Iden3MessageEntity {
       from: json['from'],
       to: json['to'],
       body: body,
+      nextRequest: json['nextRequest'],
     );
   }
 
