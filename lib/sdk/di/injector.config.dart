@@ -555,6 +555,14 @@ extension GetItInjectableX on _i1.GetIt {
     gh.lazySingleton<_i64.StacktraceManager>(() => _i64.StacktraceManager());
     gh.factory<_i65.StateIdentifierMapper>(() => _i65.StateIdentifierMapper());
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
+      () => databaseModule.profileStore,
+      instanceName: 'profilesStore',
+    );
+    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
+      () => databaseModule.didProfileInfoStore,
+      instanceName: 'didProfileInfoStore',
+    );
+    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.identityStore,
       instanceName: 'identityStore',
     );
@@ -569,14 +577,6 @@ extension GetItInjectableX on _i1.GetIt {
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.interactionStore,
       instanceName: 'interactionStore',
-    );
-    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.profileStore,
-      instanceName: 'profilesStore',
-    );
-    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.didProfileInfoStore,
-      instanceName: 'didProfileInfoStore',
     );
     gh.factory<_i66.TreeStateMapper>(() => _i66.TreeStateMapper());
     gh.factory<_i67.TreeTypeMapper>(() => _i67.TreeTypeMapper());
@@ -1212,6 +1212,7 @@ extension GetItInjectableX on _i1.GetIt {
               await getAsync<_i129.GetEnvUseCase>(),
               await getAsync<_i130.GetSelectedChainUseCase>(),
               await getAsync<_i181.GetDidIdentifierUseCase>(),
+              await getAsync<_i165.GetDidUseCase>(),
               gh<_i23.GetFetchRequestsUseCase>(),
               await getAsync<_i189.GetAuthTokenUseCase>(),
               gh<_i140.SaveClaimsUseCase>(),
@@ -1219,7 +1220,7 @@ extension GetItInjectableX on _i1.GetIt {
               gh<_i145.CacheCredentialUseCase>(),
               gh<_i37.LocalContractFilesDataSource>(),
               await getAsync<_i156.IdentityRepository>(),
-              gh<_i65.StateIdentifierMapper>(),
+              gh<_i10.ClaimStateMapper>(),
               gh<_i64.StacktraceManager>(),
             ));
     gh.factoryAsync<_i199.GetClaimsUseCase>(() async => _i199.GetClaimsUseCase(

@@ -86,13 +86,13 @@ class OnchainOfferBodyRequest extends CredentialOfferBody {
         .toList();
     return OnchainOfferBodyRequest(
       credentials: credentials,
-      transactionData: OnchainTransactionData.fromJson(json['transactionData']),
+      transactionData: OnchainTransactionData.fromJson(json['transaction_data']),
     );
   }
 
   Map<String, dynamic> toJson() => {
         'credentials': credentials.map((item) => item.toJson()).toList(),
-        'transactionData': transactionData.toJson(),
+        'transaction_data': transactionData.toJson(),
       };
 
   @override
@@ -126,18 +126,18 @@ class OnchainTransactionData {
 
   factory OnchainTransactionData.fromJson(Map<String, dynamic> json) {
     return OnchainTransactionData(
-      contractAddress: json['contractAddress'],
-      methodId: json['methodId'],
-      chainId: json['chainId'],
+      contractAddress: json['contract_address'],
+      methodId: json['method_id'],
+      chainId: json['chain_id'],
       network: json['network'],
     );
   }
 
   @override
   Map<String, dynamic> toJson() => {
-        'contractAddress': contractAddress,
-        'methodId': methodId,
-        'chainId': chainId,
+        'contract_address': contractAddress,
+        'method_id': methodId,
+        'chain_id': chainId,
         'network': network,
       };
 

@@ -80,7 +80,7 @@ class OnchainOfferIden3MessageEntity
     required super.body,
     super.to,
     super.nextRequest,
-  }) : super(messageType: Iden3MessageType.credentialOffer);
+  }) : super(messageType: Iden3MessageType.onchainCredentialOffer);
 
   /// Creates an instance from the given json
   ///

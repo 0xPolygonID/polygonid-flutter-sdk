@@ -12,6 +12,8 @@ enum FetchClaimResponseType {
   auth,
   @JsonValue("https://iden3-communication.io/credentials/1.0/offer")
   offer,
+  @JsonValue("https://iden3-communication.io/credentials/1.0/onchain-offer")
+  onchainOffer,
   @JsonValue("https://iden3-communication.io/credentials/1.0/issuance-response")
   issuance,
   @JsonValue(
