@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'dart:math';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
@@ -90,7 +91,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }) async {
     emit(const AuthState.loading());
 
-    final currentChain = await _polygonIdSdk.getSelectedChain();
+    final ChainConfigEntity currentChain =
+        await _polygonIdSdk.getSelectedChain();
+    final EnvEntity envEntity = await _polygonIdSdk.getEnv();
 
     String? did = await _polygonIdSdk.identity.getDidIdentifier(
       privateKey: privateKey,

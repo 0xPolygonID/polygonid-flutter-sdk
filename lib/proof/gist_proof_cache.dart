@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/lib_pidcore_proof_data_source.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:web3dart/web3dart.dart';
@@ -99,7 +101,9 @@ class GistProofCache {
       return cachedGistProof;
     }
 
-    Web3Client web3Client = getItSdk.get(param1: envEntity);
+    GetSelectedChainUseCase getSelectedChainUseCase = await getItSdk.getAsync<GetSelectedChainUseCase>();
+    ChainConfigEntity chain = await getSelectedChainUseCase.execute();
+    Web3Client web3Client = getItSdk.get(param1: chain.rpcUrl);
     try {
       final transactionParameters = [
         BigInt.parse(id),

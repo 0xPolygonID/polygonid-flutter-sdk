@@ -19,8 +19,11 @@ import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/filter_ma
 import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/base_64.dart';
 import 'package:polygonid_flutter_sdk/common/utils/big_int_extension.dart';
 import 'package:polygonid_flutter_sdk/common/utils/pinata_gateway_utils.dart';
@@ -67,6 +70,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart'
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj_wallet.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/gist_mtproof_data_source.dart';
@@ -102,6 +106,7 @@ import 'package:pointycastle/digests/sha512.dart';
 
 class Authenticate {
   late ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
+  late StacktraceManager _stacktraceManager;
 
   Future<bool> authenticate({
     required String privateKey,
@@ -122,6 +127,7 @@ class Authenticate {
         await getItSdk.getAsync<ProofRepository>();
     _proofGenerationStepsStreamManager =
         getItSdk<ProofGenerationStepsStreamManager>();
+    _stacktraceManager = getItSdk<StacktraceManager>();
 
     _proofGenerationStepsStreamManager.add("preparing authentication...");
 
@@ -136,12 +142,23 @@ class Authenticate {
     HexMapper hexMapper = getItSdk<HexMapper>();
     Uint8List privateKeyBytes = hexMapper.mapTo(privateKey);
 
-    var libPolygonIdIdentity = getItSdk<LibPolygonIdCoreIdentityDataSource>();
+    GetSelectedChainUseCase getSelectedChainUseCase =
+        await getItSdk.getAsync<GetSelectedChainUseCase>();
 
-    // Calculate the profileDid from the genesisDid and the profileNonce
-    String profileDid = libPolygonIdIdentity.calculateProfileId(
-      genesisDid,
-      profileNonce,
+    ChainConfigEntity chain = await getSelectedChainUseCase.execute();
+    _stacktraceManager.addTrace(
+      "[Authenticate] Chain: ${chain.blockchain} ${chain.network}",
+    );
+    GetDidIdentifierUseCase getDidIdentifierUseCase =
+        await getItSdk.getAsync<GetDidIdentifierUseCase>();
+
+    String profileDid = await getDidIdentifierUseCase.execute(
+      param: GetDidIdentifierParam(
+        privateKey: privateKey,
+        blockchain: chain.blockchain,
+        network: chain.network,
+        profileNonce: profileNonce,
+      ),
     );
 
     List<ProofRequestEntity> proofRequests = [];
@@ -164,6 +181,7 @@ class Authenticate {
     authClaimCompanionObject ??= await getAuthClaim(
       genesisDid: genesisDid,
       env: env,
+      chain: chain,
       privateKey: privateKey,
       privateKeyBytes: privateKeyBytes,
     );
@@ -220,6 +238,9 @@ class Authenticate {
       gistProofEntity: authClaimCompanionObject.gistProofEntity!,
       proofRepository: proofRepository,
     );
+    _stacktraceManager.addTrace(
+      "[Authenticate] authToken: $authToken",
+    );
 
     _proofGenerationStepsStreamManager
         .add("sending auth token to the requester...");
@@ -240,6 +261,10 @@ class Authenticate {
         HttpHeaders.acceptHeader: '*/*',
         HttpHeaders.contentTypeHeader: 'text/plain',
       },
+    );
+
+    _stacktraceManager.addTrace(
+      "[Authenticate] responseStatusCode: ${response.statusCode}\nresponseBody: ${response.body}",
     );
 
     if (response.statusCode != 200) {
@@ -366,9 +391,7 @@ class Authenticate {
         circuitData: circuitDataEntity,
         privateKey: privateKey,
         challenge: challenge,
-        ethereumUrl: env.web3Url + env.web3ApiKey,
-        stateContractAddr: env.idStateContract,
-        ipfsNodeURL: env.ipfsUrl,
+        config: env.config,
         verifierId: message.from,
         linkNonce: linkNonce,
         transactionData: transactionData,
@@ -388,8 +411,8 @@ class Authenticate {
       }
 
       config = AtomicQueryInputsConfigParam(
-        ethereumUrl: env.web3Url + env.web3ApiKey,
-        stateContractAddr: env.idStateContract,
+        chainConfigs: env.chainConfigs,
+        didMethods: env.didMethods,
         ipfsNodeURL: env.ipfsUrl,
       ).toJson();
 
@@ -1087,6 +1110,7 @@ class Authenticate {
     required String privateKey,
     required String genesisDid,
     required EnvEntity env,
+    required ChainConfigEntity chain,
     required Uint8List privateKeyBytes,
   }) async {
     List<String>? authClaim;
@@ -1199,7 +1223,7 @@ class Authenticate {
     ContractAbi contractAbi = ContractAbi.fromJson(
         jsonEncode(jsonDecode(stateAbiJson)["abi"]), 'State');
     EthereumAddress ethereumAddress =
-        EthereumAddress.fromHex(env.idStateContract);
+        EthereumAddress.fromHex(chain.stateContractAddr);
     DeployedContract contract = DeployedContract(contractAbi, ethereumAddress);
 
     String gistProof = await GistProofCache().getGistProof(

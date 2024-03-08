@@ -54,6 +54,7 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
       );
     } else if (event.downloadInfo is DownloadInfoOnDone) {
       _subscription?.cancel();
+
       emit(SplashState.waitingTimeEnded());
     } else if (event.downloadInfo is DownloadInfoOnError) {
       _subscription?.cancel();

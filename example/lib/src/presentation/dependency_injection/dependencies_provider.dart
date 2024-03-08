@@ -39,9 +39,23 @@ Future<void> init() async {
 }
 
 void registerEnv() {
-  Map<String, dynamic> polygonEnv = jsonDecode(Env.polygonEnv);
+  Map<String, dynamic> defaultEnv = jsonDecode(Env.defaultEnvironment);
+  String stacktraceEncryptionKey = Env.stacktraceEncryptionKey;
+  String pinataGateway = Env.pinataGateway;
+  String pinataGatewayToken = Env.pinataGatewayToken;
 
-  final envV1 = EnvEntity.fromJsonV1(polygonEnv);
+  EnvEntity envV1 = EnvEntity.fromJsonV1(defaultEnv);
+  if (stacktraceEncryptionKey.isNotEmpty) {
+    envV1 = envV1.copyWith(stacktraceEncryptionKey: stacktraceEncryptionKey);
+  }
+
+  if (pinataGateway.isNotEmpty) {
+    envV1 = envV1.copyWith(pinataGateway: pinataGateway);
+  }
+
+  if (pinataGatewayToken.isNotEmpty) {
+    envV1 = envV1.copyWith(pinataGatewayToken: pinataGatewayToken);
+  }
 
   getIt.registerSingleton<EnvEntity>(envV1);
 }
