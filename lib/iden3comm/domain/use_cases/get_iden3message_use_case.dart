@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/credential_refresh_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
@@ -32,6 +33,8 @@ class GetIden3MessageUseCase extends FutureUseCase<String, Iden3MessageEntity> {
         switch (type) {
           case Iden3MessageType.authRequest:
             return AuthIden3MessageEntity.fromJson(json);
+          case Iden3MessageType.authResponse:
+            return AuthResponseIden3MessageEntity.fromJson(json);
           case Iden3MessageType.credentialOffer:
             return OfferIden3MessageEntity.fromJson(json);
           case Iden3MessageType.credentialIssuanceResponse:
@@ -42,7 +45,6 @@ class GetIden3MessageUseCase extends FutureUseCase<String, Iden3MessageEntity> {
             return CredentialRefreshIden3MessageEntity.fromJson(json);
           case Iden3MessageType.credentialStatusUpdate:
             return CredentialStatusUpdateMessageEntity.fromJson(json);
-          case Iden3MessageType.authResponse:
           case Iden3MessageType.unknown:
             throw UnsupportedIden3MsgTypeException(type);
         }

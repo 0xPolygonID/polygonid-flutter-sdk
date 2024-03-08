@@ -71,15 +71,16 @@ class OfferIden3MessageEntity extends Iden3MessageEntity {
   @override
   final OfferBodyRequest body;
 
-  OfferIden3MessageEntity(
-      {required super.id,
-      required super.typ,
-      required super.type,
-      required super.thid,
-      required super.from,
-      required this.body,
-      super.to})
-      : super(messageType: Iden3MessageType.credentialOffer);
+  OfferIden3MessageEntity({
+    required super.id,
+    required super.typ,
+    required super.type,
+    required super.thid,
+    required super.from,
+    required this.body,
+    super.to,
+    super.nextRequest,
+  }) : super(messageType: Iden3MessageType.credentialOffer);
 
   /// Creates an instance from the given json
   ///
@@ -95,6 +96,7 @@ class OfferIden3MessageEntity extends Iden3MessageEntity {
       from: json['from'],
       to: json['to'],
       body: body,
+      nextRequest: json['next_request'],
     );
   }
 

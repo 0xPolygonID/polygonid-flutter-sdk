@@ -72,15 +72,16 @@ class AuthIden3MessageEntity extends Iden3MessageEntity {
   @override
   final AuthBodyRequest body;
 
-  AuthIden3MessageEntity(
-      {required super.id,
-      required super.typ,
-      required super.type,
-      required super.thid,
-      required super.from,
-      required this.body,
-      super.to})
-      : super(messageType: Iden3MessageType.authRequest);
+  AuthIden3MessageEntity({
+    required super.id,
+    required super.typ,
+    required super.type,
+    required super.thid,
+    required super.from,
+    required this.body,
+    super.to,
+    super.nextRequest,
+  }) : super(messageType: Iden3MessageType.authRequest);
 
   /// Creates an instance from the given json
   ///
@@ -97,6 +98,7 @@ class AuthIden3MessageEntity extends Iden3MessageEntity {
       from: json['from'],
       to: json['to'],
       body: body,
+      nextRequest: json['next_request'],
     );
   }
 

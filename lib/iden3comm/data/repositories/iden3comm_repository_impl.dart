@@ -23,10 +23,12 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/iden3comm_proof_map
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/jwz_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_body_did_doc_response.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/response/jwz.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
@@ -49,6 +51,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   final QMapper _qMapper;
   final JWZMapper _jwzMapper;
   final Iden3commProofMapper _iden3commProofMapper;
+  final GetIden3MessageUseCase _getIden3MessageUseCase;
 
   Iden3commRepositoryImpl(
     this._iden3messageDataSource,
@@ -62,10 +65,11 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     this._qMapper,
     this._jwzMapper,
     this._iden3commProofMapper,
+    this._getIden3MessageUseCase,
   );
 
   @override
-  Future<void> authenticate({
+  Future<Iden3MessageEntity?> authenticate({
     required AuthIden3MessageEntity request,
     required String authToken,
   }) async {
@@ -75,7 +79,29 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       throw NullAuthenticateCallbackException(request);
     }
 
-    await _remoteIden3commDataSource.authWithToken(token: authToken, url: url);
+    final response = await _remoteIden3commDataSource.authWithToken(
+      token: authToken,
+      url: url,
+    );
+
+    if (response.body.isEmpty) {
+      return null;
+    }
+
+    final messageJson = jsonDecode(response.body);
+    if (messageJson is! Map<String, dynamic> || messageJson.isEmpty) {
+      return null;
+    }
+
+    try {
+      final nextRequest = await _getIden3MessageUseCase.execute(
+        param: jsonEncode(messageJson),
+      );
+
+      return nextRequest;
+    } catch (e) {
+      return null;
+    }
   }
 
   @override

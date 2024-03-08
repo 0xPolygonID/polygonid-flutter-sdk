@@ -12,6 +12,7 @@ class CredentialStatusUpdateMessageEntity extends Iden3MessageEntity {
     required super.from,
     required super.to,
     required this.body,
+    super.nextRequest,
   }) : super(messageType: Iden3MessageType.credentialStatusUpdate);
 
   /// Creates an instance from the given json
@@ -31,6 +32,7 @@ class CredentialStatusUpdateMessageEntity extends Iden3MessageEntity {
       from: json['from'],
       to: json['to'],
       body: body,
+      nextRequest: json['nextRequest'],
     );
   }
 

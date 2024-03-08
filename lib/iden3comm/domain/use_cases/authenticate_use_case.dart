@@ -10,8 +10,10 @@ import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.d
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
@@ -42,7 +44,8 @@ class AuthenticateParam {
   });
 }
 
-class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
+class AuthenticateUseCase
+    extends FutureUseCase<AuthenticateParam, Iden3MessageEntity?> {
   final Iden3commRepository _iden3commRepository;
   final GetAuthTokenUseCase _getAuthTokenUseCase;
   final GetIden3commProofsUseCase _getIden3commProofsUseCase;
@@ -69,7 +72,7 @@ class AuthenticateUseCase extends FutureUseCase<AuthenticateParam, void> {
   );
 
   @override
-  Future<void> execute({required AuthenticateParam param}) async {
+  Future<Iden3MessageEntity?> execute({required AuthenticateParam param}) async {
     try {
       _stacktraceManager.addTrace(
         "[AuthenticateUseCase][MainFlow] auth request: " +
