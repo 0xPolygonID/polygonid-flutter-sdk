@@ -3,6 +3,7 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
@@ -15,21 +16,14 @@ class GetClaimsParam {
   final BigInt profileNonce;
   final String privateKey;
 
-  bool sortByExpiration;
-  bool sortByExpirationAscending;
-  bool sortByIssuanceDate;
-
-  bool sortByIssuanceDateAscending;
+  List<CredentialSortOrder> credentialSortOrderList;
 
   GetClaimsParam({
     this.filters,
     required this.genesisDid,
     required this.profileNonce,
     required this.privateKey,
-    this.sortByExpiration = false,
-    this.sortByExpirationAscending = false,
-    this.sortByIssuanceDate = false,
-    this.sortByIssuanceDateAscending = false,
+    this.credentialSortOrderList = const [],
   });
 }
 
@@ -55,10 +49,7 @@ class GetClaimsUseCase
         filters: param.filters,
         genesisDid: param.genesisDid,
         privateKey: param.privateKey,
-        sortByExpiration: param.sortByExpiration,
-        sortByExpirationAscending: param.sortByExpirationAscending,
-        sortByIssuanceDate: param.sortByIssuanceDate,
-        sortByIssuanceDateAscending: param.sortByIssuanceDateAscending,
+        credentialSortOrderList: param.credentialSortOrderList,
       )
           .then((claims) {
         logger().i("[GetClaimsUseCase] Claims: $claims");

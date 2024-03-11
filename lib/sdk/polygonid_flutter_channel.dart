@@ -9,6 +9,7 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/did_method_entity.d
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
@@ -715,19 +716,13 @@ class PolygonIdFlutterChannel
     List<FilterEntity>? filters,
     required String genesisDid,
     required String privateKey,
-    bool sortByExpiration = false,
-    bool sortByExpirationAscending = false,
-    bool sortByIssuanceDate = false,
-    bool sortByIssuanceDateAscending = false,
+    List<CredentialSortOrder> credentialSortOrderList = const [],
   }) {
     return _polygonIdSdk.credential.getClaims(
       filters: filters,
       genesisDid: genesisDid,
       privateKey: privateKey,
-      sortByExpiration: sortByExpiration,
-      sortByExpirationAscending: sortByExpirationAscending,
-      sortByIssuanceDate: sortByIssuanceDate,
-      sortByIssuanceDateAscending: sortByIssuanceDateAscending,
+      credentialSortOrderList: credentialSortOrderList,
     );
   }
 
