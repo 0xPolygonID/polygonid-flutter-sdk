@@ -16,10 +16,12 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/credential/response/fe
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 
 class RemoteIden3commDataSource {
+  final Dio dio;
   final http.Client client;
   final StacktraceManager _stacktraceManager;
 
   RemoteIden3commDataSource(
+    this.dio,
     this.client,
     this._stacktraceManager,
   );
@@ -34,7 +36,6 @@ class RemoteIden3commDataSource {
     }
 
     try {
-      var dio = Dio();
       final response = await dio.post(
         url,
         data: token,
