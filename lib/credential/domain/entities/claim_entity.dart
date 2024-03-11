@@ -80,4 +80,31 @@ class ClaimEntity {
 
   @override
   int get hashCode => runtimeType.hashCode;
+
+  //copyWith method
+  ClaimEntity copyWith({
+    String? id,
+    String? issuer,
+    String? did,
+    ClaimState? state,
+    String? expiration,
+    Map<String, dynamic>? schema,
+    String? type,
+    Map<String, dynamic>? info,
+    DisplayType? displayType,
+    String? credentialRawValue,
+  }) {
+    return ClaimEntity(
+      id: id ?? this.id,
+      issuer: issuer ?? this.issuer,
+      did: did ?? this.did,
+      state: state ?? this.state,
+      expiration: expiration ?? this.expiration,
+      schema: schema ?? this.schema,
+      type: type ?? this.type,
+      info: info ?? this.info,
+      displayType: displayType ?? this.displayType,
+      credentialRawValue: credentialRawValue ?? this.credentialRawValue,
+    );
+  }
 }
