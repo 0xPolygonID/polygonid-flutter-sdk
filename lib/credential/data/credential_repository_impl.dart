@@ -1,5 +1,6 @@
 import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/cache_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/remote_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
@@ -57,10 +58,7 @@ class CredentialRepositoryImpl extends CredentialRepository {
     List<FilterEntity>? filters,
     required String genesisDid,
     required String privateKey,
-    bool sortByExpiration = false,
-    bool sortByExpirationAscending = false,
-    bool sortByIssuanceDate = false,
-    bool sortByIssuanceDateAscending = false,
+    List<CredentialSortOrder> credentialSortOrderList = const [],
   }) async {
     try {
       final List<ClaimDTO> claimDTOlist =
@@ -68,10 +66,7 @@ class CredentialRepositoryImpl extends CredentialRepository {
         filter: filters == null ? null : _filtersMapper.mapTo(filters),
         did: genesisDid,
         privateKey: privateKey,
-        sortByExpiration: sortByExpiration,
-        sortByExpirationAscending: sortByExpirationAscending,
-        sortByIssuanceDate: sortByIssuanceDate,
-        sortByIssuanceDateAscending: sortByIssuanceDateAscending,
+        credentialSortOrderList: credentialSortOrderList,
       );
 
       final List<ClaimEntity> claimEntityList =

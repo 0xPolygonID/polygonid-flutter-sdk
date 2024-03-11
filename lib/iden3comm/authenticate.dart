@@ -26,6 +26,7 @@ import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/base_64.dart';
 import 'package:polygonid_flutter_sdk/common/utils/big_int_extension.dart';
+import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/common/utils/pinata_gateway_utils.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
@@ -540,7 +541,7 @@ class Authenticate {
           filter: filter,
           did: genesisDid,
           privateKey: privateKey,
-          sortByIssuanceDate: true,
+          credentialSortOrderList: [CredentialSortOrder.IssuanceDateDescending],
         );
         ClaimMapper claimMapper = getItSdk<ClaimMapper>();
         List<ClaimEntity> validClaims =
