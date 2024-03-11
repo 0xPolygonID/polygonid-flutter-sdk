@@ -26,7 +26,8 @@ MockGetDidIdentifierUseCase getDidIdentifierUseCase =
     MockGetDidIdentifierUseCase();
 MockGetAuthTokenUseCase getAuthTokenUseCase = MockGetAuthTokenUseCase();
 MockGetEnvUseCase getEnvUseCase = MockGetEnvUseCase();
-MockGetSelectedChainUseCase getSelectedChainUseCase = MockGetSelectedChainUseCase();
+MockGetSelectedChainUseCase getSelectedChainUseCase =
+    MockGetSelectedChainUseCase();
 MockGetPackageNameUseCase getPackageNameUseCase = MockGetPackageNameUseCase();
 MockCheckProfileAndDidCurrentEnvUseCase checkProfileAndDidCurrentEnvUseCase =
     MockCheckProfileAndDidCurrentEnvUseCase();

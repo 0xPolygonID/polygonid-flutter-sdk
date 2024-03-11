@@ -453,8 +453,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         pushToken: pushToken,
       );
     } catch (e) {
-      _stacktraceManager.addTrace(
-          '[authenticateV2] Error: ${e.toString()}');
+      _stacktraceManager.addTrace('[authenticateV2] Error: ${e.toString()}');
       _stacktraceManager.addError(e.toString());
       rethrow;
     }

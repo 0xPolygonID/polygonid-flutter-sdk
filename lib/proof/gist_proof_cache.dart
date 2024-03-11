@@ -101,7 +101,8 @@ class GistProofCache {
       return cachedGistProof;
     }
 
-    GetSelectedChainUseCase getSelectedChainUseCase = await getItSdk.getAsync<GetSelectedChainUseCase>();
+    GetSelectedChainUseCase getSelectedChainUseCase =
+        await getItSdk.getAsync<GetSelectedChainUseCase>();
     ChainConfigEntity chain = await getSelectedChainUseCase.execute();
     Web3Client web3Client = getItSdk.get(param1: chain.rpcUrl);
     try {
