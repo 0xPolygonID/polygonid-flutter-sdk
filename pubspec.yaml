@@ -55,6 +55,7 @@ dev_dependencies:
   mockito: ^5.3.2
   injectable_generator: ^2.4.0
   build_runner: ^2.4.6
+  web3dart_builders: 0.0.7
 
 ffigen:
   #name: NativeWitnessV3OnchainLib
