@@ -432,7 +432,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     );
   }
 
-  Future<void> authenticateNew({
+  Future<Iden3MessageEntity?> authenticateV2({
     required String privateKey,
     required String genesisDid,
     required BigInt profileNonce,
@@ -443,7 +443,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     String? challenge,
   }) async {
     try {
-      await Authenticate().authenticate(
+      return await Authenticate().authenticate(
         privateKey: privateKey,
         genesisDid: genesisDid,
         profileNonce: profileNonce,
@@ -454,8 +454,9 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       );
     } catch (e) {
       _stacktraceManager.addTrace(
-          '[authenticateNew] Error: ${e.toString()}');
+          '[authenticateV2] Error: ${e.toString()}');
       _stacktraceManager.addError(e.toString());
+      rethrow;
     }
   }
 

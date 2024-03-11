@@ -56,6 +56,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/i
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/jwz_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/smt_data_source.dart';
@@ -108,7 +109,7 @@ class Authenticate {
   late ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
   late StacktraceManager _stacktraceManager;
 
-  Future<bool> authenticate({
+  Future<Iden3MessageEntity?> authenticate({
     required String privateKey,
     required String genesisDid,
     required BigInt profileNonce,
@@ -119,159 +120,183 @@ class Authenticate {
     String? challenge,
     final Map<String, dynamic>? transactionData,
   }) async {
-    List<Iden3commProofEntity> proofs = [];
-    Map<int, String> groupIdLinkNonceMap = {};
+    try {
+      List<Iden3commProofEntity> proofs = [];
+      Map<int, String> groupIdLinkNonceMap = {};
 
-    AuthClaimCompanionObject? authClaimCompanionObject;
-    ProofRepository proofRepository =
-        await getItSdk.getAsync<ProofRepository>();
-    _proofGenerationStepsStreamManager =
-        getItSdk<ProofGenerationStepsStreamManager>();
-    _stacktraceManager = getItSdk<StacktraceManager>();
+      AuthClaimCompanionObject? authClaimCompanionObject;
+      ProofRepository proofRepository =
+          await getItSdk.getAsync<ProofRepository>();
+      _proofGenerationStepsStreamManager =
+          getItSdk<ProofGenerationStepsStreamManager>();
+      _stacktraceManager = getItSdk<StacktraceManager>();
 
-    _proofGenerationStepsStreamManager.add("preparing authentication...");
+      _proofGenerationStepsStreamManager.add("preparing authentication...");
 
-    // Check if the message type is supported
-    if (![
-      Iden3MessageType.authRequest,
-      Iden3MessageType.proofContractInvokeRequest
-    ].contains(message.messageType)) {
-      throw UnsupportedIden3MsgTypeException(message.messageType);
-    }
+      // Check if the message type is supported
+      if (![
+        Iden3MessageType.authRequest,
+        Iden3MessageType.proofContractInvokeRequest
+      ].contains(message.messageType)) {
+        throw UnsupportedIden3MsgTypeException(message.messageType);
+      }
 
-    HexMapper hexMapper = getItSdk<HexMapper>();
-    Uint8List privateKeyBytes = hexMapper.mapTo(privateKey);
+      HexMapper hexMapper = getItSdk<HexMapper>();
+      Uint8List privateKeyBytes = hexMapper.mapTo(privateKey);
 
-    GetSelectedChainUseCase getSelectedChainUseCase =
-        await getItSdk.getAsync<GetSelectedChainUseCase>();
+      GetSelectedChainUseCase getSelectedChainUseCase =
+          await getItSdk.getAsync<GetSelectedChainUseCase>();
 
-    ChainConfigEntity chain = await getSelectedChainUseCase.execute();
-    _stacktraceManager.addTrace(
-      "[Authenticate] Chain: ${chain.blockchain} ${chain.network}",
-    );
-    GetDidIdentifierUseCase getDidIdentifierUseCase =
-        await getItSdk.getAsync<GetDidIdentifierUseCase>();
+      ChainConfigEntity chain = await getSelectedChainUseCase.execute();
+      _stacktraceManager.addTrace(
+        "[Authenticate] Chain: ${chain.blockchain} ${chain.network}",
+      );
+      GetDidIdentifierUseCase getDidIdentifierUseCase =
+          await getItSdk.getAsync<GetDidIdentifierUseCase>();
 
-    String profileDid = await getDidIdentifierUseCase.execute(
-      param: GetDidIdentifierParam(
-        privateKey: privateKey,
-        blockchain: chain.blockchain,
-        network: chain.network,
-        profileNonce: profileNonce,
-      ),
-    );
+      String profileDid = await getDidIdentifierUseCase.execute(
+        param: GetDidIdentifierParam(
+          privateKey: privateKey,
+          blockchain: chain.blockchain,
+          network: chain.network,
+          profileNonce: profileNonce,
+        ),
+      );
 
-    List<ProofRequestEntity> proofRequests = [];
-    List<ClaimEntity> claims = [];
+      List<ProofRequestEntity> proofRequests = [];
+      List<ClaimEntity> claims = [];
 
-    // Get the credentials and proof requests by scope
-    // it is assigning the proofRequests and claims to the variables directly
-    // from the function call
-    await getCredentialsAndProofRequestsByScope(
-      message: message,
-      proofRequests: proofRequests,
-      genesisDid: genesisDid,
-      privateKey: privateKey,
-      claims: claims,
-    );
-
-    // this authClaimCompanionObject is the one that is being used to get the
-    // authClaim, incProof, nonRevProof, treeState, authClaimNode, gistProofEntity
-    _proofGenerationStepsStreamManager.add("getting auth claim...");
-    authClaimCompanionObject ??= await getAuthClaim(
-      genesisDid: genesisDid,
-      env: env,
-      chain: chain,
-      privateKey: privateKey,
-      privateKeyBytes: privateKeyBytes,
-    );
-
-    // if there are proof requests and claims and they are the same length
-    // then create the proof for every proof request
-    if (proofRequests.isNotEmpty &&
-        claims.isNotEmpty &&
-        proofRequests.length == claims.length) {
-      // it is assigning the proofs to the variable directly from the function call
-      await createProofForEveryProofRequest(
+      // Get the credentials and proof requests by scope
+      // it is assigning the proofRequests and claims to the variables directly
+      // from the function call
+      await getCredentialsAndProofRequestsByScope(
+        message: message,
         proofRequests: proofRequests,
+        genesisDid: genesisDid,
+        privateKey: privateKey,
         claims: claims,
-        identityEntity: identityEntity,
-        groupIdLinkNonceMap: groupIdLinkNonceMap,
+      );
+
+      // this authClaimCompanionObject is the one that is being used to get the
+      // authClaim, incProof, nonRevProof, treeState, authClaimNode, gistProofEntity
+      _proofGenerationStepsStreamManager.add("getting auth claim...");
+      authClaimCompanionObject ??= await getAuthClaim(
+        genesisDid: genesisDid,
+        env: env,
+        chain: chain,
+        privateKey: privateKey,
+        privateKeyBytes: privateKeyBytes,
+      );
+
+      // if there are proof requests and claims and they are the same length
+      // then create the proof for every proof request
+      if (proofRequests.isNotEmpty &&
+          claims.isNotEmpty &&
+          proofRequests.length == claims.length) {
+        // it is assigning the proofs to the variable directly from the function call
+        await createProofForEveryProofRequest(
+          proofRequests: proofRequests,
+          claims: claims,
+          identityEntity: identityEntity,
+          groupIdLinkNonceMap: groupIdLinkNonceMap,
+          genesisDid: genesisDid,
+          profileNonce: profileNonce,
+          privateKey: privateKey,
+          challenge: challenge,
+          env: env,
+          message: message,
+          transactionData: transactionData,
+          privateKeyBytes: privateKeyBytes,
+          proofRepository: proofRepository,
+          authClaimCompanionObject: authClaimCompanionObject,
+          proofs: proofs,
+        );
+      }
+
+      // prepare the auth response message
+      _proofGenerationStepsStreamManager
+          .add("preparing authentication parameters...");
+      String authResponseString = await prepareAuthResponseMessage(
+        env: env,
+        pushToken: pushToken,
+        profileDid: profileDid,
+        message: message,
+        proofs: proofs,
+      );
+
+      // get the auth token
+      _proofGenerationStepsStreamManager
+          .add("preparing authentication token...");
+      String authToken = await _getAuthToken(
         genesisDid: genesisDid,
         profileNonce: profileNonce,
         privateKey: privateKey,
-        challenge: challenge,
-        env: env,
-        message: message,
-        transactionData: transactionData,
         privateKeyBytes: privateKeyBytes,
+        message: authResponseString,
+        authClaim: authClaimCompanionObject.authClaim!,
+        incProof: authClaimCompanionObject.incProof!,
+        nonRevProof: authClaimCompanionObject.nonRevProof!,
+        treeState: authClaimCompanionObject.treeState!,
+        authClaimNode: authClaimCompanionObject.authClaimNode!,
+        gistProofEntity: authClaimCompanionObject.gistProofEntity!,
         proofRepository: proofRepository,
-        authClaimCompanionObject: authClaimCompanionObject,
-        proofs: proofs,
       );
+      _stacktraceManager.addTrace(
+        "[Authenticate] authToken: $authToken",
+      );
+
+      _proofGenerationStepsStreamManager
+          .add("sending auth token to the requester...");
+      String? callbackUrl = message.body.callbackUrl;
+
+      if (callbackUrl == null || callbackUrl.isEmpty) {
+        throw NullAuthenticateCallbackException(
+            message as AuthIden3MessageEntity);
+      }
+
+      // perform the authentication with the auth token callin the callback url
+      http.Client httpClient = http.Client();
+      Uri uri = Uri.parse(callbackUrl);
+      http.Response response = await httpClient.post(
+        uri,
+        body: authToken,
+        headers: {
+          HttpHeaders.acceptHeader: '*/*',
+          HttpHeaders.contentTypeHeader: 'text/plain',
+        },
+      );
+
+      _stacktraceManager.addTrace(
+        "[Authenticate] responseStatusCode: ${response.statusCode}\nresponseBody: ${response.body}",
+      );
+
+      if (response.statusCode != 200) {
+        throw NetworkException(response);
+      }
+
+      if (response.body.isEmpty) {
+        return null;
+      }
+
+      final messageJson = jsonDecode(response.body);
+      if (messageJson is! Map<String, dynamic> || messageJson.isEmpty) {
+        return null;
+      }
+
+      try {
+        GetIden3MessageUseCase _getIden3MessageUseCase =
+            await getItSdk.getAsync<GetIden3MessageUseCase>();
+        final nextRequest = await _getIden3MessageUseCase.execute(
+          param: jsonEncode(messageJson),
+        );
+
+        return nextRequest;
+      } catch (e) {
+        return null;
+      }
+    } catch (e) {
+      rethrow;
     }
-
-    // prepare the auth response message
-    _proofGenerationStepsStreamManager
-        .add("preparing authentication parameters...");
-    String authResponseString = await prepareAuthResponseMessage(
-      env: env,
-      pushToken: pushToken,
-      profileDid: profileDid,
-      message: message,
-      proofs: proofs,
-    );
-
-    // get the auth token
-    _proofGenerationStepsStreamManager.add("preparing authentication token...");
-    String authToken = await _getAuthToken(
-      genesisDid: genesisDid,
-      profileNonce: profileNonce,
-      privateKey: privateKey,
-      privateKeyBytes: privateKeyBytes,
-      message: authResponseString,
-      authClaim: authClaimCompanionObject.authClaim!,
-      incProof: authClaimCompanionObject.incProof!,
-      nonRevProof: authClaimCompanionObject.nonRevProof!,
-      treeState: authClaimCompanionObject.treeState!,
-      authClaimNode: authClaimCompanionObject.authClaimNode!,
-      gistProofEntity: authClaimCompanionObject.gistProofEntity!,
-      proofRepository: proofRepository,
-    );
-    _stacktraceManager.addTrace(
-      "[Authenticate] authToken: $authToken",
-    );
-
-    _proofGenerationStepsStreamManager
-        .add("sending auth token to the requester...");
-    String? callbackUrl = message.body.callbackUrl;
-
-    if (callbackUrl == null || callbackUrl.isEmpty) {
-      throw NullAuthenticateCallbackException(
-          message as AuthIden3MessageEntity);
-    }
-
-    // perform the authentication with the auth token callin the callback url
-    http.Client httpClient = http.Client();
-    Uri uri = Uri.parse(callbackUrl);
-    http.Response response = await httpClient.post(
-      uri,
-      body: authToken,
-      headers: {
-        HttpHeaders.acceptHeader: '*/*',
-        HttpHeaders.contentTypeHeader: 'text/plain',
-      },
-    );
-
-    _stacktraceManager.addTrace(
-      "[Authenticate] responseStatusCode: ${response.statusCode}\nresponseBody: ${response.body}",
-    );
-
-    if (response.statusCode != 200) {
-      throw NetworkException(response);
-    }
-
-    return true;
   }
 
   Future<String> prepareAuthResponseMessage({
@@ -665,6 +690,10 @@ class Authenticate {
         } else {
           MapEntry entry = (reqEntry.value as Map).entries.first;
           if (_queryOperators.containsKey(entry.key)) {
+            _validateV3OperatorsByCircuit(
+              circuitId: scope.circuitId,
+              operator: entry.key,
+            );
             operator = _queryOperators[entry.key]!;
           }
           if (entry.value == "true" || entry.value == "false") {
@@ -1322,6 +1351,30 @@ class Authenticate {
       return inputsJsonBytes;
     }
     throw Exception('Error in _computeSigProof');
+  }
+
+  void _validateV3OperatorsByCircuit({
+    required String circuitId,
+    required String operator,
+  }) {
+    const List<String> supportedOperators = [
+      '\$lte',
+      '\$gte',
+      '\$between',
+      '\$nonbetween',
+      '\$exists',
+    ];
+    const String supportedCircuitPrefix = 'credentialAtomicQueryV3';
+
+    bool operatorIsPartOfV3Operators = supportedOperators.contains(operator);
+    bool isCircuitSupported = circuitId.startsWith(supportedCircuitPrefix);
+
+    if (operatorIsPartOfV3Operators && !isCircuitSupported) {
+      throw OperatorException(
+        errorMessage:
+            "Operator $operator is not supported for circuit $circuitId",
+      );
+    }
   }
 }
 

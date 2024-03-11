@@ -111,7 +111,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           ? GENESIS_PROFILE_NONCE
           : await NonceUtils(getIt()).getPrivateProfileNonce(
               did: did, privateKey: privateKey, from: iden3message.from);
-      await _polygonIdSdk.iden3comm.authenticateNew(
+      await _polygonIdSdk.iden3comm.authenticateV2(
         message: iden3message,
         genesisDid: did,
         privateKey: privateKey,
