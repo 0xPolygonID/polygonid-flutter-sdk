@@ -9,7 +9,7 @@ enum CircuitType {
   unknown("");
 
   static const v3CircuitPrefix = "credentialAtomicQueryV3";
-  static const currentCircuitBetaPostfix = "-beta.0";
+  static const currentCircuitBetaPostfix = "-beta.1";
 
   final String name;
 

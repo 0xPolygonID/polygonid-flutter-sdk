@@ -21,7 +21,7 @@ jobs:
       - name: Setup Flutter SDK
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.10.4'
+          flutter-version: '3.19.3'
           channel: 'stable'
           cache: true
           # instead of "channel: stable", you could be more precise by specifying the exact version of Flutter you're using:
@@ -72,7 +72,7 @@ jobs:
         - name: Setup Flutter SDK
           uses: subosito/flutter-action@v2
           with:
-            flutter-version: '3.10.4'
+            flutter-version: '3.19.3'
             channel: 'stable'
             cache: true
             # instead of "channel: stable", you could be more precise by specifying the exact version of Flutter you're using:

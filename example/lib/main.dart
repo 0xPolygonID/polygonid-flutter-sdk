@@ -8,7 +8,7 @@ import 'package:polygonid_flutter_sdk_example/src/presentation/app.dart';
 Future<void> main() async {
   //Dependency Injection initialization
   await di.init();
-  PolygonIdSdk.I.switchLog(enabled: true);
+  PolygonIdSdk.I.switchLog(enabled: false);
 
   // App UI locked in portrait mode
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);

@@ -1,3 +1,4 @@
+import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
 
 import '../../../common/domain/entities/filter_entity.dart';
@@ -11,10 +12,12 @@ abstract class CredentialRepository {
     required String privateKey,
   });
 
-  Future<List<ClaimEntity>> getClaims(
-      {List<FilterEntity>? filters,
-      required String genesisDid,
-      required String privateKey});
+  Future<List<ClaimEntity>> getClaims({
+    List<FilterEntity>? filters,
+    required String genesisDid,
+    required String privateKey,
+    List<CredentialSortOrder> credentialSortOrderList = const [],
+  });
 
   Future<ClaimEntity> getClaim(
       {required String claimId,

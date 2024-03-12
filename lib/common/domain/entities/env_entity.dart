@@ -26,6 +26,8 @@ class EnvEntity {
   final List<DidMethodEntity> didMethods;
 
   final String? stacktraceEncryptionKey;
+  final String? pinataGateway;
+  final String? pinataGatewayToken;
 
   EnvEntity._({
     this.web3Url = '',
@@ -40,6 +42,8 @@ class EnvEntity {
     this.chainConfigs = const {},
     this.didMethods = const [],
     this.stacktraceEncryptionKey,
+    this.pinataGateway,
+    this.pinataGatewayToken,
   });
 
   @Deprecated("Use EnvEntity.v1 instead of EnvEntity")
@@ -53,11 +57,11 @@ class EnvEntity {
     required this.pushUrl,
     required this.ipfsUrl,
     this.stacktraceEncryptionKey,
+    this.pinataGateway,
+    this.pinataGatewayToken,
   })  : rpcUrl = web3Url + web3ApiKey,
         chainConfigs = const {},
-        didMethods = const [] {
-
-  }
+        didMethods = const [] {}
 
   EnvEntity.v1({
     required this.pushUrl,
@@ -65,6 +69,8 @@ class EnvEntity {
     required this.chainConfigs,
     required this.didMethods,
     this.stacktraceEncryptionKey,
+    this.pinataGateway,
+    this.pinataGatewayToken,
     @Deprecated("Use chainConfig") this.blockchain = '',
     @Deprecated("Use chainConfig") this.network = '',
     @Deprecated("Use chainConfig") this.web3Url = '',
@@ -83,6 +89,8 @@ class EnvEntity {
       pushUrl: json['pushUrl'],
       ipfsUrl: json['ipfsUrl'],
       stacktraceEncryptionKey: json['stacktraceEncryptionKey'],
+      pinataGateway: json['pinataGateway'],
+      pinataGatewayToken: json['pinataGatewayToken'],
     );
   }
 
@@ -105,6 +113,8 @@ class EnvEntity {
           .map((e) => DidMethodEntity.fromJson(e))
           .toList(),
       stacktraceEncryptionKey: json['stacktraceEncryptionKey'],
+      pinataGateway: json['pinataGateway'],
+      pinataGatewayToken: json['pinataGatewayToken'],
     );
   }
 
@@ -127,11 +137,13 @@ class EnvEntity {
         ),
         'didMethods': didMethods.map((e) => e.toJson()).toList(),
         'stacktraceEncryptionKey': stacktraceEncryptionKey,
+        'pinataGateway': pinataGateway,
+        'pinataGatewayToken': pinataGatewayToken,
       };
 
   @override
   String toString() {
-    return 'EnvEntity{blockchain: $blockchain, network: $network, rpcUrl: $rpcUrl, idStateContract: $idStateContract, pushUrl: $pushUrl, ipfsUrl: $ipfsUrl, chainConfig: $chainConfigs, didMethods: $didMethods, stacktraceEncryptionKey: $stacktraceEncryptionKey}';
+    return 'EnvEntity{blockchain: $blockchain, network: $network, rpcUrl: $rpcUrl, idStateContract: $idStateContract, pushUrl: $pushUrl, ipfsUrl: $ipfsUrl, chainConfig: $chainConfigs, didMethods: $didMethods, stacktraceEncryptionKey: $stacktraceEncryptionKey, , pinataGateway: $pinataGateway, pinataGatewayToken: $pinataGatewayToken}';
   }
 
   @override
@@ -146,7 +158,9 @@ class EnvEntity {
           ipfsUrl == other.ipfsUrl &&
           mapEquals(chainConfigs, other.chainConfigs) &&
           listEquals(didMethods, other.didMethods) &&
-          stacktraceEncryptionKey == other.stacktraceEncryptionKey;
+          stacktraceEncryptionKey == other.stacktraceEncryptionKey &&
+          pinataGateway == other.pinataGateway &&
+          pinataGatewayToken == other.pinataGatewayToken;
 
   @override
   int get hashCode => runtimeType.hashCode;
@@ -161,6 +175,8 @@ class EnvEntity {
     Map<String, ChainConfigEntity>? chainConfigs,
     List<DidMethodEntity>? didMethods,
     String? stacktraceEncryptionKey,
+    String? pinataGateway,
+    String? pinataGatewayToken,
   }) {
     return EnvEntity._(
       blockchain: blockchain ?? this.blockchain,
@@ -174,6 +190,8 @@ class EnvEntity {
       didMethods: didMethods ?? this.didMethods,
       stacktraceEncryptionKey:
           stacktraceEncryptionKey ?? this.stacktraceEncryptionKey,
+      pinataGateway: pinataGateway ?? this.pinataGateway,
+      pinataGatewayToken: pinataGatewayToken ?? this.pinataGatewayToken,
     );
   }
 }

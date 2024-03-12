@@ -61,3 +61,10 @@ class UnsupportedFetchClaimTypeException extends ErrorException {
 class GetConnectionsException extends ErrorException {
   GetConnectionsException(error) : super(error);
 }
+
+class OperatorException extends PolygonIdSDKException {
+  OperatorException({
+    error,
+    required errorMessage,
+  }) : super(error: error, errorMessage: errorMessage);
+}

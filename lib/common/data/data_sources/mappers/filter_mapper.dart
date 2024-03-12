@@ -35,6 +35,28 @@ class FilterMapper extends ToMapper<Filter, FilterEntity> {
             .toList());
       case FilterOperator.nonEqual:
         return Filter.notEquals(to.name, to.value);
+      case FilterOperator.between:
+        List<dynamic> dynamicList = to.value as List<dynamic>;
+        List<Object> objectList =
+            dynamicList.map((item) => item as Object).toList();
+        return Filter.and([
+          Filter.greaterThan(to.name, objectList[0]),
+          Filter.lessThan(to.name, objectList[1]),
+        ]);
+      case FilterOperator.nonbetween:
+        List<dynamic> dynamicList = to.value as List<dynamic>;
+        List<Object> objectList =
+            dynamicList.map((item) => item as Object).toList();
+        return Filter.or([
+          Filter.lessThanOrEquals(to.name, objectList[0]),
+          Filter.greaterThanOrEquals(to.name, objectList[1]),
+        ]);
+      case FilterOperator.exists:
+        if (to.value == true) {
+          return Filter.notNull(to.name);
+        } else {
+          return Filter.isNull(to.name);
+        }
     }
   }
 }

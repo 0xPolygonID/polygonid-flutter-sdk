@@ -3,6 +3,7 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
@@ -15,11 +16,14 @@ class GetClaimsParam {
   final BigInt profileNonce;
   final String privateKey;
 
+  List<CredentialSortOrder> credentialSortOrderList;
+
   GetClaimsParam({
     this.filters,
     required this.genesisDid,
     required this.profileNonce,
     required this.privateKey,
+    this.credentialSortOrderList = const [],
   });
 }
 
@@ -42,9 +46,11 @@ class GetClaimsUseCase
     if (param.profileNonce >= GENESIS_PROFILE_NONCE) {
       return _credentialRepository
           .getClaims(
-              filters: param.filters,
-              genesisDid: param.genesisDid,
-              privateKey: param.privateKey)
+        filters: param.filters,
+        genesisDid: param.genesisDid,
+        privateKey: param.privateKey,
+        credentialSortOrderList: param.credentialSortOrderList,
+      )
           .then((claims) {
         logger().i("[GetClaimsUseCase] Claims: $claims");
         _stacktraceManager

@@ -72,7 +72,8 @@ class AuthenticateUseCase
   );
 
   @override
-  Future<Iden3MessageEntity?> execute({required AuthenticateParam param}) async {
+  Future<Iden3MessageEntity?> execute(
+      {required AuthenticateParam param}) async {
     try {
       _stacktraceManager.addTrace(
         "[AuthenticateUseCase][MainFlow] auth request: " +

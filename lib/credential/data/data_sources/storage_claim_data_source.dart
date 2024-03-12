@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/data/data_sources/secure_identity_storage_data_source.dart';
+import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
@@ -113,11 +114,37 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
     Filter? filter,
     required String did,
     required String privateKey,
+    List<CredentialSortOrder> credentialSortOrderList = const [],
   }) async {
     Database database = await getDatabase(did: did, privateKey: privateKey);
 
+    List<SortOrder> sortOrders = [];
+
+    for (var element in credentialSortOrderList) {
+      switch (element) {
+        case CredentialSortOrder.ExpirationAscending:
+          sortOrders.add(SortOrder('expiration', true));
+          break;
+        case CredentialSortOrder.ExpirationDescending:
+          sortOrders.add(SortOrder('expiration', false));
+          break;
+        case CredentialSortOrder.IssuanceDateAscending:
+          sortOrders.add(SortOrder('credential.issuanceDate', true));
+          break;
+        case CredentialSortOrder.IssuanceDateDescending:
+          sortOrders.add(SortOrder('credential.issuanceDate', false));
+          break;
+      }
+    }
+
     List<RecordSnapshot<String, Map<String, Object?>>> snapshots =
-        await _storeRefWrapper.find(database, finder: Finder(filter: filter));
+        await _storeRefWrapper.find(
+      database,
+      finder: Finder(
+        filter: filter,
+        sortOrders: sortOrders,
+      ),
+    );
 
     List<ClaimDTO> claims = snapshots.map((snapshot) {
       ClaimDTO claimDTO = ClaimDTO.fromJson(snapshot.value);

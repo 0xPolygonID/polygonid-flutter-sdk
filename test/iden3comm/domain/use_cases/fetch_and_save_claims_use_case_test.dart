@@ -70,7 +70,8 @@ MockCheckProfileAndDidCurrentEnvUseCase checkProfileAndDidCurrentEnvUseCase =
 MockGetDidIdentifierUseCase getDidIdentifierUseCase =
     MockGetDidIdentifierUseCase();
 MockGetEnvUseCase getEnvUseCase = MockGetEnvUseCase();
-MockGetSelectedChainUseCase getSelectedChainUseCase = MockGetSelectedChainUseCase();
+MockGetSelectedChainUseCase getSelectedChainUseCase =
+    MockGetSelectedChainUseCase();
 MockSaveClaimsUseCase saveClaimsUseCase = MockSaveClaimsUseCase();
 MockGetAuthTokenUseCase getAuthTokenUseCase = MockGetAuthTokenUseCase();
 MockGetClaimRevocationStatusUseCase getClaimRevocationStatusUseCase =

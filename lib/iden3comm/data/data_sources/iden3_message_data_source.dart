@@ -45,14 +45,17 @@ class Iden3MessageDataSource {
   }
 
   Future<String> _getPushCipherText(
-      String pushToken, String serviceEndpoint, String packageName) async {
+    String pushToken,
+    String serviceEndpoint,
+    String packageName,
+  ) async {
     var pushInfo = {
       "app_id": packageName, //"com.polygonid.wallet",
       "pushkey": pushToken,
     };
 
     Dio dio = Dio();
-    /*final dir = await getApplicationDocumentsDirectory();
+    final dir = await getApplicationDocumentsDirectory();
     final path = dir.path;
     dio.interceptors.add(
       DioCacheInterceptor(
@@ -64,7 +67,7 @@ class Iden3MessageDataSource {
           priority: CachePriority.high,
         ),
       ),
-    );*/
+    );
 
     var publicKeyResponse =
         await dio.get(Uri.parse("$serviceEndpoint/public").toString());
