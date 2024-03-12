@@ -84,11 +84,11 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       url: url,
     );
 
-    if (response.body.isEmpty) {
+    if (response.data.isEmpty) {
       return null;
     }
 
-    final messageJson = jsonDecode(response.body);
+    final messageJson = jsonDecode(response.data);
     if (messageJson is! Map<String, dynamic> || messageJson.isEmpty) {
       return null;
     }

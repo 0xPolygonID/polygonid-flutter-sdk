@@ -13,11 +13,11 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^0.13.6
-  ffi: ^2.1.0
+  ffi: ^2.1.2
   hex: ^0.2.0
   web3dart: ^2.5.1
   web_socket_channel: ^2.2.0
-  ffigen: ^8.0.2
+  ffigen: ^11.0.0
   json_annotation: ^4.6.0
   equatable: ^2.0.3
   crypto: ^3.0.1
@@ -55,6 +55,7 @@ dev_dependencies:
   mockito: ^5.3.2
   injectable_generator: ^2.4.0
   build_runner: ^2.4.6
+  web3dart_builders: 0.0.7
 
 ffigen:
   #name: NativeWitnessV3OnchainLib

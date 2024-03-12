@@ -4,7 +4,8 @@
 // InjectableConfigGenerator
 // **************************************************************************
 
-// ignore_for_file: type=lint
+// ignore_for_file: unnecessary_lambdas
+// ignore_for_file: lines_longer_than_80_chars
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
@@ -555,28 +556,28 @@ extension GetItInjectableX on _i1.GetIt {
     gh.lazySingleton<_i64.StacktraceManager>(() => _i64.StacktraceManager());
     gh.factory<_i65.StateIdentifierMapper>(() => _i65.StateIdentifierMapper());
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.claimStore,
-      instanceName: 'claimStore',
-    );
-    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.didProfileInfoStore,
       instanceName: 'didProfileInfoStore',
+    );
+    gh.factory<_i13.StoreRef<String, dynamic>>(
+      () => databaseModule.keyValueStore,
+      instanceName: 'keyValueStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.interactionStore,
       instanceName: 'interactionStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
+      () => databaseModule.identityStore,
+      instanceName: 'identityStore',
+    );
+    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.profileStore,
       instanceName: 'profilesStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.identityStore,
-      instanceName: 'identityStore',
-    );
-    gh.factory<_i13.StoreRef<String, dynamic>>(
-      () => databaseModule.keyValueStore,
-      instanceName: 'keyValueStore',
+      () => databaseModule.claimStore,
+      instanceName: 'claimStore',
     );
     gh.factory<_i66.TreeStateMapper>(() => _i66.TreeStateMapper());
     gh.factory<_i67.TreeTypeMapper>(() => _i67.TreeTypeMapper());
@@ -680,6 +681,7 @@ extension GetItInjectableX on _i1.GetIt {
         ));
     gh.factory<_i104.RemoteIden3commDataSource>(
         () => _i104.RemoteIden3commDataSource(
+              gh<_i15.Dio>(),
               gh<_i11.Client>(),
               gh<_i64.StacktraceManager>(),
             ));
@@ -774,6 +776,7 @@ extension GetItInjectableX on _i1.GetIt {
               gh<_i60.QMapper>(),
               gh<_i35.JWZMapper>(),
               gh<_i89.Iden3commProofMapper>(),
+              gh<_i87.GetIden3MessageUseCase>(),
             ));
     gh.factoryAsync<_i117.InteractionRepositoryImpl>(
         () async => _i117.InteractionRepositoryImpl(

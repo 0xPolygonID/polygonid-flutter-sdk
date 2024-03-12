@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_nonce_use_case.dart';
@@ -25,12 +26,16 @@ class GetIden3commClaimsParam {
   final String privateKey;
   final Map<int, Map<String, dynamic>> nonRevocationProofs;
 
-  GetIden3commClaimsParam(
-      {required this.message,
-      required this.genesisDid,
-      required this.profileNonce,
-      required this.privateKey,
-      required this.nonRevocationProofs});
+  List<CredentialSortOrder> credentialSortOrderList;
+
+  GetIden3commClaimsParam({
+    required this.message,
+    required this.genesisDid,
+    required this.profileNonce,
+    required this.privateKey,
+    required this.nonRevocationProofs,
+    this.credentialSortOrderList = const [],
+  });
 }
 
 class GetIden3commClaimsUseCase
@@ -83,6 +88,7 @@ class GetIden3commClaimsUseCase
             genesisDid: param.genesisDid,
             profileNonce: param.profileNonce,
             privateKey: param.privateKey,
+            credentialSortOrderList: param.credentialSortOrderList,
           ),
         );
 

@@ -9,6 +9,7 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/did_method_entity.d
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
@@ -711,12 +712,18 @@ class PolygonIdFlutterChannel
 
   /// Credential
   @override
-  Future<List<ClaimEntity>> getClaims(
-      {List<FilterEntity>? filters,
-      required String genesisDid,
-      required String privateKey}) {
+  Future<List<ClaimEntity>> getClaims({
+    List<FilterEntity>? filters,
+    required String genesisDid,
+    required String privateKey,
+    List<CredentialSortOrder> credentialSortOrderList = const [],
+  }) {
     return _polygonIdSdk.credential.getClaims(
-        filters: filters, genesisDid: genesisDid, privateKey: privateKey);
+      filters: filters,
+      genesisDid: genesisDid,
+      privateKey: privateKey,
+      credentialSortOrderList: credentialSortOrderList,
+    );
   }
 
   @override

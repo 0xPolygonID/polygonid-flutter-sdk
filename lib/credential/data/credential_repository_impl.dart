@@ -1,5 +1,6 @@
 import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/cache_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/remote_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
@@ -53,16 +54,19 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<List<ClaimEntity>> getClaims(
-      {List<FilterEntity>? filters,
-      required String genesisDid,
-      required String privateKey}) async {
+  Future<List<ClaimEntity>> getClaims({
+    List<FilterEntity>? filters,
+    required String genesisDid,
+    required String privateKey,
+    List<CredentialSortOrder> credentialSortOrderList = const [],
+  }) async {
     try {
       final List<ClaimDTO> claimDTOlist =
           await _storageClaimDataSource.getClaims(
         filter: filters == null ? null : _filtersMapper.mapTo(filters),
         did: genesisDid,
         privateKey: privateKey,
+        credentialSortOrderList: credentialSortOrderList,
       );
 
       final List<ClaimEntity> claimEntityList =

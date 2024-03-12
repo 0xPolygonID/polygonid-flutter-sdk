@@ -7,7 +7,10 @@ enum FilterOperator {
   lesserEqual,
   inList,
   or,
-  nonEqual
+  nonEqual,
+  between,
+  nonbetween,
+  exists,
 }
 
 class FilterEntity {

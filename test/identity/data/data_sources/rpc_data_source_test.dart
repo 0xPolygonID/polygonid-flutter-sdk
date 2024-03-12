@@ -80,7 +80,8 @@ class FakeWeb3Client extends FakeCapturer implements Web3Client {
 }
 
 FakeWeb3Client client = FakeWeb3Client();
-MockGetSelectedChainUseCase _getSelectedChainUseCase = MockGetSelectedChainUseCase();
+MockGetSelectedChainUseCase _getSelectedChainUseCase =
+    MockGetSelectedChainUseCase();
 
 // Tested instance
 RPCDataSource dataSource = RPCDataSource(_getSelectedChainUseCase);

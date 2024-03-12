@@ -10,47 +10,55 @@ import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/http_exceptions_handler_mixin.dart';
+import 'package:polygonid_flutter_sdk/common/utils/pinata_gateway_utils.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/credential/response/fetch_claim_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 
 class RemoteIden3commDataSource {
+  final Dio dio;
   final http.Client client;
   final StacktraceManager _stacktraceManager;
 
   RemoteIden3commDataSource(
+    this.dio,
     this.client,
     this._stacktraceManager,
   );
 
-  Future<http.Response> authWithToken({
+  Future<Response> authWithToken({
     required String token,
     required String url,
   }) async {
-    return Future.value(Uri.parse(url)).then((uri) {
-      _stacktraceManager
-          .addTrace("[RemoteIden3commDataSource] authWithToken: $uri");
-      return client.post(
-        uri,
-        body: token,
-        headers: {
-          HttpHeaders.acceptHeader: '*/*',
-          HttpHeaders.contentTypeHeader: 'text/plain',
-        },
+    Uri? uri = Uri.tryParse(url);
+    if (uri == null) {
+      throw NetworkException("Invalid url");
+    }
+
+    try {
+      final response = await dio.post(
+        url,
+        data: token,
+        options: Options(
+          headers: {
+            HttpHeaders.acceptHeader: '*/*',
+            HttpHeaders.contentTypeHeader: 'text/plain',
+          },
+        ),
       );
-    }).then((response) {
-      _stacktraceManager.addTrace(
-          "[RemoteIden3commDataSource] authWithToken: ${response.statusCode} ${response.body}");
       if (response.statusCode != 200) {
         logger().d(
-            'Auth Error: code: ${response.statusCode} msg: ${response.body}');
+            'Auth Error: code: ${response.statusCode} msg: ${response.data}');
         _stacktraceManager.addError(
-            'Auth Error: $url response with\ncode: ${response.statusCode}\nmsg: ${response.body}');
+            'Auth Error: $url response with\ncode: ${response.statusCode}\nmsg: ${response.data}');
         throw NetworkException(response);
       } else {
         return response;
       }
-    });
+    } catch (e) {
+      logger().e('authWithToken error: $e');
+      rethrow;
+    }
   }
 
   Future<ClaimDTO> refreshCredential({
@@ -168,7 +176,17 @@ class RemoteIden3commDataSource {
 
       if (schemaUrl.toLowerCase().startsWith("ipfs://")) {
         String fileHash = schemaUrl.replaceFirst("ipfs://", "");
-        schemaUrl = "https://ipfs.io/ipfs/$fileHash";
+
+        String? pinataGatewayUrl =
+            await PinataGatewayUtils().retrievePinataGatewayUrlFromEnvironment(
+          fileHash: fileHash,
+        );
+
+        if (pinataGatewayUrl != null) {
+          schemaUrl = pinataGatewayUrl;
+        } else {
+          schemaUrl = "https://ipfs.io/ipfs/$fileHash";
+        }
       }
 
       var schemaUri = Uri.parse(schemaUrl);
@@ -229,7 +247,17 @@ class RemoteIden3commDataSource {
 
       if (displayTypeUrl.toLowerCase().startsWith("ipfs://")) {
         String ipfsHash = displayTypeUrl.replaceFirst("ipfs://", "");
-        displayTypeUrl = "https://ipfs.io/ipfs/$ipfsHash";
+
+        String? pinataGatewayUrl =
+            await PinataGatewayUtils().retrievePinataGatewayUrlFromEnvironment(
+          fileHash: ipfsHash,
+        );
+
+        if (pinataGatewayUrl != null) {
+          displayTypeUrl = pinataGatewayUrl;
+        } else {
+          displayTypeUrl = "https://ipfs.io/ipfs/$ipfsHash";
+        }
       }
 
       final displayTypeUri = Uri.parse(displayTypeUrl);
