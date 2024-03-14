@@ -91,7 +91,6 @@ class CircuitsDownloadDataSource {
       total: 100,
       done: true,
     ));
-    _controller.close();
   }
 
   ///
