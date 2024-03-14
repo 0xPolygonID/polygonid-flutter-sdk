@@ -50,7 +50,7 @@ class PolygonIdCoreCredential extends PolygonIdCore {
     return "";
   }
 
-  String? w3cCredentialsFromOnchainHex(String input, String? config) {
+  String w3cCredentialsFromOnchainHex(String input, String? config) {
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Char> cfg = ffi.nullptr;
     if (config != null) {

@@ -154,6 +154,16 @@ class PolygonIdFlutterChannel
               .then((claims) =>
                   claims.map((claim) => jsonEncode(claim)).toList());
 
+        case 'fetchAndSaveOnchainClaims':
+          return fetchAndSaveOnchainClaims(
+                  contractAddress: call.arguments['contractAddress'] as String,
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  profileNonce: BigInt.tryParse(
+                      call.arguments['profileNonce'] as String? ?? ''),
+                  privateKey: call.arguments['privateKey'] as String)
+              .then((claims) =>
+                  claims.map((claim) => jsonEncode(claim)).toList());
+
         case 'getClaimsFromIden3Message':
           return getIden3Message(message: call.arguments['message']).then(
             (message) => getClaimsFromIden3Message(
@@ -492,6 +502,21 @@ class PolygonIdFlutterChannel
         genesisDid: genesisDid,
         profileNonce: profileNonce,
         privateKey: privateKey);
+  }
+
+  @override
+  Future<List<ClaimEntity>> fetchAndSaveOnchainClaims({
+    required String contractAddress,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String privateKey,
+  }) {
+    return _polygonIdSdk.iden3comm.fetchAndSaveOnchainClaims(
+      contractAddress: contractAddress,
+      genesisDid: genesisDid,
+      profileNonce: profileNonce,
+      privateKey: privateKey,
+    );
   }
 
   @override

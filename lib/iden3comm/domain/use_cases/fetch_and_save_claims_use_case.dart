@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:polygonid_flutter_sdk/assets/get_issuer_id_interface.g.dart';
 import 'package:polygonid_flutter_sdk/assets/onchain_non_merkelized_issuer_base.g.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
@@ -13,7 +15,9 @@ import 'package:polygonid_flutter_sdk/credential/domain/use_cases/cache_credenti
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/onchain_offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_onchain_claim_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
@@ -51,6 +55,7 @@ class FetchAndSaveClaimsParam {
 class FetchAndSaveClaimsUseCase
     extends FutureUseCase<FetchAndSaveClaimsParam, List<ClaimEntity>> {
   final Iden3commCredentialRepository _iden3commCredentialRepository;
+  final FetchOnchainClaimUseCase _fetchOnchainClaimUseCase;
   final CheckProfileAndDidCurrentEnvUseCase
       _checkProfileAndDidCurrentEnvUseCase;
   final GetEnvUseCase _getEnvUseCase;
@@ -60,15 +65,16 @@ class FetchAndSaveClaimsUseCase
   final GetFetchRequestsUseCase _getFetchRequestsUseCase;
   final GetAuthTokenUseCase _getAuthTokenUseCase;
   final SaveClaimsUseCase _saveClaimsUseCase;
-  final GetClaimRevocationStatusUseCase _getClaimRevocationStatusUseCase;
   final CacheCredentialUseCase _cacheCredentialUseCase;
   final LocalContractFilesDataSource _localContractFilesDataSource;
   final IdentityRepository _identityRepository;
-  final ClaimStateMapper _claimStateMapper;
+  final InteractionRepository _interactionRepository;
+
   final StacktraceManager _stacktraceManager;
 
   FetchAndSaveClaimsUseCase(
     this._iden3commCredentialRepository,
+    this._fetchOnchainClaimUseCase,
     this._checkProfileAndDidCurrentEnvUseCase,
     this._getEnvUseCase,
     this._getSelectedChainUseCase,
@@ -77,11 +83,10 @@ class FetchAndSaveClaimsUseCase
     this._getFetchRequestsUseCase,
     this._getAuthTokenUseCase,
     this._saveClaimsUseCase,
-    this._getClaimRevocationStatusUseCase,
     this._cacheCredentialUseCase,
     this._localContractFilesDataSource,
     this._identityRepository,
-    this._claimStateMapper,
+    this._interactionRepository,
     this._stacktraceManager,
   );
 
@@ -104,12 +109,14 @@ class FetchAndSaveClaimsUseCase
       final env = await _getEnvUseCase.execute();
       final chain = await _getSelectedChainUseCase.execute();
 
-      String profileDid = await _getDidIdentifierUseCase.execute(
-          param: GetDidIdentifierParam(
-              privateKey: param.privateKey,
-              blockchain: chain.blockchain,
-              network: chain.network,
-              profileNonce: param.profileNonce));
+      final profileDid = await _getDidIdentifierUseCase.execute(
+        param: GetDidIdentifierParam(
+          privateKey: param.privateKey,
+          blockchain: chain.blockchain,
+          network: chain.network,
+          profileNonce: param.profileNonce,
+        ),
+      );
 
       final List<ClaimEntity> claims;
 
@@ -117,17 +124,18 @@ class FetchAndSaveClaimsUseCase
       if (message is OfferIden3MessageEntity) {
         claims = await _fetchClaims(message, param, profileDid);
       } else if (message is OnchainOfferIden3MessageEntity) {
-        claims = await _fetchOnchainClaims(message, profileDid);
+        claims = await _fetchOnchainClaims(message, profileDid, param);
       } else {
         throw Exception("Unknown message type: ${message.runtimeType}");
       }
 
       await _saveClaimsUseCase.execute(
-          param: SaveClaimsParam(
-        claims: claims,
-        genesisDid: param.genesisDid,
-        privateKey: param.privateKey,
-      ));
+        param: SaveClaimsParam(
+          claims: claims,
+          genesisDid: param.genesisDid,
+          privateKey: param.privateKey,
+        ),
+      );
 
       logger()
           .i("[FetchAndSaveClaimsUseCase] All claims have been saved: $claims");
@@ -207,6 +215,7 @@ class FetchAndSaveClaimsUseCase
   Future<List<ClaimEntity>> _fetchOnchainClaims(
     OnchainOfferIden3MessageEntity message,
     String profileDid,
+    FetchAndSaveClaimsParam param,
   ) async {
     final chain = await _getSelectedChainUseCase.execute();
     final env = await _getEnvUseCase.execute();
@@ -222,75 +231,80 @@ class FetchAndSaveClaimsUseCase
       address: deployedContract.address,
       client: web3Client,
     );
+    final getIssuerId = Get_issuer_id_interface(
+      address: deployedContract.address,
+      client: web3Client,
+    );
 
-    final interface = hexToBytes(nonMerklizedIssuerInterface);
+    // TODO (moria): Maybe refactor this to a separate use case
+    final supportsInterfaceCheck = await issuer.supportsInterface(
+      hexToBytes(interfaceCheckInterface),
+    );
+    final supportsNonMerklizedIssuerInterface = await issuer.supportsInterface(
+      hexToBytes(nonMerklizedIssuerInterface),
+    );
+    final supportsGetIssuerIdInterface = true;
+    // final supportsGetIssuerIdInterface = await issuer.supportsInterface(
+    //   hexToBytes(getIssuerIdInterface),
+    // );
 
-    final supportsNonMerklizedIssuerInterface =
-        await issuer.supportsInterface(interface);
-
-    if (!supportsNonMerklizedIssuerInterface) {
+    if (!supportsInterfaceCheck ||
+        !supportsNonMerklizedIssuerInterface ||
+        !supportsGetIssuerIdInterface) {
       throw Exception(
           "Contract at address $address does not support non-merkelized issuer interface");
     }
+    final issuerIdInt = await getIssuerId.getId();
+    final issuerDid = (await _identityRepository.describeId(
+      id: issuerIdInt,
+      config: ConfigParam.fromEnv(env),
+    ))
+        .did;
 
-    final didEntity = await _getDidUseCase.execute(param: profileDid);
+    // Public DID
+    String did = profileDid;
 
+    // Try find last interaction with private profile
+    await _interactionRepository
+        .getInteractions(
+          genesisDid: param.genesisDid,
+          privateKey: param.privateKey,
+        )
+        .then(
+          (interactions) => interactions.where(
+            (interaction) => interaction.from == issuerDid,
+          ),
+        )
+        .then((previousInteractions) {
+      if (previousInteractions.isNotEmpty) {
+        did = previousInteractions.last.message;
+      }
+    });
+
+    final didEntity = await _getDidUseCase.execute(param: did);
     final userId =
         await _identityRepository.convertIdToBigInt(id: didEntity.identifier);
 
     final adapterVersion = await issuer.getCredentialAdapterVersion();
 
-    // TODO (moria): Add a lot of layers on top of this or inject in constructor
-    final credDataSource = getItSdk<LibPolygonIdCoreCredentialDataSource>();
-
     final claims = <ClaimEntity>[];
     for (final credential in message.body.credentials) {
       final credentialId = BigInt.parse(credential.id);
 
-      final rawCredential = await _fetchRawCredential(
-        web3Client,
-        issuer,
-        BigInt.parse(userId),
-        credentialId,
-      );
-
       try {
-        final rawClaim = credDataSource.w3cCredentialsFromOnchainHex(
-          issuerDID: message.from,
-          hexdata: rawCredential,
-          version: adapterVersion,
-          config: ConfigParam(
-            ipfsNodeURL: env.ipfsUrl,
-            chainConfigs: env.chainConfigs,
-            didMethods: env.didMethods,
-          ).toJsonString(),
+        final claim = await _fetchOnchainClaimUseCase.execute(
+          param: FetchOnchainClaimParam(
+            profileDid: profileDid,
+            issuerDid: issuerDid,
+            contractAddress: address,
+            userId: BigInt.parse(userId),
+            credentialId: credentialId,
+            adapterVersion: adapterVersion,
+            skipInterfaceSupportCheck: true,
+          ),
         );
 
-        if (rawClaim != null) {
-          final claimJson = jsonDecode(rawClaim);
-
-          // TODO (moria): Add display method fetch
-
-          final claim = ClaimEntity(
-            id: claimJson["id"],
-            issuer: message.from,
-            did: profileDid,
-            type: claimJson["credentialSubject"]["type"],
-            expiration: claimJson["expirationDate"],
-            info: claimJson,
-            credentialRawValue: jsonEncode({
-              "from": message.from,
-              "body": claimJson,
-              // TODO : Maybe add dynamic type read
-              "type":
-                  "https://iden3-communication.io/credentials/1.0/onchain-offer",
-            }),
-            // TODO (moria): Check if the claim is revoked or expired
-            state: ClaimState.active,
-          );
-
-          claims.add(claim);
-        }
+        claims.add(claim);
       } catch (e) {
         logger().e(
             "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e");
@@ -300,27 +314,5 @@ class FetchAndSaveClaimsUseCase
     }
 
     return claims;
-  }
-
-  /// Fetches the raw credential from the contract
-  /// Returns credential as a raw hex string
-  Future<String> _fetchRawCredential(
-    Web3Client web3client,
-    Onchain_non_merkelized_issuer_base contract,
-    BigInt userId,
-    BigInt credentialId,
-  ) async {
-    final function = contract.self.abi.functions[5];
-    final params = [
-      userId,
-      credentialId,
-    ];
-
-    final result = await web3client.callRaw(
-      contract: contract.self.address,
-      data: function.encodeCall(params),
-    );
-
-    return result;
   }
 }

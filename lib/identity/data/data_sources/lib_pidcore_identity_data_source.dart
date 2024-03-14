@@ -75,4 +75,18 @@ class LibPolygonIdCoreIdentityDataSource {
     logger().d("genesisIdToBigInt: $idAsInt");
     return idAsInt;
   }
+
+  String describeId({
+    String? idAsInt,
+    String? id,
+    String? config,
+  }) {
+    return _polygonIdCoreIdentity.describeId(
+      jsonEncode({
+        if (idAsInt != null) "idAsInt": idAsInt,
+        if (id != null) "id": id,
+      }),
+      config,
+    );
+  }
 }

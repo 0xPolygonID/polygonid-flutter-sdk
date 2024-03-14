@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/did_method_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 
 class ConfigParam {
@@ -14,6 +15,14 @@ class ConfigParam {
     this.chainConfigs = const {},
     this.didMethods = const [],
   });
+
+  factory ConfigParam.fromEnv(EnvEntity env) {
+    return ConfigParam(
+      ipfsNodeURL: env.ipfsUrl,
+      chainConfigs: env.chainConfigs,
+      didMethods: env.didMethods,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "IPFSNodeURL": ipfsNodeURL,

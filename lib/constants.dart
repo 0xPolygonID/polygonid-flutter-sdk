@@ -1014,6 +1014,8 @@ const stateAbiJson = '''
 }
 ''';
 
+const interfaceCheckInterface = "0x01ffc9a7";
+
 const nonMerklizedIssuerInterface = "0x58874949";
 
 const onchainNonMerkelizedIssuerBaseAbiJson = '''
@@ -2217,6 +2219,31 @@ const onchainNonMerkelizedIssuerBaseAbiJson = '''
           "internalType": "bool",
           "name": "",
           "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]
+}
+''';
+
+const getIssuerIdInterface = "0x5d1ca631";
+
+const getIssuerIdAbiJson = '''
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "Identity",
+  "sourceName": "contracts/Identity.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "getId",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
