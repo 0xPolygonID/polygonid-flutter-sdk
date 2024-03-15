@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:polygonid_flutter_sdk/assets/get_issuer_id_interface.g.dart';
 import 'package:polygonid_flutter_sdk/assets/onchain_non_merkelized_issuer_base.g.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
@@ -14,6 +16,7 @@ import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_state_mapper
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/cache_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/onchain_offer_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
@@ -261,25 +264,21 @@ class FetchAndSaveClaimsUseCase
     ))
         .did;
 
-    // Public DID
-    String did = profileDid;
+    // Try find last interaction with the issuer
+    BigInt profileNonce = await _tryFindLastInteractionWithPrivateProfile(
+      param.genesisDid,
+      param.privateKey,
+      issuerDid,
+    );
 
-    // Try find last interaction with private profile
-    await _interactionRepository
-        .getInteractions(
-          genesisDid: param.genesisDid,
-          privateKey: param.privateKey,
-        )
-        .then(
-          (interactions) => interactions.where(
-            (interaction) => interaction.from == issuerDid,
-          ),
-        )
-        .then((previousInteractions) {
-      if (previousInteractions.isNotEmpty) {
-        did = previousInteractions.last.message;
-      }
-    });
+    final did = await _getDidIdentifierUseCase.execute(
+      param: GetDidIdentifierParam(
+        privateKey: param.privateKey,
+        blockchain: chain.blockchain,
+        network: chain.network,
+        profileNonce: profileNonce,
+      ),
+    );
 
     final didEntity = await _getDidUseCase.execute(param: did);
     final userId =
@@ -314,5 +313,35 @@ class FetchAndSaveClaimsUseCase
     }
 
     return claims;
+  }
+
+  Future<BigInt> _tryFindLastInteractionWithPrivateProfile(
+    String genesisDid,
+    String privateKey,
+    String issuerDid,
+  ) async {
+    // Public DID nonce
+    BigInt profileNonce = BigInt.zero;
+
+    var interactions = await _interactionRepository.getInteractions(
+      privateKey: privateKey,
+      genesisDid: genesisDid,
+    );
+
+    interactions = interactions
+        .where((interaction) => interaction.from == issuerDid)
+        .toList();
+    interactions.sort((a, b) => max(a.timestamp, b.timestamp));
+
+    if (interactions.isEmpty) {
+      return GENESIS_PROFILE_NONCE;
+    }
+
+    final latestInteraction = interactions.last;
+    if (latestInteraction is InteractionEntity) {
+      profileNonce = latestInteraction.profileNonce;
+    }
+
+    return profileNonce;
   }
 }
