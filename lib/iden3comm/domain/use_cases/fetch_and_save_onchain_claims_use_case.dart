@@ -195,10 +195,9 @@ class FetchAndSaveOnchainClaimsUseCase
     final supportsNonMerklizedIssuerInterface = await issuer.supportsInterface(
       hexToBytes(nonMerklizedIssuerInterface),
     );
-    final supportsGetIssuerIdInterface = true;
-    // final supportsGetIssuerIdInterface = await issuer.supportsInterface(
-    //   hexToBytes(getIssuerIdInterface),
-    // );
+    final supportsGetIssuerIdInterface = await issuer.supportsInterface(
+      hexToBytes(getIssuerIdInterface),
+    );
 
     if (!supportsInterfaceCheck ||
         !supportsNonMerklizedIssuerInterface ||
@@ -221,14 +220,19 @@ class FetchAndSaveOnchainClaimsUseCase
       privateKey: param.privateKey,
     );
 
-    final nonce = info["privateProfileNonce"] as String;
+    BigInt nonce;
+    if (info.containsKey("privateProfileNonce")) {
+      nonce = BigInt.parse(info["privateProfileNonce"] as String);
+    } else {
+      nonce = GENESIS_PROFILE_NONCE;
+    }
 
     final did = await _getDidIdentifierUseCase.execute(
       param: GetDidIdentifierParam(
         privateKey: param.privateKey,
         blockchain: chain.blockchain,
         network: chain.network,
-        profileNonce: BigInt.parse(nonce),
+        profileNonce: nonce,
       ),
     );
 
@@ -262,6 +266,7 @@ class FetchAndSaveOnchainClaimsUseCase
             "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e");
         _stacktraceManager.addTrace(
             "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e");
+        rethrow;
       }
     }
 

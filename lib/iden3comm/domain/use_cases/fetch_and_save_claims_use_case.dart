@@ -246,10 +246,9 @@ class FetchAndSaveClaimsUseCase
     final supportsNonMerklizedIssuerInterface = await issuer.supportsInterface(
       hexToBytes(nonMerklizedIssuerInterface),
     );
-    final supportsGetIssuerIdInterface = true;
-    // final supportsGetIssuerIdInterface = await issuer.supportsInterface(
-    //   hexToBytes(getIssuerIdInterface),
-    // );
+    final supportsGetIssuerIdInterface = await issuer.supportsInterface(
+      hexToBytes(getIssuerIdInterface),
+    );
 
     if (!supportsInterfaceCheck ||
         !supportsNonMerklizedIssuerInterface ||
@@ -264,9 +263,7 @@ class FetchAndSaveClaimsUseCase
     ))
         .did;
 
-    final did = profileDid;
-
-    final didEntity = await _getDidUseCase.execute(param: did);
+    final didEntity = await _getDidUseCase.execute(param: profileDid);
     final userId =
         await _identityRepository.convertIdToBigInt(id: didEntity.identifier);
 
