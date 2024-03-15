@@ -563,24 +563,24 @@ extension GetItInjectableX on _i1.GetIt {
       instanceName: 'profilesStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.identityStore,
-      instanceName: 'identityStore',
-    );
-    gh.factory<_i13.StoreRef<String, dynamic>>(
-      () => databaseModule.keyValueStore,
-      instanceName: 'keyValueStore',
-    );
-    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.claimStore,
-      instanceName: 'claimStore',
+      () => databaseModule.didProfileInfoStore,
+      instanceName: 'didProfileInfoStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.interactionStore,
       instanceName: 'interactionStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.didProfileInfoStore,
-      instanceName: 'didProfileInfoStore',
+      () => databaseModule.claimStore,
+      instanceName: 'claimStore',
+    );
+    gh.factory<_i13.StoreRef<String, dynamic>>(
+      () => databaseModule.keyValueStore,
+      instanceName: 'keyValueStore',
+    );
+    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
+      () => databaseModule.identityStore,
+      instanceName: 'identityStore',
     );
     gh.factory<_i66.TreeStateMapper>(() => _i66.TreeStateMapper());
     gh.factory<_i67.TreeTypeMapper>(() => _i67.TreeTypeMapper());
@@ -1143,7 +1143,7 @@ extension GetItInjectableX on _i1.GetIt {
               gh<_i145.CacheCredentialUseCase>(),
               gh<_i37.LocalContractFilesDataSource>(),
               await getAsync<_i157.IdentityRepository>(),
-              await getAsync<_i133.InteractionRepository>(),
+              gh<_i122.DidProfileInfoRepository>(),
               gh<_i64.StacktraceManager>(),
             ));
     gh.factoryAsync<_i189.GenerateIden3commProofUseCase>(

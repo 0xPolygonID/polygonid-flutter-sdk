@@ -125,7 +125,7 @@ class FetchOnchainClaimUseCase
       );
 
       final displayMethod = claimInfoDto.displayMethod;
-      final futures = Future.wait([
+      final futures = await Future.wait([
         _remoteIden3commDataSource
             .fetchSchema(url: claimInfoDto.credentialSchema.id)
             .then((schema) {

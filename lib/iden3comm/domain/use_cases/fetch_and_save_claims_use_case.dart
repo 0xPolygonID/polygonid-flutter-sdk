@@ -264,21 +264,7 @@ class FetchAndSaveClaimsUseCase
     ))
         .did;
 
-    // Try find last interaction with the issuer
-    BigInt profileNonce = await _tryFindLastInteractionWithPrivateProfile(
-      param.genesisDid,
-      param.privateKey,
-      issuerDid,
-    );
-
-    final did = await _getDidIdentifierUseCase.execute(
-      param: GetDidIdentifierParam(
-        privateKey: param.privateKey,
-        blockchain: chain.blockchain,
-        network: chain.network,
-        profileNonce: profileNonce,
-      ),
-    );
+    final did = profileDid;
 
     final didEntity = await _getDidUseCase.execute(param: did);
     final userId =

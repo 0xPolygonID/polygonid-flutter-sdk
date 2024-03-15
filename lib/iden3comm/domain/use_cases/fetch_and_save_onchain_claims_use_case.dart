@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:polygonid_flutter_sdk/assets/onchain_non_merkelized_issuer_base.g.dart';
 import 'package:polygonid_flutter_sdk/assets/get_issuer_id_interface.g.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
@@ -14,6 +16,8 @@ import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_state_mapper
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/cache_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/onchain_offer_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/did_profile_info_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
@@ -65,7 +69,7 @@ class FetchAndSaveOnchainClaimsUseCase
   final CacheCredentialUseCase _cacheCredentialUseCase;
   final LocalContractFilesDataSource _localContractFilesDataSource;
   final IdentityRepository _identityRepository;
-  final InteractionRepository _interactionRepository;
+  final DidProfileInfoRepository _didProfileInfoRepository;
   final StacktraceManager _stacktraceManager;
 
   FetchAndSaveOnchainClaimsUseCase(
@@ -79,7 +83,7 @@ class FetchAndSaveOnchainClaimsUseCase
     this._cacheCredentialUseCase,
     this._localContractFilesDataSource,
     this._identityRepository,
-    this._interactionRepository,
+    this._didProfileInfoRepository,
     this._stacktraceManager,
   );
 
@@ -210,25 +214,23 @@ class FetchAndSaveOnchainClaimsUseCase
     ))
         .did;
 
-    // Public DID
-    String did = profileDid;
+    final info =
+        await _didProfileInfoRepository.getDidProfileInfoByInteractedWithDid(
+      interactedWithDid: issuerDid,
+      genesisDid: param.genesisDid,
+      privateKey: param.privateKey,
+    );
 
-    // Try find last interaction with private profile
-    await _interactionRepository
-        .getInteractions(
-          genesisDid: param.genesisDid,
-          privateKey: param.privateKey,
-        )
-        .then(
-          (interactions) => interactions.where(
-            (interaction) => interaction.from == issuerDid,
-          ),
-        )
-        .then((previousInteractions) {
-      if (previousInteractions.isNotEmpty) {
-        did = previousInteractions.last.message;
-      }
-    });
+    final nonce = info["privateProfileNonce"] as String;
+
+    final did = await _getDidIdentifierUseCase.execute(
+      param: GetDidIdentifierParam(
+        privateKey: param.privateKey,
+        blockchain: chain.blockchain,
+        network: chain.network,
+        profileNonce: BigInt.parse(nonce),
+      ),
+    );
 
     final didEntity = await _getDidUseCase.execute(param: did);
     final userId =
