@@ -68,7 +68,8 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/reque
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_body_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 
-class OfferIden3MessageEntity extends CredentialOfferMessageEntity<OfferBodyRequest> {
+class OfferIden3MessageEntity
+    extends CredentialOfferMessageEntity<OfferBodyRequest> {
   OfferIden3MessageEntity({
     required super.id,
     required super.typ,

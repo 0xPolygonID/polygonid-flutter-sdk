@@ -115,8 +115,6 @@ abstract class PolygonIdSdkIden3comm {
       required String privateKey,
       Map<int, Map<String, dynamic>>? nonRevocationProofs});
 
-
-
   /// Get a list of [int] revocation nonces of claims stored in Polygon Id Sdk that fulfills
   /// the request from iden3comm message.
   ///

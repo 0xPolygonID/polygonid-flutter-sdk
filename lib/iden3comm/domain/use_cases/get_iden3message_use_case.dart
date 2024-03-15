@@ -18,8 +18,10 @@ class GetIden3MessageUseCase extends FutureUseCase<String, Iden3MessageEntity> {
   final GetIden3MessageTypeUseCase _getIden3MessageTypeUseCase;
   final StacktraceManager _stacktraceManager;
 
-  GetIden3MessageUseCase(this._getIden3MessageTypeUseCase,
-      this._stacktraceManager,);
+  GetIden3MessageUseCase(
+    this._getIden3MessageTypeUseCase,
+    this._stacktraceManager,
+  );
 
   @override
   Future<Iden3MessageEntity> execute({required String param}) {

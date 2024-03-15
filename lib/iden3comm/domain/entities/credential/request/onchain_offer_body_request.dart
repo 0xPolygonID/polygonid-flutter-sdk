@@ -86,7 +86,8 @@ class OnchainOfferBodyRequest extends CredentialOfferBody {
         .toList();
     return OnchainOfferBodyRequest(
       credentials: credentials,
-      transactionData: OnchainTransactionData.fromJson(json['transaction_data']),
+      transactionData:
+          OnchainTransactionData.fromJson(json['transaction_data']),
     );
   }
 

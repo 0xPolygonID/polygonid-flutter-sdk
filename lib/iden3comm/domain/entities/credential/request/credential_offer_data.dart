@@ -16,9 +16,9 @@ class CredentialOfferData {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'description': description,
-  };
+        'id': id,
+        'description': description,
+      };
 
   @override
   String toString() =>
@@ -27,10 +27,10 @@ class CredentialOfferData {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is CredentialOfferData &&
-              runtimeType == other.runtimeType &&
-              id == other.id &&
-              description == other.description;
+      other is CredentialOfferData &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          description == other.description;
 
   @override
   int get hashCode => runtimeType.hashCode;
