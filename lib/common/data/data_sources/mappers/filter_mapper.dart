@@ -40,16 +40,16 @@ class FilterMapper extends ToMapper<Filter, FilterEntity> {
         List<Object> objectList =
             dynamicList.map((item) => item as Object).toList();
         return Filter.and([
-          Filter.greaterThan(to.name, objectList[0]),
-          Filter.lessThan(to.name, objectList[1]),
+          Filter.greaterThanOrEquals(to.name, objectList[0]),
+          Filter.lessThanOrEquals(to.name, objectList[1]),
         ]);
       case FilterOperator.nonbetween:
         List<dynamic> dynamicList = to.value as List<dynamic>;
         List<Object> objectList =
             dynamicList.map((item) => item as Object).toList();
         return Filter.or([
-          Filter.lessThanOrEquals(to.name, objectList[0]),
-          Filter.greaterThanOrEquals(to.name, objectList[1]),
+          Filter.lessThan(to.name, objectList[0]),
+          Filter.greaterThan(to.name, objectList[1]),
         ]);
       case FilterOperator.exists:
         if (to.value == true) {
