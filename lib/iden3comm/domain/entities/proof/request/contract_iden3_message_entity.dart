@@ -52,11 +52,12 @@ class ContractIden3MessageEntity extends Iden3MessageEntity {
     String? thid,
     required this.body,
     super.nextRequest,
+    String? from,
   }) : super(
-          from: '',
           messageType: Iden3MessageType.proofContractInvokeRequest,
           thid: thid ?? '',
           typ: typ ?? '',
+          from: from ?? '',
         );
 
   /// Creates an instance from the given json
@@ -73,6 +74,7 @@ class ContractIden3MessageEntity extends Iden3MessageEntity {
       thid: json['thid'] ?? '',
       body: body,
       nextRequest: json['next_request'],
+      from: json['from'] ?? '',
     );
   }
 
