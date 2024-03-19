@@ -246,11 +246,10 @@ class FetchAndSaveClaimsUseCase
     final supportsNonMerklizedIssuerInterface = await issuer.supportsInterface(
       hexToBytes(nonMerklizedIssuerInterface),
     );
-    // TODO (moria): Uncomment this line once the contract is updated
-    final supportsGetIssuerIdInterface = true;
-    // final supportsGetIssuerIdInterface = await issuer.supportsInterface(
-    //   hexToBytes(getIssuerIdInterface),
-    // );
+
+    final supportsGetIssuerIdInterface = await issuer.supportsInterface(
+      hexToBytes(getIssuerIdInterface),
+    );
 
     if (!supportsInterfaceCheck ||
         !supportsNonMerklizedIssuerInterface ||
