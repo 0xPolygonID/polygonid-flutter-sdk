@@ -115,7 +115,7 @@ class OnchainOfferBodyRequest extends CredentialOfferBody {
 class OnchainTransactionData {
   final String contractAddress;
   final String? methodId;
-  final String? chainId;
+  final int? chainId;
   final String? network;
 
   OnchainTransactionData({
