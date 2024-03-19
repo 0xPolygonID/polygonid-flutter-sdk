@@ -202,6 +202,26 @@ extern GoUint8 PLGNCacheCredentials(char* in, char* cfg, PLGNStatus** status);
 //
 extern GoUint8 PLGNW3CCredentialFromOnchainHex(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 
+// PLGNDescribeID parses ID and return it in different representations.
+// Request example:
+//
+// {"id":"31Akw5AB2xBrwqmbDUA2XoSGCfTepz52q9jmFE4mXA"}
+//
+// {"idAsInt":"24460059377712687587111979692736628604804094576108957842967948238113620738"}
+//
+// There is possible to pass both id & idAsInt fields in the request. But if the
+// resulted ID would not be equal, error returns.
+//
+// Response example:
+//
+//	{
+//	  "did":     "did:polygonid:linea:testnet:31Akw5AB2xBrwqmbDUA2XoSGCfTepz52q9jmFE4mXA",
+//	  "id":      "31Akw5AB2xBrwqmbDUA2XoSGCfTepz52q9jmFE4mXA",
+//	  "idAsInt": "24460059377712687587111979692736628604804094576108957842967948238113620738",
+//	}
+//
+extern GoUint8 PLGNDescribeID(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
 #ifdef __cplusplus
 }
 #endif
