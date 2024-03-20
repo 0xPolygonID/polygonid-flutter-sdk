@@ -10,6 +10,7 @@ void main() {
 
 /// Initialize the Flutter SDK wrapper
 /// This method is called from the native side
+@pragma('vm:entry-point')
 Future<void> init(List? env) {
   WidgetsFlutterBinding.ensureInitialized();
 
