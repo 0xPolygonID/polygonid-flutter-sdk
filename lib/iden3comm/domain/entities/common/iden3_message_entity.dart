@@ -3,20 +3,21 @@ enum Iden3MessageType {
   authRequest,
   authResponse,
   credentialOffer,
+  onchainCredentialOffer,
   credentialIssuanceResponse,
   proofContractInvokeRequest,
   credentialRefresh,
-  credentialStatusUpdate,
+  credentialStatusUpdate;
 }
 
 /// Represents an iden3 message.
-abstract class Iden3MessageEntity {
+abstract class Iden3MessageEntity<T> {
   final String id;
   final String typ;
   final String type;
   final Iden3MessageType messageType;
   final String thid;
-  abstract final body;
+  final T body;
   final String from;
   final String? to;
   final Map<String, dynamic>? nextRequest;
@@ -30,6 +31,7 @@ abstract class Iden3MessageEntity {
     required this.from,
     this.to,
     this.nextRequest,
+    required this.body,
   });
 
   @override
@@ -43,7 +45,7 @@ abstract class Iden3MessageEntity {
         'type': type,
         'messageType': messageType.name,
         'thid': thid,
-        'body': body.toJson(),
+        'body': (body as dynamic).toJson(),
         'from': from,
         'to': to,
         'nextRequest': nextRequest,

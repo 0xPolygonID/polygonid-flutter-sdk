@@ -9,13 +9,20 @@ import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/cache_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_onchain_claim_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_fetch_requests_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
 
 import '../../../common/common_mocks.dart';
 import '../../../common/iden3comm_mocks.dart';
@@ -59,12 +66,15 @@ final param = FetchAndSaveClaimsParam(
 // Dependencies
 MockIden3commCredentialRepository iden3commCredentialRepository =
     MockIden3commCredentialRepository();
+MockFetchOnchainClaimUseCase fetchOnchainClaimUseCase =
+    MockFetchOnchainClaimUseCase();
 MockGetFetchRequestsUseCase getFetchRequestsUseCase =
     MockGetFetchRequestsUseCase();
 MockCheckProfileAndDidCurrentEnvUseCase checkProfileAndDidCurrentEnvUseCase =
     MockCheckProfileAndDidCurrentEnvUseCase();
 MockGetDidIdentifierUseCase getDidIdentifierUseCase =
     MockGetDidIdentifierUseCase();
+MockGetDidUseCase getDidUseCase = MockGetDidUseCase();
 MockGetEnvUseCase getEnvUseCase = MockGetEnvUseCase();
 MockGetSelectedChainUseCase getSelectedChainUseCase =
     MockGetSelectedChainUseCase();
@@ -74,34 +84,49 @@ MockGetClaimRevocationStatusUseCase getClaimRevocationStatusUseCase =
     MockGetClaimRevocationStatusUseCase();
 MockCacheCredentialUseCase cacheCredentialUseCase =
     MockCacheCredentialUseCase();
+MockLocalContractFilesDataSource localContractFilesDataSource =
+    MockLocalContractFilesDataSource();
+MockIdentityRepository identityRepository = MockIdentityRepository();
+MockInteractionRepository interactionRepository = MockInteractionRepository();
+MockStateIdentifierMapper stateIdentifierMapper = MockStateIdentifierMapper();
 MockStacktraceManager stacktraceManager = MockStacktraceManager();
 
 // Tested instance
 FetchAndSaveClaimsUseCase useCase = FetchAndSaveClaimsUseCase(
   iden3commCredentialRepository,
+  fetchOnchainClaimUseCase,
   checkProfileAndDidCurrentEnvUseCase,
   getEnvUseCase,
   getSelectedChainUseCase,
   getDidIdentifierUseCase,
+  getDidUseCase,
   getFetchRequestsUseCase,
   getAuthTokenUseCase,
   saveClaimsUseCase,
-  getClaimRevocationStatusUseCase,
   cacheCredentialUseCase,
+  localContractFilesDataSource,
+  identityRepository,
+  interactionRepository,
   stacktraceManager,
 );
 
 @GenerateMocks([
   Iden3commCredentialRepository,
+  FetchOnchainClaimUseCase,
   CheckProfileAndDidCurrentEnvUseCase,
   GetEnvUseCase,
   GetSelectedChainUseCase,
   GetDidIdentifierUseCase,
+  GetDidUseCase,
   GetFetchRequestsUseCase,
   GetAuthTokenUseCase,
   SaveClaimsUseCase,
   GetClaimRevocationStatusUseCase,
   CacheCredentialUseCase,
+  LocalContractFilesDataSource,
+  IdentityRepository,
+  InteractionRepository,
+  StateIdentifierMapper,
   StacktraceManager,
 ])
 void main() {
@@ -187,7 +212,8 @@ void main() {
       for (int i = 0; i < requests.length * 3; i += 3) {
         expect(fetchVerify.captured[i], CommonMocks.did);
         expect(fetchVerify.captured[i + 1], CommonMocks.token);
-        expect(fetchVerify.captured[i + 2], param.message.body.url);
+        expect(fetchVerify.captured[i + 2],
+            (param.message as OfferIden3MessageEntity).body.url);
         j++;
       }
 
@@ -234,7 +260,8 @@ void main() {
 
       expect(fetchVerify.captured[0], CommonMocks.did);
       expect(fetchVerify.captured[1], CommonMocks.token);
-      expect(fetchVerify.captured[2], param.message.body.url);
+      expect(fetchVerify.captured[2],
+          (param.message as OfferIden3MessageEntity).body.url);
 
       verifyNever(getClaimRevocationStatusUseCase.execute(
           param: captureAnyNamed('param')));

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:encrypt/encrypt.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
@@ -13,6 +15,7 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/secure_storage_
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/id_description.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/node_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/encryption_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
@@ -26,6 +29,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart'
 import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:sembast/sembast_io.dart';
 
 class IdentityRepositoryImpl extends IdentityRepository {
@@ -216,6 +220,17 @@ class IdentityRepositoryImpl extends IdentityRepository {
   Future<String> convertIdToBigInt({required String id}) {
     String idBigInt = _libPolygonIdCoreIdentityDataSource.genesisIdToBigInt(id);
     return Future.value(idBigInt);
+  }
+
+  @override
+  Future<IdDescription> describeId(
+      {required BigInt id, ConfigParam? config}) async {
+    final idDescriptionJson = _libPolygonIdCoreIdentityDataSource.describeId(
+      idAsInt: id.toString(),
+      config: config == null ? null : jsonEncode(config.toJson()),
+    );
+
+    return IdDescription.fromJson(jsonDecode(idDescriptionJson));
   }
 
   @override

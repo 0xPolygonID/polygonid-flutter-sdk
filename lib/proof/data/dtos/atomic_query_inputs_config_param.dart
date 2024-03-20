@@ -1,17 +1,28 @@
+import 'dart:convert';
+
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/did_method_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 
-class AtomicQueryInputsConfigParam {
+class ConfigParam {
   final String ipfsNodeURL;
   final Map<String, ChainConfigEntity> chainConfigs;
   final List<DidMethodEntity> didMethods;
 
-  AtomicQueryInputsConfigParam({
+  ConfigParam({
     required this.ipfsNodeURL,
     this.chainConfigs = const {},
     this.didMethods = const [],
   });
+
+  factory ConfigParam.fromEnv(EnvEntity env) {
+    return ConfigParam(
+      ipfsNodeURL: env.ipfsUrl,
+      chainConfigs: env.chainConfigs,
+      didMethods: env.didMethods,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "IPFSNodeURL": ipfsNodeURL,
@@ -21,8 +32,10 @@ class AtomicQueryInputsConfigParam {
       }..removeWhere(
           (dynamic key, dynamic value) => key == null || value == null);
 
-  factory AtomicQueryInputsConfigParam.fromJson(Map<String, dynamic> json) {
-    return AtomicQueryInputsConfigParam(
+  String toJsonString() => jsonEncode(toJson());
+
+  factory ConfigParam.fromJson(Map<String, dynamic> json) {
+    return ConfigParam(
       ipfsNodeURL: json['IPFSNodeURL'],
       chainConfigs: (json['chainConfigs'] as Map<dynamic, dynamic>).map(
           (key, value) => MapEntry(key, ChainConfigEntity.fromJson(value))),

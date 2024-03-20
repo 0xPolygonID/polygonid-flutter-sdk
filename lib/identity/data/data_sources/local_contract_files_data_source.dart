@@ -20,4 +20,17 @@ class LocalContractFilesDataSource {
             ContractAbi.fromJson(jsonEncode(jsonDecode(json)["abi"]), 'State'),
             EthereumAddress.fromHex(address)));
   }
+
+  Future<DeployedContract> loadOnchainNonMerkelizedIssuerBaseContract(
+      String onchainNonMerkelizedIssuerBaseAddress) {
+    return
+        // _assetBundle
+        //   .loadString('packages/polygonid_flutter_sdk/lib/assets/onchain_non_merkelized_issuer_base.abi.json')
+        Future.value(onchainNonMerkelizedIssuerBaseAbiJson).then((json) =>
+            DeployedContract(
+                ContractAbi.fromJson(jsonEncode(jsonDecode(json)["abi"]),
+                    'OnchainNonMerkelizedIssuerBase'),
+                EthereumAddress.fromHex(
+                    onchainNonMerkelizedIssuerBaseAddress)));
+  }
 }

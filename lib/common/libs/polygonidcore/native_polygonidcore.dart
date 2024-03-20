@@ -3755,6 +3755,61 @@ class NativePolygonIdCoreLib {
   late final _PLGNCacheCredentials = _PLGNCacheCredentialsPtr.asFunction<
       int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+
+  int PLGNW3CCredentialFromOnchainHex(
+    ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
+    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> cfg,
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNW3CCredentialFromOnchainHex(
+      jsonResponse,
+      in1,
+      cfg,
+      status,
+    );
+  }
+
+  late final _PLGNW3CCredentialFromOnchainHexPtr = _lookup<
+          ffi.NativeFunction<
+              GoUint8 Function(
+                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
+      'PLGNW3CCredentialFromOnchainHex');
+  late final _PLGNW3CCredentialFromOnchainHex =
+      _PLGNW3CCredentialFromOnchainHexPtr.asFunction<
+          int Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+
+  int PLGNDescribeID(
+    ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
+    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> cfg,
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNDescribeID(
+      jsonResponse,
+      in1,
+      cfg,
+      status,
+    );
+  }
+
+  late final _PLGNDescribeIDPtr = _lookup<
+      ffi.NativeFunction<
+          GoUint8 Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNDescribeID');
+  late final _PLGNDescribeID = _PLGNDescribeIDPtr.asFunction<
+      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
 }
 
 class __mbstate_t extends ffi.Union {

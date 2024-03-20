@@ -17,8 +17,8 @@ class GetFetchRequestsParam {
 class GetFetchRequestsUseCase
     extends FutureUseCase<GetFetchRequestsParam, List<String>> {
   @override
-  Future<List<String>> execute({required GetFetchRequestsParam param}) {
-    return Future.value(param.message.body.credentials
+  Future<List<String>> execute({required GetFetchRequestsParam param}) async {
+    return param.message.body.credentials
         .map((credential) => jsonEncode(FetchIden3MessageEntity(
             id: const Uuid().v4(),
             typ: param.message.typ,
@@ -28,6 +28,6 @@ class GetFetchRequestsUseCase
             body: FetchBodyRequest(id: credential.id),
             from: param.did,
             to: param.message.from)))
-        .toList());
+        .toList();
   }
 }

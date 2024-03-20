@@ -1,9 +1,7 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 
-class CredentialStatusUpdateMessageEntity extends Iden3MessageEntity {
-  @override
-  final CredentialStatusUpdateBody body;
-
+class CredentialStatusUpdateMessageEntity
+    extends Iden3MessageEntity<CredentialStatusUpdateBody> {
   CredentialStatusUpdateMessageEntity({
     required super.id,
     required super.typ,
@@ -11,7 +9,7 @@ class CredentialStatusUpdateMessageEntity extends Iden3MessageEntity {
     required super.thid,
     required super.from,
     required super.to,
-    required this.body,
+    required super.body,
     super.nextRequest,
   }) : super(messageType: Iden3MessageType.credentialStatusUpdate);
 

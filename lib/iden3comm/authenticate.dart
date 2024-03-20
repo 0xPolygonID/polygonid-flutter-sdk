@@ -436,11 +436,7 @@ class Authenticate {
         );
       }
 
-      config = AtomicQueryInputsConfigParam(
-        chainConfigs: env.chainConfigs,
-        didMethods: env.didMethods,
-        ipfsNodeURL: env.ipfsUrl,
-      ).toJson();
+      config = ConfigParam.fromEnv(env).toJson();
 
       List<String> splittedDid = genesisDid.split(":");
       String id = splittedDid[4];

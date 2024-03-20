@@ -15,6 +15,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response
 import 'package:polygonid_flutter_sdk/iden3comm/authenticate.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
@@ -23,6 +24,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exce
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/clean_schema_cache_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_onchain_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_filters_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_rev_nonce_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart';
@@ -68,11 +70,31 @@ abstract class PolygonIdSdkIden3comm {
   ///
   /// The [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
-  Future<List<ClaimEntity>> fetchAndSaveClaims(
-      {required Iden3MessageEntity message,
-      required String genesisDid,
-      BigInt? profileNonce,
-      required String privateKey});
+  Future<List<ClaimEntity>> fetchAndSaveClaims({
+    required CredentialOfferMessageEntity message,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String privateKey,
+  });
+
+  /// Fetch a list of [ClaimEntity] from onchain contract using its address
+  /// and stores them in Polygon Id Sdk.
+  ///
+  /// The [contractAddress] is the address of the onchain contract
+  ///
+  /// The [genesisDid] is the unique id of the identity
+  ///
+  /// The [profileNonce] is the nonce of the profile used from identity
+  /// to obtain the did identifier
+  ///
+  /// The [privateKey] is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
+  Future<List<ClaimEntity>> fetchAndSaveOnchainClaims({
+    required String contractAddress,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String privateKey,
+  });
 
   /// Get a list of [ClaimEntity] stored in Polygon Id Sdk that fulfills
   /// the request from iden3comm message.
@@ -262,6 +284,7 @@ abstract class PolygonIdSdkIden3comm {
 @injectable
 class Iden3comm implements PolygonIdSdkIden3comm {
   final FetchAndSaveClaimsUseCase _fetchAndSaveClaimsUseCase;
+  final FetchAndSaveOnchainClaimsUseCase _fetchAndSaveOnchainClaimsUseCase;
   final GetIden3MessageUseCase _getIden3MessageUseCase;
   final GetSchemasUseCase _getSchemasUseCase;
   final AuthenticateUseCase _authenticateUseCase;
@@ -282,6 +305,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
 
   Iden3comm(
     this._fetchAndSaveClaimsUseCase,
+    this._fetchAndSaveOnchainClaimsUseCase,
     this._getIden3MessageUseCase,
     this._getSchemasUseCase,
     this._authenticateUseCase,
@@ -321,24 +345,41 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }
 
   @override
-  Future<List<ClaimEntity>> fetchAndSaveClaims(
-      {required Iden3MessageEntity message,
-      required String genesisDid,
-      BigInt? profileNonce,
-      required String privateKey}) {
+  Future<List<ClaimEntity>> fetchAndSaveClaims({
+    required CredentialOfferMessageEntity message,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String privateKey,
+  }) {
     _stacktraceManager.clearStacktrace();
-    if (message is! OfferIden3MessageEntity) {
-      _stacktraceManager.addTrace(
-          '[fetchAndSaveClaims] Invalid message type: ${message.messageType}');
-      throw InvalidIden3MsgTypeException(
-          Iden3MessageType.credentialOffer, message.messageType);
-    }
+
     return _fetchAndSaveClaimsUseCase.execute(
-        param: FetchAndSaveClaimsParam(
-            message: message,
-            genesisDid: genesisDid,
-            profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
-            privateKey: privateKey));
+      param: FetchAndSaveClaimsParam(
+        message: message,
+        genesisDid: genesisDid,
+        profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
+        privateKey: privateKey,
+      ),
+    );
+  }
+
+  @override
+  Future<List<ClaimEntity>> fetchAndSaveOnchainClaims({
+    required String contractAddress,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String privateKey,
+  }) {
+    _stacktraceManager.clearStacktrace();
+
+    return _fetchAndSaveOnchainClaimsUseCase.execute(
+      param: FetchAndSaveOnchainClaimsParam(
+        contractAddress: contractAddress,
+        genesisDid: genesisDid,
+        profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
+        privateKey: privateKey,
+      ),
+    );
   }
 
   @override

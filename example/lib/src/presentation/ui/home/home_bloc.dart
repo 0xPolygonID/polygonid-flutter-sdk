@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
@@ -34,12 +35,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       return;
     }
 
-    EnvEntity env = await _polygonIdSdk.getEnv();
+    final ChainConfigEntity chain = await _polygonIdSdk.getSelectedChain();
 
     String? identifier = await _polygonIdSdk.identity.getDidIdentifier(
-        privateKey: privateKey,
-        blockchain: env.blockchain,
-        network: env.network);
+      privateKey: privateKey,
+      blockchain: chain.blockchain,
+      network: chain.network,
+    );
     emit(HomeState.loaded(identifier: identifier));
   }
 
@@ -75,12 +77,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       return;
     }
 
-    EnvEntity env = await _polygonIdSdk.getEnv();
+    final ChainConfigEntity chain = await _polygonIdSdk.getSelectedChain();
 
     String did = await _polygonIdSdk.identity.getDidIdentifier(
       privateKey: privateKey,
-      blockchain: env.blockchain,
-      network: env.network,
+      blockchain: chain.blockchain,
+      network: chain.network,
     );
 
     try {

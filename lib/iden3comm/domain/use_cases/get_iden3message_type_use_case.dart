@@ -18,6 +18,9 @@ class GetIden3MessageTypeUseCase
       case "https://iden3-communication.io/credentials/1.0/offer":
         type = Iden3MessageType.credentialOffer;
         break;
+      case "https://iden3-communication.io/credentials/1.0/onchain-offer":
+        type = Iden3MessageType.onchainCredentialOffer;
+        break;
       case "https://iden3-communication.io/credentials/1.0/issuance-response":
         type = Iden3MessageType.credentialIssuanceResponse;
         break;

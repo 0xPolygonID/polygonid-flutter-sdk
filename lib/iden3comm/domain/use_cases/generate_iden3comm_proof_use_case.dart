@@ -190,7 +190,7 @@ class GenerateIden3commProofUseCase
 
     final envConfig = param.config;
     if (envConfig != null) {
-      config = AtomicQueryInputsConfigParam(
+      config = ConfigParam(
         ipfsNodeURL: envConfig.ipfsNodeUrl,
         chainConfigs: envConfig.chainConfigs,
         didMethods: envConfig.didMethods,

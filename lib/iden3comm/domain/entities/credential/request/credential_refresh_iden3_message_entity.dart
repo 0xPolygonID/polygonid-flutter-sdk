@@ -1,16 +1,14 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 
-class CredentialRefreshIden3MessageEntity extends Iden3MessageEntity {
-  @override
-  final CredentialRefreshBodyRequest body;
-
+class CredentialRefreshIden3MessageEntity
+    extends Iden3MessageEntity<CredentialRefreshBodyRequest> {
   CredentialRefreshIden3MessageEntity({
     required super.id,
     required super.typ,
     required super.type,
     required super.thid,
     required super.from,
-    required this.body,
+    required super.body,
     required super.to,
     super.nextRequest,
   }) : super(messageType: Iden3MessageType.credentialRefresh);
