@@ -25,6 +25,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_us
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/clean_schema_cache_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_onchain_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_filters_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_rev_nonce_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart';
@@ -302,6 +303,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   final GetDidProfileInfoUseCase _getDidProfileInfoUseCase;
   final GetDidProfileInfoListUseCase _getDidProfileInfoListUseCase;
   final RemoveDidProfileInfoUseCase _removeDidProfileInfoUseCase;
+  final GetAuthTokenUseCase _getAuthTokenUseCase;
 
   Iden3comm(
     this._fetchAndSaveClaimsUseCase,
@@ -323,6 +325,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     this._getDidProfileInfoUseCase,
     this._getDidProfileInfoListUseCase,
     this._removeDidProfileInfoUseCase,
+    this._getAuthTokenUseCase,
   );
 
   @override
@@ -628,6 +631,22 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         genesisDid: did,
         privateKey: privateKey,
         interactedWithDid: interactedWithDid,
+      ),
+    );
+  }
+
+  Future<String> getAuthToken({
+    required String genesisDid,
+    required String privateKey,
+    required BigInt profileNonce,
+    required String iden3message,
+  }) {
+    return _getAuthTokenUseCase.execute(
+      param: GetAuthTokenParam(
+        genesisDid: genesisDid,
+        profileNonce: profileNonce,
+        privateKey: privateKey,
+        message: iden3message,
       ),
     );
   }
