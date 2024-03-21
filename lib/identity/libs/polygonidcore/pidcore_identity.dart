@@ -27,8 +27,11 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
         .PLGNCalculateGenesisID(response, in1, status);
     if (res == 0) {
       String? consumedStatus = consumeStatus(status, "");
-      freeAllocatedMemory();
-      throw IdentityInputsException(consumedStatus);
+      // ignore: unnecessary_null_comparison
+      if (consumedStatus != null) {
+        freeAllocatedMemory();
+        throw IdentityInputsException(consumedStatus);
+      }
     }
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;
@@ -58,8 +61,11 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
         .PLGNNewGenesisID(response, in1, cfg, status);
     if (res == 0) {
       String? consumedStatus = consumeStatus(status, "");
-      freeAllocatedMemory();
-      throw IdentityInputsException(consumedStatus);
+      // ignore: unnecessary_null_comparison
+      if (consumedStatus != null) {
+        freeAllocatedMemory();
+        throw IdentityInputsException(consumedStatus);
+      }
     }
 
     String result = "";
@@ -89,8 +95,11 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
         .PLGNProfileID(response, in1, status);
     if (res == 0) {
       String? consumedStatus = consumeStatus(status, "");
-      freeAllocatedMemory();
-      throw IdentityInputsException(consumedStatus);
+      // ignore: unnecessary_null_comparison
+      if (consumedStatus != null) {
+        freeAllocatedMemory();
+        throw IdentityInputsException(consumedStatus);
+      }
     }
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;
@@ -122,8 +131,11 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
         PolygonIdCore.nativePolygonIdCoreLib.PLGNIDToInt(response, in1, status);
     if (res == 0) {
       String? consumedStatus = consumeStatus(status, "");
-      freeAllocatedMemory();
-      throw IdentityInputsException(consumedStatus);
+      // ignore: unnecessary_null_comparison
+      if (consumedStatus != null) {
+        freeAllocatedMemory();
+        throw IdentityInputsException(consumedStatus);
+      }
     }
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;
@@ -156,8 +168,11 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
         .PLGNDescribeID(response, in1, cfg, status);
     if (res == 0) {
       String? consumedStatus = consumeStatus(status, "");
-      freeAllocatedMemory();
-      throw CredentialInputsException(consumedStatus);
+      // ignore: unnecessary_null_comparison
+      if (consumedStatus != null) {
+        freeAllocatedMemory();
+        throw IdentityInputsException(consumedStatus);
+      }
     }
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;
