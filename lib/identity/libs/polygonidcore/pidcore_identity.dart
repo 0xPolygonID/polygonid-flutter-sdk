@@ -171,7 +171,7 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
       // ignore: unnecessary_null_comparison
       if (consumedStatus != null) {
         freeAllocatedMemory();
-        throw IdentityInputsException(consumedStatus);
+        throw CredentialInputsException(consumedStatus);
       }
     }
     String result = "";
