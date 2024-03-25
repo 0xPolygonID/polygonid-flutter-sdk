@@ -93,13 +93,13 @@ class MetadataObject {
 
 class CredentialProposalBodyRequest {
   final List<CredentialObject> credentials;
-  final MetadataObject? metadata;
-  final Map<String, dynamic>? didDoc;
+  MetadataObject? metadata;
+  Map<String, dynamic>? didDoc;
 
   CredentialProposalBodyRequest({
     required this.credentials,
-    required this.metadata,
-    required this.didDoc,
+    this.metadata,
+    this.didDoc,
   });
 
   factory CredentialProposalBodyRequest.fromJson(Map<String, dynamic> json) {

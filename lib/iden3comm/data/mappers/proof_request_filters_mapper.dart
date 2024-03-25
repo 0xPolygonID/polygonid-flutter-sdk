@@ -223,84 +223,48 @@ class ProofRequestFiltersMapper
   FilterEntity? _getBooleanFiltersByOperator(field, operator, value) {
     var trueValues = [true, "true", 1];
     var falseValues = [false, "false", 0];
+
+    bool? parsedValue;
+
     if (value is int) {
-      if (operator == '\$eq') {
-        if (value == 0) {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: falseValues);
-        } else {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: trueValues);
-        }
-      } else if (operator == '\$ne') {
-        if (value == 0) {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: trueValues);
-        } else {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: falseValues);
-        }
-      }
+      parsedValue = value == 1;
     } else if (value is String) {
-      if (operator == '\$eq') {
-        if (value == "false") {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: falseValues);
-        } else {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: trueValues);
-        }
-      } else if (operator == '\$ne') {
-        if (value == "false") {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: trueValues);
-        } else {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: falseValues);
-        }
-      }
+      parsedValue = value.toLowerCase() == "true";
     } else if (value is bool) {
-      if (operator == '\$eq') {
-        if (value == false) {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: falseValues);
-        } else {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: trueValues);
-        }
-      } else if (operator == '\$ne') {
-        if (value == false) {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: trueValues);
-        } else {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: falseValues);
-        }
+      parsedValue = value;
+    } else {
+      return null;
+    }
+
+    if (operator == '\$eq') {
+      if (parsedValue == true) {
+        return FilterEntity(
+            operator: FilterOperator.inList,
+            name: 'credential.credentialSubject.$field',
+            value: trueValues);
+      } else {
+        return FilterEntity(
+            operator: FilterOperator.inList,
+            name: 'credential.credentialSubject.$field',
+            value: falseValues);
       }
+    } else if (operator == '\$ne') {
+      if (parsedValue == true) {
+        return FilterEntity(
+            operator: FilterOperator.inList,
+            name: 'credential.credentialSubject.$field',
+            value: falseValues);
+      } else {
+        return FilterEntity(
+            operator: FilterOperator.inList,
+            name: 'credential.credentialSubject.$field',
+            value: trueValues);
+      }
+    } else if (operator == '\$exists') {
+      return FilterEntity(
+          operator: FilterOperator.exists,
+          name: 'credential.credentialSubject.$field',
+          value: parsedValue);
     }
     return null;
   }
