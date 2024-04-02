@@ -4,8 +4,7 @@
 // InjectableConfigGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_lambdas
-// ignore_for_file: lines_longer_than_80_chars
+// ignore_for_file: type=lint
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
@@ -173,10 +172,10 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/clean_schema_ca
     as _i146;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_claims_use_case.dart'
     as _i200;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_onchain_claims_use_case.dart'
-    as _i188;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_onchain_claim_use_case.dart'
     as _i147;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_onchain_claims_use_case.dart'
+    as _i188;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart'
     as _i189;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_challenge_use_case.dart'
@@ -560,28 +559,28 @@ extension GetItInjectableX on _i1.GetIt {
     gh.lazySingleton<_i64.StacktraceManager>(() => _i64.StacktraceManager());
     gh.factory<_i65.StateIdentifierMapper>(() => _i65.StateIdentifierMapper());
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.profileStore,
-      instanceName: 'profilesStore',
+      () => databaseModule.identityStore,
+      instanceName: 'identityStore',
     );
     gh.factory<_i13.StoreRef<String, dynamic>>(
       () => databaseModule.keyValueStore,
       instanceName: 'keyValueStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.identityStore,
-      instanceName: 'identityStore',
-    );
-    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.didProfileInfoStore,
-      instanceName: 'didProfileInfoStore',
+      () => databaseModule.claimStore,
+      instanceName: 'claimStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.interactionStore,
       instanceName: 'interactionStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.claimStore,
-      instanceName: 'claimStore',
+      () => databaseModule.didProfileInfoStore,
+      instanceName: 'didProfileInfoStore',
+    );
+    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
+      () => databaseModule.profileStore,
+      instanceName: 'profilesStore',
     );
     gh.factory<_i66.TreeStateMapper>(() => _i66.TreeStateMapper());
     gh.factory<_i67.TreeTypeMapper>(() => _i67.TreeTypeMapper());
@@ -1132,8 +1131,8 @@ extension GetItInjectableX on _i1.GetIt {
               await getAsync<_i182.GetDidIdentifierUseCase>(),
               gh<_i64.StacktraceManager>(),
             ));
-    gh.factoryAsync<_i188.FetchAndSaveOnchainClaimsUseCase>(
-        () async => _i188.FetchAndSaveOnchainClaimsUseCase(
+    gh.factoryAsync<_i188.FetchOnchainClaimsUseCase>(
+        () async => _i188.FetchOnchainClaimsUseCase(
               await getAsync<_i147.FetchOnchainClaimUseCase>(),
               await getAsync<_i187.CheckProfileAndDidCurrentEnvUseCase>(),
               await getAsync<_i129.GetEnvUseCase>(),
@@ -1348,7 +1347,7 @@ extension GetItInjectableX on _i1.GetIt {
         ));
     gh.factoryAsync<_i211.Iden3comm>(() async => _i211.Iden3comm(
           await getAsync<_i200.FetchAndSaveClaimsUseCase>(),
-          await getAsync<_i188.FetchAndSaveOnchainClaimsUseCase>(),
+          await getAsync<_i188.FetchOnchainClaimsUseCase>(),
           gh<_i87.GetIden3MessageUseCase>(),
           gh<_i153.GetSchemasUseCase>(),
           await getAsync<_i209.AuthenticateUseCase>(),
