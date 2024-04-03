@@ -40,8 +40,7 @@ abstract class Iden3MessageEntity<T> {
       "[Iden3MessageEntity] {id: $id, typ: $typ, type: $type, messageType: $messageType, thid: $thid, body: $body, from: $from, to: $to, nextRequest: $nextRequest}";
 
   @override
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'id': id,
         'typ': typ,
         'type': type,
@@ -51,24 +50,23 @@ abstract class Iden3MessageEntity<T> {
         'from': from,
         'to': to,
         'nextRequest': nextRequest,
-      }
-        ..removeWhere(
-                (dynamic key, dynamic value) => key == null || value == null);
+      }..removeWhere(
+          (dynamic key, dynamic value) => key == null || value == null);
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is Iden3MessageEntity &&
-              runtimeType == other.runtimeType &&
-              id == other.id &&
-              typ == other.typ &&
-              type == other.type &&
-              messageType == other.messageType &&
-              thid == other.thid &&
-              body == other.body &&
-              from == other.from &&
-              to == other.to &&
-              nextRequest == other.nextRequest;
+      other is Iden3MessageEntity &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          typ == other.typ &&
+          type == other.type &&
+          messageType == other.messageType &&
+          thid == other.thid &&
+          body == other.body &&
+          from == other.from &&
+          to == other.to &&
+          nextRequest == other.nextRequest;
 
   @override
   int get hashCode => runtimeType.hashCode;

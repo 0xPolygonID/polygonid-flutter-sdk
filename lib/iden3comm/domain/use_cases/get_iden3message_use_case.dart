@@ -49,7 +49,7 @@ class GetIden3MessageUseCase extends FutureUseCase<String, Iden3MessageEntity> {
             return CredentialRefreshIden3MessageEntity.fromJson(json);
           case Iden3MessageType.credentialStatusUpdate:
             return CredentialStatusUpdateMessageEntity.fromJson(json);
-            case Iden3MessageType.credentialProposalRequest:
+          case Iden3MessageType.credentialProposalRequest:
             return CredentialProposalRequest.fromJson(json);
           case Iden3MessageType.unknown:
             throw UnsupportedIden3MsgTypeException(type);
