@@ -28,6 +28,9 @@ class PolygonIdCoreCredential extends PolygonIdCore {
       result = jsonString.toDartString();
     }
 
+    malloc.free(response);
+    malloc.free(status);
+
     return result;
   }
 
@@ -44,9 +47,12 @@ class PolygonIdCoreCredential extends PolygonIdCore {
     if (res == 0) {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
+        malloc.free(status);
         return consumedStatus;
       }
     }
+
+    malloc.free(status);
     return "";
   }
 
@@ -60,11 +66,18 @@ class PolygonIdCoreCredential extends PolygonIdCore {
         malloc<ffi.Pointer<ffi.Char>>();
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
         malloc<ffi.Pointer<PLGNStatus>>();
+
+    freeAllocatedMemory() {
+      malloc.free(response);
+      malloc.free(status);
+    }
+
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNW3CCredentialFromOnchainHex(response, in1, cfg, status);
     if (res == 0) {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
+        freeAllocatedMemory();
         throw CredentialInputsException(consumedStatus);
       }
     }
@@ -75,6 +88,7 @@ class PolygonIdCoreCredential extends PolygonIdCore {
       result = jsonString.toDartString();
     }
 
+    freeAllocatedMemory();
     return result;
   }
 }

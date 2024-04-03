@@ -154,8 +154,8 @@ class PolygonIdFlutterChannel
               .then((claims) =>
                   claims.map((claim) => jsonEncode(claim)).toList());
 
-        case 'fetchAndSaveOnchainClaims':
-          return fetchAndSaveOnchainClaims(
+        case 'fetchOnchainClaims':
+          return fetchOnchainClaims(
                   contractAddress: call.arguments['contractAddress'] as String,
                   genesisDid: call.arguments['genesisDid'] as String,
                   profileNonce: BigInt.tryParse(
@@ -505,13 +505,13 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<List<ClaimEntity>> fetchAndSaveOnchainClaims({
+  Future<List<ClaimEntity>> fetchOnchainClaims({
     required String contractAddress,
     required String genesisDid,
     BigInt? profileNonce,
     required String privateKey,
   }) {
-    return _polygonIdSdk.iden3comm.fetchAndSaveOnchainClaims(
+    return _polygonIdSdk.iden3comm.fetchOnchainClaims(
       contractAddress: contractAddress,
       genesisDid: genesisDid,
       profileNonce: profileNonce,
