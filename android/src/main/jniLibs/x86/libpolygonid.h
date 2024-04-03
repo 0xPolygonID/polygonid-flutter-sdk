@@ -183,6 +183,10 @@ extern GoUint8 PLGNAtomicQueryV3Inputs(char** jsonResponse, char* in, char* cfg,
 //
 extern GoUint8 PLGNAtomicQueryV3OnChainInputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern void PLGNFreeStatus(PLGNStatus* status);
+
+//PLGNFreeCString frees the memory allocated by Golang(using C.CString() ) for the given C string.
+//It ensures a consistent and controlled memory management within Go code.
+extern void PLGNFreeCString(char* str);
 extern GoUint8 PLGNCleanCache(PLGNStatus** status);
 extern GoUint8 PLGNCacheCredentials(char* in, char* cfg, PLGNStatus** status);
 

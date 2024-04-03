@@ -28,6 +28,9 @@ class PolygonIdCoreCredential extends PolygonIdCore {
       result = jsonString.toDartString();
     }
 
+    //PLGNFreeCString(jsonResponse) should be called before malloc.free(response);
+    PolygonIdCore.nativePolygonIdCoreLib.PLGNFreeCString(jsonResponse);
+
     malloc.free(response);
     malloc.free(status);
 
@@ -87,6 +90,9 @@ class PolygonIdCoreCredential extends PolygonIdCore {
     if (jsonString != ffi.nullptr) {
       result = jsonString.toDartString();
     }
+
+    //PLGNFreeCString(jsonResponse) should be called before malloc.free(response);
+    PolygonIdCore.nativePolygonIdCoreLib.PLGNFreeCString(jsonResponse);
 
     freeAllocatedMemory();
     return result;

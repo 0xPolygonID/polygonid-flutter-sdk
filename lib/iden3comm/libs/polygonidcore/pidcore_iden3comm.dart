@@ -27,6 +27,9 @@ class PolygonIdCoreIden3comm extends PolygonIdCore {
       result = jsonString.toDartString();
     }
 
+    //PLGNFreeCString(jsonResponse) should be called before malloc.free(response);
+    PolygonIdCore.nativePolygonIdCoreLib.PLGNFreeCString(jsonResponse);
+
     malloc.free(response);
     malloc.free(status);
 

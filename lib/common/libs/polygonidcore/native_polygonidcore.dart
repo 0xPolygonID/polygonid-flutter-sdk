@@ -3736,6 +3736,17 @@ class NativePolygonIdCoreLib {
   late final _PLGNFreeStatus =
       _PLGNFreeStatusPtr.asFunction<void Function(ffi.Pointer<PLGNStatus>)>();
 
+  void PLGNFreeCString(ffi.Pointer<ffi.Char> str) {
+    _PLGNFreeCString(str);
+  }
+
+  late final _PLGNFreeCStringPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
+          'PLGNFreeCString');
+
+  late final _PLGNFreeCString =
+      _PLGNFreeCStringPtr.asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+
   int PLGNCacheCredentials(
     ffi.Pointer<ffi.Char> in1,
     ffi.Pointer<ffi.Char> cfg,

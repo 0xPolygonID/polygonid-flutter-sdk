@@ -40,6 +40,9 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
       result = jsonString.toDartString();
     }
 
+    //PLGNFreeCString(jsonResponse) should be called before malloc.free(response);
+    PolygonIdCore.nativePolygonIdCoreLib.PLGNFreeCString(jsonResponse);
+
     freeAllocatedMemory();
     return result;
   }
@@ -75,6 +78,8 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
       result = jsonString.toDartString();
     }
 
+    //PLGNFreeCString(jsonResponse) should be called before malloc.free(response);
+    PolygonIdCore.nativePolygonIdCoreLib.PLGNFreeCString(jsonResponse);
     freeAllocatedMemory();
     return result;
   }
@@ -107,6 +112,9 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
     if (jsonString != ffi.nullptr) {
       result = jsonString.toDartString();
     }
+
+    //PLGNFreeCString(jsonResponse) should be called before malloc.free(response);
+    PolygonIdCore.nativePolygonIdCoreLib.PLGNFreeCString(jsonResponse);
 
     freeAllocatedMemory();
     return result;
@@ -144,6 +152,9 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
       result = jsonString.toDartString();
     }
 
+    //PLGNFreeCString(jsonResponse) should be called before malloc.free(response);
+    PolygonIdCore.nativePolygonIdCoreLib.PLGNFreeCString(jsonResponse);
+
     freeAllocatedMemory();
     return result;
   }
@@ -180,6 +191,9 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
     if (jsonString != ffi.nullptr) {
       result = jsonString.toDartString();
     }
+
+    //PLGNFreeCString(jsonResponse) should be called before malloc.free(response);
+    PolygonIdCore.nativePolygonIdCoreLib.PLGNFreeCString(jsonResponse);
 
     freeAllocatedMemory();
     return result;
