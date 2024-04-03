@@ -220,87 +220,42 @@ class ProofRequestFiltersMapper
     return [];
   }
 
-  FilterEntity? _getBooleanFiltersByOperator(field, operator, value) {
-    var trueValues = [true, "true", 1];
-    var falseValues = [false, "false", 0];
+  static const trueValues = [true, "true", 1];
+  static const falseValues = [false, "false", 0];
+
+  bool? _parseValueToBool(dynamic value) {
     if (value is int) {
-      if (operator == '\$eq') {
-        if (value == 0) {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: falseValues);
-        } else {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: trueValues);
-        }
-      } else if (operator == '\$ne') {
-        if (value == 0) {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: trueValues);
-        } else {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: falseValues);
-        }
-      }
+      return value == 1;
     } else if (value is String) {
-      if (operator == '\$eq') {
-        if (value == "false") {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: falseValues);
-        } else {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: trueValues);
-        }
-      } else if (operator == '\$ne') {
-        if (value == "false") {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: trueValues);
-        } else {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: falseValues);
-        }
-      }
+      return value.toLowerCase() == "true";
     } else if (value is bool) {
-      if (operator == '\$eq') {
-        if (value == false) {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: falseValues);
-        } else {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: trueValues);
-        }
-      } else if (operator == '\$ne') {
-        if (value == false) {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: trueValues);
-        } else {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: falseValues);
-        }
-      }
+      return value;
+    }
+    return null;
+  }
+
+  FilterEntity _createFilterEntity(
+      String field, FilterOperator operator, dynamic value) {
+    return FilterEntity(
+        operator: operator,
+        name: 'credential.credentialSubject.$field',
+        value: value);
+  }
+
+  FilterEntity? _getBooleanFiltersByOperator(field, operator, value) {
+    bool? parsedValue = _parseValueToBool(value);
+    if (parsedValue == null) {
+      return null;
+    }
+
+    if (operator == '\$eq') {
+      return _createFilterEntity(
+          field, FilterOperator.inList, parsedValue ? trueValues : falseValues);
+    } else if (operator == '\$ne') {
+      return _createFilterEntity(
+          field, FilterOperator.inList, parsedValue ? falseValues : trueValues);
+    } else if (operator == '\$exists') {
+      return _createFilterEntity(field, FilterOperator.exists, parsedValue);
     }
     return null;
   }

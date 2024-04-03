@@ -30,6 +30,9 @@ class GetIden3MessageTypeUseCase
       case "https://iden3-communication.io/credentials/1.0/status-update":
         type = Iden3MessageType.credentialStatusUpdate;
         break;
+      case "https://iden3-communication.io/credentials/0.1/proposal-request":
+        type = Iden3MessageType.credentialProposalRequest;
+        break;
     }
 
     return Future.value(type);
