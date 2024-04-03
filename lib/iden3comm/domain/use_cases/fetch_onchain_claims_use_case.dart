@@ -42,13 +42,13 @@ import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
 
-class FetchAndSaveOnchainClaimsParam {
+class FetchOnchainClaimsParam {
   final String contractAddress;
   final String genesisDid;
   final BigInt profileNonce;
   final String privateKey;
 
-  FetchAndSaveOnchainClaimsParam({
+  FetchOnchainClaimsParam({
     required this.contractAddress,
     required this.genesisDid,
     required this.profileNonce,
@@ -56,8 +56,8 @@ class FetchAndSaveOnchainClaimsParam {
   });
 }
 
-class FetchAndSaveOnchainClaimsUseCase
-    extends FutureUseCase<FetchAndSaveOnchainClaimsParam, List<ClaimEntity>> {
+class FetchOnchainClaimsUseCase
+    extends FutureUseCase<FetchOnchainClaimsParam, List<ClaimEntity>> {
   final FetchOnchainClaimUseCase _fetchOnchainClaimUseCase;
   final CheckProfileAndDidCurrentEnvUseCase
       _checkProfileAndDidCurrentEnvUseCase;
@@ -72,7 +72,7 @@ class FetchAndSaveOnchainClaimsUseCase
   final DidProfileInfoRepository _didProfileInfoRepository;
   final StacktraceManager _stacktraceManager;
 
-  FetchAndSaveOnchainClaimsUseCase(
+  FetchOnchainClaimsUseCase(
     this._fetchOnchainClaimUseCase,
     this._checkProfileAndDidCurrentEnvUseCase,
     this._getEnvUseCase,
@@ -89,7 +89,7 @@ class FetchAndSaveOnchainClaimsUseCase
 
   @override
   Future<List<ClaimEntity>> execute({
-    required FetchAndSaveOnchainClaimsParam param,
+    required FetchOnchainClaimsParam param,
   }) async {
     /// Get the corresponding fetch request from [OfferIden3MessageEntity]
     /// For each, get the auth token
@@ -123,42 +123,6 @@ class FetchAndSaveOnchainClaimsUseCase
         param,
       );
 
-      await _saveClaimsUseCase.execute(
-        param: SaveClaimsParam(
-          claims: claims,
-          genesisDid: param.genesisDid,
-          privateKey: param.privateKey,
-        ),
-      );
-
-      logger()
-          .i("[FetchAndSaveClaimsUseCase] All claims have been saved: $claims");
-      _stacktraceManager.addTrace(
-          "[FetchAndSaveClaimsUseCase] All claims have been saved: claimsLength ${claims.length}");
-
-      final config = ConfigParam.fromEnv(env);
-
-      for (final claim in claims) {
-        // cache claim
-        try {
-          await _cacheCredentialUseCase.execute(
-            param: CacheCredentialParam(
-              credential: jsonEncode(
-                {
-                  "verifiableCredentials": claim.toJson(),
-                },
-              ),
-              config: jsonEncode(config.toJson()),
-            ),
-          );
-        } catch (e) {
-          logger()
-              .e("[FetchAndSaveClaimsUseCase] Error while caching claim: $e");
-          _stacktraceManager.addTrace(
-              "[FetchAndSaveClaimsUseCase] Error while caching claim: $e");
-        }
-      }
-
       return claims;
     } catch (error) {
       logger().e("[FetchAndSaveClaimsUseCase] Error: $error");
@@ -171,7 +135,7 @@ class FetchAndSaveOnchainClaimsUseCase
   Future<List<ClaimEntity>> _fetchOnchainClaims(
     String contractAddress,
     String profileDid,
-    FetchAndSaveOnchainClaimsParam param,
+    FetchOnchainClaimsParam param,
   ) async {
     final chain = await _getSelectedChainUseCase.execute();
     final env = await _getEnvUseCase.execute();
