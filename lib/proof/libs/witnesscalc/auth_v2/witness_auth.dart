@@ -43,6 +43,14 @@ class WitnessAuthV2Lib {
     int errorMaxSize = 256;
     ffi.Pointer<ffi.Char> errorMsg = malloc<ffi.Char>(errorMaxSize);
 
+    freeAllocatedMemory() {
+      malloc.free(circuitBuffer);
+      malloc.free(jsonBuffer);
+      malloc.free(wtnsSize);
+      malloc.free(wtnsBuffer);
+      malloc.free(errorMsg);
+    }
+
     int result = _nativeWitnessAuthV2Lib.witnesscalc_authV2(
         circuitBuffer,
         circuitSize,
@@ -58,6 +66,7 @@ class WitnessAuthV2Lib {
       for (int i = 0; i < wtnsSize.value; i++) {
         wtnsBytes[i] = wtnsBuffer[i];
       }
+      freeAllocatedMemory();
       return wtnsBytes;
     } else if (result == WITNESSCALC_ERROR) {
       ffi.Pointer<Utf8> jsonString = errorMsg.cast<Utf8>();
@@ -71,6 +80,7 @@ class WitnessAuthV2Lib {
             "$result: ${result.toString()}. Error: Short buffer for proof or public");
       }
     }
+    freeAllocatedMemory();
     return null;
   }
 }

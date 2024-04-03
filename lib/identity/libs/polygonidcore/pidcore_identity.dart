@@ -17,11 +17,19 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
         malloc<ffi.Pointer<ffi.Char>>();
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
         malloc<ffi.Pointer<PLGNStatus>>();
+
+    freeAllocatedMemory() {
+      malloc.free(response);
+      malloc.free(status);
+    }
+
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNCalculateGenesisID(response, in1, status);
     if (res == 0) {
       String? consumedStatus = consumeStatus(status, "");
+      // ignore: unnecessary_null_comparison
       if (consumedStatus != null) {
+        freeAllocatedMemory();
         throw IdentityInputsException(consumedStatus);
       }
     }
@@ -32,6 +40,7 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
       result = jsonString.toDartString();
     }
 
+    freeAllocatedMemory();
     return result;
   }
 
@@ -42,11 +51,19 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
         malloc<ffi.Pointer<ffi.Char>>();
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
         malloc<ffi.Pointer<PLGNStatus>>();
+
+    freeAllocatedMemory() {
+      malloc.free(response);
+      malloc.free(status);
+    }
+
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNNewGenesisID(response, in1, cfg, status);
     if (res == 0) {
       String? consumedStatus = consumeStatus(status, "");
+      // ignore: unnecessary_null_comparison
       if (consumedStatus != null) {
+        freeAllocatedMemory();
         throw IdentityInputsException(consumedStatus);
       }
     }
@@ -58,6 +75,7 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
       result = jsonString.toDartString();
     }
 
+    freeAllocatedMemory();
     return result;
   }
 
@@ -67,11 +85,19 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
         malloc<ffi.Pointer<ffi.Char>>();
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
         malloc<ffi.Pointer<PLGNStatus>>();
+
+    freeAllocatedMemory() {
+      malloc.free(response);
+      malloc.free(status);
+    }
+
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNProfileID(response, in1, status);
     if (res == 0) {
       String? consumedStatus = consumeStatus(status, "");
+      // ignore: unnecessary_null_comparison
       if (consumedStatus != null) {
+        freeAllocatedMemory();
         throw IdentityInputsException(consumedStatus);
       }
     }
@@ -82,6 +108,7 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
       result = jsonString.toDartString();
     }
 
+    freeAllocatedMemory();
     return result;
   }
 
@@ -94,11 +121,19 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
         malloc<ffi.Pointer<ffi.Char>>();
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
         malloc<ffi.Pointer<PLGNStatus>>();
+
+    freeAllocatedMemory() {
+      malloc.free(response);
+      malloc.free(status);
+    }
+
     int res =
         PolygonIdCore.nativePolygonIdCoreLib.PLGNIDToInt(response, in1, status);
     if (res == 0) {
       String? consumedStatus = consumeStatus(status, "");
+      // ignore: unnecessary_null_comparison
       if (consumedStatus != null) {
+        freeAllocatedMemory();
         throw IdentityInputsException(consumedStatus);
       }
     }
@@ -109,6 +144,7 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
       result = jsonString.toDartString();
     }
 
+    freeAllocatedMemory();
     return result;
   }
 
@@ -122,11 +158,19 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
         malloc<ffi.Pointer<ffi.Char>>();
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
         malloc<ffi.Pointer<PLGNStatus>>();
+
+    freeAllocatedMemory() {
+      malloc.free(response);
+      malloc.free(status);
+    }
+
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNDescribeID(response, in1, cfg, status);
     if (res == 0) {
       String? consumedStatus = consumeStatus(status, "");
+      // ignore: unnecessary_null_comparison
       if (consumedStatus != null) {
+        freeAllocatedMemory();
         throw CredentialInputsException(consumedStatus);
       }
     }
@@ -137,6 +181,7 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
       result = jsonString.toDartString();
     }
 
+    freeAllocatedMemory();
     return result;
   }
 }
