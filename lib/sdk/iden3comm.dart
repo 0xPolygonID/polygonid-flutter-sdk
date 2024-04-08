@@ -109,7 +109,7 @@ abstract class PolygonIdSdkIden3comm {
   ///
   /// The [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
-  Future<List<ClaimEntity?>> getClaimsFromIden3Message(
+  Future<Map<int,List<ClaimEntity?>>> getClaimsFromIden3Message(
       {required Iden3MessageEntity message,
       required String genesisDid,
       BigInt? profileNonce,
@@ -386,7 +386,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }
 
   @override
-  Future<List<ClaimEntity?>> getClaimsFromIden3Message(
+  Future<Map<List<ClaimEntity?>>> getClaimsFromIden3Message(
       {required Iden3MessageEntity message,
       required String genesisDid,
       BigInt? profileNonce,

@@ -39,7 +39,7 @@ class GetIden3commClaimsParam {
 }
 
 class GetIden3commClaimsUseCase
-    extends FutureUseCase<GetIden3commClaimsParam, List<ClaimEntity?>> {
+    extends FutureUseCase<GetIden3commClaimsParam, Map<int, List<ClaimEntity?>>> {
   final Iden3commCredentialRepository _iden3commCredentialRepository;
   final GetClaimsUseCase _getClaimsUseCase;
   final GetClaimRevocationStatusUseCase _getClaimRevocationStatusUseCase;
@@ -63,7 +63,7 @@ class GetIden3commClaimsUseCase
   );
 
   @override
-  Future<List<ClaimEntity?>> execute({
+  Future<Map<int, List<ClaimEntity?>>> execute({
     required GetIden3commClaimsParam param,
   }) async {
     List<ClaimEntity?> claims = [];
@@ -72,6 +72,8 @@ class GetIden3commClaimsUseCase
         await _getProofRequestsUseCase.execute(param: param.message);
     _stacktraceManager
         .addTrace("[GetIden3commClaimsUseCase] requests: $requests");
+
+    var groupedByGroupId = groupBy(requests, (obj) => obj.scope.query.groupId);
 
     /// We got [ProofRequestEntity], let's find the associated [ClaimEntity]
     for (ProofRequestEntity request in requests) {
@@ -175,7 +177,7 @@ class GetIden3commClaimsUseCase
       throw CredentialsNotFoundException(requests);
     }
 
-    return claims;
+    return {0:claims};
   }
 
   String _getTypeFromNestedObject(
