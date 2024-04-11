@@ -8,6 +8,7 @@ enum AtomicQueryInputsType {
   sigonchain,
   v3,
   v3onchain,
+  linkedMultiQuery10,
   unknown;
 }
 

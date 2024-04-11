@@ -8,6 +8,7 @@ class ProofCircuitDataSource {
     CircuitType.sigonchain,
     CircuitType.circuitsV3,
     CircuitType.circuitsV3onchain,
+    CircuitType.linkedMultyQuery10,
   ];
 
   Future<bool> isCircuitSupported({required CircuitType circuit}) {

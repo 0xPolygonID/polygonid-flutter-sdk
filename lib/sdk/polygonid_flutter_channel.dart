@@ -165,17 +165,7 @@ class PolygonIdFlutterChannel
                   claims.map((claim) => jsonEncode(claim)).toList());
 
         case 'getClaimsFromIden3Message':
-          return getIden3Message(message: call.arguments['message']).then(
-            (message) => getClaimsFromIden3Message(
-                    message: message,
-                    genesisDid: call.arguments['genesisDid'] as String,
-                    profileNonce: BigInt.tryParse(
-                        call.arguments['profileNonce'] as String? ?? ''),
-                    privateKey: call.arguments['privateKey'] as String)
-                .then((claims) => claims
-                    .map((claim) => jsonEncode(claim?.toJson()))
-                    .toList()),
-          );
+          throw UnimplementedError();
 
         case 'getFilters':
           return getIden3Message(message: call.arguments['message'])

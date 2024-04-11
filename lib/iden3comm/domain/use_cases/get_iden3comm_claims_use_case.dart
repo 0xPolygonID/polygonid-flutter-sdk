@@ -18,6 +18,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_reque
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/circuit_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
+import 'package:sembast/sembast.dart';
 
 class GetIden3commClaimsParam {
   final Iden3MessageEntity message;
@@ -39,7 +40,7 @@ class GetIden3commClaimsParam {
 }
 
 class GetIden3commClaimsUseCase
-    extends FutureUseCase<GetIden3commClaimsParam, Map<int, List<ClaimEntity?>>> {
+    extends FutureUseCase<GetIden3commClaimsParam, List<ClaimEntity?>> {
   final Iden3commCredentialRepository _iden3commCredentialRepository;
   final GetClaimsUseCase _getClaimsUseCase;
   final GetClaimRevocationStatusUseCase _getClaimRevocationStatusUseCase;
@@ -63,7 +64,7 @@ class GetIden3commClaimsUseCase
   );
 
   @override
-  Future<Map<int, List<ClaimEntity?>>> execute({
+  Future<List<ClaimEntity?>> execute({
     required GetIden3commClaimsParam param,
   }) async {
     List<ClaimEntity?> claims = [];
@@ -75,44 +76,93 @@ class GetIden3commClaimsUseCase
 
     var groupedByGroupId = groupBy(requests, (obj) => obj.scope.query.groupId);
 
+    Map<int, List<ClaimEntity>> claimsByGroupId = {};
+
+    for (var group in groupedByGroupId.entries) {
+      int? groupId = group.key;
+      if (groupId == null) {
+        continue;
+      }
+      List<ProofRequestEntity> groupRequests = group.value;
+      List<FilterEntity> filtersForQueryClaimDb = [];
+      for (ProofRequestEntity request in groupRequests) {
+        bool supportedCircuit = await _isProofCircuitSupported.execute(
+            param: request.scope.circuitId);
+        if (!supportedCircuit) {
+          continue; //TODO maybe throw exception
+        }
+        List<FilterEntity> filterForSingleRequest =
+            await _iden3commCredentialRepository.getFilters(request: request);
+        filtersForQueryClaimDb.addAll(filterForSingleRequest);
+        filtersForQueryClaimDb = filtersForQueryClaimDb.toSet().toList();
+      }
+
+      List<ClaimEntity> claimsFiltered = await _getClaimsUseCase.execute(
+        param: GetClaimsParam(
+          filters: filtersForQueryClaimDb,
+          genesisDid: param.genesisDid,
+          profileNonce: param.profileNonce,
+          privateKey: param.privateKey,
+          credentialSortOrderList: param.credentialSortOrderList,
+        ),
+      );
+      claimsByGroupId[groupId] = claimsFiltered;
+    }
+
     /// We got [ProofRequestEntity], let's find the associated [ClaimEntity]
     for (ProofRequestEntity request in requests) {
-      if (await _isProofCircuitSupported.execute(
-          param: request.scope.circuitId)) {
-        List<FilterEntity> filters =
-            await _iden3commCredentialRepository.getFilters(request: request);
-        _stacktraceManager
-            .addTrace("[GetIden3commClaimsUseCase] filters: $filters");
+      // we check if circuit from the request is supported
+      bool supportedCircuit = await _isProofCircuitSupported.execute(
+          param: request.scope.circuitId);
+      if (!supportedCircuit) {
+        continue; //TODO maybe throw exception
+      }
 
-        List<ClaimEntity> claimsFiltered = await _getClaimsUseCase.execute(
-          param: GetClaimsParam(
-            filters: filters,
-            genesisDid: param.genesisDid,
-            profileNonce: param.profileNonce,
-            privateKey: param.privateKey,
-            credentialSortOrderList: param.credentialSortOrderList,
-          ),
-        );
+      List<ClaimEntity> validClaims = [];
+
+      int? requestGroupId = request.scope.query.groupId;
+      if (requestGroupId != null &&
+          claimsByGroupId.containsKey(requestGroupId)) {
+        validClaims = claimsByGroupId[requestGroupId] ?? [];
+      }else{
+          List<FilterEntity> filters =
+          await _iden3commCredentialRepository.getFilters(request: request);
+          _stacktraceManager
+              .addTrace("[GetIden3commClaimsUseCase] filters: $filters");
+
+          List<ClaimEntity> claimsFiltered = await _getClaimsUseCase.execute(
+            param: GetClaimsParam(
+              filters: filters,
+              genesisDid: param.genesisDid,
+              profileNonce: param.profileNonce,
+              privateKey: param.privateKey,
+              credentialSortOrderList: param.credentialSortOrderList,
+            ),
+          );
+
+          validClaims = claimsFiltered;
+
+      }
 
         // filter manually positive integer
-        claimsFiltered = _filterManuallyIfPositiveInteger(
+      validClaims = _filterManuallyIfPositiveInteger(
           request: request,
-          claimsFiltered: claimsFiltered,
+          claimsFiltered: validClaims,
         );
 
         //filter manually proof type
-        claimsFiltered = _filterManuallyIfQueryContainsProofType(
+      validClaims = _filterManuallyIfQueryContainsProofType(
           request: request,
-          claimsFiltered: claimsFiltered,
+          claimsFiltered: validClaims,
         );
 
-        if (claimsFiltered.isEmpty) {
+        if (validClaims.isEmpty) {
           _stacktraceManager
               .addTrace("[GetIden3commClaimsUseCase] claims is empty");
           continue;
         }
 
-        var validClaim = claimsFiltered.firstWhereOrNull((element) {
+        var validClaim = validClaims.firstWhereOrNull((element) {
           List<Map<String, dynamic>> proofs = element.info["proof"];
           List<String> proofTypes =
               proofs.map((e) => e["type"] as String).toList();
@@ -146,6 +196,7 @@ class GetIden3commClaimsUseCase
               break;
             case CircuitType.circuitsV3:
             case CircuitType.circuitsV3onchain:
+            case CircuitType.linkedMultyQuery10:
               bool success = [
                 'Iden3SparseMerkleProof',
                 'Iden3SparseMerkleTreeProof',
@@ -163,7 +214,7 @@ class GetIden3commClaimsUseCase
         }
 
         claims.add(validClaim);
-      }
+
     }
 
     /// If we have requests but didn't get any proofs, we throw
@@ -177,7 +228,7 @@ class GetIden3commClaimsUseCase
       throw CredentialsNotFoundException(requests);
     }
 
-    return {0:claims};
+    return claims;
   }
 
   String _getTypeFromNestedObject(

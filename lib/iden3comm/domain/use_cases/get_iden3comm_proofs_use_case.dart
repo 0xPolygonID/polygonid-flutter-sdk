@@ -114,8 +114,7 @@ class GetIden3commProofsUseCase
       _stacktraceManager
           .addTrace("[GetIden3commProofsUseCase] requests: $requests");
 
-      Map<int, List<ClaimEntity?>> claimsMappedByGroupId =
-          await _getIden3commClaimsUseCase.execute(
+      List<ClaimEntity?> claims = await _getIden3commClaimsUseCase.execute(
         param: GetIden3commClaimsParam(
           message: param.message,
           genesisDid: param.genesisDid,
@@ -126,23 +125,17 @@ class GetIden3commProofsUseCase
         ),
       );
       _stacktraceManager.addTrace(
-          "[GetIden3commProofsUseCase] claims found: ${claimsMappedByGroupId.length}");
+          "[GetIden3commProofsUseCase] claims found: ${claims.length}");
 
-      if (requests.isNotEmpty && claimsMappedByGroupId.isNotEmpty) {
+      if ((requests.isNotEmpty &&
+              claims.isNotEmpty &&
+              requests.length == claims.length) ||
+          requests.isEmpty) {
         /// We got [ProofRequestEntity], let's find the associated [ClaimEntity]
         /// and generate [ProofEntity]
         for (int i = 0; i < requests.length; i++) {
           ProofRequestEntity request = requests[i];
-          int? groupId = request.scope.query.groupId;
-          ClaimEntity? claim;
-          if (groupId == null) {
-            List<ClaimEntity?>? credentials = claimsMappedByGroupId[0];
-            claim = credentials?.firstWhere(
-                (element) => element!.type == request.scope.query.type,
-                orElse: () => null);
-          } else {
-            claim = claimsMappedByGroupId[groupId]!.first;
-          }
+          ClaimEntity? claim = claims[i];
 
           if (claim == null) {
             continue;
@@ -183,6 +176,7 @@ class GetIden3commProofsUseCase
                 .firstWhere((k) => identityEntity.profiles[k] == claim!.did,
                     orElse: () => GENESIS_PROFILE_NONCE);
 
+            int? groupId = request.scope.query.groupId;
             String linkNonce = "0";
             // Check if groupId exists in the map
             if (groupId != null) {
