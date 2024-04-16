@@ -11,28 +11,7 @@ class LibPolygonIdCoreIdentityDataSource {
     this._polygonIdCoreIdentity,
   );
 
-  @Deprecated("Use newGenesisId instead of calculateGenesisId.")
   String calculateGenesisId(
-    String claimsTreeRoot,
-    String blockchain,
-    String network,
-  ) {
-    String input = jsonEncode({
-      "claimsTreeRoot": claimsTreeRoot,
-      //"8174871235721986756013575194888048894328426483724665491825528183806540196001",
-      "blockchain": blockchain,
-      //"polygon",
-      "network": network,
-      //"mumbai"
-    });
-
-    String output = _polygonIdCoreIdentity.calculateGenesisId(input);
-    logger().d("calculateGenesisId: $output");
-
-    return jsonDecode(output)["did"];
-  }
-
-  String newGenesisId(
     String claimsTreeRoot,
     String blockchain,
     String network,
@@ -49,7 +28,7 @@ class LibPolygonIdCoreIdentityDataSource {
 
     String cfg = jsonEncode(config);
 
-    String output = _polygonIdCoreIdentity.newGenesisId(input, cfg);
+    String output = _polygonIdCoreIdentity.calculateGenesisId(input, cfg);
     logger().d("calculateGenesisId: $output");
 
     return jsonDecode(output)["did"];
