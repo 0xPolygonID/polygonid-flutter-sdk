@@ -2,6 +2,7 @@ import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
@@ -51,10 +52,12 @@ abstract class PolygonIdSdkCredential {
   ///
   /// The [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
-  Future<List<ClaimEntity>> getClaims(
-      {List<FilterEntity>? filters,
-      required String genesisDid,
-      required String privateKey});
+  Future<List<ClaimEntity>> getClaims({
+    List<FilterEntity>? filters,
+    required String genesisDid,
+    required String privateKey,
+    List<CredentialSortOrder> credentialSortOrderList,
+  });
 
   /// Get a list of [ClaimEntity] filtered by ids associated to the identity previously stored
   /// in the the Polygon ID Sdk.
@@ -204,10 +207,12 @@ class Credential implements PolygonIdSdkCredential {
   }
 
   @override
-  Future<List<ClaimEntity>> getClaims(
-      {List<FilterEntity>? filters,
-      required String genesisDid,
-      required String privateKey}) {
+  Future<List<ClaimEntity>> getClaims({
+    List<FilterEntity>? filters,
+    required String genesisDid,
+    required String privateKey,
+    List<CredentialSortOrder> credentialSortOrderList = const [],
+  }) {
     _stacktraceManager.clear();
     _stacktraceManager.addTrace("PolygonIdSdk.Credential.getClaims called");
     return _getClaimsUseCase.execute(
@@ -216,6 +221,7 @@ class Credential implements PolygonIdSdkCredential {
       genesisDid: genesisDid,
       profileNonce: GENESIS_PROFILE_NONCE,
       privateKey: privateKey,
+      credentialSortOrderList: credentialSortOrderList,
     ));
   }
 

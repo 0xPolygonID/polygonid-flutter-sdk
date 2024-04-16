@@ -1,5 +1,9 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/did_method_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
@@ -7,8 +11,11 @@ import 'package:polygonid_flutter_sdk/credential/domain/use_cases/add_did_profil
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_did_profile_info_list_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_did_profile_info_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_did_profile_info_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_response_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/authenticate.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
@@ -17,6 +24,8 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exce
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/clean_schema_cache_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_onchain_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_filters_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_rev_nonce_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart';
@@ -27,6 +36,8 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/add
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/get_interactions_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/remove_interactions_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/update_interaction_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 
 abstract class PolygonIdSdkIden3comm {
   /// Returns a [Iden3MessageEntity] from an iden3comm message string.
@@ -60,11 +71,31 @@ abstract class PolygonIdSdkIden3comm {
   ///
   /// The [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
-  Future<List<ClaimEntity>> fetchAndSaveClaims(
-      {required Iden3MessageEntity message,
-      required String genesisDid,
-      BigInt? profileNonce,
-      required String privateKey});
+  Future<List<ClaimEntity>> fetchAndSaveClaims({
+    required CredentialOfferMessageEntity message,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String privateKey,
+  });
+
+  /// Fetch a list of [ClaimEntity] from onchain contract using its address
+  /// and stores them in Polygon Id Sdk.
+  ///
+  /// The [contractAddress] is the address of the onchain contract
+  ///
+  /// The [genesisDid] is the unique id of the identity
+  ///
+  /// The [profileNonce] is the nonce of the profile used from identity
+  /// to obtain the did identifier
+  ///
+  /// The [privateKey] is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
+  Future<List<ClaimEntity>> fetchOnchainClaims({
+    required String contractAddress,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String privateKey,
+  });
 
   /// Get a list of [ClaimEntity] stored in Polygon Id Sdk that fulfills
   /// the request from iden3comm message.
@@ -121,9 +152,7 @@ abstract class PolygonIdSdkIden3comm {
     BigInt? profileNonce,
     required String privateKey,
     String? challenge,
-    String? ethereumUrl,
-    String? stateContractAddr,
-    String? ipfsNodeUrl,
+    EnvConfigEntity config,
     Map<int, Map<String, dynamic>>? nonRevocationProofs,
     Map<String, dynamic>? transactionData,
   });
@@ -143,7 +172,7 @@ abstract class PolygonIdSdkIden3comm {
   ///
   /// The [pushToken] is the push notification registration token so the issuer/verifer
   /// can send notifications to the identity.
-  Future<void> authenticate({
+  Future<Iden3MessageEntity?> authenticate({
     required Iden3MessageEntity message,
     required String genesisDid,
     BigInt? profileNonce,
@@ -256,6 +285,7 @@ abstract class PolygonIdSdkIden3comm {
 @injectable
 class Iden3comm implements PolygonIdSdkIden3comm {
   final FetchAndSaveClaimsUseCase _fetchAndSaveClaimsUseCase;
+  final FetchOnchainClaimsUseCase _fetchOnchainClaimsUseCase;
   final GetIden3MessageUseCase _getIden3MessageUseCase;
   final GetSchemasUseCase _getSchemasUseCase;
   final AuthenticateUseCase _authenticateUseCase;
@@ -273,9 +303,11 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   final GetDidProfileInfoUseCase _getDidProfileInfoUseCase;
   final GetDidProfileInfoListUseCase _getDidProfileInfoListUseCase;
   final RemoveDidProfileInfoUseCase _removeDidProfileInfoUseCase;
+  final GetAuthTokenUseCase _getAuthTokenUseCase;
 
   Iden3comm(
     this._fetchAndSaveClaimsUseCase,
+    this._fetchOnchainClaimsUseCase,
     this._getIden3MessageUseCase,
     this._getSchemasUseCase,
     this._authenticateUseCase,
@@ -293,6 +325,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     this._getDidProfileInfoUseCase,
     this._getDidProfileInfoListUseCase,
     this._removeDidProfileInfoUseCase,
+    this._getAuthTokenUseCase,
   );
 
   @override
@@ -315,24 +348,41 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }
 
   @override
-  Future<List<ClaimEntity>> fetchAndSaveClaims(
-      {required Iden3MessageEntity message,
-      required String genesisDid,
-      BigInt? profileNonce,
-      required String privateKey}) {
+  Future<List<ClaimEntity>> fetchAndSaveClaims({
+    required CredentialOfferMessageEntity message,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String privateKey,
+  }) {
     _stacktraceManager.clearStacktrace();
-    if (message is! OfferIden3MessageEntity) {
-      _stacktraceManager.addTrace(
-          '[fetchAndSaveClaims] Invalid message type: ${message.messageType}');
-      throw InvalidIden3MsgTypeException(
-          Iden3MessageType.credentialOffer, message.messageType);
-    }
+
     return _fetchAndSaveClaimsUseCase.execute(
-        param: FetchAndSaveClaimsParam(
-            message: message,
-            genesisDid: genesisDid,
-            profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
-            privateKey: privateKey));
+      param: FetchAndSaveClaimsParam(
+        message: message,
+        genesisDid: genesisDid,
+        profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
+        privateKey: privateKey,
+      ),
+    );
+  }
+
+  @override
+  Future<List<ClaimEntity>> fetchOnchainClaims({
+    required String contractAddress,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String privateKey,
+  }) {
+    _stacktraceManager.clearStacktrace();
+
+    return _fetchOnchainClaimsUseCase.execute(
+      param: FetchOnchainClaimsParam(
+        contractAddress: contractAddress,
+        genesisDid: genesisDid,
+        profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
+        privateKey: privateKey,
+      ),
+    );
   }
 
   @override
@@ -377,9 +427,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     BigInt? profileNonce,
     required String privateKey,
     String? challenge,
-    String? ethereumUrl,
-    String? stateContractAddr,
-    String? ipfsNodeUrl,
+    EnvConfigEntity? config,
     Map<int, Map<String, dynamic>>? nonRevocationProofs,
     Map<String, dynamic>? transactionData,
   }) {
@@ -391,16 +439,14 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
       privateKey: privateKey,
       challenge: challenge,
-      ethereumUrl: ethereumUrl,
-      stateContractAddr: stateContractAddr,
-      ipfsNodeUrl: ipfsNodeUrl,
+      config: config,
       nonRevocationProofs: nonRevocationProofs,
       transactionData: transactionData,
     ));
   }
 
   @override
-  Future<void> authenticate({
+  Future<Iden3MessageEntity?> authenticate({
     required Iden3MessageEntity message,
     required String genesisDid,
     BigInt? profileNonce,
@@ -428,6 +474,33 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         challenge: challenge,
       ),
     );
+  }
+
+  Future<Iden3MessageEntity?> authenticateV2({
+    required String privateKey,
+    required String genesisDid,
+    required BigInt profileNonce,
+    required IdentityEntity identityEntity,
+    required Iden3MessageEntity message,
+    required EnvEntity env,
+    String? pushToken,
+    String? challenge,
+  }) async {
+    try {
+      return await Authenticate().authenticate(
+        privateKey: privateKey,
+        genesisDid: genesisDid,
+        profileNonce: profileNonce,
+        identityEntity: identityEntity,
+        message: message,
+        env: env,
+        pushToken: pushToken,
+      );
+    } catch (e) {
+      _stacktraceManager.addTrace('[authenticateV2] Error: ${e.toString()}');
+      _stacktraceManager.addError(e.toString());
+      rethrow;
+    }
   }
 
   @override
@@ -558,6 +631,22 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         genesisDid: did,
         privateKey: privateKey,
         interactedWithDid: interactedWithDid,
+      ),
+    );
+  }
+
+  Future<String> getAuthToken({
+    required String genesisDid,
+    required String privateKey,
+    required BigInt profileNonce,
+    required String iden3message,
+  }) {
+    return _getAuthTokenUseCase.execute(
+      param: GetAuthTokenParam(
+        genesisDid: genesisDid,
+        profileNonce: profileNonce,
+        privateKey: privateKey,
+        message: iden3message,
       ),
     );
   }

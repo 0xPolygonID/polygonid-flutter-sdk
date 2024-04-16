@@ -37,6 +37,18 @@ class ProofInputsException implements Exception {
   ProofInputsException(this.errorMessage);
 }
 
+class CredentialInputsException implements Exception {
+  final String? errorMessage;
+
+  CredentialInputsException(this.errorMessage);
+}
+
+class IdentityInputsException implements Exception {
+  final String? errorMessage;
+
+  IdentityInputsException(this.errorMessage);
+}
+
 class CircuitNotDownloadedException implements Exception {
   final String circuit;
   final String errorMessage;

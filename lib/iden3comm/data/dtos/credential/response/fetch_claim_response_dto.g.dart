@@ -22,6 +22,8 @@ const _$FetchClaimResponseTypeEnumMap = {
       'https://iden3-communication.io/authorization/1.0/request',
   FetchClaimResponseType.offer:
       'https://iden3-communication.io/credentials/1.0/offer',
+  FetchClaimResponseType.onchainOffer:
+      'https://iden3-communication.io/credentials/1.0/onchain-offer',
   FetchClaimResponseType.issuance:
       'https://iden3-communication.io/credentials/1.0/issuance-response',
   FetchClaimResponseType.contractFunctionCall:

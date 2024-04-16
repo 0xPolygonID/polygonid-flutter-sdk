@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
@@ -21,9 +22,17 @@ import 'remote_iden3comm_data_source_test.mocks.dart';
 const token = "theToken";
 const url = "theUrl";
 const identifier = "theIdentifier";
-Response response = Response(mockFetchClaim, 200);
-Response errorResponse = Response(mockFetchClaim, 444);
-Response otherTypeResponse = Response(mockOtherTypeFetchClaim, 200);
+Response dioResponse = Response(
+    data: mockFetchClaim,
+    statusCode: 200,
+    requestOptions: RequestOptions(path: url));
+Response dioErrorResponse = Response(
+    data: mockFetchClaim,
+    statusCode: 444,
+    requestOptions: RequestOptions(path: url));
+http.Response response = http.Response(mockFetchClaim, 200);
+http.Response errorResponse = http.Response(mockFetchClaim, 444);
+http.Response otherTypeResponse = http.Response(mockOtherTypeFetchClaim, 200);
 final exception = Exception();
 
 /// We assume [FetchClaimResponseDTO] has been tested
@@ -39,16 +48,19 @@ final claim = ClaimDTO(
     credentialRawValue: mockFetchClaim);
 
 //DEPENDENCIES
+MockDio dio = MockDio();
 MockClient client = MockClient();
 MockStacktraceManager stacktraceStreamManager = MockStacktraceManager();
 
 RemoteIden3commDataSource dataSource = RemoteIden3commDataSource(
+  dio,
   client,
   stacktraceStreamManager,
 );
 
 @GenerateMocks([
-  Client,
+  Dio,
+  http.Client,
   StacktraceManager,
 ])
 void main() {
@@ -58,33 +70,39 @@ void main() {
         () async {
       //
       when(
-        client.post(
+        dio.post(
           any,
-          body: anyNamed("body"),
-          headers: anyNamed("headers"),
+          data: anyNamed("data"),
+          options: anyNamed("options"),
         ),
-      ).thenAnswer((realInvocation) => Future.value(response));
+      ).thenAnswer((realInvocation) => Future.value(dioResponse));
 
       //
       expect(
         await dataSource.authWithToken(
-            token: CommonMocks.token, url: CommonMocks.url),
-        response,
+          url: CommonMocks.url,
+          token: CommonMocks.token,
+        ),
+        dioResponse,
       );
 
       //
-      var captured = verify(client.post(captureAny,
-              body: captureAnyNamed('body'),
-              headers: captureAnyNamed('headers')))
-          .captured;
+      var captured = verify(dio.post(
+        captureAny,
+        data: captureAnyNamed('data'),
+        options: captureAnyNamed('options'),
+      )).captured;
+
+      expect(captured[0], CommonMocks.url);
+      expect(captured[1], CommonMocks.token);
 
       expect(
-          captured[0], Uri.parse(Iden3commMocks.authRequest.body.callbackUrl!));
-      expect(captured[1], CommonMocks.token);
-      expect(captured[2], {
-        HttpHeaders.acceptHeader: '*/*',
-        HttpHeaders.contentTypeHeader: 'text/plain',
-      });
+        captured[2].headers,
+        {
+          HttpHeaders.acceptHeader: '*/*',
+          HttpHeaders.contentTypeHeader: 'text/plain',
+        },
+      );
     });
 
     test(
@@ -92,38 +110,42 @@ void main() {
         () async {
       //
       when(
-        client.post(
+        dio.post(
           any,
-          body: anyNamed('body'),
-          headers: anyNamed('headers'),
+          data: anyNamed('data'),
+          options: anyNamed('options'),
         ),
       ).thenAnswer(
-        (realInvocation) => Future.value(errorResponse),
+        (realInvocation) => Future.value(dioErrorResponse),
       );
 
       //
       await expectLater(
         dataSource.authWithToken(
-            token: CommonMocks.token, url: CommonMocks.url),
+          url: CommonMocks.url,
+          token: CommonMocks.token,
+        ),
         throwsA(isA<NetworkException>()),
       );
 
       //
       var captured = verify(
-        client.post(
+        dio.post(
           captureAny,
-          body: captureAnyNamed('body'),
-          headers: captureAnyNamed('headers'),
+          data: captureAnyNamed('data'),
+          options: captureAnyNamed('options'),
         ),
       ).captured;
 
-      expect(
-          captured[0], Uri.parse(Iden3commMocks.authRequest.body.callbackUrl!));
+      expect(captured[0], CommonMocks.url);
       expect(captured[1], CommonMocks.token);
-      expect(captured[2], {
-        HttpHeaders.acceptHeader: '*/*',
-        HttpHeaders.contentTypeHeader: 'text/plain',
-      });
+      expect(
+        captured[2].headers,
+        {
+          HttpHeaders.acceptHeader: '*/*',
+          HttpHeaders.contentTypeHeader: 'text/plain',
+        },
+      );
     });
   });
 

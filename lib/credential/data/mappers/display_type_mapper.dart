@@ -18,10 +18,3 @@ class DisplayTypeMapper extends Mapper<Map<String, dynamic>?, DisplayType?> {
     return json;
   }
 }
-
-class DisplayTypeMapperParam {
-  final String type;
-  final Map<String, dynamic> json;
-
-  DisplayTypeMapperParam(this.type, this.json);
-}

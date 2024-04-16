@@ -15,7 +15,12 @@ class GetProofQueryUseCase
     "\$gt": 3,
     "\$in": 4,
     "\$nin": 5,
-    "\$ne": 6
+    "\$ne": 6,
+    "\$lte": 7,
+    "\$gte": 8,
+    "\$between": 9,
+    "\$nonbetween": 10,
+    "\$exists": 11,
   };
 
   GetProofQueryUseCase(this._stacktraceManager);

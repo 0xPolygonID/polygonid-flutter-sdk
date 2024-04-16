@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
@@ -14,7 +15,8 @@ import 'check_profile_and_did_current_env_use_case_test.mocks.dart';
 // Dependencies
 MockCheckProfileValidityUseCase checkProfileValidityUseCase =
     MockCheckProfileValidityUseCase();
-MockGetEnvUseCase getEnvUseCase = MockGetEnvUseCase();
+MockGetSelectedChainUseCase getSelectedChainUseCase =
+    MockGetSelectedChainUseCase();
 MockGetDidIdentifierUseCase getDidIdentifierUseCase =
     MockGetDidIdentifierUseCase();
 MockStacktraceManager stacktraceStreamManager = MockStacktraceManager();
@@ -23,14 +25,14 @@ MockStacktraceManager stacktraceStreamManager = MockStacktraceManager();
 CheckProfileAndDidCurrentEnvUseCase useCase =
     CheckProfileAndDidCurrentEnvUseCase(
   checkProfileValidityUseCase,
-  getEnvUseCase,
+  getSelectedChainUseCase,
   getDidIdentifierUseCase,
   stacktraceStreamManager,
 );
 
 @GenerateMocks([
   CheckProfileValidityUseCase,
-  GetEnvUseCase,
+  GetSelectedChainUseCase,
   GetDidIdentifierUseCase,
   StacktraceManager,
 ])
@@ -38,8 +40,8 @@ void main() {
   setUp(() {
     when(checkProfileValidityUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value(null));
-    when(getEnvUseCase.execute(param: anyNamed('param')))
-        .thenAnswer((realInvocation) => Future.value(CommonMocks.env));
+    when(getSelectedChainUseCase.execute(param: anyNamed('param')))
+        .thenAnswer((realInvocation) => Future.value(CommonMocks.chain));
     when(getDidIdentifierUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value(CommonMocks.did));
   });
@@ -63,15 +65,15 @@ void main() {
             .first
             .profileNonce,
         CommonMocks.nonce);
-    verify(getEnvUseCase.execute(param: anyNamed('param')));
+    verify(getSelectedChainUseCase.execute(param: anyNamed('param')));
 
     var captureDidIdentifier =
         verify(getDidIdentifierUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
     expect(captureDidIdentifier.privateKey, CommonMocks.privateKey);
-    expect(captureDidIdentifier.blockchain, CommonMocks.env.blockchain);
-    expect(captureDidIdentifier.network, CommonMocks.env.network);
+    expect(captureDidIdentifier.blockchain, CommonMocks.name);
+    expect(captureDidIdentifier.network, CommonMocks.network);
   });
 
   test(
@@ -103,22 +105,22 @@ void main() {
             .first
             .profileNonce,
         CommonMocks.nonce);
-    verify(getEnvUseCase.execute(param: anyNamed('param')));
+    verify(getSelectedChainUseCase.execute(param: anyNamed('param')));
 
     var captureDidIdentifier =
         verify(getDidIdentifierUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
     expect(captureDidIdentifier.privateKey, CommonMocks.privateKey);
-    expect(captureDidIdentifier.blockchain, CommonMocks.env.blockchain);
-    expect(captureDidIdentifier.network, CommonMocks.env.network);
+    expect(captureDidIdentifier.blockchain, CommonMocks.name);
+    expect(captureDidIdentifier.network, CommonMocks.network);
   });
 
   test(
       "Given param, when I call execute and an error occurred, I expect an exception to be thrown",
       () async {
     // Given
-    when(getEnvUseCase.execute(param: anyNamed('param')))
+    when(getSelectedChainUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
     // When
@@ -138,7 +140,7 @@ void main() {
             .first
             .profileNonce,
         CommonMocks.nonce);
-    verify(getEnvUseCase.execute(param: anyNamed('param')));
+    verify(getSelectedChainUseCase.execute(param: anyNamed('param')));
     verifyNever(
         getDidIdentifierUseCase.execute(param: captureAnyNamed('param')));
   });

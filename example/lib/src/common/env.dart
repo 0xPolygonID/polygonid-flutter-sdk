@@ -4,9 +4,15 @@ part 'env.g.dart';
 
 @Envied()
 abstract class Env {
-  @EnviedField(varName: 'ENV_POLYGON_MUMBAI')
-  static const String polygonMumbai = _Env.polygonMumbai;
+  @EnviedField(varName: 'DEFAULT_ENV')
+  static const String defaultEnvironment = _Env.defaultEnvironment;
 
-  @EnviedField(varName: 'ENV_POLYGON_MAINNET')
-  static const String polygonMainnet = _Env.polygonMainnet;
+  @EnviedField(varName: 'PINATA_GATEWAY')
+  static const String pinataGateway = _Env.pinataGateway;
+
+  @EnviedField(varName: 'PINATA_GATEWAY_TOKEN')
+  static const String pinataGatewayToken = _Env.pinataGatewayToken;
+
+  @EnviedField(varName: 'STACKTRACE_ENCRYPTION_KEY')
+  static const String stacktraceEncryptionKey = _Env.stacktraceEncryptionKey;
 }

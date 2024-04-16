@@ -39,37 +39,30 @@ Future<void> init() async {
 }
 
 void registerEnv() {
-  Map<String, dynamic> polygonMumbai = jsonDecode(Env.polygonMumbai);
-  Map<String, dynamic> polygonMainnet = jsonDecode(Env.polygonMainnet);
+  Map<String, dynamic> defaultEnv = jsonDecode(Env.defaultEnvironment);
+  String stacktraceEncryptionKey = Env.stacktraceEncryptionKey;
+  String pinataGateway = Env.pinataGateway;
+  String pinataGatewayToken = Env.pinataGatewayToken;
 
-  Map<String, EnvEntity> env = {
-    "mumbai": EnvEntity(
-      blockchain: polygonMumbai['blockchain'],
-      network: polygonMumbai['network'],
-      web3Url: polygonMumbai['web3Url'],
-      web3RdpUrl: polygonMumbai['web3RdpUrl'],
-      web3ApiKey: polygonMumbai['web3ApiKey'],
-      idStateContract: polygonMumbai['idStateContract'],
-      pushUrl: polygonMumbai['pushUrl'],
-      ipfsUrl: polygonMumbai['ipfsUrl'],
-    ),
-    "mainnet": EnvEntity(
-      blockchain: polygonMainnet['blockchain'],
-      network: polygonMainnet['network'],
-      web3Url: polygonMainnet['web3Url'],
-      web3RdpUrl: polygonMainnet['web3RdpUrl'],
-      web3ApiKey: polygonMainnet['web3ApiKey'],
-      idStateContract: polygonMainnet['idStateContract'],
-      pushUrl: polygonMainnet['pushUrl'],
-      ipfsUrl: polygonMainnet['ipfsUrl'],
-    )
-  };
-  getIt.registerSingleton<Map<String, EnvEntity>>(env);
+  EnvEntity envV1 = EnvEntity.fromJson(defaultEnv);
+  if (stacktraceEncryptionKey.isNotEmpty) {
+    envV1 = envV1.copyWith(stacktraceEncryptionKey: stacktraceEncryptionKey);
+  }
+
+  if (pinataGateway.isNotEmpty) {
+    envV1 = envV1.copyWith(pinataGateway: pinataGateway);
+  }
+
+  if (pinataGatewayToken.isNotEmpty) {
+    envV1 = envV1.copyWith(pinataGatewayToken: pinataGatewayToken);
+  }
+
+  getIt.registerSingleton<EnvEntity>(envV1);
 }
 
 ///
 Future<void> registerProviders() async {
-  await PolygonIdSdk.init(env: getIt<Map<String, EnvEntity>>()["mumbai"]);
+  await PolygonIdSdk.init(env: getIt<EnvEntity>());
   getIt.registerLazySingleton<PolygonIdSdk>(() => PolygonIdSdk.I);
 }
 

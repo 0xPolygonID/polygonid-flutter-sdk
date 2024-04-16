@@ -14,7 +14,7 @@ import 'package:polygonid_flutter_sdk/proof/libs/polygonidcore/pidcore_proof.dar
 
 class ComputeAtomicQueryInputs {
   final AtomicQueryInputsParam param;
-  final AtomicQueryInputsConfigParam? configParam;
+  final ConfigParam? configParam;
 
   ComputeAtomicQueryInputs({
     required this.param,
@@ -37,11 +37,14 @@ class LibPolygonIdCoreWrapper {
     this._polygonIdCoreProof,
   );
 
-  Future<String> getProofInputs(AtomicQueryInputsParam atomicQueryInputsParam,
-      AtomicQueryInputsConfigParam? atomicQueryInputsConfigParam) async {
+  Future<String> getProofInputs(
+    AtomicQueryInputsParam atomicQueryInputsParam,
+    ConfigParam? atomicQueryInputsConfigParam,
+  ) async {
     ComputeAtomicQueryInputs param = ComputeAtomicQueryInputs(
-        param: atomicQueryInputsParam,
-        configParam: atomicQueryInputsConfigParam);
+      param: atomicQueryInputsParam,
+      configParam: atomicQueryInputsConfigParam,
+    );
     try {
       String proofInputs = await compute(
         _computeAtomicQueryInputs,
@@ -54,7 +57,8 @@ class LibPolygonIdCoreWrapper {
   }
 
   Future<String> _computeAtomicQueryInputs(
-      ComputeAtomicQueryInputs computeParam) {
+    ComputeAtomicQueryInputs computeParam,
+  ) {
     try {
       String result;
 
@@ -231,9 +235,9 @@ class LibPolygonIdCoreProofDataSource {
     _stacktraceManager.addTrace(
         "[LibPolygonIdCoreProofDataSource][MainFlow]getProofInputs input param: ${jsonEncode(inputParam.toJson())}");
 
-    AtomicQueryInputsConfigParam? configParam;
+    ConfigParam? configParam;
     if (config != null) {
-      configParam = AtomicQueryInputsConfigParam.fromJson(config);
+      configParam = ConfigParam.fromJson(config);
 
       logger().i(
           "[LibPolygonIdCoreProofDataSource][MainFlow]getProofInputs config param: ${jsonEncode(inputParam.toJson())}");

@@ -1,4 +1,3 @@
-import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/env_mapper.dart';
 import 'package:polygonid_flutter_sdk/common/data/data_sources/storage_key_value_data_source.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/env_exceptions.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
@@ -6,11 +5,9 @@ import 'package:polygonid_flutter_sdk/common/domain/repositories/config_reposito
 
 class ConfigRepositoryImpl implements ConfigRepository {
   final StorageKeyValueDataSource _storageKeyValueDataSource;
-  final EnvMapper _envMapper;
 
   ConfigRepositoryImpl(
     this._storageKeyValueDataSource,
-    this._envMapper,
   );
 
   @override
@@ -20,13 +17,25 @@ class ConfigRepositoryImpl implements ConfigRepository {
         return Future.error(EnvNotSetException());
       }
 
-      return _envMapper.mapFrom(value);
+      return EnvEntity.fromJson(value);
     });
   }
 
   @override
   Future<void> setEnv({required EnvEntity env}) {
+    return _storageKeyValueDataSource.store(key: "env", value: env.toJson());
+  }
+
+  @override
+  Future<String?> getSelectedChainId() {
+    return _storageKeyValueDataSource.get(key: "selected_chain").then((value) {
+      return value;
+    });
+  }
+
+  @override
+  Future<void> setSelectedChainId({required String chainId}) {
     return _storageKeyValueDataSource.store(
-        key: "env", value: _envMapper.mapTo(env));
+        key: "selected_chain", value: chainId);
   }
 }

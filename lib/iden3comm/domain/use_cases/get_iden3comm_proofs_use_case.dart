@@ -7,8 +7,12 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/did_method_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
@@ -46,9 +50,7 @@ class GetIden3commProofsParam {
   final BigInt profileNonce;
   final String privateKey;
   final String? challenge;
-  final String? ethereumUrl;
-  final String? stateContractAddr;
-  final String? ipfsNodeUrl;
+  final EnvConfigEntity? config;
   final Map<int, Map<String, dynamic>>? nonRevocationProofs;
 
   final Map<String, dynamic>? transactionData;
@@ -59,9 +61,7 @@ class GetIden3commProofsParam {
     required this.profileNonce,
     required this.privateKey,
     this.challenge,
-    this.ethereumUrl,
-    this.stateContractAddr,
-    this.ipfsNodeUrl,
+    this.config,
     this.nonRevocationProofs,
     this.transactionData,
   });
@@ -121,6 +121,7 @@ class GetIden3commProofsUseCase
           profileNonce: param.profileNonce,
           privateKey: param.privateKey,
           nonRevocationProofs: param.nonRevocationProofs ?? {},
+          credentialSortOrderList: [CredentialSortOrder.ExpirationDescending],
         ),
       );
       _stacktraceManager.addTrace(
@@ -204,9 +205,7 @@ class GetIden3commProofsUseCase
               circuitData: circuitData,
               privateKey: privKey,
               challenge: challenge,
-              ethereumUrl: param.ethereumUrl,
-              stateContractAddr: param.stateContractAddr,
-              ipfsNodeURL: param.ipfsNodeUrl,
+              config: param.config,
               verifierId: param.message.from,
               linkNonce: linkNonce,
               transactionData: param.transactionData,

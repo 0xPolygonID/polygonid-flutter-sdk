@@ -1,13 +1,32 @@
 import 'dart:convert';
+import 'dart:math';
+import 'dart:typed_data';
 
+import 'package:polygonid_flutter_sdk/assets/get_issuer_id_interface.g.dart';
+import 'package:polygonid_flutter_sdk/assets/onchain_non_merkelized_issuer_base.g.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/lib_pidcore_credential_data_source.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_state_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/cache_credential_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/onchain_offer_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_onchain_claim_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 
+import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
@@ -16,10 +35,14 @@ import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_us
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_fetch_requests_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
+import 'package:web3dart/crypto.dart';
+import 'package:web3dart/web3dart.dart';
 
 class FetchAndSaveClaimsParam {
-  final OfferIden3MessageEntity message;
+  final CredentialOfferMessageEntity message;
   final String genesisDid;
   final BigInt profileNonce;
   final String privateKey;
@@ -35,27 +58,38 @@ class FetchAndSaveClaimsParam {
 class FetchAndSaveClaimsUseCase
     extends FutureUseCase<FetchAndSaveClaimsParam, List<ClaimEntity>> {
   final Iden3commCredentialRepository _iden3commCredentialRepository;
+  final FetchOnchainClaimUseCase _fetchOnchainClaimUseCase;
   final CheckProfileAndDidCurrentEnvUseCase
       _checkProfileAndDidCurrentEnvUseCase;
   final GetEnvUseCase _getEnvUseCase;
+  final GetSelectedChainUseCase _getSelectedChainUseCase;
   final GetDidIdentifierUseCase _getDidIdentifierUseCase;
+  final GetDidUseCase _getDidUseCase;
   final GetFetchRequestsUseCase _getFetchRequestsUseCase;
   final GetAuthTokenUseCase _getAuthTokenUseCase;
   final SaveClaimsUseCase _saveClaimsUseCase;
-  final GetClaimRevocationStatusUseCase _getClaimRevocationStatusUseCase;
   final CacheCredentialUseCase _cacheCredentialUseCase;
+  final LocalContractFilesDataSource _localContractFilesDataSource;
+  final IdentityRepository _identityRepository;
+  final InteractionRepository _interactionRepository;
+
   final StacktraceManager _stacktraceManager;
 
   FetchAndSaveClaimsUseCase(
     this._iden3commCredentialRepository,
+    this._fetchOnchainClaimUseCase,
     this._checkProfileAndDidCurrentEnvUseCase,
     this._getEnvUseCase,
+    this._getSelectedChainUseCase,
     this._getDidIdentifierUseCase,
+    this._getDidUseCase,
     this._getFetchRequestsUseCase,
     this._getAuthTokenUseCase,
     this._saveClaimsUseCase,
-    this._getClaimRevocationStatusUseCase,
     this._cacheCredentialUseCase,
+    this._localContractFilesDataSource,
+    this._identityRepository,
+    this._interactionRepository,
     this._stacktraceManager,
   );
 
@@ -75,56 +109,46 @@ class FetchAndSaveClaimsUseCase
               privateKey: param.privateKey,
               profileNonce: param.profileNonce));
 
-      EnvEntity env = await _getEnvUseCase.execute();
+      final env = await _getEnvUseCase.execute();
+      final chain = await _getSelectedChainUseCase.execute();
 
-      String profileDid = await _getDidIdentifierUseCase.execute(
-          param: GetDidIdentifierParam(
-              privateKey: param.privateKey,
-              blockchain: env.blockchain,
-              network: env.network,
-              profileNonce: param.profileNonce));
-
-      final List<String> requests = await _getFetchRequestsUseCase.execute(
-          param: GetFetchRequestsParam(
-        param.message,
-        profileDid,
-      ));
-
-      List<ClaimEntity> claims = [];
-      for (String request in requests) {
-        final String authToken = await _getAuthTokenUseCase.execute(
-            param: GetAuthTokenParam(
-          genesisDid: param.genesisDid,
-          profileNonce: param.profileNonce,
+      final profileDid = await _getDidIdentifierUseCase.execute(
+        param: GetDidIdentifierParam(
           privateKey: param.privateKey,
-          message: request,
-        ));
+          blockchain: chain.blockchain,
+          network: chain.network,
+          profileNonce: param.profileNonce,
+        ),
+      );
 
-        ClaimEntity claimEntity =
-            await _iden3commCredentialRepository.fetchClaim(
-                did: profileDid,
-                authToken: authToken,
-                url: param.message.body.url);
+      final List<ClaimEntity> claims;
 
-        claims.add(claimEntity);
+      final message = param.message;
+      if (message is OfferIden3MessageEntity) {
+        claims = await _fetchClaims(message, param, profileDid);
+      } else if (message is OnchainOfferIden3MessageEntity) {
+        claims = await _fetchOnchainClaims(message, profileDid, param);
+      } else {
+        throw Exception("Unknown message type: ${message.runtimeType}");
       }
 
       await _saveClaimsUseCase.execute(
-          param: SaveClaimsParam(
-        claims: claims,
-        genesisDid: param.genesisDid,
-        privateKey: param.privateKey,
-      ));
+        param: SaveClaimsParam(
+          claims: claims,
+          genesisDid: param.genesisDid,
+          privateKey: param.privateKey,
+        ),
+      );
 
       logger()
           .i("[FetchAndSaveClaimsUseCase] All claims have been saved: $claims");
       _stacktraceManager.addTrace(
           "[FetchAndSaveClaimsUseCase] All claims have been saved: claimsLength ${claims.length}");
 
-      final config = AtomicQueryInputsConfigParam(
-        ethereumUrl: env.web3Url + env.web3ApiKey,
-        stateContractAddr: env.idStateContract,
+      final config = ConfigParam(
         ipfsNodeURL: env.ipfsUrl,
+        chainConfigs: env.chainConfigs,
+        didMethods: env.didMethods,
       );
 
       for (final claim in claims) {
@@ -155,5 +179,153 @@ class FetchAndSaveClaimsUseCase
       _stacktraceManager.addError("[FetchAndSaveClaimsUseCase] Error: $error");
       rethrow;
     }
+  }
+
+  Future<List<ClaimEntity>> _fetchClaims(
+    OfferIden3MessageEntity message,
+    FetchAndSaveClaimsParam param,
+    String profileDid,
+  ) async {
+    final requests = await _getFetchRequestsUseCase.execute(
+      param: GetFetchRequestsParam(
+        message,
+        profileDid,
+      ),
+    );
+
+    final claims = <ClaimEntity>[];
+    for (final request in requests) {
+      final authToken = await _getAuthTokenUseCase.execute(
+        param: GetAuthTokenParam(
+          genesisDid: param.genesisDid,
+          profileNonce: param.profileNonce,
+          privateKey: param.privateKey,
+          message: request,
+        ),
+      );
+
+      final claimEntity = await _iden3commCredentialRepository.fetchClaim(
+        did: profileDid,
+        authToken: authToken,
+        url: message.body.url,
+      );
+
+      claims.add(claimEntity);
+    }
+    return claims;
+  }
+
+  Future<List<ClaimEntity>> _fetchOnchainClaims(
+    OnchainOfferIden3MessageEntity message,
+    String profileDid,
+    FetchAndSaveClaimsParam param,
+  ) async {
+    final chain = await _getSelectedChainUseCase.execute();
+    final env = await _getEnvUseCase.execute();
+
+    /// FIXME: inject web3Client through constructor
+    final web3Client = getItSdk<Web3Client>(param1: chain.rpcUrl);
+
+    final address = message.body.transactionData.contractAddress;
+    final deployedContract = await _localContractFilesDataSource
+        .loadOnchainNonMerkelizedIssuerBaseContract(address);
+
+    final issuer = Onchain_non_merkelized_issuer_base(
+      address: deployedContract.address,
+      client: web3Client,
+    );
+    final getIssuerId = Get_issuer_id_interface(
+      address: deployedContract.address,
+      client: web3Client,
+    );
+
+    // TODO (moria): Maybe refactor this to a separate use case
+    final supportsInterfaceCheck = await issuer.supportsInterface(
+      hexToBytes(interfaceCheckInterface),
+    );
+    final supportsNonMerklizedIssuerInterface = await issuer.supportsInterface(
+      hexToBytes(nonMerklizedIssuerInterface),
+    );
+
+    final supportsGetIssuerIdInterface = await issuer.supportsInterface(
+      hexToBytes(getIssuerIdInterface),
+    );
+
+    if (!supportsInterfaceCheck ||
+        !supportsNonMerklizedIssuerInterface ||
+        !supportsGetIssuerIdInterface) {
+      throw Exception(
+          "Contract at address $address does not support non-merkelized issuer interface");
+    }
+    final issuerIdInt = await getIssuerId.getId();
+    final issuerDid = (await _identityRepository.describeId(
+      id: issuerIdInt,
+      config: ConfigParam.fromEnv(env),
+    ))
+        .did;
+
+    final didEntity = await _getDidUseCase.execute(param: profileDid);
+    final userId =
+        await _identityRepository.convertIdToBigInt(id: didEntity.identifier);
+
+    final adapterVersion = await issuer.getCredentialAdapterVersion();
+
+    final claims = <ClaimEntity>[];
+    for (final credential in message.body.credentials) {
+      final credentialId = BigInt.parse(credential.id);
+
+      try {
+        final claim = await _fetchOnchainClaimUseCase.execute(
+          param: FetchOnchainClaimParam(
+            profileDid: profileDid,
+            issuerDid: issuerDid,
+            contractAddress: address,
+            userId: BigInt.parse(userId),
+            credentialId: credentialId,
+            adapterVersion: adapterVersion,
+            skipInterfaceSupportCheck: true,
+          ),
+        );
+
+        claims.add(claim);
+      } catch (e) {
+        logger().e(
+            "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e");
+        _stacktraceManager.addTrace(
+            "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e");
+      }
+    }
+
+    return claims;
+  }
+
+  Future<BigInt> _tryFindLastInteractionWithPrivateProfile(
+    String genesisDid,
+    String privateKey,
+    String issuerDid,
+  ) async {
+    // Public DID nonce
+    BigInt profileNonce = BigInt.zero;
+
+    var interactions = await _interactionRepository.getInteractions(
+      privateKey: privateKey,
+      genesisDid: genesisDid,
+    );
+
+    interactions = interactions
+        .where((interaction) => interaction.from == issuerDid)
+        .toList();
+    interactions.sort((a, b) => max(a.timestamp, b.timestamp));
+
+    if (interactions.isEmpty) {
+      return GENESIS_PROFILE_NONCE;
+    }
+
+    final latestInteraction = interactions.last;
+    if (latestInteraction is InteractionEntity) {
+      profileNonce = latestInteraction.profileNonce;
+    }
+
+    return profileNonce;
   }
 }

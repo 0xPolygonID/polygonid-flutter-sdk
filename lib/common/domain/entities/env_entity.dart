@@ -1,71 +1,126 @@
+import 'package:flutter/foundation.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/did_method_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
+
 class EnvEntity {
-  final String blockchain;
-  final String network;
-  final String web3Url;
-  final String web3RdpUrl;
-  final String web3ApiKey;
-  final String idStateContract;
   final String pushUrl;
   final String ipfsUrl;
-  final String? stacktraceEncryptionKey;
 
-  EnvEntity({
-    required this.blockchain,
-    required this.network,
-    required this.web3Url,
-    required this.web3RdpUrl,
-    required this.web3ApiKey,
-    required this.idStateContract,
+  final Map<String, ChainConfigEntity> chainConfigs;
+  final List<DidMethodEntity> didMethods;
+
+  final String? stacktraceEncryptionKey;
+  final String? pinataGateway;
+  final String? pinataGatewayToken;
+
+  EnvEntity._({
     required this.pushUrl,
     required this.ipfsUrl,
+    this.chainConfigs = const {},
+    this.didMethods = const [],
     this.stacktraceEncryptionKey,
+    this.pinataGateway,
+    this.pinataGatewayToken,
+  });
+
+  EnvEntity({
+    required this.pushUrl,
+    required this.ipfsUrl,
+    required this.chainConfigs,
+    required this.didMethods,
+    this.stacktraceEncryptionKey,
+    this.pinataGateway,
+    this.pinataGatewayToken,
   });
 
   factory EnvEntity.fromJson(Map<String, dynamic> json) {
     return EnvEntity(
-      blockchain: json['blockchain'],
-      network: json['network'],
-      web3Url: json['web3Url'],
-      web3RdpUrl: json['web3RdpUrl'],
-      web3ApiKey: json['web3ApiKey'],
-      idStateContract: json['idStateContract'],
       pushUrl: json['pushUrl'],
       ipfsUrl: json['ipfsUrl'],
+      chainConfigs: (json['chainConfigs'] as Map<String, dynamic>).map(
+        (key, value) => MapEntry(
+          key,
+          ChainConfigEntity.fromJson(value),
+        ),
+      ),
+      didMethods: (json['didMethods'] as List<dynamic>)
+          .map((e) => DidMethodEntity.fromJson(e))
+          .toList(),
       stacktraceEncryptionKey: json['stacktraceEncryptionKey'],
+      pinataGateway: json['pinataGateway'],
+      pinataGatewayToken: json['pinataGatewayToken'],
     );
   }
 
   @override
   Map<String, dynamic> toJson() => {
-        'blockchain': blockchain,
-        'network': network,
-        'web3Url': web3Url,
-        'web3RdpUrl': web3RdpUrl,
-        'web3ApiKey': web3ApiKey,
-        'idStateContract': idStateContract,
         'pushUrl': pushUrl,
         'ipfsUrl': ipfsUrl,
+        'chainConfigs': chainConfigs.map(
+          (key, value) => MapEntry(
+            key,
+            value.toJson(),
+          ),
+        ),
+        'didMethods': didMethods.map((e) => e.toJson()).toList(),
         'stacktraceEncryptionKey': stacktraceEncryptionKey,
+        'pinataGateway': pinataGateway,
+        'pinataGatewayToken': pinataGatewayToken,
       };
 
   @override
-  String toString() =>
-      "[EnvEntity] {blockchain: $blockchain, network: $network, web3Url: $web3Url, web3RdpUrl: $web3RdpUrl, web3ApiKey: $web3ApiKey, idStateContract: $idStateContract, pushUrl: $pushUrl, ipfsUrl: $ipfsUrl, stacktraceEncryptionKey: $stacktraceEncryptionKey}";
+  String toString() {
+    return 'EnvEntity{pushUrl: $pushUrl, ipfsUrl: $ipfsUrl, chainConfig: $chainConfigs, didMethods: $didMethods, stacktraceEncryptionKey: $stacktraceEncryptionKey, , pinataGateway: $pinataGateway, pinataGatewayToken: $pinataGatewayToken}';
+  }
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is EnvEntity &&
-          blockchain == other.blockchain &&
-          network == other.network &&
-          web3Url == other.web3Url &&
-          web3RdpUrl == other.web3RdpUrl &&
-          web3ApiKey == other.web3ApiKey &&
-          idStateContract == other.idStateContract &&
           pushUrl == other.pushUrl &&
           ipfsUrl == other.ipfsUrl &&
-          stacktraceEncryptionKey == other.stacktraceEncryptionKey;
+          mapEquals(chainConfigs, other.chainConfigs) &&
+          listEquals(didMethods, other.didMethods) &&
+          stacktraceEncryptionKey == other.stacktraceEncryptionKey &&
+          pinataGateway == other.pinataGateway &&
+          pinataGatewayToken == other.pinataGatewayToken;
 
   @override
   int get hashCode => runtimeType.hashCode;
+
+  EnvEntity copyWith({
+    String? blockchain,
+    String? network,
+    String? rpcUrl,
+    String? idStateContract,
+    String? pushUrl,
+    String? ipfsUrl,
+    Map<String, ChainConfigEntity>? chainConfigs,
+    List<DidMethodEntity>? didMethods,
+    String? stacktraceEncryptionKey,
+    String? pinataGateway,
+    String? pinataGatewayToken,
+  }) {
+    return EnvEntity._(
+      pushUrl: pushUrl ?? this.pushUrl,
+      ipfsUrl: ipfsUrl ?? this.ipfsUrl,
+      chainConfigs: chainConfigs ?? this.chainConfigs,
+      didMethods: didMethods ?? this.didMethods,
+      stacktraceEncryptionKey:
+          stacktraceEncryptionKey ?? this.stacktraceEncryptionKey,
+      pinataGateway: pinataGateway ?? this.pinataGateway,
+      pinataGatewayToken: pinataGatewayToken ?? this.pinataGatewayToken,
+    );
+  }
+}
+
+extension EnvEntityExtension on EnvEntity {
+  EnvConfigEntity get config {
+    return EnvConfigEntity(
+      ipfsNodeUrl: ipfsUrl,
+      chainConfigs: chainConfigs,
+      didMethods: didMethods,
+    );
+  }
 }

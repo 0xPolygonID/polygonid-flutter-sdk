@@ -41,21 +41,21 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_mes
 
 import '../../proof/request/contract_function_call_body_request.dart';
 
-class ContractIden3MessageEntity extends Iden3MessageEntity {
-  @override
-  final ContractFunctionCallBodyRequest body;
-
-  ContractIden3MessageEntity(
-      {required super.id,
-      String? typ,
-      required super.type,
-      String? thid,
-      required this.body})
-      : super(
-          from: '',
+class ContractIden3MessageEntity
+    extends Iden3MessageEntity<ContractFunctionCallBodyRequest> {
+  ContractIden3MessageEntity({
+    required super.id,
+    String? typ,
+    required super.type,
+    String? thid,
+    required super.body,
+    super.nextRequest,
+    String? from,
+  }) : super(
           messageType: Iden3MessageType.proofContractInvokeRequest,
           thid: thid ?? '',
           typ: typ ?? '',
+          from: from ?? '',
         );
 
   /// Creates an instance from the given json
@@ -71,6 +71,8 @@ class ContractIden3MessageEntity extends Iden3MessageEntity {
       type: json['type'],
       thid: json['thid'] ?? '',
       body: body,
+      nextRequest: json['next_request'],
+      from: json['from'] ?? '',
     );
   }
 

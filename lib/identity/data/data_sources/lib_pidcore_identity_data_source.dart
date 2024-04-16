@@ -12,7 +12,11 @@ class LibPolygonIdCoreIdentityDataSource {
   );
 
   String calculateGenesisId(
-      String claimsTreeRoot, String blockchain, String network) {
+    String claimsTreeRoot,
+    String blockchain,
+    String network,
+    Map<String, dynamic> config,
+  ) {
     String input = jsonEncode({
       "claimsTreeRoot": claimsTreeRoot,
       //"8174871235721986756013575194888048894328426483724665491825528183806540196001",
@@ -22,7 +26,9 @@ class LibPolygonIdCoreIdentityDataSource {
       //"mumbai"
     });
 
-    String output = _polygonIdCoreIdentity.calculateGenesisId(input);
+    String cfg = jsonEncode(config);
+
+    String output = _polygonIdCoreIdentity.calculateGenesisId(input, cfg);
     logger().d("calculateGenesisId: $output");
 
     return jsonDecode(output)["did"];
@@ -47,5 +53,19 @@ class LibPolygonIdCoreIdentityDataSource {
     String idAsInt = jsonDecode(output);
     logger().d("genesisIdToBigInt: $idAsInt");
     return idAsInt;
+  }
+
+  String describeId({
+    String? idAsInt,
+    String? id,
+    String? config,
+  }) {
+    return _polygonIdCoreIdentity.describeId(
+      jsonEncode({
+        if (idAsInt != null) "idAsInt": idAsInt,
+        if (id != null) "id": id,
+      }),
+      config,
+    );
   }
 }

@@ -4,12 +4,17 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/did_method_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
@@ -99,6 +104,15 @@ class PolygonIdFlutterChannel
         case 'getEnv':
           return _polygonIdSdk.getEnv().then((env) => jsonEncode(env));
 
+        case 'setSelectedChain':
+          return _polygonIdSdk.setSelectedChain(
+              chainConfigId: call.arguments['chainConfigId'] as String);
+
+        case 'getSelectedChain':
+          return _polygonIdSdk
+              .getSelectedChain()
+              .then((chain) => jsonEncode(chain));
+
         case 'switchLog':
           return _polygonIdSdk.switchLog(enabled: call.arguments['enabled']);
 
@@ -133,6 +147,16 @@ class PolygonIdFlutterChannel
           return fetchAndSaveClaims(
                   message: OfferIden3MessageEntity.fromJson(
                       jsonDecode(call.arguments['message'])),
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  profileNonce: BigInt.tryParse(
+                      call.arguments['profileNonce'] as String? ?? ''),
+                  privateKey: call.arguments['privateKey'] as String)
+              .then((claims) =>
+                  claims.map((claim) => jsonEncode(claim)).toList());
+
+        case 'fetchOnchainClaims':
+          return fetchOnchainClaims(
+                  contractAddress: call.arguments['contractAddress'] as String,
                   genesisDid: call.arguments['genesisDid'] as String,
                   profileNonce: BigInt.tryParse(
                       call.arguments['profileNonce'] as String? ?? ''),
@@ -446,7 +470,7 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<void> authenticate({
+  Future<Iden3MessageEntity?> authenticate({
     required Iden3MessageEntity message,
     required String genesisDid,
     BigInt? profileNonce,
@@ -467,16 +491,32 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<List<ClaimEntity>> fetchAndSaveClaims(
-      {required Iden3MessageEntity message,
-      required String genesisDid,
-      BigInt? profileNonce,
-      required String privateKey}) {
+  Future<List<ClaimEntity>> fetchAndSaveClaims({
+    required CredentialOfferMessageEntity message,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String privateKey,
+  }) {
     return _polygonIdSdk.iden3comm.fetchAndSaveClaims(
         message: message,
         genesisDid: genesisDid,
         profileNonce: profileNonce,
         privateKey: privateKey);
+  }
+
+  @override
+  Future<List<ClaimEntity>> fetchOnchainClaims({
+    required String contractAddress,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String privateKey,
+  }) {
+    return _polygonIdSdk.iden3comm.fetchOnchainClaims(
+      contractAddress: contractAddress,
+      genesisDid: genesisDid,
+      profileNonce: profileNonce,
+      privateKey: privateKey,
+    );
   }
 
   @override
@@ -548,9 +588,7 @@ class PolygonIdFlutterChannel
     BigInt? profileNonce,
     required String privateKey,
     String? challenge,
-    String? ethereumUrl,
-    String? stateContractAddr,
-    String? ipfsNodeUrl,
+    EnvConfigEntity? config,
     Map<int, Map<String, dynamic>>? nonRevocationProofs,
     Map<String, dynamic>? transactionData,
   }) {
@@ -560,9 +598,7 @@ class PolygonIdFlutterChannel
       profileNonce: profileNonce,
       privateKey: privateKey,
       challenge: challenge,
-      ethereumUrl: ethereumUrl,
-      stateContractAddr: stateContractAddr,
-      ipfsNodeUrl: ipfsNodeUrl,
+      config: config,
       nonRevocationProofs: nonRevocationProofs,
       transactionData: transactionData,
     );
@@ -703,12 +739,18 @@ class PolygonIdFlutterChannel
 
   /// Credential
   @override
-  Future<List<ClaimEntity>> getClaims(
-      {List<FilterEntity>? filters,
-      required String genesisDid,
-      required String privateKey}) {
+  Future<List<ClaimEntity>> getClaims({
+    List<FilterEntity>? filters,
+    required String genesisDid,
+    required String privateKey,
+    List<CredentialSortOrder> credentialSortOrderList = const [],
+  }) {
     return _polygonIdSdk.credential.getClaims(
-        filters: filters, genesisDid: genesisDid, privateKey: privateKey);
+      filters: filters,
+      genesisDid: genesisDid,
+      privateKey: privateKey,
+      credentialSortOrderList: credentialSortOrderList,
+    );
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
@@ -9,8 +10,10 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_genesis_stat
 import '../../../common/common_mocks.dart';
 import '../../../common/identity_mocks.dart';
 
+import '../../../iden3comm/domain/use_cases/authenticate_use_case_test.dart';
 import 'get_did_identifier_use_case_test.mocks.dart';
 
+MockGetEnvUseCase getEnvUseCase = MockGetEnvUseCase();
 MockIdentityRepository identityRepository = MockIdentityRepository();
 MockGetGenesisStateUseCase getGenesisStateUseCase =
     MockGetGenesisStateUseCase();
@@ -26,12 +29,14 @@ GetDidIdentifierParam param = GetDidIdentifierParam(
 
 GetDidIdentifierUseCase useCase = GetDidIdentifierUseCase(
   identityRepository,
+  getEnvUseCase,
   getGenesisStateUseCase,
   stacktraceStreamManager,
 );
 
 @GenerateMocks([
   IdentityRepository,
+  GetEnvUseCase,
   GetGenesisStateUseCase,
   StacktraceManager,
 ])
@@ -41,6 +46,8 @@ void main() {
     reset(getGenesisStateUseCase);
 
     // Given
+    when(getEnvUseCase.execute())
+        .thenAnswer((realInvocation) => Future.value(CommonMocks.env));
     when(getGenesisStateUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value(IdentityMocks.treeState));
     when(identityRepository.getDidIdentifier(
@@ -48,6 +55,7 @@ void main() {
       network: anyNamed('network'),
       claimsRoot: anyNamed('claimsRoot'),
       profileNonce: anyNamed('profileNonce'),
+      config: anyNamed('config'),
     )).thenAnswer((realInvocation) => Future.value(CommonMocks.did));
   });
 
@@ -70,6 +78,7 @@ void main() {
         network: captureAnyNamed('network'),
         claimsRoot: captureAnyNamed('claimsRoot'),
         profileNonce: captureAnyNamed('profileNonce'),
+        config: captureAnyNamed('config'),
       )).captured;
       expect(authClaimCapture[0], CommonMocks.blockchain);
       expect(authClaimCapture[1], CommonMocks.network);
@@ -102,6 +111,7 @@ void main() {
         network: captureAnyNamed('network'),
         claimsRoot: captureAnyNamed('claimsRoot'),
         profileNonce: captureAnyNamed('profileNonce'),
+        config: captureAnyNamed('config'),
       ));
     },
   );

@@ -115,10 +115,24 @@ class ProofRequestFiltersMapper
               name: 'credential.credentialSubject.$field',
               value: value)
         ];
+      case '\$lte':
+        return [
+          FilterEntity(
+              operator: FilterOperator.lesserEqual,
+              name: 'credential.credentialSubject.$field',
+              value: value)
+        ];
       case '\$gt':
         return [
           FilterEntity(
               operator: FilterOperator.greater,
+              name: 'credential.credentialSubject.$field',
+              value: value)
+        ];
+      case '\$gte':
+        return [
+          FilterEntity(
+              operator: FilterOperator.greaterEqual,
               name: 'credential.credentialSubject.$field',
               value: value)
         ];
@@ -148,9 +162,56 @@ class ProofRequestFiltersMapper
       case '\$ne':
         return [
           FilterEntity(
-              operator: FilterOperator.nonEqual,
-              name: 'credential.credentialSubject.$field',
-              value: value)
+            operator: FilterOperator.nonEqual,
+            name: 'credential.credentialSubject.$field',
+            value: value,
+          )
+        ];
+      case '\$between':
+        if (value is! List || value.isEmpty || value.length != 2) {
+          throw OperatorException(
+              errorMessage:
+                  "Value for \$between operator must be a list of two elements");
+        }
+
+        //order the values if they are not ordered
+        value.sort();
+
+        return [
+          FilterEntity(
+            operator: FilterOperator.between,
+            name: 'credential.credentialSubject.$field',
+            value: value,
+          )
+        ];
+      case '\$nonbetween':
+        if (value is! List || value.isEmpty || value.length != 2) {
+          throw OperatorException(
+              errorMessage:
+                  "Value for \$nonbetween operator must be a list of two elements");
+        }
+
+        //order the values if they are not ordered
+        value.sort();
+
+        return [
+          FilterEntity(
+            operator: FilterOperator.nonbetween,
+            name: 'credential.credentialSubject.$field',
+            value: value,
+          )
+        ];
+      case '\$exists':
+        if (value is! bool) {
+          throw OperatorException(
+              errorMessage: "Value for \$exists operator must be a boolean");
+        }
+        return [
+          FilterEntity(
+            operator: FilterOperator.exists,
+            name: 'credential.credentialSubject.$field',
+            value: value,
+          )
         ];
       default:
         break;
@@ -159,87 +220,42 @@ class ProofRequestFiltersMapper
     return [];
   }
 
-  FilterEntity? _getBooleanFiltersByOperator(field, operator, value) {
-    var trueValues = [true, "true", 1];
-    var falseValues = [false, "false", 0];
+  static const trueValues = [true, "true", 1];
+  static const falseValues = [false, "false", 0];
+
+  bool? _parseValueToBool(dynamic value) {
     if (value is int) {
-      if (operator == '\$eq') {
-        if (value == 0) {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: falseValues);
-        } else {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: trueValues);
-        }
-      } else if (operator == '\$ne') {
-        if (value == 0) {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: trueValues);
-        } else {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: falseValues);
-        }
-      }
+      return value == 1;
     } else if (value is String) {
-      if (operator == '\$eq') {
-        if (value == "false") {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: falseValues);
-        } else {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: trueValues);
-        }
-      } else if (operator == '\$ne') {
-        if (value == "false") {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: trueValues);
-        } else {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: falseValues);
-        }
-      }
+      return value.toLowerCase() == "true";
     } else if (value is bool) {
-      if (operator == '\$eq') {
-        if (value == false) {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: falseValues);
-        } else {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: trueValues);
-        }
-      } else if (operator == '\$ne') {
-        if (value == false) {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: trueValues);
-        } else {
-          return FilterEntity(
-              operator: FilterOperator.inList,
-              name: 'credential.credentialSubject.$field',
-              value: falseValues);
-        }
-      }
+      return value;
+    }
+    return null;
+  }
+
+  FilterEntity _createFilterEntity(
+      String field, FilterOperator operator, dynamic value) {
+    return FilterEntity(
+        operator: operator,
+        name: 'credential.credentialSubject.$field',
+        value: value);
+  }
+
+  FilterEntity? _getBooleanFiltersByOperator(field, operator, value) {
+    bool? parsedValue = _parseValueToBool(value);
+    if (parsedValue == null) {
+      return null;
+    }
+
+    if (operator == '\$eq') {
+      return _createFilterEntity(
+          field, FilterOperator.inList, parsedValue ? trueValues : falseValues);
+    } else if (operator == '\$ne') {
+      return _createFilterEntity(
+          field, FilterOperator.inList, parsedValue ? falseValues : trueValues);
+    } else if (operator == '\$exists') {
+      return _createFilterEntity(field, FilterOperator.exists, parsedValue);
     }
     return null;
   }

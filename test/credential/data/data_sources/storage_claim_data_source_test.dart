@@ -179,7 +179,12 @@ void main() {
           .captured;
 
       expect(storeCaptured[0], database);
-      expect(storeCaptured[1].toString(), sem.Finder(filter: null).toString());
+      expect(
+          storeCaptured[1].toString(),
+          sem.Finder(
+            filter: null,
+            sortOrders: [],
+          ).toString());
     });
 
     test(
@@ -202,7 +207,11 @@ void main() {
 
       expect(storeCaptured[0], database);
       expect(
-          storeCaptured[1].toString(), sem.Finder(filter: filter).toString());
+          storeCaptured[1].toString(),
+          sem.Finder(
+            filter: filter,
+            sortOrders: [],
+          ).toString());
     });
 
     test(
@@ -225,7 +234,11 @@ void main() {
 
       expect(storeCaptured[0], database);
       expect(
-          storeCaptured[1].toString(), sem.Finder(filter: filter).toString());
+          storeCaptured[1].toString(),
+          sem.Finder(
+            filter: filter,
+            sortOrders: [],
+          ).toString());
     });
   });
 

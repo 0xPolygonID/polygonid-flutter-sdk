@@ -64,22 +64,22 @@
 
 */
 
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_body_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 
-class OfferIden3MessageEntity extends Iden3MessageEntity {
-  @override
-  final OfferBodyRequest body;
-
-  OfferIden3MessageEntity(
-      {required super.id,
-      required super.typ,
-      required super.type,
-      required super.thid,
-      required super.from,
-      required this.body,
-      super.to})
-      : super(messageType: Iden3MessageType.credentialOffer);
+class OfferIden3MessageEntity
+    extends CredentialOfferMessageEntity<OfferBodyRequest> {
+  OfferIden3MessageEntity({
+    required super.id,
+    required super.typ,
+    required super.type,
+    required super.thid,
+    required super.from,
+    required super.body,
+    super.to,
+    super.nextRequest,
+  }) : super(messageType: Iden3MessageType.credentialOffer);
 
   /// Creates an instance from the given json
   ///
@@ -95,6 +95,7 @@ class OfferIden3MessageEntity extends Iden3MessageEntity {
       from: json['from'],
       to: json['to'],
       body: body,
+      nextRequest: json['next_request'],
     );
   }
 

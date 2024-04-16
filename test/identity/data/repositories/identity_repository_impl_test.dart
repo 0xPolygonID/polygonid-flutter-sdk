@@ -588,7 +588,8 @@ void main() {
   group("Get did identifier", () {
     setUp(() {
       // Given
-      when(libPolygonIdCoreIdentityDataSource.calculateGenesisId(any, any, any))
+      when(libPolygonIdCoreIdentityDataSource.calculateGenesisId(
+              any, any, any, any))
           .thenReturn(CommonMocks.did);
       when(libPolygonIdCoreIdentityDataSource.calculateProfileId(any, any))
           .thenReturn(CommonMocks.did);
@@ -603,12 +604,14 @@ void main() {
               blockchain: CommonMocks.blockchain,
               network: CommonMocks.network,
               claimsRoot: CommonMocks.message,
-              profileNonce: CommonMocks.genesisNonce),
+              profileNonce: CommonMocks.genesisNonce,
+              config: CommonMocks.envConfig),
           CommonMocks.did);
 
       // Then
-      var captureCalculate = verify(libPolygonIdCoreIdentityDataSource
-              .calculateGenesisId(captureAny, captureAny, captureAny))
+      var captureCalculate = verify(
+              libPolygonIdCoreIdentityDataSource.calculateGenesisId(
+                  captureAny, captureAny, captureAny, captureAny))
           .captured;
 
       expect(captureCalculate[0], CommonMocks.message);
@@ -628,12 +631,13 @@ void main() {
               blockchain: CommonMocks.blockchain,
               network: CommonMocks.network,
               claimsRoot: CommonMocks.message,
-              profileNonce: CommonMocks.nonce),
+              profileNonce: CommonMocks.nonce,
+              config: CommonMocks.envConfig),
           CommonMocks.did);
 
       // Then
       var captureCalculate = verify(libPolygonIdCoreIdentityDataSource
-              .calculateGenesisId(captureAny, captureAny, captureAny))
+              .calculateGenesisId(captureAny, captureAny, captureAny, any))
           .captured;
       expect(captureCalculate[0], CommonMocks.message);
       expect(captureCalculate[1], CommonMocks.blockchain);
@@ -650,7 +654,8 @@ void main() {
         "Given parameters with a profileNonce, when I call getDidIdentifier and an error occurred, then I expect an exception to be thrown",
         () async {
       // Given
-      when(libPolygonIdCoreIdentityDataSource.calculateGenesisId(any, any, any))
+      when(libPolygonIdCoreIdentityDataSource.calculateGenesisId(
+              any, any, any, any))
           .thenThrow(CommonMocks.exception);
 
       // When
@@ -659,12 +664,14 @@ void main() {
               blockchain: CommonMocks.blockchain,
               network: CommonMocks.network,
               claimsRoot: CommonMocks.message,
-              profileNonce: CommonMocks.nonce),
+              profileNonce: CommonMocks.nonce,
+              config: CommonMocks.envConfig),
           throwsA(CommonMocks.exception));
 
       // Then
-      var captureCalculate = verify(libPolygonIdCoreIdentityDataSource
-              .calculateGenesisId(captureAny, captureAny, captureAny))
+      var captureCalculate = verify(
+              libPolygonIdCoreIdentityDataSource.calculateGenesisId(
+                  captureAny, captureAny, captureAny, captureAny))
           .captured;
       expect(captureCalculate[0], CommonMocks.message);
       expect(captureCalculate[1], CommonMocks.blockchain);

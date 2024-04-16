@@ -537,7 +537,10 @@ class State extends _i1.GeneratedContract {
         result.topics!,
         result.data!,
       );
-      return Initialized(decoded);
+      return Initialized(
+        decoded,
+        result,
+      );
     });
   }
 
@@ -558,7 +561,10 @@ class State extends _i1.GeneratedContract {
         result.topics!,
         result.data!,
       );
-      return OwnershipTransferStarted(decoded);
+      return OwnershipTransferStarted(
+        decoded,
+        result,
+      );
     });
   }
 
@@ -579,7 +585,10 @@ class State extends _i1.GeneratedContract {
         result.topics!,
         result.data!,
       );
-      return OwnershipTransferred(decoded);
+      return OwnershipTransferred(
+        decoded,
+        result,
+      );
     });
   }
 
@@ -600,40 +609,58 @@ class State extends _i1.GeneratedContract {
         result.topics!,
         result.data!,
       );
-      return StateUpdated(decoded);
+      return StateUpdated(
+        decoded,
+        result,
+      );
     });
   }
 }
 
 class Initialized {
-  Initialized(List<dynamic> response) : version = (response[0] as BigInt);
+  Initialized(
+    List<dynamic> response,
+    this.event,
+  ) : version = (response[0] as BigInt);
 
   final BigInt version;
+
+  final _i1.FilterEvent event;
 }
 
 class OwnershipTransferStarted {
-  OwnershipTransferStarted(List<dynamic> response)
-      : previousOwner = (response[0] as _i1.EthereumAddress),
+  OwnershipTransferStarted(
+    List<dynamic> response,
+    this.event,
+  )   : previousOwner = (response[0] as _i1.EthereumAddress),
         newOwner = (response[1] as _i1.EthereumAddress);
 
   final _i1.EthereumAddress previousOwner;
 
   final _i1.EthereumAddress newOwner;
+
+  final _i1.FilterEvent event;
 }
 
 class OwnershipTransferred {
-  OwnershipTransferred(List<dynamic> response)
-      : previousOwner = (response[0] as _i1.EthereumAddress),
+  OwnershipTransferred(
+    List<dynamic> response,
+    this.event,
+  )   : previousOwner = (response[0] as _i1.EthereumAddress),
         newOwner = (response[1] as _i1.EthereumAddress);
 
   final _i1.EthereumAddress previousOwner;
 
   final _i1.EthereumAddress newOwner;
+
+  final _i1.FilterEvent event;
 }
 
 class StateUpdated {
-  StateUpdated(List<dynamic> response)
-      : id = (response[0] as BigInt),
+  StateUpdated(
+    List<dynamic> response,
+    this.event,
+  )   : id = (response[0] as BigInt),
         blockN = (response[1] as BigInt),
         timestamp = (response[2] as BigInt),
         state = (response[3] as BigInt);
@@ -645,4 +672,6 @@ class StateUpdated {
   final BigInt timestamp;
 
   final BigInt state;
+
+  final _i1.FilterEvent event;
 }

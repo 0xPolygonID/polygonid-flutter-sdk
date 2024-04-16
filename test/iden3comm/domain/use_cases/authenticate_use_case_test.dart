@@ -5,6 +5,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart';
@@ -25,6 +26,8 @@ MockGetDidIdentifierUseCase getDidIdentifierUseCase =
     MockGetDidIdentifierUseCase();
 MockGetAuthTokenUseCase getAuthTokenUseCase = MockGetAuthTokenUseCase();
 MockGetEnvUseCase getEnvUseCase = MockGetEnvUseCase();
+MockGetSelectedChainUseCase getSelectedChainUseCase =
+    MockGetSelectedChainUseCase();
 MockGetPackageNameUseCase getPackageNameUseCase = MockGetPackageNameUseCase();
 MockCheckProfileAndDidCurrentEnvUseCase checkProfileAndDidCurrentEnvUseCase =
     MockCheckProfileAndDidCurrentEnvUseCase();
@@ -38,6 +41,7 @@ AuthenticateUseCase useCase = AuthenticateUseCase(
   getDidIdentifierUseCase,
   getAuthTokenUseCase,
   getEnvUseCase,
+  getSelectedChainUseCase,
   getPackageNameUseCase,
   checkProfileAndDidCurrentEnvUseCase,
   proofGenerationStepsStreamManager,
@@ -58,6 +62,7 @@ AuthenticateParam param = AuthenticateParam(
   GetDidIdentifierUseCase,
   GetAuthTokenUseCase,
   GetEnvUseCase,
+  GetSelectedChainUseCase,
   GetPackageNameUseCase,
   CheckProfileAndDidCurrentEnvUseCase,
   ProofGenerationStepsStreamManager,
@@ -79,6 +84,9 @@ void main() {
 
         when(getEnvUseCase.execute(param: anyNamed('param')))
             .thenAnswer((realInvocation) => Future.value(CommonMocks.env));
+
+        when(getSelectedChainUseCase.execute(param: anyNamed('param')))
+            .thenAnswer((realInvocation) => Future.value(CommonMocks.chain));
 
         when(checkProfileAndDidCurrentEnvUseCase.execute(
                 param: anyNamed('param')))
@@ -125,8 +133,8 @@ void main() {
               .captured
               .first;
           expect(captureDidIdentifier.privateKey, CommonMocks.privateKey);
-          expect(captureDidIdentifier.blockchain, CommonMocks.env.blockchain);
-          expect(captureDidIdentifier.network, CommonMocks.env.network);
+          expect(captureDidIdentifier.blockchain, CommonMocks.name);
+          expect(captureDidIdentifier.network, CommonMocks.network);
 
           var verifyConfig =
               verify(getEnvUseCase.execute(param: captureAnyNamed('param')));
