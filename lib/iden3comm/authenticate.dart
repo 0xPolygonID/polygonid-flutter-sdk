@@ -279,12 +279,14 @@ class Authenticate {
         return null;
       }
 
+      try {
       final messageJson = jsonDecode(response.body);
+
       if (messageJson is! Map<String, dynamic> || messageJson.isEmpty) {
         return null;
       }
 
-      try {
+
         GetIden3MessageUseCase _getIden3MessageUseCase =
             await getItSdk.getAsync<GetIden3MessageUseCase>();
         final nextRequest = await _getIden3MessageUseCase.execute(

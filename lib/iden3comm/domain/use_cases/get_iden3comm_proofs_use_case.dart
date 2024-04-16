@@ -192,7 +192,7 @@ class GetIden3commProofsUseCase
             }
 
             _proofGenerationStepsStreamManager
-                .add("Generating proof for ${claim.type}");
+                .add("#${i + 1} creating proof for ${claim.type}");
 
             // Generate proof param
             GenerateIden3commProofParam proofParam =
