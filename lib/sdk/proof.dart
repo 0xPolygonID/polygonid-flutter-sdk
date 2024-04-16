@@ -162,6 +162,7 @@ class Proof implements PolygonIdSdkProof {
   Future<String?> preCacheGistProof({
     required String genesisDid,
     required EnvEntity env,
+    required String stateContractAddress,
   }) async {
     try {
       List<String> splittedDid = genesisDid.split(":");
@@ -171,7 +172,7 @@ class Proof implements PolygonIdSdkProof {
       ContractAbi contractAbi = ContractAbi.fromJson(
           jsonEncode(jsonDecode(stateAbiJson)["abi"]), 'State');
       EthereumAddress ethereumAddress =
-          EthereumAddress.fromHex(env.idStateContract);
+          EthereumAddress.fromHex(stateContractAddress);
       DeployedContract contract =
           DeployedContract(contractAbi, ethereumAddress);
       String? cachedGistProof = await GistProofCache().getGistProof(

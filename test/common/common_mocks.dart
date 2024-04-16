@@ -58,23 +58,31 @@ class CommonMocks {
   static Key key = Key.fromLength(3);
 
   static Map<String, dynamic> envJson = {
-    'blockchain': name,
-    'network': network,
-    'web3Url': url,
-    'web3ApiKey': id,
-    'idStateContract': message,
     'pushUrl': url,
     'ipfsUrl': url,
+    'chainConfigs': {
+      "137": {
+        'blockchain': name,
+        'network': network,
+        'rpcUrl': url,
+        'stateContractAddr': message,
+      }
+    },
+    'didMethods' : [],
   };
 
   static EnvEntity env = EnvEntity(
-    blockchain: name,
-    network: network,
-    web3Url: url,
-    web3ApiKey: id,
-    idStateContract: message,
     pushUrl: url,
     ipfsUrl: url,
+    chainConfigs: {
+      "137": ChainConfigEntity(
+        blockchain: name,
+        network: network,
+        rpcUrl: url,
+        stateContractAddr: message,
+      ),
+    },
+    didMethods: [],
   );
 
   static ChainConfigEntity chain = ChainConfigEntity(

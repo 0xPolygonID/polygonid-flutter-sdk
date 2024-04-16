@@ -133,8 +133,8 @@ void main() {
               .captured
               .first;
           expect(captureDidIdentifier.privateKey, CommonMocks.privateKey);
-          expect(captureDidIdentifier.blockchain, CommonMocks.env.blockchain);
-          expect(captureDidIdentifier.network, CommonMocks.env.network);
+          expect(captureDidIdentifier.blockchain, CommonMocks.name);
+          expect(captureDidIdentifier.network, CommonMocks.network);
 
           var verifyConfig =
               verify(getEnvUseCase.execute(param: captureAnyNamed('param')));
