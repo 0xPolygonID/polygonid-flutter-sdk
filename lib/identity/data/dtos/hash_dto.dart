@@ -25,7 +25,6 @@ class HashDTO extends Equatable {
   }
 
   HashDTO.fromBigInt(BigInt i) : data = Uint8List(32) {
-    Uint8List dataBytes = Uint8List(32);
     if (i < BigInt.from(0)) {
       throw ArgumentError("BigInt must be positive");
     }
