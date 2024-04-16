@@ -68,7 +68,7 @@ class CommonMocks {
         'stateContractAddr': message,
       }
     },
-    'didMethods' : [],
+    'didMethods': [],
   };
 
   static EnvEntity env = EnvEntity(
