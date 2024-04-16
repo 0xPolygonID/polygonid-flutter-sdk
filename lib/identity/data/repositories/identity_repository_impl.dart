@@ -196,7 +196,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }) {
     try {
       // Get the genesis id
-      final genesisDid = _libPolygonIdCoreIdentityDataSource.newGenesisId(
+      final genesisDid = _libPolygonIdCoreIdentityDataSource.calculateGenesisId(
         claimsRoot,
         blockchain,
         network,
