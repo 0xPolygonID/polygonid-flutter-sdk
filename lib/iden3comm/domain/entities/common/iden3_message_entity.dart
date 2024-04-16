@@ -8,6 +8,7 @@ enum Iden3MessageType {
   proofContractInvokeRequest,
   credentialRefresh,
   credentialProposalRequest,
+  credentialProposal,
   credentialStatusUpdate;
 }
 

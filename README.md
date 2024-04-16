@@ -56,15 +56,22 @@ import 'package:flutter/material.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 
 Future<void> main() async {
-  await PolygonIdSdk.init(env: EnvEntity(
-      blockchain: 'polygon',
-      network: 'mumbai',
-      web3Url: 'https://polygon-mumbai.infura.io/v3/',
-      web3ApiKey: 'YOUR-INFURA-API-KEY',
-      idStateContract: '0x134B1BE34911E39A8397ec6289782989729807a4',
+  await PolygonIdSdk.init(
+    env: EnvEntity.v1(
       pushUrl: 'https://push-staging.polygonid.com/api/v1',
-      ipfsUrl: "https://[YOUR-IPFS-API-KEY]:[YOUR-IPFS-API-KEY-SECRET]@ipfs.infura.io:5001",
-  ));
+      ipfsUrl:
+      "https://[YOUR-IPFS-API-KEY]:[YOUR-IPFS-API-KEY-SECRET]@ipfs.infura.io:5001",
+      chainConfigs: {
+        "80002": ChainConfigEntity(
+          blockchain: 'polygon',
+          network: 'amoy',
+          rpcUrl: 'https://rpc-amoy.polygon.technology/',
+          stateContractAddr: '0x1a4cC30f2aA0377b0c3bc9848766D90cb4404124',
+        )
+      },
+      didMethods: [],
+    ),
+  );
   runApp(const App());
 }
 ```
@@ -89,8 +96,8 @@ You can either set the environment during initialization (with `env` parameter) 
 The environment object is [EnvEntity](lib/common/domain/entities/env_entity.dart) with:
 ```
   final String blockchain; # The name of the blockchain (eg: polygon)
-  final String network; # The network of the blockchain (eg: mumbai)
-  final String web3Url; # URL of the blockchain (eg: https://polygon-mumbai.infura.io/v3/)
+  final String network; # The network of the blockchain (eg: amoy)
+  final String web3Url; # URL of the blockchain (eg: https://polygon-amoy.infura.io/v3/)
   final String web3ApiKey; # The API key of the web3 URL service (eg: YOUR-INFURA-API-KEY)
   final String idStateContract; # The ID state contract (eg: 0x134B1BE34911E39A8397ec6289782989729807a4)
   final String pushUrl; # The push notification URL (eg: https://push-staging.polygonid.com/api/v1)
@@ -99,14 +106,14 @@ The environment object is [EnvEntity](lib/common/domain/entities/env_entity.dart
 
 ### Supported Environments
 
-| Environment    |      Polygon Mumbai                           |  Polygon Main |
-|----------------|:------------------------------------------:|:-------------:|
-| blockchain     |         polygon                            |  polygon  |
-| network        |         mumbai                             |  main  |
-| web3Url        | https://polygon-mumbai.infura.io/v3/       |  https://polygon-mainnet.infura.io/v3/  |
-| idStateContract | 0x134B1BE34911E39A8397ec6289782989729807a4 |  0x624ce98D2d27b20b8f8d521723Df8fC4db71D79D  |
-| pushUrl        | https://push-staging.polygonid.com/api/v1  |  https://push-staging.polygonid.com/api/v1  |
-| ipfsUrl        | https://[YOUR-IPFS-API-KEY]:[YOUR-IPFS-API-KEY-SECRET]@ipfs.infura.io:5001  |  https://[YOUR-IPFS-API-KEY]:[YOUR-IPFS-API-KEY-SECRET]@ipfs.infura.io:5001  |
+| Environment    |                                Polygon Amoy                                |  Polygon Main |
+|----------------|:--------------------------------------------------------------------------:|:-------------:|
+| blockchain     |                                  polygon                                   |  polygon  |
+| network        |                                    amoy                                    |  main  |
+| web3Url        |                     https://polygon-amoy.infura.io/v3/                     |  https://polygon-mainnet.infura.io/v3/  |
+| idStateContract |                 0x1a4cC30f2aA0377b0c3bc9848766D90cb4404124                 |  0x624ce98D2d27b20b8f8d521723Df8fC4db71D79D  |
+| pushUrl        |                 https://push-staging.polygonid.com/api/v1                  |  https://push-staging.polygonid.com/api/v1  |
+| ipfsUrl        | https://[YOUR-IPFS-API-KEY]:[YOUR-IPFS-API-KEY-SECRET]@ipfs.infura.io:5001 |  https://[YOUR-IPFS-API-KEY]:[YOUR-IPFS-API-KEY-SECRET]@ipfs.infura.io:5001  |
 
 If you want to deploy your own State Contract, please check the [contract documentation](https://docs.iden3.io/contracts/state/).
 
