@@ -57,7 +57,7 @@ import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 
 Future<void> main() async {
   await PolygonIdSdk.init(
-    env: EnvEntity.v1(
+    env: EnvEntity(
       pushUrl: 'https://push-staging.polygonid.com/api/v1',
       ipfsUrl:
       "https://[YOUR-IPFS-API-KEY]:[YOUR-IPFS-API-KEY-SECRET]@ipfs.infura.io:5001",
