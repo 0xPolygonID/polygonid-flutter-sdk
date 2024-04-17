@@ -40,4 +40,20 @@ class FilterEntity {
       'value': value,
     };
   }
+
+  @override
+  String toString() =>
+      "[FilterEntity] {operator: $operator, name: $name, value: $value}";
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FilterEntity &&
+          runtimeType == other.runtimeType &&
+          operator == other.operator &&
+          name == other.name &&
+          value == other.value;
+
+  @override
+  int get hashCode => operator.hashCode ^ name.hashCode ^ value.hashCode;
 }

@@ -88,12 +88,12 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       return null;
     }
 
-    final messageJson = jsonDecode(response.data);
-    if (messageJson is! Map<String, dynamic> || messageJson.isEmpty) {
-      return null;
-    }
-
     try {
+      final messageJson = jsonDecode(response.data);
+      if (messageJson is! Map<String, dynamic> || messageJson.isEmpty) {
+        return null;
+      }
+
       final nextRequest = await _getIden3MessageUseCase.execute(
         param: jsonEncode(messageJson),
       );

@@ -588,6 +588,23 @@ class NativePolygonIdCoreLib {
   late final _realloc = _reallocPtr
       .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)>();
 
+  ffi.Pointer<ffi.Void> reallocf(
+    ffi.Pointer<ffi.Void> __ptr,
+    int __size,
+  ) {
+    return _reallocf(
+      __ptr,
+      __size,
+    );
+  }
+
+  late final _reallocfPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>, ffi.Size)>>('reallocf');
+  late final _reallocf = _reallocfPtr
+      .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)>();
+
   ffi.Pointer<ffi.Void> valloc(
     int arg0,
   ) {
@@ -2236,23 +2253,6 @@ class NativePolygonIdCoreLib {
       _lookup<ffi.NativeFunction<ffi.Void Function()>>('srandomdev');
   late final _srandomdev = _srandomdevPtr.asFunction<void Function()>();
 
-  ffi.Pointer<ffi.Void> reallocf(
-    ffi.Pointer<ffi.Void> __ptr,
-    int __size,
-  ) {
-    return _reallocf(
-      __ptr,
-      __size,
-    );
-  }
-
-  late final _reallocfPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>, ffi.Size)>>('reallocf');
-  late final _reallocf = _reallocfPtr
-      .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)>();
-
   int strtonum(
     ffi.Pointer<ffi.Char> __numstr,
     int __minval,
@@ -3722,6 +3722,36 @@ class NativePolygonIdCoreLib {
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
 
+  int PLGNALinkedMultiQueryInputs(
+    ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
+    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> cfg,
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNALinkedMultiQueryInputs(
+      jsonResponse,
+      in1,
+      cfg,
+      status,
+    );
+  }
+
+  late final _PLGNALinkedMultiQueryInputsPtr = _lookup<
+          ffi.NativeFunction<
+              GoUint8 Function(
+                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
+      'PLGNALinkedMultiQueryInputs');
+  late final _PLGNALinkedMultiQueryInputs =
+      _PLGNALinkedMultiQueryInputsPtr.asFunction<
+          int Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+
   void PLGNFreeStatus(
     ffi.Pointer<PLGNStatus> status,
   ) {
@@ -3735,6 +3765,21 @@ class NativePolygonIdCoreLib {
           'PLGNFreeStatus');
   late final _PLGNFreeStatus =
       _PLGNFreeStatusPtr.asFunction<void Function(ffi.Pointer<PLGNStatus>)>();
+
+  int PLGNCleanCache(
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNCleanCache(
+      status,
+    );
+  }
+
+  late final _PLGNCleanCachePtr = _lookup<
+      ffi.NativeFunction<
+          GoUint8 Function(
+              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNCleanCache');
+  late final _PLGNCleanCache = _PLGNCleanCachePtr.asFunction<
+      int Function(ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
 
   int PLGNCacheCredentials(
     ffi.Pointer<ffi.Char> in1,
@@ -3913,6 +3958,7 @@ class _GoString_ extends ffi.Struct {
 
 typedef ptrdiff_t = __darwin_ptrdiff_t;
 typedef __darwin_ptrdiff_t = ffi.Long;
+typedef Dart__darwin_ptrdiff_t = int;
 
 abstract class idtype_t {
   static const int P_ALL = 0;
@@ -3932,6 +3978,7 @@ class __darwin_arm_exception_state extends ffi.Struct {
 }
 
 typedef __uint32_t = ffi.UnsignedInt;
+typedef Dart__uint32_t = int;
 
 class __darwin_arm_exception_state64 extends ffi.Struct {
   @__uint64_t()
@@ -3945,6 +3992,7 @@ class __darwin_arm_exception_state64 extends ffi.Struct {
 }
 
 typedef __uint64_t = ffi.UnsignedLongLong;
+typedef Dart__uint64_t = int;
 
 class __darwin_arm_thread_state extends ffi.Struct {
   @ffi.Array.multi([13])
@@ -4077,6 +4125,7 @@ class __darwin_sigaltstack extends ffi.Struct {
 }
 
 typedef __darwin_size_t = ffi.UnsignedLong;
+typedef Dart__darwin_size_t = int;
 
 class __darwin_ucontext extends ffi.Struct {
   @ffi.Int()
@@ -4155,6 +4204,7 @@ class __siginfo extends ffi.Struct {
 typedef pid_t = __darwin_pid_t;
 typedef __darwin_pid_t = __int32_t;
 typedef __int32_t = ffi.Int;
+typedef Dart__int32_t = int;
 typedef uid_t = __darwin_uid_t;
 typedef __darwin_uid_t = __uint32_t;
 
@@ -4224,6 +4274,7 @@ class timeval extends ffi.Struct {
 }
 
 typedef __darwin_time_t = ffi.Long;
+typedef Dart__darwin_time_t = int;
 typedef __darwin_suseconds_t = __int32_t;
 
 class rusage extends ffi.Struct {
@@ -4860,7 +4911,13 @@ class rusage_info_v6 extends ffi.Struct {
   @ffi.Uint64()
   external int ri_penergy_nj;
 
-  @ffi.Array.multi([14])
+  @ffi.Uint64()
+  external int ri_secure_time_in_system;
+
+  @ffi.Uint64()
+  external int ri_secure_ptime_in_system;
+
+  @ffi.Array.multi([12])
   external ffi.Array<ffi.Uint64> ri_reserved;
 }
 
@@ -4930,6 +4987,7 @@ class lldiv_t extends ffi.Struct {
 }
 
 typedef malloc_type_id_t = ffi.UnsignedLongLong;
+typedef Dartmalloc_type_id_t = int;
 
 class _malloc_zone_t extends ffi.Opaque {}
 
@@ -4939,10 +4997,13 @@ typedef __darwin_dev_t = __int32_t;
 typedef mode_t = __darwin_mode_t;
 typedef __darwin_mode_t = __uint16_t;
 typedef __uint16_t = ffi.UnsignedShort;
+typedef Dart__uint16_t = int;
 typedef errno_t = ffi.Int;
+typedef Darterrno_t = int;
 typedef rsize_t = __darwin_size_t;
 typedef ssize_t = __darwin_ssize_t;
 typedef __darwin_ssize_t = ffi.Long;
+typedef Dart__darwin_ssize_t = int;
 
 abstract class PLGNStatusCode {
   static const int PLGNSTATUSCODE_ERROR = 0;
@@ -4974,8 +5035,12 @@ class GoSlice extends ffi.Struct {
 
 typedef GoInt = GoInt64;
 typedef GoInt64 = ffi.LongLong;
+typedef DartGoInt64 = int;
 typedef GoUint8 = ffi.UnsignedChar;
+typedef DartGoUint8 = int;
 typedef PLGNStatus = _PLGNStatus;
+
+const int __has_safe_buffers = 1;
 
 const int __DARWIN_ONLY_64_BIT_INO_T = 1;
 
@@ -5061,7 +5126,7 @@ const int __API_TO_BE_DEPRECATED_TVOS = 100000;
 
 const int __API_TO_BE_DEPRECATED_DRIVERKIT = 100000;
 
-const int __API_TO_BE_DEPRECATED_XROS = 100000;
+const int __API_TO_BE_DEPRECATED_VISIONOS = 100000;
 
 const int __MAC_10_0 = 1000;
 
@@ -5155,6 +5220,10 @@ const int __MAC_12_4 = 120400;
 
 const int __MAC_12_5 = 120500;
 
+const int __MAC_12_6 = 120600;
+
+const int __MAC_12_7 = 120700;
+
 const int __MAC_13_0 = 130000;
 
 const int __MAC_13_1 = 130100;
@@ -5165,7 +5234,19 @@ const int __MAC_13_3 = 130300;
 
 const int __MAC_13_4 = 130400;
 
+const int __MAC_13_5 = 130500;
+
+const int __MAC_13_6 = 130600;
+
 const int __MAC_14_0 = 140000;
+
+const int __MAC_14_1 = 140100;
+
+const int __MAC_14_2 = 140200;
+
+const int __MAC_14_3 = 140300;
+
+const int __MAC_14_4 = 140400;
 
 const int __IPHONE_2_0 = 20000;
 
@@ -5293,6 +5374,10 @@ const int __IPHONE_15_5 = 150500;
 
 const int __IPHONE_15_6 = 150600;
 
+const int __IPHONE_15_7 = 150700;
+
+const int __IPHONE_15_8 = 150800;
+
 const int __IPHONE_16_0 = 160000;
 
 const int __IPHONE_16_1 = 160100;
@@ -5305,7 +5390,19 @@ const int __IPHONE_16_4 = 160400;
 
 const int __IPHONE_16_5 = 160500;
 
+const int __IPHONE_16_6 = 160600;
+
+const int __IPHONE_16_7 = 160700;
+
 const int __IPHONE_17_0 = 170000;
+
+const int __IPHONE_17_1 = 170100;
+
+const int __IPHONE_17_2 = 170200;
+
+const int __IPHONE_17_3 = 170300;
+
+const int __IPHONE_17_4 = 170400;
 
 const int __WATCHOS_1_0 = 10000;
 
@@ -5373,6 +5470,8 @@ const int __WATCHOS_8_6 = 80600;
 
 const int __WATCHOS_8_7 = 80700;
 
+const int __WATCHOS_8_8 = 80800;
+
 const int __WATCHOS_9_0 = 90000;
 
 const int __WATCHOS_9_1 = 90100;
@@ -5385,7 +5484,17 @@ const int __WATCHOS_9_4 = 90400;
 
 const int __WATCHOS_9_5 = 90500;
 
+const int __WATCHOS_9_6 = 90600;
+
 const int __WATCHOS_10_0 = 100000;
+
+const int __WATCHOS_10_1 = 100100;
+
+const int __WATCHOS_10_2 = 100200;
+
+const int __WATCHOS_10_3 = 100300;
+
+const int __WATCHOS_10_4 = 100400;
 
 const int __TVOS_9_0 = 90000;
 
@@ -5469,7 +5578,17 @@ const int __TVOS_16_4 = 160400;
 
 const int __TVOS_16_5 = 160500;
 
+const int __TVOS_16_6 = 160600;
+
 const int __TVOS_17_0 = 170000;
+
+const int __TVOS_17_1 = 170100;
+
+const int __TVOS_17_2 = 170200;
+
+const int __TVOS_17_3 = 170300;
+
+const int __TVOS_17_4 = 170400;
 
 const int __BRIDGEOS_2_0 = 20000;
 
@@ -5509,7 +5628,17 @@ const int __BRIDGEOS_7_3 = 70300;
 
 const int __BRIDGEOS_7_4 = 70400;
 
+const int __BRIDGEOS_7_6 = 70600;
+
 const int __BRIDGEOS_8_0 = 80000;
+
+const int __BRIDGEOS_8_1 = 80100;
+
+const int __BRIDGEOS_8_2 = 80200;
+
+const int __BRIDGEOS_8_3 = 80300;
+
+const int __BRIDGEOS_8_4 = 80400;
 
 const int __DRIVERKIT_19_0 = 190000;
 
@@ -5523,9 +5652,21 @@ const int __DRIVERKIT_22_4 = 220400;
 
 const int __DRIVERKIT_22_5 = 220500;
 
+const int __DRIVERKIT_22_6 = 220600;
+
 const int __DRIVERKIT_23_0 = 230000;
 
-const int __XROS_1_0 = 10000;
+const int __DRIVERKIT_23_1 = 230100;
+
+const int __DRIVERKIT_23_2 = 230200;
+
+const int __DRIVERKIT_23_3 = 230300;
+
+const int __DRIVERKIT_23_4 = 230400;
+
+const int __VISIONOS_1_0 = 10000;
+
+const int __VISIONOS_1_1 = 10100;
 
 const int MAC_OS_X_VERSION_10_0 = 1000;
 
@@ -5619,6 +5760,10 @@ const int MAC_OS_VERSION_12_4 = 120400;
 
 const int MAC_OS_VERSION_12_5 = 120500;
 
+const int MAC_OS_VERSION_12_6 = 120600;
+
+const int MAC_OS_VERSION_12_7 = 120700;
+
 const int MAC_OS_VERSION_13_0 = 130000;
 
 const int MAC_OS_VERSION_13_1 = 130100;
@@ -5629,11 +5774,23 @@ const int MAC_OS_VERSION_13_3 = 130300;
 
 const int MAC_OS_VERSION_13_4 = 130400;
 
+const int MAC_OS_VERSION_13_5 = 130500;
+
+const int MAC_OS_VERSION_13_6 = 130600;
+
 const int MAC_OS_VERSION_14_0 = 140000;
+
+const int MAC_OS_VERSION_14_1 = 140100;
+
+const int MAC_OS_VERSION_14_2 = 140200;
+
+const int MAC_OS_VERSION_14_3 = 140300;
+
+const int MAC_OS_VERSION_14_4 = 140400;
 
 const int __MAC_OS_X_VERSION_MIN_REQUIRED = 140000;
 
-const int __MAC_OS_X_VERSION_MAX_ALLOWED = 140000;
+const int __MAC_OS_X_VERSION_MAX_ALLOWED = 140400;
 
 const int __ENABLE_LEGACY_MAC_AVAILABILITY = 1;
 

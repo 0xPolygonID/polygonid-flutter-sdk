@@ -279,12 +279,13 @@ class Authenticate {
         return null;
       }
 
-      final messageJson = jsonDecode(response.body);
-      if (messageJson is! Map<String, dynamic> || messageJson.isEmpty) {
-        return null;
-      }
-
       try {
+        final messageJson = jsonDecode(response.body);
+
+        if (messageJson is! Map<String, dynamic> || messageJson.isEmpty) {
+          return null;
+        }
+
         GetIden3MessageUseCase _getIden3MessageUseCase =
             await getItSdk.getAsync<GetIden3MessageUseCase>();
         final nextRequest = await _getIden3MessageUseCase.execute(
@@ -469,6 +470,7 @@ class Authenticate {
       if (kDebugMode) {
         //just for debug
         String inputs = Uint8ArrayUtils.uint8ListToString(atomicQueryInputs);
+        print("atomicQueryInputs: $inputs");
       }
 
       var vpProof;
@@ -514,8 +516,26 @@ class Authenticate {
     required String genesisDid,
     required String privateKey,
   }) async {
-    if (message.body.scope != null && message.body.scope!.isNotEmpty) {
-      for (ProofScopeRequest scope in message.body.scope!) {
+    if (message.body.scope == null || message.body.scope.isEmpty) {
+      return;
+    }
+
+    List<ProofScopeRequest> scopes = message.body.scope;
+    var groupedByGroupId = groupBy(scopes, (obj) => obj.query.groupId);
+
+    Map<int, List<ClaimEntity>> claimsByGroupId = {};
+
+    // for each group of scopes
+    for (var group in groupedByGroupId.entries) {
+      int? groupId = group.key;
+      if (groupId == null) {
+        continue;
+      }
+      List<ProofScopeRequest> groupScopes = group.value;
+
+      List<FilterEntity> filtersForQueryClaimDb = [];
+
+      for (var scope in groupScopes) {
         Map<String, dynamic> credentialSchema =
             await fetchSchema(schemaUrl: scope.query.context!);
         ProofQueryParamEntity query = await getProofQuery(scope);
@@ -524,7 +544,47 @@ class Authenticate {
           credentialSchema,
           query,
         );
-        proofRequests.add(proofRequest);
+        List<FilterEntity> filterForSingleScope =
+            ProofRequestFiltersMapper().mapFrom(proofRequest);
+        // we add the filters for each scope to the list of filters
+        filtersForQueryClaimDb.addAll(filterForSingleScope);
+        // we remove duplicates
+        filtersForQueryClaimDb = filtersForQueryClaimDb.toSet().toList();
+      }
+
+      FiltersMapper filtersMapper = getItSdk<FiltersMapper>();
+      Filter filter = filtersMapper.mapTo(filtersForQueryClaimDb);
+
+      StorageClaimDataSource storageClaimDataSource =
+          getItSdk<StorageClaimDataSource>();
+
+      List<ClaimDTO> claimDTO = await storageClaimDataSource.getClaims(
+        filter: filter,
+        did: genesisDid,
+        privateKey: privateKey,
+        credentialSortOrderList: [CredentialSortOrder.IssuanceDateDescending],
+      );
+      ClaimMapper claimMapper = getItSdk<ClaimMapper>();
+      List<ClaimEntity> validClaims =
+          claimDTO.map((e) => claimMapper.mapFrom(e)).toList();
+      claimsByGroupId[groupId] = validClaims;
+    }
+
+    for (ProofScopeRequest scope in message.body.scope!) {
+      List<ClaimEntity> validClaims = [];
+      Map<String, dynamic> credentialSchema =
+          await fetchSchema(schemaUrl: scope.query.context!);
+      ProofQueryParamEntity query = await getProofQuery(scope);
+      ProofRequestEntity proofRequest = ProofRequestEntity(
+        scope,
+        credentialSchema,
+        query,
+      );
+      proofRequests.add(proofRequest);
+
+      if (scope.query.groupId != null) {
+        validClaims = claimsByGroupId[scope.query.groupId] ?? [];
+      } else {
         List<FilterEntity> filtersForQueryClaimDb =
             ProofRequestFiltersMapper().mapFrom(proofRequest);
         FiltersMapper filtersMapper = getItSdk<FiltersMapper>();
@@ -540,72 +600,72 @@ class Authenticate {
           credentialSortOrderList: [CredentialSortOrder.IssuanceDateDescending],
         );
         ClaimMapper claimMapper = getItSdk<ClaimMapper>();
-        List<ClaimEntity> validClaims =
-            claimDTO.map((e) => claimMapper.mapFrom(e)).toList();
-
-        validClaims = _filterManuallyIfPositiveInteger(
-          request: proofRequest,
-          claimsFiltered: validClaims,
-        );
-
-        validClaims = _filterManuallyIfQueryContainsProofType(
-          request: proofRequest,
-          claimsFiltered: validClaims,
-        );
-
-        if (validClaims.isEmpty) {
-          continue;
-        }
-
-        var validClaim = validClaims.firstWhereOrNull((element) {
-          List<Map<String, dynamic>> proofs = element.info["proof"];
-          List<String> proofTypes =
-              proofs.map((e) => e["type"] as String).toList();
-
-          final circuitId = scope.circuitId;
-          // TODO (moria): remove this with v3 circuit release
-          if (circuitId.startsWith(CircuitType.v3CircuitPrefix) &&
-              !circuitId.endsWith(CircuitType.currentCircuitBetaPostfix)) {
-            throw Exception(
-                "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
-          }
-
-          CircuitTypeMapper circuitTypeMapper = getItSdk<CircuitTypeMapper>();
-          CircuitType circuitType = circuitTypeMapper.mapTo(circuitId);
-
-          switch (circuitType) {
-            case CircuitType.mtp:
-            case CircuitType.mtponchain:
-              bool success = [
-                'Iden3SparseMerkleProof',
-                'Iden3SparseMerkleTreeProof'
-              ].any((element) => proofTypes.contains(element));
-              return success;
-            case CircuitType.sig:
-            case CircuitType.sigonchain:
-              bool success = proofTypes.contains('BJJSignature2021');
-              return success;
-            case CircuitType.auth:
-            case CircuitType.unknown:
-              break;
-            case CircuitType.circuitsV3:
-            case CircuitType.circuitsV3onchain:
-              bool success = [
-                'Iden3SparseMerkleProof',
-                'Iden3SparseMerkleTreeProof',
-                'BJJSignature2021',
-              ].any((element) => proofTypes.contains(element));
-              return success;
-          }
-          return false;
-        });
-
-        if (validClaim == null) {
-          continue;
-        }
-
-        claims.add(validClaim);
+        validClaims = claimDTO.map((e) => claimMapper.mapFrom(e)).toList();
       }
+
+      validClaims = _filterManuallyIfPositiveInteger(
+        request: proofRequest,
+        claimsFiltered: validClaims,
+      );
+
+      validClaims = _filterManuallyIfQueryContainsProofType(
+        request: proofRequest,
+        claimsFiltered: validClaims,
+      );
+
+      if (validClaims.isEmpty) {
+        continue;
+      }
+
+      var validClaim = validClaims.firstWhereOrNull((element) {
+        List<Map<String, dynamic>> proofs = element.info["proof"];
+        List<String> proofTypes =
+            proofs.map((e) => e["type"] as String).toList();
+
+        final circuitId = scope.circuitId;
+        // TODO (moria): remove this with v3 circuit release
+        if (circuitId.startsWith(CircuitType.v3CircuitPrefix) &&
+            !circuitId.endsWith(CircuitType.currentCircuitBetaPostfix)) {
+          throw Exception(
+              "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
+        }
+
+        CircuitTypeMapper circuitTypeMapper = getItSdk<CircuitTypeMapper>();
+        CircuitType circuitType = circuitTypeMapper.mapTo(circuitId);
+
+        switch (circuitType) {
+          case CircuitType.mtp:
+          case CircuitType.mtponchain:
+            bool success = [
+              'Iden3SparseMerkleProof',
+              'Iden3SparseMerkleTreeProof'
+            ].any((element) => proofTypes.contains(element));
+            return success;
+          case CircuitType.sig:
+          case CircuitType.sigonchain:
+            bool success = proofTypes.contains('BJJSignature2021');
+            return success;
+          case CircuitType.auth:
+          case CircuitType.unknown:
+            break;
+          case CircuitType.circuitsV3:
+          case CircuitType.circuitsV3onchain:
+          case CircuitType.linkedMultyQuery10:
+            bool success = [
+              'Iden3SparseMerkleProof',
+              'Iden3SparseMerkleTreeProof',
+              'BJJSignature2021',
+            ].any((element) => proofTypes.contains(element));
+            return success;
+        }
+        return false;
+      });
+
+      if (validClaim == null) {
+        continue;
+      }
+
+      claims.add(validClaim);
     }
   }
 
