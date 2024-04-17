@@ -45,7 +45,7 @@ class WitnessIsolatesWrapper {
 Future<Uint8List?> _computeWitnessAuth(WitnessParam param) async {
   final WitnessAuthV2Lib witnessAuthLib = WitnessAuthV2Lib();
   final Uint8List? witnessBytes =
-  await witnessAuthLib.calculateWitnessAuth(param.wasm, param.json);
+      await witnessAuthLib.calculateWitnessAuth(param.wasm, param.json);
   return witnessBytes;
 }
 
@@ -53,7 +53,7 @@ Future<Uint8List?> _computeWitnessAuth(WitnessParam param) async {
 Future<Uint8List?> _computeWitnessSig(WitnessParam param) async {
   final WitnessSigV2Lib witnessSigLib = WitnessSigV2Lib();
   final Uint8List? witnessBytes =
-  await witnessSigLib.calculateWitnessSig(param.wasm, param.json);
+      await witnessSigLib.calculateWitnessSig(param.wasm, param.json);
   return witnessBytes;
 }
 
@@ -61,14 +61,14 @@ Future<Uint8List?> _computeWitnessSig(WitnessParam param) async {
 Future<Uint8List?> _computeWitnessMtp(WitnessParam param) async {
   final WitnessMTPV2Lib witnessMtpLib = WitnessMTPV2Lib();
   final Uint8List? witnessBytes =
-  await witnessMtpLib.calculateWitnessMTP(param.wasm, param.json);
+      await witnessMtpLib.calculateWitnessMTP(param.wasm, param.json);
   return witnessBytes;
 }
 
 /// As this is running in a separate thread, we cannot inject [WitnessMTPV2OnchainLib]
 Future<Uint8List?> _computeWitnessMtpOnchain(WitnessParam param) async {
   final WitnessMTPV2OnchainLib witnessMTPV2OnchainLib =
-  WitnessMTPV2OnchainLib();
+      WitnessMTPV2OnchainLib();
   final Uint8List? witnessBytes = await witnessMTPV2OnchainLib
       .calculateWitnessMTPOnchain(param.wasm, param.json);
   return witnessBytes;
@@ -77,7 +77,7 @@ Future<Uint8List?> _computeWitnessMtpOnchain(WitnessParam param) async {
 /// As this is running in a separate thread, we cannot inject [WitnessSigV2OnchainLib]
 Future<Uint8List?> _computeWitnessSigOnchain(WitnessParam param) async {
   final WitnessSigV2OnchainLib witnessSigV2OnchainLib =
-  WitnessSigV2OnchainLib();
+      WitnessSigV2OnchainLib();
   final Uint8List? witnessBytes = await witnessSigV2OnchainLib
       .calculateWitnessSigOnchain(param.wasm, param.json);
   return witnessBytes;
@@ -103,8 +103,8 @@ Future<Uint8List?> _computeWitnessV3Onchain(WitnessParam param) async {
 
 Future<Uint8List?> _computeLinkedMultyQuery10(WitnessParam param) async {
   final WitnessLinkedMultiQuery10 witnessLib = WitnessLinkedMultiQuery10();
-  final Uint8List? witnessBytes = await witnessLib
-      .calculateWitnessLinkedMultiQuery10(
+  final Uint8List? witnessBytes =
+      await witnessLib.calculateWitnessLinkedMultiQuery10(
     param.wasm,
     param.json,
   );

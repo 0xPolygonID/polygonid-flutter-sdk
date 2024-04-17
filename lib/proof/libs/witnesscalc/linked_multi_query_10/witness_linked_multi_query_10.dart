@@ -55,7 +55,8 @@ class WitnessLinkedMultiQuery10 {
       malloc.free(errorMsg);
     }
 
-    NativeWitnessLinkedMultiQuery10Lib nativelib = _nativeWitnessLinkedMultiQuery10;
+    NativeWitnessLinkedMultiQuery10Lib nativelib =
+        _nativeWitnessLinkedMultiQuery10;
 
     int result =
         _nativeWitnessLinkedMultiQuery10.witnesscalc_linkedMultiQuery10(

@@ -280,12 +280,11 @@ class Authenticate {
       }
 
       try {
-      final messageJson = jsonDecode(response.body);
+        final messageJson = jsonDecode(response.body);
 
-      if (messageJson is! Map<String, dynamic> || messageJson.isEmpty) {
-        return null;
-      }
-
+        if (messageJson is! Map<String, dynamic> || messageJson.isEmpty) {
+          return null;
+        }
 
         GetIden3MessageUseCase _getIden3MessageUseCase =
             await getItSdk.getAsync<GetIden3MessageUseCase>();
