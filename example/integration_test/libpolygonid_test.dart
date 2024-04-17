@@ -22,7 +22,9 @@ void main() {
         (WidgetTester tester) async {
       expect(
           pidCoreIdentity.calculateGenesisId(
-              PolygonIdCoreMocks.calculateGenesisIdInputJson),
+            PolygonIdCoreMocks.calculateGenesisIdInputJson,
+            PolygonIdCoreMocks.environmentConfigJson,
+          ),
           equals(PolygonIdCoreMocks.calculateGenesisIdOutputJson));
     });
 

@@ -1,3 +1,11 @@
+## 2.3.0
+- New operators for circuit V3 beta 1
+- On-chain credential fetch
+- Credential proposal objects
+- Added support to Polygon Amoy testnet 
+- Updated environment object
+- Update core libraries
+
 ## 2.2.9
 - Multiple circuits download and circuit V3 support
 - Credential rawValue field on the claimDTO and claimEntity

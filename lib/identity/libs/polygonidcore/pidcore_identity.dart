@@ -10,41 +10,7 @@ import '../../../common/libs/polygonidcore/native_polygonidcore.dart';
 
 @injectable
 class PolygonIdCoreIdentity extends PolygonIdCore {
-  @Deprecated('Use newGenesisId instead of calculateGenesisId.')
-  String calculateGenesisId(String input) {
-    ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
-    ffi.Pointer<ffi.Pointer<ffi.Char>> response =
-        malloc<ffi.Pointer<ffi.Char>>();
-    ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
-        malloc<ffi.Pointer<PLGNStatus>>();
-
-    freeAllocatedMemory() {
-      malloc.free(response);
-      malloc.free(status);
-    }
-
-    int res = PolygonIdCore.nativePolygonIdCoreLib
-        .PLGNCalculateGenesisID(response, in1, status);
-    if (res == 0) {
-      String? consumedStatus = consumeStatus(status, "");
-      // ignore: unnecessary_null_comparison
-      if (consumedStatus != null) {
-        freeAllocatedMemory();
-        throw IdentityInputsException(consumedStatus);
-      }
-    }
-    String result = "";
-    ffi.Pointer<ffi.Char> jsonResponse = response.value;
-    ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
-    if (jsonString != ffi.nullptr) {
-      result = jsonString.toDartString();
-    }
-
-    freeAllocatedMemory();
-    return result;
-  }
-
-  String newGenesisId(String input, String config) {
+  String calculateGenesisId(String input, String config) {
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Char> cfg = config.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<ffi.Char>> response =

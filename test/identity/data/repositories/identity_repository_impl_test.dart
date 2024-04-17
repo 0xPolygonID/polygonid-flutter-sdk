@@ -588,7 +588,8 @@ void main() {
   group("Get did identifier", () {
     setUp(() {
       // Given
-      when(libPolygonIdCoreIdentityDataSource.newGenesisId(any, any, any, any))
+      when(libPolygonIdCoreIdentityDataSource.calculateGenesisId(
+              any, any, any, any))
           .thenReturn(CommonMocks.did);
       when(libPolygonIdCoreIdentityDataSource.calculateProfileId(any, any))
           .thenReturn(CommonMocks.did);
@@ -608,8 +609,9 @@ void main() {
           CommonMocks.did);
 
       // Then
-      var captureCalculate = verify(libPolygonIdCoreIdentityDataSource
-              .newGenesisId(captureAny, captureAny, captureAny, captureAny))
+      var captureCalculate = verify(
+              libPolygonIdCoreIdentityDataSource.calculateGenesisId(
+                  captureAny, captureAny, captureAny, captureAny))
           .captured;
 
       expect(captureCalculate[0], CommonMocks.message);
@@ -635,7 +637,7 @@ void main() {
 
       // Then
       var captureCalculate = verify(libPolygonIdCoreIdentityDataSource
-              .newGenesisId(captureAny, captureAny, captureAny, any))
+              .calculateGenesisId(captureAny, captureAny, captureAny, any))
           .captured;
       expect(captureCalculate[0], CommonMocks.message);
       expect(captureCalculate[1], CommonMocks.blockchain);
@@ -652,7 +654,8 @@ void main() {
         "Given parameters with a profileNonce, when I call getDidIdentifier and an error occurred, then I expect an exception to be thrown",
         () async {
       // Given
-      when(libPolygonIdCoreIdentityDataSource.newGenesisId(any, any, any, any))
+      when(libPolygonIdCoreIdentityDataSource.calculateGenesisId(
+              any, any, any, any))
           .thenThrow(CommonMocks.exception);
 
       // When
@@ -666,8 +669,9 @@ void main() {
           throwsA(CommonMocks.exception));
 
       // Then
-      var captureCalculate = verify(libPolygonIdCoreIdentityDataSource
-              .newGenesisId(captureAny, captureAny, captureAny, captureAny))
+      var captureCalculate = verify(
+              libPolygonIdCoreIdentityDataSource.calculateGenesisId(
+                  captureAny, captureAny, captureAny, captureAny))
           .captured;
       expect(captureCalculate[0], CommonMocks.message);
       expect(captureCalculate[1], CommonMocks.blockchain);

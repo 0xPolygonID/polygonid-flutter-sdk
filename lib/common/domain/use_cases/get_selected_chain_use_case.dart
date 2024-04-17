@@ -23,11 +23,13 @@ class GetSelectedChainUseCase extends FutureUseCase<void, ChainConfigEntity> {
       }
     }
 
+    final defaultChain = env.chainConfigs.entries.first.value;
+
     return ChainConfigEntity(
-      blockchain: env.blockchain,
-      network: env.network,
-      rpcUrl: env.rpcUrl,
-      stateContractAddr: env.idStateContract,
+      blockchain: defaultChain.blockchain,
+      network: defaultChain.network,
+      rpcUrl: defaultChain.rpcUrl,
+      stateContractAddr: defaultChain.stateContractAddr,
     );
   }
 }

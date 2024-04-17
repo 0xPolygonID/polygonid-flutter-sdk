@@ -172,4 +172,7 @@ class CredentialProposalRequest
   @override
   bool operator ==(Object other) =>
       super == other && other is CredentialProposalRequest;
+
+  @override
+  int get hashCode => id.hashCode;
 }

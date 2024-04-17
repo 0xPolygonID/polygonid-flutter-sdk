@@ -17,7 +17,7 @@ class ConfigRepositoryImpl implements ConfigRepository {
         return Future.error(EnvNotSetException());
       }
 
-      return EnvEntity.fromJsonV1(value);
+      return EnvEntity.fromJson(value);
     });
   }
 

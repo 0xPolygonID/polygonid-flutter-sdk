@@ -44,7 +44,7 @@ void registerEnv() {
   String pinataGateway = Env.pinataGateway;
   String pinataGatewayToken = Env.pinataGatewayToken;
 
-  EnvEntity envV1 = EnvEntity.fromJsonV1(defaultEnv);
+  EnvEntity envV1 = EnvEntity.fromJson(defaultEnv);
   if (stacktraceEncryptionKey.isNotEmpty) {
     envV1 = envV1.copyWith(stacktraceEncryptionKey: stacktraceEncryptionKey);
   }
