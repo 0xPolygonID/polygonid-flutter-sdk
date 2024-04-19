@@ -8,9 +8,11 @@ class LocalClaimDataSource {
 
   LocalClaimDataSource(this._libPolygonIdCoreCredentialDataSource);
 
-  Future<List<String>> getAuthClaim({required List<String> publicKey}) {
+  Future<List<String>> getAuthClaim({
+    required List<String> publicKey,
+    String authClaimNonce = DEFAULT_AUTH_CLAIM_NONCE,
+  }) {
     String authClaimSchema = AUTH_CLAIM_SCHEMA;
-    String authClaimNonce = "15930428023331155902";
     String authClaim = _libPolygonIdCoreCredentialDataSource.issueClaim(
       schema: authClaimSchema,
       nonce: authClaimNonce,
