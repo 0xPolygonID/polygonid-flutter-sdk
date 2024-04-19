@@ -17,10 +17,9 @@ class LibPolygonIdCoreCredentialDataSource {
     required String schema,
     required String nonce,
     required List<String> publicKey,
-    Map<String,dynamic> additionalInputParam = const {},
+    Map<String, dynamic> additionalInputParam = const {},
   }) {
-
-    Map<String,dynamic> inputParam = {
+    Map<String, dynamic> inputParam = {
       "schema": schema,
       "nonce": nonce,
       "indexSlotA": publicKey[0],
@@ -28,7 +27,7 @@ class LibPolygonIdCoreCredentialDataSource {
     };
 
     //merge additionInputParam with inputParam removing duplicates
-    Map<String,dynamic> inputMerged = {...inputParam, ...additionalInputParam};
+    Map<String, dynamic> inputMerged = {...inputParam, ...additionalInputParam};
 
     String input = jsonEncode(inputMerged);
 
