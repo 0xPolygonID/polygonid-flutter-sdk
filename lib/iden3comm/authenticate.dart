@@ -120,6 +120,7 @@ class Authenticate {
     required String? pushToken,
     String? challenge,
     final Map<String, dynamic>? transactionData,
+    String authClaimNonce = DEFAULT_AUTH_CLAIM_NONCE,
   }) async {
     try {
       List<Iden3commProofEntity> proofs = [];
@@ -187,6 +188,7 @@ class Authenticate {
         chain: chain,
         privateKey: privateKey,
         privateKeyBytes: privateKeyBytes,
+        authClaimNonce: authClaimNonce,
       );
 
       // if there are proof requests and claims and they are the same length
@@ -1198,6 +1200,7 @@ class Authenticate {
     required EnvEntity env,
     required ChainConfigEntity chain,
     required Uint8List privateKeyBytes,
+    required String authClaimNonce,
   }) async {
     List<String>? authClaim;
     MTProofEntity? incProof;
@@ -1211,7 +1214,6 @@ class Authenticate {
     List<String> publicKey = BjjWallet(privateKeyBytes).publicKey;
 
     String authClaimSchema = AUTH_CLAIM_SCHEMA;
-    String authClaimNonce = "15930428023331155902";
     String issuedAuthClaim = libPolygonIdCredential.issueClaim(
       schema: authClaimSchema,
       nonce: authClaimNonce,
