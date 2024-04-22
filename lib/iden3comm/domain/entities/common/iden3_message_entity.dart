@@ -9,7 +9,8 @@ enum Iden3MessageType {
   credentialRefresh,
   credentialProposalRequest,
   credentialProposal,
-  credentialStatusUpdate;
+  credentialStatusUpdate,
+  problemReport;
 }
 
 /// Represents an iden3 message.

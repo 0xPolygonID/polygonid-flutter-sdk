@@ -4,6 +4,7 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/response/problem_report_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/credential_proposal_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/credential_refresh_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
@@ -54,6 +55,8 @@ class GetIden3MessageUseCase extends FutureUseCase<String, Iden3MessageEntity> {
             return CredentialProposalRequest.fromJson(json);
           case Iden3MessageType.credentialProposal:
             return CredentialProposal.fromJson(json);
+          case Iden3MessageType.problemReport:
+            return ProblemReportMessageEntity.fromJson(json);
           case Iden3MessageType.unknown:
             throw UnsupportedIden3MsgTypeException(type);
         }
