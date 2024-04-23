@@ -1428,7 +1428,13 @@ class Authenticate {
     bool operatorIsPartOfV3Operators = supportedOperators.contains(operator);
     bool isCircuitSupported = circuitId.startsWith(supportedCircuitPrefix);
 
-    if (operatorIsPartOfV3Operators && !isCircuitSupported) {
+    // if the operator is not part of the v3 operators, we don't need to check the circuit
+    if (!operatorIsPartOfV3Operators) {
+      return;
+    }
+
+    // if circuit is not V3, we throw an exception
+    if (!isCircuitSupported) {
       throw OperatorException(
         errorMessage:
             "Operator $operator is not supported for circuit $circuitId",
