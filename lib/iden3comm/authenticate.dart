@@ -86,6 +86,7 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/gist_proof_cache.dart';
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
@@ -380,6 +381,13 @@ class Authenticate {
       var circuitZkeyFileName = '${proofRequest.scope.circuitId}.zkey';
       var circuitZkeyFilePath = '$appDocPath/$circuitZkeyFileName';
       var circuitZkeyFile = File(circuitZkeyFilePath);
+
+      if (!circuitDatFile.existsSync() || !circuitZkeyFile.existsSync()) {
+        throw CircuitNotDownloadedException(
+          circuit: proofRequest.scope.circuitId,
+          errorMessage: "Circuit files not found",
+        );
+      }
 
       List<Uint8List> circuitFiles = [
         circuitDatFile.readAsBytesSync(),
