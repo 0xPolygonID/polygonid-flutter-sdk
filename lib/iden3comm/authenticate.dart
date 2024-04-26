@@ -35,6 +35,7 @@ import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/lib_pidcore_iden3comm_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_service_metadata_devices_response_dto.dart';
@@ -368,6 +369,15 @@ class Authenticate {
     for (int i = 0; i < proofRequests.length; i++) {
       ProofRequestEntity proofRequest = proofRequests[i];
       ClaimEntity claim = claims[i];
+
+      if (claim.expiration != null) {
+        claim = await _checkCredentialExpirationAndTryRefreshIfExpired(
+          claim: claim,
+          genesisDid: genesisDid,
+          privateKey: privateKey,
+        );
+      }
+
       _proofGenerationStepsStreamManager.add(
           "#${i + 1} creating proof for ${proofRequest.scope.query.type}...");
 
@@ -1448,6 +1458,41 @@ class Authenticate {
             "Operator $operator is not supported for circuit $circuitId",
       );
     }
+  }
+
+  Future<ClaimEntity> _checkCredentialExpirationAndTryRefreshIfExpired({
+    required ClaimEntity claim,
+    required String genesisDid,
+    required String privateKey,
+  }) async {
+    var now = DateTime.now().toUtc();
+    DateTime expirationTime =
+        DateFormat("yyyy-MM-ddTHH:mm:ssZ").parse(claim.expiration!);
+
+    var nowFormatted = DateFormat("yyyy-MM-dd HH:mm:ss").format(now);
+    var expirationTimeFormatted =
+        DateFormat("yyyy-MM-dd HH:mm:ss").format(expirationTime);
+    bool isExpired = nowFormatted.compareTo(expirationTimeFormatted) > 0 ||
+        claim.state == ClaimState.expired;
+
+    if (isExpired && claim.info.containsKey("refreshService")) {
+      _proofGenerationStepsStreamManager
+          .add("Refreshing expired credential...");
+
+      RefreshCredentialUseCase _refreshCredentialUseCase =
+          await getItSdk.getAsync<RefreshCredentialUseCase>();
+
+      ClaimEntity refreshedClaimEntity =
+          await _refreshCredentialUseCase.execute(
+              param: RefreshCredentialParam(
+        credential: claim,
+        genesisDid: genesisDid,
+        privateKey: privateKey,
+      ));
+
+      claim = refreshedClaimEntity;
+    }
+    return claim;
   }
 }
 
