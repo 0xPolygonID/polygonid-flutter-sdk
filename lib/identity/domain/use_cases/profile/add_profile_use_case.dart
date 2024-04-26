@@ -18,7 +18,7 @@ class AddProfileParam {
     required this.genesisDid,
     required this.profileNonce,
     required this.privateKey,
-    this.skipEnvCheck = false
+    this.skipEnvCheck = false,
   });
 }
 
