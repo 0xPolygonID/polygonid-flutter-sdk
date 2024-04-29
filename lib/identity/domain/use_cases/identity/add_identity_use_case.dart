@@ -11,10 +11,12 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/create_
 class AddIdentityParam {
   final String privateKey;
   final List<BigInt> profiles;
+  final String? genesisDid;
 
   AddIdentityParam({
     required this.privateKey,
     this.profiles = const [],
+    this.genesisDid,
   });
 }
 
@@ -33,12 +35,14 @@ class AddIdentityUseCase
   );
 
   @override
-  Future<PrivateIdentityEntity> execute(
-      {required AddIdentityParam param}) async {
+  Future<PrivateIdentityEntity> execute({
+    required AddIdentityParam param,
+  }) async {
     // Create the [IdentityEntity]
     PrivateIdentityEntity identity = await _createIdentityUseCase.execute(
-        param: CreateIdentityParam(
-            privateKey: param.privateKey, profiles: param.profiles));
+      param: CreateIdentityParam(
+          privateKey: param.privateKey, profiles: param.profiles),
+    );
     try {
       // Check if identity is already stored (already added)
       await _identityRepository.getIdentity(genesisDid: identity.did);

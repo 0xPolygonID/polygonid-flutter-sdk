@@ -623,14 +623,18 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<void> addProfile(
-      {required String genesisDid,
-      required String privateKey,
-      required BigInt profileNonce}) {
+  Future<void> addProfile({
+    required String genesisDid,
+    required String privateKey,
+    required BigInt profileNonce,
+    String? existingProfileDid,
+  }) {
     return _polygonIdSdk.identity.addProfile(
-        genesisDid: genesisDid,
-        privateKey: privateKey,
-        profileNonce: profileNonce);
+      genesisDid: genesisDid,
+      privateKey: privateKey,
+      profileNonce: profileNonce,
+      existingProfileDid: existingProfileDid,
+    );
   }
 
   @override

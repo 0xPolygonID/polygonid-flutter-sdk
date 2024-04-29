@@ -31,8 +31,9 @@ class CreateIdentityUseCase
   );
 
   @override
-  Future<PrivateIdentityEntity> execute(
-      {required CreateIdentityParam param}) async {
+  Future<PrivateIdentityEntity> execute({
+    required CreateIdentityParam param,
+  }) async {
     return Future.wait(
       [
         _getPublicKeysUseCase.execute(param: param.privateKey),
@@ -51,18 +52,20 @@ class CreateIdentityUseCase
 
       for (BigInt profile in param.profiles) {
         String identifier = await _getCurrentEnvDidIdentifierUseCase.execute(
-            param: GetCurrentEnvDidIdentifierParam(
-          privateKey: param.privateKey,
-          profileNonce: profile,
-        ));
+          param: GetCurrentEnvDidIdentifierParam(
+            privateKey: param.privateKey,
+            profileNonce: profile,
+          ),
+        );
         profiles[profile] = identifier;
       }
 
       return PrivateIdentityEntity(
-          did: didIdentifier,
-          publicKey: publicKey,
-          profiles: profiles,
-          privateKey: param.privateKey);
+        did: didIdentifier,
+        publicKey: publicKey,
+        profiles: profiles,
+        privateKey: param.privateKey,
+      );
     }).then((identity) {
       logger().i(
           "[CreateIdentityUseCase] Identity created with did: ${identity.did}, for param $param");

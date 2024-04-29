@@ -12,13 +12,13 @@ class AddProfileParam {
   final String genesisDid;
   final BigInt profileNonce;
   final String privateKey;
-  final bool skipEnvCheck;
+  final String? existingProfileDid;
 
   AddProfileParam({
     required this.genesisDid,
     required this.profileNonce,
     required this.privateKey,
-    this.skipEnvCheck = false,
+    this.existingProfileDid,
   });
 }
 
@@ -40,58 +40,76 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
 
   @override
   Future<void> execute({required AddProfileParam param}) async {
-    if (!param.skipEnvCheck) {
+    var existingProfileDid = param.existingProfileDid;
+    if (existingProfileDid == null) {
       await _checkProfileAndDidCurrentEnvUseCase.execute(
-          param: CheckProfileAndDidCurrentEnvParam(
-              did: param.genesisDid,
-              profileNonce: param.profileNonce,
-              privateKey: param.privateKey,
-              excludeGenesisProfile: true));
-    }
-    var identityEntity = await _getIdentityUseCase.execute(
-        param: GetIdentityParam(
-            genesisDid: param.genesisDid, privateKey: param.privateKey));
-
-    if (identityEntity is PrivateIdentityEntity) {
-      Map<BigInt, String> profiles = identityEntity.profiles;
-      if (profiles.containsKey(param.profileNonce)) {
-        _stacktraceManager
-            .addTrace('ProfileAlreadyExistsException: ${param.profileNonce}');
-        _stacktraceManager
-            .addError('ProfileAlreadyExistsException: ${param.profileNonce}');
-        throw ProfileAlreadyExistsException(
-            param.genesisDid, param.profileNonce);
-      } else {
-        // Create profile
-        Map<BigInt, String> newProfiles = await _createProfilesUseCase.execute(
-            param: CreateProfilesParam(
-                privateKey: param.privateKey, profiles: [param.profileNonce]));
-
-        String? profileDid = newProfiles[param.profileNonce];
-        if (profileDid != null) {
-          profiles[param.profileNonce] = profileDid;
-        } else {
-          _stacktraceManager
-              .addTrace('UnknownProfileException: ${param.profileNonce}');
-          _stacktraceManager
-              .addError('UnknownProfileException: ${param.profileNonce}');
-          throw UnknownProfileException(param.profileNonce);
-        }
-
-        // Update Identity
-        await _updateIdentityUseCase.execute(
-            param: UpdateIdentityParam(
+        param: CheckProfileAndDidCurrentEnvParam(
+          did: param.genesisDid,
+          profileNonce: param.profileNonce,
           privateKey: param.privateKey,
-          genesisDid: param.genesisDid,
-          profiles: profiles,
-        ));
-      }
-    } else {
+          excludeGenesisProfile: true,
+        ),
+      );
+    }
+
+    final identityEntity = await _getIdentityUseCase.execute(
+      param: GetIdentityParam(
+        genesisDid: param.genesisDid,
+        privateKey: param.privateKey,
+      ),
+    );
+
+    if (identityEntity is! PrivateIdentityEntity) {
+      // Private key missing
       _stacktraceManager
           .addTrace('InvalidPrivateKeyException: ${param.privateKey}');
       _stacktraceManager
           .addError('InvalidPrivateKeyException: ${param.privateKey}');
       throw InvalidPrivateKeyException(param.privateKey);
     }
+
+    Map<BigInt, String> profiles = identityEntity.profiles;
+    if (profiles.containsKey(param.profileNonce)) {
+      // Profile already exists
+      _stacktraceManager
+          .addTrace('ProfileAlreadyExistsException: ${param.profileNonce}');
+      _stacktraceManager
+          .addError('ProfileAlreadyExistsException: ${param.profileNonce}');
+      throw ProfileAlreadyExistsException(param.genesisDid, param.profileNonce);
+    }
+
+    String profileDid;
+    if (existingProfileDid == null) {
+      // Create profile
+      Map<BigInt, String> newProfiles = await _createProfilesUseCase.execute(
+        param: CreateProfilesParam(
+          privateKey: param.privateKey,
+          profiles: [param.profileNonce],
+        ),
+      );
+
+      final newProfileDid = newProfiles[param.profileNonce];
+      if (newProfileDid == null) {
+        _stacktraceManager
+            .addTrace('UnknownProfileException: ${param.profileNonce}');
+        _stacktraceManager
+            .addError('UnknownProfileException: ${param.profileNonce}');
+        throw UnknownProfileException(param.profileNonce);
+      }
+
+      profileDid = newProfileDid;
+    } else {
+      profileDid = existingProfileDid;
+    }
+
+    profiles[param.profileNonce] = profileDid;
+
+    // Update Identity
+    await _updateIdentityUseCase.execute(
+        param: UpdateIdentityParam(
+      privateKey: param.privateKey,
+      genesisDid: param.genesisDid,
+      profiles: profiles,
+    ));
   }
 }
