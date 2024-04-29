@@ -1,6 +1,7 @@
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
@@ -28,6 +29,7 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
   final CheckProfileAndDidCurrentEnvUseCase
       _checkProfileAndDidCurrentEnvUseCase;
   final CreateProfilesUseCase _createProfilesUseCase;
+  final LibPolygonIdCoreIdentityDataSource _libPolygonIdCoreIdentityDataSource;
   final StacktraceManager _stacktraceManager;
 
   AddProfileUseCase(
@@ -35,6 +37,7 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
     this._updateIdentityUseCase,
     this._checkProfileAndDidCurrentEnvUseCase,
     this._createProfilesUseCase,
+    this._libPolygonIdCoreIdentityDataSource,
     this._stacktraceManager,
   );
 
@@ -80,7 +83,7 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
 
     String profileDid;
     if (existingProfileDid == null) {
-      // Create profile
+      // Create new profile for selected network
       Map<BigInt, String> newProfiles = await _createProfilesUseCase.execute(
         param: CreateProfilesParam(
           privateKey: param.privateKey,
@@ -99,6 +102,20 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
 
       profileDid = newProfileDid;
     } else {
+      // Check if existing profile is valid. Uses network and blockchain from genesisDid.
+      final genesisDid = param.genesisDid;
+      final profileNonce = param.profileNonce;
+      final calculatedDid = _libPolygonIdCoreIdentityDataSource
+          .calculateProfileId(genesisDid, profileNonce);
+
+      if (existingProfileDid != calculatedDid) {
+        _stacktraceManager.addTrace(
+            'InvalidProfileException: $existingProfileDid != $calculatedDid');
+        _stacktraceManager.addError(
+            'InvalidProfileException: $existingProfileDid != $calculatedDid');
+        throw InvalidProfileException(profileNonce);
+      }
+
       profileDid = existingProfileDid;
     }
 

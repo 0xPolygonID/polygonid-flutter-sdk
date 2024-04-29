@@ -28,8 +28,9 @@ class CreateProfilesUseCase
   );
 
   @override
-  Future<Map<BigInt, String>> execute(
-      {required CreateProfilesParam param}) async {
+  Future<Map<BigInt, String>> execute({
+    required CreateProfilesParam param,
+  }) async {
     return Future.wait(
       [
         _getPublicKeysUseCase.execute(param: param.privateKey),
