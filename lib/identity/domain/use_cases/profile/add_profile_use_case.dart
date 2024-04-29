@@ -12,11 +12,13 @@ class AddProfileParam {
   final String genesisDid;
   final BigInt profileNonce;
   final String privateKey;
+  final bool skipEnvCheck;
 
   AddProfileParam({
     required this.genesisDid,
     required this.profileNonce,
     required this.privateKey,
+    this.skipEnvCheck = false,
   });
 }
 
@@ -38,12 +40,14 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
 
   @override
   Future<void> execute({required AddProfileParam param}) async {
-    await _checkProfileAndDidCurrentEnvUseCase.execute(
-        param: CheckProfileAndDidCurrentEnvParam(
-            did: param.genesisDid,
-            profileNonce: param.profileNonce,
-            privateKey: param.privateKey,
-            excludeGenesisProfile: true));
+    if (!param.skipEnvCheck) {
+      await _checkProfileAndDidCurrentEnvUseCase.execute(
+          param: CheckProfileAndDidCurrentEnvParam(
+              did: param.genesisDid,
+              profileNonce: param.profileNonce,
+              privateKey: param.privateKey,
+              excludeGenesisProfile: true));
+    }
     var identityEntity = await _getIdentityUseCase.execute(
         param: GetIdentityParam(
             genesisDid: param.genesisDid, privateKey: param.privateKey));

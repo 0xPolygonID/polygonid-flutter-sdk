@@ -377,17 +377,22 @@ class Identity implements PolygonIdSdkIdentity {
   }
 
   @override
-  Future<void> addProfile(
-      {required String genesisDid,
-      required String privateKey,
-      required BigInt profileNonce}) {
+  Future<void> addProfile({
+    required String genesisDid,
+    required String privateKey,
+    required BigInt profileNonce,
+    bool skipEnvCheck = false,
+  }) {
     _stacktraceManager.clear();
     _stacktraceManager.addTrace("PolygonIdSdk.Identity.addProfile called");
     return _addProfileUseCase.execute(
-        param: AddProfileParam(
-            genesisDid: genesisDid,
-            profileNonce: profileNonce,
-            privateKey: privateKey));
+      param: AddProfileParam(
+        genesisDid: genesisDid,
+        profileNonce: profileNonce,
+        privateKey: privateKey,
+        skipEnvCheck: skipEnvCheck,
+      ),
+    );
   }
 
   @override
