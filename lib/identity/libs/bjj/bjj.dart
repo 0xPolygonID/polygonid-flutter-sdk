@@ -314,6 +314,11 @@ class BabyjubjubLib {
     final msgPtr = msg.toNativeUtf8();
     final resultPtr = _verifyPoseidon(privateKeyPtr, sigPtr, msgPtr);
     final String resultString = resultPtr.toDartString();
+    //print("- Response string:  $resultString");
+    // Free the string pointer, as we already have
+    // an owned String to return
+    //print("- Freeing the native char*");
+    cstringFree(resultPtr);
     final bool result = resultString.compareTo("1") == 0;
     return result;
   }
