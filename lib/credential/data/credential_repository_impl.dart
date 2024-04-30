@@ -73,7 +73,10 @@ class CredentialRepositoryImpl extends CredentialRepository {
           claimDTOlist.map((claim) => _claimMapper.mapFrom(claim)).toList();
       return claimEntityList;
     } catch (error) {
-      throw GetClaimsException(error);
+      throw GetClaimsException(
+        "Error while getting claims",
+        error,
+      );
     }
   }
 
@@ -108,7 +111,10 @@ class CredentialRepositoryImpl extends CredentialRepository {
       );
 
       if (claimDTOlist.isEmpty || claimDTOlist.length > 1) {
-        throw ClaimNotFoundException(partialId);
+        throw ClaimNotFoundException(
+          id: partialId,
+          errorMessage: 'Credential by partial id not found',
+        );
       }
 
       ClaimEntity claimEntity = _claimMapper.mapFrom(claimDTOlist.first);
@@ -146,7 +152,10 @@ class CredentialRepositoryImpl extends CredentialRepository {
           .issuer
           .id);
     } catch (error) {
-      throw NullRevocationStatusException(claim);
+      throw NullRevocationStatusException(
+        claim: claim,
+        errorMessage: 'error while getting revocation id',
+      );
     }
   }
 
@@ -172,18 +181,24 @@ class CredentialRepositoryImpl extends CredentialRepository {
   Future<int> getRevocationNonce(
       {required ClaimEntity claim, required bool rhs}) {
     try {
-      return Future.value(_claimMapper.mapTo(claim)).then((claimDTO) =>
-          (claimDTO.info.credentialStatus.type ==
-                  CredentialStatusType.reverseSparseMerkleTreeProof
-              ? (rhs
-                  ? claimDTO.info.credentialStatus.revocationNonce!
-                  : claimDTO
-                      .info.credentialStatus.statusIssuer!.revocationNonce!)
-              : (rhs == false
-                  ? claimDTO.info.credentialStatus.revocationNonce!
-                  : throw NullRevocationStatusException(claim))));
+      return Future.value(_claimMapper.mapTo(claim)).then(
+        (claimDTO) => (claimDTO.info.credentialStatus.type ==
+                CredentialStatusType.reverseSparseMerkleTreeProof
+            ? (rhs
+                ? claimDTO.info.credentialStatus.revocationNonce!
+                : claimDTO.info.credentialStatus.statusIssuer!.revocationNonce!)
+            : (rhs == false
+                ? claimDTO.info.credentialStatus.revocationNonce!
+                : throw NullRevocationStatusException(
+                    claim: claim,
+                    errorMessage: 'Revocation nonce not found',
+                  ))),
+      );
     } catch (error) {
-      throw NullRevocationStatusException(claim);
+      throw NullRevocationStatusException(
+        claim: claim,
+        errorMessage: 'error while getting revocation nonce',
+      );
     }
   }
 
@@ -199,9 +214,15 @@ class CredentialRepositoryImpl extends CredentialRepository {
                   : claimDTO.info.credentialStatus.statusIssuer!.id)
               : (rhs == false
                   ? claimDTO.info.credentialStatus.id
-                  : throw NullRevocationStatusException(claim))));
+                  : throw NullRevocationStatusException(
+                      claim: claim,
+                      errorMessage: 'Revocation url not found',
+                    ))));
     } catch (error) {
-      throw NullRevocationStatusException(claim);
+      throw NullRevocationStatusException(
+        claim: claim,
+        errorMessage: 'error while getting revocation url',
+      );
     }
   }
 

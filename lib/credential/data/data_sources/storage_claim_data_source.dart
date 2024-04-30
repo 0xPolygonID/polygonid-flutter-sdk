@@ -187,7 +187,10 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
     Map<String, Object?>? credential =
         await _storeRefWrapper.get(db, credentialId);
     if (credential == null) {
-      throw ClaimNotFoundException(credentialId);
+      throw ClaimNotFoundException(
+        id: credentialId,
+        errorMessage: 'Credential not found by id',
+      );
     }
 
     ClaimDTO claimDTO = ClaimDTO.fromJson(credential);

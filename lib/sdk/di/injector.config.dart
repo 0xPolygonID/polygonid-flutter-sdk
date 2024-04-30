@@ -4,7 +4,8 @@
 // InjectableConfigGenerator
 // **************************************************************************
 
-// ignore_for_file: type=lint
+// ignore_for_file: unnecessary_lambdas
+// ignore_for_file: lines_longer_than_80_chars
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
@@ -564,6 +565,14 @@ extension GetItInjectableX on _i1.GetIt {
       () => databaseModule.interactionStore,
       instanceName: 'interactionStore',
     );
+    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
+      () => databaseModule.profileStore,
+      instanceName: 'profilesStore',
+    );
+    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
+      () => databaseModule.claimStore,
+      instanceName: 'claimStore',
+    );
     gh.factory<_i13.StoreRef<String, dynamic>>(
       () => databaseModule.keyValueStore,
       instanceName: 'keyValueStore',
@@ -571,14 +580,6 @@ extension GetItInjectableX on _i1.GetIt {
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.identityStore,
       instanceName: 'identityStore',
-    );
-    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.claimStore,
-      instanceName: 'claimStore',
-    );
-    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.profileStore,
-      instanceName: 'profilesStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.didProfileInfoStore,

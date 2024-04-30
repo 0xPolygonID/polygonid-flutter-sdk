@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/http_exceptions_handler_mixin.dart';
 import 'package:polygonid_flutter_sdk/common/utils/pinata_gateway_utils.dart';
@@ -106,7 +107,11 @@ class RemoteIden3commDataSource {
             "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException");
         _stacktraceManager.addError(
             "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException");
-        throw UnsupportedFetchClaimTypeException(response);
+        throw UnsupportedFetchClaimTypeException(
+          type: fetchResponse.type.name,
+          errorMessage:
+              'Unsupported fetch claim type: ${fetchResponse.type.name}\nShould be ${FetchClaimResponseType.issuance.name}',
+        );
       }
     }
   }
@@ -158,7 +163,11 @@ class RemoteIden3commDataSource {
               "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException");
           _stacktraceManager.addError(
               "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException");
-          throw UnsupportedFetchClaimTypeException(response);
+          throw UnsupportedFetchClaimTypeException(
+            type: fetchResponse.type.name,
+            errorMessage:
+                'Unsupported fetch claim type: ${fetchResponse.type.name}\nShould be ${FetchClaimResponseType.issuance.name}',
+          );
         }
       } else {
         logger().d(
@@ -232,12 +241,17 @@ class RemoteIden3commDataSource {
             "[RemoteIden3commDataSource] fetchSchema: ${schemaResponse.statusCode} ${schemaResponse.data}");
         throw NetworkException(schemaResponse);
       }
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
     } catch (error) {
       _stacktraceManager
           .addTrace("[RemoteIden3commDataSource] fetchSchema: $error");
       _stacktraceManager
           .addError("[RemoteIden3commDataSource] fetchSchema: $error");
-      throw FetchSchemaException(error);
+      throw FetchSchemaException(
+        error: error,
+        errorMessage: 'Error while fetching schema',
+      );
     }
   }
 
@@ -304,7 +318,7 @@ class RemoteIden3commDataSource {
           .addTrace("[RemoteIden3commDataSource] fetchDisplayType: $error");
       _stacktraceManager
           .addError("[RemoteIden3commDataSource] fetchDisplayType: $error");
-      throw FetchDisplayTypeException(error);
+      throw FetchDisplayTypeException(error: error, errorMessage: error.toString());
     }
   }
 
