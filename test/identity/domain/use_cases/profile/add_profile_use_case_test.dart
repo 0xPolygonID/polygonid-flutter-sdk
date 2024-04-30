@@ -3,6 +3,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
@@ -49,6 +50,8 @@ MockCreateProfilesUseCase createProfilesUseCase = MockCreateProfilesUseCase();
 MockCheckProfileAndDidCurrentEnvUseCase checkProfileAndDidCurrentEnvUseCase =
     MockCheckProfileAndDidCurrentEnvUseCase();
 MockStacktraceManager stacktraceManager = MockStacktraceManager();
+MockLibPolygonIdCoreIdentityDataSource libPolygonIdCoreIdentityDataSource =
+    MockLibPolygonIdCoreIdentityDataSource();
 
 // Tested instance
 AddProfileUseCase useCase = AddProfileUseCase(
@@ -56,6 +59,7 @@ AddProfileUseCase useCase = AddProfileUseCase(
   updateIdentityUseCase,
   checkProfileAndDidCurrentEnvUseCase,
   createProfilesUseCase,
+  libPolygonIdCoreIdentityDataSource,
   stacktraceManager,
 );
 
@@ -64,6 +68,7 @@ AddProfileUseCase useCase = AddProfileUseCase(
   UpdateIdentityUseCase,
   CheckProfileAndDidCurrentEnvUseCase,
   CreateProfilesUseCase,
+  LibPolygonIdCoreIdentityDataSource,
   StacktraceManager,
 ])
 void main() {
@@ -176,5 +181,11 @@ void main() {
     expect(captureGetIdentity.privateKey, CommonMocks.privateKey);
 
     verifyNever(updateIdentityUseCase.execute(param: captureAnyNamed('param')));
+  });
+
+  test(
+      "With an existingProfileDid param provided I expect to receive DID from network same as genesis ID",
+      () {
+    // TODO(moria): Implement this test
   });
 }
