@@ -10,6 +10,7 @@ enum Iden3MessageType {
   credentialProposalRequest,
   credentialProposal,
   credentialStatusUpdate,
+  paymentProposal,
   problemReport;
 }
 
