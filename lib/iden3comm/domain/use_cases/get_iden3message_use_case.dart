@@ -12,55 +12,56 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/reque
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_proposal_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_status_update_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/fetch_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_request_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 
-import 'get_iden3message_type_use_case.dart';
-
 class GetIden3MessageUseCase extends FutureUseCase<String, Iden3MessageEntity> {
-  final GetIden3MessageTypeUseCase _getIden3MessageTypeUseCase;
   final StacktraceManager _stacktraceManager;
 
   GetIden3MessageUseCase(
-    this._getIden3MessageTypeUseCase,
     this._stacktraceManager,
   );
 
   @override
-  Future<Iden3MessageEntity> execute({required String param}) {
+  Future<Iden3MessageEntity> execute({required String param}) async {
     try {
       Map<String, dynamic> json = jsonDecode(param);
 
-      return _getIden3MessageTypeUseCase
-          .execute(param: json['type'])
-          .then((type) {
-        switch (type) {
-          case Iden3MessageType.authRequest:
-            return AuthIden3MessageEntity.fromJson(json);
-          case Iden3MessageType.authResponse:
-            return AuthResponseIden3MessageEntity.fromJson(json);
-          case Iden3MessageType.credentialOffer:
-            return OfferIden3MessageEntity.fromJson(json);
-          case Iden3MessageType.onchainCredentialOffer:
-            return OnchainOfferIden3MessageEntity.fromJson(json);
-          case Iden3MessageType.credentialIssuanceResponse:
-            return FetchIden3MessageEntity.fromJson(json);
-          case Iden3MessageType.proofContractInvokeRequest:
-            return ContractIden3MessageEntity.fromJson(json);
-          case Iden3MessageType.credentialRefresh:
-            return CredentialRefreshIden3MessageEntity.fromJson(json);
-          case Iden3MessageType.credentialStatusUpdate:
-            return CredentialStatusUpdateMessageEntity.fromJson(json);
-          case Iden3MessageType.credentialProposalRequest:
-            return CredentialProposalRequest.fromJson(json);
-          case Iden3MessageType.credentialProposal:
-            return CredentialProposal.fromJson(json);
-          case Iden3MessageType.problemReport:
-            return ProblemReportMessageEntity.fromJson(json);
-          case Iden3MessageType.unknown:
-            throw UnsupportedIden3MsgTypeException(type);
-        }
-      });
+      final rawType = json['type'] ?? '';
+      final type = Iden3MessageType.fromType(rawType);
+
+      switch (type) {
+        case Iden3MessageType.authRequest:
+          return AuthIden3MessageEntity.fromJson(json);
+        case Iden3MessageType.authResponse:
+          return AuthResponseIden3MessageEntity.fromJson(json);
+        case Iden3MessageType.credentialOffer:
+          return OfferIden3MessageEntity.fromJson(json);
+        case Iden3MessageType.onchainCredentialOffer:
+          return OnchainOfferIden3MessageEntity.fromJson(json);
+        case Iden3MessageType.credentialIssuanceResponse:
+          return FetchIden3MessageEntity.fromJson(json);
+        case Iden3MessageType.proofContractInvokeRequest:
+          return ContractIden3MessageEntity.fromJson(json);
+        case Iden3MessageType.credentialRefresh:
+          return CredentialRefreshIden3MessageEntity.fromJson(json);
+        case Iden3MessageType.credentialStatusUpdate:
+          return CredentialStatusUpdateMessageEntity.fromJson(json);
+        case Iden3MessageType.credentialProposalRequest:
+          return CredentialProposalRequest.fromJson(json);
+        case Iden3MessageType.credentialProposal:
+          return CredentialProposal.fromJson(json);
+        case Iden3MessageType.problemReport:
+          return ProblemReportMessageEntity.fromJson(json);
+        case Iden3MessageType.paymentRequest:
+          return PaymentRequestEntity.fromJson(json);
+        case Iden3MessageType.payment:
+          return PaymentMessageEntity.fromJson(json);
+        case Iden3MessageType.unknown:
+          throw UnsupportedIden3MsgTypeException(type);
+      }
     } catch (error) {
       _stacktraceManager.addTrace("[GetIden3MessageUseCase] error: $error");
       _stacktraceManager.addError("[GetIden3MessageUseCase] error: $error");
