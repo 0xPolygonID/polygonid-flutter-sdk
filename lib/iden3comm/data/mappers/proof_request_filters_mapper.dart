@@ -15,7 +15,9 @@ class ProofRequestFiltersMapper
     try {
       context = from.context["@context"][0][query.type]["@context"];
     } catch (e) {
-      throw UnsupportedSchemaException();
+      throw UnsupportedSchemaException(
+        sch
+      );
     }
 
     List<FilterEntity> filters = [
