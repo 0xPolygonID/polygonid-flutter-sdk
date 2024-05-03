@@ -16,7 +16,10 @@ class ProofRequestFiltersMapper
       context = from.context["@context"][0][query.type]["@context"];
     } catch (e) {
       throw UnsupportedSchemaException(
-        sch
+        schema: query.type ?? "",
+        errorMessage:
+            "Schema does not have a context, please check the schema is json-ld compliant",
+        error: e,
       );
     }
 

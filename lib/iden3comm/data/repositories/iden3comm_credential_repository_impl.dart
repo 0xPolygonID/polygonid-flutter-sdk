@@ -1,3 +1,4 @@
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
@@ -30,7 +31,18 @@ class Iden3commCredentialRepositoryImpl extends Iden3commCredentialRepository {
     required String url,
     required String did,
     required String authToken,
-  }) {
+  }) async {
+    try {
+      ClaimDTO claimDTO = await _remoteIden3commDataSource.fetchClaim(
+          authToken: authToken, url: url, did: did);
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
+    } catch (e) {
+      throw FetchClaimException(
+        errorMessage: "Error fetching claim",
+        error: e,
+      );
+    }
     return _remoteIden3commDataSource
         .fetchClaim(authToken: authToken, url: url, did: did)
         .then((dto) {
