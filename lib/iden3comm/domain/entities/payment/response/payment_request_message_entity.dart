@@ -35,7 +35,7 @@ https://iden3-communication.io/credentials/0.1/payment-request
   "from": "did:iden3:polygon:mumbai:x3HstHLj2rTp6HHXk2WczYP7w3rpCsRbwCMeaQ2H2"
 }
 */
-class PaymentRequestEntity extends Iden3MessageEntity<PaymentProposalBody> {
+class PaymentRequestEntity extends Iden3MessageEntity<PaymentRequestBody> {
   PaymentRequestEntity({
     required super.id,
     required super.typ,
@@ -43,7 +43,7 @@ class PaymentRequestEntity extends Iden3MessageEntity<PaymentProposalBody> {
     required super.thid,
     required super.from,
     required super.to,
-    required PaymentProposalBody body,
+    required PaymentRequestBody body,
   }) : super(
           body: body,
           messageType: Iden3MessageType.paymentRequest,
@@ -55,7 +55,7 @@ class PaymentRequestEntity extends Iden3MessageEntity<PaymentProposalBody> {
       typ: json['typ'],
       type: json['type'],
       thid: json['thid'],
-      body: PaymentProposalBody.fromJson(json['body']),
+      body: PaymentRequestBody.fromJson(json['body']),
       from: json['from'],
       to: json['to'],
     );
@@ -69,17 +69,17 @@ class PaymentRequestEntity extends Iden3MessageEntity<PaymentProposalBody> {
   }
 }
 
-class PaymentProposalBody {
-  final List<PaymentProposal> payments;
+class PaymentRequestBody {
+  final List<PaymentRequest> payments;
 
-  PaymentProposalBody({
+  PaymentRequestBody({
     required this.payments,
   });
 
-  factory PaymentProposalBody.fromJson(Map<String, dynamic> json) {
-    return PaymentProposalBody(
-      payments: List<PaymentProposal>.from(
-        json['payments'].map((x) => PaymentProposal.fromJson(x)),
+  factory PaymentRequestBody.fromJson(Map<String, dynamic> json) {
+    return PaymentRequestBody(
+      payments: List<PaymentRequest>.from(
+        json['payments'].map((x) => PaymentRequest.fromJson(x)),
       ),
     );
   }
@@ -91,16 +91,16 @@ class PaymentProposalBody {
   }
 }
 
-class PaymentProposal {
+class PaymentRequest {
   final String type;
   final String description;
 
   final String agent;
   final String expiration;
   final List credentials;
-  final PaymentProposalData data;
+  final PaymentRequestData data;
 
-  PaymentProposal({
+  PaymentRequest({
     required this.type,
     required this.description,
     required this.agent,
@@ -109,14 +109,14 @@ class PaymentProposal {
     required this.data,
   });
 
-  factory PaymentProposal.fromJson(Map<String, dynamic> json) {
-    return PaymentProposal(
+  factory PaymentRequest.fromJson(Map<String, dynamic> json) {
+    return PaymentRequest(
       type: json['type'],
       description: json['description'],
       agent: json['agent'],
       expiration: json['expiration'],
       credentials: json['credentials'],
-      data: PaymentProposalData.fromJson(json['data']),
+      data: PaymentRequestData.fromJson(json['data']),
     );
   }
 
@@ -144,14 +144,14 @@ class PaymentProposal {
 		}]
 */
 
-class PaymentProposalData {
+class PaymentRequestData {
   final String type;
-  final int amount;
+  final String amount;
   final String id;
   final String address;
   final String signature;
 
-  PaymentProposalData({
+  PaymentRequestData({
     required this.type,
     required this.amount,
     required this.id,
@@ -159,8 +159,8 @@ class PaymentProposalData {
     required this.signature,
   });
 
-  factory PaymentProposalData.fromJson(Map<String, dynamic> json) {
-    return PaymentProposalData(
+  factory PaymentRequestData.fromJson(Map<String, dynamic> json) {
+    return PaymentRequestData(
       type: json['type'],
       amount: json['amount'],
       id: json['id'],
