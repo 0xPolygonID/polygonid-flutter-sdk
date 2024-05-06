@@ -66,7 +66,6 @@
 
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 
-import '../../authorization/request/auth_body_request.dart';
 import 'auth_body_response.dart';
 
 class AuthResponseIden3MessageEntity

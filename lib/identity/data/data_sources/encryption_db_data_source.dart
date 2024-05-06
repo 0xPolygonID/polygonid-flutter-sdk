@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:encrypt/encrypt.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';

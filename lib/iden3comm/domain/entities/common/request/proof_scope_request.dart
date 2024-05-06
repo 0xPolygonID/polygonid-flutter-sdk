@@ -74,7 +74,6 @@
 
 */
 
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_query_request.dart';
 
 class ProofScopeRequest {

@@ -1,9 +1,6 @@
-import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
-import 'dart:math';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
