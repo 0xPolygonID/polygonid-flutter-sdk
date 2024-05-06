@@ -142,7 +142,11 @@ class Authenticate {
         Iden3MessageType.authRequest,
         Iden3MessageType.proofContractInvokeRequest
       ].contains(message.messageType)) {
-        throw UnsupportedIden3MsgTypeException(message.messageType);
+        throw UnsupportedIden3MsgTypeException(
+          type: message.messageType,
+          errorMessage: "Unsupported message type\nIt should be either "
+              "authRequest or proofContractInvokeRequest",
+        );
       }
 
       HexMapper hexMapper = getItSdk<HexMapper>();
@@ -256,7 +260,9 @@ class Authenticate {
 
       if (callbackUrl == null || callbackUrl.isEmpty) {
         throw NullAuthenticateCallbackException(
-            message as AuthIden3MessageEntity);
+          authRequest: message as AuthIden3MessageEntity,
+          errorMessage: "Callback url is null or empty",
+        );
       }
 
       // perform the authentication with the auth token callin the callback url
@@ -779,7 +785,9 @@ class Authenticate {
             if (operator == 2 || operator == 3) {
               // lt, gt
               throw InvalidProofReqException(
-                  "InvalidProofReqException param: $scope\nentry: $entry");
+                errorMessage:
+                    "InvalidProofReqException param: $scope\nentry: $entry",
+              );
             }
             try {
               values = entry.value.cast<int>();
@@ -788,16 +796,19 @@ class Authenticate {
                 values = entry.value.cast<String>();
               } catch (e) {
                 throw InvalidProofReqException(
-                    "InvalidProofReqException param: $scope\nentry: $entry");
+                    errorMessage:
+                        "InvalidProofReqException param: $scope\nentry: $entry");
               }
               throw InvalidProofReqException(
-                  "InvalidProofReqException param: $scope\nentry: $entry");
+                  errorMessage:
+                      "InvalidProofReqException param: $scope\nentry: $entry");
             }
           } else if (entry.value is String) {
             if (!_isDateTime(entry.value) && (operator == 2 || operator == 3)) {
               // lt, gt
               throw InvalidProofReqException(
-                  "InvalidProofReqException param: $scope\nentry: $entry");
+                  errorMessage:
+                      "InvalidProofReqException param: $scope\nentry: $entry");
             }
 
             values = [entry.value];
@@ -809,12 +820,14 @@ class Authenticate {
             values = [entry.value == true ? 1 : 0];
           } else {
             throw InvalidProofReqException(
-                "InvalidProofReqException param: $scope\nentry: $entry");
+                errorMessage:
+                    "InvalidProofReqException param: $scope\nentry: $entry");
           }
         }
       } else {
         throw InvalidProofReqException(
-            "InvalidProofReqException param: $scope\nentry: $reqEntry");
+            errorMessage:
+                "InvalidProofReqException param: $scope\nentry: $reqEntry");
       }
     }
 

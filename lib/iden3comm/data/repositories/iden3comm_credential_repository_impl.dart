@@ -2,6 +2,7 @@ import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 
@@ -35,6 +36,10 @@ class Iden3commCredentialRepositoryImpl extends Iden3commCredentialRepository {
     try {
       ClaimDTO claimDTO = await _remoteIden3commDataSource.fetchClaim(
           authToken: authToken, url: url, did: did);
+      final displayMethod = claimDTO.info.displayMethod;
+      claimDTO = await _fetchSchemaAndDisplayType(claimDTO);
+      final ClaimEntity claimEntity = _claimMapper.mapFrom(claimDTO);
+      return claimEntity;
     } on PolygonIdSDKException catch (_) {
       rethrow;
     } catch (e) {
@@ -43,40 +48,45 @@ class Iden3commCredentialRepositoryImpl extends Iden3commCredentialRepository {
         error: e,
       );
     }
-    return _remoteIden3commDataSource
-        .fetchClaim(authToken: authToken, url: url, did: did)
-        .then((dto) {
+  }
+
+  /// fetch schema and displayType, if available add to the claimDTO otherwise
+  /// return the claimDTO
+  /// possible errors are not blocking
+  Future<ClaimDTO> _fetchSchemaAndDisplayType(ClaimDTO dto) async {
+    try {
       final displayMethod = dto.info.displayMethod;
+      final Map<String, dynamic> schema = await _remoteIden3commDataSource
+          .fetchSchema(url: dto.info.credentialSchema.id);
+      dto.schema = schema;
 
-      /// Error in fetching schema or displayType is not blocking
-      final futures = Future.wait([
-        _remoteIden3commDataSource
-            .fetchSchema(url: dto.info.credentialSchema.id)
-            .then((schema) {
-          dto.schema = schema;
-          return dto;
-        }).catchError((_) => dto),
-        if (displayMethod != null)
-          _remoteIden3commDataSource
-              .fetchDisplayType(url: displayMethod.id)
-              .then((displayType) {
-            displayType['type'] = displayMethod.type;
-            dto.displayType = displayType;
-            return dto;
-          }).catchError((_) {
-            return dto;
-          }),
-      ]);
-
-      return futures.then((_) => _claimMapper.mapFrom(dto));
-    }).catchError((error) => throw FetchClaimException(error));
+      if (displayMethod != null) {
+        final Map<String, dynamic> displayType =
+            await _remoteIden3commDataSource.fetchDisplayType(
+                url: displayMethod.id);
+        displayType['type'] = displayMethod.type;
+        dto.displayType = displayType;
+      }
+    } catch (_) {
+      return dto;
+    }
+    return dto;
   }
 
   @override
-  Future<Map<String, dynamic>> fetchSchema({required String url}) {
-    return _remoteIden3commDataSource
-        .fetchSchema(url: url)
-        .catchError((error) => throw FetchSchemaException(error));
+  Future<Map<String, dynamic>> fetchSchema({required String url}) async {
+    try {
+      final Map<String, dynamic> schema =
+          await _remoteIden3commDataSource.fetchSchema(url: url);
+      return schema;
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
+    } catch (e) {
+      throw FetchSchemaException(
+        errorMessage: "Error fetching schema",
+        error: e,
+      );
+    }
   }
 
   @override
@@ -85,19 +95,24 @@ class Iden3commCredentialRepositoryImpl extends Iden3commCredentialRepository {
     required String authToken,
     required String profileDid,
   }) async {
-    ClaimDTO claimDTO = await _remoteIden3commDataSource
-        .refreshCredential(
-          url: url,
-          authToken: authToken,
-          profileDid: profileDid,
-        )
-        .catchError((error) => throw Exception(error));
-
-    Map<String, dynamic> schema = await _remoteIden3commDataSource.fetchSchema(
-        url: claimDTO.info.credentialSchema.id);
-
-    claimDTO.schema = schema;
-    ClaimEntity claimEntity = _claimMapper.mapFrom(claimDTO);
-    return claimEntity;
+    try {
+      ClaimDTO claimDTO = await _remoteIden3commDataSource.refreshCredential(
+        url: url,
+        authToken: authToken,
+        profileDid: profileDid,
+      );
+      Map<String, dynamic> schema = await _remoteIden3commDataSource
+          .fetchSchema(url: claimDTO.info.credentialSchema.id);
+      claimDTO.schema = schema;
+      final ClaimEntity claimEntity = _claimMapper.mapFrom(claimDTO);
+      return claimEntity;
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
+    } catch (e) {
+      throw RefreshCredentialException(
+        errorMessage: "Error refreshing credential",
+        error: e,
+      );
+    }
   }
 }

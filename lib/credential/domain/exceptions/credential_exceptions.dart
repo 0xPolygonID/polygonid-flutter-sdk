@@ -2,63 +2,59 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.da
 
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 
-class ClaimNotFoundException implements PolygonIdSDKException {
+class ClaimNotFoundException extends PolygonIdSDKException {
   final String id;
-  dynamic error;
-  final String errorMessage;
 
   ClaimNotFoundException({
     required this.id,
-    this.error,
-    required this.errorMessage,
-  });
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class ClaimWrongIdentityException implements PolygonIdSDKException {
+class ClaimWrongIdentityException extends PolygonIdSDKException {
   final String identifier;
-  dynamic error;
-  final String errorMessage;
 
   ClaimWrongIdentityException({
     required this.identifier,
-    this.error,
-    required this.errorMessage,
-  });
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
 class SaveClaimException extends PolygonIdSDKException {
-  SaveClaimException(String errorMessage, [dynamic error])
+  SaveClaimException({required String errorMessage, dynamic error})
       : super(errorMessage: errorMessage, error: error);
 }
 
 class GetClaimsException extends PolygonIdSDKException {
-  GetClaimsException(String errorMessage, [dynamic error])
+  GetClaimsException({required String errorMessage, dynamic error})
       : super(errorMessage: errorMessage, error: error);
 }
 
 class RemoveClaimsException extends PolygonIdSDKException {
-  RemoveClaimsException(String errorMessage, [dynamic error])
+  RemoveClaimsException({required String errorMessage, dynamic error})
       : super(errorMessage: errorMessage, error: error);
 }
 
 class UpdateClaimException extends PolygonIdSDKException {
-  UpdateClaimException(String errorMessage, [dynamic error])
+  UpdateClaimException({required String errorMessage, dynamic error})
       : super(errorMessage: errorMessage, error: error);
 }
 
-class NullRevocationStatusException implements PolygonIdSDKException {
+class NullRevocationStatusException extends PolygonIdSDKException {
   final ClaimEntity claim;
-  dynamic error;
-  final String errorMessage;
 
   NullRevocationStatusException({
     required this.claim,
-    this.error,
-    required this.errorMessage,
-  });
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
 class RefreshCredentialException extends PolygonIdSDKException {
-  RefreshCredentialException(String errorMessage, [dynamic error])
-      : super(errorMessage: errorMessage, error: error);
+  RefreshCredentialException({
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }

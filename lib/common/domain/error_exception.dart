@@ -7,3 +7,15 @@ class PolygonIdSDKException implements Exception {
     required this.errorMessage,
   });
 }
+
+class CoreLibraryException extends PolygonIdSDKException {
+  final String coreLibraryName;
+  final String methodName;
+
+  CoreLibraryException({
+    required this.coreLibraryName,
+    required this.methodName,
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
+}

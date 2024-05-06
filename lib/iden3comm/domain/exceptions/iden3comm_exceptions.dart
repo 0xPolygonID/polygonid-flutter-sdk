@@ -3,148 +3,116 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/re
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
 
-class UnsupportedIden3MsgTypeException implements PolygonIdSDKException {
+class UnsupportedIden3MsgTypeException extends PolygonIdSDKException {
   final Iden3MessageType type;
-  final String errorMessage;
-  dynamic error;
 
   UnsupportedIden3MsgTypeException({
     required this.type,
-    required this.errorMessage,
-    this.error,
-  });
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class InvalidIden3MsgTypeException implements PolygonIdSDKException {
+class InvalidIden3MsgTypeException extends PolygonIdSDKException {
   final Iden3MessageType expected;
   final Iden3MessageType actual;
-  final String errorMessage;
-  dynamic error;
 
   InvalidIden3MsgTypeException({
     required this.expected,
     required this.actual,
-    required this.errorMessage,
-    this.error,
-  });
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class InvalidProofReqException implements PolygonIdSDKException {
-  final String errorMessage;
-  dynamic error;
-
+class InvalidProofReqException extends PolygonIdSDKException {
   InvalidProofReqException({
-    required this.errorMessage,
-    this.error,
-  });
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class ProofsNotFoundException implements PolygonIdSDKException {
+class ProofsNotFoundException extends PolygonIdSDKException {
   final List<ProofRequestEntity> proofRequests;
-  final String errorMessage;
-  dynamic error;
 
   ProofsNotFoundException({
     required this.proofRequests,
-    required this.errorMessage,
-    this.error,
-  });
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class CredentialsNotFoundException implements PolygonIdSDKException {
+class CredentialsNotFoundException extends PolygonIdSDKException {
   final List<ProofRequestEntity> proofRequests;
-  final String errorMessage;
-  dynamic error;
 
   CredentialsNotFoundException({
     required this.proofRequests,
-    required this.errorMessage,
-    this.error,
-  });
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class UnsupportedSchemaException implements PolygonIdSDKException {
+class UnsupportedSchemaException extends PolygonIdSDKException {
   final String schema;
-  final String errorMessage;
-  dynamic error;
 
   UnsupportedSchemaException({
     required this.schema,
-    required this.errorMessage,
-    this.error,
-  });
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class NullAuthenticateCallbackException implements PolygonIdSDKException {
+class NullAuthenticateCallbackException extends PolygonIdSDKException {
   final AuthIden3MessageEntity authRequest;
-  final String errorMessage;
-  dynamic error;
 
   NullAuthenticateCallbackException({
     required this.authRequest,
-    required this.errorMessage,
-    this.error,
-  });
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class FetchClaimException implements PolygonIdSDKException {
-  final String errorMessage;
-  dynamic error;
-
+class FetchClaimException extends PolygonIdSDKException {
   FetchClaimException({
-    required this.errorMessage,
-    this.error,
-  });
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class FetchSchemaException implements PolygonIdSDKException {
-  final String errorMessage;
-  dynamic error;
-
+class FetchSchemaException extends PolygonIdSDKException {
   FetchSchemaException({
-    required this.errorMessage,
-    this.error,
-  });
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class FetchDisplayTypeException implements PolygonIdSDKException {
-  final String errorMessage;
-  dynamic error;
-
+class FetchDisplayTypeException extends PolygonIdSDKException {
   FetchDisplayTypeException({
-    required this.errorMessage,
-    this.error,
-  });
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class UnsupportedFetchClaimTypeException implements PolygonIdSDKException {
+class UnsupportedFetchClaimTypeException extends PolygonIdSDKException {
   final String type;
-  final String errorMessage;
-  dynamic error;
 
   UnsupportedFetchClaimTypeException({
     required this.type,
-    required this.errorMessage,
-    this.error,
-  });
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class GetConnectionsException implements PolygonIdSDKException {
-  final String errorMessage;
-  dynamic error;
-
+class GetConnectionsException extends PolygonIdSDKException {
   GetConnectionsException({
-    required this.errorMessage,
-    this.error,
-  });
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class OperatorException implements PolygonIdSDKException {
-  final String errorMessage;
-  dynamic error;
-
+class OperatorException extends PolygonIdSDKException {
   OperatorException({
-    required this.errorMessage,
-    this.error,
-  });
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }

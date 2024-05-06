@@ -4,15 +4,23 @@ mixin HttpExceptionsHandlerMixin {
   void throwExceptionOnStatusCode(int statusCode, String responseBody) {
     if (statusCode == 404) {
       // Not found
-      throw ItemNotFoundException(responseBody);
+      throw ItemNotFoundException(
+          errorMessage: "statusCode: 404\n$responseBody");
     } else if (statusCode == 500) {
-      throw InternalServerErrorException(responseBody);
+      throw InternalServerErrorException(
+          errorMessage: "statusCode: 500\n$responseBody");
     } else if (statusCode == 400) {
-      throw BadRequestException(responseBody);
+      throw BadRequestException(errorMessage: "statusCode: 400\n$responseBody");
     } else if (statusCode == 409) {
-      throw ConflictErrorException(responseBody);
+      throw ConflictErrorException(
+          errorMessage: "statusCode: 409\n$responseBody");
     } else if (statusCode > 400) {
-      throw UnknownApiException(statusCode);
+      throw UnknownApiException(
+          httpCode: statusCode,
+          errorMessage: "statusCode: $statusCode\n$responseBody");
+    } else {
+      throw NetworkException(
+          statusCode: statusCode, errorMessage: responseBody);
     }
   }
 }

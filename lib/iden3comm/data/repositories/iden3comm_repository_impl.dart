@@ -76,7 +76,10 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     String? url = request.body.callbackUrl;
 
     if (url == null || url.isEmpty) {
-      throw NullAuthenticateCallbackException(request);
+      throw NullAuthenticateCallbackException(
+        authRequest: request,
+        errorMessage: "Callback url is null or empty",
+      );
     }
 
     final response = await _remoteIden3commDataSource.authWithToken(

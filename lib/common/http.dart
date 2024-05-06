@@ -4,7 +4,8 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 
-import '../constants.dart';
+import 'package:polygonid_flutter_sdk/constants.dart';
+import 'package:polygonid_flutter_sdk/common/utils/http_exceptions_handler_mixin.dart';
 
 Future<String> extractJSON(http.Response response) async {
   return response.body;
@@ -35,7 +36,9 @@ Future<http.Response> get(String baseAddress, String endpoint,
 
     return returnResponseOrThrowException(response);
   } on IOException {
-    throw NetworkException("network error");
+    throw NetworkException(
+      errorMessage: "network error",
+    );
   } catch (e) {
     return response;
   }
@@ -66,6 +69,8 @@ Future<http.Response> post(String baseAddress, String endpoint,
 }
 
 http.Response returnResponseOrThrowException(http.Response response) {
+  response.throwExceptionOnStatusCode(response.statusCode, response.body);
+  (response.statusCode, response.body);
   if (response.statusCode == 404) {
     // Not found
     throw ItemNotFoundException(response.body);

@@ -3,10 +3,11 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 
-import '../../../common/libs/polygonidcore/native_polygonidcore.dart';
-import '../../../common/libs/polygonidcore/pidcore_base.dart';
+import 'package:polygonid_flutter_sdk/common/libs/polygonidcore/native_polygonidcore.dart';
+import 'package:polygonid_flutter_sdk/common/libs/polygonidcore/pidcore_base.dart';
 
 @injectable
 class PolygonIdCoreProof extends PolygonIdCore {
@@ -28,7 +29,11 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
-        throw ProofInputsException(consumedStatus);
+        throw CoreLibraryException(
+          coreLibraryName: "libpolygonid",
+          methodName: "PLGNProofFromSmartContract",
+          errorMessage: consumedStatus,
+        );
       }
     }
     String result = "";
@@ -64,7 +69,11 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
-        throw ProofInputsException(consumedStatus);
+        throw CoreLibraryException(
+          coreLibraryName: "libpolygonid",
+          methodName: "PLGNAtomicQuerySigV2Inputs",
+          errorMessage: consumedStatus,
+        );
       }
     }
     String result = "";
@@ -100,7 +109,11 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
-        throw ProofInputsException(consumedStatus);
+        throw CoreLibraryException(
+          coreLibraryName: "libpolygonid",
+          methodName: "PLGNAtomicQuerySigV2OnChainInputs",
+          errorMessage: consumedStatus,
+        );
       }
     }
     String result = "";
@@ -136,7 +149,11 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
-        throw ProofInputsException(consumedStatus);
+        throw CoreLibraryException(
+          coreLibraryName: "libpolygonid",
+          methodName: "PLGNAtomicQueryMtpV2Inputs",
+          errorMessage: consumedStatus,
+        );
       }
     }
     String result = "";
@@ -172,7 +189,11 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
-        throw ProofInputsException(consumedStatus);
+        throw CoreLibraryException(
+          coreLibraryName: "libpolygonid",
+          methodName: "PLGNAtomicQueryMtpV2OnChainInputs",
+          errorMessage: consumedStatus,
+        );
       }
     }
     String result = "";
@@ -208,7 +229,11 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
-        throw ProofInputsException(consumedStatus);
+        throw CoreLibraryException(
+          coreLibraryName: "libpolygonid",
+          methodName: "PLGNAtomicQueryV3Inputs",
+          errorMessage: consumedStatus,
+        );
       }
     }
     String result = "";
@@ -244,7 +269,11 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
-        throw ProofInputsException(consumedStatus);
+        throw CoreLibraryException(
+          coreLibraryName: "libpolygonid",
+          methodName: "PLGNAtomicQueryV3OnChainInputs",
+          errorMessage: consumedStatus,
+        );
       }
     }
     String result = "";
@@ -280,7 +309,11 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
-        throw ProofInputsException(consumedStatus);
+        throw CoreLibraryException(
+          coreLibraryName: "libpolygonid",
+          methodName: "PLGNALinkedMultiQueryInputs",
+          errorMessage: consumedStatus,
+        );
       }
     }
     String result = "";
