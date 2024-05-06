@@ -1,7 +1,5 @@
-import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/did_profile_info_repository.dart';
 
 class CacheCredentialParam {
   final String credential;

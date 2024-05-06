@@ -62,9 +62,6 @@
 
 */
 
-import 'dart:convert';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 
 /// Sample
 /// ``` "vp":{

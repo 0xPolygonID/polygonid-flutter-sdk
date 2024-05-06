@@ -2,14 +2,9 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:http/http.dart';
-import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
-import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/utils/pinata_gateway_utils.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/rhs_node_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
-import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
-import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
-import 'package:web3dart/crypto.dart';
 
 import '../../../common/data/exceptions/network_exceptions.dart';
 import '../../../common/domain/domain_logger.dart';

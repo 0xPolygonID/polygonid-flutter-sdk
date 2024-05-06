@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/did_method_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 
 class ConfigParam {
   final String ipfsNodeURL;

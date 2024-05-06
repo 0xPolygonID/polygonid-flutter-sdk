@@ -1,5 +1,4 @@
 import 'package:polygonid_flutter_sdk/common/mappers/mapper.dart';
-import 'package:polygonid_flutter_sdk/credential/data/dtos/display_type/basic_display_type.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/display_type/display_type.dart';
 
 class DisplayTypeMapper extends Mapper<Map<String, dynamic>?, DisplayType?> {

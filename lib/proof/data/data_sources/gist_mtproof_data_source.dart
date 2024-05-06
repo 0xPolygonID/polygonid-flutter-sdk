@@ -1,17 +1,10 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
-import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_dto.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
-import 'package:polygonid_flutter_sdk/proof/libs/polygonidcore/pidcore_proof.dart';
 
 @injectable
 class GistMTProofDataSource {
