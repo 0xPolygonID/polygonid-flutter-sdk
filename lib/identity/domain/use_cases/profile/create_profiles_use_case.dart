@@ -4,6 +4,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_public_keys_
 
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+
 class CreateProfilesParam {
   final String privateKey;
   final List<BigInt> profiles;

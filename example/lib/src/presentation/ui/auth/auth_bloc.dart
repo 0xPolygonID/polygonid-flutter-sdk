@@ -1,4 +1,3 @@
-
 import 'package:bloc/bloc.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
