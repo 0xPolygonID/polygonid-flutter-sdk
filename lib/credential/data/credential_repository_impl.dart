@@ -1,5 +1,6 @@
 import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/cache_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/remote_claim_data_source.dart';
@@ -44,13 +45,24 @@ class CredentialRepositoryImpl extends CredentialRepository {
   Future<void> saveClaims(
       {required List<ClaimEntity> claims,
       required String genesisDid,
-      required String privateKey}) {
-    return _storageClaimDataSource
-        .storeClaims(
-            claims: claims.map((claim) => _claimMapper.mapTo(claim)).toList(),
-            did: genesisDid,
-            privateKey: privateKey)
-        .catchError((error) => throw SaveClaimException(error));
+      required String privateKey}) async {
+    try {
+      final List<ClaimDTO> claimDTOList =
+          claims.map((claim) => _claimMapper.mapTo(claim)).toList();
+      await _storageClaimDataSource.storeClaims(
+        claims: claimDTOList,
+        did: genesisDid,
+        privateKey: privateKey,
+      );
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
+    } catch (error) {
+      throw SaveClaimException(
+        errorMessage:
+            'Error while saving claims in the DB\n${error.toString()}',
+        error: error,
+      );
+    }
   }
 
   @override
@@ -72,10 +84,12 @@ class CredentialRepositoryImpl extends CredentialRepository {
       final List<ClaimEntity> claimEntityList =
           claimDTOlist.map((claim) => _claimMapper.mapFrom(claim)).toList();
       return claimEntityList;
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
     } catch (error) {
       throw GetClaimsException(
-        "Error while getting claims",
-        error,
+        errorMessage: "Error while getting claims from DB\n${error.toString()}",
+        error: error,
       );
     }
   }
@@ -128,19 +142,41 @@ class CredentialRepositoryImpl extends CredentialRepository {
   Future<void> removeClaims(
       {required List<String> claimIds,
       required String genesisDid,
-      required String privateKey}) {
-    return _storageClaimDataSource
-        .removeClaims(
-            claimIds: claimIds, did: genesisDid, privateKey: privateKey)
-        .catchError((error) => throw RemoveClaimsException(error));
+      required String privateKey}) async {
+    try {
+      await _storageClaimDataSource.removeClaims(
+        claimIds: claimIds,
+        did: genesisDid,
+        privateKey: privateKey,
+      );
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
+    } catch (error) {
+      throw RemoveClaimsException(
+        errorMessage:
+            'Error while removing claims from DB\n${error.toString()}',
+        error: error,
+      );
+    }
   }
 
   @override
   Future<void> removeAllClaims(
-      {required String genesisDid, required String privateKey}) {
-    return _storageClaimDataSource
-        .removeAllClaims(did: genesisDid, privateKey: privateKey)
-        .catchError((error) => throw RemoveClaimsException(error));
+      {required String genesisDid, required String privateKey}) async {
+    try {
+      await _storageClaimDataSource.removeAllClaims(
+        did: genesisDid,
+        privateKey: privateKey,
+      );
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
+    } catch (error) {
+      throw RemoveClaimsException(
+        errorMessage:
+            'Error while removing all claims from DB\n${error.toString()}',
+        error: error,
+      );
+    }
   }
 
   Future<String> getRhsRevocationId({required ClaimEntity claim}) {

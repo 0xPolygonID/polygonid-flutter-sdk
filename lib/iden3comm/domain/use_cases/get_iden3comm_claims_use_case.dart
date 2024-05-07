@@ -223,7 +223,10 @@ class GetIden3commClaimsUseCase
           "[GetIden3commClaimsUseCase] error getting claims for requests: $requests");
       _stacktraceManager.addError(
           "[GetIden3commClaimsUseCase] error getting claims for requests: $requests");
-      throw CredentialsNotFoundException(requests);
+      throw CredentialsNotFoundException(
+        proofRequests: requests,
+        errorMessage: "Error getting claims for requests",
+      );
     }
 
     return claims;

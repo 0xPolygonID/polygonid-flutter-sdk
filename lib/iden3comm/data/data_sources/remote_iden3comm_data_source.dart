@@ -33,7 +33,10 @@ class RemoteIden3commDataSource {
   }) async {
     Uri? uri = Uri.tryParse(url);
     if (uri == null) {
-      throw NetworkException("Invalid url");
+      throw NetworkException(
+        errorMessage: "url is invalid",
+        statusCode: 0,
+      );
     }
 
     try {
@@ -47,12 +50,16 @@ class RemoteIden3commDataSource {
           },
         ),
       );
+
       if (response.statusCode != 200) {
         logger().d(
             'Auth Error: code: ${response.statusCode} msg: ${response.data}');
         _stacktraceManager.addError(
             'Auth Error: $url response with\ncode: ${response.statusCode}\nmsg: ${response.data}');
-        throw NetworkException(response);
+        throw NetworkException(
+          errorMessage: response.data,
+          statusCode: response.statusCode ?? 0,
+        );
       } else {
         return response;
       }
@@ -70,7 +77,7 @@ class RemoteIden3commDataSource {
   }) async {
     Uri? uri = Uri.tryParse(url);
     if (uri == null) {
-      throw NetworkException("Invalid url");
+      throw NetworkException(errorMessage: "Invalid url", statusCode: 0);
     }
 
     http.Response response = await client.post(
@@ -87,7 +94,8 @@ class RemoteIden3commDataSource {
           'refreshCredential Error: code: ${response.statusCode} msg: ${response.body}');
       _stacktraceManager.addError(
           'refreshCredential Error: $url response with\ncode: ${response.statusCode}\nmsg: ${response.body}');
-      throw NetworkException(response);
+      throw NetworkException(
+          errorMessage: response.body, statusCode: response.statusCode);
     } else {
       FetchClaimResponseDTO fetchResponse =
           FetchClaimResponseDTO.fromJson(json.decode(response.body));
@@ -174,7 +182,10 @@ class RemoteIden3commDataSource {
             'fetchClaim Error: code: ${response.statusCode} msg: ${response.body}');
         _stacktraceManager.addError(
             'fetchClaim Error: $url response with\ncode: ${response.statusCode}\nmsg: ${response.body}');
-        throw NetworkException(response);
+        throw NetworkException(
+          errorMessage: response.body,
+          statusCode: response.statusCode,
+        );
       }
     });
   }
@@ -239,7 +250,10 @@ class RemoteIden3commDataSource {
             "[RemoteIden3commDataSource] fetchSchema: ${schemaResponse.statusCode} ${schemaResponse.data}");
         _stacktraceManager.addError(
             "[RemoteIden3commDataSource] fetchSchema: ${schemaResponse.statusCode} ${schemaResponse.data}");
-        throw NetworkException(schemaResponse);
+        throw NetworkException(
+          errorMessage: schemaResponse.data.toString(),
+          statusCode: schemaResponse.statusCode ?? 0,
+        );
       }
     } on PolygonIdSDKException catch (_) {
       rethrow;
@@ -311,14 +325,18 @@ class RemoteIden3commDataSource {
             "[RemoteIden3commDataSource] fetchDisplayType: ${response.statusCode} ${response.data}");
         _stacktraceManager.addError(
             "[RemoteIden3commDataSource] fetchDisplayType: ${response.statusCode} ${response.data}");
-        throw NetworkException(response);
+        throw NetworkException(
+          errorMessage: response.data.toString(),
+          statusCode: response.statusCode ?? 0,
+        );
       }
     } catch (error) {
       _stacktraceManager
           .addTrace("[RemoteIden3commDataSource] fetchDisplayType: $error");
       _stacktraceManager
           .addError("[RemoteIden3commDataSource] fetchDisplayType: $error");
-      throw FetchDisplayTypeException(error: error, errorMessage: error.toString());
+      throw FetchDisplayTypeException(
+          error: error, errorMessage: error.toString());
     }
   }
 

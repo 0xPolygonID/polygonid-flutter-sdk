@@ -225,7 +225,10 @@ class GetIden3commProofsUseCase
             "[GetIden3commProofsUseCase] CredentialsNotFoundException - requests: $requests");
         _stacktraceManager.addError(
             "[GetIden3commProofsUseCase] CredentialsNotFoundException - requests: $requests");
-        throw CredentialsNotFoundException(requests);
+        throw CredentialsNotFoundException(
+          errorMessage: "Credentials not found for requests",
+          proofRequests: requests,
+        );
       }
 
       /// If we have requests but didn't get any proofs, we throw
@@ -234,7 +237,10 @@ class GetIden3commProofsUseCase
           proofs.length != requests.length) {
         _stacktraceManager.addTrace(
             "[GetIden3commProofsUseCase] ProofsNotFoundException - requests: $requests");
-        throw ProofsNotFoundException(requests);
+        throw ProofsNotCreatedException(
+          proofRequests: requests,
+          errorMessage: "Proofs not created for requests",
+        );
       }
 
       return proofs;

@@ -67,8 +67,11 @@ class InteractionRepositoryImpl implements InteractionRepository {
   }
 
   @override
-  Future<InteractionBaseEntity> getInteraction(
-      {required String id, String? genesisDid, String? privateKey}) {
+  Future<InteractionBaseEntity> getInteraction({
+    required String id,
+    String? genesisDid,
+    String? privateKey,
+  }) {
     if (genesisDid != null && privateKey != null) {
       return _secureStorageInteractionDataSource
           .getInteractions(
@@ -76,13 +79,17 @@ class InteractionRepositoryImpl implements InteractionRepository {
               did: genesisDid,
               privateKey: privateKey)
           .then((interactions) => interactions.isEmpty
-              ? throw InteractionNotFoundException(id)
+              ? throw InteractionNotFoundException(
+                  id: id,
+                  errorMessage: "Interaction not found",
+                )
               : _interactionMapper.mapFrom(interactions.first));
     } else {
       return _storageInteractionDataSource
           .getInteractions(filter: _interactionIdFilterMapper.mapTo(id))
           .then((interactions) => interactions.isEmpty
-              ? throw InteractionNotFoundException(id)
+              ? throw InteractionNotFoundException(
+                  id: id, errorMessage: "Interaction not found")
               : _interactionMapper.mapFrom(interactions.first));
     }
   }

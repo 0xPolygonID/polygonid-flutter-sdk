@@ -9,11 +9,11 @@ class JWZMapper extends FromMapper<JWZEntity, String> {
   @override
   String mapFrom(JWZEntity from) {
     if (from.header == null) {
-      throw NullJWZHeaderException();
+      throw NullJWZHeaderException(errorMessage: "JWZ header is null");
     }
 
     if (from.payload == null) {
-      throw NullJWZPayloadException();
+      throw NullJWZPayloadException(errorMessage: "JWZ payload is null");
     }
 
     String header = Base64Util.encode64(jsonEncode(from.header));

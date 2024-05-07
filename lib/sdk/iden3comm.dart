@@ -460,7 +460,11 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       _stacktraceManager.addTrace(
           '[authenticate] Invalid message type: ${message.messageType}');
       throw InvalidIden3MsgTypeException(
-          Iden3MessageType.authRequest, message.messageType);
+        expected: Iden3MessageType.authRequest,
+        actual: message.messageType,
+        errorMessage:
+            'Invalid message type, expected: ${Iden3MessageType.authRequest}, actual: ${message.messageType}',
+      );
     }
 
     return _authenticateUseCase.execute(

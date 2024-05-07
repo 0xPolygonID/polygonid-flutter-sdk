@@ -32,10 +32,10 @@ class InvalidProofReqException extends PolygonIdSDKException {
   }) : super(errorMessage: errorMessage, error: error);
 }
 
-class ProofsNotFoundException extends PolygonIdSDKException {
+class ProofsNotCreatedException extends PolygonIdSDKException {
   final List<ProofRequestEntity> proofRequests;
 
-  ProofsNotFoundException({
+  ProofsNotCreatedException({
     required this.proofRequests,
     required String errorMessage,
     dynamic error,
@@ -112,6 +112,20 @@ class GetConnectionsException extends PolygonIdSDKException {
 
 class OperatorException extends PolygonIdSDKException {
   OperatorException({
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
+}
+
+class GetAuthTokenException extends PolygonIdSDKException {
+  GetAuthTokenException({
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
+}
+
+class CheckProfileValidityException extends PolygonIdSDKException {
+  CheckProfileValidityException({
     required String errorMessage,
     dynamic error,
   }) : super(errorMessage: errorMessage, error: error);

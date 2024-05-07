@@ -29,7 +29,10 @@ class RemoteClaimDataSource {
 
       return json.decode(revStatus);
     } else {
-      throw NetworkException(revStatusResponse);
+      throw NetworkException(
+        errorMessage: revStatusResponse.body,
+        statusCode: revStatusResponse.statusCode,
+      );
     }
   }
 }

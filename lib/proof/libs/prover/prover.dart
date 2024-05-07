@@ -8,6 +8,7 @@ import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 
 import 'native_prover.dart';
 
@@ -87,9 +88,21 @@ class ProverLib {
       String errormsg = jsonString.toDartString();
 
       logger().i("$result: ${result.toString()}. Error: $errormsg");
+      freeAllocatedMemory();
+      throw CoreLibraryException(
+        coreLibraryName: "librapidsnark",
+        methodName: "groth16_prover",
+        errorMessage: errormsg,
+      );
     } else if (result == PPROVER_ERROR_SHORT_BUFFER) {
       logger().i(
           "$result: ${result.toString()}. Error: Short buffer for proof or public");
+      freeAllocatedMemory();
+      throw CoreLibraryException(
+        coreLibraryName: "librapidsnark",
+        methodName: "groth16_prover",
+        errorMessage: "Short buffer for proof or public",
+      );
     }
     freeAllocatedMemory();
     return null;

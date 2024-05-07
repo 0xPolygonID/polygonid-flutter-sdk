@@ -50,7 +50,7 @@ class Iden3MessageDataSource {
     String packageName,
   ) async {
     var pushInfo = {
-      "app_id": packageName, //"com.polygonid.wallet",
+      "app_id": packageName,
       "pushkey": pushToken,
     };
 
@@ -84,7 +84,10 @@ class Iden3MessageDataSource {
     } else {
       logger().d(
           'getPublicKey Error: code: ${publicKeyResponse.statusCode} msg: ${publicKeyResponse.data}');
-      throw NetworkException(publicKeyResponse);
+      throw NetworkException(
+        errorMessage: publicKeyResponse.data.toString(),
+        statusCode: publicKeyResponse.statusCode ?? 0,
+      );
     }
   }
 }

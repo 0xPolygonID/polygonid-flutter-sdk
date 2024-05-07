@@ -3,9 +3,10 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/libs/polygonidcore/pidcore_base.dart';
 
-import '../../../common/libs/polygonidcore/native_polygonidcore.dart';
+import 'package:polygonid_flutter_sdk/common/libs/polygonidcore/native_polygonidcore.dart';
 
 @injectable
 class PolygonIdCoreIden3comm extends PolygonIdCore {
@@ -15,11 +16,27 @@ class PolygonIdCoreIden3comm extends PolygonIdCore {
         malloc<ffi.Pointer<ffi.Char>>();
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
         malloc<ffi.Pointer<PLGNStatus>>();
+
+    freeAllocatedMemory() {
+      malloc.free(response);
+      malloc.free(status);
+    }
+
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNAuthV2InputsMarshal(response, in1, status);
+
     if (res == 0) {
-      consumeStatus(status, "");
+      String? consumedStatus = consumeStatus(status, "");
+      if (consumedStatus != null) {
+        freeAllocatedMemory();
+        throw CoreLibraryException(
+          coreLibraryName: "libpolygonid",
+          methodName: "PLGNAuthV2InputsMarshal",
+          errorMessage: consumedStatus,
+        );
+      }
     }
+
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;
     ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
@@ -27,8 +44,7 @@ class PolygonIdCoreIden3comm extends PolygonIdCore {
       result = jsonString.toDartString();
     }
 
-    malloc.free(response);
-    malloc.free(status);
+    freeAllocatedMemory();
 
     return result;
   }

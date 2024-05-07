@@ -3,6 +3,7 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 
 import '../../../common/libs/polygonidcore/native_polygonidcore.dart';
@@ -16,13 +17,23 @@ class PolygonIdCoreCredential extends PolygonIdCore {
         malloc<ffi.Pointer<ffi.Char>>();
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
         malloc<ffi.Pointer<PLGNStatus>>();
+
+    freeAllocatedMemory() {
+      malloc.free(response);
+      malloc.free(status);
+    }
+
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNCreateClaim(response, in1, status);
     if (res == 0) {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
-        malloc.free(status);
-        return consumedStatus;
+        freeAllocatedMemory();
+        throw CoreLibraryException(
+          coreLibraryName: "libpolygonid",
+          methodName: "PLGNCreateClaim",
+          errorMessage: consumedStatus,
+        );
       }
     }
     String result = "";
@@ -32,8 +43,7 @@ class PolygonIdCoreCredential extends PolygonIdCore {
       result = jsonString.toDartString();
     }
 
-    malloc.free(response);
-    malloc.free(status);
+    freeAllocatedMemory();
 
     return result;
   }
@@ -52,7 +62,11 @@ class PolygonIdCoreCredential extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         malloc.free(status);
-        return consumedStatus;
+        throw CoreLibraryException(
+          coreLibraryName: "libpolygonid",
+          methodName: "PLGNCacheCredentials",
+          errorMessage: consumedStatus,
+        );
       }
     }
 
@@ -82,9 +96,14 @@ class PolygonIdCoreCredential extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
-        throw CredentialInputsException(consumedStatus);
+        throw CoreLibraryException(
+          coreLibraryName: "libpolygonid",
+          methodName: "PLGNW3CCredentialFromOnchainHex",
+          errorMessage: consumedStatus,
+        );
       }
     }
+
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;
     ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();

@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 
 import 'native_witness_auth_v2.dart';
 
@@ -52,14 +53,15 @@ class WitnessAuthV2Lib {
     }
 
     int result = _nativeWitnessAuthV2Lib.witnesscalc_authV2(
-        circuitBuffer,
-        circuitSize,
-        jsonBuffer,
-        jsonSize,
-        wtnsBuffer,
-        wtnsSize,
-        errorMsg,
-        errorMaxSize);
+      circuitBuffer,
+      circuitSize,
+      jsonBuffer,
+      jsonSize,
+      wtnsBuffer,
+      wtnsSize,
+      errorMsg,
+      errorMaxSize,
+    );
 
     if (result == WITNESSCALC_OK) {
       Uint8List wtnsBytes = Uint8List(wtnsSize.value);
@@ -74,11 +76,23 @@ class WitnessAuthV2Lib {
       if (kDebugMode) {
         print("$result: ${result.toString()}. Error: $errormsg");
       }
+      freeAllocatedMemory();
+      throw CoreLibraryException(
+        coreLibraryName: "libwitnesscalc_authV2",
+        methodName: "witnesscalc_authV2",
+        errorMessage: errormsg,
+      );
     } else if (result == WITNESSCALC_ERROR_SHORT_BUFFER) {
       if (kDebugMode) {
         print(
             "$result: ${result.toString()}. Error: Short buffer for proof or public");
       }
+      freeAllocatedMemory();
+      throw CoreLibraryException(
+        coreLibraryName: "libwitnesscalc_authV2",
+        methodName: "witnesscalc_authV2",
+        errorMessage: "Short buffer for proof or public",
+      );
     }
     freeAllocatedMemory();
     return null;

@@ -7,6 +7,7 @@ import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/mtp_v2/native_witness_mtp_v2.dart';
 
 @injectable
@@ -52,14 +53,16 @@ class WitnessMTPV2Lib {
     }
 
     int result = _nativeWitnessMTPV2Lib.witnesscalc_credentialAtomicQueryMTPV2(
-        circuitBuffer,
-        circuitSize,
-        jsonBuffer,
-        jsonSize,
-        wtnsBuffer,
-        wtnsSize,
-        errorMsg,
-        errorMaxSize);
+      circuitBuffer,
+      circuitSize,
+      jsonBuffer,
+      jsonSize,
+      wtnsBuffer,
+      wtnsSize,
+      errorMsg,
+      errorMaxSize,
+    );
+
     if (result == WITNESSCALC_OK) {
       Uint8List wtnsBytes = Uint8List(wtnsSize.value);
       for (int i = 0; i < wtnsSize.value; i++) {
@@ -71,6 +74,12 @@ class WitnessMTPV2Lib {
       ffi.Pointer<Utf8> jsonString = errorMsg.cast<Utf8>();
       String errormsg = jsonString.toDartString();
       logger().e("$result: ${result.toString()}. Error: $errormsg");
+      freeAllocatedMemory();
+      throw CoreLibraryException(
+        coreLibraryName: "libwitnesscalc_credentialAtomicQueryMTPV2",
+        methodName: "witnesscalc_credentialAtomicQueryMTPV2",
+        errorMessage: errormsg,
+      );
     } else if (result == WITNESSCALC_ERROR_SHORT_BUFFER) {
       logger().e(
           "$result: ${result.toString()}. Error: Short buffer for proof or public");

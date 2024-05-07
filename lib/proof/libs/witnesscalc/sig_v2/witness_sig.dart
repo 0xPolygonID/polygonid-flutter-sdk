@@ -7,6 +7,7 @@ import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 
 import 'native_witness_sig_v2.dart';
 
@@ -53,14 +54,16 @@ class WitnessSigV2Lib {
     }
 
     int result = _nativeWitnessSigV2Lib.witnesscalc_credentialAtomicQuerySigV2(
-        circuitBuffer,
-        circuitSize,
-        jsonBuffer,
-        jsonSize,
-        wtnsBuffer,
-        wtnsSize,
-        errorMsg,
-        errorMaxSize);
+      circuitBuffer,
+      circuitSize,
+      jsonBuffer,
+      jsonSize,
+      wtnsBuffer,
+      wtnsSize,
+      errorMsg,
+      errorMaxSize,
+    );
+
     if (result == WITNESSCALC_OK) {
       Uint8List wtnsBytes = Uint8List(wtnsSize.value);
       for (int i = 0; i < wtnsSize.value; i++) {
@@ -73,9 +76,21 @@ class WitnessSigV2Lib {
       String errormsg = jsonString.toDartString();
 
       logger().e("$result: ${result.toString()}. Error: $errormsg");
+      freeAllocatedMemory();
+      throw CoreLibraryException(
+        coreLibraryName: "libwitnesscalc_credentialAtomicQuerySigV2",
+        methodName: "witnesscalc_credentialAtomicQuerySigV2",
+        errorMessage: errormsg,
+      );
     } else if (result == WITNESSCALC_ERROR_SHORT_BUFFER) {
       logger().e(
           "$result: ${result.toString()}. Error: Short buffer for proof or public");
+      freeAllocatedMemory();
+      throw CoreLibraryException(
+        coreLibraryName: "libwitnesscalc_credentialAtomicQuerySigV2",
+        methodName: "witnesscalc_credentialAtomicQuerySigV2",
+        errorMessage: "Short buffer for proof or public",
+      );
     }
     freeAllocatedMemory();
     return null;
