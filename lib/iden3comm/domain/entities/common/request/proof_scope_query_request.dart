@@ -101,7 +101,6 @@
 
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/utils/number_extension.dart';
 
 class ProofScopeQueryRequest {

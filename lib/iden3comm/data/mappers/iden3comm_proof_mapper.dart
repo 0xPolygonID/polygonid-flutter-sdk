@@ -1,14 +1,9 @@
 import 'package:polygonid_flutter_sdk/common/mappers/mapper.dart';
-import 'package:polygonid_flutter_sdk/common/mappers/to_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/proof/response/iden3comm_proof_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/iden3comm_vp_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_sd_proof_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/hash_mapper.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_dto.dart';
-import 'package:polygonid_flutter_sdk/proof/data/mappers/mtproof_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/zkproof_base_mapper.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_mtproof_entity.dart';
 
 import '../dtos/proof/response/iden3comm_sd_proof_dto.dart';
 
