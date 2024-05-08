@@ -1,3 +1,10 @@
+## 2.3.1
+- Added support for LinkedMultiQuery Circuit
+- Problem report message object
+- Fix for $exists operator
+- Fix for linked proofs
+- Fix for refresh credential while creating a proof with an expired credential (refresh service is needed)
+
 ## 2.3.0
 - New operators for circuit V3 beta 1
 - On-chain credential fetch
