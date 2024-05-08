@@ -130,3 +130,17 @@ class CheckProfileValidityException extends PolygonIdSDKException {
     dynamic error,
   }) : super(errorMessage: errorMessage, error: error);
 }
+
+class GetAuthChallengeException extends PolygonIdSDKException {
+  GetAuthChallengeException({
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
+}
+
+class GetAuthInputsException extends PolygonIdSDKException {
+  GetAuthInputsException({
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
+}

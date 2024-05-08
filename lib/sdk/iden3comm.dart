@@ -5,6 +5,7 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/did_method_entity.d
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/add_did_profile_info_use_case.dart';
@@ -459,6 +460,8 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     if (message is! AuthIden3MessageEntity) {
       _stacktraceManager.addTrace(
           '[authenticate] Invalid message type: ${message.messageType}');
+      _stacktraceManager.addError(
+          'Invalid message type: ${message.messageType}, expected: ${Iden3MessageType.authRequest}');
       throw InvalidIden3MsgTypeException(
         expected: Iden3MessageType.authRequest,
         actual: message.messageType,
@@ -500,10 +503,14 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         env: env,
         pushToken: pushToken,
       );
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
     } catch (e) {
       _stacktraceManager.addTrace('[authenticateV2] Error: ${e.toString()}');
       _stacktraceManager.addError(e.toString());
-      rethrow;
+      throw PolygonIdSDKException(
+          errorMessage:
+              "Error while authenticating with error: ${e.toString()}");
     }
   }
 

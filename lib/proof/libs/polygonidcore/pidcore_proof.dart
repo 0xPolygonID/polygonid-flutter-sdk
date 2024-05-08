@@ -4,6 +4,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 
 import 'package:polygonid_flutter_sdk/common/libs/polygonidcore/native_polygonidcore.dart';
@@ -11,6 +12,9 @@ import 'package:polygonid_flutter_sdk/common/libs/polygonidcore/pidcore_base.dar
 
 @injectable
 class PolygonIdCoreProof extends PolygonIdCore {
+  final StacktraceManager _stacktraceManager;
+
+  PolygonIdCoreProof(this._stacktraceManager);
   String proofFromSmartContract(String input) {
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<ffi.Char>> response =
@@ -29,6 +33,8 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
+        _stacktraceManager.addError(
+            "libpolygonid - PLGNProofFromSmartContract: $consumedStatus");
         throw CoreLibraryException(
           coreLibraryName: "libpolygonid",
           methodName: "PLGNProofFromSmartContract",
@@ -69,6 +75,8 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
+        _stacktraceManager.addError(
+            "libpolygonid - PLGNAtomicQuerySigV2Inputs: $consumedStatus");
         throw CoreLibraryException(
           coreLibraryName: "libpolygonid",
           methodName: "PLGNAtomicQuerySigV2Inputs",
@@ -109,6 +117,8 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
+        _stacktraceManager.addError(
+            "libpolygonid - PLGNAtomicQuerySigV2OnChainInputs: $consumedStatus");
         throw CoreLibraryException(
           coreLibraryName: "libpolygonid",
           methodName: "PLGNAtomicQuerySigV2OnChainInputs",
@@ -149,6 +159,8 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
+        _stacktraceManager.addError(
+            "libpolygonid - PLGNAtomicQueryMtpV2Inputs: $consumedStatus");
         throw CoreLibraryException(
           coreLibraryName: "libpolygonid",
           methodName: "PLGNAtomicQueryMtpV2Inputs",
@@ -189,6 +201,8 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
+        _stacktraceManager.addError(
+            "libpolygonid - PLGNAtomicQueryMtpV2OnChainInputs: $consumedStatus");
         throw CoreLibraryException(
           coreLibraryName: "libpolygonid",
           methodName: "PLGNAtomicQueryMtpV2OnChainInputs",
@@ -229,6 +243,8 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
+        _stacktraceManager.addError(
+            "libpolygonid - PLGNAtomicQueryV3Inputs: $consumedStatus");
         throw CoreLibraryException(
           coreLibraryName: "libpolygonid",
           methodName: "PLGNAtomicQueryV3Inputs",
@@ -269,6 +285,8 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
+        _stacktraceManager.addError(
+            "libpolygonid - PLGNAtomicQueryV3OnChainInputs: $consumedStatus");
         throw CoreLibraryException(
           coreLibraryName: "libpolygonid",
           methodName: "PLGNAtomicQueryV3OnChainInputs",
@@ -309,6 +327,8 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
+        _stacktraceManager.addError(
+            "libpolygonid - PLGNALinkedMultiQueryInputs: $consumedStatus");
         throw CoreLibraryException(
           coreLibraryName: "libpolygonid",
           methodName: "PLGNALinkedMultiQueryInputs",

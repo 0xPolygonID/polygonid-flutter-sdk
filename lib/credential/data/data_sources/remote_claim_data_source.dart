@@ -29,6 +29,8 @@ class RemoteClaimDataSource {
 
       return json.decode(revStatus);
     } else {
+      _stacktraceManager.addError(
+          "[RemoteClaimDataSource] Error getting revocation status: ${revStatusResponse.statusCode} ${revStatusResponse.body}");
       throw NetworkException(
         errorMessage: revStatusResponse.body,
         statusCode: revStatusResponse.statusCode,

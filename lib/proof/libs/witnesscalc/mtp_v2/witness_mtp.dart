@@ -8,7 +8,9 @@ import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/mtp_v2/native_witness_mtp_v2.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 @injectable
 class WitnessMTPV2Lib {
@@ -75,6 +77,9 @@ class WitnessMTPV2Lib {
       String errormsg = jsonString.toDartString();
       logger().e("$result: ${result.toString()}. Error: $errormsg");
       freeAllocatedMemory();
+      StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+      _stacktraceManager
+          .addError("libwitnesscalc_credentialAtomicQueryMTPV2: $errormsg");
       throw CoreLibraryException(
         coreLibraryName: "libwitnesscalc_credentialAtomicQueryMTPV2",
         methodName: "witnesscalc_credentialAtomicQueryMTPV2",
@@ -83,6 +88,14 @@ class WitnessMTPV2Lib {
     } else if (result == WITNESSCALC_ERROR_SHORT_BUFFER) {
       logger().e(
           "$result: ${result.toString()}. Error: Short buffer for proof or public");
+      StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+      _stacktraceManager.addError(
+          "libwitnesscalc_credentialAtomicQueryMTPV2: witnesscalc_credentialAtomicQueryMTPV2: Short buffer for proof or public");
+      throw CoreLibraryException(
+        coreLibraryName: "libwitnesscalc_credentialAtomicQueryMTPV2",
+        methodName: "witnesscalc_credentialAtomicQueryMTPV2",
+        errorMessage: "Short buffer for proof or public",
+      );
     }
     freeAllocatedMemory();
     return null;

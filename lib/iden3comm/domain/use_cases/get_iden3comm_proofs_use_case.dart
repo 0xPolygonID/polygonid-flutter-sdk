@@ -237,6 +237,8 @@ class GetIden3commProofsUseCase
           proofs.length != requests.length) {
         _stacktraceManager.addTrace(
             "[GetIden3commProofsUseCase] ProofsNotFoundException - requests: $requests");
+        _stacktraceManager.addError(
+            "[GetIden3commProofsUseCase] ProofsNotFoundException - requests: $requests");
         throw ProofsNotCreatedException(
           proofRequests: requests,
           errorMessage: "Proofs not created for requests",

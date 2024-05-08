@@ -33,6 +33,8 @@ class RemoteIden3commDataSource {
   }) async {
     Uri? uri = Uri.tryParse(url);
     if (uri == null) {
+      _stacktraceManager
+          .addError('authWithToken error: url is invalid\nurl: $url');
       throw NetworkException(
         errorMessage: "url is invalid",
         statusCode: 0,
@@ -77,6 +79,8 @@ class RemoteIden3commDataSource {
   }) async {
     Uri? uri = Uri.tryParse(url);
     if (uri == null) {
+      _stacktraceManager
+          .addError('refreshCredential error: url is invalid\nurl: $url');
       throw NetworkException(errorMessage: "Invalid url", statusCode: 0);
     }
 

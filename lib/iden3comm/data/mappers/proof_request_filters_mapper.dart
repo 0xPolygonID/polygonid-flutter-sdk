@@ -1,4 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/mappers/from_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
@@ -7,6 +8,9 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exce
 
 class ProofRequestFiltersMapper
     extends FromMapper<ProofRequestEntity, List<FilterEntity>> {
+  final StacktraceManager _stacktraceManager;
+  ProofRequestFiltersMapper(this._stacktraceManager);
+
   @override
   List<FilterEntity> mapFrom(ProofRequestEntity from) {
     ProofScopeQueryRequest query = from.scope.query;
@@ -15,6 +19,8 @@ class ProofRequestFiltersMapper
     try {
       context = from.context["@context"][0][query.type]["@context"];
     } catch (e) {
+      _stacktraceManager.addError(
+          "Error getting context from schema: ${query.type}\nSchema does not have a context, please check the schema is json-ld compliant");
       throw UnsupportedSchemaException(
         schema: query.type ?? "",
         errorMessage:
@@ -174,6 +180,8 @@ class ProofRequestFiltersMapper
         ];
       case '\$between':
         if (value is! List || value.isEmpty || value.length != 2) {
+          _stacktraceManager.addError(
+              "Value for \$between operator must be a list of two elements");
           throw OperatorException(
               errorMessage:
                   "Value for \$between operator must be a list of two elements");
@@ -191,6 +199,8 @@ class ProofRequestFiltersMapper
         ];
       case '\$nonbetween':
         if (value is! List || value.isEmpty || value.length != 2) {
+          _stacktraceManager.addError(
+              "Value for \$nonbetween operator must be a list of two elements");
           throw OperatorException(
               errorMessage:
                   "Value for \$nonbetween operator must be a list of two elements");
@@ -209,6 +219,8 @@ class ProofRequestFiltersMapper
       case '\$exists':
         bool? parsedValue = _parseValueToBool(value);
         if (parsedValue == null) {
+          _stacktraceManager
+              .addError("Value for \$exists operator must be a boolean");
           throw OperatorException(
               errorMessage: "Value for \$exists operator must be a boolean");
         }

@@ -13,7 +13,10 @@ class PrivateKeyMapper extends FromMapper<String?, Uint8List?> {
       var private = from.codeUnits;
 
       if (private.length > 32) {
-        throw TooLongPrivateKeyException();
+        throw TooLongPrivateKeyException(
+          errorMessage:
+              "Private key is too long, ${private.length} bytes instead of 32 bytes",
+        );
       }
 
       key = Uint8List(32);

@@ -65,7 +65,11 @@ class RemoveProfileUseCase extends FutureUseCase<RemoveProfileParam, void> {
             "[RemoveProfileUseCase] UnknownProfileException - profileNonce: ${param.profileNonce}");
         _stacktraceManager.addError(
             "[RemoveProfileUseCase] UnknownProfileException - profileNonce: ${param.profileNonce}");
-        throw UnknownProfileException(param.profileNonce);
+        throw UnknownProfileException(
+          profileNonce: param.profileNonce,
+          errorMessage:
+              "Profile with nonce ${param.profileNonce} does not exist",
+        );
       } else {
         Map<BigInt, String> newProfiles = await _createProfilesUseCase.execute(
             param: CreateProfilesParam(
@@ -88,7 +92,11 @@ class RemoveProfileUseCase extends FutureUseCase<RemoveProfileParam, void> {
               "[RemoveProfileUseCase] UnknownProfileException - profileNonce: ${param.profileNonce}");
           _stacktraceManager.addError(
               "[RemoveProfileUseCase] UnknownProfileException - profileNonce: ${param.profileNonce}");
-          throw UnknownProfileException(param.profileNonce);
+          throw UnknownProfileException(
+            profileNonce: param.profileNonce,
+            errorMessage:
+                "Profile with nonce ${param.profileNonce} does not exist",
+          );
         }
 
         await _updateIdentityUseCase.execute(
@@ -103,7 +111,10 @@ class RemoveProfileUseCase extends FutureUseCase<RemoveProfileParam, void> {
           "[RemoveProfileUseCase] InvalidPrivateKeyException - privateKey: ${param.privateKey}");
       _stacktraceManager.addError(
           "[RemoveProfileUseCase] InvalidPrivateKeyException - privateKey: ${param.privateKey}");
-      throw InvalidPrivateKeyException(param.privateKey);
+      throw InvalidPrivateKeyException(
+        privateKey: param.privateKey,
+        errorMessage: "The provided private key is not valid",
+      );
     }
   }
 }

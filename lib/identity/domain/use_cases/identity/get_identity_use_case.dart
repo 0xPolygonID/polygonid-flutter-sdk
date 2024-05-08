@@ -53,7 +53,11 @@ class GetIdentityUseCase
                 profileNonce: GENESIS_PROFILE_NONCE));
 
         if (did.did != genesisDid) {
-          throw InvalidPrivateKeyException(param.privateKey!);
+          throw InvalidPrivateKeyException(
+            privateKey: param.privateKey!,
+            errorMessage:
+                "the did from the private key does not match the genesis did from the param",
+          );
         }
 
         // Get the [PrivateIdentityEntity]

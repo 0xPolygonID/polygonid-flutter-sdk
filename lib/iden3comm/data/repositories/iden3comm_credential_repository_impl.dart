@@ -1,4 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
@@ -15,11 +16,13 @@ class Iden3commCredentialRepositoryImpl extends Iden3commCredentialRepository {
   final RemoteIden3commDataSource _remoteIden3commDataSource;
   final ProofRequestFiltersMapper _proofRequestFiltersMapper;
   final ClaimMapper _claimMapper;
+  final StacktraceManager _stacktraceManager;
 
   Iden3commCredentialRepositoryImpl(
     this._remoteIden3commDataSource,
     this._proofRequestFiltersMapper,
     this._claimMapper,
+    this._stacktraceManager,
   );
 
   @override
@@ -43,6 +46,7 @@ class Iden3commCredentialRepositoryImpl extends Iden3commCredentialRepository {
     } on PolygonIdSDKException catch (_) {
       rethrow;
     } catch (e) {
+      _stacktraceManager.addError("Error fetching claim: $e");
       throw FetchClaimException(
         errorMessage: "Error fetching claim",
         error: e,
@@ -82,6 +86,7 @@ class Iden3commCredentialRepositoryImpl extends Iden3commCredentialRepository {
     } on PolygonIdSDKException catch (_) {
       rethrow;
     } catch (e) {
+      _stacktraceManager.addError("Error fetching schema: $e");
       throw FetchSchemaException(
         errorMessage: "Error fetching schema",
         error: e,
@@ -109,6 +114,7 @@ class Iden3commCredentialRepositoryImpl extends Iden3commCredentialRepository {
     } on PolygonIdSDKException catch (_) {
       rethrow;
     } catch (e) {
+      _stacktraceManager.addError("Error refreshing credential: $e");
       throw RefreshCredentialException(
         errorMessage: "Error refreshing credential",
         error: e,

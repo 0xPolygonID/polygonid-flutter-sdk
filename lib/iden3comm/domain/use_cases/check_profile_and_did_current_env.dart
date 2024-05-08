@@ -60,6 +60,8 @@ class CheckProfileAndDidCurrentEnvUseCase
 
       // we check if the did is the same as the one we got from param
       if (did != param.did) {
+        _stacktraceManager.addError(
+            "[CheckProfileAndDidCurrentEnvUseCase] DID does not match current environment DID");
         throw DidNotMatchCurrentEnvException(
           did: param.did,
           rightDid: did,

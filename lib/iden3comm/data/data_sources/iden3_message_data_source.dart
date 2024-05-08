@@ -15,6 +15,7 @@ import 'package:pointycastle/asymmetric/rsa.dart';
 import 'package:pointycastle/digests/sha512.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/http_exceptions_handler_mixin.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_service_metadata_devices_response_dto.dart';
@@ -22,6 +23,9 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_service_response_dto.dart';
 
 class Iden3MessageDataSource {
+  final StacktraceManager _stacktraceManager;
+
+  Iden3MessageDataSource(this._stacktraceManager);
   Future<AuthBodyDidDocResponseDTO> getDidDocResponse(String pushUrl,
       String didIdentifier, String pushToken, String packageName) async {
     return AuthBodyDidDocResponseDTO(
@@ -83,6 +87,8 @@ class Iden3MessageDataSource {
       return base64.encode(encrypted);
     } else {
       logger().d(
+          'getPublicKey Error: code: ${publicKeyResponse.statusCode} msg: ${publicKeyResponse.data}');
+      _stacktraceManager.addError(
           'getPublicKey Error: code: ${publicKeyResponse.statusCode} msg: ${publicKeyResponse.data}');
       throw NetworkException(
         errorMessage: publicKeyResponse.data.toString(),

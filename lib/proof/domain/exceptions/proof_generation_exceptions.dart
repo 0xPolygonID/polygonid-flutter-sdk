@@ -73,7 +73,10 @@ class IdentityInputsException extends PolygonIdSDKException {
 }
 
 class CircuitNotDownloadedException extends PolygonIdSDKException {
+  final String circuit;
+
   CircuitNotDownloadedException({
+    required this.circuit,
     required String errorMessage,
     dynamic error,
   }) : super(errorMessage: errorMessage, error: error);

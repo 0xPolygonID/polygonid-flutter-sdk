@@ -3,9 +3,11 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/common/utils/http_exceptions_handler_mixin.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 Future<String> extractJSON(http.Response response) async {
   return response.body;
@@ -35,6 +37,8 @@ Future<http.Response> get(String baseAddress, String endpoint,
 
     return returnResponseOrThrowException(response);
   } on IOException {
+    StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+    _stacktraceManager.addError("network error with IO exception");
     throw NetworkException(
       errorMessage: "network error",
       statusCode: 0,
@@ -62,6 +66,8 @@ Future<http.Response> post(String baseAddress, String endpoint,
 
     return returnResponseOrThrowException(response);
   } on IOException {
+    StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+    _stacktraceManager.addError("network error with IO exception");
     throw NetworkException(
       errorMessage: "network error",
       statusCode: 0,
@@ -90,6 +96,6 @@ http.Response returnResponseOrThrowException(http.Response response) {
         httpCode: statusCode,
         errorMessage: "statusCode: $statusCode\n$responseBody");
   } else {
-    throw NetworkException(statusCode: statusCode, errorMessage: responseBody);
+    return response;
   }
 }

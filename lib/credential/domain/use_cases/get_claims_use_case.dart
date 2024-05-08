@@ -67,7 +67,8 @@ class GetClaimsUseCase
       rethrow;
     } catch (error) {
       _stacktraceManager.addTrace("[GetClaimsUseCase] Error: $error");
-      _stacktraceManager.addError("[GetClaimsUseCase] Error: $error");
+      _stacktraceManager.addError(
+          "[GetClaimsUseCase] Error while getting claims from the DB\n${error.toString()}");
       logger().e("[GetClaimsUseCase] Error: $error");
       throw GetClaimsException(
         errorMessage:

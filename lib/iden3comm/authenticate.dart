@@ -142,6 +142,9 @@ class Authenticate {
         Iden3MessageType.authRequest,
         Iden3MessageType.proofContractInvokeRequest
       ].contains(message.messageType)) {
+        _stacktraceManager.addError(
+          "[Authenticate] Unsupported message type: ${message.messageType} It should be either authRequest or proofContractInvokeRequest",
+        );
         throw UnsupportedIden3MsgTypeException(
           type: message.messageType,
           errorMessage: "Unsupported message type\nIt should be either "
@@ -259,6 +262,9 @@ class Authenticate {
       String? callbackUrl = message.body.callbackUrl;
 
       if (callbackUrl == null || callbackUrl.isEmpty) {
+        _stacktraceManager.addError(
+          "[Authenticate] Callback url is null or empty",
+        );
         throw NullAuthenticateCallbackException(
           authRequest: message as AuthIden3MessageEntity,
           errorMessage: "Callback url is null or empty",
@@ -282,7 +288,13 @@ class Authenticate {
       );
 
       if (response.statusCode != 200) {
-        throw NetworkException(response);
+        _stacktraceManager.addError(
+          "[Authenticate] Error sending auth token to the requester: ${response.statusCode} ${response.body}",
+        );
+        throw NetworkException(
+          statusCode: response.statusCode,
+          errorMessage: response.body,
+        );
       }
 
       if (response.body.isEmpty) {
@@ -399,9 +411,13 @@ class Authenticate {
       var circuitZkeyFile = File(circuitZkeyFilePath);
 
       if (!circuitDatFile.existsSync() || !circuitZkeyFile.existsSync()) {
+        _stacktraceManager.addError(
+          "[Authenticate] Circuit files not found for ${proofRequest.scope.circuitId}",
+        );
         throw CircuitNotDownloadedException(
           circuit: proofRequest.scope.circuitId,
-          errorMessage: "Circuit files not found",
+          errorMessage:
+              "Circuit files not found for ${proofRequest.scope.circuitId}",
         );
       }
 
@@ -570,8 +586,10 @@ class Authenticate {
           credentialSchema,
           query,
         );
+        ProofRequestFiltersMapper proofRequestFiltersMapper =
+            getItSdk<ProofRequestFiltersMapper>();
         List<FilterEntity> filterForSingleScope =
-            ProofRequestFiltersMapper().mapFrom(proofRequest);
+            proofRequestFiltersMapper.mapFrom(proofRequest);
         // we add the filters for each scope to the list of filters
         filtersForQueryClaimDb.addAll(filterForSingleScope);
         // we remove duplicates
@@ -611,8 +629,10 @@ class Authenticate {
       if (scope.query.groupId != null) {
         validClaims = claimsByGroupId[scope.query.groupId] ?? [];
       } else {
+        ProofRequestFiltersMapper proofRequestFiltersMapper =
+            getItSdk<ProofRequestFiltersMapper>();
         List<FilterEntity> filtersForQueryClaimDb =
-            ProofRequestFiltersMapper().mapFrom(proofRequest);
+            proofRequestFiltersMapper.mapFrom(proofRequest);
         FiltersMapper filtersMapper = getItSdk<FiltersMapper>();
         Filter filter = filtersMapper.mapTo(filtersForQueryClaimDb);
 
@@ -652,8 +672,13 @@ class Authenticate {
         // TODO (moria): remove this with v3 circuit release
         if (circuitId.startsWith(CircuitType.v3CircuitPrefix) &&
             !circuitId.endsWith(CircuitType.currentCircuitBetaPostfix)) {
-          throw Exception(
-              "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
+          _stacktraceManager.addError(
+            "[Authenticate] V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}",
+          );
+          throw CircuitNotDownloadedException(
+              circuit: circuitId,
+              errorMessage:
+                  "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
         }
 
         CircuitTypeMapper circuitTypeMapper = getItSdk<CircuitTypeMapper>();
@@ -738,7 +763,13 @@ class Authenticate {
 
       return schema;
     } else {
-      throw NetworkException(schemaResponse);
+      _stacktraceManager.addError(
+        "[Authenticate] Error fetching schema: ${schemaResponse.statusCode} ${schemaResponse.statusMessage}",
+      );
+      throw NetworkException(
+        statusCode: schemaResponse.statusCode ?? 0,
+        errorMessage: schemaResponse.statusMessage ?? "",
+      );
     }
   }
 
@@ -784,6 +815,9 @@ class Authenticate {
           } else if (entry.value is List<dynamic>) {
             if (operator == 2 || operator == 3) {
               // lt, gt
+              _stacktraceManager.addError(
+                "[Authenticate] InvalidProofReqException param: $scope\nentry: $entry",
+              );
               throw InvalidProofReqException(
                 errorMessage:
                     "InvalidProofReqException param: $scope\nentry: $entry",
@@ -795,10 +829,16 @@ class Authenticate {
               try {
                 values = entry.value.cast<String>();
               } catch (e) {
+                _stacktraceManager.addError(
+                  "[Authenticate] InvalidProofReqException param: $scope\nentry: $entry",
+                );
                 throw InvalidProofReqException(
                     errorMessage:
                         "InvalidProofReqException param: $scope\nentry: $entry");
               }
+              _stacktraceManager.addError(
+                "[Authenticate] InvalidProofReqException param: $scope\nentry: $entry",
+              );
               throw InvalidProofReqException(
                   errorMessage:
                       "InvalidProofReqException param: $scope\nentry: $entry");
@@ -806,6 +846,9 @@ class Authenticate {
           } else if (entry.value is String) {
             if (!_isDateTime(entry.value) && (operator == 2 || operator == 3)) {
               // lt, gt
+              _stacktraceManager.addError(
+                "[Authenticate] InvalidProofReqException param: $scope\nentry: $entry",
+              );
               throw InvalidProofReqException(
                   errorMessage:
                       "InvalidProofReqException param: $scope\nentry: $entry");
@@ -819,12 +862,18 @@ class Authenticate {
           } else if (entry.value is bool) {
             values = [entry.value == true ? 1 : 0];
           } else {
+            _stacktraceManager.addError(
+              "[Authenticate] InvalidProofReqException param: $scope\nentry: $entry",
+            );
             throw InvalidProofReqException(
                 errorMessage:
                     "InvalidProofReqException param: $scope\nentry: $entry");
           }
         }
       } else {
+        _stacktraceManager.addError(
+          "[Authenticate] InvalidProofReqException param: $scope\nentry: $reqEntry",
+        );
         throw InvalidProofReqException(
             errorMessage:
                 "InvalidProofReqException param: $scope\nentry: $reqEntry");
@@ -1015,7 +1064,11 @@ class Authenticate {
       final signature = bjjKey.sign(messHash);
       return signature;
     } else {
-      throw const FormatException("message string couldnt be parsed as BigInt");
+      _stacktraceManager.addError(
+        "[Authenticate] message string couldn't be parsed as BigInt",
+      );
+      throw const FormatException(
+          "message string couldn't be parsed as BigInt");
     }
   }
 
@@ -1092,7 +1145,13 @@ class Authenticate {
           .process(Uint8List.fromList(json.encode(pushInfo).codeUnits));
       return base64.encode(encrypted);
     } else {
-      throw NetworkException(publicKeyResponse);
+      _stacktraceManager.addError(
+        "[Authenticate] Error fetching public key: ${publicKeyResponse.statusCode} ${publicKeyResponse.statusMessage}",
+      );
+      throw NetworkException(
+        statusCode: publicKeyResponse.statusCode ?? 0,
+        errorMessage: publicKeyResponse.statusMessage ?? "",
+      );
     }
   }
 
@@ -1209,11 +1268,17 @@ class Authenticate {
 
   String stringFromJwz(JWZEntity jwzEntity) {
     if (jwzEntity.header == null) {
-      throw NullJWZHeaderException();
+      _stacktraceManager.addError(
+        "[Authenticate] JWZ header is null",
+      );
+      throw NullJWZHeaderException(errorMessage: "JWZ header is null");
     }
 
     if (jwzEntity.payload == null) {
-      throw NullJWZPayloadException();
+      _stacktraceManager.addError(
+        "[Authenticate] JWZ payload is null",
+      );
+      throw NullJWZPayloadException(errorMessage: "JWZ payload is null");
     }
 
     String header = Base64Util.encode64(jsonEncode(jwzEntity.header));
@@ -1431,15 +1496,17 @@ class Authenticate {
     Uint8List inputsJsonBytes;
     dynamic inputsJson = json.decode(sigProofInputs);
     if (inputsJson is Map<String, dynamic>) {
-      //Map<String, dynamic> inputs = json.decode(res);
-      Uint8List inputsJsonBytes = Uint8ArrayUtils.uint8ListfromString(
-          sigProofInputs /*json.encode(inputs["inputs"])*/);
+      Uint8List inputsJsonBytes =
+          Uint8ArrayUtils.uint8ListfromString(sigProofInputs);
       return inputsJsonBytes;
     } else if (inputsJson is String) {
       Uint8List inputsJsonBytes =
           Uint8ArrayUtils.uint8ListfromString(inputsJson);
       return inputsJsonBytes;
     }
+    _stacktraceManager.addError(
+      "[Authenticate] Error in _computeSigProof",
+    );
     throw Exception('Error in _computeSigProof');
   }
 
@@ -1466,6 +1533,9 @@ class Authenticate {
 
     // if circuit is not V3, we throw an exception
     if (!isCircuitSupported) {
+      _stacktraceManager.addError(
+        "[Authenticate] Operator $operator is not supported for circuit $circuitId",
+      );
       throw OperatorException(
         errorMessage:
             "Operator $operator is not supported for circuit $circuitId",

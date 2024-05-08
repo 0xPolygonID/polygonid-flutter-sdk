@@ -1,4 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/response/jwz.dart';
@@ -45,11 +46,16 @@ class GetJWZUseCase extends FutureUseCase<GetJWZParam, String> {
       logger().i("[GetJWZUseCase][MainFlow] JWZ: $encodedJwz");
       _stacktraceManager.addTrace("[GetJWZUseCase][MainFlow] JWZ: $encodedJwz");
       return encodedJwz;
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
     } catch (error) {
       logger().e("[GetJWZUseCase] Error: $error");
       _stacktraceManager.addTrace("[GetJWZUseCase] Error: $error");
       _stacktraceManager.addError("[GetJWZUseCase] Error: $error");
-      rethrow;
+      throw PolygonIdSDKException(
+        errorMessage: "Error getting JWZ, error: $error",
+        error: error,
+      );
     }
   }
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
@@ -37,6 +38,7 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart'
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/auth_v2/witness_auth.dart';
+import 'package:web3dart/contracts.dart';
 
 class ProofRepositoryImpl extends ProofRepository {
   final WitnessDataSource _witnessDataSource;
@@ -187,8 +189,10 @@ class ProofRepositoryImpl extends ProofRepository {
 
     _stacktraceManager.addTrace(
         "[calculateAtomicQueryInputs/libPolygonIdCoreProof] NullAtomicQueryInputsException");
-    throw NullAtomicQueryInputsException(id,
-        errorMessage: "Empty inputs result");
+    throw NullAtomicQueryInputsException(
+      id: id,
+      errorMessage: "Empty inputs result",
+    );
   }
 
   @override
@@ -208,29 +212,56 @@ class ProofRepositoryImpl extends ProofRepository {
         param: witnessParam,
       );
       if (witness == null) {
-        throw NullWitnessException(circuitData.circuitId);
+        throw NullWitnessException(
+          circuit: circuitType.name,
+          errorMessage: "Empty witness result for circuit ${circuitType.name}",
+        );
       } else {
         return witness;
       }
-    } catch (e) {
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
+    } catch (error) {
       _stacktraceManager.addTrace("[calculateWitness] NullWitnessException");
-      throw NullWitnessException(circuitData.circuitId);
+      throw NullWitnessException(
+        circuit: circuitData.circuitId,
+        errorMessage:
+            "Empty witness result for circuit ${circuitData.circuitId} with error: $error",
+        error: error,
+      );
     }
   }
 
   @override
   Future<ZKProofEntity> prove(
-      CircuitDataEntity circuitData, Uint8List wtnsBytes) {
-    return _proverLibDataSource
-        .prove(circuitData.circuitId, circuitData.zKeyFile, wtnsBytes)
-        .then((proof) {
-      if (proof == null) {
-        _stacktraceManager.addTrace("[prove] NullProofException");
-        throw NullProofException(circuitData.circuitId);
+      CircuitDataEntity circuitData, Uint8List wtnsBytes) async {
+    try {
+      final Map<String, dynamic>? proof = await _proverLibDataSource.prove(
+        circuitData.circuitId,
+        circuitData.zKeyFile,
+        wtnsBytes,
+      );
+
+      if (proof == null || proof.isEmpty) {
+        _stacktraceManager
+            .addTrace("[prove] NullProofException, proof is null");
+        throw NullProofException(
+          circuit: circuitData.circuitId,
+          errorMessage: "Empty proof result",
+        );
       }
 
-      return _zkProofMapper.mapFrom(proof);
-    }).catchError((error) => throw NullProofException(circuitData.circuitId));
+      final ZKProofEntity zkProof = _zkProofMapper.mapFrom(proof);
+      return zkProof;
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
+    } catch (error) {
+      throw NullProofException(
+        circuit: circuitData.circuitId,
+        errorMessage: "Error in _computeProve: $error",
+        error: error,
+      );
+    }
   }
 
   @override
@@ -242,25 +273,47 @@ class ProofRepositoryImpl extends ProofRepository {
   @override
   Future<GistMTProofEntity> getGistProof(
       {required String idAsInt, required String contractAddress}) async {
-    String gistProofSC = await _getGistProofSC(
-      identifier: idAsInt,
-      contractAddress: contractAddress,
-    );
+    try {
+      String gistProofSC = await _getGistProofSC(
+        identifier: idAsInt,
+        contractAddress: contractAddress,
+      );
 
-    String gistProof =
-        _libPolygonIdCoreProofDataSource.proofFromSC(gistProofSC);
+      String gistProof =
+          _libPolygonIdCoreProofDataSource.proofFromSC(gistProofSC);
 
-    return _gistMTProofMapper
-        .mapFrom(_gistProofDataSource.getGistMTProof(gistProof));
+      return _gistMTProofMapper
+          .mapFrom(_gistProofDataSource.getGistMTProof(gistProof));
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
+    } catch (error) {
+      throw FetchGistProofException(
+        errorMessage: "Error in getGistProof: $error",
+        error: error,
+      );
+    }
   }
 
   Future<String> _getGistProofSC(
-      {required String identifier, required String contractAddress}) {
-    return _localContractFilesDataSource
-        .loadStateContract(contractAddress)
-        .then((contract) => _rpcDataSource
-            .getGistProof(identifier, contract)
-            .catchError((error) => throw FetchGistProofException(error)));
+      {required String identifier, required String contractAddress}) async {
+    try {
+      DeployedContract contract =
+          await _localContractFilesDataSource.loadStateContract(
+        contractAddress,
+      );
+      String gistProof = await _rpcDataSource.getGistProof(
+        identifier,
+        contract,
+      );
+      return gistProof;
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
+    } catch (error) {
+      throw FetchGistProofException(
+        errorMessage: "Error in _getGistProofSC: $error",
+        error: error,
+      );
+    }
   }
 
   @override

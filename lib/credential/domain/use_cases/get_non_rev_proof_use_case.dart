@@ -30,7 +30,7 @@ class GetNonRevProofUseCase
       return nonRevProof;
     }).catchError((error) {
       logger().e("[GetNonRevProofUseCase] Error: $error");
-
+      _stacktraceManager.addError("[GetNonRevProofUseCase] Error: $error");
       throw error;
     });
   }

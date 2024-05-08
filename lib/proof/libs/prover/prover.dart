@@ -9,6 +9,8 @@ import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 import 'native_prover.dart';
 
@@ -89,6 +91,8 @@ class ProverLib {
 
       logger().i("$result: ${result.toString()}. Error: $errormsg");
       freeAllocatedMemory();
+      StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+      _stacktraceManager.addError("librapidsnark - groth16_prover: $errormsg");
       throw CoreLibraryException(
         coreLibraryName: "librapidsnark",
         methodName: "groth16_prover",
@@ -98,6 +102,9 @@ class ProverLib {
       logger().i(
           "$result: ${result.toString()}. Error: Short buffer for proof or public");
       freeAllocatedMemory();
+      StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+      _stacktraceManager.addError(
+          "librapidsnark - groth16_prover: Short buffer for proof or public");
       throw CoreLibraryException(
         coreLibraryName: "librapidsnark",
         methodName: "groth16_prover",

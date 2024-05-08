@@ -11,6 +11,13 @@ class InteractionNotFoundException extends PolygonIdSDKException {
   }) : super(errorMessage: errorMessage, error: error);
 }
 
+class InteractionsNotFoundException extends PolygonIdSDKException {
+  InteractionsNotFoundException({
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
+}
+
 class InvalidInteractionType extends PolygonIdSDKException {
   final InteractionType type;
 

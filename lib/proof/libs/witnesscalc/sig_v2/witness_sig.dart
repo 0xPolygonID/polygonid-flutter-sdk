@@ -8,6 +8,8 @@ import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 import 'native_witness_sig_v2.dart';
 
@@ -77,6 +79,9 @@ class WitnessSigV2Lib {
 
       logger().e("$result: ${result.toString()}. Error: $errormsg");
       freeAllocatedMemory();
+      StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+      _stacktraceManager
+          .addError("libwitnesscalc_credentialAtomicQuerySigV2: $errormsg");
       throw CoreLibraryException(
         coreLibraryName: "libwitnesscalc_credentialAtomicQuerySigV2",
         methodName: "witnesscalc_credentialAtomicQuerySigV2",
@@ -86,6 +91,9 @@ class WitnessSigV2Lib {
       logger().e(
           "$result: ${result.toString()}. Error: Short buffer for proof or public");
       freeAllocatedMemory();
+      StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+      _stacktraceManager.addError(
+          "libwitnesscalc_credentialAtomicQuerySigV2: witnesscalc_credentialAtomicQuerySigV2: Short buffer for proof or public");
       throw CoreLibraryException(
         coreLibraryName: "libwitnesscalc_credentialAtomicQuerySigV2",
         methodName: "witnesscalc_credentialAtomicQuerySigV2",
