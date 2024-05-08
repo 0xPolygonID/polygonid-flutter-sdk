@@ -1,4 +1,3 @@
-
 import '../../../../common/domain/error_exception.dart';
 
 class IdentityException extends ErrorException {

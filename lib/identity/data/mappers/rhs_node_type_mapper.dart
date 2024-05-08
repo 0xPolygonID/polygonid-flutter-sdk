@@ -1,4 +1,3 @@
-
 import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart';
 
 import '../../../common/mappers/from_mapper.dart';
