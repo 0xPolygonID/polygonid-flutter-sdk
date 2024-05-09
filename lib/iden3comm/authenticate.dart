@@ -706,7 +706,7 @@ class Authenticate {
       DioCacheInterceptor(
         options: CacheOptions(
           store: HiveCacheStore(path),
-          policy: CachePolicy.refreshForceCache,
+          policy: CachePolicy.request,
           hitCacheOnErrorExcept: [],
           maxStale: const Duration(days: 14),
           priority: CachePriority.high,
@@ -714,7 +714,7 @@ class Authenticate {
       ),
     );
     final schemaResponse = await dio.get(schemaUri.toString());
-    if (schemaResponse.statusCode == 200) {
+    if (schemaResponse.statusCode == 200 || schemaResponse.statusCode == 304) {
       Map<String, dynamic> schema = {};
       bool isMap = schemaResponse.data is Map<String, dynamic>;
       if (!isMap) {
@@ -1051,7 +1051,7 @@ class Authenticate {
       DioCacheInterceptor(
         options: CacheOptions(
           store: HiveCacheStore(path),
-          policy: CachePolicy.refreshForceCache,
+          policy: CachePolicy.request,
           hitCacheOnErrorExcept: [],
           maxStale: const Duration(days: 7),
           priority: CachePriority.high,
@@ -1062,7 +1062,8 @@ class Authenticate {
     var publicKeyResponse =
         await dio.get(Uri.parse("$serviceEndpoint/public").toString());
 
-    if (publicKeyResponse.statusCode == 200) {
+    if (publicKeyResponse.statusCode == 200 ||
+        publicKeyResponse.statusCode == 304) {
       String publicKeyPem = publicKeyResponse.data;
       var publicKey = RSAKeyParser().parse(publicKeyPem) as RSAPublicKey;
       final encrypter =
