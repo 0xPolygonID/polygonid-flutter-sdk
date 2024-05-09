@@ -19,7 +19,11 @@ class PolygonIdCoreCredential extends PolygonIdCore {
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNCreateClaim(response, in1, status);
     if (res == 0) {
-      consumeStatus(status, "");
+      String? consumedStatus = consumeStatus(status, "");
+      if (consumedStatus != null) {
+        malloc.free(status);
+        return consumedStatus;
+      }
     }
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;

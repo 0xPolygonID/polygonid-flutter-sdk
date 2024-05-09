@@ -6,6 +6,7 @@ enum CircuitType {
   sigonchain("credentialAtomicQuerySigV2OnChain"),
   circuitsV3("credentialAtomicQueryV3$currentCircuitBetaPostfix"),
   circuitsV3onchain("credentialAtomicQueryV3OnChain$currentCircuitBetaPostfix"),
+  linkedMultyQuery10("linkedMultiQuery10$currentCircuitBetaPostfix"),
   unknown("");
 
   static const v3CircuitPrefix = "credentialAtomicQueryV3";

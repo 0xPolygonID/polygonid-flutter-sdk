@@ -1,11 +1,9 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:fast_base58/fast_base58.dart';
 import 'package:polygonid_flutter_sdk/common/utils/hex_utils.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:web3dart/credentials.dart';
-import 'package:web3dart/crypto.dart';
 
 import 'eddsa_babyjub.dart' as eddsaBabyJub;
 import 'package:bip32/bip32.dart' as bip32;

@@ -1,4 +1,3 @@
-import 'package:json_annotation/json_annotation.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/display_type/basic_display_type.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/display_type/unknown_display_type.dart';
 

@@ -17,13 +17,19 @@ class LibPolygonIdCoreCredentialDataSource {
     required String schema,
     required String nonce,
     required List<String> publicKey,
+    Map<String, dynamic> additionalInputParam = const {},
   }) {
-    String input = jsonEncode({
-      "schema": schema, //"ca938857241db9451ea329256b9c06e5",
-      "nonce": nonce, //"15930428023331155902",
+    Map<String, dynamic> inputParam = {
+      "schema": schema,
+      "nonce": nonce,
       "indexSlotA": publicKey[0],
       "indexSlotB": publicKey[1],
-    });
+    };
+
+    //merge additionInputParam with inputParam removing duplicates
+    Map<String, dynamic> inputMerged = {...inputParam, ...additionalInputParam};
+
+    String input = jsonEncode(inputMerged);
 
     String output = _polygonIdCoreCredential.createClaim(input);
 

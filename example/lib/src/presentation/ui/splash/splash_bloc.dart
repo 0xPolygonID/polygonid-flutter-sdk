@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/circuits_to_download_param.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
@@ -31,7 +30,7 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
         CircuitsToDownloadParam(
           circuitsName: "circuitsV3",
           bucketUrl:
-              "https://iden3-circuits-bucket.s3.eu-west-1.amazonaws.com/circuitsv3-beta-1.zip",
+              "https://iden3-circuits-bucket.s3.eu-west-1.amazonaws.com/circuitsv3-beta-1-1.zip",
         ),
       ],
     );

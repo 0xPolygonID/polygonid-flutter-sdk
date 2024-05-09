@@ -64,9 +64,7 @@
 
 */
 
-import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_response_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/zkproof_dto.dart';
 
 part 'iden3comm_proof_dto.g.dart';

@@ -257,4 +257,40 @@ class PolygonIdCoreProof extends PolygonIdCore {
     freeAllocatedMemory();
     return result;
   }
+
+  String getLinkedMultiQueryInputs(String input, String? config) {
+    ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
+    ffi.Pointer<ffi.Char> cfg = ffi.nullptr;
+    if (config != null) {
+      cfg = config.toNativeUtf8().cast<ffi.Char>();
+    }
+    ffi.Pointer<ffi.Pointer<ffi.Char>> response =
+        malloc<ffi.Pointer<ffi.Char>>();
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
+        malloc<ffi.Pointer<PLGNStatus>>();
+
+    freeAllocatedMemory() {
+      malloc.free(response);
+      malloc.free(status);
+    }
+
+    int res = PolygonIdCore.nativePolygonIdCoreLib
+        .PLGNALinkedMultiQueryInputs(response, in1, cfg, status);
+    if (res == 0) {
+      String? consumedStatus = consumeStatus(status, "");
+      if (consumedStatus != null) {
+        freeAllocatedMemory();
+        throw ProofInputsException(consumedStatus);
+      }
+    }
+    String result = "";
+    ffi.Pointer<ffi.Char> jsonResponse = response.value;
+    ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
+    if (jsonString != ffi.nullptr) {
+      result = jsonString.toDartString();
+    }
+
+    freeAllocatedMemory();
+    return result;
+  }
 }

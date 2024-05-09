@@ -1,8 +1,6 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
-import 'package:json_annotation/json_annotation.dart';
-import 'package:polygonid_flutter_sdk/credential/data/dtos/display_type/display_type.dart';
 
 import 'claim_info_dto.dart';
 

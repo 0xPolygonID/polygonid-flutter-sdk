@@ -4,7 +4,6 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
 
 class GetIdentitiesUseCase extends FutureUseCase<void, List<IdentityEntity>> {
   final IdentityRepository _identityRepository;

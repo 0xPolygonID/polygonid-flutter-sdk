@@ -182,11 +182,16 @@ abstract class PolygonIdSdkIdentity {
   /// The [profileNonce] is the nonce of the profile used from identity
   /// to obtain the did identifier. Value must be greater than 0 and less than 2^248
   ///
+  /// The [existingProfileDid] is the DID of the existing profile.
+  /// If provided - new profile won't be created.
+  ///
   /// The profile will be added using the current env set with [PolygonIdSdk.setEnv]
-  Future<void> addProfile(
-      {required String genesisDid,
-      required String privateKey,
-      required BigInt profileNonce});
+  Future<void> addProfile({
+    required String genesisDid,
+    required String privateKey,
+    required BigInt profileNonce,
+    String? existingProfileDid,
+  });
 
   /// Removes a profile from the identity derived from private key and stored
   /// in the Polygon ID Sdk.
@@ -377,17 +382,22 @@ class Identity implements PolygonIdSdkIdentity {
   }
 
   @override
-  Future<void> addProfile(
-      {required String genesisDid,
-      required String privateKey,
-      required BigInt profileNonce}) {
+  Future<void> addProfile({
+    required String genesisDid,
+    required String privateKey,
+    required BigInt profileNonce,
+    String? existingProfileDid,
+  }) {
     _stacktraceManager.clear();
     _stacktraceManager.addTrace("PolygonIdSdk.Identity.addProfile called");
     return _addProfileUseCase.execute(
-        param: AddProfileParam(
-            genesisDid: genesisDid,
-            profileNonce: profileNonce,
-            privateKey: privateKey));
+      param: AddProfileParam(
+        genesisDid: genesisDid,
+        profileNonce: profileNonce,
+        privateKey: privateKey,
+        existingProfileDid: existingProfileDid,
+      ),
+    );
   }
 
   @override

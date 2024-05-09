@@ -65,7 +65,6 @@
 */
 
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_body_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/onchain_offer_body_request.dart';
 

@@ -2,9 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
-import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
-import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_auth_claim_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
@@ -13,7 +11,6 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart'
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_latest_state_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/sign_message_use_case.dart';

@@ -2,47 +2,33 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:ninja_prime/ninja_prime.dart';
-import 'dart:convert';
 
 import 'package:intl/intl.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
-import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
-import 'package:polygonid_flutter_sdk/common/domain/entities/did_method_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
-import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/credential_refresh_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/update_claim_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart';
-import 'package:uuid/uuid.dart';
 
 class GetIden3commProofsParam {
   final Iden3MessageEntity message;
@@ -192,7 +178,7 @@ class GetIden3commProofsUseCase
             }
 
             _proofGenerationStepsStreamManager
-                .add("Generating proof for ${claim.type}");
+                .add("#${i + 1} creating proof for ${claim.type}");
 
             // Generate proof param
             GenerateIden3commProofParam proofParam =

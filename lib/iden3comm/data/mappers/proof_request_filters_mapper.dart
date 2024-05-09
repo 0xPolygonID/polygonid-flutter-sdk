@@ -202,7 +202,8 @@ class ProofRequestFiltersMapper
           )
         ];
       case '\$exists':
-        if (value is! bool) {
+        bool? parsedValue = _parseValueToBool(value);
+        if (parsedValue == null) {
           throw OperatorException(
               errorMessage: "Value for \$exists operator must be a boolean");
         }
@@ -210,7 +211,7 @@ class ProofRequestFiltersMapper
           FilterEntity(
             operator: FilterOperator.exists,
             name: 'credential.credentialSubject.$field',
-            value: value,
+            value: parsedValue,
           )
         ];
       default:

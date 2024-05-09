@@ -1,8 +1,6 @@
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
 
 import '../../../common/domain/entities/filter_entity.dart';
-import '../../../identity/domain/entities/identity_entity.dart';
 import '../entities/claim_entity.dart';
 
 abstract class CredentialRepository {

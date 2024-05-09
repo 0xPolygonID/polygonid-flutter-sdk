@@ -1,12 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_store.dart';
 import 'package:encrypt/encrypt.dart';
-import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pointycastle/api.dart';
 import 'package:pointycastle/asymmetric/api.dart';
@@ -15,7 +13,6 @@ import 'package:pointycastle/asymmetric/rsa.dart';
 import 'package:pointycastle/digests/sha512.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
-import 'package:polygonid_flutter_sdk/common/utils/http_exceptions_handler_mixin.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_service_metadata_devices_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_service_metadata_response_dto.dart';

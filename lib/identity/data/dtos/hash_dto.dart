@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:equatable/equatable.dart';
-import 'package:json_annotation/json_annotation.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 
 import '../../../common/utils/uint8_list_utils.dart';

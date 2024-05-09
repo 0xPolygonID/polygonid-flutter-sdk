@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/witness_param.dart';
+import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/linked_multi_query_10/witness_linked_multi_query_10.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/mtp_v2/witness_mtp.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/sig_v2/witness_sig.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/v3/witness_v3.dart';
@@ -10,7 +11,6 @@ import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/v3_onchain/witness_
 import '../../libs/witnesscalc/auth_v2/witness_auth.dart';
 import '../../libs/witnesscalc/mtp_v2_onchain/witness_mtp_onchain.dart';
 import '../../libs/witnesscalc/sig_v2_onchain/witness_sig_onchain.dart';
-import '../mappers/circuit_type_mapper.dart';
 
 @injectable
 class WitnessIsolatesWrapper {
@@ -34,6 +34,9 @@ class WitnessIsolatesWrapper {
 
   Future<Uint8List?> computeWitnessV3Onchain(WitnessParam param) =>
       compute(_computeWitnessV3Onchain, param);
+
+  Future<Uint8List?> computeLinkedMultyQuery10(WitnessParam param) =>
+      compute(_computeLinkedMultyQuery10, param);
 }
 
 /// As this is running in a separate thread, we cannot inject [WitnessAuthLib]
@@ -96,6 +99,16 @@ Future<Uint8List?> _computeWitnessV3Onchain(WitnessParam param) async {
   return witnessBytes;
 }
 
+Future<Uint8List?> _computeLinkedMultyQuery10(WitnessParam param) async {
+  final WitnessLinkedMultiQuery10 witnessLib = WitnessLinkedMultiQuery10();
+  final Uint8List? witnessBytes =
+      await witnessLib.calculateWitnessLinkedMultiQuery10(
+    param.wasm,
+    param.json,
+  );
+  return witnessBytes;
+}
+
 class WitnessDataSource {
   final WitnessIsolatesWrapper _witnessIsolatesWrapper;
 
@@ -118,6 +131,8 @@ class WitnessDataSource {
         return _witnessIsolatesWrapper.computeWitnessV3(param);
       case CircuitType.circuitsV3onchain:
         return _witnessIsolatesWrapper.computeWitnessV3Onchain(param);
+      case CircuitType.linkedMultyQuery10:
+        return _witnessIsolatesWrapper.computeLinkedMultyQuery10(param);
       default:
         return Future.value(null);
     }

@@ -4,7 +4,6 @@ import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_nonce_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
@@ -73,10 +72,57 @@ class GetIden3commClaimsUseCase
     _stacktraceManager
         .addTrace("[GetIden3commClaimsUseCase] requests: $requests");
 
+    var groupedByGroupId = groupBy(requests, (obj) => obj.scope.query.groupId);
+
+    Map<int, List<ClaimEntity>> claimsByGroupId = {};
+
+    for (var group in groupedByGroupId.entries) {
+      int? groupId = group.key;
+      if (groupId == null) {
+        continue;
+      }
+      List<ProofRequestEntity> groupRequests = group.value;
+      List<FilterEntity> filtersForQueryClaimDb = [];
+      for (ProofRequestEntity request in groupRequests) {
+        bool supportedCircuit = await _isProofCircuitSupported.execute(
+            param: request.scope.circuitId);
+        if (!supportedCircuit) {
+          continue; //TODO maybe throw exception
+        }
+        List<FilterEntity> filterForSingleRequest =
+            await _iden3commCredentialRepository.getFilters(request: request);
+        filtersForQueryClaimDb.addAll(filterForSingleRequest);
+        filtersForQueryClaimDb = filtersForQueryClaimDb.toSet().toList();
+      }
+
+      List<ClaimEntity> claimsFiltered = await _getClaimsUseCase.execute(
+        param: GetClaimsParam(
+          filters: filtersForQueryClaimDb,
+          genesisDid: param.genesisDid,
+          profileNonce: param.profileNonce,
+          privateKey: param.privateKey,
+          credentialSortOrderList: param.credentialSortOrderList,
+        ),
+      );
+      claimsByGroupId[groupId] = claimsFiltered;
+    }
+
     /// We got [ProofRequestEntity], let's find the associated [ClaimEntity]
     for (ProofRequestEntity request in requests) {
-      if (await _isProofCircuitSupported.execute(
-          param: request.scope.circuitId)) {
+      // we check if circuit from the request is supported
+      bool supportedCircuit = await _isProofCircuitSupported.execute(
+          param: request.scope.circuitId);
+      if (!supportedCircuit) {
+        continue; //TODO maybe throw exception
+      }
+
+      List<ClaimEntity> validClaims = [];
+
+      int? requestGroupId = request.scope.query.groupId;
+      if (requestGroupId != null &&
+          claimsByGroupId.containsKey(requestGroupId)) {
+        validClaims = claimsByGroupId[requestGroupId] ?? [];
+      } else {
         List<FilterEntity> filters =
             await _iden3commCredentialRepository.getFilters(request: request);
         _stacktraceManager
@@ -92,76 +138,79 @@ class GetIden3commClaimsUseCase
           ),
         );
 
-        // filter manually positive integer
-        claimsFiltered = _filterManuallyIfPositiveInteger(
-          request: request,
-          claimsFiltered: claimsFiltered,
-        );
-
-        //filter manually proof type
-        claimsFiltered = _filterManuallyIfQueryContainsProofType(
-          request: request,
-          claimsFiltered: claimsFiltered,
-        );
-
-        if (claimsFiltered.isEmpty) {
-          _stacktraceManager
-              .addTrace("[GetIden3commClaimsUseCase] claims is empty");
-          continue;
-        }
-
-        var validClaim = claimsFiltered.firstWhereOrNull((element) {
-          List<Map<String, dynamic>> proofs = element.info["proof"];
-          List<String> proofTypes =
-              proofs.map((e) => e["type"] as String).toList();
-
-          final circuitId = request.scope.circuitId;
-          // TODO (moria): remove this with v3 circuit release
-          if (circuitId.startsWith(CircuitType.v3CircuitPrefix) &&
-              !circuitId.endsWith(CircuitType.currentCircuitBetaPostfix)) {
-            _stacktraceManager.addTrace(
-                "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
-            throw Exception(
-                "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
-          }
-
-          CircuitType circuitType = _circuitTypeMapper.mapTo(circuitId);
-
-          switch (circuitType) {
-            case CircuitType.mtp:
-            case CircuitType.mtponchain:
-              bool success = [
-                'Iden3SparseMerkleProof',
-                'Iden3SparseMerkleTreeProof'
-              ].any((element) => proofTypes.contains(element));
-              return success;
-            case CircuitType.sig:
-            case CircuitType.sigonchain:
-              bool success = proofTypes.contains('BJJSignature2021');
-              return success;
-            case CircuitType.auth:
-            case CircuitType.unknown:
-              break;
-            case CircuitType.circuitsV3:
-            case CircuitType.circuitsV3onchain:
-              bool success = [
-                'Iden3SparseMerkleProof',
-                'Iden3SparseMerkleTreeProof',
-                'BJJSignature2021',
-              ].any((element) => proofTypes.contains(element));
-              return success;
-          }
-          return false;
-        });
-
-        if (validClaim == null) {
-          _stacktraceManager.addTrace(
-              "[GetIden3commClaimsUseCase] claims has no valid proof type");
-          continue;
-        }
-
-        claims.add(validClaim);
+        validClaims = claimsFiltered;
       }
+
+      // filter manually positive integer
+      validClaims = _filterManuallyIfPositiveInteger(
+        request: request,
+        claimsFiltered: validClaims,
+      );
+
+      //filter manually proof type
+      validClaims = _filterManuallyIfQueryContainsProofType(
+        request: request,
+        claimsFiltered: validClaims,
+      );
+
+      if (validClaims.isEmpty) {
+        _stacktraceManager
+            .addTrace("[GetIden3commClaimsUseCase] claims is empty");
+        continue;
+      }
+
+      var validClaim = validClaims.firstWhereOrNull((element) {
+        List<Map<String, dynamic>> proofs = element.info["proof"];
+        List<String> proofTypes =
+            proofs.map((e) => e["type"] as String).toList();
+
+        final circuitId = request.scope.circuitId;
+        // TODO (moria): remove this with v3 circuit release
+        if (circuitId.startsWith(CircuitType.v3CircuitPrefix) &&
+            !circuitId.endsWith(CircuitType.currentCircuitBetaPostfix)) {
+          _stacktraceManager.addTrace(
+              "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
+          throw Exception(
+              "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
+        }
+
+        CircuitType circuitType = _circuitTypeMapper.mapTo(circuitId);
+
+        switch (circuitType) {
+          case CircuitType.mtp:
+          case CircuitType.mtponchain:
+            bool success = [
+              'Iden3SparseMerkleProof',
+              'Iden3SparseMerkleTreeProof'
+            ].any((element) => proofTypes.contains(element));
+            return success;
+          case CircuitType.sig:
+          case CircuitType.sigonchain:
+            bool success = proofTypes.contains('BJJSignature2021');
+            return success;
+          case CircuitType.auth:
+          case CircuitType.unknown:
+            break;
+          case CircuitType.circuitsV3:
+          case CircuitType.circuitsV3onchain:
+          case CircuitType.linkedMultyQuery10:
+            bool success = [
+              'Iden3SparseMerkleProof',
+              'Iden3SparseMerkleTreeProof',
+              'BJJSignature2021',
+            ].any((element) => proofTypes.contains(element));
+            return success;
+        }
+        return false;
+      });
+
+      if (validClaim == null) {
+        _stacktraceManager.addTrace(
+            "[GetIden3commClaimsUseCase] claims has no valid proof type");
+        continue;
+      }
+
+      claims.add(validClaim);
     }
 
     /// If we have requests but didn't get any proofs, we throw
