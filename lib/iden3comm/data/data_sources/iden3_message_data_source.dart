@@ -63,7 +63,7 @@ class Iden3MessageDataSource {
       DioCacheInterceptor(
         options: CacheOptions(
           store: HiveCacheStore(path),
-          policy: CachePolicy.refreshForceCache,
+          policy: CachePolicy.request,
           hitCacheOnErrorExcept: [],
           maxStale: const Duration(days: 7),
           priority: CachePriority.high,
@@ -74,7 +74,8 @@ class Iden3MessageDataSource {
     var publicKeyResponse =
         await dio.get(Uri.parse("$serviceEndpoint/public").toString());
 
-    if (publicKeyResponse.statusCode == 200) {
+    if (publicKeyResponse.statusCode == 200 ||
+        publicKeyResponse.statusCode == 304) {
       String publicKeyPem = publicKeyResponse.data;
       var publicKey = RSAKeyParser().parse(publicKeyPem) as RSAPublicKey;
       final encrypter =

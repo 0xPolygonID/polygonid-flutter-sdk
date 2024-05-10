@@ -224,7 +224,7 @@ class RemoteIden3commDataSource {
         DioCacheInterceptor(
           options: CacheOptions(
             store: HiveCacheStore(path),
-            policy: CachePolicy.refreshForceCache,
+            policy: CachePolicy.request,
             hitCacheOnErrorExcept: [],
             maxStale: const Duration(days: 14),
             priority: CachePriority.high,
@@ -237,7 +237,8 @@ class RemoteIden3commDataSource {
           'fetchSchema: code: ${schemaResponse.statusCode} msg: ${schemaResponse.data}');
       _stacktraceManager.addTrace(
           "[RemoteIden3commDataSource] fetchSchema: ${schemaResponse.statusCode} ${schemaResponse.data}");
-      if (schemaResponse.statusCode == 200) {
+      if (schemaResponse.statusCode == 200 ||
+          schemaResponse.statusCode == 304) {
         Map<String, dynamic> schema = {};
         bool isMap = schemaResponse.data is Map<String, dynamic>;
         if (!isMap) {
@@ -301,7 +302,7 @@ class RemoteIden3commDataSource {
         DioCacheInterceptor(
           options: CacheOptions(
             store: HiveCacheStore(path),
-            policy: CachePolicy.refreshForceCache,
+            policy: CachePolicy.request,
             hitCacheOnErrorExcept: [],
             maxStale: const Duration(days: 14),
             priority: CachePriority.high,
@@ -312,7 +313,7 @@ class RemoteIden3commDataSource {
       final response = await dio.get(displayTypeUri.toString());
       _stacktraceManager.addTrace(
           "[RemoteIden3commDataSource] fetchDisplayType: ${response.statusCode} ${response.data}");
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 304) {
         Map<String, dynamic> data = {};
         bool isMap = response.data is Map<String, dynamic>;
         if (!isMap) {

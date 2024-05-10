@@ -25,7 +25,7 @@ dependencies:
   injectable: ^2.1.2
   # Path provider 2.0.12 is giving problems with iOS, forced to use 2.0.11
   path_provider: ^2.0.15
-  archive: ^3.3.7
+  archive: ^3.5.1
   sembast: 3.5.0+1
   fast_base58: 0.2.1
   uuid: ^3.0.6
@@ -33,9 +33,9 @@ dependencies:
   pointycastle: 3.7.3
   package_info_plus: ^4.2.0
   bip32: ^2.0.0
-  dio: ^5.3.0
-  dio_cache_interceptor: ^3.4.2
-  dio_cache_interceptor_hive_store: ^3.2.1
+  dio: ^5.4.3+1
+  dio_cache_interceptor: ^3.5.0
+  dio_cache_interceptor_hive_store: ^3.2.2
   logger: ^2.0.1
   intl: ^0.18.1
   hive: ^2.2.3
