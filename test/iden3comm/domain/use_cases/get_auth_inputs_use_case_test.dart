@@ -4,6 +4,7 @@ import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_auth_claim_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
@@ -33,6 +34,7 @@ MockStacktraceManager stacktraceManager = MockStacktraceManager();
 GetAuthInputsParam param = GetAuthInputsParam(CommonMocks.challenge,
     CommonMocks.did, CommonMocks.nonce, CommonMocks.privateKey);
 var claims = [CommonMocks.authClaim, CommonMocks.authClaim];
+var getAuthInputsException = GetAuthInputsException(errorMessage: "error");
 
 // Tested instance
 GetAuthInputsUseCase useCase = GetAuthInputsUseCase(
@@ -145,11 +147,11 @@ void main() {
     () async {
       // Given
       when(getLatestStateUseCase.execute(param: anyNamed('param')))
-          .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
+          .thenAnswer((realInvocation) => Future.error(getAuthInputsException));
 
       // When
       await expectLater(
-          useCase.execute(param: param), throwsA(CommonMocks.exception));
+          useCase.execute(param: param), throwsA(getAuthInputsException));
 
       // Then
       var capturedIdentity =

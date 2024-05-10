@@ -1,4 +1,6 @@
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
@@ -14,18 +16,25 @@ class GetAuthChallengeUseCase extends FutureUseCase<String, String> {
   );
 
   @override
-  Future<String> execute({required String param}) {
-    return _iden3commRepository.getChallenge(message: param).then((challenge) {
-      logger()
-          .i("[GetAuthChallengeUseCase] Message $param challenge: $challenge");
+  Future<String> execute({required String param}) async {
+    try {
+      String authChallenge =
+          await _iden3commRepository.getChallenge(message: param);
+      logger().i(
+          "[GetAuthChallengeUseCase] Message $param challenge: $authChallenge");
       _stacktraceManager.addTrace(
-          "[GetAuthChallengeUseCase] Message $param challenge: $challenge");
-      return challenge;
-    }).catchError((error) {
+          "[GetAuthChallengeUseCase] Message $param challenge: $authChallenge");
+      return authChallenge;
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
+    } catch (error) {
       logger().e("[GetAuthChallengeUseCase] Error: $error");
       _stacktraceManager.addTrace("[GetAuthChallengeUseCase] Error: $error");
       _stacktraceManager.addError("[GetAuthChallengeUseCase] Error: $error");
-      throw error;
-    });
+      throw GetAuthChallengeException(
+        errorMessage: "Error getting auth challenge with error: $error",
+        error: error,
+      );
+    }
   }
 }

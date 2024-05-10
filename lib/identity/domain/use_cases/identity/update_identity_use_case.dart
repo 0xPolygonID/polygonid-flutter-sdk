@@ -1,4 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
@@ -54,16 +55,23 @@ class UpdateIdentityUseCase
         // then we update the identity
         await _identityRepository.storeIdentity(identity: identity);
       } else {
-        throw InvalidPrivateKeyException(param.privateKey);
+        throw InvalidPrivateKeyException(
+          privateKey: param.privateKey,
+          errorMessage: "The provided private key is not valid",
+        );
       }
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
     } catch (error) {
       logger().e("[UpdateIdentityUseCase] Error: $error");
 
-      rethrow;
+      throw UnknownIdentityException(
+        did: param.genesisDid,
+        errorMessage: "Error updating identity, with error: $error",
+      );
     }
 
-    logger().i(
-        "[UpdateIdentityUseCase] Identity updated with did: ${param.genesisDid}, for key $param");
+    logger().i("[UpdateIdentityUseCase] Identity updated");
     return identity;
   }
 }

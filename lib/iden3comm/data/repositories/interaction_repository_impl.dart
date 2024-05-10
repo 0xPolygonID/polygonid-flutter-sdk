@@ -1,5 +1,6 @@
 import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/secure_storage_interaction_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/storage_interaction_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/interaction_id_filter_mapper.dart';
@@ -14,6 +15,7 @@ class InteractionRepositoryImpl implements InteractionRepository {
   final InteractionMapper _interactionMapper;
   final FiltersMapper _filtersMapper;
   final InteractionIdFilterMapper _interactionIdFilterMapper;
+  final StacktraceManager _stacktraceManager;
 
   InteractionRepositoryImpl(
     this._secureStorageInteractionDataSource,
@@ -21,6 +23,7 @@ class InteractionRepositoryImpl implements InteractionRepository {
     this._interactionMapper,
     this._filtersMapper,
     this._interactionIdFilterMapper,
+    this._stacktraceManager,
   );
 
   @override
@@ -66,22 +69,36 @@ class InteractionRepositoryImpl implements InteractionRepository {
   }
 
   @override
-  Future<InteractionBaseEntity> getInteraction(
-      {required String id, String? genesisDid, String? privateKey}) {
+  Future<InteractionBaseEntity> getInteraction({
+    required String id,
+    String? genesisDid,
+    String? privateKey,
+  }) async {
     if (genesisDid != null && privateKey != null) {
-      return _secureStorageInteractionDataSource
-          .getInteractions(
-              filter: _interactionIdFilterMapper.mapTo(id),
-              did: genesisDid,
-              privateKey: privateKey)
-          .then((interactions) => interactions.isEmpty
-              ? throw InteractionNotFoundException(id)
-              : _interactionMapper.mapFrom(interactions.first));
+      List<Map<String, dynamic>> interactions =
+          await _secureStorageInteractionDataSource.getInteractions(
+        filter: _interactionIdFilterMapper.mapTo(id),
+        did: genesisDid,
+        privateKey: privateKey,
+      );
+      if (interactions.isEmpty) {
+        _stacktraceManager.addError("Interaction not found");
+        throw InteractionNotFoundException(
+          id: id,
+          errorMessage: "Interaction not found",
+        );
+      } else {
+        Map<String, dynamic> interaction = interactions.first;
+        InteractionBaseEntity interactionBaseEntity =
+            _interactionMapper.mapFrom(interaction);
+        return interactionBaseEntity;
+      }
     } else {
       return _storageInteractionDataSource
           .getInteractions(filter: _interactionIdFilterMapper.mapTo(id))
           .then((interactions) => interactions.isEmpty
-              ? throw InteractionNotFoundException(id)
+              ? throw InteractionNotFoundException(
+                  id: id, errorMessage: "Interaction not found")
               : _interactionMapper.mapFrom(interactions.first));
     }
   }

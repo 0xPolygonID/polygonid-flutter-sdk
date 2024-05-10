@@ -48,8 +48,10 @@ void main() {
     when(createIdentityUseCase.execute(param: anyNamed('param'))).thenAnswer(
         (realInvocation) => Future.value(IdentityMocks.privateIdentity));
     when(identityRepository.getIdentity(genesisDid: anyNamed('genesisDid')))
-        .thenAnswer((realInvocation) =>
-            Future.error(UnknownIdentityException(CommonMocks.identifier)));
+        .thenAnswer((realInvocation) => Future.error(UnknownIdentityException(
+              did: CommonMocks.identifier,
+              errorMessage: 'Error',
+            )));
     when(identityRepository.storeIdentity(identity: anyNamed('identity')))
         .thenAnswer((realInvocation) => Future.value());
     when(createIdentityStateUseCase.execute(param: anyNamed('param')))

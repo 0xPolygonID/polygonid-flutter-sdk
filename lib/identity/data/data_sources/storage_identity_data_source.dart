@@ -1,5 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/data/data_sources/secure_identity_storage_data_source.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+
 //import 'package:polygonid_flutter_sdk/common/utils/encrypt_codec.dart';
 import 'package:polygonid_flutter_sdk/common/utils/encrypt_sembast_codec.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
@@ -42,8 +44,13 @@ class IdentityStoreRefWrapper {
 class StorageIdentityDataSource extends SecureIdentityStorageDataSource {
   final Database _database;
   final IdentityStoreRefWrapper _storeRefWrapper;
+  final StacktraceManager _stacktraceManager;
 
-  StorageIdentityDataSource(this._database, this._storeRefWrapper);
+  StorageIdentityDataSource(
+    this._database,
+    this._storeRefWrapper,
+    this._stacktraceManager,
+  );
 
   //FIXME: mutualize [getIdentities] and [getIdentity]
   Future<List<IdentityDTO>> getIdentities({Filter? filter}) {
@@ -57,7 +64,11 @@ class StorageIdentityDataSource extends SecureIdentityStorageDataSource {
   Future<IdentityDTO> getIdentity({required String did}) {
     return _storeRefWrapper.get(_database, did).then((storedValue) {
       if (storedValue == null) {
-        throw UnknownIdentityException(did);
+        _stacktraceManager.addError("Identity not found");
+        throw UnknownIdentityException(
+          did: did,
+          errorMessage: "Identity not found",
+        );
       }
 
       return IdentityDTO.fromJson(storedValue);

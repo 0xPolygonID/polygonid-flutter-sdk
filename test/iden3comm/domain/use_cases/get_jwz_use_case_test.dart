@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_jwz_use_case.dart';
@@ -12,6 +13,10 @@ import 'get_jwz_use_case_test.mocks.dart';
 
 MockIden3commRepository iden3commRepository = MockIden3commRepository();
 MockStacktraceManager stacktraceManager = MockStacktraceManager();
+
+var polygonIdSDKException = PolygonIdSDKException(
+  errorMessage: "error",
+);
 
 GetJWZUseCase useCase = GetJWZUseCase(
   iden3commRepository,
@@ -52,14 +57,14 @@ void main() {
     () async {
       // Given
       when(iden3commRepository.encodeJWZ(jwz: anyNamed("jwz")))
-          .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
+          .thenAnswer((realInvocation) => Future.error(polygonIdSDKException));
 
       // When
       await useCase
           .execute(param: param)
           .then((value) => expect(true, false))
           .catchError((error) {
-        expect(error, CommonMocks.exception);
+        expect(error, polygonIdSDKException);
       });
 
       // Then

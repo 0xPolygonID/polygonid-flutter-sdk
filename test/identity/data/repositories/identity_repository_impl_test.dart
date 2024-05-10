@@ -273,8 +273,10 @@ void main() {
         () async {
       // Given
       when(storageIdentityDataSource.getIdentity(did: anyNamed('did')))
-          .thenAnswer((realInvocation) =>
-              Future.error(UnknownIdentityException(CommonMocks.identifier)));
+          .thenAnswer((realInvocation) => Future.error(UnknownIdentityException(
+                did: CommonMocks.identifier,
+                errorMessage: "Unknown identity",
+              )));
 
       // When
       await repository

@@ -265,7 +265,11 @@ class Credential implements PolygonIdSdkCredential {
     } else {
       _stacktraceManager.addTrace(
           "PolygonIdSdk.Credential.getClaimRevocationStatus claim not found");
-      throw ClaimNotFoundException(claimId);
+      _stacktraceManager.addError("Claim not found");
+      throw ClaimNotFoundException(
+        id: claimId,
+        errorMessage: "Claim not found",
+      );
     }
   }
 

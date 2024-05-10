@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:polygonid_flutter_sdk/assets/onchain_non_merkelized_issuer_base.g.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
@@ -13,6 +14,7 @@ import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
@@ -87,8 +89,11 @@ class FetchOnchainClaimUseCase
       );
 
       if (!supportsInterfaceCheck || !supportsNonMerklizedIssuerInterface) {
-        throw Exception(
-            "Contract at address ${param.contractAddress} does not support non-merkelized issuer interface");
+        _stacktraceManager.addError(
+            "[FetchAndSaveClaimsUseCase] Contract at address ${param.contractAddress} does not support non-merkelized issuer interface");
+        throw FetchClaimException(
+            errorMessage:
+                "Contract at address ${param.contractAddress} does not support non-merkelized issuer interface");
       }
     }
 
@@ -145,12 +150,19 @@ class FetchOnchainClaimUseCase
       ]);
 
       return _claimMapper.mapFrom(claimDto);
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
     } catch (e) {
       logger().e(
           "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e");
       _stacktraceManager.addTrace(
           "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e");
-      rethrow;
+      _stacktraceManager.addError(
+          "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e");
+      throw FetchClaimException(
+        errorMessage: "Error while fetching onchain claim",
+        error: e,
+      );
     }
   }
 

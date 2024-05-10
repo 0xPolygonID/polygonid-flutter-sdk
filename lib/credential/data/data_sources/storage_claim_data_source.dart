@@ -1,8 +1,10 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/data/data_sources/secure_identity_storage_data_source.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:sembast/sembast.dart';
 
 import '../dtos/claim_dto.dart';
@@ -186,7 +188,12 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
     Map<String, Object?>? credential =
         await _storeRefWrapper.get(db, credentialId);
     if (credential == null) {
-      throw ClaimNotFoundException(credentialId);
+      StacktraceManager stacktraceManager = getItSdk<StacktraceManager>();
+      stacktraceManager.addError('Credential not found by id');
+      throw ClaimNotFoundException(
+        id: credentialId,
+        errorMessage: 'Credential not found by id',
+      );
     }
 
     ClaimDTO claimDTO = ClaimDTO.fromJson(credential);

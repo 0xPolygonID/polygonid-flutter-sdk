@@ -8,7 +8,6 @@ import 'package:polygonid_flutter_sdk/identity/domain/exceptions/smt_exceptions.
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_dto.dart';
 
-// TODO move to common
 class SMTDataSource {
   final HexMapper _hexMapper;
   final LibBabyJubJubDataSource _libBabyjubjubDataSource;
@@ -105,7 +104,9 @@ class SMTDataSource {
         // trying to add
         final newLeafKey = newLeaf.children[0];
         if (newLeafKey == nKey) {
-          throw SMTEntryIndexAlreadyExistsException();
+          throw SMTEntryIndexAlreadyExistsException(
+            errorMessage: "Leaf node already exists",
+          );
         }
         final pathOldLeaf = _getPath(maxLevels, nKey);
         // We need to push newLeaf down until its path diverges from
@@ -143,7 +144,9 @@ class SMTDataSource {
         }
         return _addNode(newNodeMiddle, storeName, did, privateKey);
       default:
-        throw SMTInvalidNodeFoundException();
+        throw SMTInvalidNodeFoundException(
+          errorMessage: "Invalid node type found",
+        );
     }
   }
 
@@ -168,7 +171,9 @@ class SMTDataSource {
     }*/
 
     if (nodeFound) {
-      throw SMTNodeKeyAlreadyExistsException();
+      throw SMTNodeKeyAlreadyExistsException(
+        errorMessage: "Node key already exists",
+      );
     }
 
     await _storageSMTDataSource.addNode(
@@ -195,7 +200,9 @@ class SMTDataSource {
     int maxLevels = await _storageSMTDataSource.getMaxLevels(
         storeName: storeName, did: did, privateKey: privateKey);
     if (level > maxLevels - 2) {
-      throw SMTReachedMaxLevelException();
+      throw SMTReachedMaxLevelException(
+        errorMessage: "Reached max level",
+      );
     }
 
     if (pathNewLeaf[level] == pathOldLeaf[level]) {
@@ -285,10 +292,14 @@ class SMTDataSource {
           }
           break;
         default:
-          throw SMTInvalidNodeFoundException();
+          throw SMTInvalidNodeFoundException(
+            errorMessage: "Invalid node type found",
+          );
       }
     }
-    throw SMTKeyNotFoundException();
+    throw SMTKeyNotFoundException(
+      errorMessage: "Key not found",
+    );
   }
 
   Future<HashDTO> getProofTreeRoot(

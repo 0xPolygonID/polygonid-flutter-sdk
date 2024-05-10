@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
 import 'package:web3dart/web3dart.dart';
 
@@ -82,14 +83,19 @@ class FakeWeb3Client extends FakeCapturer implements Web3Client {
 FakeWeb3Client client = FakeWeb3Client();
 MockGetSelectedChainUseCase _getSelectedChainUseCase =
     MockGetSelectedChainUseCase();
+MockStacktraceManager _stacktraceManager = MockStacktraceManager();
 
 // Tested instance
-RPCDataSource dataSource = RPCDataSource(_getSelectedChainUseCase);
+RPCDataSource dataSource = RPCDataSource(
+  _getSelectedChainUseCase,
+  _stacktraceManager,
+);
 
 /// FIXME: UT not possible since [RPCDataSource.getState] is using directly [State]
 /// TODO: [RPCDataSource.getGistProof]
 @GenerateMocks([
   GetSelectedChainUseCase,
+  StacktraceManager,
 ])
 void main() {
   // setUp(() {

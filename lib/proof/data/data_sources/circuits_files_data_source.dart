@@ -29,7 +29,8 @@ class CircuitsFilesDataSource {
     } on PathNotFoundException catch (error) {
       throw CircuitNotDownloadedException(
         circuit: circuitId,
-        errorMessage: error.message,
+        errorMessage:
+            "${error.message} Circuit $circuitId not downloaded or not found",
       );
     } catch (_) {
       rethrow;

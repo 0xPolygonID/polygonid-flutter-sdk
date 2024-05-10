@@ -17,7 +17,10 @@ class CheckProfileValidityUseCase
     final maxVal = base.pow(exponent) - BigInt.one;
     return Future(() {
       if (param.profileNonce.isNegative || (param.profileNonce >= maxVal)) {
-        throw InvalidProfileException(param.profileNonce);
+        throw InvalidProfileException(
+          profileNonce: param.profileNonce,
+          errorMessage: "Profile nonce is invalid",
+        );
       }
     }).then((_) {
       logger().i("[CheckProfileValidityUseCase] Profile is valid");

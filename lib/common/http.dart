@@ -3,8 +3,11 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 
-import '../constants.dart';
+import 'package:polygonid_flutter_sdk/constants.dart';
+import 'package:polygonid_flutter_sdk/common/utils/http_exceptions_handler_mixin.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 Future<String> extractJSON(http.Response response) async {
   return response.body;
@@ -20,10 +23,9 @@ Future<http.Response> get(String baseAddress, String endpoint,
     } else {
       baseAddress = baseAddress.replaceFirst("https://", "");
       if (queryParameters != null) {
-        uri = Uri.https(
-            baseAddress, endpoint /*'$API_VERSION$endpoint'*/, queryParameters);
+        uri = Uri.https(baseAddress, endpoint, queryParameters);
       } else {
-        uri = Uri.https(baseAddress, endpoint /*'$API_VERSION$endpoint'*/);
+        uri = Uri.https(baseAddress, endpoint);
       }
     }
     response = await http.get(
@@ -35,7 +37,12 @@ Future<http.Response> get(String baseAddress, String endpoint,
 
     return returnResponseOrThrowException(response);
   } on IOException {
-    throw NetworkException("network error");
+    StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+    _stacktraceManager.addError("network error with IO exception");
+    throw NetworkException(
+      errorMessage: "network error",
+      statusCode: 0,
+    );
   } catch (e) {
     return response;
   }
@@ -59,25 +66,35 @@ Future<http.Response> post(String baseAddress, String endpoint,
 
     return returnResponseOrThrowException(response);
   } on IOException {
-    throw NetworkException("network error");
+    StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+    _stacktraceManager.addError("network error with IO exception");
+    throw NetworkException(
+      errorMessage: "network error",
+      statusCode: 0,
+    );
   } catch (e) {
     return response;
   }
 }
 
 http.Response returnResponseOrThrowException(http.Response response) {
-  if (response.statusCode == 404) {
+  int statusCode = response.statusCode;
+  String responseBody = response.body;
+  if (statusCode == 404) {
     // Not found
-    throw ItemNotFoundException(response.body);
-  } else if (response.statusCode == 500) {
-    throw InternalServerErrorException(response.body);
-  } else if (response.statusCode == 400) {
-    String responseBody = response.body;
-    throw BadRequestException(responseBody);
-  } else if (response.statusCode == 409) {
-    throw ConflictErrorException(response.body);
-  } else if (response.statusCode > 400) {
-    throw UnknownApiException(response.statusCode);
+    throw ItemNotFoundException(errorMessage: "statusCode: 404\n$responseBody");
+  } else if (statusCode == 500) {
+    throw InternalServerErrorException(
+        errorMessage: "statusCode: 500\n$responseBody");
+  } else if (statusCode == 400) {
+    throw BadRequestException(errorMessage: "statusCode: 400\n$responseBody");
+  } else if (statusCode == 409) {
+    throw ConflictErrorException(
+        errorMessage: "statusCode: 409\n$responseBody");
+  } else if (statusCode > 400) {
+    throw UnknownApiException(
+        httpCode: statusCode,
+        errorMessage: "statusCode: $statusCode\n$responseBody");
   } else {
     return response;
   }

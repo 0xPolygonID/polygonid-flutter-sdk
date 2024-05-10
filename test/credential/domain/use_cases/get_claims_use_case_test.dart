@@ -4,6 +4,7 @@ import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
@@ -104,6 +105,7 @@ final profilesClaimEntities = [
   )
 ];
 var exception = Exception();
+var getClaimsException = GetClaimsException(errorMessage: "error");
 
 // Dependencies
 MockCredentialRepository credentialRepository = MockCredentialRepository();
@@ -240,11 +242,11 @@ void main() {
               genesisDid: captureAnyNamed('genesisDid'),
               privateKey: captureAnyNamed('privateKey'),
               filters: anyNamed("filters")))
-          .thenAnswer((realInvocation) => Future.error(exception));
+          .thenAnswer((realInvocation) => Future.error(getClaimsException));
 
       // When
       await expectLater(
-          useCase.execute(param: paramFilters), throwsA(exception));
+          useCase.execute(param: paramFilters), throwsA(getClaimsException));
 
       // Then
       /*var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(
@@ -270,11 +272,11 @@ void main() {
       when(credentialRepository.getClaims(
               genesisDid: captureAnyNamed('genesisDid'),
               privateKey: captureAnyNamed('privateKey')))
-          .thenAnswer((realInvocation) => Future.error(exception));
+          .thenAnswer((realInvocation) => Future.error(getClaimsException));
 
       // When
       await expectLater(
-          useCase.execute(param: profileParam), throwsA(exception));
+          useCase.execute(param: profileParam), throwsA(getClaimsException));
 
       // Then
       /*var capturedDid = verify(getCurrentEnvDidIdentifierUseCase.execute(

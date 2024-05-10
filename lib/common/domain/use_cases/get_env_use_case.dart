@@ -22,6 +22,7 @@ class GetEnvUseCase extends FutureUseCase<void, EnvEntity> {
     }).catchError((error) {
       logger().e("[GetEnvUseCase] Error: $error");
       _stacktraceManager.addTrace("[GetEnvUseCase] Error: $error");
+      _stacktraceManager.addError(error.toString());
       throw error;
     });
   }

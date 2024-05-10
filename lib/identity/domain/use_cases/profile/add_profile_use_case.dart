@@ -67,7 +67,10 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
           .addTrace('InvalidPrivateKeyException: ${param.privateKey}');
       _stacktraceManager
           .addError('InvalidPrivateKeyException: ${param.privateKey}');
-      throw InvalidPrivateKeyException(param.privateKey);
+      throw InvalidPrivateKeyException(
+        privateKey: param.privateKey,
+        errorMessage: 'The provided private key is not valid',
+      );
     }
 
     Map<BigInt, String> profiles = identityEntity.profiles;
@@ -77,7 +80,12 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
           .addTrace('ProfileAlreadyExistsException: ${param.profileNonce}');
       _stacktraceManager
           .addError('ProfileAlreadyExistsException: ${param.profileNonce}');
-      throw ProfileAlreadyExistsException(param.genesisDid, param.profileNonce);
+      throw ProfileAlreadyExistsException(
+        genesisDid: param.genesisDid,
+        profileNonce: param.profileNonce,
+        errorMessage:
+            'Profile nonce ${param.profileNonce} already exists for genesisDid: ${param.genesisDid}',
+      );
     }
 
     String profileDid;
@@ -96,7 +104,11 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
             .addTrace('UnknownProfileException: ${param.profileNonce}');
         _stacktraceManager
             .addError('UnknownProfileException: ${param.profileNonce}');
-        throw UnknownProfileException(param.profileNonce);
+        throw UnknownProfileException(
+          profileNonce: param.profileNonce,
+          errorMessage:
+              'Profile nonce ${param.profileNonce} not found after profile creation',
+        );
       }
 
       profileDid = newProfileDid;
@@ -112,7 +124,11 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
             'InvalidProfileException: $existingProfileDid != $calculatedDid');
         _stacktraceManager.addError(
             'InvalidProfileException: $existingProfileDid != $calculatedDid');
-        throw InvalidProfileException(profileNonce);
+        throw InvalidProfileException(
+          profileNonce: profileNonce,
+          errorMessage:
+              'Profile nonce $profileNonce does not match existing profile did',
+        );
       }
 
       profileDid = existingProfileDid;

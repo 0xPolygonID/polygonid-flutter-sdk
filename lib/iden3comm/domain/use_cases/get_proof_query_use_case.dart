@@ -53,8 +53,12 @@ class GetProofQueryUseCase
                   "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
               _stacktraceManager.addError(
                   "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
-              return Future.error(InvalidProofReqException(
-                  "InvalidProofReqException param: $param\nentry: $entry"));
+              return Future.error(
+                InvalidProofReqException(
+                  errorMessage:
+                      "InvalidProofReqException param: $param\nentry: $entry",
+                ),
+              );
             }
             try {
               values = entry.value.cast<int>();
@@ -67,14 +71,16 @@ class GetProofQueryUseCase
                 _stacktraceManager.addError(
                     "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
                 return Future.error(InvalidProofReqException(
-                    "InvalidProofReqException param: $param\nentry: $entry"));
+                    errorMessage:
+                        "InvalidProofReqException param: $param\nentry: $entry"));
               }
               _stacktraceManager.addTrace(
                   "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
               _stacktraceManager.addError(
                   "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
               return Future.error(InvalidProofReqException(
-                  "InvalidProofReqException param: $param\nentry: $entry"));
+                  errorMessage:
+                      "InvalidProofReqException param: $param\nentry: $entry"));
             }
           } else if (entry.value is String) {
             if (!_isDateTime(entry.value) && (operator == 2 || operator == 3)) {
@@ -82,7 +88,8 @@ class GetProofQueryUseCase
               _stacktraceManager.addTrace(
                   "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
               return Future.error(InvalidProofReqException(
-                  "InvalidProofReqException param: $param\nentry: $entry"));
+                  errorMessage:
+                      "InvalidProofReqException param: $param\nentry: $entry"));
             }
 
             values = [entry.value];
@@ -98,7 +105,8 @@ class GetProofQueryUseCase
             _stacktraceManager.addError(
                 "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $entry");
             return Future.error(InvalidProofReqException(
-                "InvalidProofReqException param: $param\nentry: $entry"));
+                errorMessage:
+                    "InvalidProofReqException param: $param\nentry: $entry"));
           }
         }
       } else {
@@ -107,7 +115,8 @@ class GetProofQueryUseCase
         _stacktraceManager.addError(
             "[GetProofQueryUseCase] InvalidProofReqException param: $param\nentry: $reqEntry");
         return Future.error(InvalidProofReqException(
-            "InvalidProofReqException param: $param\nentry: $reqEntry"));
+            errorMessage:
+                "InvalidProofReqException param: $param\nentry: $reqEntry"));
       }
     }
 

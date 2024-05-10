@@ -19,7 +19,6 @@ class SetEnvUseCase extends FutureUseCase<EnvEntity, void> {
       }
     }).catchError((error) {
       logger().e("[SetEnvUseCase] Error: $error");
-
       throw error;
     });
   }
