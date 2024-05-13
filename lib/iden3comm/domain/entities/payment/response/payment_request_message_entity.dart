@@ -43,11 +43,8 @@ class PaymentRequestEntity extends Iden3MessageEntity<PaymentRequestBody> {
     required super.thid,
     required super.from,
     required super.to,
-    required PaymentRequestBody body,
-  }) : super(
-          body: body,
-          messageType: Iden3MessageType.paymentRequest,
-        );
+    required super.body,
+  }) : super(messageType: Iden3MessageType.paymentRequest);
 
   factory PaymentRequestEntity.fromJson(Map<String, dynamic> json) {
     return PaymentRequestEntity(
@@ -70,14 +67,17 @@ class PaymentRequestEntity extends Iden3MessageEntity<PaymentRequestBody> {
 }
 
 class PaymentRequestBody {
+  final String agent;
   final List<PaymentRequest> payments;
 
   PaymentRequestBody({
+    required this.agent,
     required this.payments,
   });
 
   factory PaymentRequestBody.fromJson(Map<String, dynamic> json) {
     return PaymentRequestBody(
+      agent: json['agent'],
       payments: List<PaymentRequest>.from(
         json['payments'].map((x) => PaymentRequest.fromJson(x)),
       ),
@@ -86,34 +86,31 @@ class PaymentRequestBody {
 
   Map<String, dynamic> toJson() {
     return {
+      "agent": agent,
       "payments": payments.map((e) => e.toJson()).toList(),
     };
   }
 }
 
 class PaymentRequest {
+  final List credentials;
   final String type;
+  final PaymentRequestData data;
+  final String expiration;
   final String description;
 
-  final String agent;
-  final String expiration;
-  final List credentials;
-  final PaymentRequestData data;
-
   PaymentRequest({
-    required this.type,
-    required this.description,
-    required this.agent,
-    required this.expiration,
     required this.credentials,
+    required this.type,
     required this.data,
+    required this.description,
+    required this.expiration,
   });
 
   factory PaymentRequest.fromJson(Map<String, dynamic> json) {
     return PaymentRequest(
       type: json['type'],
       description: json['description'],
-      agent: json['agent'],
       expiration: json['expiration'],
       credentials: json['credentials'],
       data: PaymentRequestData.fromJson(json['data']),
@@ -124,7 +121,6 @@ class PaymentRequest {
     return {
       "type": type,
       "description": description,
-      "agent": agent,
       "expiration": expiration,
       "credentials": credentials,
       "data": data.toJson(),
@@ -148,13 +144,15 @@ class PaymentRequestData {
   final String type;
   final String amount;
   final String id;
-  final String address;
-  final String signature;
+  final String? chainId;
+  final String? address;
+  final String? signature;
 
   PaymentRequestData({
     required this.type,
     required this.amount,
     required this.id,
+    required this.chainId,
     required this.address,
     required this.signature,
   });
@@ -164,6 +162,7 @@ class PaymentRequestData {
       type: json['type'],
       amount: json['amount'],
       id: json['id'],
+      chainId: json['chainId'],
       address: json['address'],
       signature: json['signature'],
     );
