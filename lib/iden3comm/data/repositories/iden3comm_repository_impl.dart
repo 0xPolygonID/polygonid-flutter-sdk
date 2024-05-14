@@ -10,6 +10,7 @@ import 'package:pointycastle/asymmetric/rsa.dart';
 import 'package:pointycastle/digests/sha512.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/iden3_message_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/lib_pidcore_iden3comm_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
@@ -22,7 +23,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_response_mappe
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/iden3comm_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/jwz_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_body_did_doc_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/response/jwz.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
@@ -52,6 +52,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   final JWZMapper _jwzMapper;
   final Iden3commProofMapper _iden3commProofMapper;
   final GetIden3MessageUseCase _getIden3MessageUseCase;
+  final StacktraceManager _stacktraceManager;
 
   Iden3commRepositoryImpl(
     this._iden3messageDataSource,
@@ -66,6 +67,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     this._jwzMapper,
     this._iden3commProofMapper,
     this._getIden3MessageUseCase,
+    this._stacktraceManager,
   );
 
   @override
@@ -76,7 +78,11 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     String? url = request.body.callbackUrl;
 
     if (url == null || url.isEmpty) {
-      throw NullAuthenticateCallbackException(request);
+      _stacktraceManager.addError("Callback url is null or empty");
+      throw NullAuthenticateCallbackException(
+        authRequest: request,
+        errorMessage: "Callback url is null or empty",
+      );
     }
 
     final response = await _remoteIden3commDataSource.authWithToken(

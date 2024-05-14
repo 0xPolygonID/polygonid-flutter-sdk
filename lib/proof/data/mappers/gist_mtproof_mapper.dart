@@ -1,4 +1,3 @@
-import 'package:polygonid_flutter_sdk/common/mappers/mapper.dart';
 import 'package:polygonid_flutter_sdk/common/mappers/to_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hash_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_dto.dart';

@@ -65,6 +65,8 @@ class GenerateNonRevProofUseCase
           _stacktraceManager
               .addTrace("[GenerateNonRevProofUseCase] Error: $error");
           logger().e("[GenerateNonRevProofUseCase] Error: $error");
+          _stacktraceManager
+              .addError("[GenerateNonRevProofUseCase] Error: $error");
           throw error;
         });
       }

@@ -1,10 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/jwz_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/response/jwz.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/jwz_exceptions.dart';
 
 import '../../../common/common_mocks.dart';
 import '../../../common/iden3comm_mocks.dart';
+import 'jwz_mapper_test.mocks.dart';
 
 // Data
 JWZEntity jwzNoHeader =
@@ -12,9 +15,11 @@ JWZEntity jwzNoHeader =
 JWZEntity jwzNoPayload =
     JWZEntity(header: Iden3commMocks.jwzHeader, payload: null);
 
+MockStacktraceManager stacktraceManager = MockStacktraceManager();
 // Tested instance
-JWZMapper mapper = JWZMapper();
+JWZMapper mapper = JWZMapper(stacktraceManager);
 
+@GenerateMocks([StacktraceManager])
 void main() {
   test(
       "Given a JWZEntity, when I call mapFrom, then I expect a String to be returned",

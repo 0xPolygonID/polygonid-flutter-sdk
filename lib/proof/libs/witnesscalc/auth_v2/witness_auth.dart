@@ -1,11 +1,13 @@
 import 'dart:ffi' as ffi;
 import 'dart:ffi';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 import 'native_witness_auth_v2.dart';
 
@@ -52,14 +54,15 @@ class WitnessAuthV2Lib {
     }
 
     int result = _nativeWitnessAuthV2Lib.witnesscalc_authV2(
-        circuitBuffer,
-        circuitSize,
-        jsonBuffer,
-        jsonSize,
-        wtnsBuffer,
-        wtnsSize,
-        errorMsg,
-        errorMaxSize);
+      circuitBuffer,
+      circuitSize,
+      jsonBuffer,
+      jsonSize,
+      wtnsBuffer,
+      wtnsSize,
+      errorMsg,
+      errorMaxSize,
+    );
 
     if (result == WITNESSCALC_OK) {
       Uint8List wtnsBytes = Uint8List(wtnsSize.value);
@@ -74,11 +77,29 @@ class WitnessAuthV2Lib {
       if (kDebugMode) {
         print("$result: ${result.toString()}. Error: $errormsg");
       }
+      freeAllocatedMemory();
+      StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+      _stacktraceManager
+          .addError("libwitnesscalc_authV2: witnesscalc_authV2: $errormsg");
+      throw CoreLibraryException(
+        coreLibraryName: "libwitnesscalc_authV2",
+        methodName: "witnesscalc_authV2",
+        errorMessage: errormsg,
+      );
     } else if (result == WITNESSCALC_ERROR_SHORT_BUFFER) {
       if (kDebugMode) {
         print(
             "$result: ${result.toString()}. Error: Short buffer for proof or public");
       }
+      freeAllocatedMemory();
+      StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+      _stacktraceManager.addError(
+          "libwitnesscalc_authV2: witnesscalc_authV2: Short buffer for proof or public");
+      throw CoreLibraryException(
+        coreLibraryName: "libwitnesscalc_authV2",
+        methodName: "witnesscalc_authV2",
+        errorMessage: "Short buffer for proof or public",
+      );
     }
     freeAllocatedMemory();
     return null;

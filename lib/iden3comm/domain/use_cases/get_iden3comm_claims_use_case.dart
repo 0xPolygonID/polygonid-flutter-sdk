@@ -4,7 +4,6 @@ import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_nonce_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
@@ -17,8 +16,8 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_cr
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/circuit_type_mapper.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
-import 'package:sembast/sembast.dart';
 
 class GetIden3commClaimsParam {
   final Iden3MessageEntity message;
@@ -172,8 +171,10 @@ class GetIden3commClaimsUseCase
             !circuitId.endsWith(CircuitType.currentCircuitBetaPostfix)) {
           _stacktraceManager.addTrace(
               "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
-          throw Exception(
-              "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
+          throw CircuitNotDownloadedException(
+              circuit: circuitId,
+              errorMessage:
+                  "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
         }
 
         CircuitType circuitType = _circuitTypeMapper.mapTo(circuitId);
@@ -223,7 +224,10 @@ class GetIden3commClaimsUseCase
           "[GetIden3commClaimsUseCase] error getting claims for requests: $requests");
       _stacktraceManager.addError(
           "[GetIden3commClaimsUseCase] error getting claims for requests: $requests");
-      throw CredentialsNotFoundException(requests);
+      throw CredentialsNotFoundException(
+        proofRequests: requests,
+        errorMessage: "Error getting claims for requests",
+      );
     }
 
     return claims;

@@ -60,7 +60,10 @@ class GetIden3MessageUseCase extends FutureUseCase<String, Iden3MessageEntity> {
         case Iden3MessageType.payment:
           return PaymentMessageEntity.fromJson(json);
         case Iden3MessageType.unknown:
-          throw UnsupportedIden3MsgTypeException(type);
+          throw UnsupportedIden3MsgTypeException(
+            type: Iden3MessageType.unknown,
+            errorMessage: "Unsupported message type: $type",
+          );
       }
     } catch (error) {
       _stacktraceManager.addTrace("[GetIden3MessageUseCase] error: $error");

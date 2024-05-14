@@ -42,7 +42,8 @@ class WalletLibWrapper {
       final signature = bjjKey.sign(messHash);
       return Future.value(signature);
     } else {
-      throw const FormatException("message string couldnt be parsed as BigInt");
+      throw const FormatException(
+          "message string couldn't be parsed as BigInt");
     }
   }
 }

@@ -1,11 +1,13 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/interaction_exception.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/check_profile_validity_use_case.dart';
 
@@ -32,35 +34,26 @@ class GetInteractionsUseCase
   final InteractionRepository _interactionRepository;
   final CheckProfileValidityUseCase _checkProfileValidityUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
+  final StacktraceManager _stacktraceManager;
 
   GetInteractionsUseCase(
     this._interactionRepository,
     this._checkProfileValidityUseCase,
     this._getIdentityUseCase,
+    this._stacktraceManager,
   );
 
   @override
   Future<List<InteractionBaseEntity>> execute(
       {required GetInteractionsParam param}) async {
-    // we check if profile is valid and identity is existing
-    if (param.genesisDid != null &&
-        param.profileNonce != null &&
-        param.privateKey != null) {
-      await _checkProfileValidityUseCase
-          .execute(
-              param:
-                  CheckProfileValidityParam(profileNonce: param.profileNonce!))
-          .then((_) => _getIdentityUseCase.execute(
-              param: GetIdentityParam(
-                  genesisDid: param.genesisDid!,
-                  privateKey: param.privateKey)));
-    }
-    return _interactionRepository
-        .getInteractions(
-            filters: param.filters,
-            genesisDid: param.genesisDid,
-            privateKey: param.privateKey)
-        .then((interactions) {
+    try {
+      List<InteractionBaseEntity> interactions =
+          await _interactionRepository.getInteractions(
+        filters: param.filters,
+        genesisDid: param.genesisDid,
+        privateKey: param.privateKey,
+      );
+
       /// Shortcut to filter by type
       if (param.types != null) {
         interactions = interactions
@@ -88,9 +81,14 @@ class GetInteractionsUseCase
       logger().i("[GetInteractionsUseCase] Interactions: $interactions");
 
       return interactions;
-    }).catchError((error) {
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
+    } catch (error) {
       logger().e("[GetInteractionsUseCase] Error: $error");
-      throw error;
-    });
+      _stacktraceManager.addTrace("[GetInteractionsUseCase] Error: $error");
+      throw InteractionsNotFoundException(
+        errorMessage: "Error getting interactions $error",
+      );
+    }
   }
 }

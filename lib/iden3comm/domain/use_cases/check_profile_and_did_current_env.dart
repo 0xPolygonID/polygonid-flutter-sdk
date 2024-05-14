@@ -1,9 +1,11 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
-import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/check_profile_validity_use_case.dart';
@@ -37,15 +39,16 @@ class CheckProfileAndDidCurrentEnvUseCase
   );
 
   @override
-  Future<void> execute({required CheckProfileAndDidCurrentEnvParam param}) {
-    return _checkProfileValidityUseCase
-        .execute(
-      param: CheckProfileValidityParam(profileNonce: param.profileNonce),
-    )
-        .then((_) async {
-      final chain = await _getSelectedChainUseCase.execute();
-
-      final did = await _getDidIdentifierUseCase.execute(
+  Future<void> execute(
+      {required CheckProfileAndDidCurrentEnvParam param}) async {
+    try {
+      // check if profile is valid, it will throw an exception if not
+      await _checkProfileValidityUseCase.execute(
+          param: CheckProfileValidityParam(profileNonce: param.profileNonce));
+      // we get the current chain to check if the did is valid for the current environment
+      final ChainConfigEntity chain = await _getSelectedChainUseCase.execute();
+      // we get the did for the current environment
+      final String did = await _getDidIdentifierUseCase.execute(
         param: GetDidIdentifierParam(
           privateKey: param.privateKey,
           blockchain: chain.blockchain,
@@ -54,24 +57,33 @@ class CheckProfileAndDidCurrentEnvUseCase
         ),
       );
 
+      // we check if the did is the same as the one we got from param
       if (did != param.did) {
-        throw DidNotMatchCurrentEnvException(param.did, did);
+        _stacktraceManager.addError(
+            "[CheckProfileAndDidCurrentEnvUseCase] DID does not match current environment DID");
+        throw DidNotMatchCurrentEnvException(
+          did: param.did,
+          rightDid: did,
+          errorMessage: "DID does not match current environment DID",
+        );
       }
 
-      return did;
-    }).then((identity) {
       logger().i(
           "[CheckProfileAndDidCurrentEnvUseCase] Profile ${param.profileNonce} and private key are valid for current env");
       _stacktraceManager.addTrace(
           "[CheckProfileAndDidCurrentEnvUseCase] Profile ${param.profileNonce} and private key are valid for current env");
-      return identity;
-    }).catchError((error) {
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
+    } catch (error) {
       logger().e("[CheckProfileAndDidCurrentEnvUseCase] Error: $error");
       _stacktraceManager
           .addTrace("[CheckProfileAndDidCurrentEnvUseCase] Error: $error");
       _stacktraceManager
           .addError("[CheckProfileAndDidCurrentEnvUseCase] Error: $error");
-      throw error;
-    });
+      throw CheckProfileValidityException(
+        errorMessage: "Error checking profile for current env",
+        error: error,
+      );
+    }
   }
 }

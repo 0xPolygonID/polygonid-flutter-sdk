@@ -116,7 +116,10 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
         .get(transaction, storeName, "root")
         .then((storedValue) {
       if (storedValue == null) {
-        throw SMTNotFoundException(storeName);
+        throw SMTNotFoundException(
+          storeName: storeName,
+          errorMessage: "SMT not found",
+        );
       }
       return HashDTO.fromJson(storedValue);
     });

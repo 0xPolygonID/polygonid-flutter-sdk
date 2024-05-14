@@ -1,14 +1,15 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 
 class GetClaimsParam {
   final List<FilterEntity>? filters;
@@ -41,32 +42,38 @@ class GetClaimsUseCase
 
   @override
   Future<List<ClaimEntity>> execute({required GetClaimsParam param}) async {
-    // if profileNonce is zero, return all profiles credentials,
-    // if profileNonce > 0 then return only credentials from that profile
-    if (param.profileNonce >= GENESIS_PROFILE_NONCE) {
-      return _credentialRepository
-          .getClaims(
+    // if profileNonce is less than GENESIS_PROFILE_NONCE is invalid
+    // because the profileNonce should be greater than or equal to GENESIS_PROFILE_NONCE
+    if (param.profileNonce < GENESIS_PROFILE_NONCE) {
+      _stacktraceManager.addTrace("[GetClaimsUseCase] Invalid profile nonce");
+      _stacktraceManager.addError(
+          "[GetClaimsUseCase] Invalid profile nonce: ${param.profileNonce}");
+      throw InvalidProfileException(
+        profileNonce: param.profileNonce,
+        errorMessage: "Invalid profile nonce when getting claims",
+      );
+    }
+
+    try {
+      List<ClaimEntity> claims = await _credentialRepository.getClaims(
         filters: param.filters,
         genesisDid: param.genesisDid,
         privateKey: param.privateKey,
         credentialSortOrderList: param.credentialSortOrderList,
-      )
-          .then((claims) {
-        logger().i("[GetClaimsUseCase] Claims: $claims");
-        _stacktraceManager
-            .addTrace("[GetClaimsUseCase] Claims length: ${claims.length}");
-        return claims;
-      }).catchError((error) {
-        _stacktraceManager.addTrace("[GetClaimsUseCase] Error: $error");
-        _stacktraceManager.addError("[GetClaimsUseCase] Error: $error");
-        logger().e("[GetClaimsUseCase] Error: $error");
-        throw error;
-      });
-    } else {
-      _stacktraceManager.addTrace("[GetClaimsUseCase] Invalid profile nonce");
+      );
+      return claims;
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
+    } catch (error) {
+      _stacktraceManager.addTrace("[GetClaimsUseCase] Error: $error");
       _stacktraceManager.addError(
-          "[GetClaimsUseCase] Invalid profile nonce: ${param.profileNonce}");
-      throw InvalidProfileException(param.profileNonce);
+          "[GetClaimsUseCase] Error while getting claims from the DB\n${error.toString()}");
+      logger().e("[GetClaimsUseCase] Error: $error");
+      throw GetClaimsException(
+        errorMessage:
+            'Error while getting claims from the DB\n${error.toString()}',
+        error: error,
+      );
     }
   }
 }

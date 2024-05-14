@@ -12,7 +12,6 @@ import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_credential
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/update_claim_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 
 import '../credential/domain/use_cases/save_claims_use_case.dart';
 
@@ -266,7 +265,11 @@ class Credential implements PolygonIdSdkCredential {
     } else {
       _stacktraceManager.addTrace(
           "PolygonIdSdk.Credential.getClaimRevocationStatus claim not found");
-      throw ClaimNotFoundException(claimId);
+      _stacktraceManager.addError("Claim not found");
+      throw ClaimNotFoundException(
+        id: claimId,
+        errorMessage: "Claim not found",
+      );
     }
   }
 

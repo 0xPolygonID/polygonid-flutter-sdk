@@ -3,26 +3,28 @@ import 'dart:typed_data';
 
 import 'package:http/http.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/pinata_gateway_utils.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/rhs_node_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
-import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
-import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
-import 'package:web3dart/crypto.dart';
 
-import '../../../common/data/exceptions/network_exceptions.dart';
-import '../../../common/domain/domain_logger.dart';
-import '../../../common/utils/uint8_list_utils.dart';
-import '../../domain/entities/rhs_node_entity.dart';
-import '../../domain/exceptions/identity_exceptions.dart';
-import '../dtos/hash_dto.dart';
-import '../dtos/node_dto.dart';
-import '../mappers/node_type_dto_mapper.dart';
-import '../mappers/rhs_node_type_mapper.dart';
+import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/node_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/node_type_dto_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/rhs_node_type_mapper.dart';
 
-/// FIXME: inject http client (for source and UT mocking)
 class RemoteIdentityDataSource {
+  final StacktraceManager _stacktraceManager;
+
+  RemoteIdentityDataSource(this._stacktraceManager);
+
   Future<RhsNodeDTO> fetchStateRoots({required String url}) async {
     try {
       //fetch rhs state and save it
@@ -60,11 +62,21 @@ class RemoteIdentityDataSource {
         logger().d('rhs node: ${rhsNodeResponse.toString()}');
         return rhsNodeResponse;
       } else {
-        throw NetworkException(rhsResponse);
+        _stacktraceManager.addError(
+            "Error fetching state roots with error: ${rhsResponse.statusCode} ${rhsResponse.body}");
+        throw NetworkException(
+          statusCode: rhsResponse.statusCode,
+          errorMessage: rhsResponse.body,
+        );
       }
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
     } catch (error) {
       logger().e('state roots error: $error');
-      throw FetchStateRootsException(error);
+      throw FetchStateRootsException(
+        errorMessage: "Error fetching state roots with error: $error",
+        error: error,
+      );
     }
   }
 

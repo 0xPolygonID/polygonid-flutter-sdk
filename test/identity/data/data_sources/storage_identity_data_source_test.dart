@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/common/data/data_sources/storage_key_value_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
@@ -29,17 +30,22 @@ MockDatabase database = MockDatabase();
 MockIdentityStoreRefWrapper storeRefWrapper = MockIdentityStoreRefWrapper();
 MockWalletDataSource walletDataSource = MockWalletDataSource();
 MockHexMapper hexMapper = MockHexMapper();
+MockStacktraceManager stacktraceManager = MockStacktraceManager();
 
 // Tested instance
-StorageIdentityDataSource dataSource =
-    StorageIdentityDataSource(database, storeRefWrapper);
+StorageIdentityDataSource dataSource = StorageIdentityDataSource(
+  database,
+  storeRefWrapper,
+  stacktraceManager,
+);
 
 @GenerateMocks([
   Database,
   IdentityStoreRefWrapper,
   StorageKeyValueDataSource,
   WalletDataSource,
-  HexMapper
+  HexMapper,
+  StacktraceManager,
 ])
 void main() {
   group("Get identity", () {

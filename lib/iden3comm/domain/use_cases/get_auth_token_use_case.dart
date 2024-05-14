@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_challenge_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_jwz_use_case.dart';
@@ -79,37 +81,16 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
       );
 
       return authToken;
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
     } catch (error) {
       logger().e("[GetAuthTokenUseCase] Error: $error");
       _stacktraceManager.addTrace("[GetAuthTokenUseCase] Error: $error");
       _stacktraceManager.addError("[GetAuthTokenUseCase] Error: $error");
-      rethrow;
+      throw GetAuthTokenException(
+        errorMessage: "Error while getting auth token",
+        error: error,
+      );
     }
-
-    /*return _getJWZUseCase
-        .execute(param: GetJWZParam(message: param.message))
-        .then((encoded) => _getAuthChallengeUseCase.execute(param: encoded))
-        .then((challenge) => Future.wait([
-              _getAuthInputsUseCase.execute(
-                  param: GetAuthInputsParam(challenge, param.genesisDid,
-                      param.profileNonce, param.privateKey)),
-              _loadCircuitUseCase.execute(param: "authV2")
-            ]))
-        .then((values) => _proveUseCase.execute(
-            param: ProveParam(
-                values[0] as Uint8List, values[1] as CircuitDataEntity)))
-        .then((proof) => _getJWZUseCase.execute(
-            param: GetJWZParam(message: param.message, proof: proof)))
-        .then((token) {
-      logger().i("[GetAuthTokenUseCase] Message $param Auth token: $token");
-      _stacktraceManager
-          .addTrace("[GetAuthTokenUseCase] Message $param Auth token: $token");
-      return token;
-    }).catchError((error) {
-      logger().e("[GetAuthTokenUseCase] Error: $error");
-      _stacktraceManager.addTrace("[GetAuthTokenUseCase] Error: $error");
-      _stacktraceManager.addError("[GetAuthTokenUseCase] Error: $error");
-      throw error;
-    });*/
   }
 }

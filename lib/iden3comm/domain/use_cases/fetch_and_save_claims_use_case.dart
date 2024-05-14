@@ -1,28 +1,25 @@
 import 'dart:convert';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:polygonid_flutter_sdk/assets/get_issuer_id_interface.g.dart';
 import 'package:polygonid_flutter_sdk/assets/onchain_non_merkelized_issuer_base.g.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
-import 'package:polygonid_flutter_sdk/credential/data/data_sources/lib_pidcore_credential_data_source.dart';
-import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_state_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/cache_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/onchain_offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_onchain_claim_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 
@@ -30,7 +27,6 @@ import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
@@ -129,6 +125,8 @@ class FetchAndSaveClaimsUseCase
       } else if (message is OnchainOfferIden3MessageEntity) {
         claims = await _fetchOnchainClaims(message, profileDid, param);
       } else {
+        _stacktraceManager.addError(
+            "[FetchAndSaveClaimsUseCase] Unknown message type: ${message.runtimeType}");
         throw Exception("Unknown message type: ${message.runtimeType}");
       }
 
@@ -254,8 +252,11 @@ class FetchAndSaveClaimsUseCase
     if (!supportsInterfaceCheck ||
         !supportsNonMerklizedIssuerInterface ||
         !supportsGetIssuerIdInterface) {
-      throw Exception(
+      _stacktraceManager.addError(
           "Contract at address $address does not support non-merkelized issuer interface");
+      throw FetchClaimException(
+          errorMessage:
+              "Contract at address $address does not support non-merkelized issuer interface");
     }
     final issuerIdInt = await getIssuerId.getId();
     final issuerDid = (await _identityRepository.describeId(
@@ -288,11 +289,19 @@ class FetchAndSaveClaimsUseCase
         );
 
         claims.add(claim);
+      } on PolygonIdSDKException catch (_) {
+        rethrow;
       } catch (e) {
         logger().e(
             "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e");
         _stacktraceManager.addTrace(
             "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e");
+        _stacktraceManager.addError(
+            "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e");
+        throw FetchClaimException(
+          errorMessage: "Error while fetching onchain claim",
+          error: e,
+        );
       }
     }
 

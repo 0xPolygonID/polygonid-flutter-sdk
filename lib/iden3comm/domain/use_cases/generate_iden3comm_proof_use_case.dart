@@ -1,11 +1,9 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
-import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
-import 'package:polygonid_flutter_sdk/common/domain/entities/did_method_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
@@ -30,6 +28,8 @@ import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/get_gist_mtproof_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/prove_use_case.dart';
@@ -121,8 +121,12 @@ class GenerateIden3commProofUseCase
         !circuitId.endsWith(CircuitType.currentCircuitBetaPostfix)) {
       _stacktraceManager.addTrace(
           "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
-      throw Exception(
+      _stacktraceManager.addError(
           "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
+      throw CircuitNotDownloadedException(
+          circuit: circuitId,
+          errorMessage:
+              "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
     }
 
     if (circuitId == CircuitType.mtponchain.name ||
@@ -265,15 +269,10 @@ class GenerateIden3commProofUseCase
     logger().i(
         "GENERATION PROOF atomicQueryInputs executed in ${stopwatch.elapsed}");
 
-    // Prove
-    return _proveUseCase
-        .execute(param: ProveParam(atomicQueryInputs, param.circuitData))
-        .then((proof) {
-      _stacktraceManager.addTrace(
-        "[GenerateIden3commProofUseCase][MainFlow] proof: ${jsonEncode(proof.toJson())}",
-        log: true,
+    try {
+      ZKProofEntity proof = await _proveUseCase.execute(
+        param: ProveParam(atomicQueryInputs, param.circuitData),
       );
-
       if (vpProof != null) {
         return Iden3commSDProofEntity(
             id: param.request.id,
@@ -289,12 +288,18 @@ class GenerateIden3commProofUseCase
           pubSignals: proof.pubSignals,
         );
       }
-    }).catchError((error) {
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
+    } catch (error) {
       _stacktraceManager.addTrace(
           "[GenerateIden3commProofUseCase] proveUseCase Error: $error");
       logger().e("[GenerateProofUseCase] Error: $error");
-
-      throw error;
-    });
+      _stacktraceManager.addError(
+          "[GenerateIden3commProofUseCase] proveUseCase Error: $error");
+      throw ProofGenerationException(
+        errorMessage: "Error while generating proof with error: $error",
+        error: error,
+      );
+    }
   }
 }

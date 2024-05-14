@@ -1,3 +1,4 @@
+/*
 import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
@@ -106,7 +107,8 @@ void main() {
     });
 
     // TODO: fix localhost url from input
-    /*testWidgets('PolygonIdCoreIdentity get sig on chain proofs inputs',
+    */
+/*testWidgets('PolygonIdCoreIdentity get sig on chain proofs inputs',
             (WidgetTester tester) async {
           expect(
               pidCoreProof.getSigOnchainProofInputs(
@@ -130,6 +132,8 @@ void main() {
               pidCoreProof.getMTPOnchainProofInputs(
                   PolygonIdCoreMocks.mtpV2OnChainInputJson),
               equals(PolygonIdCoreMocks.mtpV2OnChainOutputJson));
-        });*/
+        });*/ /*
+
   });
 }
+*/

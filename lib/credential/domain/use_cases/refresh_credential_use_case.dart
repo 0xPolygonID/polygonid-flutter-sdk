@@ -47,7 +47,10 @@ class RefreshCredentialUseCase
 
     if (!param.credential.info.containsKey("refreshService") ||
         param.credential.info["refreshService"] == null) {
-      throw RefreshCredentialException("Refresh service not found");
+      _stacktraceManager
+          .addError("[RefreshCredentialUseCase] Refresh service not found");
+      throw RefreshCredentialException(
+          errorMessage: "Refresh service not found");
     }
 
     RefreshServiceDTO refreshService =

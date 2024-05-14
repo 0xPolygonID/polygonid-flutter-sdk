@@ -1,12 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_store.dart';
 import 'package:encrypt/encrypt.dart';
-import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pointycastle/api.dart';
 import 'package:pointycastle/asymmetric/api.dart';
@@ -15,6 +13,7 @@ import 'package:pointycastle/asymmetric/rsa.dart';
 import 'package:pointycastle/digests/sha512.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/http_exceptions_handler_mixin.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_service_metadata_devices_response_dto.dart';
@@ -22,6 +21,9 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_service_response_dto.dart';
 
 class Iden3MessageDataSource {
+  final StacktraceManager _stacktraceManager;
+
+  Iden3MessageDataSource(this._stacktraceManager);
   Future<AuthBodyDidDocResponseDTO> getDidDocResponse(String pushUrl,
       String didIdentifier, String pushToken, String packageName) async {
     return AuthBodyDidDocResponseDTO(
@@ -50,7 +52,7 @@ class Iden3MessageDataSource {
     String packageName,
   ) async {
     var pushInfo = {
-      "app_id": packageName, //"com.polygonid.wallet",
+      "app_id": packageName,
       "pushkey": pushToken,
     };
 
@@ -61,7 +63,7 @@ class Iden3MessageDataSource {
       DioCacheInterceptor(
         options: CacheOptions(
           store: HiveCacheStore(path),
-          policy: CachePolicy.refreshForceCache,
+          policy: CachePolicy.request,
           hitCacheOnErrorExcept: [],
           maxStale: const Duration(days: 7),
           priority: CachePriority.high,
@@ -72,7 +74,8 @@ class Iden3MessageDataSource {
     var publicKeyResponse =
         await dio.get(Uri.parse("$serviceEndpoint/public").toString());
 
-    if (publicKeyResponse.statusCode == 200) {
+    if (publicKeyResponse.statusCode == 200 ||
+        publicKeyResponse.statusCode == 304) {
       String publicKeyPem = publicKeyResponse.data;
       var publicKey = RSAKeyParser().parse(publicKeyPem) as RSAPublicKey;
       final encrypter =
@@ -84,7 +87,12 @@ class Iden3MessageDataSource {
     } else {
       logger().d(
           'getPublicKey Error: code: ${publicKeyResponse.statusCode} msg: ${publicKeyResponse.data}');
-      throw NetworkException(publicKeyResponse);
+      _stacktraceManager.addError(
+          'getPublicKey Error: code: ${publicKeyResponse.statusCode} msg: ${publicKeyResponse.data}');
+      throw NetworkException(
+        errorMessage: publicKeyResponse.data.toString(),
+        statusCode: publicKeyResponse.statusCode ?? 0,
+      );
     }
   }
 }
