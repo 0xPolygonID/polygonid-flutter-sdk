@@ -14,7 +14,7 @@ https://iden3-communication.io/credentials/0.1/payment
        "id":"123",
        "type":"Iden3PaymentCryptoV1",
         "paymentData":{ // base on defined type
-					      "txID": "0xPay2",
+				    "txId": "0xPay2",
 				}
      }
 	  ]
@@ -32,11 +32,8 @@ class PaymentMessageEntity extends Iden3MessageEntity<PaymentBody> {
     required super.thid,
     required super.from,
     required super.to,
-    required PaymentBody body,
-  }) : super(
-          body: body,
-          messageType: Iden3MessageType.payment,
-        );
+    required super.body,
+  }) : super(messageType: Iden3MessageType.payment);
 
   factory PaymentMessageEntity.fromJson(Map<String, dynamic> json) {
     return PaymentMessageEntity(
@@ -101,21 +98,21 @@ class Payment {
 }
 
 class PaymentData {
-  final String txID;
+  final String txId;
 
   PaymentData({
-    required this.txID,
+    required this.txId,
   });
 
   factory PaymentData.fromJson(Map<String, dynamic> json) {
     return PaymentData(
-      txID: json['txID'],
+      txId: json['txId'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      "txID": txID,
+      "txId": txId,
     };
   }
 }
