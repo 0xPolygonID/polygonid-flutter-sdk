@@ -147,6 +147,7 @@ class PaymentRequestData {
   final String? chainId;
   final String? address;
   final String? signature;
+  final String? currency;
 
   PaymentRequestData({
     required this.type,
@@ -155,6 +156,7 @@ class PaymentRequestData {
     required this.chainId,
     required this.address,
     required this.signature,
+    required this.currency,
   });
 
   factory PaymentRequestData.fromJson(Map<String, dynamic> json) {
@@ -165,6 +167,7 @@ class PaymentRequestData {
       chainId: json['chainId'],
       address: json['address'],
       signature: json['signature'],
+      currency: json['currency'],
     );
   }
 
@@ -175,6 +178,7 @@ class PaymentRequestData {
       "id": id,
       "address": address,
       "signature": signature,
+      "currency": currency,
     };
   }
 }
