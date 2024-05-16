@@ -52,7 +52,7 @@ class FetchCredentialsUseCase {
     this._getEnvUseCase,
   );
 
-  Future<List<ClaimEntity>> execute({
+  Future<List<ClaimEntity>> fetchCredentials({
     required CredentialOfferMessageEntity credentialOfferMessage,
     required String privateKey,
     required String genesisDid,

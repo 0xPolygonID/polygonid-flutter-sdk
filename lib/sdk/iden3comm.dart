@@ -278,7 +278,7 @@ abstract class PolygonIdSdkIden3comm {
     required String interactedWithDid,
   });
 
-  Future<List<ClaimEntity>> fetchCredentialsUseCase({
+  Future<List<ClaimEntity>> fetchCredentials({
     required CredentialOfferMessageEntity credentialOfferMessage,
     required String privateKey,
     required String genesisDid,
@@ -670,7 +670,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }
 
   @override
-  Future<List<ClaimEntity>> fetchCredentialsUseCase({
+  Future<List<ClaimEntity>> fetchCredentials({
     required CredentialOfferMessageEntity credentialOfferMessage,
     required String privateKey,
     required String genesisDid,
@@ -678,7 +678,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     String? blockchain,
     String? network,
   }) {
-    return _fetchCredentialsUseCase.call(
+    return _fetchCredentialsUseCase.fetchCredentials(
       credentialOfferMessage: credentialOfferMessage,
       privateKey: privateKey,
       genesisDid: genesisDid,
