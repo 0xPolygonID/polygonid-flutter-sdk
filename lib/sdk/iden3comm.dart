@@ -21,6 +21,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exce
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/clean_schema_cache_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_credentials_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_onchain_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_filters_use_case.dart';
@@ -276,6 +277,15 @@ abstract class PolygonIdSdkIden3comm {
     required String privateKey,
     required String interactedWithDid,
   });
+
+  Future<List<ClaimEntity>> fetchCredentials({
+    required CredentialOfferMessageEntity credentialOfferMessage,
+    required String privateKey,
+    required String genesisDid,
+    required BigInt profileNonce,
+    String? blockchain,
+    String? network,
+  });
 }
 
 @injectable
@@ -300,6 +310,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   final GetDidProfileInfoListUseCase _getDidProfileInfoListUseCase;
   final RemoveDidProfileInfoUseCase _removeDidProfileInfoUseCase;
   final GetAuthTokenUseCase _getAuthTokenUseCase;
+  final FetchCredentialsUseCase _fetchCredentialsUseCase;
 
   Iden3comm(
     this._fetchAndSaveClaimsUseCase,
@@ -322,6 +333,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     this._getDidProfileInfoListUseCase,
     this._removeDidProfileInfoUseCase,
     this._getAuthTokenUseCase,
+    this._fetchCredentialsUseCase,
   );
 
   @override
@@ -654,6 +666,25 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         privateKey: privateKey,
         message: iden3message,
       ),
+    );
+  }
+
+  @override
+  Future<List<ClaimEntity>> fetchCredentials({
+    required CredentialOfferMessageEntity credentialOfferMessage,
+    required String privateKey,
+    required String genesisDid,
+    required BigInt profileNonce,
+    String? blockchain,
+    String? network,
+  }) {
+    return _fetchCredentialsUseCase.fetchCredentials(
+      credentialOfferMessage: credentialOfferMessage,
+      privateKey: privateKey,
+      genesisDid: genesisDid,
+      profileNonce: profileNonce,
+      blockchain: blockchain,
+      network: network,
     );
   }
 }

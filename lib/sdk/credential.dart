@@ -5,6 +5,8 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/cache_credential_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/cache_credentials_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_credential_by_id_use_case.dart';
@@ -12,6 +14,7 @@ import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_credential
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/update_claim_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 
 import '../credential/domain/use_cases/save_claims_use_case.dart';
 
@@ -132,6 +135,16 @@ abstract class PolygonIdSdkCredential {
     required String privateKey,
     required ClaimEntity credential,
   });
+
+  Future<void> cacheCredential({
+    required ClaimEntity credential,
+    ConfigParam? configParam,
+  });
+
+  Future<void> cacheCredentials({
+    required List<ClaimEntity> credentials,
+    ConfigParam? configParam,
+  });
 }
 
 @injectable
@@ -144,8 +157,9 @@ class Credential implements PolygonIdSdkCredential {
   final StacktraceManager _stacktraceManager;
   final RefreshCredentialUseCase _refreshCredentialUseCase;
   final GetCredentialByIdUseCase _getCredentialByIdUseCase;
-
   final GetCredentialByPartialIdUseCase _getCredentialByPartialIdUseCase;
+  final CacheCredentialsUseCase _cacheCredentialsUseCase;
+  final CacheCredentialUseCase _cacheCredentialUseCase;
 
   Credential(
     this._saveClaimsUseCase,
@@ -157,6 +171,8 @@ class Credential implements PolygonIdSdkCredential {
     this._refreshCredentialUseCase,
     this._getCredentialByIdUseCase,
     this._getCredentialByPartialIdUseCase,
+    this._cacheCredentialsUseCase,
+    this._cacheCredentialUseCase,
   );
 
   @override
@@ -340,5 +356,28 @@ class Credential implements PolygonIdSdkCredential {
       genesisDid: genesisDid,
       privateKey: privateKey,
     ));
+  }
+
+  @override
+  Future<void> cacheCredential({
+    required ClaimEntity credential,
+    ConfigParam? configParam,
+  }) {
+    return _cacheCredentialUseCase.execute(
+        param: CacheCredentialParam(
+      credential: credential,
+      config: configParam,
+    ));
+  }
+
+  @override
+  Future<void> cacheCredentials({
+    required List<ClaimEntity> credentials,
+    ConfigParam? configParam,
+  }) {
+    return _cacheCredentialsUseCase.execute(
+      credentials: credentials,
+      configParam: configParam,
+    );
   }
 }

@@ -19,6 +19,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/i
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/circuits_to_download_param.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
@@ -952,6 +953,33 @@ class PolygonIdFlutterChannel
     required String privateKey,
   }) {
     // TODO: implement getCredentialByPartialId
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> cacheCredential(
+      {required ClaimEntity credential, ConfigParam? configParam}) {
+    // TODO: implement cacheCredential
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> cacheCredentials(
+      {required List<ClaimEntity> credentials, ConfigParam? configParam}) {
+    // TODO: implement cacheCredentials
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<ClaimEntity>> fetchCredentials(
+      {required CredentialOfferMessageEntity<CredentialOfferBody>
+          credentialOfferMessage,
+      required String privateKey,
+      required String genesisDid,
+      required BigInt profileNonce,
+      String? blockchain,
+      String? network}) {
+    // TODO: implement fetchCredentialsUseCase
     throw UnimplementedError();
   }
 }
