@@ -93,7 +93,7 @@ class PaymentRequestBody {
 }
 
 class PaymentRequest {
-  final List credentials;
+  final List<CredentialInfo> credentials;
   final String type;
   final PaymentRequestData data;
   final String expiration;
@@ -112,7 +112,9 @@ class PaymentRequest {
       type: json['type'],
       description: json['description'],
       expiration: json['expiration'],
-      credentials: json['credentials'],
+      credentials: List<CredentialInfo>.from(
+        json['credentials'].map((x) => CredentialInfo.fromJson(x)),
+      ),
       data: PaymentRequestData.fromJson(json['data']),
     );
   }
@@ -122,7 +124,7 @@ class PaymentRequest {
       "type": type,
       "description": description,
       "expiration": expiration,
-      "credentials": credentials,
+      "credentials": credentials.map((e) => e.toJson()).toList(),
       "data": data.toJson(),
     };
   }
@@ -139,6 +141,27 @@ class PaymentRequest {
 			"description": "Synaps credential proposal"
 		}]
 */
+
+class CredentialInfo {
+  final String type;
+  final String context;
+
+  CredentialInfo({required this.type, required this.context,});
+
+  factory CredentialInfo.fromJson(Map<String, dynamic> json) {
+    return CredentialInfo(
+      type: json['type'],
+      context: json['context'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "type": type,
+      "context": context,
+    };
+  }
+}
 
 class PaymentRequestData {
   final String type;
