@@ -552,6 +552,11 @@ class PolygonIdFlutterChannel
   }
 
   @override
+  Future<Map<String, dynamic>> fetchSchema({required String schemaUrl}) {
+    return _polygonIdSdk.iden3comm.fetchSchema(schemaUrl: schemaUrl);
+  }
+
+  @override
   Future<List<InteractionBaseEntity>> getInteractions(
       {String? genesisDid,
       BigInt? profileNonce,
