@@ -15,7 +15,7 @@ class GetSchemasUseCase
       {required Iden3MessageEntity param}) async {
     if (![
       Iden3MessageType.authRequest,
-      Iden3MessageType.proofContractInvokeRequest
+      Iden3MessageType.proofContractInvokeRequest,
     ].contains(param.messageType)) {
       return Future.error(
         UnsupportedIden3MsgTypeException(

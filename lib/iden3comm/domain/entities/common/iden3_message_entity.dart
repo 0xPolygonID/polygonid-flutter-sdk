@@ -1,16 +1,36 @@
 enum Iden3MessageType {
-  unknown,
-  authRequest,
-  authResponse,
-  credentialOffer,
-  onchainCredentialOffer,
-  credentialIssuanceResponse,
-  proofContractInvokeRequest,
-  credentialRefresh,
-  credentialProposalRequest,
-  credentialProposal,
-  credentialStatusUpdate,
-  problemReport;
+  authRequest("https://iden3-communication.io/authorization/1.0/request"),
+  authResponse("https://iden3-communication.io/authorization/1.0/response"),
+  credentialOffer("https://iden3-communication.io/credentials/1.0/offer"),
+  onchainCredentialOffer(
+      "https://iden3-communication.io/credentials/1.0/onchain-offer"),
+  credentialIssuanceResponse(
+      "https://iden3-communication.io/credentials/1.0/issuance-response"),
+  proofContractInvokeRequest(
+      "https://iden3-communication.io/proofs/1.0/contract-invoke-request"),
+  credentialRefresh("https://iden3-communication.io/credentials/1.0/refresh"),
+  credentialProposalRequest(
+      "https://iden3-communication.io/credentials/0.1/proposal-request"),
+  credentialProposal("https://iden3-communication.io/credentials/0.1/proposal"),
+  credentialStatusUpdate(
+      "https://iden3-communication.io/credentials/1.0/status-update"),
+  paymentRequest(
+      "https://iden3-communication.io/credentials/0.1/payment-request"),
+  payment(
+      "https://iden3-communication.io/credentials/0.1/payment"),
+  problemReport("https://didcomm.org/report-problem/2.0/problem-report"),
+  unknown("");
+
+  final String type;
+
+  const Iden3MessageType(this.type);
+
+  factory Iden3MessageType.fromType(String type) {
+    return Iden3MessageType.values.firstWhere(
+      (element) => element.type == type,
+      orElse: () => Iden3MessageType.unknown,
+    );
+  }
 }
 
 /// Represents an iden3 message.

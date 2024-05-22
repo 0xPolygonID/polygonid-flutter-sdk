@@ -75,15 +75,14 @@ class RPCDataSource {
 
       logger().d(transactionParameters);
 
-      List<dynamic> result;
-
-      result = await web3Client.call(
-          contract: gistContract,
-          function: _getGistProof(gistContract),
-          params: transactionParameters);
+      final List<dynamic> result = await web3Client.call(
+        contract: gistContract,
+        function: _getGistProof(gistContract),
+        params: transactionParameters,
+      );
 
       if (result.isNotEmpty && result[0] is List && result[0].length == 8) {
-        var siblings =
+        final siblings =
             (result[0][2] as List).map((bigInt) => bigInt.toString()).toList();
 
         final String resultString = jsonEncode({
