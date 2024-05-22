@@ -154,12 +154,8 @@ class FetchAndSaveClaimsUseCase
         try {
           await _cacheCredentialUseCase.execute(
             param: CacheCredentialParam(
-              credential: jsonEncode(
-                {
-                  "verifiableCredentials": claim.toJson(),
-                },
-              ),
-              config: jsonEncode(config.toJson()),
+              credential: claim,
+              config: config,
             ),
           );
         } catch (e) {
