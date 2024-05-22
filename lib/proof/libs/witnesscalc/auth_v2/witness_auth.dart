@@ -80,6 +80,8 @@ class WitnessAuthV2Lib {
       freeAllocatedMemory();
       StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
       _stacktraceManager
+          .addTrace("libwitnesscalc_authV2: witnesscalc_authV2: $errormsg");
+      _stacktraceManager
           .addError("libwitnesscalc_authV2: witnesscalc_authV2: $errormsg");
       throw CoreLibraryException(
         coreLibraryName: "libwitnesscalc_authV2",
@@ -93,6 +95,8 @@ class WitnessAuthV2Lib {
       }
       freeAllocatedMemory();
       StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+      _stacktraceManager.addTrace(
+          "libwitnesscalc_authV2: witnesscalc_authV2: Short buffer for proof or public");
       _stacktraceManager.addError(
           "libwitnesscalc_authV2: witnesscalc_authV2: Short buffer for proof or public");
       throw CoreLibraryException(

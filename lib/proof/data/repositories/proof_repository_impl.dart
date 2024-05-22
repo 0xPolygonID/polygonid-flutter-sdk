@@ -160,10 +160,16 @@ class ProofRepositoryImpl extends ProofRepository {
         scopeParams: scopeParams,
         transactionData: transactionData,
       );
-    } catch (e) {
+    } on PolygonIdSDKException catch (error) {
       _stacktraceManager.addTrace(
-          "[calculateAtomicQueryInputs/libPolygonIdCoreProof] exception $e");
+          "[calculateAtomicQueryInputs/libPolygonIdCoreProof] exception ${error.errorMessage}");
       rethrow;
+    } catch (e) {
+      throw NullAtomicQueryInputsException(
+        id: id,
+        errorMessage: "Error in getProofInputs: $e",
+        error: e,
+      );
     }
 
     if (res.isNotEmpty) {
