@@ -146,7 +146,10 @@ class CredentialInfo {
   final String type;
   final String context;
 
-  CredentialInfo({required this.type, required this.context,});
+  CredentialInfo({
+    required this.type,
+    required this.context,
+  });
 
   factory CredentialInfo.fromJson(Map<String, dynamic> json) {
     return CredentialInfo(
@@ -167,10 +170,10 @@ class PaymentRequestData {
   final String type;
   final String amount;
   final String id;
-  final String? chainId;
-  final String? address;
+  final String chainId;
+  final String address;
+  final String currency;
   final String? signature;
-  final String? currency;
 
   PaymentRequestData({
     required this.type,

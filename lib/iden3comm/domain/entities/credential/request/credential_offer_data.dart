@@ -48,7 +48,8 @@ class CredentialOfferData {
 
   bool get isPending => status == CredentialOfferStatus.pending;
 
-  bool get isCompleted => status == CredentialOfferStatus.completed;
+  bool get isCompleted =>
+      status == null || status == CredentialOfferStatus.completed;
 
   bool get isRejected => status == CredentialOfferStatus.rejected;
 }
