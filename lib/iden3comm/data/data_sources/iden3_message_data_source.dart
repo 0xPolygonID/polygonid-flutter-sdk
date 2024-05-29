@@ -36,8 +36,9 @@ class Iden3MessageDataSource {
       id: didIdentifier,
       service: [
         AuthBodyDidDocServiceResponseDTO(
-          id: '$didIdentifier/mobile',
-          type: 'Iden3Mobile',
+          id: '$didIdentifier#mobile',
+          type: 'Iden3MobileServiceV1',
+          serviceEndpoint: 'iden3comm:v0.1:callbackHandler',
         ),
         AuthBodyDidDocServiceResponseDTO(
           id: "$didIdentifier#push",
