@@ -4,7 +4,7 @@
 #include <jni.h>
 #include <sys/mman.h>
 #include <android/log.h>
-//#include "libpolygonid.h"
+#include "libpolygonid.h"
 #include "prover.h"
 #include "verifier.h"
 

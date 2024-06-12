@@ -210,18 +210,18 @@ JNIEXPORT jstring JNICALL Java_io_iden3_polygonid_1flutter_1sdk_RapidsnarkJniBri
 ) {
     LOGI("PLGNAuthV2InputsMarshal native called");
 
-//    const char *constNativeInput = env->GetStringUTFChars(input, nullptr);
-//    char *nativeInput = strcpy(new char[strlen(constNativeInput) + 1], constNativeInput);
+    const char *constNativeInput = env->GetStringUTFChars(input, nullptr);
+    char *nativeInput = strcpy(new char[strlen(constNativeInput) + 1], constNativeInput);
 
-//    char** responseBuffer = new char*[1];
+    char** responseBuffer = new char*[1];
 
-//    PLGNStatus** status = NULL;
+    PLGNStatus** status = NULL;
 
     // Call the PLGNAuthV2InputsMarshal function
-//    PLGNAuthV2InputsMarshal(responseBuffer, nativeInput, status);
+    PLGNAuthV2InputsMarshal(responseBuffer, nativeInput, status);
 
     // Release the native buffers
-//    env->ReleaseStringUTFChars(input, constNativeInput);
+    env->ReleaseStringUTFChars(input, constNativeInput);
 
     return NULL;
 }
