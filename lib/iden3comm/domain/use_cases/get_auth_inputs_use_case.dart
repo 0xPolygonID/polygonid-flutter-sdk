@@ -58,6 +58,7 @@ class GetAuthInputsUseCase
 
   @override
   Future<Uint8List> execute({required GetAuthInputsParam param}) async {
+    final stopwatch = Stopwatch()..start();
     try {
       IdentityEntity identity = await _getIdentityUseCase.execute(
           param: GetIdentityParam(
@@ -103,6 +104,8 @@ class GetAuthInputsUseCase
           param.challenge,
         ),
       );
+      print('GetAuthInputsUseCase: got all for inputs in: ${stopwatch.elapsedMilliseconds} ms');
+
       Uint8List authInputs = await _iden3commRepository.getAuthInputs(
         genesisDid: param.genesisDid,
         profileNonce: param.profileNonce,

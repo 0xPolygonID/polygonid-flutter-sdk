@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
@@ -102,6 +103,14 @@ class PolygonIdSdk {
     return getItSdk
         .getAsync<GetEnvUseCase>()
         .then((instance) => instance.execute());
+  }
+
+  static const _methodChannel = MethodChannel('polygonid_flutter_sdk');
+
+  Future<dynamic> test() async {
+    return _methodChannel.invokeMethod('PLGNAuthV2InputsMarshal', {
+      "input": "",
+    });
   }
 
   Future<ChainConfigEntity> getSelectedChain() {

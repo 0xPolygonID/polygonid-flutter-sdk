@@ -93,10 +93,11 @@ class Iden3commVPProofDTO {
   final String type;
   final Map<String, dynamic> verifiableCredential;
 
-  Iden3commVPProofDTO(
-      {required this.context,
-      required this.type,
-      required this.verifiableCredential});
+  Iden3commVPProofDTO({
+    required this.context,
+    required this.type,
+    required this.verifiableCredential,
+  });
 
   factory Iden3commVPProofDTO.fromJson(Map<String, dynamic> json) =>
       _$Iden3commVPProofDTOFromJson(json);

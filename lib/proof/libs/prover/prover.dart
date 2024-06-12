@@ -25,7 +25,10 @@ class ProverLib {
   ProverLib();
 
   Future<Map<String, dynamic>?> prove(
-      String circuitId, Uint8List zkeyBytes, Uint8List wtnsBytes) async {
+    String circuitId,
+    Uint8List zkeyBytes,
+    Uint8List wtnsBytes,
+  ) async {
     Map<String, dynamic> map = {};
 
     int zkeySize = zkeyBytes.length;

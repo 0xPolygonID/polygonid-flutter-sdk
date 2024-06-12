@@ -10,16 +10,26 @@ import 'native_polygonidcore.dart';
 
 @injectable
 class PolygonIdCore {
+
+  static NativePolygonIdCoreLib? _nativePolygonIdCoreLib;
+
   static NativePolygonIdCoreLib get nativePolygonIdCoreLib {
-    return Platform.isAndroid
+    final instance = _nativePolygonIdCoreLib;
+    if (instance != null) {
+      return instance;
+    }
+
+    _nativePolygonIdCoreLib = Platform.isAndroid
         ? NativePolygonIdCoreLib(ffi.DynamicLibrary.open("libpolygonid.so"))
         : NativePolygonIdCoreLib(ffi.DynamicLibrary.process());
+
+    return _nativePolygonIdCoreLib!;
   }
 
   PolygonIdCore();
 
-  String? consumeStatus(
-      ffi.Pointer<ffi.Pointer<PLGNStatus>> status, String msg) {
+  String? consumeStatus(ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+      String msg) {
     if (status == ffi.nullptr || status.value == ffi.nullptr) {
       if (kDebugMode) {
         print("unable to allocate status\n");
@@ -45,7 +55,8 @@ class PolygonIdCore {
           msg = "$msg: $errormsg";
           if (kDebugMode) {
             print(
-                "$msg: ${status.value.ref.status.toString()}. Error: $errormsg");
+                "$msg: ${status.value.ref.status
+                    .toString()}. Error: $errormsg");
           }
         } catch (e) {
           if (kDebugMode) {

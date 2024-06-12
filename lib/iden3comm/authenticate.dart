@@ -72,6 +72,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj_wallet.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/gist_mtproof_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_param.dart';
@@ -392,37 +393,18 @@ class Authenticate {
       _proofGenerationStepsStreamManager.add(
           "#${i + 1} creating proof for ${proofRequest.scope.query.type}...");
 
-      Directory appDir = await getApplicationDocumentsDirectory();
-      String appDocPath = appDir.path;
+      final appDir = await getApplicationDocumentsDirectory();
+      final circuitsDataSource = CircuitsFilesDataSource(appDir);
 
-      var circuitDatFileName = '${proofRequest.scope.circuitId}.dat';
-      var circuitDatFilePath = '$appDocPath/$circuitDatFileName';
-      var circuitDatFile = File(circuitDatFilePath);
-
-      var circuitZkeyFileName = '${proofRequest.scope.circuitId}.zkey';
-      var circuitZkeyFilePath = '$appDocPath/$circuitZkeyFileName';
-      var circuitZkeyFile = File(circuitZkeyFilePath);
-
-      if (!circuitDatFile.existsSync() || !circuitZkeyFile.existsSync()) {
-        _stacktraceManager.addError(
-          "[Authenticate] Circuit files not found for ${proofRequest.scope.circuitId}",
-        );
-        throw CircuitNotDownloadedException(
-          circuit: proofRequest.scope.circuitId,
-          errorMessage:
-              "Circuit files not found for ${proofRequest.scope.circuitId}",
-        );
-      }
-
-      List<Uint8List> circuitFiles = [
-        circuitDatFile.readAsBytesSync(),
-        circuitZkeyFile.readAsBytesSync()
-      ];
+      final circuitDatFileBytes = await circuitsDataSource
+          .loadCircuitDatFile(proofRequest.scope.circuitId);
+      final zkeyFilePath = await circuitsDataSource
+          .getZkeyFilePath(proofRequest.scope.circuitId);
 
       CircuitDataEntity circuitDataEntity = CircuitDataEntity(
         proofRequest.scope.circuitId,
-        circuitFiles[0],
-        circuitFiles[1],
+        circuitDatFileBytes,
+        zkeyFilePath,
       );
 
       BigInt claimSubjectProfileNonce = identityEntity.profiles.keys.firstWhere(
@@ -515,13 +497,13 @@ class Authenticate {
       }
 
       Uint8List witnessBytes = await proofRepository.calculateWitness(
-        circuitDataEntity,
-        atomicQueryInputs,
+        circuitData: circuitDataEntity,
+        atomicQueryInputs: atomicQueryInputs,
       );
 
       ZKProofEntity zkProofEntity = await proofRepository.prove(
-        circuitDataEntity,
-        witnessBytes,
+        circuitData: circuitDataEntity,
+        wtnsBytes: witnessBytes,
       );
 
       Iden3commProofEntity proof;
@@ -1215,39 +1197,27 @@ class Authenticate {
 
     Uint8List authInputsBytes = Uint8ArrayUtils.uint8ListfromString(authInputs);
 
-    Directory appDir = await getApplicationDocumentsDirectory();
-    String appDocPath = appDir.path;
+    final appDir = await getApplicationDocumentsDirectory();
+    final circuitsDataSource = CircuitsFilesDataSource(appDir);
 
-    var circuitDatFileName = 'authV2.dat';
-    var circuitDatFilePath = '$appDocPath/$circuitDatFileName';
-    var circuitDatFile = File(circuitDatFilePath);
-
-    var circuitZkeyFileName = 'authV2.zkey';
-    var circuitZkeyFilePath = '$appDocPath/$circuitZkeyFileName';
-    var circuitZkeyFile = File(circuitZkeyFilePath);
-
-    Uint8List circuitsDatFileBytes = await circuitDatFile.readAsBytes();
-    Uint8List circuitsZkeyFileBytes = await circuitZkeyFile.readAsBytes();
-
-    List<Uint8List> circuitFiles = [
-      circuitsDatFileBytes,
-      circuitsZkeyFileBytes,
-    ];
+    final circuitDatFileBytes =
+        await circuitsDataSource.loadCircuitDatFile('authV2');
+    final zkeyFilePath = await circuitsDataSource.getZkeyFilePath('authV2');
 
     CircuitDataEntity circuitDataEntity = CircuitDataEntity(
       "authV2",
-      circuitFiles[0],
-      circuitFiles[1],
+      circuitDatFileBytes,
+      zkeyFilePath,
     );
 
     Uint8List witnessBytes = await proofRepository.calculateWitness(
-      circuitDataEntity,
-      authInputsBytes,
+      circuitData: circuitDataEntity,
+      atomicQueryInputs: authInputsBytes,
     );
 
     ZKProofEntity zkProofEntity = await proofRepository.prove(
-      circuitDataEntity,
-      witnessBytes,
+      circuitData: circuitDataEntity,
+      wtnsBytes: witnessBytes,
     );
 
     JWZEntity jwzZkProof = JWZEntity(

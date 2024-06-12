@@ -66,23 +66,23 @@
 
 import 'package:json_annotation/json_annotation.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/proof/response/iden3comm_proof_dto.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/zkproof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 
 import 'iden3comm_vp_proof_dto.dart';
+
 part 'iden3comm_sd_proof_dto.g.dart';
 
 @JsonSerializable()
 class Iden3commSDProofDTO extends Iden3commProofDTO {
   Iden3commVPProofDTO vp;
 
-  Iden3commSDProofDTO(
-      {required this.vp,
-      required int id,
-      required String circuitId,
-      required ZKProofBaseDTO proof,
-      required List<String> pubSignals})
-      : super(
-            id: id, circuitId: circuitId, proof: proof, pubSignals: pubSignals);
+  Iden3commSDProofDTO({
+    required this.vp,
+    required super.id,
+    required super.circuitId,
+    required super.proof,
+    required super.pubSignals,
+  });
 
   factory Iden3commSDProofDTO.fromJson(Map<String, dynamic> json) =>
       _$Iden3commSDProofDTOFromJson(json);

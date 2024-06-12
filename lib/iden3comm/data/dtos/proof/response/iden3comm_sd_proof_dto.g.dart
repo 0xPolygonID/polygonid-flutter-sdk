@@ -11,8 +11,8 @@ Iden3commSDProofDTO _$Iden3commSDProofDTOFromJson(Map<String, dynamic> json) =>
       vp: Iden3commVPProofDTO.fromJson(json['vp'] as Map<String, dynamic>),
       id: json['id'] as int,
       circuitId: json['circuitId'] as String,
-      proof: ZKProofBaseDTO.fromJson(json['proof'] as Map<String, dynamic>),
-      pubSignals: (json['pub_signals'] as List<dynamic>)
+      proof: ZKProofBaseEntity.fromJson(json['proof'] as Map<String, dynamic>),
+      pubSignals: (json['pubSignals'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
     );
@@ -21,7 +21,7 @@ Map<String, dynamic> _$Iden3commSDProofDTOToJson(
         Iden3commSDProofDTO instance) =>
     <String, dynamic>{
       'proof': instance.proof,
-      'pub_signals': instance.pubSignals,
+      'pubSignals': instance.pubSignals,
       'id': instance.id,
       'circuitId': instance.circuitId,
       'vp': instance.vp,

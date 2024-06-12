@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
@@ -79,10 +80,16 @@ class ProofRepositoryImpl extends ProofRepository {
 
   @override
   Future<CircuitDataEntity> loadCircuitFiles(String circuitId) async {
-    List<Uint8List> circuitFiles =
-        await _circuitsFilesDataSource.loadCircuitFiles(circuitId);
-    CircuitDataEntity circuitDataEntity =
-        CircuitDataEntity(circuitId, circuitFiles[0], circuitFiles[1]);
+    final circuitDatFile =
+        await _circuitsFilesDataSource.loadCircuitDatFile(circuitId);
+    final zkeyFilePath = await _circuitsFilesDataSource.getZkeyFilePath(
+      circuitId,
+    );
+    final circuitDataEntity = CircuitDataEntity(
+      circuitId,
+      circuitDatFile,
+      zkeyFilePath,
+    );
     return circuitDataEntity;
   }
 
@@ -192,10 +199,10 @@ class ProofRepositoryImpl extends ProofRepository {
   }
 
   @override
-  Future<Uint8List> calculateWitness(
-    CircuitDataEntity circuitData,
-    Uint8List atomicQueryInputs,
-  ) async {
+  Future<Uint8List> calculateWitness({
+    required CircuitDataEntity circuitData,
+    required Uint8List atomicQueryInputs,
+  }) async {
     WitnessParam witnessParam =
         WitnessParam(wasm: circuitData.datFile, json: atomicQueryInputs);
 
@@ -229,14 +236,24 @@ class ProofRepositoryImpl extends ProofRepository {
   }
 
   @override
-  Future<ZKProofEntity> prove(
-      CircuitDataEntity circuitData, Uint8List wtnsBytes) async {
+  Future<ZKProofEntity> prove({
+    required CircuitDataEntity circuitData,
+    required Uint8List wtnsBytes,
+  }) async {
     try {
+      Stopwatch stopwatch = Stopwatch()..start();
+
       final Map<String, dynamic>? proof = await _proverLibDataSource.prove(
         circuitData.circuitId,
-        circuitData.zKeyFile,
+        circuitData.zKeyPath,
         wtnsBytes,
       );
+
+      _stacktraceManager.addTrace(
+          "[ProveUseCase][MainFlow] proof generated in ${stopwatch.elapsedMilliseconds} ms");
+      logger().i(
+          "[ProveUseCase][MainFlow] proof generated in ${stopwatch.elapsedMilliseconds} ms");
+      logger().i("[ProveUseCase] proof: $proof");
 
       if (proof == null || proof.isEmpty) {
         _stacktraceManager
