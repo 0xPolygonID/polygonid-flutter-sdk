@@ -28,6 +28,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late final HomeBloc _bloc;
+
   @override
   void initState() {
     super.initState();
@@ -295,7 +296,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-
   ///
   Widget _buildSignMessageFeatureCard() {
     return BlocBuilder(
@@ -308,12 +308,9 @@ class _HomeScreenState extends State<HomeScreen> {
           title: CustomStrings.signMessageTitle,
           description: CustomStrings.signMessageDescription,
           onTap: () async {
-            final result = await PolygonIdSdk.I.test();
-            print(result);
-            return;
             Navigator.pushNamed(context, Routes.signMessagePath);
           },
-          enabled: true,
+          enabled: enabled,
           disabledReason: CustomStrings.homeFeatureCardDisabledReason,
         );
       },

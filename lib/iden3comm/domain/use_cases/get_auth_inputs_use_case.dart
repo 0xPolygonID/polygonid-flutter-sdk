@@ -21,6 +21,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/sign_me
 import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/get_gist_mtproof_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/gist_proof_cache.dart';
 
 class GetAuthInputsParam {
   final String challenge;
@@ -64,11 +65,19 @@ class GetAuthInputsUseCase
           param: GetIdentityParam(
               genesisDid: param.genesisDid, privateKey: param.privateKey));
 
+      print(
+          'GetAuthInputsUseCase: got identity at: ${stopwatch.elapsedMilliseconds} ms');
+
       List<String> authClaim =
           await _getAuthClaimUseCase.execute(param: identity.publicKey);
+      print(
+          'GetAuthInputsUseCase: got authClaim at: ${stopwatch.elapsedMilliseconds} ms');
       NodeEntity authClaimNode =
           await _identityRepository.getAuthClaimNode(children: authClaim);
       _stacktraceManager.addTrace("[GetAuthInputsUseCase] Auth claim node");
+
+      print(
+          'GetAuthInputsUseCase: got authClaimNode at: ${stopwatch.elapsedMilliseconds} ms');
 
       MTProofEntity incProof = await _smtRepository.generateProof(
           key: authClaimNode.hash,
@@ -78,12 +87,18 @@ class GetAuthInputsUseCase
       _stacktraceManager
           .addTrace("[GetAuthInputsUseCase] Inc proof: ${incProof.toString()}");
 
+      print(
+          'GetAuthInputsUseCase: got incProof at: ${stopwatch.elapsedMilliseconds} ms');
+
       MTProofEntity nonRevProof = await _smtRepository.generateProof(
           key: authClaimNode.hash,
           type: TreeType.revocation,
           did: param.genesisDid,
           privateKey: param.privateKey);
       _stacktraceManager.addTrace("[GetAuthInputsUseCase] Non rev proof");
+
+      print(
+          'GetAuthInputsUseCase: got nonRevProof at: ${stopwatch.elapsedMilliseconds} ms');
 
       // hash of clatr, revtr, rootr
       Map<String, dynamic> treeState = await _getLatestStateUseCase.execute(
@@ -98,13 +113,17 @@ class GetAuthInputsUseCase
       _stacktraceManager.addTrace(
           "[GetAuthInputsUseCase][MainFlow] Gist proof: ${jsonEncode(gistProof.toJson())}");
 
+      print(
+          'GetAuthInputsUseCase: got gist proof at: ${stopwatch.elapsedMilliseconds} ms');
+
       String signature = await _signMessageUseCase.execute(
         param: SignMessageParam(
           param.privateKey,
           param.challenge,
         ),
       );
-      print('GetAuthInputsUseCase: got all for inputs in: ${stopwatch.elapsedMilliseconds} ms');
+      print(
+          'GetAuthInputsUseCase: got all for inputs in: ${stopwatch.elapsedMilliseconds} ms');
 
       Uint8List authInputs = await _iden3commRepository.getAuthInputs(
         genesisDid: param.genesisDid,

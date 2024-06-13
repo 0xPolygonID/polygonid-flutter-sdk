@@ -25,8 +25,8 @@ JNIEXPORT jint JNICALL Java_io_iden3_polygonid_1flutter_1sdk_RapidsnarkJniBridge
     char *nativePublicBuffer = (char *) env->GetByteArrayElements(publicBuffer, nullptr);
     char *nativeErrorMsg = (char *) env->GetByteArrayElements(errorMsg, nullptr);
 
-    jlong *nativeProofSizeArr = env->GetLongArrayElements(proofSize, 0);
-    jlong *nativePublicSizeArr = env->GetLongArrayElements(publicSize, 0);
+    jlong * nativeProofSizeArr = env->GetLongArrayElements(proofSize, 0);
+    jlong * nativePublicSizeArr = env->GetLongArrayElements(publicSize, 0);
 
     unsigned long nativeProofSize = nativeProofSizeArr[0];
     unsigned long nativePublicSize = nativePublicSizeArr[0];
@@ -44,8 +44,10 @@ JNIEXPORT jint JNICALL Java_io_iden3_polygonid_1flutter_1sdk_RapidsnarkJniBridge
     nativeProofSizeArr[0] = nativeProofSize;
     nativePublicSizeArr[0] = nativePublicSize;
 
-    env->SetLongArrayRegion(proofSize, 0, 1, (jlong *) nativeProofSizeArr);
-    env->SetLongArrayRegion(publicSize, 0, 1, (jlong *) nativePublicSizeArr);
+    env->SetLongArrayRegion(proofSize, 0, 1, (jlong * )
+    nativeProofSizeArr);
+    env->SetLongArrayRegion(publicSize, 0, 1, (jlong * )
+    nativePublicSizeArr);
 
     // Release the native buffers
     env->ReleaseByteArrayElements(zkeyBuffer, (jbyte *) nativeZkeyBuffer, 0);
@@ -54,8 +56,10 @@ JNIEXPORT jint JNICALL Java_io_iden3_polygonid_1flutter_1sdk_RapidsnarkJniBridge
     env->ReleaseByteArrayElements(publicBuffer, (jbyte *) nativePublicBuffer, 0);
     env->ReleaseByteArrayElements(errorMsg, (jbyte *) nativeErrorMsg, 0);
 
-    env->ReleaseLongArrayElements(proofSize, (jlong *) nativeProofSizeArr, 0);
-    env->ReleaseLongArrayElements(publicSize, (jlong *) nativePublicSizeArr, 0);
+    env->ReleaseLongArrayElements(proofSize, (jlong * )
+    nativeProofSizeArr, 0);
+    env->ReleaseLongArrayElements(publicSize, (jlong * )
+    nativePublicSizeArr, 0);
 
     return result;
 }
@@ -79,8 +83,8 @@ JNIEXPORT jint JNICALL Java_io_iden3_polygonid_1flutter_1sdk_RapidsnarkJniBridge
     char *nativePublicBuffer = (char *) env->GetByteArrayElements(publicBuffer, nullptr);
     char *nativeErrorMsg = (char *) env->GetByteArrayElements(errorMsg, nullptr);
 
-    jlong *nativeProofSizeArr = env->GetLongArrayElements(proofSize, 0);
-    jlong *nativePublicSizeArr = env->GetLongArrayElements(publicSize, 0);
+    jlong * nativeProofSizeArr = env->GetLongArrayElements(proofSize, 0);
+    jlong * nativePublicSizeArr = env->GetLongArrayElements(publicSize, 0);
 
     unsigned long nativeProofSize = nativeProofSizeArr[0];
     unsigned long nativePublicSize = nativePublicSizeArr[0];
@@ -98,8 +102,10 @@ JNIEXPORT jint JNICALL Java_io_iden3_polygonid_1flutter_1sdk_RapidsnarkJniBridge
     nativeProofSizeArr[0] = nativeProofSize;
     nativePublicSizeArr[0] = nativePublicSize;
 
-    env->SetLongArrayRegion(proofSize, 0, 1, (jlong *) nativeProofSizeArr);
-    env->SetLongArrayRegion(publicSize, 0, 1, (jlong *) nativePublicSizeArr);
+    env->SetLongArrayRegion(proofSize, 0, 1, (jlong * )
+    nativeProofSizeArr);
+    env->SetLongArrayRegion(publicSize, 0, 1, (jlong * )
+    nativePublicSizeArr);
 
     // Release the native buffers
     env->ReleaseByteArrayElements(wtnsBuffer, (jbyte *) nativeWtnsBuffer, 0);
@@ -107,8 +113,10 @@ JNIEXPORT jint JNICALL Java_io_iden3_polygonid_1flutter_1sdk_RapidsnarkJniBridge
     env->ReleaseByteArrayElements(publicBuffer, (jbyte *) nativePublicBuffer, 0);
     env->ReleaseByteArrayElements(errorMsg, (jbyte *) nativeErrorMsg, 0);
 
-    env->ReleaseLongArrayElements(proofSize, (jlong *) nativeProofSizeArr, 0);
-    env->ReleaseLongArrayElements(publicSize, (jlong *) nativePublicSizeArr, 0);
+    env->ReleaseLongArrayElements(proofSize, (jlong * )
+    nativeProofSizeArr, 0);
+    env->ReleaseLongArrayElements(publicSize, (jlong * )
+    nativePublicSizeArr, 0);
 
     return status_code;
 }
@@ -160,7 +168,7 @@ JNIEXPORT jlong JNICALL Java_io_iden3_polygonid_1flutter_1sdk_RapidsnarkJniBridg
     // Call the groth16_public_size_for_zkey_buf function
     int status_code = groth16_public_size_for_zkey_buf(
             nativeZkeyBuffer, zkeySize,
-            (size_t *) &nativePublicSize,
+            (size_t * ) & nativePublicSize,
             nativeErrorMsg, errorMsgMaxSize
     );
 
@@ -202,7 +210,18 @@ JNIEXPORT jlong JNICALL Java_io_iden3_polygonid_1flutter_1sdk_RapidsnarkJniBridg
     return nativePublicSize;
 }
 
-JNIEXPORT jstring JNICALL Java_io_iden3_polygonid_1flutter_1sdk_RapidsnarkJniBridge_PLGNAuthV2InputsMarshal(
+inline const char *ToString(PLGNStatusCode v) {
+    switch (v) {
+        case PLGNSTATUSCODE_ERROR:
+            return "PLGNSTATUSCODE_ERROR";
+        case PLGNSTATUSCODE_NIL_POINTER:
+            return "PLGNSTATUSCODE_NIL_POINTER";
+        default:
+            return "[Unknown PLGNStatusCode]";
+    }
+}
+
+JNIEXPORT jbyteArray JNICALL Java_io_iden3_polygonid_1flutter_1sdk_RapidsnarkJniBridge_PLGNAuthV2InputsMarshal(
         JNIEnv *env, jobject obj,
         jstring input,
         jbyteArray response,
@@ -211,19 +230,25 @@ JNIEXPORT jstring JNICALL Java_io_iden3_polygonid_1flutter_1sdk_RapidsnarkJniBri
     LOGI("PLGNAuthV2InputsMarshal native called");
 
     const char *constNativeInput = env->GetStringUTFChars(input, nullptr);
-    char *nativeInput = strcpy(new char[strlen(constNativeInput) + 1], constNativeInput);
+    char *nativeInput = strcpy(new char[strlen(constNativeInput)], constNativeInput);
 
-    char** responseBuffer = new char*[1];
+    char **responseBuffer = new char *[1];
 
-    PLGNStatus** status = NULL;
+    PLGNStatus **status = new PLGNStatus *[1];
 
     // Call the PLGNAuthV2InputsMarshal function
-    PLGNAuthV2InputsMarshal(responseBuffer, nativeInput, status);
+    unsigned char result = PLGNAuthV2InputsMarshal(responseBuffer, nativeInput, status);
+
+    LOGI("PLGNAuthV2InputsMarshal output:%s", responseBuffer[0]);
 
     // Release the native buffers
     env->ReleaseStringUTFChars(input, constNativeInput);
 
-    return NULL;
+    jbyteArray responseByteArray = env->NewByteArray(strlen(responseBuffer[0]));
+    env->SetByteArrayRegion(responseByteArray, 0, strlen(responseBuffer[0]),
+                            (jbyte *) responseBuffer[0]);
+
+    return responseByteArray;
 }
 
 

@@ -32,6 +32,7 @@ class CommonMocks {
   static String token = "theToken";
   static String url = "theUrl";
   static String circuitId = "credentialAtomicQuerySig";
+  static String zkeyFilePath = "zkeyFilePath";
   static String field = "theField";
   static String issuer = "theIssuer";
   static String type = "KYCAgeCredential";

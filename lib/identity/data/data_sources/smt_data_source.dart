@@ -278,7 +278,7 @@ class SMTDataSource {
           return MTProofDTO(
               existence: false,
               siblings: siblings,
-              nodeAux: NodeAuxDTO(
+              nodeAux: NodeAuxEntity(
                 key: node.children[0].toString(),
                 value: node.children[1].toString(),
               ));

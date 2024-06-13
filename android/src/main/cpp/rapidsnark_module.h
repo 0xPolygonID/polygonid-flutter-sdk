@@ -46,7 +46,7 @@ JNIEXPORT jlong JNICALL Java_io_iden3_polygonid_1flutter_1sdk_RapidsnarkJniBridg
         jbyteArray errorMsg, jlong errorMsgMaxSize
 );
 
-JNIEXPORT jstring JNICALL Java_io_iden3_polygonid_1flutter_1sdk_RapidsnarkJniBridge_PLGNAuthV2InputsMarshal(
+JNIEXPORT jbyteArray JNICALL Java_io_iden3_polygonid_1flutter_1sdk_RapidsnarkJniBridge_PLGNAuthV2InputsMarshal(
         JNIEnv *env, jobject obj,
         jstring input,
         jbyteArray response,

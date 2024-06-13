@@ -6,12 +6,13 @@ part of 'node_aux_dto.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-NodeAuxDTO _$NodeAuxDTOFromJson(Map<String, dynamic> json) => NodeAuxDTO(
+NodeAuxEntity _$NodeAuxEntityFromJson(Map<String, dynamic> json) =>
+    NodeAuxEntity(
       key: json['key'] as String,
       value: json['value'] as String,
     );
 
-Map<String, dynamic> _$NodeAuxDTOToJson(NodeAuxDTO instance) =>
+Map<String, dynamic> _$NodeAuxEntityToJson(NodeAuxEntity instance) =>
     <String, dynamic>{
       'key': instance.key,
       'value': instance.value,

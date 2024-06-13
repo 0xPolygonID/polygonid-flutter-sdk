@@ -1,6 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/libs/polygonidcore/pidcore_iden3comm.dart';
 
 /*
@@ -52,13 +55,15 @@ import 'package:polygonid_flutter_sdk/iden3comm/libs/polygonidcore/pidcore_iden3
     }
 * */
 class LibPolygonIdCoreIden3commDataSource {
+  static const _methodChannel = MethodChannel("polygonid_flutter_sdk");
+
   final PolygonIdCoreIden3comm _polygonIdCoreIden3comm;
 
   LibPolygonIdCoreIden3commDataSource(
     this._polygonIdCoreIden3comm,
   );
 
-  String getAuthInputs({
+  Future<Uint8List> getAuthInputs({
     required String genesisDid,
     required BigInt profileNonce,
     required List<String> authClaim,
@@ -68,7 +73,7 @@ class LibPolygonIdCoreIden3commDataSource {
     required Map<String, dynamic> treeState,
     required String challenge,
     required String signature,
-  }) {
+  }) async {
     String input = jsonEncode({
       "genesisDID": genesisDid,
       "profileNonce": profileNonce.toString(),
@@ -81,9 +86,22 @@ class LibPolygonIdCoreIden3commDataSource {
       "challenge": challenge,
     });
 
-    String output = _polygonIdCoreIden3comm.getAuthInputs(input);
+    if (Platform.isAndroid) {
+      Uint8List outputBytes = await _methodChannel.invokeMethod(
+        'PLGNAuthV2InputsMarshal',
+        {
+          "input": input,
+        },
+      );
 
-    logger().d("getAuthV2Inputs: $output");
-    return output;
+      final output = Uint8ArrayUtils.uint8ListToString(outputBytes);
+
+      logger().d("getAuthV2Inputs: $output");
+      return outputBytes;
+    } else {
+      String output = _polygonIdCoreIden3comm.getAuthInputs(input);
+
+      return Uint8ArrayUtils.uint8ListfromString(output);
+    }
   }
 }

@@ -26,6 +26,8 @@ class ProveUseCase extends FutureUseCase<ProveParam, ZKProofEntity> {
   Future<ZKProofEntity> execute({required ProveParam param}) async {
     Stopwatch stopwatch = Stopwatch()..start();
     try {
+      final input = String.fromCharCodes(param.inputs);
+      print('ProveUseCase: input: $input');
       // Calculate witness
       Uint8List wtnsBytes = await _proofRepository.calculateWitness(
         circuitData: param.circuitData,

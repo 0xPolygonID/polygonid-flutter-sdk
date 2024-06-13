@@ -18,8 +18,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE -Wno-unused-value)
 
 # Import an already existing .so file
 # Here, we add a dependency to the shared_library prebuilt
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../jniLibs/arm64-v8a)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../jniLibs/x86_64)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../jniLibs)
 
 set(
         SHARED_PROVER_LIBRARY_SO
@@ -53,6 +52,7 @@ set_target_properties(
         rapidsnark_sdk_lib
         PROPERTIES
         IMPORTED_LOCATION ${SHARED_SDK_LIBRARY_SO}
+        NO_SONAME 1
 )
 
 # Add libraries to this project

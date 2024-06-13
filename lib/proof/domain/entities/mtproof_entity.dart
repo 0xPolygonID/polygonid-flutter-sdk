@@ -1,13 +1,16 @@
-import '../../../identity/domain/entities/hash_entity.dart';
-import 'node_aux_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_dto.dart';
 
 class MTProofEntity {
   final bool existence;
   final List<HashEntity> siblings;
   final NodeAuxEntity? nodeAux;
 
-  MTProofEntity(
-      {required this.existence, required this.siblings, this.nodeAux});
+  MTProofEntity({
+    required this.existence,
+    required this.siblings,
+    this.nodeAux,
+  });
 
   @override
   String toString() =>

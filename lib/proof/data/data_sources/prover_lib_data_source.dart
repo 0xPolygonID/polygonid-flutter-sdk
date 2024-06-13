@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -19,8 +20,11 @@ class ProverLibWrapper {
 ///
 Future<Map<String, dynamic>?> _computeProve(ProveParam param) async {
   ProverLib proverLib = ProverLib();
-  // return proverLib.prove(param.circuitId, param.zKeyPath, param.wtns);
-  return null;
+  return proverLib.proveZkeyFilePath(
+    param.circuitId,
+    param.zKeyPath,
+    param.wtns,
+  );
 }
 
 class ProverLibDataSource {
@@ -34,16 +38,23 @@ class ProverLibDataSource {
     String zKeyPath,
     Uint8List wtnsBytes,
   ) async {
-    final result = await _methodChannel.invokeMapMethod(
-      'prove',
-      {
-        'zKeyPath': zKeyPath,
-        'wtnsBytes': wtnsBytes,
-      },
-    );
-    result?['proof'] = jsonDecode(result['proof'] as String);
-    result?['pub_signals'] = jsonDecode(result['pub_signals'] as String);
+    if (Platform.isAndroid) {
+      final result = await _methodChannel.invokeMapMethod(
+        'prove',
+        {
+          'zKeyPath': zKeyPath,
+          'wtnsBytes': wtnsBytes,
+        },
+      );
+      result?['proof'] = jsonDecode(result['proof'] as String);
+      result?['pub_signals'] = jsonDecode(result['pub_signals'] as String);
 
-    return result?.cast<String, dynamic>();
+      return result?.cast<String, dynamic>();
+    } else {
+      final result =
+          await _proverLibWrapper.prover(circuitId, zKeyPath, wtnsBytes);
+
+      return result;
+    }
   }
 }

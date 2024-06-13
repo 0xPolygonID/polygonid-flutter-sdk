@@ -18,16 +18,20 @@ part 'mtproof_dto.g.dart';
           }
     }
 */
+
 /// Represents a merkle tree proof DTO.
 @JsonSerializable(explicitToJson: true)
 class MTProofDTO extends Equatable {
   final bool existence;
   final List<HashDTO> siblings;
   @JsonKey(name: 'node_aux')
-  final NodeAuxDTO? nodeAux;
+  final NodeAuxEntity? nodeAux;
 
-  const MTProofDTO(
-      {required this.existence, required this.siblings, this.nodeAux});
+  const MTProofDTO({
+    required this.existence,
+    required this.siblings,
+    this.nodeAux,
+  });
 
   factory MTProofDTO.fromJson(Map<String, dynamic> json) =>
       _$MTProofDTOFromJson(json);

@@ -1188,7 +1188,8 @@ class Authenticate {
     AuthProofMapper authProofMapper = getItSdk<AuthProofMapper>();
     GistMTProofMapper gistMTProofMapper = getItSdk<GistMTProofMapper>();
 
-    String authInputs = libPolygonIdCoreIden3commDataSource.getAuthInputs(
+    Uint8List authInputsBytes =
+        await libPolygonIdCoreIden3commDataSource.getAuthInputs(
       genesisDid: genesisDid,
       profileNonce: profileNonce,
       authClaim: authClaim,
@@ -1199,8 +1200,6 @@ class Authenticate {
       challenge: authChallenge,
       signature: signature,
     );
-
-    Uint8List authInputsBytes = Uint8ArrayUtils.uint8ListfromString(authInputs);
 
     final appDir = await getApplicationDocumentsDirectory();
     final circuitsDataSource = CircuitsFilesDataSource(appDir);
@@ -1385,11 +1384,9 @@ class Authenticate {
       envEntity: env,
     );
 
-    GistMTProofMapper gistMTProofMapper = getItSdk<GistMTProofMapper>();
-    GistMTProofDataSource gistMTProofDataSource =
-        getItSdk<GistMTProofDataSource>();
-    GistMTProofDTO gistMTProofDTO =
-        gistMTProofDataSource.getGistMTProof(gistProof);
+    final gistMTProofMapper = getItSdk<GistMTProofMapper>();
+    final gistMTProofDataSource = getItSdk<GistMTProofDataSource>();
+    final gistMTProofDTO = gistMTProofDataSource.getGistMTProof(gistProof);
     gistProofEntity = gistMTProofMapper.mapFrom(gistMTProofDTO);
 
     return AuthClaimCompanionObject()

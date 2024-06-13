@@ -13,7 +13,7 @@ MTProofDTO _$MTProofDTOFromJson(Map<String, dynamic> json) => MTProofDTO(
           .toList(),
       nodeAux: json['node_aux'] == null
           ? null
-          : NodeAuxDTO.fromJson(json['node_aux'] as Map<String, dynamic>),
+          : NodeAuxEntity.fromJson(json['node_aux'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$MTProofDTOToJson(MTProofDTO instance) =>

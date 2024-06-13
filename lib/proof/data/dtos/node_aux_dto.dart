@@ -12,19 +12,19 @@ part 'node_aux_dto.g.dart';
 
 /// Represents an node aux DTO.
 @JsonSerializable()
-class NodeAuxDTO extends Equatable {
+class NodeAuxEntity extends Equatable {
   final String key;
   final String value;
 
-  const NodeAuxDTO({
+  const NodeAuxEntity({
     required this.key,
     required this.value,
   });
 
-  factory NodeAuxDTO.fromJson(Map<String, dynamic> json) =>
-      _$NodeAuxDTOFromJson(json);
+  factory NodeAuxEntity.fromJson(Map<String, dynamic> json) =>
+      _$NodeAuxEntityFromJson(json);
 
-  Map<String, dynamic> toJson() => _$NodeAuxDTOToJson(this);
+  Map<String, dynamic> toJson() => _$NodeAuxEntityToJson(this);
 
   @override
   List<Object?> get props => [key, value];

@@ -10,28 +10,31 @@ import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_dto.dart';
 class GistMTProofDataSource {
   GistMTProofDTO getGistMTProof(String gistProof) {
     // remove all quotes from the string values
-    final gistProof2 = gistProof.replaceAll("\"", "");
+    final unquotedString = gistProof.replaceAll("\"", "");
 
     // now we add quotes to both keys and Strings values
-    final quotedString =
-        gistProof2.replaceAllMapped(RegExp(r'\b\w+\b'), (match) {
-      return '"${match.group(0)}"';
-    });
+    final quotedString = unquotedString.replaceAllMapped(
+      RegExp(r'\b\w+\b'),
+      (match) {
+        return '"${match.group(0)}"';
+      },
+    );
 
     var gistProofJson = jsonDecode(quotedString);
 
     return GistMTProofDTO(
-        root: gistProofJson["root"],
-        proof: MTProofDTO(
-            existence:
-                gistProofJson["proof"]["existence"] == "true" ? true : false,
-            siblings: (gistProofJson["proof"]["siblings"] as List)
-                .map((hash) => HashDTO.fromBigInt(BigInt.parse(hash)))
-                .toList(),
-            nodeAux: gistProofJson["proof"]["node_aux"] != null
-                ? NodeAuxDTO(
-                    key: gistProofJson["proof"]["node_aux"]["key"],
-                    value: gistProofJson["proof"]["node_aux"]["value"])
-                : null));
+      root: gistProofJson["root"],
+      proof: MTProofDTO(
+        existence: gistProofJson["proof"]["existence"] == "true" ? true : false,
+        siblings: (gistProofJson["proof"]["siblings"] as List)
+            .map((hash) => HashDTO.fromBigInt(BigInt.parse(hash)))
+            .toList(),
+        nodeAux: gistProofJson["proof"]["node_aux"] != null
+            ? NodeAuxEntity(
+                key: gistProofJson["proof"]["node_aux"]["key"],
+                value: gistProofJson["proof"]["node_aux"]["value"])
+            : null,
+      ),
+    );
   }
 }

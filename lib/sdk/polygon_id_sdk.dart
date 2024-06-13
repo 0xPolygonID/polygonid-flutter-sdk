@@ -105,14 +105,6 @@ class PolygonIdSdk {
         .then((instance) => instance.execute());
   }
 
-  static const _methodChannel = MethodChannel('polygonid_flutter_sdk');
-
-  Future<dynamic> test() async {
-    return _methodChannel.invokeMethod('PLGNAuthV2InputsMarshal', {
-      "input": "",
-    });
-  }
-
   Future<ChainConfigEntity> getSelectedChain() {
     return getItSdk
         .getAsync<GetSelectedChainUseCase>()

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
@@ -34,6 +35,7 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart'
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
+import 'package:polygonid_flutter_sdk/proof/gist_proof_cache.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/auth_v2/witness_auth.dart';
 import 'package:web3dart/contracts.dart';
 
@@ -52,6 +54,7 @@ class ProofRepositoryImpl extends ProofRepository {
   final AuthProofMapper _authProofMapper;
   final GistMTProofMapper _gistMTProofMapper;
   final CircuitsFilesDataSource _circuitsFilesDataSource;
+  final GetEnvUseCase _getEnvUseCase;
   final StacktraceManager _stacktraceManager;
 
   // FIXME: those mappers shouldn't be used here as they are part of Credential
@@ -75,6 +78,7 @@ class ProofRepositoryImpl extends ProofRepository {
     this._authProofMapper,
     this._gistMTProofMapper,
     this._circuitsFilesDataSource,
+    this._getEnvUseCase,
     this._stacktraceManager,
   );
 
@@ -284,16 +288,21 @@ class ProofRepositoryImpl extends ProofRepository {
   }
 
   @override
-  Future<GistMTProofEntity> getGistProof(
-      {required String idAsInt, required String contractAddress}) async {
+  Future<GistMTProofEntity> getGistProof({
+    required String idAsInt,
+    required String contractAddress,
+  }) async {
     try {
-      String gistProofSC = await _getGistProofSC(
-        identifier: idAsInt,
-        contractAddress: contractAddress,
+      final envEntity = await _getEnvUseCase.execute();
+      final contract = await _localContractFilesDataSource.loadStateContract(
+        contractAddress,
       );
 
-      String gistProof =
-          _libPolygonIdCoreProofDataSource.proofFromSC(gistProofSC);
+      String gistProof = await GistProofCache().getGistProof(
+        id: idAsInt,
+        deployedContract: contract,
+        envEntity: envEntity,
+      );
 
       return _gistMTProofMapper
           .mapFrom(_gistProofDataSource.getGistMTProof(gistProof));
@@ -302,28 +311,6 @@ class ProofRepositoryImpl extends ProofRepository {
     } catch (error) {
       throw FetchGistProofException(
         errorMessage: "Error in getGistProof: $error",
-        error: error,
-      );
-    }
-  }
-
-  Future<String> _getGistProofSC(
-      {required String identifier, required String contractAddress}) async {
-    try {
-      DeployedContract contract =
-          await _localContractFilesDataSource.loadStateContract(
-        contractAddress,
-      );
-      String gistProof = await _rpcDataSource.getGistProof(
-        identifier,
-        contract,
-      );
-      return gistProof;
-    } on PolygonIdSDKException catch (_) {
-      rethrow;
-    } catch (error) {
-      throw FetchGistProofException(
-        errorMessage: "Error in _getGistProofSC: $error",
         error: error,
       );
     }

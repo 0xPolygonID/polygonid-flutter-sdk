@@ -75,12 +75,9 @@ class WitnessAuthV2Lib {
       ffi.Pointer<Utf8> jsonString = errorMsg.cast<Utf8>();
       String errormsg = jsonString.toDartString();
       if (kDebugMode) {
-        print("$result: ${result.toString()}. Error: $errormsg");
+        print("Code: ${result.toString()}. Error: $errormsg");
       }
       freeAllocatedMemory();
-      StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
-      _stacktraceManager
-          .addError("libwitnesscalc_authV2: witnesscalc_authV2: $errormsg");
       throw CoreLibraryException(
         coreLibraryName: "libwitnesscalc_authV2",
         methodName: "witnesscalc_authV2",
@@ -88,13 +85,9 @@ class WitnessAuthV2Lib {
       );
     } else if (result == WITNESSCALC_ERROR_SHORT_BUFFER) {
       if (kDebugMode) {
-        print(
-            "$result: ${result.toString()}. Error: Short buffer for proof or public");
+        print("Code: $result. Error: Short buffer for proof or public");
       }
       freeAllocatedMemory();
-      StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
-      _stacktraceManager.addError(
-          "libwitnesscalc_authV2: witnesscalc_authV2: Short buffer for proof or public");
       throw CoreLibraryException(
         coreLibraryName: "libwitnesscalc_authV2",
         methodName: "witnesscalc_authV2",

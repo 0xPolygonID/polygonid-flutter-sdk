@@ -14,7 +14,6 @@ import io.iden3.polygonid_flutter_sdk.*
 class PolygonIdSdkPlugin : FlutterPlugin, MethodCallHandler {
 
     init {
-        Log.e("TAG", "INIT START")
         System.loadLibrary("polygonid")
         System.loadLibrary("gmp")
         System.loadLibrary("witnesscalc_authV2")
@@ -22,11 +21,6 @@ class PolygonIdSdkPlugin : FlutterPlugin, MethodCallHandler {
         System.loadLibrary("witnesscalc_credentialAtomicQueryMTPV2")
         System.loadLibrary("witnesscalc_credentialAtomicQuerySigV2OnChain")
         System.loadLibrary("witnesscalc_credentialAtomicQueryMTPV2OnChain")
-        System.loadLibrary("rapidsnark_module")
-
-        Log.e("TAG", "INIT END")
-        PLGNAuthV2InputsMarshal("")
-        Log.e("TAG", "INIT AFTER")
     }
 
     /// The MethodChannel that will the communication between Flutter and native Android
@@ -41,7 +35,6 @@ class PolygonIdSdkPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-        Log.e("PolygonIdSdkPlugin", "onMethodCall")
         if (call.method == "getPlatformVersion") {
             result.success("Android ${android.os.Build.VERSION.RELEASE}")
         } else if (call.method == "prove") {
