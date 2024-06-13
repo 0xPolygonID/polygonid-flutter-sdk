@@ -44,8 +44,11 @@ class AuthBodyDidDocResponseDTO extends Equatable {
   final String? id;
   final List<AuthBodyDidDocServiceResponseDTO>? service;
 
-  const AuthBodyDidDocResponseDTO(
-      {required this.context, required this.id, required this.service});
+  const AuthBodyDidDocResponseDTO({
+    required this.context,
+    required this.id,
+    required this.service,
+  });
 
   factory AuthBodyDidDocResponseDTO.fromJson(Map<String, dynamic> json) =>
       _$AuthBodyDidDocResponseDTOFromJson(json);

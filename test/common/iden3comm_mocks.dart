@@ -107,7 +107,7 @@ class Iden3commMocks {
 {
   "id": "4dd6479b-99b6-405c-ba9e-c7b18d251a5e",
   "typ": "application/iden3comm-plain-json",
-  "type": "https://iden3-communication.io/credentials/1.0/fetch-request",
+  "type": "https://iden3-communication.io/credentials/1.0/issuance-response",
   "thid": "4dd6479b-99b6-405c-ba9e-c7b18d251a5e",
   "from": "1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ",
   "to": "1244GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ",
@@ -139,7 +139,7 @@ class Iden3commMocks {
 {
   "id": "1",
   "typ": "theTyp",
-  "type": "theType",
+  "type": "https://iden3-communication.io/credentials/1.0/offer",
   "thid": "theThid",
   "from": "theFrom",
   "body": $offerRequestBodyJson
@@ -171,7 +171,7 @@ class Iden3commMocks {
 {
   "id": "theId",
   "typ": "theTyp",
-  "type": "theType",
+  "type": "https://iden3-communication.io/proofs/1.0/contract-invoke-request",
   "body": $contractFunctionCallRequestBodyJson
 }
 ''';
