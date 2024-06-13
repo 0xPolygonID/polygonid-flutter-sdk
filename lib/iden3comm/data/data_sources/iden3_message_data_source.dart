@@ -24,12 +24,22 @@ class Iden3MessageDataSource {
   final StacktraceManager _stacktraceManager;
 
   Iden3MessageDataSource(this._stacktraceManager);
-  Future<AuthBodyDidDocResponseDTO> getDidDocResponse(String pushUrl,
-      String didIdentifier, String pushToken, String packageName) async {
+
+  Future<AuthBodyDidDocResponseDTO> getDidDocResponse(
+    String pushUrl,
+    String didIdentifier,
+    String pushToken,
+    String packageName,
+  ) async {
     return AuthBodyDidDocResponseDTO(
       context: const ["https://www.w3.org/ns/did/v1"],
       id: didIdentifier,
       service: [
+        AuthBodyDidDocServiceResponseDTO(
+          id: '$didIdentifier#mobile',
+          type: 'Iden3MobileServiceV1',
+          serviceEndpoint: 'iden3comm:v0.1:callbackHandler',
+        ),
         AuthBodyDidDocServiceResponseDTO(
           id: "$didIdentifier#push",
           type: "push-notification",

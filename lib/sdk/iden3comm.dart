@@ -23,6 +23,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/clean_schema_ca
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_credentials_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_onchain_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_schema_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_filters_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_rev_nonce_use_case.dart';
@@ -49,6 +50,9 @@ abstract class PolygonIdSdkIden3comm {
   /// Returns the schemas from an [Iden3MessageEntity].
   Future<List<Map<String, dynamic>>> getSchemas(
       {required Iden3MessageEntity message});
+
+  /// Fetches a schema from a given [schemaUrl].
+  Future<Map<String, dynamic>> fetchSchema({required String schemaUrl});
 
   /// Returns a list of [FilterEntity] from an iden3comm message to
   /// apply to [Credential.getClaims]
@@ -294,6 +298,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   final FetchOnchainClaimsUseCase _fetchOnchainClaimsUseCase;
   final GetIden3MessageUseCase _getIden3MessageUseCase;
   final GetSchemasUseCase _getSchemasUseCase;
+  final FetchSchemaUseCase _fetchSchemaUseCase;
   final AuthenticateUseCase _authenticateUseCase;
   final GetFiltersUseCase _getFiltersUseCase;
   final GetIden3commClaimsUseCase _getIden3commClaimsUseCase;
@@ -317,6 +322,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     this._fetchOnchainClaimsUseCase,
     this._getIden3MessageUseCase,
     this._getSchemasUseCase,
+    this._fetchSchemaUseCase,
     this._authenticateUseCase,
     this._getFiltersUseCase,
     this._getIden3commClaimsUseCase,
@@ -347,6 +353,12 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       {required Iden3MessageEntity message}) {
     _stacktraceManager.clearStacktrace();
     return _getSchemasUseCase.execute(param: message);
+  }
+
+  @override
+  Future<Map<String, dynamic>> fetchSchema({required String schemaUrl}) {
+    _stacktraceManager.clearStacktrace();
+    return _fetchSchemaUseCase.execute(param: schemaUrl);
   }
 
   @override
