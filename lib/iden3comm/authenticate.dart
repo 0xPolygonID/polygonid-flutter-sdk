@@ -1067,6 +1067,11 @@ class Authenticate {
       id: profileDid,
       service: [
         AuthBodyDidDocServiceResponseDTO(
+          id: '$profileDid#mobile',
+          type: 'Iden3MobileServiceV1',
+          serviceEndpoint: 'iden3comm:v0.1:callbackHandler',
+        ),
+        AuthBodyDidDocServiceResponseDTO(
           id: "$profileDid#push",
           type: "push-notification",
           serviceEndpoint: pushUrl,

@@ -43,11 +43,11 @@ class ProblemReportMessageEntity extends Iden3MessageEntity<ProblemReportBody> {
 
 class ProblemReportBody {
   final String code;
-  final String comment;
+  final String? comment;
 
   ProblemReportBody({
     required this.code,
-    required this.comment,
+    this.comment,
   });
 
   factory ProblemReportBody.fromJson(Map<String, dynamic> json) {
@@ -60,7 +60,7 @@ class ProblemReportBody {
   Map<String, dynamic> toJson() {
     return {
       'code': code,
-      'comment': comment,
+      if (comment != null) 'comment': comment,
     };
   }
 
