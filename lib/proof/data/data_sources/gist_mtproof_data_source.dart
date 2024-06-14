@@ -1,14 +1,14 @@
 import 'dart:convert';
 
 import 'package:injectable/injectable.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_entity.dart';
 
 @injectable
 class GistMTProofDataSource {
-  GistMTProofDTO getGistMTProof(String gistProof) {
+  GistMTProofEntity getGistMTProof(String gistProof) {
     // remove all quotes from the string values
     final unquotedString = gistProof.replaceAll("\"", "");
 
@@ -22,12 +22,12 @@ class GistMTProofDataSource {
 
     var gistProofJson = jsonDecode(quotedString);
 
-    return GistMTProofDTO(
+    return GistMTProofEntity(
       root: gistProofJson["root"],
-      proof: MTProofDTO(
+      proof: MTProofEntity(
         existence: gistProofJson["proof"]["existence"] == "true" ? true : false,
         siblings: (gistProofJson["proof"]["siblings"] as List)
-            .map((hash) => HashDTO.fromBigInt(BigInt.parse(hash)))
+            .map((hash) => HashEntity.fromBigInt(BigInt.parse(hash)))
             .toList(),
         nodeAux: gistProofJson["proof"]["node_aux"] != null
             ? NodeAuxEntity(

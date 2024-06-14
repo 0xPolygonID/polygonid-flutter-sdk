@@ -8,9 +8,9 @@ part of 'node_dto.dart';
 
 NodeDTO _$NodeDTOFromJson(Map<String, dynamic> json) => NodeDTO(
       children: (json['children'] as List<dynamic>)
-          .map((e) => HashDTO.fromJson(e as Map<String, dynamic>))
+          .map((e) => HashEntity.fromJson(e as String))
           .toList(),
-      hash: HashDTO.fromJson(json['hash'] as Map<String, dynamic>),
+      hash: HashEntity.fromJson(json['hash'] as String),
       type: $enumDecode(_$NodeTypeDTOEnumMap, json['type']),
     );
 

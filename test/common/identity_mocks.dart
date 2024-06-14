@@ -1,6 +1,6 @@
+import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
@@ -37,7 +37,7 @@ class IdentityMocks {
     network: CommonMocks.network,
   );
 
-  static HashEntity hash = HashEntity(data: CommonMocks.message);
+  static HashEntity hash = HashEntity.zero();
 
   static NodeEntity node =
       NodeEntity(hash: hash, children: [hash, hash], nodeType: NodeType.middle);

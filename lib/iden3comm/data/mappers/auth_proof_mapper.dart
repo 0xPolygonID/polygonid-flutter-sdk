@@ -1,19 +1,14 @@
 import 'package:polygonid_flutter_sdk/common/mappers/to_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/hash_mapper.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 
 class AuthProofMapper extends ToMapper<Map<String, dynamic>, MTProofEntity> {
-  final HashMapper _hashMapper;
-
-  AuthProofMapper(this._hashMapper);
+  AuthProofMapper();
 
   @override
   Map<String, dynamic> mapTo(MTProofEntity to) {
     Map<String, dynamic> result = {
       "existence": to.existence,
-      "siblings": to.siblings
-          .map((hashEntity) => _hashMapper.mapTo(hashEntity).toString())
-          .toList()
+      "siblings": to.siblings.map((hash) => hash.toString()).toList()
     };
 
     if (to.nodeAux != null) {

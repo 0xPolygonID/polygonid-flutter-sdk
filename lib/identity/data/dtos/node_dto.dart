@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import 'hash_dto.dart';
+import '../../domain/entities/hash_entity.dart';
 
 part 'node_dto.g.dart';
 
@@ -31,8 +31,8 @@ enum NodeTypeDTO {
 /// Represents a node DTO.
 @JsonSerializable(explicitToJson: true)
 class NodeDTO extends Equatable {
-  final HashDTO hash;
-  final List<HashDTO> children;
+  final HashEntity hash;
+  final List<HashEntity> children;
   final NodeTypeDTO type;
 
   const NodeDTO(

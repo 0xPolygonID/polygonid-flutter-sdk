@@ -5,7 +5,7 @@ class NodeTypeDTOMapper extends FromMapper<NodeDTO, NodeTypeDTO> {
   @override
   NodeTypeDTO mapFrom(NodeDTO from) {
     if (from.children.length == 3) {
-      if (from.children[2].toJson()['data'] ==
+      if (from.children[2].toJson() ==
           "0100000000000000000000000000000000000000000000000000000000000000") {
         return NodeTypeDTO.leaf;
       } else {

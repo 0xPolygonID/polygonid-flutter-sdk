@@ -24,14 +24,14 @@ import 'package:polygonid_flutter_sdk/proof/data/data_sources/proof_circuit_data
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/prover_lib_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/witness_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/circuits_to_download_param.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/witness_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/circuit_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/gist_mtproof_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/zkproof_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_mtproof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
@@ -52,7 +52,6 @@ class ProofRepositoryImpl extends ProofRepository {
   final CircuitTypeMapper _circuitTypeMapper;
   final ZKProofMapper _zkProofMapper;
   final AuthProofMapper _authProofMapper;
-  final GistMTProofMapper _gistMTProofMapper;
   final CircuitsFilesDataSource _circuitsFilesDataSource;
   final GetEnvUseCase _getEnvUseCase;
   final StacktraceManager _stacktraceManager;
@@ -76,7 +75,6 @@ class ProofRepositoryImpl extends ProofRepository {
     this._claimMapper,
     this._revocationStatusMapper,
     this._authProofMapper,
-    this._gistMTProofMapper,
     this._circuitsFilesDataSource,
     this._getEnvUseCase,
     this._stacktraceManager,
@@ -121,7 +119,7 @@ class ProofRepositoryImpl extends ProofRepository {
     ClaimDTO credentialDto = _claimMapper.mapTo(claim);
     Map<String, dynamic>? gistProofMap;
     if (gistProof != null) {
-      gistProofMap = _gistMTProofMapper.mapTo(gistProof);
+      gistProofMap = gistProof.toJson();
     }
     Map<String, dynamic>? incProofMap;
     if (incProof != null) {
@@ -304,8 +302,7 @@ class ProofRepositoryImpl extends ProofRepository {
         envEntity: envEntity,
       );
 
-      return _gistMTProofMapper
-          .mapFrom(_gistProofDataSource.getGistMTProof(gistProof));
+      return _gistProofDataSource.getGistMTProof(gistProof);
     } on PolygonIdSDKException catch (_) {
       rethrow;
     } catch (error) {

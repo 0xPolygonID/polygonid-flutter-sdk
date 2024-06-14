@@ -17,7 +17,7 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/secure_storage_profiles_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/node_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/rhs_node_dto.dart';
@@ -75,14 +75,14 @@ final rhsNodeDTOs = [
   RhsNodeDTO(
       node: NodeDTO(
         children: const [],
-        hash: HashDTO(data: Uint8List(32)),
+        hash: HashEntity(data: Uint8List(32)),
         type: NodeTypeDTO.middle,
       ),
       status: ''),
   RhsNodeDTO(
       node: NodeDTO(
         children: const [],
-        hash: HashDTO(data: Uint8List(32)),
+        hash: HashEntity(data: Uint8List(32)),
         type: NodeTypeDTO.leaf,
       ),
       status: ''),

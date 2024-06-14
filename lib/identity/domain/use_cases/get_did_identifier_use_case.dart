@@ -45,7 +45,7 @@ class GetDidIdentifierUseCase
           (genesisState) => _identityRepository.getDidIdentifier(
             blockchain: param.blockchain,
             network: param.network,
-            claimsRoot: genesisState.claimsTree.data,
+            claimsRoot: genesisState.claimsTree.string(),
             profileNonce: param.profileNonce,
             config: env.config,
           ),

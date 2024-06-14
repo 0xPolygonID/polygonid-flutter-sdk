@@ -1,4 +1,4 @@
-import 'hash_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 
 /// 3 types of nodes:
 ///

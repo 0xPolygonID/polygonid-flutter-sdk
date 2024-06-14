@@ -15,7 +15,7 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/node_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/node_type_dto_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/rhs_node_type_mapper.dart';
@@ -51,10 +51,10 @@ class RemoteIdentityDataSource {
         Map<String, dynamic> rhsNode = json.decode(rhsResponse.body);
         rhsNode['node']['children'] =
             (rhsNode['node']['children'] as List<dynamic>)
-                .map((e) => HashDTO.fromHex(e as String).toJson())
+                .map((e) => HashEntity.fromHex(e as String).toJson())
                 .toList();
         rhsNode['node']['hash'] =
-            HashDTO.fromHex((rhsNode['node']['hash'] as String)).toJson();
+            HashEntity.fromHex((rhsNode['node']['hash'] as String)).toJson();
         rhsNode['node']['type'] = "unknown";
         rhsNode['node']['type'] =
             NodeTypeDTOMapper().mapFrom(NodeDTO.fromJson(rhsNode['node'])).name;

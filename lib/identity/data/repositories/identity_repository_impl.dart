@@ -15,7 +15,7 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/secure_storage_profiles_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/id_description.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/node_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/rhs_node_dto.dart';
@@ -104,11 +104,11 @@ class IdentityRepositoryImpl extends IdentityRepository {
         hashIndex, hashValue, BigInt.one.toString());
     NodeDTO authClaimNode = NodeDTO(
         children: [
-          HashDTO.fromBigInt(BigInt.parse(hashIndex)),
-          HashDTO.fromBigInt(BigInt.parse(hashValue)),
-          HashDTO.fromBigInt(BigInt.one),
+          HashEntity.fromBigInt(BigInt.parse(hashIndex)),
+          HashEntity.fromBigInt(BigInt.parse(hashValue)),
+          HashEntity.fromBigInt(BigInt.one),
         ],
-        hash: HashDTO.fromBigInt(BigInt.parse(hashClaimNode)),
+        hash: HashEntity.fromBigInt(BigInt.parse(hashClaimNode)),
         type: NodeTypeDTO.leaf);
     return _nodeMapper.mapFrom(authClaimNode);
   }

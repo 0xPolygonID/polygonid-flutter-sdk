@@ -4,13 +4,11 @@ import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/smt_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_smt_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/hash_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/node_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/tree_state_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/tree_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/repositories/smt_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
-import 'package:polygonid_flutter_sdk/proof/data/mappers/mtproof_mapper.dart';
 
 import '../../../common/common_mocks.dart';
 import '../../../common/identity_mocks.dart';
@@ -24,8 +22,6 @@ MockStorageSMTDataSource storageSMTDataSource = MockStorageSMTDataSource();
 MockLibBabyJubJubDataSource libBabyJubJubDataSource =
     MockLibBabyJubJubDataSource();
 MockNodeMapper nodeMapper = MockNodeMapper();
-MockHashMapper hashMapper = MockHashMapper();
-MockMTProofMapper proofMapper = MockMTProofMapper();
 MockTreeTypeMapper treeTypeMapper = MockTreeTypeMapper();
 MockTreeStateMapper treeStateMapper = MockTreeStateMapper();
 
@@ -35,8 +31,6 @@ SMTRepository repository = SMTRepositoryImpl(
   storageSMTDataSource,
   libBabyJubJubDataSource,
   nodeMapper,
-  hashMapper,
-  proofMapper,
   treeTypeMapper,
   treeStateMapper,
 );
@@ -46,8 +40,6 @@ SMTRepository repository = SMTRepositoryImpl(
   StorageSMTDataSource,
   LibBabyJubJubDataSource,
   NodeMapper,
-  HashMapper,
-  MTProofMapper,
   TreeTypeMapper,
   TreeStateMapper,
 ])

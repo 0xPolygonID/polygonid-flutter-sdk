@@ -31,9 +31,9 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3messag
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/gist_mtproof_mapper.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_mtproof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
 import 'package:uuid/uuid.dart';
 
 class Iden3commRepositoryImpl extends Iden3commRepository {

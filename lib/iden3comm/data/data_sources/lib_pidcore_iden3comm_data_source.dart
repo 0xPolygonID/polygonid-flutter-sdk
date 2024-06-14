@@ -86,6 +86,7 @@ class LibPolygonIdCoreIden3commDataSource {
       "challenge": challenge,
     });
 
+    final stopwatch = Stopwatch()..start();
     if (Platform.isAndroid) {
       Uint8List outputBytes = await _methodChannel.invokeMethod(
         'PLGNAuthV2InputsMarshal',
@@ -96,10 +97,13 @@ class LibPolygonIdCoreIden3commDataSource {
 
       final output = Uint8ArrayUtils.uint8ListToString(outputBytes);
 
+      print('PLGNAuthV2InputsMarshal: got authInputs at: ${stopwatch.elapsedMilliseconds} ms');
+
       logger().d("getAuthV2Inputs: $output");
       return outputBytes;
     } else {
       String output = _polygonIdCoreIden3comm.getAuthInputs(input);
+      print('PLGNAuthV2InputsMarshal: got authInputs at: ${stopwatch.elapsedMilliseconds} ms');
 
       return Uint8ArrayUtils.uint8ListfromString(output);
     }

@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'node_aux_dto.g.dart';
+part 'node_aux_entity.g.dart';
 
 /*
  "node_aux": {

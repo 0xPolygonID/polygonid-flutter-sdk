@@ -1,15 +1,15 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import 'hash_dto.dart';
+import '../../domain/entities/hash_entity.dart';
 
 part 'identity_claim_dto.g.dart';
 
 @JsonSerializable()
 class IdentityClaimDTO extends Equatable {
-  final HashDTO hashIndex;
-  final HashDTO hashValue;
-  final List<HashDTO> children; // big ints
+  final HashEntity hashIndex;
+  final HashEntity hashValue;
+  final List<HashEntity> children; // big ints
 
   const IdentityClaimDTO(
       {required this.children,

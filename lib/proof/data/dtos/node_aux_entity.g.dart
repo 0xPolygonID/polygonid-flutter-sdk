@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'node_aux_dto.dart';
+part of 'node_aux_entity.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator

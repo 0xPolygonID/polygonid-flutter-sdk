@@ -19,20 +19,21 @@ part 'gist_mtproof_dto.g.dart';
     }
 }
 */
+
 /// Represents a gist proof DTO.
 @JsonSerializable(explicitToJson: true)
-class GistMTProofDTO extends Equatable {
+class GistMTProofEntity extends Equatable {
   @JsonKey(name: 'root')
   final String root;
   @JsonKey(name: 'proof')
-  final MTProofDTO proof;
+  final MTProofEntity proof;
 
-  const GistMTProofDTO({required this.root, required this.proof});
+  const GistMTProofEntity({required this.root, required this.proof});
 
-  factory GistMTProofDTO.fromJson(Map<String, dynamic> json) =>
-      _$GistMTProofDTOFromJson(json);
+  factory GistMTProofEntity.fromJson(Map<String, dynamic> json) =>
+      _$GistMTProofEntityFromJson(json);
 
-  Map<String, dynamic> toJson() => _$GistMTProofDTOToJson(this);
+  Map<String, dynamic> toJson() => _$GistMTProofEntityToJson(this);
 
   @override
   List<Object?> get props => [root, proof];

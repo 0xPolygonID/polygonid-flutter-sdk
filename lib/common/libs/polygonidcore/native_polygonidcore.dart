@@ -3755,9 +3755,12 @@ class NativePolygonIdCoreLib {
   void PLGNFreeStatus(
     ffi.Pointer<PLGNStatus> status,
   ) {
-    return _PLGNFreeStatus(
+    final stopwatch = Stopwatch()..start();
+    final res = _PLGNFreeStatus(
       status,
     );
+    print('PLGNFreeStatus executed in ${stopwatch.elapsed}');
+    return res;
   }
 
   late final _PLGNFreeStatusPtr =

@@ -39,7 +39,7 @@ main() {
             verify(proverLibWrapper.prover(captureAny, captureAny, captureAny))
                 .captured;
         expect(captured[0], CommonMocks.circuitId);
-        expect(captured[1], ProofMocks.zKeyFile);
+        expect(captured[1], CommonMocks.zkeyFilePath);
         expect(captured[2], ProofMocks.datFile);
       },
     );

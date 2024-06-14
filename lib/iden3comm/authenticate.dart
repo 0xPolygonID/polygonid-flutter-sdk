@@ -60,11 +60,10 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3messag
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/node_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/node_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
@@ -80,8 +79,7 @@ import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/circuit_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/gist_mtproof_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_mtproof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
@@ -1186,7 +1184,6 @@ class Authenticate {
         getItSdk<LibPolygonIdCoreIden3commDataSource>();
 
     AuthProofMapper authProofMapper = getItSdk<AuthProofMapper>();
-    GistMTProofMapper gistMTProofMapper = getItSdk<GistMTProofMapper>();
 
     Uint8List authInputsBytes =
         await libPolygonIdCoreIden3commDataSource.getAuthInputs(
@@ -1195,7 +1192,7 @@ class Authenticate {
       authClaim: authClaim,
       incProof: authProofMapper.mapTo(incProof),
       nonRevProof: authProofMapper.mapTo(nonRevProof),
-      gistProof: gistMTProofMapper.mapTo(gistProofEntity),
+      gistProof: gistProofEntity.toJson(),
       treeState: treeState,
       challenge: authChallenge,
       signature: signature,
@@ -1301,11 +1298,11 @@ class Authenticate {
         hashIndex, hashValue, BigInt.one.toString());
     NodeDTO authClaimNode = NodeDTO(
       children: [
-        HashDTO.fromBigInt(BigInt.parse(hashIndex)),
-        HashDTO.fromBigInt(BigInt.parse(hashValue)),
-        HashDTO.fromBigInt(BigInt.one),
+        HashEntity.fromBigInt(BigInt.parse(hashIndex)),
+        HashEntity.fromBigInt(BigInt.parse(hashValue)),
+        HashEntity.fromBigInt(BigInt.one),
       ],
-      hash: HashDTO.fromBigInt(BigInt.parse(hashClaimNode)),
+      hash: HashEntity.fromBigInt(BigInt.parse(hashClaimNode)),
       type: NodeTypeDTO.leaf,
     );
     NodeMapper nodeMapper = getItSdk<NodeMapper>();
@@ -1351,9 +1348,9 @@ class Authenticate {
     );
 
     String hash = await smtRepository.hashState(
-      claims: trees[0].data,
-      revocation: trees[1].data,
-      roots: trees[2].data,
+      claims: trees[0].string(),
+      revocation: trees[1].string(),
+      roots: trees[2].string(),
     );
 
     TreeStateEntity treeStateEntity = TreeStateEntity(
@@ -1384,10 +1381,8 @@ class Authenticate {
       envEntity: env,
     );
 
-    final gistMTProofMapper = getItSdk<GistMTProofMapper>();
     final gistMTProofDataSource = getItSdk<GistMTProofDataSource>();
-    final gistMTProofDTO = gistMTProofDataSource.getGistMTProof(gistProof);
-    gistProofEntity = gistMTProofMapper.mapFrom(gistMTProofDTO);
+    gistProofEntity = gistMTProofDataSource.getGistMTProof(gistProof);
 
     return AuthClaimCompanionObject()
       ..authClaim = authClaim
