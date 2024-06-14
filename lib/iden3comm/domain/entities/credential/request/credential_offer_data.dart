@@ -27,7 +27,7 @@ class CredentialOfferData {
   Map<String, dynamic> toJson() => {
         'id': id,
         'description': description,
-        'status': status?.name,
+        if (status != null) 'status': status?.name,
       };
 
   @override

@@ -16,8 +16,7 @@ enum Iden3MessageType {
       "https://iden3-communication.io/credentials/1.0/status-update"),
   paymentRequest(
       "https://iden3-communication.io/credentials/0.1/payment-request"),
-  payment(
-      "https://iden3-communication.io/credentials/0.1/payment"),
+  payment("https://iden3-communication.io/credentials/0.1/payment"),
   problemReport("https://didcomm.org/report-problem/2.0/problem-report"),
   unknown("");
 
