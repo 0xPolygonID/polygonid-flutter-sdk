@@ -61,11 +61,9 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/node_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/node_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
@@ -75,7 +73,7 @@ import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_dat
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/gist_mtproof_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_param.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/circuit_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/gist_mtproof_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
@@ -1296,22 +1294,20 @@ class Authenticate {
     );
     String hashClaimNode = await libBabyJubJub.hashPoseidon3(
         hashIndex, hashValue, BigInt.one.toString());
-    NodeDTO authClaimNode = NodeDTO(
+    NodeEntity authClaimNode = NodeEntity(
       children: [
         HashEntity.fromBigInt(BigInt.parse(hashIndex)),
         HashEntity.fromBigInt(BigInt.parse(hashValue)),
         HashEntity.fromBigInt(BigInt.one),
       ],
       hash: HashEntity.fromBigInt(BigInt.parse(hashClaimNode)),
-      type: NodeTypeDTO.leaf,
+      type: NodeType.leaf,
     );
-    NodeMapper nodeMapper = getItSdk<NodeMapper>();
-    NodeEntity nodeEntity = nodeMapper.mapFrom(authClaimNode);
 
     // INC PROOF
     SMTRepository smtRepository = getItSdk<SMTRepository>();
     incProof = await smtRepository.generateProof(
-      key: nodeEntity.hash,
+      key: authClaimNode.hash,
       type: TreeType.claims,
       did: genesisDid,
       privateKey: privateKey,
@@ -1319,7 +1315,7 @@ class Authenticate {
 
     // NON REV PROOF
     nonRevProof = await smtRepository.generateProof(
-      key: nodeEntity.hash,
+      key: authClaimNode.hash,
       type: TreeType.revocation,
       did: genesisDid,
       privateKey: privateKey,
@@ -1390,7 +1386,7 @@ class Authenticate {
       ..nonRevProof = nonRevProof
       ..gistProofEntity = gistProofEntity
       ..treeState = treeState
-      ..authClaimNode = nodeEntity;
+      ..authClaimNode = authClaimNode;
   }
 
   Future<Uint8List> _computeSigProof({

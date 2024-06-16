@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 
-part 'gist_mtproof_dto.g.dart';
+part 'gist_mtproof_entity.g.dart';
 
 /*
 {

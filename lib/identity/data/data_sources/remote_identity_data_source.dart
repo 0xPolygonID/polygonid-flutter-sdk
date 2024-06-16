@@ -8,6 +8,7 @@ import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.d
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/pinata_gateway_utils.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/rhs_node_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/node_type_entity_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
 
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
@@ -16,8 +17,7 @@ import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/node_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/node_type_dto_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/rhs_node_type_mapper.dart';
 
 class RemoteIdentityDataSource {
@@ -56,8 +56,9 @@ class RemoteIdentityDataSource {
         rhsNode['node']['hash'] =
             HashEntity.fromHex((rhsNode['node']['hash'] as String)).toJson();
         rhsNode['node']['type'] = "unknown";
-        rhsNode['node']['type'] =
-            NodeTypeDTOMapper().mapFrom(NodeDTO.fromJson(rhsNode['node'])).name;
+        rhsNode['node']['type'] = NodeTypeEntityMapper()
+            .mapFrom(NodeEntity.fromJson(rhsNode['node']))
+            .name;
         RhsNodeDTO rhsNodeResponse = RhsNodeDTO.fromJson(rhsNode);
         logger().d('rhs node: ${rhsNodeResponse.toString()}');
         return rhsNodeResponse;

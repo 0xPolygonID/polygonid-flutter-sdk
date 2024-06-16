@@ -5,6 +5,6 @@ import 'package:web3dart/crypto.dart';
 class StateIdentifierMapper extends ToMapper<String, String> {
   @override
   String mapTo(String to) {
-    return bytesToHex(Uint8ArrayUtils.bigIntToBytes(BigInt.parse(to)));
+    return BigInt.parse(to).toRadixString(16);
   }
 }

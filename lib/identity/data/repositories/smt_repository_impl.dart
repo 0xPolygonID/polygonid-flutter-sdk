@@ -1,11 +1,10 @@
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/smt_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_smt_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/node_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/tree_state_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/tree_type_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
@@ -15,7 +14,6 @@ class SMTRepositoryImpl implements SMTRepository {
   final SMTDataSource _smtDataSource;
   final StorageSMTDataSource _storageSMTDataSource;
   final LibBabyJubJubDataSource _libBabyJubJubDataSource;
-  final NodeMapper _nodeMapper;
   final TreeTypeMapper _treeTypeMapper;
   final TreeStateMapper _treeStateMapper;
 
@@ -23,7 +21,6 @@ class SMTRepositoryImpl implements SMTRepository {
     this._smtDataSource,
     this._storageSMTDataSource,
     this._libBabyJubJubDataSource,
-    this._nodeMapper,
     this._treeTypeMapper,
     this._treeStateMapper,
   );
@@ -59,7 +56,7 @@ class SMTRepositoryImpl implements SMTRepository {
     required String privateKey,
   }) {
     return _smtDataSource.addLeaf(
-      newNodeLeaf: _nodeMapper.mapTo(leaf),
+      newNodeLeaf: leaf,
       storeName: _treeTypeMapper.mapTo(type),
       did: did,
       privateKey: privateKey,
@@ -73,14 +70,12 @@ class SMTRepositoryImpl implements SMTRepository {
     required String did,
     required String privateKey,
   }) {
-    return _storageSMTDataSource
-        .getNode(
-          key: hash,
-          storeName: _treeTypeMapper.mapTo(type),
-          did: did,
-          privateKey: privateKey,
-        )
-        .then((dto) => _nodeMapper.mapFrom(dto));
+    return _storageSMTDataSource.getNode(
+      key: hash,
+      storeName: _treeTypeMapper.mapTo(type),
+      did: did,
+      privateKey: privateKey,
+    );
   }
 
   @override
@@ -106,7 +101,7 @@ class SMTRepositoryImpl implements SMTRepository {
   }) {
     return _storageSMTDataSource.addNode(
       key: hash,
-      node: _nodeMapper.mapTo(node),
+      node: node,
       storeName: _treeTypeMapper.mapTo(type),
       did: did,
       privateKey: privateKey,
@@ -148,7 +143,7 @@ class SMTRepositoryImpl implements SMTRepository {
   }) async {
     return _smtDataSource.getProofTreeRoot(
       proof: proof,
-      node: _nodeMapper.mapTo(node),
+      node: node,
     );
   }
 
@@ -159,7 +154,7 @@ class SMTRepositoryImpl implements SMTRepository {
   }) async {
     return _smtDataSource.verifyProof(
       proof: proof,
-      node: _nodeMapper.mapTo(node),
+      node: node,
       treeRoot: (treeRoot),
     );
   }

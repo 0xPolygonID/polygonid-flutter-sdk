@@ -37,7 +37,7 @@ class GetDidIdentifierUseCase
 
   @override
   Future<String> execute({required GetDidIdentifierParam param}) async {
-    EnvEntity env = await _getEnvUseCase.execute();
+    final env = await _getEnvUseCase.execute();
 
     return _getGenesisStateUseCase
         .execute(param: param.privateKey)

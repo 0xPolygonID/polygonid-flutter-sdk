@@ -33,7 +33,8 @@ class ProveUseCase extends FutureUseCase<ProveParam, ZKProofEntity> {
         circuitData: param.circuitData,
         atomicQueryInputs: param.inputs,
       );
-      print('ProveUseCase: calculateWitness: ${stopwatch.elapsedMilliseconds} ms');
+      print(
+          'ProveUseCase: calculateWitness: ${stopwatch.elapsedMilliseconds} ms');
 
       // Generate proof
       ZKProofEntity zkProofEntity = await _proofRepository.prove(

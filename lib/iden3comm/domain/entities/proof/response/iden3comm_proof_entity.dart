@@ -69,12 +69,12 @@ class Iden3commProofEntity extends ZKProofEntity {
   final int id;
   final String circuitId;
 
-  Iden3commProofEntity(
-      {required this.id,
-      required this.circuitId,
-      required ZKProofBaseEntity proof,
-      required List<String> pubSignals})
-      : super(proof: proof, pubSignals: pubSignals);
+  Iden3commProofEntity({
+    required this.id,
+    required this.circuitId,
+    required ZKProofBaseEntity proof,
+    required List<String> pubSignals,
+  }) : super(proof: proof, pubSignals: pubSignals);
 
   /// Creates an instance from the given json
   ///

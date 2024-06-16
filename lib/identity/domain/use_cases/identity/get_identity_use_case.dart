@@ -45,11 +45,13 @@ class GetIdentityUseCase
         DidEntity did = await _getDidUseCase.execute(param: param.genesisDid);
 
         String genesisDid = await _getDidIdentifierUseCase.execute(
-            param: GetDidIdentifierParam(
-                privateKey: param.privateKey!,
-                blockchain: did.blockchain,
-                network: did.network,
-                profileNonce: GENESIS_PROFILE_NONCE));
+          param: GetDidIdentifierParam(
+            privateKey: param.privateKey!,
+            blockchain: did.blockchain,
+            network: did.network,
+            profileNonce: GENESIS_PROFILE_NONCE,
+          ),
+        );
 
         if (did.did != genesisDid) {
           throw InvalidPrivateKeyException(
@@ -59,14 +61,17 @@ class GetIdentityUseCase
           );
         }
 
+        final publicIdentity = await _identityRepository.getIdentity(
+          genesisDid: genesisDid,
+        );
+
         // Get the [PrivateIdentityEntity]
-        identity = await _identityRepository
-            .getIdentity(genesisDid: param.genesisDid)
-            .then((identity) => PrivateIdentityEntity(
-                did: param.genesisDid,
-                publicKey: identity.publicKey,
-                profiles: identity.profiles,
-                privateKey: param.privateKey!));
+        identity = PrivateIdentityEntity(
+          did: param.genesisDid,
+          publicKey: publicIdentity.publicKey,
+          profiles: publicIdentity.profiles,
+          privateKey: param.privateKey!,
+        );
       } else {
         identity =
             await _identityRepository.getIdentity(genesisDid: param.genesisDid);

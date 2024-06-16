@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'gist_mtproof_dto.dart';
+part of 'gist_mtproof_entity.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator

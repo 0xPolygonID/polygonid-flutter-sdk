@@ -1,29 +1,30 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'node_dto.dart';
+part of 'node_entity.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-NodeDTO _$NodeDTOFromJson(Map<String, dynamic> json) => NodeDTO(
+NodeEntity _$NodeEntityFromJson(Map<String, dynamic> json) => NodeEntity(
       children: (json['children'] as List<dynamic>)
           .map((e) => HashEntity.fromJson(e as String))
           .toList(),
       hash: HashEntity.fromJson(json['hash'] as String),
-      type: $enumDecode(_$NodeTypeDTOEnumMap, json['type']),
+      type: $enumDecode(_$NodeTypeEnumMap, json['type']),
     );
 
-Map<String, dynamic> _$NodeDTOToJson(NodeDTO instance) => <String, dynamic>{
+Map<String, dynamic> _$NodeEntityToJson(NodeEntity instance) =>
+    <String, dynamic>{
       'hash': instance.hash.toJson(),
       'children': instance.children.map((e) => e.toJson()).toList(),
-      'type': _$NodeTypeDTOEnumMap[instance.type]!,
+      'type': _$NodeTypeEnumMap[instance.type]!,
     };
 
-const _$NodeTypeDTOEnumMap = {
-  NodeTypeDTO.middle: 'middle',
-  NodeTypeDTO.leaf: 'leaf',
-  NodeTypeDTO.state: 'state',
-  NodeTypeDTO.empty: 'empty',
-  NodeTypeDTO.unknown: 'unknown',
+const _$NodeTypeEnumMap = {
+  NodeType.middle: 'middle',
+  NodeType.leaf: 'leaf',
+  NodeType.state: 'state',
+  NodeType.empty: 'empty',
+  NodeType.unknown: 'unknown',
 };

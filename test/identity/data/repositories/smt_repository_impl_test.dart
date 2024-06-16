@@ -4,7 +4,6 @@ import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/smt_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_smt_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/node_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/tree_state_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/tree_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/repositories/smt_repository_impl.dart';
@@ -21,7 +20,6 @@ MockSMTDataSource smtDataSource = MockSMTDataSource();
 MockStorageSMTDataSource storageSMTDataSource = MockStorageSMTDataSource();
 MockLibBabyJubJubDataSource libBabyJubJubDataSource =
     MockLibBabyJubJubDataSource();
-MockNodeMapper nodeMapper = MockNodeMapper();
 MockTreeTypeMapper treeTypeMapper = MockTreeTypeMapper();
 MockTreeStateMapper treeStateMapper = MockTreeStateMapper();
 
@@ -30,7 +28,6 @@ SMTRepository repository = SMTRepositoryImpl(
   smtDataSource,
   storageSMTDataSource,
   libBabyJubJubDataSource,
-  nodeMapper,
   treeTypeMapper,
   treeStateMapper,
 );
@@ -39,7 +36,6 @@ SMTRepository repository = SMTRepositoryImpl(
   SMTDataSource,
   StorageSMTDataSource,
   LibBabyJubJubDataSource,
-  NodeMapper,
   TreeTypeMapper,
   TreeStateMapper,
 ])

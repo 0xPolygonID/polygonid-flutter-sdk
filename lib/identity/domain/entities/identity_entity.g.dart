@@ -1,12 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'identity_dto.dart';
+part of 'identity_entity.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-IdentityDTO _$IdentityDTOFromJson(Map<String, dynamic> json) => IdentityDTO(
+IdentityEntity _$IdentityEntityFromJson(Map<String, dynamic> json) =>
+    IdentityEntity(
       did: json['did'] as String,
       publicKey:
           (json['publicKey'] as List<dynamic>).map((e) => e as String).toList(),
@@ -15,7 +16,7 @@ IdentityDTO _$IdentityDTOFromJson(Map<String, dynamic> json) => IdentityDTO(
       ),
     );
 
-Map<String, dynamic> _$IdentityDTOToJson(IdentityDTO instance) =>
+Map<String, dynamic> _$IdentityEntityToJson(IdentityEntity instance) =>
     <String, dynamic>{
       'did': instance.did,
       'publicKey': instance.publicKey,

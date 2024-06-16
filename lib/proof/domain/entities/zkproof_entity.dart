@@ -40,11 +40,13 @@ class ZKProofBaseEntity {
   final String protocol;
   final String? curve;
 
-  const ZKProofBaseEntity({required this.piA,
+  const ZKProofBaseEntity({
+    required this.piA,
     required this.piB,
     required this.piC,
     required this.protocol,
-    required this.curve,});
+    required this.curve,
+  });
 
   factory ZKProofBaseEntity.fromJson(Map<String, dynamic> json) =>
       ZKProofBaseEntity(
@@ -57,14 +59,12 @@ class ZKProofBaseEntity {
         curve: json['curve'] as String?,
       );
 
-  Map<String, dynamic> toJson() =>
-      <String, dynamic>{
+  Map<String, dynamic> toJson() => <String, dynamic>{
         'pi_a': piA,
         'pi_b': piB,
         'pi_c': piC,
         'protocol': protocol,
-        if (curve != null)
-          'curve': curve,
+        if (curve != null) 'curve': curve,
       };
 
   @override
@@ -74,13 +74,13 @@ class ZKProofBaseEntity {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is ZKProofBaseEntity &&
-              runtimeType == other.runtimeType &&
-              listEquals(piA, other.piA) &&
-              listEquals(piB, other.piB) &&
-              listEquals(piC, other.piC) &&
-              protocol == other.protocol &&
-              curve == other.curve;
+      other is ZKProofBaseEntity &&
+          runtimeType == other.runtimeType &&
+          listEquals(piA, other.piA) &&
+          listEquals(piB, other.piB) &&
+          listEquals(piC, other.piC) &&
+          protocol == other.protocol &&
+          curve == other.curve;
 
   @override
   int get hashCode => runtimeType.hashCode;
@@ -133,17 +133,15 @@ class ZKProofEntity {
   factory ZKProofEntity.fromBase64(String data) =>
       ZKProofEntity.fromJson(jsonDecode(Base64Util.decode(data)));
 
-  factory ZKProofEntity.fromJson(Map<String, dynamic> json) =>
-      ZKProofEntity(
+  factory ZKProofEntity.fromJson(Map<String, dynamic> json) => ZKProofEntity(
         proof:
-        ZKProofBaseEntity.fromJson(json['proof'] as Map<String, dynamic>),
+            ZKProofBaseEntity.fromJson(json['proof'] as Map<String, dynamic>),
         pubSignals: (json['pub_signals'] as List<dynamic>)
             .map((e) => e as String)
             .toList(),
       );
 
-  Map<String, dynamic> toJson() =>
-      <String, dynamic>{
+  Map<String, dynamic> toJson() => <String, dynamic>{
         'proof': proof.toJson(),
         'pub_signals': pubSignals,
       };
@@ -155,10 +153,10 @@ class ZKProofEntity {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is ZKProofEntity &&
-              runtimeType == other.runtimeType &&
-              proof == other.proof &&
-              listEquals(pubSignals, other.pubSignals);
+      other is ZKProofEntity &&
+          runtimeType == other.runtimeType &&
+          proof == other.proof &&
+          listEquals(pubSignals, other.pubSignals);
 
   @override
   int get hashCode => runtimeType.hashCode;

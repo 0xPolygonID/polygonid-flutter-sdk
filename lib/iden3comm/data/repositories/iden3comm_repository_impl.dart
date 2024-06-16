@@ -31,7 +31,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3messag
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/gist_mtproof_mapper.dart';
 import 'package:uuid/uuid.dart';
@@ -181,8 +181,8 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
 
   @override
   Future<String> getChallenge({required String message}) {
-    return Future.value(_qMapper.mapFrom(message))
-        .then((q) => _libBabyJubJubDataSource.hashPoseidon(q));
+    final q = _qMapper.mapFrom(message);
+    return _libBabyJubJubDataSource.hashPoseidon(q);
   }
 
   @override

@@ -10,15 +10,15 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_auth_claim_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_latest_state_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/sign_message_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/get_gist_mtproof_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/gist_proof_cache.dart';
@@ -65,39 +65,41 @@ class GetAuthInputsUseCase
           param: GetIdentityParam(
               genesisDid: param.genesisDid, privateKey: param.privateKey));
 
-      print(
+      logger().i(
           'GetAuthInputsUseCase: got identity at: ${stopwatch.elapsedMilliseconds} ms');
 
       List<String> authClaim =
           await _getAuthClaimUseCase.execute(param: identity.publicKey);
-      print(
+      logger().i(
           'GetAuthInputsUseCase: got authClaim at: ${stopwatch.elapsedMilliseconds} ms');
       NodeEntity authClaimNode =
           await _identityRepository.getAuthClaimNode(children: authClaim);
       _stacktraceManager.addTrace("[GetAuthInputsUseCase] Auth claim node");
 
-      print(
+      logger().i(
           'GetAuthInputsUseCase: got authClaimNode at: ${stopwatch.elapsedMilliseconds} ms');
 
       MTProofEntity incProof = await _smtRepository.generateProof(
-          key: authClaimNode.hash,
-          type: TreeType.claims,
-          did: param.genesisDid,
-          privateKey: param.privateKey);
+        key: authClaimNode.hash,
+        type: TreeType.claims,
+        did: param.genesisDid,
+        privateKey: param.privateKey,
+      );
       _stacktraceManager
           .addTrace("[GetAuthInputsUseCase] Inc proof: ${incProof.toString()}");
 
-      print(
+      logger().i(
           'GetAuthInputsUseCase: got incProof at: ${stopwatch.elapsedMilliseconds} ms');
 
       MTProofEntity nonRevProof = await _smtRepository.generateProof(
-          key: authClaimNode.hash,
-          type: TreeType.revocation,
-          did: param.genesisDid,
-          privateKey: param.privateKey);
+        key: authClaimNode.hash,
+        type: TreeType.revocation,
+        did: param.genesisDid,
+        privateKey: param.privateKey,
+      );
       _stacktraceManager.addTrace("[GetAuthInputsUseCase] Non rev proof");
 
-      print(
+      logger().i(
           'GetAuthInputsUseCase: got nonRevProof at: ${stopwatch.elapsedMilliseconds} ms');
 
       // hash of clatr, revtr, rootr
@@ -113,7 +115,7 @@ class GetAuthInputsUseCase
       _stacktraceManager.addTrace(
           "[GetAuthInputsUseCase][MainFlow] Gist proof: ${jsonEncode(gistProof.toJson())}");
 
-      print(
+      logger().i(
           'GetAuthInputsUseCase: got gist proof at: ${stopwatch.elapsedMilliseconds} ms');
 
       String signature = await _signMessageUseCase.execute(
@@ -122,7 +124,7 @@ class GetAuthInputsUseCase
           param.challenge,
         ),
       );
-      print(
+      logger().i(
           'GetAuthInputsUseCase: got all for inputs in: ${stopwatch.elapsedMilliseconds} ms');
 
       Uint8List authInputs = await _iden3commRepository.getAuthInputs(

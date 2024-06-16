@@ -11,7 +11,7 @@ class CommonMocks {
   static String did = "did:polygonid:polygon:mumbai:$id";
   static String id = "theId";
   static String identifier = "theIdentifier";
-  static String privateKey = "thePrivateKey";
+  static String privateKey = "000000";
   static Map<BigInt, String> profiles = {
     BigInt.zero: "${did}0",
     BigInt.one: "${did}1"
@@ -56,7 +56,7 @@ class CommonMocks {
 
   static FilterEntity filter = FilterEntity(name: name, value: aMap);
 
-  static Key key = Key.fromLength(3);
+  static Key key = Key.fromBase16(CommonMocks.privateKey);
 
   static Map<String, dynamic> envJson = {
     'pushUrl': url,

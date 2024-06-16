@@ -5,7 +5,7 @@ import 'package:sembast/sembast.dart';
 import '../../../constants.dart';
 import '../../domain/exceptions/smt_exceptions.dart';
 import '../../domain/entities/hash_entity.dart';
-import '../dtos/node_dto.dart';
+import '../../domain/entities/node_entity.dart';
 
 /// [StoreRef] wrapper
 /// Delegates all call to [IdentitySMTStoreRefWrapper._store]
@@ -44,23 +44,23 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
 
   // getNode gets a node by key from the SMT.  Empty nodes are not stored in the
   // tree; they are all the same and assumed to always exist.
-  Future<NodeDTO> getNode(
+  Future<NodeEntity> getNode(
       {required HashEntity key,
       required String storeName,
       required String did,
       required String privateKey}) {
     if ((BigInt.parse(key.toString())) == BigInt.zero) {
-      return Future.value(NodeDTO(
+      return Future.value(NodeEntity(
         children: const [],
         hash: HashEntity.fromBigInt(BigInt.zero),
-        type: NodeTypeDTO.empty,
+        type: NodeType.empty,
       ));
     }
     return getDatabase(did: did, privateKey: privateKey).then((database) =>
         database
             .transaction((transaction) => getTransact(
                 storeName: storeName, transaction: transaction, key: key))
-            .then((snapshot) => NodeDTO.fromJson(snapshot!))
+            .then((snapshot) => NodeEntity.fromJson(snapshot!))
             .whenComplete(() => database.close()));
   }
 
@@ -74,7 +74,7 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
 
   Future<void> addNode(
       {required HashEntity key,
-      required NodeDTO node,
+      required NodeEntity node,
       required String storeName,
       required String did,
       required String privateKey}) {
@@ -93,7 +93,7 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
       {required String storeName,
       required DatabaseClient transaction,
       required HashEntity key,
-      required NodeDTO node}) async {
+      required NodeEntity node}) async {
     await _storeRefWrapper.put(
         transaction, storeName, key.toString(), node.toJson());
   }
