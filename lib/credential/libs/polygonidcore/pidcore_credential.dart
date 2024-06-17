@@ -35,6 +35,8 @@ class PolygonIdCoreCredential extends PolygonIdCore {
       if (consumedStatus != null) {
         freeAllocatedMemory();
         _stacktraceManager
+            .addTrace("libpolygonid - PLGNCreateClaim: $consumedStatus");
+        _stacktraceManager
             .addError("libpolygonid - PLGNCreateClaim: $consumedStatus");
         throw CoreLibraryException(
           coreLibraryName: "libpolygonid",
@@ -69,6 +71,8 @@ class PolygonIdCoreCredential extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         malloc.free(status);
+        _stacktraceManager
+            .addTrace("libpolygonid: PLGNCacheCredentials: $consumedStatus");
         _stacktraceManager
             .addError("libpolygonid: PLGNCacheCredentials: $consumedStatus");
         throw CoreLibraryException(
@@ -105,6 +109,8 @@ class PolygonIdCoreCredential extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
+        _stacktraceManager.addTrace(
+            "libpolygonid: PLGNW3CCredentialFromOnchainHex: $consumedStatus");
         _stacktraceManager.addError(
             "libpolygonid: PLGNW3CCredentialFromOnchainHex: $consumedStatus");
         throw CoreLibraryException(

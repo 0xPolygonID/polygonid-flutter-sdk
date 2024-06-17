@@ -81,20 +81,28 @@ class WitnessV3OnchainLib {
       logger().e("$result: ${result.toString()}. Error: $errormsg");
       freeAllocatedMemory();
       StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+
+      _stacktraceManager.addTrace(
+          "libwitnesscalc_credentialAtomicQueryV3OnChain: witnesscalc_credentialAtomicQueryV3OnChain: $errormsg");
       _stacktraceManager.addError(
           "libwitnesscalc_credentialAtomicQueryV3OnChain: witnesscalc_credentialAtomicQueryV3OnChain: $errormsg");
+
       throw CoreLibraryException(
         coreLibraryName: "libwitnesscalc_credentialAtomicQueryV3OnChain",
         methodName: "witnesscalc_credentialAtomicQueryV3OnChain",
         errorMessage: errormsg,
       );
     } else if (result == WITNESSCALC_ERROR_SHORT_BUFFER) {
+      freeAllocatedMemory();
+
       logger().e(
           "$result: ${result.toString()}. Error: Short buffer for proof or public");
-      freeAllocatedMemory();
       StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+      _stacktraceManager.addTrace(
+          "libwitnesscalc_credentialAtomicQueryV3OnChain: witnesscalc_credentialAtomicQueryV3OnChain: Short buffer for proof or public");
       _stacktraceManager.addError(
           "libwitnesscalc_credentialAtomicQueryV3OnChain: witnesscalc_credentialAtomicQueryV3OnChain: Short buffer for proof or public");
+
       throw CoreLibraryException(
         coreLibraryName: "libwitnesscalc_credentialAtomicQueryV3OnChain",
         methodName: "witnesscalc_credentialAtomicQueryV3OnChain",

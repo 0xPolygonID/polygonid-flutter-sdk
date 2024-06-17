@@ -15,6 +15,7 @@ class PolygonIdCoreProof extends PolygonIdCore {
   final StacktraceManager _stacktraceManager;
 
   PolygonIdCoreProof(this._stacktraceManager);
+
   String proofFromSmartContract(String input) {
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<ffi.Char>> response =
@@ -33,6 +34,8 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
+        _stacktraceManager.addTrace(
+            "libpolygonid - PLGNProofFromSmartContract: $consumedStatus");
         _stacktraceManager.addError(
             "libpolygonid - PLGNProofFromSmartContract: $consumedStatus");
         throw CoreLibraryException(
@@ -75,6 +78,8 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
+        _stacktraceManager.addTrace(
+            "libpolygonid - PLGNAtomicQuerySigV2Inputs: $consumedStatus");
         _stacktraceManager.addError(
             "libpolygonid - PLGNAtomicQuerySigV2Inputs: $consumedStatus");
         throw CoreLibraryException(
@@ -117,6 +122,8 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
+        _stacktraceManager.addTrace(
+            "libpolygonid - PLGNAtomicQuerySigV2OnChainInputs: $consumedStatus");
         _stacktraceManager.addError(
             "libpolygonid - PLGNAtomicQuerySigV2OnChainInputs: $consumedStatus");
         throw CoreLibraryException(
@@ -159,6 +166,8 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
+        _stacktraceManager.addTrace(
+            "libpolygonid - PLGNAtomicQueryMtpV2Inputs: $consumedStatus");
         _stacktraceManager.addError(
             "libpolygonid - PLGNAtomicQueryMtpV2Inputs: $consumedStatus");
         throw CoreLibraryException(
@@ -201,6 +210,8 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
+        _stacktraceManager.addTrace(
+            "libpolygonid - PLGNAtomicQueryMtpV2OnChainInputs: $consumedStatus");
         _stacktraceManager.addError(
             "libpolygonid - PLGNAtomicQueryMtpV2OnChainInputs: $consumedStatus");
         throw CoreLibraryException(
@@ -243,6 +254,8 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
+        _stacktraceManager.addTrace(
+            "libpolygonid - PLGNAtomicQueryV3Inputs: $consumedStatus");
         _stacktraceManager.addError(
             "libpolygonid - PLGNAtomicQueryV3Inputs: $consumedStatus");
         throw CoreLibraryException(
@@ -285,6 +298,8 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
+        _stacktraceManager.addTrace(
+            "libpolygonid - PLGNAtomicQueryV3OnChainInputs: $consumedStatus");
         _stacktraceManager.addError(
             "libpolygonid - PLGNAtomicQueryV3OnChainInputs: $consumedStatus");
         throw CoreLibraryException(
@@ -327,6 +342,8 @@ class PolygonIdCoreProof extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
+        _stacktraceManager.addTrace(
+            "libpolygonid - PLGNALinkedMultiQueryInputs: $consumedStatus");
         _stacktraceManager.addError(
             "libpolygonid - PLGNALinkedMultiQueryInputs: $consumedStatus");
         throw CoreLibraryException(
