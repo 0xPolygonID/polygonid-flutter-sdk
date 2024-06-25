@@ -34,6 +34,8 @@ class PolygonIdCoreIden3comm extends PolygonIdCore {
       String? consumedStatus = consumeStatus(status, "");
       if (consumedStatus != null) {
         freeAllocatedMemory();
+        _stacktraceManager.addTrace(
+            "libpolygonid - PLGNAuthV2InputsMarshal: $consumedStatus");
         _stacktraceManager.addError(
             "libpolygonid - PLGNAuthV2InputsMarshal: $consumedStatus");
         throw CoreLibraryException(

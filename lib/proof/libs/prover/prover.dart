@@ -95,6 +95,7 @@ class ProverLib {
       logger().i("$result: ${result.toString()}. Error: $errormsg");
       freeAllocatedMemory();
       StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+      _stacktraceManager.addTrace("librapidsnark - groth16_prover: $errormsg");
       _stacktraceManager.addError("librapidsnark - groth16_prover: $errormsg");
       throw CoreLibraryException(
         coreLibraryName: "librapidsnark",
@@ -106,6 +107,8 @@ class ProverLib {
           "$result: ${result.toString()}. Error: Short buffer for proof or public");
       freeAllocatedMemory();
       StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+      _stacktraceManager.addTrace(
+          "librapidsnark - groth16_prover: Short buffer for proof or public");
       _stacktraceManager.addError(
           "librapidsnark - groth16_prover: Short buffer for proof or public");
       throw CoreLibraryException(

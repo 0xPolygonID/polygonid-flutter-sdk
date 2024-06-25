@@ -81,6 +81,8 @@ class WitnessSigV2Lib {
       freeAllocatedMemory();
       StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
       _stacktraceManager
+          .addTrace("libwitnesscalc_credentialAtomicQuerySigV2: $errormsg");
+      _stacktraceManager
           .addError("libwitnesscalc_credentialAtomicQuerySigV2: $errormsg");
       throw CoreLibraryException(
         coreLibraryName: "libwitnesscalc_credentialAtomicQuerySigV2",

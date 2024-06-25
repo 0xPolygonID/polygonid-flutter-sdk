@@ -87,6 +87,8 @@ class WitnessLinkedMultiQuery10 {
       logger().e("$result: ${result.toString()}. Error: $errormsg");
       freeAllocatedMemory();
       StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+      _stacktraceManager.addTrace(
+          "libwitnesscalc_linked_multi_query_10: witnesscalc_linkedMultiQuery10: $errormsg");
       _stacktraceManager.addError(
           "libwitnesscalc_linked_multi_query_10: witnesscalc_linkedMultiQuery10: $errormsg");
       throw CoreLibraryException(

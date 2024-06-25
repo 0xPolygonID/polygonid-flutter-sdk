@@ -15,6 +15,7 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
   final StacktraceManager _stacktraceManager;
 
   PolygonIdCoreIdentity(this._stacktraceManager);
+
   String calculateGenesisId(String input, String config) {
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Char> cfg = config.toNativeUtf8().cast<ffi.Char>();
@@ -35,6 +36,9 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
 
       if (consumedStatus != null) {
         freeAllocatedMemory();
+
+        _stacktraceManager
+            .addTrace("libpolygonid - PLGNNewGenesisID: $consumedStatus");
         _stacktraceManager
             .addError("libpolygonid - PLGNNewGenesisID: $consumedStatus");
         throw CoreLibraryException(
@@ -75,6 +79,9 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
 
       if (consumedStatus != null) {
         freeAllocatedMemory();
+
+        _stacktraceManager
+            .addTrace("libpolygonid - PLGNProfileID: $consumedStatus");
         _stacktraceManager
             .addError("libpolygonid - PLGNProfileID: $consumedStatus");
         throw CoreLibraryException(
@@ -118,6 +125,9 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
       // ignore: unnecessary_null_comparison
       if (consumedStatus != null) {
         freeAllocatedMemory();
+
+        _stacktraceManager
+            .addTrace("libpolygonid - PLGNIDToInt: $consumedStatus");
         _stacktraceManager
             .addError("libpolygonid - PLGNIDToInt: $consumedStatus");
         throw CoreLibraryException(
