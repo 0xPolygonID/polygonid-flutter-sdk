@@ -17,6 +17,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
@@ -483,7 +484,7 @@ class Authenticate {
       if (kDebugMode) {
         //just for debug
         String inputs = Uint8ArrayUtils.uint8ListToString(atomicQueryInputs);
-        print("atomicQueryInputs: $inputs");
+        logger().i("atomicQueryInputs: $inputs");
       }
 
       var vpProof;
@@ -1013,8 +1014,8 @@ class Authenticate {
     do {
       randomNumber = randomBigInt(248, max: maxVal, random: random);
       if (kDebugMode) {
-        print("random number $randomNumber");
-        print("less than safeMax ${randomNumber < safeMaxVal}");
+        logger().i("random number $randomNumber");
+        logger().i("less than safeMax ${randomNumber < safeMaxVal}");
       }
     } while (randomNumber >= safeMaxVal);
 

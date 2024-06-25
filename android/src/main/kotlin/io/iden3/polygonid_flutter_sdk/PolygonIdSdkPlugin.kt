@@ -36,9 +36,7 @@ class PolygonIdSdkPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-        if (call.method == "getPlatformVersion") {
-            result.success("Android ${android.os.Build.VERSION.RELEASE}")
-        } else if (call.method == "prove") {
+        if (call.method == "prove") {
             val zKeyPath = call.argument<String>("zKeyPath")
             val wtnsBytes = call.argument<ByteArray>("wtnsBytes")
 
@@ -50,10 +48,6 @@ class PolygonIdSdkPlugin : FlutterPlugin, MethodCallHandler {
                     "pub_signals" to proof.publicSignals
                 )
             )
-        } else if (call.method == "PLGNAuthV2InputsMarshal") {
-            val input = call.argument<String>("input")!!
-            val output = PLGNAuthV2InputsMarshal(input)
-            result.success(output)
         } else {
             result.notImplemented()
         }

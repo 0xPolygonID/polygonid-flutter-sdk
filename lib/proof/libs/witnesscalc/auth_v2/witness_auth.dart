@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
@@ -74,9 +75,7 @@ class WitnessAuthV2Lib {
     } else if (result == WITNESSCALC_ERROR) {
       ffi.Pointer<Utf8> jsonString = errorMsg.cast<Utf8>();
       String errormsg = jsonString.toDartString();
-      if (kDebugMode) {
-        print("Code: ${result.toString()}. Error: $errormsg");
-      }
+      logger().e("Code: ${result.toString()}. Error: $errormsg");
       freeAllocatedMemory();
       throw CoreLibraryException(
         coreLibraryName: "libwitnesscalc_authV2",
@@ -84,9 +83,7 @@ class WitnessAuthV2Lib {
         errorMessage: errormsg,
       );
     } else if (result == WITNESSCALC_ERROR_SHORT_BUFFER) {
-      if (kDebugMode) {
-        print("Code: $result. Error: Short buffer for proof or public");
-      }
+      logger().e("Code: $result. Error: Short buffer for proof or public");
       freeAllocatedMemory();
       throw CoreLibraryException(
         coreLibraryName: "libwitnesscalc_authV2",

@@ -221,37 +221,6 @@ inline const char *ToString(PLGNStatusCode v) {
     }
 }
 
-JNIEXPORT jbyteArray JNICALL Java_io_iden3_polygonid_1flutter_1sdk_RapidsnarkJniBridge_PLGNAuthV2InputsMarshal(
-        JNIEnv *env, jobject obj,
-        jstring input,
-        jbyteArray response,
-        jbyteArray errorMsg
-) {
-    LOGI("PLGNAuthV2InputsMarshal native called");
-
-    const char *constNativeInput = env->GetStringUTFChars(input, nullptr);
-    char *nativeInput = strcpy(new char[strlen(constNativeInput)], constNativeInput);
-
-    char **responseBuffer = new char *[1];
-
-    PLGNStatus **status = new PLGNStatus *[1];
-
-    // Call the PLGNAuthV2InputsMarshal function
-    unsigned char result = PLGNAuthV2InputsMarshal(responseBuffer, nativeInput, status);
-
-    LOGI("PLGNAuthV2InputsMarshal output:%s", responseBuffer[0]);
-
-    // Release the native buffers
-    env->ReleaseStringUTFChars(input, constNativeInput);
-
-    jbyteArray responseByteArray = env->NewByteArray(strlen(responseBuffer[0]));
-    env->SetByteArrayRegion(responseByteArray, 0, strlen(responseBuffer[0]),
-                            (jbyte *) responseBuffer[0]);
-
-    return responseByteArray;
-}
-
-
 #ifdef __cplusplus
 }
 #endif

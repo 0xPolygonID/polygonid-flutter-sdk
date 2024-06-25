@@ -32,7 +32,10 @@ main() {
       () async {
         expect(
             await dataSource.prove(
-                CommonMocks.circuitId, CommonMocks.zkeyFilePath, ProofMocks.datFile),
+              CommonMocks.circuitId,
+              CommonMocks.zkeyFilePath,
+              ProofMocks.datFile,
+            ),
             mockProverRes);
 
         var captured =

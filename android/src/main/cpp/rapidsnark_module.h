@@ -46,13 +46,6 @@ JNIEXPORT jlong JNICALL Java_io_iden3_polygonid_1flutter_1sdk_RapidsnarkJniBridg
         jbyteArray errorMsg, jlong errorMsgMaxSize
 );
 
-JNIEXPORT jbyteArray JNICALL Java_io_iden3_polygonid_1flutter_1sdk_RapidsnarkJniBridge_PLGNAuthV2InputsMarshal(
-        JNIEnv *env, jobject obj,
-        jstring input,
-        jbyteArray response,
-        jbyteArray errorMsg
-);
-
 }
 
 #endif //ANDROID_CMAKE_RAPIDSNARK_MODULE_H

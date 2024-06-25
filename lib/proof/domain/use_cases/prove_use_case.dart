@@ -27,13 +27,13 @@ class ProveUseCase extends FutureUseCase<ProveParam, ZKProofEntity> {
     Stopwatch stopwatch = Stopwatch()..start();
     try {
       final input = String.fromCharCodes(param.inputs);
-      print('ProveUseCase: input: $input');
+      logger().i('ProveUseCase: input: $input');
       // Calculate witness
       Uint8List wtnsBytes = await _proofRepository.calculateWitness(
         circuitData: param.circuitData,
         atomicQueryInputs: param.inputs,
       );
-      print(
+      logger().i(
           'ProveUseCase: calculateWitness: ${stopwatch.elapsedMilliseconds} ms');
 
       // Generate proof

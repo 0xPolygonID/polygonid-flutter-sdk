@@ -55,8 +55,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/libs/polygonidcore/pidcore_iden3
     }
 * */
 class LibPolygonIdCoreIden3commDataSource {
-  static const _methodChannel = MethodChannel("polygonid_flutter_sdk");
-
   final PolygonIdCoreIden3comm _polygonIdCoreIden3comm;
 
   LibPolygonIdCoreIden3commDataSource(
@@ -86,26 +84,8 @@ class LibPolygonIdCoreIden3commDataSource {
       "challenge": challenge,
     });
 
-    final stopwatch = Stopwatch()..start();
-    if (Platform.isAndroid) {
-      Uint8List outputBytes = await _methodChannel.invokeMethod(
-        'PLGNAuthV2InputsMarshal',
-        {
-          "input": input,
-        },
-      );
+    String output = _polygonIdCoreIden3comm.getAuthInputs(input);
 
-      final output = Uint8ArrayUtils.uint8ListToString(outputBytes);
-
-      print('PLGNAuthV2InputsMarshal: got authInputs at: ${stopwatch.elapsedMilliseconds} ms');
-
-      logger().d("getAuthV2Inputs: $output");
-      return outputBytes;
-    } else {
-      String output = _polygonIdCoreIden3comm.getAuthInputs(input);
-      print('PLGNAuthV2InputsMarshal: got authInputs at: ${stopwatch.elapsedMilliseconds} ms');
-
-      return Uint8ArrayUtils.uint8ListfromString(output);
-    }
+    return Uint8ArrayUtils.uint8ListfromString(output);
   }
 }

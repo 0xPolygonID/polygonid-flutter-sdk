@@ -37,23 +37,23 @@ set_target_properties(
         IMPORTED_LOCATION ${SHARED_PROVER_LIBRARY_SO}
 )
 
-set(
-        SHARED_SDK_LIBRARY_SO
-        ${CMAKE_CURRENT_SOURCE_DIR}/../jniLibs/${CMAKE_ANDROID_ARCH_ABI}/libpolygonid.so
-)
-# IMPORTED allows to depends on a library file outside the project.
-add_library(
-        rapidsnark_sdk_lib
-        SHARED
-        IMPORTED
-)
-# IMPORTED_LOCATION specifies the location of the library file on disk
-set_target_properties(
-        rapidsnark_sdk_lib
-        PROPERTIES
-        IMPORTED_LOCATION ${SHARED_SDK_LIBRARY_SO}
-        NO_SONAME 1
-)
+#set(
+#        SHARED_SDK_LIBRARY_SO
+#        ${CMAKE_CURRENT_SOURCE_DIR}/../jniLibs/${CMAKE_ANDROID_ARCH_ABI}/libpolygonid.so
+#)
+## IMPORTED allows to depends on a library file outside the project.
+#add_library(
+#        rapidsnark_sdk_lib
+#        SHARED
+#        IMPORTED
+#)
+## IMPORTED_LOCATION specifies the location of the library file on disk
+#set_target_properties(
+#        rapidsnark_sdk_lib
+#        PROPERTIES
+#        IMPORTED_LOCATION ${SHARED_SDK_LIBRARY_SO}
+#        NO_SONAME 1
+#)
 
 # Add libraries to this project
 target_link_libraries(
