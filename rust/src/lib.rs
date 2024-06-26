@@ -555,11 +555,16 @@ pub /*extern*/ fn verify_poseidon_internal(private_key: *const c_char, compresse
         Err(_) => "there",
         Ok(string) => string,
     };
+    /*
     let message_bigint = match message_str.parse::<i32>() {
         Ok(n) => BigInt::from(n),
         Err(e) => BigInt::zero(),
     };
-
+    */
+    let message_bigint = match BigInt::from_str(message_str) {
+        Ok(n) => n,
+        Err(e) => BigInt::zero(),
+    };
     if verify(pk.public(), sig.clone(), message_bigint.clone()) {
         CString::new("1".to_owned()).unwrap().into_raw()
     } else {
