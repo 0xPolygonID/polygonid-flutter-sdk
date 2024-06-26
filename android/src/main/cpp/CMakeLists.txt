@@ -59,7 +59,7 @@ set_target_properties(
 target_link_libraries(
         ${PROJECT_NAME}
         rapidsnark_prover_lib
-        rapidsnark_sdk_lib
+#        rapidsnark_sdk_lib
 )
 
 # Add the log library
