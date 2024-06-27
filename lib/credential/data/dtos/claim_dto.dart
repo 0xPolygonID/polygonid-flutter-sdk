@@ -9,11 +9,12 @@ class ClaimDTO extends Equatable {
   final String issuer;
   final String did;
   final String state;
-  final ClaimInfoDTO info;
   final String? expiration;
-  final String type;
   Map<String, dynamic>? schema;
+  final String type;
+  final ClaimInfoDTO info;
   Map<String, dynamic>? displayType;
+
   final String credentialRawValue;
 
   ClaimDTO({

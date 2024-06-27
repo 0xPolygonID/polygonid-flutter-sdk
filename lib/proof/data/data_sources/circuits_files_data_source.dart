@@ -10,22 +10,13 @@ class CircuitsFilesDataSource {
 
   CircuitsFilesDataSource(this.directory);
 
-  Future<List<Uint8List>> loadCircuitFiles(String circuitId) async {
-    String path = directory.path;
-
+  Future<Uint8List> loadCircuitDatFile(String circuitId) async {
     try {
-      var circuitDatFileName = '$circuitId.dat';
-      var circuitDatFilePath = '$path/$circuitDatFileName';
-      var circuitDatFile = File(circuitDatFilePath);
+      final circuitDatFileName = '$circuitId.dat';
+      final circuitDatFilePath = '${directory.path}/$circuitDatFileName';
+      final circuitDatFile = File(circuitDatFilePath);
 
-      var circuitZkeyFileName = '$circuitId.zkey';
-      var circuitZkeyFilePath = '$path/$circuitZkeyFileName';
-      var circuitZkeyFile = File(circuitZkeyFilePath);
-
-      return [
-        circuitDatFile.readAsBytesSync(),
-        circuitZkeyFile.readAsBytesSync()
-      ];
+      return circuitDatFile.readAsBytesSync();
     } on PathNotFoundException catch (error) {
       throw CircuitNotDownloadedException(
         circuit: circuitId,
@@ -35,6 +26,21 @@ class CircuitsFilesDataSource {
     } catch (_) {
       rethrow;
     }
+  }
+
+  Future<String> getZkeyFilePath(String circuitId) async {
+    final circuitZkeyFileName = '$circuitId.zkey';
+    final circuitZkeyFilePath = '${directory.path}/$circuitZkeyFileName';
+
+    final circuitZkeyFile = File(circuitZkeyFilePath);
+    if (!circuitZkeyFile.existsSync()) {
+      throw CircuitNotDownloadedException(
+        circuit: circuitId,
+        errorMessage: "Circuit $circuitId not downloaded or not found",
+      );
+    }
+
+    return circuitZkeyFilePath;
   }
 
   ///

@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
@@ -22,17 +24,18 @@ import 'package:polygonid_flutter_sdk/proof/data/data_sources/proof_circuit_data
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/prover_lib_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/witness_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/circuits_to_download_param.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/witness_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/circuit_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/gist_mtproof_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/zkproof_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_mtproof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
+import 'package:polygonid_flutter_sdk/proof/gist_proof_cache.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/auth_v2/witness_auth.dart';
 import 'package:web3dart/contracts.dart';
 
@@ -49,8 +52,8 @@ class ProofRepositoryImpl extends ProofRepository {
   final CircuitTypeMapper _circuitTypeMapper;
   final ZKProofMapper _zkProofMapper;
   final AuthProofMapper _authProofMapper;
-  final GistMTProofMapper _gistMTProofMapper;
   final CircuitsFilesDataSource _circuitsFilesDataSource;
+  final GetEnvUseCase _getEnvUseCase;
   final StacktraceManager _stacktraceManager;
 
   // FIXME: those mappers shouldn't be used here as they are part of Credential
@@ -72,17 +75,23 @@ class ProofRepositoryImpl extends ProofRepository {
     this._claimMapper,
     this._revocationStatusMapper,
     this._authProofMapper,
-    this._gistMTProofMapper,
     this._circuitsFilesDataSource,
+    this._getEnvUseCase,
     this._stacktraceManager,
   );
 
   @override
   Future<CircuitDataEntity> loadCircuitFiles(String circuitId) async {
-    List<Uint8List> circuitFiles =
-        await _circuitsFilesDataSource.loadCircuitFiles(circuitId);
-    CircuitDataEntity circuitDataEntity =
-        CircuitDataEntity(circuitId, circuitFiles[0], circuitFiles[1]);
+    final circuitDatFile =
+        await _circuitsFilesDataSource.loadCircuitDatFile(circuitId);
+    final zkeyFilePath = await _circuitsFilesDataSource.getZkeyFilePath(
+      circuitId,
+    );
+    final circuitDataEntity = CircuitDataEntity(
+      circuitId,
+      circuitDatFile,
+      zkeyFilePath,
+    );
     return circuitDataEntity;
   }
 
@@ -110,7 +119,7 @@ class ProofRepositoryImpl extends ProofRepository {
     ClaimDTO credentialDto = _claimMapper.mapTo(claim);
     Map<String, dynamic>? gistProofMap;
     if (gistProof != null) {
-      gistProofMap = _gistMTProofMapper.mapTo(gistProof);
+      gistProofMap = gistProof.toJson();
     }
     Map<String, dynamic>? incProofMap;
     if (incProof != null) {
@@ -198,10 +207,10 @@ class ProofRepositoryImpl extends ProofRepository {
   }
 
   @override
-  Future<Uint8List> calculateWitness(
-    CircuitDataEntity circuitData,
-    Uint8List atomicQueryInputs,
-  ) async {
+  Future<Uint8List> calculateWitness({
+    required CircuitDataEntity circuitData,
+    required Uint8List atomicQueryInputs,
+  }) async {
     WitnessParam witnessParam =
         WitnessParam(wasm: circuitData.datFile, json: atomicQueryInputs);
 
@@ -235,14 +244,24 @@ class ProofRepositoryImpl extends ProofRepository {
   }
 
   @override
-  Future<ZKProofEntity> prove(
-      CircuitDataEntity circuitData, Uint8List wtnsBytes) async {
+  Future<ZKProofEntity> prove({
+    required CircuitDataEntity circuitData,
+    required Uint8List wtnsBytes,
+  }) async {
     try {
+      Stopwatch stopwatch = Stopwatch()..start();
+
       final Map<String, dynamic>? proof = await _proverLibDataSource.prove(
         circuitData.circuitId,
-        circuitData.zKeyFile,
+        circuitData.zKeyPath,
         wtnsBytes,
       );
+
+      _stacktraceManager.addTrace(
+          "[ProveUseCase][MainFlow] proof generated in ${stopwatch.elapsedMilliseconds} ms");
+      logger().i(
+          "[ProveUseCase][MainFlow] proof generated in ${stopwatch.elapsedMilliseconds} ms");
+      logger().i("[ProveUseCase] proof: $proof");
 
       if (proof == null || proof.isEmpty) {
         _stacktraceManager
@@ -273,46 +292,28 @@ class ProofRepositoryImpl extends ProofRepository {
   }
 
   @override
-  Future<GistMTProofEntity> getGistProof(
-      {required String idAsInt, required String contractAddress}) async {
+  Future<GistMTProofEntity> getGistProof({
+    required String idAsInt,
+    required String contractAddress,
+  }) async {
     try {
-      String gistProofSC = await _getGistProofSC(
-        identifier: idAsInt,
-        contractAddress: contractAddress,
+      final envEntity = await _getEnvUseCase.execute();
+      final contract = await _localContractFilesDataSource.loadStateContract(
+        contractAddress,
       );
 
-      String gistProof =
-          _libPolygonIdCoreProofDataSource.proofFromSC(gistProofSC);
+      String gistProof = await GistProofCache().getGistProof(
+        id: idAsInt,
+        deployedContract: contract,
+        envEntity: envEntity,
+      );
 
-      return _gistMTProofMapper
-          .mapFrom(_gistProofDataSource.getGistMTProof(gistProof));
+      return _gistProofDataSource.getGistMTProof(gistProof);
     } on PolygonIdSDKException catch (_) {
       rethrow;
     } catch (error) {
       throw FetchGistProofException(
         errorMessage: "Error in getGistProof: $error",
-        error: error,
-      );
-    }
-  }
-
-  Future<String> _getGistProofSC(
-      {required String identifier, required String contractAddress}) async {
-    try {
-      DeployedContract contract =
-          await _localContractFilesDataSource.loadStateContract(
-        contractAddress,
-      );
-      String gistProof = await _rpcDataSource.getGistProof(
-        identifier,
-        contract,
-      );
-      return gistProof;
-    } on PolygonIdSDKException catch (_) {
-      rethrow;
-    } catch (error) {
-      throw FetchGistProofException(
-        errorMessage: "Error in _getGistProofSC: $error",
         error: error,
       );
     }

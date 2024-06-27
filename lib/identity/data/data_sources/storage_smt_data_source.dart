@@ -4,8 +4,8 @@ import 'package:sembast/sembast.dart';
 
 import '../../../constants.dart';
 import '../../domain/exceptions/smt_exceptions.dart';
-import '../dtos/hash_dto.dart';
-import '../dtos/node_dto.dart';
+import '../../domain/entities/hash_entity.dart';
+import '../../domain/entities/node_entity.dart';
 
 /// [StoreRef] wrapper
 /// Delegates all call to [IdentitySMTStoreRefWrapper._store]
@@ -44,23 +44,23 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
 
   // getNode gets a node by key from the SMT.  Empty nodes are not stored in the
   // tree; they are all the same and assumed to always exist.
-  Future<NodeDTO> getNode(
-      {required HashDTO key,
+  Future<NodeEntity> getNode(
+      {required HashEntity key,
       required String storeName,
       required String did,
       required String privateKey}) {
     if ((BigInt.parse(key.toString())) == BigInt.zero) {
-      return Future.value(NodeDTO(
+      return Future.value(NodeEntity(
         children: const [],
-        hash: HashDTO.fromBigInt(BigInt.zero),
-        type: NodeTypeDTO.empty,
+        hash: HashEntity.fromBigInt(BigInt.zero),
+        type: NodeType.empty,
       ));
     }
     return getDatabase(did: did, privateKey: privateKey).then((database) =>
         database
             .transaction((transaction) => getTransact(
                 storeName: storeName, transaction: transaction, key: key))
-            .then((snapshot) => NodeDTO.fromJson(snapshot!))
+            .then((snapshot) => NodeEntity.fromJson(snapshot!))
             .whenComplete(() => database.close()));
   }
 
@@ -68,13 +68,13 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
   Future<Map<String, Object?>?> getTransact(
       {required String storeName,
       required DatabaseClient transaction,
-      required HashDTO key}) async {
+      required HashEntity key}) async {
     return _storeRefWrapper.get(transaction, storeName, key.toString());
   }
 
   Future<void> addNode(
-      {required HashDTO key,
-      required NodeDTO node,
+      {required HashEntity key,
+      required NodeEntity node,
       required String storeName,
       required String did,
       required String privateKey}) {
@@ -92,13 +92,13 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
   Future<void> putTransact(
       {required String storeName,
       required DatabaseClient transaction,
-      required HashDTO key,
-      required NodeDTO node}) async {
+      required HashEntity key,
+      required NodeEntity node}) async {
     await _storeRefWrapper.put(
         transaction, storeName, key.toString(), node.toJson());
   }
 
-  Future<HashDTO> getRoot(
+  Future<HashEntity> getRoot(
       {required String storeName,
       required String did,
       required String privateKey}) {
@@ -110,7 +110,7 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
   }
 
   // For UT purpose
-  Future<HashDTO> getRootTransact(
+  Future<HashEntity> getRootTransact(
       {required DatabaseClient transaction, required String storeName}) async {
     return _storeRefWrapper
         .get(transaction, storeName, "root")
@@ -121,12 +121,12 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
           errorMessage: "SMT not found",
         );
       }
-      return HashDTO.fromJson(storedValue);
+      return HashEntity.fromJson(storedValue["data"] as String);
     });
   }
 
   Future<void> setRoot(
-      {required HashDTO root,
+      {required HashEntity root,
       required String storeName,
       required String did,
       required String privateKey}) {
@@ -141,8 +141,9 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
   Future<void> setRootTransact(
       {required DatabaseClient transaction,
       required String storeName,
-      required HashDTO root}) async {
-    await _storeRefWrapper.put(transaction, storeName, "root", root.toJson());
+      required HashEntity root}) async {
+    await _storeRefWrapper
+        .put(transaction, storeName, "root", {"data": root.toJson()});
   }
 
   Future<int> getMaxLevels(

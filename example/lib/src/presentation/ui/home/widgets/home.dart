@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:polygonid_flutter_sdk/common/libs/polygonidcore/pidcore_base.dart';
+import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/navigations/routes.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/common/widgets/button_next_action.dart';
@@ -25,6 +28,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late final HomeBloc _bloc;
+
   @override
   void initState() {
     super.initState();
@@ -303,7 +307,7 @@ class _HomeScreenState extends State<HomeScreen> {
           methodName: CustomStrings.signMessageMethod,
           title: CustomStrings.signMessageTitle,
           description: CustomStrings.signMessageDescription,
-          onTap: () {
+          onTap: () async {
             Navigator.pushNamed(context, Routes.signMessagePath);
           },
           enabled: enabled,

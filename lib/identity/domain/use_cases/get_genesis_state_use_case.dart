@@ -29,9 +29,10 @@ class GetGenesisStateUseCase extends FutureUseCase<String, TreeStateEntity> {
         .then((authClaim) =>
             _identityRepository.getAuthClaimNode(children: authClaim))
         .then((node) => _smtRepository
-            .hashState(claims: node.hash.data, revocation: zero, roots: zero)
-            .then((hash) => TreeStateEntity(hash, node.hash,
-                HashEntity(data: zero), HashEntity(data: zero))))
+            .hashState(
+                claims: node.hash.string(), revocation: zero, roots: zero)
+            .then((hash) => TreeStateEntity(
+                hash, node.hash, HashEntity.zero(), HashEntity.zero())))
         .then((state) {
       _stacktraceManager.addTrace("[GetGenesisStateUseCase] State");
       logger().i("[GetGenesisStateUseCase] State: $state");

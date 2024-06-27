@@ -6,8 +6,14 @@ class CredentialIssuance {
   final CredentialIssuanceBodyRequest? body;
   final String? from;
 
-  CredentialIssuance(
-      {this.id, this.typ, this.type, this.thid, this.body, this.from});
+  CredentialIssuance({
+    this.id,
+    this.typ,
+    this.type,
+    this.thid,
+    this.body,
+    this.from,
+  });
 
   /// Creates an instance from the given json
   ///

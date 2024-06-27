@@ -106,11 +106,12 @@ class Iden3commSDProofEntity extends Iden3commProofEntity {
     Iden3commVPProof vp = Iden3commVPProof.fromJson(json["vp"]);
 
     return Iden3commSDProofEntity(
-        id: json['id'],
-        circuitId: json['circuitId'],
-        proof: proof,
-        pubSignals: pubSig,
-        vp: vp);
+      id: json['id'],
+      circuitId: json['circuitId'],
+      proof: proof,
+      pubSignals: pubSig,
+      vp: vp,
+    );
   }
 
   Map<String, dynamic> toJson() => {

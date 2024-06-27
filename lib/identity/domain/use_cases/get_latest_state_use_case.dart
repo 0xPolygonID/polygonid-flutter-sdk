@@ -43,9 +43,10 @@ class GetLatestStateUseCase
     ], eagerError: true)
         .then((trees) => _smtRepository
             .hashState(
-                claims: trees[0].data,
-                revocation: trees[1].data,
-                roots: trees[2].data)
+              claims: trees[0].string(),
+              revocation: trees[1].string(),
+              roots: trees[2].string(),
+            )
             .then(
                 (hash) => TreeStateEntity(hash, trees[0], trees[1], trees[2])))
         .then((state) => _smtRepository.convertState(state: state))

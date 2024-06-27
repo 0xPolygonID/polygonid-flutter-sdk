@@ -5,6 +5,7 @@ import 'package:ninja_prime/ninja_prime.dart';
 
 import 'package:intl/intl.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
@@ -251,8 +252,8 @@ class GetIden3commProofsUseCase
     do {
       randomNumber = randomBigInt(248, max: maxVal, random: random);
       if (kDebugMode) {
-        print("random number $randomNumber");
-        print("less than safeMax ${randomNumber < safeMaxVal}");
+        logger().i("random number $randomNumber");
+        logger().i("less than safeMax ${randomNumber < safeMaxVal}");
       }
     } while (randomNumber >= safeMaxVal);
 

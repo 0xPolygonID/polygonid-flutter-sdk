@@ -1,11 +1,11 @@
 import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart';
 
 import '../../../common/mappers/from_mapper.dart';
-import '../dtos/node_dto.dart';
+import '../../domain/entities/node_entity.dart';
 
-class RhsNodeTypeMapper extends FromMapper<NodeDTO, RhsNodeType> {
+class RhsNodeTypeMapper extends FromMapper<NodeEntity, RhsNodeType> {
   @override
-  RhsNodeType mapFrom(NodeDTO from) {
+  RhsNodeType mapFrom(NodeEntity from) {
     if (from.children.length == 3) {
       if (BigInt.parse(from.children[2].toString()) == BigInt.one) {
         return RhsNodeType.leaf;

@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import '../../../identity/data/dtos/hash_dto.dart';
-import 'node_aux_dto.dart';
+import '../../../identity/domain/entities/hash_entity.dart';
+import 'node_aux_entity.dart';
 
 part 'mtproof_dto.g.dart';
 
@@ -18,21 +18,26 @@ part 'mtproof_dto.g.dart';
           }
     }
 */
+
 /// Represents a merkle tree proof DTO.
 @JsonSerializable(explicitToJson: true)
-class MTProofDTO extends Equatable {
+class MTProofEntity extends Equatable {
   final bool existence;
-  final List<HashDTO> siblings;
+  @JsonKey(name: 'siblings')
+  final List<HashEntity> siblings;
   @JsonKey(name: 'node_aux')
-  final NodeAuxDTO? nodeAux;
+  final NodeAuxEntity? nodeAux;
 
-  const MTProofDTO(
-      {required this.existence, required this.siblings, this.nodeAux});
+  const MTProofEntity({
+    required this.existence,
+    required this.siblings,
+    this.nodeAux,
+  });
 
-  factory MTProofDTO.fromJson(Map<String, dynamic> json) =>
-      _$MTProofDTOFromJson(json);
+  factory MTProofEntity.fromJson(Map<String, dynamic> json) =>
+      _$MTProofEntityFromJson(json);
 
-  Map<String, dynamic> toJson() => _$MTProofDTOToJson(this);
+  Map<String, dynamic> toJson() => _$MTProofEntityToJson(this);
 
   @override
   List<Object?> get props => [existence, siblings, nodeAux];

@@ -82,7 +82,7 @@ void main() {
       )).captured;
       expect(authClaimCapture[0], CommonMocks.blockchain);
       expect(authClaimCapture[1], CommonMocks.network);
-      expect(authClaimCapture[2], IdentityMocks.treeState.claimsTree.data);
+      expect(authClaimCapture[2], IdentityMocks.treeState.claimsTree.string());
       expect(authClaimCapture[3], CommonMocks.genesisNonce);
     },
   );

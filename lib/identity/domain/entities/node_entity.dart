@@ -1,33 +1,58 @@
+import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
+
 import 'hash_entity.dart';
+
+part 'node_entity.g.dart';
 
 /// 3 types of nodes:
 ///
 /// - State node: [Claims Tree root, Revocation Tree root, Roots Tree root]
 /// - Middle node: [leftNode, rightNode]
 /// - Leaf node: [key, value, 1]
-enum NodeType { unknown, state, middle, leaf }
+// TODO (moria): Complete doc
+/// - Empty node: ???
+enum NodeType {
+  middle,
+  leaf,
+  state,
+  empty,
+  unknown,
+}
 
-class NodeEntity {
+//"node": {
+//"children": [
+//"a89423f2621d29b696a24735d9217e5143cecd95c3f793bcff04a24e6bc5100d", // Claims tree root
+//"0000000000000000000000000000000000000000000000000000000000000000", // Revocation tree root
+//"a5cc9f57a671f2aa19c9f15caca63b5435478e65852a7bbe6c1008f8fccd890b"  // Roots tree root
+//],
+//"hash": "c2cf7856100eaa0e5da6c167ecef46ed909d686901bb6807e0db13097c04f811" // Identity state
+//}
+
+/// 3 types of nodes:
+///
+/// - State node: [Claims Tree root, Revocation Tree root, Roots Tree root]
+/// - Middle node: [leftNode, rightNode]
+/// - Leaf node: [key, value, 1]
+
+/// Represents a node DTO.
+@JsonSerializable(explicitToJson: true)
+class NodeEntity extends Equatable {
   final HashEntity hash;
   final List<HashEntity> children;
-  final NodeType nodeType;
+  final NodeType type;
 
-  NodeEntity(
-      {required this.hash, required this.children, required this.nodeType});
+  const NodeEntity({
+    required this.children,
+    required this.hash,
+    required this.type,
+  });
 
-  @override
-  String toString() =>
-      "[NodeEntity] {hash: $hash, children: $children, nodeType: $nodeType}";
+  factory NodeEntity.fromJson(Map<String, dynamic> json) =>
+      _$NodeEntityFromJson(json);
 
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is NodeEntity &&
-          runtimeType == other.runtimeType &&
-          hash.toString() == other.hash.toString() &&
-          children.toString() == other.children.toString() &&
-          nodeType == other.nodeType;
+  Map<String, dynamic> toJson() => _$NodeEntityToJson(this);
 
   @override
-  int get hashCode => runtimeType.hashCode;
+  List<Object?> get props => [hash, children, type];
 }

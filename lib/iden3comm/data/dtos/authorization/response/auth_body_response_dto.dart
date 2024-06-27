@@ -67,7 +67,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/proof/response/iden3comm_proof_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 
 part 'auth_body_response_dto.g.dart';
 
@@ -75,10 +75,13 @@ part 'auth_body_response_dto.g.dart';
 class AuthBodyResponseDTO extends Equatable {
   final AuthBodyDidDocResponseDTO? did_doc;
   final String? message;
-  final List<Iden3commProofDTO>? scope;
+  final List<Iden3commProofEntity>? scope;
 
-  const AuthBodyResponseDTO(
-      {this.did_doc, required this.message, required this.scope});
+  const AuthBodyResponseDTO({
+    this.did_doc,
+    required this.message,
+    required this.scope,
+  });
 
   factory AuthBodyResponseDTO.fromJson(Map<String, dynamic> json) =>
       _$AuthBodyResponseDTOFromJson(json);

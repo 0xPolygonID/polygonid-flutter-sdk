@@ -76,9 +76,9 @@ void main() {
             revocation: captureAnyNamed('revocation'),
             roots: captureAnyNamed('roots'),
           )).captured;
-          expect(captureHash[0], IdentityMocks.hash.data);
-          expect(captureHash[1], IdentityMocks.hash.data);
-          expect(captureHash[2], IdentityMocks.hash.data);
+          expect(captureHash[0], IdentityMocks.hash.string());
+          expect(captureHash[1], IdentityMocks.hash.string());
+          expect(captureHash[2], IdentityMocks.hash.string());
 
           expect(
               verify(smtRepository.convertState(
