@@ -128,7 +128,10 @@ class ZKProofEntity {
   final ZKProofBaseEntity proof;
   final List<String> pubSignals;
 
-  ZKProofEntity({required this.proof, required this.pubSignals});
+  ZKProofEntity({
+    required this.proof,
+    required this.pubSignals,
+  });
 
   factory ZKProofEntity.fromBase64(String data) =>
       ZKProofEntity.fromJson(jsonDecode(Base64Util.decode(data)));

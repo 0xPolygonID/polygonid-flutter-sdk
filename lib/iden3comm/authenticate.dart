@@ -43,7 +43,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/iden3comm_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/proof_request_filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
@@ -333,9 +332,6 @@ class Authenticate {
       profileDid: profileDid,
     );
 
-    Iden3commProofMapper _iden3commProofMapper =
-        getItSdk<Iden3commProofMapper>();
-
     AuthResponseDTO authResponse = AuthResponseDTO(
       id: const Uuid().v4(),
       thid: message.thid,
@@ -345,10 +341,7 @@ class Authenticate {
       type: "https://iden3-communication.io/authorization/1.0/response",
       body: AuthBodyResponseDTO(
         message: (message as AuthIden3MessageEntity).body.message,
-        scope: proofs
-            .map((iden3commProofEntity) =>
-                _iden3commProofMapper.mapTo(iden3commProofEntity))
-            .toList(),
+        scope: proofs,
         did_doc: didDocResponse,
       ),
     );

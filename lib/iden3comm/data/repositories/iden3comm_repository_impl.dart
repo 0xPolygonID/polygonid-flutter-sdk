@@ -19,7 +19,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_response_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/iden3comm_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/jwz_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
@@ -48,7 +47,6 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   final GistMTProofMapper _gistProofMapper;
   final QMapper _qMapper;
   final JWZMapper _jwzMapper;
-  final Iden3commProofMapper _iden3commProofMapper;
   final GetIden3MessageUseCase _getIden3MessageUseCase;
   final StacktraceManager _stacktraceManager;
 
@@ -62,7 +60,6 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     this._gistProofMapper,
     this._qMapper,
     this._jwzMapper,
-    this._iden3commProofMapper,
     this._getIden3MessageUseCase,
     this._stacktraceManager,
   );
@@ -143,10 +140,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       type: "https://iden3-communication.io/authorization/1.0/response",
       body: AuthBodyResponseDTO(
         message: request.body.message,
-        scope: scope
-            .map((iden3commProofEntity) =>
-                _iden3commProofMapper.mapTo(iden3commProofEntity))
-            .toList(),
+        scope: scope,
         did_doc: didDocResponse,
       ),
     );
