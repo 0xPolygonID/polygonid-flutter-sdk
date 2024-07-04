@@ -1,25 +1,19 @@
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/smt_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_smt_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/hash_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/node_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/tree_state_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/tree_type_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
-import 'package:polygonid_flutter_sdk/proof/data/mappers/mtproof_mapper.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 
 class SMTRepositoryImpl implements SMTRepository {
   final SMTDataSource _smtDataSource;
   final StorageSMTDataSource _storageSMTDataSource;
   final LibBabyJubJubDataSource _libBabyJubJubDataSource;
-  final NodeMapper _nodeMapper;
-  final HashMapper _hashMapper;
-  final MTProofMapper _proofMapper;
   final TreeTypeMapper _treeTypeMapper;
   final TreeStateMapper _treeStateMapper;
 
@@ -27,9 +21,6 @@ class SMTRepositoryImpl implements SMTRepository {
     this._smtDataSource,
     this._storageSMTDataSource,
     this._libBabyJubJubDataSource,
-    this._nodeMapper,
-    this._hashMapper,
-    this._proofMapper,
     this._treeTypeMapper,
     this._treeStateMapper,
   );
@@ -40,8 +31,8 @@ class SMTRepositoryImpl implements SMTRepository {
   //   required TreeType type,
   //   required String did,
   //   required String privateKey}) async {
-  //   final keyHash = _hashMapper.mapTo(key);
-  //   final valueHash = _hashMapper.mapTo(value);
+  //   final keyHash = (key);
+  //   final valueHash = (value);
   //   final oneHash = HashDTO.fromBigInt(BigInt.one);
   //   final newNodeChildren = [keyHash, valueHash, oneHash];
   //   String nodeHashString = await _libBabyJubJubDataSource.hashPoseidon3(
@@ -58,59 +49,63 @@ class SMTRepositoryImpl implements SMTRepository {
   //       .then((dto) => _hashMapper.mapFrom(dto)); // returns new root
   // }
 
-  Future<void> addLeaf(
-      {required NodeEntity leaf,
-      required TreeType type,
-      required String did,
-      required String privateKey}) {
+  Future<void> addLeaf({
+    required NodeEntity leaf,
+    required TreeType type,
+    required String did,
+    required String privateKey,
+  }) {
     return _smtDataSource.addLeaf(
-        newNodeLeaf: _nodeMapper.mapTo(leaf),
-        storeName: _treeTypeMapper.mapTo(type),
-        did: did,
-        privateKey: privateKey);
+      newNodeLeaf: leaf,
+      storeName: _treeTypeMapper.mapTo(type),
+      did: did,
+      privateKey: privateKey,
+    );
   }
 
   @override
-  Future<NodeEntity> getNode(
-      {required HashEntity hash,
-      required TreeType type,
-      required String did,
-      required String privateKey}) {
-    return _storageSMTDataSource
-        .getNode(
-            key: _hashMapper.mapTo(hash),
-            storeName: _treeTypeMapper.mapTo(type),
-            did: did,
-            privateKey: privateKey)
-        .then((dto) => _nodeMapper.mapFrom(dto));
+  Future<NodeEntity> getNode({
+    required HashEntity hash,
+    required TreeType type,
+    required String did,
+    required String privateKey,
+  }) {
+    return _storageSMTDataSource.getNode(
+      key: hash,
+      storeName: _treeTypeMapper.mapTo(type),
+      did: did,
+      privateKey: privateKey,
+    );
   }
 
   @override
-  Future<HashEntity> getRoot(
-      {required TreeType type,
-      required String did,
-      required String privateKey}) {
-    return _storageSMTDataSource
-        .getRoot(
-            storeName: _treeTypeMapper.mapTo(type),
-            did: did,
-            privateKey: privateKey)
-        .then((dto) => _hashMapper.mapFrom(dto));
+  Future<HashEntity> getRoot({
+    required TreeType type,
+    required String did,
+    required String privateKey,
+  }) {
+    return _storageSMTDataSource.getRoot(
+      storeName: _treeTypeMapper.mapTo(type),
+      did: did,
+      privateKey: privateKey,
+    );
   }
 
   @override
-  Future<void> addNode(
-      {required HashEntity hash,
-      required NodeEntity node,
-      required TreeType type,
-      required String did,
-      required String privateKey}) {
+  Future<void> addNode({
+    required HashEntity hash,
+    required NodeEntity node,
+    required TreeType type,
+    required String did,
+    required String privateKey,
+  }) {
     return _storageSMTDataSource.addNode(
-        key: _hashMapper.mapTo(hash),
-        node: _nodeMapper.mapTo(node),
-        storeName: _treeTypeMapper.mapTo(type),
-        did: did,
-        privateKey: privateKey);
+      key: hash,
+      node: node,
+      storeName: _treeTypeMapper.mapTo(type),
+      did: did,
+      privateKey: privateKey,
+    );
   }
 
   @override
@@ -120,43 +115,48 @@ class SMTRepositoryImpl implements SMTRepository {
       required String did,
       required String privateKey}) {
     return _storageSMTDataSource.setRoot(
-        root: _hashMapper.mapTo(root),
-        storeName: _treeTypeMapper.mapTo(type),
-        did: did,
-        privateKey: privateKey);
+      root: (root),
+      storeName: _treeTypeMapper.mapTo(type),
+      did: did,
+      privateKey: privateKey,
+    );
   }
 
   @override
-  Future<MTProofEntity> generateProof(
-      {required HashEntity key,
-      required TreeType type,
-      required String did,
-      required String privateKey}) async {
-    return _smtDataSource
-        .generateProof(
-            key: _hashMapper.mapTo(key),
-            storeName: _treeTypeMapper.mapTo(type),
-            did: did,
-            privateKey: privateKey)
-        .then((dto) => _proofMapper.mapFrom(dto));
+  Future<MTProofEntity> generateProof({
+    required HashEntity key,
+    required TreeType type,
+    required String did,
+    required String privateKey,
+  }) async {
+    return _smtDataSource.generateProof(
+      key: (key),
+      storeName: _treeTypeMapper.mapTo(type),
+      did: did,
+      privateKey: privateKey,
+    );
   }
 
-  Future<HashEntity> getProofTreeRoot(
-      {required MTProofEntity proof, required NodeEntity node}) async {
-    return _smtDataSource
-        .getProofTreeRoot(
-            proof: _proofMapper.mapTo(proof), node: _nodeMapper.mapTo(node))
-        .then((dto) => _hashMapper.mapFrom(dto));
+  Future<HashEntity> getProofTreeRoot({
+    required MTProofEntity proof,
+    required NodeEntity node,
+  }) async {
+    return _smtDataSource.getProofTreeRoot(
+      proof: proof,
+      node: node,
+    );
   }
 
-  Future<bool> verifyProof(
-      {required MTProofEntity proof,
-      required NodeEntity node,
-      required HashEntity treeRoot}) async {
+  Future<bool> verifyProof({
+    required MTProofEntity proof,
+    required NodeEntity node,
+    required HashEntity treeRoot,
+  }) async {
     return _smtDataSource.verifyProof(
-        proof: _proofMapper.mapTo(proof),
-        node: _nodeMapper.mapTo(node),
-        treeRoot: _hashMapper.mapTo(treeRoot));
+      proof: proof,
+      node: node,
+      treeRoot: (treeRoot),
+    );
   }
 
   @override

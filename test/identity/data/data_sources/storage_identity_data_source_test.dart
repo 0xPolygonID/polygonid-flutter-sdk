@@ -5,7 +5,7 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/common/data/data_sources/storage_key_value_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:sembast/sembast.dart';
@@ -19,7 +19,7 @@ final mockGet = {
   'publicKey': CommonMocks.pubKeys,
   'profiles': {'0': "${CommonMocks.did}0", '1': "${CommonMocks.did}1"}
 };
-final identityDTO = IdentityDTO(
+final identityDTO = IdentityEntity(
     did: CommonMocks.did,
     publicKey: CommonMocks.pubKeys,
     profiles: CommonMocks.profiles);

@@ -10,8 +10,11 @@ class RhsNodeEntity {
   final String status;
   final RhsNodeType nodeType;
 
-  RhsNodeEntity(
-      {required this.node, required this.status, required this.nodeType});
+  RhsNodeEntity({
+    required this.node,
+    required this.status,
+    required this.nodeType,
+  });
 
   @override
   String toString() =>

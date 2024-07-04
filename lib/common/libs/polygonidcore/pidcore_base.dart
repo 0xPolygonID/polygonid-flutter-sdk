@@ -5,15 +5,25 @@ import 'dart:io';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 
 import 'native_polygonidcore.dart';
 
 @injectable
 class PolygonIdCore {
+  static NativePolygonIdCoreLib? _nativePolygonIdCoreLib;
+
   static NativePolygonIdCoreLib get nativePolygonIdCoreLib {
-    return Platform.isAndroid
+    final instance = _nativePolygonIdCoreLib;
+    if (instance != null) {
+      return instance;
+    }
+
+    _nativePolygonIdCoreLib = Platform.isAndroid
         ? NativePolygonIdCoreLib(ffi.DynamicLibrary.open("libpolygonid.so"))
         : NativePolygonIdCoreLib(ffi.DynamicLibrary.process());
+
+    return _nativePolygonIdCoreLib!;
   }
 
   PolygonIdCore();
@@ -22,7 +32,7 @@ class PolygonIdCore {
       ffi.Pointer<ffi.Pointer<PLGNStatus>> status, String msg) {
     if (status == ffi.nullptr || status.value == ffi.nullptr) {
       if (kDebugMode) {
-        print("unable to allocate status\n");
+        logger().e("unable to allocate status\n");
       }
       return "unable to allocate status";
     }
@@ -35,7 +45,7 @@ class PolygonIdCore {
 
       if (status.value.ref.error_msg == ffi.nullptr) {
         if (kDebugMode) {
-          print("$msg: ${status.value.ref.status.toString()}");
+          logger().e("$msg: ${status.value.ref.status.toString()}");
         }
       } else {
         ffi.Pointer<ffi.Char> json = status.value.ref.error_msg;
@@ -44,12 +54,12 @@ class PolygonIdCore {
           String errormsg = jsonString.toDartString();
           msg = "$msg: $errormsg";
           if (kDebugMode) {
-            print(
+            logger().e(
                 "$msg: ${status.value.ref.status.toString()}. Error: $errormsg");
           }
         } catch (e) {
           if (kDebugMode) {
-            print("$msg: ${status.value.ref.status.toString()}");
+            logger().e("$msg: ${status.value.ref.status.toString()}");
           }
         }
       }

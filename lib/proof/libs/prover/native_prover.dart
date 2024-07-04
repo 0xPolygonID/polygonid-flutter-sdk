@@ -73,6 +73,58 @@ class NativeProverLib {
           ffi.Pointer<ffi.UnsignedLong>,
           ffi.Pointer<ffi.Char>,
           int)>();
+
+  /// @return error code:
+  /// PRPOVER_OK - in case of success.
+  /// PPROVER_ERROR - in case of an error.
+  int groth16_prover_zkey_file(
+    ffi.Pointer<ffi.Char> zkeyPath,
+    ffi.Pointer<ffi.Void> wtns_buffer,
+    int wtns_size,
+    ffi.Pointer<ffi.Char> proof_buffer,
+    ffi.Pointer<ffi.UnsignedLong> proof_size,
+    ffi.Pointer<ffi.Char> public_buffer,
+    ffi.Pointer<ffi.UnsignedLong> public_size,
+    ffi.Pointer<ffi.Char> error_msg,
+    int error_msg_maxsize,
+  ) {
+    return _groth16_prover_zkey_file(
+      zkeyPath,
+      wtns_buffer,
+      wtns_size,
+      proof_buffer,
+      proof_size,
+      public_buffer,
+      public_size,
+      error_msg,
+      error_msg_maxsize,
+    );
+  }
+
+  late final _groth16_prover_zkey_filePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int Function(
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Void>,
+              ffi.UnsignedLong,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.UnsignedLong>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.UnsignedLong>,
+              ffi.Pointer<ffi.Char>,
+              ffi.UnsignedLong)>>('groth16_prover_zkey_file');
+  late final _groth16_prover_zkey_file =
+      _groth16_prover_zkey_filePtr.asFunction<
+          int Function(
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.UnsignedLong>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.UnsignedLong>,
+              ffi.Pointer<ffi.Char>,
+              int)>();
 }
 
 const int PRPOVER_OK = 0;

@@ -17,6 +17,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
@@ -42,7 +43,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/iden3comm_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/proof_request_filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
@@ -60,27 +60,24 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3messag
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/node_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/node_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj_wallet.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/gist_mtproof_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_param.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/circuit_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/gist_mtproof_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_mtproof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
@@ -335,9 +332,6 @@ class Authenticate {
       profileDid: profileDid,
     );
 
-    Iden3commProofMapper _iden3commProofMapper =
-        getItSdk<Iden3commProofMapper>();
-
     AuthResponseDTO authResponse = AuthResponseDTO(
       id: const Uuid().v4(),
       thid: message.thid,
@@ -347,10 +341,7 @@ class Authenticate {
       type: "https://iden3-communication.io/authorization/1.0/response",
       body: AuthBodyResponseDTO(
         message: (message as AuthIden3MessageEntity).body.message,
-        scope: proofs
-            .map((iden3commProofEntity) =>
-                _iden3commProofMapper.mapTo(iden3commProofEntity))
-            .toList(),
+        scope: proofs,
         did_doc: didDocResponse,
       ),
     );
@@ -392,37 +383,18 @@ class Authenticate {
       _proofGenerationStepsStreamManager.add(
           "#${i + 1} creating proof for ${proofRequest.scope.query.type}...");
 
-      Directory appDir = await getApplicationDocumentsDirectory();
-      String appDocPath = appDir.path;
+      final appDir = await getApplicationDocumentsDirectory();
+      final circuitsDataSource = CircuitsFilesDataSource(appDir);
 
-      var circuitDatFileName = '${proofRequest.scope.circuitId}.dat';
-      var circuitDatFilePath = '$appDocPath/$circuitDatFileName';
-      var circuitDatFile = File(circuitDatFilePath);
-
-      var circuitZkeyFileName = '${proofRequest.scope.circuitId}.zkey';
-      var circuitZkeyFilePath = '$appDocPath/$circuitZkeyFileName';
-      var circuitZkeyFile = File(circuitZkeyFilePath);
-
-      if (!circuitDatFile.existsSync() || !circuitZkeyFile.existsSync()) {
-        _stacktraceManager.addError(
-          "[Authenticate] Circuit files not found for ${proofRequest.scope.circuitId}",
-        );
-        throw CircuitNotDownloadedException(
-          circuit: proofRequest.scope.circuitId,
-          errorMessage:
-              "Circuit files not found for ${proofRequest.scope.circuitId}",
-        );
-      }
-
-      List<Uint8List> circuitFiles = [
-        circuitDatFile.readAsBytesSync(),
-        circuitZkeyFile.readAsBytesSync()
-      ];
+      final circuitDatFileBytes = await circuitsDataSource
+          .loadCircuitDatFile(proofRequest.scope.circuitId);
+      final zkeyFilePath = await circuitsDataSource
+          .getZkeyFilePath(proofRequest.scope.circuitId);
 
       CircuitDataEntity circuitDataEntity = CircuitDataEntity(
         proofRequest.scope.circuitId,
-        circuitFiles[0],
-        circuitFiles[1],
+        circuitDatFileBytes,
+        zkeyFilePath,
       );
 
       BigInt claimSubjectProfileNonce = identityEntity.profiles.keys.firstWhere(
@@ -505,7 +477,7 @@ class Authenticate {
       if (kDebugMode) {
         //just for debug
         String inputs = Uint8ArrayUtils.uint8ListToString(atomicQueryInputs);
-        print("atomicQueryInputs: $inputs");
+        logger().i("atomicQueryInputs: $inputs");
       }
 
       var vpProof;
@@ -515,13 +487,13 @@ class Authenticate {
       }
 
       Uint8List witnessBytes = await proofRepository.calculateWitness(
-        circuitDataEntity,
-        atomicQueryInputs,
+        circuitData: circuitDataEntity,
+        atomicQueryInputs: atomicQueryInputs,
       );
 
       ZKProofEntity zkProofEntity = await proofRepository.prove(
-        circuitDataEntity,
-        witnessBytes,
+        circuitData: circuitDataEntity,
+        wtnsBytes: witnessBytes,
       );
 
       Iden3commProofEntity proof;
@@ -1035,8 +1007,8 @@ class Authenticate {
     do {
       randomNumber = randomBigInt(248, max: maxVal, random: random);
       if (kDebugMode) {
-        print("random number $randomNumber");
-        print("less than safeMax ${randomNumber < safeMaxVal}");
+        logger().i("random number $randomNumber");
+        logger().i("less than safeMax ${randomNumber < safeMaxVal}");
       }
     } while (randomNumber >= safeMaxVal);
 
@@ -1204,55 +1176,41 @@ class Authenticate {
         getItSdk<LibPolygonIdCoreIden3commDataSource>();
 
     AuthProofMapper authProofMapper = getItSdk<AuthProofMapper>();
-    GistMTProofMapper gistMTProofMapper = getItSdk<GistMTProofMapper>();
 
-    String authInputs = libPolygonIdCoreIden3commDataSource.getAuthInputs(
+    Uint8List authInputsBytes =
+        await libPolygonIdCoreIden3commDataSource.getAuthInputs(
       genesisDid: genesisDid,
       profileNonce: profileNonce,
       authClaim: authClaim,
       incProof: authProofMapper.mapTo(incProof),
       nonRevProof: authProofMapper.mapTo(nonRevProof),
-      gistProof: gistMTProofMapper.mapTo(gistProofEntity),
+      gistProof: gistProofEntity.toJson(),
       treeState: treeState,
       challenge: authChallenge,
       signature: signature,
     );
 
-    Uint8List authInputsBytes = Uint8ArrayUtils.uint8ListfromString(authInputs);
+    final appDir = await getApplicationDocumentsDirectory();
+    final circuitsDataSource = CircuitsFilesDataSource(appDir);
 
-    Directory appDir = await getApplicationDocumentsDirectory();
-    String appDocPath = appDir.path;
-
-    var circuitDatFileName = 'authV2.dat';
-    var circuitDatFilePath = '$appDocPath/$circuitDatFileName';
-    var circuitDatFile = File(circuitDatFilePath);
-
-    var circuitZkeyFileName = 'authV2.zkey';
-    var circuitZkeyFilePath = '$appDocPath/$circuitZkeyFileName';
-    var circuitZkeyFile = File(circuitZkeyFilePath);
-
-    Uint8List circuitsDatFileBytes = await circuitDatFile.readAsBytes();
-    Uint8List circuitsZkeyFileBytes = await circuitZkeyFile.readAsBytes();
-
-    List<Uint8List> circuitFiles = [
-      circuitsDatFileBytes,
-      circuitsZkeyFileBytes,
-    ];
+    final circuitDatFileBytes =
+        await circuitsDataSource.loadCircuitDatFile('authV2');
+    final zkeyFilePath = await circuitsDataSource.getZkeyFilePath('authV2');
 
     CircuitDataEntity circuitDataEntity = CircuitDataEntity(
       "authV2",
-      circuitFiles[0],
-      circuitFiles[1],
+      circuitDatFileBytes,
+      zkeyFilePath,
     );
 
     Uint8List witnessBytes = await proofRepository.calculateWitness(
-      circuitDataEntity,
-      authInputsBytes,
+      circuitData: circuitDataEntity,
+      atomicQueryInputs: authInputsBytes,
     );
 
     ZKProofEntity zkProofEntity = await proofRepository.prove(
-      circuitDataEntity,
-      witnessBytes,
+      circuitData: circuitDataEntity,
+      wtnsBytes: witnessBytes,
     );
 
     JWZEntity jwzZkProof = JWZEntity(
@@ -1330,22 +1288,20 @@ class Authenticate {
     );
     String hashClaimNode = await libBabyJubJub.hashPoseidon3(
         hashIndex, hashValue, BigInt.one.toString());
-    NodeDTO authClaimNode = NodeDTO(
+    NodeEntity authClaimNode = NodeEntity(
       children: [
-        HashDTO.fromBigInt(BigInt.parse(hashIndex)),
-        HashDTO.fromBigInt(BigInt.parse(hashValue)),
-        HashDTO.fromBigInt(BigInt.one),
+        HashEntity.fromBigInt(BigInt.parse(hashIndex)),
+        HashEntity.fromBigInt(BigInt.parse(hashValue)),
+        HashEntity.fromBigInt(BigInt.one),
       ],
-      hash: HashDTO.fromBigInt(BigInt.parse(hashClaimNode)),
-      type: NodeTypeDTO.leaf,
+      hash: HashEntity.fromBigInt(BigInt.parse(hashClaimNode)),
+      type: NodeType.leaf,
     );
-    NodeMapper nodeMapper = getItSdk<NodeMapper>();
-    NodeEntity nodeEntity = nodeMapper.mapFrom(authClaimNode);
 
     // INC PROOF
     SMTRepository smtRepository = getItSdk<SMTRepository>();
     incProof = await smtRepository.generateProof(
-      key: nodeEntity.hash,
+      key: authClaimNode.hash,
       type: TreeType.claims,
       did: genesisDid,
       privateKey: privateKey,
@@ -1353,7 +1309,7 @@ class Authenticate {
 
     // NON REV PROOF
     nonRevProof = await smtRepository.generateProof(
-      key: nodeEntity.hash,
+      key: authClaimNode.hash,
       type: TreeType.revocation,
       did: genesisDid,
       privateKey: privateKey,
@@ -1382,9 +1338,9 @@ class Authenticate {
     );
 
     String hash = await smtRepository.hashState(
-      claims: trees[0].data,
-      revocation: trees[1].data,
-      roots: trees[2].data,
+      claims: trees[0].string(),
+      revocation: trees[1].string(),
+      roots: trees[2].string(),
     );
 
     TreeStateEntity treeStateEntity = TreeStateEntity(
@@ -1415,12 +1371,8 @@ class Authenticate {
       envEntity: env,
     );
 
-    GistMTProofMapper gistMTProofMapper = getItSdk<GistMTProofMapper>();
-    GistMTProofDataSource gistMTProofDataSource =
-        getItSdk<GistMTProofDataSource>();
-    GistMTProofDTO gistMTProofDTO =
-        gistMTProofDataSource.getGistMTProof(gistProof);
-    gistProofEntity = gistMTProofMapper.mapFrom(gistMTProofDTO);
+    final gistMTProofDataSource = getItSdk<GistMTProofDataSource>();
+    gistProofEntity = gistMTProofDataSource.getGistMTProof(gistProof);
 
     return AuthClaimCompanionObject()
       ..authClaim = authClaim
@@ -1428,7 +1380,7 @@ class Authenticate {
       ..nonRevProof = nonRevProof
       ..gistProofEntity = gistProofEntity
       ..treeState = treeState
-      ..authClaimNode = nodeEntity;
+      ..authClaimNode = authClaimNode;
   }
 
   Future<Uint8List> _computeSigProof({

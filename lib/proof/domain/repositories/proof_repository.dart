@@ -4,8 +4,8 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.da
 import 'package:polygonid_flutter_sdk/proof/data/dtos/circuits_to_download_param.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_mtproof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 
 abstract class ProofRepository {
@@ -34,13 +34,15 @@ abstract class ProofRepository {
     Map<String, dynamic>? transactionData,
   });
 
-  Future<Uint8List> calculateWitness(
-    CircuitDataEntity circuitData,
-    Uint8List atomicQueryInputs,
-  );
+  Future<Uint8List> calculateWitness({
+    required CircuitDataEntity circuitData,
+    required Uint8List atomicQueryInputs,
+  });
 
-  Future<ZKProofEntity> prove(
-      CircuitDataEntity circuitData, Uint8List wtnsBytes);
+  Future<ZKProofEntity> prove({
+    required CircuitDataEntity circuitData,
+    required Uint8List wtnsBytes,
+  });
 
   Future<GistMTProofEntity> getGistProof(
       {required String idAsInt, required String contractAddress});

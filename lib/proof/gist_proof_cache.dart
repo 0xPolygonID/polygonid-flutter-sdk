@@ -83,9 +83,6 @@ class GistProofCache {
     });
   }
 
-  ContractFunction _getGistProof(DeployedContract contract) =>
-      contract.function('getGISTProof');
-
   Future<String> getGistProof({
     required String id,
     required DeployedContract deployedContract,
@@ -110,11 +107,9 @@ class GistProofCache {
         BigInt.parse(id),
       ];
 
-      List<dynamic> result;
-
-      result = await web3Client.call(
+      final result = await web3Client.call(
         contract: deployedContract,
-        function: _getGistProof(deployedContract),
+        function: deployedContract.function('getGISTProof'),
         params: transactionParameters,
       );
 

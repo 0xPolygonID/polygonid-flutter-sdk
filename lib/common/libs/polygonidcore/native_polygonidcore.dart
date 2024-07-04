@@ -4,6 +4,8 @@
 // ignore_for_file: type=lint
 import 'dart:ffi' as ffi;
 
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+
 /// Bindings to `ios/Classes/libpolygonid.h`.
 class NativePolygonIdCoreLib {
   /// Holds the symbol lookup function.
@@ -3755,9 +3757,12 @@ class NativePolygonIdCoreLib {
   void PLGNFreeStatus(
     ffi.Pointer<PLGNStatus> status,
   ) {
-    return _PLGNFreeStatus(
+    final stopwatch = Stopwatch()..start();
+    final res = _PLGNFreeStatus(
       status,
     );
+    logger().i('PLGNFreeStatus executed in ${stopwatch.elapsed}');
+    return res;
   }
 
   late final _PLGNFreeStatusPtr =
