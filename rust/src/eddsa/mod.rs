@@ -20,7 +20,6 @@ use rand6::Rng;
 //extern crate blake; // compatible version with Blake used at circomlib
 //#[macro_use]
 //use blake_hash::Digest;
-use blake::Blake;
 
 use std::cmp::min;
 
@@ -33,9 +32,9 @@ pub mod utils;
 
 lazy_static! {
     static ref D: Fr = Fr::from_str("168696").unwrap();
-    static ref D_big: BigInt = BigInt::parse_bytes(b"168696", 10).unwrap();
+    static ref D_BIG: BigInt = BigInt::parse_bytes(b"168696", 10).unwrap();
     static ref A: Fr = Fr::from_str("168700").unwrap();
-    static ref A_big: BigInt = BigInt::parse_bytes(b"168700", 10).unwrap();
+    static ref A_BIG: BigInt = BigInt::parse_bytes(b"168700", 10).unwrap();
     pub static ref Q: BigInt = BigInt::parse_bytes(
         b"21888242871839275222246405745257275088548364400416034343698204186575808495617",10
     )
@@ -62,7 +61,7 @@ lazy_static! {
     )
         .unwrap()
         >> 3;
-    static ref poseidon: poseidon_rs::Poseidon = Poseidon::new();
+    static ref POSEIDON: poseidon_rs::Poseidon = Poseidon::new();
 }
 
 #[derive(Clone, Debug)]
@@ -213,7 +212,7 @@ pub fn decompress_point(bb: [u8; 32]) -> Result<Point, String> {
     // x^2 = (1 - y^2) / (a - d * y^2) (mod p)
     let den = utils::modinv(
         &utils::modulus(
-            &(&A_big.clone() - utils::modulus(&(&D_big.clone() * (&y * &y)), &Q)),
+            &(&A_BIG.clone() - utils::modulus(&(&D_BIG.clone() * (&y * &y)), &Q)),
             &Q,
         ),
         &Q,
@@ -333,7 +332,7 @@ impl PrivateKey {
         let a = &self.public();
 
         let hm_input = vec![r8.x.clone(), r8.y.clone(), a.x.clone(), a.y.clone(), msg_fr];
-        let hm = poseidon.hash(hm_input)?;
+        let hm = POSEIDON.hash(hm_input)?;
 
         let mut s = &self.scalar_key() << 3;
         let hm_b = BigInt::parse_bytes(to_hex(&hm).as_bytes(), 16).unwrap();
@@ -372,7 +371,7 @@ pub fn schnorr_hash(pk: &Point, msg: BigInt, c: &Point) -> Result<BigInt, String
     }
     let msg_fr: Fr = Fr::from_str(&msg.to_string()).unwrap();
     let hm_input = vec![pk.x.clone(), pk.y.clone(), c.x.clone(), c.y.clone(), msg_fr];
-    let h = poseidon.hash(hm_input)?;
+    let h = POSEIDON.hash(hm_input)?;
     let h_b = BigInt::parse_bytes(to_hex(&h).as_bytes(), 16).unwrap();
     Ok(h_b)
 }
@@ -409,7 +408,7 @@ pub fn verify(pk: Point, sig: Signature, msg: BigInt) -> bool {
         pk.y.clone(),
         msg_fr,
     ];
-    let hm = match poseidon.hash(hm_input) {
+    let hm = match POSEIDON.hash(hm_input) {
         Result::Err(_) => return false,
         Result::Ok(hm) => hm,
     };
