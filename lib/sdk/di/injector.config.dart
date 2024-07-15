@@ -551,28 +551,28 @@ extension GetItInjectableX on _i1.GetIt {
     gh.lazySingleton<_i55.StacktraceManager>(() => _i55.StacktraceManager());
     gh.factory<_i56.StateIdentifierMapper>(() => _i56.StateIdentifierMapper());
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.identityStore,
-      instanceName: 'identityStore',
+      () => databaseModule.interactionStore,
+      instanceName: 'interactionStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.profileStore,
-      instanceName: 'profilesStore',
+      () => databaseModule.didProfileInfoStore,
+      instanceName: 'didProfileInfoStore',
+    );
+    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
+      () => databaseModule.identityStore,
+      instanceName: 'identityStore',
     );
     gh.factory<_i13.StoreRef<String, dynamic>>(
       () => databaseModule.keyValueStore,
       instanceName: 'keyValueStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.interactionStore,
-      instanceName: 'interactionStore',
+      () => databaseModule.profileStore,
+      instanceName: 'profilesStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.claimStore,
       instanceName: 'claimStore',
-    );
-    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.didProfileInfoStore,
-      instanceName: 'didProfileInfoStore',
     );
     gh.factory<_i57.TreeStateMapper>(() => _i57.TreeStateMapper());
     gh.factory<_i58.TreeTypeMapper>(() => _i58.TreeTypeMapper());
