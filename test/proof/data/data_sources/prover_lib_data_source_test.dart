@@ -23,7 +23,7 @@ main() {
     setUp(() {
       reset(proverLibWrapper);
 
-      when(proverLibWrapper.prover(any, any, any))
+      when(proverLibWrapper.prover(any, any))
           .thenAnswer((realInvocation) => Future.value(mockProverRes));
     });
 
@@ -32,15 +32,13 @@ main() {
       () async {
         expect(
             await dataSource.prove(
-              CommonMocks.circuitId,
-              CommonMocks.zkeyFilePath,
+              ProofMocks.zKeyFile,
               ProofMocks.datFile,
             ),
             mockProverRes);
 
         var captured =
-            verify(proverLibWrapper.prover(captureAny, captureAny, captureAny))
-                .captured;
+            verify(proverLibWrapper.prover(captureAny, captureAny)).captured;
         expect(captured[0], CommonMocks.circuitId);
         expect(captured[1], CommonMocks.zkeyFilePath);
         expect(captured[2], ProofMocks.datFile);

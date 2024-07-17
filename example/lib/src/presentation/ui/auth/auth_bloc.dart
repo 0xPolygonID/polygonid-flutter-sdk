@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
@@ -119,6 +120,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(const AuthState.authenticated());
     } on OperatorException catch (error) {
       emit(AuthState.error(error.errorMessage));
+    } on PolygonIdSDKException catch (exception) {
+      emit(AuthState.error(exception.toString() + ":" + exception.errorMessage));
     } catch (error) {
       emit(AuthState.error(error.toString()));
     }

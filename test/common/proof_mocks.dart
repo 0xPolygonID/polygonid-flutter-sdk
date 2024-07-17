@@ -57,7 +57,10 @@ class ProofMocks {
   static Uint8List datFile = Uint8List(32);
   static Uint8List zKeyFile = Uint8List(32);
   static CircuitDataEntity circuitData = CircuitDataEntity(
-      CommonMocks.circuitId, datFile, CommonMocks.zkeyFilePath);
+    CommonMocks.circuitId,
+    datFile,
+    zKeyFile,
+  );
 
   static MTProofEntity mtProof = MTProofEntity(
       existence: true, siblings: [IdentityMocks.hash, IdentityMocks.hash]);

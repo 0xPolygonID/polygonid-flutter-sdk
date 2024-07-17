@@ -3,19 +3,19 @@ import 'dart:typed_data';
 class CircuitDataEntity {
   final String circuitId;
   final Uint8List datFile;
-  final String zKeyPath;
+  final Uint8List zkey;
 
   CircuitDataEntity(
     this.circuitId,
     this.datFile,
-    this.zKeyPath,
+    this.zkey,
   );
 
   factory CircuitDataEntity.fromJson(Map<String, dynamic> json) {
     return CircuitDataEntity(
       json['circuitId'] as String,
       json['datFile'] as Uint8List,
-      json['zKeyPath'] as String,
+      json['zkey'] as Uint8List,
     );
   }
 
@@ -24,12 +24,12 @@ class CircuitDataEntity {
     return {
       'circuitId': circuitId,
       'datFile': datFile,
-      'zKeyPath': zKeyPath,
+      'zkey': zkey,
     };
   }
 
   @override
   String toString() {
-    return 'CircuitDataEntity{circuitId: $circuitId, datFile: $datFile, zKeyPath: $zKeyPath}';
+    return 'CircuitDataEntity{circuitId: $circuitId, datFile: $datFile, zkey: $zkey}';
   }
 }

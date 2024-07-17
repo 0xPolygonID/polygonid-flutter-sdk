@@ -388,13 +388,13 @@ class Authenticate {
 
       final circuitDatFileBytes = await circuitsDataSource
           .loadCircuitDatFile(proofRequest.scope.circuitId);
-      final zkeyFilePath = await circuitsDataSource
-          .getZkeyFilePath(proofRequest.scope.circuitId);
+      final zkeyBytes = await circuitsDataSource
+          .loadCircuitFile(proofRequest.scope.circuitId);
 
       CircuitDataEntity circuitDataEntity = CircuitDataEntity(
         proofRequest.scope.circuitId,
         circuitDatFileBytes,
-        zkeyFilePath,
+        zkeyBytes,
       );
 
       BigInt claimSubjectProfileNonce = identityEntity.profiles.keys.firstWhere(
@@ -1195,12 +1195,12 @@ class Authenticate {
 
     final circuitDatFileBytes =
         await circuitsDataSource.loadCircuitDatFile('authV2');
-    final zkeyFilePath = await circuitsDataSource.getZkeyFilePath('authV2');
+    final zkeyBytes = await circuitsDataSource.loadCircuitFile('authV2');
 
     CircuitDataEntity circuitDataEntity = CircuitDataEntity(
       "authV2",
       circuitDatFileBytes,
-      zkeyFilePath,
+      zkeyBytes,
     );
 
     Uint8List witnessBytes = await proofRepository.calculateWitness(

@@ -41,6 +41,10 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   ninja_prime: ^2.0.0
+  flutter_rapidsnark:
+    git:
+      url: git@github.com:iden3/flutter-rapidsnark.git
+      ref: main
 
 dev_dependencies:
   flutter_test:

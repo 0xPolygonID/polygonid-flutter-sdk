@@ -21,7 +21,6 @@ class PolygonIdSdkPlugin : FlutterPlugin, MethodCallHandler {
         System.loadLibrary("witnesscalc_credentialAtomicQueryMTPV2")
         System.loadLibrary("witnesscalc_credentialAtomicQuerySigV2OnChain")
         System.loadLibrary("witnesscalc_credentialAtomicQueryMTPV2OnChain")
-        System.loadLibrary("rapidsnark")
     }
 
     /// The MethodChannel that will the communication between Flutter and native Android
@@ -36,21 +35,7 @@ class PolygonIdSdkPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-        if (call.method == "prove") {
-            val zKeyPath = call.argument<String>("zKeyPath")
-            val wtnsBytes = call.argument<ByteArray>("wtnsBytes")
-
-            val proof = groth16ProveWithZKeyFilePath(zKeyPath!!, wtnsBytes!!)
-
-            result.success(
-                mapOf<String, Any>(
-                    "proof" to proof.proof,
-                    "pub_signals" to proof.publicSignals
-                )
-            )
-        } else {
-            result.notImplemented()
-        }
+        result.notImplemented()
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {

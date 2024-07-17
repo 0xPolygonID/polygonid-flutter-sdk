@@ -28,6 +28,26 @@ class CircuitsFilesDataSource {
     }
   }
 
+  Future<Uint8List> loadCircuitFile(String circuitId) async {
+    String path = directory.path;
+
+    try {
+      var circuitZkeyFileName = '$circuitId.zkey';
+      var circuitZkeyFilePath = '$path/$circuitZkeyFileName';
+      var circuitZkeyFile = File(circuitZkeyFilePath);
+
+      return circuitZkeyFile.readAsBytesSync();
+    } on PathNotFoundException catch (error) {
+      throw CircuitNotDownloadedException(
+        circuit: circuitId,
+        errorMessage:
+        "${error.message} Circuit $circuitId not downloaded or not found",
+      );
+    } catch (_) {
+      rethrow;
+    }
+  }
+
   Future<String> getZkeyFilePath(String circuitId) async {
     final circuitZkeyFileName = '$circuitId.zkey';
     final circuitZkeyFilePath = '${directory.path}/$circuitZkeyFileName';

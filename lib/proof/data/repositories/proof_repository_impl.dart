@@ -84,13 +84,13 @@ class ProofRepositoryImpl extends ProofRepository {
   Future<CircuitDataEntity> loadCircuitFiles(String circuitId) async {
     final circuitDatFile =
         await _circuitsFilesDataSource.loadCircuitDatFile(circuitId);
-    final zkeyFilePath = await _circuitsFilesDataSource.getZkeyFilePath(
+    final zkeyFile = await _circuitsFilesDataSource.loadCircuitFile(
       circuitId,
     );
     final circuitDataEntity = CircuitDataEntity(
       circuitId,
       circuitDatFile,
-      zkeyFilePath,
+      zkeyFile,
     );
     return circuitDataEntity;
   }
@@ -252,8 +252,7 @@ class ProofRepositoryImpl extends ProofRepository {
       Stopwatch stopwatch = Stopwatch()..start();
 
       final Map<String, dynamic>? proof = await _proverLibDataSource.prove(
-        circuitData.circuitId,
-        circuitData.zKeyPath,
+        circuitData.zkey,
         wtnsBytes,
       );
 
