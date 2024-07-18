@@ -46,7 +46,7 @@ dependencies:
   flutter_rapidsnark:
     git:
       url: git@github.com:iden3/flutter-rapidsnark.git
-      ref: main
+      ref: 0.0.1-alpha.1
 
 dev_dependencies:
   flutter_test:
