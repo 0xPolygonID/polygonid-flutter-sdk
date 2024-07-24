@@ -518,25 +518,25 @@ extension GetItInjectableX on _i1.GetIt {
       () => databaseModule.didProfileInfoStore,
       instanceName: 'didProfileInfoStore',
     );
-    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.profileStore,
-      instanceName: 'profilesStore',
-    );
-    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
-      () => databaseModule.identityStore,
-      instanceName: 'identityStore',
+    gh.factory<_i13.StoreRef<String, dynamic>>(
+      () => databaseModule.keyValueStore,
+      instanceName: 'keyValueStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.interactionStore,
       instanceName: 'interactionStore',
     );
     gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
+      () => databaseModule.profileStore,
+      instanceName: 'profilesStore',
+    );
+    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.claimStore,
       instanceName: 'claimStore',
     );
-    gh.factory<_i13.StoreRef<String, dynamic>>(
-      () => databaseModule.keyValueStore,
-      instanceName: 'keyValueStore',
+    gh.factory<_i13.StoreRef<String, Map<String, Object?>>>(
+      () => databaseModule.identityStore,
+      instanceName: 'identityStore',
     );
     gh.factory<_i50.TreeStateMapper>(() => _i50.TreeStateMapper());
     gh.factory<_i51.TreeTypeMapper>(() => _i51.TreeTypeMapper());
