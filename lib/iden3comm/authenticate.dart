@@ -59,6 +59,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3c
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/node_dto.dart';
@@ -69,6 +70,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.d
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj_wallet.dart';
@@ -1306,7 +1308,9 @@ class Authenticate {
     var libPolygonIdCredential =
         getItSdk<LibPolygonIdCoreCredentialDataSource>();
 
-    List<String> publicKey = BjjWallet(privateKeyBytes).publicKey;
+    final identityRepo = await getItSdk.getAsync<IdentityRepository>();
+    List<String> publicKey =
+        await identityRepo.getPublicKeys(privateKey: privateKey);
 
     String authClaimSchema = AUTH_CLAIM_SCHEMA;
     String issuedAuthClaim = libPolygonIdCredential.issueClaim(
