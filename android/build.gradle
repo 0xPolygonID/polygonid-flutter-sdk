@@ -47,11 +47,6 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
         main.jniLibs.srcDirs += 'src/main/jniLibs'
     }
-    externalNativeBuild {
-        cmake {
-            path "src/main/cpp/CMakeLists.txt"
-        }
-    }
 
     defaultConfig {
         minSdkVersion 21
