@@ -12,12 +12,14 @@ class GetDidIdentifierParam {
   final String blockchain;
   final String network;
   final BigInt profileNonce;
+  final String? method;
 
   GetDidIdentifierParam({
     required this.privateKey,
     required this.blockchain,
     required this.network,
     required this.profileNonce,
+    this.method,
   });
 }
 
@@ -48,6 +50,7 @@ class GetDidIdentifierUseCase
             claimsRoot: genesisState.claimsTree.data,
             profileNonce: param.profileNonce,
             config: env.config,
+            method: param.method,
           ),
         )
         .then((did) {

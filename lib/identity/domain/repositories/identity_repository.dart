@@ -32,6 +32,7 @@ abstract class IdentityRepository {
     required String claimsRoot,
     required BigInt profileNonce,
     required EnvConfigEntity config,
+    String? method,
   });
 
   // RHS

@@ -45,11 +45,14 @@ class GetIdentityUseCase
         DidEntity did = await _getDidUseCase.execute(param: param.genesisDid);
 
         String genesisDid = await _getDidIdentifierUseCase.execute(
-            param: GetDidIdentifierParam(
-                privateKey: param.privateKey!,
-                blockchain: did.blockchain,
-                network: did.network,
-                profileNonce: GENESIS_PROFILE_NONCE));
+          param: GetDidIdentifierParam(
+            privateKey: param.privateKey!,
+            blockchain: did.blockchain,
+            network: did.network,
+            profileNonce: GENESIS_PROFILE_NONCE,
+            method: did.method,
+          ),
+        );
 
         if (did.did != genesisDid) {
           throw InvalidPrivateKeyException(

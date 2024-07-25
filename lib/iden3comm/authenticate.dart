@@ -164,6 +164,7 @@ class Authenticate {
           blockchain: chain.blockchain,
           network: chain.network,
           profileNonce: profileNonce,
+          method: chain.method,
         ),
       );
 

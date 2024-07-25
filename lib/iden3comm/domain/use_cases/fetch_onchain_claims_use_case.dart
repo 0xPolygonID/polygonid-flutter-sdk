@@ -101,6 +101,7 @@ class FetchOnchainClaimsUseCase
           blockchain: chain.blockchain,
           network: chain.network,
           profileNonce: param.profileNonce,
+          method: chain.method,
         ),
       );
 
@@ -186,6 +187,7 @@ class FetchOnchainClaimsUseCase
         blockchain: chain.blockchain,
         network: chain.network,
         profileNonce: nonce,
+        method: chain.method,
       ),
     );
 

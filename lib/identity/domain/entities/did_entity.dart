@@ -3,17 +3,19 @@ class DidEntity {
   final String identifier;
   final String blockchain;
   final String network;
+  final String? method;
 
   DidEntity({
     required this.did,
     required this.identifier,
     required this.blockchain,
     required this.network,
+    this.method,
   });
 
   @override
   String toString() =>
-      "[DidEntity] {did: $did, identifier: $identifier, blockchain: $blockchain, network: $network}";
+      "[DidEntity] {did: $did, identifier: $identifier, blockchain: $blockchain, network: $network, method: $method}";
 
   @override
   bool operator ==(Object other) =>
@@ -23,7 +25,8 @@ class DidEntity {
           did == other.did &&
           identifier == other.identifier &&
           blockchain == other.blockchain &&
-          network == other.network;
+          network == other.network &&
+          method == other.method;
 
   @override
   int get hashCode => runtimeType.hashCode;
@@ -33,6 +36,7 @@ class DidEntity {
         'identifier': identifier,
         'blockchain': blockchain,
         'network': network,
+        'method': method,
       };
 
   factory DidEntity.fromJson(Map<String, dynamic> json) => DidEntity(
@@ -40,5 +44,6 @@ class DidEntity {
         identifier: json['identifier'],
         blockchain: json['blockchain'],
         network: json['network'],
+        method: json['method'],
       );
 }

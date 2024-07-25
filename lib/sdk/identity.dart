@@ -355,16 +355,20 @@ class Identity implements PolygonIdSdkIdentity {
     required String blockchain,
     required String network,
     BigInt? profileNonce,
+    String? method,
   }) {
     _stacktraceManager.clear();
     _stacktraceManager
         .addTrace("PolygonIdSdk.Identity.getDidIdentifier called");
     return _getDidIdentifierUseCase.execute(
-        param: GetDidIdentifierParam(
-            privateKey: privateKey,
-            blockchain: blockchain,
-            network: network,
-            profileNonce: profileNonce ?? BigInt.zero));
+      param: GetDidIdentifierParam(
+        privateKey: privateKey,
+        blockchain: blockchain,
+        network: network,
+        profileNonce: profileNonce ?? BigInt.zero,
+        method: method,
+      ),
+    );
   }
 
   @override
