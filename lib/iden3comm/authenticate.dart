@@ -1049,26 +1049,6 @@ class Authenticate {
   Future<String> signMessage({required Uint8List privateKey, required String message}) async {
     final walletDs = getItSdk<WalletDataSource>();
     return walletDs.signMessage(privateKey: privateKey, message: message);
-
-    // TODO: check if this code is needed.
-    BigInt? messHash;
-    if (message.toLowerCase().startsWith("0x")) {
-      message = strip0x(message);
-      messHash = BigInt.tryParse(message, radix: 16);
-    } else {
-      messHash = BigInt.tryParse(message, radix: 10);
-    }
-    final bjjKey = bjj.PrivateKey(privateKey);
-    if (messHash != null) {
-      final signature = bjjKey.sign(messHash);
-      return signature;
-    } else {
-      _stacktraceManager.addError(
-        "[Authenticate] message string couldn't be parsed as BigInt",
-      );
-      throw const FormatException(
-          "message string couldn't be parsed as BigInt");
-    }
   }
 
   Future<AuthBodyDidDocResponseDTO?> _getDidDoc({
