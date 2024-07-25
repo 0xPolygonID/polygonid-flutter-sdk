@@ -37,6 +37,7 @@ class GetCurrentEnvDidIdentifierUseCase
               blockchain: chain.blockchain,
               network: chain.network,
               profileNonce: param.profileNonce,
+              method: chain.method,
             )))
         .then((did) {
       logger().i("[GetCurrentEnvDidIdentifierUseCase] did: $did");

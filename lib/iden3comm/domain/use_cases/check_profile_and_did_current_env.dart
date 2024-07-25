@@ -54,6 +54,7 @@ class CheckProfileAndDidCurrentEnvUseCase
           blockchain: chain.blockchain,
           network: chain.network,
           profileNonce: GENESIS_PROFILE_NONCE,
+          method: chain.method,
         ),
       );
 

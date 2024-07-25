@@ -52,6 +52,7 @@ class CommonMocks {
   static Exception exception = Exception(message);
   static String blockchain = "theBlockchain";
   static String network = "theNetwork";
+  static String method = "theMethod";
   static EnvConfigEntity envConfig = EnvConfigEntity(ipfsNodeUrl: '');
 
   static FilterEntity filter = FilterEntity(name: name, value: aMap);

@@ -4,12 +4,14 @@ class ChainConfigEntity {
 
   final String rpcUrl;
   final String stateContractAddr;
+  final String? method;
 
   ChainConfigEntity({
     required this.blockchain,
     required this.network,
     required this.rpcUrl,
     required this.stateContractAddr,
+    this.method,
   });
 
   factory ChainConfigEntity.fromJson(Map<String, dynamic> json) {
@@ -18,6 +20,7 @@ class ChainConfigEntity {
       network: json['network'],
       rpcUrl: json['rpcUrl'],
       stateContractAddr: json['stateContractAddr'],
+      method: json['method'],
     );
   }
 
@@ -26,11 +29,12 @@ class ChainConfigEntity {
         'network': network,
         'rpcUrl': rpcUrl,
         'stateContractAddr': stateContractAddr,
+        'method': method,
       };
 
   @override
   String toString() {
-    return 'ChainConfigEntity{blockchain: $blockchain, network: $network, rpcUrl: $rpcUrl, stateContractAddr: $stateContractAddr}';
+    return 'ChainConfigEntity{blockchain: $blockchain, network: $network, rpcUrl: $rpcUrl, stateContractAddr: $stateContractAddr, method: $method}';
   }
 
   @override
@@ -41,7 +45,8 @@ class ChainConfigEntity {
         other.blockchain == blockchain &&
         other.network == network &&
         other.rpcUrl == rpcUrl &&
-        other.stateContractAddr == stateContractAddr;
+        other.stateContractAddr == stateContractAddr &&
+        other.method == method;
   }
 
   @override

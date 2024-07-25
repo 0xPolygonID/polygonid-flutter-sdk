@@ -225,14 +225,16 @@ class IdentityRepositoryImpl extends IdentityRepository {
     required String claimsRoot,
     required BigInt profileNonce,
     required EnvConfigEntity config,
+    String? method,
   }) {
     try {
       // Get the genesis id
       final genesisDid = _libPolygonIdCoreIdentityDataSource.calculateGenesisId(
-        claimsRoot,
-        blockchain,
-        network,
-        config.toJson(),
+        claimsTreeRoot: claimsRoot,
+        blockchain: blockchain,
+        network: network,
+        config: config.toJson(),
+        method: method,
       );
 
       if (profileNonce == GENESIS_PROFILE_NONCE) {

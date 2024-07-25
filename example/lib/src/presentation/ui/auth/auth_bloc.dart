@@ -95,6 +95,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       privateKey: privateKey,
       blockchain: currentChain.blockchain,
       network: currentChain.network,
+      method: currentChain.method,
     );
 
     IdentityEntity identityEntity = await _polygonIdSdk.identity.getIdentity(

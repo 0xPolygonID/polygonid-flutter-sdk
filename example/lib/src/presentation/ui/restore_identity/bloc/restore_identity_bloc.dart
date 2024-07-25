@@ -40,6 +40,7 @@ class RestoreIdentityBloc
       privateKey: privateKey,
       blockchain: chain.blockchain,
       network: chain.network,
+      method: chain.method,
     );
 
     if (genesisDid.isEmpty) {

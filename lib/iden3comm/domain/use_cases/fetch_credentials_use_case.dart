@@ -59,6 +59,7 @@ class FetchCredentialsUseCase {
     required BigInt profileNonce,
     String? blockchain,
     String? network,
+    String? method,
   }) async {
     try {
       // we check the type of the credential offer message
@@ -75,6 +76,7 @@ class FetchCredentialsUseCase {
             await _getSelectedChainUseCase.execute();
         network = chain.network;
         blockchain = chain.blockchain;
+        method = chain.method;
       }
 
       // we get the profile identifier
@@ -85,6 +87,7 @@ class FetchCredentialsUseCase {
           blockchain: blockchain,
           network: network,
           profileNonce: profileNonce,
+          method: method,
         ),
       );
 
