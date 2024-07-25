@@ -17,14 +17,11 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/secure_storage_profiles_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/node_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/rhs_node_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/encryption_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/identity_dto_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/node_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/rhs_node_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
@@ -51,7 +48,7 @@ class FakeWallet extends Fake implements BjjWallet {
 
 final mockWallet = FakeWallet();
 const otherIdentifier = "theOtherIdentifier";
-final mockDTO = IdentityDTO(
+final mockDTO = IdentityEntity(
   did: CommonMocks.identifier,
   publicKey: CommonMocks.pubKeys,
   profiles: CommonMocks.profiles,
@@ -73,17 +70,17 @@ final mockAuthResponse = AuthResponse(
 
 final rhsNodeDTOs = [
   RhsNodeDTO(
-      node: NodeDTO(
+      node: NodeEntity(
         children: const [],
-        hash: HashDTO(data: Uint8List(32)),
-        type: NodeTypeDTO.middle,
+        hash: HashEntity(data: Uint8List(32)),
+        type: NodeType.middle,
       ),
       status: ''),
   RhsNodeDTO(
-      node: NodeDTO(
+      node: NodeEntity(
         children: const [],
-        hash: HashDTO(data: Uint8List(32)),
-        type: NodeTypeDTO.leaf,
+        hash: HashEntity(data: Uint8List(32)),
+        type: NodeType.leaf,
       ),
       status: ''),
 ];
@@ -159,11 +156,8 @@ MockDestinationPathDataSource destinationPathDataSource =
     MockDestinationPathDataSource();
 MockHexMapper hexMapper = MockHexMapper();
 MockPrivateKeyMapper privateKeyMapper = MockPrivateKeyMapper();
-MockIdentityDTOMapper identityDTOMapper = MockIdentityDTOMapper();
 MockRhsNodeMapper rhsNodeMapper = MockRhsNodeMapper();
 MockStateIdentifierMapper stateIdentifierMapper = MockStateIdentifierMapper();
-MockNodeMapper nodeMapper = MockNodeMapper();
-MockEncryptionKeyMapper encryptionKeyMapper = MockEncryptionKeyMapper();
 MockSecureStorageProfilesDataSource secureStorageProfilesDataSource =
     MockSecureStorageProfilesDataSource();
 
@@ -180,11 +174,8 @@ IdentityRepository repository = IdentityRepositoryImpl(
   destinationPathDataSource,
   hexMapper,
   privateKeyMapper,
-  identityDTOMapper,
   rhsNodeMapper,
   stateIdentifierMapper,
-  nodeMapper,
-  encryptionKeyMapper,
   secureStorageProfilesDataSource,
 );
 
@@ -201,104 +192,11 @@ IdentityRepository repository = IdentityRepositoryImpl(
   DestinationPathDataSource,
   HexMapper,
   PrivateKeyMapper,
-  IdentityDTOMapper,
   RhsNodeMapper,
   StateIdentifierMapper,
-  NodeMapper,
-  EncryptionKeyMapper,
   SecureStorageProfilesDataSource,
 ])
 void main() {
-  group("Get identity", () {
-    setUp(() {
-      reset(storageIdentityDataSource);
-      reset(identityDTOMapper);
-
-      // Given
-      when(identityDTOMapper.mapFrom(any))
-          .thenAnswer((realInvocation) => IdentityMocks.identity);
-
-      when(storageIdentityDataSource.getIdentity(did: anyNamed('did')))
-          .thenAnswer((realInvocation) => Future.value(mockDTO));
-    });
-
-    test(
-        "Given an identifier, when I call getIdentity, then I expect a IdentityEntity to be returned",
-        () async {
-      // When
-      expect(await repository.getIdentity(genesisDid: CommonMocks.identifier),
-          IdentityMocks.identity);
-
-      // Then
-      expect(
-          verify(storageIdentityDataSource.getIdentity(
-                  did: captureAnyNamed('did')))
-              .captured
-              .first,
-          CommonMocks.identifier);
-
-      expect(verify(identityDTOMapper.mapFrom(captureAny)).captured.first,
-          mockDTO);
-    });
-
-    test(
-        "Given an identifier, when I call getIdentity and an error occurred, then I expect a IdentityException to be thrown",
-        () async {
-      // Given
-      when(storageIdentityDataSource.getIdentity(did: anyNamed('did')))
-          .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
-
-      // When
-      await repository
-          .getIdentity(genesisDid: CommonMocks.identifier)
-          .then((_) => null)
-          .catchError((error) {
-        expect(error, isA<IdentityException>());
-        expect(error.error, CommonMocks.exception);
-      });
-
-      // Then
-      expect(
-          verify(storageIdentityDataSource.getIdentity(
-                  did: captureAnyNamed('did')))
-              .captured
-              .first,
-          CommonMocks.identifier);
-
-      verifyNever(identityDTOMapper.mapFrom(captureAny));
-    });
-
-    test(
-        "Given an identifier, when I call getIdentity and the identity doesn't exist, then I expect a UnknownIdentityException to be thrown",
-        () async {
-      // Given
-      when(storageIdentityDataSource.getIdentity(did: anyNamed('did')))
-          .thenAnswer((realInvocation) => Future.error(UnknownIdentityException(
-                did: CommonMocks.identifier,
-                errorMessage: "Unknown identity",
-              )));
-
-      // When
-      await repository
-          .getIdentity(genesisDid: CommonMocks.identifier)
-          .then((_) => null)
-          .catchError((error) {
-        expect(error, isA<UnknownIdentityException>());
-        expect(error.did, CommonMocks.identifier);
-      });
-
-      // Then
-      expect(
-          verify(storageIdentityDataSource.getIdentity(
-                  did: captureAnyNamed('did')))
-              .captured
-              .first,
-          CommonMocks.identifier);
-
-      verifyNever(identityDTOMapper.mapFrom(captureAny));
-    });
-  });
-
   group("Sign message", () {
     setUp(() {
       reset(walletDataSource);
@@ -711,7 +609,6 @@ void main() {
       when(storageIdentityDataSource.getIdentityDb(
               did: anyNamed('did'), privateKey: anyNamed('privateKey')))
           .thenAnswer((realInvocation) => Future.value(CommonMocks.aMap));
-      when(encryptionKeyMapper.mapFrom(any)).thenReturn(CommonMocks.key);
       when(encryptionDbDataSource.encryptData(
               data: anyNamed('data'), key: anyNamed('key')))
           .thenReturn(CommonMocks.message);
@@ -734,9 +631,6 @@ void main() {
       expect(captureIdentity[0], CommonMocks.did);
       expect(captureIdentity[1], CommonMocks.privateKey);
 
-      expect(verify(encryptionKeyMapper.mapFrom(captureAny)).captured.first,
-          CommonMocks.privateKey);
-
       var captureEncrypt = verify(encryptionDbDataSource.encryptData(
               data: captureAnyNamed('data'), key: captureAnyNamed('key')))
           .captured;
@@ -748,7 +642,9 @@ void main() {
         "Given params, when I call exportIdentity and a error occurred, then I expect an exception to be thrown",
         () async {
       // Given
-      when(encryptionKeyMapper.mapFrom(any)).thenThrow(CommonMocks.exception);
+      when(storageIdentityDataSource.getIdentityDb(
+              did: anyNamed('did'), privateKey: anyNamed('privateKey')))
+          .thenThrow(CommonMocks.exception);
 
       // When
       try {
@@ -766,9 +662,6 @@ void main() {
       expect(captureIdentity[0], CommonMocks.did);
       expect(captureIdentity[1], CommonMocks.privateKey);
 
-      expect(verify(encryptionKeyMapper.mapFrom(captureAny)).captured.first,
-          CommonMocks.privateKey);
-
       verifyNever(encryptionDbDataSource.encryptData(
           data: captureAnyNamed('data'), key: captureAnyNamed('key')));
     });
@@ -779,7 +672,6 @@ void main() {
       // Given
       when(destinationPathDataSource.getDestinationPath(did: anyNamed('did')))
           .thenAnswer((realInvocation) => Future.value(CommonMocks.name));
-      when(encryptionKeyMapper.mapFrom(any)).thenReturn(CommonMocks.key);
       when(encryptionDbDataSource.decryptData(
               encryptedData: anyNamed('encryptedData'), key: anyNamed('key')))
           .thenReturn(CommonMocks.aMap);
@@ -802,9 +694,6 @@ void main() {
           completes);
 
       // Then
-      expect(verify(encryptionKeyMapper.mapFrom(captureAny)).captured.first,
-          CommonMocks.privateKey);
-
       var captureDecrypt = verify(encryptionDbDataSource.decryptData(
               encryptedData: captureAnyNamed('encryptedData'),
               key: captureAnyNamed('key')))
@@ -840,9 +729,6 @@ void main() {
       }
 
       // Then
-      expect(verify(encryptionKeyMapper.mapFrom(captureAny)).captured.first,
-          CommonMocks.privateKey);
-
       var captureDecrypt = verify(encryptionDbDataSource.decryptData(
               encryptedData: captureAnyNamed('encryptedData'),
               key: captureAnyNamed('key')))

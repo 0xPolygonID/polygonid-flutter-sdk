@@ -47,12 +47,20 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
 
   @override
   Future<String> execute({required GetAuthTokenParam param}) async {
+    Stopwatch stopwatch = Stopwatch()..start();
+    logger().i('GetAuthTokenUseCase: started');
     try {
-      String encodedJwz = await _getJWZUseCase.execute(
-          param: GetJWZParam(message: param.message));
+      final jwz = await _getJWZUseCase.execute(
+        param: GetJWZParam(message: param.message),
+      );
 
-      String authChallenge =
-          await _getAuthChallengeUseCase.execute(param: encodedJwz);
+      logger().i(
+          'GetAuthTokenUseCase: getJWZUseCase at ${stopwatch.elapsedMilliseconds} ms');
+
+      final authChallenge = await _getAuthChallengeUseCase.execute(param: jwz);
+
+      logger().i(
+          'GetAuthTokenUseCase: getAuthChallengeUseCase at ${stopwatch.elapsedMilliseconds} ms');
 
       Uint8List authInputs = await _getAuthInputsUseCase.execute(
         param: GetAuthInputsParam(
@@ -63,22 +71,27 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
         ),
       );
 
-      CircuitDataEntity circuit =
-          await _loadCircuitUseCase.execute(param: "authV2");
+      logger().i(
+          'GetAuthTokenUseCase: getAuthInputsUseCase at ${stopwatch.elapsedMilliseconds} ms');
 
-      ZKProofEntity zkProofEntity = await _proveUseCase.execute(
-        param: ProveParam(
-          authInputs,
-          circuit,
-        ),
+      final circuit = await _loadCircuitUseCase.execute(param: "authV2");
+
+      logger().i(
+          'GetAuthTokenUseCase: loadCircuitUseCase at ${stopwatch.elapsedMilliseconds} ms');
+
+      final zkProofEntity = await _proveUseCase.execute(
+        param: ProveParam(authInputs, circuit),
       );
+
+      logger().i(
+          'GetAuthTokenUseCase: proveUseCase at ${stopwatch.elapsedMilliseconds} ms');
 
       String authToken = await _getJWZUseCase.execute(
-        param: GetJWZParam(
-          message: param.message,
-          proof: zkProofEntity,
-        ),
+        param: GetJWZParam(message: param.message, proof: zkProofEntity),
       );
+
+      logger().i(
+          'GetAuthTokenUseCase: getJWZUseCase at ${stopwatch.elapsedMilliseconds} ms');
 
       return authToken;
     } on PolygonIdSDKException catch (_) {

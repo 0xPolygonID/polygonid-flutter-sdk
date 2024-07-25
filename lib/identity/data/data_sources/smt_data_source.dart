@@ -1,12 +1,12 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_smt_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/node_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/smt_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_entity.dart';
 
 class SMTDataSource {
   final HexMapper _hexMapper;
@@ -27,7 +27,7 @@ class SMTDataSource {
             storeName: storeName, did: did, privateKey: privateKey))
         .catchError((error) {});
     await _storageSMTDataSource.setRoot(
-        root: HashDTO.zero(),
+        root: HashEntity.zero(),
         storeName: storeName,
         did: did,
         privateKey: privateKey);
@@ -51,13 +51,13 @@ class SMTDataSource {
       required String did,
       required String privateKey}) async {
     return _storageSMTDataSource.setRoot(
-        root: HashDTO.zero(),
+        root: HashEntity.zero(),
         storeName: storeName,
         did: did,
         privateKey: privateKey);
   }
 
-  Future<HashDTO> getRoot(
+  Future<HashEntity> getRoot(
       {required String storeName,
       required String did,
       required String privateKey}) async {
@@ -65,8 +65,8 @@ class SMTDataSource {
         storeName: storeName, did: did, privateKey: privateKey);
   }
 
-  Future<HashDTO> addLeaf(
-      {required NodeDTO newNodeLeaf,
+  Future<HashEntity> addLeaf(
+      {required NodeEntity newNodeLeaf,
       required String storeName,
       required String did,
       required String privateKey}) async {
@@ -82,7 +82,7 @@ class SMTDataSource {
     return newRoot;
   }
 
-  Future<HashDTO> _addLeaf(NodeDTO newLeaf, HashDTO key, int level,
+  Future<HashEntity> _addLeaf(NodeEntity newLeaf, HashEntity key, int level,
       List<bool> path, String storeName, String did, String privateKey) async {
     int maxLevels = await _storageSMTDataSource.getMaxLevels(
         storeName: storeName, did: did, privateKey: privateKey);
@@ -90,15 +90,15 @@ class SMTDataSource {
       throw ArgumentError("level must be less than maxLevels");
     }
 
-    logger().i("add leaf under key ${key.data} at level $level");
+    logger().i("add leaf under key ${key.string()} at level $level");
 
     final node = await _storageSMTDataSource.getNode(
         key: key, storeName: storeName, did: did, privateKey: privateKey);
     switch (node.type) {
-      case NodeTypeDTO.empty:
+      case NodeType.empty:
         return _addNode(newLeaf, storeName, did, privateKey);
-      case NodeTypeDTO.leaf:
-      case NodeTypeDTO.state: //???
+      case NodeType.leaf:
+      case NodeType.state: //???
         final nKey = node.children[0];
         // Check if leaf node found contains the leaf node we are
         // trying to add
@@ -113,10 +113,10 @@ class SMTDataSource {
         // n's path
         return _pushLeaf(newLeaf, node, level, path, pathOldLeaf, storeName,
             did, privateKey);
-      case NodeTypeDTO.middle:
+      case NodeType.middle:
         // We need to go deeper, continue traversing the tree, left or
         // right depending on path
-        late final NodeDTO newNodeMiddle;
+        late final NodeEntity newNodeMiddle;
         if (path[level]) {
           // go right
           final nextKey = await _addLeaf(newLeaf, node.children[1], level + 1,
@@ -124,11 +124,9 @@ class SMTDataSource {
           final newNodeChildren = [node.children[0], nextKey];
           final nodeHashData = await _libBabyjubjubDataSource.hashPoseidon2(
               node.children[0].toString(), nextKey.toString());
-          final nodeHash = HashDTO.fromBigInt(BigInt.parse(nodeHashData));
-          newNodeMiddle = NodeDTO(
-              children: newNodeChildren,
-              hash: nodeHash,
-              type: NodeTypeDTO.middle);
+          final nodeHash = HashEntity.fromBigInt(BigInt.parse(nodeHashData));
+          newNodeMiddle = NodeEntity(
+              children: newNodeChildren, hash: nodeHash, type: NodeType.middle);
         } else {
           // go left
           final nextKey = await _addLeaf(newLeaf, node.children[0], level + 1,
@@ -136,11 +134,9 @@ class SMTDataSource {
           final newNodeChildren = [nextKey, node.children[1]];
           final nodeHashData = await _libBabyjubjubDataSource.hashPoseidon2(
               nextKey.toString(), node.children[1].toString());
-          final nodeHash = HashDTO.fromBigInt(BigInt.parse(nodeHashData));
-          newNodeMiddle = NodeDTO(
-              children: newNodeChildren,
-              hash: nodeHash,
-              type: NodeTypeDTO.middle);
+          final nodeHash = HashEntity.fromBigInt(BigInt.parse(nodeHashData));
+          newNodeMiddle = NodeEntity(
+              children: newNodeChildren, hash: nodeHash, type: NodeType.middle);
         }
         return _addNode(newNodeMiddle, storeName, did, privateKey);
       default:
@@ -150,12 +146,12 @@ class SMTDataSource {
     }
   }
 
-  Future<HashDTO> _addNode(
-      NodeDTO node, String storeName, String did, String privateKey) async {
+  Future<HashEntity> _addNode(
+      NodeEntity node, String storeName, String did, String privateKey) async {
     // print("add node $n");
 
     final key = node.hash;
-    if (node.type == NodeTypeDTO.empty) {
+    if (node.type == NodeType.empty) {
       return key;
     }
 
@@ -164,7 +160,7 @@ class SMTDataSource {
     bool nodeFound = await _storageSMTDataSource
         .getNode(
             key: key, storeName: storeName, did: did, privateKey: privateKey)
-        .then((node) => node.type != NodeTypeDTO.empty)
+        .then((node) => node.type != NodeType.empty)
         .catchError((error) => false);
     /*} on SMTNotFoundException {
       nodeFound = false;
@@ -188,9 +184,9 @@ class SMTDataSource {
   // pushLeaf recursively pushes an existing oldLeaf down until its path diverges
   // from newLeaf, at which point both leafs are stored, all while updating the
   // path.
-  Future<HashDTO> _pushLeaf(
-      NodeDTO newLeaf,
-      NodeDTO oldLeaf,
+  Future<HashEntity> _pushLeaf(
+      NodeEntity newLeaf,
+      NodeEntity oldLeaf,
       int level,
       List<bool> pathNewLeaf,
       List<bool> pathOldLeaf,
@@ -209,25 +205,25 @@ class SMTDataSource {
       // We need to go deeper!
       final nextKey = await _pushLeaf(newLeaf, oldLeaf, level + 1, pathNewLeaf,
           pathOldLeaf, storeName, did, privateKey);
-      late final List<HashDTO> newNodeChildren;
+      late final List<HashEntity> newNodeChildren;
       if (pathNewLeaf[level]) {
         // go right
-        newNodeChildren = [HashDTO.zero(), nextKey];
+        newNodeChildren = [HashEntity.zero(), nextKey];
       } else {
         // go left
-        newNodeChildren = [nextKey, HashDTO.zero()];
+        newNodeChildren = [nextKey, HashEntity.zero()];
       }
       final nodeHashData = await _libBabyjubjubDataSource.hashPoseidon2(
           newNodeChildren[0].toString(), newNodeChildren[1].toString());
-      final nodeHash = HashDTO.fromBigInt(BigInt.parse(nodeHashData));
-      final NodeDTO newNodeMiddle = NodeDTO(
-          children: newNodeChildren, hash: nodeHash, type: NodeTypeDTO.middle);
+      final nodeHash = HashEntity.fromBigInt(BigInt.parse(nodeHashData));
+      final NodeEntity newNodeMiddle = NodeEntity(
+          children: newNodeChildren, hash: nodeHash, type: NodeType.middle);
       return _addNode(newNodeMiddle, storeName, did, privateKey);
     }
 
     final oldLeafKey = oldLeaf.hash;
     final newLeafKey = newLeaf.hash;
-    late final List<HashDTO> newNodeChildren;
+    late final List<HashEntity> newNodeChildren;
     if (pathNewLeaf[level]) {
       newNodeChildren = [oldLeafKey, newLeafKey];
     } else {
@@ -235,14 +231,14 @@ class SMTDataSource {
     }
     final nodeHashData = await _libBabyjubjubDataSource.hashPoseidon2(
         newNodeChildren[0].toString(), newNodeChildren[1].toString());
-    final nodeHash = HashDTO.fromBigInt(BigInt.parse(nodeHashData));
-    final NodeDTO newNodeMiddle = NodeDTO(
-        children: newNodeChildren, hash: nodeHash, type: NodeTypeDTO.middle);
+    final nodeHash = HashEntity.fromBigInt(BigInt.parse(nodeHashData));
+    final NodeEntity newNodeMiddle = NodeEntity(
+        children: newNodeChildren, hash: nodeHash, type: NodeType.middle);
     await _addNode(newLeaf, storeName, did, privateKey);
     return _addNode(newNodeMiddle, storeName, did, privateKey);
   }
 
-  _getPath(int numLevel, HashDTO h) {
+  _getPath(int numLevel, HashEntity h) {
     final path = List<bool>.filled(numLevel, false);
     for (int i = 0; i < numLevel; i++) {
       path[i] = h.testBit(i);
@@ -251,15 +247,16 @@ class SMTDataSource {
   }
 
   // TODO: MTProofDTO from proof, not identity
-  Future<MTProofDTO> generateProof(
-      {required HashDTO key,
-      required String storeName,
-      required String did,
-      required String privateKey}) async {
+  Future<MTProofEntity> generateProof({
+    required HashEntity key,
+    required String storeName,
+    required String did,
+    required String privateKey,
+  }) async {
     int maxLevels = await _storageSMTDataSource.getMaxLevels(
         storeName: storeName, did: did, privateKey: privateKey);
     final path = _getPath(maxLevels, key);
-    var siblings = <HashDTO>[];
+    var siblings = <HashEntity>[];
     final root = await _storageSMTDataSource.getRoot(
         storeName: storeName, did: did, privateKey: privateKey);
     var nextKey = root;
@@ -268,21 +265,21 @@ class SMTDataSource {
           key: nextKey, storeName: storeName, did: did, privateKey: privateKey);
 
       switch (node.type) {
-        case NodeTypeDTO.empty:
-          return MTProofDTO(existence: false, siblings: siblings);
-        case NodeTypeDTO.leaf:
+        case NodeType.empty:
+          return MTProofEntity(existence: false, siblings: siblings);
+        case NodeType.leaf:
           if (node.hash == key) {
-            return MTProofDTO(existence: true, siblings: siblings);
+            return MTProofEntity(existence: true, siblings: siblings);
           }
           // We found a leaf whose entry didn't match key
-          return MTProofDTO(
+          return MTProofEntity(
               existence: false,
               siblings: siblings,
-              nodeAux: NodeAuxDTO(
+              nodeAux: NodeAuxEntity(
                 key: node.children[0].toString(),
                 value: node.children[1].toString(),
               ));
-        case NodeTypeDTO.middle:
+        case NodeType.middle:
           if (path[depth]) {
             nextKey = node.children[1];
             siblings.add(node.children[0]);
@@ -302,29 +299,29 @@ class SMTDataSource {
     );
   }
 
-  Future<HashDTO> getProofTreeRoot(
-      {required MTProofDTO proof, required NodeDTO node}) async {
-    assert(node.type == NodeTypeDTO.leaf);
-    HashDTO midKey;
+  Future<HashEntity> getProofTreeRoot(
+      {required MTProofEntity proof, required NodeEntity node}) async {
+    assert(node.type == NodeType.leaf);
+    HashEntity midKey;
     if (proof.existence) {
       midKey = node.hash;
     } else {
       if (proof.nodeAux == null) {
-        midKey = HashDTO.zero();
+        midKey = HashEntity.zero();
       } else {
         if (node.children[0] ==
-            HashDTO.fromBigInt(BigInt.parse(proof.nodeAux!.key))) {
+            HashEntity.fromBigInt(BigInt.parse(proof.nodeAux!.key))) {
           throw Exception(
               "Non-existence proof being checked against hIndex equal to nodeAux");
         }
-        midKey = HashDTO.fromBigInt(BigInt.parse(proof.nodeAux!.key));
+        midKey = HashEntity.fromBigInt(BigInt.parse(proof.nodeAux!.key));
       }
     }
 
     final path = _getPath(proof.siblings.length, node.children[0]);
 
     for (int level = proof.siblings.length - 1; level >= 0; level--) {
-      late final List<HashDTO> newNodeChildren;
+      late final List<HashEntity> newNodeChildren;
       if (path[level]) {
         newNodeChildren = [proof.siblings[level], midKey];
       } else {
@@ -332,16 +329,16 @@ class SMTDataSource {
       }
       final nodeHashData = await _libBabyjubjubDataSource.hashPoseidon2(
           newNodeChildren[0].toString(), newNodeChildren[1].toString());
-      midKey = HashDTO.fromBigInt(BigInt.parse(nodeHashData));
+      midKey = HashEntity.fromBigInt(BigInt.parse(nodeHashData));
     }
 
     return Future.value(midKey);
   }
 
   Future<bool> verifyProof(
-      {required MTProofDTO proof,
-      required NodeDTO node,
-      required HashDTO treeRoot}) async {
+      {required MTProofEntity proof,
+      required NodeEntity node,
+      required HashEntity treeRoot}) async {
     return getProofTreeRoot(proof: proof, node: node)
         .then((proofTreeRoot) => proofTreeRoot == treeRoot);
   }

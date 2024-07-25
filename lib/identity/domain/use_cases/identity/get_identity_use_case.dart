@@ -62,14 +62,17 @@ class GetIdentityUseCase
           );
         }
 
+        final publicIdentity = await _identityRepository.getIdentity(
+          genesisDid: genesisDid,
+        );
+
         // Get the [PrivateIdentityEntity]
-        identity = await _identityRepository
-            .getIdentity(genesisDid: param.genesisDid)
-            .then((identity) => PrivateIdentityEntity(
-                did: param.genesisDid,
-                publicKey: identity.publicKey,
-                profiles: identity.profiles,
-                privateKey: param.privateKey!));
+        identity = PrivateIdentityEntity(
+          did: param.genesisDid,
+          publicKey: publicIdentity.publicKey,
+          profiles: publicIdentity.profiles,
+          privateKey: param.privateKey!,
+        );
       } else {
         identity =
             await _identityRepository.getIdentity(genesisDid: param.genesisDid);

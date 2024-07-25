@@ -50,6 +50,9 @@ jobs:
       - name: Run tests
         run: flutter test --coverage
 
+      - name: Run Rust library test
+        run: cd rust && cargo test
+
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:

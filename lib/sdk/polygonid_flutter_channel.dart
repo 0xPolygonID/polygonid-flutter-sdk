@@ -21,10 +21,10 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.d
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/circuits_to_download_param.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_mtproof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/credential.dart';
 import 'package:polygonid_flutter_sdk/sdk/iden3comm.dart';
@@ -844,21 +844,22 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<ZKProofEntity> prove(
-      {required String identifier,
-      required BigInt profileNonce,
-      required BigInt claimSubjectProfileNonce,
-      required ClaimEntity credential,
-      required CircuitDataEntity circuitData,
-      required Map<String, dynamic> proofScopeRequest,
-      List<String>? authClaim,
-      MTProofEntity? incProof,
-      MTProofEntity? nonRevProof,
-      GistMTProofEntity? gistProof,
-      Map<String, dynamic>? treeState,
-      String? challenge,
-      String? signature,
-      Map<String, dynamic>? config}) {
+  Future<ZKProofEntity> prove({
+    required String identifier,
+    required BigInt profileNonce,
+    required BigInt claimSubjectProfileNonce,
+    required ClaimEntity credential,
+    required CircuitDataEntity circuitData,
+    required Map<String, dynamic> proofScopeRequest,
+    List<String>? authClaim,
+    MTProofEntity? incProof,
+    MTProofEntity? nonRevProof,
+    GistMTProofEntity? gistProof,
+    Map<String, dynamic>? treeState,
+    String? challenge,
+    String? signature,
+    Map<String, dynamic>? config,
+  }) {
     return _polygonIdSdk.proof.prove(
         identifier: identifier,
         profileNonce: profileNonce,

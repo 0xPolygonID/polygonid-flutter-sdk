@@ -7,9 +7,9 @@ import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/circuits_to_download_param.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_mtproof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/cancel_download_circuits_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/circuits_files_exist_use_case.dart';
@@ -22,21 +22,22 @@ import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:web3dart/web3dart.dart';
 
 abstract class PolygonIdSdkProof {
-  Future<ZKProofEntity> prove(
-      {required String identifier,
-      required BigInt profileNonce,
-      required BigInt claimSubjectProfileNonce,
-      required ClaimEntity credential,
-      required CircuitDataEntity circuitData,
-      required Map<String, dynamic> proofScopeRequest,
-      List<String>? authClaim,
-      MTProofEntity? incProof,
-      MTProofEntity? nonRevProof,
-      GistMTProofEntity? gistProof,
-      Map<String, dynamic>? treeState,
-      String? challenge,
-      String? signature,
-      Map<String, dynamic>? config});
+  Future<ZKProofEntity> prove({
+    required String identifier,
+    required BigInt profileNonce,
+    required BigInt claimSubjectProfileNonce,
+    required ClaimEntity credential,
+    required CircuitDataEntity circuitData,
+    required Map<String, dynamic> proofScopeRequest,
+    List<String>? authClaim,
+    MTProofEntity? incProof,
+    MTProofEntity? nonRevProof,
+    GistMTProofEntity? gistProof,
+    Map<String, dynamic>? treeState,
+    String? challenge,
+    String? signature,
+    Map<String, dynamic>? config,
+  });
 
   Stream<DownloadInfo> initCircuitsDownloadAndGetInfoStream({
     required List<CircuitsToDownloadParam> circuitsToDownload,

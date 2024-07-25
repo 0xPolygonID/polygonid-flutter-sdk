@@ -38,14 +38,15 @@ class ZKProofBaseEntity {
   final List<List<String>> piB;
   final List<String> piC;
   final String protocol;
-  final String curve;
+  final String? curve;
 
-  const ZKProofBaseEntity(
-      {required this.piA,
-      required this.piB,
-      required this.piC,
-      required this.protocol,
-      required this.curve});
+  const ZKProofBaseEntity({
+    required this.piA,
+    required this.piB,
+    required this.piC,
+    required this.protocol,
+    required this.curve,
+  });
 
   factory ZKProofBaseEntity.fromJson(Map<String, dynamic> json) =>
       ZKProofBaseEntity(
@@ -55,7 +56,7 @@ class ZKProofBaseEntity {
             .toList(),
         piC: (json['pi_c'] as List<dynamic>).map((e) => e as String).toList(),
         protocol: json['protocol'] as String,
-        curve: json['curve'] as String,
+        curve: json['curve'] as String?,
       );
 
   Map<String, dynamic> toJson() => <String, dynamic>{
@@ -63,7 +64,7 @@ class ZKProofBaseEntity {
         'pi_b': piB,
         'pi_c': piC,
         'protocol': protocol,
-        'curve': curve,
+        if (curve != null) 'curve': curve,
       };
 
   @override
@@ -127,7 +128,10 @@ class ZKProofEntity {
   final ZKProofBaseEntity proof;
   final List<String> pubSignals;
 
-  ZKProofEntity({required this.proof, required this.pubSignals});
+  ZKProofEntity({
+    required this.proof,
+    required this.pubSignals,
+  });
 
   factory ZKProofEntity.fromBase64(String data) =>
       ZKProofEntity.fromJson(jsonDecode(Base64Util.decode(data)));

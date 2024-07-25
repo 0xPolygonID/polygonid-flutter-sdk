@@ -7,7 +7,7 @@ part of 'rhs_node_dto.dart';
 // **************************************************************************
 
 RhsNodeDTO _$RhsNodeDTOFromJson(Map<String, dynamic> json) => RhsNodeDTO(
-      node: NodeDTO.fromJson(json['node'] as Map<String, dynamic>),
+      node: NodeEntity.fromJson(json['node'] as Map<String, dynamic>),
       status: json['status'] as String,
     );
 

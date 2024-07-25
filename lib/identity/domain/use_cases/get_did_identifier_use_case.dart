@@ -39,7 +39,7 @@ class GetDidIdentifierUseCase
 
   @override
   Future<String> execute({required GetDidIdentifierParam param}) async {
-    EnvEntity env = await _getEnvUseCase.execute();
+    final env = await _getEnvUseCase.execute();
 
     return _getGenesisStateUseCase
         .execute(param: param.privateKey)
@@ -47,7 +47,7 @@ class GetDidIdentifierUseCase
           (genesisState) => _identityRepository.getDidIdentifier(
             blockchain: param.blockchain,
             network: param.network,
-            claimsRoot: genesisState.claimsTree.data,
+            claimsRoot: genesisState.claimsTree.string(),
             profileNonce: param.profileNonce,
             config: env.config,
             method: param.method,

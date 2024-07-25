@@ -3,8 +3,8 @@ import 'dart:typed_data';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_sd_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/response/jwz.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_mtproof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 
 import 'common_mocks.dart';
@@ -56,8 +56,8 @@ class ProofMocks {
   /// [CircuitDataEntity]
   static Uint8List datFile = Uint8List(32);
   static Uint8List zKeyFile = Uint8List(32);
-  static CircuitDataEntity circuitData =
-      CircuitDataEntity(CommonMocks.circuitId, datFile, zKeyFile);
+  static CircuitDataEntity circuitData = CircuitDataEntity(
+      CommonMocks.circuitId, datFile, CommonMocks.zkeyFilePath);
 
   static MTProofEntity mtProof = MTProofEntity(
       existence: true, siblings: [IdentityMocks.hash, IdentityMocks.hash]);

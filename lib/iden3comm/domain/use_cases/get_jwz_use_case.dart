@@ -32,11 +32,9 @@ class GetJWZUseCase extends FutureUseCase<GetJWZParam, String> {
         alg: "groth16",
       );
 
-      JWZPayload payload = JWZPayload(payload: param.message);
-
       JWZEntity jwz = JWZEntity(
         header: header,
-        payload: payload,
+        payload: JWZPayload(payload: param.message),
         proof: param.proof,
       );
 

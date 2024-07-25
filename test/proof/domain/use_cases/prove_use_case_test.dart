@@ -22,10 +22,14 @@ ProveParam param = ProveParam(CommonMocks.aBytes, ProofMocks.circuitData);
 ])
 void main() {
   setUp(() {
-    when(proofRepository.calculateWitness(any, any))
-        .thenAnswer((realInvocation) => Future.value(CommonMocks.aBytes));
-    when(proofRepository.prove(any, any))
-        .thenAnswer((realInvocation) => Future.value(ProofMocks.zkProof));
+    when(proofRepository.calculateWitness(
+      circuitData: anyNamed('circuitData'),
+      atomicQueryInputs: anyNamed('atomicQueryInputs'),
+    )).thenAnswer((realInvocation) => Future.value(CommonMocks.aBytes));
+    when(proofRepository.prove(
+      circuitData: anyNamed('circuitData'),
+      wtnsBytes: anyNamed('wtnsBytes'),
+    )).thenAnswer((realInvocation) => Future.value(ProofMocks.zkProof));
   });
 
   test(
@@ -35,14 +39,17 @@ void main() {
       expect(await useCase.execute(param: param), ProofMocks.zkProof);
 
       // Then
-      var capturedWitness =
-          verify(proofRepository.calculateWitness(captureAny, captureAny))
-              .captured;
+      var capturedWitness = verify(proofRepository.calculateWitness(
+        circuitData: captureAnyNamed('circuitData'),
+        atomicQueryInputs: captureAnyNamed('atomicQueryInputs'),
+      )).captured;
       expect(capturedWitness[0], param.circuitData);
       expect(capturedWitness[1], param.inputs);
 
-      var capturedProve =
-          verify(proofRepository.prove(captureAny, captureAny)).captured;
+      var capturedProve = verify(proofRepository.prove(
+        circuitData: captureAnyNamed('circuitData'),
+        wtnsBytes: captureAnyNamed('wtnsBytes'),
+      )).captured;
       expect(capturedProve[0], param.circuitData);
       expect(capturedProve[1], CommonMocks.aBytes);
     },
@@ -52,21 +59,27 @@ void main() {
     'Given a param, when I call execute and an error occurred, then I expect an exception to be thrown',
     () async {
       // Given
-      when(proofRepository.calculateWitness(any, any))
-          .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
+      when(proofRepository.calculateWitness(
+        circuitData: captureAnyNamed('circuitData'),
+        atomicQueryInputs: captureAnyNamed('atomicQueryInputs'),
+      )).thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
       // When
       await expectLater(
           useCase.execute(param: param), throwsA(CommonMocks.exception));
 
       // Then
-      var capturedWitness =
-          verify(proofRepository.calculateWitness(captureAny, captureAny))
-              .captured;
+      var capturedWitness = verify(proofRepository.calculateWitness(
+        circuitData: captureAnyNamed('circuitData'),
+        atomicQueryInputs: captureAnyNamed('atomicQueryInputs'),
+      )).captured;
       expect(capturedWitness[0], param.circuitData);
       expect(capturedWitness[1], param.inputs);
 
-      verifyNever(proofRepository.prove(captureAny, captureAny));
+      verifyNever(proofRepository.prove(
+        circuitData: captureAnyNamed('circuitData'),
+        wtnsBytes: captureAnyNamed('wtnsBytes'),
+      ));
     },
   );
 }

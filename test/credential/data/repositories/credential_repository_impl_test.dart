@@ -24,7 +24,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/credential/response/fe
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/encryption_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:sembast/sembast.dart';
 
@@ -90,16 +89,6 @@ final filters = [
   FilterEntity(name: "theName2", value: "theValue2")
 ];
 final filter = Filter.equals("theField", "theValue");
-
-Map<String, Object?> mockDb = {
-  "id": "id",
-};
-String encryptedDb = "theEncryptedDb";
-String destinationPath = "theDestinationPath";
-String privateKey = "thePrivateKey";
-Key encryptionKey = Key(Uint8List.fromList([1, 2, 3, 4, 5, 6, 7, 8]));
-
-IV mockIv = IV(Uint8List.fromList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]));
 
 // Dependencies
 MockRemoteClaimDataSource remoteClaimDataSource = MockRemoteClaimDataSource();
@@ -331,7 +320,7 @@ void main() {
         storageClaimDataSource.getClaim(
           credentialId: anyNamed('credentialId'),
           did: anyNamed('did'),
-          privateKey: privateKey,
+          privateKey: CommonMocks.privateKey,
         ),
       ).thenAnswer((realInvocation) => Future.value(claimDTOs[0]));
 
