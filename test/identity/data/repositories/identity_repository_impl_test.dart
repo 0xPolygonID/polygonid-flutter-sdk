@@ -488,13 +488,15 @@ void main() {
   group("Get did identifier", () {
     setUp(() {
       // Given
-      when(libPolygonIdCoreIdentityDataSource.calculateGenesisId(
-              network: any,
-              blockchain: any,
-              claimsTreeRoot: any,
-              config: any,
-              method: any))
-          .thenReturn(CommonMocks.did);
+      when(
+        libPolygonIdCoreIdentityDataSource.calculateGenesisId(
+          claimsTreeRoot: anyNamed('claimsTreeRoot'),
+          blockchain: anyNamed('blockchain'),
+          network: anyNamed('network'),
+          config: anyNamed('config'),
+          method: anyNamed('method'),
+        ),
+      ).thenReturn(CommonMocks.did);
       when(libPolygonIdCoreIdentityDataSource.calculateProfileId(any, any))
           .thenReturn(CommonMocks.did);
     });
@@ -505,21 +507,23 @@ void main() {
       // When
       expect(
           await repository.getDidIdentifier(
-              blockchain: CommonMocks.blockchain,
-              network: CommonMocks.network,
-              claimsRoot: CommonMocks.message,
-              profileNonce: CommonMocks.genesisNonce,
-              config: CommonMocks.envConfig),
+            blockchain: CommonMocks.blockchain,
+            network: CommonMocks.network,
+            claimsRoot: CommonMocks.message,
+            profileNonce: CommonMocks.genesisNonce,
+            config: CommonMocks.envConfig,
+            method: CommonMocks.method,
+          ),
           CommonMocks.did);
 
       // Then
       var captureCalculate =
           verify(libPolygonIdCoreIdentityDataSource.calculateGenesisId(
-        blockchain: captureAny,
-        claimsTreeRoot: captureAny,
-        config: captureAny,
-        network: captureAny,
-        method: captureAny,
+        claimsTreeRoot: captureAnyNamed('claimsTreeRoot'),
+        blockchain: captureAnyNamed('blockchain'),
+        network: captureAnyNamed('network'),
+        config: captureAnyNamed('config'),
+        method: captureAnyNamed('method'),
       )).captured;
 
       expect(captureCalculate[0], CommonMocks.message);
@@ -536,21 +540,23 @@ void main() {
       // When
       expect(
           await repository.getDidIdentifier(
-              blockchain: CommonMocks.blockchain,
-              network: CommonMocks.network,
-              claimsRoot: CommonMocks.message,
-              profileNonce: CommonMocks.nonce,
-              config: CommonMocks.envConfig),
+            blockchain: CommonMocks.blockchain,
+            network: CommonMocks.network,
+            claimsRoot: CommonMocks.message,
+            profileNonce: CommonMocks.nonce,
+            config: CommonMocks.envConfig,
+            method: CommonMocks.method,
+          ),
           CommonMocks.did);
 
       // Then
       var captureCalculate =
           verify(libPolygonIdCoreIdentityDataSource.calculateGenesisId(
-        claimsTreeRoot: captureAny,
-        blockchain: captureAny,
-        network: captureAny,
-        config: any,
-        method: any,
+        claimsTreeRoot: captureAnyNamed('claimsTreeRoot'),
+        blockchain: captureAnyNamed('blockchain'),
+        network: captureAnyNamed('network'),
+        config: captureAnyNamed('config'),
+        method: captureAnyNamed('method'),
       )).captured;
       expect(captureCalculate[0], CommonMocks.message);
       expect(captureCalculate[1], CommonMocks.blockchain);
@@ -568,31 +574,33 @@ void main() {
         () async {
       // Given
       when(libPolygonIdCoreIdentityDataSource.calculateGenesisId(
-        claimsTreeRoot: any,
-        blockchain: any,
-        network: any,
-        config: any,
-        method: any,
+        claimsTreeRoot: anyNamed('claimsTreeRoot'),
+        blockchain: anyNamed('blockchain'),
+        network: anyNamed('network'),
+        config: anyNamed('config'),
+        method: anyNamed('method'),
       )).thenThrow(CommonMocks.exception);
 
       // When
       await expectLater(
           repository.getDidIdentifier(
-              blockchain: CommonMocks.blockchain,
-              network: CommonMocks.network,
-              claimsRoot: CommonMocks.message,
-              profileNonce: CommonMocks.nonce,
-              config: CommonMocks.envConfig),
+            blockchain: CommonMocks.blockchain,
+            network: CommonMocks.network,
+            claimsRoot: CommonMocks.message,
+            profileNonce: CommonMocks.nonce,
+            config: CommonMocks.envConfig,
+            method: CommonMocks.method,
+          ),
           throwsA(CommonMocks.exception));
 
       // Then
       var captureCalculate =
           verify(libPolygonIdCoreIdentityDataSource.calculateGenesisId(
-        claimsTreeRoot: captureAny,
-        blockchain: captureAny,
-        network: captureAny,
-        config: captureAny,
-        method: captureAny,
+        claimsTreeRoot: captureAnyNamed('claimsTreeRoot'),
+        blockchain: captureAnyNamed('blockchain'),
+        network: captureAnyNamed('network'),
+        config: captureAnyNamed('config'),
+        method: captureAnyNamed('method'),
       )).captured;
       expect(captureCalculate[0], CommonMocks.message);
       expect(captureCalculate[1], CommonMocks.blockchain);
