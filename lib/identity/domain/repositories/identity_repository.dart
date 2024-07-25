@@ -11,7 +11,7 @@ abstract class IdentityRepository {
     required String? secret,
   });
 
-  Future<List<String>> getPublicKeys({required privateKey});
+  Future<List<String>> getPublicKeys({required String privateKey});
 
   Future<void> storeIdentity({required IdentityEntity identity});
 

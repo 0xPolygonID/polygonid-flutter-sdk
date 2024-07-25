@@ -468,7 +468,7 @@ class Authenticate {
           proofRequest.scope.circuitId == CircuitType.sigonchain.name ||
           proofRequest.scope.circuitId == CircuitType.circuitsV3onchain.name) {
         /// SIGN MESSAGE
-        String signature = signMessage(
+        String signature = await signMessage(
           privateKey: privateKeyBytes,
           message: challenge!,
         );
@@ -1046,7 +1046,11 @@ class Authenticate {
   }
 
   /// SIGN MESSAGE WITH BJJ KEY
-  String signMessage({required Uint8List privateKey, required String message}) {
+  Future<String> signMessage({required Uint8List privateKey, required String message}) async {
+    final walletDs = getItSdk<WalletDataSource>();
+    return walletDs.signMessage(privateKey: privateKey, message: message);
+
+    // TODO: check if this code is needed.
     BigInt? messHash;
     if (message.toLowerCase().startsWith("0x")) {
       message = strip0x(message);
@@ -1197,7 +1201,7 @@ class Authenticate {
 
     String authChallenge = await libBabyJubJub.hashPoseidon(qNormalized);
 
-    String signature = signMessage(
+    String signature = await signMessage(
       privateKey: privateKeyBytes,
       message: authChallenge,
     );
