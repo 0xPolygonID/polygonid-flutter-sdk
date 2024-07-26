@@ -1,7 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
@@ -211,12 +215,17 @@ class ProofRepositoryImpl extends ProofRepository {
     required CircuitDataEntity circuitData,
     required Uint8List atomicQueryInputs,
   }) async {
-    WitnessParam witnessParam =
-        WitnessParam(wasm: circuitData.datFile, json: atomicQueryInputs);
+    final inputs = (await rootBundle.load("assets/authV2_inputs.json"))
+        .buffer
+        .asUint8List();
+    final graph =
+        (await rootBundle.load("assets/graph_authV2.bin")).buffer.asUint8List();
+
+    WitnessParam witnessParam = WitnessParam(wasm: graph, json: inputs);
 
     _stacktraceManager.addTrace(
         "[calculateWitness] circuitData.circuitId ${circuitData.circuitId}");
-    CircuitType circuitType = _circuitTypeMapper.mapTo(circuitData.circuitId);
+    CircuitType circuitType = CircuitType.universal;
     try {
       Uint8List? witness = await _witnessDataSource.computeWitness(
         type: circuitType,

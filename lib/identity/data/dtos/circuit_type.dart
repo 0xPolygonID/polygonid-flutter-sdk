@@ -1,4 +1,5 @@
 enum CircuitType {
+  universal("universal"),
   auth("authV2"),
   mtp("credentialAtomicQueryMTPV2"),
   sig("credentialAtomicQuerySigV2"),

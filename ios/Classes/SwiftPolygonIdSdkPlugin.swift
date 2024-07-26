@@ -63,5 +63,9 @@ public class SwiftPolygonIdSdkPlugin: NSObject, FlutterPlugin {
         
         // witnesscalc mtpv2 onchain bindings
         witnesscalc_credentialAtomicQueryMTPV2OnChain(nil, 0, nil, 0, nil, nil, nil, 0);
+
+        // universal witness calc bindings
+        gw_calc_witness(nil, nil, 0, nil, nil, nil);
+        gw_free_status(nil);
     }
 }

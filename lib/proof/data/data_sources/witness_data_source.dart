@@ -5,6 +5,7 @@ import 'package:polygonid_flutter_sdk/proof/data/dtos/witness_param.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/linked_multi_query_10/witness_linked_multi_query_10.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/mtp_v2/witness_mtp.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/sig_v2/witness_sig.dart';
+import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/universal/witness_universal.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/v3/witness_v3.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/v3_onchain/witness_v3_onchain.dart';
 
@@ -14,6 +15,9 @@ import '../../libs/witnesscalc/sig_v2_onchain/witness_sig_onchain.dart';
 
 @injectable
 class WitnessIsolatesWrapper {
+  Future<Uint8List?> computeWitnessUniversal(WitnessParam param) =>
+      compute(_computeWitnessUniversal, param);
+
   Future<Uint8List?> computeWitnessAuth(WitnessParam param) =>
       compute(_computeWitnessAuth, param);
 
@@ -37,6 +41,16 @@ class WitnessIsolatesWrapper {
 
   Future<Uint8List?> computeLinkedMultyQuery10(WitnessParam param) =>
       compute(_computeLinkedMultyQuery10, param);
+}
+
+/// As this is running in a separate thread, we cannot inject [WitnessAuthLib]
+Future<Uint8List?> _computeWitnessUniversal(WitnessParam param) async {
+  final WitnessUniversalLib witnessAuthLib = WitnessUniversalLib();
+  final stopwatch = Stopwatch()..start();
+
+  witnessAuthLib.calculateWitness(param.wasm, param.json);
+  print('Time elapsed: ${stopwatch.elapsed}');
+  return Uint8List(0);
 }
 
 /// As this is running in a separate thread, we cannot inject [WitnessAuthLib]
@@ -117,6 +131,8 @@ class WitnessDataSource {
   Future<Uint8List?> computeWitness(
       {required CircuitType type, required WitnessParam param}) {
     switch (type) {
+      case CircuitType.universal:
+        return _witnessIsolatesWrapper.computeWitnessUniversal(param);
       case CircuitType.auth:
         return _witnessIsolatesWrapper.computeWitnessAuth(param);
       case CircuitType.mtp:
