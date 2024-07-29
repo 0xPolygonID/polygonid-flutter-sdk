@@ -53,7 +53,7 @@ void main() {
                 param: captureAnyNamed('param')))
             .captured
             .first
-            ._privateKey,
+            .privateKey,
         CommonMocks.privateKey);
   });
 

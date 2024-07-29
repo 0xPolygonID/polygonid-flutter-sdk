@@ -8,7 +8,6 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import io.iden3.polygonid_flutter_sdk.*
 
 /** PolygonIdSdkPlugin */
 class PolygonIdSdkPlugin : FlutterPlugin, MethodCallHandler {
@@ -36,21 +35,7 @@ class PolygonIdSdkPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-        if (call.method == "prove") {
-            val zKeyPath = call.argument<String>("zKeyPath")
-            val wtnsBytes = call.argument<ByteArray>("wtnsBytes")
-
-            val proof = groth16ProveWithZKeyFilePath(zKeyPath!!, wtnsBytes!!)
-
-            result.success(
-                mapOf<String, Any>(
-                    "proof" to proof.proof,
-                    "pub_signals" to proof.publicSignals
-                )
-            )
-        } else {
-            result.notImplemented()
-        }
+        result.notImplemented()
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {

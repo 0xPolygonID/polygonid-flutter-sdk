@@ -59,6 +59,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3c
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
@@ -66,6 +67,7 @@ import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj_wallet.dart';
@@ -439,7 +441,7 @@ class Authenticate {
           proofRequest.scope.circuitId == CircuitType.sigonchain.name ||
           proofRequest.scope.circuitId == CircuitType.circuitsV3onchain.name) {
         /// SIGN MESSAGE
-        String signature = signMessage(
+        String signature = await signMessage(
           privateKey: privateKeyBytes,
           message: challenge!,
         );
@@ -1017,25 +1019,10 @@ class Authenticate {
   }
 
   /// SIGN MESSAGE WITH BJJ KEY
-  String signMessage({required Uint8List privateKey, required String message}) {
-    BigInt? messHash;
-    if (message.toLowerCase().startsWith("0x")) {
-      message = strip0x(message);
-      messHash = BigInt.tryParse(message, radix: 16);
-    } else {
-      messHash = BigInt.tryParse(message, radix: 10);
-    }
-    final bjjKey = bjj.PrivateKey(privateKey);
-    if (messHash != null) {
-      final signature = bjjKey.sign(messHash);
-      return signature;
-    } else {
-      _stacktraceManager.addError(
-        "[Authenticate] message string couldn't be parsed as BigInt",
-      );
-      throw const FormatException(
-          "message string couldn't be parsed as BigInt");
-    }
+  Future<String> signMessage(
+      {required Uint8List privateKey, required String message}) async {
+    final walletDs = getItSdk<WalletDataSource>();
+    return walletDs.signMessage(privateKey: privateKey, message: message);
   }
 
   Future<AuthBodyDidDocResponseDTO?> _getDidDoc({
@@ -1168,7 +1155,7 @@ class Authenticate {
 
     String authChallenge = await libBabyJubJub.hashPoseidon(qNormalized);
 
-    String signature = signMessage(
+    String signature = await signMessage(
       privateKey: privateKeyBytes,
       message: authChallenge,
     );
@@ -1265,7 +1252,8 @@ class Authenticate {
     var libPolygonIdCredential =
         getItSdk<LibPolygonIdCoreCredentialDataSource>();
 
-    List<String> publicKey = BjjWallet(privateKeyBytes).publicKey;
+    final identityRepo = await getItSdk.getAsync<IdentityRepository>();
+    final publicKey = await identityRepo.getPublicKeys(privateKey: privateKey);
 
     String authClaimSchema = AUTH_CLAIM_SCHEMA;
     String issuedAuthClaim = libPolygonIdCredential.issueClaim(

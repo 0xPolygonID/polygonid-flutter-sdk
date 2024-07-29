@@ -1,4 +1,4 @@
-import "package:polygonid_flutter_sdk/common/kms/store/abstract-key-store.dart";
+import "package:polygonid_flutter_sdk/common/kms/store/abstract_key_store.dart";
 
 /// Key Store to use in memory
 ///

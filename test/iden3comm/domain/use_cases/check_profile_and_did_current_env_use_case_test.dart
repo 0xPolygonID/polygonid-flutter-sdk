@@ -75,7 +75,7 @@ void main() {
         verify(getDidIdentifierUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(captureDidIdentifier._privateKey, CommonMocks.privateKey);
+    expect(captureDidIdentifier.privateKey, CommonMocks.privateKey);
     expect(captureDidIdentifier.blockchain, CommonMocks.name);
     expect(captureDidIdentifier.network, CommonMocks.network);
   });
@@ -115,7 +115,7 @@ void main() {
         verify(getDidIdentifierUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(captureDidIdentifier._privateKey, CommonMocks.privateKey);
+    expect(captureDidIdentifier.privateKey, CommonMocks.privateKey);
     expect(captureDidIdentifier.blockchain, CommonMocks.name);
     expect(captureDidIdentifier.network, CommonMocks.network);
   });

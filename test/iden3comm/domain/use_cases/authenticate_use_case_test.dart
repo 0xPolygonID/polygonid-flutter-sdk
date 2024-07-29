@@ -126,13 +126,13 @@ void main() {
               .first;
           expect(capturedProofs.message, Iden3commMocks.authRequest);
           expect(capturedProofs.genesisDid, CommonMocks.did);
-          expect(capturedProofs._privateKey, CommonMocks.privateKey);
+          expect(capturedProofs.privateKey, CommonMocks.privateKey);
 
           var captureDidIdentifier = verify(getDidIdentifierUseCase.execute(
                   param: captureAnyNamed('param')))
               .captured
               .first;
-          expect(captureDidIdentifier._privateKey, CommonMocks.privateKey);
+          expect(captureDidIdentifier.privateKey, CommonMocks.privateKey);
           expect(captureDidIdentifier.blockchain, CommonMocks.name);
           expect(captureDidIdentifier.network, CommonMocks.network);
 
@@ -147,7 +147,7 @@ void main() {
               .captured
               .first;
           expect(captureCheck.did, CommonMocks.did);
-          expect(captureCheck._privateKey, CommonMocks.privateKey);
+          expect(captureCheck.privateKey, CommonMocks.privateKey);
           expect(captureCheck.profileNonce, CommonMocks.genesisNonce);
 
           verify(getPackageNameUseCase.execute());
@@ -172,7 +172,7 @@ void main() {
               .captured
               .first;
           expect(capturedAuthToken.genesisDid, CommonMocks.did);
-          expect(capturedAuthToken._privateKey, CommonMocks.privateKey);
+          expect(capturedAuthToken.privateKey, CommonMocks.privateKey);
           expect(capturedAuthToken.message, CommonMocks.message);
 
           var capturedAuthenticate = verify(iden3commRepository.authenticate(
@@ -209,7 +209,7 @@ void main() {
               .first;
           expect(capturedProofs.message, Iden3commMocks.authRequest);
           expect(capturedProofs.genesisDid, CommonMocks.did);
-          expect(capturedProofs._privateKey, CommonMocks.privateKey);
+          expect(capturedProofs.privateKey, CommonMocks.privateKey);
 
           var verifyConfig =
               verify(getEnvUseCase.execute(param: captureAnyNamed('param')));
@@ -222,7 +222,7 @@ void main() {
               .captured
               .first;
           expect(captureCheck.did, CommonMocks.did);
-          expect(captureCheck._privateKey, CommonMocks.privateKey);
+          expect(captureCheck.privateKey, CommonMocks.privateKey);
           expect(captureCheck.profileNonce, CommonMocks.genesisNonce);
 
           verify(getPackageNameUseCase.execute());

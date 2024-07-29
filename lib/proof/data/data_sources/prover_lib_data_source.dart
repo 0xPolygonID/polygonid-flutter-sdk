@@ -38,23 +38,8 @@ class ProverLibDataSource {
     String zKeyPath,
     Uint8List wtnsBytes,
   ) async {
-    if (Platform.isAndroid) {
-      final result = await _methodChannel.invokeMapMethod(
-        'prove',
-        {
-          'zKeyPath': zKeyPath,
-          'wtnsBytes': wtnsBytes,
-        },
-      );
-      result?['proof'] = jsonDecode(result['proof'] as String);
-      result?['pub_signals'] = jsonDecode(result['pub_signals'] as String);
-
-      return result?.cast<String, dynamic>();
-    } else {
-      final result =
-          await _proverLibWrapper.prover(circuitId, zKeyPath, wtnsBytes);
-
-      return result;
-    }
+    final result =
+        await _proverLibWrapper.prover(circuitId, zKeyPath, wtnsBytes);
+    return result;
   }
 }
