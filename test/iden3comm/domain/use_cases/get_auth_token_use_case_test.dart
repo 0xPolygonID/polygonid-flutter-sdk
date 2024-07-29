@@ -93,7 +93,7 @@ void main() {
             .captured
             .first;
     expect(captureAuthInputs.genesisDid, CommonMocks.did);
-    expect(captureAuthInputs.privateKey, CommonMocks.privateKey);
+    expect(captureAuthInputs._privateKey, CommonMocks.privateKey);
 
     expect(
         verify(loadCircuitUseCase.execute(param: captureAnyNamed('param')))
@@ -138,7 +138,7 @@ void main() {
             .captured
             .first;
     expect(captureAuthInputs.genesisDid, CommonMocks.did);
-    expect(captureAuthInputs.privateKey, CommonMocks.privateKey);
+    expect(captureAuthInputs._privateKey, CommonMocks.privateKey);
 
     expect(
         verify(loadCircuitUseCase.execute(param: captureAnyNamed('param')))

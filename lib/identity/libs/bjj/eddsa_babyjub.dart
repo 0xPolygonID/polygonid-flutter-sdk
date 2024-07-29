@@ -94,9 +94,15 @@ class PublicKey {
     sigList.add(signature.r8[1].toInt());
     sigList.add(signature.s.toInt());
     return bjjLib.verifyPoseidon(
-        Uint8ArrayUtils.uint8ListToString(Uint8List.fromList(pointList)),
-        Uint8ArrayUtils.uint8ListToString(Uint8List.fromList(sigList)),
-        messageHash);
+      Uint8ArrayUtils.uint8ListToString(Uint8List.fromList(pointList)),
+      Uint8ArrayUtils.uint8ListToString(Uint8List.fromList(sigList)),
+      messageHash,
+    );
+  }
+
+  String hex() {
+    BabyjubjubLib bjjLib = BabyjubjubLib();
+    return bjjLib.packPoint(p[0].toString(), p[1].toString());
   }
 }
 
@@ -137,6 +143,8 @@ class PrivateKey {
         bjjLib.signPoseidon(HexUtils.bytesToHex(sk), messageHash.toString());
     return signature;
   }
+
+  String hex() => HexUtils.bytesToHex(sk);
 }
 
 String packSignature(Uint8List signature) {

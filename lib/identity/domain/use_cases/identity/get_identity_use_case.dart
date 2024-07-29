@@ -50,6 +50,7 @@ class GetIdentityUseCase
             blockchain: did.blockchain,
             network: did.network,
             profileNonce: GENESIS_PROFILE_NONCE,
+            method: did.method,
           ),
         );
 

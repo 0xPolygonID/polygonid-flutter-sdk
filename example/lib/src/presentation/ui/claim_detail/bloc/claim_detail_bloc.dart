@@ -39,6 +39,7 @@ class ClaimDetailBloc extends Bloc<ClaimDetailEvent, ClaimDetailState> {
         privateKey: privateKey,
         blockchain: currentChain.blockchain,
         network: currentChain.network,
+        method: currentChain.method,
       );
 
       await _polygonIdSdk.credential.removeClaims(

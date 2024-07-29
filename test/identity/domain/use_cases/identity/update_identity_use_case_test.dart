@@ -64,7 +64,7 @@ void main() {
         verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(capturedGet.privateKey, param.privateKey);
+    expect(capturedGet._privateKey, param.privateKey);
     expect(capturedGet.genesisDid, param.genesisDid);
 
     var capturedStore = verify(identityRepository.storeIdentity(
@@ -83,7 +83,7 @@ void main() {
     // When
     await useCase.execute(param: param).then((_) => null).catchError((error) {
       expect(error, isA<InvalidPrivateKeyException>());
-      expect(error.privateKey, param.privateKey);
+      expect(error._privateKey, param.privateKey);
     });
 
     // Then
@@ -91,7 +91,7 @@ void main() {
         verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(capturedGet.privateKey, param.privateKey);
+    expect(capturedGet._privateKey, param.privateKey);
     expect(capturedGet.genesisDid, param.genesisDid);
 
     verifyNever(identityRepository.storeIdentity(
@@ -113,7 +113,7 @@ void main() {
         verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(capturedGet.privateKey, param.privateKey);
+    expect(capturedGet._privateKey, param.privateKey);
     expect(capturedGet.genesisDid, param.genesisDid);
 
     verifyNever(identityRepository.storeIdentity(

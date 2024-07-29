@@ -69,7 +69,7 @@ void main() {
         verify(createIdentityUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(captureCreate.privateKey, CommonMocks.privateKey);
+    expect(captureCreate._privateKey, CommonMocks.privateKey);
     expect(captureCreate.profiles, CommonMocks.bigIntValues);
 
     expect(
@@ -91,7 +91,7 @@ void main() {
     for (int i = 0; i < CommonMocks.profiles.values.length; i++) {
       expect(
           verifyState.captured[i].did, CommonMocks.profiles.values.toList()[i]);
-      expect(verifyState.captured[i].privateKey, CommonMocks.privateKey);
+      expect(verifyState.captured[i]._privateKey, CommonMocks.privateKey);
     }
   });
 
@@ -114,7 +114,7 @@ void main() {
         verify(createIdentityUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(captureCreate.privateKey, CommonMocks.privateKey);
+    expect(captureCreate._privateKey, CommonMocks.privateKey);
     expect(captureCreate.profiles, CommonMocks.bigIntValues);
 
     expect(
@@ -146,7 +146,7 @@ void main() {
         verify(createIdentityUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(captureCreate.privateKey, CommonMocks.privateKey);
+    expect(captureCreate._privateKey, CommonMocks.privateKey);
     expect(captureCreate.profiles, CommonMocks.bigIntValues);
 
     verifyNever(identityRepository.getIdentity(

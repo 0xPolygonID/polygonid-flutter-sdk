@@ -114,6 +114,7 @@ class FetchAndSaveClaimsUseCase
           blockchain: chain.blockchain,
           network: chain.network,
           profileNonce: param.profileNonce,
+          method: chain.method,
         ),
       );
 
