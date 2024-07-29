@@ -108,13 +108,13 @@ void main() {
               .captured
               .first;
       expect(capturedIdentity.genesisDid, param.genesisDid);
-      expect(capturedIdentity._privateKey, param.privateKey);
+      expect(capturedIdentity.privateKey, param.privateKey);
 
       var capturedSign =
           verify(signMessageUseCase.execute(param: captureAnyNamed("param")))
               .captured
               .first;
-      expect(capturedSign._privateKey, param.privateKey);
+      expect(capturedSign.privateKey, param.privateKey);
       expect(capturedSign.message, CommonMocks.challenge);
 
       var capturedAuthInputs = verify(iden3commRepository.getAuthInputs(
@@ -159,7 +159,7 @@ void main() {
               .captured
               .first;
       expect(capturedIdentity.genesisDid, param.genesisDid);
-      expect(capturedIdentity._privateKey, param.privateKey);
+      expect(capturedIdentity.privateKey, param.privateKey);
 
       verifyNever(signMessageUseCase.execute(param: captureAnyNamed("param")));
 
