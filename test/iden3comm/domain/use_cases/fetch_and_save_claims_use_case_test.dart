@@ -184,7 +184,7 @@ void main() {
       expect(authVerify.callCount, requests.length);
       for (int i = 0; i < requests.length; i++) {
         expect(authVerify.captured[i].genesisDid, param.genesisDid);
-        expect(authVerify.captured[i].privateKey, param.privateKey);
+        expect(authVerify.captured[i]._privateKey, param.privateKey);
         expect(authVerify.captured[i].message, requests[i]);
       }
 
@@ -199,7 +199,7 @@ void main() {
           .captured
           .first;
       expect(captureCheck.did, param.genesisDid);
-      expect(captureCheck.privateKey, CommonMocks.privateKey);
+      expect(captureCheck._privateKey, CommonMocks.privateKey);
       expect(captureCheck.profileNonce, CommonMocks.genesisNonce);
 
       var fetchVerify = verify(iden3commCredentialRepository.fetchClaim(
@@ -248,7 +248,7 @@ void main() {
 
       expect(authVerify.callCount, 1);
       expect(authVerify.captured[0].genesisDid, param.genesisDid);
-      expect(authVerify.captured[0].privateKey, param.privateKey);
+      expect(authVerify.captured[0]._privateKey, param.privateKey);
       expect(authVerify.captured[0].message, requests[0]);
 
       var fetchVerify = verify(iden3commCredentialRepository.fetchClaim(

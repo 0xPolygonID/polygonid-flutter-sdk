@@ -53,7 +53,7 @@ void main() {
         verify(addIdentityUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(capturedCreate.privateKey, CommonMocks.privateKey);
+    expect(capturedCreate._privateKey, CommonMocks.privateKey);
   });
 
   test(
@@ -72,7 +72,7 @@ void main() {
         verify(addIdentityUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(capturedCreate.privateKey, CommonMocks.privateKey);
+    expect(capturedCreate._privateKey, CommonMocks.privateKey);
   });
 
   test(
