@@ -1,3 +1,3 @@
-export './abstract-key-store.dart';
-export './memory-key-store.dart';
+export './abstract_key_store.dart';
+export './memory_key_store.dart';
 export './types.dart';

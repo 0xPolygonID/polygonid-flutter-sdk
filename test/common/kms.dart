@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polygonid_flutter_sdk/common/kms/index.dart';
 import 'package:polygonid_flutter_sdk/common/kms/kms.dart';
-import 'package:polygonid_flutter_sdk/common/kms/store/memory-key-store.dart';
+import 'package:polygonid_flutter_sdk/common/kms/store/memory_key_store.dart';
 import 'package:polygonid_flutter_sdk/common/utils/big_int_extension.dart';
 import 'package:web3dart/crypto.dart';
 
@@ -29,6 +29,8 @@ Future<void> testFlow(IKeyProvider provider) async {
   final signature1 = await provider.sign(keyId1, dataToSign1);
   final signature2 = await provider.sign(keyId2, dataToSign2);
   final signature3 = await provider.sign(keyId3, dataToSign1);
+
+  print(bytesToHex(signature1));
 
   final isPublicKey1Valid =
       await provider.verify(dataToSign1, bytesToHex(signature1), keyId1);
