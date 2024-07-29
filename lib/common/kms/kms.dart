@@ -73,7 +73,7 @@ class KMS {
       KmsKeyType keyType, Uint8List bytes) async {
     final keyProvider = _registry[keyType];
     if (keyProvider == null) {
-      throw Exception('keyProvider not found for: ${keyType}');
+      throw Exception('keyProvider not found for: $keyType');
     }
     return keyProvider.newPrivateKeyFromSeed(bytes);
   }

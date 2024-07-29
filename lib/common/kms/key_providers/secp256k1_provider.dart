@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:polygonid_flutter_sdk/common/kms/kms.dart';
-import 'package:polygonid_flutter_sdk/common/kms/provider-helpers.dart';
+import 'package:polygonid_flutter_sdk/common/kms/provider_helpers.dart';
 import 'package:polygonid_flutter_sdk/common/kms/store/abstract_key_store.dart';
 import 'package:polygonid_flutter_sdk/common/kms/store/types.dart';
 import 'package:web3dart/crypto.dart';
