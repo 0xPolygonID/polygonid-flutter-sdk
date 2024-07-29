@@ -30,8 +30,6 @@ Future<void> testFlow(IKeyProvider provider) async {
   final signature2 = await provider.sign(keyId2, dataToSign2);
   final signature3 = await provider.sign(keyId3, dataToSign1);
 
-  print(bytesToHex(signature1));
-
   final isPublicKey1Valid =
       await provider.verify(dataToSign1, bytesToHex(signature1), keyId1);
   final isPublicKey2Valid =
