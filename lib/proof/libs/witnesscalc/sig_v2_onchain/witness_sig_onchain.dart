@@ -80,7 +80,7 @@ class WitnessSigV2OnchainLib {
 
       logger().e("$result: ${result.toString()}. Error: $errormsg");
       freeAllocatedMemory();
-      StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+      StacktraceManager _stacktraceManager = StacktraceManager();
       _stacktraceManager.addTrace(
           "libwitnesscalc_credentialAtomicQuerySigV2OnChain: $errormsg");
       _stacktraceManager.addError(
@@ -94,7 +94,7 @@ class WitnessSigV2OnchainLib {
       logger().e(
           "$result: ${result.toString()}. Error: Short buffer for proof or public");
       freeAllocatedMemory();
-      StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+      StacktraceManager _stacktraceManager = StacktraceManager();
       _stacktraceManager.addTrace(
           "libwitnesscalc_credentialAtomicQuerySigV2OnChain: witnesscalc_credentialAtomicQuerySigV2OnChain: Short buffer for proof or public");
       _stacktraceManager.addError(

@@ -79,7 +79,7 @@ class WitnessV3Lib {
 
       logger().e("$result: ${result.toString()}. Error: $errormsg");
       freeAllocatedMemory();
-      StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+      StacktraceManager _stacktraceManager = StacktraceManager();
       _stacktraceManager
           .addTrace("libwitnesscalc_credentialAtomicQueryV3: $errormsg");
       _stacktraceManager
@@ -93,7 +93,7 @@ class WitnessV3Lib {
       logger().e(
           "$result: ${result.toString()}. Error: Short buffer for proof or public");
       freeAllocatedMemory();
-      StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+      StacktraceManager _stacktraceManager = StacktraceManager();
       _stacktraceManager.addTrace(
           "libwitnesscalc_credentialAtomicQueryV3: witnesscalc_credentialAtomicQueryV3: Short buffer for proof or public");
       _stacktraceManager.addError(
