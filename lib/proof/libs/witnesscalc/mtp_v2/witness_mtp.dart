@@ -77,11 +77,6 @@ class WitnessMTPV2Lib {
       String errormsg = jsonString.toDartString();
       logger().e("$result: ${result.toString()}. Error: $errormsg");
       freeAllocatedMemory();
-      StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
-      _stacktraceManager.addTrace(
-          "libwitnesscalc_credentialAtomicQueryMTPV2: witnesscalc_credentialAtomicQueryMTPV2: $errormsg");
-      _stacktraceManager
-          .addError("libwitnesscalc_credentialAtomicQueryMTPV2: $errormsg");
       throw CoreLibraryException(
         coreLibraryName: "libwitnesscalc_credentialAtomicQueryMTPV2",
         methodName: "witnesscalc_credentialAtomicQueryMTPV2",
@@ -90,7 +85,7 @@ class WitnessMTPV2Lib {
     } else if (result == WITNESSCALC_ERROR_SHORT_BUFFER) {
       logger().e(
           "$result: ${result.toString()}. Error: Short buffer for proof or public");
-      StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+      StacktraceManager _stacktraceManager = StacktraceManager();
       _stacktraceManager.addTrace(
           "libwitnesscalc_credentialAtomicQueryMTPV2: witnesscalc_credentialAtomicQueryMTPV2: Short buffer for proof or public");
       _stacktraceManager.addError(

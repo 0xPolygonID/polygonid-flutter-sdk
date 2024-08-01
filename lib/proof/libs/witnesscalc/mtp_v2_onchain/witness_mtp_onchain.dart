@@ -80,7 +80,7 @@ class WitnessMTPV2OnchainLib {
 
       logger().e("$result: ${result.toString()}. Error: $errormsg");
       freeAllocatedMemory();
-      StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+      StacktraceManager _stacktraceManager = StacktraceManager();
       _stacktraceManager.addTrace(
           "libwitnesscalc_credentialAtomicQueryMTPV2OnChain: $errormsg");
       _stacktraceManager.addError(
@@ -94,7 +94,7 @@ class WitnessMTPV2OnchainLib {
       logger().e(
           "$result: ${result.toString()}. Error: Short buffer for proof or public");
       freeAllocatedMemory();
-      StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+      StacktraceManager _stacktraceManager = StacktraceManager();
       _stacktraceManager.addTrace(
           "libwitnesscalc_credentialAtomicQueryMTPV2OnChain: witnesscalc_credentialAtomicQueryMTPV2OnChain: Short buffer for proof or public");
       _stacktraceManager.addError(
