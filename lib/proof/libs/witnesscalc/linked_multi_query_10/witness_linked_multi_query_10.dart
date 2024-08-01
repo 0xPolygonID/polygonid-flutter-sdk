@@ -86,7 +86,7 @@ class WitnessLinkedMultiQuery10 {
 
       logger().e("$result: ${result.toString()}. Error: $errormsg");
       freeAllocatedMemory();
-      StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+      StacktraceManager _stacktraceManager = StacktraceManager();
       _stacktraceManager.addTrace(
           "libwitnesscalc_linked_multi_query_10: witnesscalc_linkedMultiQuery10: $errormsg");
       _stacktraceManager.addError(
@@ -100,7 +100,7 @@ class WitnessLinkedMultiQuery10 {
       logger().e(
           "$result: ${result.toString()}. Error: Short buffer for proof or public");
       freeAllocatedMemory();
-      StacktraceManager _stacktraceManager = getItSdk.get<StacktraceManager>();
+      StacktraceManager _stacktraceManager = StacktraceManager();
       _stacktraceManager.addError(
         "libwitnesscalc_linked_multi_query_10: witnesscalc_linkedMultiQuery10",
       );
