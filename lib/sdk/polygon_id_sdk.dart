@@ -39,7 +39,6 @@ class PolygonIdSdk {
     return _ref!;
   }
 
-
   /// Initializes the PolygonId SDK
   /// Pass [env] to set the environment that contains pushUrl, ipfsUrl, chainConfigs, didMethods
   /// Set [newIdentity] param to use a new identity creation and private key handling mechanisms
