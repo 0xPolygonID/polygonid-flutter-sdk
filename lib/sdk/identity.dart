@@ -282,6 +282,7 @@ class Identity implements PolygonIdSdkIdentity {
     return _getPrivateKeyUseCase.execute(param: secret);
   }
 
+  @override
   Future<PrivateIdentityEntity> addIdentity({String? secret}) async {
     _stacktraceManager.clear();
     _stacktraceManager.addTrace("PolygonIdSdk.Identity.addIdentity called");

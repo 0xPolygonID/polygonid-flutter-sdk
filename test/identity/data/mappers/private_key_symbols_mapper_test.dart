@@ -1,7 +1,9 @@
+// ignore_for_file: deprecated_member_use_from_same_package
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key/private_key_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key/private_key_symbols_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 
 // Data
@@ -44,7 +46,7 @@ const longPrivateKey =
     "thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long";
 
 // Tested instance
-PrivateKeyMapper mapper = PrivateKeyMapper();
+PrivateKeyMapper mapper = PrivateKeySymbolsMapper();
 
 void main() {
   group("Map from", () {

@@ -48,6 +48,17 @@ class WalletLibWrapper {
   }
 }
 
+class WalletLibWrapperUpdated extends WalletLibWrapper {
+  @override
+  Future<BjjWallet> createWallet({Uint8List? secret}) async {
+    if (secret == null) {
+      return BjjWallet.createBjjWallet(secret: secret);
+    } else {
+      return BjjWallet(secret);
+    }
+  }
+}
+
 class WalletDataSource {
   final WalletLibWrapper _walletLibWrapper;
 

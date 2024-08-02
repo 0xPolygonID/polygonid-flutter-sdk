@@ -1,8 +1,10 @@
+// ignore_for_file: deprecated_member_use_from_same_package
 import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:dio/dio.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart';
@@ -28,6 +30,10 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/did_profile_
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key/private_key_hex_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key/private_key_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key/private_key_symbols_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/repositories/identity_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/identity/data/repositories/smt_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
@@ -46,7 +52,25 @@ final getItSdk = GetIt.asNewInstance();
 @InjectableInit(
   initializerName: r'$initSDKGetIt',
 )
-configureInjection() => getItSdk.$initSDKGetIt();
+Future<GetIt> configureInjection(bool newIdentity) async {
+  final getIt = getItSdk.$initSDKGetIt();
+
+  await _registerNewIdentityDependencies(newIdentity);
+
+  return getIt;
+}
+
+Future<void> _registerNewIdentityDependencies(bool newIdentity) async {
+  getItSdk.unregister<PrivateKeyMapper>();
+  getItSdk.unregister<WalletLibWrapper>();
+  if (newIdentity) {
+    getItSdk.registerFactory<PrivateKeyMapper>(() => PrivateKeyHexMapper());
+    getItSdk.registerFactory<WalletLibWrapper>(() => WalletLibWrapperUpdated());
+  } else {
+    getItSdk.registerFactory<PrivateKeyMapper>(() => PrivateKeySymbolsMapper());
+    getItSdk.registerFactory<WalletLibWrapper>(() => WalletLibWrapper());
+  }
+}
 
 /// Logger
 @module

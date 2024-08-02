@@ -1,10 +1,14 @@
 import 'dart:typed_data';
 
+import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/mappers/from_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key/private_key_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 
-import '../../domain/exceptions/identity_exceptions.dart';
-
-class PrivateKeyMapper extends FromMapper<String?, Uint8List?> {
+@Injectable(as: PrivateKeyMapper)
+@Deprecated(
+    "It is wrong to use String.codeUnits to convert private key to bytes. ")
+class PrivateKeySymbolsMapper extends PrivateKeyMapper {
   @override
   Uint8List? mapFrom(String? from) {
     Uint8List? key;
