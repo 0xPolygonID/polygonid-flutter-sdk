@@ -100,7 +100,7 @@ class AuthenticateUseCase
           .i("stopwatch after getEnvUseCase ${stopwatch.elapsedMilliseconds}");
 
       String profileDid = await _getDidIdentifierUseCase.execute(
-        param: GetDidIdentifierParam(
+        param: GetDidIdentifierParam.withPrivateKey(
           privateKey: param.privateKey,
           blockchain: chain.blockchain,
           network: chain.network,

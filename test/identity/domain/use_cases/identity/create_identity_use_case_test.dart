@@ -86,11 +86,11 @@ void main() {
             param: captureAnyNamed('param')))
         .captured;
     expect(capturedGetDid.length, CommonMocks.intValues.length + 1);
-    expect(capturedGetDid.first.privateKey, CommonMocks.privateKey);
+    expect(capturedGetDid.first.publicKey, CommonMocks.pubKeys);
     expect(capturedGetDid.first.profileNonce, CommonMocks.genesisNonce);
 
     for (int i = 1; i < CommonMocks.bigIntValues.length + 1; i++) {
-      expect(capturedGetDid[i].privateKey, CommonMocks.privateKey);
+      expect(capturedGetDid[i].publicKey, CommonMocks.pubKeys);
       expect(capturedGetDid[i].profileNonce, CommonMocks.bigIntValues[i - 1]);
     }
   });
@@ -112,7 +112,7 @@ void main() {
             param: captureAnyNamed('param')))
         .captured;
     expect(capturedGetDid.length, 1);
-    expect(capturedGetDid.first.privateKey, CommonMocks.privateKey);
+    expect(capturedGetDid.first.publicKey, CommonMocks.pubKeys);
     expect(capturedGetDid.first.profileNonce, CommonMocks.genesisNonce);
   });
 
@@ -138,7 +138,7 @@ void main() {
             param: captureAnyNamed('param')))
         .captured;
     expect(capturedGetDid.length, 1);
-    expect(capturedGetDid.first.privateKey, CommonMocks.privateKey);
+    expect(capturedGetDid.first.publicKey, CommonMocks.pubKeys);
     expect(capturedGetDid.first.profileNonce, CommonMocks.genesisNonce);
   });
 }

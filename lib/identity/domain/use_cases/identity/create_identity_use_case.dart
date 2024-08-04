@@ -37,7 +37,7 @@ class CreateIdentityUseCase
     return Future(() async {
       final didIdentifier = await _getCurrentEnvDidIdentifierUseCase.execute(
         param: GetCurrentEnvDidIdentifierParam(
-          privateKey: param.privateKey,
+          publicKey: publicKey,
           profileNonce: GENESIS_PROFILE_NONCE,
         ),
       );
@@ -46,7 +46,7 @@ class CreateIdentityUseCase
       for (BigInt profile in param.profiles) {
         String identifier = await _getCurrentEnvDidIdentifierUseCase.execute(
           param: GetCurrentEnvDidIdentifierParam(
-            privateKey: param.privateKey,
+            publicKey: publicKey,
             profileNonce: profile,
           ),
         );

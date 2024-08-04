@@ -362,7 +362,7 @@ class Identity implements PolygonIdSdkIdentity {
     _stacktraceManager
         .addTrace("PolygonIdSdk.Identity.getDidIdentifier called");
     return _getDidIdentifierUseCase.execute(
-      param: GetDidIdentifierParam(
+      param: GetDidIdentifierParam.withPrivateKey(
         privateKey: privateKey,
         blockchain: blockchain,
         network: network,

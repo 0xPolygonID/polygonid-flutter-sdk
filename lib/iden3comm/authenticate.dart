@@ -159,7 +159,7 @@ class Authenticate {
           await getItSdk.getAsync<GetDidIdentifierUseCase>();
 
       String profileDid = await getDidIdentifierUseCase.execute(
-        param: GetDidIdentifierParam(
+        param: GetDidIdentifierParam.withPrivateKey(
           privateKey: privateKey,
           blockchain: chain.blockchain,
           network: chain.network,

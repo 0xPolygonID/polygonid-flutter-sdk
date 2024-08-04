@@ -9,10 +9,11 @@ import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repositor
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_auth_claim_use_case.dart';
 
 /// Get the genesis state of the tree, [param] - private key.
-class GetGenesisStateUseCase extends FutureUseCase<String, TreeStateEntity> {
+class GetGenesisStateUseCase
+    extends FutureUseCase<List<String>, TreeStateEntity> {
   final IdentityRepository _identityRepository;
   final SMTRepository _smtRepository;
-  final GetIdentityAuthClaimUseCase _getIdentityAuthClaimUseCase;
+  final GetAuthClaimUseCase _getIdentityAuthClaimUseCase;
   final StacktraceManager _stacktraceManager;
 
   GetGenesisStateUseCase(
@@ -23,7 +24,7 @@ class GetGenesisStateUseCase extends FutureUseCase<String, TreeStateEntity> {
   );
 
   @override
-  Future<TreeStateEntity> execute({required String param}) {
+  Future<TreeStateEntity> execute({required List<String> param}) {
     return Future(() async {
       final authClaim = await _getIdentityAuthClaimUseCase.execute(
         param: param,

@@ -7,7 +7,7 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_auth_claim_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
@@ -36,7 +36,7 @@ class GetAuthInputsParam {
 class GetAuthInputsUseCase
     extends FutureUseCase<GetAuthInputsParam, Uint8List> {
   final GetIdentityUseCase _getIdentityUseCase;
-  final GetAuthClaimUseCase _getAuthClaimUseCase;
+  final CredentialRepository _credentialRepository;
   final SignMessageUseCase _signMessageUseCase;
   final GetGistMTProofUseCase _getGistMTProofUseCase;
   final GetLatestStateUseCase _getLatestStateUseCase;
@@ -47,7 +47,7 @@ class GetAuthInputsUseCase
 
   GetAuthInputsUseCase(
     this._getIdentityUseCase,
-    this._getAuthClaimUseCase,
+    this._credentialRepository,
     this._signMessageUseCase,
     this._getGistMTProofUseCase,
     this._getLatestStateUseCase,
@@ -68,8 +68,8 @@ class GetAuthInputsUseCase
       logger().i(
           'GetAuthInputsUseCase: got identity at: ${stopwatch.elapsedMilliseconds} ms');
 
-      List<String> authClaim =
-          await _getAuthClaimUseCase.execute(param: identity.publicKey);
+      List<String> authClaim = await _credentialRepository.getAuthClaim(
+          publicKey: identity.publicKey);
       logger().i(
           'GetAuthInputsUseCase: got authClaim at: ${stopwatch.elapsedMilliseconds} ms');
       NodeEntity authClaimNode =

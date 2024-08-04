@@ -45,7 +45,7 @@ class GetIdentityUseCase
         DidEntity did = await _getDidUseCase.execute(param: param.genesisDid);
 
         String genesisDid = await _getDidIdentifierUseCase.execute(
-          param: GetDidIdentifierParam(
+          param: GetDidIdentifierParam.withPrivateKey(
             privateKey: param.privateKey!,
             blockchain: did.blockchain,
             network: did.network,
