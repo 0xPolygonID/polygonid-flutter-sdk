@@ -29,17 +29,19 @@ class GetCurrentEnvDidIdentifierUseCase
 
   @override
   Future<String> execute({required GetCurrentEnvDidIdentifierParam param}) {
-    return _getSelectedChainUseCase
-        .execute()
-        .then((chain) => _getDidIdentifierUseCase.execute(
-                param: GetDidIdentifierParam(
-              privateKey: param.privateKey,
-              blockchain: chain.blockchain,
-              network: chain.network,
-              profileNonce: param.profileNonce,
-              method: chain.method,
-            )))
-        .then((did) {
+    return Future(() async {
+      final chain = await _getSelectedChainUseCase.execute();
+
+      final did = await _getDidIdentifierUseCase.execute(
+        param: GetDidIdentifierParam(
+          privateKey: param.privateKey,
+          blockchain: chain.blockchain,
+          network: chain.network,
+          profileNonce: param.profileNonce,
+          method: chain.method,
+        ),
+      );
+
       logger().i("[GetCurrentEnvDidIdentifierUseCase] did: $did");
       _stacktraceManager
           .addTrace("[GetCurrentEnvDidIdentifierUseCase] did: $did");

@@ -41,19 +41,21 @@ class GetDidIdentifierUseCase
   Future<String> execute({required GetDidIdentifierParam param}) async {
     final env = await _getEnvUseCase.execute();
 
-    return _getGenesisStateUseCase
-        .execute(param: param.privateKey)
-        .then(
-          (genesisState) => _identityRepository.getDidIdentifier(
-            blockchain: param.blockchain,
-            network: param.network,
-            claimsRoot: genesisState.claimsTree.string(),
-            profileNonce: param.profileNonce,
-            config: env.config,
-            method: param.method,
-          ),
-        )
-        .then((did) {
+    return Future(() async {
+      // TODO Check start
+      final genesisState = await _getGenesisStateUseCase.execute(
+        param: param.privateKey,
+      );
+      final claimsRoot = genesisState.claimsTree.string();
+      // TODO Check end
+      final did = await _identityRepository.getDidIdentifier(
+        blockchain: param.blockchain,
+        network: param.network,
+        claimsRoot: claimsRoot,
+        profileNonce: param.profileNonce,
+        config: env.config,
+        method: param.method,
+      );
       logger().i("[GetDidIdentifierUseCase] did: $did");
 
       return did;

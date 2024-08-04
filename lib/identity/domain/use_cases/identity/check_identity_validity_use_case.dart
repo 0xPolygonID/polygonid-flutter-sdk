@@ -9,20 +9,20 @@ class CheckIdentityValidityUseCase extends FutureUseCase<String, void> {
   final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
   final StacktraceManager _stacktraceManager;
 
-  CheckIdentityValidityUseCase(
-    this._getPrivateKeyUseCase,
-    this._getCurrentEnvDidIdentifierUseCase,
-    this._stacktraceManager,
-  );
+  CheckIdentityValidityUseCase(this._getPrivateKeyUseCase,
+      this._getCurrentEnvDidIdentifierUseCase,
+      this._stacktraceManager,);
 
   @override
   Future<void> execute({required String param}) {
-    return _getPrivateKeyUseCase
-        .execute(param: param)
-        .then((privateKey) => _getCurrentEnvDidIdentifierUseCase.execute(
-            param: GetCurrentEnvDidIdentifierParam(
-                privateKey: privateKey, profileNonce: BigInt.zero)))
-        .then((_) {
+    return Future(() async {
+      final privateKey = await _getPrivateKeyUseCase.execute(param: param);
+      await _getCurrentEnvDidIdentifierUseCase.execute(
+        param: GetCurrentEnvDidIdentifierParam(
+          privateKey: privateKey,
+          profileNonce: BigInt.zero,
+        ),
+      );
       logger().i("[CheckIdentityValidityUseCase] Identity is valid");
       _stacktraceManager
           .addTrace("[CheckIdentityValidityUseCase] Identity is valid");

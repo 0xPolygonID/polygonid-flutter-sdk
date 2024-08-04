@@ -70,10 +70,12 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<List<String>> getPublicKeys({required String privateKey}) {
-    return _walletDataSource
-        .getWallet(privateKey: _hexMapper.mapTo(privateKey))
-        .then((wallet) => wallet.publicKey);
+  Future<List<String>> getPublicKeys({required String privateKey}) async {
+    final wallet = await _walletDataSource.getWallet(
+      privateKey: _hexMapper.mapTo(privateKey),
+    );
+    final pubKeys = wallet.publicKey;
+    return pubKeys;
   }
 
   @override

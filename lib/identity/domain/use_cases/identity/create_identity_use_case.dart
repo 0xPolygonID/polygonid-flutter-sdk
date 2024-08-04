@@ -19,12 +19,12 @@ class CreateIdentityParam {
 
 class CreateIdentityUseCase
     extends FutureUseCase<CreateIdentityParam, PrivateIdentityEntity> {
-  final GetPublicKeysUseCase _getPublicKeysUseCase;
+  final GetPublicKeysUseCase _getPubKeysUseCase;
   final GetCurrentEnvDidIdentifierUseCase _getCurrentEnvDidIdentifierUseCase;
   final StacktraceManager _stacktraceManager;
 
   CreateIdentityUseCase(
-    this._getPublicKeysUseCase,
+    this._getPubKeysUseCase,
     this._getCurrentEnvDidIdentifierUseCase,
     this._stacktraceManager,
   );
@@ -33,20 +33,14 @@ class CreateIdentityUseCase
   Future<PrivateIdentityEntity> execute({
     required CreateIdentityParam param,
   }) async {
-    return Future.wait(
-      [
-        _getPublicKeysUseCase.execute(param: param.privateKey),
-        _getCurrentEnvDidIdentifierUseCase.execute(
-          param: GetCurrentEnvDidIdentifierParam(
-            privateKey: param.privateKey,
-            profileNonce: GENESIS_PROFILE_NONCE,
-          ),
-        )
-      ],
-      eagerError: true,
-    ).then((values) async {
-      String didIdentifier = values[1] as String;
-      List<String> publicKey = values[0] as List<String>;
+    final publicKey = await _getPubKeysUseCase.execute(param: param.privateKey);
+    return Future(() async {
+      final didIdentifier = await _getCurrentEnvDidIdentifierUseCase.execute(
+        param: GetCurrentEnvDidIdentifierParam(
+          privateKey: param.privateKey,
+          profileNonce: GENESIS_PROFILE_NONCE,
+        ),
+      );
       Map<BigInt, String> profiles = {GENESIS_PROFILE_NONCE: didIdentifier};
 
       for (BigInt profile in param.profiles) {
@@ -59,13 +53,13 @@ class CreateIdentityUseCase
         profiles[profile] = identifier;
       }
 
-      return PrivateIdentityEntity(
+      final identity = PrivateIdentityEntity(
         did: didIdentifier,
         publicKey: publicKey,
         profiles: profiles,
         privateKey: param.privateKey,
       );
-    }).then((identity) {
+
       logger().i(
           "[CreateIdentityUseCase] Identity created with did: ${identity.did}, for param $param");
       _stacktraceManager.addTrace(

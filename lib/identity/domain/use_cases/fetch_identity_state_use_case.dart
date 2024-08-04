@@ -6,13 +6,13 @@ import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repo
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
 
 class FetchIdentityStateUseCase extends FutureUseCase<String, String> {
-  final IdentityRepository _identityRepository;
+  final IdentityRepository _identityRepo;
   final GetSelectedChainUseCase _getSelectedChainUseCase;
   final GetDidUseCase _getDidUseCase;
   final StacktraceManager _stacktraceManager;
 
   FetchIdentityStateUseCase(
-    this._identityRepository,
+    this._identityRepo,
     this._getSelectedChainUseCase,
     this._getDidUseCase,
     this._stacktraceManager,
@@ -20,15 +20,15 @@ class FetchIdentityStateUseCase extends FutureUseCase<String, String> {
 
   @override
   Future<String> execute({required String param}) async {
-    return _getSelectedChainUseCase
-        .execute()
-        .then((chain) => _getDidUseCase
-            .execute(param: param)
-            .then((did) =>
-                _identityRepository.convertIdToBigInt(id: did.identifier))
-            .then((id) => _identityRepository.getState(
-                identifier: id, contractAddress: chain.stateContractAddr)))
-        .then((state) {
+    return Future(() async {
+      final chain = await _getSelectedChainUseCase.execute();
+      final did = await _getDidUseCase.execute(param: param);
+      final id = await _identityRepo.convertIdToBigInt(id: did.identifier);
+      final state = await _identityRepo.getState(
+        identifier: id,
+        contractAddress: chain.stateContractAddr,
+      );
+
       _stacktraceManager.addTrace(
           "[FetchIdentityStateUseCase] Fetched state for identifier $param");
       logger().i(

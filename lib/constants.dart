@@ -1,7 +1,8 @@
 const AUTH_CLAIM_SCHEMA = "cca3371a6cb1b715004407e325bd993c";
 const API_VERSION = 'v1';
 const CHANNEL_NAME = 'technology.polygon.polygonid_flutter_sdk';
-const DEFAULT_AUTH_CLAIM_NONCE = '15930428023331155902';
+// TODO Change depending on new identity and auth enabled
+var DEFAULT_AUTH_CLAIM_NONCE = '15930428023331155902';
 
 /// Database
 const databaseName = "polygonIdSdk.db";
