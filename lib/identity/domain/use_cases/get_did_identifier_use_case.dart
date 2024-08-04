@@ -6,21 +6,31 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_genesis_stat
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_public_keys_use_case.dart';
 
 class GetDidIdentifierParam {
   final String privateKey;
+  final List<String> publicKey;
   final String blockchain;
   final String network;
   final BigInt profileNonce;
   final String? method;
 
   GetDidIdentifierParam({
+    required this.publicKey,
+    required this.blockchain,
+    required this.network,
+    required this.profileNonce,
+    this.method,
+  }) : privateKey = "";
+
+  GetDidIdentifierParam.withPrivateKey({
     required this.privateKey,
     required this.blockchain,
     required this.network,
     required this.profileNonce,
     this.method,
-  });
+  }) : publicKey = const <String>[];
 }
 
 class GetDidIdentifierUseCase
@@ -39,21 +49,28 @@ class GetDidIdentifierUseCase
 
   @override
   Future<String> execute({required GetDidIdentifierParam param}) async {
-    final env = await _getEnvUseCase.execute();
+    return Future(() async {
+      final env = await _getEnvUseCase.execute();
+      final List<String> publicKey;
+      if (param.publicKey.isNotEmpty) {
+        publicKey = param.publicKey;
+      } else {
+        publicKey = await _identityRepository.getPublicKeys(
+            privateKey: param.privateKey);
+      }
 
-    return _getGenesisStateUseCase
-        .execute(param: param.privateKey)
-        .then(
-          (genesisState) => _identityRepository.getDidIdentifier(
-            blockchain: param.blockchain,
-            network: param.network,
-            claimsRoot: genesisState.claimsTree.string(),
-            profileNonce: param.profileNonce,
-            config: env.config,
-            method: param.method,
-          ),
-        )
-        .then((did) {
+      final genesisState = await _getGenesisStateUseCase.execute(
+        param: publicKey,
+      );
+      final claimsRoot = genesisState.claimsTree.string();
+      final did = await _identityRepository.getDidIdentifier(
+        blockchain: param.blockchain,
+        network: param.network,
+        claimsRoot: claimsRoot,
+        profileNonce: param.profileNonce,
+        config: env.config,
+        method: param.method,
+      );
       logger().i("[GetDidIdentifierUseCase] did: $did");
 
       return did;

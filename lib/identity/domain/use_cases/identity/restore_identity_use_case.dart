@@ -39,15 +39,17 @@ class RestoreIdentityUseCase
   );
 
   @override
-  Future<PrivateIdentityEntity> execute(
-      {required RestoreIdentityParam param}) async {
+  Future<PrivateIdentityEntity> execute({
+    required RestoreIdentityParam param,
+  }) async {
     late PrivateIdentityEntity privateIdentity;
 
     try {
+      final publicKey =
+          await _identityRepository.getPublicKeys(privateKey: param.privateKey);
       String genesisDid = await _getCurrentEnvDidIdentifierUseCase.execute(
           param: GetCurrentEnvDidIdentifierParam(
-              privateKey: param.privateKey,
-              profileNonce: GENESIS_PROFILE_NONCE));
+              publicKey: publicKey, profileNonce: GENESIS_PROFILE_NONCE));
       privateIdentity = await _getIdentityUseCase.execute(
           param: GetIdentityParam(
               genesisDid: genesisDid,

@@ -41,7 +41,9 @@ class AddIdentityUseCase
     // Create the [IdentityEntity]
     PrivateIdentityEntity identity = await _createIdentityUseCase.execute(
       param: CreateIdentityParam(
-          privateKey: param.privateKey, profiles: param.profiles),
+        privateKey: param.privateKey,
+        profiles: param.profiles,
+      ),
     );
     try {
       // Check if identity is already stored (already added)

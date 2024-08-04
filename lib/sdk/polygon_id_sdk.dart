@@ -39,7 +39,13 @@ class PolygonIdSdk {
     return _ref!;
   }
 
-  static Future<void> init({EnvEntity? env}) async {
+  /// Initializes the PolygonId SDK
+  /// Pass [env] to set the environment that contains pushUrl, ipfsUrl, chainConfigs, didMethods
+  /// Set [newIdentity] param to use a new identity creation and private key handling mechanisms
+  static Future<void> init({
+    EnvEntity? env,
+    bool newIdentity = false,
+  }) async {
     // As [PolygonIdSdk] uses path_provider plugin, we need to ensure the
     // platform is initialized
     WidgetsFlutterBinding.ensureInitialized();
@@ -56,7 +62,7 @@ class PolygonIdSdk {
     }
 
     // Init injection
-    await configureInjection();
+    await configureInjection(newIdentity);
     await getItSdk.allReady();
 
     // Set env

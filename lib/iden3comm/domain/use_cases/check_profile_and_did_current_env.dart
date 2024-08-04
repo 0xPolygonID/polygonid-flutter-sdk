@@ -49,7 +49,7 @@ class CheckProfileAndDidCurrentEnvUseCase
       final ChainConfigEntity chain = await _getSelectedChainUseCase.execute();
       // we get the did for the current environment
       final String did = await _getDidIdentifierUseCase.execute(
-        param: GetDidIdentifierParam(
+        param: GetDidIdentifierParam.withPrivateKey(
           privateKey: param.privateKey,
           blockchain: chain.blockchain,
           network: chain.network,

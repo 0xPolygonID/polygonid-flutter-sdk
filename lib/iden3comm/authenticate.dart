@@ -114,8 +114,9 @@ class Authenticate {
     required String? pushToken,
     String? challenge,
     final Map<String, dynamic>? transactionData,
-    String authClaimNonce = DEFAULT_AUTH_CLAIM_NONCE,
+    String? authClaimNonce,
   }) async {
+    final nonce = authClaimNonce ?? DEFAULT_AUTH_CLAIM_NONCE;
     try {
       List<Iden3commProofEntity> proofs = [];
       Map<int, String> groupIdLinkNonceMap = {};
@@ -158,7 +159,7 @@ class Authenticate {
           await getItSdk.getAsync<GetDidIdentifierUseCase>();
 
       String profileDid = await getDidIdentifierUseCase.execute(
-        param: GetDidIdentifierParam(
+        param: GetDidIdentifierParam.withPrivateKey(
           privateKey: privateKey,
           blockchain: chain.blockchain,
           network: chain.network,
@@ -190,7 +191,7 @@ class Authenticate {
         chain: chain,
         privateKey: privateKey,
         privateKeyBytes: privateKeyBytes,
-        authClaimNonce: authClaimNonce,
+        authClaimNonce: nonce,
       );
 
       // if there are proof requests and claims and they are the same length

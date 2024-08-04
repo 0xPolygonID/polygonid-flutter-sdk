@@ -96,7 +96,7 @@ class FetchOnchainClaimsUseCase
       final chain = await _getSelectedChainUseCase.execute();
 
       final profileDid = await _getDidIdentifierUseCase.execute(
-        param: GetDidIdentifierParam(
+        param: GetDidIdentifierParam.withPrivateKey(
           privateKey: param.privateKey,
           blockchain: chain.blockchain,
           network: chain.network,
@@ -182,7 +182,7 @@ class FetchOnchainClaimsUseCase
     }
 
     final did = await _getDidIdentifierUseCase.execute(
-      param: GetDidIdentifierParam(
+      param: GetDidIdentifierParam.withPrivateKey(
         privateKey: param.privateKey,
         blockchain: chain.blockchain,
         network: chain.network,

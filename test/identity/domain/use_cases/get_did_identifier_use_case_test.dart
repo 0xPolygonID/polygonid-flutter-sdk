@@ -20,7 +20,7 @@ MockGetGenesisStateUseCase getGenesisStateUseCase =
 MockStacktraceManager stacktraceStreamManager = MockStacktraceManager();
 
 // Data
-GetDidIdentifierParam param = GetDidIdentifierParam(
+GetDidIdentifierParam param = GetDidIdentifierParam.withPrivateKey(
   privateKey: CommonMocks.privateKey,
   blockchain: CommonMocks.blockchain,
   network: CommonMocks.network,
@@ -57,6 +57,8 @@ void main() {
       profileNonce: anyNamed('profileNonce'),
       config: anyNamed('config'),
     )).thenAnswer((realInvocation) => Future.value(CommonMocks.did));
+    when(identityRepository.getPublicKeys(privateKey: CommonMocks.privateKey))
+        .thenAnswer((realInvocation) => Future.value(CommonMocks.pubKeys));
   });
 
   test(
@@ -71,7 +73,7 @@ void main() {
                   param: captureAnyNamed('param')))
               .captured
               .first,
-          CommonMocks.privateKey);
+          CommonMocks.pubKeys);
 
       var authClaimCapture = verify(identityRepository.getDidIdentifier(
         blockchain: captureAnyNamed('blockchain'),
@@ -104,7 +106,7 @@ void main() {
                   param: captureAnyNamed('param')))
               .captured
               .first,
-          CommonMocks.privateKey);
+          CommonMocks.pubKeys);
 
       verifyNever(identityRepository.getDidIdentifier(
         blockchain: captureAnyNamed('blockchain'),

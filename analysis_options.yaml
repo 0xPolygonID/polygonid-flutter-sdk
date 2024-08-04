@@ -28,6 +28,7 @@ analyzer:
 
   exclude:
     - '**/*.g.dart'
+    - '**/*.config.dart'
 
 linter:
   rules:
