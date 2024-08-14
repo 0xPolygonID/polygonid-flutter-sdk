@@ -10,6 +10,7 @@ jobs:
       - uses: actions/stale@v8
         with:
           stale-issue-message: 'This issue is stale because it has been open 20 days with no activity. Remove stale label or comment or this will be closed in 10 days.'
+          'exempt-issue-labels': 'bug,enhancement'
           close-issue-message: 'This issue was closed because it has been stalled for 10 days with no activity.'
           days-before-stale: 20
           days-before-close: 10
