@@ -88,7 +88,7 @@ class RefreshCredentialUseCase
       profileDid: param.credential.did,
     );
 
-    if (claimEntity.id == param.credential.id) {
+    if (claimEntity.id != param.credential.id) {
       await _removeClaimsUseCase.execute(
         param: RemoveClaimsParam(
           claimIds: [param.credential.id],
