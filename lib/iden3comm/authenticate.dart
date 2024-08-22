@@ -302,8 +302,7 @@ class Authenticate {
           return null;
         }
 
-        GetIden3MessageUseCase _getIden3MessageUseCase =
-            await getItSdk.getAsync<GetIden3MessageUseCase>();
+        final _getIden3MessageUseCase = getItSdk<GetIden3MessageUseCase>();
         final nextRequest = await _getIden3MessageUseCase.execute(
           param: jsonEncode(messageJson),
         );
