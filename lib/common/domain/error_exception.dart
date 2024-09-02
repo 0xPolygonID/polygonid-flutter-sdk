@@ -6,6 +6,11 @@ class PolygonIdSDKException implements Exception {
     this.error,
     required this.errorMessage,
   });
+
+  @override
+  String toString() {
+    return errorMessage;
+  }
 }
 
 class CoreLibraryException extends PolygonIdSDKException {
@@ -18,4 +23,9 @@ class CoreLibraryException extends PolygonIdSDKException {
     required String errorMessage,
     dynamic error,
   }) : super(errorMessage: errorMessage, error: error);
+
+  @override
+  String toString() {
+    return "[$coreLibraryName] [$methodName] $errorMessage";
+  }
 }
