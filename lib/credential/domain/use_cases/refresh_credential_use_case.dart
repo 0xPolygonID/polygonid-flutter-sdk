@@ -64,7 +64,7 @@ class RefreshCredentialUseCase
       type: "https://iden3-communication.io/credentials/1.0/refresh",
       thid: id,
       body: CredentialRefreshBodyRequest(
-        param.credential.id.replaceAll("urn:uuid:", ""),
+        param.credential.id,
         "expired",
       ),
       from: param.credential.did,
