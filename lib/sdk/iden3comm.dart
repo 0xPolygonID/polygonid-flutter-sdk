@@ -392,6 +392,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     required String genesisDid,
     BigInt? profileNonce,
     required String privateKey,
+    String? chainId,
   }) {
     _stacktraceManager.clearStacktrace();
 
@@ -401,17 +402,19 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         genesisDid: genesisDid,
         profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
         privateKey: privateKey,
+        chainId: chainId,
       ),
     );
   }
 
   @override
-  Future<List<ClaimEntity?>> getClaimsFromIden3Message(
-      {required Iden3MessageEntity message,
-      required String genesisDid,
-      BigInt? profileNonce,
-      required String privateKey,
-      Map<int, Map<String, dynamic>>? nonRevocationProofs}) {
+  Future<List<ClaimEntity?>> getClaimsFromIden3Message({
+    required Iden3MessageEntity message,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String privateKey,
+    Map<int, Map<String, dynamic>>? nonRevocationProofs,
+  }) {
     _stacktraceManager.clearStacktrace();
     return _getIden3commClaimsUseCase.execute(
         param: GetIden3commClaimsParam(

@@ -164,11 +164,14 @@ class FetchCredentialsUseCase {
     required OnchainOfferIden3MessageEntity message,
     required String profileDid,
   }) async {
-    final chain = await _getSelectedChainUseCase.execute();
     final env = await _getEnvUseCase.execute();
+    final chainId = message.body.transactionData.chainId?.toString();
+    final chain = chainId != null
+        ? env.chainConfigs[chainId]
+        : await _getSelectedChainUseCase.execute();
 
     /// FIXME: inject web3Client through constructor
-    final web3Client = getItSdk<Web3Client>(param1: chain.rpcUrl);
+    final web3Client = getItSdk<Web3Client>(param1: chain!.rpcUrl);
 
     final address = message.body.transactionData.contractAddress;
     final deployedContract = await _localContractFilesDataSource
@@ -229,6 +232,7 @@ class FetchCredentialsUseCase {
             contractAddress: address,
             userId: BigInt.parse(userId),
             credentialId: credentialId,
+            chainId: chainId,
             adapterVersion: adapterVersion,
             skipInterfaceSupportCheck: true,
           ),

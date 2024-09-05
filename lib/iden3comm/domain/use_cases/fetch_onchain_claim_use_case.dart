@@ -30,6 +30,7 @@ class FetchOnchainClaimParam {
   final BigInt credentialId;
   final String adapterVersion;
 
+  final String? chainId;
   final bool skipInterfaceSupportCheck;
 
   FetchOnchainClaimParam({
@@ -39,6 +40,7 @@ class FetchOnchainClaimParam {
     required this.userId,
     required this.credentialId,
     required this.adapterVersion,
+    this.chainId,
     this.skipInterfaceSupportCheck = false,
   });
 }
@@ -66,9 +68,12 @@ class FetchOnchainClaimUseCase
 
   @override
   Future<ClaimEntity> execute({required FetchOnchainClaimParam param}) async {
-    final chain = await _getSelectedChainUseCase.execute();
     final env = await _getEnvUseCase.execute();
-    final web3Client = getItSdk<Web3Client>(param1: chain.rpcUrl);
+    final chain = param.chainId != null
+        ? env.chainConfigs[param.chainId]
+        : await _getSelectedChainUseCase.execute();
+
+    final web3Client = getItSdk<Web3Client>(param1: chain!.rpcUrl);
 
     final deployedContract = await _localContractFilesDataSource
         .loadOnchainNonMerkelizedIssuerBaseContract(param.contractAddress);
