@@ -32,7 +32,7 @@ ClaimProofIssuerCredStatusDTO _$ClaimProofIssuerCredStatusDTOFromJson(
         Map<String, dynamic> json) =>
     ClaimProofIssuerCredStatusDTO(
       json['id'] as String,
-      json['revocationNonce'] as int?,
+      (json['revocationNonce'] as num?)?.toInt(),
       $enumDecode(_$ClaimProofIssuerCredStatusTypeEnumMap, json['type']),
       json['statusIssuer'] == null
           ? null

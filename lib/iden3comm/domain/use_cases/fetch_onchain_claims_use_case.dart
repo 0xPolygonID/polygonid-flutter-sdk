@@ -34,12 +34,14 @@ class FetchOnchainClaimsParam {
   final String genesisDid;
   final BigInt profileNonce;
   final String privateKey;
+  final String? chainId;
 
   FetchOnchainClaimsParam({
     required this.contractAddress,
     required this.genesisDid,
     required this.profileNonce,
     required this.privateKey,
+    this.chainId,
   });
 }
 
@@ -125,10 +127,12 @@ class FetchOnchainClaimsUseCase
     String profileDid,
     FetchOnchainClaimsParam param,
   ) async {
-    final chain = await _getSelectedChainUseCase.execute();
     final env = await _getEnvUseCase.execute();
+    final chain = param.chainId != null
+        ? env.chainConfigs[param.chainId!]
+        : await _getSelectedChainUseCase.execute();
 
-    final web3Client = getItSdk<Web3Client>(param1: chain.rpcUrl);
+    final web3Client = getItSdk<Web3Client>(param1: chain!.rpcUrl);
     final deployedContract = await _localContractFilesDataSource
         .loadOnchainNonMerkelizedIssuerBaseContract(contractAddress);
 
@@ -210,6 +214,7 @@ class FetchOnchainClaimsUseCase
             contractAddress: contractAddress,
             userId: BigInt.parse(userId),
             credentialId: credentialId,
+            chainId: param.chainId,
             adapterVersion: adapterVersion,
             skipInterfaceSupportCheck: true,
           ),

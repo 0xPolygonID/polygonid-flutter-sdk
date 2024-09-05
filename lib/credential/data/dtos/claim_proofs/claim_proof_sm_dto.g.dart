@@ -45,8 +45,8 @@ ClaimProofIssuerStateSMDTO _$ClaimProofIssuerStateSMDTOFromJson(
       json['revocationTreeRoot'] as String,
       json['rootOfRoots'] as String,
       json['value'] as String,
-      json['blockNumber'] as int?,
-      json['blockTimestamp'] as int?,
+      (json['blockNumber'] as num?)?.toInt(),
+      (json['blockTimestamp'] as num?)?.toInt(),
       json['txId'] as String?,
     );
 
