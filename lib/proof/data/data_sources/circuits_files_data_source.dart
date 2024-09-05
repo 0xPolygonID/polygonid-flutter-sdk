@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:archive/archive.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
+import 'package:path/path.dart' as pathLib;
 
 class CircuitsFilesDataSource {
   final Directory directory;
@@ -112,7 +113,7 @@ class CircuitsFilesDataSource {
     var archive = zipDecoder.decodeBytes(zipBytes);
 
     for (var file in archive) {
-      var filename = '$path/${file.name}';
+      var filename = pathLib.join(path, pathLib.basename(file.name));
       if (file.isFile) {
         var outFile = File(filename);
         outFile = await outFile.create(recursive: true);
