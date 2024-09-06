@@ -200,8 +200,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_jwz_use_cas
     as _i249;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_query_context_use_case.dart'
     as _i631;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_query_use_case.dart'
-    as _i54;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart'
     as _i627;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_schemas_use_case.dart'
@@ -576,8 +574,6 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i98.JWZMapper(gh<_i267.StacktraceManager>()));
     gh.factory<_i897.GetIden3MessageUseCase>(
         () => _i897.GetIden3MessageUseCase(gh<_i267.StacktraceManager>()));
-    gh.factory<_i54.GetProofQueryUseCase>(
-        () => _i54.GetProofQueryUseCase(gh<_i267.StacktraceManager>()));
     gh.factory<_i409.RemoteIden3commDataSource>(
         () => _i409.RemoteIden3commDataSource(
               gh<_i361.Dio>(),
@@ -768,12 +764,6 @@ extension GetItInjectableX on _i174.GetIt {
               gh<_i609.InteractionIdFilterMapper>(),
               gh<_i267.StacktraceManager>(),
             ));
-    gh.factory<_i627.GetProofRequestsUseCase>(
-        () => _i627.GetProofRequestsUseCase(
-              gh<_i631.GetProofQueryContextUseCase>(),
-              gh<_i54.GetProofQueryUseCase>(),
-              gh<_i267.StacktraceManager>(),
-            ));
     gh.factory<_i238.FetchSchemaUseCase>(() =>
         _i238.FetchSchemaUseCase(gh<_i698.Iden3commCredentialRepository>()));
     gh.factory<_i233.GetSchemasUseCase>(() =>
@@ -799,6 +789,11 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i443.TreeTypeMapper>(),
           gh<_i68.TreeStateMapper>(),
         ));
+    gh.factory<_i627.GetProofRequestsUseCase>(
+        () => _i627.GetProofRequestsUseCase(
+              gh<_i631.GetProofQueryContextUseCase>(),
+              gh<_i267.StacktraceManager>(),
+            ));
     gh.factoryAsync<_i1012.InteractionRepository>(() async =>
         repositoriesModule.interactionRepository(
             await getAsync<_i548.InteractionRepositoryImpl>()));

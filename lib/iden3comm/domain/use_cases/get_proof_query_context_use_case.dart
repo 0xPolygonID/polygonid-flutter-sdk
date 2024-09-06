@@ -14,8 +14,9 @@ class GetProofQueryContextUseCase
   );
 
   @override
-  Future<Map<String, dynamic>> execute(
-      {required ProofScopeRequest param}) async {
+  Future<Map<String, dynamic>> execute({
+    required ProofScopeRequest param,
+  }) async {
     String schemaUrl = param.query.context!;
     _stacktraceManager
         .addTrace("[GetProofQueryContextUseCase] schemaUrl: $schemaUrl");
