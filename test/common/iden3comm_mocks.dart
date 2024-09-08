@@ -258,10 +258,8 @@ class Iden3commMocks {
   ''';
 
   static List<ProofRequestEntity> proofRequestList = [
-    ProofRequestEntity(Iden3commMocks.proofScopeRequest, mockContext,
-        ProofQueryParamEntity(CommonMocks.field, CommonMocks.intValues, 3)),
-    ProofRequestEntity(Iden3commMocks.proofScopeRequest, mockContext,
-        ProofQueryParamEntity(CommonMocks.field, CommonMocks.intValues, 2)),
+    ProofRequestEntity(Iden3commMocks.proofScopeRequest, mockContext),
+    ProofRequestEntity(Iden3commMocks.proofScopeRequest, mockContext),
   ];
 
   static Iden3commProofEntity iden3commProof = Iden3commProofEntity(

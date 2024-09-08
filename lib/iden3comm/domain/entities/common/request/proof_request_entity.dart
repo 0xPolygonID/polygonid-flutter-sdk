@@ -4,13 +4,12 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/p
 class ProofRequestEntity {
   final ProofScopeRequest scope;
   final Map<String, dynamic> context;
-  final ProofQueryParamEntity queryParam;
 
-  ProofRequestEntity(this.scope, this.context, this.queryParam);
+  ProofRequestEntity(this.scope, this.context);
 
   @override
   String toString() =>
-      "[ProofRequestEntity] {scope: $scope, context: $context, queryParam: $queryParam}";
+      "[ProofRequestEntity] {scope: $scope, context: $context}";
 
   @override
   bool operator ==(Object other) =>
@@ -18,39 +17,8 @@ class ProofRequestEntity {
       other is ProofRequestEntity &&
           runtimeType == other.runtimeType &&
           scope == other.scope &&
-          context == other.context &&
-          queryParam == other.queryParam;
+          context == other.context;
 
   @override
   int get hashCode => runtimeType.hashCode;
-}
-
-class ProofQueryParamEntity {
-  final String field;
-  final List<dynamic> values;
-  final int operator;
-
-  ProofQueryParamEntity(this.field, this.values, this.operator);
-
-  @override
-  String toString() =>
-      "[ProofQueryParamEntity] {field: $field, values: $values, operator: $operator}";
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ProofQueryParamEntity &&
-          runtimeType == other.runtimeType &&
-          field == other.field &&
-          listEquals(values, other.values) &&
-          operator == other.operator;
-
-  @override
-  int get hashCode => runtimeType.hashCode;
-
-  Map<String, dynamic> toJson() => {
-        'field': field,
-        'values': values,
-        'operator': operator,
-      };
 }

@@ -419,21 +419,6 @@ class Authenticate {
         }
       }
 
-      GenerateIden3commProofParam proofParam = GenerateIden3commProofParam(
-        did: genesisDid,
-        profileNonce: profileNonce,
-        claimSubjectProfileNonce: claimSubjectProfileNonce,
-        credential: claim,
-        request: proofRequest.scope,
-        circuitData: circuitDataEntity,
-        privateKey: privateKey,
-        challenge: challenge,
-        config: env.config,
-        verifierId: message.from,
-        linkNonce: linkNonce,
-        transactionData: transactionData,
-      );
-
       Map<String, dynamic>? config;
       String? signature;
 
@@ -526,33 +511,31 @@ class Authenticate {
     required String genesisDid,
     required String privateKey,
   }) async {
-    if (message.body.scope == null || message.body.scope.isEmpty) {
+    List<ProofScopeRequest>? scopes = message.body.scope;
+    if (scopes == null || scopes.isEmpty) {
       return;
     }
 
-    List<ProofScopeRequest> scopes = message.body.scope;
-    var groupedByGroupId = groupBy(scopes, (obj) => obj.query.groupId);
+    final groupedByGroupId = groupBy(scopes, (obj) => obj.query.groupId);
 
     Map<int, List<ClaimEntity>> claimsByGroupId = {};
 
     // for each group of scopes
-    for (var group in groupedByGroupId.entries) {
+    for (final group in groupedByGroupId.entries) {
       int? groupId = group.key;
       if (groupId == null) {
         continue;
       }
-      List<ProofScopeRequest> groupScopes = group.value;
 
       List<FilterEntity> filtersForQueryClaimDb = [];
 
-      for (var scope in groupScopes) {
+      List<ProofScopeRequest> groupScopes = group.value;
+      for (final scope in groupScopes) {
         Map<String, dynamic> credentialSchema =
             await fetchSchema(schemaUrl: scope.query.context!);
-        ProofQueryParamEntity query = await getProofQuery(scope);
         ProofRequestEntity proofRequest = ProofRequestEntity(
           scope,
           credentialSchema,
-          query,
         );
         ProofRequestFiltersMapper proofRequestFiltersMapper =
             getItSdk<ProofRequestFiltersMapper>();
@@ -582,15 +565,13 @@ class Authenticate {
       claimsByGroupId[groupId] = validClaims;
     }
 
-    for (ProofScopeRequest scope in message.body.scope!) {
+    for (final scope in scopes) {
       List<ClaimEntity> validClaims = [];
       Map<String, dynamic> credentialSchema =
           await fetchSchema(schemaUrl: scope.query.context!);
-      ProofQueryParamEntity query = await getProofQuery(scope);
       ProofRequestEntity proofRequest = ProofRequestEntity(
         scope,
         credentialSchema,
-        query,
       );
       proofRequests.add(proofRequest);
 
@@ -631,7 +612,7 @@ class Authenticate {
         continue;
       }
 
-      var validClaim = validClaims.firstWhereOrNull((element) {
+      final validClaim = validClaims.firstWhereOrNull((element) {
         List<Map<String, dynamic>> proofs = element.info["proof"];
         List<String> proofTypes =
             proofs.map((e) => e["type"] as String).toList();
@@ -704,8 +685,8 @@ class Authenticate {
       }
     }
 
-    var schemaUri = Uri.parse(schemaUrl);
-    Dio dio = Dio();
+    final schemaUri = Uri.parse(schemaUrl);
+    final dio = Dio();
     final dir = await getApplicationDocumentsDirectory();
     final path = dir.path;
     dio.interceptors.add(
@@ -739,116 +720,6 @@ class Authenticate {
         errorMessage: schemaResponse.statusMessage ?? "",
       );
     }
-  }
-
-  Future<ProofQueryParamEntity> getProofQuery(ProofScopeRequest scope) async {
-    final Map<String, int> _queryOperators = {
-      "\$noop": 0,
-      "\$eq": 1,
-      "\$lt": 2,
-      "\$gt": 3,
-      "\$in": 4,
-      "\$nin": 5,
-      "\$ne": 6,
-      "\$lte": 7,
-      "\$gte": 8,
-      "\$between": 9,
-      "\$nonbetween": 10,
-      "\$exists": 11,
-    };
-
-    String field = "";
-    int operator = 0;
-    List<dynamic> values = [];
-
-    if (scope.query.credentialSubject != null &&
-        scope.query.credentialSubject!.length == 1) {
-      MapEntry reqEntry = scope.query.credentialSubject!.entries.first;
-
-      if (reqEntry.value != null && reqEntry.value is Map) {
-        field = reqEntry.key;
-        if (reqEntry.value.length == 0) {
-          Future.value(ProofQueryParamEntity(field, values, operator));
-        } else {
-          MapEntry entry = (reqEntry.value as Map).entries.first;
-          if (_queryOperators.containsKey(entry.key)) {
-            _validateV3OperatorsByCircuit(
-              circuitId: scope.circuitId,
-              operator: entry.key,
-            );
-            operator = _queryOperators[entry.key]!;
-          }
-          if (entry.value == "true" || entry.value == "false") {
-            values = [entry.value == "true" ? 1 : 0];
-          } else if (entry.value is List<dynamic>) {
-            if (operator == 2 || operator == 3) {
-              // lt, gt
-              _stacktraceManager.addError(
-                "[Authenticate] InvalidProofReqException param: $scope\nentry: $entry",
-              );
-              throw InvalidProofReqException(
-                errorMessage:
-                    "InvalidProofReqException param: $scope\nentry: $entry",
-              );
-            }
-            try {
-              values = entry.value.cast<int>();
-            } catch (e) {
-              try {
-                values = entry.value.cast<String>();
-              } catch (e) {
-                _stacktraceManager.addError(
-                  "[Authenticate] InvalidProofReqException param: $scope\nentry: $entry",
-                );
-                throw InvalidProofReqException(
-                    errorMessage:
-                        "InvalidProofReqException param: $scope\nentry: $entry");
-              }
-              _stacktraceManager.addError(
-                "[Authenticate] InvalidProofReqException param: $scope\nentry: $entry",
-              );
-              throw InvalidProofReqException(
-                  errorMessage:
-                      "InvalidProofReqException param: $scope\nentry: $entry");
-            }
-          } else if (entry.value is String) {
-            if (!_isDateTime(entry.value) && (operator == 2 || operator == 3)) {
-              // lt, gt
-              _stacktraceManager.addError(
-                "[Authenticate] InvalidProofReqException param: $scope\nentry: $entry",
-              );
-              throw InvalidProofReqException(
-                  errorMessage:
-                      "InvalidProofReqException param: $scope\nentry: $entry");
-            }
-
-            values = [entry.value];
-          } else if (entry.value is int) {
-            values = [entry.value];
-          } else if (entry.value is double) {
-            values = [entry.value];
-          } else if (entry.value is bool) {
-            values = [entry.value == true ? 1 : 0];
-          } else {
-            _stacktraceManager.addError(
-              "[Authenticate] InvalidProofReqException param: $scope\nentry: $entry",
-            );
-            throw InvalidProofReqException(
-                errorMessage:
-                    "InvalidProofReqException param: $scope\nentry: $entry");
-          }
-        }
-      } else {
-        _stacktraceManager.addError(
-          "[Authenticate] InvalidProofReqException param: $scope\nentry: $reqEntry",
-        );
-        throw InvalidProofReqException(
-            errorMessage:
-                "InvalidProofReqException param: $scope\nentry: $reqEntry");
-      }
-    }
-
-    return ProofQueryParamEntity(field, values, operator);
   }
 
   bool _isDateTime(String input) {

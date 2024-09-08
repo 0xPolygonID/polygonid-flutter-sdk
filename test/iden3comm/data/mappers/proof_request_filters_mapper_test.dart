@@ -88,8 +88,6 @@ ProofScopeRequest proofScopeRequest = ProofScopeRequest(
     credentialSubject: jsonDecode(mockQueryRequestLT),
   ),
 );
-ProofQueryParamEntity proofQueryParamEntity =
-    ProofQueryParamEntity("theField", [0, 1, 2], 4);
 ProofRequestEntity mockProofRequestEntityLT = ProofRequestEntity(
   ProofScopeRequest(
     id: 1,
@@ -102,7 +100,6 @@ ProofRequestEntity mockProofRequestEntityLT = ProofRequestEntity(
     ),
   ),
   Iden3commMocks.mockContext,
-  proofQueryParamEntity,
 );
 
 ProofRequestEntity mockProofRequestEntityGT = ProofRequestEntity(
@@ -117,7 +114,6 @@ ProofRequestEntity mockProofRequestEntityGT = ProofRequestEntity(
     ),
   ),
   Iden3commMocks.mockContext,
-  proofQueryParamEntity,
 );
 
 ProofRequestEntity mockProofRequestEntityEQ = ProofRequestEntity(
@@ -132,7 +128,6 @@ ProofRequestEntity mockProofRequestEntityEQ = ProofRequestEntity(
     ),
   ),
   Iden3commMocks.mockContext,
-  proofQueryParamEntity,
 );
 
 ProofRequestEntity mockProofRequestEntityIN = ProofRequestEntity(
@@ -147,7 +142,6 @@ ProofRequestEntity mockProofRequestEntityIN = ProofRequestEntity(
     ),
   ),
   Iden3commMocks.mockContext,
-  proofQueryParamEntity,
 );
 
 ProofRequestEntity mockProofRequestEntityNIN = ProofRequestEntity(
@@ -162,7 +156,6 @@ ProofRequestEntity mockProofRequestEntityNIN = ProofRequestEntity(
     ),
   ),
   Iden3commMocks.mockContext,
-  proofQueryParamEntity,
 );
 
 ProofRequestEntity mockProofRequestEntityNINCountry = ProofRequestEntity(
@@ -177,7 +170,6 @@ ProofRequestEntity mockProofRequestEntityNINCountry = ProofRequestEntity(
     ),
   ),
   Iden3commMocks.mockContext,
-  proofQueryParamEntity,
 );
 
 ProofRequestEntity mockProofRequestEntityNotSupportedOperator =
@@ -193,7 +185,6 @@ ProofRequestEntity mockProofRequestEntityNotSupportedOperator =
     ),
   ),
   Iden3commMocks.mockContext,
-  proofQueryParamEntity,
 );
 
 MockStacktraceManager mockStacktraceManager = MockStacktraceManager();
