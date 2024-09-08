@@ -18,7 +18,7 @@ Please check the [IDEN3MESSAGE_PARSER.md](IDEN3MESSAGE_PARSER.md) file for more 
 
 This is a Flutter plugin for the [Privado ID SDK](https://docs.privado.id/docs/category/wallet-sdk), which allows you to integrate Privado ID identity system into your Flutter apps.
 
-Please see the [example app](https://github.com/iden3/polygonid-flutter-sdk/tree/develop/example) included in the repository and follow the [Privado ID Wallet SDK Documentation](https://0xpolygonid.github.io/tutorials/wallet/wallet-sdk/polygonid-sdk/polygonid-sdk-overview/).
+Please see the [example app](https://github.com/iden3/polygonid-flutter-sdk/tree/develop/example) included in the repository and follow the [Privado ID Wallet SDK Documentation](https://docs.privado.id/docs/category/flutter-sdk).
 
 ## Installation
 
@@ -84,7 +84,7 @@ See [below](#environment) for details about setting up the environment.
 Stream<DownloadInfo> stream =
         await PolygonIdSdk.I.proof.initCircuitsDownloadAndGetInfoStream;
 ```
-For more information on how to use the Privado ID Flutter SDK, please check the [example app](https://github.com/iden3/polygonid-flutter-sdk/tree/develop/example) included in the repository and follow the [Privado ID Wallet SDK Documentation](https://0xpolygonid.github.io/tutorials/wallet/wallet-sdk/polygonid-sdk/polygonid-sdk-overview/)
+For more information on how to use the Privado ID Flutter SDK, please check the [example app](https://github.com/iden3/polygonid-flutter-sdk/tree/develop/example) included in the repository and follow the [Privado ID Wallet SDK Documentation](https://docs.privado.id/docs/category/flutter-sdk)
 
 <a href="env"></a>
 # Environment
