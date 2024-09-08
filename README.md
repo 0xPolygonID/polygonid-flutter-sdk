@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="example/assets/images/polygon_id_logo.svg" width="120" height="120">
+  <img src="example/assets/images/privado_id_logo.svg.svg" width="120" height="120">
 </p>
  
-# Polygon ID Flutter SDK
+# Privado ID Flutter SDK
 
 [![pub package](https://img.shields.io/badge/pub-2.3.1-blueviolet)](https://pub.dev/packages/polygonid_flutter_sdk)
 [![build](https://github.com/iden3/polygonid-flutter-sdk/workflows/polygonid_flutter_sdk/badge.svg)](https://github.com/iden3/polygonid-flutter-sdk/actions?query=workflow%3Apolygonid_flutter_sdk)
@@ -16,9 +16,9 @@ Please check the [IDEN3MESSAGE_PARSER.md](IDEN3MESSAGE_PARSER.md) file for more 
 
 ## Description
 
-This is a Flutter plugin for the [Polygon ID SDK](https://polygon.technology/polygon-id), which allows you to integrate Polygon ID identity system into your Flutter apps.
+This is a Flutter plugin for the [Privado ID SDK](https://docs.privado.id/docs/category/wallet-sdk), which allows you to integrate Privado ID identity system into your Flutter apps.
 
-Please see the [example app](https://github.com/iden3/polygonid-flutter-sdk/tree/develop/example) included in the repository and follow the [Polygon ID Wallet SDK Documentation](https://0xpolygonid.github.io/tutorials/wallet/wallet-sdk/polygonid-sdk/polygonid-sdk-overview/).
+Please see the [example app](https://github.com/iden3/polygonid-flutter-sdk/tree/develop/example) included in the repository and follow the [Privado ID Wallet SDK Documentation](https://docs.privado.id/docs/category/flutter-sdk).
 
 ## Installation
 
@@ -42,14 +42,14 @@ dependencies:
 
 ## Usage
 
-To integrate Polygon ID Flutter SDK into your Flutter app, follow these steps:
+To integrate Privado ID Flutter SDK into your Flutter app, follow these steps:
 
 1. Import the `polygonid_flutter_sdk` package:
 
 ```dart
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 ```
-2. Initialize the Polygon ID Flutter SDK with your environment:
+2. Initialize the Privado ID Flutter SDK with your environment:
 
 ```dart
 import 'package:flutter/material.dart';
@@ -84,7 +84,7 @@ See [below](#environment) for details about setting up the environment.
 Stream<DownloadInfo> stream =
         await PolygonIdSdk.I.proof.initCircuitsDownloadAndGetInfoStream;
 ```
-For more information on how to use the PolygonID Flutter SDK, please check the [example app](https://github.com/iden3/polygonid-flutter-sdk/tree/develop/example) included in the repository and follow the [Polygon ID Wallet SDK Documentation](https://0xpolygonid.github.io/tutorials/wallet/wallet-sdk/polygonid-sdk/polygonid-sdk-overview/)
+For more information on how to use the Privado ID Flutter SDK, please check the [example app](https://github.com/iden3/polygonid-flutter-sdk/tree/develop/example) included in the repository and follow the [Privado ID Wallet SDK Documentation](https://docs.privado.id/docs/category/flutter-sdk)
 
 <a href="env"></a>
 # Environment
@@ -167,11 +167,11 @@ If you encounter any issues with this SDK, please file an [issue][tracker]. Cont
 
 ## Resources
 
-- [Polygon ID website](https://polygon.technology/polygon-id/)
-- [Polygon ID GitHub repository](https://github.com/0xPolygonId/)
-- [Polygon ID Documentation](https://devs.polygonid.com)
+- [Privado ID website](https://www.privado.id/)
+- [Privado ID GitHub repository](https://github.com/0xPolygonId/)
+- [Privado ID Documentation](https://docs.privado.id/)
 - [Flutter documentation](https://flutter.dev/docs)
-- [Polygon ID SDK FAQ](https://github.com/0xPolygonID/polygonid-flutter-sdk/blob/develop/FAQ.md)
-- [Polygon ID SDK Authentication guideline](https://github.com/0xPolygonID/polygonid-flutter-sdk/blob/develop/AUTH.md)
-- [Polygon ID SDK Fetch and Save credentials guideline](https://github.com/0xPolygonID/polygonid-flutter-sdk/blob/develop/FETCH_CRED.md)
-- [Polygon ID SDK Proof guideline](https://github.com/0xPolygonID/polygonid-flutter-sdk/blob/develop/PROOF.md)
+- [Privado ID SDK FAQ](https://github.com/0xPolygonID/polygonid-flutter-sdk/blob/develop/FAQ.md)
+- [Privado ID SDK Authentication guideline](https://github.com/0xPolygonID/polygonid-flutter-sdk/blob/develop/AUTH.md)
+- [Privado ID SDK Fetch and Save credentials guideline](https://github.com/0xPolygonID/polygonid-flutter-sdk/blob/develop/FETCH_CRED.md)
+- [Privado ID SDK Proof guideline](https://github.com/0xPolygonID/polygonid-flutter-sdk/blob/develop/PROOF.md)
