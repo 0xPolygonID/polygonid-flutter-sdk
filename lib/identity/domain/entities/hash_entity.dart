@@ -49,8 +49,16 @@ class HashEntity extends Equatable {
     });
   }
 
-  factory HashEntity.fromJson(String json) =>
-      HashEntity.fromBigInt(BigInt.parse(json));
+  factory HashEntity.fromJson(dynamic json) {
+    if (json is String) {
+      // if json is a String we can parse it directly
+      return HashEntity.fromBigInt(BigInt.parse(json));
+    } else if (json is Map<String, dynamic> && json.containsKey('data')) {
+      return HashEntity.fromBigInt(BigInt.parse(json['data']));
+    } else {
+      throw Exception('invalid format');
+    }
+  }
 
   String toJson() => toBigInt().toString();
 
