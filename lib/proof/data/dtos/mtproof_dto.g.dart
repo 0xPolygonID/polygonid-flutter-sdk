@@ -9,9 +9,8 @@ part of 'mtproof_dto.dart';
 MTProofEntity _$MTProofEntityFromJson(Map<String, dynamic> json) =>
     MTProofEntity(
       existence: json['existence'] as bool,
-      siblings: (json['siblings'] as List<dynamic>)
-          .map((e) => HashEntity.fromJson(e as String))
-          .toList(),
+      siblings:
+          (json['siblings'] as List<dynamic>).map(HashEntity.fromJson).toList(),
       nodeAux: json['node_aux'] == null
           ? null
           : NodeAuxEntity.fromJson(json['node_aux'] as Map<String, dynamic>),

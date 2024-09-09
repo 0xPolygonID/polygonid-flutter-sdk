@@ -7,10 +7,9 @@ part of 'node_entity.dart';
 // **************************************************************************
 
 NodeEntity _$NodeEntityFromJson(Map<String, dynamic> json) => NodeEntity(
-      children: (json['children'] as List<dynamic>)
-          .map((e) => HashEntity.fromJson(e as String))
-          .toList(),
-      hash: HashEntity.fromJson(json['hash'] as String),
+      children:
+          (json['children'] as List<dynamic>).map(HashEntity.fromJson).toList(),
+      hash: HashEntity.fromJson(json['hash']),
       type: $enumDecode(_$NodeTypeEnumMap, json['type']),
     );
 
