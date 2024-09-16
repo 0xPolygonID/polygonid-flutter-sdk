@@ -41,6 +41,7 @@ dependencies:
   ninja_prime: ^2.0.0
   ed25519_edwards: ^0.3.1
   secp256k1: ^0.3.0
+  flutter_rapidsnark: 0.0.1-alpha.2
 
 dev_dependencies:
   flutter_test:
