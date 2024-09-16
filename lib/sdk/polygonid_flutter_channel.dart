@@ -508,18 +508,22 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<List<ClaimEntity?>> getClaimsFromIden3Message(
-      {required Iden3MessageEntity message,
-      required String genesisDid,
-      BigInt? profileNonce,
-      required String privateKey,
-      Map<int, Map<String, dynamic>>? nonRevocationProofs}) {
+  Future<List<ClaimEntity?>> getClaimsFromIden3Message({
+    required Iden3MessageEntity message,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String privateKey,
+    Map<int, Map<String, dynamic>>? nonRevocationProofs,
+    List<CredentialSortOrder> sortOrder = const [],
+  }) {
     return _polygonIdSdk.iden3comm.getClaimsFromIden3Message(
-        message: message,
-        genesisDid: genesisDid,
-        profileNonce: profileNonce,
-        privateKey: privateKey,
-        nonRevocationProofs: nonRevocationProofs);
+      message: message,
+      genesisDid: genesisDid,
+      profileNonce: profileNonce,
+      privateKey: privateKey,
+      nonRevocationProofs: nonRevocationProofs,
+      sortOrder: sortOrder,
+    );
   }
 
   @override
