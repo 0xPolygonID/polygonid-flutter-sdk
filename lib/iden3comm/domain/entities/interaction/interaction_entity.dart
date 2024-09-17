@@ -7,6 +7,7 @@ class InteractionEntity extends InteractionBaseEntity {
   InteractionEntity({
     required super.id,
     required super.from,
+    required super.to,
     required this.genesisDid,
     required this.profileNonce,
     required super.type,
@@ -19,6 +20,7 @@ class InteractionEntity extends InteractionBaseEntity {
     return InteractionEntity(
       id: json['id'],
       from: json['from'],
+      to: json['to'],
       genesisDid: json['genesisDid'],
       profileNonce: BigInt.parse(json['profileNonce']),
       type: InteractionType.values.firstWhere((type) =>
@@ -48,6 +50,7 @@ class InteractionEntity extends InteractionBaseEntity {
           runtimeType == other.runtimeType &&
           id == other.id &&
           from == other.from &&
+          to == other.to &&
           genesisDid == other.genesisDid &&
           profileNonce == other.profileNonce &&
           type == other.type &&
