@@ -27,7 +27,7 @@ help: makefile
 ## init: Install missing dependencies.
 .PHONY: init
 init:
-	rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
+	rustup target add aarch64-apple-ios aarch64-apple-ios-sim
 	rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
 	@if [ $$(uname) == "Darwin" ] ; then cargo install cargo-lipo ; fi
 	cargo install cbindgen
@@ -39,16 +39,15 @@ init:
 # ##############################################################################
 
 ## all: Compile iOS, Android and bindings targets
-all: ios android bindings
+all: ios bindings
 
 ## ios: Compile the iOS universal library
-ios: target/universal/release/libexample.a
+ios:
+	cargo build --target aarch64-apple-ios --release && \
+	cargo build --target aarch64-apple-ios-sim --release
 
 target/universal/release/libexample.a: $(SOURCES) ndk-home
-	@if [ $$(uname) == "Darwin" ] ; then \
-		cargo lipo --release ; \
-		else echo "Skipping iOS compilation on $$(uname)" ; \
-	fi
+
 
 ## android: Compile the android targets (arm64, armv7 and i686)
 android: target/aarch64-linux-android/release/libexample.so target/armv7-linux-androideabi/release/libexample.so target/i686-linux-android/release/libexample.so target/x86_64-linux-android/release/libexample.so
