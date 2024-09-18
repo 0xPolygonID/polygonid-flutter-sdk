@@ -75,6 +75,7 @@ class UpdateInteractionUseCase
         timestamp: interactionToBeUpdated.timestamp,
         message: interactionToBeUpdated.message,
         state: param.state ?? interactionToBeUpdated.state,
+        to: interactionToBeUpdated.to,
       );
       return _addInteractionUseCase.execute(
           param: AddInteractionParam(
@@ -91,6 +92,7 @@ class UpdateInteractionUseCase
                 timestamp: interactionToBeUpdated.timestamp,
                 message: interactionToBeUpdated.message,
                 state: param.state ?? interactionToBeUpdated.state,
+                to: interactionToBeUpdated.to,
               ))
           .then((interaction) => _addInteractionUseCase.execute(
               param: AddInteractionParam(interaction: interaction)))
