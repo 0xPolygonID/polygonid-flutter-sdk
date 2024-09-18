@@ -5,6 +5,7 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/add_did_profile_info_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_did_profile_info_list_use_case.dart';
@@ -110,12 +111,14 @@ abstract class PolygonIdSdkIden3comm {
   ///
   /// The [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
-  Future<List<ClaimEntity?>> getClaimsFromIden3Message(
-      {required Iden3MessageEntity message,
-      required String genesisDid,
-      BigInt? profileNonce,
-      required String privateKey,
-      Map<int, Map<String, dynamic>>? nonRevocationProofs});
+  Future<List<ClaimEntity?>> getClaimsFromIden3Message({
+    required Iden3MessageEntity message,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String privateKey,
+    Map<int, Map<String, dynamic>>? nonRevocationProofs,
+    List<CredentialSortOrder> sortOrder,
+  });
 
   /// Get a list of [int] revocation nonces of claims stored in Polygon Id Sdk that fulfills
   /// the request from iden3comm message.
@@ -414,6 +417,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     BigInt? profileNonce,
     required String privateKey,
     Map<int, Map<String, dynamic>>? nonRevocationProofs,
+    List<CredentialSortOrder> sortOrder = const [],
   }) {
     _stacktraceManager.clearStacktrace();
     return _getIden3commClaimsUseCase.execute(
@@ -423,6 +427,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
       privateKey: privateKey,
       nonRevocationProofs: nonRevocationProofs ?? {},
+      credentialSortOrderList: sortOrder,
     ));
   }
 
