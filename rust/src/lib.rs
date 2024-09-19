@@ -31,27 +31,10 @@ use std::str::FromStr;
 use rustc_hex::{FromHex, ToHex};
 use std::panic::catch_unwind;
 
-/*lazy_static! {
- static ref B8: Point = Point {
-        x: Fr::from_str(
-            "5299619240641551281634865583518297030282874472190772894086521144482721001553",
-        )
-        .unwrap(),
-        y: Fr::from_str(
-            "16950150798460657717958625567821834550301663161624707787222815936182638968203",
-        )
-        .unwrap(),
-        // z: Fr::one(),
-    };
-}*/
-
 #[no_mangle]
 pub /*extern*/ fn pack_signature_internal(signature: *const c_char) -> *mut c_char {
     let signature_cstr = unsafe { CStr::from_ptr(signature) };
-    let signature_str = match signature_cstr.to_str() {
-        Err(_) => "there",
-        Ok(string) => string,
-    };
+    let signature_str = signature_cstr.to_str().unwrap_or_else(|_| "there");
     let signature_bytes_raw = signature_str.from_hex().unwrap();
     let mut signature_bytes: [u8; 64] = [0; 64];
     signature_bytes.copy_from_slice(&signature_bytes_raw);
@@ -59,48 +42,23 @@ pub /*extern*/ fn pack_signature_internal(signature: *const c_char) -> *mut c_ch
     let r_b8_bytes: [u8; 32] = *array_ref!(signature_bytes[..32], 0, 32);
     let s: BigInt = BigInt::from_bytes_le(Sign::Plus, &signature_bytes[32..]);
 
-    //let x_big = BigInt::parse_bytes(&r_b8_bytes[..16], 16).unwrap();
-    //let y_big = BigInt::parse_bytes(&r_b8_bytes[16..], 16).unwrap();
-    /*let (_, x_bytes) = x_big.to_bytes_le();
-    let (_, y_bytes) = y_big.to_bytes_le();
-
-    let mut x_16bytes: [u8; 16] = [0; 16];
-    let lenx = min(x_bytes.len(), x_16bytes.len());
-    x_16bytes[..lenx].copy_from_slice(&x_bytes[..lenx]);
-    b.append(&mut x_16bytes.to_vec());
-
-    let mut y_16bytes: [u8; 16] = [0; 16];
-    let leny = min(y_bytes.len(), y_16bytes.len());
-    y_16bytes[..leny].copy_from_slice(&y_bytes[..leny]);
-    b.append(&mut y_16bytes.to_vec());*/
-
-
-    //let x_string = to_hex_string(r_b8_bytes[..16].to_vec());
-    //let x_str = x_string.as_str();
-    //let y_string = to_hex_string(r_b8_bytes[16..].to_vec());
-
-    //let r_b8 = decompress_point(r_b8_bytes).unwrap();
-    //let y_str = y_string.as_str();
-    //let x_big = BigInt::parse_bytes(&r_b8_bytes[0..15], 16).unwrap();
-    //let y_big = BigInt::parse_bytes(&r_b8_bytes[15..32], 16).unwrap();
     let x_big: BigInt = BigInt::from_bytes_le(Sign::Plus, &r_b8_bytes[0..15]);
     let y_big: BigInt = BigInt::from_bytes_le(Sign::Plus, &r_b8_bytes[15..32]);
-    //let y_big = x_big.clone();
 
-    let x:Fr = Fr::from_str(
-            &x_big.to_string(),
-        ).unwrap();
+    let x: Fr = Fr::from_str(
+        &x_big.to_string(),
+    ).unwrap();
 
-    let y:Fr = Fr::from_str(
-            &y_big.to_string(),
-        ).unwrap();
+    let y: Fr = Fr::from_str(
+        &y_big.to_string(),
+    ).unwrap();
 
     let r_b8: Point = Point {
-        x: x,
-        y: y,
+        x,
+        y,
     };
 
-    let sig = Signature { r_b8 : r_b8.clone(), s };
+    let sig = Signature { r_b8: r_b8.clone(), s };
     let res = sig.compress();
 
     let hex_string = to_hex_string(res.to_vec());
@@ -110,22 +68,16 @@ pub /*extern*/ fn pack_signature_internal(signature: *const c_char) -> *mut c_ch
 #[no_mangle]
 pub extern fn pack_signature(signature: *const c_char) -> *mut c_char {
     let result = catch_unwind(|| pack_signature_internal(signature));
-    match result {
-        Ok(res) => res,
-        Err(e) => {
-            println!("pack_signature Rust Err: {:?}", e);
-            std::ptr::null_mut()
-        }
-    }
+    result.unwrap_or_else(|e| {
+        println!("pack_signature Rust Err: {:?}", e);
+        std::ptr::null_mut()
+    })
 }
 
 #[no_mangle]
 pub /*extern*/ fn unpack_signature_internal(compressed_signature: *const c_char) -> *mut c_char {
     let compressed_signature_cstr = unsafe { CStr::from_ptr(compressed_signature) };
-    let compressed_signature_str = match compressed_signature_cstr.to_str() {
-        Err(_) => "there",
-        Ok(string) => string,
-    };
+    let compressed_signature_str = compressed_signature_cstr.to_str().unwrap_or_else(|_| "there");
     let compressed_signature_bytes_raw = compressed_signature_str.from_hex().unwrap();
     let mut compressed_signature_bytes: [u8; 64] = [0; 64];
     compressed_signature_bytes.copy_from_slice(&compressed_signature_bytes_raw);
@@ -166,27 +118,18 @@ pub /*extern*/ fn unpack_signature_internal(compressed_signature: *const c_char)
 pub extern fn unpack_signature(compressed_signature: *const c_char) -> *mut c_char {
     println!("Rust unpack_signature");
     let result = catch_unwind(|| unpack_signature_internal(compressed_signature));
-    match result {
-        Ok(res) => res,
-        Err(e) => {
-            println!("unpack_signature Rust Err: {:?}", e);
-            std::ptr::null_mut()
-        }
-    }
+    result.unwrap_or_else(|e| {
+        println!("unpack_signature Rust Err: {:?}", e);
+        std::ptr::null_mut()
+    })
 }
 
 #[no_mangle]
 pub /*extern*/ fn pack_point_internal(point_x: *const c_char, point_y: *const c_char) -> *mut c_char {
     let point_x_cstr = unsafe { CStr::from_ptr(point_x) };
-    let point_x_str = match point_x_cstr.to_str() {
-        Err(_) => "there",
-        Ok(string) => string,
-    };
+    let point_x_str = point_x_cstr.to_str().unwrap_or_else(|_| "there");
     let point_y_cstr = unsafe { CStr::from_ptr(point_y) };
-    let point_y_str = match point_y_cstr.to_str() {
-        Err(_) => "there",
-        Ok(string) => string,
-    };
+    let point_y_str = point_y_cstr.to_str().unwrap_or_else(|_| "there");
     let p: Point = Point {
         x: Fr::from_str(point_x_str).unwrap(),
         y: Fr::from_str(point_y_str).unwrap(),
@@ -200,13 +143,10 @@ pub /*extern*/ fn pack_point_internal(point_x: *const c_char, point_y: *const c_
 #[no_mangle]
 pub extern fn pack_point(point_x: *const c_char, point_y: *const c_char) -> *mut c_char {
     let result = catch_unwind(|| pack_point_internal(point_x, point_y));
-    match result {
-        Ok(res) => res,
-        Err(e) => {
-            println!("pack_point Rust Err: {:?}", e);
-            std::ptr::null_mut()
-        }
-    }
+    result.unwrap_or_else(|e| {
+        println!("pack_point Rust Err: {:?}", e);
+        std::ptr::null_mut()
+    })
 }
 
 pub fn to_hex_string(bytes: Vec<u8>) -> String {
@@ -217,7 +157,7 @@ pub fn to_hex_string(bytes: Vec<u8>) -> String {
 }
 
 #[no_mangle]
-pub /*extern*/ fn unpack_point_internal(compressed_point: *const c_char) ->  *mut c_char {
+pub /*extern*/ fn unpack_point_internal(compressed_point: *const c_char) -> *mut c_char {
     let compressed_point_str = unsafe { CStr::from_ptr(compressed_point) }.to_str().unwrap();
     let y_bytes_raw = compressed_point_str.from_hex().unwrap();
     let mut y_bytes: [u8; 32] = [0; 32];
@@ -235,13 +175,10 @@ pub /*extern*/ fn unpack_point_internal(compressed_point: *const c_char) ->  *mu
 #[no_mangle]
 pub extern fn unpack_point(compressed_point: *const c_char) -> *mut c_char {
     let result = catch_unwind(|| unpack_point_internal(compressed_point));
-    match result {
-        Ok(res) => res,
-        Err(e) => {
-            println!("unpack_point Rust Err: {:?}", e);
-            std::ptr::null_mut()
-        }
-    }
+    result.unwrap_or_else(|e| {
+        println!("unpack_point Rust Err: {:?}", e);
+        std::ptr::null_mut()
+    })
 }
 
 #[no_mangle]
@@ -265,13 +202,10 @@ pub /*extern*/ fn prv2pub_internal(private_key: *const c_char) -> *mut c_char {
 #[no_mangle]
 pub extern fn prv2pub(private_key: *const c_char) -> *mut c_char {
     let result = catch_unwind(|| prv2pub_internal(private_key));
-    match result {
-        Ok(res) => res,
-        Err(e) => {
-            println!("prv2pub Rust Err: {:?}", e);
-            std::ptr::null_mut()
-        }
-    }
+    result.unwrap_or_else(|e| {
+        println!("prv2pub Rust Err: {:?}", e);
+        std::ptr::null_mut()
+    })
 }
 
 #[no_mangle]
@@ -293,13 +227,10 @@ pub /*extern*/ fn sign_poseidon_internal(private_key: *const c_char, msg: *const
 #[no_mangle]
 pub extern fn sign_poseidon(private_key: *const c_char, msg: *const c_char) -> *mut c_char {
     let result = catch_unwind(|| sign_poseidon_internal(private_key, msg));
-    match result {
-        Ok(res) => res,
-        Err(e) => {
-            println!("sign_poseidon Rust Err: {:?}", e);
-            std::ptr::null_mut()
-        }
-    }
+    result.unwrap_or_else(|e| {
+        println!("sign_poseidon Rust Err: {:?}", e);
+        std::ptr::null_mut()
+    })
 }
 
 fn bytes_from_str(s: *const c_char) -> Result<Vec<u8>, String> {
@@ -322,8 +253,10 @@ fn bigint_from_str(s: *const c_char) -> Result<BigInt, String> {
 
 fn priv_key(private_key: *const c_char) -> Result<PrivateKey, String> {
     let pk_bytes = bytes_from_str(private_key).map_err(|e| format!("private key error: {}", e))?;
-    Ok(PrivateKey { key: pk_bytes.try_into()
-        .map_err(|_| "private key should be exactly 32 bytes long".to_owned())? })
+    Ok(PrivateKey {
+        key: pk_bytes.try_into()
+            .map_err(|_| "private key should be exactly 32 bytes long".to_owned())?
+    })
 }
 
 fn unpack_sig(compressed_signature: *const c_char) -> Result<Signature, String> {
@@ -335,7 +268,7 @@ fn unpack_sig(compressed_signature: *const c_char) -> Result<Signature, String> 
 }
 
 #[no_mangle]
-pub fn verify_poseidon_internal(private_key: *const c_char, compressed_signature: *const c_char, message: *const c_char) ->  *mut c_char {
+pub fn verify_poseidon_internal(private_key: *const c_char, compressed_signature: *const c_char, message: *const c_char) -> *mut c_char {
     let pk = priv_key(private_key)
         .unwrap_or_else(|err_msg| panic!("{}", err_msg));
     let sig = unpack_sig(compressed_signature)
@@ -354,19 +287,16 @@ pub fn verify_poseidon_internal(private_key: *const c_char, compressed_signature
 #[no_mangle]
 pub extern fn verify_poseidon(private_key: *const c_char, compressed_signature: *const c_char, message: *const c_char) -> *mut c_char {
     let result = catch_unwind(|| verify_poseidon_internal(private_key, compressed_signature, message));
-    match result {
-        Ok(res) => res,
-        Err(e) => {
-            println!("verify_poseidon Rust Err: {:?}", e);
-            std::ptr::null_mut()
-        }
-    }
+    result.unwrap_or_else(|e| {
+        println!("verify_poseidon Rust Err: {:?}", e);
+        std::ptr::null_mut()
+    })
 }
 
 #[no_mangle]
 pub extern fn cstring_free(str: *mut c_char) {
     unsafe {
-        if str.is_null() { return }
+        if str.is_null() { return; }
         drop(CString::from_raw(str));
     };
 }
@@ -389,7 +319,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "private key error: hex decode error: Invalid character 'p' at position 0")]
+    #[should_panic(
+        expected = "private key error: hex decode error: Invalid character 'p' at position 0"
+    )]
     fn test_verify_poseidon_internal_with_incorrect_hex_private_key_should_panic() {
         let pk = CString::new("pk").unwrap();
         verify_poseidon_internal(pk.into_raw(), null(), null());
@@ -434,7 +366,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "message parse error: bigint parse error: invalid digit found in string")]
+    #[should_panic(
+        expected = "message parse error: bigint parse error: invalid digit found in string"
+    )]
     fn test_verify_poseidon_internal_invalid_msg() {
         let pk = CString::new("459a964f864b613e0fae29bd5395cb7e5cb16d9501d898a5630d25dc56ab87aa").unwrap();
         let sig = CString::new("aac24e561679c387a075ea22a153d8d060ee751555da44484f96ef3721537c9cf436f9668439cc183382a0ec1445ca594c8b626041bba1c28870c318e41cb307").unwrap();

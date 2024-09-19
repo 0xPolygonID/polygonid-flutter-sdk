@@ -20,11 +20,11 @@ gw_calc_witness(const char *inputs,
 			    void **wtns_data, size_t *wtns_len,
 				const gw_status_t *status);
 
-void
+/*void
 gw_free_status(gw_status_t *status) {
   if (status->error_msg != NULL) {
 	free(status->error_msg);
   }
-}
+}*/
 
 #endif // RUST_GRAPH_WITNESS_H

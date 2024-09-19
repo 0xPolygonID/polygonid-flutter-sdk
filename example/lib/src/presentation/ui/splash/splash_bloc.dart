@@ -1,11 +1,14 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/circuits_to_download_param.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/splash_event.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/splash/splash_state.dart';
+import 'package:path_provider/path_provider.dart';
 
 class SplashBloc extends Bloc<SplashEvent, SplashState> {
   SplashBloc() : super(SplashState.init()) {
@@ -34,6 +37,15 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
         ),
       ],
     );
+
+    // TODO Remove
+    const graphPath = 'assets/graph_authV2.bin';
+    final appDir = await getApplicationDocumentsDirectory();
+    rootBundle.load(graphPath).then((data) {
+      final graphFile = appDir.path + '/graph_authV2.bin';
+      final buffer = data.buffer.asUint8List();
+      File(graphFile).writeAsBytes(buffer);
+    });
 
     _subscription = stream.listen((downloadInfo) {
       add(DownloadProgressSplashEvent(downloadInfo));

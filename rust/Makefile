@@ -46,26 +46,13 @@ ios:
 	cargo build --target aarch64-apple-ios --release && \
 	cargo build --target aarch64-apple-ios-sim --release
 
-target/universal/release/libexample.a: $(SOURCES) ndk-home
-
-
 ## android: Compile the android targets (arm64, armv7 and i686)
-android: target/aarch64-linux-android/release/libexample.so target/armv7-linux-androideabi/release/libexample.so target/i686-linux-android/release/libexample.so target/x86_64-linux-android/release/libexample.so
+android: target/aarch64-linux-android/release/libexample.so target/x86_64-linux-android/release/libexample.so
 
 target/aarch64-linux-android/release/libexample.so: $(SOURCES) ndk-home
 	CC_aarch64_linux_android=$(ANDROID_AARCH64_LINKER) \
 	CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$(ANDROID_AARCH64_LINKER) \
 		cargo build --target aarch64-linux-android --release
-
-target/armv7-linux-androideabi/release/libexample.so: $(SOURCES) ndk-home
-	CC_armv7_linux_androideabi=$(ANDROID_ARMV7_LINKER) \
-	CARGO_TARGET_ARMV7_LINUX_ANDROIDEABI_LINKER=$(ANDROID_ARMV7_LINKER) \
-		cargo build --target armv7-linux-androideabi --release
-
-target/i686-linux-android/release/libexample.so: $(SOURCES) ndk-home
-	CC_i686_linux_android=$(ANDROID_I686_LINKER) \
-	CARGO_TARGET_I686_LINUX_ANDROID_LINKER=$(ANDROID_I686_LINKER) \
-		cargo  build --target i686-linux-android --release
 
 target/x86_64-linux-android/release/libexample.so: $(SOURCES) ndk-home
 	CC_x86_64_linux_android=$(ANDROID_X86_64_LINKER) \

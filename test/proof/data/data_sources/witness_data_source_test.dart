@@ -17,7 +17,7 @@ WitnessDataSource dataSource = WitnessDataSource(witnessIsolatesWrapper);
 
 Uint8List wasm = Uint8List(32);
 Uint8List json = Uint8List(32);
-final param = WitnessParam(wasm: wasm, json: json);
+final param = WitnessParam(graph: wasm, inputs: json);
 
 Uint8List mockResponse = Uint8List(32);
 
@@ -51,8 +51,8 @@ main() {
               verify(witnessIsolatesWrapper.computeWitnessAuth(captureAny))
                   .captured
                   .first;
-          expect(captured.wasm, wasm);
-          expect(captured.json, json);
+          expect(captured.graph, wasm);
+          expect(captured.inputs, json);
         },
       );
 
@@ -68,8 +68,8 @@ main() {
               verify(witnessIsolatesWrapper.computeWitnessMtp(captureAny))
                   .captured
                   .first;
-          expect(captured.wasm, wasm);
-          expect(captured.json, json);
+          expect(captured.graph, wasm);
+          expect(captured.inputs, json);
         },
       );
 
@@ -85,8 +85,8 @@ main() {
               verify(witnessIsolatesWrapper.computeWitnessSig(captureAny))
                   .captured
                   .first;
-          expect(captured.wasm, wasm);
-          expect(captured.json, json);
+          expect(captured.graph, wasm);
+          expect(captured.inputs, json);
         },
       );
     },

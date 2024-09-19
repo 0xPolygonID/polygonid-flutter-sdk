@@ -36,7 +36,6 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart'
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/gist_proof_cache.dart';
-import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/auth_v2/witness_auth.dart';
 import 'package:web3dart/contracts.dart';
 
 class ProofRepositoryImpl extends ProofRepository {
@@ -82,14 +81,14 @@ class ProofRepositoryImpl extends ProofRepository {
 
   @override
   Future<CircuitDataEntity> loadCircuitFiles(String circuitId) async {
-    final circuitDatFile =
-        await _circuitsFilesDataSource.loadCircuitDatFile(circuitId);
+    final circuitGraphBinFile =
+        await _circuitsFilesDataSource.loadCircuitGraphBinFile(circuitId);
     final zkeyFilePath = await _circuitsFilesDataSource.getZkeyFilePath(
       circuitId,
     );
     final circuitDataEntity = CircuitDataEntity(
       circuitId,
-      circuitDatFile,
+      circuitGraphBinFile,
       zkeyFilePath,
     );
     return circuitDataEntity;
@@ -211,8 +210,10 @@ class ProofRepositoryImpl extends ProofRepository {
     required CircuitDataEntity circuitData,
     required Uint8List atomicQueryInputs,
   }) async {
-    WitnessParam witnessParam =
-        WitnessParam(wasm: circuitData.datFile, json: atomicQueryInputs);
+    final witnessParam = WitnessParam(
+      inputs: atomicQueryInputs,
+      graph: circuitData.graphBinFile,
+    );
 
     _stacktraceManager.addTrace(
         "[calculateWitness] circuitData.circuitId ${circuitData.circuitId}");

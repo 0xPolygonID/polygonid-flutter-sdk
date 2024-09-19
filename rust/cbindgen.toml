@@ -1,5 +1,5 @@
 language = "C"
-autogen_warning = "// NOTE: Append the lines below to ios/Classes/HermezPlugin.h"
+autogen_warning = "// NOTE: Append the lines below to ios/Classes/<your>Plugin.h"
 #namespace = "ffi"
 #include_guard = "CBINDGEN_BINDINGS_H"
 

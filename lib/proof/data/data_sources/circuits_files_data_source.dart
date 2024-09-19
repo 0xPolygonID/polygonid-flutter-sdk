@@ -11,9 +11,9 @@ class CircuitsFilesDataSource {
 
   CircuitsFilesDataSource(this.directory);
 
-  Future<Uint8List> loadCircuitDatFile(String circuitId) async {
+  Future<Uint8List> loadCircuitGraphBinFile(String circuitId) async {
     try {
-      final circuitDatFileName = '$circuitId.dat';
+      final circuitDatFileName = 'graph_$circuitId.bin';
       final circuitDatFilePath = '${directory.path}/$circuitDatFileName';
       final circuitDatFile = File(circuitDatFilePath);
 

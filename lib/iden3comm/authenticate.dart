@@ -387,14 +387,14 @@ class Authenticate {
       final appDir = await getApplicationDocumentsDirectory();
       final circuitsDataSource = CircuitsFilesDataSource(appDir);
 
-      final circuitDatFileBytes = await circuitsDataSource
-          .loadCircuitDatFile(proofRequest.scope.circuitId);
+      final circuitGraphFileBytes = await circuitsDataSource
+          .loadCircuitGraphBinFile(proofRequest.scope.circuitId);
       final zkeyFilePath = await circuitsDataSource
           .getZkeyFilePath(proofRequest.scope.circuitId);
 
       CircuitDataEntity circuitDataEntity = CircuitDataEntity(
         proofRequest.scope.circuitId,
-        circuitDatFileBytes,
+        circuitGraphFileBytes,
         zkeyFilePath,
       );
 
@@ -1048,7 +1048,7 @@ class Authenticate {
     final circuitsDataSource = CircuitsFilesDataSource(appDir);
 
     final circuitDatFileBytes =
-        await circuitsDataSource.loadCircuitDatFile('authV2');
+        await circuitsDataSource.loadCircuitGraphBinFile('authV2');
     final zkeyFilePath = await circuitsDataSource.getZkeyFilePath('authV2');
 
     CircuitDataEntity circuitDataEntity = CircuitDataEntity(

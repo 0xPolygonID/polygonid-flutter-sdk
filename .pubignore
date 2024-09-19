@@ -1,0 +1,14 @@
+.dart_tool/
+.github/
+.idea/
+build/
+coverage/
+example/
+libs/
+rust/
+test/
+.gitguardian.uml
+.gitignore
+build.yaml
+codecov.yml
+coverage.sh
