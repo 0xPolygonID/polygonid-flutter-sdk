@@ -39,7 +39,7 @@ init:
 # ##############################################################################
 
 ## all: Compile iOS, Android and bindings targets
-all: ios bindings
+all: android ios bindings
 
 ## ios: Compile the iOS universal library
 ios:

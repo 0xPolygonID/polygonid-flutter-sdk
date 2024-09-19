@@ -1,5 +1,4 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_smt_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
@@ -7,14 +6,16 @@ import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/smt_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/node_aux_entity.dart';
+import 'package:poseidon/poseidon.dart';
 
 class SMTDataSource {
   final HexMapper _hexMapper;
-  final LibBabyJubJubDataSource _libBabyjubjubDataSource;
   final StorageSMTDataSource _storageSMTDataSource;
 
-  SMTDataSource(this._hexMapper, this._libBabyjubjubDataSource,
-      this._storageSMTDataSource);
+  SMTDataSource(
+    this._hexMapper,
+    this._storageSMTDataSource,
+  );
 
   Future<void> createSMT(
       {required int maxLevels,
@@ -122,9 +123,11 @@ class SMTDataSource {
           final nextKey = await _addLeaf(newLeaf, node.children[1], level + 1,
               path, storeName, did, privateKey);
           final newNodeChildren = [node.children[0], nextKey];
-          final nodeHashData = await _libBabyjubjubDataSource.hashPoseidon2(
-              node.children[0].toString(), nextKey.toString());
-          final nodeHash = HashEntity.fromBigInt(BigInt.parse(nodeHashData));
+          final nodeHashData = poseidon2([
+            node.children[0].toBigInt(),
+            nextKey.toBigInt(),
+          ]);
+          final nodeHash = HashEntity.fromBigInt(nodeHashData);
           newNodeMiddle = NodeEntity(
               children: newNodeChildren, hash: nodeHash, type: NodeType.middle);
         } else {
@@ -132,9 +135,11 @@ class SMTDataSource {
           final nextKey = await _addLeaf(newLeaf, node.children[0], level + 1,
               path, storeName, did, privateKey);
           final newNodeChildren = [nextKey, node.children[1]];
-          final nodeHashData = await _libBabyjubjubDataSource.hashPoseidon2(
-              nextKey.toString(), node.children[1].toString());
-          final nodeHash = HashEntity.fromBigInt(BigInt.parse(nodeHashData));
+          final nodeHashData = poseidon2([
+            nextKey.toBigInt(),
+            node.children[1].toBigInt(),
+          ]);
+          final nodeHash = HashEntity.fromBigInt(nodeHashData);
           newNodeMiddle = NodeEntity(
               children: newNodeChildren, hash: nodeHash, type: NodeType.middle);
         }
@@ -213,9 +218,11 @@ class SMTDataSource {
         // go left
         newNodeChildren = [nextKey, HashEntity.zero()];
       }
-      final nodeHashData = await _libBabyjubjubDataSource.hashPoseidon2(
-          newNodeChildren[0].toString(), newNodeChildren[1].toString());
-      final nodeHash = HashEntity.fromBigInt(BigInt.parse(nodeHashData));
+      final nodeHashData = poseidon2([
+        newNodeChildren[0].toBigInt(),
+        newNodeChildren[1].toBigInt(),
+      ]);
+      final nodeHash = HashEntity.fromBigInt(nodeHashData);
       final NodeEntity newNodeMiddle = NodeEntity(
           children: newNodeChildren, hash: nodeHash, type: NodeType.middle);
       return _addNode(newNodeMiddle, storeName, did, privateKey);
@@ -229,9 +236,11 @@ class SMTDataSource {
     } else {
       newNodeChildren = [newLeafKey, oldLeafKey];
     }
-    final nodeHashData = await _libBabyjubjubDataSource.hashPoseidon2(
-        newNodeChildren[0].toString(), newNodeChildren[1].toString());
-    final nodeHash = HashEntity.fromBigInt(BigInt.parse(nodeHashData));
+    final nodeHashData = poseidon2([
+      newNodeChildren[0].toBigInt(),
+      newNodeChildren[1].toBigInt(),
+    ]);
+    final nodeHash = HashEntity.fromBigInt(nodeHashData);
     final NodeEntity newNodeMiddle = NodeEntity(
         children: newNodeChildren, hash: nodeHash, type: NodeType.middle);
     await _addNode(newLeaf, storeName, did, privateKey);
@@ -327,9 +336,11 @@ class SMTDataSource {
       } else {
         newNodeChildren = [midKey, proof.siblings[level]];
       }
-      final nodeHashData = await _libBabyjubjubDataSource.hashPoseidon2(
-          newNodeChildren[0].toString(), newNodeChildren[1].toString());
-      midKey = HashEntity.fromBigInt(BigInt.parse(nodeHashData));
+      final nodeHashData = poseidon2([
+        newNodeChildren[0].toBigInt(),
+        newNodeChildren[1].toBigInt(),
+      ]);
+      midKey = HashEntity.fromBigInt(nodeHashData);
     }
 
     return Future.value(midKey);

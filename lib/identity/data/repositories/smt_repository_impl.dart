@@ -1,4 +1,3 @@
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/smt_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_smt_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
@@ -9,18 +8,17 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
+import 'package:poseidon/poseidon.dart';
 
 class SMTRepositoryImpl implements SMTRepository {
   final SMTDataSource _smtDataSource;
   final StorageSMTDataSource _storageSMTDataSource;
-  final LibBabyJubJubDataSource _libBabyJubJubDataSource;
   final TreeTypeMapper _treeTypeMapper;
   final TreeStateMapper _treeStateMapper;
 
   SMTRepositoryImpl(
     this._smtDataSource,
     this._storageSMTDataSource,
-    this._libBabyJubJubDataSource,
     this._treeTypeMapper,
     this._treeStateMapper,
   );
@@ -192,8 +190,12 @@ class SMTRepositoryImpl implements SMTRepository {
     required String claims,
     required String revocation,
     required String roots,
-  }) {
-    return _libBabyJubJubDataSource.hashPoseidon3(claims, revocation, roots);
+  }) async {
+    return poseidon3([
+      BigInt.parse(claims),
+      BigInt.parse(revocation),
+      BigInt.parse(roots),
+    ]).toString();
   }
 
   @override

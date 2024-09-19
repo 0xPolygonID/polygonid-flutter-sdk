@@ -152,9 +152,3 @@ String packSignature(Uint8List signature) {
   final sigString = Uint8ArrayUtils.uint8ListToString(signature);
   return bjjLib.packSignature(sigString);
 }
-
-String hashPoseidon(
-    String claimsTreeRoot, String revocationTree, String rootsTreeRoot) {
-  BabyjubjubLib bjjLib = BabyjubjubLib();
-  return bjjLib.hashPoseidon(claimsTreeRoot, revocationTree, rootsTreeRoot);
-}

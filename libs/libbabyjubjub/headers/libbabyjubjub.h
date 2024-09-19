@@ -10,18 +10,6 @@ char *unpack_point(const char *compressed_point);
 
 char *prv2pub(const char *private_key);
 
-char *poseidon_hash(const char *input);
-
-char *poseidon_hash2(const char *in1, const char *in2);
-
-char *poseidon_hash3(const char *in1, const char *in2, const char *in3);
-
-char *poseidon_hash4(const char *in1, const char *in2, const char *in3, const char *in4);
-
-char *hash_poseidon(const char *claims_tree,
-                    const char *revocation_tree,
-                    const char *roots_tree_root);
-
 char *sign_poseidon(const char *private_key, const char *msg);
 
 char *verify_poseidon(const char *private_key,

@@ -70,14 +70,4 @@ class BjjWallet {
     final bjjWallet = BjjWallet(privateBjjKey!);
     return bjjWallet;
   }
-
-  /// Hash message with poseidon
-  /// @param [String] messageStr - message to hash
-  /// @returns [String] - hash poseidon
-  String hashMessage(
-      String claimsTreeRoot, String revocationTree, String rootsTreeRoot) {
-    final hash = eddsaBabyJub.hashPoseidon(
-        claimsTreeRoot, revocationTree, rootsTreeRoot);
-    return hash;
-  }
 }

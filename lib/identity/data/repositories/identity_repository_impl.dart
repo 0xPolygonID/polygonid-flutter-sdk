@@ -7,7 +7,6 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.d
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
@@ -28,6 +27,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.d
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
+import 'package:poseidon/poseidon.dart';
 
 class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
@@ -35,7 +35,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final StorageIdentityDataSource _storageIdentityDataSource;
   final RPCDataSource _rpcDataSource;
   final LocalContractFilesDataSource _localContractFilesDataSource;
-  final LibBabyJubJubDataSource _libBabyJubJubDataSource;
   final LibPolygonIdCoreIdentityDataSource _libPolygonIdCoreIdentityDataSource;
   final EncryptionDbDataSource _encryptionDbDataSource;
   final DestinationPathDataSource _destinationPathDataSource;
@@ -51,7 +50,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._storageIdentityDataSource,
     this._rpcDataSource,
     this._localContractFilesDataSource,
-    this._libBabyJubJubDataSource,
     this._libPolygonIdCoreIdentityDataSource,
     this._encryptionDbDataSource,
     this._destinationPathDataSource,
@@ -80,28 +78,33 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
   @override
   Future<NodeEntity> getAuthClaimNode({required List<String> children}) async {
-    String hashIndex = await _libBabyJubJubDataSource.hashPoseidon4(
-      children[0],
-      children[1],
-      children[2],
-      children[3],
-    );
-    String hashValue = await _libBabyJubJubDataSource.hashPoseidon4(
-      children[4],
-      children[5],
-      children[6],
-      children[7],
-    );
-    String hashClaimNode = await _libBabyJubJubDataSource.hashPoseidon3(
-        hashIndex, hashValue, BigInt.one.toString());
+    BigInt hashIndex = poseidon4([
+      BigInt.parse(children[0]),
+      BigInt.parse(children[1]),
+      BigInt.parse(children[2]),
+      BigInt.parse(children[3]),
+    ]);
+    BigInt hashValue = poseidon4([
+      BigInt.parse(children[4]),
+      BigInt.parse(children[5]),
+      BigInt.parse(children[6]),
+      BigInt.parse(children[7]),
+    ]);
+
+    BigInt hashClaimNode = poseidon3([
+      hashIndex,
+      hashValue,
+      BigInt.one,
+    ]);
     NodeEntity authClaimNode = NodeEntity(
-        children: [
-          HashEntity.fromBigInt(BigInt.parse(hashIndex)),
-          HashEntity.fromBigInt(BigInt.parse(hashValue)),
-          HashEntity.fromBigInt(BigInt.one),
-        ],
-        hash: HashEntity.fromBigInt(BigInt.parse(hashClaimNode)),
-        type: NodeType.leaf);
+      children: [
+        HashEntity.fromBigInt(hashIndex),
+        HashEntity.fromBigInt(hashValue),
+        HashEntity.fromBigInt(BigInt.one),
+      ],
+      hash: HashEntity.fromBigInt(hashClaimNode),
+      type: NodeType.leaf,
+    );
     return authClaimNode;
   }
 
