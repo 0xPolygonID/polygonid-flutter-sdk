@@ -4,7 +4,7 @@ group 'io.github.0xpolygonid.polygonid_flutter_sdk'
 version sdkVersion
 
 buildscript {
-    ext.kotlin_version = '1.8.0'
+    ext.kotlin_version = '1.9.20'
     repositories {
         google()
         maven { url "https://jitpack.io" }
@@ -31,7 +31,7 @@ apply plugin: 'maven-publish'
 // apply plugin: 'signing'
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 34
     ndkVersion "26.3.11579264"
 
     compileOptions {

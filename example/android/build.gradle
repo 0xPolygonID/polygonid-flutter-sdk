@@ -1,6 +1,6 @@
 buildscript {
-    ext.kotlin_version = '1.8.0'
-    ext.gradle_tools = '7.3.1'
+    ext.kotlin_version = '1.9.20'
+    ext.gradle_tools = '8.1.0'
     repositories {
         google()
         maven { url "https://jitpack.io" }
