@@ -17,7 +17,7 @@ dependencies:
   hex: ^0.2.0
   web3dart: ">=2.6.1"
   web_socket_channel: ">=2.2.0"
-  ffigen: ^11.0.0
+  ffigen: ^14.0.1
   json_annotation: ^4.6.0
   equatable: ^2.0.3
   crypto: ^3.0.1
@@ -59,12 +59,12 @@ dev_dependencies:
   web3dart_builders: 0.0.7
 
 ffigen:
-  name: NativeWitnessLinkedMultiQuery10Lib
-  description: Bindings to `ios/Classes/witnesscalc_linkedMultiQuery10.h`.
-  output: 'lib/proof/libs/witnesscalc/linked_multi_query_10/native_witness_linked_multi_query_10.dart'
-  headers:
-      entry-points:
-      - 'ios/Classes/witnesscalc_linkedMultiQuery10.h'
+  #name: NativeWitnessLinkedMultiQuery10Lib
+  #description: Bindings to `ios/Classes/witnesscalc_linkedMultiQuery10.h`.
+  #output: 'lib/proof/libs/witnesscalc/linked_multi_query_10/native_witness_linked_multi_query_10.dart'
+  #headers:
+  #    entry-points:
+  #    - 'ios/Classes/witnesscalc_linkedMultiQuery10.h'
 
   #name: NativeWitnessV3OnchainLib
   #description: Bindings to `ios/Classes/witnesscalc_credentialAtomicQueryV3OnChain.h`.
@@ -80,12 +80,12 @@ ffigen:
   #  entry-points:
   #    - 'ios/Classes/witnesscalc_credentialAtomicQueryV3.h'
 
-  #name: NativePolygonIdCoreLib
-  #description: Bindings to `ios/Classes/libpolygonid.h`.
-  #output: 'lib/common/libs/polygonidcore/native_polygonidcore.dart'
-  #headers:
-  #  entry-points:
-  #    - 'ios/Classes/libpolygonid.h'
+  name: NativePolygonIdCoreLib
+  description: Bindings to `ios/Classes/libpolygonid.h`.
+  output: 'lib/common/libs/polygonidcore/native_polygonidcore.dart'
+  headers:
+    entry-points:
+      - 'ios/Classes/libpolygonid.h'
 
   # name: WitnessMtpLib
   # description: Bindings to `ios/Classes/witnesscalc_credentialAtomicQueryMTPV2.h`.

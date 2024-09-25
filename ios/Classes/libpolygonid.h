@@ -26,14 +26,14 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 
 typedef enum
 {
-	PLGNSTATUSCODE_ERROR,
-	PLGNSTATUSCODE_NIL_POINTER,
+    PLGNSTATUSCODE_ERROR,
+    PLGNSTATUSCODE_NIL_POINTER,
 } PLGNStatusCode;
 
 typedef struct _PLGNStatus
 {
-	PLGNStatusCode status;
-	char *error_msg;
+    PLGNStatusCode status;
+    char *error_msg;
 } PLGNStatus;
 
 #line 1 "cgo-generated-wrapper"
@@ -99,6 +99,7 @@ extern GoUint8 PLGNAuthV2InputsMarshal(char** jsonResponse, char* in, PLGNStatus
 //
 extern GoUint8 PLGNCalculateGenesisID(char** jsonResponse, char* in, PLGNStatus** status);
 extern GoUint8 PLGNNewGenesisID(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+extern GoUint8 PLGNNewGenesisIDFromEth(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern GoUint8 PLGNCreateClaim(char** jsonResponse, char* in, PLGNStatus** status);
 
 // PLGNIDToInt returns the ID as a big int string
