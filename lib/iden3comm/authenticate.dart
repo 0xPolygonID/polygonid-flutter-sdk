@@ -57,7 +57,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exce
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/jwz_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
@@ -87,6 +86,8 @@ import 'package:polygonid_flutter_sdk/proof/gist_proof_cache.dart';
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/polygonidcore/pidcore_proof.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
+import 'package:poseidon/constants/p1.dart';
+import 'package:poseidon/poseidon.dart';
 import 'package:sembast/sembast.dart';
 import 'package:uuid/uuid.dart';
 import 'package:web3dart/crypto.dart';
@@ -1020,11 +1021,9 @@ class Authenticate {
     // Endianness
     BigInt endian = Uint8ArrayUtils.leBuff2int(sha);
 
-    String qNormalized = endian.qNormalize().toString();
+    BigInt qNormalized = endian.qNormalize();
 
-    var libBabyJubJub = getItSdk<LibBabyJubJubDataSource>();
-
-    String authChallenge = await libBabyJubJub.hashPoseidon(qNormalized);
+    String authChallenge = poseidon1([qNormalized]).toString();
 
     String signature = await signMessage(
       privateKey: privateKeyBytes,
@@ -1133,28 +1132,30 @@ class Authenticate {
       publicKey: publicKey,
     );
     authClaim = List.from(jsonDecode(issuedAuthClaim));
-    var libBabyJubJub = getItSdk<LibBabyJubJubDataSource>();
-    String hashIndex = await libBabyJubJub.hashPoseidon4(
-      authClaim[0],
-      authClaim[1],
-      authClaim[2],
-      authClaim[3],
-    );
-    String hashValue = await libBabyJubJub.hashPoseidon4(
-      authClaim[4],
-      authClaim[5],
-      authClaim[6],
-      authClaim[7],
-    );
-    String hashClaimNode = await libBabyJubJub.hashPoseidon3(
-        hashIndex, hashValue, BigInt.one.toString());
+    BigInt hashIndex = poseidon4([
+      BigInt.parse(authClaim[0]),
+      BigInt.parse(authClaim[1]),
+      BigInt.parse(authClaim[2]),
+      BigInt.parse(authClaim[3]),
+    ]);
+    BigInt hashValue = poseidon4([
+      BigInt.parse(authClaim[4]),
+      BigInt.parse(authClaim[5]),
+      BigInt.parse(authClaim[6]),
+      BigInt.parse(authClaim[7]),
+    ]);
+    BigInt hashClaimNode = poseidon3([
+      hashIndex,
+      hashValue,
+      BigInt.one,
+    ]);
     NodeEntity authClaimNode = NodeEntity(
       children: [
-        HashEntity.fromBigInt(BigInt.parse(hashIndex)),
-        HashEntity.fromBigInt(BigInt.parse(hashValue)),
+        HashEntity.fromBigInt(hashIndex),
+        HashEntity.fromBigInt(hashValue),
         HashEntity.fromBigInt(BigInt.one),
       ],
-      hash: HashEntity.fromBigInt(BigInt.parse(hashClaimNode)),
+      hash: HashEntity.fromBigInt(hashClaimNode),
       type: NodeType.leaf,
     );
 

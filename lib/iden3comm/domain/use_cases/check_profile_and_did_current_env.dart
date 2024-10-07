@@ -39,9 +39,11 @@ class CheckProfileAndDidCurrentEnvUseCase
   );
 
   @override
-  Future<void> execute(
-      {required CheckProfileAndDidCurrentEnvParam param}) async {
+  Future<void> execute({
+    required CheckProfileAndDidCurrentEnvParam param,
+  }) async {
     try {
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
       // check if profile is valid, it will throw an exception if not
       await _checkProfileValidityUseCase.execute(
           param: CheckProfileValidityParam(profileNonce: param.profileNonce));
@@ -70,7 +72,7 @@ class CheckProfileAndDidCurrentEnvUseCase
       }
 
       logger().i(
-          "[CheckProfileAndDidCurrentEnvUseCase] Profile ${param.profileNonce} and private key are valid for current env");
+          "[CheckProfileAndDidCurrentEnvUseCase] Profile ${param.profileNonce} and private key are valid for current env in ${DateTime.now().millisecondsSinceEpoch - timestamp} ms");
       _stacktraceManager.addTrace(
           "[CheckProfileAndDidCurrentEnvUseCase] Profile ${param.profileNonce} and private key are valid for current env");
     } on PolygonIdSDKException catch (_) {
