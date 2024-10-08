@@ -71,7 +71,7 @@ class CheckProfileAndDidCurrentEnvUseCase
         );
       }
 
-      logger().i(
+      logger().d(
           "[CheckProfileAndDidCurrentEnvUseCase] Profile ${param.profileNonce} and private key are valid for current env in ${DateTime.now().millisecondsSinceEpoch - timestamp} ms");
       _stacktraceManager.addTrace(
           "[CheckProfileAndDidCurrentEnvUseCase] Profile ${param.profileNonce} and private key are valid for current env");
