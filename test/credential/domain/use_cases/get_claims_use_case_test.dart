@@ -28,18 +28,26 @@ final filters = [
       value: ["theValue2", "theValue3"])
 ];
 final GetClaimsParam param = GetClaimsParam(
-    genesisDid: identifier, profileNonce: BigInt.zero, privateKey: privateKey);
+  genesisDid: identifier,
+  profileNonce: BigInt.zero,
+  encryptionKey: privateKey,
+);
 final GetClaimsParam negativeParam = GetClaimsParam(
-    genesisDid: identifier,
-    profileNonce: CommonMocks.negativeNonce,
-    privateKey: privateKey);
+  genesisDid: identifier,
+  profileNonce: CommonMocks.negativeNonce,
+  encryptionKey: privateKey,
+);
 final GetClaimsParam paramFilters = GetClaimsParam(
-    genesisDid: identifier,
-    profileNonce: BigInt.zero,
-    privateKey: privateKey,
-    filters: filters);
+  genesisDid: identifier,
+  profileNonce: BigInt.zero,
+  encryptionKey: privateKey,
+  filters: filters,
+);
 final GetClaimsParam profileParam = GetClaimsParam(
-    genesisDid: identifier, profileNonce: BigInt.one, privateKey: privateKey);
+  genesisDid: identifier,
+  profileNonce: BigInt.one,
+  encryptionKey: privateKey,
+);
 final claimEntities = [
   ClaimEntity(
     issuer: "",
@@ -137,7 +145,7 @@ void main() {
       // Given
       when(credentialRepository.getClaims(
               genesisDid: anyNamed('genesisDid'),
-              privateKey: anyNamed('privateKey'),
+              encryptionKey: anyNamed('encryptionKey'),
               filters: anyNamed("filters")))
           .thenAnswer((realInvocation) => Future.value(claimEntities));
       when(getCurrentEnvDidIdentifierUseCase.execute(param: anyNamed('param')))
@@ -161,7 +169,7 @@ void main() {
 
       var capturedGet = verify(credentialRepository.getClaims(
               genesisDid: captureAnyNamed('genesisDid'),
-              privateKey: captureAnyNamed('privateKey'),
+              encryptionKey: captureAnyNamed('encryptionKey'),
               filters: captureAnyNamed('filters')))
           .captured;
       expect(capturedGet[0], identifier);
@@ -186,7 +194,7 @@ void main() {
 
       var capturedGet = verify(credentialRepository.getClaims(
               genesisDid: captureAnyNamed('genesisDid'),
-              privateKey: captureAnyNamed('privateKey'),
+              encryptionKey: captureAnyNamed('encryptionKey'),
               filters: captureAnyNamed('filters')))
           .captured;
       expect(capturedGet[0], identifier);
@@ -207,7 +215,7 @@ void main() {
 
       verifyNever(credentialRepository.getClaims(
           genesisDid: captureAnyNamed('genesisDid'),
-          privateKey: captureAnyNamed('privateKey'),
+          encryptionKey: captureAnyNamed('encryptionKey'),
           filters: captureAnyNamed('filters')));
     });
 
@@ -226,7 +234,7 @@ void main() {
 
       var capturedGet = verify(credentialRepository.getClaims(
               genesisDid: captureAnyNamed('genesisDid'),
-              privateKey: captureAnyNamed('privateKey'),
+              encryptionKey: captureAnyNamed('encryptionKey'),
               filters: captureAnyNamed('filters')))
           .captured;
       expect(capturedGet[0], identifier);
@@ -240,7 +248,7 @@ void main() {
       // Given
       when(credentialRepository.getClaims(
               genesisDid: captureAnyNamed('genesisDid'),
-              privateKey: captureAnyNamed('privateKey'),
+              encryptionKey: captureAnyNamed('encryptionKey'),
               filters: anyNamed("filters")))
           .thenAnswer((realInvocation) => Future.error(getClaimsException));
 
@@ -257,7 +265,7 @@ void main() {
 
       var capturedGet = verify(credentialRepository.getClaims(
               genesisDid: captureAnyNamed('genesisDid'),
-              privateKey: captureAnyNamed('privateKey'),
+              encryptionKey: captureAnyNamed('encryptionKey'),
               filters: captureAnyNamed('filters')))
           .captured;
       expect(capturedGet[0], identifier);
@@ -271,7 +279,7 @@ void main() {
       // Given
       when(credentialRepository.getClaims(
               genesisDid: captureAnyNamed('genesisDid'),
-              privateKey: captureAnyNamed('privateKey')))
+              encryptionKey: captureAnyNamed('encryptionKey')))
           .thenAnswer((realInvocation) => Future.error(getClaimsException));
 
       // When
@@ -289,7 +297,7 @@ void main() {
 
       var capturedGet = verify(credentialRepository.getClaims(
               genesisDid: captureAnyNamed('genesisDid'),
-              privateKey: captureAnyNamed('privateKey'),
+              encryptionKey: captureAnyNamed('encryptionKey'),
               filters: captureAnyNamed('filters')))
           .captured;
       expect(capturedGet[0], identifier);

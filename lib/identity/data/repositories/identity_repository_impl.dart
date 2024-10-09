@@ -28,6 +28,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_except
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:poseidon/poseidon.dart';
+import 'package:web3dart/crypto.dart';
 
 class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
@@ -68,9 +69,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<List<String>> getPublicKeys({required String privateKey}) async {
+  Future<List<String>> getPublicKeys({required String bjjPrivateKey}) async {
     final wallet = await _walletDataSource.getWallet(
-      privateKey: _hexMapper.mapTo(privateKey),
+      privateKey: _hexMapper.mapTo(bjjPrivateKey),
     );
     final pubKeys = wallet.publicKey;
     return pubKeys;
@@ -152,8 +153,10 @@ class IdentityRepositoryImpl extends IdentityRepository {
   ///
   /// Return a signature in hexadecimal format
   @override
-  Future<String> signMessage(
-      {required String privateKey, required String message}) async {
+  Future<String> signMessage({
+    required String privateKey,
+    required String message,
+  }) async {
     try {
       final Uint8List hexPrivateKey = _hexMapper.mapTo(privateKey);
       final String signedMessage = await _walletDataSource.signMessage(
@@ -172,8 +175,10 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<String> getState(
-      {required String identifier, required String contractAddress}) {
+  Future<String> getState({
+    required String identifier,
+    required String contractAddress,
+  }) {
     return _localContractFilesDataSource
         .loadStateContract(contractAddress)
         .then(
@@ -206,11 +211,12 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<Map<String, dynamic>> getNonRevProof(
-      {required String identityState,
-      required BigInt nonce,
-      required String baseUrl,
-      Map<String, dynamic>? cachedNonRevProof}) {
+  Future<Map<String, dynamic>> getNonRevProof({
+    required String identityState,
+    required BigInt nonce,
+    required String baseUrl,
+    Map<String, dynamic>? cachedNonRevProof,
+  }) {
     return _remoteIdentityDataSource
         .getNonRevocationProof(identityState, nonce, baseUrl, cachedNonRevProof)
         .catchError(
@@ -255,14 +261,49 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
+  Future<String> getEthDidIdentifier({
+    required String ethAddress,
+    required String blockchain,
+    required String network,
+    required BigInt profileNonce,
+    required EnvConfigEntity config,
+    String? method,
+  }) async {
+    try {
+      // Get the genesis id
+      final genesisDid =
+          _libPolygonIdCoreIdentityDataSource.calculateGenesisIdFromEth(
+        ethAddress: ethAddress,
+        blockchain: blockchain,
+        network: network,
+        config: config.toJson(),
+        method: method,
+      );
+
+      if (profileNonce == GENESIS_PROFILE_NONCE) {
+        return Future.value(genesisDid);
+      } else {
+        String profileDid = _libPolygonIdCoreIdentityDataSource
+            .calculateProfileId(genesisDid, profileNonce);
+
+        return Future.value(profileDid);
+      }
+    } catch (error) {
+      return Future.error(error);
+    }
+  }
+
+  @override
   Future<String> convertIdToBigInt({required String id}) {
     String idBigInt = _libPolygonIdCoreIdentityDataSource.genesisIdToBigInt(id);
     return Future.value(idBigInt);
   }
 
   @override
-  Future<IdDescription> describeId(
-      {required BigInt id, ConfigParam? config}) async {
+  Future<IdDescription> describeId({
+    required BigInt id,
+    ConfigParam? config,
+  }) async {
     final idDescriptionJson = _libPolygonIdCoreIdentityDataSource.describeId(
       idAsInt: id.toString(),
       config: config == null ? null : jsonEncode(config.toJson()),
@@ -274,12 +315,12 @@ class IdentityRepositoryImpl extends IdentityRepository {
   @override
   Future<String> exportIdentity({
     required String did,
-    required String privateKey,
+    required String encryptionKey,
   }) async {
     Map<String, Object?> exportableDb = await _storageIdentityDataSource
-        .getIdentityDb(did: did, privateKey: privateKey);
+        .getIdentityDb(did: did, encryptionKey: encryptionKey);
 
-    final key = Key.fromBase16(privateKey);
+    final key = Key.fromBase16(encryptionKey);
 
     return _encryptionDbDataSource.encryptData(
       data: exportableDb,
@@ -290,10 +331,10 @@ class IdentityRepositoryImpl extends IdentityRepository {
   @override
   Future<void> importIdentity({
     required String did,
-    required String privateKey,
     required String encryptedDb,
+    required String encryptionKey,
   }) async {
-    final key = Key.fromBase16(privateKey);
+    final key = Key.fromBase16(encryptionKey);
 
     Map<String, Object?> decryptedDb = _encryptionDbDataSource.decryptData(
       encryptedData: encryptedDb,
@@ -306,30 +347,31 @@ class IdentityRepositoryImpl extends IdentityRepository {
     return _storageIdentityDataSource.saveIdentityDb(
       exportableDb: decryptedDb,
       destinationPath: destinationPath,
-      privateKey: privateKey,
+      encryptionKey: encryptionKey,
     );
   }
 
   @override
   Future<Map<BigInt, String>> getProfiles({
     required String did,
-    required String privateKey,
+    required String encryptionKey,
   }) {
     return _secureStorageProfilesDataSource.getProfiles(
       did: did,
-      privateKey: privateKey,
+      encryptionKey: encryptionKey,
     );
   }
 
   @override
-  Future<void> putProfiles(
-      {required String did,
-      required String privateKey,
-      required Map<BigInt, String> profiles}) {
+  Future<void> putProfiles({
+    required String did,
+    required String encryptionKey,
+    required Map<BigInt, String> profiles,
+  }) {
     return _secureStorageProfilesDataSource.storeProfiles(
       did: did,
-      privateKey: privateKey,
       profiles: profiles,
+      encryptionKey: encryptionKey,
     );
   }
 }

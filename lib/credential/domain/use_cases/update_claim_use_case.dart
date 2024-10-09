@@ -13,7 +13,7 @@ class UpdateClaimParam {
   final String? expiration;
   final String? type;
   final Map<String, dynamic>? data;
-  final String privateKey;
+  final String encryptionKey;
 
   UpdateClaimParam({
     required this.id,
@@ -23,7 +23,7 @@ class UpdateClaimParam {
     this.expiration,
     this.type,
     this.data,
-    required this.privateKey,
+    required this.encryptionKey,
   });
 }
 
@@ -45,7 +45,7 @@ class UpdateClaimUseCase extends FutureUseCase<UpdateClaimParam, ClaimEntity> {
         .getClaim(
             claimId: param.id,
             genesisDid: param.genesisDid,
-            privateKey: param.privateKey)
+            encryptionKey: param.encryptionKey)
         .then((claim) => ClaimEntity(
               id: param.id,
               issuer: param.issuer ?? claim.issuer,
@@ -59,7 +59,7 @@ class UpdateClaimUseCase extends FutureUseCase<UpdateClaimParam, ClaimEntity> {
         .then((updated) => _credentialRepository.saveClaims(
             claims: [updated],
             genesisDid: param.genesisDid,
-            privateKey: param.privateKey).then((_) => updated))
+            encryptionKey: param.encryptionKey).then((_) => updated))
         .then((claim) {
       logger().i(
           "[UpdateClaimUseCase] Claim with id ${param.id} has been updated: $claim");

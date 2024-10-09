@@ -4,24 +4,30 @@ import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_public_keys_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/add_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/smt/create_identity_state_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/create_identity_use_case.dart';
 
 import '../../../../common/common_mocks.dart';
 import '../../../../common/identity_mocks.dart';
+import '../../../../iden3comm/domain/use_cases/check_profile_and_did_current_env_use_case_test.dart';
 import 'add_identity_use_case_test.mocks.dart';
 
 // Data
 var exception = Exception();
 var param = AddIdentityParam(
-    privateKey: CommonMocks.privateKey, profiles: CommonMocks.bigIntValues);
+  bjjPublicKey: CommonMocks.publicKey,
+  profiles: CommonMocks.bigIntValues,
+  encryptionKey: CommonMocks.encryptionKey,
+);
 
 // Dependencies
 MockIdentityRepository identityRepository = MockIdentityRepository();
 MockCreateIdentityUseCase createIdentityUseCase = MockCreateIdentityUseCase();
 MockCreateIdentityStateUseCase createIdentityStateUseCase =
     MockCreateIdentityStateUseCase();
+MockGetPublicKeyUseCase getPublicKeyUseCase = MockGetPublicKeyUseCase();
 MockStacktraceManager stacktraceManager = MockStacktraceManager();
 
 // Tested instance
@@ -29,6 +35,7 @@ AddIdentityUseCase useCase = AddIdentityUseCase(
   identityRepository,
   createIdentityUseCase,
   createIdentityStateUseCase,
+  getPublicKeyUseCase,
   stacktraceManager,
 );
 
@@ -36,6 +43,7 @@ AddIdentityUseCase useCase = AddIdentityUseCase(
   IdentityRepository,
   CreateIdentityUseCase,
   CreateIdentityStateUseCase,
+  GetPublicKeyUseCase,
   StacktraceManager,
 ])
 void main() {
@@ -69,7 +77,7 @@ void main() {
         verify(createIdentityUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(captureCreate.privateKey, CommonMocks.privateKey);
+    expect(captureCreate.bjjPublicKey, CommonMocks.publicKey);
     expect(captureCreate.profiles, CommonMocks.bigIntValues);
 
     expect(
@@ -91,7 +99,7 @@ void main() {
     for (int i = 0; i < CommonMocks.profiles.values.length; i++) {
       expect(
           verifyState.captured[i].did, CommonMocks.profiles.values.toList()[i]);
-      expect(verifyState.captured[i].privateKey, CommonMocks.privateKey);
+      expect(verifyState.captured[i].bjjPublicKey, CommonMocks.publicKey);
     }
   });
 
@@ -114,7 +122,7 @@ void main() {
         verify(createIdentityUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(captureCreate.privateKey, CommonMocks.privateKey);
+    expect(captureCreate.bjjPublicKey, CommonMocks.publicKey);
     expect(captureCreate.profiles, CommonMocks.bigIntValues);
 
     expect(
@@ -146,7 +154,7 @@ void main() {
         verify(createIdentityUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(captureCreate.privateKey, CommonMocks.privateKey);
+    expect(captureCreate.bjjPublicKey, CommonMocks.publicKey);
     expect(captureCreate.profiles, CommonMocks.bigIntValues);
 
     verifyNever(identityRepository.getIdentity(

@@ -28,7 +28,7 @@ class SMTRepositoryImpl implements SMTRepository {
   //   required HashEntity value,
   //   required TreeType type,
   //   required String did,
-  //   required String privateKey}) async {
+  //   required String encryptionKey}) async {
   //   final keyHash = (key);
   //   final valueHash = (value);
   //   final oneHash = HashDTO.fromBigInt(BigInt.one);
@@ -43,7 +43,7 @@ class SMTRepositoryImpl implements SMTRepository {
   //       newNodeLeaf: newNodeLeaf,
   //       storeName: _treeTypeMapper.mapTo(type),
   //       did: did,
-  //       privateKey: privateKey)
+  //       encryptionKey: encryptionKey)
   //       .then((dto) => _hashMapper.mapFrom(dto)); // returns new root
   // }
 
@@ -51,13 +51,13 @@ class SMTRepositoryImpl implements SMTRepository {
     required NodeEntity leaf,
     required TreeType type,
     required String did,
-    required String privateKey,
+    required String encryptionKey,
   }) {
     return _smtDataSource.addLeaf(
       newNodeLeaf: leaf,
       storeName: _treeTypeMapper.mapTo(type),
       did: did,
-      privateKey: privateKey,
+      encryptionKey: encryptionKey,
     );
   }
 
@@ -66,13 +66,13 @@ class SMTRepositoryImpl implements SMTRepository {
     required HashEntity hash,
     required TreeType type,
     required String did,
-    required String privateKey,
+    required String encryptionKey,
   }) {
     return _storageSMTDataSource.getNode(
       key: hash,
       storeName: _treeTypeMapper.mapTo(type),
       did: did,
-      privateKey: privateKey,
+      encryptionKey: encryptionKey,
     );
   }
 
@@ -80,12 +80,12 @@ class SMTRepositoryImpl implements SMTRepository {
   Future<HashEntity> getRoot({
     required TreeType type,
     required String did,
-    required String privateKey,
+    required String encryptionKey,
   }) {
     return _storageSMTDataSource.getRoot(
       storeName: _treeTypeMapper.mapTo(type),
       did: did,
-      privateKey: privateKey,
+      encryptionKey: encryptionKey,
     );
   }
 
@@ -95,28 +95,29 @@ class SMTRepositoryImpl implements SMTRepository {
     required NodeEntity node,
     required TreeType type,
     required String did,
-    required String privateKey,
+    required String encryptionKey,
   }) {
     return _storageSMTDataSource.addNode(
       key: hash,
       node: node,
       storeName: _treeTypeMapper.mapTo(type),
       did: did,
-      privateKey: privateKey,
+      encryptionKey: encryptionKey,
     );
   }
 
   @override
-  Future<void> setRoot(
-      {required HashEntity root,
-      required TreeType type,
-      required String did,
-      required String privateKey}) {
+  Future<void> setRoot({
+    required HashEntity root,
+    required TreeType type,
+    required String did,
+    required String encryptionKey,
+  }) {
     return _storageSMTDataSource.setRoot(
       root: (root),
       storeName: _treeTypeMapper.mapTo(type),
       did: did,
-      privateKey: privateKey,
+      encryptionKey: encryptionKey,
     );
   }
 
@@ -125,13 +126,13 @@ class SMTRepositoryImpl implements SMTRepository {
     required HashEntity key,
     required TreeType type,
     required String did,
-    required String privateKey,
+    required String encryptionKey,
   }) async {
     return _smtDataSource.generateProof(
       key: (key),
       storeName: _treeTypeMapper.mapTo(type),
       did: did,
-      privateKey: privateKey,
+      encryptionKey: encryptionKey,
     );
   }
 
@@ -162,27 +163,27 @@ class SMTRepositoryImpl implements SMTRepository {
     required int maxLevels,
     required TreeType type,
     required String did,
-    required String privateKey,
+    required String encryptionKey,
   }) {
     return _smtDataSource.createSMT(
         maxLevels: maxLevels,
         storeName: _treeTypeMapper.mapTo(type),
         did: did,
-        privateKey: privateKey);
+        encryptionKey: encryptionKey);
   }
 
   @override
   Future<void> removeSMT({
     required TreeType type,
     required String did,
-    required String privateKey,
+    required String encryptionKey,
   }) {
     var name = _treeTypeMapper.mapTo(type);
 
     return _smtDataSource
-        .removeSMT(storeName: name, did: did, privateKey: privateKey)
+        .removeSMT(storeName: name, did: did, encryptionKey: encryptionKey)
         .then((_) => _smtDataSource.removeRoot(
-            storeName: name, did: did, privateKey: privateKey));
+            storeName: name, did: did, encryptionKey: encryptionKey));
   }
 
   @override

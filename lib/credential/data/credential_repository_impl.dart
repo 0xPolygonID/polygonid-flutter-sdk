@@ -39,17 +39,18 @@ class CredentialRepositoryImpl extends CredentialRepository {
   );
 
   @override
-  Future<void> saveClaims(
-      {required List<ClaimEntity> claims,
-      required String genesisDid,
-      required String privateKey}) async {
+  Future<void> saveClaims({
+    required List<ClaimEntity> claims,
+    required String genesisDid,
+    required String encryptionKey,
+  }) async {
     try {
       final List<ClaimDTO> claimDTOList =
           claims.map((claim) => _claimMapper.mapTo(claim)).toList();
       await _storageClaimDataSource.storeClaims(
         claims: claimDTOList,
         did: genesisDid,
-        privateKey: privateKey,
+        encryptionKey: encryptionKey,
       );
     } on PolygonIdSDKException catch (_) {
       rethrow;
@@ -68,20 +69,19 @@ class CredentialRepositoryImpl extends CredentialRepository {
   Future<List<ClaimEntity>> getClaims({
     List<FilterEntity>? filters,
     required String genesisDid,
-    required String privateKey,
+    required String encryptionKey,
     List<CredentialSortOrder> credentialSortOrderList = const [],
   }) async {
     try {
-      final List<ClaimDTO> claimDTOlist =
-          await _storageClaimDataSource.getClaims(
+      final claimDTOs = await _storageClaimDataSource.getClaims(
         filter: filters == null ? null : _filtersMapper.mapTo(filters),
         did: genesisDid,
-        privateKey: privateKey,
+        encryptionKey: encryptionKey,
         credentialSortOrderList: credentialSortOrderList,
       );
 
       final List<ClaimEntity> claimEntityList =
-          claimDTOlist.map((claim) => _claimMapper.mapFrom(claim)).toList();
+          claimDTOs.map((claim) => _claimMapper.mapFrom(claim)).toList();
       return claimEntityList;
     } on PolygonIdSDKException catch (_) {
       rethrow;
@@ -96,13 +96,17 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<ClaimEntity> getClaim(
-      {required String claimId,
-      required String genesisDid,
-      required String privateKey}) async {
+  Future<ClaimEntity> getClaim({
+    required String claimId,
+    required String genesisDid,
+    required String encryptionKey,
+  }) async {
     try {
       ClaimDTO claimDTO = await _storageClaimDataSource.getClaim(
-          credentialId: claimId, did: genesisDid, privateKey: privateKey);
+        credentialId: claimId,
+        did: genesisDid,
+        encryptionKey: encryptionKey,
+      );
 
       ClaimEntity claimEntity = _claimMapper.mapFrom(claimDTO);
       return claimEntity;
@@ -122,17 +126,16 @@ class CredentialRepositoryImpl extends CredentialRepository {
   Future<ClaimEntity> getCredentialByPartialId({
     required String partialId,
     required String genesisDid,
-    required String privateKey,
+    required String encryptionKey,
   }) async {
     try {
-      List<ClaimDTO> claimDTOlist =
-          await _storageClaimDataSource.getCredentialByPartialId(
+      final claimDTOs = await _storageClaimDataSource.getCredentialByPartialId(
         partialId: partialId,
         did: genesisDid,
-        privateKey: privateKey,
+        encryptionKey: encryptionKey,
       );
 
-      if (claimDTOlist.isEmpty || claimDTOlist.length > 1) {
+      if (claimDTOs.isEmpty || claimDTOs.length > 1) {
         _stacktraceManager
             .addError('Error while getting claim by partial id from DB\n');
         throw ClaimNotFoundException(
@@ -141,7 +144,7 @@ class CredentialRepositoryImpl extends CredentialRepository {
         );
       }
 
-      ClaimEntity claimEntity = _claimMapper.mapFrom(claimDTOlist.first);
+      ClaimEntity claimEntity = _claimMapper.mapFrom(claimDTOs.first);
       return claimEntity;
     } catch (e) {
       rethrow;
@@ -149,15 +152,16 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<void> removeClaims(
-      {required List<String> claimIds,
-      required String genesisDid,
-      required String privateKey}) async {
+  Future<void> removeClaims({
+    required List<String> claimIds,
+    required String genesisDid,
+    required String encryptionKey,
+  }) async {
     try {
       await _storageClaimDataSource.removeClaims(
         claimIds: claimIds,
         did: genesisDid,
-        privateKey: privateKey,
+        encryptionKey: encryptionKey,
       );
     } on PolygonIdSDKException catch (_) {
       rethrow;
@@ -173,12 +177,14 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<void> removeAllClaims(
-      {required String genesisDid, required String privateKey}) async {
+  Future<void> removeAllClaims({
+    required String genesisDid,
+    required String encryptionKey,
+  }) async {
     try {
       await _storageClaimDataSource.removeAllClaims(
         did: genesisDid,
-        privateKey: privateKey,
+        encryptionKey: encryptionKey,
       );
     } on PolygonIdSDKException catch (_) {
       rethrow;
@@ -232,8 +238,10 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<int> getRevocationNonce(
-      {required ClaimEntity claim, required bool rhs}) {
+  Future<int> getRevocationNonce({
+    required ClaimEntity claim,
+    required bool rhs,
+  }) {
     try {
       return Future.value(_claimMapper.mapTo(claim)).then(
         (claimDTO) => (claimDTO.info.credentialStatus.type ==
@@ -259,8 +267,10 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<String> getRevocationUrl(
-      {required ClaimEntity claim, required bool rhs}) {
+  Future<String> getRevocationUrl({
+    required ClaimEntity claim,
+    required bool rhs,
+  }) {
     try {
       return Future.value(_claimMapper.mapTo(claim)).then((claimDTO) =>
           (claimDTO.info.credentialStatus.type ==

@@ -106,7 +106,7 @@ class GetIden3commProofsUseCase
           message: param.message,
           genesisDid: param.genesisDid,
           profileNonce: param.profileNonce,
-          privateKey: param.privateKey,
+          encryptionKey: param.privateKey,
           nonRevocationProofs: param.nonRevocationProofs ?? {},
           credentialSortOrderList: [CredentialSortOrder.ExpirationDescending],
         ),
@@ -155,9 +155,11 @@ class GetIden3commProofsUseCase
             }
 
             var identityEntity = await _getIdentityUseCase.execute(
-                param: GetIdentityParam(
-                    genesisDid: param.genesisDid,
-                    privateKey: param.privateKey));
+              param: GetIdentityParam(
+                genesisDid: param.genesisDid,
+                privateKey: param.privateKey,
+              ),
+            );
 
             BigInt claimSubjectProfileNonce = identityEntity.profiles.keys
                 .firstWhere((k) => identityEntity.profiles[k] == claim!.did,

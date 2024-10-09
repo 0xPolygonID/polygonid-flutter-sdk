@@ -17,9 +17,10 @@ import 'update_identity_use_case_test.mocks.dart';
 // Data
 var exception = Exception();
 var param = UpdateIdentityParam(
-    privateKey: CommonMocks.privateKey,
-    genesisDid: CommonMocks.did,
-    profiles: CommonMocks.profiles);
+  encryptionKey: CommonMocks.encryptionKey,
+  genesisDid: CommonMocks.did,
+  profiles: CommonMocks.profiles,
+);
 
 // Dependencies
 MockIdentityRepository identityRepository = MockIdentityRepository();
@@ -55,7 +56,7 @@ void main() {
       "Given a param with a valid private key, when I call execute, then I expect an updated PrivateIdentityEntity to be returned",
       () async {
     // When
-    PrivateIdentityEntity result = await useCase.execute(param: param);
+    IdentityEntity result = await useCase.execute(param: param);
 
     // Then
     expect(result, IdentityMocks.privateIdentity);
@@ -64,7 +65,7 @@ void main() {
         verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(capturedGet.privateKey, param.privateKey);
+    expect(capturedGet.encryptionKey, param.encryptionKey);
     expect(capturedGet.genesisDid, param.genesisDid);
 
     var capturedStore = verify(identityRepository.storeIdentity(
@@ -83,7 +84,7 @@ void main() {
     // When
     await useCase.execute(param: param).then((_) => null).catchError((error) {
       expect(error, isA<InvalidPrivateKeyException>());
-      expect(error.privateKey, param.privateKey);
+      expect(error.encryptionKey, param.encryptionKey);
     });
 
     // Then
@@ -91,7 +92,7 @@ void main() {
         verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(capturedGet.privateKey, param.privateKey);
+    expect(capturedGet.encryptionKey, param.encryptionKey);
     expect(capturedGet.genesisDid, param.genesisDid);
 
     verifyNever(identityRepository.storeIdentity(
@@ -113,7 +114,7 @@ void main() {
         verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(capturedGet.privateKey, param.privateKey);
+    expect(capturedGet.encryptionKey, param.encryptionKey);
     expect(capturedGet.genesisDid, param.genesisDid);
 
     verifyNever(identityRepository.storeIdentity(

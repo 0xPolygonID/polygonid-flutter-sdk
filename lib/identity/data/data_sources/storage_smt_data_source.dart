@@ -44,11 +44,12 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
 
   // getNode gets a node by key from the SMT.  Empty nodes are not stored in the
   // tree; they are all the same and assumed to always exist.
-  Future<NodeEntity> getNode(
-      {required HashEntity key,
-      required String storeName,
-      required String did,
-      required String privateKey}) {
+  Future<NodeEntity> getNode({
+    required HashEntity key,
+    required String storeName,
+    required String did,
+    required String encryptionKey,
+  }) {
     if ((BigInt.parse(key.toString())) == BigInt.zero) {
       return Future.value(NodeEntity(
         children: const [],
@@ -56,8 +57,8 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
         type: NodeType.empty,
       ));
     }
-    return getDatabase(did: did, privateKey: privateKey).then((database) =>
-        database
+    return getDatabase(did: did, encryptionKey: encryptionKey).then(
+        (database) => database
             .transaction((transaction) => getTransact(
                 storeName: storeName, transaction: transaction, key: key))
             .then((snapshot) => NodeEntity.fromJson(snapshot!))
@@ -65,21 +66,23 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
   }
 
   // For UT purpose
-  Future<Map<String, Object?>?> getTransact(
-      {required String storeName,
-      required DatabaseClient transaction,
-      required HashEntity key}) async {
+  Future<Map<String, Object?>?> getTransact({
+    required String storeName,
+    required DatabaseClient transaction,
+    required HashEntity key,
+  }) async {
     return _storeRefWrapper.get(transaction, storeName, key.toString());
   }
 
-  Future<void> addNode(
-      {required HashEntity key,
-      required NodeEntity node,
-      required String storeName,
-      required String did,
-      required String privateKey}) {
-    return getDatabase(did: did, privateKey: privateKey).then((database) =>
-        database
+  Future<void> addNode({
+    required HashEntity key,
+    required NodeEntity node,
+    required String storeName,
+    required String did,
+    required String encryptionKey,
+  }) {
+    return getDatabase(did: did, encryptionKey: encryptionKey).then(
+        (database) => database
             .transaction((transaction) => putTransact(
                 storeName: storeName,
                 transaction: transaction,
@@ -89,21 +92,23 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
   }
 
   // For UT purpose
-  Future<void> putTransact(
-      {required String storeName,
-      required DatabaseClient transaction,
-      required HashEntity key,
-      required NodeEntity node}) async {
+  Future<void> putTransact({
+    required String storeName,
+    required DatabaseClient transaction,
+    required HashEntity key,
+    required NodeEntity node,
+  }) async {
     await _storeRefWrapper.put(
         transaction, storeName, key.toString(), node.toJson());
   }
 
-  Future<HashEntity> getRoot(
-      {required String storeName,
-      required String did,
-      required String privateKey}) {
-    return getDatabase(did: did, privateKey: privateKey).then((database) =>
-        database
+  Future<HashEntity> getRoot({
+    required String storeName,
+    required String did,
+    required String encryptionKey,
+  }) {
+    return getDatabase(did: did, encryptionKey: encryptionKey).then(
+        (database) => database
             .transaction((transaction) =>
                 getRootTransact(transaction: transaction, storeName: storeName))
             .whenComplete(() => database.close()));
@@ -125,33 +130,36 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
     });
   }
 
-  Future<void> setRoot(
-      {required HashEntity root,
-      required String storeName,
-      required String did,
-      required String privateKey}) {
-    return getDatabase(did: did, privateKey: privateKey).then((database) =>
-        database
+  Future<void> setRoot({
+    required HashEntity root,
+    required String storeName,
+    required String did,
+    required String encryptionKey,
+  }) {
+    return getDatabase(did: did, encryptionKey: encryptionKey).then(
+        (database) => database
             .transaction((transaction) => setRootTransact(
                 transaction: transaction, storeName: storeName, root: root))
             .whenComplete(() => database.close()));
   }
 
   // For UT purpose
-  Future<void> setRootTransact(
-      {required DatabaseClient transaction,
-      required String storeName,
-      required HashEntity root}) async {
+  Future<void> setRootTransact({
+    required DatabaseClient transaction,
+    required String storeName,
+    required HashEntity root,
+  }) async {
     await _storeRefWrapper
         .put(transaction, storeName, "root", {"data": root.toJson()});
   }
 
-  Future<int> getMaxLevels(
-      {required String storeName,
-      required String did,
-      required String privateKey}) {
-    return getDatabase(did: did, privateKey: privateKey).then((database) =>
-        database
+  Future<int> getMaxLevels({
+    required String storeName,
+    required String did,
+    required String encryptionKey,
+  }) {
+    return getDatabase(did: did, encryptionKey: encryptionKey).then(
+        (database) => database
             .transaction((transaction) => getMaxLevelsTransact(
                 transaction: transaction, storeName: storeName))
             .then((snapshot) => snapshot!["maxLevels"] as int)
@@ -159,18 +167,21 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
   }
 
   // For UT purpose
-  Future<Map<String, Object?>?> getMaxLevelsTransact(
-      {required DatabaseClient transaction, required String storeName}) async {
+  Future<Map<String, Object?>?> getMaxLevelsTransact({
+    required DatabaseClient transaction,
+    required String storeName,
+  }) async {
     return _storeRefWrapper.get(transaction, storeName, "maxLevels");
   }
 
-  Future<void> setMaxLevels(
-      {required int maxLevels,
-      required String storeName,
-      required String did,
-      required String privateKey}) {
-    return getDatabase(did: did, privateKey: privateKey).then((database) =>
-        database
+  Future<void> setMaxLevels({
+    required int maxLevels,
+    required String storeName,
+    required String did,
+    required String encryptionKey,
+  }) {
+    return getDatabase(did: did, encryptionKey: encryptionKey).then(
+        (database) => database
             .transaction((transaction) => setMaxLevelsTransact(
                 transaction: transaction,
                 storeName: storeName,
@@ -187,20 +198,23 @@ class StorageSMTDataSource extends SecureIdentityStorageDataSource {
         .put(transaction, storeName, "maxLevels", {"maxLevels": maxLevels});
   }
 
-  Future<void> removeSMT(
-      {required String storeName,
-      required String did,
-      required String privateKey}) {
-    return getDatabase(did: did, privateKey: privateKey).then((database) =>
-        database
+  Future<void> removeSMT({
+    required String storeName,
+    required String did,
+    required String encryptionKey,
+  }) {
+    return getDatabase(did: did, encryptionKey: encryptionKey).then(
+        (database) => database
             .transaction((transaction) => removeSMTTransact(
                 transaction: transaction, storeName: storeName))
             .whenComplete(() => database.close()));
   }
 
   // For UT purpose
-  Future<void> removeSMTTransact(
-      {required DatabaseClient transaction, required String storeName}) async {
+  Future<void> removeSMTTransact({
+    required DatabaseClient transaction,
+    required String storeName,
+  }) async {
     await _storeRefWrapper.removeAll(transaction, storeName);
   }
 }

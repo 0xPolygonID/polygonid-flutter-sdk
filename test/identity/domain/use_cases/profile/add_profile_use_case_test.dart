@@ -7,6 +7,7 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_ide
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_public_keys_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/update_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/add_profile_use_case.dart';
@@ -49,6 +50,7 @@ MockUpdateIdentityUseCase updateIdentityUseCase = MockUpdateIdentityUseCase();
 MockCreateProfilesUseCase createProfilesUseCase = MockCreateProfilesUseCase();
 MockCheckProfileAndDidCurrentEnvUseCase checkProfileAndDidCurrentEnvUseCase =
     MockCheckProfileAndDidCurrentEnvUseCase();
+MockGetPublicKeyUseCase getPublicKeyUseCase = MockGetPublicKeyUseCase();
 MockStacktraceManager stacktraceManager = MockStacktraceManager();
 MockLibPolygonIdCoreIdentityDataSource libPolygonIdCoreIdentityDataSource =
     MockLibPolygonIdCoreIdentityDataSource();
@@ -59,6 +61,7 @@ AddProfileUseCase useCase = AddProfileUseCase(
   updateIdentityUseCase,
   checkProfileAndDidCurrentEnvUseCase,
   createProfilesUseCase,
+  getPublicKeyUseCase,
   libPolygonIdCoreIdentityDataSource,
   stacktraceManager,
 );
@@ -68,6 +71,7 @@ AddProfileUseCase useCase = AddProfileUseCase(
   UpdateIdentityUseCase,
   CheckProfileAndDidCurrentEnvUseCase,
   CreateProfilesUseCase,
+  GetPublicKeyUseCase,
   LibPolygonIdCoreIdentityDataSource,
   StacktraceManager,
 ])
@@ -77,6 +81,7 @@ void main() {
     reset(updateIdentityUseCase);
     reset(createProfilesUseCase);
     reset(checkProfileAndDidCurrentEnvUseCase);
+    reset(getPublicKeyUseCase);
 
     // Given
     when(checkProfileAndDidCurrentEnvUseCase.execute(param: anyNamed('param')))
@@ -88,6 +93,8 @@ void main() {
             {param.profileNonce: CommonMocks.did + "${param.profileNonce}"}));
     when(updateIdentityUseCase.execute(param: anyNamed('param'))).thenAnswer(
         (realInvocation) => Future.value(IdentityMocks.privateIdentity));
+    when(getPublicKeyUseCase.execute(param: anyNamed('param')))
+        .thenAnswer((realInvocation) => Future.value(CommonMocks.publicKey));
   });
 
   test(

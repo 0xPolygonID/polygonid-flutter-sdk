@@ -17,76 +17,91 @@ class SMTDataSource {
     this._storageSMTDataSource,
   );
 
-  Future<void> createSMT(
-      {required int maxLevels,
-      required String storeName,
-      required String did,
-      required String privateKey}) async {
+  Future<void> createSMT({
+    required int maxLevels,
+    required String storeName,
+    required String did,
+    required String encryptionKey,
+  }) async {
     await _storageSMTDataSource
-        .getRoot(storeName: storeName, did: did, privateKey: privateKey)
+        .getRoot(storeName: storeName, did: did, encryptionKey: encryptionKey)
         .then((root) async => await _storageSMTDataSource.removeSMT(
-            storeName: storeName, did: did, privateKey: privateKey))
+            storeName: storeName, did: did, encryptionKey: encryptionKey))
         .catchError((error) {});
     await _storageSMTDataSource.setRoot(
         root: HashEntity.zero(),
         storeName: storeName,
         did: did,
-        privateKey: privateKey);
+        encryptionKey: encryptionKey);
     await _storageSMTDataSource.setMaxLevels(
         maxLevels: maxLevels,
         storeName: storeName,
         did: did,
-        privateKey: privateKey);
+        encryptionKey: encryptionKey);
   }
 
   Future<void> removeSMT(
       {required String storeName,
       required String did,
-      required String privateKey}) async {
+      required String encryptionKey}) async {
     return _storageSMTDataSource.removeSMT(
-        storeName: storeName, did: did, privateKey: privateKey);
+        storeName: storeName, did: did, encryptionKey: encryptionKey);
   }
 
   Future<void> removeRoot(
       {required String storeName,
       required String did,
-      required String privateKey}) async {
+      required String encryptionKey}) async {
     return _storageSMTDataSource.setRoot(
         root: HashEntity.zero(),
         storeName: storeName,
         did: did,
-        privateKey: privateKey);
+        encryptionKey: encryptionKey);
   }
 
-  Future<HashEntity> getRoot(
-      {required String storeName,
-      required String did,
-      required String privateKey}) async {
+  Future<HashEntity> getRoot({
+    required String storeName,
+    required String did,
+    required String encryptionKey,
+  }) async {
     return _storageSMTDataSource.getRoot(
-        storeName: storeName, did: did, privateKey: privateKey);
+      storeName: storeName,
+      did: did,
+      encryptionKey: encryptionKey,
+    );
   }
 
-  Future<HashEntity> addLeaf(
-      {required NodeEntity newNodeLeaf,
-      required String storeName,
-      required String did,
-      required String privateKey}) async {
+  Future<HashEntity> addLeaf({
+    required NodeEntity newNodeLeaf,
+    required String storeName,
+    required String did,
+    required String encryptionKey,
+  }) async {
     int maxLevels = await _storageSMTDataSource.getMaxLevels(
-        storeName: storeName, did: did, privateKey: privateKey);
+        storeName: storeName, did: did, encryptionKey: encryptionKey);
     final root = await _storageSMTDataSource.getRoot(
-        storeName: storeName, did: did, privateKey: privateKey);
+        storeName: storeName, did: did, encryptionKey: encryptionKey);
     final path = _getPath(maxLevels, newNodeLeaf.children[0]);
-    final newRoot =
-        await _addLeaf(newNodeLeaf, root, 0, path, storeName, did, privateKey);
+    final newRoot = await _addLeaf(
+        newNodeLeaf, root, 0, path, storeName, did, encryptionKey);
     await _storageSMTDataSource.setRoot(
-        root: newRoot, storeName: storeName, did: did, privateKey: privateKey);
+        root: newRoot,
+        storeName: storeName,
+        did: did,
+        encryptionKey: encryptionKey);
     return newRoot;
   }
 
-  Future<HashEntity> _addLeaf(NodeEntity newLeaf, HashEntity key, int level,
-      List<bool> path, String storeName, String did, String privateKey) async {
+  Future<HashEntity> _addLeaf(
+      NodeEntity newLeaf,
+      HashEntity key,
+      int level,
+      List<bool> path,
+      String storeName,
+      String did,
+      String encryptionKey) async {
     int maxLevels = await _storageSMTDataSource.getMaxLevels(
-        storeName: storeName, did: did, privateKey: privateKey);
+        storeName: storeName, did: did, encryptionKey: encryptionKey);
     if (level > maxLevels - 1) {
       throw ArgumentError("level must be less than maxLevels");
     }
@@ -94,10 +109,10 @@ class SMTDataSource {
     logger().i("add leaf under key ${key.string()} at level $level");
 
     final node = await _storageSMTDataSource.getNode(
-        key: key, storeName: storeName, did: did, privateKey: privateKey);
+        key: key, storeName: storeName, did: did, encryptionKey: encryptionKey);
     switch (node.type) {
       case NodeType.empty:
-        return _addNode(newLeaf, storeName, did, privateKey);
+        return _addNode(newLeaf, storeName, did, encryptionKey);
       case NodeType.leaf:
       case NodeType.state: //???
         final nKey = node.children[0];
@@ -113,7 +128,7 @@ class SMTDataSource {
         // We need to push newLeaf down until its path diverges from
         // n's path
         return _pushLeaf(newLeaf, node, level, path, pathOldLeaf, storeName,
-            did, privateKey);
+            did, encryptionKey);
       case NodeType.middle:
         // We need to go deeper, continue traversing the tree, left or
         // right depending on path
@@ -121,7 +136,7 @@ class SMTDataSource {
         if (path[level]) {
           // go right
           final nextKey = await _addLeaf(newLeaf, node.children[1], level + 1,
-              path, storeName, did, privateKey);
+              path, storeName, did, encryptionKey);
           final newNodeChildren = [node.children[0], nextKey];
           final nodeHashData = poseidon2([
             node.children[0].toBigInt(),
@@ -133,7 +148,7 @@ class SMTDataSource {
         } else {
           // go left
           final nextKey = await _addLeaf(newLeaf, node.children[0], level + 1,
-              path, storeName, did, privateKey);
+              path, storeName, did, encryptionKey);
 
           final newNodeChildren = [nextKey, node.children[1]];
           final nodeHashData = poseidon2([
@@ -144,7 +159,7 @@ class SMTDataSource {
           newNodeMiddle = NodeEntity(
               children: newNodeChildren, hash: nodeHash, type: NodeType.middle);
         }
-        return _addNode(newNodeMiddle, storeName, did, privateKey);
+        return _addNode(newNodeMiddle, storeName, did, encryptionKey);
       default:
         throw SMTInvalidNodeFoundException(
           errorMessage: "Invalid node type found",
@@ -153,7 +168,11 @@ class SMTDataSource {
   }
 
   Future<HashEntity> _addNode(
-      NodeEntity node, String storeName, String did, String privateKey) async {
+    NodeEntity node,
+    String storeName,
+    String did,
+    String encryptionKey,
+  ) async {
     // print("add node $n");
 
     final key = node.hash;
@@ -165,7 +184,10 @@ class SMTDataSource {
     //try {
     bool nodeFound = await _storageSMTDataSource
         .getNode(
-            key: key, storeName: storeName, did: did, privateKey: privateKey)
+            key: key,
+            storeName: storeName,
+            did: did,
+            encryptionKey: encryptionKey)
         .then((node) => node.type != NodeType.empty)
         .catchError((error) => false);
     /*} on SMTNotFoundException {
@@ -179,11 +201,12 @@ class SMTDataSource {
     }
 
     await _storageSMTDataSource.addNode(
-        key: key,
-        node: node,
-        storeName: storeName,
-        did: did,
-        privateKey: privateKey);
+      key: key,
+      node: node,
+      storeName: storeName,
+      did: did,
+      encryptionKey: encryptionKey,
+    );
     return key;
   }
 
@@ -191,16 +214,20 @@ class SMTDataSource {
   // from newLeaf, at which point both leafs are stored, all while updating the
   // path.
   Future<HashEntity> _pushLeaf(
-      NodeEntity newLeaf,
-      NodeEntity oldLeaf,
-      int level,
-      List<bool> pathNewLeaf,
-      List<bool> pathOldLeaf,
-      String storeName,
-      String did,
-      String privateKey) async {
+    NodeEntity newLeaf,
+    NodeEntity oldLeaf,
+    int level,
+    List<bool> pathNewLeaf,
+    List<bool> pathOldLeaf,
+    String storeName,
+    String did,
+    String encryptionKey,
+  ) async {
     int maxLevels = await _storageSMTDataSource.getMaxLevels(
-        storeName: storeName, did: did, privateKey: privateKey);
+      storeName: storeName,
+      did: did,
+      encryptionKey: encryptionKey,
+    );
     if (level > maxLevels - 2) {
       throw SMTReachedMaxLevelException(
         errorMessage: "Reached max level",
@@ -209,8 +236,16 @@ class SMTDataSource {
 
     if (pathNewLeaf[level] == pathOldLeaf[level]) {
       // We need to go deeper!
-      final nextKey = await _pushLeaf(newLeaf, oldLeaf, level + 1, pathNewLeaf,
-          pathOldLeaf, storeName, did, privateKey);
+      final nextKey = await _pushLeaf(
+        newLeaf,
+        oldLeaf,
+        level + 1,
+        pathNewLeaf,
+        pathOldLeaf,
+        storeName,
+        did,
+        encryptionKey,
+      );
       late final List<HashEntity> newNodeChildren;
       if (pathNewLeaf[level]) {
         // go right
@@ -225,8 +260,11 @@ class SMTDataSource {
       ]);
       final nodeHash = HashEntity.fromBigInt(nodeHashData);
       final NodeEntity newNodeMiddle = NodeEntity(
-          children: newNodeChildren, hash: nodeHash, type: NodeType.middle);
-      return _addNode(newNodeMiddle, storeName, did, privateKey);
+        children: newNodeChildren,
+        hash: nodeHash,
+        type: NodeType.middle,
+      );
+      return _addNode(newNodeMiddle, storeName, did, encryptionKey);
     }
 
     final oldLeafKey = oldLeaf.hash;
@@ -243,9 +281,12 @@ class SMTDataSource {
     ]);
     final nodeHash = HashEntity.fromBigInt(nodeHashData);
     final NodeEntity newNodeMiddle = NodeEntity(
-        children: newNodeChildren, hash: nodeHash, type: NodeType.middle);
-    await _addNode(newLeaf, storeName, did, privateKey);
-    return _addNode(newNodeMiddle, storeName, did, privateKey);
+      children: newNodeChildren,
+      hash: nodeHash,
+      type: NodeType.middle,
+    );
+    await _addNode(newLeaf, storeName, did, encryptionKey);
+    return _addNode(newNodeMiddle, storeName, did, encryptionKey);
   }
 
   _getPath(int numLevel, HashEntity h) {
@@ -261,18 +302,21 @@ class SMTDataSource {
     required HashEntity key,
     required String storeName,
     required String did,
-    required String privateKey,
+    required String encryptionKey,
   }) async {
     int maxLevels = await _storageSMTDataSource.getMaxLevels(
-        storeName: storeName, did: did, privateKey: privateKey);
+        storeName: storeName, did: did, encryptionKey: encryptionKey);
     final path = _getPath(maxLevels, key);
     var siblings = <HashEntity>[];
     final root = await _storageSMTDataSource.getRoot(
-        storeName: storeName, did: did, privateKey: privateKey);
+        storeName: storeName, did: did, encryptionKey: encryptionKey);
     var nextKey = root;
     for (int depth = 0; depth < maxLevels; depth++) {
       final node = await _storageSMTDataSource.getNode(
-          key: nextKey, storeName: storeName, did: did, privateKey: privateKey);
+          key: nextKey,
+          storeName: storeName,
+          did: did,
+          encryptionKey: encryptionKey);
 
       switch (node.type) {
         case NodeType.empty:

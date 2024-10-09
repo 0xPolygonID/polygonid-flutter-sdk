@@ -6,12 +6,12 @@ import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_
 class GetCredentialByPartialIdParam {
   final String partialId;
   final String genesisDid;
-  final String privateKey;
+  final String encryptionKey;
 
   GetCredentialByPartialIdParam({
     required this.partialId,
     required this.genesisDid,
-    required this.privateKey,
+    required this.encryptionKey,
   });
 }
 
@@ -26,12 +26,13 @@ class GetCredentialByPartialIdUseCase
   );
 
   @override
-  Future<ClaimEntity> execute(
-      {required GetCredentialByPartialIdParam param}) async {
+  Future<ClaimEntity> execute({
+    required GetCredentialByPartialIdParam param,
+  }) async {
     return _credentialRepository.getCredentialByPartialId(
       partialId: param.partialId,
       genesisDid: param.genesisDid,
-      privateKey: param.privateKey,
+      encryptionKey: param.encryptionKey,
     );
   }
 }

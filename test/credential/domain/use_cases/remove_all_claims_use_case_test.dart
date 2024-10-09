@@ -12,7 +12,7 @@ import 'remove_all_claims_use_case_test.mocks.dart';
 const identifier = "theIdentifier";
 const privateKey = "thePrivateKey";
 const ids = ["theId", "theId1", "theId2"];
-final param = RemoveAllClaimsParam(did: identifier, privateKey: privateKey);
+final param = RemoveAllClaimsParam(did: identifier, encryptionKey: privateKey);
 final exception = Exception();
 
 // Dependencies
@@ -36,7 +36,7 @@ void main() {
 
       // Given
       when(credentialRepository.removeAllClaims(
-              genesisDid: identifier, privateKey: privateKey))
+              genesisDid: identifier, encryptionKey: privateKey))
           .thenAnswer((realInvocation) => Future.value());
     });
 
@@ -48,7 +48,7 @@ void main() {
       // Then
       var capturedRemove = verify(credentialRepository.removeAllClaims(
               genesisDid: captureAnyNamed('genesisDid'),
-              privateKey: captureAnyNamed('privateKey')))
+              encryptionKey: captureAnyNamed('encryptionKey')))
           .captured;
       expect(capturedRemove[0], identifier);
       expect(capturedRemove[1], privateKey);
@@ -59,7 +59,7 @@ void main() {
         () async {
       // Given
       when(credentialRepository.removeAllClaims(
-              genesisDid: identifier, privateKey: privateKey))
+              genesisDid: identifier, encryptionKey: privateKey))
           .thenAnswer((realInvocation) => Future.error(exception));
 
       // When
@@ -68,7 +68,7 @@ void main() {
       // Then
       var capturedRemove = verify(credentialRepository.removeAllClaims(
               genesisDid: captureAnyNamed('genesisDid'),
-              privateKey: captureAnyNamed('privateKey')))
+              encryptionKey: captureAnyNamed('encryptionKey')))
           .captured;
       expect(capturedRemove[0], identifier);
       expect(capturedRemove[1], privateKey);

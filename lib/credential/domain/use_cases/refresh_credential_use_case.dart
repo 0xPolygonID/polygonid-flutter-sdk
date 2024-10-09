@@ -15,6 +15,18 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:uuid/uuid.dart';
 
+class RefreshCredentialParam {
+  final ClaimEntity credential;
+  final String genesisDid;
+  final String privateKey;
+
+  RefreshCredentialParam({
+    required this.credential,
+    required this.genesisDid,
+    required this.privateKey,
+  });
+}
+
 class RefreshCredentialUseCase
     extends FutureUseCase<RefreshCredentialParam, ClaimEntity> {
   final CredentialRepository _credentialRepository;
@@ -36,14 +48,22 @@ class RefreshCredentialUseCase
   );
 
   @override
-  Future<ClaimEntity> execute({required RefreshCredentialParam param}) async {
-    var identityEntity = await _getIdentityUseCase.execute(
-        param: GetIdentityParam(
-            genesisDid: param.genesisDid, privateKey: param.privateKey));
+  Future<ClaimEntity> execute({
+    required RefreshCredentialParam param,
+  }) async {
+    final encryptionKey = param.privateKey;
+
+    final identityEntity = await _getIdentityUseCase.execute(
+      param: GetIdentityParam(
+        genesisDid: param.genesisDid,
+        privateKey: param.privateKey,
+      ),
+    );
 
     BigInt claimSubjectProfileNonce = identityEntity.profiles.keys.firstWhere(
-        (k) => identityEntity.profiles[k] == param.credential.did,
-        orElse: () => GENESIS_PROFILE_NONCE);
+      (k) => identityEntity.profiles[k] == param.credential.did,
+      orElse: () => GENESIS_PROFILE_NONCE,
+    );
 
     if (!param.credential.info.containsKey("refreshService") ||
         param.credential.info["refreshService"] == null) {
@@ -93,7 +113,7 @@ class RefreshCredentialUseCase
         param: RemoveClaimsParam(
           claimIds: [param.credential.id],
           genesisDid: param.genesisDid,
-          privateKey: param.privateKey,
+          encryptionKey: encryptionKey,
         ),
       );
     }
@@ -102,22 +122,10 @@ class RefreshCredentialUseCase
       param: SaveClaimsParam(
         claims: [claimEntity],
         genesisDid: param.genesisDid,
-        privateKey: param.privateKey,
+        encryptionKey: encryptionKey,
       ),
     );
 
     return claimEntity;
   }
-}
-
-class RefreshCredentialParam {
-  final ClaimEntity credential;
-  final String genesisDid;
-  final String privateKey;
-
-  RefreshCredentialParam({
-    required this.credential,
-    required this.genesisDid,
-    required this.privateKey,
-  });
 }

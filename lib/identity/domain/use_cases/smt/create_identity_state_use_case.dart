@@ -11,11 +11,13 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_public_keys_
 
 class CreateIdentityStateParam {
   final String did;
-  final String privateKey;
+  final List<String> bjjPublicKey;
+  final String encryptionKey;
 
   CreateIdentityStateParam({
     required this.did,
-    required this.privateKey,
+    required this.bjjPublicKey,
+    required this.encryptionKey,
   });
 }
 
@@ -24,7 +26,7 @@ class CreateIdentityStateUseCase
   final IdentityRepository _identityRepository;
   final SMTRepository _smtRepository;
   final GetAuthClaimUseCase _getAuthClaimUseCase;
-  final GetPublicKeysUseCase _getPublicKeysUseCase;
+  final GetPublicKeyUseCase _getPublicKeysUseCase;
   final StacktraceManager _stacktraceManager;
 
   CreateIdentityStateUseCase(
@@ -37,36 +39,36 @@ class CreateIdentityStateUseCase
 
   @override
   Future<void> execute({required CreateIdentityStateParam param}) async {
-    final publicKeys =
-        await _getPublicKeysUseCase.execute(param: param.privateKey);
     try {
       await _smtRepository.createSMT(
         maxLevels: 40,
         type: TreeType.claims,
         did: param.did,
-        privateKey: param.privateKey,
+        encryptionKey: param.encryptionKey,
       );
       await _smtRepository.createSMT(
         maxLevels: 40,
         type: TreeType.revocation,
         did: param.did,
-        privateKey: param.privateKey,
+        encryptionKey: param.encryptionKey,
       );
       await _smtRepository.createSMT(
         maxLevels: 40,
         type: TreeType.roots,
         did: param.did,
-        privateKey: param.privateKey,
+        encryptionKey: param.encryptionKey,
       );
 
-      final authClaim = await _getAuthClaimUseCase.execute(param: publicKeys);
+      final authClaim = await _getAuthClaimUseCase.execute(
+        param: param.bjjPublicKey,
+      );
       NodeEntity authClaimNode =
           await _identityRepository.getAuthClaimNode(children: authClaim);
       await _smtRepository.addLeaf(
         leaf: authClaimNode,
         type: TreeType.claims,
         did: param.did,
-        privateKey: param.privateKey,
+        encryptionKey: param.encryptionKey,
       );
       _stacktraceManager.addTrace("[CreateIdentityStateUseCase] State created");
       logger().i("[CreateIdentityStateUseCase] State created with: $param");
@@ -78,53 +80,5 @@ class CreateIdentityStateUseCase
       logger().e("[CreateIdentityStateUseCase] Error: $error");
       rethrow;
     }
-    /*return;
-    return Future.wait(
-      [
-        _smtRepository.createSMT(
-          maxLevels: 40,
-          type: TreeType.claims,
-          did: param.did,
-          privateKey: param.privateKey,
-        ),
-        _smtRepository.createSMT(
-          maxLevels: 40,
-          type: TreeType.revocation,
-          did: param.did,
-          privateKey: param.privateKey,
-        ),
-        _smtRepository.createSMT(
-          maxLevels: 40,
-          type: TreeType.roots,
-          did: param.did,
-          privateKey: param.privateKey,
-        ),
-      ],
-      eagerError: true,
-    )
-        .then(
-          (_) => _getIdentityAuthClaimUseCase.execute(param: param.privateKey),
-        )
-        .then(
-          (authClaim) =>
-              _identityRepository.getAuthClaimNode(children: authClaim),
-        )
-        .then(
-          (node) => _smtRepository.addLeaf(
-            leaf: node,
-            type: TreeType.claims,
-            did: param.did,
-            privateKey: param.privateKey,
-          ),
-        )
-        .then((_) {
-      _stacktraceManager.addTrace("[CreateIdentityStateUseCase] State created");
-      logger().i("[CreateIdentityStateUseCase] State created with: $param");
-    }).catchError((error) {
-      _stacktraceManager.addTrace("[CreateIdentityStateUseCase] Error: $error");
-      _stacktraceManager.addError("[CreateIdentityStateUseCase] Error: $error");
-      logger().e("[CreateIdentityStateUseCase] Error: $error");
-      throw error;
-    });*/
   }
 }

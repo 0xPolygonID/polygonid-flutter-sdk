@@ -127,8 +127,8 @@ class PolygonIdFlutterChannel
 
           return addInteraction(
                   interaction: interaction,
-                  genesisDid: call.arguments['genesisDid'] as String?,
-                  privateKey: call.arguments['privateKey'] as String?)
+                  genesisDid: call.arguments['genesisDid'] as String,
+                  privateKey: call.arguments['privateKey'] as String)
               .then((interaction) => jsonEncode(interaction.toJson()));
 
         case 'authenticate':
@@ -447,14 +447,16 @@ class PolygonIdFlutterChannel
 
   /// Iden3comm
   @override
-  Future<InteractionBaseEntity> addInteraction(
-      {required InteractionBaseEntity interaction,
-      String? genesisDid,
-      String? privateKey}) {
+  Future<InteractionBaseEntity> addInteraction({
+    required InteractionBaseEntity interaction,
+    required String genesisDid,
+    required String privateKey,
+  }) {
     return _polygonIdSdk.iden3comm.addInteraction(
-        interaction: interaction,
-        genesisDid: genesisDid,
-        privateKey: privateKey);
+      interaction: interaction,
+      genesisDid: genesisDid,
+      privateKey: privateKey,
+    );
   }
 
   @override

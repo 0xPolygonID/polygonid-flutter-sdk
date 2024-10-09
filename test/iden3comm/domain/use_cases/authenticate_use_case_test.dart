@@ -132,7 +132,7 @@ void main() {
                   param: captureAnyNamed('param')))
               .captured
               .first;
-          expect(captureDidIdentifier.privateKey, CommonMocks.privateKey);
+          expect(captureDidIdentifier.bjjPrivateKey, CommonMocks.privateKey);
           expect(captureDidIdentifier.blockchain, CommonMocks.name);
           expect(captureDidIdentifier.network, CommonMocks.network);
 

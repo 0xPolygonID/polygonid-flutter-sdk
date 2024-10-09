@@ -27,15 +27,16 @@ class InteractionRepositoryImpl implements InteractionRepository {
   );
 
   @override
-  Future<InteractionBaseEntity> addInteraction(
-      {required InteractionBaseEntity interaction,
-      String? genesisDid,
-      String? privateKey}) {
-    if (genesisDid != null && privateKey != null) {
+  Future<InteractionBaseEntity> addInteraction({
+    required InteractionBaseEntity interaction,
+    String? genesisDid,
+    String? encryptionKey,
+  }) {
+    if (genesisDid != null && encryptionKey != null) {
       return _secureStorageInteractionDataSource.storeInteractions(
         interactions: [_interactionMapper.mapTo(interaction)],
         did: genesisDid,
-        privateKey: privateKey,
+        encryptionKey: encryptionKey,
       ).then((interactionDTOs) =>
           _interactionMapper.mapFrom(interactionDTOs.first));
     } else {
@@ -48,13 +49,15 @@ class InteractionRepositoryImpl implements InteractionRepository {
 
   @override
   Future<List<InteractionBaseEntity>> getInteractions(
-      {List<FilterEntity>? filters, String? genesisDid, String? privateKey}) {
-    if (genesisDid != null && privateKey != null) {
+      {List<FilterEntity>? filters,
+      String? genesisDid,
+      String? encryptionKey}) {
+    if (genesisDid != null && encryptionKey != null) {
       return _secureStorageInteractionDataSource
           .getInteractions(
               filter: filters == null ? null : _filtersMapper.mapTo(filters),
               did: genesisDid,
-              privateKey: privateKey)
+              encryptionKey: encryptionKey)
           .then((interactions) => interactions
               .map((interaction) => _interactionMapper.mapFrom(interaction))
               .toList());
@@ -72,14 +75,14 @@ class InteractionRepositoryImpl implements InteractionRepository {
   Future<InteractionBaseEntity> getInteraction({
     required String id,
     String? genesisDid,
-    String? privateKey,
+    String? encryptionKey,
   }) async {
-    if (genesisDid != null && privateKey != null) {
+    if (genesisDid != null && encryptionKey != null) {
       List<Map<String, dynamic>> interactions =
           await _secureStorageInteractionDataSource.getInteractions(
         filter: _interactionIdFilterMapper.mapTo(id),
         did: genesisDid,
-        privateKey: privateKey,
+        encryptionKey: encryptionKey,
       );
       if (interactions.isEmpty) {
         _stacktraceManager.addError("Interaction not found");
@@ -104,13 +107,16 @@ class InteractionRepositoryImpl implements InteractionRepository {
   }
 
   @override
-  Future<void> removeInteractions(
-      {required List<String> ids, String? genesisDid, String? privateKey}) {
-    if (genesisDid != null && privateKey != null) {
+  Future<void> removeInteractions({
+    required List<String> ids,
+    String? genesisDid,
+    String? encryptionKey,
+  }) {
+    if (genesisDid != null && encryptionKey != null) {
       return _secureStorageInteractionDataSource.removeInteractions(
         ids: ids,
         did: genesisDid,
-        privateKey: privateKey,
+        encryptionKey: encryptionKey,
       );
     } else {
       return _storageInteractionDataSource.removeInteractions(ids: ids);

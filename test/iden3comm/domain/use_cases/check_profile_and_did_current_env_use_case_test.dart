@@ -8,6 +8,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exce
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_public_keys_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/check_profile_validity_use_case.dart';
 
 import '../../../common/common_mocks.dart';
@@ -23,6 +24,7 @@ MockGetSelectedChainUseCase getSelectedChainUseCase =
     MockGetSelectedChainUseCase();
 MockGetDidIdentifierUseCase getDidIdentifierUseCase =
     MockGetDidIdentifierUseCase();
+MockGetPublicKeyUseCase getPublicKeyUseCase = MockGetPublicKeyUseCase();
 MockStacktraceManager stacktraceStreamManager = MockStacktraceManager();
 
 // Tested instance
@@ -31,6 +33,7 @@ CheckProfileAndDidCurrentEnvUseCase useCase =
   checkProfileValidityUseCase,
   getSelectedChainUseCase,
   getDidIdentifierUseCase,
+  getPublicKeyUseCase,
   stacktraceStreamManager,
 );
 
@@ -38,6 +41,7 @@ CheckProfileAndDidCurrentEnvUseCase useCase =
   CheckProfileValidityUseCase,
   GetSelectedChainUseCase,
   GetDidIdentifierUseCase,
+  GetPublicKeyUseCase,
   StacktraceManager,
 ])
 void main() {
@@ -57,7 +61,7 @@ void main() {
         useCase.execute(
             param: CheckProfileAndDidCurrentEnvParam(
                 did: CommonMocks.did,
-                privateKey: CommonMocks.privateKey,
+                publicKey: CommonMocks.publicKey,
                 profileNonce: CommonMocks.nonce)),
         completes);
 
@@ -75,7 +79,7 @@ void main() {
         verify(getDidIdentifierUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(captureDidIdentifier.privateKey, CommonMocks.privateKey);
+    expect(captureDidIdentifier.bjjPublicKey, CommonMocks.publicKey);
     expect(captureDidIdentifier.blockchain, CommonMocks.name);
     expect(captureDidIdentifier.network, CommonMocks.network);
   });
@@ -92,7 +96,7 @@ void main() {
         .execute(
             param: CheckProfileAndDidCurrentEnvParam(
                 did: CommonMocks.did,
-                privateKey: CommonMocks.privateKey,
+                publicKey: CommonMocks.publicKey,
                 profileNonce: CommonMocks.nonce))
         .then((_) => expect(true, false))
         .catchError((error) {
@@ -115,7 +119,7 @@ void main() {
         verify(getDidIdentifierUseCase.execute(param: captureAnyNamed('param')))
             .captured
             .first;
-    expect(captureDidIdentifier.privateKey, CommonMocks.privateKey);
+    expect(captureDidIdentifier.bjjPublicKey, CommonMocks.publicKey);
     expect(captureDidIdentifier.blockchain, CommonMocks.name);
     expect(captureDidIdentifier.network, CommonMocks.network);
   });
@@ -132,7 +136,7 @@ void main() {
         useCase.execute(
             param: CheckProfileAndDidCurrentEnvParam(
                 did: CommonMocks.did,
-                privateKey: CommonMocks.privateKey,
+                publicKey: CommonMocks.publicKey,
                 profileNonce: CommonMocks.nonce)),
         throwsA(checkProfileValidityException));
 

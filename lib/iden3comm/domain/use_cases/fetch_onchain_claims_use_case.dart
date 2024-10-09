@@ -24,6 +24,7 @@ import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_public_keys_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:web3dart/crypto.dart';
@@ -56,6 +57,7 @@ class FetchOnchainClaimsUseCase
   final GetDidUseCase _getDidUseCase;
   final SaveClaimsUseCase _saveClaimsUseCase;
   final CacheCredentialUseCase _cacheCredentialUseCase;
+  final GetPublicKeyUseCase _getPublicKeyUseCase;
   final LocalContractFilesDataSource _localContractFilesDataSource;
   final IdentityRepository _identityRepository;
   final DidProfileInfoRepository _didProfileInfoRepository;
@@ -70,6 +72,7 @@ class FetchOnchainClaimsUseCase
     this._getDidUseCase,
     this._saveClaimsUseCase,
     this._cacheCredentialUseCase,
+    this._getPublicKeyUseCase,
     this._localContractFilesDataSource,
     this._identityRepository,
     this._didProfileInfoRepository,
@@ -86,10 +89,13 @@ class FetchOnchainClaimsUseCase
     /// Then save the list of [ClaimEntity]
 
     try {
+      final bjjPublicKey =
+          await _getPublicKeyUseCase.execute(param: param.privateKey);
+
       await _checkProfileAndDidCurrentEnvUseCase.execute(
         param: CheckProfileAndDidCurrentEnvParam(
           did: param.genesisDid,
-          privateKey: param.privateKey,
+          publicKey: bjjPublicKey,
           profileNonce: param.profileNonce,
         ),
       );
@@ -98,8 +104,8 @@ class FetchOnchainClaimsUseCase
       final chain = await _getSelectedChainUseCase.execute();
 
       final profileDid = await _getDidIdentifierUseCase.execute(
-        param: GetDidIdentifierParam.withPrivateKey(
-          privateKey: param.privateKey,
+        param: GetDidIdentifierParam(
+          bjjPublicKey: bjjPublicKey,
           blockchain: chain.blockchain,
           network: chain.network,
           profileNonce: param.profileNonce,
@@ -110,6 +116,7 @@ class FetchOnchainClaimsUseCase
       final claims = await _fetchOnchainClaims(
         param.contractAddress,
         profileDid,
+        bjjPublicKey,
         param,
       );
 
@@ -125,6 +132,7 @@ class FetchOnchainClaimsUseCase
   Future<List<ClaimEntity>> _fetchOnchainClaims(
     String contractAddress,
     String profileDid,
+    List<String> bjjPublicKey,
     FetchOnchainClaimsParam param,
   ) async {
     final env = await _getEnvUseCase.execute();
@@ -175,7 +183,7 @@ class FetchOnchainClaimsUseCase
         await _didProfileInfoRepository.getDidProfileInfoByInteractedWithDid(
       interactedWithDid: issuerDid,
       genesisDid: param.genesisDid,
-      privateKey: param.privateKey,
+      encryptionKey: param.privateKey,
     );
 
     BigInt nonce;
@@ -186,8 +194,8 @@ class FetchOnchainClaimsUseCase
     }
 
     final did = await _getDidIdentifierUseCase.execute(
-      param: GetDidIdentifierParam.withPrivateKey(
-        privateKey: param.privateKey,
+      param: GetDidIdentifierParam(
+        bjjPublicKey: bjjPublicKey,
         blockchain: chain.blockchain,
         network: chain.network,
         profileNonce: nonce,

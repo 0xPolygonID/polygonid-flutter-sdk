@@ -130,7 +130,7 @@ void main() {
       // Given
       when(storageClaimDataSource.storeClaims(
               did: anyNamed('did'),
-              privateKey: anyNamed('privateKey'),
+              encryptionKey: anyNamed('encryptionKey'),
               claims: anyNamed('claims')))
           .thenAnswer((realInvocation) => Future.value());
       when(claimMapper.mapTo(any)).thenReturn(claimDTOs[0]);
@@ -143,18 +143,18 @@ void main() {
       await expectLater(
           repository.saveClaims(
               genesisDid: CommonMocks.identifier,
-              privateKey: CommonMocks.privateKey,
+              encryptionKey: CommonMocks.encryptionKey,
               claims: claimEntities),
           completes);
 
       // Then
       var captureStore = verify(storageClaimDataSource.storeClaims(
               did: captureAnyNamed('did'),
-              privateKey: captureAnyNamed('privateKey'),
+              encryptionKey: captureAnyNamed('encryptionKey'),
               claims: captureAnyNamed('claims')))
           .captured;
       expect(captureStore[0], CommonMocks.identifier);
-      expect(captureStore[1], CommonMocks.privateKey);
+      expect(captureStore[1], CommonMocks.encryptionKey);
       expect(captureStore[2], [claimDTOs[0], claimDTOs[0]]);
 
       var mapperVerify = verify(claimMapper.mapTo(captureAny));
@@ -170,7 +170,7 @@ void main() {
       // Given
       when(storageClaimDataSource.storeClaims(
               did: anyNamed('did'),
-              privateKey: anyNamed('privateKey'),
+              encryptionKey: anyNamed('encryptionKey'),
               claims: anyNamed('claims')))
           .thenAnswer((realInvocation) => Future.error(exception));
 
@@ -178,7 +178,7 @@ void main() {
       await repository
           .saveClaims(
               genesisDid: CommonMocks.identifier,
-              privateKey: CommonMocks.privateKey,
+              encryptionKey: CommonMocks.encryptionKey,
               claims: claimEntities)
           .then((_) => expect(true, false))
           .catchError((error) {
@@ -189,11 +189,11 @@ void main() {
       // Then
       var captureStore = verify(storageClaimDataSource.storeClaims(
               did: captureAnyNamed('did'),
-              privateKey: captureAnyNamed('privateKey'),
+              encryptionKey: captureAnyNamed('encryptionKey'),
               claims: captureAnyNamed('claims')))
           .captured;
       expect(captureStore[0], CommonMocks.identifier);
-      expect(captureStore[1], CommonMocks.privateKey);
+      expect(captureStore[1], CommonMocks.encryptionKey);
       expect(captureStore[2], [claimDTOs[0], claimDTOs[0]]);
 
       verify(claimMapper.mapTo(captureAny));
@@ -205,7 +205,7 @@ void main() {
       // Given
       when(storageClaimDataSource.getClaims(
               did: anyNamed('did'),
-              privateKey: anyNamed('privateKey'),
+              encryptionKey: anyNamed('encryptionKey'),
               filter: anyNamed('filter')))
           .thenAnswer((realInvocation) => Future.value(claimDTOs));
       when(claimMapper.mapFrom(any)).thenReturn(claimEntities[0]);
@@ -219,17 +219,17 @@ void main() {
       expect(
           await repository.getClaims(
             genesisDid: CommonMocks.identifier,
-            privateKey: CommonMocks.privateKey,
+            encryptionKey: CommonMocks.encryptionKey,
           ),
           [claimEntities[0], claimEntities[0]]);
 
       // Then
       var captureGet = verify(storageClaimDataSource.getClaims(
               did: captureAnyNamed('did'),
-              privateKey: captureAnyNamed('privateKey')))
+              encryptionKey: captureAnyNamed('encryptionKey')))
           .captured;
       expect(captureGet[0], CommonMocks.identifier);
-      expect(captureGet[1], CommonMocks.privateKey);
+      expect(captureGet[1], CommonMocks.encryptionKey);
 
       verifyNever(filtersMapper.mapTo(captureAny));
 
@@ -247,18 +247,18 @@ void main() {
       expect(
           await repository.getClaims(
               genesisDid: CommonMocks.identifier,
-              privateKey: CommonMocks.privateKey,
+              encryptionKey: CommonMocks.encryptionKey,
               filters: filters),
           [claimEntities[0], claimEntities[0]]);
 
       // Then
       var captureGet = verify(storageClaimDataSource.getClaims(
               did: captureAnyNamed('did'),
-              privateKey: captureAnyNamed('privateKey'),
+              encryptionKey: captureAnyNamed('encryptionKey'),
               filter: captureAnyNamed('filter')))
           .captured;
       expect(captureGet[0], CommonMocks.identifier);
-      expect(captureGet[1], CommonMocks.privateKey);
+      expect(captureGet[1], CommonMocks.encryptionKey);
       expect(captureGet[2], filter);
 
       expect(verify(filtersMapper.mapTo(captureAny)).captured.first, filters);
@@ -276,7 +276,7 @@ void main() {
       // Given
       when(storageClaimDataSource.getClaims(
               did: anyNamed('did'),
-              privateKey: anyNamed('privateKey'),
+              encryptionKey: anyNamed('encryptionKey'),
               filter: anyNamed('filter')))
           .thenAnswer((realInvocation) => Future.error(exception));
 
@@ -284,7 +284,7 @@ void main() {
       await repository
           .getClaims(
               genesisDid: CommonMocks.identifier,
-              privateKey: CommonMocks.privateKey,
+              encryptionKey: CommonMocks.encryptionKey,
               filters: filters)
           .then((_) => expect(true, false))
           .catchError((error) {
@@ -295,11 +295,11 @@ void main() {
       // Then
       var captureGet = verify(storageClaimDataSource.getClaims(
               did: captureAnyNamed('did'),
-              privateKey: captureAnyNamed('privateKey'),
+              encryptionKey: captureAnyNamed('encryptionKey'),
               filter: captureAnyNamed('filter')))
           .captured;
       expect(captureGet[0], CommonMocks.identifier);
-      expect(captureGet[1], CommonMocks.privateKey);
+      expect(captureGet[1], CommonMocks.encryptionKey);
       expect(captureGet[2], filter);
 
       expect(verify(filtersMapper.mapTo(captureAny)).captured.first, filters);
@@ -313,14 +313,14 @@ void main() {
       // Given
       when(storageClaimDataSource.getClaims(
               did: anyNamed('did'),
-              privateKey: anyNamed('privateKey'),
+              encryptionKey: anyNamed('encryptionKey'),
               filter: anyNamed('filter')))
           .thenAnswer((realInvocation) => Future.value([claimDTOs[0]]));
       when(
         storageClaimDataSource.getClaim(
           credentialId: anyNamed('credentialId'),
           did: anyNamed('did'),
-          privateKey: CommonMocks.privateKey,
+          encryptionKey: CommonMocks.encryptionKey,
         ),
       ).thenAnswer((realInvocation) => Future.value(claimDTOs[0]));
 
@@ -336,7 +336,7 @@ void main() {
       expect(
         await repository.getClaim(
           genesisDid: CommonMocks.identifier,
-          privateKey: CommonMocks.privateKey,
+          encryptionKey: CommonMocks.encryptionKey,
           claimId: ids[0],
         ),
         claimEntities[0],
@@ -346,13 +346,13 @@ void main() {
         storageClaimDataSource.getClaim(
           credentialId: captureAnyNamed('credentialId'),
           did: captureAnyNamed('did'),
-          privateKey: captureAnyNamed('privateKey'),
+          encryptionKey: captureAnyNamed('encryptionKey'),
         ),
       ).captured;
 
       expect(captureGet[0], CommonMocks.id);
       expect(captureGet[1], CommonMocks.identifier);
-      expect(captureGet[2], CommonMocks.privateKey);
+      expect(captureGet[2], CommonMocks.encryptionKey);
 
       expect(
           verify(claimMapper.mapFrom(captureAny)).captured.first, claimDTOs[0]);
@@ -366,7 +366,7 @@ void main() {
         storageClaimDataSource.getClaim(
           credentialId: anyNamed('credentialId'),
           did: anyNamed('did'),
-          privateKey: anyNamed('privateKey'),
+          encryptionKey: anyNamed('encryptionKey'),
         ),
       ).thenAnswer((realInvocation) => Future.error(ClaimNotFoundException(
             id: ids[0],
@@ -376,7 +376,7 @@ void main() {
       await repository
           .getClaim(
             genesisDid: CommonMocks.identifier,
-            privateKey: CommonMocks.privateKey,
+            encryptionKey: CommonMocks.encryptionKey,
             claimId: ids[0],
           )
           .then((value) => expect(true, false))
@@ -388,13 +388,13 @@ void main() {
       var captureGet = verify(
         storageClaimDataSource.getClaim(
           did: captureAnyNamed('did'),
-          privateKey: captureAnyNamed('privateKey'),
+          encryptionKey: captureAnyNamed('encryptionKey'),
           credentialId: captureAnyNamed('credentialId'),
         ),
       ).captured;
 
       expect(captureGet[0], CommonMocks.identifier);
-      expect(captureGet[1], CommonMocks.privateKey);
+      expect(captureGet[1], CommonMocks.encryptionKey);
       expect(captureGet[2], CommonMocks.id);
 
       verifyNever(claimMapper.mapFrom(captureAny));
@@ -407,7 +407,7 @@ void main() {
       when(
         storageClaimDataSource.getClaim(
           did: anyNamed('did'),
-          privateKey: anyNamed('privateKey'),
+          encryptionKey: anyNamed('encryptionKey'),
           credentialId: anyNamed('credentialId'),
         ),
       ).thenAnswer(
@@ -418,7 +418,7 @@ void main() {
         repository.getClaim(
           genesisDid: CommonMocks.identifier,
           claimId: ids[0],
-          privateKey: CommonMocks.privateKey,
+          encryptionKey: CommonMocks.encryptionKey,
         ),
         throwsA(claimNotFoundException),
       );
@@ -427,13 +427,13 @@ void main() {
       final captureGet = verify(
         storageClaimDataSource.getClaim(
           did: captureAnyNamed('did'),
-          privateKey: captureAnyNamed('privateKey'),
+          encryptionKey: captureAnyNamed('encryptionKey'),
           credentialId: captureAnyNamed('credentialId'),
         ),
       ).captured;
 
       expect(captureGet[0], CommonMocks.identifier);
-      expect(captureGet[1], CommonMocks.privateKey);
+      expect(captureGet[1], CommonMocks.encryptionKey);
       expect(captureGet[2], CommonMocks.id);
 
       verifyNever(claimMapper.mapFrom(captureAny));
@@ -444,7 +444,7 @@ void main() {
     setUp(() {
       // Given
       when(storageClaimDataSource.removeAllClaims(
-              did: anyNamed('did'), privateKey: anyNamed('privateKey')))
+              did: anyNamed('did'), encryptionKey: anyNamed('encryptionKey')))
           .thenAnswer((realInvocation) => Future.value());
     });
 
@@ -454,16 +454,16 @@ void main() {
       await expectLater(
           repository.removeAllClaims(
               genesisDid: CommonMocks.identifier,
-              privateKey: CommonMocks.privateKey),
+              encryptionKey: CommonMocks.encryptionKey),
           completes);
 
       // Then
       var captureRemove = verify(storageClaimDataSource.removeAllClaims(
               did: captureAnyNamed('did'),
-              privateKey: captureAnyNamed('privateKey')))
+              encryptionKey: captureAnyNamed('encryptionKey')))
           .captured;
       expect(captureRemove[0], CommonMocks.identifier);
-      expect(captureRemove[1], CommonMocks.privateKey);
+      expect(captureRemove[1], CommonMocks.encryptionKey);
     });
 
     test(
@@ -471,14 +471,14 @@ void main() {
         () async {
       // Given
       when(storageClaimDataSource.removeAllClaims(
-              did: anyNamed('did'), privateKey: anyNamed('privateKey')))
+              did: anyNamed('did'), encryptionKey: anyNamed('encryptionKey')))
           .thenAnswer((realInvocation) => Future.error(exception));
 
       // When
       await repository
           .removeAllClaims(
               genesisDid: CommonMocks.identifier,
-              privateKey: CommonMocks.privateKey)
+              encryptionKey: CommonMocks.encryptionKey)
           .then((_) => expect(true, false))
           .catchError((error) {
         expect(error, isA<RemoveClaimsException>());
@@ -488,10 +488,10 @@ void main() {
       // Then
       var captureRemove = verify(storageClaimDataSource.removeAllClaims(
               did: captureAnyNamed('did'),
-              privateKey: captureAnyNamed('privateKey')))
+              encryptionKey: captureAnyNamed('encryptionKey')))
           .captured;
       expect(captureRemove[0], CommonMocks.identifier);
-      expect(captureRemove[1], CommonMocks.privateKey);
+      expect(captureRemove[1], CommonMocks.encryptionKey);
     });
   });
 
@@ -500,7 +500,7 @@ void main() {
       // Given
       when(storageClaimDataSource.removeClaims(
               did: anyNamed('did'),
-              privateKey: anyNamed('privateKey'),
+              encryptionKey: anyNamed('encryptionKey'),
               claimIds: anyNamed('claimIds')))
           .thenAnswer((realInvocation) => Future.value());
     });
@@ -512,18 +512,18 @@ void main() {
       await expectLater(
           repository.removeClaims(
               genesisDid: CommonMocks.identifier,
-              privateKey: CommonMocks.privateKey,
+              encryptionKey: CommonMocks.encryptionKey,
               claimIds: ids),
           completes);
 
       // Then
       var captureRemove = verify(storageClaimDataSource.removeClaims(
               did: captureAnyNamed('did'),
-              privateKey: captureAnyNamed('privateKey'),
+              encryptionKey: captureAnyNamed('encryptionKey'),
               claimIds: captureAnyNamed('claimIds')))
           .captured;
       expect(captureRemove[0], CommonMocks.identifier);
-      expect(captureRemove[1], CommonMocks.privateKey);
+      expect(captureRemove[1], CommonMocks.encryptionKey);
       expect(captureRemove[2], ids);
     });
 
@@ -533,7 +533,7 @@ void main() {
       // Given
       when(storageClaimDataSource.removeClaims(
               did: anyNamed('did'),
-              privateKey: anyNamed('privateKey'),
+              encryptionKey: anyNamed('encryptionKey'),
               claimIds: anyNamed('claimIds')))
           .thenAnswer((realInvocation) => Future.error(exception));
 
@@ -541,7 +541,7 @@ void main() {
       await repository
           .removeClaims(
               genesisDid: CommonMocks.identifier,
-              privateKey: CommonMocks.privateKey,
+              encryptionKey: CommonMocks.encryptionKey,
               claimIds: ids)
           .then((_) => expect(true, false))
           .catchError((error) {
@@ -552,94 +552,12 @@ void main() {
       // Then
       var captureRemove = verify(storageClaimDataSource.removeClaims(
               did: captureAnyNamed('did'),
-              privateKey: captureAnyNamed('privateKey'),
+              encryptionKey: captureAnyNamed('encryptionKey'),
               claimIds: captureAnyNamed('claimIds')))
           .captured;
       expect(captureRemove[0], CommonMocks.identifier);
-      expect(captureRemove[1], CommonMocks.privateKey);
+      expect(captureRemove[1], CommonMocks.encryptionKey);
       expect(captureRemove[2], ids);
     });
   });
-
-  // group("Encrypt db", () {
-  //   setUp(() {
-  //     when(storageClaimDataSource.getClaimsDb(
-  //             did: anyNamed('did'), privateKey: anyNamed('privateKey')))
-  //         .thenAnswer((realInvocation) => Future.value(mockDb));
-  //
-  //     when(encryptionKeyMapper.mapFrom(any))
-  //         .thenAnswer((realInvocation) => encryptionKey);
-  //
-  //     when(encryptionDbDataSource.encryptData(
-  //       data: anyNamed('data'),
-  //       key: anyNamed('key'),
-  //     )).thenAnswer((realInvocation) => encryptedDb);
-  //   });
-  //
-  //   test(
-  //       "Given an identifier and a privateKey as param, when I call exportEncryptedClaimsDb, then I expect the process to completes",
-  //       () async {
-  //     // When
-  //     expect(
-  //       await repository.exportClaims(
-  //           did: CommonMocks.identifier, privateKey: CommonMocks.privateKey),
-  //       encryptedDb,
-  //     );
-  //
-  //     // Then
-  //     var captureGet = verify(storageClaimDataSource.getClaimsDb(
-  //             did: captureAnyNamed('did'),
-  //             privateKey: captureAnyNamed('privateKey')))
-  //         .captured;
-  //     expect(captureGet[0], CommonMocks.identifier);
-  //     expect(captureGet[1], CommonMocks.privateKey);
-  //
-  //     var captureEncryptionKeyMapper =
-  //         verify(encryptionKeyMapper.mapFrom(captureAny)).captured;
-  //     expect(captureEncryptionKeyMapper[0], CommonMocks.privateKey);
-  //
-  //     var captureEncrypt = verify(encryptionDbDataSource.encryptData(
-  //       data: captureAnyNamed('data'),
-  //       key: captureAnyNamed('key'),
-  //     )).captured;
-  //     expect(captureEncrypt[0], mockDb);
-  //     expect(captureEncrypt[1], encryptionKey);
-  //   });
-  // });
-  //
-  // group("Decrypt an imported encrypted claims db", () {
-  //   setUp(() {
-  //     when(encryptionDbDataSource.decryptData(
-  //       encryptedData: anyNamed('encryptedData'),
-  //       key: anyNamed('key'),
-  //     )).thenAnswer((realInvocation) => mockDb);
-  //
-  //     when(encryptionKeyMapper.mapFrom(any))
-  //         .thenAnswer((realInvocation) => encryptionKey);
-  //
-  //     when(destinationPathDataSource.getDestinationPath(
-  //             did: anyNamed('did')))
-  //         .thenAnswer((realInvocation) => Future.value(destinationPath));
-  //
-  //     when(storageClaimDataSource.saveClaimsDb(
-  //       exportableDb: anyNamed('exportableDb'),
-  //       databaseFactory: anyNamed('databaseFactory'),
-  //       destinationPath: anyNamed('destinationPath'),
-  //       privateKey: anyNamed('privateKey'),
-  //     )).thenAnswer((realInvocation) => Future.value());
-  //   });
-  //
-  //   test(
-  //       "Given an encrypted db, a privateKey and an identinfier, when I call importEncryptedClaimsDb, then I expect the process to completes",
-  //       () {
-  //     // When
-  //     expect(
-  //       repository.importClaims(
-  //           encryptedDb: encryptedDb,
-  //           privateKey: CommonMocks.privateKey,
-  //           did: CommonMocks.identifier),
-  //       completes,
-  //     );
-  //   });
-  // });
 }

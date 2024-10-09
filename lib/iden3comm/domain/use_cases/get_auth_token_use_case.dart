@@ -64,10 +64,11 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
 
       Uint8List authInputs = await _getAuthInputsUseCase.execute(
         param: GetAuthInputsParam(
-          authChallenge,
-          param.genesisDid,
-          param.profileNonce,
-          param.privateKey,
+          challenge: authChallenge,
+          genesisDid: param.genesisDid,
+          profileNonce: param.profileNonce,
+          privateKey: param.privateKey,
+          encryptionKey: param.privateKey,
         ),
       );
 

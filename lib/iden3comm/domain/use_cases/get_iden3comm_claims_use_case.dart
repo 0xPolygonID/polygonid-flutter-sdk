@@ -23,7 +23,7 @@ class GetIden3commClaimsParam {
   final Iden3MessageEntity message;
   final String genesisDid;
   final BigInt profileNonce;
-  final String privateKey;
+  final String encryptionKey;
   final Map<int, Map<String, dynamic>> nonRevocationProofs;
 
   List<CredentialSortOrder> credentialSortOrderList;
@@ -32,7 +32,7 @@ class GetIden3commClaimsParam {
     required this.message,
     required this.genesisDid,
     required this.profileNonce,
-    required this.privateKey,
+    required this.encryptionKey,
     required this.nonRevocationProofs,
     this.credentialSortOrderList = const [],
   });
@@ -101,7 +101,7 @@ class GetIden3commClaimsUseCase
           filters: filtersForQueryClaimDb,
           genesisDid: param.genesisDid,
           profileNonce: param.profileNonce,
-          privateKey: param.privateKey,
+          encryptionKey: param.encryptionKey,
           credentialSortOrderList: param.credentialSortOrderList,
         ),
       );
@@ -134,7 +134,7 @@ class GetIden3commClaimsUseCase
             filters: filters,
             genesisDid: param.genesisDid,
             profileNonce: param.profileNonce,
-            privateKey: param.privateKey,
+            encryptionKey: param.encryptionKey,
             credentialSortOrderList: param.credentialSortOrderList,
           ),
         );

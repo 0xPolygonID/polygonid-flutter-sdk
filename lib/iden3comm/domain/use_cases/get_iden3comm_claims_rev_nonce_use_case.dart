@@ -12,13 +12,13 @@ class GetIden3commClaimsRevNonceParam {
   final Iden3MessageEntity message;
   final String genesisDid;
   final BigInt profileNonce;
-  final String privateKey;
+  final String encryptionKey;
 
   GetIden3commClaimsRevNonceParam({
     required this.message,
     required this.genesisDid,
     required this.profileNonce,
-    required this.privateKey,
+    required this.encryptionKey,
   });
 }
 
@@ -58,7 +58,7 @@ class GetIden3commClaimsRevNonceUseCase
                   filters: filters,
                   genesisDid: param.genesisDid,
                   profileNonce: param.profileNonce,
-                  privateKey: param.privateKey,
+                  encryptionKey: param.encryptionKey,
                 )))
             .then(
           (claims) async {

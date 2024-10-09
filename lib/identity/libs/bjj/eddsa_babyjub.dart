@@ -2,25 +2,32 @@ import 'dart:typed_data';
 
 import 'package:hex/hex.dart';
 import 'package:poseidon/poseidon.dart';
+import 'package:polygonid_flutter_sdk/common/kms/keys/types.dart';
+import 'package:web3dart/crypto.dart';
 
 import '../../../common/utils/hex_utils.dart';
 import '../../../common/utils/uint8_list_utils.dart';
 import 'bjj.dart';
 
+import 'package:polygonid_flutter_sdk/common/kms/keys/public_key.dart';
+import 'package:polygonid_flutter_sdk/common/kms/keys/private_key.dart';
+
+final bjjLib = BabyjubjubLib();
+
 /// Class representing EdDSA Baby Jub signature
-class Signature {
+class BjjSignature {
   late List<BigInt> r8;
   late BigInt s;
 
   /// Create a Signature with the R8 point and S scalar
   /// @param {List[BigInt]} r8 - R8 point
   /// @param {BigInt} s - BigInt
-  Signature(this.r8, this.s);
+  BjjSignature(this.r8, this.s);
 
   /// Create a Signature from a compressed Signature Buffer
   /// @param {Uint8List} buf - Buffer containing a signature
   /// @returns {Signature} Object signature
-  static Signature newFromCompressed(Uint8List buf) {
+  static BjjSignature newFromCompressed(Uint8List buf) {
     if (buf.length != 64) {
       throw ArgumentError('buf must be 64 bytes');
     }
@@ -40,30 +47,37 @@ class Signature {
     // S is decoded manually
     BigInt s = Uint8ArrayUtils.beBuff2int(
         Uint8List.fromList(buf.sublist(32, 64).reversed.toList()));
-    return Signature(r8, s);
+    return BjjSignature(r8, s);
   }
 }
 
 /// Class representing a EdDSA Baby Jub public key
-class PublicKey {
-  late List<BigInt> p;
+class BjjPublicKey extends PublicKey {
+  final List<BigInt> p;
 
   /// Create a PublicKey from a curve point p
   /// @param {List[BigInt]} p - curve point
-  PublicKey(this.p);
+  BjjPublicKey(this.p)
+      : super(
+          hex: bjjLib.packPoint(
+            p[0].toString(),
+            p[1].toString(),
+          ),
+        );
+
+  KeyType get keyType => KeyType.BabyJubJub;
 
   /// Create a PublicKey from a bigInt compressed pubKey
   ///
   /// @param {BigInt} compressedBigInt - compressed public key in a bigInt
   ///
   /// @returns {PublicKey} public key class
-  static PublicKey newFromCompressed(BigInt compressedBigInt) {
+  factory BjjPublicKey.newFromCompressed(BigInt compressedBigInt) {
     final Uint8List compressedBuffLE =
         Uint8ArrayUtils.leInt2Buff(compressedBigInt, 32);
     if (compressedBuffLE.length != 32) {
       throw ArgumentError('buf must be 32 bytes');
     }
-    BabyjubjubLib bjjLib = BabyjubjubLib();
     final p =
         bjjLib.unpackPoint(Uint8ArrayUtils.uint8ListToString(compressedBuffLE));
     if (p == null) {
@@ -74,19 +88,21 @@ class PublicKey {
     List<BigInt> point = [];
     point.add(x);
     point.add(y);
-    return PublicKey(point);
+    return BjjPublicKey(point);
   }
 
   /// Compress the PublicKey
   /// @returns {Uint8List} - point compressed into a buffer
   Uint8List compress() {
-    BabyjubjubLib bjjLib = BabyjubjubLib();
     return HexUtils.hexToBytes(
-        bjjLib.packPoint(p[0].toString(), p[1].toString()));
+      bjjLib.packPoint(
+        p[0].toString(),
+        p[1].toString(),
+      ),
+    );
   }
 
-  bool verify(String messageHash, Signature signature) {
-    BabyjubjubLib bjjLib = BabyjubjubLib();
+  bool verify(String messageHash, BjjSignature signature) {
     List<int> pointList = [];
     pointList.add(p[0].toInt());
     pointList.add(p[1].toInt());
@@ -100,30 +116,25 @@ class PublicKey {
       messageHash,
     );
   }
-
-  String hex() {
-    BabyjubjubLib bjjLib = BabyjubjubLib();
-    return bjjLib.packPoint(p[0].toString(), p[1].toString());
-  }
 }
 
 /// Class representing EdDSA Baby Jub private key
-class PrivateKey {
+class BjjPrivateKey extends PrivateKey {
   late Uint8List sk;
 
   /// Create a PrivateKey from a 32 byte Buffer
   /// @param {Uint8List} buf - private key
-  PrivateKey(Uint8List buf) {
-    if (buf.length != 32) {
+  BjjPrivateKey(Uint8List bytes) : super(hex: bytesToHex(bytes)) {
+    if (bytes.length != 32) {
       throw ArgumentError('buf must be 32 bytes');
     }
-    sk = buf;
+    sk = bytes;
   }
 
   /// Retrieve PublicKey of the PrivateKey
   /// @returns {PublicKey} PublicKey derived from PrivateKey
-  PublicKey public() {
-    BabyjubjubLib bjjLib = BabyjubjubLib();
+  @override
+  BjjPublicKey publicKey() {
     String resultString = bjjLib.prv2pub(HexUtils.bytesToHex(sk));
     final stringList = resultString.split(",");
     stringList[0] = stringList[0].replaceAll("Fr(", "");
@@ -135,17 +146,22 @@ class PrivateKey {
     List<BigInt> p = [];
     p.add(x);
     p.add(y);
-    return PublicKey(p);
+    return BjjPublicKey(p);
   }
 
-  String sign(BigInt messageHash) {
-    BabyjubjubLib bjjLib = BabyjubjubLib();
-    String signature =
-        bjjLib.signPoseidon(HexUtils.bytesToHex(sk), messageHash.toString());
-    return signature;
-  }
+  @override
+  Uint8List sign(Uint8List message) {
+    final messageHashBytes = bytesToHex(message);
 
-  String hex() => HexUtils.bytesToHex(sk);
+    final messageHashBigInt = BigInt.parse(messageHashBytes, radix: 16);
+
+    String signature = bjjLib.signPoseidon(
+      HexUtils.bytesToHex(sk),
+      messageHashBigInt.toString(),
+    );
+
+    return Uint8ArrayUtils.uint8ListfromString(signature);
+  }
 }
 
 String hashPoseidon(

@@ -15,7 +15,7 @@ class GetClaimsParam {
   final List<FilterEntity>? filters;
   final String genesisDid;
   final BigInt profileNonce;
-  final String privateKey;
+  final String encryptionKey;
 
   List<CredentialSortOrder> credentialSortOrderList;
 
@@ -23,7 +23,7 @@ class GetClaimsParam {
     this.filters,
     required this.genesisDid,
     required this.profileNonce,
-    required this.privateKey,
+    required this.encryptionKey,
     this.credentialSortOrderList = const [],
   });
 }
@@ -58,7 +58,7 @@ class GetClaimsUseCase
       List<ClaimEntity> claims = await _credentialRepository.getClaims(
         filters: param.filters,
         genesisDid: param.genesisDid,
-        privateKey: param.privateKey,
+        encryptionKey: param.encryptionKey,
         credentialSortOrderList: param.credentialSortOrderList,
       );
       return claims;
