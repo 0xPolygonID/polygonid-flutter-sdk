@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -270,7 +271,7 @@ class Authenticate {
         );
       }
 
-      // perform the authentication with the auth token callin the callback url
+      // perform the authentication with the auth token calling the callback url
       http.Client httpClient = http.Client();
       Uri uri = Uri.parse(callbackUrl);
       http.Response response = await httpClient.post(
@@ -280,7 +281,7 @@ class Authenticate {
           HttpHeaders.acceptHeader: '*/*',
           HttpHeaders.contentTypeHeader: 'text/plain',
         },
-      );
+      ).timeout(const Duration(seconds: 30));
 
       _stacktraceManager.addTrace(
         "[Authenticate] responseStatusCode: ${response.statusCode}\nresponseBody: ${response.body}",
@@ -316,6 +317,12 @@ class Authenticate {
       } catch (e) {
         return null;
       }
+    } on TimeoutException catch (e) {
+      String waitingTime = e.duration?.inSeconds.toString() ?? "unknown";
+      throw NetworkException(
+          statusCode: 504,
+          errorMessage:
+              "Connection timeout while sending auth token to the requester.\nwaited for $waitingTime seconds.");
     } catch (e) {
       rethrow;
     }
