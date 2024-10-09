@@ -27,12 +27,13 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/i
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/gist_mtproof_mapper.dart';
+import 'package:poseidon/poseidon.dart';
+import 'package:poseidon/poseidon/poseidon.dart';
 import 'package:uuid/uuid.dart';
 
 class Iden3commRepositoryImpl extends Iden3commRepository {
@@ -40,8 +41,6 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   final RemoteIden3commDataSource _remoteIden3commDataSource;
   final LibPolygonIdCoreIden3commDataSource
       _libPolygonIdCoreIden3commDataSource;
-  final LibBabyJubJubDataSource
-      _libBabyJubJubDataSource; // TODO move bjj DS to common
   final AuthResponseMapper _authResponseMapper;
   final AuthProofMapper _authProofMapper;
   final GistMTProofMapper _gistProofMapper;
@@ -54,7 +53,6 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     this._iden3messageDataSource,
     this._remoteIden3commDataSource,
     this._libPolygonIdCoreIden3commDataSource,
-    this._libBabyJubJubDataSource,
     this._authResponseMapper,
     this._authProofMapper,
     this._gistProofMapper,
@@ -174,9 +172,9 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   }
 
   @override
-  Future<String> getChallenge({required String message}) {
+  Future<String> getChallenge({required String message}) async {
     final q = _qMapper.mapFrom(message);
-    return _libBabyJubJubDataSource.hashPoseidon(q);
+    return poseidon1([BigInt.parse(q)]).toString();
   }
 
   @override

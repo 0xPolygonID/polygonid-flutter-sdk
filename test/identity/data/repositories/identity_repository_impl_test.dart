@@ -9,7 +9,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/re
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
@@ -146,8 +145,6 @@ MockStorageIdentityDataSource storageIdentityDataSource =
 MockRPCDataSource rpcDataSource = MockRPCDataSource();
 MockLocalContractFilesDataSource localContractFilesDataSource =
     MockLocalContractFilesDataSource();
-MockLibBabyJubJubDataSource libBabyJubJubDataSource =
-    MockLibBabyJubJubDataSource();
 MockLibPolygonIdCoreIdentityDataSource libPolygonIdCoreIdentityDataSource =
     MockLibPolygonIdCoreIdentityDataSource();
 MockEncryptionDbDataSource encryptionDbDataSource =
@@ -168,7 +165,6 @@ IdentityRepository repository = IdentityRepositoryImpl(
   storageIdentityDataSource,
   rpcDataSource,
   localContractFilesDataSource,
-  libBabyJubJubDataSource,
   libPolygonIdCoreIdentityDataSource,
   encryptionDbDataSource,
   destinationPathDataSource,
@@ -186,7 +182,6 @@ IdentityRepository repository = IdentityRepositoryImpl(
   RPCDataSource,
   LocalContractFilesDataSource,
   LocalClaimDataSource,
-  LibBabyJubJubDataSource,
   LibPolygonIdCoreIdentityDataSource,
   EncryptionDbDataSource,
   DestinationPathDataSource,

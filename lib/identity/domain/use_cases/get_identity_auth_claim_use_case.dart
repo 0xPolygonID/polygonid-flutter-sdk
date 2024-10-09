@@ -21,7 +21,7 @@ class GetAuthClaimUseCase extends FutureUseCase<List<String>, List<String>> {
     return Future(() async {
       final authClaim = await _credentialRepo.getAuthClaim(publicKey: param);
 
-      logger().i("[GetIdentityAuthClaimUseCase] AuthClaim is $authClaim");
+      logger().d("[GetIdentityAuthClaimUseCase] AuthClaim is $authClaim");
 
       return authClaim;
     }).catchError((error) {
