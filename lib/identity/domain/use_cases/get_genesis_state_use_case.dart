@@ -44,7 +44,7 @@ class GetGenesisStateUseCase
         HashEntity.zero(),
       );
       _stacktraceManager.addTrace("[GetGenesisStateUseCase] State");
-      logger().i("[GetGenesisStateUseCase] State: $state");
+      logger().d("[GetGenesisStateUseCase] State: $state");
 
       return state;
     }).catchError((error) {
