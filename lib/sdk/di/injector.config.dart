@@ -786,7 +786,7 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i309.CredentialRepository>(),
           gh<_i267.StacktraceManager>(),
         ));
-    gh.factoryAsync<_i1049.ConfigRepositoryImpl>(() async =>
+    gh.singletonAsync<_i1049.ConfigRepositoryImpl>(() async =>
         _i1049.ConfigRepositoryImpl(
             await getAsync<_i525.StorageKeyValueDataSource>()));
     gh.factory<_i328.SMTRepositoryImpl>(() => _i328.SMTRepositoryImpl(

@@ -32,7 +32,8 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.d
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/gist_mtproof_mapper.dart';
-import 'package:poseidon/constants/p1.dart';
+import 'package:poseidon/poseidon.dart';
+import 'package:poseidon/poseidon/poseidon.dart';
 import 'package:uuid/uuid.dart';
 
 class Iden3commRepositoryImpl extends Iden3commRepository {
@@ -173,7 +174,6 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   @override
   Future<String> getChallenge({required String message}) async {
     final q = _qMapper.mapFrom(message);
-
     return poseidon1([BigInt.parse(q)]).toString();
   }
 

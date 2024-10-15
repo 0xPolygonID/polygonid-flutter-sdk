@@ -77,7 +77,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<NodeEntity> getAuthClaimNode({required List<String> children}) async {
+  Future<NodeEntity> getAuthClaimNode({required List<String> children}) {
     BigInt hashIndex = poseidon4([
       BigInt.parse(children[0]),
       BigInt.parse(children[1]),
@@ -90,7 +90,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
       BigInt.parse(children[6]),
       BigInt.parse(children[7]),
     ]);
-
     BigInt hashClaimNode = poseidon3([
       hashIndex,
       hashValue,
@@ -105,7 +104,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
       hash: HashEntity.fromBigInt(hashClaimNode),
       type: NodeType.leaf,
     );
-    return authClaimNode;
+    return Future.value(authClaimNode);
   }
 
   @override

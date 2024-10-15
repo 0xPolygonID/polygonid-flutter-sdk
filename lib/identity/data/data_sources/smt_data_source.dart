@@ -134,6 +134,7 @@ class SMTDataSource {
           // go left
           final nextKey = await _addLeaf(newLeaf, node.children[0], level + 1,
               path, storeName, did, privateKey);
+
           final newNodeChildren = [nextKey, node.children[1]];
           final nodeHashData = poseidon2([
             nextKey.toBigInt(),
@@ -346,10 +347,11 @@ class SMTDataSource {
     return Future.value(midKey);
   }
 
-  Future<bool> verifyProof(
-      {required MTProofEntity proof,
-      required NodeEntity node,
-      required HashEntity treeRoot}) async {
+  Future<bool> verifyProof({
+    required MTProofEntity proof,
+    required NodeEntity node,
+    required HashEntity treeRoot,
+  }) async {
     return getProofTreeRoot(proof: proof, node: node)
         .then((proofTreeRoot) => proofTreeRoot == treeRoot);
   }

@@ -26,14 +26,14 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 
 typedef enum
 {
-	PLGNSTATUSCODE_ERROR,
-	PLGNSTATUSCODE_NIL_POINTER,
+    PLGNSTATUSCODE_ERROR,
+    PLGNSTATUSCODE_NIL_POINTER,
 } PLGNStatusCode;
 
 typedef struct _PLGNStatus
 {
-	PLGNStatusCode status;
-	char *error_msg;
+    PLGNStatusCode status;
+    char *error_msg;
 } PLGNStatus;
 
 #line 1 "cgo-generated-wrapper"

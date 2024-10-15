@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -86,6 +87,7 @@ import 'package:polygonid_flutter_sdk/proof/gist_proof_cache.dart';
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/polygonidcore/pidcore_proof.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
+import 'package:poseidon/constants/p1.dart';
 import 'package:poseidon/poseidon.dart';
 import 'package:sembast/sembast.dart';
 import 'package:uuid/uuid.dart';
@@ -263,7 +265,7 @@ class Authenticate {
         );
       }
 
-      // perform the authentication with the auth token callin the callback url
+      // perform the authentication with the auth token calling the callback url
       http.Client httpClient = http.Client();
       Uri uri = Uri.parse(callbackUrl);
       http.Response response = await httpClient.post(
@@ -273,7 +275,7 @@ class Authenticate {
           HttpHeaders.acceptHeader: '*/*',
           HttpHeaders.contentTypeHeader: 'text/plain',
         },
-      );
+      ).timeout(const Duration(seconds: 30));
 
       _stacktraceManager.addTrace(
         "[Authenticate] responseStatusCode: ${response.statusCode}\nresponseBody: ${response.body}",
@@ -309,6 +311,12 @@ class Authenticate {
       } catch (e) {
         return null;
       }
+    } on TimeoutException catch (e) {
+      String waitingTime = e.duration?.inSeconds.toString() ?? "unknown";
+      throw NetworkException(
+          statusCode: 504,
+          errorMessage:
+              "Connection timeout while sending auth token to the requester.\nwaited for $waitingTime seconds.");
     } catch (e) {
       rethrow;
     }
@@ -1018,8 +1026,9 @@ class Authenticate {
     // Endianness
     BigInt endian = Uint8ArrayUtils.leBuff2int(sha);
 
-    final qNormalized = endian.qNormalize();
-    final authChallenge = poseidon1([qNormalized]).toString();
+    BigInt qNormalized = endian.qNormalize();
+
+    String authChallenge = poseidon1([qNormalized]).toString();
 
     String signature = await signMessage(
       privateKey: privateKeyBytes,

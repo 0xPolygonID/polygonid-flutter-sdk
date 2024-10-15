@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:hex/hex.dart';
+import 'package:poseidon/poseidon.dart';
 
 import '../../../common/utils/hex_utils.dart';
 import '../../../common/utils/uint8_list_utils.dart';
@@ -147,8 +148,14 @@ class PrivateKey {
   String hex() => HexUtils.bytesToHex(sk);
 }
 
-String packSignature(Uint8List signature) {
-  BabyjubjubLib bjjLib = BabyjubjubLib();
-  final sigString = Uint8ArrayUtils.uint8ListToString(signature);
-  return bjjLib.packSignature(sigString);
+String hashPoseidon(
+  String claimsTreeRoot,
+  String revocationTree,
+  String rootsTreeRoot,
+) {
+  return poseidon3([
+    BigInt.parse(claimsTreeRoot),
+    BigInt.parse(revocationTree),
+    BigInt.parse(rootsTreeRoot),
+  ]).toString();
 }

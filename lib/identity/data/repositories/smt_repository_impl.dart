@@ -33,9 +33,9 @@ class SMTRepositoryImpl implements SMTRepository {
   //   final valueHash = (value);
   //   final oneHash = HashDTO.fromBigInt(BigInt.one);
   //   final newNodeChildren = [keyHash, valueHash, oneHash];
-  //   String nodeHashString = await _libBabyJubJubDataSource.hashPoseidon3(
-  //       keyHash.toString(), valueHash.toString(), BigInt.one.toString());
-  //   HashDTO nodeHash = HashDTO.fromBigInt(BigInt.parse(nodeHashString));
+  //   String nodeHashString = poseidon3(
+  //       keyHash, valueHash, BigInt.one);
+  //   HashDTO nodeHash = HashDTO.fromBigInt(nodeHashString);
   //   final newNodeLeaf = NodeDTO(
   //       hash: nodeHash, children: newNodeChildren, type: NodeTypeDTO.leaf);
   //   return _smtDataSource

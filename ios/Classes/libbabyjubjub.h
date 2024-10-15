@@ -1,9 +1,5 @@
 // NOTE: Append the lines below to ios/Classes/<your>Plugin.h
 
-char *pack_signature(const char *signature);
-
-char *unpack_signature(const char *compressed_signature);
-
 char *pack_point(const char *point_x, const char *point_y);
 
 char *unpack_point(const char *compressed_point);

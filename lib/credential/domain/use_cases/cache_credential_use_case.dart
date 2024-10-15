@@ -34,7 +34,7 @@ class CacheCredentialUseCase
 
     String credential = jsonEncode(
       {
-        "verifiableCredentials": param.credential.toJson(),
+        "verifiableCredentials": param.credential.info,
       },
     );
 

@@ -16,16 +16,6 @@ class BabyjubjubLib {
   late CStringFree cstringFree;
 
   BabyjubjubLib() {
-    _packSignature = _nativeBabyjubjubLib
-        .lookup<NativeFunction<Pointer<Utf8> Function(Pointer<Utf8>)>>(
-            "pack_signature")
-        .asFunction();
-
-    _unpackSignature = _nativeBabyjubjubLib
-        .lookup<NativeFunction<Pointer<Utf8> Function(Pointer<Utf8>)>>(
-            "unpack_signature")
-        .asFunction();
-
     _packPoint = _nativeBabyjubjubLib
         .lookup<
             NativeFunction<
@@ -60,42 +50,6 @@ class BabyjubjubLib {
     cstringFree = _nativeBabyjubjubLib
         .lookup<NativeFunction<CStringFreeFFI>>("cstring_free")
         .asFunction();
-  }
-
-  late Pointer<Utf8> Function(Pointer<Utf8>) _packSignature;
-
-  String packSignature(String signature) {
-    //if (lib == null) return "ERROR: The library is not initialized";
-
-    final sig = signature.toNativeUtf8();
-    //print("- Calling packSignature with argument: $sig");
-    // The actual native call
-    final resultPtr = _packSignature(sig);
-    //print("- Result pointer:  $resultPtr");
-
-    final result = resultPtr.toDartString();
-    //print("- Response string:  $result");
-    // Free the string pointer, as we already have
-    // an owned String to return
-    //print("- Freeing the native char*");
-    cstringFree(resultPtr);
-    return result;
-  }
-
-  late Pointer<Utf8> Function(Pointer<Utf8>) _unpackSignature;
-
-  String unpackSignature(String compressedSignature) {
-    //if (lib == null) return "ERROR: The library is not initialized";
-
-    final sigPtr = compressedSignature.toNativeUtf8();
-    final resultPtr = _unpackSignature(sigPtr);
-    final result = resultPtr.toDartString();
-    //print("- Response string:  $result");
-    // Free the string pointer, as we already have
-    // an owned String to return
-    //print("- Freeing the native char*");
-    cstringFree(resultPtr);
-    return result;
   }
 
   late Pointer<Utf8> Function(Pointer<Utf8>, Pointer<Utf8>) _packPoint;
