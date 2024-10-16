@@ -434,7 +434,7 @@ class Authenticate {
           proofRequest.scope.circuitId == CircuitType.sigonchain.name ||
           proofRequest.scope.circuitId == CircuitType.circuitsV3onchain.name) {
         /// SIGN MESSAGE
-        String signature = await signMessage(
+        signature = await signMessage(
           privateKey: privateKeyBytes,
           message: challenge!,
         );
