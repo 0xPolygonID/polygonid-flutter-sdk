@@ -24,11 +24,12 @@ class JWZHeader {
   final List<String> crit;
   final String typ;
 
-  JWZHeader(
-      {required this.alg,
-      required this.circuitId,
-      required this.crit,
-      required this.typ});
+  JWZHeader({
+    required this.alg,
+    required this.circuitId,
+    required this.crit,
+    required this.typ,
+  });
 
   factory JWZHeader.fromBase64(String data) =>
       JWZHeader.fromJson(jsonDecode(Base64Util.decode(data)));
@@ -69,7 +70,9 @@ class JWZHeader {
 class JWZPayload {
   final dynamic payload;
 
-  JWZPayload({required this.payload});
+  JWZPayload({
+    required this.payload,
+  });
 
   @override
   String toString() => "[JWZPayload] {payload: $payload}";
@@ -92,16 +95,20 @@ class JWZEntity {
   final JWZPayload? payload;
   ZKProofEntity? proof;
 
-  JWZEntity({this.header, required this.payload, this.proof});
+  JWZEntity({
+    this.header,
+    required this.payload,
+    this.proof,
+  });
 
-  /// FIXME: should we move this to a mapper?
   factory JWZEntity.fromBase64(String data) {
-    var split = data.split(".");
+    final split = data.split(".");
 
     return JWZEntity(
-        header: JWZHeader.fromBase64(split[0]),
-        payload: JWZPayload(payload: Base64Util.decode(split[1])),
-        proof: split.length == 3 ? ZKProofEntity.fromBase64(split[2]) : null);
+      header: JWZHeader.fromBase64(split[0]),
+      payload: JWZPayload(payload: Base64Util.decode(split[1])),
+      proof: split.length == 3 ? ZKProofEntity.fromBase64(split[2]) : null,
+    );
   }
 
   @override

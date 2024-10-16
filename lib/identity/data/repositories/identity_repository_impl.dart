@@ -5,6 +5,7 @@ import 'package:encrypt/encrypt.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
+import 'package:polygonid_flutter_sdk/common/utils/hex_utils.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
@@ -19,7 +20,6 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart'
 import 'package:polygonid_flutter_sdk/identity/data/dtos/id_description.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/rhs_node_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/rhs_node_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
@@ -28,7 +28,6 @@ import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_except
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:poseidon/poseidon.dart';
-import 'package:web3dart/crypto.dart';
 
 class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
@@ -39,7 +38,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final LibPolygonIdCoreIdentityDataSource _libPolygonIdCoreIdentityDataSource;
   final EncryptionDbDataSource _encryptionDbDataSource;
   final DestinationPathDataSource _destinationPathDataSource;
-  final HexMapper _hexMapper;
   final PrivateKeyMapper _privateKeyMapper;
   final RhsNodeMapper _rhsNodeMapper;
   final StateIdentifierMapper _stateIdentifierMapper;
@@ -54,7 +52,6 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._libPolygonIdCoreIdentityDataSource,
     this._encryptionDbDataSource,
     this._destinationPathDataSource,
-    this._hexMapper,
     this._privateKeyMapper,
     this._rhsNodeMapper,
     this._stateIdentifierMapper,
@@ -65,13 +62,13 @@ class IdentityRepositoryImpl extends IdentityRepository {
   Future<String> getPrivateKey({required String? secret}) {
     return _walletDataSource
         .createWallet(secret: _privateKeyMapper.mapFrom(secret))
-        .then((wallet) => _hexMapper.mapFrom(wallet.privateKey));
+        .then((wallet) => HexUtils.bytesToHex(wallet.privateKey));
   }
 
   @override
   Future<List<String>> getPublicKeys({required String bjjPrivateKey}) async {
     final wallet = await _walletDataSource.getWallet(
-      privateKey: _hexMapper.mapTo(bjjPrivateKey),
+      privateKey: HexUtils.hexToBytes(bjjPrivateKey),
     );
     final pubKeys = wallet.publicKey;
     return pubKeys;
@@ -158,7 +155,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
     required String message,
   }) async {
     try {
-      final Uint8List hexPrivateKey = _hexMapper.mapTo(privateKey);
+      final Uint8List hexPrivateKey = HexUtils.hexToBytes(privateKey);
       final String signedMessage = await _walletDataSource.signMessage(
         privateKey: hexPrivateKey,
         message: message,
