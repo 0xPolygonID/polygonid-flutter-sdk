@@ -1,28 +1,64 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:ninja_prime/ninja_prime.dart';
 
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/common/utils/big_int_extension.dart';
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
+import 'package:polygonid_flutter_sdk/common/utils/hex_utils.dart';
+import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
+import 'package:polygonid_flutter_sdk/constants.dart';
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/lib_pidcore_credential_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/authenticate.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/iden3_message_data_source.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/lib_pidcore_iden3comm_data_source.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_response_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_response_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_response_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/gist_mtproof_data_source.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/gist_proof_cache.dart';
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
@@ -30,6 +66,10 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
+import 'package:poseidon/poseidon.dart';
+import 'package:uuid/uuid.dart';
+import 'package:web3dart/web3dart.dart';
 
 class GetIden3commProofsParam {
   final Iden3MessageEntity message;
@@ -95,11 +135,27 @@ class GetIden3commProofsUseCase
       List<Iden3commProofEntity> proofs = [];
       Map<int, String> groupIdLinkNonceMap = {};
 
+      final message = param.message;
+
       _proofGenerationStepsStreamManager.add("Getting proof requests");
       List<ProofRequestEntity> requests =
           await _getProofRequestsUseCase.execute(param: param.message);
       _stacktraceManager
           .addTrace("[GetIden3commProofsUseCase] requests: $requests");
+
+      /// Generate auth proof for empty contract request message
+      if (requests.isEmpty && message is ContractIden3MessageEntity) {
+        final authProof = await _generateAuthProof(
+          message,
+          param.genesisDid,
+          param.profileNonce,
+          param.privateKey,
+          param.challenge!,
+          param.config,
+        );
+
+        return [authProof];
+      }
 
       List<ClaimEntity?> claims = await _getIden3commClaimsUseCase.execute(
         param: GetIden3commClaimsParam(
@@ -292,4 +348,246 @@ class GetIden3commProofsUseCase
     }
     return claim;
   }
+
+  Future<Iden3commProofEntity> _generateAuthProof(
+    ContractIden3MessageEntity message,
+    String genesisDid,
+    BigInt profileNonce,
+    String privateKey,
+    String challenge,
+    EnvConfigEntity? config,
+  ) async {
+    final env = await (await getItSdk.getAsync<GetEnvUseCase>()).execute();
+    final chain =
+        await (await getItSdk.getAsync<GetSelectedChainUseCase>()).execute();
+
+    String profileDid =
+        await (await getItSdk.getAsync<GetDidIdentifierUseCase>()).execute(
+      param: GetDidIdentifierParam.withPrivateKey(
+        privateKey: privateKey,
+        profileNonce: profileNonce,
+        blockchain: chain.blockchain,
+        network: chain.network,
+        method: chain.method,
+      ),
+    );
+
+    final proofRepository = await getItSdk.getAsync<ProofRepository>();
+
+    final authClaimCompanion = await getAuthClaim(
+      privateKey: privateKey,
+      genesisDid: genesisDid,
+      env: env,
+      chain: chain,
+      authClaimNonce: DEFAULT_AUTH_CLAIM_NONCE,
+    );
+
+    final libPolygonIdCoreIden3commDataSource =
+        getItSdk<LibPolygonIdCoreIden3commDataSource>();
+
+    final authProofMapper = getItSdk<AuthProofMapper>();
+
+    final challengeBytes = HexUtils.hexToBytes(challenge);
+
+    // Endianness
+    BigInt endian = Uint8ArrayUtils.leBuff2int(challengeBytes);
+
+    BigInt qNormalized = endian.qNormalize();
+
+    String authChallenge = poseidon1([qNormalized]).toString();
+
+    String signature = await signMessage(
+      privateKey: HexUtils.hexToBytes(privateKey),
+      message: authChallenge,
+    );
+
+    Uint8List authInputsBytes =
+        await libPolygonIdCoreIden3commDataSource.getAuthInputs(
+      genesisDid: genesisDid,
+      profileNonce: profileNonce,
+      authClaim: authClaimCompanion.authClaim!,
+      incProof: authProofMapper.mapTo(authClaimCompanion.incProof!),
+      nonRevProof: authProofMapper.mapTo(authClaimCompanion.nonRevProof!),
+      gistProof: authClaimCompanion.gistProofEntity!.toJson(),
+      treeState: authClaimCompanion.treeState!,
+      challenge: authChallenge,
+      signature: signature,
+    );
+
+    final appDir = await getApplicationDocumentsDirectory();
+    final circuitsDataSource = CircuitsFilesDataSource(appDir);
+
+    final circuitDatFileBytes =
+        await circuitsDataSource.loadCircuitDatFile('authV2');
+    final zkeyFilePath = await circuitsDataSource.getZkeyFilePath('authV2');
+
+    CircuitDataEntity circuitDataEntity = CircuitDataEntity(
+      "authV2",
+      circuitDatFileBytes,
+      zkeyFilePath,
+    );
+
+    Uint8List witnessBytes = await proofRepository.calculateWitness(
+      circuitData: circuitDataEntity,
+      atomicQueryInputs: authInputsBytes,
+    );
+
+    ZKProofEntity zkProofEntity = await proofRepository.prove(
+      circuitData: circuitDataEntity,
+      wtnsBytes: witnessBytes,
+    );
+
+    return Iden3commProofEntity(
+      id: 0,
+      circuitId: "authV2",
+      proof: zkProofEntity.proof,
+      pubSignals: zkProofEntity.pubSignals,
+    );
+  }
+}
+
+/// SIGN MESSAGE WITH BJJ KEY
+Future<String> signMessage({
+  required Uint8List privateKey,
+  required String message,
+}) async {
+  final walletDs = getItSdk<WalletDataSource>();
+  return walletDs.signMessage(privateKey: privateKey, message: message);
+}
+
+Future<AuthClaimCompanionObject> getAuthClaim({
+  required String privateKey,
+  required String genesisDid,
+  required EnvEntity env,
+  required ChainConfigEntity chain,
+  required String authClaimNonce,
+}) async {
+  List<String>? authClaim;
+  MTProofEntity? incProof;
+  MTProofEntity? nonRevProof;
+  GistMTProofEntity? gistProofEntity;
+  Map<String, dynamic>? treeState;
+  Map<String, dynamic>? config;
+  var libPolygonIdCredential = getItSdk<LibPolygonIdCoreCredentialDataSource>();
+
+  final identityRepo = await getItSdk.getAsync<IdentityRepository>();
+  final publicKey = await identityRepo.getPublicKeys(privateKey: privateKey);
+
+  String authClaimSchema = AUTH_CLAIM_SCHEMA;
+  String issuedAuthClaim = libPolygonIdCredential.issueClaim(
+    schema: authClaimSchema,
+    nonce: authClaimNonce,
+    publicKey: publicKey,
+  );
+  authClaim = List.from(jsonDecode(issuedAuthClaim));
+  BigInt hashIndex = poseidon4([
+    BigInt.parse(authClaim[0]),
+    BigInt.parse(authClaim[1]),
+    BigInt.parse(authClaim[2]),
+    BigInt.parse(authClaim[3]),
+  ]);
+  BigInt hashValue = poseidon4([
+    BigInt.parse(authClaim[4]),
+    BigInt.parse(authClaim[5]),
+    BigInt.parse(authClaim[6]),
+    BigInt.parse(authClaim[7]),
+  ]);
+  BigInt hashClaimNode = poseidon3([
+    hashIndex,
+    hashValue,
+    BigInt.one,
+  ]);
+  NodeEntity authClaimNode = NodeEntity(
+    children: [
+      HashEntity.fromBigInt(hashIndex),
+      HashEntity.fromBigInt(hashValue),
+      HashEntity.fromBigInt(BigInt.one),
+    ],
+    hash: HashEntity.fromBigInt(hashClaimNode),
+    type: NodeType.leaf,
+  );
+
+  // INC PROOF
+  SMTRepository smtRepository = getItSdk<SMTRepository>();
+  incProof = await smtRepository.generateProof(
+    key: authClaimNode.hash,
+    type: TreeType.claims,
+    did: genesisDid,
+    privateKey: privateKey,
+  );
+
+  // NON REV PROOF
+  nonRevProof = await smtRepository.generateProof(
+    key: authClaimNode.hash,
+    type: TreeType.revocation,
+    did: genesisDid,
+    privateKey: privateKey,
+  );
+
+  // TREE STATE
+  List<HashEntity> trees = await Future.wait(
+    [
+      smtRepository.getRoot(
+        type: TreeType.claims,
+        did: genesisDid,
+        privateKey: privateKey,
+      ),
+      smtRepository.getRoot(
+        type: TreeType.revocation,
+        did: genesisDid,
+        privateKey: privateKey,
+      ),
+      smtRepository.getRoot(
+        type: TreeType.roots,
+        did: genesisDid,
+        privateKey: privateKey,
+      ),
+    ],
+    eagerError: true,
+  );
+
+  String hash = await smtRepository.hashState(
+    claims: trees[0].string(),
+    revocation: trees[1].string(),
+    roots: trees[2].string(),
+  );
+
+  TreeStateEntity treeStateEntity = TreeStateEntity(
+    hash,
+    trees[0],
+    trees[1],
+    trees[2],
+  );
+
+  treeState = await smtRepository.convertState(
+    state: treeStateEntity,
+  );
+
+  //GIST
+  List<String> splittedDid = genesisDid.split(":");
+  String id = splittedDid[4];
+  var libPolygonIdIdentity = getItSdk<LibPolygonIdCoreIdentityDataSource>();
+  String convertedId = libPolygonIdIdentity.genesisIdToBigInt(id);
+  ContractAbi contractAbi = ContractAbi.fromJson(
+      jsonEncode(jsonDecode(stateAbiJson)["abi"]), 'State');
+  EthereumAddress ethereumAddress =
+      EthereumAddress.fromHex(chain.stateContractAddr);
+  DeployedContract contract = DeployedContract(contractAbi, ethereumAddress);
+
+  String gistProof = await GistProofCache().getGistProof(
+    id: convertedId,
+    deployedContract: contract,
+    envEntity: env,
+  );
+
+  final gistMTProofDataSource = getItSdk<GistMTProofDataSource>();
+  gistProofEntity = gistMTProofDataSource.getGistMTProof(gistProof);
+
+  return AuthClaimCompanionObject()
+    ..authClaim = authClaim
+    ..incProof = incProof
+    ..nonRevProof = nonRevProof
+    ..gistProofEntity = gistProofEntity
+    ..treeState = treeState
+    ..authClaimNode = authClaimNode;
 }
