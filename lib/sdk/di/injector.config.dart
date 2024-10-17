@@ -373,7 +373,6 @@ import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stre
     as _i920;
 import 'package:polygonid_flutter_sdk/proof/libs/polygonidcore/pidcore_proof.dart'
     as _i961;
-import 'package:polygonid_flutter_sdk/proof/libs/prover/prover.dart' as _i506;
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/auth_v2/witness_auth.dart'
     as _i318;
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/linked_multi_query_10/witness_linked_multi_query_10.dart'
@@ -421,18 +420,6 @@ extension GetItInjectableX on _i174.GetIt {
     final databaseModule = _$DatabaseModule();
     final encryptionModule = _$EncryptionModule();
     final repositoriesModule = _$RepositoriesModule();
-    gh.factory<_i318.WitnessAuthV2Lib>(() => _i318.WitnessAuthV2Lib());
-    gh.factory<_i602.WitnessV3OnchainLib>(() => _i602.WitnessV3OnchainLib());
-    gh.factory<_i184.WitnessSigV2Lib>(() => _i184.WitnessSigV2Lib());
-    gh.factory<_i695.WitnessV3Lib>(() => _i695.WitnessV3Lib());
-    gh.factory<_i896.WitnessLinkedMultiQuery10>(
-        () => _i896.WitnessLinkedMultiQuery10());
-    gh.factory<_i68.WitnessSigV2OnchainLib>(
-        () => _i68.WitnessSigV2OnchainLib());
-    gh.factory<_i569.WitnessMTPV2Lib>(() => _i569.WitnessMTPV2Lib());
-    gh.factory<_i436.WitnessMTPV2OnchainLib>(
-        () => _i436.WitnessMTPV2OnchainLib());
-    gh.factory<_i506.ProverLib>(() => _i506.ProverLib());
     gh.factory<_i502.ProverLibWrapper>(() => _i502.ProverLibWrapper());
     gh.factory<_i1039.WitnessIsolatesWrapper>(
         () => _i1039.WitnessIsolatesWrapper());
@@ -488,6 +475,17 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i284.Iden3MessageTypeMapper());
     gh.factory<_i968.GetFetchRequestsUseCase>(
         () => _i968.GetFetchRequestsUseCase());
+    gh.factory<_i318.WitnessAuthV2Lib>(() => _i318.WitnessAuthV2Lib());
+    gh.factory<_i602.WitnessV3OnchainLib>(() => _i602.WitnessV3OnchainLib());
+    gh.factory<_i184.WitnessSigV2Lib>(() => _i184.WitnessSigV2Lib());
+    gh.factory<_i695.WitnessV3Lib>(() => _i695.WitnessV3Lib());
+    gh.factory<_i896.WitnessLinkedMultiQuery10>(
+        () => _i896.WitnessLinkedMultiQuery10());
+    gh.factory<_i68.WitnessSigV2OnchainLib>(
+        () => _i68.WitnessSigV2OnchainLib());
+    gh.factory<_i569.WitnessMTPV2Lib>(() => _i569.WitnessMTPV2Lib());
+    gh.factory<_i436.WitnessMTPV2OnchainLib>(
+        () => _i436.WitnessMTPV2OnchainLib());
     gh.lazySingleton<_i920.ProofGenerationStepsStreamManager>(
         () => _i920.ProofGenerationStepsStreamManager());
     gh.lazySingleton<_i267.StacktraceManager>(() => _i267.StacktraceManager());
@@ -684,7 +682,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i232.SecureStorageProfilesDataSource>(() =>
         _i232.SecureStorageProfilesDataSource(
             gh<_i232.SecureStorageProfilesStoreRefWrapper>()));
-    gh.factory<_i969.LocalClaimDataSource>(() => _i969.LocalClaimDataSource(
+    gh.singleton<_i969.LocalClaimDataSource>(() => _i969.LocalClaimDataSource(
         gh<_i758.LibPolygonIdCoreCredentialDataSource>()));
     gh.factory<_i272.CacheCredentialDataSource>(() =>
         _i272.CacheCredentialDataSource(

@@ -252,7 +252,6 @@ class ProofRepositoryImpl extends ProofRepository {
       Stopwatch stopwatch = Stopwatch()..start();
 
       final Map<String, dynamic>? proof = await _proverLibDataSource.prove(
-        circuitData.circuitId,
         circuitData.zKeyPath,
         wtnsBytes,
       );
