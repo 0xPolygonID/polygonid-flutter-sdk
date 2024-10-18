@@ -7,12 +7,12 @@ import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.d
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 import '../../../common/common_mocks.dart';
@@ -55,6 +55,8 @@ AuthenticateParam param = AuthenticateParam(
   pushToken: CommonMocks.token,
   privateKey: CommonMocks.privateKey,
 );
+
+AuthResponseDTO authResponseDTO = AuthResponseDTO();
 
 @GenerateMocks([
   Iden3commRepository,
@@ -102,7 +104,7 @@ void main() {
                 pushUrl: anyNamed('pushUrl'),
                 pushToken: anyNamed('pushToken'),
                 packageName: anyNamed('packageName')))
-            .thenAnswer((realInvocation) => Future.value(CommonMocks.message));
+            .thenAnswer((realInvocation) => Future.value(authResponseDTO));
 
         when(getAuthTokenUseCase.execute(param: anyNamed('param')))
             .thenAnswer((realInvocation) => Future.value(CommonMocks.id));

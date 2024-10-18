@@ -20,6 +20,7 @@ final mockGet = {
 };
 final identityDTO = IdentityEntity(
     did: CommonMocks.did,
+    type: IdentityType.bjj,
     publicKey: CommonMocks.publicKey,
     profiles: CommonMocks.profiles);
 final exception = Exception();

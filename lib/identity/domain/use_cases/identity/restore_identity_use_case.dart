@@ -58,7 +58,6 @@ class RestoreIdentityUseCase
       identity = await _getIdentityUseCase.execute(
         param: GetIdentityParam(
           genesisDid: genesisDid,
-          publicKey: publicKey,
         ),
       );
     } on UnknownIdentityException {
@@ -95,6 +94,7 @@ class RestoreIdentityUseCase
       return PrivateIdentityEntity(
         did: identity.did,
         publicKey: identity.publicKey,
+        type: identity.type,
         profiles: identity.profiles,
         privateKey: param.privateKey,
       );

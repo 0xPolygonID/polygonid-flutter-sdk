@@ -65,6 +65,12 @@ class BjjPublicKey extends PublicKey {
           ),
         );
 
+  BjjPublicKey.fromStringList(List<String> points)
+      : p = points.map((e) => BigInt.parse(e)).toList(),
+        super(
+          hex: bjjLib.packPoint(points[0], points[1]),
+        );
+
   KeyType get keyType => KeyType.BabyJubJub;
 
   /// Create a PublicKey from a bigInt compressed pubKey
@@ -116,26 +122,29 @@ class BjjPublicKey extends PublicKey {
       messageHash,
     );
   }
+
+  List<String> asStringList() {
+    return [p[0].toString(), p[1].toString()];
+  }
 }
 
 /// Class representing EdDSA Baby Jub private key
 class BjjPrivateKey extends PrivateKey {
-  late Uint8List sk;
-
   /// Create a PrivateKey from a 32 byte Buffer
   /// @param {Uint8List} buf - private key
   BjjPrivateKey(Uint8List bytes) : super(hex: bytesToHex(bytes)) {
     if (bytes.length != 32) {
       throw ArgumentError('buf must be 32 bytes');
     }
-    sk = bytes;
   }
+
+  BjjPrivateKey.fromHex(String hex) : super(hex: hex);
 
   /// Retrieve PublicKey of the PrivateKey
   /// @returns {PublicKey} PublicKey derived from PrivateKey
   @override
   BjjPublicKey publicKey() {
-    String resultString = bjjLib.prv2pub(HexUtils.bytesToHex(sk));
+    String resultString = bjjLib.prv2pub(hex);
     final stringList = resultString.split(",");
     stringList[0] = stringList[0].replaceAll("Fr(", "");
     stringList[0] = stringList[0].replaceAll(")", "");
@@ -156,7 +165,7 @@ class BjjPrivateKey extends PrivateKey {
     final messageHashBigInt = BigInt.parse(messageHashBytes, radix: 16);
 
     String signature = bjjLib.signPoseidon(
-      HexUtils.bytesToHex(sk),
+      hex,
       messageHashBigInt.toString(),
     );
 

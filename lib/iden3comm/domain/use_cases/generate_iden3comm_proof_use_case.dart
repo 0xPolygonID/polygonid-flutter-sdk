@@ -142,7 +142,6 @@ class GenerateIden3commProofUseCase
       IdentityEntity identity = await _getIdentityUseCase.execute(
         param: GetIdentityParam(
           genesisDid: param.did,
-          privateKey: param.privateKey,
         ),
       );
       _stacktraceManager.addTrace(

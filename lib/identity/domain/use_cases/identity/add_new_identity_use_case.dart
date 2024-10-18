@@ -1,4 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/add_identity_use_case.dart';
 
@@ -39,6 +40,7 @@ class AddNewIdentityUseCase
       return PrivateIdentityEntity(
         did: identity.did,
         publicKey: identity.publicKey,
+        type: IdentityType.bjj,
         profiles: identity.profiles,
         privateKey: privateKey,
       );

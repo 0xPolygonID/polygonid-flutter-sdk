@@ -18,8 +18,11 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/common/kms/index.dart';
+import 'package:polygonid_flutter_sdk/common/kms/keys/types.dart';
 import 'package:polygonid_flutter_sdk/common/utils/base_64.dart';
 import 'package:polygonid_flutter_sdk/common/utils/big_int_extension.dart';
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
@@ -31,12 +34,8 @@ import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/iden3_message_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/lib_pidcore_iden3comm_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/proof_request_filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
@@ -50,6 +49,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/i
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_vp_proof.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/jwz_exceptions.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
@@ -59,7 +59,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repo
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_latest_state_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_public_keys_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/libs/bjj/eddsa_babyjub.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
@@ -74,26 +74,30 @@ import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stre
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:poseidon/poseidon.dart';
 import 'package:sembast/sembast.dart';
-import 'package:uuid/uuid.dart';
 
 class Authenticate {
   late ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
   late StacktraceManager _stacktraceManager;
 
+  KMS get _kms => getItSdk<KMS>();
+
   Future<Iden3MessageEntity?> authenticate({
-    required String privateKey,
+    required Iden3MessageEntity message,
+    required KeyId? bjjKeyId,
+    required String? privateKey,
+    required KeyId? ethKeyId,
+    required String encryptionKey,
     required String genesisDid,
     required BigInt profileNonce,
     required IdentityEntity identityEntity,
-    required Iden3MessageEntity message,
-    required EnvEntity env,
     required String? pushToken,
     String? challenge,
     final Map<String, dynamic>? transactionData,
   }) async {
     try {
       List<Iden3commProofEntity> proofs = [];
-      Map<int, String> groupIdLinkNonceMap = {};
+
+      final env = await (await getItSdk.getAsync<GetEnvUseCase>()).execute();
 
       final proofRepository = await getItSdk.getAsync<ProofRepository>();
       _proofGenerationStepsStreamManager =
@@ -124,21 +128,47 @@ class Authenticate {
       _stacktraceManager.addTrace(
         "[Authenticate] Chain: ${chain.blockchain} ${chain.network}",
       );
-      GetDidIdentifierUseCase getDidIdentifierUseCase =
-          await getItSdk.getAsync<GetDidIdentifierUseCase>();
 
-      final getPubKeyUseCase = await getItSdk.getAsync<GetPublicKeyUseCase>();
-      final bjjPublicKey = await getPubKeyUseCase.execute(param: privateKey);
+      BjjPublicKey? bjjPublicKey;
 
-      String profileDid = await getDidIdentifierUseCase.execute(
-        param: GetDidIdentifierParam(
-          bjjPublicKey: bjjPublicKey,
-          blockchain: chain.blockchain,
-          network: chain.network,
-          profileNonce: profileNonce,
-          method: chain.method,
-        ),
-      );
+      final String profileDid;
+      switch (identityEntity.type) {
+        case IdentityType.bjj:
+          final getDidUseCase =
+              await getItSdk.getAsync<GetDidIdentifierUseCase>();
+
+          bjjPublicKey = (await _kms.publicKey(bjjKeyId!)) as BjjPublicKey;
+
+          profileDid = await getDidUseCase.execute(
+            param: GetDidIdentifierParam(
+              bjjPublicKey: bjjPublicKey.asStringList(),
+              profileNonce: profileNonce,
+              blockchain: chain.blockchain,
+              network: chain.network,
+              method: chain.method,
+            ),
+          );
+
+          break;
+        case IdentityType.ethereum:
+          // TODO Get eth address outta eth key id
+
+          final ethPublicKey =
+              (await _kms.publicKey(ethKeyId!)) as Secp256k1PublicKey;
+          final ethAddress = ethPublicKey.toEthAddress();
+
+          final identityRepo = await getItSdk.getAsync<IdentityRepository>();
+
+          profileDid = await identityRepo.getEthDidIdentifier(
+            ethAddress: ethAddress,
+            profileNonce: profileNonce,
+            blockchain: chain.blockchain,
+            network: chain.network,
+            method: chain.method,
+            config: env.config,
+          );
+          break;
+      }
 
       List<ProofRequestEntity> proofRequests = [];
       List<ClaimEntity> claims = [];
@@ -150,19 +180,24 @@ class Authenticate {
         message: message,
         proofRequests: proofRequests,
         genesisDid: genesisDid,
-        privateKey: privateKey,
+        encryptionKey: encryptionKey,
         claims: claims,
       );
 
-      // this authClaimCompanionObject is the one that is being used to get the
-      // authClaim, incProof, nonRevProof, treeState, authClaimNode, gistProofEntity
-      _proofGenerationStepsStreamManager.add("getting auth claim...");
-      final authClaimCompanionObject = await _getAuthClaimData(
-        genesisDid: genesisDid,
-        env: env,
-        chain: chain,
-        privateKey: privateKey,
-      );
+      AuthClaimCompanionObject? authClaimCompanionObject;
+
+      if (bjjPublicKey != null) {
+        // this authClaimCompanionObject is the one that is being used to get the
+        // authClaim, incProof, nonRevProof, treeState, authClaimNode, gistProofEntity
+        _proofGenerationStepsStreamManager.add("getting auth claim...");
+        authClaimCompanionObject = await _getAuthClaimData(
+          genesisDid: genesisDid,
+          env: env,
+          chain: chain,
+          publicKey: bjjPublicKey.asStringList(),
+          encryptionKey: encryptionKey,
+        );
+      }
 
       // if there are proof requests and claims and they are the same length
       // then create the proof for every proof request
@@ -170,50 +205,71 @@ class Authenticate {
           claims.isNotEmpty &&
           proofRequests.length == claims.length) {
         // it is assigning the proofs to the variable directly from the function call
-        await createProofForEveryProofRequest(
+        await _createProofForEveryProofRequest(
           proofRequests: proofRequests,
           claims: claims,
           identityEntity: identityEntity,
-          groupIdLinkNonceMap: groupIdLinkNonceMap,
           genesisDid: genesisDid,
           profileNonce: profileNonce,
-          privateKey: privateKey,
+          privateKey: privateKey!,
+          encryptionKey: encryptionKey,
           challenge: challenge,
           env: env,
           message: message,
           transactionData: transactionData,
           proofRepository: proofRepository,
-          authClaimCompanionObject: authClaimCompanionObject,
+          authClaimCompanionObject: authClaimCompanionObject!,
           proofs: proofs,
+          bjjKeyId: bjjKeyId!,
         );
       }
 
       // prepare the auth response message
       _proofGenerationStepsStreamManager
           .add("preparing authentication parameters...");
-      String authResponseString = await _prepareAuthResponseMessage(
-        env: env,
+
+      final iden3commRepo = getItSdk<Iden3commRepository>();
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      final authResponse = await iden3commRepo.getAuthResponse(
+        did: profileDid,
+        request: message as AuthIden3MessageEntity,
+        scope: proofs,
+        pushUrl: env.pushUrl,
         pushToken: pushToken,
-        profileDid: profileDid,
-        message: message,
-        proofs: proofs,
+        packageName: packageInfo.packageName,
       );
+
+      final authResponseString = jsonEncode(authResponse.toJson());
 
       // get the auth token
       _proofGenerationStepsStreamManager
           .add("preparing authentication token...");
-      String authToken = await _getJWZAuthToken(
-        genesisDid: genesisDid,
-        profileNonce: profileNonce,
-        privateKey: privateKey,
-        message: authResponseString,
-        authClaim: authClaimCompanionObject.authClaim,
-        incProof: authClaimCompanionObject.incProof,
-        nonRevProof: authClaimCompanionObject.nonRevProof,
-        treeState: authClaimCompanionObject.treeState,
-        gistProofEntity: authClaimCompanionObject.gistProofEntity,
-        proofRepository: proofRepository,
-      );
+
+      final String authToken;
+      switch (identityEntity.type) {
+        case IdentityType.bjj:
+          authClaimCompanionObject!;
+          authToken = await _getJWZAuthToken(
+            genesisDid: genesisDid,
+            profileNonce: profileNonce,
+            privateKey: privateKey!,
+            message: authResponseString,
+            authClaim: authClaimCompanionObject.authClaim,
+            incProof: authClaimCompanionObject.incProof,
+            nonRevProof: authClaimCompanionObject.nonRevProof,
+            treeState: authClaimCompanionObject.treeState,
+            gistProofEntity: authClaimCompanionObject.gistProofEntity,
+            proofRepository: proofRepository,
+          );
+          break;
+        case IdentityType.ethereum:
+          authToken = await _getJWSAuthToken(
+            message: authResponseString,
+            fromDid: message.from,
+            ethKeyId: ethKeyId!,
+          );
+      }
+
       _stacktraceManager.addTrace(
         "[Authenticate] authToken: $authToken",
       );
@@ -227,7 +283,7 @@ class Authenticate {
           "[Authenticate] Callback url is null or empty",
         );
         throw NullAuthenticateCallbackException(
-          authRequest: message as AuthIden3MessageEntity,
+          authRequest: message,
           errorMessage: "Callback url is null or empty",
         );
       }
@@ -289,52 +345,16 @@ class Authenticate {
     }
   }
 
-  Future<String> _prepareAuthResponseMessage({
-    required EnvEntity env,
-    required String? pushToken,
-    required String profileDid,
-    required Iden3MessageEntity message,
-    required List<Iden3commProofEntity> proofs,
-  }) async {
-    String pushUrl = env.pushUrl;
-
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    String packageName = packageInfo.packageName;
-
-    AuthBodyDidDocResponseDTO? didDocResponse = await _getDidDoc(
-      pushUrl: pushUrl,
-      pushToken: pushToken,
-      packageName: packageName,
-      profileDid: profileDid,
-    );
-
-    AuthResponseDTO authResponse = AuthResponseDTO(
-      id: const Uuid().v4(),
-      thid: message.thid,
-      to: message.from,
-      from: profileDid,
-      typ: "application/iden3-zkp-json",
-      type: "https://iden3-communication.io/authorization/1.0/response",
-      body: AuthBodyResponseDTO(
-        message: (message as AuthIden3MessageEntity).body.message,
-        scope: proofs,
-        did_doc: didDocResponse,
-      ),
-    );
-
-    String authResponseString = jsonEncode(authResponse.toJson());
-    return authResponseString;
-  }
-
   ///
-  Future<void> createProofForEveryProofRequest({
+  Future<void> _createProofForEveryProofRequest({
     required List<ProofRequestEntity> proofRequests,
     required List<ClaimEntity> claims,
     required IdentityEntity identityEntity,
-    required Map<int, String> groupIdLinkNonceMap,
     required String genesisDid,
     required BigInt profileNonce,
     required String privateKey,
+    required KeyId bjjKeyId,
+    required String encryptionKey,
     required String? challenge,
     required EnvEntity env,
     required Iden3MessageEntity message,
@@ -343,6 +363,8 @@ class Authenticate {
     required AuthClaimCompanionObject authClaimCompanionObject,
     required List<Iden3commProofEntity> proofs,
   }) async {
+    final groupIdLinkNonceMap = <int, String>{};
+
     for (int i = 0; i < proofRequests.length; i++) {
       ProofRequestEntity proofRequest = proofRequests[i];
       ClaimEntity claim = claims[i];
@@ -398,10 +420,16 @@ class Authenticate {
           proofRequest.scope.circuitId == CircuitType.sigonchain.name ||
           proofRequest.scope.circuitId == CircuitType.circuitsV3onchain.name) {
         /// SIGN MESSAGE
-        signature = await signMessage(
-          privateKey: HexUtils.hexToBytes(privateKey),
-          message: challenge!,
-        );
+
+        Uint8List messHash;
+        if (challenge!.toLowerCase().startsWith("0x")) {
+          messHash = HexUtils.hexToBytes(challenge);
+        } else {
+          messHash = HexUtils.hexToBytes(
+              BigInt.parse(challenge, radix: 10).toRadixString(16));
+        }
+
+        signature = HexUtils.bytesToHex(await _kms.sign(bjjKeyId, messHash));
       }
 
       config = ConfigParam.fromEnv(env).toJson();
@@ -477,11 +505,11 @@ class Authenticate {
   }
 
   Future<void> _getCredentialsAndProofRequestsByScope({
+    required Iden3MessageEntity message,
     required List<ProofRequestEntity> proofRequests,
     required List<ClaimEntity> claims,
-    required Iden3MessageEntity message,
     required String genesisDid,
-    required String privateKey,
+    required String encryptionKey,
   }) async {
     List<ProofScopeRequest>? scopes = message.body.scope;
     if (scopes == null || scopes.isEmpty) {
@@ -531,7 +559,7 @@ class Authenticate {
       List<ClaimDTO> claimDTO = await storageClaimDataSource.getClaims(
         filter: filter,
         did: genesisDid,
-        encryptionKey: privateKey,
+        encryptionKey: encryptionKey,
         credentialSortOrderList: [CredentialSortOrder.IssuanceDateDescending],
       );
       ClaimMapper claimMapper = getItSdk<ClaimMapper>();
@@ -567,7 +595,7 @@ class Authenticate {
         List<ClaimDTO> claimDTO = await storageClaimDataSource.getClaims(
           filter: filter,
           did: genesisDid,
-          encryptionKey: privateKey,
+          encryptionKey: encryptionKey,
           credentialSortOrderList: [CredentialSortOrder.IssuanceDateDescending],
         );
         ClaimMapper claimMapper = getItSdk<ClaimMapper>();
@@ -795,28 +823,34 @@ class Authenticate {
     return walletDs.signMessage(privateKey: privateKey, message: message);
   }
 
-  Future<AuthBodyDidDocResponseDTO?> _getDidDoc({
-    required String? pushUrl,
-    required String? pushToken,
-    required String? packageName,
-    required String profileDid,
+  Future<String> _getJWSAuthToken({
+    required String message,
+    required String fromDid,
+    required KeyId ethKeyId,
   }) async {
-    if (pushUrl == null ||
-        pushToken == null ||
-        packageName == null ||
-        pushUrl.isEmpty ||
-        pushToken.isEmpty ||
-        packageName.isEmpty) {
-      return null;
-    }
+    final kms = getItSdk<KMS>();
 
-    final iden3MessageDS = getItSdk<Iden3MessageDataSource>();
-    return iden3MessageDS.getDidDocResponse(
-      pushUrl,
-      profileDid,
-      pushToken,
-      packageName,
-    );
+    /// I suppose vm-0 is JWZ token verification method
+    final header = {
+      "alg": "ES256K",
+
+      /// did:iden3:privado:main:2SZDsdYordSH49VhS6hGo164RLwfcQe9FGow5ftSUG#vm-1
+      "kid": fromDid + "#vm-1",
+      "typ": "application/iden3comm-signed-json",
+    };
+    final encodedHeader = base64UrlEncode(jsonEncode(header).codeUnits);
+
+    final encodedMessage = base64UrlEncode(message.codeUnits);
+
+    final signingInput = "$encodedHeader.$encodedMessage";
+    final signingInputBytes = Uint8List.fromList(signingInput.codeUnits);
+
+    final signatureBytes = await kms.sign(ethKeyId, signingInputBytes);
+    final signatureEncoded = base64UrlEncode(signatureBytes);
+
+    final jws = signingInput + '.' + signatureEncoded;
+
+    return jws;
   }
 
   Future<String> _getJWZAuthToken({
@@ -936,7 +970,8 @@ class Authenticate {
   }
 
   Future<AuthClaimCompanionObject> _getAuthClaimData({
-    required String privateKey,
+    required List<String> publicKey,
+    required String encryptionKey,
     required String genesisDid,
     required EnvEntity env,
     required ChainConfigEntity chain,
@@ -949,8 +984,6 @@ class Authenticate {
     final Map<String, dynamic> treeState;
 
     final identityRepo = await getItSdk.getAsync<IdentityRepository>();
-    final publicKey =
-        await identityRepo.getPublicKeys(bjjPrivateKey: privateKey);
 
     /// First param
     final localClaimDs = getItSdk<LocalClaimDataSource>();
@@ -965,7 +998,7 @@ class Authenticate {
       key: authClaimNode.hash,
       type: TreeType.claims,
       did: genesisDid,
-      encryptionKey: privateKey,
+      encryptionKey: encryptionKey,
     );
 
     /// Third param
@@ -973,7 +1006,7 @@ class Authenticate {
       key: authClaimNode.hash,
       type: TreeType.revocation,
       did: genesisDid,
-      encryptionKey: privateKey,
+      encryptionKey: encryptionKey,
     );
 
     /// Fourth param
@@ -981,7 +1014,7 @@ class Authenticate {
     treeState = await getLatestStateUC.execute(
       param: GetLatestStateParam(
         did: genesisDid,
-        encryptionKey: privateKey,
+        encryptionKey: encryptionKey,
       ),
     );
 

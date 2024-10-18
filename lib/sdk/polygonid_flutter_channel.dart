@@ -7,6 +7,7 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/kms/keys/types.dart';
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
@@ -237,6 +238,22 @@ class PolygonIdFlutterChannel
         case 'addIdentity':
           return addIdentity(secret: call.arguments['secret'] as String?)
               .then((identity) => jsonEncode(identity.toJson()));
+
+        case 'addEthBasedIdentity':
+          final bjjKeyJson = call.arguments['bjjKeyId'] as String?;
+          return addEthBasedIdentity(
+            seed: call.arguments['secret'] as String?,
+            createBjjKey: call.arguments['createBjjKey'] as bool,
+            encryptionKey: call.arguments['encryptionKey'] as String,
+          ).then((identity) => jsonEncode(identity.toJson()));
+
+        case 'addEthBasedIdentityFromKey':
+          final bjjKeyJson = call.arguments['bjjKeyId'] as String?;
+          return addEthBasedIdentityFromKey(
+            ethKeyId: KeyId.fromJson(call.arguments['ethKeyId'] as String),
+            bjjKeyId: bjjKeyJson != null ? KeyId.fromJson(bjjKeyJson) : null,
+            encryptionKey: call.arguments['encryptionKey'] as String,
+          ).then((identity) => jsonEncode(identity.toJson()));
 
         case 'addProfile':
           return addProfile(
@@ -629,6 +646,32 @@ class PolygonIdFlutterChannel
   @override
   Future<PrivateIdentityEntity> addIdentity({String? secret}) {
     return _polygonIdSdk.identity.addIdentity(secret: secret);
+  }
+
+  @override
+  Future<IdentityEntity> addEthBasedIdentity({
+    String? seed,
+    bool createBjjKey = true,
+    required String encryptionKey,
+  }) {
+    return _polygonIdSdk.identity.addEthBasedIdentity(
+      seed: seed,
+      createBjjKey: createBjjKey,
+      encryptionKey: encryptionKey,
+    );
+  }
+
+  @override
+  Future<IdentityEntity> addEthBasedIdentityFromKey({
+    required KeyId ethKeyId,
+    KeyId? bjjKeyId,
+    required String encryptionKey,
+  }) {
+    return _polygonIdSdk.identity.addEthBasedIdentityFromKey(
+      ethKeyId: ethKeyId,
+      bjjKeyId: bjjKeyId,
+      encryptionKey: encryptionKey,
+    );
   }
 
   @override

@@ -51,9 +51,6 @@ class UpdateInteractionUseCase
       await _checkProfileValidityUseCase.execute(
         param: CheckProfileValidityParam(profileNonce: profileNonce),
       );
-      await _getIdentityUseCase.execute(
-        param: GetIdentityParam(genesisDid: genesisDid, privateKey: null),
-      );
 
       InteractionBaseEntity interactionToBeUpdated;
       try {

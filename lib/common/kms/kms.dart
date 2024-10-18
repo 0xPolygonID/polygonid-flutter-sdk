@@ -1,10 +1,9 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:polygonid_flutter_sdk/common/kms/keys/private_key.dart';
 import 'package:polygonid_flutter_sdk/common/kms/keys/public_key.dart';
 import 'package:polygonid_flutter_sdk/common/kms/keys/types.dart';
-import 'package:meta/meta.dart';
+import 'package:polygonid_flutter_sdk/common/utils/seed_utils.dart';
 
 /// KeyProvider is responsible for signing and creation of the keys
 ///
@@ -40,6 +39,12 @@ abstract class IKeyProvider {
   /// @returns 'Promise<KmsKeyId>'
   Future<KeyId> newPrivateKeyFromSeed(Uint8List seed);
 
+  /// Imports private key into the KMS and returns key id
+  ///
+  /// @param {Uint8Array} privateKey - private key
+  /// @returns 'Promise<KmsKeyId>'
+  Future<KeyId> importPrivateKey(Uint8List privateKey);
+
   /// Verifies a message signature using the provided key ID.
   ///
   /// @param message - The message bytes to verify.
@@ -47,9 +52,6 @@ abstract class IKeyProvider {
   /// @param keyId - The KMS key ID used to verify the signature.
   /// @returns A promise that resolves to a boolean indicating whether the signature is valid.
   Future<bool> verify(Uint8List message, String signatureHex, KeyId keyId);
-
-  @internal
-  Future<PrivateKey> privateKey(KeyId keyId);
 }
 
 /// Key management system class contains different key providers.
@@ -83,7 +85,7 @@ class KMS {
     }
 
     final random = Random.secure();
-    final seedBytes = _generateSeedBytes(random);
+    final seedBytes = generateSeedBytes(random);
 
     return keyProvider.newPrivateKeyFromSeed(seedBytes);
   }
@@ -101,6 +103,14 @@ class KMS {
     return keyProvider.newPrivateKeyFromSeed(bytes);
   }
 
+  Future<KeyId> importPrivateKey(KeyType keyType, Uint8List bytes) async {
+    final keyProvider = _registry[keyType];
+    if (keyProvider == null) {
+      throw Exception('keyProvider not found for: $keyType');
+    }
+    return keyProvider.importPrivateKey(bytes);
+  }
+
   /// gets public key for key id
   ///
   /// @param {KmsKeyId} keyId -- key id
@@ -112,20 +122,6 @@ class KMS {
     }
 
     return keyProvider.publicKey(keyId);
-  }
-
-  /// gets private key for key id
-  ///
-  /// @param {KmsKeyId} keyId -- key id
-  /// @returns private key
-  @internal
-  Future<PrivateKey> privateKey(KeyId keyId) async {
-    final keyProvider = _registry[keyId.type];
-    if (keyProvider == null) {
-      throw Exception('keyProvider not found for: ${keyId.type}');
-    }
-
-    return keyProvider.privateKey(keyId);
   }
 
   /// sign Uint8Array with giv KmsKeyIden
@@ -159,12 +155,4 @@ class KMS {
     }
     return keyProvider.verify(data, signatureHex, keyId);
   }
-}
-
-Uint8List _generateSeedBytes(Random random) {
-  final seedBytes = Uint8List(32);
-  for (var i = 0; i < seedBytes.length; i++) {
-    seedBytes[i] = random.nextInt(256);
-  }
-  return seedBytes;
 }

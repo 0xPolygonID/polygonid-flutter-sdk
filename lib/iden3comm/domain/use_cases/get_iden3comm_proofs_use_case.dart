@@ -145,7 +145,6 @@ class GetIden3commProofsUseCase
             var identityEntity = await _getIdentityUseCase.execute(
               param: GetIdentityParam(
                 genesisDid: param.genesisDid,
-                privateKey: param.privateKey,
               ),
             );
 

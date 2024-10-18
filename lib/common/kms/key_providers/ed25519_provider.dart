@@ -3,10 +3,8 @@ import 'dart:typed_data';
 import 'package:polygonid_flutter_sdk/common/kms/keys/private_key.dart';
 import 'package:polygonid_flutter_sdk/common/kms/keys/public_key.dart';
 import 'package:polygonid_flutter_sdk/common/kms/kms.dart';
-import 'package:polygonid_flutter_sdk/common/kms/provider_helpers.dart';
 import 'package:polygonid_flutter_sdk/common/kms/store/abstract_key_store.dart';
 import 'package:polygonid_flutter_sdk/common/kms/keys/types.dart';
-import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:web3dart/crypto.dart';
 import 'package:ed25519_edwards/ed25519_edwards.dart' as ed25519;
 
@@ -32,6 +30,21 @@ class Ed25519Provider implements IKeyProvider {
       throw Exception('Seed should be 32 bytes');
     }
     final edPrivateKey = ed25519.newKeyFromSeed(seed);
+    final privateKey = Ed25519PrivateKey(edPrivateKey);
+
+    final publicKey = privateKey.publicKey();
+
+    await _keyStore.importKey(
+      alias: publicKey.keyId.id,
+      key: bytesToHex(edPrivateKey.bytes),
+    );
+
+    return publicKey.keyId;
+  }
+
+  @override
+  Future<KeyId> importPrivateKey(Uint8List privateKeyBytes) async {
+    final edPrivateKey = ed25519.PrivateKey(privateKeyBytes);
     final privateKey = Ed25519PrivateKey(edPrivateKey);
 
     final publicKey = privateKey.publicKey();
@@ -86,11 +99,6 @@ class Ed25519Provider implements IKeyProvider {
     );
   }
 
-  @override
-  Future<PrivateKey> privateKey(KeyId keyId) async {
-    return _privateKey(keyId);
-  }
-
   /// Retrieves the private key for a given keyId from the key store.
   /// @param {KmsKeyId} keyId - The identifier of the key to retrieve.
   /// @returns {Future<String>} The private key associated with the keyId.
@@ -106,6 +114,10 @@ class Ed25519PublicKey extends PublicKey {
 
   Ed25519PublicKey(this.publicKey) : super(hex: bytesToHex(publicKey.bytes));
 
+  Ed25519PublicKey.fromHex(String hex)
+      : publicKey = ed25519.PublicKey(hexToBytes(hex)),
+        super(hex: hex);
+
   @override
   KeyType get keyType => KeyType.Ed25519;
 }
@@ -114,6 +126,10 @@ class Ed25519PrivateKey extends PrivateKey {
   final ed25519.PrivateKey privateKey;
 
   Ed25519PrivateKey(this.privateKey) : super(hex: bytesToHex(privateKey.bytes));
+
+  Ed25519PrivateKey.fromHex(String hex)
+      : privateKey = ed25519.PrivateKey(hexToBytes(hex)),
+        super(hex: hex);
 
   @override
   PublicKey publicKey() {

@@ -5,7 +5,10 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/common/kms/index.dart';
+import 'package:polygonid_flutter_sdk/common/kms/keys/types.dart';
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
+import 'package:polygonid_flutter_sdk/common/utils/hex_utils.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/add_did_profile_info_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_did_profile_info_list_use_case.dart';
@@ -37,6 +40,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/get
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/remove_interactions_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/update_interaction_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 abstract class PolygonIdSdkIden3comm {
   /// Returns a [Iden3MessageEntity] from an iden3comm message string.
@@ -511,24 +515,41 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }
 
   Future<Iden3MessageEntity?> authenticateV2({
+    required Iden3MessageEntity message,
     required String privateKey,
     required String genesisDid,
     required BigInt profileNonce,
     required IdentityEntity identityEntity,
-    required Iden3MessageEntity message,
-    required EnvEntity env,
+    String? ethPrivateKey,
     String? pushToken,
     String? challenge,
   }) async {
+    final kms = getItSdk<KMS>();
+    final bjjKeyId = await kms.importPrivateKey(
+      KeyType.BabyJubJub,
+      HexUtils.hexToBytes(privateKey),
+    );
+
+    KeyId? ethKeyId;
+    if (ethPrivateKey != null) {
+      ethKeyId = await kms.importPrivateKey(
+        KeyType.Secp256k1,
+        HexUtils.hexToBytes(ethPrivateKey),
+      );
+    }
+
     try {
       return await Authenticate().authenticate(
-        privateKey: privateKey,
+        message: message,
+        bjjKeyId: bjjKeyId,
+        ethKeyId: ethKeyId,
+        encryptionKey: privateKey,
         genesisDid: genesisDid,
         profileNonce: profileNonce,
         identityEntity: identityEntity,
-        message: message,
-        env: env,
         pushToken: pushToken,
+        challenge: challenge,
+        privateKey: privateKey,
       );
     } on PolygonIdSDKException catch (_) {
       rethrow;

@@ -1,5 +1,14 @@
+import 'dart:math';
+import 'dart:typed_data';
+
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/common/kms/index.dart';
+import 'package:polygonid_flutter_sdk/common/kms/key_providers/ed25519_provider.dart';
+import 'package:polygonid_flutter_sdk/common/kms/keys/types.dart';
+import 'package:polygonid_flutter_sdk/common/kms/kms.dart';
+import 'package:polygonid_flutter_sdk/common/utils/seed_utils.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/add_eth_identity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
@@ -20,6 +29,9 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/check_i
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/remove_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/sign_message_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/remove_profile_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/libs/bjj/eddsa_babyjub.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
+import 'package:web3dart/crypto.dart';
 
 abstract class PolygonIdSdkIdentity {
   /// Checks the identity validity from a secret
@@ -57,6 +69,18 @@ abstract class PolygonIdSdkIdentity {
   ///
   /// The identity will be created using the current env set with [PolygonIdSdk.setEnv]
   Future<PrivateIdentityEntity> addIdentity({String? secret});
+
+  Future<IdentityEntity> addEthBasedIdentity({
+    String? seed,
+    bool createBjjKey = true,
+    required String encryptionKey,
+  });
+
+  Future<IdentityEntity> addEthBasedIdentityFromKey({
+    required KeyId ethKeyId,
+    KeyId? bjjKeyId,
+    required String encryptionKey,
+  });
 
   /// Restores an [IdentityEntity] from a privateKey and encrypted backup databases
   /// associated to the identity
@@ -246,6 +270,8 @@ class Identity implements PolygonIdSdkIdentity {
 
   final GetDidUseCase _getDidUseCase;
 
+  final AddEthIdentity _addEthIdentity;
+
   final StacktraceManager _stacktraceManager;
 
   Identity(
@@ -264,6 +290,7 @@ class Identity implements PolygonIdSdkIdentity {
     this._getProfilesUseCase,
     this._removeProfileUseCase,
     this._getDidUseCase,
+    this._addEthIdentity,
     this._stacktraceManager,
   );
 
@@ -287,6 +314,62 @@ class Identity implements PolygonIdSdkIdentity {
     _stacktraceManager.clear();
     _stacktraceManager.addTrace("PolygonIdSdk.Identity.addIdentity called");
     return _addNewIdentityUseCase.execute(param: secret);
+  }
+
+  @override
+  Future<IdentityEntity> addEthBasedIdentity({
+    String? seed,
+    bool createBjjKey = true,
+    required String encryptionKey,
+  }) async {
+    _stacktraceManager.clear();
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.addIdentity called");
+
+    final kms = getItSdk<KMS>();
+
+    final Uint8List seedBytes;
+    if (seed == null) {
+      seedBytes = generateSeedBytes(Random.secure());
+    } else {
+      seedBytes = hexToBytes(seed);
+    }
+
+    final ethKeyId = await kms.createKeyFromSeed(KeyType.Secp256k1, seedBytes);
+    final ethPublicKey = await kms.publicKey(ethKeyId) as Secp256k1PublicKey;
+
+    final bjjKeyId = await kms.createKeyFromSeed(KeyType.Secp256k1, seedBytes);
+    final bjjPublicKey = await kms.publicKey(bjjKeyId) as BjjPublicKey;
+
+    return _addEthIdentity.addEthIdentity(
+      bjjPublicKey: bjjPublicKey,
+      ethPublicKey: ethPublicKey,
+      encryptionKey: encryptionKey,
+    );
+  }
+
+  @override
+  Future<IdentityEntity> addEthBasedIdentityFromKey({
+    required KeyId ethKeyId,
+    KeyId? bjjKeyId,
+    required String encryptionKey,
+  }) async {
+    _stacktraceManager.clear();
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.addIdentity called");
+
+    final kms = getItSdk<KMS>();
+
+    final ethPublicKey = await kms.publicKey(ethKeyId);
+
+    BjjPublicKey? bjjPublicKey;
+    if (bjjKeyId != null) {
+      bjjPublicKey = await kms.publicKey(bjjKeyId) as BjjPublicKey;
+    }
+
+    return _addEthIdentity.addEthIdentity(
+      bjjPublicKey: bjjPublicKey as BjjPublicKey,
+      ethPublicKey: ethPublicKey as Secp256k1PublicKey,
+      encryptionKey: encryptionKey,
+    );
   }
 
   @override
@@ -330,7 +413,6 @@ class Identity implements PolygonIdSdkIdentity {
     return _getIdentityUseCase.execute(
       param: GetIdentityParam(
         genesisDid: genesisDid,
-        privateKey: privateKey,
       ),
     );
   }

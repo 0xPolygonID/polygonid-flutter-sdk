@@ -362,8 +362,8 @@ class Credential implements PolygonIdSdkCredential {
   @override
   Future<ClaimEntity> refreshCredential({
     required String genesisDid,
-    required String privateKey,
     required ClaimEntity credential,
+    required String privateKey,
   }) {
     return _refreshCredentialUseCase.execute(
       param: RefreshCredentialParam(

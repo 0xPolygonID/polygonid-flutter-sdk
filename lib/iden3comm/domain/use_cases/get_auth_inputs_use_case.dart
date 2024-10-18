@@ -70,7 +70,6 @@ class GetAuthInputsUseCase
       IdentityEntity identity = await _getIdentityUseCase.execute(
         param: GetIdentityParam(
           genesisDid: param.genesisDid,
-          privateKey: param.privateKey,
         ),
       );
 

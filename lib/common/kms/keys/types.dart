@@ -9,6 +9,14 @@ enum KeyType {
   final String name;
 
   const KeyType(this.name);
+
+  static KeyType fromJson(String json) {
+    return values.firstWhere((v) => v.name == json);
+  }
+
+  String toJson() {
+    return name;
+  }
 }
 
 /// ID of the key that describe contain key type
@@ -20,6 +28,17 @@ class KeyId {
   final String id;
 
   KeyId({required this.type, required this.id});
+
+  factory KeyId.fromJson(String json) {
+    return KeyId(
+      type: KeyType.fromJson(json.split(':')[0]),
+      id: json,
+    );
+  }
+
+  String toJson() {
+    return id;
+  }
 
   @override
   bool operator ==(Object other) =>

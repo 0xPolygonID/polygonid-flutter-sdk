@@ -8,13 +8,9 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity
 import 'common_mocks.dart';
 
 class IdentityMocks {
-  static IdentityEntity identityDTO = IdentityEntity(
-      did: CommonMocks.did,
-      publicKey: CommonMocks.publicKey,
-      profiles: CommonMocks.profiles);
-
   static IdentityEntity identity = IdentityEntity(
       did: CommonMocks.did,
+      type: IdentityType.bjj,
       publicKey: CommonMocks.publicKey,
       profiles: CommonMocks.profiles);
 
@@ -25,6 +21,7 @@ class IdentityMocks {
 
   static PrivateIdentityEntity privateIdentity = PrivateIdentityEntity(
       did: CommonMocks.did,
+      type: IdentityType.bjj,
       publicKey: CommonMocks.publicKey,
       privateKey: CommonMocks.privateKey,
       profiles: CommonMocks.profiles);

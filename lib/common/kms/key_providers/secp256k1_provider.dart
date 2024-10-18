@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:crypto/crypto.dart';
 import 'package:polygonid_flutter_sdk/common/kms/keys/private_key.dart';
 import 'package:polygonid_flutter_sdk/common/kms/keys/public_key.dart';
 import 'package:polygonid_flutter_sdk/common/kms/kms.dart';
@@ -48,6 +47,26 @@ class Sec256k1Provider implements IKeyProvider {
     await _keyStore.importKey(
       alias: kmsId.id,
       key: bytesToHex(seed).padLeft(64, '0'),
+    );
+
+    return kmsId;
+  }
+
+  @override
+  Future<KeyId> importPrivateKey(Uint8List privateKeyBytes) async {
+    final privateKey =
+        secp256k1.PrivateKey.fromHex(bytesToHex(privateKeyBytes));
+
+    final publicKey = privateKey.publicKey;
+
+    final kmsId = KeyId(
+      type: keyType,
+      id: keyPath(keyType, publicKey.toHex()),
+    );
+
+    await _keyStore.importKey(
+      alias: kmsId.id,
+      key: bytesToHex(privateKeyBytes).padLeft(64, '0'),
     );
 
     return kmsId;
@@ -143,5 +162,18 @@ class Secp256k1PrivateKey extends PrivateKey {
     signatureBytes.setRange(32, 64, sBytes);
 
     return signatureBytes;
+  }
+}
+
+extension EthereumAddressExtension on Secp256k1PublicKey {
+  String toEthAddress() {
+    final publicKeyUncompressed = hexToBytes(publicKey.toHex());
+
+    // Skip 04 hex prefix/first prefix byte and hash
+    final pubKeyHash = keccak256(publicKeyUncompressed.sublist(1));
+
+    final trailing20Bytes = pubKeyHash.sublist(pubKeyHash.length - 20);
+
+    return '0x' + trailing20Bytes.map((e) => e.toRadixString(16)).join();
   }
 }

@@ -64,7 +64,6 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
     final identityEntity = await _getIdentityUseCase.execute(
       param: GetIdentityParam(
         genesisDid: param.genesisDid,
-        privateKey: null,
       ),
     );
 

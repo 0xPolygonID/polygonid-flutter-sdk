@@ -48,6 +48,7 @@ final mockWallet = FakeWallet();
 const otherIdentifier = "theOtherIdentifier";
 final mockDTO = IdentityEntity(
   did: CommonMocks.identifier,
+  type: IdentityType.bjj,
   publicKey: CommonMocks.publicKey,
   profiles: CommonMocks.profiles,
 );
@@ -125,9 +126,9 @@ final DeployedContract contract = DeployedContract(
     ])));
 
 var identities = [
-  IdentityMocks.identityDTO,
-  IdentityMocks.identityDTO,
-  IdentityMocks.identityDTO,
+  IdentityMocks.identity,
+  IdentityMocks.identity,
+  IdentityMocks.identity,
 ];
 var expectedIdentities = [
   IdentityMocks.identity,

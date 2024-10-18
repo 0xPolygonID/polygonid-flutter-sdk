@@ -59,6 +59,7 @@ class CreateIdentityUseCase
       return IdentityEntity(
         did: didIdentifier,
         publicKey: param.bjjPublicKey,
+        type: IdentityType.bjj,
         profiles: profiles,
       );
     }).catchError((error) {

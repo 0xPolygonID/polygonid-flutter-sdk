@@ -79,11 +79,6 @@ class HashEntity extends Equatable {
     return data[n ~/ 8] & (1 << (n % 8)) != 0;
   }
 
-  // TestBit tests whether the bit n in bitmap is 1.
-  bool _testBit(Uint8List byte, int n) {
-    return data[n ~/ 8] & (1 << (n % 8)) != 0;
-  }
-
   String string() => Uint8ArrayUtils.bytesToBigInt(data).toString();
 
   @override

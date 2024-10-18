@@ -142,13 +142,17 @@ class AuthenticateUseCase
 
       _proofGenerationStepsStreamManager
           .add("preparing authentication parameters...");
-      String authResponse = await _iden3commRepository.getAuthResponse(
-          did: profileDid,
-          request: param.message,
-          scope: proofs,
-          pushUrl: pushUrl,
-          pushToken: param.pushToken,
-          packageName: packageName);
+      final authResponse = await _iden3commRepository.getAuthResponse(
+        did: profileDid,
+        request: param.message,
+        scope: proofs,
+        pushUrl: pushUrl,
+        pushToken: param.pushToken,
+        packageName: packageName,
+      );
+
+      final authResponseString = jsonEncode(authResponse.toJson());
+
       _stacktraceManager.addTrace(
           "[AuthenticateUseCase] _iden3commRepository.getAuthResponse success\nauthResponse: $authResponse");
       logger().i(
@@ -161,7 +165,7 @@ class AuthenticateUseCase
               genesisDid: param.genesisDid,
               profileNonce: param.profileNonce,
               privateKey: param.privateKey,
-              message: authResponse));
+              message: authResponseString));
       logger()
           .i("stopwatch after getAuthToken ${stopwatch.elapsedMilliseconds}");
       _stacktraceManager.addTrace(

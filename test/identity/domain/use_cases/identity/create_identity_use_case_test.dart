@@ -25,12 +25,14 @@ var profiles = {BigInt.zero: CommonMocks.did};
 
 IdentityEntity expected = IdentityEntity(
   did: CommonMocks.did,
+  type: IdentityType.bjj,
   publicKey: CommonMocks.publicKey,
   profiles: profiles,
 );
 
 IdentityEntity expectedNoProfiles = IdentityEntity(
   did: CommonMocks.did,
+  type: IdentityType.bjj,
   publicKey: CommonMocks.publicKey,
   profiles: noProfiles,
 );

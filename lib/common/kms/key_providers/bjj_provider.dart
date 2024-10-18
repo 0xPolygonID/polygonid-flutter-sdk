@@ -50,6 +50,21 @@ class BjjProvider implements IKeyProvider {
     return kmsId;
   }
 
+  @override
+  Future<KeyId> importPrivateKey(Uint8List privateKeyBytes) async {
+    final privateKey = BjjPrivateKey(privateKeyBytes);
+
+    final publicKey = privateKey.publicKey();
+
+    final kmsId = KeyId(
+      type: keyType,
+      id: keyPath(keyType, publicKey.hex),
+    );
+    await _keyStore.importKey(alias: publicKey.keyId.id, key: privateKey.hex);
+
+    return kmsId;
+  }
+
   /// Gets public key by kmsKeyId
   ///
   /// @param {KmsKeyId} keyId - key identifier
