@@ -32,14 +32,14 @@ import 'package:web3dart/web3dart.dart';
 class FetchOnchainClaimsParam {
   final String contractAddress;
   final String genesisDid;
-  final BigInt profileNonce;
+  final BigInt? profileNonce;
   final String privateKey;
   final String? chainId;
 
   FetchOnchainClaimsParam({
     required this.contractAddress,
     required this.genesisDid,
-    required this.profileNonce,
+    this.profileNonce,
     required this.privateKey,
     this.chainId,
   });
@@ -90,26 +90,12 @@ class FetchOnchainClaimsUseCase
         param: CheckProfileAndDidCurrentEnvParam(
           did: param.genesisDid,
           privateKey: param.privateKey,
-          profileNonce: param.profileNonce,
-        ),
-      );
-
-      final env = await _getEnvUseCase.execute();
-      final chain = await _getSelectedChainUseCase.execute();
-
-      final profileDid = await _getDidIdentifierUseCase.execute(
-        param: GetDidIdentifierParam.withPrivateKey(
-          privateKey: param.privateKey,
-          blockchain: chain.blockchain,
-          network: chain.network,
-          profileNonce: param.profileNonce,
-          method: chain.method,
+          profileNonce: param.profileNonce ?? GENESIS_PROFILE_NONCE,
         ),
       );
 
       final claims = await _fetchOnchainClaims(
         param.contractAddress,
-        profileDid,
         param,
       );
 
@@ -124,7 +110,6 @@ class FetchOnchainClaimsUseCase
 
   Future<List<ClaimEntity>> _fetchOnchainClaims(
     String contractAddress,
-    String profileDid,
     FetchOnchainClaimsParam param,
   ) async {
     final env = await _getEnvUseCase.execute();
@@ -179,23 +164,20 @@ class FetchOnchainClaimsUseCase
     );
 
     BigInt nonce;
-    if (info.containsKey("privateProfileNonce")) {
+    if (param.profileNonce != null) {
+      nonce = param.profileNonce!;
+    } else if (info.containsKey("privateProfileNonce")) {
       nonce = BigInt.parse(info["privateProfileNonce"] as String);
     } else {
       nonce = GENESIS_PROFILE_NONCE;
     }
 
-    final did = await _getDidIdentifierUseCase.execute(
-      param: GetDidIdentifierParam.withPrivateKey(
-        privateKey: param.privateKey,
-        blockchain: chain.blockchain,
-        network: chain.network,
-        profileNonce: nonce,
-        method: chain.method,
-      ),
+    final profileDid = _identityRepository.getPrivateProfileForGenesisDid(
+      genesisDid: param.genesisDid,
+      profileNonce: nonce,
     );
 
-    final didEntity = await _getDidUseCase.execute(param: did);
+    final didEntity = await _getDidUseCase.execute(param: profileDid);
     final userId =
         await _identityRepository.convertIdToBigInt(id: didEntity.identifier);
 

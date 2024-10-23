@@ -35,6 +35,11 @@ abstract class IdentityRepository {
     String? method,
   });
 
+  String getPrivateProfileForGenesisDid({
+    required String genesisDid,
+    required BigInt profileNonce,
+  });
+
   // RHS
   Future<Map<String, dynamic>> getNonRevProof(
       {required String identityState,
