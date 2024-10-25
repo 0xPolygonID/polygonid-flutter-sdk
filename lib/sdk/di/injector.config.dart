@@ -684,7 +684,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i232.SecureStorageProfilesDataSource>(() =>
         _i232.SecureStorageProfilesDataSource(
             gh<_i232.SecureStorageProfilesStoreRefWrapper>()));
-    gh.factory<_i969.LocalClaimDataSource>(() => _i969.LocalClaimDataSource(
+    gh.singleton<_i969.LocalClaimDataSource>(() => _i969.LocalClaimDataSource(
         gh<_i758.LibPolygonIdCoreCredentialDataSource>()));
     gh.factory<_i272.CacheCredentialDataSource>(() =>
         _i272.CacheCredentialDataSource(
