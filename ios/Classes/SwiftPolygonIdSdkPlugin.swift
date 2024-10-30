@@ -39,9 +39,6 @@ public class SwiftPolygonIdSdkPlugin: NSObject, FlutterPlugin {
         PLGNAtomicQueryMtpV2OnChainInputs(nil, nil, nil, nil);
         PLGNFreeStatus(nil);
         
-        // Prover bindings
-        groth16_prover(nil, 0, nil, 0, nil, nil, nil, nil, nil, 0);
-        
         // witnesscalc authv2 bindings
         witnesscalc_authV2(nil, 0, nil, 0, nil, nil, nil, 0);
         
