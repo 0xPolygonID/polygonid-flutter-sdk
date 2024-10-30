@@ -50,18 +50,6 @@ class PolygonIdCore {
     String errorMessage = status.value.ref.status.toString();
     PLGNStatusCode statusCode = status.value.ref.status;
 
-    if (status.value.ref.error_msg != ffi.nullptr) {
-      try {
-        ffi.Pointer<ffi.Char> json = status.value.ref.error_msg;
-        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
-        errorMessage = jsonString.toDartString();
-      }catch(_){
-        // we don't want to crash the app if we can't parse the error message
-        if(kDebugMode){
-          logger().e("Error parsing error message");
-        }
-      }
-    }
     if (status.value.ref.error_msg == ffi.nullptr) {
       if (kDebugMode) {
         logger().e("$msg: ${status.value.ref.status.toString()}");
@@ -71,7 +59,7 @@ class PolygonIdCore {
       ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
       try {
         String errormsg = jsonString.toDartString();
-        msg = "$msg: $errormsg";
+        msg = errormsg;
         if (kDebugMode) {
           logger().e(
               "$msg: ${status.value.ref.status.toString()}. Error: $errormsg");
@@ -83,6 +71,11 @@ class PolygonIdCore {
       }
     }
     result = msg;
+    _freeStatus(status);
+    return NativePolygonIdCoreResult.error(
+      statusCode: statusCode,
+      message: errorMessage,
+    );
   }
 
   void _freeStatus(ffi.Pointer<ffi.Pointer<PLGNStatus>> status) {
