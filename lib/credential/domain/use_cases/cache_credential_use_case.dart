@@ -15,8 +15,7 @@ class CacheCredentialParam {
   });
 }
 
-class CacheCredentialUseCase
-    extends FutureUseCase<CacheCredentialParam, String?> {
+class CacheCredentialUseCase extends FutureUseCase<CacheCredentialParam, bool> {
   final CredentialRepository _credentialRepository;
 
   CacheCredentialUseCase(
@@ -24,7 +23,7 @@ class CacheCredentialUseCase
   );
 
   @override
-  Future<String?> execute({
+  Future<bool> execute({
     required CacheCredentialParam param,
   }) {
     String? config;
