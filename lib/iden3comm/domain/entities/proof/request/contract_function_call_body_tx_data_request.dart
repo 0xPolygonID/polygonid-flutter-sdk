@@ -42,6 +42,7 @@ class ContractFunctionCallBodyTxDataRequest {
   final String methodId; // required, hex string, ethereum function selector
   final int chainId; // required, number of chain.
   final String? network;
+  String challange = "";
 
   ContractFunctionCallBodyTxDataRequest(
       {required this.contractAddress,

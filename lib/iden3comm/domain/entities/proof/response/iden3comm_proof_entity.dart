@@ -66,7 +66,7 @@ import 'dart:convert';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 
 class Iden3commProofEntity extends ZKProofEntity {
-  final int id;
+  int id;
   final String circuitId;
 
   Iden3commProofEntity({

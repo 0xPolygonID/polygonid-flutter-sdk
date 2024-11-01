@@ -150,7 +150,7 @@ class GetIden3commProofsUseCase
           param.genesisDid,
           param.profileNonce,
           param.privateKey,
-          param.challenge!,
+          message.body.transactionData.challange!,
           param.config,
         );
 
@@ -358,11 +358,9 @@ class GetIden3commProofsUseCase
     EnvConfigEntity? config,
   ) async {
     final env = await (await getItSdk.getAsync<GetEnvUseCase>()).execute();
-    final chain =
-        await (await getItSdk.getAsync<GetSelectedChainUseCase>()).execute();
+    final chain = await (await getItSdk.getAsync<GetSelectedChainUseCase>()).execute();
 
-    String profileDid =
-        await (await getItSdk.getAsync<GetDidIdentifierUseCase>()).execute(
+    String profileDid = await (await getItSdk.getAsync<GetDidIdentifierUseCase>()).execute(
       param: GetDidIdentifierParam.withPrivateKey(
         privateKey: privateKey,
         profileNonce: profileNonce,
