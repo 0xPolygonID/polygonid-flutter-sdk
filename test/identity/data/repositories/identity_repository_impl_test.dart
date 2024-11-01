@@ -21,7 +21,6 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart'
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/rhs_node_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/rhs_node_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/repositories/identity_repository_impl.dart';
@@ -151,7 +150,6 @@ MockEncryptionDbDataSource encryptionDbDataSource =
     MockEncryptionDbDataSource();
 MockDestinationPathDataSource destinationPathDataSource =
     MockDestinationPathDataSource();
-MockHexMapper hexMapper = MockHexMapper();
 MockPrivateKeyMapper privateKeyMapper = MockPrivateKeyMapper();
 MockRhsNodeMapper rhsNodeMapper = MockRhsNodeMapper();
 MockStateIdentifierMapper stateIdentifierMapper = MockStateIdentifierMapper();
@@ -168,7 +166,6 @@ IdentityRepository repository = IdentityRepositoryImpl(
   libPolygonIdCoreIdentityDataSource,
   encryptionDbDataSource,
   destinationPathDataSource,
-  hexMapper,
   privateKeyMapper,
   rhsNodeMapper,
   stateIdentifierMapper,
@@ -185,7 +182,6 @@ IdentityRepository repository = IdentityRepositoryImpl(
   LibPolygonIdCoreIdentityDataSource,
   EncryptionDbDataSource,
   DestinationPathDataSource,
-  HexMapper,
   PrivateKeyMapper,
   RhsNodeMapper,
   StateIdentifierMapper,
@@ -201,8 +197,6 @@ void main() {
       when(walletDataSource.signMessage(
               privateKey: anyNamed('privateKey'), message: anyNamed('message')))
           .thenAnswer((realInvocation) => Future.value(CommonMocks.signature));
-      when(hexMapper.mapTo(any))
-          .thenAnswer((realInvocation) => CommonMocks.aBytes);
     });
 
     test(
@@ -215,13 +209,11 @@ void main() {
           CommonMocks.signature);
 
       // Then
-      expect(verify(hexMapper.mapTo(captureAny)).captured.first,
-          CommonMocks.privateKey);
       var signCaptured = verify(walletDataSource.signMessage(
               privateKey: captureAnyNamed('privateKey'),
               message: captureAnyNamed('message')))
           .captured;
-      expect(signCaptured[0], CommonMocks.aBytes);
+      expect(signCaptured[0], [0, 0, 0]);
       expect(signCaptured[1], CommonMocks.message);
     });
 
@@ -244,13 +236,11 @@ void main() {
       });
 
       // Then
-      expect(verify(hexMapper.mapTo(captureAny)).captured.first,
-          CommonMocks.privateKey);
       var signCaptured = verify(walletDataSource.signMessage(
               privateKey: captureAnyNamed('privateKey'),
               message: captureAnyNamed('message')))
           .captured;
-      expect(signCaptured[0], CommonMocks.aBytes);
+      expect(signCaptured[0], [0, 0, 0]);
       expect(signCaptured[1], CommonMocks.message);
     });
   });

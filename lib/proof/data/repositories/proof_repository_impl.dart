@@ -9,12 +9,9 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
-import 'package:polygonid_flutter_sdk/credential/data/mappers/revocation_status_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_download_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_data_source.dart';
@@ -27,7 +24,6 @@ import 'package:polygonid_flutter_sdk/proof/data/dtos/circuits_to_download_param
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/witness_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/circuit_type_mapper.dart';
-import 'package:polygonid_flutter_sdk/proof/data/mappers/gist_mtproof_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/zkproof_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
@@ -36,8 +32,6 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart'
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/gist_proof_cache.dart';
-import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/auth_v2/witness_auth.dart';
-import 'package:web3dart/contracts.dart';
 
 class ProofRepositoryImpl extends ProofRepository {
   final WitnessDataSource _witnessDataSource;
@@ -45,10 +39,8 @@ class ProofRepositoryImpl extends ProofRepository {
   final LibPolygonIdCoreProofDataSource _libPolygonIdCoreProofDataSource;
   final GistMTProofDataSource _gistProofDataSource;
   final ProofCircuitDataSource _proofCircuitDataSource;
-  final RemoteIdentityDataSource _remoteIdentityDataSource;
   final LocalContractFilesDataSource _localContractFilesDataSource;
   final CircuitsDownloadDataSource _circuitsDownloadDataSource;
-  final RPCDataSource _rpcDataSource;
   final CircuitTypeMapper _circuitTypeMapper;
   final ZKProofMapper _zkProofMapper;
   final AuthProofMapper _authProofMapper;
@@ -58,7 +50,6 @@ class ProofRepositoryImpl extends ProofRepository {
 
   // FIXME: those mappers shouldn't be used here as they are part of Credential
   final ClaimMapper _claimMapper;
-  final RevocationStatusMapper _revocationStatusMapper;
 
   ProofRepositoryImpl(
     this._witnessDataSource,
@@ -66,14 +57,11 @@ class ProofRepositoryImpl extends ProofRepository {
     this._libPolygonIdCoreProofDataSource,
     this._gistProofDataSource,
     this._proofCircuitDataSource,
-    this._remoteIdentityDataSource,
     this._localContractFilesDataSource,
     this._circuitsDownloadDataSource,
-    this._rpcDataSource,
     this._circuitTypeMapper,
     this._zkProofMapper,
     this._claimMapper,
-    this._revocationStatusMapper,
     this._authProofMapper,
     this._circuitsFilesDataSource,
     this._getEnvUseCase,
@@ -183,7 +171,6 @@ class ProofRepositoryImpl extends ProofRepository {
 
     if (res.isNotEmpty) {
       _stacktraceManager.addTrace("atomicQueryInputs result: success");
-      Uint8List inputsJsonBytes;
       dynamic inputsJson = json.decode(res);
       _stacktraceManager.addTrace("inputJsonType: ${inputsJson.runtimeType}");
       if (inputsJson is Map<String, dynamic>) {

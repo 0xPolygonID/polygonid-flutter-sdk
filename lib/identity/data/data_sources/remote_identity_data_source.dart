@@ -2,9 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:http/http.dart';
-import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
-import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/pinata_gateway_utils.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/rhs_node_dto.dart';
@@ -126,7 +124,6 @@ class RemoteIdentityDataSource {
       bool exists = false;
       List<String> siblings = <String>[];
       String nextKey = revTreeRootHash;
-      int depth = 0;
       Uint8List key = Uint8ArrayUtils.bigIntToBytes(revNonce);
 
       for (int depth = 0; depth < (key.length * 8); depth++) {

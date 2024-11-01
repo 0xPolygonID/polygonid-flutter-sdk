@@ -6,7 +6,6 @@ import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 
 import 'package:polygonid_flutter_sdk/constants.dart';
-import 'package:polygonid_flutter_sdk/common/utils/http_exceptions_handler_mixin.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 Future<String> extractJSON(http.Response response) async {
@@ -14,7 +13,7 @@ Future<String> extractJSON(http.Response response) async {
 }
 
 Future<http.Response> get(String baseAddress, String endpoint,
-    {Map<String, String?>? queryParameters}) async {
+    {Map<String, String?>? queryParameters,}) async {
   var response;
   try {
     Uri uri;

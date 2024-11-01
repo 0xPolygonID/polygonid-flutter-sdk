@@ -5,7 +5,6 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.d
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/create_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 
 class UpdateIdentityParam {
@@ -23,18 +22,17 @@ class UpdateIdentityParam {
 class UpdateIdentityUseCase
     extends FutureUseCase<UpdateIdentityParam, PrivateIdentityEntity> {
   final IdentityRepository _identityRepository;
-  final CreateIdentityUseCase _createIdentityUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
 
   UpdateIdentityUseCase(
     this._identityRepository,
-    this._createIdentityUseCase,
     this._getIdentityUseCase,
   );
 
   @override
-  Future<PrivateIdentityEntity> execute(
-      {required UpdateIdentityParam param}) async {
+  Future<PrivateIdentityEntity> execute({
+    required UpdateIdentityParam param,
+  }) async {
     IdentityEntity identity = await _getIdentityUseCase.execute(
       param: GetIdentityParam(
         genesisDid: param.genesisDid,

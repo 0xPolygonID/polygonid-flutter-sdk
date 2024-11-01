@@ -10,7 +10,6 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/mtp_v2/native_witness_mtp_v2.dart';
-import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 @injectable
 class WitnessMTPV2Lib {

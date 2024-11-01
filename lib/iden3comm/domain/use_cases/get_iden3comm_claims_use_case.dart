@@ -4,10 +4,7 @@ import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_nonce_use_case.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/update_claim_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_query_request.dart';
@@ -42,9 +39,6 @@ class GetIden3commClaimsUseCase
     extends FutureUseCase<GetIden3commClaimsParam, List<ClaimEntity?>> {
   final Iden3commCredentialRepository _iden3commCredentialRepository;
   final GetClaimsUseCase _getClaimsUseCase;
-  final GetClaimRevocationStatusUseCase _getClaimRevocationStatusUseCase;
-  final GetClaimRevocationNonceUseCase _getClaimRevocationNonceUseCase;
-  final UpdateClaimUseCase _updateClaimUseCase;
   final IsProofCircuitSupportedUseCase _isProofCircuitSupported;
   final GetProofRequestsUseCase _getProofRequestsUseCase;
   final CircuitTypeMapper _circuitTypeMapper;
@@ -53,9 +47,6 @@ class GetIden3commClaimsUseCase
   GetIden3commClaimsUseCase(
     this._iden3commCredentialRepository,
     this._getClaimsUseCase,
-    this._getClaimRevocationStatusUseCase,
-    this._getClaimRevocationNonceUseCase,
-    this._updateClaimUseCase,
     this._isProofCircuitSupported,
     this._getProofRequestsUseCase,
     this._circuitTypeMapper,

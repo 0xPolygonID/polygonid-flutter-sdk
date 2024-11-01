@@ -1,15 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:encrypt/encrypt.dart';
-import 'package:http/http.dart';
-import 'package:pointycastle/api.dart';
-import 'package:pointycastle/asymmetric/api.dart';
-import 'package:pointycastle/asymmetric/oaep.dart';
-import 'package:pointycastle/asymmetric/rsa.dart';
-import 'package:pointycastle/digests/sha512.dart';
-import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/iden3_message_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/lib_pidcore_iden3comm_data_source.dart';
@@ -33,7 +24,6 @@ import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/gist_mtproof_mapper.dart';
 import 'package:poseidon/poseidon.dart';
-import 'package:poseidon/poseidon/poseidon.dart';
 import 'package:uuid/uuid.dart';
 
 class Iden3commRepositoryImpl extends Iden3commRepository {

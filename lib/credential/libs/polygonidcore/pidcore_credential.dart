@@ -5,7 +5,6 @@ import 'package:ffi/ffi.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 
 import '../../../common/libs/polygonidcore/native_polygonidcore.dart';
 import '../../../common/libs/polygonidcore/pidcore_base.dart';

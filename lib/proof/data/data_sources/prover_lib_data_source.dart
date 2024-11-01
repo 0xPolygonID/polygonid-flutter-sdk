@@ -1,13 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/prove_param.dart';
 import 'package:flutter_rapidsnark/flutter_rapidsnark.dart';
-
-const _methodChannel = MethodChannel('polygonid_flutter_sdk');
 
 @injectable
 class ProverLibWrapper {

@@ -67,7 +67,9 @@ class FetchOnchainClaimUseCase
   );
 
   @override
-  Future<ClaimEntity> execute({required FetchOnchainClaimParam param}) async {
+  Future<ClaimEntity> execute({
+    required FetchOnchainClaimParam param,
+  }) async {
     final env = await _getEnvUseCase.execute();
     final chain = param.chainId != null
         ? env.chainConfigs[param.chainId]
@@ -135,7 +137,7 @@ class FetchOnchainClaimUseCase
       );
 
       final displayMethod = claimInfoDto.displayMethod;
-      final futures = await Future.wait([
+      await Future.wait([
         _remoteIden3commDataSource
             .fetchSchema(url: claimInfoDto.credentialSchema.id)
             .then((schema) {

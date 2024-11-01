@@ -4,8 +4,6 @@ import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/check_profile_validity_use_case.dart';
 
 class AddInteractionParam {
   final String? genesisDid;
@@ -22,20 +20,17 @@ class AddInteractionParam {
 class AddInteractionUseCase
     extends FutureUseCase<AddInteractionParam, InteractionBaseEntity> {
   final InteractionRepository _interactionRepository;
-  final CheckProfileValidityUseCase _checkProfileValidityUseCase;
-  final GetIdentityUseCase _getIdentityUseCase;
   final StacktraceManager _stacktraceManager;
 
   AddInteractionUseCase(
     this._interactionRepository,
-    this._checkProfileValidityUseCase,
-    this._getIdentityUseCase,
     this._stacktraceManager,
   );
 
   @override
-  Future<InteractionBaseEntity> execute(
-      {required AddInteractionParam param}) async {
+  Future<InteractionBaseEntity> execute({
+    required AddInteractionParam param,
+  }) async {
     try {
       // if genesisDid and privateKey are not provided we throw an exception
       if (param.genesisDid == null || param.privateKey == null) {

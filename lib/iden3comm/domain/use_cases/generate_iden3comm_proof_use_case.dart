@@ -8,7 +8,6 @@ import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_sd_proof_entity.dart';
@@ -253,12 +252,12 @@ class GenerateIden3commProofUseCase
       log: true,
     );
 
-    Uint8List atomicQueryInputs =
-        Uint8ArrayUtils.uint8ListfromString(json.encode(inputsJson["inputs"]));
+    final inputs = json.encode(inputsJson["inputs"]);
+    final atomicQueryInputs = Uint8ArrayUtils.uint8ListfromString(inputs);
 
     if (kDebugMode) {
       //just for debug
-      String inputs = Uint8ArrayUtils.uint8ListToString(atomicQueryInputs);
+      logger().i('[GenerateIden3commProofUseCase] inputs: $inputs');
     }
 
     var vpProof;
