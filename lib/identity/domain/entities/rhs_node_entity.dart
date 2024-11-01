@@ -3,7 +3,12 @@
 /// - State node: [Claims Tree root, Revocation Tree root, Roots Tree root]
 ///- Middle node: [leftNode, rightNode]
 /// - Leaf node: [key, value, 1]
-enum RhsNodeType { unknown, state, middle, leaf }
+enum RhsNodeType {
+  leaf,
+  middle,
+  state,
+  unknown,
+}
 
 class RhsNodeEntity {
   final Map<String, dynamic> node;
