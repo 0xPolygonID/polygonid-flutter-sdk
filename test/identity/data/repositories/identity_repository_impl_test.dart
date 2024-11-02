@@ -20,8 +20,6 @@ import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key/private_
 import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/rhs_node_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/rhs_node_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/repositories/identity_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart';
@@ -67,14 +65,14 @@ final mockAuthResponse = AuthResponse(
 );
 
 final rhsNodeDTOs = [
-  RhsNodeDTO(
+  RhsNodeEntity(
       node: NodeEntity(
         children: const [],
         hash: HashEntity(data: Uint8List(32)),
         type: NodeType.middle,
       ),
       status: ''),
-  RhsNodeDTO(
+  RhsNodeEntity(
       node: NodeEntity(
         children: const [],
         hash: HashEntity(data: Uint8List(32)),
@@ -84,15 +82,19 @@ final rhsNodeDTOs = [
 ];
 final rhsNodeEntities = [
   RhsNodeEntity(
-    node: {},
-    status: '',
-    nodeType: RhsNodeType.state,
-  ),
+      node: NodeEntity(
+        children: const [],
+        hash: HashEntity(data: Uint8List(32)),
+        type: NodeType.middle,
+      ),
+      status: ''),
   RhsNodeEntity(
-    node: {},
-    status: '',
-    nodeType: RhsNodeType.state,
-  ),
+      node: NodeEntity(
+        children: const [],
+        hash: HashEntity(data: Uint8List(32)),
+        type: NodeType.leaf,
+      ),
+      status: ''),
 ];
 
 Response errorResponse = Response("body", 450);
@@ -151,7 +153,6 @@ MockEncryptionDbDataSource encryptionDbDataSource =
 MockDestinationPathDataSource destinationPathDataSource =
     MockDestinationPathDataSource();
 MockPrivateKeyMapper privateKeyMapper = MockPrivateKeyMapper();
-MockRhsNodeMapper rhsNodeMapper = MockRhsNodeMapper();
 MockStateIdentifierMapper stateIdentifierMapper = MockStateIdentifierMapper();
 MockSecureStorageProfilesDataSource secureStorageProfilesDataSource =
     MockSecureStorageProfilesDataSource();
@@ -167,7 +168,6 @@ IdentityRepository repository = IdentityRepositoryImpl(
   encryptionDbDataSource,
   destinationPathDataSource,
   privateKeyMapper,
-  rhsNodeMapper,
   stateIdentifierMapper,
   secureStorageProfilesDataSource,
 );
@@ -183,7 +183,6 @@ IdentityRepository repository = IdentityRepositoryImpl(
   EncryptionDbDataSource,
   DestinationPathDataSource,
   PrivateKeyMapper,
-  RhsNodeMapper,
   StateIdentifierMapper,
   SecureStorageProfilesDataSource,
 ])
@@ -360,57 +359,10 @@ void main() {
   group("Get State Roots", () {
     setUp(() {
       reset(remoteIdentityDataSource);
-      reset(rhsNodeMapper);
 
       // Given
       when(remoteIdentityDataSource.fetchStateRoots(url: anyNamed('url')))
           .thenAnswer((realInvocation) => Future.value(rhsNodeDTOs[0]));
-      when(rhsNodeMapper.mapFrom(any)).thenReturn(rhsNodeEntities[0]);
-    });
-
-    test(
-        "Given parameters, when I call fetchStateRoots, then I expect a RhsNodeEntity to be returned",
-        () async {
-      // When
-      expect(await repository.getStateRoots(url: CommonMocks.url),
-          rhsNodeEntities[0]);
-
-      // Then
-      var fetchCaptured = verify(remoteIdentityDataSource.fetchStateRoots(
-              url: captureAnyNamed('url')))
-          .captured;
-
-      expect(fetchCaptured[0], CommonMocks.url);
-
-      expect(verify(rhsNodeMapper.mapFrom(captureAny)).captured.first,
-          rhsNodeDTOs[0]);
-    });
-
-    test(
-        "Given parameters, when I call fetchStateRoots and an error occurred, then I expect a FetchIdentityStateException to be thrown",
-        () async {
-      // Given
-      when(remoteIdentityDataSource.fetchStateRoots(
-        url: anyNamed('url'),
-      )).thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
-
-      // When
-      await repository
-          .getStateRoots(url: CommonMocks.url)
-          .then((_) => expect(true, false))
-          .catchError((error) {
-        expect(error, isA<FetchStateRootsException>());
-        expect(error.error, CommonMocks.exception);
-      });
-
-      // Then
-      var fetchCaptured = verify(remoteIdentityDataSource.fetchStateRoots(
-        url: captureAnyNamed('url'),
-      )).captured;
-
-      expect(fetchCaptured[0], CommonMocks.url);
-
-      verifyNever(rhsNodeMapper.mapFrom(captureAny));
     });
   });
 

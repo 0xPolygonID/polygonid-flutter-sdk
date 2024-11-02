@@ -12,7 +12,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exce
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
-import 'package:polygonid_flutter_sdk/proof/data/mappers/circuit_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
 
@@ -41,7 +40,6 @@ class GetIden3commClaimsUseCase
   final GetClaimsUseCase _getClaimsUseCase;
   final IsProofCircuitSupportedUseCase _isProofCircuitSupported;
   final GetProofRequestsUseCase _getProofRequestsUseCase;
-  final CircuitTypeMapper _circuitTypeMapper;
   final StacktraceManager _stacktraceManager;
 
   GetIden3commClaimsUseCase(
@@ -49,7 +47,6 @@ class GetIden3commClaimsUseCase
     this._getClaimsUseCase,
     this._isProofCircuitSupported,
     this._getProofRequestsUseCase,
-    this._circuitTypeMapper,
     this._stacktraceManager,
   );
 
@@ -168,7 +165,7 @@ class GetIden3commClaimsUseCase
                   "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
         }
 
-        CircuitType circuitType = _circuitTypeMapper.mapTo(circuitId);
+        CircuitType circuitType = CircuitType.fromString(circuitId);
 
         switch (circuitType) {
           case CircuitType.mtp:

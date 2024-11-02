@@ -43,7 +43,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_service_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/proof_request_filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
@@ -72,7 +71,6 @@ import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_dat
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/gist_mtproof_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/data/mappers/circuit_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
@@ -628,8 +626,7 @@ class Authenticate {
                   "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
         }
 
-        CircuitTypeMapper circuitTypeMapper = getItSdk<CircuitTypeMapper>();
-        CircuitType circuitType = circuitTypeMapper.mapTo(circuitId);
+        CircuitType circuitType = CircuitType.fromString(circuitId);
 
         switch (circuitType) {
           case CircuitType.mtp:
@@ -1004,15 +1001,14 @@ class Authenticate {
     LibPolygonIdCoreIden3commDataSource libPolygonIdCoreIden3commDataSource =
         getItSdk<LibPolygonIdCoreIden3commDataSource>();
 
-    AuthProofMapper authProofMapper = getItSdk<AuthProofMapper>();
 
     Uint8List authInputsBytes =
         await libPolygonIdCoreIden3commDataSource.getAuthInputs(
       genesisDid: genesisDid,
       profileNonce: profileNonce,
       authClaim: authClaim,
-      incProof: authProofMapper.mapTo(incProof),
-      nonRevProof: authProofMapper.mapTo(nonRevProof),
+      incProof: incProof.toJson(),
+      nonRevProof: nonRevProof.toJson(),
       gistProof: gistProofEntity.toJson(),
       treeState: treeState,
       challenge: authChallenge,

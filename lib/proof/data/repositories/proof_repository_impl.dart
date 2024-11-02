@@ -10,7 +10,6 @@ import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_download_data_source.dart';
@@ -23,8 +22,6 @@ import 'package:polygonid_flutter_sdk/proof/data/data_sources/witness_data_sourc
 import 'package:polygonid_flutter_sdk/proof/data/dtos/circuits_to_download_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/witness_param.dart';
-import 'package:polygonid_flutter_sdk/proof/data/mappers/circuit_type_mapper.dart';
-import 'package:polygonid_flutter_sdk/proof/data/mappers/zkproof_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
@@ -41,9 +38,6 @@ class ProofRepositoryImpl extends ProofRepository {
   final ProofCircuitDataSource _proofCircuitDataSource;
   final LocalContractFilesDataSource _localContractFilesDataSource;
   final CircuitsDownloadDataSource _circuitsDownloadDataSource;
-  final CircuitTypeMapper _circuitTypeMapper;
-  final ZKProofMapper _zkProofMapper;
-  final AuthProofMapper _authProofMapper;
   final CircuitsFilesDataSource _circuitsFilesDataSource;
   final GetEnvUseCase _getEnvUseCase;
   final StacktraceManager _stacktraceManager;
@@ -59,10 +53,7 @@ class ProofRepositoryImpl extends ProofRepository {
     this._proofCircuitDataSource,
     this._localContractFilesDataSource,
     this._circuitsDownloadDataSource,
-    this._circuitTypeMapper,
-    this._zkProofMapper,
     this._claimMapper,
-    this._authProofMapper,
     this._circuitsFilesDataSource,
     this._getEnvUseCase,
     this._stacktraceManager,
@@ -105,19 +96,10 @@ class ProofRepositoryImpl extends ProofRepository {
     Map<String, dynamic>? transactionData,
   }) async {
     ClaimDTO credentialDto = _claimMapper.mapTo(claim);
-    Map<String, dynamic>? gistProofMap;
-    if (gistProof != null) {
-      gistProofMap = gistProof.toJson();
-    }
-    Map<String, dynamic>? incProofMap;
-    if (incProof != null) {
-      incProofMap = _authProofMapper.mapTo(incProof);
-    }
 
-    Map<String, dynamic>? nonRevProofMap;
-    if (nonRevProof != null) {
-      nonRevProofMap = _authProofMapper.mapTo(nonRevProof);
-    }
+    final gistProofMap = gistProof?.toJson();
+    final incProofMap = incProof?.toJson();
+    final nonRevProofMap = nonRevProof?.toJson();
 
     _stacktraceManager.addTrace("getProofInputs id: $id");
     _stacktraceManager.addTrace("getProofInputs profileNonce: $profileNonce");
@@ -203,7 +185,7 @@ class ProofRepositoryImpl extends ProofRepository {
 
     _stacktraceManager.addTrace(
         "[calculateWitness] circuitData.circuitId ${circuitData.circuitId}");
-    CircuitType circuitType = _circuitTypeMapper.mapTo(circuitData.circuitId);
+    final circuitType = CircuitType.fromString(circuitData.circuitId);
     try {
       Uint8List? witness = await _witnessDataSource.computeWitness(
         type: circuitType,
@@ -258,7 +240,7 @@ class ProofRepositoryImpl extends ProofRepository {
         );
       }
 
-      final ZKProofEntity zkProof = _zkProofMapper.mapFrom(proof);
+      final ZKProofEntity zkProof = ZKProofEntity.fromJson(proof);
       return zkProof;
     } on PolygonIdSDKException catch (_) {
       rethrow;
@@ -272,9 +254,9 @@ class ProofRepositoryImpl extends ProofRepository {
   }
 
   @override
-  Future<bool> isCircuitSupported({required String circuitId}) {
-    return Future.value(_circuitTypeMapper.mapTo(circuitId)).then((circuit) =>
-        _proofCircuitDataSource.isCircuitSupported(circuit: circuit));
+  Future<bool> isCircuitSupported({required String circuitId}) async {
+    final circuitType = CircuitType.fromString(circuitId);
+    return _proofCircuitDataSource.isCircuitSupported(circuit: circuitType);
   }
 
   @override
