@@ -16,7 +16,6 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
@@ -138,7 +137,7 @@ class FetchOnchainClaimsUseCase
     final issuerIdInt = await getIssuerId.getId();
     final issuerDid = (await _identityRepository.describeId(
       id: issuerIdInt,
-      config: ConfigParam.fromEnv(env),
+      config: env.config,
     ))
         .did;
 

@@ -1,7 +1,6 @@
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/id_description.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 
 import '../entities/identity_entity.dart';
 import '../entities/rhs_node_entity.dart';
@@ -52,7 +51,7 @@ abstract class IdentityRepository {
 
   Future<String> convertIdToBigInt({required String id});
 
-  Future<IdDescription> describeId({required BigInt id, ConfigParam? config});
+  Future<IdDescription> describeId({required BigInt id, EnvConfigEntity? config});
 
   Future<RhsNodeEntity> getStateRoots({required String url});
 
