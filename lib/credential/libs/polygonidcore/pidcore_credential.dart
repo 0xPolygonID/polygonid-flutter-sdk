@@ -7,7 +7,6 @@ import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/libs/polygonidcore/native_polygonidcore.dart';
 import 'package:polygonid_flutter_sdk/common/libs/polygonidcore/pidcore_base.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 
 @injectable
 class PolygonIdCoreCredential extends PolygonIdCore {
