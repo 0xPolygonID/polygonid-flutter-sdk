@@ -1001,7 +1001,6 @@ class Authenticate {
     LibPolygonIdCoreIden3commDataSource libPolygonIdCoreIden3commDataSource =
         getItSdk<LibPolygonIdCoreIden3commDataSource>();
 
-
     Uint8List authInputsBytes =
         await libPolygonIdCoreIden3commDataSource.getAuthInputs(
       genesisDid: genesisDid,

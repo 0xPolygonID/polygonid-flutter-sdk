@@ -12,8 +12,11 @@ Future<String> extractJSON(http.Response response) async {
   return response.body;
 }
 
-Future<http.Response> get(String baseAddress, String endpoint,
-    {Map<String, String?>? queryParameters,}) async {
+Future<http.Response> get(
+  String baseAddress,
+  String endpoint, {
+  Map<String, String?>? queryParameters,
+}) async {
   var response;
   try {
     Uri uri;

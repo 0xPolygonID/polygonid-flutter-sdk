@@ -1,4 +1,3 @@
-
 import 'package:http/http.dart';
 import 'package:mockito/annotations.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
