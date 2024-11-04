@@ -51,7 +51,8 @@ abstract class IdentityRepository {
 
   Future<String> convertIdToBigInt({required String id});
 
-  Future<IdDescription> describeId({required BigInt id, EnvConfigEntity? config});
+  Future<IdDescription> describeId(
+      {required BigInt id, EnvConfigEntity? config});
 
   Future<RhsNodeEntity> getStateRoots({required String url});
 
