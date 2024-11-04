@@ -286,7 +286,7 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<String?> cacheCredential({
+  Future<bool> cacheCredential({
     required String credential,
     String? config,
   }) {

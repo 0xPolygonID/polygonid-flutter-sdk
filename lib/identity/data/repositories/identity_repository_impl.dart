@@ -250,6 +250,15 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
+  String getPrivateProfileForGenesisDid({
+    required String genesisDid,
+    required BigInt profileNonce,
+  }) {
+    return _libPolygonIdCoreIdentityDataSource.calculateProfileId(
+        genesisDid, profileNonce);
+  }
+
+  @override
   Future<String> convertIdToBigInt({required String id}) {
     String idBigInt = _libPolygonIdCoreIdentityDataSource.genesisIdToBigInt(id);
     return Future.value(idBigInt);

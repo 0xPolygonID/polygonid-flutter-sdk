@@ -29,21 +29,21 @@ class PolygonIdCoreProof extends PolygonIdCore {
 
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNProofFromSmartContract(response, in1, status);
+
+    // res 0 means error
     if (res == 0) {
-      String? consumedStatus = consumeStatus(status, "");
-      if (consumedStatus != null) {
-        freeAllocatedMemory();
-        _stacktraceManager.addTrace(
-            "libpolygonid - PLGNProofFromSmartContract: $consumedStatus");
-        _stacktraceManager.addError(
-            "libpolygonid - PLGNProofFromSmartContract: $consumedStatus");
-        throw CoreLibraryException(
-          coreLibraryName: "libpolygonid",
-          methodName: "PLGNProofFromSmartContract",
-          errorMessage: consumedStatus,
-        );
-      }
+      final ConsumedStatusResult consumedStatus = consumeStatus(status);
+      freeAllocatedMemory();
+      _trackError(consumedStatus, "PLGNProofFromSmartContract");
+      throw CoreLibraryException(
+        coreLibraryName: "libpolygonid",
+        methodName: "PLGNProofFromSmartContract",
+        errorMessage: consumedStatus.message,
+        statusCode: consumedStatus.statusCode,
+      );
     }
+
+    // parse the response
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;
     ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
@@ -73,21 +73,21 @@ class PolygonIdCoreProof extends PolygonIdCore {
 
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNAtomicQuerySigV2Inputs(response, in1, cfg, status);
+
+    // res 0 means error
     if (res == 0) {
-      String? consumedStatus = consumeStatus(status, "");
-      if (consumedStatus != null) {
-        freeAllocatedMemory();
-        _stacktraceManager.addTrace(
-            "libpolygonid - PLGNAtomicQuerySigV2Inputs: $consumedStatus");
-        _stacktraceManager.addError(
-            "libpolygonid - PLGNAtomicQuerySigV2Inputs: $consumedStatus");
-        throw CoreLibraryException(
-          coreLibraryName: "libpolygonid",
-          methodName: "PLGNAtomicQuerySigV2Inputs",
-          errorMessage: consumedStatus,
-        );
-      }
+      final ConsumedStatusResult consumedStatus = consumeStatus(status);
+      freeAllocatedMemory();
+      _trackError(consumedStatus, "PLGNAtomicQuerySigV2Inputs");
+      throw CoreLibraryException(
+        coreLibraryName: "libpolygonid",
+        methodName: "PLGNAtomicQuerySigV2Inputs",
+        errorMessage: consumedStatus.message,
+        statusCode: consumedStatus.statusCode,
+      );
     }
+
+    // parse the response
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;
     ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
@@ -117,21 +117,21 @@ class PolygonIdCoreProof extends PolygonIdCore {
 
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNAtomicQuerySigV2OnChainInputs(response, in1, cfg, status);
+
+    // res 0 means error
     if (res == 0) {
-      String? consumedStatus = consumeStatus(status, "");
-      if (consumedStatus != null) {
-        freeAllocatedMemory();
-        _stacktraceManager.addTrace(
-            "libpolygonid - PLGNAtomicQuerySigV2OnChainInputs: $consumedStatus");
-        _stacktraceManager.addError(
-            "libpolygonid - PLGNAtomicQuerySigV2OnChainInputs: $consumedStatus");
-        throw CoreLibraryException(
-          coreLibraryName: "libpolygonid",
-          methodName: "PLGNAtomicQuerySigV2OnChainInputs",
-          errorMessage: consumedStatus,
-        );
-      }
+      final ConsumedStatusResult consumedStatus = consumeStatus(status);
+      freeAllocatedMemory();
+      _trackError(consumedStatus, "PLGNAtomicQuerySigV2OnChainInputs");
+      throw CoreLibraryException(
+        coreLibraryName: "libpolygonid",
+        methodName: "PLGNAtomicQuerySigV2OnChainInputs",
+        errorMessage: consumedStatus.message,
+        statusCode: consumedStatus.statusCode,
+      );
     }
+
+    // parse the response
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;
     ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
@@ -161,21 +161,21 @@ class PolygonIdCoreProof extends PolygonIdCore {
 
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNAtomicQueryMtpV2Inputs(response, in1, cfg, status);
+
+    // res 0 means error
     if (res == 0) {
-      String? consumedStatus = consumeStatus(status, "");
-      if (consumedStatus != null) {
-        freeAllocatedMemory();
-        _stacktraceManager.addTrace(
-            "libpolygonid - PLGNAtomicQueryMtpV2Inputs: $consumedStatus");
-        _stacktraceManager.addError(
-            "libpolygonid - PLGNAtomicQueryMtpV2Inputs: $consumedStatus");
-        throw CoreLibraryException(
-          coreLibraryName: "libpolygonid",
-          methodName: "PLGNAtomicQueryMtpV2Inputs",
-          errorMessage: consumedStatus,
-        );
-      }
+      final ConsumedStatusResult consumedStatus = consumeStatus(status);
+      freeAllocatedMemory();
+      _trackError(consumedStatus, "PLGNAtomicQueryMtpV2Inputs");
+      throw CoreLibraryException(
+        coreLibraryName: "libpolygonid",
+        methodName: "PLGNAtomicQueryMtpV2Inputs",
+        errorMessage: consumedStatus.message,
+        statusCode: consumedStatus.statusCode,
+      );
     }
+
+    // parse the response
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;
     ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
@@ -205,21 +205,21 @@ class PolygonIdCoreProof extends PolygonIdCore {
 
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNAtomicQueryMtpV2OnChainInputs(response, in1, cfg, status);
+
+    // res 0 means error
     if (res == 0) {
-      String? consumedStatus = consumeStatus(status, "");
-      if (consumedStatus != null) {
-        freeAllocatedMemory();
-        _stacktraceManager.addTrace(
-            "libpolygonid - PLGNAtomicQueryMtpV2OnChainInputs: $consumedStatus");
-        _stacktraceManager.addError(
-            "libpolygonid - PLGNAtomicQueryMtpV2OnChainInputs: $consumedStatus");
-        throw CoreLibraryException(
-          coreLibraryName: "libpolygonid",
-          methodName: "PLGNAtomicQueryMtpV2OnChainInputs",
-          errorMessage: consumedStatus,
-        );
-      }
+      final ConsumedStatusResult consumedStatus = consumeStatus(status);
+      freeAllocatedMemory();
+      _trackError(consumedStatus, "PLGNAtomicQueryMtpV2OnChainInputs");
+      throw CoreLibraryException(
+        coreLibraryName: "libpolygonid",
+        methodName: "PLGNAtomicQueryMtpV2OnChainInputs",
+        errorMessage: consumedStatus.message,
+        statusCode: consumedStatus.statusCode,
+      );
     }
+
+    // parse the response
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;
     ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
@@ -249,21 +249,21 @@ class PolygonIdCoreProof extends PolygonIdCore {
 
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNAtomicQueryV3Inputs(response, in1, cfg, status);
+
+    // res 0 means error
     if (res == 0) {
-      String? consumedStatus = consumeStatus(status, "");
-      if (consumedStatus != null) {
-        freeAllocatedMemory();
-        _stacktraceManager.addTrace(
-            "libpolygonid - PLGNAtomicQueryV3Inputs: $consumedStatus");
-        _stacktraceManager.addError(
-            "libpolygonid - PLGNAtomicQueryV3Inputs: $consumedStatus");
-        throw CoreLibraryException(
-          coreLibraryName: "libpolygonid",
-          methodName: "PLGNAtomicQueryV3Inputs",
-          errorMessage: consumedStatus,
-        );
-      }
+      final ConsumedStatusResult consumedStatus = consumeStatus(status);
+      freeAllocatedMemory();
+      _trackError(consumedStatus, "PLGNAtomicQueryV3Inputs");
+      throw CoreLibraryException(
+        coreLibraryName: "libpolygonid",
+        methodName: "PLGNAtomicQueryV3Inputs",
+        errorMessage: consumedStatus.message,
+        statusCode: consumedStatus.statusCode,
+      );
     }
+
+    // parse the response
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;
     ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
@@ -293,21 +293,22 @@ class PolygonIdCoreProof extends PolygonIdCore {
 
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNAtomicQueryV3OnChainInputs(response, in1, cfg, status);
+
+    // res 0 means error
     if (res == 0) {
-      String? consumedStatus = consumeStatus(status, "");
-      if (consumedStatus != null) {
-        freeAllocatedMemory();
-        _stacktraceManager.addTrace(
-            "libpolygonid - PLGNAtomicQueryV3OnChainInputs: $consumedStatus");
-        _stacktraceManager.addError(
-            "libpolygonid - PLGNAtomicQueryV3OnChainInputs: $consumedStatus");
-        throw CoreLibraryException(
-          coreLibraryName: "libpolygonid",
-          methodName: "PLGNAtomicQueryV3OnChainInputs",
-          errorMessage: consumedStatus,
-        );
-      }
+      final ConsumedStatusResult consumedStatus = consumeStatus(status);
+
+      freeAllocatedMemory();
+      _trackError(consumedStatus, "PLGNAtomicQueryV3OnChainInputs");
+      throw CoreLibraryException(
+        coreLibraryName: "libpolygonid",
+        methodName: "PLGNAtomicQueryV3OnChainInputs",
+        errorMessage: consumedStatus.message,
+        statusCode: consumedStatus.statusCode,
+      );
     }
+
+    // parse the response
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;
     ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
@@ -337,21 +338,21 @@ class PolygonIdCoreProof extends PolygonIdCore {
 
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNALinkedMultiQueryInputs(response, in1, cfg, status);
+
+    // res 0 means error
     if (res == 0) {
-      String? consumedStatus = consumeStatus(status, "");
-      if (consumedStatus != null) {
-        freeAllocatedMemory();
-        _stacktraceManager.addTrace(
-            "libpolygonid - PLGNALinkedMultiQueryInputs: $consumedStatus");
-        _stacktraceManager.addError(
-            "libpolygonid - PLGNALinkedMultiQueryInputs: $consumedStatus");
-        throw CoreLibraryException(
-          coreLibraryName: "libpolygonid",
-          methodName: "PLGNALinkedMultiQueryInputs",
-          errorMessage: consumedStatus,
-        );
-      }
+      final ConsumedStatusResult consumedStatus = consumeStatus(status);
+      freeAllocatedMemory();
+      _trackError(consumedStatus, "PLGNALinkedMultiQueryInputs");
+      throw CoreLibraryException(
+        coreLibraryName: "libpolygonid",
+        methodName: "PLGNALinkedMultiQueryInputs",
+        errorMessage: consumedStatus.message,
+        statusCode: consumedStatus.statusCode,
+      );
     }
+
+    // parse the response
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;
     ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
@@ -361,5 +362,12 @@ class PolygonIdCoreProof extends PolygonIdCore {
 
     freeAllocatedMemory();
     return result;
+  }
+
+  void _trackError(ConsumedStatusResult consumedStatus, String methodName) {
+    _stacktraceManager.addTrace(
+        "libpolygonid - $methodName: [${consumedStatus.statusCode}] - ${consumedStatus.message}");
+    _stacktraceManager.addError(
+        "libpolygonid - $methodName: [${consumedStatus.statusCode}] - ${consumedStatus.message}");
   }
 }
