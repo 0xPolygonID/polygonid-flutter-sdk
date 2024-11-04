@@ -18,9 +18,6 @@ import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key/private_
 import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/id_description.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/rhs_node_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/rhs_node_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart';
@@ -28,6 +25,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_except
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:poseidon/poseidon.dart';
+import 'package:web3dart/crypto.dart';
 
 class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
@@ -38,9 +36,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final LibPolygonIdCoreIdentityDataSource _libPolygonIdCoreIdentityDataSource;
   final EncryptionDbDataSource _encryptionDbDataSource;
   final DestinationPathDataSource _destinationPathDataSource;
-  final HexMapper _hexMapper;
   final PrivateKeyMapper _privateKeyMapper;
-  final RhsNodeMapper _rhsNodeMapper;
   final StateIdentifierMapper _stateIdentifierMapper;
   final SecureStorageProfilesDataSource _secureStorageProfilesDataSource;
 
@@ -53,9 +49,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._libPolygonIdCoreIdentityDataSource,
     this._encryptionDbDataSource,
     this._destinationPathDataSource,
-    this._hexMapper,
     this._privateKeyMapper,
-    this._rhsNodeMapper,
     this._stateIdentifierMapper,
     this._secureStorageProfilesDataSource,
   );
@@ -64,13 +58,13 @@ class IdentityRepositoryImpl extends IdentityRepository {
   Future<String> getPrivateKey({required String? secret}) {
     return _walletDataSource
         .createWallet(secret: _privateKeyMapper.mapFrom(secret))
-        .then((wallet) => _hexMapper.mapFrom(wallet.privateKey));
+        .then((wallet) => bytesToHex(wallet.privateKey));
   }
 
   @override
   Future<List<String>> getPublicKeys({required String privateKey}) async {
     final wallet = await _walletDataSource.getWallet(
-      privateKey: _hexMapper.mapTo(privateKey),
+      privateKey: hexToBytes(privateKey),
     );
     final pubKeys = wallet.publicKey;
     return pubKeys;
@@ -152,10 +146,12 @@ class IdentityRepositoryImpl extends IdentityRepository {
   ///
   /// Return a signature in hexadecimal format
   @override
-  Future<String> signMessage(
-      {required String privateKey, required String message}) async {
+  Future<String> signMessage({
+    required String privateKey,
+    required String message,
+  }) async {
     try {
-      final Uint8List hexPrivateKey = _hexMapper.mapTo(privateKey);
+      final Uint8List hexPrivateKey = hexToBytes(privateKey);
       final String signedMessage = await _walletDataSource.signMessage(
         privateKey: hexPrivateKey,
         message: message,
@@ -191,10 +187,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
   @override
   Future<RhsNodeEntity> getStateRoots({required String url}) async {
     try {
-      final RhsNodeDTO rhsNodeDTO =
-          await _remoteIdentityDataSource.fetchStateRoots(url: url);
-      RhsNodeEntity rhsNodeEntity = _rhsNodeMapper.mapFrom(rhsNodeDTO);
-      return rhsNodeEntity;
+      final node = await _remoteIdentityDataSource.fetchStateRoots(url: url);
+      return node;
     } on PolygonIdSDKException catch (_) {
       rethrow;
     } catch (error) {
@@ -206,11 +200,12 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<Map<String, dynamic>> getNonRevProof(
-      {required String identityState,
-      required BigInt nonce,
-      required String baseUrl,
-      Map<String, dynamic>? cachedNonRevProof}) {
+  Future<Map<String, dynamic>> getNonRevProof({
+    required String identityState,
+    required BigInt nonce,
+    required String baseUrl,
+    Map<String, dynamic>? cachedNonRevProof,
+  }) {
     return _remoteIdentityDataSource
         .getNonRevocationProof(identityState, nonce, baseUrl, cachedNonRevProof)
         .catchError(

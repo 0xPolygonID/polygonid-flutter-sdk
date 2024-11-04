@@ -6,7 +6,6 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_genesis_stat
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_public_keys_use_case.dart';
 
 class GetDidIdentifierParam {
   final String privateKey;

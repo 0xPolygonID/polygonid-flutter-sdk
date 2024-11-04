@@ -3,8 +3,6 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polygonid_flutter_sdk/common/kms/index.dart';
-import 'package:polygonid_flutter_sdk/common/kms/kms.dart';
-import 'package:polygonid_flutter_sdk/common/kms/store/memory_key_store.dart';
 import 'package:polygonid_flutter_sdk/common/utils/big_int_extension.dart';
 import 'package:web3dart/crypto.dart';
 
@@ -53,6 +51,9 @@ void main() {
       final ed25519Provider = Ed25519Provider(KmsKeyType.Ed25519, keyStore);
       final secp256k1Provider =
           Sec256k1Provider(KmsKeyType.Secp256k1, keyStore);
+
+      // BJJ uses platform based implementation
+      // ignore: unused_local_variable
       final bjjProvider = BjjProvider(KmsKeyType.BabyJubJub, keyStore);
       await Future.wait([
         // testFlow(bjjProvider),

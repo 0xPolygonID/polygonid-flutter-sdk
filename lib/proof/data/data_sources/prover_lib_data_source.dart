@@ -1,13 +1,21 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:injectable/injectable.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/prove_param.dart';
 import 'package:flutter_rapidsnark/flutter_rapidsnark.dart';
 
-const _methodChannel = MethodChannel('polygonid_flutter_sdk');
+class ProveParam {
+  final String zKeyPath;
+  final Uint8List wtns;
+  final RootIsolateToken rootToken;
+
+  ProveParam(
+    this.zKeyPath,
+    this.wtns,
+    this.rootToken,
+  );
+}
 
 @injectable
 class ProverLibWrapper {
