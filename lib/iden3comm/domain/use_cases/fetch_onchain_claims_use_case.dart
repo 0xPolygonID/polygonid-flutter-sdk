@@ -7,7 +7,6 @@ import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/cache_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/onchain_offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
@@ -17,12 +16,10 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_a
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_onchain_claim_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
@@ -32,14 +29,14 @@ import 'package:web3dart/web3dart.dart';
 class FetchOnchainClaimsParam {
   final String contractAddress;
   final String genesisDid;
-  final BigInt profileNonce;
+  final BigInt? profileNonce;
   final String privateKey;
   final String? chainId;
 
   FetchOnchainClaimsParam({
     required this.contractAddress,
     required this.genesisDid,
-    required this.profileNonce,
+    this.profileNonce,
     required this.privateKey,
     this.chainId,
   });
@@ -52,10 +49,7 @@ class FetchOnchainClaimsUseCase
       _checkProfileAndDidCurrentEnvUseCase;
   final GetEnvUseCase _getEnvUseCase;
   final GetSelectedChainUseCase _getSelectedChainUseCase;
-  final GetDidIdentifierUseCase _getDidIdentifierUseCase;
   final GetDidUseCase _getDidUseCase;
-  final SaveClaimsUseCase _saveClaimsUseCase;
-  final CacheCredentialUseCase _cacheCredentialUseCase;
   final LocalContractFilesDataSource _localContractFilesDataSource;
   final IdentityRepository _identityRepository;
   final DidProfileInfoRepository _didProfileInfoRepository;
@@ -66,10 +60,7 @@ class FetchOnchainClaimsUseCase
     this._checkProfileAndDidCurrentEnvUseCase,
     this._getEnvUseCase,
     this._getSelectedChainUseCase,
-    this._getDidIdentifierUseCase,
     this._getDidUseCase,
-    this._saveClaimsUseCase,
-    this._cacheCredentialUseCase,
     this._localContractFilesDataSource,
     this._identityRepository,
     this._didProfileInfoRepository,
@@ -90,26 +81,12 @@ class FetchOnchainClaimsUseCase
         param: CheckProfileAndDidCurrentEnvParam(
           did: param.genesisDid,
           privateKey: param.privateKey,
-          profileNonce: param.profileNonce,
-        ),
-      );
-
-      final env = await _getEnvUseCase.execute();
-      final chain = await _getSelectedChainUseCase.execute();
-
-      final profileDid = await _getDidIdentifierUseCase.execute(
-        param: GetDidIdentifierParam.withPrivateKey(
-          privateKey: param.privateKey,
-          blockchain: chain.blockchain,
-          network: chain.network,
-          profileNonce: param.profileNonce,
-          method: chain.method,
+          profileNonce: param.profileNonce ?? GENESIS_PROFILE_NONCE,
         ),
       );
 
       final claims = await _fetchOnchainClaims(
         param.contractAddress,
-        profileDid,
         param,
       );
 
@@ -124,7 +101,6 @@ class FetchOnchainClaimsUseCase
 
   Future<List<ClaimEntity>> _fetchOnchainClaims(
     String contractAddress,
-    String profileDid,
     FetchOnchainClaimsParam param,
   ) async {
     final env = await _getEnvUseCase.execute();
@@ -179,23 +155,20 @@ class FetchOnchainClaimsUseCase
     );
 
     BigInt nonce;
-    if (info.containsKey("privateProfileNonce")) {
+    if (param.profileNonce != null) {
+      nonce = param.profileNonce!;
+    } else if (info.containsKey("privateProfileNonce")) {
       nonce = BigInt.parse(info["privateProfileNonce"] as String);
     } else {
       nonce = GENESIS_PROFILE_NONCE;
     }
 
-    final did = await _getDidIdentifierUseCase.execute(
-      param: GetDidIdentifierParam.withPrivateKey(
-        privateKey: param.privateKey,
-        blockchain: chain.blockchain,
-        network: chain.network,
-        profileNonce: nonce,
-        method: chain.method,
-      ),
+    final profileDid = _identityRepository.getPrivateProfileForGenesisDid(
+      genesisDid: param.genesisDid,
+      profileNonce: nonce,
     );
 
-    final didEntity = await _getDidUseCase.execute(param: did);
+    final didEntity = await _getDidUseCase.execute(param: profileDid);
     final userId =
         await _identityRepository.convertIdToBigInt(id: didEntity.identifier);
 
