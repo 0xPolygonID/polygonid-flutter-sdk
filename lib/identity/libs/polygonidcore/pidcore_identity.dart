@@ -16,6 +16,7 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
 
   PolygonIdCoreIdentity(this._stacktraceManager);
 
+  /// PLGNNewGenesisID returns the genesis ID
   String calculateGenesisId(String input, String config) {
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Char> cfg = config.toNativeUtf8().cast<ffi.Char>();
@@ -31,24 +32,21 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
 
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNNewGenesisID(response, in1, cfg, status);
+
+    // res 0 means error
     if (res == 0) {
-      String? consumedStatus = consumeStatus(status, "");
-
-      if (consumedStatus != null) {
-        freeAllocatedMemory();
-
-        _stacktraceManager
-            .addTrace("libpolygonid - PLGNNewGenesisID: $consumedStatus");
-        _stacktraceManager
-            .addError("libpolygonid - PLGNNewGenesisID: $consumedStatus");
-        throw CoreLibraryException(
-          coreLibraryName: "libpolygonid",
-          methodName: "PLGNNewGenesisID",
-          errorMessage: consumedStatus,
-        );
-      }
+      final ConsumedStatusResult consumedStatus = consumeStatus(status);
+      freeAllocatedMemory();
+      _trackError(consumedStatus, "PLGNNewGenesisID");
+      throw CoreLibraryException(
+        coreLibraryName: "libpolygonid",
+        methodName: "PLGNNewGenesisID",
+        errorMessage: consumedStatus.message,
+        statusCode: consumedStatus.statusCode,
+      );
     }
 
+    // parse the response
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;
     ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
@@ -60,6 +58,7 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
     return result;
   }
 
+  /// PLGNNewGenesisIDFromEth returns the genesis ID from an Ethereum address
   String calculateGenesisIdFromEth(String input, String config) {
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Char> cfg = config.toNativeUtf8().cast<ffi.Char>();
@@ -75,24 +74,21 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
 
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNNewGenesisIDFromEth(response, in1, cfg, status);
+
+    // res 0 means error
     if (res == 0) {
-      String? consumedStatus = consumeStatus(status, "");
-
-      if (consumedStatus != null) {
-        freeAllocatedMemory();
-
-        _stacktraceManager.addTrace(
-            "libpolygonid - PLGNNewGenesisIDFromEth: $consumedStatus");
-        _stacktraceManager.addError(
-            "libpolygonid - PLGNNewGenesisIDFromEth: $consumedStatus");
-        throw CoreLibraryException(
-          coreLibraryName: "libpolygonid",
-          methodName: "PLGNNewGenesisIDFromEth",
-          errorMessage: consumedStatus,
-        );
-      }
+      final ConsumedStatusResult consumedStatus = consumeStatus(status);
+      freeAllocatedMemory();
+      _trackError(consumedStatus, "PLGNNewGenesisIDFromEth");
+      throw CoreLibraryException(
+        coreLibraryName: "libpolygonid",
+        methodName: "PLGNNewGenesisIDFromEth",
+        errorMessage: consumedStatus.message,
+        statusCode: consumedStatus.statusCode,
+      );
     }
 
+    // parse the response
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;
     ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
@@ -104,6 +100,7 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
     return result;
   }
 
+  /// PLGNProfileID returns the profile ID from genesis ID and profile nonce
   String calculateProfileId(String input) {
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Pointer<ffi.Char>> response =
@@ -118,24 +115,21 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
 
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNProfileID(response, in1, status);
+
+    // res 0 means error
     if (res == 0) {
-      String? consumedStatus = consumeStatus(status, "");
-
-      if (consumedStatus != null) {
-        freeAllocatedMemory();
-
-        _stacktraceManager
-            .addTrace("libpolygonid - PLGNProfileID: $consumedStatus");
-        _stacktraceManager
-            .addError("libpolygonid - PLGNProfileID: $consumedStatus");
-        throw CoreLibraryException(
-          coreLibraryName: "libpolygonid",
-          methodName: "PLGNProfileID",
-          errorMessage: consumedStatus,
-        );
-      }
+      final ConsumedStatusResult consumedStatus = consumeStatus(status);
+      freeAllocatedMemory();
+      _trackError(consumedStatus, "PLGNProfileID");
+      throw CoreLibraryException(
+        coreLibraryName: "libpolygonid",
+        methodName: "PLGNProfileID",
+        errorMessage: consumedStatus.message,
+        statusCode: consumedStatus.statusCode,
+      );
     }
 
+    // parse the response
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;
     ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
@@ -164,23 +158,21 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
 
     int res =
         PolygonIdCore.nativePolygonIdCoreLib.PLGNIDToInt(response, in1, status);
-    if (res == 0) {
-      String? consumedStatus = consumeStatus(status, "");
-      // ignore: unnecessary_null_comparison
-      if (consumedStatus != null) {
-        freeAllocatedMemory();
 
-        _stacktraceManager
-            .addTrace("libpolygonid - PLGNIDToInt: $consumedStatus");
-        _stacktraceManager
-            .addError("libpolygonid - PLGNIDToInt: $consumedStatus");
-        throw CoreLibraryException(
-          coreLibraryName: "libpolygonid",
-          methodName: "PLGNIDToInt",
-          errorMessage: consumedStatus,
-        );
-      }
+    // res 0 means error
+    if (res == 0) {
+      final ConsumedStatusResult consumedStatus = consumeStatus(status);
+      freeAllocatedMemory();
+      _trackError(consumedStatus, "PLGNIDToInt");
+      throw CoreLibraryException(
+        coreLibraryName: "libpolygonid",
+        methodName: "PLGNIDToInt",
+        errorMessage: consumedStatus.message,
+        statusCode: consumedStatus.statusCode,
+      );
     }
+
+    // parse the response
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;
     ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
@@ -192,6 +184,7 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
     return result;
   }
 
+  /// PLGNDescribeID
   String describeId(String input, String? config) {
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Char> cfg = ffi.nullptr;
@@ -210,20 +203,21 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
 
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNDescribeID(response, in1, cfg, status);
-    if (res == 0) {
-      String? consumedStatus = consumeStatus(status, "");
 
-      if (consumedStatus != null) {
-        freeAllocatedMemory();
-        _stacktraceManager
-            .addError("libpolygonid - PLGNDescribeID: $consumedStatus");
-        throw CoreLibraryException(
-          coreLibraryName: "libpolygonid",
-          methodName: "PLGNDescribeID",
-          errorMessage: consumedStatus,
-        );
-      }
+    // res 0 means error
+    if (res == 0) {
+      final ConsumedStatusResult consumedStatus = consumeStatus(status);
+      freeAllocatedMemory();
+      _trackError(consumedStatus, "PLGNDescribeID");
+      throw CoreLibraryException(
+        coreLibraryName: "libpolygonid",
+        methodName: "PLGNDescribeID",
+        errorMessage: consumedStatus.message,
+        statusCode: consumedStatus.statusCode,
+      );
     }
+
+    // parse the response
     String result = "";
     ffi.Pointer<ffi.Char> jsonResponse = response.value;
     ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
@@ -233,5 +227,12 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
 
     freeAllocatedMemory();
     return result;
+  }
+
+  void _trackError(ConsumedStatusResult consumedStatus, String methodName) {
+    _stacktraceManager.addTrace(
+        "libpolygonid - $methodName: [${consumedStatus.statusCode}] - ${consumedStatus.message}");
+    _stacktraceManager.addError(
+        "libpolygonid - $methodName: [${consumedStatus.statusCode}] - ${consumedStatus.message}");
   }
 }

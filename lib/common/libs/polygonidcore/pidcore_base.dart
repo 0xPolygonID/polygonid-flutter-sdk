@@ -9,6 +9,13 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 
 import 'native_polygonidcore.dart';
 
+typedef ConsumedStatusResult = ({PLGNStatusCode statusCode, String message});
+
+ConsumedStatusResult _createConsumedStatusResult(
+    PLGNStatusCode statusCode, String message) {
+  return (statusCode: statusCode, message: message);
+}
+
 @injectable
 class PolygonIdCore {
   static NativePolygonIdCoreLib? _nativePolygonIdCoreLib;
@@ -28,44 +35,44 @@ class PolygonIdCore {
 
   PolygonIdCore();
 
-  String? consumeStatus(
-      ffi.Pointer<ffi.Pointer<PLGNStatus>> status, String msg) {
+  ConsumedStatusResult consumeStatus(
+      ffi.Pointer<ffi.Pointer<PLGNStatus>> status) {
     if (status == ffi.nullptr || status.value == ffi.nullptr) {
-      if (kDebugMode) {
-        logger().e("unable to allocate status\n");
-      }
-      return "unable to allocate status";
-    }
-    String? result;
+      _logError("unable to allocate status");
 
-    if (status.value.ref.status >= 0) {
-      if (msg.isEmpty) {
-        msg = "status is not OK with code ${status.value.ref.status}";
-      }
-
-      if (status.value.ref.error_msg == ffi.nullptr) {
-        if (kDebugMode) {
-          logger().e("$msg: ${status.value.ref.status.toString()}");
-        }
-      } else {
-        ffi.Pointer<ffi.Char> json = status.value.ref.error_msg;
-        ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
-        try {
-          String errormsg = jsonString.toDartString();
-          msg = "$msg: $errormsg";
-          if (kDebugMode) {
-            logger().e(
-                "$msg: ${status.value.ref.status.toString()}. Error: $errormsg");
-          }
-        } catch (e) {
-          if (kDebugMode) {
-            logger().e("$msg: ${status.value.ref.status.toString()}");
-          }
-        }
-      }
-      result = msg;
+      return _createConsumedStatusResult(
+        PLGNStatusCode.PLGNSTATUSCODE_ERROR,
+        "unable to allocate status",
+      );
     }
+
+    String errorMessage = status.value.ref.status.toString();
+    PLGNStatusCode statusCode = status.value.ref.status;
+
+    if (status.value.ref.error_msg == ffi.nullptr) {
+      _logError(status.value.ref.status.toString());
+    } else {
+      ffi.Pointer<ffi.Char> json = status.value.ref.error_msg;
+      ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
+      try {
+        errorMessage = jsonString.toDartString();
+        _logError(
+            "${status.value.ref.status.toString()} - Error: $errorMessage");
+      } catch (e) {
+        _logError(status.value.ref.status.toString());
+      }
+    }
+    _freeStatus(status);
+    return _createConsumedStatusResult(statusCode, errorMessage);
+  }
+
+  void _freeStatus(ffi.Pointer<ffi.Pointer<PLGNStatus>> status) {
     nativePolygonIdCoreLib.PLGNFreeStatus(status.value);
-    return result;
+  }
+
+  void _logError(String message) {
+    if (kDebugMode) {
+      logger().e(message);
+    }
   }
 }
