@@ -1,15 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:encrypt/encrypt.dart';
-import 'package:http/http.dart';
-import 'package:pointycastle/api.dart';
-import 'package:pointycastle/asymmetric/api.dart';
-import 'package:pointycastle/asymmetric/oaep.dart';
-import 'package:pointycastle/asymmetric/rsa.dart';
-import 'package:pointycastle/digests/sha512.dart';
-import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/iden3_message_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/lib_pidcore_iden3comm_data_source.dart';
@@ -17,8 +8,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3co
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_response_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/jwz_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
@@ -31,9 +20,7 @@ import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
-import 'package:polygonid_flutter_sdk/proof/data/mappers/gist_mtproof_mapper.dart';
 import 'package:poseidon/poseidon.dart';
-import 'package:poseidon/poseidon/poseidon.dart';
 import 'package:uuid/uuid.dart';
 
 class Iden3commRepositoryImpl extends Iden3commRepository {
@@ -41,9 +28,6 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   final RemoteIden3commDataSource _remoteIden3commDataSource;
   final LibPolygonIdCoreIden3commDataSource
       _libPolygonIdCoreIden3commDataSource;
-  final AuthResponseMapper _authResponseMapper;
-  final AuthProofMapper _authProofMapper;
-  final GistMTProofMapper _gistProofMapper;
   final QMapper _qMapper;
   final JWZMapper _jwzMapper;
   final GetIden3MessageUseCase _getIden3MessageUseCase;
@@ -53,9 +37,6 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     this._iden3messageDataSource,
     this._remoteIden3commDataSource,
     this._libPolygonIdCoreIden3commDataSource,
-    this._authResponseMapper,
-    this._authProofMapper,
-    this._gistProofMapper,
     this._qMapper,
     this._jwzMapper,
     this._getIden3MessageUseCase,
@@ -142,7 +123,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
         did_doc: didDocResponse,
       ),
     );
-    return _authResponseMapper.mapFrom(authResponse);
+    return jsonEncode(authResponse.toJson());
   }
 
   @override
@@ -162,9 +143,9 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       genesisDid: genesisDid,
       profileNonce: profileNonce,
       authClaim: authClaim,
-      incProof: _authProofMapper.mapTo(incProof),
-      nonRevProof: _authProofMapper.mapTo(nonRevProof),
-      gistProof: _gistProofMapper.mapTo(gistProof),
+      incProof: incProof.toJson(),
+      nonRevProof: nonRevProof.toJson(),
+      gistProof: gistProof.toJson(),
       treeState: treeState,
       challenge: challenge,
       signature: signature,

@@ -105,10 +105,6 @@ class GetIden3commProofsUseCase
   final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
   final StacktraceManager _stacktraceManager;
 
-  final GetAuthTokenUseCase _getAuthTokenUseCase;
-  final Iden3commCredentialRepository _iden3commCredentialRepository;
-  final RemoveClaimsUseCase _removeClaimsUseCase;
-  final SaveClaimsUseCase _saveClaimsUseCase;
   final RefreshCredentialUseCase _refreshCredentialUseCase;
 
   GetIden3commProofsUseCase(
@@ -120,10 +116,6 @@ class GetIden3commProofsUseCase
     this._getIdentityUseCase,
     this._proofGenerationStepsStreamManager,
     this._stacktraceManager,
-    this._getAuthTokenUseCase,
-    this._iden3commCredentialRepository,
-    this._removeClaimsUseCase,
-    this._saveClaimsUseCase,
     this._refreshCredentialUseCase,
   );
 

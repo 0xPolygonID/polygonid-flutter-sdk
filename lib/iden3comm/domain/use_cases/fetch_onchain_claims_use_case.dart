@@ -1,28 +1,20 @@
 import 'package:polygonid_flutter_sdk/assets/onchain_non_merkelized_issuer_base.g.dart';
 import 'package:polygonid_flutter_sdk/assets/get_issuer_id_interface.g.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
-import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
-import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/cache_credential_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/onchain_offer_iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/did_profile_info_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_onchain_claim_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
@@ -52,10 +44,7 @@ class FetchOnchainClaimsUseCase
       _checkProfileAndDidCurrentEnvUseCase;
   final GetEnvUseCase _getEnvUseCase;
   final GetSelectedChainUseCase _getSelectedChainUseCase;
-  final GetDidIdentifierUseCase _getDidIdentifierUseCase;
   final GetDidUseCase _getDidUseCase;
-  final SaveClaimsUseCase _saveClaimsUseCase;
-  final CacheCredentialUseCase _cacheCredentialUseCase;
   final LocalContractFilesDataSource _localContractFilesDataSource;
   final IdentityRepository _identityRepository;
   final DidProfileInfoRepository _didProfileInfoRepository;
@@ -66,10 +55,7 @@ class FetchOnchainClaimsUseCase
     this._checkProfileAndDidCurrentEnvUseCase,
     this._getEnvUseCase,
     this._getSelectedChainUseCase,
-    this._getDidIdentifierUseCase,
     this._getDidUseCase,
-    this._saveClaimsUseCase,
-    this._cacheCredentialUseCase,
     this._localContractFilesDataSource,
     this._identityRepository,
     this._didProfileInfoRepository,

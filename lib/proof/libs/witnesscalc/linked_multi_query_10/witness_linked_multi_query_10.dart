@@ -11,7 +11,6 @@ import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 
 import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/linked_multi_query_10/native_witness_linked_multi_query_10.dart';
-import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 @injectable
 class WitnessLinkedMultiQuery10 {
@@ -57,9 +56,6 @@ class WitnessLinkedMultiQuery10 {
       malloc.free(wtnsBuffer);
       malloc.free(errorMsg);
     }
-
-    NativeWitnessLinkedMultiQuery10Lib nativelib =
-        _nativeWitnessLinkedMultiQuery10;
 
     int result =
         _nativeWitnessLinkedMultiQuery10.witnesscalc_linkedMultiQuery10(

@@ -3,18 +3,17 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/secure_storage_interaction_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/storage_interaction_data_source.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/interaction_id_filter_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/interaction_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/interaction_exception.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart';
+import 'package:sembast/sembast.dart';
 
 class InteractionRepositoryImpl implements InteractionRepository {
   final SecureStorageInteractionDataSource _secureStorageInteractionDataSource;
   final StorageInteractionDataSource _storageInteractionDataSource;
   final InteractionMapper _interactionMapper;
   final FiltersMapper _filtersMapper;
-  final InteractionIdFilterMapper _interactionIdFilterMapper;
   final StacktraceManager _stacktraceManager;
 
   InteractionRepositoryImpl(
@@ -22,7 +21,6 @@ class InteractionRepositoryImpl implements InteractionRepository {
     this._storageInteractionDataSource,
     this._interactionMapper,
     this._filtersMapper,
-    this._interactionIdFilterMapper,
     this._stacktraceManager,
   );
 
@@ -77,7 +75,7 @@ class InteractionRepositoryImpl implements InteractionRepository {
     if (genesisDid != null && privateKey != null) {
       List<Map<String, dynamic>> interactions =
           await _secureStorageInteractionDataSource.getInteractions(
-        filter: _interactionIdFilterMapper.mapTo(id),
+        filter: Filter.equals('id', id),
         did: genesisDid,
         privateKey: privateKey,
       );
@@ -95,7 +93,7 @@ class InteractionRepositoryImpl implements InteractionRepository {
       }
     } else {
       return _storageInteractionDataSource
-          .getInteractions(filter: _interactionIdFilterMapper.mapTo(id))
+          .getInteractions(filter: Filter.equals('id', id))
           .then((interactions) => interactions.isEmpty
               ? throw InteractionNotFoundException(
                   id: id, errorMessage: "Interaction not found")
