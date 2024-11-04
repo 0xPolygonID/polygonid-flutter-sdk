@@ -42,13 +42,13 @@ class ContractFunctionCallBodyTxDataRequest {
   final String methodId; // required, hex string, ethereum function selector
   final int chainId; // required, number of chain.
   final String? network;
-  String challange = "";
 
-  ContractFunctionCallBodyTxDataRequest(
-      {required this.contractAddress,
-      required this.methodId,
-      required this.chainId,
-      this.network});
+  ContractFunctionCallBodyTxDataRequest({
+    required this.contractAddress,
+    required this.methodId,
+    required this.chainId,
+    this.network,
+  });
 
   /// Creates an instance from the given json
   ///

@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:ninja_prime/ninja_prime.dart';
 
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
@@ -13,7 +12,6 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.d
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
-import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/big_int_extension.dart';
@@ -23,34 +21,23 @@ import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/lib_pidcore_credential_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/authenticate.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/iden3_message_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/lib_pidcore_iden3comm_data_source.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/gist_mtproof_data_source.dart';
@@ -68,7 +55,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_c
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:poseidon/poseidon.dart';
-import 'package:uuid/uuid.dart';
 import 'package:web3dart/web3dart.dart';
 
 class GetIden3commProofsParam {
@@ -138,12 +124,8 @@ class GetIden3commProofsUseCase
       /// Generate auth proof for empty contract request message
       if (requests.isEmpty && message is ContractIden3MessageEntity) {
         final authProof = await _generateAuthProof(
-          message,
-          param.genesisDid,
-          param.profileNonce,
-          param.privateKey,
-          message.body.transactionData.challange!,
-          param.config,
+          message: message,
+          param: param,
         );
 
         return [authProof];
@@ -341,45 +323,27 @@ class GetIden3commProofsUseCase
     return claim;
   }
 
-  Future<Iden3commProofEntity> _generateAuthProof(
-    ContractIden3MessageEntity message,
-    String genesisDid,
-    BigInt profileNonce,
-    String privateKey,
-    String challenge,
-    EnvConfigEntity? config,
-  ) async {
+  Future<Iden3commProofEntity> _generateAuthProof({
+    required ContractIden3MessageEntity message,
+    required GetIden3commProofsParam param,
+  }) async {
     final env = await (await getItSdk.getAsync<GetEnvUseCase>()).execute();
-    final chain = await (await getItSdk.getAsync<GetSelectedChainUseCase>()).execute();
 
-    String profileDid = await (await getItSdk.getAsync<GetDidIdentifierUseCase>()).execute(
-      param: GetDidIdentifierParam.withPrivateKey(
-        privateKey: privateKey,
-        profileNonce: profileNonce,
-        blockchain: chain.blockchain,
-        network: chain.network,
-        method: chain.method,
-      ),
-    );
-
-    final proofRepository = await getItSdk.getAsync<ProofRepository>();
+    final chainId = message.body.transactionData.chainId;
+    final chain = env.chainConfigs[chainId] ??
+        await (await getItSdk.getAsync<GetSelectedChainUseCase>()).execute();
 
     final authClaimCompanion = await getAuthClaim(
-      privateKey: privateKey,
-      genesisDid: genesisDid,
+      privateKey: param.privateKey,
+      genesisDid: param.genesisDid,
       env: env,
       chain: chain,
       authClaimNonce: DEFAULT_AUTH_CLAIM_NONCE,
     );
 
-    final libPolygonIdCoreIden3commDataSource =
-        getItSdk<LibPolygonIdCoreIden3commDataSource>();
+    final challengeBytes = HexUtils.hexToBytes(param.challenge!);
 
-    final authProofMapper = getItSdk<AuthProofMapper>();
-
-    final challengeBytes = HexUtils.hexToBytes(challenge);
-
-    // Endianness
+    /// Endianness
     BigInt endian = Uint8ArrayUtils.leBuff2int(challengeBytes);
 
     BigInt qNormalized = endian.qNormalize();
@@ -387,43 +351,40 @@ class GetIden3commProofsUseCase
     String authChallenge = poseidon1([qNormalized]).toString();
 
     String signature = await signMessage(
-      privateKey: HexUtils.hexToBytes(privateKey),
+      privateKey: HexUtils.hexToBytes(param.privateKey),
       message: authChallenge,
     );
 
-    Uint8List authInputsBytes =
-        await libPolygonIdCoreIden3commDataSource.getAuthInputs(
-      genesisDid: genesisDid,
-      profileNonce: profileNonce,
+    final authInputsDS = getItSdk<LibPolygonIdCoreIden3commDataSource>();
+    Uint8List authInputsBytes = await authInputsDS.getAuthInputs(
+      genesisDid: param.genesisDid,
+      profileNonce: param.profileNonce,
       authClaim: authClaimCompanion.authClaim!,
-      incProof: authProofMapper.mapTo(authClaimCompanion.incProof!),
-      nonRevProof: authProofMapper.mapTo(authClaimCompanion.nonRevProof!),
+      incProof: authClaimCompanion.incProof!.toJson(),
+      nonRevProof: authClaimCompanion.nonRevProof!.toJson(),
       gistProof: authClaimCompanion.gistProofEntity!.toJson(),
       treeState: authClaimCompanion.treeState!,
       challenge: authChallenge,
       signature: signature,
     );
 
-    final appDir = await getApplicationDocumentsDirectory();
-    final circuitsDataSource = CircuitsFilesDataSource(appDir);
+    final circuitsDS = await getItSdk.getAsync<CircuitsFilesDataSource>();
+    final circuitDatFileBytes = await circuitsDS.loadCircuitDatFile('authV2');
+    final zkeyFilePath = await circuitsDS.getZkeyFilePath('authV2');
 
-    final circuitDatFileBytes =
-        await circuitsDataSource.loadCircuitDatFile('authV2');
-    final zkeyFilePath = await circuitsDataSource.getZkeyFilePath('authV2');
-
-    CircuitDataEntity circuitDataEntity = CircuitDataEntity(
+    final circuitData = CircuitDataEntity(
       "authV2",
       circuitDatFileBytes,
       zkeyFilePath,
     );
 
-    Uint8List witnessBytes = await proofRepository.calculateWitness(
-      circuitData: circuitDataEntity,
+    Uint8List witnessBytes = await _proofRepository.calculateWitness(
+      circuitData: circuitData,
       atomicQueryInputs: authInputsBytes,
     );
 
-    ZKProofEntity zkProofEntity = await proofRepository.prove(
-      circuitData: circuitDataEntity,
+    ZKProofEntity zkProofEntity = await _proofRepository.prove(
+      circuitData: circuitData,
       wtnsBytes: witnessBytes,
     );
 
@@ -457,7 +418,6 @@ Future<AuthClaimCompanionObject> getAuthClaim({
   MTProofEntity? nonRevProof;
   GistMTProofEntity? gistProofEntity;
   Map<String, dynamic>? treeState;
-  Map<String, dynamic>? config;
   var libPolygonIdCredential = getItSdk<LibPolygonIdCoreCredentialDataSource>();
 
   final identityRepo = await getItSdk.getAsync<IdentityRepository>();
