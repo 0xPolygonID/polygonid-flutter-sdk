@@ -69,7 +69,6 @@ import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repositor
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/gist_mtproof_data_source.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
@@ -428,7 +427,7 @@ class Authenticate {
         );
       }
 
-      config = ConfigParam.fromEnv(env).toJson();
+      config = env.config.toJson();
 
       List<String> splittedDid = genesisDid.split(":");
       String id = splittedDid[4];

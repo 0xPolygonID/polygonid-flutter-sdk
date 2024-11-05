@@ -23,7 +23,6 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.d
 import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:poseidon/poseidon.dart';
 import 'package:web3dart/crypto.dart';
 
@@ -265,8 +264,10 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<IdDescription> describeId(
-      {required BigInt id, ConfigParam? config}) async {
+  Future<IdDescription> describeId({
+    required BigInt id,
+    EnvConfigEntity? config,
+  }) async {
     final idDescriptionJson = _libPolygonIdCoreIdentityDataSource.describeId(
       idAsInt: id.toString(),
       config: config == null ? null : jsonEncode(config.toJson()),

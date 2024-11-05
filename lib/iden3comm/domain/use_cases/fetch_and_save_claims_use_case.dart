@@ -24,7 +24,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/reque
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_fetch_requests_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
@@ -134,12 +133,7 @@ class FetchAndSaveClaimsUseCase
       _stacktraceManager.addTrace(
           "[FetchAndSaveClaimsUseCase] All claims have been saved: claimsLength ${claims.length}");
 
-      final config = ConfigParam(
-        ipfsNodeURL: env.ipfsUrl,
-        chainConfigs: env.chainConfigs,
-        didMethods: env.didMethods,
-      );
-
+      final config = env.config;
       for (final claim in claims) {
         // cache claim
         try {
@@ -251,7 +245,7 @@ class FetchAndSaveClaimsUseCase
     final issuerIdInt = await getIssuerId.getId();
     final issuerDid = (await _identityRepository.describeId(
       id: issuerIdInt,
-      config: ConfigParam.fromEnv(env),
+      config: env.config,
     ))
         .did;
 
