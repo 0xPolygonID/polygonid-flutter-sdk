@@ -81,7 +81,7 @@ class PaymentRequestBody {
 
   factory PaymentRequestBody.fromJson(Map<String, dynamic> json) {
     return PaymentRequestBody(
-      agent: json['agent'] ?? '',
+      agent: json['agent'],
       payments: (json['payments'] as List<dynamic>)
           .map((x) => PaymentRequest.fromJson(x))
           .toList(),
@@ -98,14 +98,14 @@ class PaymentRequestBody {
 
 class PaymentRequest {
   final List<CredentialInfo> credentials;
-  final String? type;
+  final String type;
   final List<PaymentRequestData> data;
   final String expiration;
   final String description;
 
   PaymentRequest({
     required this.credentials,
-    this.type,
+    required this.type,
     required this.data,
     required this.description,
     required this.expiration,
