@@ -81,10 +81,28 @@ class Payment {
   });
 
   factory Payment.fromJson(Map<String, dynamic> json) {
+    final String type = json['type'];
+    PaymentData paymentData;
+
+    switch (type) {
+      case 'Iden3PaymentCryptoV1':
+        paymentData = Iden3PaymentCryptoV1Data.fromJson(json['paymentData']);
+        break;
+      case 'Iden3PaymentRailsV1':
+        paymentData = Iden3PaymentRailsV1Data.fromJson(json['paymentData']);
+        break;
+      case 'Iden3PaymentRailsERC20V1':
+        paymentData =
+            Iden3PaymentRailsERC20V1Data.fromJson(json['paymentData']);
+        break;
+      default:
+        throw Exception('Unknown payment type: $type');
+    }
+
     return Payment(
       id: json['id'],
-      type: json['type'],
-      paymentData: PaymentData.fromJson(json['paymentData']),
+      type: type,
+      paymentData: paymentData,
     );
   }
 
@@ -97,22 +115,72 @@ class Payment {
   }
 }
 
-class PaymentData {
+abstract class PaymentData {
+  Map<String, dynamic> toJson();
+}
+
+class Iden3PaymentCryptoV1Data extends PaymentData {
   final String txId;
 
-  PaymentData({
-    required this.txId,
-  });
+  Iden3PaymentCryptoV1Data({required this.txId});
 
-  factory PaymentData.fromJson(Map<String, dynamic> json) {
-    return PaymentData(
+  factory Iden3PaymentCryptoV1Data.fromJson(Map<String, dynamic> json) {
+    return Iden3PaymentCryptoV1Data(txId: json['txId']);
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {'txId': txId};
+  }
+}
+
+class Iden3PaymentRailsV1Data extends PaymentData {
+  final String txId;
+  final String chainId;
+
+  Iden3PaymentRailsV1Data({required this.txId, required this.chainId});
+
+  factory Iden3PaymentRailsV1Data.fromJson(Map<String, dynamic> json) {
+    return Iden3PaymentRailsV1Data(
       txId: json['txId'],
+      chainId: json['chainId'],
     );
   }
 
+  @override
   Map<String, dynamic> toJson() {
     return {
-      "txId": txId,
+      'txId': txId,
+      'chainId': chainId,
+    };
+  }
+}
+
+class Iden3PaymentRailsERC20V1Data extends PaymentData {
+  final String txId;
+  final String chainId;
+  final String tokenAddress;
+
+  Iden3PaymentRailsERC20V1Data({
+    required this.txId,
+    required this.chainId,
+    required this.tokenAddress,
+  });
+
+  factory Iden3PaymentRailsERC20V1Data.fromJson(Map<String, dynamic> json) {
+    return Iden3PaymentRailsERC20V1Data(
+      txId: json['txId'],
+      chainId: json['chainId'],
+      tokenAddress: json['tokenAddress'],
+    );
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'txId': txId,
+      'chainId': chainId,
+      'tokenAddress': tokenAddress,
     };
   }
 }
