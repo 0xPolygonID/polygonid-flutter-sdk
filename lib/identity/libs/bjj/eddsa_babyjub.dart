@@ -7,9 +7,11 @@ import '../../../common/utils/hex_utils.dart';
 import '../../../common/utils/uint8_list_utils.dart';
 import 'bjj.dart';
 
+typedef Point = ({BigInt x, BigInt y});
+
 /// Class representing EdDSA Baby Jub signature
 class Signature {
-  late List<BigInt> r8;
+  late Point r8;
   late BigInt s;
 
   /// Create a Signature with the R8 point and S scalar
@@ -26,55 +28,48 @@ class Signature {
     }
     BabyjubjubLib bjjLib = BabyjubjubLib();
 
-    final XYSublist = buf.sublist(0, 32);
-    // unpackPoint is used to unpack R8 X and Y
-    final List<String>? unpackedPoint =
-        bjjLib.unpackPoint(HEX.encode(XYSublist.toList()));
+    final pointsSublist = buf.sublist(0, 32);
+    // uncompressPoint is used to unpack R8 X and Y
+    final unpackedPoint =
+        bjjLib.uncompressPoint(HEX.encode(pointsSublist.toList()));
 
-    BigInt? x = BigInt.tryParse(unpackedPoint![0], radix: 10);
-    BigInt? y = BigInt.tryParse(unpackedPoint[1], radix: 10);
-    List<BigInt> r8 = [];
-    r8.add(x!);
-    r8.add(y!);
+    final x = BigInt.parse(unpackedPoint[0]);
+    final y = BigInt.parse(unpackedPoint[1]);
 
     // S is decoded manually
     BigInt s = Uint8ArrayUtils.beBuff2int(
         Uint8List.fromList(buf.sublist(32, 64).reversed.toList()));
-    return Signature(r8, s);
+    return Signature((x: x, y: y), s);
+  }
+
+  /// Compress the Signature
+  /// @returns {Uint8List} - signature compressed into a buffer
+  Uint8List compress() {
+    final r8 = HexUtils.hexToBytes(
+      BabyjubjubLib().compressPoint(this.r8.x.toString(), this.r8.y.toString()),
+    );
+    final s = Uint8ArrayUtils.beInt2Buff(this.s, 32);
+    return Uint8List.fromList([...r8, ...s]);
   }
 }
 
 /// Class representing a EdDSA Baby Jub public key
 class PublicKey {
-  late List<BigInt> p;
+  final String hex;
+  final Point p;
 
   /// Create a PublicKey from a curve point p
+  /// @param {String} hex - hex representation
   /// @param {List[BigInt]} p - curve point
-  PublicKey(this.p);
+  PublicKey._(this.hex, this.p);
 
-  /// Create a PublicKey from a bigInt compressed pubKey
-  ///
-  /// @param {BigInt} compressedBigInt - compressed public key in a bigInt
-  ///
-  /// @returns {PublicKey} public key class
-  static PublicKey newFromCompressed(BigInt compressedBigInt) {
-    final Uint8List compressedBuffLE =
-        Uint8ArrayUtils.leInt2Buff(compressedBigInt, 32);
-    if (compressedBuffLE.length != 32) {
-      throw ArgumentError('buf must be 32 bytes');
-    }
+  factory PublicKey.hex(String hex) {
     BabyjubjubLib bjjLib = BabyjubjubLib();
-    final p =
-        bjjLib.unpackPoint(Uint8ArrayUtils.uint8ListToString(compressedBuffLE));
-    if (p == null) {
-      throw ArgumentError('unpackPoint failed');
-    }
+    final p = bjjLib.uncompressPoint(hex);
     BigInt x = BigInt.parse(p[0]);
     BigInt y = BigInt.parse(p[1]);
-    List<BigInt> point = [];
-    point.add(x);
-    point.add(y);
-    return PublicKey(point);
+
+    return PublicKey._(hex, (x: x, y: y));
   }
 
   /// Compress the PublicKey
@@ -82,28 +77,17 @@ class PublicKey {
   Uint8List compress() {
     BabyjubjubLib bjjLib = BabyjubjubLib();
     return HexUtils.hexToBytes(
-        bjjLib.packPoint(p[0].toString(), p[1].toString()));
+      bjjLib.compressPoint(p.x.toString(), p.y.toString()),
+    );
   }
 
   bool verify(String messageHash, Signature signature) {
     BabyjubjubLib bjjLib = BabyjubjubLib();
-    List<int> pointList = [];
-    pointList.add(p[0].toInt());
-    pointList.add(p[1].toInt());
-    List<int> sigList = [];
-    sigList.add(signature.r8[0].toInt());
-    sigList.add(signature.r8[1].toInt());
-    sigList.add(signature.s.toInt());
     return bjjLib.verifyPoseidon(
-      Uint8ArrayUtils.uint8ListToString(Uint8List.fromList(pointList)),
-      Uint8ArrayUtils.uint8ListToString(Uint8List.fromList(sigList)),
+      hex,
+      Uint8ArrayUtils.uint8ListToString(signature.compress()),
       messageHash,
     );
-  }
-
-  String hex() {
-    BabyjubjubLib bjjLib = BabyjubjubLib();
-    return bjjLib.packPoint(p[0].toString(), p[1].toString());
   }
 }
 
@@ -124,24 +108,16 @@ class PrivateKey {
   /// @returns {PublicKey} PublicKey derived from PrivateKey
   PublicKey public() {
     BabyjubjubLib bjjLib = BabyjubjubLib();
-    String resultString = bjjLib.prv2pub(HexUtils.bytesToHex(sk));
-    final stringList = resultString.split(",");
-    stringList[0] = stringList[0].replaceAll("Fr(", "");
-    stringList[0] = stringList[0].replaceAll(")", "");
-    stringList[1] = stringList[1].replaceAll("Fr(", "");
-    stringList[1] = stringList[1].replaceAll(")", "");
-    BigInt x = HexUtils.hexToInt(stringList[0]);
-    BigInt y = HexUtils.hexToInt(stringList[1]);
-    List<BigInt> p = [];
-    p.add(x);
-    p.add(y);
-    return PublicKey(p);
+    String publicKeyHex = bjjLib.prv2pub(HexUtils.bytesToHex(sk));
+    return PublicKey.hex(publicKeyHex);
   }
 
   String sign(BigInt messageHash) {
     BabyjubjubLib bjjLib = BabyjubjubLib();
-    String signature =
-        bjjLib.signPoseidon(HexUtils.bytesToHex(sk), messageHash.toString());
+    String signature = bjjLib.signPoseidon(
+      HexUtils.bytesToHex(sk),
+      messageHash.toString(),
+    );
     return signature;
   }
 

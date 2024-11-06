@@ -3835,6 +3835,24 @@ class NativePolygonIdCoreLib {
   late final _PLGNCleanCache = _PLGNCleanCachePtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
 
+  int PLGNCleanCache2(
+    ffi.Pointer<ffi.Char> cfg,
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNCleanCache2(
+      cfg,
+      status,
+    );
+  }
+
+  late final _PLGNCleanCache2Ptr = _lookup<
+      ffi.NativeFunction<
+          GoUint8 Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNCleanCache2');
+  late final _PLGNCleanCache2 = _PLGNCleanCache2Ptr.asFunction<
+      int Function(
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+
   int PLGNCacheCredentials(
     ffi.Pointer<ffi.Char> in1,
     ffi.Pointer<ffi.Char> cfg,
@@ -3909,6 +3927,156 @@ class NativePolygonIdCoreLib {
   late final _PLGNDescribeID = _PLGNDescribeIDPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+
+  int PLGNBabyJubJubSignPoseidon(
+    ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
+    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> cfg,
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNBabyJubJubSignPoseidon(
+      jsonResponse,
+      in1,
+      cfg,
+      status,
+    );
+  }
+
+  late final _PLGNBabyJubJubSignPoseidonPtr = _lookup<
+          ffi.NativeFunction<
+              GoUint8 Function(
+                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
+      'PLGNBabyJubJubSignPoseidon');
+  late final _PLGNBabyJubJubSignPoseidon =
+      _PLGNBabyJubJubSignPoseidonPtr.asFunction<
+          int Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+
+  int PLGNBabyJubJubVerifyPoseidon(
+    ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
+    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> cfg,
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNBabyJubJubVerifyPoseidon(
+      jsonResponse,
+      in1,
+      cfg,
+      status,
+    );
+  }
+
+  late final _PLGNBabyJubJubVerifyPoseidonPtr = _lookup<
+          ffi.NativeFunction<
+              GoUint8 Function(
+                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
+      'PLGNBabyJubJubVerifyPoseidon');
+  late final _PLGNBabyJubJubVerifyPoseidon =
+      _PLGNBabyJubJubVerifyPoseidonPtr.asFunction<
+          int Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+
+  int PLGNBabyJubJubPrivate2Public(
+    ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
+    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> cfg,
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNBabyJubJubPrivate2Public(
+      jsonResponse,
+      in1,
+      cfg,
+      status,
+    );
+  }
+
+  late final _PLGNBabyJubJubPrivate2PublicPtr = _lookup<
+          ffi.NativeFunction<
+              GoUint8 Function(
+                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
+      'PLGNBabyJubJubPrivate2Public');
+  late final _PLGNBabyJubJubPrivate2Public =
+      _PLGNBabyJubJubPrivate2PublicPtr.asFunction<
+          int Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+
+  int PLGNBabyJubJubPublicUncompress(
+    ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
+    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> cfg,
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNBabyJubJubPublicUncompress(
+      jsonResponse,
+      in1,
+      cfg,
+      status,
+    );
+  }
+
+  late final _PLGNBabyJubJubPublicUncompressPtr = _lookup<
+          ffi.NativeFunction<
+              GoUint8 Function(
+                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
+      'PLGNBabyJubJubPublicUncompress');
+  late final _PLGNBabyJubJubPublicUncompress =
+      _PLGNBabyJubJubPublicUncompressPtr.asFunction<
+          int Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+
+  int PLGNBabyJubJubPublicCompress(
+    ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
+    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> cfg,
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNBabyJubJubPublicCompress(
+      jsonResponse,
+      in1,
+      cfg,
+      status,
+    );
+  }
+
+  late final _PLGNBabyJubJubPublicCompressPtr = _lookup<
+          ffi.NativeFunction<
+              GoUint8 Function(
+                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
+      'PLGNBabyJubJubPublicCompress');
+  late final _PLGNBabyJubJubPublicCompress =
+      _PLGNBabyJubJubPublicCompressPtr.asFunction<
+          int Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
 }
 
 final class __mbstate_t extends ffi.Union {
@@ -5346,6 +5514,8 @@ const int __MAC_14_5 = 140500;
 
 const int __MAC_15_0 = 150000;
 
+const int __MAC_15_1 = 150100;
+
 const int __IPHONE_2_0 = 20000;
 
 const int __IPHONE_2_1 = 20100;
@@ -5506,6 +5676,8 @@ const int __IPHONE_17_5 = 170500;
 
 const int __IPHONE_18_0 = 180000;
 
+const int __IPHONE_18_1 = 180100;
+
 const int __WATCHOS_1_0 = 10000;
 
 const int __WATCHOS_2_0 = 20000;
@@ -5601,6 +5773,8 @@ const int __WATCHOS_10_4 = 100400;
 const int __WATCHOS_10_5 = 100500;
 
 const int __WATCHOS_11_0 = 110000;
+
+const int __WATCHOS_11_1 = 110100;
 
 const int __TVOS_9_0 = 90000;
 
@@ -5700,6 +5874,8 @@ const int __TVOS_17_5 = 170500;
 
 const int __TVOS_18_0 = 180000;
 
+const int __TVOS_18_1 = 180100;
+
 const int __BRIDGEOS_2_0 = 20000;
 
 const int __BRIDGEOS_3_0 = 30000;
@@ -5754,6 +5930,8 @@ const int __BRIDGEOS_8_5 = 80500;
 
 const int __BRIDGEOS_9_0 = 90000;
 
+const int __BRIDGEOS_9_1 = 90100;
+
 const int __DRIVERKIT_19_0 = 190000;
 
 const int __DRIVERKIT_20_0 = 200000;
@@ -5782,6 +5960,8 @@ const int __DRIVERKIT_23_5 = 230500;
 
 const int __DRIVERKIT_24_0 = 240000;
 
+const int __DRIVERKIT_24_1 = 240100;
+
 const int __VISIONOS_1_0 = 10000;
 
 const int __VISIONOS_1_1 = 10100;
@@ -5789,6 +5969,8 @@ const int __VISIONOS_1_1 = 10100;
 const int __VISIONOS_1_2 = 10200;
 
 const int __VISIONOS_2_0 = 20000;
+
+const int __VISIONOS_2_1 = 20100;
 
 const int MAC_OS_X_VERSION_10_0 = 1000;
 
@@ -5914,9 +6096,11 @@ const int MAC_OS_VERSION_14_5 = 140500;
 
 const int MAC_OS_VERSION_15_0 = 150000;
 
-const int __MAC_OS_X_VERSION_MIN_REQUIRED = 150000;
+const int MAC_OS_VERSION_15_1 = 150100;
 
-const int __MAC_OS_X_VERSION_MAX_ALLOWED = 150000;
+const int __MAC_OS_X_VERSION_MIN_REQUIRED = 140000;
+
+const int __MAC_OS_X_VERSION_MAX_ALLOWED = 150100;
 
 const int __ENABLE_LEGACY_MAC_AVAILABILITY = 1;
 
