@@ -3,18 +3,18 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_param.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/polygonidcore/pidcore_proof.dart';
 
 class ComputeAtomicQueryInputs {
   final AtomicQueryInputsParam param;
-  final ConfigParam? configParam;
+  final EnvConfigEntity? configParam;
 
   ComputeAtomicQueryInputs({
     required this.param,
@@ -39,7 +39,7 @@ class LibPolygonIdCoreWrapper {
 
   Future<String> getProofInputs(
     AtomicQueryInputsParam atomicQueryInputsParam,
-    ConfigParam? atomicQueryInputsConfigParam,
+    EnvConfigEntity? atomicQueryInputsConfigParam,
   ) async {
     ComputeAtomicQueryInputs param = ComputeAtomicQueryInputs(
       param: atomicQueryInputsParam,
@@ -245,9 +245,9 @@ class LibPolygonIdCoreProofDataSource {
     _stacktraceManager.addTrace(
         "[LibPolygonIdCoreProofDataSource][MainFlow]getProofInputs input param: ${jsonEncode(inputParam.toJson())}");
 
-    ConfigParam? configParam;
+    EnvConfigEntity? configParam;
     if (config != null) {
-      configParam = ConfigParam.fromJson(config);
+      configParam = EnvConfigEntity.fromJson(config);
 
       logger().i(
           "[LibPolygonIdCoreProofDataSource][MainFlow]getProofInputs config param: ${jsonEncode(inputParam.toJson())}");

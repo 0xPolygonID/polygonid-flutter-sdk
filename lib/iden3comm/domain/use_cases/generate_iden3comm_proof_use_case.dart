@@ -24,7 +24,6 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_aut
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_latest_state_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/sign_message_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
@@ -196,11 +195,7 @@ class GenerateIden3commProofUseCase
 
     final envConfig = param.config;
     if (envConfig != null) {
-      config = ConfigParam(
-        ipfsNodeURL: envConfig.ipfsNodeUrl,
-        chainConfigs: envConfig.chainConfigs,
-        didMethods: envConfig.didMethods,
-      ).toJson();
+      config = envConfig.toJson();
       _stacktraceManager.addTrace(
           "[GenerateIden3commProofUseCase] AtomicQueryInputsConfigParam: success");
     }
