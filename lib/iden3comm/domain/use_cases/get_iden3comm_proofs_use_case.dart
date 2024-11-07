@@ -341,18 +341,14 @@ class GetIden3commProofsUseCase
       authClaimNonce: DEFAULT_AUTH_CLAIM_NONCE,
     );
 
-    final challengeBytes = HexUtils.hexToBytes(param.challenge!);
+    final challengeStr = param.challenge!;
 
     /// Endianness
-    BigInt endian = Uint8ArrayUtils.leBuff2int(challengeBytes);
-
-    BigInt qNormalized = endian.qNormalize();
-
-    String authChallenge = poseidon1([qNormalized]).toString();
-
+    BigInt challenge = BigInt.parse(challengeStr);
+    final challengeNormalized = challenge.qNormalize();
     String signature = await signMessage(
       privateKey: HexUtils.hexToBytes(param.privateKey),
-      message: authChallenge,
+      message: challengeNormalized.toString(),
     );
 
     final authInputsDS = getItSdk<LibPolygonIdCoreIden3commDataSource>();
@@ -364,7 +360,7 @@ class GetIden3commProofsUseCase
       nonRevProof: authClaimCompanion.nonRevProof!.toJson(),
       gistProof: authClaimCompanion.gistProofEntity!.toJson(),
       treeState: authClaimCompanion.treeState!,
-      challenge: authChallenge,
+      challenge: challengeStr,
       signature: signature,
     );
 
