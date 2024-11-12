@@ -140,8 +140,10 @@ class PrivateKey {
 
   String sign(BigInt messageHash) {
     BabyjubjubLib bjjLib = BabyjubjubLib();
-    String signature =
-        bjjLib.signPoseidon(HexUtils.bytesToHex(sk), messageHash.toString());
+    String signature = bjjLib.signPoseidon(
+      HexUtils.bytesToHex(sk),
+      messageHash.toString(),
+    );
     return signature;
   }
 
