@@ -84,7 +84,7 @@ ffigen:
   output: 'lib/common/libs/polygonidcore/native_polygonidcore.dart'
   headers:
     entry-points:
-      - 'ios/Classes/libpolygonid.h'
+      - 'ios/Frameworks/libpolygonid.xcframework/libpolygonid.h'
 
   # name: WitnessMtpLib
   # description: Bindings to `ios/Classes/witnesscalc_credentialAtomicQueryMTPV2.h`.
