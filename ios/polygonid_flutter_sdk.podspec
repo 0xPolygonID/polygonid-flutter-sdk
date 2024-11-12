@@ -31,7 +31,7 @@ PolygonID SDK flutter plugin project.
   ]
   # Flutter.framework does not contain a i386 nor arm64 slice.
   s.pod_target_xcconfig = {
-    "OTHER_LDFLAGS" => "-force_load $(PODS_TARGET_SRCROOT)/Frameworks/libpolygonid.a -lc++ -lz"
+    "OTHER_LDFLAGS" => "-lc++ -lz",
     "DEFINES_MODULE" => "YES"
   }
   s.swift_version = '5.0'

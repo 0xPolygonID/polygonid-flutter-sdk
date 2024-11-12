@@ -179,11 +179,11 @@ SPEC CHECKSUMS:
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
   package_info_plus: 58f0028419748fad15bf008b270aaa8e54380b1c
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
-  polygonid_flutter_sdk: e7da3e2c28a01d1ccf081c440d8e6f14e3d92afb
+  polygonid_flutter_sdk: cb3414f867f0080e6170cfdbb8c29c65956e37ad
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   rapidsnark: 4e70fa2f70e3b0846a0c1bf94a635113f261ada9
   scan: aea35bb4aa59ccc8839c576a18cd57c7d492cc86
 
-PODFILE CHECKSUM: 683afc34171758571dc8c30fde1e4c822a1862c5
+PODFILE CHECKSUM: b9df976ea8a0f3dd60817c9e699f66bc8808062e
 
 COCOAPODS: 1.15.2

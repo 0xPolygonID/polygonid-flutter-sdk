@@ -4,11 +4,17 @@ import 'dart:io';
 import 'package:ffi/ffi.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
+import 'package:polygonid_flutter_sdk/common/libs/polygonidcore/pidcore_base.dart';
 import 'package:polygonid_flutter_sdk/common/utils/hex_utils.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj.dart';
 
+import 'polygonidcore_mocks.dart';
+
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
+  PolygonIdCore.setEnvConfig(EnvConfigEntity(ipfsNodeUrl: ""));
 
   final lib = BabyjubjubLib();
 
@@ -22,7 +28,7 @@ void main() {
         "6B58E72B1BB6DD8C2B20CB62E90F1AE7F7F054C059B962382643721B273B2510";
 
     testWidgets('Compress point', (WidgetTester tester) async {
-      final compressedPoint = lib.packPoint(pointX, pointY);
+      final compressedPoint = lib.compressPoint(pointX, pointY);
 
       expect(
         compressedPoint,
@@ -31,10 +37,10 @@ void main() {
     });
 
     testWidgets('Uncompress point', (WidgetTester tester) async {
-      final uncompressedPoint = lib.unpackPoint(compressedPoint);
+      final uncompressedPoint = lib.uncompressPoint(compressedPoint);
 
       expect(uncompressedPoint, isNotNull);
-      expect(uncompressedPoint![0], equals(pointX));
+      expect(uncompressedPoint[0], equals(pointX));
       expect(uncompressedPoint[1], equals(pointY));
     });
   });
@@ -58,8 +64,10 @@ void main() {
     });
 
     testWidgets("Verify signature", (WidgetTester tester) async {
+      final publicKey = lib.prv2pub(privateKey);
+
       final valid = lib.verifyPoseidon(
-        privateKey,
+        publicKey,
         signature,
         message,
       );
@@ -78,18 +86,12 @@ void main() {
         "7588418921868074418607355872196117318956729766890665605182116638798290735907";
 
     testWidgets("Private key to public", (WidgetTester tester) async {
-      final publicKeyRaw = lib.prv2pub(privateKey);
+      final publicKeyHex = lib.prv2pub(privateKey);
 
-      final stringList = publicKeyRaw.split(",");
-      stringList[0] = stringList[0].replaceAll("Fr(", "");
-      stringList[0] = stringList[0].replaceAll(")", "");
-      stringList[1] = stringList[1].replaceAll("Fr(", "");
-      stringList[1] = stringList[1].replaceAll(")", "");
-      BigInt x = HexUtils.hexToInt(stringList[0]);
-      BigInt y = HexUtils.hexToInt(stringList[1]);
+      final points = lib.uncompressPoint(publicKeyHex);
 
-      expect(x.toString(), equals(expectedX));
-      expect(y.toString(), equals(expectedY));
+      expect(points[0], equals(expectedX));
+      expect(points[1], equals(expectedY));
     });
   });
 }
