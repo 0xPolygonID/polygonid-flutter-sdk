@@ -92,11 +92,10 @@ class Iden3PaymentCryptoV1 extends Payment {
 
   Iden3PaymentCryptoV1({
     required this.id,
-    required String type,
     String? context,
     required PaymentData paymentData,
   }) : super(
-    type: type,
+    type: "Iden3PaymentCryptoV1",
     context: context,
     paymentData: paymentData,
   );
@@ -110,7 +109,6 @@ class Iden3PaymentCryptoV1 extends Payment {
 
     return Iden3PaymentCryptoV1(
       id: id,
-      type: json['type'],
       context: context,
       paymentData: Iden3PaymentCryptoV1Data.fromJson(json['paymentData']),
     );
@@ -133,11 +131,10 @@ class Iden3PaymentRailsV1 extends Payment {
 
   Iden3PaymentRailsV1({
     required this.nonce,
-    required String type,
     String? context,
     required PaymentData paymentData,
   }) : super(
-    type: type,
+    type: "Iden3PaymentRailsV1",
     context: context,
     paymentData: paymentData,
   );
@@ -151,7 +148,6 @@ class Iden3PaymentRailsV1 extends Payment {
 
     return Iden3PaymentRailsV1(
       nonce: nonce,
-      type: json['type'],
       context: context,
       paymentData: Iden3PaymentRailsV1Data.fromJson(json['paymentData']),
     );
@@ -174,11 +170,10 @@ class Iden3PaymentRailsERC20V1 extends Payment {
 
   Iden3PaymentRailsERC20V1({
     required this.nonce,
-    required String type,
     String? context,
     required PaymentData paymentData,
   }) : super(
-    type: type,
+    type: "Iden3PaymentRailsERC20V1",
     context: context,
     paymentData: paymentData,
   );
@@ -193,7 +188,6 @@ class Iden3PaymentRailsERC20V1 extends Payment {
 
     return Iden3PaymentRailsERC20V1(
       nonce: nonce,
-      type: json['type'],
       context: context,
       paymentData: Iden3PaymentRailsERC20V1Data.fromJson(json['paymentData']),
     );
