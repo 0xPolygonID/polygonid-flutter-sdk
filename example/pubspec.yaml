@@ -80,6 +80,14 @@ flutter:
   assets:
     - assets/
     - assets/images/
+    - packages/polygonid_flutter_sdk/assets/authV2.wcd
+    - packages/polygonid_flutter_sdk/assets/credentialAtomicQueryMTPV2.wcd
+    - packages/polygonid_flutter_sdk/assets/credentialAtomicQueryMTPV2OnChain.wcd
+    - packages/polygonid_flutter_sdk/assets/credentialAtomicQuerySigV2.wcd
+    - packages/polygonid_flutter_sdk/assets/credentialAtomicQuerySigV2OnChain.wcd
+    - packages/polygonid_flutter_sdk/assets/credentialAtomicQueryV3-beta.1.wcd
+    - packages/polygonid_flutter_sdk/assets/credentialAtomicQueryV3OnChain-beta.1.wcd
+
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

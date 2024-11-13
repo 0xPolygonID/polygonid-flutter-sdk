@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:injectable/injectable.dart';
 import 'package:flutter_rapidsnark/flutter_rapidsnark.dart';
 
 class ProveParam {
@@ -17,9 +16,14 @@ class ProveParam {
   );
 }
 
-@injectable
-class ProverLibWrapper {
-  Future<Map<String, dynamic>?> prove(String zKeyPath, Uint8List wtnsBytes) {
+class ProverLibDataSource {
+  ProverLibDataSource();
+
+  ///
+  Future<Map<String, dynamic>?> prove(
+    String zKeyPath,
+    Uint8List wtnsBytes,
+  ) async {
     final rootToken = RootIsolateToken.instance!;
 
     return compute(
@@ -42,19 +46,4 @@ Future<Map<String, dynamic>?> _computeProof(ProveParam param) async {
     'proof': jsonDecode(result.proof),
     'pub_signals': jsonDecode(result.publicSignals),
   };
-}
-
-class ProverLibDataSource {
-  final ProverLibWrapper _proverLibWrapper;
-
-  ProverLibDataSource(this._proverLibWrapper);
-
-  ///
-  Future<Map<String, dynamic>?> prove(
-    String zKeyPath,
-    Uint8List wtnsBytes,
-  ) async {
-    final result = await _proverLibWrapper.prove(zKeyPath, wtnsBytes);
-    return result;
-  }
 }

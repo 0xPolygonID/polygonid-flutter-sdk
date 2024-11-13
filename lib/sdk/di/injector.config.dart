@@ -363,9 +363,8 @@ extension GetItInjectableX on _i174.GetIt {
     final databaseModule = _$DatabaseModule();
     final encryptionModule = _$EncryptionModule();
     final repositoriesModule = _$RepositoriesModule();
-    gh.factory<_i502.ProverLibWrapper>(() => _i502.ProverLibWrapper());
-    gh.factory<_i1039.WitnessIsolatesWrapper>(
-        () => _i1039.WitnessIsolatesWrapper());
+    gh.factory<_i502.ProverLibDataSource>(() => _i502.ProverLibDataSource());
+    gh.factory<_i1039.WitnessDataSource>(() => _i1039.WitnessDataSource());
     gh.factory<_i694.GistMTProofDataSource>(
         () => _i694.GistMTProofDataSource());
     gh.factory<_i1021.ProofCircuitDataSource>(
@@ -523,8 +522,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i758.LibPolygonIdCoreCredentialDataSource>(() =>
         _i758.LibPolygonIdCoreCredentialDataSource(
             gh<_i328.PolygonIdCoreCredential>()));
-    gh.factory<_i1039.WitnessDataSource>(
-        () => _i1039.WitnessDataSource(gh<_i1039.WitnessIsolatesWrapper>()));
     gh.factory<_i361.SecureDidProfileInfoStoreRefWrapper>(() =>
         _i361.SecureDidProfileInfoStoreRefWrapper(
             gh<_i310.StoreRef<String, Map<String, Object?>>>(
@@ -541,8 +538,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i425.SecureStorageInteractionDataSource>(() =>
         _i425.SecureStorageInteractionDataSource(
             gh<_i425.SecureInteractionStoreRefWrapper>()));
-    gh.factory<_i502.ProverLibDataSource>(
-        () => _i502.ProverLibDataSource(gh<_i502.ProverLibWrapper>()));
     gh.factory<_i383.WalletDataSource>(
         () => _i383.WalletDataSource(gh<_i383.WalletLibWrapper>()));
     gh.factory<_i910.Iden3commCredentialRepositoryImpl>(

@@ -1,40 +1,43 @@
 import 'package:circom_witnesscalc/circom_witnesscalc.dart';
 import 'package:flutter/foundation.dart';
-import 'package:injectable/injectable.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
+import 'package:flutter/services.dart';
 
 class WitnessParam {
   final String inputsJson;
   final Uint8List circuitGraphFile;
+  final RootIsolateToken rootToken;
 
-  WitnessParam({
-    required this.inputsJson,
-    required this.circuitGraphFile,
-  });
+  WitnessParam(
+    this.inputsJson,
+    this.circuitGraphFile,
+    this.rootToken,
+  );
 }
 
 class WitnessDataSource {
-  final WitnessIsolatesWrapper _witnessIsolatesWrapper;
-
-  WitnessDataSource(this._witnessIsolatesWrapper);
+  WitnessDataSource();
 
   Future<Uint8List?> computeWitness({
-    required CircuitType type,
-    required WitnessParam param,
+    required String inputsJson,
+    required Uint8List circuitGraphFile,
   }) {
-    return _witnessIsolatesWrapper.computeWitness(param);
-  }
-}
+    final rootToken = RootIsolateToken.instance!;
 
-@injectable
-class WitnessIsolatesWrapper {
-  Future<Uint8List?> computeWitness(WitnessParam param) {
-    return compute(_computeWitness, param);
+    return compute(
+      _computeWitness,
+      WitnessParam(
+        inputsJson,
+        circuitGraphFile,
+        rootToken,
+      ),
+    );
   }
 }
 
 /// As this is running in a separate thread, we cannot inject [WitnessAuthLib]
 Future<Uint8List?> _computeWitness(WitnessParam param) async {
+  BackgroundIsolateBinaryMessenger.ensureInitialized(param.rootToken);
+
   final result = await CircomWitnesscalc().calculateWitness(
     inputs: param.inputsJson,
     graphData: param.circuitGraphFile,

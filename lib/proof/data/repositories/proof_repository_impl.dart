@@ -179,18 +179,13 @@ class ProofRepositoryImpl extends ProofRepository {
     required CircuitDataEntity circuitData,
     required String atomicQueryInputs,
   }) async {
-    WitnessParam witnessParam = WitnessParam(
-      inputsJson: atomicQueryInputs,
-      circuitGraphFile: circuitData.graphFile,
-    );
-
     _stacktraceManager.addTrace(
         "[calculateWitness] circuitData.circuitId ${circuitData.circuitId}");
     final circuitType = CircuitType.fromString(circuitData.circuitId);
     try {
       Uint8List? witness = await _witnessDataSource.computeWitness(
-        type: circuitType,
-        param: witnessParam,
+        inputsJson: atomicQueryInputs,
+        circuitGraphFile: circuitData.graphFile,
       );
       if (witness == null) {
         throw NullWitnessException(
