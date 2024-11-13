@@ -59,7 +59,7 @@ class LibPolygonIdCoreIden3commDataSource {
     this._polygonIdCoreIden3comm,
   );
 
-  Future<Uint8List> getAuthInputs({
+  Future<String> getAuthInputs({
     required String genesisDid,
     required BigInt profileNonce,
     required List<String> authClaim,
@@ -84,6 +84,6 @@ class LibPolygonIdCoreIden3commDataSource {
 
     String output = _polygonIdCoreIden3comm.getAuthInputs(input);
 
-    return Uint8ArrayUtils.uint8ListfromString(output);
+    return output;
   }
 }

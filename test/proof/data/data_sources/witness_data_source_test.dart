@@ -14,8 +14,8 @@ MockWitnessIsolatesWrapper witnessIsolatesWrapper =
 WitnessDataSource dataSource = WitnessDataSource(witnessIsolatesWrapper);
 
 Uint8List wasm = Uint8List(32);
-Uint8List json = Uint8List(32);
-final param = WitnessParam(wasm: wasm, json: json);
+String json = "";
+final param = WitnessParam(circuitGraphFile: wasm, inputsJson: "");
 
 Uint8List mockResponse = Uint8List(32);
 
@@ -27,13 +27,7 @@ main() {
       setUp(() {
         reset(witnessIsolatesWrapper);
 
-        when(witnessIsolatesWrapper.computeWitnessAuth(any))
-            .thenAnswer((realInvocation) => Future.value(mockResponse));
-
-        when(witnessIsolatesWrapper.computeWitnessMtp(any))
-            .thenAnswer((realInvocation) => Future.value(mockResponse));
-
-        when(witnessIsolatesWrapper.computeWitnessSig(any))
+        when(witnessIsolatesWrapper.computeWitness(any))
             .thenAnswer((realInvocation) => Future.value(mockResponse));
       });
 
@@ -46,45 +40,11 @@ main() {
               mockResponse);
 
           WitnessParam captured =
-              verify(witnessIsolatesWrapper.computeWitnessAuth(captureAny))
+              verify(witnessIsolatesWrapper.computeWitness(captureAny))
                   .captured
                   .first;
-          expect(captured.wasm, wasm);
-          expect(captured.json, json);
-        },
-      );
-
-      test(
-        'Given a WitnessParam obj (wasm, json), when called computeWitnessMtp, we expect a Uint8List to be returned',
-        () async {
-          expect(
-              await dataSource.computeWitness(
-                  param: param, type: CircuitType.mtp),
-              mockResponse);
-
-          WitnessParam captured =
-              verify(witnessIsolatesWrapper.computeWitnessMtp(captureAny))
-                  .captured
-                  .first;
-          expect(captured.wasm, wasm);
-          expect(captured.json, json);
-        },
-      );
-
-      test(
-        'Given a WitnessParam obj (wasm, json), when called computeWitnessSig, we expect a Uint8List to be returned',
-        () async {
-          expect(
-              await dataSource.computeWitness(
-                  param: param, type: CircuitType.sig),
-              mockResponse);
-
-          WitnessParam captured =
-              verify(witnessIsolatesWrapper.computeWitnessSig(captureAny))
-                  .captured
-                  .first;
-          expect(captured.wasm, wasm);
-          expect(captured.json, json);
+          expect(captured.circuitGraphFile, wasm);
+          expect(captured.inputsJson, json);
         },
       );
     },

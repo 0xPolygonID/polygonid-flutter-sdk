@@ -61,7 +61,7 @@ class ProofRepositoryImpl extends ProofRepository {
   @override
   Future<CircuitDataEntity> loadCircuitFiles(String circuitId) async {
     final circuitDatFile =
-        await _circuitsFilesDataSource.loadCircuitDatFile(circuitId);
+        await _circuitsFilesDataSource.loadGraphFile(circuitId);
     final zkeyFilePath = await _circuitsFilesDataSource.getZkeyFilePath(
       circuitId,
     );
@@ -177,10 +177,12 @@ class ProofRepositoryImpl extends ProofRepository {
   @override
   Future<Uint8List> calculateWitness({
     required CircuitDataEntity circuitData,
-    required Uint8List atomicQueryInputs,
+    required String atomicQueryInputs,
   }) async {
-    WitnessParam witnessParam =
-        WitnessParam(wasm: circuitData.datFile, json: atomicQueryInputs);
+    WitnessParam witnessParam = WitnessParam(
+      inputsJson: atomicQueryInputs,
+      circuitGraphFile: circuitData.graphFile,
+    );
 
     _stacktraceManager.addTrace(
         "[calculateWitness] circuitData.circuitId ${circuitData.circuitId}");

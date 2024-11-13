@@ -332,22 +332,6 @@ import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stre
     as _i920;
 import 'package:polygonid_flutter_sdk/proof/libs/polygonidcore/pidcore_proof.dart'
     as _i961;
-import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/auth_v2/witness_auth.dart'
-    as _i318;
-import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/linked_multi_query_10/witness_linked_multi_query_10.dart'
-    as _i896;
-import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/mtp_v2/witness_mtp.dart'
-    as _i569;
-import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/mtp_v2_onchain/witness_mtp_onchain.dart'
-    as _i436;
-import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/sig_v2/witness_sig.dart'
-    as _i184;
-import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/sig_v2_onchain/witness_sig_onchain.dart'
-    as _i68;
-import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/v3/witness_v3.dart'
-    as _i695;
-import 'package:polygonid_flutter_sdk/proof/libs/witnesscalc/v3_onchain/witness_v3_onchain.dart'
-    as _i602;
 import 'package:polygonid_flutter_sdk/sdk/credential.dart' as _i501;
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart' as _i335;
 import 'package:polygonid_flutter_sdk/sdk/error_handling.dart' as _i795;
@@ -379,17 +363,6 @@ extension GetItInjectableX on _i174.GetIt {
     final databaseModule = _$DatabaseModule();
     final encryptionModule = _$EncryptionModule();
     final repositoriesModule = _$RepositoriesModule();
-    gh.factory<_i318.WitnessAuthV2Lib>(() => _i318.WitnessAuthV2Lib());
-    gh.factory<_i602.WitnessV3OnchainLib>(() => _i602.WitnessV3OnchainLib());
-    gh.factory<_i184.WitnessSigV2Lib>(() => _i184.WitnessSigV2Lib());
-    gh.factory<_i695.WitnessV3Lib>(() => _i695.WitnessV3Lib());
-    gh.factory<_i896.WitnessLinkedMultiQuery10>(
-        () => _i896.WitnessLinkedMultiQuery10());
-    gh.factory<_i68.WitnessSigV2OnchainLib>(
-        () => _i68.WitnessSigV2OnchainLib());
-    gh.factory<_i569.WitnessMTPV2Lib>(() => _i569.WitnessMTPV2Lib());
-    gh.factory<_i436.WitnessMTPV2OnchainLib>(
-        () => _i436.WitnessMTPV2OnchainLib());
     gh.factory<_i502.ProverLibWrapper>(() => _i502.ProverLibWrapper());
     gh.factory<_i1039.WitnessIsolatesWrapper>(
         () => _i1039.WitnessIsolatesWrapper());

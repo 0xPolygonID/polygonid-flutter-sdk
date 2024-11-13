@@ -14,7 +14,7 @@ abstract class Iden3commRepository {
     required String authToken,
   });
 
-  Future<Uint8List> getAuthInputs(
+  Future<String> getAuthInputs(
       {required String genesisDid,
       required BigInt profileNonce,
       required String challenge,

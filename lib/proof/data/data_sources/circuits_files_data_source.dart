@@ -11,13 +11,11 @@ class CircuitsFilesDataSource {
 
   CircuitsFilesDataSource(this.directory);
 
-  Future<Uint8List> loadCircuitDatFile(String circuitId) async {
+  Future<Uint8List> loadGraphFile(String circuitId) async {
     try {
-      final circuitDatFileName = '$circuitId.dat';
-      final circuitDatFilePath = '${directory.path}/$circuitDatFileName';
-      final circuitDatFile = File(circuitDatFilePath);
-
-      return circuitDatFile.readAsBytesSync();
+      final circuitGraphFile =
+          File("packages/polygonid_flutter_sdk/assets/$circuitId.wcd");
+      return circuitGraphFile.readAsBytesSync();
     } on PathNotFoundException catch (error) {
       throw CircuitNotDownloadedException(
         circuit: circuitId,

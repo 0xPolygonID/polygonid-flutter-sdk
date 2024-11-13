@@ -43,7 +43,10 @@ dependencies:
   secp256k1: ^0.3.0
   background_downloader: ^8.5.5
   poseidon: ^0.0.1
-  flutter_rapidsnark: 0.0.1-alpha.3
+  flutter_rapidsnark:
+    path: ../flutter_rapidsnark
+  circom_witnesscalc:
+    git: git@github.com:iden3/circom-witnesscalc-flutter.git
 
 dev_dependencies:
   flutter_test:
@@ -133,3 +136,10 @@ flutter:
 
   assets:
     - lib/assets/
+    - packages/polygonid_flutter_sdk/assets/authV2.wcd
+    - packages/polygonid_flutter_sdk/assets/credentialAtomicQueryMTPV2.wcd
+    - packages/polygonid_flutter_sdk/assets/credentialAtomicQueryMTPV2OnChain.wcd
+    - packages/polygonid_flutter_sdk/assets/credentialAtomicQuerySigV2.wcd
+    - packages/polygonid_flutter_sdk/assets/credentialAtomicQuerySigV2OnChain.wcd
+    - packages/polygonid_flutter_sdk/assets/credentialAtomicQueryV3-beta.1.wcd
+    - packages/polygonid_flutter_sdk/assets/credentialAtomicQueryV3OnChain-beta.1.wcd

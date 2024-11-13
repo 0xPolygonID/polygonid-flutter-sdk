@@ -77,7 +77,7 @@ void main() {
             nonRevProof: anyNamed('nonRevProof'),
             gistProof: anyNamed('gistProof'),
             treeState: anyNamed('treeState')))
-        .thenAnswer((realInvocation) => Future.value(CommonMocks.aBytes));
+        .thenAnswer((realInvocation) => Future.value(CommonMocks.inputs));
     when(identityRepository.getAuthClaimNode(children: anyNamed('children')))
         .thenAnswer((realInvocation) => Future.value(IdentityMocks.node));
     when(smtRepository.generateProof(
@@ -96,7 +96,7 @@ void main() {
     'Given a param, when I call execute, then I expect a bytes list to be returned',
     () async {
       // When
-      expect(await useCase.execute(param: param), CommonMocks.aBytes);
+      expect(await useCase.execute(param: param), CommonMocks.inputs);
 
       // Then
       var capturedIdentity =

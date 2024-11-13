@@ -60,7 +60,7 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
       logger().i(
           'GetAuthTokenUseCase: getAuthChallengeUseCase at ${stopwatch.elapsedMilliseconds} ms');
 
-      Uint8List authInputs = await _getAuthInputsUseCase.execute(
+      final authInputs = await _getAuthInputsUseCase.execute(
         param: GetAuthInputsParam(
           authChallenge,
           param.genesisDid,
