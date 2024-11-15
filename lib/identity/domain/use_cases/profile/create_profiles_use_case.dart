@@ -9,7 +9,10 @@ class CreateProfilesParam {
   final String privateKey;
   final List<BigInt> profiles;
 
-  CreateProfilesParam({required this.privateKey, this.profiles = const []});
+  CreateProfilesParam({
+    required this.privateKey,
+    this.profiles = const [],
+  });
 }
 
 class CreateProfilesUseCase
@@ -28,23 +31,25 @@ class CreateProfilesUseCase
   Future<Map<BigInt, String>> execute({
     required CreateProfilesParam param,
   }) async {
-    return Future.wait(
-      [
-        _getPublicKeysUseCase.execute(param: param.privateKey),
-        _getCurrentEnvDidIdentifierUseCase.execute(
-            param: GetCurrentEnvDidIdentifierParam(
-                privateKey: param.privateKey, profileNonce: BigInt.zero))
-      ],
-      eagerError: true,
-    ).then((values) async {
-      String didIdentifier = values[1] as String;
-      List<String> publicKey = values[0] as List<String>;
+    return Future(() async {
+      final publicKey =
+          await _getPublicKeysUseCase.execute(param: param.privateKey);
+
+      String didIdentifier = await _getCurrentEnvDidIdentifierUseCase.execute(
+        param: GetCurrentEnvDidIdentifierParam(
+          publicKey: publicKey,
+          profileNonce: BigInt.zero,
+        ),
+      );
       Map<BigInt, String> profiles = {BigInt.zero: didIdentifier};
 
       for (BigInt profile in param.profiles) {
         String profileDid = await _getCurrentEnvDidIdentifierUseCase.execute(
-            param: GetCurrentEnvDidIdentifierParam(
-                privateKey: param.privateKey, profileNonce: profile));
+          param: GetCurrentEnvDidIdentifierParam(
+            publicKey: publicKey,
+            profileNonce: profile,
+          ),
+        );
         profiles[profile] = profileDid;
       }
 

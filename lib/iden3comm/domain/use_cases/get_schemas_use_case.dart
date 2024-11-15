@@ -15,9 +15,15 @@ class GetSchemasUseCase
       {required Iden3MessageEntity param}) async {
     if (![
       Iden3MessageType.authRequest,
-      Iden3MessageType.proofContractInvokeRequest
+      Iden3MessageType.proofContractInvokeRequest,
     ].contains(param.messageType)) {
-      return Future.error(UnsupportedIden3MsgTypeException(param.messageType));
+      return Future.error(
+        UnsupportedIden3MsgTypeException(
+          type: param.messageType,
+          errorMessage:
+              "Unsupported message type: ${param.messageType}\nExpected: ${Iden3MessageType.authRequest}, ${Iden3MessageType.proofContractInvokeRequest}",
+        ),
+      );
     }
 
     List<Map<String, dynamic>> result = [];

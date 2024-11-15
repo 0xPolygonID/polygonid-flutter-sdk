@@ -1,7 +1,11 @@
 import 'dart:convert';
 
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
+import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/assets/state.g.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
@@ -11,8 +15,9 @@ import 'package:web3dart/web3dart.dart';
 class RPCDataSource {
   /// FIXME: UC in a DS!
   final GetSelectedChainUseCase _getSelectedChainUseCase;
+  final StacktraceManager _stacktraceManager;
 
-  RPCDataSource(this._getSelectedChainUseCase);
+  RPCDataSource(this._getSelectedChainUseCase, this._stacktraceManager);
 
   /// Retrieve last state for a given identity.
   ///
@@ -42,9 +47,12 @@ class RPCDataSource {
         }
       }
       return "";
-    } catch (e) {
-      logger().e(e.toString());
+    } on PolygonIdSDKException catch (_) {
       rethrow;
+    } catch (e) {
+      _stacktraceManager.addError("Error getting state from RPC with error $e");
+      throw PolygonIdSDKException(
+          errorMessage: "Error getting state from RPC with error $e");
     }
   }
 
@@ -67,15 +75,14 @@ class RPCDataSource {
 
       logger().d(transactionParameters);
 
-      List<dynamic> result;
-
-      result = await web3Client.call(
-          contract: gistContract,
-          function: _getGistProof(gistContract),
-          params: transactionParameters);
+      final List<dynamic> result = await web3Client.call(
+        contract: gistContract,
+        function: _getGistProof(gistContract),
+        params: transactionParameters,
+      );
 
       if (result.isNotEmpty && result[0] is List && result[0].length == 8) {
-        var siblings =
+        final siblings =
             (result[0][2] as List).map((bigInt) => bigInt.toString()).toList();
 
         final String resultString = jsonEncode({
@@ -92,9 +99,13 @@ class RPCDataSource {
         return resultString;
       }
       return "";
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
     } catch (e) {
       logger().e(e.toString());
-      rethrow;
+      _stacktraceManager.addError("Error getting gist proof with error $e");
+      throw PolygonIdSDKException(
+          errorMessage: "Error getting gist proof with error $e");
     }
   }
 

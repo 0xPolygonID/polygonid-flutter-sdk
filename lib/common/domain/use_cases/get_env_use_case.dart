@@ -16,12 +16,13 @@ class GetEnvUseCase extends FutureUseCase<void, EnvEntity> {
   @override
   Future<EnvEntity> execute({dynamic param}) {
     return _configRepository.getEnv().then((env) {
-      logger().i("[GetEnvUseCase] Current env is: $env");
+      logger().d("[GetEnvUseCase] Current env is: $env");
 
       return env;
     }).catchError((error) {
       logger().e("[GetEnvUseCase] Error: $error");
       _stacktraceManager.addTrace("[GetEnvUseCase] Error: $error");
+      _stacktraceManager.addError(error.toString());
       throw error;
     });
   }

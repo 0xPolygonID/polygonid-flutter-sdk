@@ -1,15 +1,46 @@
-class SMTNotFoundException implements Exception {
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
+
+class SMTNotFoundException extends PolygonIdSDKException {
   final String storeName;
 
-  SMTNotFoundException(this.storeName);
+  SMTNotFoundException({
+    required this.storeName,
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class SMTNodeKeyAlreadyExistsException implements Exception {}
+class SMTNodeKeyAlreadyExistsException extends PolygonIdSDKException {
+  SMTNodeKeyAlreadyExistsException({
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
+}
 
-class SMTEntryIndexAlreadyExistsException implements Exception {}
+class SMTEntryIndexAlreadyExistsException extends PolygonIdSDKException {
+  SMTEntryIndexAlreadyExistsException({
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
+}
 
-class SMTReachedMaxLevelException implements Exception {}
+class SMTReachedMaxLevelException extends PolygonIdSDKException {
+  SMTReachedMaxLevelException({
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
+}
 
-class SMTInvalidNodeFoundException implements Exception {}
+class SMTInvalidNodeFoundException extends PolygonIdSDKException {
+  SMTInvalidNodeFoundException({
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
+}
 
-class SMTKeyNotFoundException implements Exception {}
+class SMTKeyNotFoundException extends PolygonIdSDKException {
+  SMTKeyNotFoundException({
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
+}

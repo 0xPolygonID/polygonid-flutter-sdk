@@ -20,13 +20,12 @@ class AddNewIdentityUseCase
 
   @override
   Future<PrivateIdentityEntity> execute({String? param}) {
-    // Get the privateKey
-    return _identityRepository
-        .getPrivateKey(secret: param)
-        // Create and save the identity
-        .then((privateKey) => _addIdentityUseCase.execute(
-            param: AddIdentityParam(privateKey: privateKey)))
-        .then((identity) {
+    return Future(() async {
+      final privateKey = await _identityRepository.getPrivateKey(secret: param);
+      final identity = await _addIdentityUseCase.execute(
+        param: AddIdentityParam(privateKey: privateKey),
+      );
+
       logger().i(
           "[AddNewIdentityUseCase] New Identity created and saved with did: ${identity.did}, for key $param");
       _stacktraceManager.addTrace(

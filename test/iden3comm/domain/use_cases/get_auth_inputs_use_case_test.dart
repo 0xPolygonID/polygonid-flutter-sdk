@@ -3,7 +3,8 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_auth_claim_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
@@ -20,7 +21,7 @@ import '../../../common/proof_mocks.dart';
 import 'get_auth_inputs_use_case_test.mocks.dart';
 
 MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
-MockGetAuthClaimUseCase getAuthClaimUseCase = MockGetAuthClaimUseCase();
+MockCredentialRepository credentialRepository = MockCredentialRepository();
 MockSignMessageUseCase signMessageUseCase = MockSignMessageUseCase();
 MockGetGistMTProofUseCase getGistProofUseCase = MockGetGistMTProofUseCase();
 MockGetLatestStateUseCase getLatestStateUseCase = MockGetLatestStateUseCase();
@@ -33,11 +34,12 @@ MockStacktraceManager stacktraceManager = MockStacktraceManager();
 GetAuthInputsParam param = GetAuthInputsParam(CommonMocks.challenge,
     CommonMocks.did, CommonMocks.nonce, CommonMocks.privateKey);
 var claims = [CommonMocks.authClaim, CommonMocks.authClaim];
+var getAuthInputsException = GetAuthInputsException(errorMessage: "error");
 
 // Tested instance
 GetAuthInputsUseCase useCase = GetAuthInputsUseCase(
   getIdentityUseCase,
-  getAuthClaimUseCase,
+  credentialRepository,
   signMessageUseCase,
   getGistProofUseCase,
   getLatestStateUseCase,
@@ -49,7 +51,7 @@ GetAuthInputsUseCase useCase = GetAuthInputsUseCase(
 
 @GenerateMocks([
   GetIdentityUseCase,
-  GetAuthClaimUseCase,
+  CredentialRepository,
   SignMessageUseCase,
   GetGistMTProofUseCase,
   GetLatestStateUseCase,
@@ -64,7 +66,7 @@ void main() {
         .thenAnswer((realInvocation) => Future.value(IdentityMocks.identity));
     when(signMessageUseCase.execute(param: anyNamed("param")))
         .thenAnswer((realInvocation) => Future.value(CommonMocks.signature));
-    when(getAuthClaimUseCase.execute(param: anyNamed("param")))
+    when(credentialRepository.getAuthClaim(publicKey: anyNamed("publicKey")))
         .thenAnswer((realInvocation) => Future.value(claims));
     when(iden3commRepository.getAuthInputs(
             genesisDid: anyNamed('genesisDid'),
@@ -78,8 +80,6 @@ void main() {
             gistProof: anyNamed('gistProof'),
             treeState: anyNamed('treeState')))
         .thenAnswer((realInvocation) => Future.value(CommonMocks.aBytes));
-    when(getAuthClaimUseCase.execute(param: anyNamed('param')))
-        .thenAnswer((realInvocation) => Future.value(claims));
     when(identityRepository.getAuthClaimNode(children: anyNamed('children')))
         .thenAnswer((realInvocation) => Future.value(IdentityMocks.node));
     when(smtRepository.generateProof(
@@ -145,11 +145,11 @@ void main() {
     () async {
       // Given
       when(getLatestStateUseCase.execute(param: anyNamed('param')))
-          .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
+          .thenAnswer((realInvocation) => Future.error(getAuthInputsException));
 
       // When
       await expectLater(
-          useCase.execute(param: param), throwsA(CommonMocks.exception));
+          useCase.execute(param: param), throwsA(getAuthInputsException));
 
       // Then
       var capturedIdentity =

@@ -1,9 +1,10 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/data/data_sources/secure_identity_storage_data_source.dart';
-//import 'package:polygonid_flutter_sdk/common/utils/encrypt_codec.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+
 import 'package:polygonid_flutter_sdk/common/utils/encrypt_sembast_codec.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/identity_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
@@ -42,32 +43,41 @@ class IdentityStoreRefWrapper {
 class StorageIdentityDataSource extends SecureIdentityStorageDataSource {
   final Database _database;
   final IdentityStoreRefWrapper _storeRefWrapper;
+  final StacktraceManager _stacktraceManager;
 
-  StorageIdentityDataSource(this._database, this._storeRefWrapper);
+  StorageIdentityDataSource(
+    this._database,
+    this._storeRefWrapper,
+    this._stacktraceManager,
+  );
 
   //FIXME: mutualize [getIdentities] and [getIdentity]
-  Future<List<IdentityDTO>> getIdentities({Filter? filter}) {
+  Future<List<IdentityEntity>> getIdentities({Filter? filter}) {
     return _storeRefWrapper
         .find(_database, finder: Finder(filter: filter))
         .then((snapshots) => snapshots
-            .map((snapshot) => IdentityDTO.fromJson(snapshot.value))
+            .map((snapshot) => IdentityEntity.fromJson(snapshot.value))
             .toList());
   }
 
-  Future<IdentityDTO> getIdentity({required String did}) {
+  Future<IdentityEntity> getIdentity({required String did}) {
     return _storeRefWrapper.get(_database, did).then((storedValue) {
       if (storedValue == null) {
-        throw UnknownIdentityException(did);
+        _stacktraceManager.addError("Identity not found");
+        throw UnknownIdentityException(
+          did: did,
+          errorMessage: "Identity not found",
+        );
       }
 
-      return IdentityDTO.fromJson(storedValue);
+      return IdentityEntity.fromJson(storedValue);
     });
   }
 
   /// As we support only one identity at the moment, we need to maintain
   /// the stored current did up to date
   Future<void> storeIdentity(
-      {required String did, required IdentityDTO identity}) {
+      {required String did, required IdentityEntity identity}) {
     return _database.transaction((transaction) => storeIdentityTransact(
         transaction: transaction, did: did, identity: identity));
   }
@@ -75,7 +85,7 @@ class StorageIdentityDataSource extends SecureIdentityStorageDataSource {
   Future<void> storeIdentityTransact(
       {required DatabaseClient transaction,
       required String did,
-      required IdentityDTO identity}) async {
+      required IdentityEntity identity}) async {
     await _storeRefWrapper.put(transaction, did, identity.toJson());
   }
 

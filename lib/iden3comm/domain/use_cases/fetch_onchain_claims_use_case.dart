@@ -1,10 +1,17 @@
 import 'package:polygonid_flutter_sdk/assets/onchain_non_merkelized_issuer_base.g.dart';
 import 'package:polygonid_flutter_sdk/assets/get_issuer_id_interface.g.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/cache_credential_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/onchain_offer_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/did_profile_info_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_onchain_claim_use_case.dart';
@@ -27,12 +34,14 @@ class FetchOnchainClaimsParam {
   final String genesisDid;
   final BigInt profileNonce;
   final String privateKey;
+  final String? chainId;
 
   FetchOnchainClaimsParam({
     required this.contractAddress,
     required this.genesisDid,
     required this.profileNonce,
     required this.privateKey,
+    this.chainId,
   });
 }
 
@@ -89,11 +98,12 @@ class FetchOnchainClaimsUseCase
       final chain = await _getSelectedChainUseCase.execute();
 
       final profileDid = await _getDidIdentifierUseCase.execute(
-        param: GetDidIdentifierParam(
+        param: GetDidIdentifierParam.withPrivateKey(
           privateKey: param.privateKey,
           blockchain: chain.blockchain,
           network: chain.network,
           profileNonce: param.profileNonce,
+          method: chain.method,
         ),
       );
 
@@ -117,10 +127,12 @@ class FetchOnchainClaimsUseCase
     String profileDid,
     FetchOnchainClaimsParam param,
   ) async {
-    final chain = await _getSelectedChainUseCase.execute();
     final env = await _getEnvUseCase.execute();
+    final chain = param.chainId != null
+        ? env.chainConfigs[param.chainId!]
+        : await _getSelectedChainUseCase.execute();
 
-    final web3Client = getItSdk<Web3Client>(param1: chain.rpcUrl);
+    final web3Client = getItSdk<Web3Client>(param1: chain!.rpcUrl);
     final deployedContract = await _localContractFilesDataSource
         .loadOnchainNonMerkelizedIssuerBaseContract(contractAddress);
 
@@ -147,8 +159,9 @@ class FetchOnchainClaimsUseCase
     if (!supportsInterfaceCheck ||
         !supportsNonMerklizedIssuerInterface ||
         !supportsGetIssuerIdInterface) {
-      throw Exception(
-          "Contract at address $contractAddress does not support non-merkelized issuer interface");
+      throw FetchClaimException(
+          errorMessage:
+              "Contract at address $contractAddress does not support non-merkelized issuer interface");
     }
 
     final issuerIdInt = await getIssuerId.getId();
@@ -173,11 +186,12 @@ class FetchOnchainClaimsUseCase
     }
 
     final did = await _getDidIdentifierUseCase.execute(
-      param: GetDidIdentifierParam(
+      param: GetDidIdentifierParam.withPrivateKey(
         privateKey: param.privateKey,
         blockchain: chain.blockchain,
         network: chain.network,
         profileNonce: nonce,
+        method: chain.method,
       ),
     );
 
@@ -200,18 +214,26 @@ class FetchOnchainClaimsUseCase
             contractAddress: contractAddress,
             userId: BigInt.parse(userId),
             credentialId: credentialId,
+            chainId: param.chainId,
             adapterVersion: adapterVersion,
             skipInterfaceSupportCheck: true,
           ),
         );
 
         claims.add(claim);
+      } on PolygonIdSDKException catch (_) {
+        rethrow;
       } catch (e) {
         logger().e(
             "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e");
         _stacktraceManager.addTrace(
             "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e");
-        rethrow;
+        _stacktraceManager.addError(
+            "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e");
+        throw FetchClaimException(
+          errorMessage: "Error fetching claim",
+          error: e,
+        );
       }
     }
 

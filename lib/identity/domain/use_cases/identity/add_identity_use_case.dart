@@ -41,14 +41,19 @@ class AddIdentityUseCase
     // Create the [IdentityEntity]
     PrivateIdentityEntity identity = await _createIdentityUseCase.execute(
       param: CreateIdentityParam(
-          privateKey: param.privateKey, profiles: param.profiles),
+        privateKey: param.privateKey,
+        profiles: param.profiles,
+      ),
     );
     try {
       // Check if identity is already stored (already added)
       await _identityRepository.getIdentity(genesisDid: identity.did);
 
       // If there is already one, we throw
-      throw IdentityAlreadyExistsException(identity.did);
+      throw IdentityAlreadyExistsException(
+        did: identity.did,
+        errorMessage: "Identity already exists with did: ${identity.did}",
+      );
     } on UnknownIdentityException {
       // If identity doesn't exist, we save it
       await _identityRepository.storeIdentity(identity: identity);

@@ -107,7 +107,7 @@ class Iden3commMocks {
 {
   "id": "4dd6479b-99b6-405c-ba9e-c7b18d251a5e",
   "typ": "application/iden3comm-plain-json",
-  "type": "https://iden3-communication.io/credentials/1.0/fetch-request",
+  "type": "https://iden3-communication.io/credentials/1.0/issuance-response",
   "thid": "4dd6479b-99b6-405c-ba9e-c7b18d251a5e",
   "from": "1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ",
   "to": "1244GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ",
@@ -139,7 +139,7 @@ class Iden3commMocks {
 {
   "id": "1",
   "typ": "theTyp",
-  "type": "theType",
+  "type": "https://iden3-communication.io/credentials/1.0/offer",
   "thid": "theThid",
   "from": "theFrom",
   "body": $offerRequestBodyJson
@@ -171,7 +171,7 @@ class Iden3commMocks {
 {
   "id": "theId",
   "typ": "theTyp",
-  "type": "theType",
+  "type": "https://iden3-communication.io/proofs/1.0/contract-invoke-request",
   "body": $contractFunctionCallRequestBodyJson
 }
 ''';
@@ -258,10 +258,8 @@ class Iden3commMocks {
   ''';
 
   static List<ProofRequestEntity> proofRequestList = [
-    ProofRequestEntity(Iden3commMocks.proofScopeRequest, mockContext,
-        ProofQueryParamEntity(CommonMocks.field, CommonMocks.intValues, 3)),
-    ProofRequestEntity(Iden3commMocks.proofScopeRequest, mockContext,
-        ProofQueryParamEntity(CommonMocks.field, CommonMocks.intValues, 2)),
+    ProofRequestEntity(Iden3commMocks.proofScopeRequest, mockContext),
+    ProofRequestEntity(Iden3commMocks.proofScopeRequest, mockContext),
   ];
 
   static Iden3commProofEntity iden3commProof = Iden3commProofEntity(
@@ -294,14 +292,16 @@ class Iden3commMocks {
 
   static List<InteractionEntity> interactionEntities = [
     InteractionEntity(
-        id: CommonMocks.intValues[0].toString(),
-        from: CommonMocks.did,
-        genesisDid: CommonMocks.did,
-        profileNonce: CommonMocks.nonce,
-        type: InteractionType.offer,
-        timestamp: 0,
-        message: CommonMocks.message,
-        state: InteractionState.opened),
+      id: CommonMocks.intValues[0].toString(),
+      from: CommonMocks.did,
+      genesisDid: CommonMocks.did,
+      profileNonce: CommonMocks.nonce,
+      type: InteractionType.offer,
+      timestamp: 0,
+      message: CommonMocks.message,
+      state: InteractionState.opened,
+      to: CommonMocks.did,
+    ),
     InteractionEntity(
       id: CommonMocks.intValues[1].toString(),
       from: CommonMocks.did,
@@ -311,15 +311,18 @@ class Iden3commMocks {
       timestamp: 0,
       message: CommonMocks.message,
       state: InteractionState.received,
+      to: CommonMocks.did,
     ),
     InteractionEntity(
-        id: CommonMocks.intValues[2].toString(),
-        from: CommonMocks.did,
-        genesisDid: CommonMocks.did,
-        profileNonce: CommonMocks.nonce,
-        type: InteractionType.offer,
-        timestamp: 0,
-        message: CommonMocks.message,
-        state: InteractionState.accepted),
+      id: CommonMocks.intValues[2].toString(),
+      from: CommonMocks.did,
+      genesisDid: CommonMocks.did,
+      profileNonce: CommonMocks.nonce,
+      type: InteractionType.offer,
+      timestamp: 0,
+      message: CommonMocks.message,
+      state: InteractionState.accepted,
+      to: CommonMocks.did,
+    ),
   ];
 }

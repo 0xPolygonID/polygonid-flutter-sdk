@@ -51,7 +51,7 @@ Map<String, dynamic> _$ClaimInfoDTOToJson(ClaimInfoDTO instance) =>
 CredentialStatusDTO _$CredentialStatusDTOFromJson(Map<String, dynamic> json) =>
     CredentialStatusDTO(
       json['id'] as String,
-      json['revocationNonce'] as int?,
+      (json['revocationNonce'] as num?)?.toInt(),
       $enumDecode(_$CredentialStatusTypeEnumMap, json['type']),
       json['statusIssuer'] == null
           ? null

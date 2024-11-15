@@ -45,7 +45,10 @@ GetIden3commProofsParam param = GetIden3commProofsParam(
   privateKey: CommonMocks.privateKey,
 );
 
-var exception = ProofsNotFoundException([]);
+var exception = ProofsNotCreatedException(
+  errorMessage: 'Error',
+  proofRequests: [],
+);
 
 // Mocked dependencies
 MockProofRepository proofRepository = MockProofRepository();

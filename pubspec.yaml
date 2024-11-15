@@ -1,6 +1,6 @@
 name: polygonid_flutter_sdk
 description: PolygonID Flutter SDK (https://polygon.technology/polygon-id). This plugin provides a cross-platform tool (iOS, Android) to integrate the PolygonID solution.
-version: 2.3.1
+version: 2.3.5
 homepage: https://polygon.technology/polygon-id
 repository: https://github.com/0xPolygonID/polygonid-flutter-sdk
 issue_tracker: https://github.com/0xPolygonID/polygonid-flutter-sdk/issues
@@ -12,35 +12,37 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^0.13.6
+  http: ">=1.0.0"
   ffi: ^2.1.2
   hex: ^0.2.0
-  web3dart: ^2.5.1
-  web_socket_channel: ^2.2.0
-  ffigen: ^11.0.0
+  web3dart: ">=2.6.1"
+  web_socket_channel: ">=2.2.0"
+  ffigen: ^14.0.1
   json_annotation: ^4.6.0
   equatable: ^2.0.3
   crypto: ^3.0.1
   get_it: ^7.2.0
   injectable: ^2.1.2
-  # Path provider 2.0.12 is giving problems with iOS, forced to use 2.0.11
   path_provider: ^2.0.15
-  archive: ^3.3.7
+  archive: ^3.5.1
   sembast: 3.5.0+1
-  fast_base58: 0.2.1
   uuid: ^3.0.6
   encrypt: 5.0.3
   pointycastle: 3.7.3
-  package_info_plus: ^4.2.0
+  package_info_plus: ">=7.0.0"
   bip32: ^2.0.0
-  dio: ^5.3.0
-  dio_cache_interceptor: ^3.4.2
-  dio_cache_interceptor_hive_store: ^3.2.1
+  dio: ^5.4.3+1
+  dio_cache_interceptor: ^3.5.0
+  dio_cache_interceptor_hive_store: ^3.2.2
   logger: ^2.0.1
-  intl: ^0.18.1
+  intl: ">=0.18.1"
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   ninja_prime: ^2.0.0
+  ed25519_edwards: ^0.3.1
+  secp256k1: ^0.3.0
+  background_downloader: ^8.5.5
+  poseidon: ^0.0.1
 
 dev_dependencies:
   flutter_test:
@@ -58,12 +60,12 @@ dev_dependencies:
   web3dart_builders: 0.0.7
 
 ffigen:
-  name: NativeWitnessLinkedMultiQuery10Lib
-  description: Bindings to `ios/Classes/witnesscalc_linkedMultiQuery10.h`.
-  output: 'lib/proof/libs/witnesscalc/linked_multi_query_10/native_witness_linked_multi_query_10.dart'
-  headers:
-      entry-points:
-      - 'ios/Classes/witnesscalc_linkedMultiQuery10.h'
+  #name: NativeWitnessLinkedMultiQuery10Lib
+  #description: Bindings to `ios/Classes/witnesscalc_linkedMultiQuery10.h`.
+  #output: 'lib/proof/libs/witnesscalc/linked_multi_query_10/native_witness_linked_multi_query_10.dart'
+  #headers:
+  #    entry-points:
+  #    - 'ios/Classes/witnesscalc_linkedMultiQuery10.h'
 
   #name: NativeWitnessV3OnchainLib
   #description: Bindings to `ios/Classes/witnesscalc_credentialAtomicQueryV3OnChain.h`.
@@ -79,12 +81,12 @@ ffigen:
   #  entry-points:
   #    - 'ios/Classes/witnesscalc_credentialAtomicQueryV3.h'
 
-  #name: NativePolygonIdCoreLib
-  #description: Bindings to `ios/Classes/libpolygonid.h`.
-  #output: 'lib/common/libs/polygonidcore/native_polygonidcore.dart'
-  #headers:
-  #  entry-points:
-  #    - 'ios/Classes/libpolygonid.h'
+  name: NativePolygonIdCoreLib
+  description: Bindings to `ios/Classes/libpolygonid.h`.
+  output: 'lib/common/libs/polygonidcore/native_polygonidcore.dart'
+  headers:
+    entry-points:
+      - 'ios/Classes/libpolygonid.h'
 
   # name: WitnessMtpLib
   # description: Bindings to `ios/Classes/witnesscalc_credentialAtomicQueryMTPV2.h`.

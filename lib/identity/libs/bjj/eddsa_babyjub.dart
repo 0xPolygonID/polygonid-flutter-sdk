@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:hex/hex.dart';
+import 'package:poseidon/poseidon.dart';
 
 import '../../../common/utils/hex_utils.dart';
 import '../../../common/utils/uint8_list_utils.dart';
@@ -94,9 +95,15 @@ class PublicKey {
     sigList.add(signature.r8[1].toInt());
     sigList.add(signature.s.toInt());
     return bjjLib.verifyPoseidon(
-        Uint8ArrayUtils.uint8ListToString(Uint8List.fromList(pointList)),
-        Uint8ArrayUtils.uint8ListToString(Uint8List.fromList(sigList)),
-        messageHash);
+      Uint8ArrayUtils.uint8ListToString(Uint8List.fromList(pointList)),
+      Uint8ArrayUtils.uint8ListToString(Uint8List.fromList(sigList)),
+      messageHash,
+    );
+  }
+
+  String hex() {
+    BabyjubjubLib bjjLib = BabyjubjubLib();
+    return bjjLib.packPoint(p[0].toString(), p[1].toString());
   }
 }
 
@@ -137,16 +144,18 @@ class PrivateKey {
         bjjLib.signPoseidon(HexUtils.bytesToHex(sk), messageHash.toString());
     return signature;
   }
-}
 
-String packSignature(Uint8List signature) {
-  BabyjubjubLib bjjLib = BabyjubjubLib();
-  final sigString = Uint8ArrayUtils.uint8ListToString(signature);
-  return bjjLib.packSignature(sigString);
+  String hex() => HexUtils.bytesToHex(sk);
 }
 
 String hashPoseidon(
-    String claimsTreeRoot, String revocationTree, String rootsTreeRoot) {
-  BabyjubjubLib bjjLib = BabyjubjubLib();
-  return bjjLib.hashPoseidon(claimsTreeRoot, revocationTree, rootsTreeRoot);
+  String claimsTreeRoot,
+  String revocationTree,
+  String rootsTreeRoot,
+) {
+  return poseidon3([
+    BigInt.parse(claimsTreeRoot),
+    BigInt.parse(revocationTree),
+    BigInt.parse(rootsTreeRoot),
+  ]).toString();
 }

@@ -11,19 +11,18 @@ class LibPolygonIdCoreIdentityDataSource {
     this._polygonIdCoreIdentity,
   );
 
-  String calculateGenesisId(
-    String claimsTreeRoot,
-    String blockchain,
-    String network,
-    Map<String, dynamic> config,
-  ) {
+  String calculateGenesisId({
+    required String claimsTreeRoot,
+    required String blockchain,
+    required String network,
+    required Map<String, dynamic> config,
+    String? method,
+  }) {
     String input = jsonEncode({
       "claimsTreeRoot": claimsTreeRoot,
-      //"8174871235721986756013575194888048894328426483724665491825528183806540196001",
       "blockchain": blockchain,
-      //"polygon",
       "network": network,
-      //"mumbai"
+      if (method != null) "method": method,
     });
 
     String cfg = jsonEncode(config);

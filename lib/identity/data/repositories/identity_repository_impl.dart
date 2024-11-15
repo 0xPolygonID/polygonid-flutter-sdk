@@ -1,11 +1,12 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:encrypt/encrypt.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
@@ -13,22 +14,20 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/rpc_data_source
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/secure_storage_profiles_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key/private_key_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/id_description.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/node_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/encryption_key_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/rhs_node_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/identity_dto_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/node_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/rhs_node_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
+import 'package:poseidon/poseidon.dart';
 
 class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
@@ -36,17 +35,13 @@ class IdentityRepositoryImpl extends IdentityRepository {
   final StorageIdentityDataSource _storageIdentityDataSource;
   final RPCDataSource _rpcDataSource;
   final LocalContractFilesDataSource _localContractFilesDataSource;
-  final LibBabyJubJubDataSource _libBabyJubJubDataSource;
   final LibPolygonIdCoreIdentityDataSource _libPolygonIdCoreIdentityDataSource;
   final EncryptionDbDataSource _encryptionDbDataSource;
   final DestinationPathDataSource _destinationPathDataSource;
   final HexMapper _hexMapper;
   final PrivateKeyMapper _privateKeyMapper;
-  final IdentityDTOMapper _identityDTOMapper;
   final RhsNodeMapper _rhsNodeMapper;
   final StateIdentifierMapper _stateIdentifierMapper;
-  final NodeMapper _nodeMapper;
-  final EncryptionKeyMapper _encryptionKeyMapper;
   final SecureStorageProfilesDataSource _secureStorageProfilesDataSource;
 
   IdentityRepositoryImpl(
@@ -55,17 +50,13 @@ class IdentityRepositoryImpl extends IdentityRepository {
     this._storageIdentityDataSource,
     this._rpcDataSource,
     this._localContractFilesDataSource,
-    this._libBabyJubJubDataSource,
     this._libPolygonIdCoreIdentityDataSource,
     this._encryptionDbDataSource,
     this._destinationPathDataSource,
     this._hexMapper,
     this._privateKeyMapper,
-    this._identityDTOMapper,
     this._rhsNodeMapper,
     this._stateIdentifierMapper,
-    this._nodeMapper,
-    this._encryptionKeyMapper,
     this._secureStorageProfilesDataSource,
   );
 
@@ -77,45 +68,55 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<List<String>> getPublicKeys({required privateKey}) {
-    return _walletDataSource
-        .getWallet(privateKey: _hexMapper.mapTo(privateKey))
-        .then((wallet) => wallet.publicKey);
+  Future<List<String>> getPublicKeys({required String privateKey}) async {
+    final wallet = await _walletDataSource.getWallet(
+      privateKey: _hexMapper.mapTo(privateKey),
+    );
+    final pubKeys = wallet.publicKey;
+    return pubKeys;
   }
 
   @override
-  Future<NodeEntity> getAuthClaimNode({required List<String> children}) async {
-    String hashIndex = await _libBabyJubJubDataSource.hashPoseidon4(
-      children[0],
-      children[1],
-      children[2],
-      children[3],
+  Future<NodeEntity> getAuthClaimNode({required List<String> children}) {
+    BigInt hashIndex = poseidon4([
+      BigInt.parse(children[0]),
+      BigInt.parse(children[1]),
+      BigInt.parse(children[2]),
+      BigInt.parse(children[3]),
+    ]);
+    BigInt hashValue = poseidon4([
+      BigInt.parse(children[4]),
+      BigInt.parse(children[5]),
+      BigInt.parse(children[6]),
+      BigInt.parse(children[7]),
+    ]);
+    BigInt hashClaimNode = poseidon3([
+      hashIndex,
+      hashValue,
+      BigInt.one,
+    ]);
+    NodeEntity authClaimNode = NodeEntity(
+      children: [
+        HashEntity.fromBigInt(hashIndex),
+        HashEntity.fromBigInt(hashValue),
+        HashEntity.fromBigInt(BigInt.one),
+      ],
+      hash: HashEntity.fromBigInt(hashClaimNode),
+      type: NodeType.leaf,
     );
-    String hashValue = await _libBabyJubJubDataSource.hashPoseidon4(
-      children[4],
-      children[5],
-      children[6],
-      children[7],
-    );
-    String hashClaimNode = await _libBabyJubJubDataSource.hashPoseidon3(
-        hashIndex, hashValue, BigInt.one.toString());
-    NodeDTO authClaimNode = NodeDTO(
-        children: [
-          HashDTO.fromBigInt(BigInt.parse(hashIndex)),
-          HashDTO.fromBigInt(BigInt.parse(hashValue)),
-          HashDTO.fromBigInt(BigInt.one),
-        ],
-        hash: HashDTO.fromBigInt(BigInt.parse(hashClaimNode)),
-        type: NodeTypeDTO.leaf);
-    return _nodeMapper.mapFrom(authClaimNode);
+    return Future.value(authClaimNode);
   }
 
   @override
   Future<void> storeIdentity({required IdentityEntity identity}) {
-    return Future.value(_identityDTOMapper.mapTo(identity)).then((dto) =>
-        _storageIdentityDataSource
-            .storeIdentity(did: identity.did, identity: dto)
-            .catchError((error) => throw IdentityException(error)));
+    return _storageIdentityDataSource
+        .storeIdentity(did: identity.did, identity: identity)
+        .catchError(
+          (error) => throw IdentityException(
+            errorMessage: "Error storing identity with error: $error",
+            error: error,
+          ),
+        );
   }
 
   /// Get an [IdentityEntity] from an identifier
@@ -123,20 +124,23 @@ class IdentityRepositoryImpl extends IdentityRepository {
   /// Throws an [UnknownIdentityException] if not found.
   @override
   Future<IdentityEntity> getIdentity({required String genesisDid}) {
-    return _storageIdentityDataSource
-        .getIdentity(did: genesisDid)
-        .then((dto) => _identityDTOMapper.mapFrom(dto))
-        .catchError((error) => throw IdentityException(error),
-            test: (error) => error is! UnknownIdentityException);
+    return _storageIdentityDataSource.getIdentity(did: genesisDid).catchError(
+          (error) => throw IdentityException(
+            errorMessage: "Error getting identity with error: $error",
+            error: error,
+          ),
+          test: (error) => error is! UnknownIdentityException,
+        );
   }
 
   @override
   Future<List<IdentityEntity>> getIdentities() {
-    return _storageIdentityDataSource
-        .getIdentities()
-        .then((dtos) =>
-            dtos.map((dto) => _identityDTOMapper.mapFrom(dto)).toList())
-        .catchError((error) => throw IdentityException(error));
+    return _storageIdentityDataSource.getIdentities().catchError(
+          (error) => throw IdentityException(
+            errorMessage: "Error getting identities with error: $error",
+            error: error,
+          ),
+        );
   }
 
   @override
@@ -149,10 +153,22 @@ class IdentityRepositoryImpl extends IdentityRepository {
   /// Return a signature in hexadecimal format
   @override
   Future<String> signMessage(
-      {required String privateKey, required String message}) {
-    return _walletDataSource
-        .signMessage(privateKey: _hexMapper.mapTo(privateKey), message: message)
-        .catchError((error) => throw IdentityException(error));
+      {required String privateKey, required String message}) async {
+    try {
+      final Uint8List hexPrivateKey = _hexMapper.mapTo(privateKey);
+      final String signedMessage = await _walletDataSource.signMessage(
+        privateKey: hexPrivateKey,
+        message: message,
+      );
+      return signedMessage;
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
+    } catch (error) {
+      throw IdentityException(
+        errorMessage: "Error signing message with error: $error",
+        error: error,
+      );
+    }
   }
 
   @override
@@ -160,17 +176,33 @@ class IdentityRepositoryImpl extends IdentityRepository {
       {required String identifier, required String contractAddress}) {
     return _localContractFilesDataSource
         .loadStateContract(contractAddress)
-        .then((contract) => _rpcDataSource
-            .getState(_stateIdentifierMapper.mapTo(identifier), contract)
-            .catchError((error) => throw FetchIdentityStateException(error)));
+        .then(
+          (contract) => _rpcDataSource
+              .getState(_stateIdentifierMapper.mapTo(identifier), contract)
+              .catchError(
+                (error) => throw FetchIdentityStateException(
+                  errorMessage: "Error fetching state with error: $error",
+                  error: error,
+                ),
+              ),
+        );
   }
 
   @override
-  Future<RhsNodeEntity> getStateRoots({required String url}) {
-    return _remoteIdentityDataSource
-        .fetchStateRoots(url: url)
-        .then((dto) => _rhsNodeMapper.mapFrom(dto))
-        .catchError((error) => throw FetchStateRootsException(error));
+  Future<RhsNodeEntity> getStateRoots({required String url}) async {
+    try {
+      final RhsNodeDTO rhsNodeDTO =
+          await _remoteIdentityDataSource.fetchStateRoots(url: url);
+      RhsNodeEntity rhsNodeEntity = _rhsNodeMapper.mapFrom(rhsNodeDTO);
+      return rhsNodeEntity;
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
+    } catch (error) {
+      throw FetchStateRootsException(
+        errorMessage: "Error fetching state roots with error: $error",
+        error: error,
+      );
+    }
   }
 
   @override
@@ -181,7 +213,13 @@ class IdentityRepositoryImpl extends IdentityRepository {
       Map<String, dynamic>? cachedNonRevProof}) {
     return _remoteIdentityDataSource
         .getNonRevocationProof(identityState, nonce, baseUrl, cachedNonRevProof)
-        .catchError((error) => throw NonRevProofException(error));
+        .catchError(
+          (error) => throw NonRevProofException(
+            errorMessage:
+                "Error fetching non revocation proof with error: $error",
+            error: error,
+          ),
+        );
   }
 
   @override
@@ -191,14 +229,16 @@ class IdentityRepositoryImpl extends IdentityRepository {
     required String claimsRoot,
     required BigInt profileNonce,
     required EnvConfigEntity config,
+    String? method,
   }) {
     try {
       // Get the genesis id
       final genesisDid = _libPolygonIdCoreIdentityDataSource.calculateGenesisId(
-        claimsRoot,
-        blockchain,
-        network,
-        config.toJson(),
+        claimsTreeRoot: claimsRoot,
+        blockchain: blockchain,
+        network: network,
+        config: config.toJson(),
+        method: method,
       );
 
       if (profileNonce == GENESIS_PROFILE_NONCE) {
@@ -239,7 +279,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
     Map<String, Object?> exportableDb = await _storageIdentityDataSource
         .getIdentityDb(did: did, privateKey: privateKey);
 
-    Key key = _encryptionKeyMapper.mapFrom(privateKey);
+    final key = Key.fromBase16(privateKey);
 
     return _encryptionDbDataSource.encryptData(
       data: exportableDb,
@@ -253,7 +293,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
     required String privateKey,
     required String encryptedDb,
   }) async {
-    Key key = _encryptionKeyMapper.mapFrom(privateKey);
+    final key = Key.fromBase16(privateKey);
 
     Map<String, Object?> decryptedDb = _encryptionDbDataSource.decryptData(
       encryptedData: encryptedDb,

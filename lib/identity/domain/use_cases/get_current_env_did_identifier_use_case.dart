@@ -6,11 +6,11 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 
 class GetCurrentEnvDidIdentifierParam {
-  final String privateKey;
+  final List<String> publicKey;
   final BigInt profileNonce;
 
   GetCurrentEnvDidIdentifierParam({
-    required this.privateKey,
+    required this.publicKey,
     required this.profileNonce,
   });
 }
@@ -29,16 +29,19 @@ class GetCurrentEnvDidIdentifierUseCase
 
   @override
   Future<String> execute({required GetCurrentEnvDidIdentifierParam param}) {
-    return _getSelectedChainUseCase
-        .execute()
-        .then((chain) => _getDidIdentifierUseCase.execute(
-                param: GetDidIdentifierParam(
-              privateKey: param.privateKey,
-              blockchain: chain.blockchain,
-              network: chain.network,
-              profileNonce: param.profileNonce,
-            )))
-        .then((did) {
+    return Future(() async {
+      final chain = await _getSelectedChainUseCase.execute();
+
+      final did = await _getDidIdentifierUseCase.execute(
+        param: GetDidIdentifierParam(
+          publicKey: param.publicKey,
+          blockchain: chain.blockchain,
+          network: chain.network,
+          profileNonce: param.profileNonce,
+          method: chain.method,
+        ),
+      );
+
       logger().i("[GetCurrentEnvDidIdentifierUseCase] did: $did");
       _stacktraceManager
           .addTrace("[GetCurrentEnvDidIdentifierUseCase] did: $did");

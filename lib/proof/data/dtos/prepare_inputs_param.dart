@@ -1,4 +1,4 @@
-import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 
 enum PrepareInputsType { auth, mtp, sig }
@@ -8,9 +8,9 @@ class PrepareInputsParam {
   final String did;
   final int profileNonce;
   final List<String> authClaim;
-  final MTProofDTO incProof;
-  final MTProofDTO nonRevProof;
-  final GistMTProofDTO gistProof;
+  final MTProofEntity incProof;
+  final MTProofEntity nonRevProof;
+  final GistMTProofEntity gistProof;
   final Map<String, dynamic> treeState;
   final String challenge;
   final String signature;

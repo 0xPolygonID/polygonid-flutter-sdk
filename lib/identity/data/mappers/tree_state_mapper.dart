@@ -6,9 +6,9 @@ class TreeStateMapper extends ToMapper<Map<String, dynamic>, TreeStateEntity> {
   Map<String, dynamic> mapTo(TreeStateEntity to) {
     return {
       "state": to.hash,
-      "claimsRoot": to.claimsTree.data,
-      "revocationRoot": to.revocationTree.data,
-      "rootOfRoots": to.rootsTree.data
+      "claimsRoot": to.claimsTree.string(),
+      "revocationRoot": to.revocationTree.string(),
+      "rootOfRoots": to.rootsTree.string(),
     };
   }
 }

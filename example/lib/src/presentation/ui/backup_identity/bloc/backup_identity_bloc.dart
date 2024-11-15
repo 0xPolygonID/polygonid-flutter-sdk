@@ -39,6 +39,7 @@ class BackupIdentityBloc
       privateKey: privateKey,
       blockchain: chainConfigEntity.blockchain,
       network: chainConfigEntity.network,
+      method: chainConfigEntity.method,
     );
 
     if (genesisDid.isEmpty) {

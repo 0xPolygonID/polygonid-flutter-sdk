@@ -25,22 +25,14 @@ https://iden3-communication.io/credentials/0.1/proposal
 */
 class CredentialProposal extends Iden3MessageEntity<CredentialProposalBody> {
   CredentialProposal({
-    required String id,
-    required String typ,
-    required String type,
-    required String thid,
-    required CredentialProposalBody body,
-    required String from,
-    required String to,
-  }) : super(
-          id: id,
-          typ: typ,
-          type: type,
-          thid: thid,
-          body: body,
-          from: from,
-          to: to,
-        );
+    required super.id,
+    required super.typ,
+    required super.type,
+    required super.thid,
+    required super.body,
+    required super.from,
+    required super.to,
+  }) : super(messageType: Iden3MessageType.credentialProposal);
 
   factory CredentialProposal.fromJson(Map<String, dynamic> json) {
     return CredentialProposal(

@@ -14,7 +14,7 @@ AuthBodyResponseDTO _$AuthBodyResponseDTOFromJson(Map<String, dynamic> json) =>
               json['did_doc'] as Map<String, dynamic>),
       message: json['message'] as String?,
       scope: (json['scope'] as List<dynamic>?)
-          ?.map((e) => Iden3commProofDTO.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => Iden3commProofEntity.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 

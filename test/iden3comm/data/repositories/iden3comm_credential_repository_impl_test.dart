@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/proof_request_filters_mapper.dart';
@@ -21,18 +22,21 @@ MockRemoteIden3commDataSource remoteIden3commDataSource =
 MockClaimMapper claimMapper = MockClaimMapper();
 MockProofRequestFiltersMapper proofRequestFiltersMapper =
     MockProofRequestFiltersMapper();
+MockStacktraceManager stacktraceManager = MockStacktraceManager();
 
 // Tested instance
 Iden3commCredentialRepository repository = Iden3commCredentialRepositoryImpl(
   remoteIden3commDataSource,
   proofRequestFiltersMapper,
   claimMapper,
+  stacktraceManager,
 );
 
 @GenerateMocks([
   RemoteIden3commDataSource,
   ClaimMapper,
   ProofRequestFiltersMapper,
+  StacktraceManager,
 ])
 void main() {
   group("Fetch credential", () {

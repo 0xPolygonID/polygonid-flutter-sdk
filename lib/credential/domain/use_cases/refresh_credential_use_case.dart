@@ -47,7 +47,10 @@ class RefreshCredentialUseCase
 
     if (!param.credential.info.containsKey("refreshService") ||
         param.credential.info["refreshService"] == null) {
-      throw RefreshCredentialException("Refresh service not found");
+      _stacktraceManager
+          .addError("[RefreshCredentialUseCase] Refresh service not found");
+      throw RefreshCredentialException(
+          errorMessage: "Refresh service not found");
     }
 
     RefreshServiceDTO refreshService =
@@ -61,7 +64,7 @@ class RefreshCredentialUseCase
       type: "https://iden3-communication.io/credentials/1.0/refresh",
       thid: id,
       body: CredentialRefreshBodyRequest(
-        param.credential.id.replaceAll("urn:uuid:", ""),
+        param.credential.id,
         "expired",
       ),
       from: param.credential.did,
@@ -85,7 +88,7 @@ class RefreshCredentialUseCase
       profileDid: param.credential.did,
     );
 
-    if (claimEntity.id == param.credential.id) {
+    if (claimEntity.id != param.credential.id) {
       await _removeClaimsUseCase.execute(
         param: RemoveClaimsParam(
           claimIds: [param.credential.id],

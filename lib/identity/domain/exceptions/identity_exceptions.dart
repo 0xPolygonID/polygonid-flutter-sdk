@@ -1,46 +1,78 @@
-import '../../../../common/domain/error_exception.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 
-class IdentityException extends ErrorException {
-  IdentityException(error) : super(error);
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
+
+class IdentityException extends PolygonIdSDKException {
+  IdentityException({required String errorMessage, dynamic error})
+      : super(errorMessage: errorMessage, error: error);
 }
 
-class TooLongPrivateKeyException implements Exception {}
+class TooLongPrivateKeyException extends PolygonIdSDKException {
+  TooLongPrivateKeyException({required String errorMessage, dynamic error})
+      : super(errorMessage: errorMessage, error: error);
+}
 
-class IdentityAlreadyExistsException implements Exception {
+class IdentityAlreadyExistsException extends PolygonIdSDKException {
   final String did;
 
-  IdentityAlreadyExistsException(this.did);
+  IdentityAlreadyExistsException({
+    required this.did,
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class ProfileAlreadyExistsException implements Exception {
+class ProfileAlreadyExistsException extends PolygonIdSDKException {
   final String genesisDid;
   final BigInt profileNonce;
 
-  ProfileAlreadyExistsException(this.genesisDid, this.profileNonce);
+  ProfileAlreadyExistsException({
+    required this.genesisDid,
+    required this.profileNonce,
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class UnknownProfileException implements Exception {
+class UnknownProfileException extends PolygonIdSDKException {
   final BigInt profileNonce;
 
-  UnknownProfileException(this.profileNonce);
+  UnknownProfileException({
+    required this.profileNonce,
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class UnknownIdentityException implements Exception {
+class UnknownIdentityException extends PolygonIdSDKException {
   final String did;
 
-  UnknownIdentityException(this.did);
+  UnknownIdentityException({
+    required this.did,
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class InvalidPrivateKeyException implements Exception {
+class InvalidPrivateKeyException extends PolygonIdSDKException {
   final String privateKey;
 
-  InvalidPrivateKeyException(this.privateKey);
+  InvalidPrivateKeyException({
+    required this.privateKey,
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class InvalidProfileException extends ErrorException {
+class InvalidProfileException extends PolygonIdSDKException {
   final BigInt profileNonce;
 
-  InvalidProfileException(this.profileNonce) : super(null);
+  InvalidProfileException({
+    required this.profileNonce,
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 
   dynamic get error {
     if (profileNonce == BigInt.zero) {
@@ -53,21 +85,29 @@ class InvalidProfileException extends ErrorException {
   }
 }
 
-class FetchIdentityStateException extends ErrorException {
-  FetchIdentityStateException(error) : super(error);
+class FetchIdentityStateException extends PolygonIdSDKException {
+  FetchIdentityStateException({required String errorMessage, dynamic error})
+      : super(errorMessage: errorMessage, error: error);
 }
 
-class FetchStateRootsException extends ErrorException {
-  FetchStateRootsException(error) : super(error);
+class FetchStateRootsException extends PolygonIdSDKException {
+  FetchStateRootsException({required String errorMessage, dynamic error})
+      : super(errorMessage: errorMessage, error: error);
 }
 
-class NonRevProofException extends ErrorException {
-  NonRevProofException(error) : super(error);
+class NonRevProofException extends PolygonIdSDKException {
+  NonRevProofException({required String errorMessage, dynamic error})
+      : super(errorMessage: errorMessage, error: error);
 }
 
-class DidNotMatchCurrentEnvException implements Exception {
+class DidNotMatchCurrentEnvException extends PolygonIdSDKException {
   final String did;
   final String rightDid;
 
-  DidNotMatchCurrentEnvException(this.did, this.rightDid);
+  DidNotMatchCurrentEnvException({
+    required this.did,
+    required this.rightDid,
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }

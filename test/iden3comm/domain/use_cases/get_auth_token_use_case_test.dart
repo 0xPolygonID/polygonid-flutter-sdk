@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_challenge_use_case.dart';
@@ -22,6 +23,7 @@ final param = GetAuthTokenParam(
     message: CommonMocks.message);
 const result = "token";
 var exception = Exception();
+var getAuthTokenException = GetAuthTokenException(errorMessage: "Error");
 
 // Dependencies
 MockLoadCircuitUseCase loadCircuitUseCase = MockLoadCircuitUseCase();
@@ -112,11 +114,11 @@ void main() {
       () async {
     // Given
     when(proveUseCase.execute(param: anyNamed('param')))
-        .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
+        .thenAnswer((realInvocation) => Future.error(getAuthTokenException));
 
     // When
     await expectLater(
-        useCase.execute(param: param), throwsA(CommonMocks.exception));
+        useCase.execute(param: param), throwsA(getAuthTokenException));
 
     // Then
     var verifyGetJWZ =

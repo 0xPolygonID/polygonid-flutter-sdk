@@ -1,29 +1,27 @@
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_auth_claim_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 
 /// Get the public keys as List<String> associated with the @param String privateKey
-class GetIdentityAuthClaimUseCase extends FutureUseCase<String, List<String>> {
-  final IdentityRepository _identityRepository;
-  final GetAuthClaimUseCase _getAuthClaimUseCase;
+class GetAuthClaimUseCase extends FutureUseCase<List<String>, List<String>> {
+  final CredentialRepository _credentialRepo;
   final StacktraceManager _stacktraceManager;
 
-  GetIdentityAuthClaimUseCase(
-    this._identityRepository,
-    this._getAuthClaimUseCase,
+  GetAuthClaimUseCase(
+    this._credentialRepo,
     this._stacktraceManager,
   );
 
+  /// [param] - public keys
   @override
-  Future<List<String>> execute({required String param}) {
-    return _identityRepository
-        .getPublicKeys(privateKey: param)
-        .then((pubKeys) => _getAuthClaimUseCase.execute(param: pubKeys))
-        .then((authClaim) {
-      logger().i("[GetIdentityAuthClaimUseCase] AuthClaim is $authClaim");
+  Future<List<String>> execute({required List<String> param}) {
+    return Future(() async {
+      final authClaim = await _credentialRepo.getAuthClaim(publicKey: param);
+
+      logger().d("[GetIdentityAuthClaimUseCase] AuthClaim is $authClaim");
 
       return authClaim;
     }).catchError((error) {

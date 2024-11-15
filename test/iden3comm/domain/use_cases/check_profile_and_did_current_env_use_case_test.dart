@@ -4,6 +4,7 @@ import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
@@ -11,6 +12,9 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/check_pr
 
 import '../../../common/common_mocks.dart';
 import 'check_profile_and_did_current_env_use_case_test.mocks.dart';
+
+var checkProfileValidityException =
+    CheckProfileValidityException(errorMessage: "Error");
 
 // Dependencies
 MockCheckProfileValidityUseCase checkProfileValidityUseCase =
@@ -120,8 +124,8 @@ void main() {
       "Given param, when I call execute and an error occurred, I expect an exception to be thrown",
       () async {
     // Given
-    when(getSelectedChainUseCase.execute(param: anyNamed('param')))
-        .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
+    when(getSelectedChainUseCase.execute(param: anyNamed('param'))).thenAnswer(
+        (realInvocation) => Future.error(checkProfileValidityException));
 
     // When
     await expectLater(
@@ -130,7 +134,7 @@ void main() {
                 did: CommonMocks.did,
                 privateKey: CommonMocks.privateKey,
                 profileNonce: CommonMocks.nonce)),
-        throwsA(CommonMocks.exception));
+        throwsA(checkProfileValidityException));
 
     // Then
     expect(

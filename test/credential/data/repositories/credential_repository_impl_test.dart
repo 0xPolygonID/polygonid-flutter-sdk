@@ -7,6 +7,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/data/credential_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/cache_claim_data_source.dart';
@@ -23,7 +24,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/credential/response/fe
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/remote_identity_data_source.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/encryption_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:sembast/sembast.dart';
 
@@ -35,6 +35,10 @@ import 'credential_repository_impl_test.mocks.dart';
 // Data®
 const ids = ["theId", "theId1", "theId2"];
 final exception = Exception();
+final ClaimNotFoundException claimNotFoundException = ClaimNotFoundException(
+  id: ids[0],
+  errorMessage: "Claim not found",
+);
 
 /// We assume [FetchClaimResponseDTO] has been tested
 final fetchClaimDTO =
@@ -86,16 +90,6 @@ final filters = [
 ];
 final filter = Filter.equals("theField", "theValue");
 
-Map<String, Object?> mockDb = {
-  "id": "id",
-};
-String encryptedDb = "theEncryptedDb";
-String destinationPath = "theDestinationPath";
-String privateKey = "thePrivateKey";
-Key encryptionKey = Key(Uint8List.fromList([1, 2, 3, 4, 5, 6, 7, 8]));
-
-IV mockIv = IV(Uint8List.fromList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]));
-
 // Dependencies
 MockRemoteClaimDataSource remoteClaimDataSource = MockRemoteClaimDataSource();
 MockStorageClaimDataSource storageClaimDataSource =
@@ -106,6 +100,7 @@ MockCacheCredentialDataSource cacheCredentialDataSource =
 MockClaimMapper claimMapper = MockClaimMapper();
 MockFiltersMapper filtersMapper = MockFiltersMapper();
 MockIdFilterMapper idFilterMapper = MockIdFilterMapper();
+MockStacktraceManager stacktraceManager = MockStacktraceManager();
 
 // Tested instance
 CredentialRepositoryImpl repository = CredentialRepositoryImpl(
@@ -116,6 +111,7 @@ CredentialRepositoryImpl repository = CredentialRepositoryImpl(
   claimMapper,
   filtersMapper,
   idFilterMapper,
+  stacktraceManager,
 );
 
 @GenerateMocks([
@@ -126,6 +122,7 @@ CredentialRepositoryImpl repository = CredentialRepositoryImpl(
   ClaimMapper,
   FiltersMapper,
   IdFilterMapper,
+  StacktraceManager,
 ])
 void main() {
   group("Save claims", () {
@@ -323,7 +320,7 @@ void main() {
         storageClaimDataSource.getClaim(
           credentialId: anyNamed('credentialId'),
           did: anyNamed('did'),
-          privateKey: privateKey,
+          privateKey: CommonMocks.privateKey,
         ),
       ).thenAnswer((realInvocation) => Future.value(claimDTOs[0]));
 
@@ -371,8 +368,10 @@ void main() {
           did: anyNamed('did'),
           privateKey: anyNamed('privateKey'),
         ),
-      ).thenAnswer(
-          (realInvocation) => Future.error(ClaimNotFoundException(ids[0])));
+      ).thenAnswer((realInvocation) => Future.error(ClaimNotFoundException(
+            id: ids[0],
+            errorMessage: "Claim not found",
+          )));
       // When
       await repository
           .getClaim(
@@ -412,7 +411,7 @@ void main() {
           credentialId: anyNamed('credentialId'),
         ),
       ).thenAnswer(
-        (realInvocation) => Future.error(exception),
+        (realInvocation) => Future.error(claimNotFoundException),
       );
 
       await expectLater(
@@ -421,7 +420,7 @@ void main() {
           claimId: ids[0],
           privateKey: CommonMocks.privateKey,
         ),
-        throwsA(exception),
+        throwsA(claimNotFoundException),
       );
 
       // Then

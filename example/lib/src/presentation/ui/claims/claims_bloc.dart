@@ -112,6 +112,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       privateKey: privateKey,
       blockchain: chainConfig.blockchain,
       network: chainConfig.network,
+      method: chainConfig.method,
     );
 
     if (did.isEmpty) {
@@ -159,6 +160,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       privateKey: privateKey,
       blockchain: chainConfig.blockchain,
       network: chainConfig.network,
+      method: chainConfig.method,
     );
 
     if (did.isEmpty) {
@@ -204,6 +206,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       privateKey: privateKey,
       blockchain: chain.blockchain,
       network: chain.network,
+      method: chain.method,
     );
 
     if (did.isEmpty) {
@@ -245,6 +248,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       privateKey: privateKey,
       blockchain: chain.blockchain,
       network: chain.network,
+      method: chain.method,
     );
 
     if (did.isEmpty) {
@@ -370,6 +374,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
       privateKey: privateKey,
       blockchain: chain.blockchain,
       network: chain.network,
+      method: chain.method,
     );
 
     if (did.isEmpty) {

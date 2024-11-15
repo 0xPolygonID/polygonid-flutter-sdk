@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
@@ -98,17 +99,20 @@ class LibPolygonIdCoreWrapper {
               jsonEncode(computeParam.configParam?.toJson()));
           break;
         case AtomicQueryInputsType.unknown:
-          throw NullAtomicQueryInputsException(computeParam.param.id);
+          throw NullAtomicQueryInputsException(
+            id: computeParam.param.id,
+            errorMessage: "Unknown AtomicQueryInputsType",
+          );
       }
 
       return Future.value(result);
-    } on ProofInputsException catch (error) {
-      throw NullAtomicQueryInputsException(
-        computeParam.param.id,
-        errorMessage: error.errorMessage,
-      );
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
     } catch (error) {
-      throw NullAtomicQueryInputsException(computeParam.param.id);
+      throw NullAtomicQueryInputsException(
+        id: computeParam.param.id,
+        errorMessage: "Error in _computeAtomicQueryInputs: $error",
+      );
     }
   }
 

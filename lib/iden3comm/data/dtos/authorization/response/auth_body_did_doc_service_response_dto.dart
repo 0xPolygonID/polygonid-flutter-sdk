@@ -38,18 +38,19 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response
 
 part 'auth_body_did_doc_service_response_dto.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class AuthBodyDidDocServiceResponseDTO extends Equatable {
   final String? id;
   final String? type;
   final String? serviceEndpoint;
   final AuthBodyDidDocServiceMetadataResponseDTO? metadata;
 
-  const AuthBodyDidDocServiceResponseDTO(
-      {required this.id,
-      required this.type,
-      required this.serviceEndpoint,
-      required this.metadata});
+  const AuthBodyDidDocServiceResponseDTO({
+    required this.id,
+    required this.type,
+    this.serviceEndpoint,
+    this.metadata,
+  });
 
   factory AuthBodyDidDocServiceResponseDTO.fromJson(
           Map<String, dynamic> json) =>

@@ -19,11 +19,12 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/i
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/circuits_to_download_param.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_mtproof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/credential.dart';
 import 'package:polygonid_flutter_sdk/sdk/iden3comm.dart';
@@ -507,18 +508,22 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<List<ClaimEntity?>> getClaimsFromIden3Message(
-      {required Iden3MessageEntity message,
-      required String genesisDid,
-      BigInt? profileNonce,
-      required String privateKey,
-      Map<int, Map<String, dynamic>>? nonRevocationProofs}) {
+  Future<List<ClaimEntity?>> getClaimsFromIden3Message({
+    required Iden3MessageEntity message,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String privateKey,
+    Map<int, Map<String, dynamic>>? nonRevocationProofs,
+    List<CredentialSortOrder> sortOrder = const [],
+  }) {
     return _polygonIdSdk.iden3comm.getClaimsFromIden3Message(
-        message: message,
-        genesisDid: genesisDid,
-        profileNonce: profileNonce,
-        privateKey: privateKey,
-        nonRevocationProofs: nonRevocationProofs);
+      message: message,
+      genesisDid: genesisDid,
+      profileNonce: profileNonce,
+      privateKey: privateKey,
+      nonRevocationProofs: nonRevocationProofs,
+      sortOrder: sortOrder,
+    );
   }
 
   @override
@@ -549,6 +554,11 @@ class PolygonIdFlutterChannel
   Future<List<Map<String, dynamic>>> getSchemas(
       {required Iden3MessageEntity message}) {
     return _polygonIdSdk.iden3comm.getSchemas(message: message);
+  }
+
+  @override
+  Future<Map<String, dynamic>> fetchSchema({required String schemaUrl}) {
+    return _polygonIdSdk.iden3comm.fetchSchema(schemaUrl: schemaUrl);
   }
 
   @override
@@ -838,21 +848,22 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<ZKProofEntity> prove(
-      {required String identifier,
-      required BigInt profileNonce,
-      required BigInt claimSubjectProfileNonce,
-      required ClaimEntity credential,
-      required CircuitDataEntity circuitData,
-      required Map<String, dynamic> proofScopeRequest,
-      List<String>? authClaim,
-      MTProofEntity? incProof,
-      MTProofEntity? nonRevProof,
-      GistMTProofEntity? gistProof,
-      Map<String, dynamic>? treeState,
-      String? challenge,
-      String? signature,
-      Map<String, dynamic>? config}) {
+  Future<ZKProofEntity> prove({
+    required String identifier,
+    required BigInt profileNonce,
+    required BigInt claimSubjectProfileNonce,
+    required ClaimEntity credential,
+    required CircuitDataEntity circuitData,
+    required Map<String, dynamic> proofScopeRequest,
+    List<String>? authClaim,
+    MTProofEntity? incProof,
+    MTProofEntity? nonRevProof,
+    GistMTProofEntity? gistProof,
+    Map<String, dynamic>? treeState,
+    String? challenge,
+    String? signature,
+    Map<String, dynamic>? config,
+  }) {
     return _polygonIdSdk.proof.prove(
         identifier: identifier,
         profileNonce: profileNonce,
@@ -952,6 +963,33 @@ class PolygonIdFlutterChannel
     required String privateKey,
   }) {
     // TODO: implement getCredentialByPartialId
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> cacheCredential(
+      {required ClaimEntity credential, ConfigParam? configParam}) {
+    // TODO: implement cacheCredential
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> cacheCredentials(
+      {required List<ClaimEntity> credentials, ConfigParam? configParam}) {
+    // TODO: implement cacheCredentials
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<ClaimEntity>> fetchCredentials(
+      {required CredentialOfferMessageEntity<CredentialOfferBody>
+          credentialOfferMessage,
+      required String privateKey,
+      required String genesisDid,
+      required BigInt profileNonce,
+      String? blockchain,
+      String? network}) {
+    // TODO: implement fetchCredentialsUseCase
     throw UnimplementedError();
   }
 }

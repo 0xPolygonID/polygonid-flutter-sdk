@@ -7,6 +7,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_aut
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_public_keys_use_case.dart';
 
 class CreateIdentityStateParam {
   final String did;
@@ -22,18 +23,22 @@ class CreateIdentityStateUseCase
     extends FutureUseCase<CreateIdentityStateParam, void> {
   final IdentityRepository _identityRepository;
   final SMTRepository _smtRepository;
-  final GetIdentityAuthClaimUseCase _getIdentityAuthClaimUseCase;
+  final GetAuthClaimUseCase _getAuthClaimUseCase;
+  final GetPublicKeysUseCase _getPublicKeysUseCase;
   final StacktraceManager _stacktraceManager;
 
   CreateIdentityStateUseCase(
     this._identityRepository,
     this._smtRepository,
-    this._getIdentityAuthClaimUseCase,
+    this._getAuthClaimUseCase,
+    this._getPublicKeysUseCase,
     this._stacktraceManager,
   );
 
   @override
   Future<void> execute({required CreateIdentityStateParam param}) async {
+    final publicKeys =
+        await _getPublicKeysUseCase.execute(param: param.privateKey);
     try {
       await _smtRepository.createSMT(
         maxLevels: 40,
@@ -54,8 +59,7 @@ class CreateIdentityStateUseCase
         privateKey: param.privateKey,
       );
 
-      List<String> authClaim =
-          await _getIdentityAuthClaimUseCase.execute(param: param.privateKey);
+      final authClaim = await _getAuthClaimUseCase.execute(param: publicKeys);
       NodeEntity authClaimNode =
           await _identityRepository.getAuthClaimNode(children: authClaim);
       await _smtRepository.addLeaf(

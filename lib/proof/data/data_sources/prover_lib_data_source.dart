@@ -1,20 +1,30 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/prove_param.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/prover/prover.dart';
 
+const _methodChannel = MethodChannel('polygonid_flutter_sdk');
+
 @injectable
 class ProverLibWrapper {
   Future<Map<String, dynamic>?> prover(
-      String circuitId, Uint8List zKeyBytes, Uint8List wtnsBytes) {
-    return compute(_computeProve, ProveParam(circuitId, zKeyBytes, wtnsBytes));
+      String circuitId, String zKeyPath, Uint8List wtnsBytes) {
+    return compute(_computeProve, ProveParam(circuitId, zKeyPath, wtnsBytes));
   }
 }
 
 ///
-Future<Map<String, dynamic>?> _computeProve(ProveParam param) {
+Future<Map<String, dynamic>?> _computeProve(ProveParam param) async {
   ProverLib proverLib = ProverLib();
-  return proverLib.prove(param.circuitId, param.zKey, param.wtns);
+  return proverLib.proveZkeyFilePath(
+    param.circuitId,
+    param.zKeyPath,
+    param.wtns,
+  );
 }
 
 class ProverLibDataSource {
@@ -24,7 +34,12 @@ class ProverLibDataSource {
 
   ///
   Future<Map<String, dynamic>?> prove(
-      String circuitId, Uint8List zKeyBytes, Uint8List wtnsBytes) async {
-    return _proverLibWrapper.prover(circuitId, zKeyBytes, wtnsBytes);
+    String circuitId,
+    String zKeyPath,
+    Uint8List wtnsBytes,
+  ) async {
+    final result =
+        await _proverLibWrapper.prover(circuitId, zKeyPath, wtnsBytes);
+    return result;
   }
 }

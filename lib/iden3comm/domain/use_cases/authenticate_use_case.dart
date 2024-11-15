@@ -100,11 +100,14 @@ class AuthenticateUseCase
           .i("stopwatch after getEnvUseCase ${stopwatch.elapsedMilliseconds}");
 
       String profileDid = await _getDidIdentifierUseCase.execute(
-          param: GetDidIdentifierParam(
-              privateKey: param.privateKey,
-              blockchain: chain.blockchain,
-              network: chain.network,
-              profileNonce: param.profileNonce));
+        param: GetDidIdentifierParam.withPrivateKey(
+          privateKey: param.privateKey,
+          blockchain: chain.blockchain,
+          network: chain.network,
+          profileNonce: param.profileNonce,
+          method: chain.method,
+        ),
+      );
       _stacktraceManager.addTrace(
           "[AuthenticateUseCase] _getDidIdentifierUseCase success\ndid: $profileDid");
       logger().i(

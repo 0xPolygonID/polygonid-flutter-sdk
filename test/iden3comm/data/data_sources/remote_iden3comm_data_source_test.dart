@@ -219,7 +219,7 @@ void main() {
           .then((_) => expect(true, false)) // Be sure we don't succeed
           .catchError((error) {
         expect(error, (isA<UnsupportedFetchClaimTypeException>()));
-        expect(error.error, otherTypeResponse);
+        expect(error.error, null);
       });
 
       // Then

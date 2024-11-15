@@ -1,13 +1,16 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/proof_request_filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_query_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 
 import '../../../common/iden3comm_mocks.dart';
+import 'proof_request_filters_mapper_test.mocks.dart';
 
 String mockQueryRequestLT = '''
 {
@@ -85,8 +88,6 @@ ProofScopeRequest proofScopeRequest = ProofScopeRequest(
     credentialSubject: jsonDecode(mockQueryRequestLT),
   ),
 );
-ProofQueryParamEntity proofQueryParamEntity =
-    ProofQueryParamEntity("theField", [0, 1, 2], 4);
 ProofRequestEntity mockProofRequestEntityLT = ProofRequestEntity(
   ProofScopeRequest(
     id: 1,
@@ -99,7 +100,6 @@ ProofRequestEntity mockProofRequestEntityLT = ProofRequestEntity(
     ),
   ),
   Iden3commMocks.mockContext,
-  proofQueryParamEntity,
 );
 
 ProofRequestEntity mockProofRequestEntityGT = ProofRequestEntity(
@@ -114,7 +114,6 @@ ProofRequestEntity mockProofRequestEntityGT = ProofRequestEntity(
     ),
   ),
   Iden3commMocks.mockContext,
-  proofQueryParamEntity,
 );
 
 ProofRequestEntity mockProofRequestEntityEQ = ProofRequestEntity(
@@ -129,7 +128,6 @@ ProofRequestEntity mockProofRequestEntityEQ = ProofRequestEntity(
     ),
   ),
   Iden3commMocks.mockContext,
-  proofQueryParamEntity,
 );
 
 ProofRequestEntity mockProofRequestEntityIN = ProofRequestEntity(
@@ -144,7 +142,6 @@ ProofRequestEntity mockProofRequestEntityIN = ProofRequestEntity(
     ),
   ),
   Iden3commMocks.mockContext,
-  proofQueryParamEntity,
 );
 
 ProofRequestEntity mockProofRequestEntityNIN = ProofRequestEntity(
@@ -159,7 +156,6 @@ ProofRequestEntity mockProofRequestEntityNIN = ProofRequestEntity(
     ),
   ),
   Iden3commMocks.mockContext,
-  proofQueryParamEntity,
 );
 
 ProofRequestEntity mockProofRequestEntityNINCountry = ProofRequestEntity(
@@ -174,7 +170,6 @@ ProofRequestEntity mockProofRequestEntityNINCountry = ProofRequestEntity(
     ),
   ),
   Iden3commMocks.mockContext,
-  proofQueryParamEntity,
 );
 
 ProofRequestEntity mockProofRequestEntityNotSupportedOperator =
@@ -190,13 +185,15 @@ ProofRequestEntity mockProofRequestEntityNotSupportedOperator =
     ),
   ),
   Iden3commMocks.mockContext,
-  proofQueryParamEntity,
 );
+
+MockStacktraceManager mockStacktraceManager = MockStacktraceManager();
 
 // Tested instance
 ProofRequestFiltersMapper proofRequestFiltersMapper =
-    ProofRequestFiltersMapper();
+    ProofRequestFiltersMapper(mockStacktraceManager);
 
+@GenerateMocks([StacktraceManager])
 main() {
   group("ProofRequestFiltersMapper", () {
     test("From ProofRequestEntity to List<FilterEntity> LT operator", () {

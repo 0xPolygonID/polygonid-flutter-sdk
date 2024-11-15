@@ -1,35 +1,49 @@
-class NetworkException implements Exception {
-  final dynamic error;
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 
-  NetworkException(this.error);
+class NetworkException extends PolygonIdSDKException {
+  final int statusCode;
+
+  NetworkException({
+    required this.statusCode,
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class UnknownApiException implements Exception {
-  int httpCode;
+class UnknownApiException extends PolygonIdSDKException {
+  final int httpCode;
 
-  UnknownApiException(this.httpCode);
+  UnknownApiException({
+    required this.httpCode,
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class ItemNotFoundException implements Exception {
-  String message;
-
-  ItemNotFoundException(this.message);
+class ItemNotFoundException extends PolygonIdSDKException {
+  ItemNotFoundException({
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class InternalServerErrorException implements Exception {
-  String message;
-
-  InternalServerErrorException(this.message);
+class InternalServerErrorException extends PolygonIdSDKException {
+  InternalServerErrorException({
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class ConflictErrorException implements Exception {
-  String message;
-
-  ConflictErrorException(this.message);
+class ConflictErrorException extends PolygonIdSDKException {
+  ConflictErrorException({
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }
 
-class BadRequestException implements Exception {
-  String message;
-
-  BadRequestException(this.message);
+class BadRequestException extends PolygonIdSDKException {
+  BadRequestException({
+    required String errorMessage,
+    dynamic error,
+  }) : super(errorMessage: errorMessage, error: error);
 }

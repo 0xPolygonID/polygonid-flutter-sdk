@@ -24,36 +24,39 @@ class GetLatestStateUseCase
 
   @override
   Future<Map<String, dynamic>> execute({required GetLatestStateParam param}) {
-    return Future.wait([
-      _smtRepository.getRoot(
-        type: TreeType.claims,
-        did: param.did,
-        privateKey: param.privateKey,
-      ),
-      _smtRepository.getRoot(
-        type: TreeType.revocation,
-        did: param.did,
-        privateKey: param.privateKey,
-      ),
-      _smtRepository.getRoot(
-        type: TreeType.roots,
-        did: param.did,
-        privateKey: param.privateKey,
-      ),
-    ], eagerError: true)
-        .then((trees) => _smtRepository
-            .hashState(
-                claims: trees[0].data,
-                revocation: trees[1].data,
-                roots: trees[2].data)
-            .then(
-                (hash) => TreeStateEntity(hash, trees[0], trees[1], trees[2])))
-        .then((state) => _smtRepository.convertState(state: state))
-        .then((state) {
-      _stacktraceManager.addTrace("[GetLatestStateUseCase] State");
-      logger().i("[GetLatestStateUseCase] State: $state");
+    return Future.wait(
+      [
+        _smtRepository.getRoot(
+          type: TreeType.claims,
+          did: param.did,
+          privateKey: param.privateKey,
+        ),
+        _smtRepository.getRoot(
+          type: TreeType.revocation,
+          did: param.did,
+          privateKey: param.privateKey,
+        ),
+        _smtRepository.getRoot(
+          type: TreeType.roots,
+          did: param.did,
+          privateKey: param.privateKey,
+        ),
+      ],
+      eagerError: true,
+    ).then((trees) async {
+      final hash = await _smtRepository.hashState(
+        claims: trees[0].string(),
+        revocation: trees[1].string(),
+        roots: trees[2].string(),
+      );
+      final state = TreeStateEntity(hash, trees[0], trees[1], trees[2]);
+      final convertedState = await _smtRepository.convertState(state: state);
 
-      return state;
+      _stacktraceManager
+          .addTrace("[GetLatestStateUseCase] State: $convertedState");
+      logger().i("[GetLatestStateUseCase] State: $convertedState");
+
+      return convertedState;
     }).catchError((error) {
       _stacktraceManager.addTrace("[GetLatestStateUseCase] Error: $error");
       _stacktraceManager.addError("[GetLatestStateUseCase] Error: $error");

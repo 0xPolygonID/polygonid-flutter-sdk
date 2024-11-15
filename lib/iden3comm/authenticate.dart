@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -17,6 +18,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
@@ -42,7 +44,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/auth_proof_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/iden3comm_proof_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/proof_request_filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
@@ -57,30 +58,28 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exce
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/jwz_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_babyjubjub_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/hash_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/node_dto.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/node_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/hex_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj_wallet.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/gist_mtproof_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_config_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_param.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/circuit_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/data/mappers/gist_mtproof_mapper.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/gist_mtproof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
@@ -88,6 +87,8 @@ import 'package:polygonid_flutter_sdk/proof/gist_proof_cache.dart';
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/polygonidcore/pidcore_proof.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
+import 'package:poseidon/constants/p1.dart';
+import 'package:poseidon/poseidon.dart';
 import 'package:sembast/sembast.dart';
 import 'package:uuid/uuid.dart';
 import 'package:web3dart/crypto.dart';
@@ -115,8 +116,9 @@ class Authenticate {
     required String? pushToken,
     String? challenge,
     final Map<String, dynamic>? transactionData,
-    String authClaimNonce = DEFAULT_AUTH_CLAIM_NONCE,
+    String? authClaimNonce,
   }) async {
+    final nonce = authClaimNonce ?? DEFAULT_AUTH_CLAIM_NONCE;
     try {
       List<Iden3commProofEntity> proofs = [];
       Map<int, String> groupIdLinkNonceMap = {};
@@ -135,7 +137,14 @@ class Authenticate {
         Iden3MessageType.authRequest,
         Iden3MessageType.proofContractInvokeRequest
       ].contains(message.messageType)) {
-        throw UnsupportedIden3MsgTypeException(message.messageType);
+        _stacktraceManager.addError(
+          "[Authenticate] Unsupported message type: ${message.messageType} It should be either authRequest or proofContractInvokeRequest",
+        );
+        throw UnsupportedIden3MsgTypeException(
+          type: message.messageType,
+          errorMessage: "Unsupported message type\nIt should be either "
+              "authRequest or proofContractInvokeRequest",
+        );
       }
 
       HexMapper hexMapper = getItSdk<HexMapper>();
@@ -152,11 +161,12 @@ class Authenticate {
           await getItSdk.getAsync<GetDidIdentifierUseCase>();
 
       String profileDid = await getDidIdentifierUseCase.execute(
-        param: GetDidIdentifierParam(
+        param: GetDidIdentifierParam.withPrivateKey(
           privateKey: privateKey,
           blockchain: chain.blockchain,
           network: chain.network,
           profileNonce: profileNonce,
+          method: chain.method,
         ),
       );
 
@@ -183,7 +193,7 @@ class Authenticate {
         chain: chain,
         privateKey: privateKey,
         privateKeyBytes: privateKeyBytes,
-        authClaimNonce: authClaimNonce,
+        authClaimNonce: nonce,
       );
 
       // if there are proof requests and claims and they are the same length
@@ -248,11 +258,16 @@ class Authenticate {
       String? callbackUrl = message.body.callbackUrl;
 
       if (callbackUrl == null || callbackUrl.isEmpty) {
+        _stacktraceManager.addError(
+          "[Authenticate] Callback url is null or empty",
+        );
         throw NullAuthenticateCallbackException(
-            message as AuthIden3MessageEntity);
+          authRequest: message as AuthIden3MessageEntity,
+          errorMessage: "Callback url is null or empty",
+        );
       }
 
-      // perform the authentication with the auth token callin the callback url
+      // perform the authentication with the auth token calling the callback url
       http.Client httpClient = http.Client();
       Uri uri = Uri.parse(callbackUrl);
       http.Response response = await httpClient.post(
@@ -262,14 +277,20 @@ class Authenticate {
           HttpHeaders.acceptHeader: '*/*',
           HttpHeaders.contentTypeHeader: 'text/plain',
         },
-      );
+      ).timeout(const Duration(seconds: 30));
 
       _stacktraceManager.addTrace(
         "[Authenticate] responseStatusCode: ${response.statusCode}\nresponseBody: ${response.body}",
       );
 
       if (response.statusCode != 200) {
-        throw NetworkException(response);
+        _stacktraceManager.addError(
+          "[Authenticate] Error sending auth token to the requester: ${response.statusCode} ${response.body}",
+        );
+        throw NetworkException(
+          statusCode: response.statusCode,
+          errorMessage: response.body,
+        );
       }
 
       if (response.body.isEmpty) {
@@ -283,8 +304,7 @@ class Authenticate {
           return null;
         }
 
-        GetIden3MessageUseCase _getIden3MessageUseCase =
-            await getItSdk.getAsync<GetIden3MessageUseCase>();
+        final _getIden3MessageUseCase = getItSdk<GetIden3MessageUseCase>();
         final nextRequest = await _getIden3MessageUseCase.execute(
           param: jsonEncode(messageJson),
         );
@@ -293,6 +313,12 @@ class Authenticate {
       } catch (e) {
         return null;
       }
+    } on TimeoutException catch (e) {
+      String waitingTime = e.duration?.inSeconds.toString() ?? "unknown";
+      throw NetworkException(
+          statusCode: 504,
+          errorMessage:
+              "Connection timeout while sending auth token to the requester.\nwaited for $waitingTime seconds.");
     } catch (e) {
       rethrow;
     }
@@ -317,9 +343,6 @@ class Authenticate {
       profileDid: profileDid,
     );
 
-    Iden3commProofMapper _iden3commProofMapper =
-        getItSdk<Iden3commProofMapper>();
-
     AuthResponseDTO authResponse = AuthResponseDTO(
       id: const Uuid().v4(),
       thid: message.thid,
@@ -329,10 +352,7 @@ class Authenticate {
       type: "https://iden3-communication.io/authorization/1.0/response",
       body: AuthBodyResponseDTO(
         message: (message as AuthIden3MessageEntity).body.message,
-        scope: proofs
-            .map((iden3commProofEntity) =>
-                _iden3commProofMapper.mapTo(iden3commProofEntity))
-            .toList(),
+        scope: proofs,
         did_doc: didDocResponse,
       ),
     );
@@ -374,33 +394,18 @@ class Authenticate {
       _proofGenerationStepsStreamManager.add(
           "#${i + 1} creating proof for ${proofRequest.scope.query.type}...");
 
-      Directory appDir = await getApplicationDocumentsDirectory();
-      String appDocPath = appDir.path;
+      final appDir = await getApplicationDocumentsDirectory();
+      final circuitsDataSource = CircuitsFilesDataSource(appDir);
 
-      var circuitDatFileName = '${proofRequest.scope.circuitId}.dat';
-      var circuitDatFilePath = '$appDocPath/$circuitDatFileName';
-      var circuitDatFile = File(circuitDatFilePath);
-
-      var circuitZkeyFileName = '${proofRequest.scope.circuitId}.zkey';
-      var circuitZkeyFilePath = '$appDocPath/$circuitZkeyFileName';
-      var circuitZkeyFile = File(circuitZkeyFilePath);
-
-      if (!circuitDatFile.existsSync() || !circuitZkeyFile.existsSync()) {
-        throw CircuitNotDownloadedException(
-          circuit: proofRequest.scope.circuitId,
-          errorMessage: "Circuit files not found",
-        );
-      }
-
-      List<Uint8List> circuitFiles = [
-        circuitDatFile.readAsBytesSync(),
-        circuitZkeyFile.readAsBytesSync()
-      ];
+      final circuitDatFileBytes = await circuitsDataSource
+          .loadCircuitDatFile(proofRequest.scope.circuitId);
+      final zkeyFilePath = await circuitsDataSource
+          .getZkeyFilePath(proofRequest.scope.circuitId);
 
       CircuitDataEntity circuitDataEntity = CircuitDataEntity(
         proofRequest.scope.circuitId,
-        circuitFiles[0],
-        circuitFiles[1],
+        circuitDatFileBytes,
+        zkeyFilePath,
       );
 
       BigInt claimSubjectProfileNonce = identityEntity.profiles.keys.firstWhere(
@@ -422,21 +427,6 @@ class Authenticate {
         }
       }
 
-      GenerateIden3commProofParam proofParam = GenerateIden3commProofParam(
-        did: genesisDid,
-        profileNonce: profileNonce,
-        claimSubjectProfileNonce: claimSubjectProfileNonce,
-        credential: claim,
-        request: proofRequest.scope,
-        circuitData: circuitDataEntity,
-        privateKey: privateKey,
-        challenge: challenge,
-        config: env.config,
-        verifierId: message.from,
-        linkNonce: linkNonce,
-        transactionData: transactionData,
-      );
-
       Map<String, dynamic>? config;
       String? signature;
 
@@ -444,7 +434,7 @@ class Authenticate {
           proofRequest.scope.circuitId == CircuitType.sigonchain.name ||
           proofRequest.scope.circuitId == CircuitType.circuitsV3onchain.name) {
         /// SIGN MESSAGE
-        String signature = signMessage(
+        String signature = await signMessage(
           privateKey: privateKeyBytes,
           message: challenge!,
         );
@@ -483,7 +473,7 @@ class Authenticate {
       if (kDebugMode) {
         //just for debug
         String inputs = Uint8ArrayUtils.uint8ListToString(atomicQueryInputs);
-        print("atomicQueryInputs: $inputs");
+        logger().i("atomicQueryInputs: $inputs");
       }
 
       var vpProof;
@@ -493,13 +483,13 @@ class Authenticate {
       }
 
       Uint8List witnessBytes = await proofRepository.calculateWitness(
-        circuitDataEntity,
-        atomicQueryInputs,
+        circuitData: circuitDataEntity,
+        atomicQueryInputs: atomicQueryInputs,
       );
 
       ZKProofEntity zkProofEntity = await proofRepository.prove(
-        circuitDataEntity,
-        witnessBytes,
+        circuitData: circuitDataEntity,
+        wtnsBytes: witnessBytes,
       );
 
       Iden3commProofEntity proof;
@@ -529,36 +519,36 @@ class Authenticate {
     required String genesisDid,
     required String privateKey,
   }) async {
-    if (message.body.scope == null || message.body.scope.isEmpty) {
+    List<ProofScopeRequest>? scopes = message.body.scope;
+    if (scopes == null || scopes.isEmpty) {
       return;
     }
 
-    List<ProofScopeRequest> scopes = message.body.scope;
-    var groupedByGroupId = groupBy(scopes, (obj) => obj.query.groupId);
+    final groupedByGroupId = groupBy(scopes, (obj) => obj.query.groupId);
 
     Map<int, List<ClaimEntity>> claimsByGroupId = {};
 
     // for each group of scopes
-    for (var group in groupedByGroupId.entries) {
+    for (final group in groupedByGroupId.entries) {
       int? groupId = group.key;
       if (groupId == null) {
         continue;
       }
-      List<ProofScopeRequest> groupScopes = group.value;
 
       List<FilterEntity> filtersForQueryClaimDb = [];
 
-      for (var scope in groupScopes) {
+      List<ProofScopeRequest> groupScopes = group.value;
+      for (final scope in groupScopes) {
         Map<String, dynamic> credentialSchema =
             await fetchSchema(schemaUrl: scope.query.context!);
-        ProofQueryParamEntity query = await getProofQuery(scope);
         ProofRequestEntity proofRequest = ProofRequestEntity(
           scope,
           credentialSchema,
-          query,
         );
+        ProofRequestFiltersMapper proofRequestFiltersMapper =
+            getItSdk<ProofRequestFiltersMapper>();
         List<FilterEntity> filterForSingleScope =
-            ProofRequestFiltersMapper().mapFrom(proofRequest);
+            proofRequestFiltersMapper.mapFrom(proofRequest);
         // we add the filters for each scope to the list of filters
         filtersForQueryClaimDb.addAll(filterForSingleScope);
         // we remove duplicates
@@ -583,23 +573,23 @@ class Authenticate {
       claimsByGroupId[groupId] = validClaims;
     }
 
-    for (ProofScopeRequest scope in message.body.scope!) {
+    for (final scope in scopes) {
       List<ClaimEntity> validClaims = [];
       Map<String, dynamic> credentialSchema =
           await fetchSchema(schemaUrl: scope.query.context!);
-      ProofQueryParamEntity query = await getProofQuery(scope);
       ProofRequestEntity proofRequest = ProofRequestEntity(
         scope,
         credentialSchema,
-        query,
       );
       proofRequests.add(proofRequest);
 
       if (scope.query.groupId != null) {
         validClaims = claimsByGroupId[scope.query.groupId] ?? [];
       } else {
+        ProofRequestFiltersMapper proofRequestFiltersMapper =
+            getItSdk<ProofRequestFiltersMapper>();
         List<FilterEntity> filtersForQueryClaimDb =
-            ProofRequestFiltersMapper().mapFrom(proofRequest);
+            proofRequestFiltersMapper.mapFrom(proofRequest);
         FiltersMapper filtersMapper = getItSdk<FiltersMapper>();
         Filter filter = filtersMapper.mapTo(filtersForQueryClaimDb);
 
@@ -630,7 +620,7 @@ class Authenticate {
         continue;
       }
 
-      var validClaim = validClaims.firstWhereOrNull((element) {
+      final validClaim = validClaims.firstWhereOrNull((element) {
         List<Map<String, dynamic>> proofs = element.info["proof"];
         List<String> proofTypes =
             proofs.map((e) => e["type"] as String).toList();
@@ -639,8 +629,13 @@ class Authenticate {
         // TODO (moria): remove this with v3 circuit release
         if (circuitId.startsWith(CircuitType.v3CircuitPrefix) &&
             !circuitId.endsWith(CircuitType.currentCircuitBetaPostfix)) {
-          throw Exception(
-              "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
+          _stacktraceManager.addError(
+            "[Authenticate] V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}",
+          );
+          throw CircuitNotDownloadedException(
+              circuit: circuitId,
+              errorMessage:
+                  "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
         }
 
         CircuitTypeMapper circuitTypeMapper = getItSdk<CircuitTypeMapper>();
@@ -698,15 +693,15 @@ class Authenticate {
       }
     }
 
-    var schemaUri = Uri.parse(schemaUrl);
-    Dio dio = Dio();
+    final schemaUri = Uri.parse(schemaUrl);
+    final dio = Dio();
     final dir = await getApplicationDocumentsDirectory();
     final path = dir.path;
     dio.interceptors.add(
       DioCacheInterceptor(
         options: CacheOptions(
           store: HiveCacheStore(path),
-          policy: CachePolicy.refreshForceCache,
+          policy: CachePolicy.request,
           hitCacheOnErrorExcept: [],
           maxStale: const Duration(days: 14),
           priority: CachePriority.high,
@@ -714,7 +709,7 @@ class Authenticate {
       ),
     );
     final schemaResponse = await dio.get(schemaUri.toString());
-    if (schemaResponse.statusCode == 200) {
+    if (schemaResponse.statusCode == 200 || schemaResponse.statusCode == 304) {
       Map<String, dynamic> schema = {};
       bool isMap = schemaResponse.data is Map<String, dynamic>;
       if (!isMap) {
@@ -725,93 +720,14 @@ class Authenticate {
 
       return schema;
     } else {
-      throw NetworkException(schemaResponse);
+      _stacktraceManager.addError(
+        "[Authenticate] Error fetching schema: ${schemaResponse.statusCode} ${schemaResponse.statusMessage}",
+      );
+      throw NetworkException(
+        statusCode: schemaResponse.statusCode ?? 0,
+        errorMessage: schemaResponse.statusMessage ?? "",
+      );
     }
-  }
-
-  Future<ProofQueryParamEntity> getProofQuery(ProofScopeRequest scope) async {
-    final Map<String, int> _queryOperators = {
-      "\$noop": 0,
-      "\$eq": 1,
-      "\$lt": 2,
-      "\$gt": 3,
-      "\$in": 4,
-      "\$nin": 5,
-      "\$ne": 6,
-      "\$lte": 7,
-      "\$gte": 8,
-      "\$between": 9,
-      "\$nonbetween": 10,
-      "\$exists": 11,
-    };
-
-    String field = "";
-    int operator = 0;
-    List<dynamic> values = [];
-
-    if (scope.query.credentialSubject != null &&
-        scope.query.credentialSubject!.length == 1) {
-      MapEntry reqEntry = scope.query.credentialSubject!.entries.first;
-
-      if (reqEntry.value != null && reqEntry.value is Map) {
-        field = reqEntry.key;
-        if (reqEntry.value.length == 0) {
-          Future.value(ProofQueryParamEntity(field, values, operator));
-        } else {
-          MapEntry entry = (reqEntry.value as Map).entries.first;
-          if (_queryOperators.containsKey(entry.key)) {
-            _validateV3OperatorsByCircuit(
-              circuitId: scope.circuitId,
-              operator: entry.key,
-            );
-            operator = _queryOperators[entry.key]!;
-          }
-          if (entry.value == "true" || entry.value == "false") {
-            values = [entry.value == "true" ? 1 : 0];
-          } else if (entry.value is List<dynamic>) {
-            if (operator == 2 || operator == 3) {
-              // lt, gt
-              throw InvalidProofReqException(
-                  "InvalidProofReqException param: $scope\nentry: $entry");
-            }
-            try {
-              values = entry.value.cast<int>();
-            } catch (e) {
-              try {
-                values = entry.value.cast<String>();
-              } catch (e) {
-                throw InvalidProofReqException(
-                    "InvalidProofReqException param: $scope\nentry: $entry");
-              }
-              throw InvalidProofReqException(
-                  "InvalidProofReqException param: $scope\nentry: $entry");
-            }
-          } else if (entry.value is String) {
-            if (!_isDateTime(entry.value) && (operator == 2 || operator == 3)) {
-              // lt, gt
-              throw InvalidProofReqException(
-                  "InvalidProofReqException param: $scope\nentry: $entry");
-            }
-
-            values = [entry.value];
-          } else if (entry.value is int) {
-            values = [entry.value];
-          } else if (entry.value is double) {
-            values = [entry.value];
-          } else if (entry.value is bool) {
-            values = [entry.value == true ? 1 : 0];
-          } else {
-            throw InvalidProofReqException(
-                "InvalidProofReqException param: $scope\nentry: $entry");
-          }
-        }
-      } else {
-        throw InvalidProofReqException(
-            "InvalidProofReqException param: $scope\nentry: $reqEntry");
-      }
-    }
-
-    return ProofQueryParamEntity(field, values, operator);
   }
 
   bool _isDateTime(String input) {
@@ -973,8 +889,8 @@ class Authenticate {
     do {
       randomNumber = randomBigInt(248, max: maxVal, random: random);
       if (kDebugMode) {
-        print("random number $randomNumber");
-        print("less than safeMax ${randomNumber < safeMaxVal}");
+        logger().i("random number $randomNumber");
+        logger().i("less than safeMax ${randomNumber < safeMaxVal}");
       }
     } while (randomNumber >= safeMaxVal);
 
@@ -982,21 +898,10 @@ class Authenticate {
   }
 
   /// SIGN MESSAGE WITH BJJ KEY
-  String signMessage({required Uint8List privateKey, required String message}) {
-    BigInt? messHash;
-    if (message.toLowerCase().startsWith("0x")) {
-      message = strip0x(message);
-      messHash = BigInt.tryParse(message, radix: 16);
-    } else {
-      messHash = BigInt.tryParse(message, radix: 10);
-    }
-    final bjjKey = bjj.PrivateKey(privateKey);
-    if (messHash != null) {
-      final signature = bjjKey.sign(messHash);
-      return signature;
-    } else {
-      throw const FormatException("message string couldnt be parsed as BigInt");
-    }
+  Future<String> signMessage(
+      {required Uint8List privateKey, required String message}) async {
+    final walletDs = getItSdk<WalletDataSource>();
+    return walletDs.signMessage(privateKey: privateKey, message: message);
   }
 
   Future<AuthBodyDidDocResponseDTO?> _getDidDoc({
@@ -1018,6 +923,11 @@ class Authenticate {
       context: const ["https://www.w3.org/ns/did/v1"],
       id: profileDid,
       service: [
+        AuthBodyDidDocServiceResponseDTO(
+          id: '$profileDid#mobile',
+          type: 'Iden3MobileServiceV1',
+          serviceEndpoint: 'iden3comm:v0.1:callbackHandler',
+        ),
         AuthBodyDidDocServiceResponseDTO(
           id: "$profileDid#push",
           type: "push-notification",
@@ -1051,7 +961,7 @@ class Authenticate {
       DioCacheInterceptor(
         options: CacheOptions(
           store: HiveCacheStore(path),
-          policy: CachePolicy.refreshForceCache,
+          policy: CachePolicy.request,
           hitCacheOnErrorExcept: [],
           maxStale: const Duration(days: 7),
           priority: CachePriority.high,
@@ -1062,7 +972,8 @@ class Authenticate {
     var publicKeyResponse =
         await dio.get(Uri.parse("$serviceEndpoint/public").toString());
 
-    if (publicKeyResponse.statusCode == 200) {
+    if (publicKeyResponse.statusCode == 200 ||
+        publicKeyResponse.statusCode == 304) {
       String publicKeyPem = publicKeyResponse.data;
       var publicKey = RSAKeyParser().parse(publicKeyPem) as RSAPublicKey;
       final encrypter =
@@ -1072,7 +983,13 @@ class Authenticate {
           .process(Uint8List.fromList(json.encode(pushInfo).codeUnits));
       return base64.encode(encrypted);
     } else {
-      throw NetworkException(publicKeyResponse);
+      _stacktraceManager.addError(
+        "[Authenticate] Error fetching public key: ${publicKeyResponse.statusCode} ${publicKeyResponse.statusMessage}",
+      );
+      throw NetworkException(
+        statusCode: publicKeyResponse.statusCode ?? 0,
+        errorMessage: publicKeyResponse.statusMessage ?? "",
+      );
     }
   }
 
@@ -1111,13 +1028,11 @@ class Authenticate {
     // Endianness
     BigInt endian = Uint8ArrayUtils.leBuff2int(sha);
 
-    String qNormalized = endian.qNormalize().toString();
+    BigInt qNormalized = endian.qNormalize();
 
-    var libBabyJubJub = getItSdk<LibBabyJubJubDataSource>();
+    String authChallenge = poseidon1([qNormalized]).toString();
 
-    String authChallenge = await libBabyJubJub.hashPoseidon(qNormalized);
-
-    String signature = signMessage(
+    String signature = await signMessage(
       privateKey: privateKeyBytes,
       message: authChallenge,
     );
@@ -1126,55 +1041,41 @@ class Authenticate {
         getItSdk<LibPolygonIdCoreIden3commDataSource>();
 
     AuthProofMapper authProofMapper = getItSdk<AuthProofMapper>();
-    GistMTProofMapper gistMTProofMapper = getItSdk<GistMTProofMapper>();
 
-    String authInputs = libPolygonIdCoreIden3commDataSource.getAuthInputs(
+    Uint8List authInputsBytes =
+        await libPolygonIdCoreIden3commDataSource.getAuthInputs(
       genesisDid: genesisDid,
       profileNonce: profileNonce,
       authClaim: authClaim,
       incProof: authProofMapper.mapTo(incProof),
       nonRevProof: authProofMapper.mapTo(nonRevProof),
-      gistProof: gistMTProofMapper.mapTo(gistProofEntity),
+      gistProof: gistProofEntity.toJson(),
       treeState: treeState,
       challenge: authChallenge,
       signature: signature,
     );
 
-    Uint8List authInputsBytes = Uint8ArrayUtils.uint8ListfromString(authInputs);
+    final appDir = await getApplicationDocumentsDirectory();
+    final circuitsDataSource = CircuitsFilesDataSource(appDir);
 
-    Directory appDir = await getApplicationDocumentsDirectory();
-    String appDocPath = appDir.path;
-
-    var circuitDatFileName = 'authV2.dat';
-    var circuitDatFilePath = '$appDocPath/$circuitDatFileName';
-    var circuitDatFile = File(circuitDatFilePath);
-
-    var circuitZkeyFileName = 'authV2.zkey';
-    var circuitZkeyFilePath = '$appDocPath/$circuitZkeyFileName';
-    var circuitZkeyFile = File(circuitZkeyFilePath);
-
-    Uint8List circuitsDatFileBytes = await circuitDatFile.readAsBytes();
-    Uint8List circuitsZkeyFileBytes = await circuitZkeyFile.readAsBytes();
-
-    List<Uint8List> circuitFiles = [
-      circuitsDatFileBytes,
-      circuitsZkeyFileBytes,
-    ];
+    final circuitDatFileBytes =
+        await circuitsDataSource.loadCircuitDatFile('authV2');
+    final zkeyFilePath = await circuitsDataSource.getZkeyFilePath('authV2');
 
     CircuitDataEntity circuitDataEntity = CircuitDataEntity(
       "authV2",
-      circuitFiles[0],
-      circuitFiles[1],
+      circuitDatFileBytes,
+      zkeyFilePath,
     );
 
     Uint8List witnessBytes = await proofRepository.calculateWitness(
-      circuitDataEntity,
-      authInputsBytes,
+      circuitData: circuitDataEntity,
+      atomicQueryInputs: authInputsBytes,
     );
 
     ZKProofEntity zkProofEntity = await proofRepository.prove(
-      circuitDataEntity,
-      witnessBytes,
+      circuitData: circuitDataEntity,
+      wtnsBytes: witnessBytes,
     );
 
     JWZEntity jwzZkProof = JWZEntity(
@@ -1189,11 +1090,17 @@ class Authenticate {
 
   String stringFromJwz(JWZEntity jwzEntity) {
     if (jwzEntity.header == null) {
-      throw NullJWZHeaderException();
+      _stacktraceManager.addError(
+        "[Authenticate] JWZ header is null",
+      );
+      throw NullJWZHeaderException(errorMessage: "JWZ header is null");
     }
 
     if (jwzEntity.payload == null) {
-      throw NullJWZPayloadException();
+      _stacktraceManager.addError(
+        "[Authenticate] JWZ payload is null",
+      );
+      throw NullJWZPayloadException(errorMessage: "JWZ payload is null");
     }
 
     String header = Base64Util.encode64(jsonEncode(jwzEntity.header));
@@ -1222,7 +1129,8 @@ class Authenticate {
     var libPolygonIdCredential =
         getItSdk<LibPolygonIdCoreCredentialDataSource>();
 
-    List<String> publicKey = BjjWallet(privateKeyBytes).publicKey;
+    final identityRepo = await getItSdk.getAsync<IdentityRepository>();
+    final publicKey = await identityRepo.getPublicKeys(privateKey: privateKey);
 
     String authClaimSchema = AUTH_CLAIM_SCHEMA;
     String issuedAuthClaim = libPolygonIdCredential.issueClaim(
@@ -1231,37 +1139,37 @@ class Authenticate {
       publicKey: publicKey,
     );
     authClaim = List.from(jsonDecode(issuedAuthClaim));
-    var libBabyJubJub = getItSdk<LibBabyJubJubDataSource>();
-    String hashIndex = await libBabyJubJub.hashPoseidon4(
-      authClaim[0],
-      authClaim[1],
-      authClaim[2],
-      authClaim[3],
-    );
-    String hashValue = await libBabyJubJub.hashPoseidon4(
-      authClaim[4],
-      authClaim[5],
-      authClaim[6],
-      authClaim[7],
-    );
-    String hashClaimNode = await libBabyJubJub.hashPoseidon3(
-        hashIndex, hashValue, BigInt.one.toString());
-    NodeDTO authClaimNode = NodeDTO(
+    BigInt hashIndex = poseidon4([
+      BigInt.parse(authClaim[0]),
+      BigInt.parse(authClaim[1]),
+      BigInt.parse(authClaim[2]),
+      BigInt.parse(authClaim[3]),
+    ]);
+    BigInt hashValue = poseidon4([
+      BigInt.parse(authClaim[4]),
+      BigInt.parse(authClaim[5]),
+      BigInt.parse(authClaim[6]),
+      BigInt.parse(authClaim[7]),
+    ]);
+    BigInt hashClaimNode = poseidon3([
+      hashIndex,
+      hashValue,
+      BigInt.one,
+    ]);
+    NodeEntity authClaimNode = NodeEntity(
       children: [
-        HashDTO.fromBigInt(BigInt.parse(hashIndex)),
-        HashDTO.fromBigInt(BigInt.parse(hashValue)),
-        HashDTO.fromBigInt(BigInt.one),
+        HashEntity.fromBigInt(hashIndex),
+        HashEntity.fromBigInt(hashValue),
+        HashEntity.fromBigInt(BigInt.one),
       ],
-      hash: HashDTO.fromBigInt(BigInt.parse(hashClaimNode)),
-      type: NodeTypeDTO.leaf,
+      hash: HashEntity.fromBigInt(hashClaimNode),
+      type: NodeType.leaf,
     );
-    NodeMapper nodeMapper = getItSdk<NodeMapper>();
-    NodeEntity nodeEntity = nodeMapper.mapFrom(authClaimNode);
 
     // INC PROOF
     SMTRepository smtRepository = getItSdk<SMTRepository>();
     incProof = await smtRepository.generateProof(
-      key: nodeEntity.hash,
+      key: authClaimNode.hash,
       type: TreeType.claims,
       did: genesisDid,
       privateKey: privateKey,
@@ -1269,7 +1177,7 @@ class Authenticate {
 
     // NON REV PROOF
     nonRevProof = await smtRepository.generateProof(
-      key: nodeEntity.hash,
+      key: authClaimNode.hash,
       type: TreeType.revocation,
       did: genesisDid,
       privateKey: privateKey,
@@ -1298,9 +1206,9 @@ class Authenticate {
     );
 
     String hash = await smtRepository.hashState(
-      claims: trees[0].data,
-      revocation: trees[1].data,
-      roots: trees[2].data,
+      claims: trees[0].string(),
+      revocation: trees[1].string(),
+      roots: trees[2].string(),
     );
 
     TreeStateEntity treeStateEntity = TreeStateEntity(
@@ -1331,12 +1239,8 @@ class Authenticate {
       envEntity: env,
     );
 
-    GistMTProofMapper gistMTProofMapper = getItSdk<GistMTProofMapper>();
-    GistMTProofDataSource gistMTProofDataSource =
-        getItSdk<GistMTProofDataSource>();
-    GistMTProofDTO gistMTProofDTO =
-        gistMTProofDataSource.getGistMTProof(gistProof);
-    gistProofEntity = gistMTProofMapper.mapFrom(gistMTProofDTO);
+    final gistMTProofDataSource = getItSdk<GistMTProofDataSource>();
+    gistProofEntity = gistMTProofDataSource.getGistMTProof(gistProof);
 
     return AuthClaimCompanionObject()
       ..authClaim = authClaim
@@ -1344,7 +1248,7 @@ class Authenticate {
       ..nonRevProof = nonRevProof
       ..gistProofEntity = gistProofEntity
       ..treeState = treeState
-      ..authClaimNode = nodeEntity;
+      ..authClaimNode = authClaimNode;
   }
 
   Future<Uint8List> _computeSigProof({
@@ -1411,15 +1315,17 @@ class Authenticate {
     Uint8List inputsJsonBytes;
     dynamic inputsJson = json.decode(sigProofInputs);
     if (inputsJson is Map<String, dynamic>) {
-      //Map<String, dynamic> inputs = json.decode(res);
-      Uint8List inputsJsonBytes = Uint8ArrayUtils.uint8ListfromString(
-          sigProofInputs /*json.encode(inputs["inputs"])*/);
+      Uint8List inputsJsonBytes =
+          Uint8ArrayUtils.uint8ListfromString(sigProofInputs);
       return inputsJsonBytes;
     } else if (inputsJson is String) {
       Uint8List inputsJsonBytes =
           Uint8ArrayUtils.uint8ListfromString(inputsJson);
       return inputsJsonBytes;
     }
+    _stacktraceManager.addError(
+      "[Authenticate] Error in _computeSigProof",
+    );
     throw Exception('Error in _computeSigProof');
   }
 
@@ -1446,6 +1352,9 @@ class Authenticate {
 
     // if circuit is not V3, we throw an exception
     if (!isCircuitSupported) {
+      _stacktraceManager.addError(
+        "[Authenticate] Operator $operator is not supported for circuit $circuitId",
+      );
       throw OperatorException(
         errorMessage:
             "Operator $operator is not supported for circuit $circuitId",

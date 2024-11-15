@@ -1,5 +1,8 @@
 import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/filters_mapper.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/cache_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/remote_claim_data_source.dart';
@@ -22,6 +25,7 @@ class CredentialRepositoryImpl extends CredentialRepository {
   final ClaimMapper _claimMapper;
   final FiltersMapper _filtersMapper;
   final IdFilterMapper _idFilterMapper;
+  final StacktraceManager _stacktraceManager;
 
   CredentialRepositoryImpl(
     this._remoteClaimDataSource,
@@ -31,19 +35,33 @@ class CredentialRepositoryImpl extends CredentialRepository {
     this._claimMapper,
     this._filtersMapper,
     this._idFilterMapper,
+    this._stacktraceManager,
   );
 
   @override
   Future<void> saveClaims(
       {required List<ClaimEntity> claims,
       required String genesisDid,
-      required String privateKey}) {
-    return _storageClaimDataSource
-        .storeClaims(
-            claims: claims.map((claim) => _claimMapper.mapTo(claim)).toList(),
-            did: genesisDid,
-            privateKey: privateKey)
-        .catchError((error) => throw SaveClaimException(error));
+      required String privateKey}) async {
+    try {
+      final List<ClaimDTO> claimDTOList =
+          claims.map((claim) => _claimMapper.mapTo(claim)).toList();
+      await _storageClaimDataSource.storeClaims(
+        claims: claimDTOList,
+        did: genesisDid,
+        privateKey: privateKey,
+      );
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
+    } catch (error) {
+      _stacktraceManager
+          .addError('Error while saving claims in the DB\n${error.toString()}');
+      throw SaveClaimException(
+        errorMessage:
+            'Error while saving claims in the DB\n${error.toString()}',
+        error: error,
+      );
+    }
   }
 
   @override
@@ -65,8 +83,15 @@ class CredentialRepositoryImpl extends CredentialRepository {
       final List<ClaimEntity> claimEntityList =
           claimDTOlist.map((claim) => _claimMapper.mapFrom(claim)).toList();
       return claimEntityList;
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
     } catch (error) {
-      throw GetClaimsException(error);
+      _stacktraceManager
+          .addError('Error while getting claims from DB\n${error.toString()}');
+      throw GetClaimsException(
+        errorMessage: "Error while getting claims from DB\n${error.toString()}",
+        error: error,
+      );
     }
   }
 
@@ -81,8 +106,15 @@ class CredentialRepositoryImpl extends CredentialRepository {
 
       ClaimEntity claimEntity = _claimMapper.mapFrom(claimDTO);
       return claimEntity;
-    } catch (e) {
+    } on PolygonIdSDKException catch (_) {
       rethrow;
+    } catch (e) {
+      _stacktraceManager
+          .addError('Error while getting claim from DB\n${e.toString()}');
+      throw ClaimNotFoundException(
+        id: claimId,
+        errorMessage: 'Credential not found',
+      );
     }
   }
 
@@ -101,7 +133,12 @@ class CredentialRepositoryImpl extends CredentialRepository {
       );
 
       if (claimDTOlist.isEmpty || claimDTOlist.length > 1) {
-        throw ClaimNotFoundException(partialId);
+        _stacktraceManager
+            .addError('Error while getting claim by partial id from DB\n');
+        throw ClaimNotFoundException(
+          id: partialId,
+          errorMessage: 'Credential by partial id not found',
+        );
       }
 
       ClaimEntity claimEntity = _claimMapper.mapFrom(claimDTOlist.first);
@@ -115,19 +152,45 @@ class CredentialRepositoryImpl extends CredentialRepository {
   Future<void> removeClaims(
       {required List<String> claimIds,
       required String genesisDid,
-      required String privateKey}) {
-    return _storageClaimDataSource
-        .removeClaims(
-            claimIds: claimIds, did: genesisDid, privateKey: privateKey)
-        .catchError((error) => throw RemoveClaimsException(error));
+      required String privateKey}) async {
+    try {
+      await _storageClaimDataSource.removeClaims(
+        claimIds: claimIds,
+        did: genesisDid,
+        privateKey: privateKey,
+      );
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
+    } catch (error) {
+      _stacktraceManager
+          .addError('Error while removing claims from DB\n${error.toString()}');
+      throw RemoveClaimsException(
+        errorMessage:
+            'Error while removing claims from DB\n${error.toString()}',
+        error: error,
+      );
+    }
   }
 
   @override
   Future<void> removeAllClaims(
-      {required String genesisDid, required String privateKey}) {
-    return _storageClaimDataSource
-        .removeAllClaims(did: genesisDid, privateKey: privateKey)
-        .catchError((error) => throw RemoveClaimsException(error));
+      {required String genesisDid, required String privateKey}) async {
+    try {
+      await _storageClaimDataSource.removeAllClaims(
+        did: genesisDid,
+        privateKey: privateKey,
+      );
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
+    } catch (error) {
+      _stacktraceManager.addError(
+          'Error while removing all claims from DB\n${error.toString()}');
+      throw RemoveClaimsException(
+        errorMessage:
+            'Error while removing all claims from DB\n${error.toString()}',
+        error: error,
+      );
+    }
   }
 
   Future<String> getRhsRevocationId({required ClaimEntity claim}) {
@@ -138,8 +201,15 @@ class CredentialRepositoryImpl extends CredentialRepository {
           .first
           .issuer
           .id);
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
     } catch (error) {
-      throw NullRevocationStatusException(claim);
+      _stacktraceManager
+          .addError('Error while getting revocation id\n${error.toString()}');
+      throw NullRevocationStatusException(
+        claim: claim,
+        errorMessage: 'error while getting revocation id',
+      );
     }
   }
 
@@ -165,18 +235,26 @@ class CredentialRepositoryImpl extends CredentialRepository {
   Future<int> getRevocationNonce(
       {required ClaimEntity claim, required bool rhs}) {
     try {
-      return Future.value(_claimMapper.mapTo(claim)).then((claimDTO) =>
-          (claimDTO.info.credentialStatus.type ==
-                  CredentialStatusType.reverseSparseMerkleTreeProof
-              ? (rhs
-                  ? claimDTO.info.credentialStatus.revocationNonce!
-                  : claimDTO
-                      .info.credentialStatus.statusIssuer!.revocationNonce!)
-              : (rhs == false
-                  ? claimDTO.info.credentialStatus.revocationNonce!
-                  : throw NullRevocationStatusException(claim))));
+      return Future.value(_claimMapper.mapTo(claim)).then(
+        (claimDTO) => (claimDTO.info.credentialStatus.type ==
+                CredentialStatusType.reverseSparseMerkleTreeProof
+            ? (rhs
+                ? claimDTO.info.credentialStatus.revocationNonce!
+                : claimDTO.info.credentialStatus.statusIssuer!.revocationNonce!)
+            : (rhs == false
+                ? claimDTO.info.credentialStatus.revocationNonce!
+                : throw NullRevocationStatusException(
+                    claim: claim,
+                    errorMessage: 'Revocation nonce not found',
+                  ))),
+      );
     } catch (error) {
-      throw NullRevocationStatusException(claim);
+      _stacktraceManager.addError(
+          'Error while getting revocation nonce\n${error.toString()}');
+      throw NullRevocationStatusException(
+        claim: claim,
+        errorMessage: 'error while getting revocation nonce',
+      );
     }
   }
 
@@ -192,9 +270,17 @@ class CredentialRepositoryImpl extends CredentialRepository {
                   : claimDTO.info.credentialStatus.statusIssuer!.id)
               : (rhs == false
                   ? claimDTO.info.credentialStatus.id
-                  : throw NullRevocationStatusException(claim))));
+                  : throw NullRevocationStatusException(
+                      claim: claim,
+                      errorMessage: 'Revocation url not found',
+                    ))));
     } catch (error) {
-      throw NullRevocationStatusException(claim);
+      _stacktraceManager
+          .addError('Error while getting revocation url\n${error.toString()}');
+      throw NullRevocationStatusException(
+        claim: claim,
+        errorMessage: 'error while getting revocation url',
+      );
     }
   }
 

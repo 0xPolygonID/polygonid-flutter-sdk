@@ -40,6 +40,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       privateKey: privateKey,
       blockchain: chain.blockchain,
       network: chain.network,
+      method: chain.method,
     );
     emit(HomeState.loaded(identifier: identifier));
   }
@@ -82,6 +83,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       privateKey: privateKey,
       blockchain: chain.blockchain,
       network: chain.network,
+      method: chain.method,
     );
 
     try {
