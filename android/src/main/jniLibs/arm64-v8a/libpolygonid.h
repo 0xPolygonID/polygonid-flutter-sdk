@@ -205,7 +205,13 @@ extern GoUint8 PLGNAtomicQueryV3OnChainInputs(char** jsonResponse, char* in, cha
 //
 extern GoUint8 PLGNALinkedMultiQueryInputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern void PLGNFreeStatus(PLGNStatus* status);
+
+// Deprecated: Use PLGNCleanCache2 instead. We need to support consistent path
+// to the cache directory. This function supposed the cache directory is empty
+// and should be calculated based on user's $HOME directory.
+//
 extern GoUint8 PLGNCleanCache(PLGNStatus** status);
+extern GoUint8 PLGNCleanCache2(char* cfg, PLGNStatus** status);
 extern GoUint8 PLGNCacheCredentials(char* in, char* cfg, PLGNStatus** status);
 
 // PLGNW3CCredentialFromOnchainHex returns a verifiable credential from an onchain data hex string.
@@ -243,6 +249,11 @@ extern GoUint8 PLGNW3CCredentialFromOnchainHex(char** jsonResponse, char* in, ch
 //	}
 //
 extern GoUint8 PLGNDescribeID(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+extern GoUint8 PLGNBabyJubJubSignPoseidon(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+extern GoUint8 PLGNBabyJubJubVerifyPoseidon(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+extern GoUint8 PLGNBabyJubJubPrivate2Public(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+extern GoUint8 PLGNBabyJubJubPublicUncompress(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+extern GoUint8 PLGNBabyJubJubPublicCompress(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 
 #ifdef __cplusplus
 }

@@ -39,7 +39,7 @@ class BjjProvider implements IKeyProvider {
 
     final kmsId = KmsKeyId(
       type: keyType,
-      id: keyPath(keyType, publicKey.hex()),
+      id: keyPath(keyType, publicKey.hex),
     );
     await keyStore.importKey(alias: kmsId.id, key: privateKey.hex());
 
@@ -52,7 +52,7 @@ class BjjProvider implements IKeyProvider {
   @override
   Future<String> publicKey(KmsKeyId keyId) async {
     final privateKey = await _privateKey(keyId);
-    return privateKey.public().hex();
+    return privateKey.public().hex;
   }
 
   /// signs prepared payload of size,
@@ -87,8 +87,7 @@ class BjjProvider implements IKeyProvider {
       Uint8List message, String signatureHex, KmsKeyId keyId) async {
     final publicKey = await this.publicKey(keyId);
 
-    final bytes = hexToBytes(publicKey);
-    final pbkey = PublicKey.newFromCompressed(bytesToUnsignedInt(bytes));
+    final pbkey = PublicKey.hex(publicKey);
 
     return pbkey.verify(
       Uint8ArrayUtils.uint8ListToString(message),

@@ -32,8 +32,7 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNNewGenesisID(response, in1, cfg, status);
 
-    // res 0 means error
-    if (res == 0) {
+    if (res == PLGNStatusCode.PLGNSTATUSCODE_ERROR.value) {
       final ConsumedStatusResult consumedStatus = consumeStatus(status);
       freeAllocatedMemory();
       _trackError(consumedStatus, "PLGNNewGenesisID");
@@ -74,8 +73,7 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNNewGenesisIDFromEth(response, in1, cfg, status);
 
-    // res 0 means error
-    if (res == 0) {
+    if (res == PLGNStatusCode.PLGNSTATUSCODE_ERROR.value) {
       final ConsumedStatusResult consumedStatus = consumeStatus(status);
       freeAllocatedMemory();
       _trackError(consumedStatus, "PLGNNewGenesisIDFromEth");
@@ -115,8 +113,7 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNProfileID(response, in1, status);
 
-    // res 0 means error
-    if (res == 0) {
+    if (res == PLGNStatusCode.PLGNSTATUSCODE_ERROR.value) {
       final ConsumedStatusResult consumedStatus = consumeStatus(status);
       freeAllocatedMemory();
       _trackError(consumedStatus, "PLGNProfileID");
@@ -158,8 +155,7 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
     int res =
         PolygonIdCore.nativePolygonIdCoreLib.PLGNIDToInt(response, in1, status);
 
-    // res 0 means error
-    if (res == 0) {
+    if (res == PLGNStatusCode.PLGNSTATUSCODE_ERROR.value) {
       final ConsumedStatusResult consumedStatus = consumeStatus(status);
       freeAllocatedMemory();
       _trackError(consumedStatus, "PLGNIDToInt");
@@ -203,8 +199,7 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
     int res = PolygonIdCore.nativePolygonIdCoreLib
         .PLGNDescribeID(response, in1, cfg, status);
 
-    // res 0 means error
-    if (res == 0) {
+    if (res == PLGNStatusCode.PLGNSTATUSCODE_ERROR.value) {
       final ConsumedStatusResult consumedStatus = consumeStatus(status);
       freeAllocatedMemory();
       _trackError(consumedStatus, "PLGNDescribeID");
