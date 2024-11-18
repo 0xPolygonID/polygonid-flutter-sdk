@@ -3,6 +3,8 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response
 class Iden3PaymentRequestCryptoV1Data extends PaymentRequestData {
   @override
   final String type;
+  final PaymentRequestDataType paymentRequestDataType =
+      PaymentRequestDataType.cryptoV1;
   final String amount;
   final String id;
   final String chainId;

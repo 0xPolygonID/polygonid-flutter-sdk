@@ -98,24 +98,18 @@ class PaymentRequestBody {
 
 class PaymentRequest {
   final List<CredentialInfo> credentials;
-  final String type;
   final List<PaymentRequestData> data;
-  final String expiration;
   final String description;
 
   PaymentRequest({
     required this.credentials,
-    required this.type,
     required this.data,
     required this.description,
-    required this.expiration,
   });
 
   factory PaymentRequest.fromJson(Map<String, dynamic> json) {
     return PaymentRequest(
-      type: json['type'],
       description: json['description'],
-      expiration: json['expiration'] ?? '',
       credentials: (json['credentials'] as List<dynamic>)
           .map((x) => CredentialInfo.fromJson(x))
           .toList(),
@@ -127,13 +121,17 @@ class PaymentRequest {
 
   Map<String, dynamic> toJson() {
     return {
-      "type": type,
       "description": description,
-      "expiration": expiration,
       "credentials": credentials.map((e) => e.toJson()).toList(),
       "data": data.map((e) => e.toJson()).toList(),
     };
   }
+}
+
+enum PaymentRequestDataType {
+  cryptoV1,
+  railsV1,
+  railsERC20V1,
 }
 
 class PaymentRequestDataFactory {
@@ -191,6 +189,7 @@ class CredentialInfo {
 
 abstract class PaymentRequestData {
   String get type;
+  PaymentRequestDataType get paymentRequestDataType;
 
   Map<String, dynamic> toJson();
 }

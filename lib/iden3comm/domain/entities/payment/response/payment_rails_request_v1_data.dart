@@ -13,6 +13,10 @@ class Iden3PaymentRailsRequestV1Data extends PaymentRequestData {
   final String metadata;
   final List<PaymentRequestDataProof> proof;
 
+  @override
+  PaymentRequestDataType get paymentRequestDataType =>
+      PaymentRequestDataType.railsV1;
+
   Iden3PaymentRailsRequestV1Data({
     required this.type,
     required this.context,

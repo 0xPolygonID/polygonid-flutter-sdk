@@ -1,33 +1,39 @@
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_rails_request_v1_data.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_request_data_proof.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_request_message_entity.dart';
 
-class Iden3PaymentRailsERC20RequestV1Data extends PaymentRequestData {
-  @override
-  final String type;
-  final List<String> context;
+class Iden3PaymentRailsERC20RequestV1Data
+    extends Iden3PaymentRailsRequestV1Data {
   final String tokenAddress;
-  final String recipient;
-  final String amount;
-  final String currency;
-  final String expirationDate;
-  final String nonce;
-  final String metadata;
   final List<String>? features;
-  final List<PaymentRequestDataProof> proof;
+
+  @override
+  PaymentRequestDataType get paymentRequestDataType =>
+      PaymentRequestDataType.railsERC20V1;
 
   Iden3PaymentRailsERC20RequestV1Data({
-    required this.type,
-    required this.context,
+    required String type,
+    required List<String> context,
+    required String recipient,
+    required String amount,
+    required String currency,
+    required String expirationDate,
+    required String nonce,
+    required String metadata,
+    required List<PaymentRequestDataProof> proof,
     required this.tokenAddress,
-    required this.recipient,
-    required this.amount,
-    required this.currency,
-    required this.expirationDate,
-    required this.nonce,
-    required this.metadata,
     this.features,
-    required this.proof,
-  });
+  }) : super(
+          type: type,
+          context: context,
+          recipient: recipient,
+          amount: amount,
+          currency: currency,
+          expirationDate: expirationDate,
+          nonce: nonce,
+          metadata: metadata,
+          proof: proof,
+        );
 
   factory Iden3PaymentRailsERC20RequestV1Data.fromJson(
       Map<String, dynamic> json) {
@@ -51,23 +57,11 @@ class Iden3PaymentRailsERC20RequestV1Data extends PaymentRequestData {
 
   @override
   Map<String, dynamic> toJson() {
-    final json = {
-      "@context": context,
-      "type": type,
-      "tokenAddress": tokenAddress,
-      "recipient": recipient,
-      "amount": amount,
-      "currency": currency,
-      "expirationDate": expirationDate,
-      "nonce": nonce,
-      "metadata": metadata,
-      "proof": proof.map((e) => e.toJson()).toList(),
-    };
-
+    final json = super.toJson();
+    json['tokenAddress'] = tokenAddress;
     if (features != null) {
       json['features'] = features!;
     }
-
     return json;
   }
 }

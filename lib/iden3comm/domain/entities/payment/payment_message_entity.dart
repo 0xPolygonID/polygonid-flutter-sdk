@@ -44,7 +44,7 @@ class PaymentBody {
   factory PaymentBody.fromJson(Map<String, dynamic> json) {
     return PaymentBody(
       payments:
-      List<Payment>.from(json['payments'].map((x) => Payment.fromJson(x))),
+          List<Payment>.from(json['payments'].map((x) => Payment.fromJson(x))),
     );
   }
 
@@ -95,10 +95,10 @@ class Iden3PaymentCryptoV1 extends Payment {
     String? context,
     required PaymentData paymentData,
   }) : super(
-    type: "Iden3PaymentCryptoV1",
-    context: context,
-    paymentData: paymentData,
-  );
+          type: "Iden3PaymentCryptoV1",
+          context: context,
+          paymentData: paymentData,
+        );
 
   factory Iden3PaymentCryptoV1.fromJson(Map<String, dynamic> json) {
     String? id = json['id'];
@@ -134,10 +134,10 @@ class Iden3PaymentRailsV1 extends Payment {
     String? context,
     required PaymentData paymentData,
   }) : super(
-    type: "Iden3PaymentRailsV1",
-    context: context,
-    paymentData: paymentData,
-  );
+          type: "Iden3PaymentRailsV1",
+          context: context,
+          paymentData: paymentData,
+        );
 
   factory Iden3PaymentRailsV1.fromJson(Map<String, dynamic> json) {
     String? nonce = json['nonce'];
@@ -173,10 +173,10 @@ class Iden3PaymentRailsERC20V1 extends Payment {
     String? context,
     required PaymentData paymentData,
   }) : super(
-    type: "Iden3PaymentRailsERC20V1",
-    context: context,
-    paymentData: paymentData,
-  );
+          type: "Iden3PaymentRailsERC20V1",
+          context: context,
+          paymentData: paymentData,
+        );
 
   factory Iden3PaymentRailsERC20V1.fromJson(Map<String, dynamic> json) {
     String? nonce = json['nonce'];
