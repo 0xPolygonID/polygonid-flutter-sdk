@@ -185,7 +185,7 @@ class ProofRepositoryImpl extends ProofRepository {
     try {
       Uint8List? witness = await _witnessDataSource.computeWitness(
         inputsJson: atomicQueryInputs,
-        circuitGraphFile: circuitData.graphFile,
+        circuitGraphFile: circuitData.witnessCalculationData,
       );
       if (witness == null) {
         throw NullWitnessException(
