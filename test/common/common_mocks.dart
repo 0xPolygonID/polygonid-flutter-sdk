@@ -48,6 +48,7 @@ class CommonMocks {
     'yep': 4
   };
   static Uint8List aBytes = Uint8List(32);
+  static String inputs = "inputs";
   static String hash = "theHash";
   static Exception exception = Exception(message);
   static String blockchain = "theBlockchain";

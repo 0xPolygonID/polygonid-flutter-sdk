@@ -119,6 +119,11 @@ If you want to deploy your own State Contract, please check the [contract docume
 
 You can get the current env using [PolygonIdSdk.I.getEnv()](lib/sdk/polygon_id_sdk.dart#L76).
 
+# Witness calculation
+
+To generate proofs, you need to use witness calculation data (.wcd) files. Common .wcd files are provided in the [assets](assets) folder.
+Place them under the `assets` folder in your project.
+
 # Deploy and check
 ### Deploy
 1. Clone this repository.

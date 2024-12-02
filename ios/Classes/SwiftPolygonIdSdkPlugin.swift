@@ -46,29 +46,5 @@ public class SwiftPolygonIdSdkPlugin: NSObject, FlutterPlugin {
         PLGNBabyJubJubPrivate2Public(nil, nil, nil, nil);
         PLGNBabyJubJubPublicUncompress(nil, nil, nil, nil);
         PLGNBabyJubJubPublicCompress(nil, nil, nil, nil);
-        
-        // witnesscalc authv2 bindings
-        witnesscalc_authV2(nil, 0, nil, 0, nil, nil, nil, 0);
-        
-        // witnesscalc sigv2 bindings
-        witnesscalc_credentialAtomicQuerySigV2(nil, 0, nil, 0, nil, nil, nil, 0);
-        
-        // witnesscalc sigv2 onchain bindings
-        witnesscalc_credentialAtomicQuerySigV2OnChain(nil, 0, nil, 0, nil, nil, nil, 0);
-        
-        // witnesscalc mtpv2 bindings
-        witnesscalc_credentialAtomicQueryMTPV2(nil, 0, nil, 0, nil, nil, nil, 0);
-        
-        // witnesscalc mtpv2 onchain bindings
-        witnesscalc_credentialAtomicQueryMTPV2OnChain(nil, 0, nil, 0, nil, nil, nil, 0);
-
-        // witnesscalc v3 bindings
-        witnesscalc_credentialAtomicQueryV3(nil, 0, nil, 0, nil, nil, nil, 0);
-
-        // witnesscalc v3 onchain bindings
-        witnesscalc_credentialAtomicQueryV3OnChain(nil, 0, nil, 0, nil, nil, nil, 0);
-
-        // witnesscalc linked multi query 10 bindings
-        witnesscalc_linkedMultiQuery10(nil, 0, nil, 0, nil, nil, nil, 0);
     }
 }

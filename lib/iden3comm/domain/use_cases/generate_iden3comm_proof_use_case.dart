@@ -248,7 +248,7 @@ class GenerateIden3commProofUseCase
     );
 
     final inputs = json.encode(inputsJson["inputs"]);
-    final atomicQueryInputs = Uint8ArrayUtils.uint8ListfromString(inputs);
+    final atomicQueryInputs = inputs;
 
     if (kDebugMode) {
       //just for debug
