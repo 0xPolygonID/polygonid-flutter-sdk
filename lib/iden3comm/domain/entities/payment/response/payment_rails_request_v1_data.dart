@@ -7,7 +7,6 @@ class Iden3PaymentRailsRequestV1Data extends PaymentRequestData {
   final List<String> context;
   final String recipient;
   final String amount;
-  final String currency;
   final String expirationDate;
   final String nonce;
   final String metadata;
@@ -22,7 +21,6 @@ class Iden3PaymentRailsRequestV1Data extends PaymentRequestData {
     required this.context,
     required this.recipient,
     required this.amount,
-    required this.currency,
     required this.expirationDate,
     required this.nonce,
     required this.metadata,
@@ -35,7 +33,6 @@ class Iden3PaymentRailsRequestV1Data extends PaymentRequestData {
       context: List<String>.from(json['@context']),
       recipient: json['recipient'],
       amount: json['amount'],
-      currency: json['currency'],
       expirationDate: json['expirationDate'],
       nonce: json['nonce'],
       metadata: json['metadata'],
@@ -52,7 +49,6 @@ class Iden3PaymentRailsRequestV1Data extends PaymentRequestData {
       "type": type,
       "recipient": recipient,
       "amount": amount,
-      "currency": currency,
       "expirationDate": expirationDate,
       "nonce": nonce,
       "metadata": metadata,
