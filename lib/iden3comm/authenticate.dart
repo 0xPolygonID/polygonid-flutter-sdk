@@ -384,14 +384,14 @@ class Authenticate {
       final appDir = await getApplicationDocumentsDirectory();
       final circuitsDataSource = CircuitsFilesDataSource(appDir);
 
-      final circuitDatFileBytes = await circuitsDataSource
-          .loadCircuitDatFile(proofRequest.scope.circuitId);
+      final graphFileBytes =
+          await circuitsDataSource.loadGraphFile(proofRequest.scope.circuitId);
       final zkeyFilePath = await circuitsDataSource
           .getZkeyFilePath(proofRequest.scope.circuitId);
 
       CircuitDataEntity circuitDataEntity = CircuitDataEntity(
         proofRequest.scope.circuitId,
-        circuitDatFileBytes,
+        graphFileBytes,
         zkeyFilePath,
       );
 
@@ -455,12 +455,10 @@ class Authenticate {
       final inputsString = Uint8ArrayUtils.uint8ListToString(res);
 
       dynamic inputsJson = json.decode(inputsString);
-      Uint8List atomicQueryInputs = Uint8ArrayUtils.uint8ListfromString(
-          json.encode(inputsJson["inputs"]));
+      final atomicQueryInputs = json.encode(inputsJson["inputs"]);
       if (kDebugMode) {
         //just for debug
-        String inputs = Uint8ArrayUtils.uint8ListToString(atomicQueryInputs);
-        logger().i("atomicQueryInputs: $inputs");
+        logger().i("atomicQueryInputs: $atomicQueryInputs");
       }
 
       var vpProof;
@@ -1000,8 +998,7 @@ class Authenticate {
     LibPolygonIdCoreIden3commDataSource libPolygonIdCoreIden3commDataSource =
         getItSdk<LibPolygonIdCoreIden3commDataSource>();
 
-    Uint8List authInputsBytes =
-        await libPolygonIdCoreIden3commDataSource.getAuthInputs(
+    String authInputs = await libPolygonIdCoreIden3commDataSource.getAuthInputs(
       genesisDid: genesisDid,
       profileNonce: profileNonce,
       authClaim: authClaim,
@@ -1017,7 +1014,7 @@ class Authenticate {
     final circuitsDataSource = CircuitsFilesDataSource(appDir);
 
     final circuitDatFileBytes =
-        await circuitsDataSource.loadCircuitDatFile('authV2');
+        await circuitsDataSource.loadGraphFile('authV2');
     final zkeyFilePath = await circuitsDataSource.getZkeyFilePath('authV2');
 
     CircuitDataEntity circuitDataEntity = CircuitDataEntity(
@@ -1028,7 +1025,7 @@ class Authenticate {
 
     Uint8List witnessBytes = await proofRepository.calculateWitness(
       circuitData: circuitDataEntity,
-      atomicQueryInputs: authInputsBytes,
+      atomicQueryInputs: authInputs,
     );
 
     ZKProofEntity zkProofEntity = await proofRepository.prove(

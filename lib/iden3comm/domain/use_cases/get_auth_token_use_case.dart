@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
@@ -60,7 +58,7 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
       logger().i(
           'GetAuthTokenUseCase: getAuthChallengeUseCase at ${stopwatch.elapsedMilliseconds} ms');
 
-      Uint8List authInputs = await _getAuthInputsUseCase.execute(
+      final authInputs = await _getAuthInputsUseCase.execute(
         param: GetAuthInputsParam(
           authChallenge,
           param.genesisDid,

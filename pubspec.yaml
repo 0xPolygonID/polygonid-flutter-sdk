@@ -1,6 +1,6 @@
 name: polygonid_flutter_sdk
 description: PolygonID Flutter SDK (https://polygon.technology/polygon-id). This plugin provides a cross-platform tool (iOS, Android) to integrate the PolygonID solution.
-version: 2.3.7
+version: 2.4.0
 homepage: https://polygon.technology/polygon-id
 repository: https://github.com/0xPolygonID/polygonid-flutter-sdk
 issue_tracker: https://github.com/0xPolygonID/polygonid-flutter-sdk/issues
@@ -44,6 +44,7 @@ dependencies:
   background_downloader: ^8.5.5
   poseidon: ^0.0.1
   flutter_rapidsnark: 0.0.1-alpha.3
+  circom_witnesscalc: 0.0.1-alpha.1
 
 dev_dependencies:
   flutter_test:
@@ -58,69 +59,12 @@ dev_dependencies:
 ffigen:
   # dart run ffigen
 
-  #name: NativeWitnessLinkedMultiQuery10Lib
-  #description: Bindings to `ios/Classes/witnesscalc_linkedMultiQuery10.h`.
-  #output: 'lib/proof/libs/witnesscalc/linked_multi_query_10/native_witness_linked_multi_query_10.dart'
-  #headers:
-  #    entry-points:
-  #    - 'ios/Classes/witnesscalc_linkedMultiQuery10.h'
-
-  #name: NativeWitnessV3OnchainLib
-  #description: Bindings to `ios/Classes/witnesscalc_credentialAtomicQueryV3OnChain.h`.
-  #output: 'lib/proof/libs/witnesscalc/v3_onchain/native_witness_v3_onchain.dart'
-  #headers:
-  #  entry-points:
-  #    - 'ios/Classes/witnesscalc_credentialAtomicQueryV3OnChain.h'
-
-  #name: NativeWitnessV3Lib
-  #description: Bindings to `ios/Classes/witnesscalc_credentialAtomicQueryV3.h`.
-  #output: 'lib/proof/libs/witnesscalc/v3/native_witness_v3.dart'
-  #headers:
-  #  entry-points:
-  #    - 'ios/Classes/witnesscalc_credentialAtomicQueryV3.h'
-
   name: NativePolygonIdCoreLib
   description: Bindings to `ios/Classes/libpolygonid.h`.
   output: 'lib/common/libs/polygonidcore/native_polygonidcore.dart'
   headers:
     entry-points:
       - 'ios/Frameworks/libpolygonid.xcframework/libpolygonid.h'
-
-  # name: WitnessMtpLib
-  # description: Bindings to `ios/Classes/witnesscalc_credentialAtomicQueryMTPV2.h`.
-  # output: 'lib/proof/libs/mtp_v2/native_witness_mtp_v2.dart'
-  # headers:
-  #  entry-points:
-  #    - 'ios/Classes/witnesscalc_mtp.h'
-
-  # name: WitnessLib
-  # description: Bindings to `ios/Classes/witnesscalc.h`.
-  # output: 'lib/libs/generated_bindings_witness.dart'
-  # headers:
-  #  entry-points:
-  #   - 'ios/Classes/witnesscalc.h'
-
-  #name: NativeWitnessMtpOnchainLib
-  #description: Bindings to `ios/Classes/witnesscalc_credentialAtomicQueryMTPV2OnChain.h`.
-  #output: 'lib/proof/libs/witnesscalc/mtp_v2_onchain/native_witness_mtp_v2_onchain.dart'
-  #headers:
-  #  entry-points:
-  #    - 'ios/Classes/witnesscalc_credentialAtomicQueryMTPV2OnChain.h'
-
-  #name: NativeWitnessSigOnchainLib
-  #description: Bindings to `ios/Classes/witnesscalc_credentialAtomicQuerySigV2OnChain.h`.
-  #output: 'lib/proof/libs/witnesscalc/sig_v2_onchain/native_witness_sig_v2_onchain.dart'
-  #headers:
-  #  entry-points:
-  #    - 'ios/Classes/witnesscalc_credentialAtomicQuerySigV2OnChain.h'
-
-
-  # name: ProverLib
-  # description: Bindings to `ios/Classes/prover.h`.
-  # output: 'lib/libs/generated_bindings_prover.dart'
-  # headers:
-  # entry-points:
-  # - 'ios/Classes/prover.h'
 
 flutter:
   plugin:

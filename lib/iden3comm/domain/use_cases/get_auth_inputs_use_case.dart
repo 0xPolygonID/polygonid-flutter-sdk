@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
@@ -31,8 +29,7 @@ class GetAuthInputsParam {
       this.challenge, this.genesisDid, this.profileNonce, this.privateKey);
 }
 
-class GetAuthInputsUseCase
-    extends FutureUseCase<GetAuthInputsParam, Uint8List> {
+class GetAuthInputsUseCase extends FutureUseCase<GetAuthInputsParam, String> {
   final GetIdentityUseCase _getIdentityUseCase;
   final CredentialRepository _credentialRepository;
   final SignMessageUseCase _signMessageUseCase;
@@ -56,7 +53,7 @@ class GetAuthInputsUseCase
   );
 
   @override
-  Future<Uint8List> execute({required GetAuthInputsParam param}) async {
+  Future<String> execute({required GetAuthInputsParam param}) async {
     final stopwatch = Stopwatch()..start();
     try {
       IdentityEntity identity = await _getIdentityUseCase.execute(
@@ -125,7 +122,7 @@ class GetAuthInputsUseCase
       logger().i(
           'GetAuthInputsUseCase: got all for inputs in: ${stopwatch.elapsedMilliseconds} ms');
 
-      Uint8List authInputs = await _iden3commRepository.getAuthInputs(
+      final authInputs = await _iden3commRepository.getAuthInputs(
         genesisDid: param.genesisDid,
         profileNonce: param.profileNonce,
         challenge: param.challenge,
