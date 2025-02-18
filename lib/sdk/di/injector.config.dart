@@ -19,6 +19,18 @@ import 'package:http/http.dart' as _i519;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:logger/logger.dart' as _i974;
 import 'package:package_info_plus/package_info_plus.dart' as _i655;
+import 'package:polygonid_flutter_sdk/circuits/data/circuits_data_source.dart'
+    as _i769;
+import 'package:polygonid_flutter_sdk/circuits/domain/cancel_circuits_download_use_case.dart'
+    as _i37;
+import 'package:polygonid_flutter_sdk/circuits/domain/circuits_already_downloaded_and_checksum_are_valid_use_case.dart'
+    as _i515;
+import 'package:polygonid_flutter_sdk/circuits/domain/circuits_repository.dart'
+    as _i1000;
+import 'package:polygonid_flutter_sdk/circuits/domain/download_circuits_use_case.dart'
+    as _i521;
+import 'package:polygonid_flutter_sdk/circuits/domain/remove_circuits_use_case.dart'
+    as _i737;
 import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/filter_mapper.dart'
     as _i325;
 import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/filters_mapper.dart'
@@ -338,6 +350,7 @@ import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stre
     as _i920;
 import 'package:polygonid_flutter_sdk/proof/libs/polygonidcore/pidcore_proof.dart'
     as _i961;
+import 'package:polygonid_flutter_sdk/sdk/circuits.dart' as _i610;
 import 'package:polygonid_flutter_sdk/sdk/credential.dart' as _i501;
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart' as _i335;
 import 'package:polygonid_flutter_sdk/sdk/error_handling.dart' as _i795;
@@ -544,6 +557,11 @@ extension GetItInjectableX on _i174.GetIt {
             gh<_i425.SecureInteractionStoreRefWrapper>()));
     gh.factory<_i383.WalletDataSource>(
         () => _i383.WalletDataSource(gh<_i383.WalletLibWrapper>()));
+    gh.factoryAsync<_i769.CircuitsDataSource>(
+        () async => _i769.CircuitsDataSource(
+              await getAsync<_i497.Directory>(),
+              gh<_i361.Dio>(),
+            ));
     gh.factory<_i910.Iden3commCredentialRepositoryImpl>(
         () => _i910.Iden3commCredentialRepositoryImpl(
               gh<_i409.RemoteIden3commDataSource>(),
@@ -625,6 +643,9 @@ extension GetItInjectableX on _i174.GetIt {
             ));
     gh.factory<_i258.DidProfileInfoRepository>(() => repositoriesModule
         .didProfileInfoRepository(gh<_i66.DidProfileInfoRepositoryImpl>()));
+    gh.factoryAsync<_i1000.CircuitsRepositoryImpl>(() async =>
+        _i1000.CircuitsRepositoryImpl(
+            circuitsDataSource: await getAsync<_i769.CircuitsDataSource>()));
     gh.factory<_i893.AddDidProfileInfoUseCase>(() =>
         _i893.AddDidProfileInfoUseCase(gh<_i258.DidProfileInfoRepository>()));
     gh.factory<_i616.GetDidProfileInfoUseCase>(() =>
@@ -640,6 +661,8 @@ extension GetItInjectableX on _i174.GetIt {
               await getAsync<_i310.Database>(),
               gh<_i525.KeyValueStoreRefWrapper>(),
             ));
+    gh.factoryAsync<_i1000.CircuitsRepository>(() async => repositoriesModule
+        .circuitsRepository(await getAsync<_i1000.CircuitsRepositoryImpl>()));
     gh.factory<_i238.FetchSchemaUseCase>(() =>
         _i238.FetchSchemaUseCase(gh<_i698.Iden3commCredentialRepository>()));
     gh.factory<_i233.GetSchemasUseCase>(() =>
@@ -653,6 +676,18 @@ extension GetItInjectableX on _i174.GetIt {
               gh<_i631.GetProofQueryContextUseCase>(),
               gh<_i267.StacktraceManager>(),
             ));
+    gh.factoryAsync<_i37.CancelCircuitsDownloadUseCase>(() async =>
+        _i37.CancelCircuitsDownloadUseCase(
+            await getAsync<_i1000.CircuitsRepository>()));
+    gh.factoryAsync<_i521.DownloadCircuitsUseCase>(() async =>
+        _i521.DownloadCircuitsUseCase(
+            await getAsync<_i1000.CircuitsRepository>()));
+    gh.factoryAsync<_i737.RemoveCircuitsUseCase>(() async =>
+        _i737.RemoveCircuitsUseCase(
+            await getAsync<_i1000.CircuitsRepository>()));
+    gh.factoryAsync<_i515.CircuitsAlreadyDownloadedAndChecksumAreValidUseCase>(
+        () async => _i515.CircuitsAlreadyDownloadedAndChecksumAreValidUseCase(
+            await getAsync<_i1000.CircuitsRepository>()));
     gh.factoryAsync<_i1012.InteractionRepository>(() async =>
         repositoriesModule.interactionRepository(
             await getAsync<_i548.InteractionRepositoryImpl>()));
@@ -687,6 +722,13 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i359.CleanSchemaCacheUseCase(gh<_i88.Iden3commRepository>()));
     gh.factory<_i309.CredentialRepository>(() => repositoriesModule
         .credentialRepository(gh<_i550.CredentialRepositoryImpl>()));
+    gh.factoryAsync<_i610.Circuits>(() async => _i610.Circuits(
+          await getAsync<_i521.DownloadCircuitsUseCase>(),
+          await getAsync<
+              _i515.CircuitsAlreadyDownloadedAndChecksumAreValidUseCase>(),
+          await getAsync<_i37.CancelCircuitsDownloadUseCase>(),
+          await getAsync<_i737.RemoveCircuitsUseCase>(),
+        ));
     gh.factory<_i53.GetClaimRevocationNonceUseCase>(() =>
         _i53.GetClaimRevocationNonceUseCase(gh<_i309.CredentialRepository>()));
     gh.factory<_i227.GetCredentialByIdUseCase>(

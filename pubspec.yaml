@@ -45,6 +45,7 @@ dependencies:
   poseidon: ^0.0.1
   flutter_rapidsnark: 0.0.1-beta.1
   circom_witnesscalc: 0.0.1-alpha.3
+  md5_file_checksum: ^1.0.6
 
 dev_dependencies:
   flutter_test:
