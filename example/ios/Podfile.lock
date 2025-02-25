@@ -4,88 +4,78 @@ PODS:
   - camera_avfoundation (0.0.1):
     - Flutter
   - circom_witnesscalc (0.0.1):
-    - CircomWitnesscalc (= 0.0.1-alpha.2)
+    - CircomWitnesscalc (= 0.0.1-alpha.3)
     - Flutter
-  - CircomWitnesscalc (0.0.1-alpha.2):
-    - CircomWitnesscalc/CircomWitnesscalc (= 0.0.1-alpha.2)
-  - CircomWitnesscalc/C (0.0.1-alpha.2)
-  - CircomWitnesscalc/CircomWitnesscalc (0.0.1-alpha.2):
-    - CircomWitnesscalc/C
-  - CryptoSwift (1.8.3)
+  - CircomWitnesscalc (0.0.1-alpha.3):
+    - CircomWitnesscalc/CircomWitnesscalc (= 0.0.1-alpha.3)
+  - CircomWitnesscalc/CircomWitnesscalc (0.0.1-alpha.3):
+    - "CircomWitnesscalc/сircomWitnesscalcС"
+  - "CircomWitnesscalc/сircomWitnesscalcС (0.0.1-alpha.3)"
+  - CryptoSwift (1.8.4)
   - Flutter (1.0.0)
-  - flutter_rapidsnark (0.0.1):
+  - flutter_rapidsnark (0.0.1-beta.3):
     - Flutter
-    - rapidsnark (= 0.0.1-alpha.5)
+    - rapidsnark (= 0.0.1-beta.2)
   - flutter_secure_storage (6.0.0):
     - Flutter
-  - google_mlkit_barcode_scanning (0.7.0):
+  - google_mlkit_barcode_scanning (0.13.0):
     - Flutter
     - google_mlkit_commons
-    - GoogleMLKit/BarcodeScanning (~> 4.0.0)
-  - google_mlkit_commons (0.4.0):
+    - GoogleMLKit/BarcodeScanning (~> 7.0.0)
+  - google_mlkit_commons (0.9.0):
     - Flutter
     - MLKitVision
-  - GoogleDataTransport (9.4.1):
-    - GoogleUtilities/Environment (~> 7.7)
-    - nanopb (< 2.30911.0, >= 2.30908.0)
-    - PromisesObjC (< 3.0, >= 1.2)
-  - GoogleMLKit/BarcodeScanning (4.0.0):
+  - GoogleDataTransport (10.1.0):
+    - nanopb (~> 3.30910.0)
+    - PromisesObjC (~> 2.4)
+  - GoogleMLKit/BarcodeScanning (7.0.0):
     - GoogleMLKit/MLKitCore
-    - MLKitBarcodeScanning (~> 3.0.0)
-  - GoogleMLKit/MLKitCore (4.0.0):
-    - MLKitCommon (~> 9.0.0)
-  - GoogleToolboxForMac/DebugUtils (2.3.2):
-    - GoogleToolboxForMac/Defines (= 2.3.2)
-  - GoogleToolboxForMac/Defines (2.3.2)
-  - GoogleToolboxForMac/Logger (2.3.2):
-    - GoogleToolboxForMac/Defines (= 2.3.2)
-  - "GoogleToolboxForMac/NSData+zlib (2.3.2)":
-    - GoogleToolboxForMac/Defines (= 2.3.2)
-  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.3.2)":
-    - GoogleToolboxForMac/DebugUtils (= 2.3.2)
-    - GoogleToolboxForMac/Defines (= 2.3.2)
-    - "GoogleToolboxForMac/NSString+URLArguments (= 2.3.2)"
-  - "GoogleToolboxForMac/NSString+URLArguments (2.3.2)"
-  - GoogleUtilities/Environment (7.13.3):
+    - MLKitBarcodeScanning (~> 6.0.0)
+  - GoogleMLKit/MLKitCore (7.0.0):
+    - MLKitCommon (~> 12.0.0)
+  - GoogleToolboxForMac/Defines (4.2.1)
+  - GoogleToolboxForMac/Logger (4.2.1):
+    - GoogleToolboxForMac/Defines (= 4.2.1)
+  - "GoogleToolboxForMac/NSData+zlib (4.2.1)":
+    - GoogleToolboxForMac/Defines (= 4.2.1)
+  - GoogleUtilities/Environment (8.0.2):
     - GoogleUtilities/Privacy
-    - PromisesObjC (< 3.0, >= 1.2)
-  - GoogleUtilities/Logger (7.13.3):
+  - GoogleUtilities/Logger (8.0.2):
     - GoogleUtilities/Environment
     - GoogleUtilities/Privacy
-  - GoogleUtilities/Privacy (7.13.3)
-  - GoogleUtilities/UserDefaults (7.13.3):
+  - GoogleUtilities/Privacy (8.0.2)
+  - GoogleUtilities/UserDefaults (8.0.2):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
-  - GoogleUtilitiesComponents (1.1.0):
-    - GoogleUtilities/Logger
-  - GTMSessionFetcher/Core (2.3.0)
+  - GTMSessionFetcher/Core (3.5.0)
   - image_picker_ios (0.0.1):
     - Flutter
   - integration_test (0.0.1):
     - Flutter
-  - MLImage (1.0.0-beta4)
-  - MLKitBarcodeScanning (3.0.0):
-    - MLKitCommon (~> 9.0)
-    - MLKitVision (~> 5.0)
-  - MLKitCommon (9.0.0):
-    - GoogleDataTransport (~> 9.0)
-    - GoogleToolboxForMac/Logger (~> 2.1)
-    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
-    - "GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)"
-    - GoogleUtilities/UserDefaults (~> 7.0)
-    - GoogleUtilitiesComponents (~> 1.0)
-    - GTMSessionFetcher/Core (< 3.0, >= 1.1)
-  - MLKitVision (5.0.0):
-    - GoogleToolboxForMac/Logger (~> 2.1)
-    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
-    - GTMSessionFetcher/Core (< 3.0, >= 1.1)
-    - MLImage (= 1.0.0-beta4)
-    - MLKitCommon (~> 9.0)
-  - nanopb (2.30910.0):
-    - nanopb/decode (= 2.30910.0)
-    - nanopb/encode (= 2.30910.0)
-  - nanopb/decode (2.30910.0)
-  - nanopb/encode (2.30910.0)
+  - md5_file_checksum (1.0.3):
+    - Flutter
+  - MLImage (1.0.0-beta6)
+  - MLKitBarcodeScanning (6.0.0):
+    - MLKitCommon (~> 12.0)
+    - MLKitVision (~> 8.0)
+  - MLKitCommon (12.0.0):
+    - GoogleDataTransport (~> 10.0)
+    - GoogleToolboxForMac/Logger (< 5.0, >= 4.2.1)
+    - "GoogleToolboxForMac/NSData+zlib (< 5.0, >= 4.2.1)"
+    - GoogleUtilities/Logger (~> 8.0)
+    - GoogleUtilities/UserDefaults (~> 8.0)
+    - GTMSessionFetcher/Core (< 4.0, >= 3.3.2)
+  - MLKitVision (8.0.0):
+    - GoogleToolboxForMac/Logger (< 5.0, >= 4.2.1)
+    - "GoogleToolboxForMac/NSData+zlib (< 5.0, >= 4.2.1)"
+    - GTMSessionFetcher/Core (< 4.0, >= 3.3.2)
+    - MLImage (= 1.0.0-beta6)
+    - MLKitCommon (~> 12.0)
+  - nanopb (3.30910.0):
+    - nanopb/decode (= 3.30910.0)
+    - nanopb/encode (= 3.30910.0)
+  - nanopb/decode (3.30910.0)
+  - nanopb/encode (3.30910.0)
   - package_info_plus (0.4.5):
     - Flutter
   - path_provider_foundation (0.0.1):
@@ -95,13 +85,11 @@ PODS:
     - CryptoSwift
     - Flutter
   - PromisesObjC (2.4.0)
-  - rapidsnark (0.0.1-alpha.5):
-    - rapidsnark/rapidsnark (= 0.0.1-alpha.5)
-  - rapidsnark/C (0.0.1-alpha.5)
-  - rapidsnark/rapidsnark (0.0.1-alpha.5):
-    - rapidsnark/C
-  - scan (0.0.1):
-    - Flutter
+  - rapidsnark (0.0.1-beta.2):
+    - rapidsnark/rapidsnark (= 0.0.1-beta.2)
+  - rapidsnark/rapidsnark (0.0.1-beta.2):
+    - rapidsnark/rapidsnarkC
+  - rapidsnark/rapidsnarkC (0.0.1-beta.2)
 
 DEPENDENCIES:
   - background_downloader (from `.symlinks/plugins/background_downloader/ios`)
@@ -114,10 +102,10 @@ DEPENDENCIES:
   - google_mlkit_commons (from `.symlinks/plugins/google_mlkit_commons/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
+  - md5_file_checksum (from `.symlinks/plugins/md5_file_checksum/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - polygonid_flutter_sdk (from `.symlinks/plugins/polygonid_flutter_sdk/ios`)
-  - scan (from `.symlinks/plugins/scan/ios`)
 
 SPEC REPOS:
   trunk:
@@ -127,7 +115,6 @@ SPEC REPOS:
     - GoogleMLKit
     - GoogleToolboxForMac
     - GoogleUtilities
-    - GoogleUtilitiesComponents
     - GTMSessionFetcher
     - MLImage
     - MLKitBarcodeScanning
@@ -158,46 +145,45 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   integration_test:
     :path: ".symlinks/plugins/integration_test/ios"
+  md5_file_checksum:
+    :path: ".symlinks/plugins/md5_file_checksum/ios"
   package_info_plus:
     :path: ".symlinks/plugins/package_info_plus/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
   polygonid_flutter_sdk:
     :path: ".symlinks/plugins/polygonid_flutter_sdk/ios"
-  scan:
-    :path: ".symlinks/plugins/scan/ios"
 
 SPEC CHECKSUMS:
-  background_downloader: 9f788ffc5de45acf87d6380e91ca0841066c18cf
-  camera_avfoundation: dd002b0330f4981e1bbcb46ae9b62829237459a4
-  circom_witnesscalc: 8d93a269f84300930b6c74afdd013afcf2cef60d
-  CircomWitnesscalc: 77ebed71f7c5001e1a9e45c406904e9417bbe68b
-  CryptoSwift: 967f37cea5a3294d9cce358f78861652155be483
+  background_downloader: b42a56120f5348bff70e74222f0e9e6f7f1a1537
+  camera_avfoundation: 04b44aeb14070126c6529e5ab82cc7c9fca107cf
+  circom_witnesscalc: 68f4f58e5d7c539b3b3bbb199a174729a1a7d4bf
+  CircomWitnesscalc: 194e88897842f88b39bc8670dec553f4928d1bf8
+  CryptoSwift: e64e11850ede528a02a0f3e768cec8e9d92ecb90
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_rapidsnark: ded255c197aac9911fa75822447486eced081719
-  flutter_secure_storage: 23fc622d89d073675f2eaa109381aefbcf5a49be
-  google_mlkit_barcode_scanning: ec351dc4eeea0e004996607817b75a0b9fd278ba
-  google_mlkit_commons: 26607e403b3301ec966e578a308c98c6ac3e9477
-  GoogleDataTransport: 6c09b596d841063d76d4288cc2d2f42cc36e1e2a
-  GoogleMLKit: 2bd0dc6253c4d4f227aad460f69215a504b2980e
-  GoogleToolboxForMac: 8bef7c7c5cf7291c687cf5354f39f9db6399ad34
-  GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
-  GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
-  GTMSessionFetcher: 3a63d75eecd6aa32c2fc79f578064e1214dfdec2
-  image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
-  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
-  MLImage: 7bb7c4264164ade9bf64f679b40fb29c8f33ee9b
-  MLKitBarcodeScanning: 04e264482c5f3810cb89ebc134ef6b61e67db505
-  MLKitCommon: c1b791c3e667091918d91bda4bba69a91011e390
-  MLKitVision: 8baa5f46ee3352614169b85250574fde38c36f49
-  nanopb: 438bc412db1928dac798aa6fd75726007be04262
-  package_info_plus: 58f0028419748fad15bf008b270aaa8e54380b1c
-  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
-  polygonid_flutter_sdk: 0addb0ec937d019ca3f9fd7f408307a8ef9d730f
+  flutter_rapidsnark: 842c3ddde387254b6f8a36e1a0f403560ee169ca
+  flutter_secure_storage: 2c2ff13db9e0a5647389bff88b0ecac56e3f3418
+  google_mlkit_barcode_scanning: c0a50c1042484a6ca506967dfa91fa7d7e74f280
+  google_mlkit_commons: 92c769cc2e0a2bfdeb3c38091a36e8a9cc8c63d4
+  GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
+  GoogleMLKit: eff9e23ec1d90ea4157a1ee2e32a4f610c5b3318
+  GoogleToolboxForMac: d1a2cbf009c453f4d6ded37c105e2f67a32206d8
+  GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
+  GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
+  image_picker_ios: 7fe1ff8e34c1790d6fff70a32484959f563a928a
+  integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
+  md5_file_checksum: 87308be3200f274a928252dad22fe3d77bde510f
+  MLImage: 0ad1c5f50edd027672d8b26b0fee78a8b4a0fc56
+  MLKitBarcodeScanning: 0a3064da0a7f49ac24ceb3cb46a5bc67496facd2
+  MLKitCommon: 07c2c33ae5640e5380beaaa6e4b9c249a205542d
+  MLKitVision: 45e79d68845a2de77e2dd4d7f07947f0ed157b0e
+  nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
+  package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
+  path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
+  polygonid_flutter_sdk: 6656352e684f59f73c70180f233f6cd777704cc6
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
-  rapidsnark: 4e70fa2f70e3b0846a0c1bf94a635113f261ada9
-  scan: aea35bb4aa59ccc8839c576a18cd57c7d492cc86
+  rapidsnark: da1c1d74a36ba8376700286d45707574d9d1afcb
 
-PODFILE CHECKSUM: 4cdc80e81528855188b9b9e51837db2ec2f4052c
+PODFILE CHECKSUM: cf3dfeaf156bc93b450005f4ecebdcff4b7af9f3
 
 COCOAPODS: 1.16.2
