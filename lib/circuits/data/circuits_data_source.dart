@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
 import 'package:background_downloader/background_downloader.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:injectable/injectable.dart';
 import 'package:md5_file_checksum/md5_file_checksum.dart';
 import 'package:polygonid_flutter_sdk/circuits/data/circuit_model.dart';
@@ -44,13 +45,14 @@ class CircuitsDataSource {
     try {
       String path = directory.path;
       var file = File('$path/$circuitFileName');
-      if (!file.existsSync()) {
+      final bool fileExists = await file.exists();
+      if (!fileExists) {
         return false;
       }
 
       // we check the md5 checksum of the file
       final checksumFromFileBase64 =
-          await Md5FileChecksum.getFileChecksum(filePath: file.path);
+          await _getChecksumWithoutBlockingUI(file.path);
       final String checksumFromFile = _base64ToHex(checksumFromFileBase64);
 
       // we compare the checksum of the file with the checksum provided
@@ -62,6 +64,20 @@ class CircuitsDataSource {
     } catch (e) {
       return false;
     }
+  }
+
+  Future<String> _getChecksumWithoutBlockingUI(String filePath) async {
+    final rootToken = RootIsolateToken.instance!;
+    final String checksum =
+        await compute(_calculateChecksum, ChecksumParam(filePath, rootToken));
+    return checksum;
+  }
+
+  Future<String> _calculateChecksum(ChecksumParam param) async {
+    BackgroundIsolateBinaryMessenger.ensureInitialized(param.rootToken);
+    String checksum =
+        await Md5FileChecksum.getFileChecksum(filePath: param.filePath);
+    return checksum;
   }
 
   // get the path to the temporary zip file, after the download is complete
@@ -264,7 +280,9 @@ class CircuitsDataSource {
     try {
       String path = directory.path;
       var file = File('$path/$circuitFileName');
-      if (!file.existsSync()) {
+
+      bool fileExists = await file.exists();
+      if (!fileExists) {
         return true; // file does not exist so we return true
       }
 
@@ -279,4 +297,14 @@ class CircuitsDataSource {
     final bytes = base64.decode(base64Str);
     return bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join('');
   }
+}
+
+class ChecksumParam {
+  final String filePath;
+  final RootIsolateToken rootToken;
+
+  ChecksumParam(
+    this.filePath,
+    this.rootToken,
+  );
 }

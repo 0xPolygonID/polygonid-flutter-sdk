@@ -9,11 +9,11 @@ abstract class CircuitsRepository {
   });
 
   Future<void> initCircuitsDownloadFromServer({
-    required List<CircuitsToDownloadParam> circuitsToDownload,
+    required CircuitsToDownloadParam circuitsToDownload,
   });
 
   Stream<DownloadInfo> circuitsDownloadInfoStream(
-      {required List<CircuitsToDownloadParam> circuitsToDownload});
+      {required CircuitsToDownloadParam circuitsToDownload});
 
   Future<void> cancelCircuitsDownload();
 
@@ -41,27 +41,24 @@ class CircuitsRepositoryImpl implements CircuitsRepository {
 
   @override
   Future<void> initCircuitsDownloadFromServer({
-    required List<CircuitsToDownloadParam> circuitsToDownload,
+    required CircuitsToDownloadParam circuitsToDownload,
   }) async {
-    for (int i = 0; i < circuitsToDownload.length; i++) {
-      CircuitsToDownloadParam param = circuitsToDownload[i];
+    String zipPath =
+        await circuitsDataSource.getPathForTemporaryZipFileDownload(
+      zipFileName: circuitsToDownload.zipFileName,
+    );
+    // we delete the file if it exists
+    await circuitsDataSource.deleteFile(zipPath);
+    circuitsToDownload.temporaryZipDownloadPath = zipPath;
 
-      String zipPath =
-          await circuitsDataSource.getPathForTemporaryZipFileDownload(
-        zipFileName: param.zipFileName,
-      );
-      // we delete the file if it exists
-      await circuitsDataSource.deleteFile(zipPath);
-      circuitsToDownload[i].temporaryZipDownloadPath = zipPath;
-    }
     return circuitsDataSource.initStreamedResponseFromServer(
-      circuitsToDownload: circuitsToDownload,
+      circuitsToDownload: [circuitsToDownload],
     );
   }
 
   @override
   Stream<DownloadInfo> circuitsDownloadInfoStream(
-      {required List<CircuitsToDownloadParam> circuitsToDownload}) async* {
+      {required CircuitsToDownloadParam circuitsToDownload}) async* {
     await for (final downloadResponse in circuitsDataSource.downloadStream) {
       int progress = downloadResponse.progress;
       int total = downloadResponse.total;
@@ -77,59 +74,64 @@ class CircuitsRepositoryImpl implements CircuitsRepository {
 
         int totalZipFileSize = 0;
 
-        for (CircuitsToDownloadParam param in circuitsToDownload) {
-          if (param.temporaryZipDownloadPath == null) {
-            continue;
-          }
-          String pathForZipFileTemp = param.temporaryZipDownloadPath!;
-          String pathForZipFile = await circuitsDataSource
-              .getPathToCircuitZipFile(zipFileName: param.zipFileName);
+        if (circuitsToDownload.temporaryZipDownloadPath == null) {
+          continue;
+        }
+        String pathForZipFileTemp =
+            circuitsToDownload.temporaryZipDownloadPath!;
+        String pathForZipFile =
+            await circuitsDataSource.getPathToCircuitZipFile(
+                zipFileName: circuitsToDownload.zipFileName);
 
-          // we get the size of the temp zip file
-          int zipFileSize =
-              circuitsDataSource.zipFileSize(pathToFile: pathForZipFileTemp);
+        // we get the size of the temp zip file
+        int zipFileSize =
+            circuitsDataSource.zipFileSize(pathToFile: pathForZipFileTemp);
 
-          totalZipFileSize += zipFileSize;
+        totalZipFileSize += zipFileSize;
 
-          // check if circuits inside the zip file are correct
-          // and if the checksum is correct
-          bool validCircuits = await circuitsDataSource
-              .checkAllCircuitsChecksumFromZipDownloaded(
-            pathForZipFile: pathForZipFileTemp,
-            circuitsToCheck: param.circuitsWithChecksum,
-          );
+        // check if circuits inside the zip file are correct
+        // and if the checksum is correct
+        bool validCircuits =
+            await circuitsDataSource.checkAllCircuitsChecksumFromZipDownloaded(
+          pathForZipFile: pathForZipFileTemp,
+          circuitsToCheck: circuitsToDownload.circuitsWithChecksum,
+        );
 
-          if (!validCircuits) {
-            yield DownloadInfo.onError(
-                errorMessage: "Downloaded files incorrect");
-          }
-
+        if (!validCircuits) {
+          yield DownloadInfo.onError(
+              errorMessage: "Downloaded files incorrect");
           // we remove zip files
           await circuitsDataSource.deleteFile(pathForZipFileTemp);
           await circuitsDataSource.deleteFile(pathForZipFile);
+          return;
         }
+
+        // we remove zip files
+        await circuitsDataSource.deleteFile(pathForZipFileTemp);
+        await circuitsDataSource.deleteFile(pathForZipFile);
 
         // check if the downloaded files size are correct
         if (downloadSize != 0 && totalZipFileSize != downloadSize) {
           try {
             // if error we delete the temp file
-            for (CircuitsToDownloadParam param in circuitsToDownload) {
-              if (param.temporaryZipDownloadPath == null) {
-                continue;
-              }
-              String pathForZipFileTemp = param.temporaryZipDownloadPath!;
-              circuitsDataSource.deleteFile(pathForZipFileTemp);
+            if (circuitsToDownload.temporaryZipDownloadPath == null) {
+              continue;
             }
+            String pathForZipFileTemp =
+                circuitsToDownload.temporaryZipDownloadPath!;
+            circuitsDataSource.deleteFile(pathForZipFileTemp);
           } catch (_) {}
 
           yield DownloadInfo.onError(
               errorMessage: "Downloaded files incorrect");
+          return;
         }
 
         yield DownloadInfo.onDone(
           contentLength: downloadSize,
           downloaded: totalZipFileSize,
         );
+        return;
       }
 
       yield DownloadInfo.onProgress(

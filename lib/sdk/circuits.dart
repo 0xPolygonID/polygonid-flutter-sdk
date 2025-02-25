@@ -9,7 +9,7 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity
 
 abstract class PolygonIdSdkCircuits {
   Stream<DownloadInfo> initCircuitsDownloadAndGetInfoStream({
-    required List<CircuitsToDownloadParam> circuitsToDownload,
+    required CircuitsToDownloadParam circuitsToDownload,
   });
 
   Future<bool> circuitsIsAlreadyDownloadedAndChecksumAreValid({
@@ -40,7 +40,7 @@ class Circuits implements PolygonIdSdkCircuits {
 
   @override
   Stream<DownloadInfo> initCircuitsDownloadAndGetInfoStream({
-    required List<CircuitsToDownloadParam> circuitsToDownload,
+    required CircuitsToDownloadParam circuitsToDownload,
   }) {
     return _downloadCircuitsUseCase.execute(
       param: DownloadCircuitsParam(circuitsToDownload: circuitsToDownload),
