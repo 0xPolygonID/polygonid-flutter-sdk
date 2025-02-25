@@ -871,6 +871,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.11.1"
+  md5_file_checksum:
+    dependency: transitive
+    description:
+      name: md5_file_checksum
+      sha256: "60130debb1489ae49449050ad5faa730bff86985dfac5a06c56f279de329994b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.6"
   meta:
     dependency: transitive
     description:

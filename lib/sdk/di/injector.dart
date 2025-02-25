@@ -12,6 +12,7 @@ import 'package:logger/logger.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:polygonid_flutter_sdk/circuits/domain/circuits_repository.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/utils/encrypt_sembast_codec.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
@@ -213,6 +214,11 @@ abstract class RepositoriesModule {
   // SMT
   SMTRepository smtRepository(SMTRepositoryImpl smtRepositoryImpl) =>
       smtRepositoryImpl;
+
+  // Circuits Repository
+  CircuitsRepository circuitsRepository(
+          CircuitsRepositoryImpl circuitsRepositoryImpl) =>
+      circuitsRepositoryImpl;
 }
 
 @module

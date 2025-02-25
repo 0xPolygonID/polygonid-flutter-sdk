@@ -10,6 +10,7 @@ import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.d
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/set_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/set_selected_chain_use_case.dart';
+import 'package:polygonid_flutter_sdk/sdk/circuits.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:polygonid_flutter_sdk/sdk/error_handling.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygonid_flutter_channel.dart';
@@ -82,6 +83,7 @@ class PolygonIdSdk {
     _ref!.proof = await getItSdk.getAsync<Proof>();
     _ref!.iden3comm = await getItSdk.getAsync<Iden3comm>();
     _ref!.errorHandling = getItSdk.get<ErrorHandling>();
+    _ref!.circuits = await getItSdk.getAsync<Circuits>();
 
     // Channel
     getItSdk<PolygonIdFlutterChannel>();
@@ -95,6 +97,7 @@ class PolygonIdSdk {
   late Proof proof;
   late Iden3comm iden3comm;
   late ErrorHandling errorHandling;
+  late Circuits circuits;
 
   PolygonIdSdk._();
 
