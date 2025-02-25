@@ -11,6 +11,7 @@ import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/set_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/set_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/kms/kms.dart';
+import 'package:polygonid_flutter_sdk/sdk/circuits.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:polygonid_flutter_sdk/sdk/error_handling.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygonid_flutter_channel.dart';
@@ -84,6 +85,7 @@ class PolygonIdSdk {
     _ref!.iden3comm = await getItSdk.getAsync<Iden3comm>();
     _ref!.errorHandling = getItSdk.get<ErrorHandling>();
     _ref!.kms = getItSdk.get<KMS>();
+    _ref!.circuits = await getItSdk.getAsync<Circuits>();
 
     // Channel
     getItSdk<PolygonIdFlutterChannel>();
@@ -98,39 +100,46 @@ class PolygonIdSdk {
   late Iden3comm iden3comm;
   late ErrorHandling errorHandling;
   late KMS kms;
+  late Circuits circuits;
 
   PolygonIdSdk._();
 
+  /// Set the environment for the SDK to operate
   Future<void> setEnv({required EnvEntity env}) {
     return getItSdk
         .getAsync<SetEnvUseCase>()
         .then((instance) => instance.execute(param: env));
   }
 
+  /// Get the current set environment for the SDK
   Future<EnvEntity> getEnv() {
     return getItSdk
         .getAsync<GetEnvUseCase>()
         .then((instance) => instance.execute());
   }
 
+  /// Get the current selected chain configuration
   Future<ChainConfigEntity> getSelectedChain() {
     return getItSdk
         .getAsync<GetSelectedChainUseCase>()
         .then((instance) => instance.execute());
   }
 
+  /// Get the current selected chain id
   Future<String?> getSelectedChainId() {
     return getItSdk
         .getAsync<ConfigRepository>()
         .then((instance) => instance.getSelectedChainId());
   }
 
+  /// Set the selected chain configuration by its id
   Future<void> setSelectedChain({required String chainConfigId}) {
     return getItSdk
         .getAsync<SetSelectedChainUseCase>()
         .then((instance) => instance.execute(param: chainConfigId));
   }
 
+  /// Switch the log on or off
   Future<void> switchLog({required bool enabled}) async {
     Domain.logEnabled = enabled;
   }

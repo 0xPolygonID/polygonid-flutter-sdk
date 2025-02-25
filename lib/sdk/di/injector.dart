@@ -13,6 +13,7 @@ import 'package:meta/meta.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:polygonid_flutter_sdk/circuits/domain/circuits_repository.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/kms/index.dart';
 import 'package:polygonid_flutter_sdk/common/kms/keys/types.dart';
@@ -221,6 +222,11 @@ abstract class RepositoriesModule {
   // SMT
   SMTRepository smtRepository(SMTRepositoryImpl smtRepositoryImpl) =>
       smtRepositoryImpl;
+
+  // Circuits Repository
+  CircuitsRepository circuitsRepository(
+          CircuitsRepositoryImpl circuitsRepositoryImpl) =>
+      circuitsRepositoryImpl;
 }
 
 @module

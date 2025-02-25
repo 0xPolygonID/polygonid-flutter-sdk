@@ -199,7 +199,7 @@ class CredentialRepositoryImpl extends CredentialRepository {
     ClaimDTO claimDTO = _claimMapper.mapTo(claim);
     try {
       return Future.value(claimDTO.info.proofs
-          .where((proof) => proof.type == "BJJSignature2021")
+          ?.where((proof) => proof.type == "BJJSignature2021")
           .first
           .issuer
           .id);
@@ -303,6 +303,17 @@ class CredentialRepositoryImpl extends CredentialRepository {
     String? config,
   }) {
     return _cacheCredentialDataSource.cacheCredential(
+      credential: credential,
+      config: config,
+    );
+  }
+
+  @override
+  Future<String> coreClaimFromCredential({
+    required String credential,
+    String? config,
+  }) {
+    return _localClaimDataSource.coreClaimFromCredential(
       credential: credential,
       config: config,
     );
