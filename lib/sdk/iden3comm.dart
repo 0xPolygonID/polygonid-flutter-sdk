@@ -41,7 +41,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/get
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/remove_interactions_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/update_interaction_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 
 abstract class PolygonIdSdkIden3comm {
