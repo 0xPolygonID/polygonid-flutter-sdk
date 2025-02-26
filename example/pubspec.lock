@@ -876,8 +876,8 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: e9f49e917975d19ce6b5d09f2e5435c39c25a4dc
-      url: "git@github.com:5eeman/md5_file_checksum.git"
+      resolved-ref: "643bca197ebc50919b3723a0490d0896153fe8c8"
+      url: "git@github.com:albemala/md5_file_checksum.git"
     source: git
     version: "1.0.7"
   meta:

@@ -52,7 +52,7 @@ PODS:
     - Flutter
   - integration_test (0.0.1):
     - Flutter
-  - md5_file_checksum (1.0.3):
+  - md5_file_checksum (1.0.7):
     - Flutter
   - MLImage (1.0.0-beta6)
   - MLKitBarcodeScanning (6.0.0):
@@ -172,7 +172,7 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
   image_picker_ios: 7fe1ff8e34c1790d6fff70a32484959f563a928a
   integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
-  md5_file_checksum: 87308be3200f274a928252dad22fe3d77bde510f
+  md5_file_checksum: 4f6d86dbc8f3e8a0b017f533d65331d4181c6287
   MLImage: 0ad1c5f50edd027672d8b26b0fee78a8b4a0fc56
   MLKitBarcodeScanning: 0a3064da0a7f49ac24ceb3cb46a5bc67496facd2
   MLKitCommon: 07c2c33ae5640e5380beaaa6e4b9c249a205542d

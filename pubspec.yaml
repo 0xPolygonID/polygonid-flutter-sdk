@@ -47,7 +47,8 @@ dependencies:
   flutter_rapidsnark: 0.0.1-beta.3
   circom_witnesscalc: 0.0.1-alpha.3
   md5_file_checksum:
-    git: git@github.com:5eeman/md5_file_checksum.git
+    git:
+      url: git@github.com:albemala/md5_file_checksum.git
 
 dev_dependencies:
   flutter_test:
