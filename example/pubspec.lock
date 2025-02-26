@@ -874,11 +874,12 @@ packages:
   md5_file_checksum:
     dependency: transitive
     description:
-      name: md5_file_checksum
-      sha256: "60130debb1489ae49449050ad5faa730bff86985dfac5a06c56f279de329994b"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.6"
+      path: "."
+      ref: HEAD
+      resolved-ref: e9f49e917975d19ce6b5d09f2e5435c39c25a4dc
+      url: "git@github.com:5eeman/md5_file_checksum.git"
+    source: git
+    version: "1.0.7"
   meta:
     dependency: transitive
     description:
