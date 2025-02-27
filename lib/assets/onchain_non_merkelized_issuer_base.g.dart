@@ -1,5 +1,8 @@
-// Generated code, do not modify. Run `build_runner build` to re-generate!
-// @dart=2.12
+// @dart=3.0
+// coverage:ignore-file
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint
+// ignore_for_file: unused_local_variable, unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:web3dart/web3dart.dart' as _i1;
 import 'dart:typed_data' as _i2;
@@ -42,12 +45,12 @@ class Onchain_non_merkelized_issuer_base extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<dynamic> getClaimProof(
-    BigInt claimIndexHash, {
+    ({BigInt claimIndexHash}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[1];
     assert(checkSignature(function, 'b57a40cb'));
-    final params = [claimIndexHash];
+    final params = [args.claimIndexHash];
     final response = await read(
       function,
       params,
@@ -60,15 +63,14 @@ class Onchain_non_merkelized_issuer_base extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<dynamic> getClaimProofByRoot(
-    BigInt claimIndexHash,
-    BigInt root, {
+    ({BigInt claimIndexHash, BigInt root}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[2];
     assert(checkSignature(function, '310d0d5b'));
     final params = [
-      claimIndexHash,
-      root,
+      args.claimIndexHash,
+      args.root,
     ];
     final response = await read(
       function,
@@ -82,12 +84,12 @@ class Onchain_non_merkelized_issuer_base extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<GetClaimProofWithStateInfo> getClaimProofWithStateInfo(
-    BigInt claimIndexHash, {
+    ({BigInt claimIndexHash}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[3];
     assert(checkSignature(function, 'b37feda4'));
-    final params = [claimIndexHash];
+    final params = [args.claimIndexHash];
     final response = await read(
       function,
       params,
@@ -115,15 +117,14 @@ class Onchain_non_merkelized_issuer_base extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<GetCredential> getCredential(
-    BigInt _userId,
-    BigInt _credentialId, {
+    ({BigInt userId, BigInt credentialId}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[5];
     assert(checkSignature(function, '37c1d9ff'));
     final params = [
-      _userId,
-      _credentialId,
+      args.userId,
+      args.credentialId,
     ];
     final response = await read(
       function,
@@ -243,12 +244,12 @@ class Onchain_non_merkelized_issuer_base extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<dynamic> getRevocationProof(
-    BigInt revocationNonce, {
+    ({BigInt revocationNonce}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[13];
     assert(checkSignature(function, '26485063'));
-    final params = [revocationNonce];
+    final params = [args.revocationNonce];
     final response = await read(
       function,
       params,
@@ -261,15 +262,14 @@ class Onchain_non_merkelized_issuer_base extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<dynamic> getRevocationProofByRoot(
-    BigInt revocationNonce,
-    BigInt root, {
+    ({BigInt revocationNonce, BigInt root}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[14];
     assert(checkSignature(function, 'e26ecb0b'));
     final params = [
-      revocationNonce,
-      root,
+      args.revocationNonce,
+      args.root,
     ];
     final response = await read(
       function,
@@ -283,12 +283,12 @@ class Onchain_non_merkelized_issuer_base extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<GetRevocationProofWithStateInfo> getRevocationProofWithStateInfo(
-    BigInt revocationNonce, {
+    ({BigInt revocationNonce}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[15];
     assert(checkSignature(function, '0033058d'));
-    final params = [revocationNonce];
+    final params = [args.revocationNonce];
     final response = await read(
       function,
       params,
@@ -301,15 +301,14 @@ class Onchain_non_merkelized_issuer_base extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<dynamic> getRevocationStatus(
-    BigInt id,
-    BigInt nonce, {
+    ({BigInt id, BigInt nonce}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[16];
     assert(checkSignature(function, '110c96a7'));
     final params = [
-      id,
-      nonce,
+      args.id,
+      args.nonce,
     ];
     final response = await read(
       function,
@@ -323,17 +322,15 @@ class Onchain_non_merkelized_issuer_base extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<dynamic> getRevocationStatusByIdAndState(
-    BigInt id,
-    BigInt state,
-    BigInt nonce, {
+    ({BigInt id, BigInt state, BigInt nonce}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[17];
     assert(checkSignature(function, 'aad72921'));
     final params = [
-      id,
-      state,
-      nonce,
+      args.id,
+      args.state,
+      args.nonce,
     ];
     final response = await read(
       function,
@@ -362,12 +359,12 @@ class Onchain_non_merkelized_issuer_base extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<dynamic> getRootProof(
-    BigInt rootsTreeRoot, {
+    ({BigInt rootsTreeRoot}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[19];
     assert(checkSignature(function, 'c1e32733'));
-    final params = [rootsTreeRoot];
+    final params = [args.rootsTreeRoot];
     final response = await read(
       function,
       params,
@@ -380,15 +377,14 @@ class Onchain_non_merkelized_issuer_base extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<dynamic> getRootProofByRoot(
-    BigInt claimsTreeRoot,
-    BigInt root, {
+    ({BigInt claimsTreeRoot, BigInt root}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[20];
     assert(checkSignature(function, '2d5c4f25'));
     final params = [
-      claimsTreeRoot,
-      root,
+      args.claimsTreeRoot,
+      args.root,
     ];
     final response = await read(
       function,
@@ -402,12 +398,12 @@ class Onchain_non_merkelized_issuer_base extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<GetRootProofWithStateInfo> getRootProofWithStateInfo(
-    BigInt rootsTreeRoot, {
+    ({BigInt rootsTreeRoot}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[21];
     assert(checkSignature(function, '443d7534'));
-    final params = [rootsTreeRoot];
+    final params = [args.rootsTreeRoot];
     final response = await read(
       function,
       params,
@@ -420,12 +416,12 @@ class Onchain_non_merkelized_issuer_base extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<dynamic> getRootsByState(
-    BigInt state, {
+    ({BigInt state}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[22];
     assert(checkSignature(function, 'b8db6871'));
-    final params = [state];
+    final params = [args.state];
     final response = await read(
       function,
       params,
@@ -468,12 +464,12 @@ class Onchain_non_merkelized_issuer_base extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<List<BigInt>> getUserCredentialIds(
-    BigInt _userId, {
+    ({BigInt userId}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[25];
     assert(checkSignature(function, '668d0bd4'));
-    final params = [_userId];
+    final params = [args.userId];
     final response = await read(
       function,
       params,
@@ -486,13 +482,13 @@ class Onchain_non_merkelized_issuer_base extends _i1.GeneratedContract {
   /// like the gas price, nonce and max gas. The `data` and `to` fields will be
   /// set by the contract.
   Future<String> initialize(
-    _i1.EthereumAddress _stateContractAddr, {
+    ({_i1.EthereumAddress stateContractAddr}) args, {
     required _i1.Credentials credentials,
     _i1.Transaction? transaction,
   }) async {
     final function = self.abi.functions[26];
     assert(checkSignature(function, 'c4d66de8'));
-    final params = [_stateContractAddr];
+    final params = [args.stateContractAddr];
     return write(
       credentials,
       transaction,
@@ -505,12 +501,12 @@ class Onchain_non_merkelized_issuer_base extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<bool> supportsInterface(
-    _i2.Uint8List interfaceId, {
+    ({_i2.Uint8List interfaceId}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[27];
     assert(checkSignature(function, '01ffc9a7'));
-    final params = [interfaceId];
+    final params = [args.interfaceId];
     final response = await read(
       function,
       params,

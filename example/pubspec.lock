@@ -225,14 +225,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.1-alpha.3"
-  cli_util:
-    dependency: transitive
-    description:
-      name: cli_util
-      sha256: ff6785f7e9e3c38ac98b2fb035701789de90154024a75b6cb926445e83197d1c
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.4.2"
   clock:
     dependency: transitive
     description:
@@ -401,14 +393,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
-  ffigen:
-    dependency: transitive
-    description:
-      name: ffigen
-      sha256: "585a852fefda1b796322b45b433e602daae58f92dd8d918b2497db02f1cabf7c"
-      url: "https://pub.dev"
-    source: hosted
-    version: "14.0.1"
   file:
     dependency: transitive
     description:
@@ -874,11 +858,10 @@ packages:
   md5_file_checksum:
     dependency: transitive
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "643bca197ebc50919b3723a0490d0896153fe8c8"
-      url: "git@github.com:albemala/md5_file_checksum.git"
-    source: git
+      name: md5_file_checksum
+      sha256: e02a8f99ff1255f0cc6e055532fd845982d2b1cecdd643f385e1611c6dc81e6c
+      url: "https://pub.dev"
+    source: hosted
     version: "1.0.7"
   meta:
     dependency: transitive
@@ -1095,14 +1078,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.0"
-  quiver:
-    dependency: transitive
-    description:
-      name: quiver
-      sha256: ea0b925899e64ecdfbf9c7becb60d5b50e706ade44a85b2363be2a22d88117d2
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.2.2"
   sec:
     dependency: transitive
     description:
@@ -1123,10 +1098,10 @@ packages:
     dependency: transitive
     description:
       name: sembast
-      sha256: "85ff944434f7b566fdc388be4f85b23e954736b7d6e51f965f4f419d966c15b1"
+      sha256: f90377eb5ef66ac5a42d7afd72f4f900c436a2528d6b67b318fb2b9f5484bbe5
       url: "https://pub.dev"
     source: hosted
-    version: "3.5.0+1"
+    version: "3.8.4"
   shelf:
     dependency: transitive
     description:
@@ -1172,6 +1147,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.10.1"
+  sprintf:
+    dependency: transitive
+    description:
+      name: sprintf
+      sha256: "1fc9ffe69d4df602376b52949af107d8f5703b77cda567c4d7d86a0693120f23"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.0.0"
   stack_trace:
     dependency: transitive
     description:
@@ -1256,10 +1239,10 @@ packages:
     dependency: "direct main"
     description:
       name: uuid
-      sha256: "648e103079f7c64a36dc7d39369cabb358d377078a051d6ae2ad3aa539519313"
+      sha256: a5be9ef6618a7ac1e964353ef476418026db906c4facdedaa299b7a2e71690ff
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.7"
+    version: "4.5.1"
   vector_graphics:
     dependency: transitive
     description:
@@ -1328,10 +1311,10 @@ packages:
     dependency: transitive
     description:
       name: web3dart
-      sha256: bebbea9278723cef51d21caf65668860e7547f59114fe9f8af01b873a72ba0e6
+      sha256: "31f93cf84b8c874d7ffb363959249d7e479115fe12cf46f30b037dcad6750b22"
       url: "https://pub.dev"
     source: hosted
-    version: "2.7.1"
+    version: "2.7.2"
   web_socket:
     dependency: transitive
     description:
@@ -1388,14 +1371,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.3"
-  yaml_edit:
-    dependency: transitive
-    description:
-      name: yaml_edit
-      sha256: fb38626579fb345ad00e674e2af3a5c9b0cc4b9bfb8fd7f7ff322c7c9e62aef5
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.2"
 sdks:
   dart: ">=3.7.0 <4.0.0"
   flutter: ">=3.24.0"

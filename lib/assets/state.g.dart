@@ -1,5 +1,8 @@
-// Generated code, do not modify. Run `build_runner build` to re-generate!
-// @dart=2.12
+// @dart=3.0
+// coverage:ignore-file
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint
+// ignore_for_file: unused_local_variable, unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:web3dart/web3dart.dart' as _i1;
 
@@ -59,12 +62,12 @@ class State extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<dynamic> getGISTProof(
-    BigInt id, {
+    ({BigInt id}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[2];
     assert(checkSignature(function, '3025bb8c'));
-    final params = [id];
+    final params = [args.id];
     final response = await read(
       function,
       params,
@@ -77,15 +80,14 @@ class State extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<dynamic> getGISTProofByBlock(
-    BigInt id,
-    BigInt blockNumber, {
+    ({BigInt id, BigInt blockNumber}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[3];
     assert(checkSignature(function, '046ff140'));
     final params = [
-      id,
-      blockNumber,
+      args.id,
+      args.blockNumber,
     ];
     final response = await read(
       function,
@@ -99,15 +101,14 @@ class State extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<dynamic> getGISTProofByRoot(
-    BigInt id,
-    BigInt root, {
+    ({BigInt id, BigInt root}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[4];
     assert(checkSignature(function, 'e12a36c0'));
     final params = [
-      id,
-      root,
+      args.id,
+      args.root,
     ];
     final response = await read(
       function,
@@ -121,15 +122,14 @@ class State extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<dynamic> getGISTProofByTime(
-    BigInt id,
-    BigInt timestamp, {
+    ({BigInt id, BigInt timestamp}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[5];
     assert(checkSignature(function, 'd51afebf'));
     final params = [
-      id,
-      timestamp,
+      args.id,
+      args.timestamp,
     ];
     final response = await read(
       function,
@@ -158,15 +158,14 @@ class State extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<List<dynamic>> getGISTRootHistory(
-    BigInt start,
-    BigInt length, {
+    ({BigInt start, BigInt length}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[7];
     assert(checkSignature(function, '2f7670e4'));
     final params = [
-      start,
-      length,
+      args.start,
+      args.length,
     ];
     final response = await read(
       function,
@@ -195,12 +194,12 @@ class State extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<dynamic> getGISTRootInfo(
-    BigInt root, {
+    ({BigInt root}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[9];
     assert(checkSignature(function, '7c1a66de'));
-    final params = [root];
+    final params = [args.root];
     final response = await read(
       function,
       params,
@@ -213,12 +212,12 @@ class State extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<dynamic> getGISTRootInfoByBlock(
-    BigInt blockNumber, {
+    ({BigInt blockNumber}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[10];
     assert(checkSignature(function, '5845e530'));
-    final params = [blockNumber];
+    final params = [args.blockNumber];
     final response = await read(
       function,
       params,
@@ -231,12 +230,12 @@ class State extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<dynamic> getGISTRootInfoByTime(
-    BigInt timestamp, {
+    ({BigInt timestamp}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[11];
     assert(checkSignature(function, '0ef6e65b'));
-    final params = [timestamp];
+    final params = [args.timestamp];
     final response = await read(
       function,
       params,
@@ -249,12 +248,12 @@ class State extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<dynamic> getStateInfoById(
-    BigInt id, {
+    ({BigInt id}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[12];
     assert(checkSignature(function, 'b4bdea55'));
-    final params = [id];
+    final params = [args.id];
     final response = await read(
       function,
       params,
@@ -267,15 +266,14 @@ class State extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<dynamic> getStateInfoByIdAndState(
-    BigInt id,
-    BigInt state, {
+    ({BigInt id, BigInt state}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[13];
     assert(checkSignature(function, '53c87312'));
     final params = [
-      id,
-      state,
+      args.id,
+      args.state,
     ];
     final response = await read(
       function,
@@ -289,17 +287,15 @@ class State extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<List<dynamic>> getStateInfoHistoryById(
-    BigInt id,
-    BigInt startIndex,
-    BigInt length, {
+    ({BigInt id, BigInt startIndex, BigInt length}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[14];
     assert(checkSignature(function, 'e99858fe'));
     final params = [
-      id,
-      startIndex,
-      length,
+      args.id,
+      args.startIndex,
+      args.length,
     ];
     final response = await read(
       function,
@@ -313,12 +309,12 @@ class State extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<BigInt> getStateInfoHistoryLengthById(
-    BigInt id, {
+    ({BigInt id}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[15];
     assert(checkSignature(function, '676d5b5a'));
-    final params = [id];
+    final params = [args.id];
     final response = await read(
       function,
       params,
@@ -346,12 +342,12 @@ class State extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<bool> idExists(
-    BigInt id, {
+    ({BigInt id}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[17];
     assert(checkSignature(function, '0b8a295a'));
-    final params = [id];
+    final params = [args.id];
     final response = await read(
       function,
       params,
@@ -364,13 +360,13 @@ class State extends _i1.GeneratedContract {
   /// like the gas price, nonce and max gas. The `data` and `to` fields will be
   /// set by the contract.
   Future<String> initialize(
-    _i1.EthereumAddress verifierContractAddr, {
+    ({_i1.EthereumAddress verifierContractAddr}) args, {
     required _i1.Credentials credentials,
     _i1.Transaction? transaction,
   }) async {
     final function = self.abi.functions[18];
     assert(checkSignature(function, 'c4d66de8'));
-    final params = [verifierContractAddr];
+    final params = [args.verifierContractAddr];
     return write(
       credentials,
       transaction,
@@ -431,13 +427,13 @@ class State extends _i1.GeneratedContract {
   /// like the gas price, nonce and max gas. The `data` and `to` fields will be
   /// set by the contract.
   Future<String> setVerifier(
-    _i1.EthereumAddress newVerifierAddr, {
+    ({_i1.EthereumAddress newVerifierAddr}) args, {
     required _i1.Credentials credentials,
     _i1.Transaction? transaction,
   }) async {
     final function = self.abi.functions[22];
     assert(checkSignature(function, '5437988d'));
-    final params = [newVerifierAddr];
+    final params = [args.newVerifierAddr];
     return write(
       credentials,
       transaction,
@@ -450,15 +446,14 @@ class State extends _i1.GeneratedContract {
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<bool> stateExists(
-    BigInt id,
-    BigInt state, {
+    ({BigInt id, BigInt state}) args, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[23];
     assert(checkSignature(function, '233a4d23'));
     final params = [
-      id,
-      state,
+      args.id,
+      args.state,
     ];
     final response = await read(
       function,
@@ -472,13 +467,13 @@ class State extends _i1.GeneratedContract {
   /// like the gas price, nonce and max gas. The `data` and `to` fields will be
   /// set by the contract.
   Future<String> transferOwnership(
-    _i1.EthereumAddress newOwner, {
+    ({_i1.EthereumAddress newOwner}) args, {
     required _i1.Credentials credentials,
     _i1.Transaction? transaction,
   }) async {
     final function = self.abi.functions[24];
     assert(checkSignature(function, 'f2fde38b'));
-    final params = [newOwner];
+    final params = [args.newOwner];
     return write(
       credentials,
       transaction,
@@ -491,26 +486,28 @@ class State extends _i1.GeneratedContract {
   /// like the gas price, nonce and max gas. The `data` and `to` fields will be
   /// set by the contract.
   Future<String> transitState(
-    BigInt id,
-    BigInt oldState,
-    BigInt newState,
-    bool isOldStateGenesis,
-    List<BigInt> a,
-    List<List<BigInt>> b,
-    List<BigInt> c, {
+    ({
+      BigInt id,
+      BigInt oldState,
+      BigInt newState,
+      bool isOldStateGenesis,
+      List<BigInt> a,
+      List<List<BigInt>> b,
+      List<BigInt> c
+    }) args, {
     required _i1.Credentials credentials,
     _i1.Transaction? transaction,
   }) async {
     final function = self.abi.functions[25];
     assert(checkSignature(function, '28f88a65'));
     final params = [
-      id,
-      oldState,
-      newState,
-      isOldStateGenesis,
-      a,
-      b,
-      c,
+      args.id,
+      args.oldState,
+      args.newState,
+      args.isOldStateGenesis,
+      args.a,
+      args.b,
+      args.c,
     ];
     return write(
       credentials,

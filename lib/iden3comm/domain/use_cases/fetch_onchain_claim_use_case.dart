@@ -86,12 +86,12 @@ class FetchOnchainClaimUseCase
 
     if (!param.skipInterfaceSupportCheck) {
       final supportsInterfaceCheck = await contract.supportsInterface(
-        hexToBytes(interfaceCheckInterface),
+        (interfaceId: hexToBytes(interfaceCheckInterface)),
       );
 
       final supportsNonMerklizedIssuerInterface =
           await contract.supportsInterface(
-        hexToBytes(nonMerklizedIssuerInterface),
+        (interfaceId: hexToBytes(nonMerklizedIssuerInterface)),
       );
 
       if (!supportsInterfaceCheck || !supportsNonMerklizedIssuerInterface) {
