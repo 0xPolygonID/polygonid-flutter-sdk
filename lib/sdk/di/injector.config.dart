@@ -360,6 +360,7 @@ import 'package:polygonid_flutter_sdk/sdk/polygonid_flutter_channel.dart'
     as _i608;
 import 'package:polygonid_flutter_sdk/sdk/proof.dart' as _i445;
 import 'package:sembast/sembast.dart' as _i310;
+import 'package:sembast/sembast_io.dart' as _i156;
 import 'package:web3dart/web3dart.dart' as _i641;
 
 extension GetItInjectableX on _i174.GetIt {
@@ -413,7 +414,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i1041.PolygonIdSdkLogger>(() => loggerModule.sdkLogger);
     gh.factory<_i189.PolygonIdSdk>(() => channelModule.polygonIdSdk);
     gh.factory<_i519.Client>(() => networkModule.client);
-    gh.factory<_i361.Dio>(() => networkModule.dio);
+    gh.factory<_i361.Dio>(() => networkModule.dio());
     gh.factoryAsync<_i497.Directory>(
         () => filesManagerModule.applicationDocumentsDirectory);
     gh.factory<_i71.ZipDecoder>(() => filesManagerModule.zipDecoder());
@@ -427,8 +428,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i281.MethodChannel>(() => channelModule.methodChannel);
     gh.lazySingletonAsync<_i655.PackageInfo>(() => platformModule.packageInfo);
     gh.lazySingleton<_i281.AssetBundle>(() => platformModule.assetBundle);
-    gh.lazySingletonAsync<_i310.Database>(() => databaseModule.database());
-    gh.factory<_i310.StoreRef<String, Map<String, Object?>>>(
+    gh.lazySingletonAsync<_i156.Database>(() => databaseModule.database());
+    gh.factory<_i156.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.claimStore,
       instanceName: 'claimStore',
     );
@@ -440,15 +441,15 @@ extension GetItInjectableX on _i174.GetIt {
           encryptionModule.encryptAES(key),
       instanceName: 'encryptAES',
     );
-    gh.factory<Map<String, _i310.StoreRef<String, Map<String, Object?>>>>(
+    gh.factory<Map<String, _i156.StoreRef<String, Map<String, Object?>>>>(
       () => databaseModule.identityStateStore,
       instanceName: 'identityStateStore',
     );
-    gh.factory<_i310.StoreRef<String, Map<String, Object?>>>(
+    gh.factory<_i156.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.didProfileInfoStore,
       instanceName: 'didProfileInfoStore',
     );
-    gh.factory<_i310.StoreRef<String, Map<String, Object?>>>(
+    gh.factory<_i156.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.identityStore,
       instanceName: 'identityStore',
     );
@@ -459,7 +460,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i461.FiltersMapper>(
         () => _i461.FiltersMapper(gh<_i325.FilterMapper>()));
     gh.factory<_i526.PrivateKeyMapper>(() => _i168.PrivateKeySymbolsMapper());
-    gh.factory<_i310.StoreRef<String, dynamic>>(
+    gh.factory<_i156.StoreRef<String, dynamic>>(
       () => databaseModule.keyValueStore,
       instanceName: 'keyValueStore',
     );
@@ -481,7 +482,7 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i98.JWZMapper(gh<_i267.StacktraceManager>()));
     gh.factory<_i897.GetIden3MessageUseCase>(
         () => _i897.GetIden3MessageUseCase(gh<_i267.StacktraceManager>()));
-    gh.factory<_i310.StoreRef<String, Map<String, Object?>>>(
+    gh.factory<_i156.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.interactionStore,
       instanceName: 'interactionStore',
     );
@@ -490,12 +491,12 @@ extension GetItInjectableX on _i174.GetIt {
               gh<_i361.Dio>(),
               gh<_i267.StacktraceManager>(),
             ));
-    gh.factoryParam<_i310.SembastCodec, String, dynamic>((
+    gh.factoryParam<_i156.SembastCodec, String, dynamic>((
       encryptionKey,
       _,
     ) =>
         databaseModule.getCodec(encryptionKey));
-    gh.factory<_i310.StoreRef<String, Map<String, Object?>>>(
+    gh.factory<_i156.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.profileStore,
       instanceName: 'profilesStore',
     );
@@ -524,7 +525,7 @@ extension GetItInjectableX on _i174.GetIt {
             gh<_i852.PolygonIdCoreIdentity>()));
     gh.factory<_i995.IdentityStoreRefWrapper>(() =>
         _i995.IdentityStoreRefWrapper(
-            gh<_i310.StoreRef<String, Map<String, Object?>>>(
+            gh<_i156.StoreRef<String, Map<String, Object?>>>(
                 instanceName: 'identityStore')));
     gh.factory<_i42.IdentitySMTStoreRefWrapper>(() =>
         _i42.IdentitySMTStoreRefWrapper(
@@ -532,7 +533,7 @@ extension GetItInjectableX on _i174.GetIt {
                 instanceName: 'identityStateStore')));
     gh.factory<_i383.WalletDataSource>(
         () => _i383.WalletDataSource(gh<_i383.WalletLibWrapper>()));
-    gh.factoryParamAsync<_i310.Database, String?, String?>(
+    gh.factoryParamAsync<_i156.Database, String?, String?>(
       (
         identifier,
         encryptionKey,
@@ -589,7 +590,7 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i938.DestinationPathDataSource(gh<_i938.CreatePathWrapper>()));
     gh.factoryAsync<_i995.StorageIdentityDataSource>(
         () async => _i995.StorageIdentityDataSource(
-              await getAsync<_i310.Database>(),
+              await getAsync<_i156.Database>(),
               gh<_i995.IdentityStoreRefWrapper>(),
               gh<_i267.StacktraceManager>(),
             ));
