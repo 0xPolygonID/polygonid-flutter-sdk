@@ -31,7 +31,7 @@ class _EncryptEncoder extends Converter<Map<String, dynamic>, String> {
             .encrypt(json.encode(input), iv: IV.allZerosOfLength(16))
             .base64;
         break;
-      }
+    }
     return encoded;
   }
 }
@@ -59,7 +59,7 @@ class _EncryptDecoder extends Converter<String, Map<String, dynamic>> {
                 Fernet(Key.fromUtf8(base64Url.encode(Key.fromUtf8(key).bytes))))
             .decrypt64(input, iv: IV.allZerosOfLength(16)));
         break;
-      }
+    }
     if (decoded is Map) {
       return decoded.cast<String, dynamic>();
     }
