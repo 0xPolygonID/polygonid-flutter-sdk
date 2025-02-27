@@ -20,7 +20,7 @@ class ButtonNextAction extends StatelessWidget {
           shape: const CircleBorder(),
           color: enabled
               ? CustomColors.primaryButton
-              : CustomColors.primaryButton.withOpacity(0.5),
+              : CustomColors.primaryButton.withValues(alpha: 0.5),
         ),
         child: IconButton(
           onPressed: onPressed,

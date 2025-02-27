@@ -2,9 +2,9 @@ import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 
 class ProofGenerationException extends PolygonIdSDKException {
   ProofGenerationException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class NullAtomicQueryInputsException extends PolygonIdSDKException {
@@ -12,9 +12,9 @@ class NullAtomicQueryInputsException extends PolygonIdSDKException {
 
   NullAtomicQueryInputsException({
     required this.id,
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class NullWitnessException extends PolygonIdSDKException {
@@ -22,16 +22,16 @@ class NullWitnessException extends PolygonIdSDKException {
 
   NullWitnessException({
     required this.circuit,
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class GenerateNonRevProofException extends PolygonIdSDKException {
   GenerateNonRevProofException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class NullProofException extends PolygonIdSDKException {
@@ -39,37 +39,37 @@ class NullProofException extends PolygonIdSDKException {
 
   NullProofException({
     required this.circuit,
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class FetchGistProofException extends PolygonIdSDKException {
   FetchGistProofException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class ProofInputsException extends PolygonIdSDKException {
   ProofInputsException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class CredentialInputsException extends PolygonIdSDKException {
   CredentialInputsException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class IdentityInputsException extends PolygonIdSDKException {
   IdentityInputsException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class CircuitNotDownloadedException extends PolygonIdSDKException {
@@ -77,7 +77,7 @@ class CircuitNotDownloadedException extends PolygonIdSDKException {
 
   CircuitNotDownloadedException({
     required this.circuit,
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }

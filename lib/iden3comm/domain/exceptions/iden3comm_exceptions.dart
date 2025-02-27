@@ -8,9 +8,9 @@ class UnsupportedIden3MsgTypeException extends PolygonIdSDKException {
 
   UnsupportedIden3MsgTypeException({
     required this.type,
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class InvalidIden3MsgTypeException extends PolygonIdSDKException {
@@ -20,16 +20,16 @@ class InvalidIden3MsgTypeException extends PolygonIdSDKException {
   InvalidIden3MsgTypeException({
     required this.expected,
     required this.actual,
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class InvalidProofReqException extends PolygonIdSDKException {
   InvalidProofReqException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class ProofsNotCreatedException extends PolygonIdSDKException {
@@ -37,9 +37,9 @@ class ProofsNotCreatedException extends PolygonIdSDKException {
 
   ProofsNotCreatedException({
     required this.proofRequests,
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class CredentialsNotFoundException extends PolygonIdSDKException {
@@ -47,9 +47,9 @@ class CredentialsNotFoundException extends PolygonIdSDKException {
 
   CredentialsNotFoundException({
     required this.proofRequests,
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class UnsupportedSchemaException extends PolygonIdSDKException {
@@ -57,9 +57,9 @@ class UnsupportedSchemaException extends PolygonIdSDKException {
 
   UnsupportedSchemaException({
     required this.schema,
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class NullAuthenticateCallbackException extends PolygonIdSDKException {
@@ -67,30 +67,30 @@ class NullAuthenticateCallbackException extends PolygonIdSDKException {
 
   NullAuthenticateCallbackException({
     required this.authRequest,
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class FetchClaimException extends PolygonIdSDKException {
   FetchClaimException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class FetchSchemaException extends PolygonIdSDKException {
   FetchSchemaException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class FetchDisplayTypeException extends PolygonIdSDKException {
   FetchDisplayTypeException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class UnsupportedFetchClaimTypeException extends PolygonIdSDKException {
@@ -98,49 +98,49 @@ class UnsupportedFetchClaimTypeException extends PolygonIdSDKException {
 
   UnsupportedFetchClaimTypeException({
     required this.type,
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class GetConnectionsException extends PolygonIdSDKException {
   GetConnectionsException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class OperatorException extends PolygonIdSDKException {
   OperatorException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class GetAuthTokenException extends PolygonIdSDKException {
   GetAuthTokenException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class CheckProfileValidityException extends PolygonIdSDKException {
   CheckProfileValidityException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class GetAuthChallengeException extends PolygonIdSDKException {
   GetAuthChallengeException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class GetAuthInputsException extends PolygonIdSDKException {
   GetAuthInputsException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }

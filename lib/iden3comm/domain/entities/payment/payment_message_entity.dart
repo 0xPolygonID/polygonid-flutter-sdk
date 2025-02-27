@@ -91,12 +91,10 @@ class Iden3PaymentCryptoV1 extends Payment {
 
   Iden3PaymentCryptoV1({
     required this.id,
-    String? context,
-    required PaymentData paymentData,
+    super.context,
+    required super.paymentData,
   }) : super(
           type: "Iden3PaymentCryptoV1",
-          context: context,
-          paymentData: paymentData,
         );
 
   factory Iden3PaymentCryptoV1.fromJson(Map<String, dynamic> json) {
@@ -130,12 +128,10 @@ class Iden3PaymentRailsV1 extends Payment {
 
   Iden3PaymentRailsV1({
     required this.nonce,
-    String? context,
-    required PaymentData paymentData,
+    super.context,
+    required super.paymentData,
   }) : super(
           type: "Iden3PaymentRailsV1",
-          context: context,
-          paymentData: paymentData,
         );
 
   factory Iden3PaymentRailsV1.fromJson(Map<String, dynamic> json) {
@@ -169,12 +165,10 @@ class Iden3PaymentRailsERC20V1 extends Payment {
 
   Iden3PaymentRailsERC20V1({
     required this.nonce,
-    String? context,
-    required PaymentData paymentData,
+    super.context,
+    required super.paymentData,
   }) : super(
           type: "Iden3PaymentRailsERC20V1",
-          context: context,
-          paymentData: paymentData,
         );
 
   factory Iden3PaymentRailsERC20V1.fromJson(Map<String, dynamic> json) {

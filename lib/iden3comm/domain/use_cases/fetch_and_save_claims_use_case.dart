@@ -225,14 +225,14 @@ class FetchAndSaveClaimsUseCase
 
     // TODO (moria): Maybe refactor this to a separate use case
     final supportsInterfaceCheck = await issuer.supportsInterface(
-      hexToBytes(interfaceCheckInterface),
+      (interfaceId: hexToBytes(interfaceCheckInterface)),
     );
     final supportsNonMerklizedIssuerInterface = await issuer.supportsInterface(
-      hexToBytes(nonMerklizedIssuerInterface),
+      (interfaceId: hexToBytes(nonMerklizedIssuerInterface)),
     );
 
     final supportsGetIssuerIdInterface = await issuer.supportsInterface(
-      hexToBytes(getIssuerIdInterface),
+      (interfaceId: hexToBytes(getIssuerIdInterface)),
     );
 
     if (!supportsInterfaceCheck ||

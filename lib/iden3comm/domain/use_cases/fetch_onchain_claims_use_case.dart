@@ -112,14 +112,14 @@ class FetchOnchainClaimsUseCase
     );
 
     final supportsInterfaceCheck = await issuer.supportsInterface(
-      hexToBytes(interfaceCheckInterface),
+      (interfaceId: hexToBytes(interfaceCheckInterface)),
     );
     final supportsNonMerklizedIssuerInterface = await issuer.supportsInterface(
-      hexToBytes(nonMerklizedIssuerInterface),
+      (interfaceId: hexToBytes(nonMerklizedIssuerInterface)),
     );
 
     final supportsGetIssuerIdInterface = await issuer.supportsInterface(
-      hexToBytes(getIssuerIdInterface),
+      (interfaceId: hexToBytes(getIssuerIdInterface)),
     );
 
     if (!supportsInterfaceCheck ||
@@ -165,7 +165,7 @@ class FetchOnchainClaimsUseCase
     final adapterVersion = await issuer.getCredentialAdapterVersion();
 
     final credentialIds =
-        await issuer.getUserCredentialIds(BigInt.parse(userId));
+        await issuer.getUserCredentialIds((userId: BigInt.parse(userId)));
 
     final claims = <ClaimEntity>[];
     for (final credentialId in credentialIds) {

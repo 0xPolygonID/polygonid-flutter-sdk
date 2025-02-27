@@ -12,26 +12,17 @@ class Iden3PaymentRailsERC20RequestV1Data
       PaymentRequestDataType.railsERC20V1;
 
   Iden3PaymentRailsERC20RequestV1Data({
-    required String type,
-    required List<String> context,
-    required String recipient,
-    required String amount,
-    required String expirationDate,
-    required String nonce,
-    required String metadata,
-    required List<PaymentRequestDataProof> proof,
+    required super.type,
+    required super.context,
+    required super.recipient,
+    required super.amount,
+    required super.expirationDate,
+    required super.nonce,
+    required super.metadata,
+    required super.proof,
     required this.tokenAddress,
     this.features,
-  }) : super(
-          type: type,
-          context: context,
-          recipient: recipient,
-          amount: amount,
-          expirationDate: expirationDate,
-          nonce: nonce,
-          metadata: metadata,
-          proof: proof,
-        );
+  });
 
   factory Iden3PaymentRailsERC20RequestV1Data.fromJson(
       Map<String, dynamic> json) {

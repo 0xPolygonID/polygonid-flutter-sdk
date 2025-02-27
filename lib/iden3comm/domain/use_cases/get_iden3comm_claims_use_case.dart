@@ -330,7 +330,9 @@ class GetIden3commClaimsUseCase
   }) {
     try {
       if (request.scope.query.proofType == null ||
-          request.scope.query.proofType!.isEmpty) return claimsFiltered;
+          request.scope.query.proofType!.isEmpty) {
+        return claimsFiltered;
+      }
 
       String proofType = request.scope.query.proofType!;
       claimsFiltered.removeWhere((element) {

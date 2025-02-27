@@ -5,11 +5,11 @@ class PrivateIdentityEntity extends IdentityEntity {
   final String privateKey;
 
   const PrivateIdentityEntity({
-    required String did,
-    required List<String> publicKey,
-    required Map<BigInt, String> profiles,
+    required super.did,
+    required super.publicKey,
+    required super.profiles,
     required this.privateKey,
-  }) : super(did: did, publicKey: publicKey, profiles: profiles);
+  });
 
   factory PrivateIdentityEntity.fromJson(Map<String, dynamic> json) {
     return PrivateIdentityEntity(

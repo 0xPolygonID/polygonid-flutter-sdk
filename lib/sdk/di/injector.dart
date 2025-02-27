@@ -43,7 +43,6 @@ import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository
 import 'package:polygonid_flutter_sdk/sdk/default_logger.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.config.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
-import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:web3dart/web3dart.dart';
 
@@ -105,7 +104,7 @@ abstract class NetworkModule {
   Client get client => Client();
 
   @factory
-  Dio get dio => Dio();
+  Dio dio() => Dio();
 
   @factory
   Web3Client web3client(@factoryParam String rpcUrl) {

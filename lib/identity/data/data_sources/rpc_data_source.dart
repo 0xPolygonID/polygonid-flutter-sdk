@@ -33,7 +33,7 @@ class RPCDataSource {
       BigInt idBigInt = Uint8ArrayUtils.leBuff2int(hexToBytes(id));
       logger().d(idBigInt);
 
-      List<dynamic> result = await state.getStateInfoById(idBigInt);
+      List<dynamic> result = await state.getStateInfoById((id: idBigInt));
 
       if (result.isNotEmpty && result.length == 7 && result[1] is BigInt) {
         if (result[1] != BigInt.zero) {

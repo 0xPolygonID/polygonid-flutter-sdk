@@ -12,51 +12,66 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  # Network
   http: ">=1.0.0"
-  ffi: ^2.1.2
-  hex: ^0.2.0
-  web3dart: ">=2.6.1"
-  web_socket_channel: ">=2.2.0"
-  ffigen: ^14.0.1
-  json_annotation: ^4.6.0
-  equatable: ^2.0.3
-  crypto: ^3.0.1
-  get_it: 8.0.2
-  injectable: ^2.1.2
-  path_provider: ^2.0.15
-  archive: ^3.5.1
-  sembast: 3.5.0+1
-  uuid: ^3.0.6
-  encrypt: 5.0.3
-  pointycastle: 3.7.3
-  package_info_plus: ">=7.0.0"
-  bip32: ^2.0.0
   dio: ^5.4.3+1
-  dio_cache_interceptor: ^3.5.0
+  dio_cache_interceptor: ^3.5.1
   dio_cache_interceptor_hive_store: ^3.2.2
-  logger: ^2.0.1
-  intl: ">=0.18.1"
-  hive: ^2.2.3
-  hive_flutter: ^1.1.0
+
+  # Web3
+  web3dart: ">=2.6.1"
+  bip32: ^2.0.0
+
+  # Crypto
+  crypto: ^3.0.1
+  encrypt: 5.0.3
+  pointycastle: ^3.7.0
   ninja_prime: ^2.0.0
   ed25519_edwards: ^0.3.1
   secp256k1: ^0.3.0
-  background_downloader: ^8.5.5
-  meta: ^1.15.0
   poseidon: ^0.0.1
+
+  # ZK proof
   flutter_rapidsnark: 0.0.1-beta.3
   circom_witnesscalc: 0.0.1-alpha.3
+
+  # FFI
+  ffi: ^2.1.2
+
+  # DI
+  get_it: 8.0.2
+  injectable: ^2.1.2
+
+  # Storage
+  sembast: ^3.6.0
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
+  # Utils
+  hex: ^0.2.0
+  uuid: ">=4.0.0"
+  json_annotation: ^4.6.0
+  equatable: ^2.0.7
+  path_provider: ^2.0.15
+  archive: ^3.5.1
+  package_info_plus: ">=7.0.0"
+  logger: ^2.0.1
+  intl: ">=0.18.1"
+  background_downloader: ^8.5.5
+  meta: ^1.15.0
   md5_file_checksum: ^1.0.7
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.3
+  flutter_lints: ^5.0.0
   json_serializable: ^6.7.1
-  mockito: ^5.3.2
   injectable_generator: ^2.4.0
   build_runner: ^2.4.6
-  web3dart_builders: 0.0.7
+  web3dart_builders: 0.1.2
+  ffigen: ^16.0.0
+  mockito: ^5.3.2
 
 ffigen:
   # dart run ffigen
@@ -75,6 +90,9 @@ ffigen:
       - PLGN.*
   preamble: |
     // ignore_for_file: camel_case_types, non_constant_identifier_names, unused_element, unused_field, unused_local_variable
+  compiler-opts-automatic:
+    macos:
+      include-c-standard-library: true
 
 flutter:
   plugin:

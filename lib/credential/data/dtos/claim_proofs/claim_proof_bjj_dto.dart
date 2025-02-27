@@ -9,8 +9,11 @@ class ClaimProofBJJDTO extends ClaimProofDTO {
   final String signature;
 
   const ClaimProofBJJDTO(
-      String type, ClaimProofIssuerDTO issuer, String coreClaim, this.signature)
-      : super(type, issuer, coreClaim);
+    super.type,
+    super.issuer,
+    super.coreClaim,
+    this.signature,
+  );
 
   factory ClaimProofBJJDTO.fromJson(Map<String, dynamic> json) =>
       _$ClaimProofBJJDTOFromJson(json);
@@ -25,9 +28,8 @@ class ClaimProofIssuerBJJDTO extends ClaimProofIssuerDTO {
   final ClaimProofMTPDTO mtp;
   final ClaimProofIssuerCredStatusDTO credentialStatus;
 
-  ClaimProofIssuerBJJDTO(String id, ClaimProofIssuerStateDTO state,
-      this.authCoreClaim, this.mtp, this.credentialStatus)
-      : super(id, state);
+  ClaimProofIssuerBJJDTO(super.id, super.state, this.authCoreClaim, this.mtp,
+      this.credentialStatus);
 
   factory ClaimProofIssuerBJJDTO.fromJson(Map<String, dynamic> json) =>
       _$ClaimProofIssuerBJJDTOFromJson(json);
