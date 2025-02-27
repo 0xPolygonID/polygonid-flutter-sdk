@@ -8,9 +8,8 @@ part 'claim_proof_sm_dto.g.dart';
 class ClaimProofSMDTO extends ClaimProofDTO {
   final ClaimProofMTPDTO mtp;
 
-  ClaimProofSMDTO(
-      String type, ClaimProofIssuerSMDTO issuer, String coreClaim, this.mtp)
-      : super(type, issuer, coreClaim);
+  ClaimProofSMDTO(super.type, ClaimProofIssuerSMDTO super.issuer,
+      super.coreClaim, this.mtp);
 
   factory ClaimProofSMDTO.fromJson(Map<String, dynamic> json) =>
       _$ClaimProofSMDTOFromJson(json);
@@ -21,8 +20,7 @@ class ClaimProofSMDTO extends ClaimProofDTO {
 
 @JsonSerializable(explicitToJson: true)
 class ClaimProofIssuerSMDTO extends ClaimProofIssuerDTO {
-  ClaimProofIssuerSMDTO(String id, ClaimProofIssuerStateSMDTO state)
-      : super(id, state);
+  ClaimProofIssuerSMDTO(super.id, ClaimProofIssuerStateSMDTO super.state);
 
   factory ClaimProofIssuerSMDTO.fromJson(Map<String, dynamic> json) =>
       _$ClaimProofIssuerSMDTOFromJson(json);
@@ -41,14 +39,13 @@ class ClaimProofIssuerStateSMDTO extends ClaimProofIssuerStateDTO {
   final String? txId;
 
   ClaimProofIssuerStateSMDTO(
-      String claimsTreeRoot,
-      String revocationTreeRoot,
-      String rootOfRoots,
-      String value,
+      super.claimsTreeRoot,
+      String super.revocationTreeRoot,
+      String super.rootOfRoots,
+      super.value,
       this.blockNumber,
       this.blockTimestamp,
-      this.txId)
-      : super(claimsTreeRoot, revocationTreeRoot, rootOfRoots, value);
+      this.txId);
 
   factory ClaimProofIssuerStateSMDTO.fromJson(Map<String, dynamic> json) =>
       _$ClaimProofIssuerStateSMDTOFromJson(json);

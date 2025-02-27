@@ -23,10 +23,10 @@ class CoreLibraryException extends PolygonIdSDKException {
   CoreLibraryException({
     required this.coreLibraryName,
     required this.methodName,
-    required String errorMessage,
+    required super.errorMessage,
     this.statusCode,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    super.error,
+  });
 
   @override
   String toString() {

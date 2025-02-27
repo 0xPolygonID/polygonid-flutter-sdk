@@ -6,16 +6,16 @@ class InteractionNotFoundException extends PolygonIdSDKException {
 
   InteractionNotFoundException({
     required this.id,
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class InteractionsNotFoundException extends PolygonIdSDKException {
   InteractionsNotFoundException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class InvalidInteractionType extends PolygonIdSDKException {
@@ -23,7 +23,7 @@ class InvalidInteractionType extends PolygonIdSDKException {
 
   InvalidInteractionType({
     required this.type,
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }

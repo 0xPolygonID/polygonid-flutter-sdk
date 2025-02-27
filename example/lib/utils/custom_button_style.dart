@@ -46,7 +46,7 @@ class CustomButtonStyle {
     enableFeedback: false,
     padding:
         const EdgeInsets.only(top: 18.0, bottom: 18.0, right: 24.0, left: 24.0),
-    backgroundColor: CustomColors.primaryButton.withOpacity(0.5),
+    backgroundColor: CustomColors.primaryButton.withValues(alpha: 0.5),
     shadowColor: CustomColors.transparent,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(10),

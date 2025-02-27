@@ -5,9 +5,9 @@ class NetworkException extends PolygonIdSDKException {
 
   NetworkException({
     required this.statusCode,
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class UnknownApiException extends PolygonIdSDKException {
@@ -15,35 +15,35 @@ class UnknownApiException extends PolygonIdSDKException {
 
   UnknownApiException({
     required this.httpCode,
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class ItemNotFoundException extends PolygonIdSDKException {
   ItemNotFoundException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class InternalServerErrorException extends PolygonIdSDKException {
   InternalServerErrorException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class ConflictErrorException extends PolygonIdSDKException {
   ConflictErrorException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class BadRequestException extends PolygonIdSDKException {
   BadRequestException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }

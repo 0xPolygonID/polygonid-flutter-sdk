@@ -7,9 +7,9 @@ class ClaimNotFoundException extends PolygonIdSDKException {
 
   ClaimNotFoundException({
     required this.id,
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class ClaimWrongIdentityException extends PolygonIdSDKException {
@@ -17,29 +17,25 @@ class ClaimWrongIdentityException extends PolygonIdSDKException {
 
   ClaimWrongIdentityException({
     required this.identifier,
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class SaveClaimException extends PolygonIdSDKException {
-  SaveClaimException({required String errorMessage, dynamic error})
-      : super(errorMessage: errorMessage, error: error);
+  SaveClaimException({required super.errorMessage, super.error});
 }
 
 class GetClaimsException extends PolygonIdSDKException {
-  GetClaimsException({required String errorMessage, dynamic error})
-      : super(errorMessage: errorMessage, error: error);
+  GetClaimsException({required super.errorMessage, super.error});
 }
 
 class RemoveClaimsException extends PolygonIdSDKException {
-  RemoveClaimsException({required String errorMessage, dynamic error})
-      : super(errorMessage: errorMessage, error: error);
+  RemoveClaimsException({required super.errorMessage, super.error});
 }
 
 class UpdateClaimException extends PolygonIdSDKException {
-  UpdateClaimException({required String errorMessage, dynamic error})
-      : super(errorMessage: errorMessage, error: error);
+  UpdateClaimException({required super.errorMessage, super.error});
 }
 
 class NullRevocationStatusException extends PolygonIdSDKException {
@@ -47,14 +43,14 @@ class NullRevocationStatusException extends PolygonIdSDKException {
 
   NullRevocationStatusException({
     required this.claim,
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class RefreshCredentialException extends PolygonIdSDKException {
   RefreshCredentialException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }

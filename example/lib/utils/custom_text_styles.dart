@@ -41,7 +41,7 @@ class CustomTextStyles {
       descriptionTextStyle.copyWith(color: CustomColors.redError);
 
   static TextStyle claimCardIssuerTextStyle = TextStyle(
-    color: CustomColors.proofCardSubtitle.withOpacity(0.8),
+    color: CustomColors.proofCardSubtitle.withValues(alpha: 0.8),
     fontSize: 14,
     fontWeight: FontWeight.w400,
   );

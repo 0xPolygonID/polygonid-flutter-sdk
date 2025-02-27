@@ -5,42 +5,42 @@ class SMTNotFoundException extends PolygonIdSDKException {
 
   SMTNotFoundException({
     required this.storeName,
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class SMTNodeKeyAlreadyExistsException extends PolygonIdSDKException {
   SMTNodeKeyAlreadyExistsException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class SMTEntryIndexAlreadyExistsException extends PolygonIdSDKException {
   SMTEntryIndexAlreadyExistsException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class SMTReachedMaxLevelException extends PolygonIdSDKException {
   SMTReachedMaxLevelException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class SMTInvalidNodeFoundException extends PolygonIdSDKException {
   SMTInvalidNodeFoundException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
 
 class SMTKeyNotFoundException extends PolygonIdSDKException {
   SMTKeyNotFoundException({
-    required String errorMessage,
-    dynamic error,
-  }) : super(errorMessage: errorMessage, error: error);
+    required super.errorMessage,
+    super.error,
+  });
 }
