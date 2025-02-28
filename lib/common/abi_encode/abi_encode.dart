@@ -82,10 +82,9 @@ extension EncodableIterable<T extends AbiEncodable> on Iterable<T> {
 
 extension HexEncodable on AbiType {
   String encodeToHex(List<dynamic> params) {
-    final buffer = LengthTrackingByteSink();
-    encode(params, buffer);
+    final bytes = encode(params);
 
-    final result = bytesToHex(buffer.asBytes());
+    final result = bytesToHex(bytes);
 
     return result;
   }

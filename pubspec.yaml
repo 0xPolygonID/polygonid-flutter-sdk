@@ -20,7 +20,7 @@ dependencies:
   dio_cache_interceptor_hive_store: ^3.2.2
 
   # Web3
-  web3dart: ">=2.6.1"
+  web3dart: ">=2.7.0"
   bip32: ^2.0.0
 
   # Crypto
