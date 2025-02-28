@@ -93,9 +93,11 @@ class PolygonIdFlutterChannel
         /// SDK
         case 'init':
           return PolygonIdSdk.init(
-              env: call.arguments['env'] != null
-                  ? EnvEntity.fromJson(jsonDecode(call.arguments['env']))
-                  : null);
+            env: call.arguments['env'] != null
+                ? EnvEntity.fromJson(jsonDecode(call.arguments['env']))
+                : null,
+            newIdentity: call.arguments['newIdentity'] as bool,
+          );
 
         case 'setEnv':
           return _polygonIdSdk.setEnv(

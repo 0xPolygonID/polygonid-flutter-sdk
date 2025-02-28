@@ -61,7 +61,10 @@ void registerEnv() {
 
 ///
 Future<void> registerProviders() async {
-  await PolygonIdSdk.init(env: getIt<EnvEntity>());
+  await PolygonIdSdk.init(
+    env: getIt<EnvEntity>(),
+    newIdentity: true,
+  );
   getIt.registerLazySingleton<PolygonIdSdk>(() => PolygonIdSdk.I);
 }
 

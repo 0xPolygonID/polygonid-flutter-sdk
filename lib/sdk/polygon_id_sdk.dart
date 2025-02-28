@@ -45,7 +45,7 @@ class PolygonIdSdk {
   /// Set [newIdentity] param to use a new identity creation and private key handling mechanisms
   static Future<void> init({
     EnvEntity? env,
-    bool newIdentity = false,
+    required bool newIdentity,
   }) async {
     // As [PolygonIdSdk] uses path_provider plugin, we need to ensure the
     // platform is initialized
@@ -68,18 +68,17 @@ class PolygonIdSdk {
 
     // Set env
     if (env != null) {
-      await getItSdk
-          .getAsync<SetEnvUseCase>()
-          .then((instance) => instance.execute(param: env));
+      await getItSdk.get<SetEnvUseCase>().execute(param: env);
     }
     if (env?.chainConfigs.entries.isNotEmpty ?? false) {
-      await getItSdk.getAsync<SetSelectedChainUseCase>().then(
-          (instance) => instance.execute(param: env!.chainConfigs.keys.first));
+      await getItSdk
+          .get<SetSelectedChainUseCase>()
+          .execute(param: env!.chainConfigs.keys.first);
     }
 
     // SDK singleton
     _ref = PolygonIdSdk._();
-    _ref!.identity = await getItSdk.getAsync<Identity>();
+    _ref!.identity = getItSdk.get<Identity>();
     _ref!.credential = await getItSdk.getAsync<Credential>();
     _ref!.proof = await getItSdk.getAsync<Proof>();
     _ref!.iden3comm = await getItSdk.getAsync<Iden3comm>();

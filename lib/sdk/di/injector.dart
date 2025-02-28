@@ -44,7 +44,7 @@ import 'package:polygonid_flutter_sdk/sdk/default_logger.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.config.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:sembast/sembast.dart';
-import 'package:sembast/sembast_io.dart';
+import 'package:sembast/sembast_io.dart' show databaseFactoryIo;
 import 'package:web3dart/web3dart.dart';
 
 final getItSdk = GetIt.asNewInstance();
@@ -53,7 +53,7 @@ final getItSdk = GetIt.asNewInstance();
   initializerName: r'$initSDKGetIt',
 )
 Future<GetIt> configureInjection(bool newIdentity) async {
-  final getIt = getItSdk.$initSDKGetIt();
+  final getIt = await getItSdk.$initSDKGetIt();
 
   await _registerNewIdentityDependencies(newIdentity);
 
@@ -61,8 +61,12 @@ Future<GetIt> configureInjection(bool newIdentity) async {
 }
 
 Future<void> _registerNewIdentityDependencies(bool newIdentity) async {
-  getItSdk.unregister<PrivateKeyMapper>();
-  getItSdk.unregister<WalletLibWrapper>();
+  if (getItSdk.isRegistered<PrivateKeyMapper>()) {
+    getItSdk.unregister<PrivateKeyMapper>();
+  }
+  if (getItSdk.isRegistered<WalletLibWrapper>()) {
+    getItSdk.unregister<WalletLibWrapper>();
+  }
   if (newIdentity) {
     getItSdk.registerFactory<PrivateKeyMapper>(() => PrivateKeyHexMapper());
     getItSdk.registerFactory<WalletLibWrapper>(() => WalletLibWrapperUpdated());
@@ -118,6 +122,7 @@ abstract class NetworkModule {
 
 @module
 abstract class DatabaseModule {
+  @preResolve
   @singleton
   Future<Database> database() async {
     final dir = await getApplicationDocumentsDirectory();
