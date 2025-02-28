@@ -43,6 +43,7 @@ import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository
 import 'package:polygonid_flutter_sdk/sdk/default_logger.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.config.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
+import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:web3dart/web3dart.dart';
 
@@ -117,7 +118,7 @@ abstract class NetworkModule {
 
 @module
 abstract class DatabaseModule {
-  @lazySingleton
+  @singleton
   Future<Database> database() async {
     final dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
