@@ -39,7 +39,9 @@ class WalletLibWrapper {
       message = strip0x(message);
       messHash = hexToBytes(message);
     } else {
-      messHash = hexToBytes(BigInt.parse(message, radix: 10).toRadixString(16));
+      var hex = BigInt.parse(message, radix: 10).toRadixString(16);
+      hex = hex.length.isEven ? hex : "0$hex";
+      messHash = hexToBytes(hex);
     }
     final bjjKey = BjjPrivateKey(privateKey);
     final signature = bjjKey.sign(messHash);
