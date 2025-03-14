@@ -7,7 +7,7 @@ class PinataGatewayUtils {
     required String fileHash,
   }) async {
     try {
-      GetEnvUseCase getEnvUseCase = await getItSdk.getAsync<GetEnvUseCase>();
+      GetEnvUseCase getEnvUseCase = getItSdk<GetEnvUseCase>();
       EnvEntity env = await getEnvUseCase.execute();
       if (env.pinataGateway != null &&
           env.pinataGateway!.isNotEmpty &&

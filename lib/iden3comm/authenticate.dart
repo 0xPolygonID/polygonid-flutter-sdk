@@ -139,16 +139,15 @@ class Authenticate {
       Uint8List privateKeyBytes = hexToBytes(privateKey);
 
       GetSelectedChainUseCase getSelectedChainUseCase =
-          await getItSdk.getAsync<GetSelectedChainUseCase>();
+      getItSdk.get<GetSelectedChainUseCase>();
 
       ChainConfigEntity chain = await getSelectedChainUseCase.execute();
       _stacktraceManager.addTrace(
         "[Authenticate] Chain: ${chain.blockchain} ${chain.network}",
       );
-      GetDidIdentifierUseCase getDidIdentifierUseCase =
-          await getItSdk.getAsync<GetDidIdentifierUseCase>();
+      GetDidIdentifierUseCase getDidIdentifierUseCase = getItSdk<GetDidIdentifierUseCase>();
 
-      final getPubKeyUseCase = await getItSdk.getAsync<GetPublicKeyUseCase>();
+      final getPubKeyUseCase = await getItSdk<GetPublicKeyUseCase>();
       final bjjPublicKey = await getPubKeyUseCase.execute(param: privateKey);
 
       String profileDid = await getDidIdentifierUseCase.execute(
@@ -1094,7 +1093,7 @@ class Authenticate {
     var libPolygonIdCredential =
         getItSdk<LibPolygonIdCoreCredentialDataSource>();
 
-    final identityRepo = await getItSdk.getAsync<IdentityRepository>();
+    final identityRepo = getItSdk<IdentityRepository>();
     final publicKey =
         await identityRepo.getPublicKeys(bjjPrivateKey: privateKey);
 
