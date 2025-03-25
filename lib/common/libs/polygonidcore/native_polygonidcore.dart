@@ -654,6 +654,36 @@ class NativePolygonIdCoreLib {
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
 
+  int PLGNW3CCredentialFromPassportInputs(
+    ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
+    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> cfg,
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNW3CCredentialFromPassportInputs(
+      jsonResponse,
+      in1,
+      cfg,
+      status,
+    );
+  }
+
+  late final _PLGNW3CCredentialFromPassportInputsPtr = _lookup<
+          ffi.NativeFunction<
+              GoUint8 Function(
+                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Char>,
+                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
+      'PLGNW3CCredentialFromPassportInputs');
+  late final _PLGNW3CCredentialFromPassportInputs =
+      _PLGNW3CCredentialFromPassportInputsPtr.asFunction<
+          int Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+
   int PLGNDescribeID(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
     ffi.Pointer<ffi.Char> in1,

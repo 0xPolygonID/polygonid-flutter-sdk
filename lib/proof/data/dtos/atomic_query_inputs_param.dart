@@ -181,3 +181,40 @@ class AnonAadhaarInputsParam extends AtomicQueryInputsParam {
         },
       };
 }
+
+class PassportInputsParam extends AtomicQueryInputsParam {
+  final String passportData;
+  final String credentialSubjectID;
+  final int revocationNonce;
+  final String credentialStatusID;
+  final String issuerDid;
+  final String issuanceDate;
+  final String linkNonce;
+
+  PassportInputsParam({
+    required this.passportData,
+    required this.credentialSubjectID,
+    required this.revocationNonce,
+    required this.credentialStatusID,
+    required this.issuerDid,
+    required this.issuanceDate,
+    required this.linkNonce,
+  });
+
+  @override
+  String get id => credentialSubjectID;
+
+  @override
+  Map<String, dynamic> toJson() => {
+        "passportData": passportData,
+        "credentialSubjectID": credentialSubjectID,
+        "credentialStatusRevocationNonce": revocationNonce,
+        "credentialStatusID": credentialStatusID,
+        "issuerID": issuerDid,
+        "issuanceDate": issuanceDate,
+        "linkNonce": linkNonce,
+        "request": {
+          "circuitId": "passportV1",
+        },
+      };
+}

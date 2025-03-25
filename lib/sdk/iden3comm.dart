@@ -25,6 +25,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/clean_schema_ca
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/core_claim_from_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/create_anon_aadhaar_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/create_anon_aadhaar_proof_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/create_passport_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_credentials_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_onchain_claims_use_case.dart';
@@ -328,6 +329,17 @@ abstract class PolygonIdSdkIden3comm {
     required SelfIssuedCredentialParams selfIssuedCredentialParams,
     required Map<String, dynamic> additionalFields,
   });
+
+  Future<ClaimEntity> getPassportCredential({
+    required String passportData,
+    required String profileDid,
+    required int revocationNonce,
+    required String credentialStatusID,
+    required String issuerDid,
+    required String issuanceDate,
+    required String linkNonce,
+    Map<String, dynamic>? additionalFields,
+  });
 }
 
 @injectable
@@ -356,6 +368,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   final FetchCredentialsUseCase _fetchCredentialsUseCase;
   final CreateAnonAadhaarCredentialUseCase _createAnonAadhaarCredentialUseCase;
   final CreateAnonAadhaarProofUseCase _createAnonAadhaarProofUseCase;
+  final CreatePassportCredentialUseCase _createPassportCredentialUseCase;
   final CoreClaimFromCredentialUseCase _coreClaimFromCredentialUseCase;
 
   Iden3comm(
@@ -383,6 +396,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     this._fetchCredentialsUseCase,
     this._createAnonAadhaarCredentialUseCase,
     this._createAnonAadhaarProofUseCase,
+    this._createPassportCredentialUseCase,
     this._coreClaimFromCredentialUseCase,
   );
 
@@ -785,6 +799,31 @@ class Iden3comm implements PolygonIdSdkIden3comm {
           profileDid: profileDid,
           selfIssuedCredentialParams: selfIssuedCredentialParams,
           additionalFields: additionalFields),
+    );
+  }
+
+  @override
+  Future<ClaimEntity> getPassportCredential({
+    required String passportData,
+    required String profileDid,
+    required int revocationNonce,
+    required String credentialStatusID,
+    required String issuerDid,
+    required String issuanceDate,
+    required String linkNonce,
+    Map<String, dynamic>? additionalFields,
+  }) {
+    return _createPassportCredentialUseCase.execute(
+      param: CreatePassportCredentialParam(
+        passportData: passportData,
+        profileDid: profileDid,
+        revocationNonce: revocationNonce,
+        credentialStatusID: credentialStatusID,
+        issuerDid: issuerDid,
+        issuanceDate: issuanceDate,
+        linkNonce: linkNonce,
+        additionalFields: additionalFields,
+      ),
     );
   }
 

@@ -78,6 +78,34 @@ class LibPolygonIdCoreCredentialDataSource {
     );
   }
 
+  String credentialFromPassport({
+    required String passportData,
+    required String did,
+    required int revocationNonce,
+    required String credentialStatusID,
+    required String issuerDid,
+    required String issuanceDate,
+    required String linkNonce,
+
+    String? config,
+  }) {
+    // This method accepts same inputs as the proof gen inputs calc
+    final param = PassportInputsParam(
+      passportData: passportData,
+      credentialSubjectID: did,
+      revocationNonce: revocationNonce,
+      credentialStatusID: credentialStatusID,
+      issuerDid: issuerDid,
+      issuanceDate: issuanceDate,
+      linkNonce: linkNonce,
+    );
+
+    return _polygonIdCoreCredential.createCredentialFromAnonAadhaarInputs(
+      jsonEncode(param.toJson()),
+      config,
+    );
+  }
+
   String coreClaimFromCredential({
     required String credential,
     String? config,

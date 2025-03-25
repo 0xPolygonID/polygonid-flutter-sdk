@@ -1028,6 +1028,21 @@ class PolygonIdFlutterChannel
   }
 
   @override
+  Future<ClaimEntity> getPassportCredential({
+    required String passportData,
+    required String profileDid,
+    required int revocationNonce,
+    required String credentialStatusID,
+    required String issuerDid,
+    required String issuanceDate,
+    required String linkNonce,
+    Map<String, dynamic>? additionalFields,
+  }) {
+    // TODO: implement getPassportCredential
+    throw UnimplementedError();
+  }
+
+  @override
   Future<ZKProofEntity> getAnonAadhaarProof({
     required String qrData,
     required String profileDid,
