@@ -160,6 +160,8 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/create_anon_aad
     as _i39;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/create_passport_credential_use_case.dart'
     as _i185;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/create_passport_proof_use_case.dart'
+    as _i139;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_claims_use_case.dart'
     as _i102;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_credentials_use_case.dart'
@@ -795,6 +797,12 @@ extension GetItInjectableX on _i174.GetIt {
               gh<_i41.LibPolygonIdCoreWrapper>(),
               await getAsync<_i310.ProveUseCase>(),
             ));
+    gh.factoryAsync<_i139.CreatePassportProofUseCase>(
+        () async => _i139.CreatePassportProofUseCase(
+              gh<_i626.GetEnvUseCase>(),
+              gh<_i41.LibPolygonIdCoreWrapper>(),
+              await getAsync<_i310.ProveUseCase>(),
+            ));
     gh.factory<_i309.CredentialRepository>(() => repositoriesModule
         .credentialRepository(gh<_i550.CredentialRepositoryImpl>()));
     gh.factoryAsync<_i610.Circuits>(() async => _i610.Circuits(
@@ -1286,6 +1294,7 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i352.CreateAnonAadhaarCredentialUseCase>(),
           await getAsync<_i39.CreateAnonAadhaarProofUseCase>(),
           gh<_i185.CreatePassportCredentialUseCase>(),
+          await getAsync<_i139.CreatePassportProofUseCase>(),
           gh<_i351.CoreClaimFromCredentialUseCase>(),
         ));
     return this;
