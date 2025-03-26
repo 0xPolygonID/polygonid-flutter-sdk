@@ -26,6 +26,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/core_claim_from
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/create_anon_aadhaar_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/create_anon_aadhaar_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/create_passport_credential_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/create_passport_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_credentials_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_onchain_claims_use_case.dart';
@@ -369,6 +370,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   final CreateAnonAadhaarCredentialUseCase _createAnonAadhaarCredentialUseCase;
   final CreateAnonAadhaarProofUseCase _createAnonAadhaarProofUseCase;
   final CreatePassportCredentialUseCase _createPassportCredentialUseCase;
+  final CreatePassportProofUseCase _createPassportProofUseCase;
   final CoreClaimFromCredentialUseCase _coreClaimFromCredentialUseCase;
 
   Iden3comm(
@@ -397,6 +399,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     this._createAnonAadhaarCredentialUseCase,
     this._createAnonAadhaarProofUseCase,
     this._createPassportCredentialUseCase,
+    this._createPassportProofUseCase,
     this._coreClaimFromCredentialUseCase,
   );
 
@@ -799,6 +802,31 @@ class Iden3comm implements PolygonIdSdkIden3comm {
           profileDid: profileDid,
           selfIssuedCredentialParams: selfIssuedCredentialParams,
           additionalFields: additionalFields),
+    );
+  }
+
+  @override
+  Future<ZKProofEntity> getPassportProof({
+    required String passportData,
+    required String profileDid,
+    required int revocationNonce,
+    required String credentialStatusID,
+    required String issuerDid,
+    required int issuanceDate,
+    required String linkNonce,
+    required String circuitId,
+  }) async {
+    return _createPassportProofUseCase.execute(
+      param: CreatePassportProofParam(
+        passportData: passportData,
+        profileDid: profileDid,
+        revocationNonce: revocationNonce,
+        credentialStatusID: credentialStatusID,
+        issuerDid: issuerDid,
+        issuanceDate: issuanceDate,
+        linkNonce: linkNonce,
+        circuitId: circuitId,
+      ),
     );
   }
 
