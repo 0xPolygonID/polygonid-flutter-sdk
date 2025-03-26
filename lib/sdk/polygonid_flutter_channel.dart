@@ -1034,7 +1034,7 @@ class PolygonIdFlutterChannel
     required int revocationNonce,
     required String credentialStatusID,
     required String issuerDid,
-    required String issuanceDate,
+    required int issuanceDate,
     required String linkNonce,
     Map<String, dynamic>? additionalFields,
   }) {

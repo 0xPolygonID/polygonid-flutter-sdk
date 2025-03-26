@@ -116,7 +116,8 @@ class GenericAtomicQueryInputsParam extends AtomicQueryInputsParam {
       "verifierId": verifierId,
       "linkNonce": linkNonce,
       "params": params,
-    }..removeWhere((dynamic key, dynamic value) => value == null);
+    }
+      ..removeWhere((dynamic key, dynamic value) => value == null);
 
     if (transactionData?.isNotEmpty ?? false) {
       inputs['transactionData'] =
@@ -156,7 +157,8 @@ class AnonAadhaarInputsParam extends AtomicQueryInputsParam {
     required this.qrData,
     required this.credentialSubjectID,
     required SelfIssuedCredentialParams params,
-  })  : revocationNonce = params.revocationNonce,
+  })
+      : revocationNonce = params.revocationNonce,
         credentialStatusID = params.credentialStatusID,
         issuerDid = params.issuerDid,
         publicKey = params.publicKey,
@@ -167,7 +169,8 @@ class AnonAadhaarInputsParam extends AtomicQueryInputsParam {
   String get id => credentialSubjectID;
 
   @override
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "qrData": qrData,
         "credentialSubjectID": credentialSubjectID,
         "credentialStatusRevocationNonce": revocationNonce,
@@ -188,7 +191,7 @@ class PassportInputsParam extends AtomicQueryInputsParam {
   final int revocationNonce;
   final String credentialStatusID;
   final String issuerDid;
-  final String issuanceDate;
+  final int issuanceDate;
   final String linkNonce;
 
   PassportInputsParam({
@@ -205,7 +208,8 @@ class PassportInputsParam extends AtomicQueryInputsParam {
   String get id => credentialSubjectID;
 
   @override
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "passportData": passportData,
         "credentialSubjectID": credentialSubjectID,
         "credentialStatusRevocationNonce": revocationNonce,

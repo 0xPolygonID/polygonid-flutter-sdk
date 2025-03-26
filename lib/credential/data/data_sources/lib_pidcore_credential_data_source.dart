@@ -84,9 +84,8 @@ class LibPolygonIdCoreCredentialDataSource {
     required int revocationNonce,
     required String credentialStatusID,
     required String issuerDid,
-    required String issuanceDate,
+    required int issuanceDate,
     required String linkNonce,
-
     String? config,
   }) {
     // This method accepts same inputs as the proof gen inputs calc
@@ -100,7 +99,7 @@ class LibPolygonIdCoreCredentialDataSource {
       linkNonce: linkNonce,
     );
 
-    return _polygonIdCoreCredential.createCredentialFromAnonAadhaarInputs(
+    return _polygonIdCoreCredential.createCredentialFromPassportInputs(
       jsonEncode(param.toJson()),
       config,
     );

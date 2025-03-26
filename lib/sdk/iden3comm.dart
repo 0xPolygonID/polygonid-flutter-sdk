@@ -336,7 +336,7 @@ abstract class PolygonIdSdkIden3comm {
     required int revocationNonce,
     required String credentialStatusID,
     required String issuerDid,
-    required String issuanceDate,
+    required int issuanceDate,
     required String linkNonce,
     Map<String, dynamic>? additionalFields,
   });
@@ -809,7 +809,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     required int revocationNonce,
     required String credentialStatusID,
     required String issuerDid,
-    required String issuanceDate,
+    required int issuanceDate,
     required String linkNonce,
     Map<String, dynamic>? additionalFields,
   }) {

@@ -15,7 +15,7 @@ class CreatePassportCredentialParam {
   final int revocationNonce;
   final String credentialStatusID;
   final String issuerDid;
-  final String issuanceDate;
+  final int issuanceDate;
   final String linkNonce;
   Map<String, dynamic>? additionalFields;
 
