@@ -1028,8 +1028,20 @@ class PolygonIdFlutterChannel
   }
 
   @override
+  Future<ZKProofEntity> getAnonAadhaarProof({
+    required String qrData,
+    required String profileDid,
+    required SelfIssuedCredentialParams selfIssuedCredentialParams,
+    required String circuitId,
+  }) {
+    // TODO: implement getAnonAadhaarProof
+    throw UnimplementedError();
+  }
+
+  @override
   Future<ClaimEntity> getPassportCredential({
     required String passportData,
+    required String dg2Hash,
     required String profileDid,
     required int revocationNonce,
     required String credentialStatusID,
@@ -1043,13 +1055,18 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<ZKProofEntity> getAnonAadhaarProof({
-    required String qrData,
+  Future<ZKProofEntity> getPassportProof({
+    required String passportData,
+    required String dg2Hash,
     required String profileDid,
-    required SelfIssuedCredentialParams selfIssuedCredentialParams,
+    required int revocationNonce,
+    required String credentialStatusID,
+    required String issuerDid,
+    required int issuanceDate,
+    required String linkNonce,
     required String circuitId,
   }) {
-    // TODO: implement getAnonAadhaarProof
+    // TODO: implement getPassportProof
     throw UnimplementedError();
   }
 

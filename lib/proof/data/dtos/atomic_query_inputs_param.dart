@@ -187,6 +187,7 @@ class AnonAadhaarInputsParam extends AtomicQueryInputsParam {
 
 class PassportInputsParam extends AtomicQueryInputsParam {
   final String passportData;
+  final String dg2Hash;
   final String credentialSubjectID;
   final int revocationNonce;
   final String credentialStatusID;
@@ -196,6 +197,7 @@ class PassportInputsParam extends AtomicQueryInputsParam {
 
   PassportInputsParam({
     required this.passportData,
+    required this.dg2Hash,
     required this.credentialSubjectID,
     required this.revocationNonce,
     required this.credentialStatusID,
@@ -211,6 +213,7 @@ class PassportInputsParam extends AtomicQueryInputsParam {
   Map<String, dynamic> toJson() =>
       {
         "passportData": passportData,
+        "dg2Hash": dg2Hash,
         "credentialSubjectID": credentialSubjectID,
         "credentialStatusRevocationNonce": revocationNonce,
         "credentialStatusID": credentialStatusID,

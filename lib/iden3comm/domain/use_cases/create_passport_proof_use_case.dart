@@ -13,6 +13,7 @@ import 'package:polygonid_flutter_sdk/proof/domain/use_cases/prove_use_case.dart
 
 class CreatePassportProofParam {
   final String passportData;
+  final String dg2Hash;
   final String profileDid;
   final int revocationNonce;
   final String credentialStatusID;
@@ -23,6 +24,7 @@ class CreatePassportProofParam {
 
   CreatePassportProofParam({
     required this.passportData,
+    required this.dg2Hash,
     required this.profileDid,
     required this.revocationNonce,
     required this.credentialStatusID,
@@ -53,6 +55,7 @@ class CreatePassportProofUseCase
 
     final passportInputs = PassportInputsParam(
       passportData: param.passportData,
+      dg2Hash: param.dg2Hash,
       credentialSubjectID: param.profileDid,
       revocationNonce: param.revocationNonce,
       credentialStatusID: param.credentialStatusID,

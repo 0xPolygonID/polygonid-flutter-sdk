@@ -80,6 +80,7 @@ class LibPolygonIdCoreCredentialDataSource {
 
   String credentialFromPassport({
     required String passportData,
+    required String dg2Hash,
     required String did,
     required int revocationNonce,
     required String credentialStatusID,
@@ -91,6 +92,7 @@ class LibPolygonIdCoreCredentialDataSource {
     // This method accepts same inputs as the proof gen inputs calc
     final param = PassportInputsParam(
       passportData: passportData,
+      dg2Hash: dg2Hash,
       credentialSubjectID: did,
       revocationNonce: revocationNonce,
       credentialStatusID: credentialStatusID,

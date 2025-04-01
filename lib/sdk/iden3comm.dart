@@ -331,8 +331,24 @@ abstract class PolygonIdSdkIden3comm {
     required Map<String, dynamic> additionalFields,
   });
 
+
+  /// [passportData] - DG1 passport group with tag
+  Future<ZKProofEntity> getPassportProof({
+    required String passportData,
+    required String dg2Hash,
+    required String profileDid,
+    required int revocationNonce,
+    required String credentialStatusID,
+    required String issuerDid,
+    required int issuanceDate,
+    required String linkNonce,
+    required String circuitId,
+  });
+
+  /// [passportData] - DG1 passport group with tag
   Future<ClaimEntity> getPassportCredential({
     required String passportData,
+    required String dg2Hash,
     required String profileDid,
     required int revocationNonce,
     required String credentialStatusID,
@@ -798,16 +814,18 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }) {
     return _createAnonAadhaarCredentialUseCase.execute(
       param: CreateAnonAadhaarCredentialParam(
-          qrData: qrData,
-          profileDid: profileDid,
-          selfIssuedCredentialParams: selfIssuedCredentialParams,
-          additionalFields: additionalFields),
+        qrData: qrData,
+        profileDid: profileDid,
+        selfIssuedCredentialParams: selfIssuedCredentialParams,
+        additionalFields: additionalFields,
+      ),
     );
   }
 
   @override
   Future<ZKProofEntity> getPassportProof({
     required String passportData,
+    required String dg2Hash,
     required String profileDid,
     required int revocationNonce,
     required String credentialStatusID,
@@ -819,6 +837,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     return _createPassportProofUseCase.execute(
       param: CreatePassportProofParam(
         passportData: passportData,
+        dg2Hash: dg2Hash,
         profileDid: profileDid,
         revocationNonce: revocationNonce,
         credentialStatusID: credentialStatusID,
@@ -833,6 +852,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   @override
   Future<ClaimEntity> getPassportCredential({
     required String passportData,
+    required String dg2Hash,
     required String profileDid,
     required int revocationNonce,
     required String credentialStatusID,
@@ -844,6 +864,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     return _createPassportCredentialUseCase.execute(
       param: CreatePassportCredentialParam(
         passportData: passportData,
+        dg2Hash: dg2Hash,
         profileDid: profileDid,
         revocationNonce: revocationNonce,
         credentialStatusID: credentialStatusID,

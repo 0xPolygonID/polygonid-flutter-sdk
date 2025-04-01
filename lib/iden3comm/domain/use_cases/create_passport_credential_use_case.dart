@@ -11,6 +11,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3co
 
 class CreatePassportCredentialParam {
   final String passportData;
+  final String dg2Hash;
   final String profileDid;
   final int revocationNonce;
   final String credentialStatusID;
@@ -21,6 +22,7 @@ class CreatePassportCredentialParam {
 
   CreatePassportCredentialParam({
     required this.passportData,
+    required this.dg2Hash,
     required this.profileDid,
     required this.revocationNonce,
     required this.credentialStatusID,
@@ -53,6 +55,7 @@ class CreatePassportCredentialUseCase
 
     final credentialJson = _libPolygonIdCoreCredentialDS.credentialFromPassport(
       passportData: param.passportData,
+      dg2Hash: param.dg2Hash,
       did: param.profileDid,
       revocationNonce: param.revocationNonce,
       credentialStatusID: param.credentialStatusID,
