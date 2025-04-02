@@ -18,6 +18,7 @@ class CreatePassportCredentialParam {
   final String issuerDid;
   final int issuanceDate;
   final String linkNonce;
+  final String circuitId;
   Map<String, dynamic>? additionalFields;
 
   CreatePassportCredentialParam({
@@ -29,6 +30,7 @@ class CreatePassportCredentialParam {
     required this.issuerDid,
     required this.issuanceDate,
     required this.linkNonce,
+    required this.circuitId,
     required this.additionalFields,
   });
 }
@@ -62,6 +64,7 @@ class CreatePassportCredentialUseCase
       issuerDid: param.issuerDid,
       issuanceDate: param.issuanceDate,
       linkNonce: param.linkNonce,
+      circuitId: param.circuitId,
       config: jsonEncode(env.config.toJson()),
     );
 

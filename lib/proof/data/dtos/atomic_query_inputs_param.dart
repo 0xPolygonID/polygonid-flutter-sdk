@@ -116,8 +116,7 @@ class GenericAtomicQueryInputsParam extends AtomicQueryInputsParam {
       "verifierId": verifierId,
       "linkNonce": linkNonce,
       "params": params,
-    }
-      ..removeWhere((dynamic key, dynamic value) => value == null);
+    }..removeWhere((dynamic key, dynamic value) => value == null);
 
     if (transactionData?.isNotEmpty ?? false) {
       inputs['transactionData'] =
@@ -157,8 +156,7 @@ class AnonAadhaarInputsParam extends AtomicQueryInputsParam {
     required this.qrData,
     required this.credentialSubjectID,
     required SelfIssuedCredentialParams params,
-  })
-      : revocationNonce = params.revocationNonce,
+  })  : revocationNonce = params.revocationNonce,
         credentialStatusID = params.credentialStatusID,
         issuerDid = params.issuerDid,
         publicKey = params.publicKey,
@@ -169,8 +167,7 @@ class AnonAadhaarInputsParam extends AtomicQueryInputsParam {
   String get id => credentialSubjectID;
 
   @override
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         "qrData": qrData,
         "credentialSubjectID": credentialSubjectID,
         "credentialStatusRevocationNonce": revocationNonce,
@@ -194,6 +191,7 @@ class PassportInputsParam extends AtomicQueryInputsParam {
   final String issuerDid;
   final int issuanceDate;
   final String linkNonce;
+  final String circuitId;
 
   PassportInputsParam({
     required this.passportData,
@@ -204,14 +202,14 @@ class PassportInputsParam extends AtomicQueryInputsParam {
     required this.issuerDid,
     required this.issuanceDate,
     required this.linkNonce,
+    required this.circuitId,
   });
 
   @override
   String get id => credentialSubjectID;
 
   @override
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         "passportData": passportData,
         "dg2Hash": dg2Hash,
         "credentialSubjectID": credentialSubjectID,
@@ -221,7 +219,7 @@ class PassportInputsParam extends AtomicQueryInputsParam {
         "issuanceDate": issuanceDate,
         "linkNonce": linkNonce,
         "request": {
-          "circuitId": "passportV1",
+          "circuitId": circuitId,
         },
       };
 }

@@ -87,6 +87,7 @@ class LibPolygonIdCoreCredentialDataSource {
     required String issuerDid,
     required int issuanceDate,
     required String linkNonce,
+    required String circuitId,
     String? config,
   }) {
     // This method accepts same inputs as the proof gen inputs calc
@@ -99,6 +100,7 @@ class LibPolygonIdCoreCredentialDataSource {
       issuerDid: issuerDid,
       issuanceDate: issuanceDate,
       linkNonce: linkNonce,
+      circuitId: circuitId,
     );
 
     return _polygonIdCoreCredential.createCredentialFromPassportInputs(

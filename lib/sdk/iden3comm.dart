@@ -355,6 +355,7 @@ abstract class PolygonIdSdkIden3comm {
     required String issuerDid,
     required int issuanceDate,
     required String linkNonce,
+    required String circuitId,
     Map<String, dynamic>? additionalFields,
   });
 }
@@ -859,6 +860,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     required String issuerDid,
     required int issuanceDate,
     required String linkNonce,
+    required String circuitId,
     Map<String, dynamic>? additionalFields,
   }) {
     return _createPassportCredentialUseCase.execute(
@@ -871,6 +873,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         issuerDid: issuerDid,
         issuanceDate: issuanceDate,
         linkNonce: linkNonce,
+        circuitId: circuitId,
         additionalFields: additionalFields,
       ),
     );

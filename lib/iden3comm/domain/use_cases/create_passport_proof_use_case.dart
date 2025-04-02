@@ -62,6 +62,7 @@ class CreatePassportProofUseCase
       issuerDid: param.issuerDid,
       issuanceDate: param.issuanceDate,
       linkNonce: param.linkNonce,
+      circuitId: param.circuitId,
     );
 
     final generateInputsResult = await _libPolygonIdCoreWrapper.getProofInputs(

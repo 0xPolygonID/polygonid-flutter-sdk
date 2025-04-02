@@ -1048,6 +1048,7 @@ class PolygonIdFlutterChannel
     required String issuerDid,
     required int issuanceDate,
     required String linkNonce,
+    required String circuitId,
     Map<String, dynamic>? additionalFields,
   }) {
     // TODO: implement getPassportCredential
