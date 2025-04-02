@@ -2,9 +2,11 @@
 // CircuitModel(fileName: 'linkedMultiQuery10-beta.1.dat', checksum: 'a5b1e217ace63fb0c2bd2d8673d70dea'),
 class CircuitModel {
   final String fileName;
-  final String checksum;
 
-  CircuitModel({required this.fileName, required this.checksum});
+  /// MD5 checksum of the file, useful in case of large files.
+  final String? checksum;
+
+  CircuitModel({required this.fileName, this.checksum});
 
   factory CircuitModel.fromJson(Map<String, dynamic> json) {
     return CircuitModel(
@@ -14,9 +16,9 @@ class CircuitModel {
   }
 
   Map<String, dynamic> toJson() {
-    final json = <String, dynamic>{};
-    json['fileName'] = fileName;
-    json['checksum'] = checksum;
-    return json;
+    return {
+      'fileName': fileName,
+      if (checksum != null) 'checksum': checksum,
+    };
   }
 }

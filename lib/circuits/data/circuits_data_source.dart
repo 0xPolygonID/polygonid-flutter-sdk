@@ -40,7 +40,7 @@ class CircuitsDataSource {
   /// - [checksum]: the md5 checksum of the file
   Future<bool> circuitExistsAndValidChecksum({
     required String circuitFileName,
-    required String checksum,
+    required String? checksum,
   }) async {
     try {
       String path = directory.path;
@@ -48,6 +48,11 @@ class CircuitsDataSource {
       final bool fileExists = await file.exists();
       if (!fileExists) {
         return false;
+      }
+
+      if (checksum == null || checksum.isEmpty) {
+        // If there is no checksum - skip check
+        return true;
       }
 
       // we check the md5 checksum of the file
@@ -246,14 +251,14 @@ class CircuitsDataSource {
         await outFile.writeAsBytes(archiveFile.content);
 
         // we get the checksum from list
-        final String circuitToCheckChecksum = circuitsToCheck
+        final String? circuitToCheckChecksum = circuitsToCheck
             .firstWhere(
               (element) => element.fileName == outFile.path.split('/').last,
               orElse: () => CircuitModel(fileName: '', checksum: ''),
             )
             .checksum;
 
-        if (circuitToCheckChecksum.isEmpty) {
+        if (circuitToCheckChecksum == null || circuitToCheckChecksum.isEmpty) {
           // if the checksum is empty we don't need to check it
           continue;
         }
