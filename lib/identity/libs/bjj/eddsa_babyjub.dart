@@ -130,7 +130,7 @@ class BjjPrivateKey extends PrivateKey {
       messageHashBigInt.toString(),
     );
 
-    return Uint8ArrayUtils.uint8ListfromString(signature);
+    return hexToBytes(signature);
   }
 }
 

@@ -301,18 +301,10 @@ packages:
     dependency: transitive
     description:
       name: dio_cache_interceptor
-      sha256: "1346705a2057c265014d7696e3e2318b560bfb00b484dac7f9b01e2ceaebb07d"
+      sha256: c1cbf8be886b3e077165dda50a1b3bb299b8a72694af94d065b4d2ac0fee67d7
       url: "https://pub.dev"
     source: hosted
-    version: "3.5.1"
-  dio_cache_interceptor_hive_store:
-    dependency: transitive
-    description:
-      name: dio_cache_interceptor_hive_store
-      sha256: "449b36541216cb20543228081125ad2995eb9712ec35bd030d85663ea1761895"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.2.2"
+    version: "4.0.3"
   dio_web_adapter:
     dependency: transitive
     description:
@@ -634,6 +626,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.3"
+  hive_ce:
+    dependency: transitive
+    description:
+      name: hive_ce
+      sha256: ac66daee46ad46486a1ed12cf91e9d7479c875fb46889be8d2c96b557406647f
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.10.1"
   hive_flutter:
     dependency: transitive
     description:
@@ -650,6 +650,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.0"
+  http_cache_core:
+    dependency: transitive
+    description:
+      name: http_cache_core
+      sha256: b0accfa821e73085b5252dd42a6908d19ea0c29badd46db3668af6f8e510cfe1
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1"
+  http_cache_hive_store:
+    dependency: transitive
+    description:
+      name: http_cache_hive_store
+      sha256: "85847efdb18094961a66b74d3b856da093ddcbaf7739adecdc28149e871fb8fe"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.1"
   http_multi_server:
     dependency: transitive
     description:
