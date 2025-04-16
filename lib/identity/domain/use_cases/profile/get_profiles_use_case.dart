@@ -41,13 +41,8 @@ class GetProfilesUseCase
       final identity = await _getIdentityUseCase.execute(
         param: GetIdentityParam(genesisDid: param.genesisDid),
       );
-      final profiles = identity.profiles;
 
-      _stacktraceManager
-          .addTrace("[GetProfilesUseCase] Profiles for $param are: $profiles");
-      logger().i("[GetProfilesUseCase] Profiles for $param are: $profiles");
-
-      return profiles;
+      return identity.profiles;
     } catch (error) {
       _stacktraceManager.addTrace("[GetProfilesUseCase] Error: $error");
       _stacktraceManager.addError("[GetProfilesUseCase] Error: $error");

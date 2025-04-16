@@ -89,7 +89,8 @@ class RemoveIdentityUseCase extends FutureUseCase<RemoveIdentityParam, void> {
 
       // Remove the identity
       await _identityRepository.removeIdentity(genesisDid: param.genesisDid);
-      _stacktraceManager.addTrace("[RemoveIdentityUseCase] Identity removed");
+      _stacktraceManager.addTrace(
+          "[RemoveIdentityUseCase] Identity removed, did: ${param.genesisDid}");
     } catch (error) {
       logger().e("[RemoveIdentityUseCase] Error: $error");
       _stacktraceManager.addTrace("[RemoveIdentityUseCase] Error: $error");

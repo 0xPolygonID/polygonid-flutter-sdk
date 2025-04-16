@@ -50,7 +50,7 @@ class GetIdentityUseCase
         );
         logger().i("[GetIdentityUseCase] Identity: $identity");
         _stacktraceManager.addTrace(
-            "[GetIdentityUseCase] Identity DID: ${identity.did}, public key: ${identity.publicKey}, profiles: ${identity.profiles}");
+            "[GetIdentityUseCase] Identity DID: ${identity.did}, public key: ${identity.publicKey}");
 
         return identity;
       }
@@ -102,7 +102,7 @@ class GetIdentityUseCase
 
       logger().i("[GetIdentityUseCase] Identity: $identity");
       _stacktraceManager.addTrace(
-          "[GetIdentityUseCase] Identity DID: ${identity.did}, public key: ${identity.publicKey}, profiles: ${identity.profiles}");
+          "[GetIdentityUseCase] Identity DID: ${identity.did}, public key: ${identity.publicKey}");
 
       return identity;
     } catch (error) {

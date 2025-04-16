@@ -2,19 +2,24 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+
 import 'package:collection/collection.dart';
 import 'package:crypto/crypto.dart';
-import 'package:http/http.dart' as http;
-
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_store.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:ninja_prime/ninja_prime.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pointycastle/api.dart';
+import 'package:pointycastle/asymmetric/api.dart';
+import 'package:pointycastle/asymmetric/oaep.dart';
+import 'package:pointycastle/asymmetric/rsa.dart';
+import 'package:pointycastle/digests/sha512.dart';
 import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
@@ -59,8 +64,8 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_ide
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
@@ -71,8 +76,8 @@ import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_dat
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/gist_mtproof_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/lib_pidcore_proof_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
@@ -84,12 +89,6 @@ import 'package:sembast/sembast.dart';
 import 'package:uuid/uuid.dart';
 import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
-
-import 'package:pointycastle/api.dart';
-import 'package:pointycastle/asymmetric/api.dart';
-import 'package:pointycastle/asymmetric/oaep.dart';
-import 'package:pointycastle/asymmetric/rsa.dart';
-import 'package:pointycastle/digests/sha512.dart';
 
 class Authenticate {
   late ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
@@ -139,15 +138,16 @@ class Authenticate {
       Uint8List privateKeyBytes = hexToBytes(privateKey);
 
       GetSelectedChainUseCase getSelectedChainUseCase =
-      getItSdk.get<GetSelectedChainUseCase>();
+          getItSdk.get<GetSelectedChainUseCase>();
 
       ChainConfigEntity chain = await getSelectedChainUseCase.execute();
       _stacktraceManager.addTrace(
         "[Authenticate] Chain: ${chain.blockchain} ${chain.network}",
       );
-      GetDidIdentifierUseCase getDidIdentifierUseCase = getItSdk<GetDidIdentifierUseCase>();
+      GetDidIdentifierUseCase getDidIdentifierUseCase =
+          getItSdk<GetDidIdentifierUseCase>();
 
-      final getPubKeyUseCase = await getItSdk<GetPublicKeyUseCase>();
+      final getPubKeyUseCase = getItSdk<GetPublicKeyUseCase>();
       final bjjPublicKey = await getPubKeyUseCase.execute(param: privateKey);
 
       String profileDid = await getDidIdentifierUseCase.execute(

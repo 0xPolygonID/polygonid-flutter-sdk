@@ -44,7 +44,7 @@ class GetClaimsUseCase
     if (param.profileNonce < GENESIS_PROFILE_NONCE) {
       _stacktraceManager.addTrace("[GetClaimsUseCase] Invalid profile nonce");
       _stacktraceManager.addError(
-          "[GetClaimsUseCase] Invalid profile nonce: ${param.profileNonce}");
+          "[GetClaimsUseCase] Invalid profile nonce, less than $GENESIS_PROFILE_NONCE");
       throw InvalidProfileException(
         profileNonce: param.profileNonce,
         errorMessage: "Invalid profile nonce when getting claims",
