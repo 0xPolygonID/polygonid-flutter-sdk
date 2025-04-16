@@ -120,7 +120,10 @@ void main() {
               .captured
               .first;
       expect(capturedUpdate.encryptionKey, CommonMocks.privateKey);
-      expect(capturedUpdate.profiles[1], CommonMocks.profiles[BigInt.one]);
+      expect(
+        capturedUpdate.profiles[BigInt.one],
+        CommonMocks.profiles[BigInt.one],
+      );
     },
   );
 

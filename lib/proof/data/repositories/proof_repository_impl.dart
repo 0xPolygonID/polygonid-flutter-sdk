@@ -19,9 +19,9 @@ import 'package:polygonid_flutter_sdk/proof/data/data_sources/prover_lib_data_so
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/witness_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/circuits_to_download_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/generate_inputs_response.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
@@ -101,9 +101,6 @@ class ProofRepositoryImpl extends ProofRepository {
     final nonRevProofMap = nonRevProof?.toJson();
 
     _stacktraceManager.addTrace("getProofInputs id: $id");
-    _stacktraceManager.addTrace("getProofInputs profileNonce: $profileNonce");
-    _stacktraceManager.addTrace(
-        "getProofInputs claimSubjectProfileNonce: $claimSubjectProfileNonce");
     _stacktraceManager.addTrace("getProofInputs authClaim: $authClaim");
     _stacktraceManager.addTrace("getProofInputs incProof: $incProofMap");
     _stacktraceManager.addTrace("getProofInputs nonRevProof: $nonRevProofMap");

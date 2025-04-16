@@ -19,8 +19,6 @@ class GetIdentitiesUseCase extends FutureUseCase<void, List<IdentityEntity>> {
     try {
       final identities = await _identityRepository.getIdentities();
       logger().i("[GetIdentitiesUseCase] identities: $identities");
-      _stacktraceManager
-          .addTrace("[GetIdentitiesUseCase] identities: $identities");
 
       return identities;
     } catch (error) {
