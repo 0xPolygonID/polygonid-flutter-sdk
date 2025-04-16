@@ -139,13 +139,14 @@ class Authenticate {
       Uint8List privateKeyBytes = hexToBytes(privateKey);
 
       GetSelectedChainUseCase getSelectedChainUseCase =
-      getItSdk.get<GetSelectedChainUseCase>();
+          getItSdk.get<GetSelectedChainUseCase>();
 
       ChainConfigEntity chain = await getSelectedChainUseCase.execute();
       _stacktraceManager.addTrace(
         "[Authenticate] Chain: ${chain.blockchain} ${chain.network}",
       );
-      GetDidIdentifierUseCase getDidIdentifierUseCase = getItSdk<GetDidIdentifierUseCase>();
+      GetDidIdentifierUseCase getDidIdentifierUseCase =
+          getItSdk<GetDidIdentifierUseCase>();
 
       final getPubKeyUseCase = await getItSdk<GetPublicKeyUseCase>();
       final bjjPublicKey = await getPubKeyUseCase.execute(param: privateKey);

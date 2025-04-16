@@ -64,12 +64,12 @@ class RemoveProfileUseCase extends FutureUseCase<RemoveProfileParam, void> {
     Map<BigInt, String> profiles = identityEntity.profiles;
     if (!profiles.containsKey(param.profileNonce)) {
       _stacktraceManager.addTrace(
-          "[RemoveProfileUseCase] UnknownProfileException - profileNonce: ${param.profileNonce}");
+          "[RemoveProfileUseCase] UnknownProfileException - failed to find profile nonce");
       _stacktraceManager.addError(
-          "[RemoveProfileUseCase] UnknownProfileException - profileNonce: ${param.profileNonce}");
+          "[RemoveProfileUseCase] UnknownProfileException - failed to find profile nonce");
       throw UnknownProfileException(
         profileNonce: param.profileNonce,
-        errorMessage: "Profile with nonce ${param.profileNonce} does not exist",
+        errorMessage: "Failed to find profile nonce",
       );
     }
 

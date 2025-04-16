@@ -39,9 +39,9 @@ class BackupIdentityUseCase extends FutureUseCase<BackupIdentityParam, String> {
         encryptionKey: param.encryptionKey,
       );
       logger().i(
-          "[BackupIdentityUseCase] Identity backed up with did: ${identity.did}, for key $param");
+          "[BackupIdentityUseCase] Identity backed up with did: ${identity.did}");
       _stacktraceManager.addTrace(
-          "[BackupIdentityUseCase] Identity backed up with did: ${identity.did}, for key $param");
+          "[BackupIdentityUseCase] Identity backed up with did: ${identity.did}");
       return export;
     } catch (error) {
       logger().e("[BackupIdentityUseCase] Error: $error");
