@@ -331,7 +331,6 @@ abstract class PolygonIdSdkIden3comm {
     required Map<String, dynamic> additionalFields,
   });
 
-
   /// [passportData] - DG1 passport group with tag
   Future<ZKProofEntity> getPassportProof({
     required String passportData,
