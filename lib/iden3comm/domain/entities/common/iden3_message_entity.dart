@@ -20,6 +20,13 @@ enum Iden3MessageType {
       "https://iden3-communication.io/credentials/0.1/payment-request"),
   payment("https://iden3-communication.io/credentials/0.1/payment"),
   problemReport("https://didcomm.org/report-problem/2.0/problem-report"),
+  attestationRequest("https://iden3-communication.io/attestation/0.1/request"),
+  attestationResponse(
+      "https://iden3-communication.io/attestation/0.1/response"),
+  verificationRequest(
+      "https://iden3-communication.io/passport/0.1/verification-request"),
+  verificationResponse(
+      "https://iden3-communication.io/passport/0.1/verification-status-response"),
   unknown("");
 
   final String type;

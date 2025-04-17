@@ -1,6 +1,9 @@
 import 'dart:convert';
+
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/attestation/attestation_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/attestation/attestation_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
@@ -12,10 +15,12 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/reque
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_proposal_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_status_update_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/fetch_iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_request_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/payment_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_request_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_response_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/verification/verification_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/verification/verification_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 
 class GetIden3MessageUseCase extends FutureUseCase<String, Iden3MessageEntity> {
@@ -62,6 +67,14 @@ class GetIden3MessageUseCase extends FutureUseCase<String, Iden3MessageEntity> {
           return PaymentRequestEntity.fromJson(json);
         case Iden3MessageType.payment:
           return PaymentMessageEntity.fromJson(json);
+        case Iden3MessageType.attestationRequest:
+          return AttestationRequestEntity.fromJson(json);
+        case Iden3MessageType.attestationResponse:
+          return AttestationResponseEntity.fromJson(json);
+        case Iden3MessageType.verificationRequest:
+          return VerificationRequestEntity.fromJson(json);
+        case Iden3MessageType.verificationResponse:
+          return VerificationResponseEntity.fromJson(json);
         case Iden3MessageType.unknown:
           throw UnsupportedIden3MsgTypeException(
             type: Iden3MessageType.unknown,
