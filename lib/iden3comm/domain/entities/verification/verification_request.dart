@@ -72,6 +72,7 @@
 */
 
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 
 class VerificationRequestEntity
     extends Iden3MessageEntity<VerificationRequestBody> {
@@ -120,10 +121,27 @@ class VerificationRequestEntity
 }
 
 class VerificationRequestBody {
-  final String type;
+  final Map<String, dynamic> didDoc;
+  final ZKProofEntity credentialProof;
+
+  final String dg1Hash;
+  final String dgHashFunction;
+  final String eContent;
+  final String encryptedDigest;
+  final String signedAttr;
+  final String dscPem;
+  final String linkNonce;
 
   VerificationRequestBody({
-    required this.type,
+    required this.didDoc,
+    required this.credentialProof,
+    required this.dg1Hash,
+    required this.dgHashFunction,
+    required this.eContent,
+    required this.encryptedDigest,
+    required this.signedAttr,
+    required this.dscPem,
+    required this.linkNonce,
   });
 
   /// Creates an instance from the given json
@@ -132,23 +150,48 @@ class VerificationRequestBody {
   /// @returns [OfferBodyRequest]
   factory VerificationRequestBody.fromJson(Map<String, dynamic> json) {
     return VerificationRequestBody(
-      type: json['type'],
+      didDoc: json['didDoc'],
+      credentialProof: ZKProofEntity.fromJson(json['credentialProof']),
+      dg1Hash: json['dg1Hash'],
+      dgHashFunction: json['dgHashFunction'],
+      eContent: json['eContent'],
+      encryptedDigest: json['encryptedDigest'],
+      signedAttr: json['signedAttr'],
+      dscPem: json['dscPem'],
+      linkNonce: json['linkNonce'],
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'type': type,
+        'didDoc': didDoc,
+        'credentialProof': credentialProof.toJson(),
+        'dg1Hash': dg1Hash,
+        'dgHashFunction': dgHashFunction,
+        'eContent': eContent,
+        'encryptedDigest': encryptedDigest,
+        'signedAttr': signedAttr,
+        'dscPem': dscPem,
+        'linkNonce': linkNonce,
       };
 
   @override
-  String toString() => "[VerificationRequestBody] {type: $type}";
+  String toString() =>
+      "[VerificationRequestBody] {didDoc: $didDoc, credentialProof: $credentialProof, dg1Hash: $dg1Hash, dgHashFunction: $dgHashFunction, eContent: $eContent, encryptedDigest: $encryptedDigest, signedAttr: $signedAttr, dscPem: $dscPem, linkNonce: $linkNonce}";
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is VerificationRequestBody &&
           runtimeType == other.runtimeType &&
-          type == other.type;
+          didDoc == other.didDoc &&
+          credentialProof == other.credentialProof &&
+          dg1Hash == other.dg1Hash &&
+          dgHashFunction == other.dgHashFunction &&
+          eContent == other.eContent &&
+          encryptedDigest == other.encryptedDigest &&
+          signedAttr == other.signedAttr &&
+          dscPem == other.dscPem &&
+          linkNonce == other.linkNonce;
 
   @override
   int get hashCode => runtimeType.hashCode;
