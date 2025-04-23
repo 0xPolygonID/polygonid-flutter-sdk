@@ -110,7 +110,7 @@ void main() {
         await widgetTester.pumpAndSettle();
 
         // with the iden3message scanned
-        // we expect to authenticate succesfully
+        // we expect to authenticate successfully
         await widgetTester.pumpAndSettle(const Duration(seconds: 3));
         expect(find.text(CustomStrings.authSuccess), findsOneWidget);
         await widgetTester.pumpAndSettle();
