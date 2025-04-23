@@ -327,7 +327,7 @@ void main() {
     });
 
     test(
-        "Given parameters, when I call getState and an error occured, then I expect an exception to be thrown",
+        "Given parameters, when I call getState and an error occurred, then I expect an exception to be thrown",
         () async {
       // Given
       when(rpcDataSource.getState(any, any))
