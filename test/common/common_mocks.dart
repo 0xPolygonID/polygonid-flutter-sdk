@@ -59,7 +59,10 @@ class CommonMocks {
   static String blockchain = "theBlockchain";
   static String network = "theNetwork";
   static String method = "theMethod";
-  static EnvConfigEntity envConfig = EnvConfigEntity(ipfsNodeUrl: '');
+  static EnvConfigEntity envConfig = EnvConfigEntity(
+    ipfsNodeUrl: '',
+    ipfsGatewayUrl: '',
+  );
 
   static FilterEntity filter = FilterEntity(name: name, value: aMap);
 
@@ -82,6 +85,7 @@ class CommonMocks {
   static EnvEntity env = EnvEntity(
     pushUrl: url,
     ipfsUrl: url,
+    ipfsGatewayUrl: url,
     chainConfigs: {
       "137": ChainConfigEntity(
         blockchain: name,

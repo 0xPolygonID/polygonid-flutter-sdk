@@ -6,6 +6,7 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.d
 class EnvEntity {
   final String pushUrl;
   final String ipfsUrl;
+  final String ipfsGatewayUrl;
 
   final Map<String, ChainConfigEntity> chainConfigs;
   final List<DidMethodEntity> didMethods;
@@ -19,6 +20,7 @@ class EnvEntity {
   EnvEntity._({
     required this.pushUrl,
     required this.ipfsUrl,
+    required this.ipfsGatewayUrl,
     this.chainConfigs = const {},
     this.didMethods = const [],
     this.stacktraceEncryptionKey,
@@ -30,6 +32,7 @@ class EnvEntity {
   EnvEntity({
     required this.pushUrl,
     required this.ipfsUrl,
+    required this.ipfsGatewayUrl,
     required this.chainConfigs,
     required this.didMethods,
     this.stacktraceEncryptionKey,
@@ -42,6 +45,7 @@ class EnvEntity {
     return EnvEntity(
       pushUrl: json['pushUrl'],
       ipfsUrl: json['ipfsUrl'],
+      ipfsGatewayUrl: json['ipfsGatewayUrl'],
       chainConfigs: (json['chainConfigs'] as Map<String, dynamic>).map(
         (key, value) => MapEntry(
           key,
@@ -103,6 +107,7 @@ class EnvEntity {
     String? idStateContract,
     String? pushUrl,
     String? ipfsUrl,
+    String? ipfsGatewayUrl,
     Map<String, ChainConfigEntity>? chainConfigs,
     List<DidMethodEntity>? didMethods,
     String? stacktraceEncryptionKey,
@@ -113,6 +118,7 @@ class EnvEntity {
     return EnvEntity._(
       pushUrl: pushUrl ?? this.pushUrl,
       ipfsUrl: ipfsUrl ?? this.ipfsUrl,
+      ipfsGatewayUrl: ipfsGatewayUrl ?? this.ipfsGatewayUrl,
       chainConfigs: chainConfigs ?? this.chainConfigs,
       didMethods: didMethods ?? this.didMethods,
       stacktraceEncryptionKey:
@@ -126,6 +132,7 @@ class EnvEntity {
   EnvConfigEntity get config {
     return EnvConfigEntity(
       ipfsNodeUrl: ipfsUrl,
+      ipfsGatewayUrl: ipfsGatewayUrl,
       chainConfigs: chainConfigs,
       didMethods: didMethods,
       cacheDir: cacheDir,

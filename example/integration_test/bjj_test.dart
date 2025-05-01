@@ -1,20 +1,16 @@
-import 'dart:ffi';
-import 'dart:io';
-
-import 'package:ffi/ffi.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/libs/polygonidcore/pidcore_base.dart';
-import 'package:polygonid_flutter_sdk/common/utils/hex_utils.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj.dart';
-
-import 'polygonidcore_mocks.dart';
 
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  PolygonIdCore.setEnvConfig(EnvConfigEntity(ipfsNodeUrl: ""));
+  PolygonIdCore.setEnvConfig(EnvConfigEntity(
+    ipfsNodeUrl: "",
+    ipfsGatewayUrl: '',
+  ));
 
   final lib = BabyjubjubLib();
 
