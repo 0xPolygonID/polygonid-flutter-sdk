@@ -1,4 +1,5 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:uuid/uuid.dart';
 
 class ProblemReportMessageEntity extends Iden3MessageEntity<ProblemReportBody> {
   // Parent thread
@@ -16,6 +17,7 @@ class ProblemReportMessageEntity extends Iden3MessageEntity<ProblemReportBody> {
     required this.ack,
     required super.from,
     required super.body,
+    super.to,
   }) : super(messageType: Iden3MessageType.problemReport);
 
   factory ProblemReportMessageEntity.fromJson(Map<String, dynamic> json) {
@@ -30,7 +32,58 @@ class ProblemReportMessageEntity extends Iden3MessageEntity<ProblemReportBody> {
       ack: json.containsKey('ack')
           ? json['ack'].map<String>((e) => e.toString()).toList()
           : null,
-      from: "",
+      from: json['from'],
+      to: json['to'],
+      body: body,
+    );
+  }
+
+  /// Creates a new ProblemReportMessageEntity with predefined fields
+  ///
+  /// [code] - Required problem code
+  /// [threadId] - Thread ID for the message
+  /// [parentThreadId] - Parent thread ID
+  /// [acknowledgements] - Optional list of previous message IDs that triggered this one
+  /// [comment] - Optional human-friendly text describing the problem
+  /// [args] - Optional list of arguments for placeholders in comment field
+  /// [escalateTo] - Optional URI where more help could be received
+  static ProblemReportMessageEntity createProblemReport({
+    required String from,
+    String? to = "",
+    required String code,
+    String? threadId,
+    String? parentThreadId,
+    List<String>? acknowledgements,
+    String? comment,
+    List<String>? args,
+    String? escalateTo,
+  }) {
+    // Generate a unique message ID (this could be improved with a proper UUID generator)
+    final String messageId = const Uuid().v4();
+
+    // Use the provided threadId or generate a new one if not provided
+    final String tId = threadId ?? const Uuid().v4();
+
+    // Use the provided parentThreadId or use the threadId value if not provided
+    final String parentTId = parentThreadId ?? tId;
+
+    // Create the problem report body
+    final body = ProblemReportBody(
+      code: code,
+      comment: comment,
+      args: args,
+      escalateTo: escalateTo,
+    );
+
+    return ProblemReportMessageEntity(
+      id: messageId,
+      typ: 'application/iden3comm-plain-json',
+      type: Iden3MessageType.problemReport.type,
+      thid: tId,
+      pthid: parentTId,
+      ack: acknowledgements,
+      from: from,
+      to: to,
       body: body,
     );
   }
