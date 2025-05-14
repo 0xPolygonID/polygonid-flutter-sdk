@@ -51,7 +51,7 @@ void main() {
     });
 
     test(
-        "Given a private key, when I call createWallet and an error occured, then I expect an exception to be thrown",
+        "Given a private key, when I call createWallet and an error occurred, then I expect an exception to be thrown",
         () async {
       // Given
       when(walletLibWrapper.createWallet(secret: anyNamed('secret')))
@@ -101,7 +101,7 @@ void main() {
     });
 
     test(
-        "Given a private key and a message, when I call signMessage and an error occured, then I expect an exception to be thrown",
+        "Given a private key and a message, when I call signMessage and an error occurred, then I expect an exception to be thrown",
         () async {
       // Given
       when(walletLibWrapper.signMessage(

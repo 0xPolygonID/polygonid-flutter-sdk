@@ -182,7 +182,7 @@ void main() {
       );
 
       test(
-        'Given a param, when I call execute and an error occured, then I expect an exception to be thrown',
+        'Given a param, when I call execute and an error occurred, then I expect an exception to be thrown',
         () async {
           // Given
           when(iden3commRepository.getAuthResponse(
