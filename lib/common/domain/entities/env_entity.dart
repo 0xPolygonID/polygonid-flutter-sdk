@@ -16,6 +16,7 @@ class EnvEntity {
   final String? pinataGatewayToken;
 
   final String? cacheDir;
+  final String? method;
 
   EnvEntity._({
     required this.pushUrl,
@@ -27,6 +28,7 @@ class EnvEntity {
     this.pinataGateway,
     this.pinataGatewayToken,
     this.cacheDir,
+    this.method,
   });
 
   EnvEntity({
@@ -39,6 +41,7 @@ class EnvEntity {
     this.pinataGateway,
     this.pinataGatewayToken,
     this.cacheDir,
+    this.method,
   });
 
   factory EnvEntity.fromJson(Map<String, dynamic> json) {
@@ -59,6 +62,7 @@ class EnvEntity {
       pinataGateway: json['pinataGateway'],
       pinataGatewayToken: json['pinataGatewayToken'],
       cacheDir: json['cacheDir'],
+      method: json['method'],
     );
   }
 
@@ -77,6 +81,7 @@ class EnvEntity {
         'pinataGateway': pinataGateway,
         'pinataGatewayToken': pinataGatewayToken,
         'cacheDir': cacheDir,
+        'method': method,
       };
 
   @override
@@ -114,6 +119,7 @@ class EnvEntity {
     String? pinataGateway,
     String? pinataGatewayToken,
     String? cacheDir,
+    String? method,
   }) {
     return EnvEntity._(
       pushUrl: pushUrl ?? this.pushUrl,
@@ -126,6 +132,7 @@ class EnvEntity {
       pinataGateway: pinataGateway ?? this.pinataGateway,
       pinataGatewayToken: pinataGatewayToken ?? this.pinataGatewayToken,
       cacheDir: cacheDir ?? this.cacheDir,
+      method: method ?? this.method,
     );
   }
 
