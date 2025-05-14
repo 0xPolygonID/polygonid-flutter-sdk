@@ -12,7 +12,7 @@ class ProblemReportMessageEntity extends Iden3MessageEntity<ProblemReportBody> {
     required super.id,
     required super.typ,
     required super.type,
-    required super.thid,
+    super.thid = '',
     required this.pthid,
     required this.ack,
     required super.from,
@@ -27,7 +27,7 @@ class ProblemReportMessageEntity extends Iden3MessageEntity<ProblemReportBody> {
       id: json['id'],
       typ: json['typ'],
       type: json['type'],
-      thid: json['thid'],
+      thid: json['thid'] ?? '',
       pthid: json['pthid'],
       ack: json.containsKey('ack')
           ? json['ack'].map<String>((e) => e.toString()).toList()
