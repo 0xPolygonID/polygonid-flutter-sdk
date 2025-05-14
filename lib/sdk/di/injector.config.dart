@@ -158,6 +158,10 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/create_anon_aad
     as _i352;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/create_anon_aadhaar_proof_use_case.dart'
     as _i39;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/create_passport_credential_use_case.dart'
+    as _i185;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/create_passport_proof_use_case.dart'
+    as _i139;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_and_save_claims_use_case.dart'
     as _i102;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_credentials_use_case.dart'
@@ -734,6 +738,13 @@ extension GetItInjectableX on _i174.GetIt {
               gh<_i461.FiltersMapper>(),
               gh<_i267.StacktraceManager>(),
             ));
+    gh.factory<_i185.CreatePassportCredentialUseCase>(
+        () => _i185.CreatePassportCredentialUseCase(
+              gh<_i758.LibPolygonIdCoreCredentialDataSource>(),
+              gh<_i409.RemoteIden3commDataSource>(),
+              gh<_i626.GetEnvUseCase>(),
+              gh<_i294.ClaimMapper>(),
+            ));
     gh.factory<_i352.CreateAnonAadhaarCredentialUseCase>(
         () => _i352.CreateAnonAadhaarCredentialUseCase(
               gh<_i758.LibPolygonIdCoreCredentialDataSource>(),
@@ -780,6 +791,12 @@ extension GetItInjectableX on _i174.GetIt {
         .iden3commRepository(gh<_i588.Iden3commRepositoryImpl>()));
     gh.factory<_i359.CleanSchemaCacheUseCase>(
         () => _i359.CleanSchemaCacheUseCase(gh<_i88.Iden3commRepository>()));
+    gh.factoryAsync<_i139.CreatePassportProofUseCase>(
+        () async => _i139.CreatePassportProofUseCase(
+              gh<_i626.GetEnvUseCase>(),
+              gh<_i41.LibPolygonIdCoreWrapper>(),
+              await getAsync<_i310.ProveUseCase>(),
+            ));
     gh.factoryAsync<_i39.CreateAnonAadhaarProofUseCase>(
         () async => _i39.CreateAnonAadhaarProofUseCase(
               gh<_i626.GetEnvUseCase>(),
@@ -1276,6 +1293,8 @@ extension GetItInjectableX on _i174.GetIt {
           await getAsync<_i709.FetchCredentialsUseCase>(),
           gh<_i352.CreateAnonAadhaarCredentialUseCase>(),
           await getAsync<_i39.CreateAnonAadhaarProofUseCase>(),
+          gh<_i185.CreatePassportCredentialUseCase>(),
+          await getAsync<_i139.CreatePassportProofUseCase>(),
           gh<_i351.CoreClaimFromCredentialUseCase>(),
         ));
     return this;

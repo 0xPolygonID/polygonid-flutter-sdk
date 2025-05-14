@@ -150,7 +150,7 @@ class VerificationRequestBody {
   /// @returns [OfferBodyRequest]
   factory VerificationRequestBody.fromJson(Map<String, dynamic> json) {
     return VerificationRequestBody(
-      didDoc: json['didDoc'],
+      didDoc: json['did_doc'],
       credentialProof: ZKProofEntity.fromJson(json['credentialProof']),
       dg1Hash: json['dg1Hash'],
       dgHashFunction: json['dgHashFunction'],
@@ -163,7 +163,7 @@ class VerificationRequestBody {
   }
 
   Map<String, dynamic> toJson() => {
-        'didDoc': didDoc,
+        'did_doc': didDoc,
         'credentialProof': credentialProof.toJson(),
         'dg1Hash': dg1Hash,
         'dgHashFunction': dgHashFunction,

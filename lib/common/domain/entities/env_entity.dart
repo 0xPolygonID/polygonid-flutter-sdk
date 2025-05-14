@@ -6,6 +6,7 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.d
 class EnvEntity {
   final String pushUrl;
   final String ipfsUrl;
+  final String ipfsGatewayUrl;
 
   final Map<String, ChainConfigEntity> chainConfigs;
   final List<DidMethodEntity> didMethods;
@@ -15,33 +16,39 @@ class EnvEntity {
   final String? pinataGatewayToken;
 
   final String? cacheDir;
+  final String? method;
 
   EnvEntity._({
     required this.pushUrl,
     required this.ipfsUrl,
+    required this.ipfsGatewayUrl,
     this.chainConfigs = const {},
     this.didMethods = const [],
     this.stacktraceEncryptionKey,
     this.pinataGateway,
     this.pinataGatewayToken,
     this.cacheDir,
+    this.method,
   });
 
   EnvEntity({
     required this.pushUrl,
     required this.ipfsUrl,
+    required this.ipfsGatewayUrl,
     required this.chainConfigs,
     required this.didMethods,
     this.stacktraceEncryptionKey,
     this.pinataGateway,
     this.pinataGatewayToken,
     this.cacheDir,
+    this.method,
   });
 
   factory EnvEntity.fromJson(Map<String, dynamic> json) {
     return EnvEntity(
       pushUrl: json['pushUrl'],
       ipfsUrl: json['ipfsUrl'],
+      ipfsGatewayUrl: json['ipfsGatewayUrl'],
       chainConfigs: (json['chainConfigs'] as Map<String, dynamic>).map(
         (key, value) => MapEntry(
           key,
@@ -55,6 +62,7 @@ class EnvEntity {
       pinataGateway: json['pinataGateway'],
       pinataGatewayToken: json['pinataGatewayToken'],
       cacheDir: json['cacheDir'],
+      method: json['method'],
     );
   }
 
@@ -73,6 +81,7 @@ class EnvEntity {
         'pinataGateway': pinataGateway,
         'pinataGatewayToken': pinataGatewayToken,
         'cacheDir': cacheDir,
+        'method': method,
       };
 
   @override
@@ -103,16 +112,19 @@ class EnvEntity {
     String? idStateContract,
     String? pushUrl,
     String? ipfsUrl,
+    String? ipfsGatewayUrl,
     Map<String, ChainConfigEntity>? chainConfigs,
     List<DidMethodEntity>? didMethods,
     String? stacktraceEncryptionKey,
     String? pinataGateway,
     String? pinataGatewayToken,
     String? cacheDir,
+    String? method,
   }) {
     return EnvEntity._(
       pushUrl: pushUrl ?? this.pushUrl,
       ipfsUrl: ipfsUrl ?? this.ipfsUrl,
+      ipfsGatewayUrl: ipfsGatewayUrl ?? this.ipfsGatewayUrl,
       chainConfigs: chainConfigs ?? this.chainConfigs,
       didMethods: didMethods ?? this.didMethods,
       stacktraceEncryptionKey:
@@ -120,12 +132,14 @@ class EnvEntity {
       pinataGateway: pinataGateway ?? this.pinataGateway,
       pinataGatewayToken: pinataGatewayToken ?? this.pinataGatewayToken,
       cacheDir: cacheDir ?? this.cacheDir,
+      method: method ?? this.method,
     );
   }
 
   EnvConfigEntity get config {
     return EnvConfigEntity(
       ipfsNodeUrl: ipfsUrl,
+      ipfsGatewayUrl: ipfsGatewayUrl,
       chainConfigs: chainConfigs,
       didMethods: didMethods,
       cacheDir: cacheDir,

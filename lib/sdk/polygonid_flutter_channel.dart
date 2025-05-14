@@ -1039,6 +1039,39 @@ class PolygonIdFlutterChannel
   }
 
   @override
+  Future<ClaimEntity> getPassportCredential({
+    required String passportData,
+    required String dg2Hash,
+    required String profileDid,
+    required int revocationNonce,
+    required String credentialStatusID,
+    required String issuerDid,
+    required int issuanceDate,
+    required String linkNonce,
+    required String circuitId,
+    Map<String, dynamic>? additionalFields,
+  }) {
+    // TODO: implement getPassportCredential
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<ZKProofEntity> getPassportProof({
+    required String passportData,
+    required String dg2Hash,
+    required String profileDid,
+    required int revocationNonce,
+    required String credentialStatusID,
+    required String issuerDid,
+    required int issuanceDate,
+    required String linkNonce,
+    required String circuitId,
+  }) {
+    // TODO: implement getPassportProof
+    throw UnimplementedError();
+  }
+
+  @override
   Future<String> getProofFromSmartContract({required String inputs}) {
     // TODO: implement getProofFromSmartContract
     throw UnimplementedError();

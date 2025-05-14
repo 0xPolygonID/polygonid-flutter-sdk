@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
-import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_store.dart';
+import 'package:http_cache_hive_store/http_cache_hive_store.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
@@ -280,7 +280,6 @@ class RemoteIden3commDataSource {
           options: CacheOptions(
             store: HiveCacheStore(path),
             policy: CachePolicy.request,
-            hitCacheOnErrorExcept: [],
             maxStale: const Duration(days: 14),
             priority: CachePriority.high,
           ),
@@ -358,7 +357,6 @@ class RemoteIden3commDataSource {
           options: CacheOptions(
             store: HiveCacheStore(path),
             policy: CachePolicy.request,
-            hitCacheOnErrorExcept: [],
             maxStale: const Duration(days: 14),
             priority: CachePriority.high,
           ),

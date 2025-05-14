@@ -7,7 +7,7 @@ import 'package:collection/collection.dart';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
-import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_store.dart';
+import 'package:http_cache_hive_store/http_cache_hive_store.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
@@ -691,7 +691,6 @@ class Authenticate {
         options: CacheOptions(
           store: HiveCacheStore(path),
           policy: CachePolicy.request,
-          hitCacheOnErrorExcept: [],
           maxStale: const Duration(days: 14),
           priority: CachePriority.high,
         ),
@@ -929,7 +928,6 @@ class Authenticate {
         options: CacheOptions(
           store: HiveCacheStore(path),
           policy: CachePolicy.request,
-          hitCacheOnErrorExcept: [],
           maxStale: const Duration(days: 7),
           priority: CachePriority.high,
         ),

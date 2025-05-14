@@ -137,6 +137,15 @@ class PolygonIdCoreCredential extends PolygonIdCore {
     );
   }
 
+  String createCredentialFromPassportInputs(String input, String? config) {
+    return callGenericCoreFunction(
+      input: () => input,
+      function: PolygonIdCore
+          .nativePolygonIdCoreLib.PLGNW3CCredentialFromPassportInputs,
+      parse: (o) => o,
+    );
+  }
+
   String coreClaimFromCredential(String input, String? config) {
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Char> cfg = ffi.nullptr;

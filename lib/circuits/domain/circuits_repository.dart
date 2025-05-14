@@ -5,7 +5,7 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity
 abstract class CircuitsRepository {
   Future<bool> circuitExistsAndValidChecksum({
     required String circuitFileName,
-    required String checksum,
+    required String? checksum,
   });
 
   Future<void> initCircuitsDownloadFromServer({
@@ -30,7 +30,7 @@ class CircuitsRepositoryImpl implements CircuitsRepository {
   @override
   Future<bool> circuitExistsAndValidChecksum({
     required String circuitFileName,
-    required String checksum,
+    required String? checksum,
   }) async {
     bool exists = await circuitsDataSource.circuitExistsAndValidChecksum(
       circuitFileName: circuitFileName,
