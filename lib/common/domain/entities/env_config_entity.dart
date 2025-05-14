@@ -22,7 +22,7 @@ class EnvConfigEntity {
       ipfsNodeUrl: json['ipfsNodeUrl'],
       ipfsGatewayUrl: json['ipfsGatewayUrl'],
       chainConfigs: (json['chainConfigs'] as Map<dynamic, dynamic>).map(
-              (key, value) => MapEntry(key, ChainConfigEntity.fromJson(value))),
+          (key, value) => MapEntry(key, ChainConfigEntity.fromJson(value))),
       didMethods: (json['didMethods'] as List<dynamic>)
           .map((value) => DidMethodEntity.fromJson(value))
           .toList(),
@@ -35,7 +35,7 @@ class EnvConfigEntity {
       'ipfsNodeUrl': ipfsNodeUrl,
       'ipfsGatewayUrl': ipfsGatewayUrl,
       'chainConfigs':
-      chainConfigs.map((key, value) => MapEntry(key, value.toJson())),
+          chainConfigs.map((key, value) => MapEntry(key, value.toJson())),
       'didMethods': didMethods.map((e) => e.toJson()).toList(),
       'cacheDir': cacheDir,
     };
