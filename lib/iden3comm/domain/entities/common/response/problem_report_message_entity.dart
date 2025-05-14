@@ -16,6 +16,7 @@ class ProblemReportMessageEntity extends Iden3MessageEntity<ProblemReportBody> {
     required this.ack,
     required super.from,
     required super.body,
+    super.to,
   }) : super(messageType: Iden3MessageType.problemReport);
 
   factory ProblemReportMessageEntity.fromJson(Map<String, dynamic> json) {
@@ -30,8 +31,9 @@ class ProblemReportMessageEntity extends Iden3MessageEntity<ProblemReportBody> {
       ack: json.containsKey('ack')
           ? json['ack'].map<String>((e) => e.toString()).toList()
           : null,
-      from: "",
+      from: json.containsKey('from') ? json['from'] : "",
       body: body,
+      to: json.containsKey('to') ? json['to'] : null,
     );
   }
 
@@ -102,12 +104,12 @@ class ProblemReportBody {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ProblemReportBody &&
-          runtimeType == other.runtimeType &&
-          code == other.code &&
-          escalateTo == other.escalateTo &&
-          args == other.args &&
-          comment == other.comment;
+          other is ProblemReportBody &&
+              runtimeType == other.runtimeType &&
+              code == other.code &&
+              escalateTo == other.escalateTo &&
+              args == other.args &&
+              comment == other.comment;
 
   @override
   int get hashCode => runtimeType.hashCode;
