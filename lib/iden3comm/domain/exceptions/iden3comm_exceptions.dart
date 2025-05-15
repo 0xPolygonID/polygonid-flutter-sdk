@@ -5,10 +5,12 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/p
 
 class UnsupportedIden3MsgTypeException extends PolygonIdSDKException {
   final Iden3MessageType type;
+  final Map<String, dynamic> message;
 
   UnsupportedIden3MsgTypeException({
     required this.type,
     required super.errorMessage,
+    this.message = const {},
     super.error,
   });
 }
