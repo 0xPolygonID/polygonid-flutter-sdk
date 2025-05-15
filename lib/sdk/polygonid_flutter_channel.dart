@@ -96,7 +96,6 @@ class PolygonIdFlutterChannel
             env: call.arguments['env'] != null
                 ? EnvEntity.fromJson(jsonDecode(call.arguments['env']))
                 : null,
-            newIdentity: call.arguments['newIdentity'] as bool,
           );
 
         case 'setEnv':

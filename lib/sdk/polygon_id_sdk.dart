@@ -45,7 +45,6 @@ class PolygonIdSdk {
   /// Set [newIdentity] param to use a new identity creation and private key handling mechanisms
   static Future<void> init({
     EnvEntity? env,
-    required bool newIdentity,
   }) async {
     // As [PolygonIdSdk] uses path_provider plugin, we need to ensure the
     // platform is initialized
@@ -63,7 +62,7 @@ class PolygonIdSdk {
     }
 
     // Init injection
-    await configureInjection(newIdentity);
+    await configureInjection();
     await getItSdk.allReady();
 
     // Set env

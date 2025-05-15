@@ -232,7 +232,7 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_sou
     as _i383;
 import 'package:polygonid_flutter_sdk/identity/data/mappers/node_type_entity_mapper.dart'
     as _i307;
-import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key/private_key_hex_mapper.dart'
+import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key/private_key_mapper.dart'
     as _i180;
 import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key/private_key_mapper.dart'
     as _i526;
