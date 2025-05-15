@@ -26,7 +26,7 @@ enum Iden3MessageType {
   verificationRequest(
       "https://iden3-communication.io/passport/0.1/verification-request"),
   verificationResponse(
-      "https://iden3-communication.io/passport/0.1/verification-status-response"),
+      "https://iden3-communication.io/passport/0.1/verification-response"),
   unknown("");
 
   final String type;

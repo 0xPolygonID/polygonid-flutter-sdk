@@ -79,6 +79,7 @@ class GetIden3MessageUseCase extends FutureUseCase<String, Iden3MessageEntity> {
           throw UnsupportedIden3MsgTypeException(
             type: Iden3MessageType.unknown,
             errorMessage: "Unsupported message type: $type",
+            message: json,
           );
       }
     } catch (error) {
