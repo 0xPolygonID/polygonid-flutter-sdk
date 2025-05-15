@@ -29,12 +29,10 @@ class ProblemReportMessageEntity extends Iden3MessageEntity<ProblemReportBody> {
       type: json['type'],
       thid: json['thid'] ?? '',
       pthid: json['pthid'],
-      ack: json.containsKey('ack')
-          ? json['ack'].map<String>((e) => e.toString()).toList()
-          : null,
-      from: json.containsKey('from') ? json['from'] : "",
+      ack: (json['ack'] as List?)?.map((e) => e.toString()).toList(),
+      from: json['from'] ?? "",
       body: body,
-      to: json.containsKey('to') ? json['to'] : null,
+      to: json['to'],
     );
   }
 
@@ -130,9 +128,7 @@ class ProblemReportBody {
 
   factory ProblemReportBody.fromJson(Map<String, dynamic> json) {
     return ProblemReportBody(
-      args: json.containsKey('args')
-          ? json['args'].map<String>((e) => e.toString()).toList()
-          : null,
+      args: (json['args'] as List?)?.map((e) => e.toString()).toList(),
       code: json['code'],
       comment: json['comment'],
       escalateTo: json['escalate_to'],
