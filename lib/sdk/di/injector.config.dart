@@ -232,12 +232,8 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_sou
     as _i383;
 import 'package:polygonid_flutter_sdk/identity/data/mappers/node_type_entity_mapper.dart'
     as _i307;
-import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key/private_key_hex_mapper.dart'
-    as _i180;
 import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key/private_key_mapper.dart'
     as _i526;
-import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key/private_key_symbols_mapper.dart'
-    as _i168;
 import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart'
     as _i599;
 import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart'
@@ -407,7 +403,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i599.QMapper>(() => _i599.QMapper());
     gh.factory<_i720.StateIdentifierMapper>(
         () => _i720.StateIdentifierMapper());
-    gh.factory<_i180.PrivateKeyHexMapper>(() => _i180.PrivateKeyHexMapper());
+    gh.factory<_i526.PrivateKeyMapper>(() => _i526.PrivateKeyMapper());
     gh.factory<_i307.NodeTypeEntityMapper>(() => _i307.NodeTypeEntityMapper());
     gh.factory<_i192.CheckProfileValidityUseCase>(
         () => _i192.CheckProfileValidityUseCase());
@@ -466,7 +462,6 @@ extension GetItInjectableX on _i174.GetIt {
         ));
     gh.factory<_i461.FiltersMapper>(
         () => _i461.FiltersMapper(gh<_i325.FilterMapper>()));
-    gh.factory<_i526.PrivateKeyMapper>(() => _i168.PrivateKeySymbolsMapper());
     gh.factory<_i310.StoreRef<String, dynamic>>(
       () => databaseModule.keyValueStore,
       instanceName: 'keyValueStore',

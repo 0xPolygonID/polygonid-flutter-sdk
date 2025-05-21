@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key/private_key_hex_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key/private_key_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 
@@ -48,7 +47,7 @@ final convertedKey = bytes;
 const longPrivateKey = privateKey + privateKey;
 
 // Tested instance
-PrivateKeyMapper mapper = PrivateKeyHexMapper();
+PrivateKeyMapper mapper = PrivateKeyMapper();
 
 void main() {
   group("Map from", () {

@@ -3,11 +3,10 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key/private_key_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key/private_key_symbols_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 
 // Data
-const privateKey = "thePrivateKey";
+const privateKey = "thePrivateKeyThePrivateKeyThePri";
 final convertedKey = Uint8List.fromList([
   116,
   104,
@@ -22,31 +21,31 @@ final convertedKey = Uint8List.fromList([
   75,
   101,
   121,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
+  84,
+  104,
+  101,
+  80,
+  114,
+  105,
+  118,
+  97,
+  116,
+  101,
+  75,
+  101,
+  121,
+  84,
+  104,
+  101,
+  80,
+  114,
+  105,
 ]);
 const longPrivateKey =
     "thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long, thePrivateKey which is very long";
 
 // Tested instance
-PrivateKeyMapper mapper = PrivateKeySymbolsMapper();
+PrivateKeyMapper mapper = PrivateKeyMapper();
 
 void main() {
   group("Map from", () {
