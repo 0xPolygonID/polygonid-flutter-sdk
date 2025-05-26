@@ -56,6 +56,7 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 import 'package:polygonid_flutter_sdk/common/kms/index.dart' as _i710;
 import 'package:polygonid_flutter_sdk/common/libs/polygonidcore/pidcore_base.dart'
     as _i393;
+import 'package:polygonid_flutter_sdk/common/pidcore_util.dart' as _i375;
 import 'package:polygonid_flutter_sdk/credential/data/credential_repository_impl.dart'
     as _i550;
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/cache_claim_data_source.dart'
@@ -359,6 +360,7 @@ import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart' as _i189;
 import 'package:polygonid_flutter_sdk/sdk/polygonid_flutter_channel.dart'
     as _i608;
 import 'package:polygonid_flutter_sdk/sdk/proof.dart' as _i445;
+import 'package:polygonid_flutter_sdk/sdk/util.dart' as _i269;
 import 'package:sembast/sembast.dart' as _i310;
 import 'package:sembast/sembast_io.dart' as _i156;
 import 'package:web3dart/web3dart.dart' as _i641;
@@ -421,6 +423,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i1026.InteractionMapper>(() => _i1026.InteractionMapper());
     gh.factory<_i968.GetFetchRequestsUseCase>(
         () => _i968.GetFetchRequestsUseCase());
+    gh.factory<_i375.PolygonIdCoreUtil>(() => _i375.PolygonIdCoreUtil());
     await gh.singletonAsync<_i310.Database>(
       () => databaseModule.database(),
       preResolve: true,
@@ -436,6 +439,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => databaseModule.claimStore,
       instanceName: 'claimStore',
     );
+    gh.factory<_i269.Util>(() => _i269.Util(gh<_i375.PolygonIdCoreUtil>()));
     gh.factoryParam<_i890.Encrypter, _i890.Key, dynamic>(
       (
         key,

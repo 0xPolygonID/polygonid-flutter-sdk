@@ -15,6 +15,7 @@ import 'package:polygonid_flutter_sdk/sdk/circuits.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:polygonid_flutter_sdk/sdk/error_handling.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygonid_flutter_channel.dart';
+import 'package:polygonid_flutter_sdk/sdk/util.dart';
 
 import 'credential.dart';
 import 'iden3comm.dart';
@@ -84,6 +85,7 @@ class PolygonIdSdk {
     _ref!.errorHandling = getItSdk.get<ErrorHandling>();
     _ref!.kms = getItSdk.get<KMS>();
     _ref!.circuits = await getItSdk.getAsync<Circuits>();
+    _ref!.util = await getItSdk.getAsync<Util>();
 
     // Channel
     getItSdk<PolygonIdFlutterChannel>();
@@ -99,6 +101,7 @@ class PolygonIdSdk {
   late ErrorHandling errorHandling;
   late KMS kms;
   late Circuits circuits;
+  late Util util;
 
   PolygonIdSdk._();
 
