@@ -85,7 +85,7 @@ class PolygonIdSdk {
     _ref!.errorHandling = getItSdk.get<ErrorHandling>();
     _ref!.kms = getItSdk.get<KMS>();
     _ref!.circuits = await getItSdk.getAsync<Circuits>();
-    _ref!.util = await getItSdk.getAsync<Util>();
+    _ref!.util = getItSdk.get<Util>();
 
     // Channel
     getItSdk<PolygonIdFlutterChannel>();
