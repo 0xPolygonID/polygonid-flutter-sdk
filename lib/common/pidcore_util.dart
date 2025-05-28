@@ -5,10 +5,10 @@ import 'package:polygonid_flutter_sdk/common/libs/polygonidcore/pidcore_base.dar
 
 @injectable
 class PolygonIdCoreUtil extends PolygonIdCore {
-  Map<String, dynamic> validateAttestationDocument(String attestionDocument) {
+  Map<String, dynamic> validateAttestationDocument(String attestationDocument) {
     return callGenericCoreFunction(
       input: () => jsonEncode({
-        "attestation_document": attestionDocument,
+        "attestation_document": attestationDocument,
       }),
       function:
           PolygonIdCore.nativePolygonIdCoreLib.PLGNValidateAttestationDocument,
