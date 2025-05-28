@@ -10,6 +10,7 @@ class ClaimDTO extends Equatable {
   final String did;
   final String state;
   final String? expiration;
+  final String? issuanceDate;
   Map<String, dynamic>? schema;
   final String type;
   final ClaimInfoDTO info;
@@ -24,6 +25,7 @@ class ClaimDTO extends Equatable {
     required this.type,
     this.state = '',
     this.expiration,
+    this.issuanceDate,
     required this.info,
     this.schema,
     this.displayType,
@@ -38,6 +40,7 @@ class ClaimDTO extends Equatable {
       type: json['type'] as String,
       state: json['state'] as String? ?? '',
       expiration: json['expiration'] as String?,
+      issuanceDate: json['issuanceDate'] as String?,
       info: ClaimInfoDTO.fromJson(json['credential'] as Map<String, dynamic>),
       schema: json['schema'] as Map<String, dynamic>?,
       displayType: json['displayType'] as Map<String, dynamic>?,
@@ -53,6 +56,7 @@ class ClaimDTO extends Equatable {
       'state': state,
       'credential': info.toJson(),
       'expiration': expiration,
+      'issuanceDate': issuanceDate,
       'type': type,
       'schema': schema,
       'displayType': displayType,
@@ -68,6 +72,7 @@ class ClaimDTO extends Equatable {
         state,
         info,
         expiration,
+        issuanceDate,
         type,
         schema,
         displayType,
@@ -76,6 +81,6 @@ class ClaimDTO extends Equatable {
 
   @override
   String toString() {
-    return 'ClaimDTO{id: $id, issuer: $issuer, did: $did, state: $state, info: $info, expiration: $expiration, type: $type, schema: $schema, displayType: $displayType, credentialRawValue: $credentialRawValue}';
+    return 'ClaimDTO{id: $id, issuer: $issuer, did: $did, state: $state, info: $info, expiration: $expiration, issuanceDate: $issuanceDate, type: $type, schema: $schema, displayType: $displayType, credentialRawValue: $credentialRawValue}';
   }
 }

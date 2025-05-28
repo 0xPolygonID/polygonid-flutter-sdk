@@ -26,6 +26,7 @@ class ClaimMapper extends Mapper<ClaimDTO, ClaimEntity> {
       did: from.did,
       state: _claimStateMapper.mapFrom(from.state),
       expiration: from.expiration,
+      issuanceDate: from.issuanceDate,
       schema: from.schema,
       type: from.type,
       info: _claimInfoMapper.mapFrom(from.info),
