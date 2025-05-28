@@ -3,48 +3,31 @@ import 'dart:convert';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 
-class CacheCredentialParam {
-  final ClaimEntity credential;
-  final EnvConfigEntity? config;
-
-  CacheCredentialParam({
-    required this.credential,
-    this.config,
-  });
-}
-
-class CacheCredentialUseCase extends FutureUseCase<CacheCredentialParam, bool> {
+class CleanCredentialCacheUseCase
+    extends FutureUseCase<EnvConfigEntity?, void> {
   final CredentialRepository _credentialRepository;
   final GetEnvUseCase _getEnvUseCase;
 
-  CacheCredentialUseCase(
+  CleanCredentialCacheUseCase(
     this._credentialRepository,
     this._getEnvUseCase,
   );
 
   @override
-  Future<bool> execute({
-    required CacheCredentialParam param,
+  Future<void> execute({
+    required EnvConfigEntity? param,
   }) async {
     String? config;
-    if (param.config != null) {
-      config = jsonEncode(param.config!.toJson());
+    if (param != null) {
+      config = jsonEncode(param.toJson());
     } else {
       final env = await _getEnvUseCase.execute();
       config = jsonEncode(env.config.toJson());
     }
 
-    String credential = jsonEncode(
-      {
-        "verifiableCredentials": param.credential.info,
-      },
-    );
-
-    return _credentialRepository.cacheCredential(
-      credential: credential,
+    return _credentialRepository.cleanCache(
       config: config,
     );
   }

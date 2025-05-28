@@ -55,7 +55,7 @@ class PolygonIdCoreCredential extends PolygonIdCore {
     return result;
   }
 
-  bool cacheCredentials(String input, String? config) {
+  bool cacheCredential(String input, String? config) {
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Char> cfg = ffi.nullptr;
     if (config != null) {
@@ -70,6 +70,33 @@ class PolygonIdCoreCredential extends PolygonIdCore {
     if (res != 0) {
       malloc.free(status);
       return true;
+    }
+
+    // in case of error throw exception with error message and status code
+    ConsumedStatusResult consumedStatus = consumeStatus(status);
+    malloc.free(status);
+    _trackError(consumedStatus, "PLGNCacheCredentials");
+    throw CoreLibraryException(
+      coreLibraryName: "libpolygonid",
+      methodName: "PLGNCacheCredentials",
+      errorMessage: consumedStatus.message,
+      statusCode: consumedStatus.statusCode,
+    );
+  }
+
+  void cleanCache(String? config) {
+    ffi.Pointer<ffi.Char> cfg = ffi.nullptr;
+    if (config != null) {
+      cfg = config.toNativeUtf8().cast<ffi.Char>();
+    }
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
+        malloc<ffi.Pointer<PLGNStatus>>();
+    int res = PolygonIdCore.nativePolygonIdCoreLib.PLGNCleanCache2(cfg, status);
+
+    // it means success
+    if (res != 0) {
+      malloc.free(status);
+      return;
     }
 
     // in case of error throw exception with error message and status code

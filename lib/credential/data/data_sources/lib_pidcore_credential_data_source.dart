@@ -39,10 +39,6 @@ class LibPolygonIdCoreCredentialDataSource {
     return output;
   }
 
-  bool cacheCredentials(String input, String? config) {
-    return _polygonIdCoreCredential.cacheCredentials(input, config);
-  }
-
   String w3cCredentialsFromOnchainHex({
     required String issuerDID,
     required String hexdata,

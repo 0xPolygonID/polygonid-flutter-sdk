@@ -8,6 +8,7 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.da
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/cache_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/cache_credentials_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/clean_cache_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_credential_by_id_use_case.dart';
@@ -173,6 +174,11 @@ abstract class PolygonIdSdkCredential {
     required List<ClaimEntity> credentials,
     EnvConfigEntity? configParam,
   });
+
+  /// Clean the credentials cache to remove all cached credentials.
+  Future<void> cleanCredentialsCache({
+    EnvConfigEntity? configParam,
+  });
 }
 
 @injectable
@@ -188,6 +194,7 @@ class Credential implements PolygonIdSdkCredential {
   final GetCredentialByPartialIdUseCase _getCredentialByPartialIdUseCase;
   final CacheCredentialsUseCase _cacheCredentialsUseCase;
   final CacheCredentialUseCase _cacheCredentialUseCase;
+  final CleanCredentialCacheUseCase _cleanCredentialCacheUseCase;
 
   Credential(
     this._saveClaimsUseCase,
@@ -201,6 +208,7 @@ class Credential implements PolygonIdSdkCredential {
     this._getCredentialByPartialIdUseCase,
     this._cacheCredentialsUseCase,
     this._cacheCredentialUseCase,
+    this._cleanCredentialCacheUseCase,
   );
 
   @override
@@ -422,6 +430,15 @@ class Credential implements PolygonIdSdkCredential {
     return _cacheCredentialsUseCase.execute(
       credentials: credentials,
       configParam: configParam,
+    );
+  }
+
+  @override
+  Future<void> cleanCredentialsCache({
+    EnvConfigEntity? configParam,
+  }) {
+    return _cleanCredentialCacheUseCase.execute(
+      param: configParam,
     );
   }
 }
