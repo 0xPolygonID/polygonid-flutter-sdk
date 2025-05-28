@@ -38,7 +38,7 @@ class CleanCredentialCacheUseCase
       _credentialRepository.cleanCache(
         config: config,
       );
-    } on CoreLibraryException catch (e) {
+    } on CoreLibraryException {
       await _tryEraseCache(configEntity);
     }
 
