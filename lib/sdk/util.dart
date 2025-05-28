@@ -15,35 +15,24 @@ class Util {
     final result =
         _polygonIdCoreUtil.validateAttestationDocument(attestationDocument);
     final publicKey = result['public_key'] as String;
-    final publicKeyX = result['public_key_x_int'] as String?;
-    final publicKeyY = result['public_key_y_int'] as String?;
 
     return AttestationResult(
       publicKey: publicKey,
-      publicKeyX: publicKeyX,
-      publicKeyY: publicKeyY,
     );
   }
 }
 
 class AttestationResult {
-  /// The public key base64 encoded PKIX, ASN.1 DER form.
+  /// The public key hex encoded.
   final String publicKey;
-
-  /// X & Y only would be presented if EC signing was used.
-  /// If RSA used, there would be only publicKey.
-  final String? publicKeyX;
-  final String? publicKeyY;
 
   AttestationResult({
     required this.publicKey,
-    this.publicKeyX,
-    this.publicKeyY,
   });
 
   @override
   String toString() {
-    return 'AttestationResult{publicKey: $publicKey, publicKeyX: $publicKeyX, publicKeyY: $publicKeyY}';
+    return 'AttestationResult{publicKey: $publicKey}';
   }
 
   @override
@@ -51,11 +40,8 @@ class AttestationResult {
       identical(this, other) ||
       other is AttestationResult &&
           runtimeType == other.runtimeType &&
-          publicKey == other.publicKey &&
-          publicKeyX == other.publicKeyX &&
-          publicKeyY == other.publicKeyY;
+          publicKey == other.publicKey;
 
   @override
-  int get hashCode =>
-      publicKey.hashCode ^ publicKeyX.hashCode ^ publicKeyY.hashCode;
+  int get hashCode => publicKey.hashCode;
 }
