@@ -101,13 +101,14 @@ class ProofScopeResponse {
   factory ProofScopeResponse.fromJson(Map<String, dynamic> json) {
     ZKProofBaseEntity proof = ZKProofBaseEntity.fromJson(json['proof']);
 
+    final publicSignals = (json['pub_signals'] as List?)?.cast<String>();
     return ProofScopeResponse(
       id: json['id'],
       circuitId: json['circuitId'],
       verifiablePresentation: json['vp'],
       txHash: json['txHash'],
       proof: proof,
-      publicSignals: json['pub_signals'],
+      publicSignals: publicSignals ?? [],
     );
   }
 
