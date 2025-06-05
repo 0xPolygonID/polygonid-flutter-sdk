@@ -55,8 +55,14 @@ abstract class PolygonIdSdkIdentity {
   /// - If the byte array is not 32 length, it will be padded with 0s.
   /// - If the byte array is longer than 32, an exception will be thrown.
   ///
+  /// If [useSecretAsPrivateKey] is true, [secret] must be non-null and exactly 32 bytes long,
+  /// and it will be used directly as the private key without padding.
+  ///
   /// The identity will be created using the current env set with [PolygonIdSdk.setEnv]
-  Future<PrivateIdentityEntity> addIdentity({String? secret});
+  Future<PrivateIdentityEntity> addIdentity({
+    String? secret,
+    bool useSecretAsPrivateKey = false,
+  });
 
   /// Restores an [IdentityEntity] from a privateKey and encrypted backup databases
   /// associated to the identity
@@ -292,10 +298,24 @@ class Identity implements PolygonIdSdkIdentity {
   }
 
   @override
-  Future<PrivateIdentityEntity> addIdentity({String? secret}) async {
+  Future<PrivateIdentityEntity> addIdentity({
+    String? secret,
+    bool useSecretAsPrivateKey = false,
+  }) async {
+    assert(
+      !useSecretAsPrivateKey ||
+          (secret != null &&
+              secret.length == 64 &&
+              RegExp(r'^[0-9a-fA-F]+$').hasMatch(secret)),
+      'If useSecretAsPrivateKey is true, secret must be a non-null 64-character hex string',
+    );
     _stacktraceManager.clear();
     _stacktraceManager.addTrace("PolygonIdSdk.Identity.addIdentity called");
-    return _addNewIdentityUseCase.execute(param: secret);
+
+    return _addNewIdentityUseCase.execute(
+      param: secret,
+      useSecretAsPrivateKey: useSecretAsPrivateKey,
+    );
   }
 
   @override

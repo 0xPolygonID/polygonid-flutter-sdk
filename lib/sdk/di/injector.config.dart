@@ -412,6 +412,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i192.CheckProfileValidityUseCase>(
         () => _i192.CheckProfileValidityUseCase());
     gh.factory<_i78.GetDidUseCase>(() => _i78.GetDidUseCase());
+    gh.factory<_i375.PolygonIdCoreUtil>(() => _i375.PolygonIdCoreUtil());
     gh.factory<_i393.PolygonIdCore>(() => _i393.PolygonIdCore());
     gh.factory<_i325.FilterMapper>(() => _i325.FilterMapper());
     gh.factory<_i974.Logger>(() => loggerModule.logger);
@@ -425,7 +426,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i1026.InteractionMapper>(() => _i1026.InteractionMapper());
     gh.factory<_i968.GetFetchRequestsUseCase>(
         () => _i968.GetFetchRequestsUseCase());
-    gh.factory<_i375.PolygonIdCoreUtil>(() => _i375.PolygonIdCoreUtil());
     await gh.singletonAsync<_i310.Database>(
       () => databaseModule.database(),
       preResolve: true,
@@ -705,15 +705,15 @@ extension GetItInjectableX on _i174.GetIt {
               gh<_i361.SecureStorageDidProfileInfoDataSource>(),
               gh<_i461.FiltersMapper>(),
             ));
-    gh.factory<_i348.CacheCredentialUseCase>(() => _i348.CacheCredentialUseCase(
-          gh<_i309.CredentialRepository>(),
-          gh<_i626.GetEnvUseCase>(),
-        ));
     gh.factory<_i732.CleanCredentialCacheUseCase>(
         () => _i732.CleanCredentialCacheUseCase(
               gh<_i309.CredentialRepository>(),
               gh<_i626.GetEnvUseCase>(),
             ));
+    gh.factory<_i348.CacheCredentialUseCase>(() => _i348.CacheCredentialUseCase(
+          gh<_i309.CredentialRepository>(),
+          gh<_i626.GetEnvUseCase>(),
+        ));
     gh.factory<_i627.GetProofRequestsUseCase>(
         () => _i627.GetProofRequestsUseCase(
               gh<_i631.GetProofQueryContextUseCase>(),

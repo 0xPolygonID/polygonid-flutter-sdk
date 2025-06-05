@@ -19,9 +19,21 @@ class AddNewIdentityUseCase
   );
 
   @override
-  Future<PrivateIdentityEntity> execute({String? param}) {
+  Future<PrivateIdentityEntity> execute({
+    String? param,
+    bool useSecretAsPrivateKey = false,
+  }) {
+    assert(
+      !useSecretAsPrivateKey ||
+          (secret != null &&
+              secret.length == 64 &&
+              RegExp(r'^[0-9a-fA-F]+$').hasMatch(secret)),
+      'If useSecretAsPrivateKey is true, secret must be a non-null 64-character hex string',
+    );
     return Future(() async {
-      final privateKey = await _identityRepository.getPrivateKey(secret: param);
+      final String privateKey = useSecretAsPrivateKey
+          ? param!
+          : await _identityRepository.getPrivateKey(secret: param);
       final publicKeys =
           await _identityRepository.getPublicKeys(bjjPrivateKey: privateKey);
       final identity = await _addIdentityUseCase.execute(
