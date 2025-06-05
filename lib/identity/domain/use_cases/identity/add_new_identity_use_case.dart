@@ -1,10 +1,9 @@
-import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/add_identity_use_case.dart';
-
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/add_identity_use_case.dart';
 
 class AddNewIdentityUseCase
     extends FutureUseCase<String?, PrivateIdentityEntity> {
@@ -25,10 +24,8 @@ class AddNewIdentityUseCase
   }) {
     assert(
       !useSecretAsPrivateKey ||
-          (secret != null &&
-              secret.length == 64 &&
-              RegExp(r'^[0-9a-fA-F]+$').hasMatch(secret)),
-      'If useSecretAsPrivateKey is true, secret must be a non-null 64-character hex string',
+          (param != null && RegExp(r'^[0-9a-fA-F]{64}$').hasMatch(param)),
+      'If useSecretAsPrivateKey is true, param must be a non-null 64-character hex string',
     );
     return Future(() async {
       final String privateKey = useSecretAsPrivateKey
