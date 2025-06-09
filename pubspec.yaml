@@ -33,7 +33,7 @@ dependencies:
   poseidon: ^0.0.1
 
   # ZK proof
-  flutter_rapidsnark: 0.0.1-beta.3
+  flutter_rapidsnark: 0.0.1-beta.4
   circom_witnesscalc: 0.0.1-alpha.4
 
   # FFI
