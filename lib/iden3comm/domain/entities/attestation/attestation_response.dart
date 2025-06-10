@@ -17,7 +17,10 @@ class AttestationResponseEntity
     required super.body,
     super.to,
     super.nextRequest,
-  }) : super(messageType: Iden3MessageType.attestationResponse);
+  }) : super(
+          messageType: Iden3MessageType.attestationResponse,
+          from: "",
+        );
 
   /// Creates an instance from the given json
   ///
