@@ -69,10 +69,11 @@ class CreateAnonAadhaarCredentialUseCase
       type: claimInfoDto.credentialSubject.type,
       info: claimInfoDto,
       credentialRawValue: jsonEncode({
-        "from": param.selfIssuedCredentialParams.issuerDid,
-        "body": claimJson,
-        // TODO Maybe use some other type
         "type": "https://iden3-communication.io/credentials/1.0/offer",
+        "from": param.selfIssuedCredentialParams.issuerDid,
+        "body": {
+          'credential': claimJson,
+        },
       }),
     );
 

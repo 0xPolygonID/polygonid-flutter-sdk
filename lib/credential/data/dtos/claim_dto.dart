@@ -16,6 +16,7 @@ class ClaimDTO extends Equatable {
   final ClaimInfoDTO info;
   Map<String, dynamic>? displayType;
 
+  /// Raw value of credential represented as iden3 message
   final String credentialRawValue;
 
   ClaimDTO({
