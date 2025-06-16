@@ -13,7 +13,7 @@ class Util {
   /// If the attestation document is invalid, it will throw an [CoreLibraryException].
   AttestationResult validateAttestationDocument(String attestationDocument) {
     final result =
-    _polygonIdCoreUtil.validateAttestationDocument(attestationDocument);
+        _polygonIdCoreUtil.validateAttestationDocument(attestationDocument);
     final publicKey = result['public_key'] as String?;
     final userData = result['user_data'] as String?;
 
@@ -42,10 +42,10 @@ class AttestationResult {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is AttestationResult &&
-              runtimeType == other.runtimeType &&
-              publicKey == other.publicKey &&
-              userData == other.userData;
+      other is AttestationResult &&
+          runtimeType == other.runtimeType &&
+          publicKey == other.publicKey &&
+          userData == other.userData;
 
   @override
   int get hashCode => publicKey.hashCode ^ userData.hashCode;
