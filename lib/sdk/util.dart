@@ -13,35 +13,40 @@ class Util {
   /// If the attestation document is invalid, it will throw an [CoreLibraryException].
   AttestationResult validateAttestationDocument(String attestationDocument) {
     final result =
-        _polygonIdCoreUtil.validateAttestationDocument(attestationDocument);
-    final publicKey = result['public_key'] as String;
+    _polygonIdCoreUtil.validateAttestationDocument(attestationDocument);
+    final publicKey = result['public_key'] as String?;
+    final userData = result['user_data'] as String?;
 
     return AttestationResult(
       publicKey: publicKey,
+      userData: userData,
     );
   }
 }
 
 class AttestationResult {
   /// The public key hex encoded.
-  final String publicKey;
+  final String? publicKey;
+  final String? userData;
 
   AttestationResult({
-    required this.publicKey,
+    this.publicKey,
+    this.userData,
   });
 
   @override
   String toString() {
-    return 'AttestationResult{publicKey: $publicKey}';
+    return 'AttestationResult{publicKey: $publicKey, userData: $userData}';
   }
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is AttestationResult &&
-          runtimeType == other.runtimeType &&
-          publicKey == other.publicKey;
+          other is AttestationResult &&
+              runtimeType == other.runtimeType &&
+              publicKey == other.publicKey &&
+              userData == other.userData;
 
   @override
-  int get hashCode => publicKey.hashCode;
+  int get hashCode => publicKey.hashCode ^ userData.hashCode;
 }
