@@ -235,7 +235,7 @@ class Iden3commMocks {
   {
     "verifiableCredential": {
       "documentType": 99,
-      "@type": "KYCAgeCredential"
+      "type": "KYCAgeCredential"
     },
     "type": "VerifiablePresentation",
     "@context": [
