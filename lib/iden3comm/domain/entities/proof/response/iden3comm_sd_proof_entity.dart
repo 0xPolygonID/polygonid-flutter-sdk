@@ -68,7 +68,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/i
 /// Sample
 /// ``` "vp":{
 ///       "@context": ["https://www.w3.org/2018/credentials/v1"]
-///       "@type": "VerifiablePresentation",
+///       "type": "VerifiablePresentation",
 ///       "verifiableCredential": {
 ///         "@context": [
 ///           "https://www.w3.org/2018/credentials/v1",
