@@ -103,8 +103,8 @@ class ProofRequestFiltersMapper
       if (value is Map<String, dynamic> && value[key].containsKey("@context")) {
         value = value[key]["@context"];
       } else if (value is Map<String, dynamic> &&
-          value[key].containsKey("type")) {
-        value = value[key]["type"];
+          value[key].containsKey("@type")) {
+        value = value[key]["@type"];
         break;
       } else {
         break;

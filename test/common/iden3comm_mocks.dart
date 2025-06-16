@@ -237,7 +237,7 @@ class Iden3commMocks {
       "documentType": 99,
       "@type": "KYCAgeCredential"
     },
-    "@type": "VerifiablePresentation",
+    "type": "VerifiablePresentation",
     "@context": [
       "https://www.w3.org/2018/credentials/v1",
       "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld"
