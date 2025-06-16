@@ -65,7 +65,7 @@
 /// Sample
 /// ``` "vp":{
 ///       "@context": ["https://www.w3.org/2018/credentials/v1"]
-///       "@type": "VerifiablePresentation",
+///       "type": "VerifiablePresentation",
 ///       "verifiableCredential": {
 ///         "@context": [
 ///           "https://www.w3.org/2018/credentials/v1",
@@ -95,13 +95,13 @@ class Iden3commVPProof {
         context: (json['@context'] as List<dynamic>)
             .map((e) => e as String)
             .toList(),
-        type: json['@type'] as String,
+        type: json['type'] as String,
         verifiableCredential:
             (json['verifiableCredential'] as Map<String, dynamic>),
       );
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        '@type': type,
+        'type': type,
         '@context': context,
         'verifiableCredential': verifiableCredential,
       };
