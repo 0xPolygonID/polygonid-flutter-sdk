@@ -49,7 +49,7 @@ class CreateAnonAadhaarProofUseCase
     final anonAadhaarInputs =
         AnonAadhaarInputsParam.fromSelfIssuedCredentialParams(
       qrData: param.qrData,
-          timeNow: param.timeNow,
+      timeNow: param.timeNow,
       credentialSubjectID: param.profileDid,
       params: param.selfIssuedCredentialParams,
     );
