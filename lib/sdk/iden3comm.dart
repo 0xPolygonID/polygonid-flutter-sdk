@@ -319,6 +319,7 @@ abstract class PolygonIdSdkIden3comm {
 
   Future<ZKProofEntity> getAnonAadhaarProof({
     required String qrData,
+    required int timeNow,
     required String profileDid,
     required SelfIssuedCredentialParams selfIssuedCredentialParams,
     required String circuitId,
@@ -326,6 +327,7 @@ abstract class PolygonIdSdkIden3comm {
 
   Future<ClaimEntity> getAnonAadhaarCredential({
     required String qrData,
+    required int timeNow,
     required String profileDid,
     required SelfIssuedCredentialParams selfIssuedCredentialParams,
     required Map<String, dynamic> additionalFields,
@@ -791,6 +793,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   @override
   Future<ZKProofEntity> getAnonAadhaarProof({
     required String qrData,
+    required int timeNow,
     required String profileDid,
     required SelfIssuedCredentialParams selfIssuedCredentialParams,
     required String circuitId,
@@ -798,6 +801,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     return _createAnonAadhaarProofUseCase.execute(
       param: CreateAnonAadhaarProofParam(
         qrData: qrData,
+        timeNow: timeNow,
         profileDid: profileDid,
         selfIssuedCredentialParams: selfIssuedCredentialParams,
         circuitId: circuitId,
@@ -808,6 +812,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   @override
   Future<ClaimEntity> getAnonAadhaarCredential({
     required String qrData,
+    required int timeNow,
     required String profileDid,
     required SelfIssuedCredentialParams selfIssuedCredentialParams,
     Map<String, dynamic>? additionalFields,
@@ -815,6 +820,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     return _createAnonAadhaarCredentialUseCase.execute(
       param: CreateAnonAadhaarCredentialParam(
         qrData: qrData,
+        timeNow: timeNow,
         profileDid: profileDid,
         selfIssuedCredentialParams: selfIssuedCredentialParams,
         additionalFields: additionalFields,

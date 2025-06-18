@@ -1030,6 +1030,7 @@ class PolygonIdFlutterChannel
   @override
   Future<ClaimEntity> getAnonAadhaarCredential({
     required String qrData,
+    required int timeNow,
     required String profileDid,
     required SelfIssuedCredentialParams selfIssuedCredentialParams,
     required Map<String, dynamic> additionalFields,
@@ -1041,6 +1042,7 @@ class PolygonIdFlutterChannel
   @override
   Future<ZKProofEntity> getAnonAadhaarProof({
     required String qrData,
+    required int timeNow,
     required String profileDid,
     required SelfIssuedCredentialParams selfIssuedCredentialParams,
     required String circuitId,

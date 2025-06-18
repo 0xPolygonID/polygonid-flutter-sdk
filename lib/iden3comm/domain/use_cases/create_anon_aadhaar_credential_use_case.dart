@@ -12,12 +12,14 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/self_issuance/se
 
 class CreateAnonAadhaarCredentialParam {
   final String qrData;
+  final int timeNow;
   final String profileDid;
   final SelfIssuedCredentialParams selfIssuedCredentialParams;
   Map<String, dynamic>? additionalFields;
 
   CreateAnonAadhaarCredentialParam({
     required this.qrData,
+    required this.timeNow,
     required this.profileDid,
     required this.selfIssuedCredentialParams,
     required this.additionalFields,
@@ -47,6 +49,7 @@ class CreateAnonAadhaarCredentialUseCase
     final credentialJson =
         _libPolygonIdCoreCredentialDS.credentialFromAnonAadhaar(
       qrData: param.qrData,
+      timeNow: param.timeNow,
       did: param.profileDid,
       selfIssuedCredentialParams: param.selfIssuedCredentialParams,
       config: jsonEncode(env.config.toJson()),

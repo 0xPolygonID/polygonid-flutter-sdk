@@ -57,6 +57,7 @@ class LibPolygonIdCoreCredentialDataSource {
 
   String credentialFromAnonAadhaar({
     required String qrData,
+    required int timeNow,
     required String did,
     required SelfIssuedCredentialParams selfIssuedCredentialParams,
     String? config,
@@ -64,6 +65,7 @@ class LibPolygonIdCoreCredentialDataSource {
     // This method accepts same inputs as the proof gen inputs calc
     final param = AnonAadhaarInputsParam.fromSelfIssuedCredentialParams(
       qrData: qrData,
+      timeNow: timeNow,
       credentialSubjectID: did,
       params: selfIssuedCredentialParams,
     );
