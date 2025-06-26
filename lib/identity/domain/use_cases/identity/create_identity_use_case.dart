@@ -3,7 +3,6 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 
-import '../../../../common/domain/domain_logger.dart';
 import '../../../../common/domain/use_case.dart';
 
 class CreateIdentityParam {

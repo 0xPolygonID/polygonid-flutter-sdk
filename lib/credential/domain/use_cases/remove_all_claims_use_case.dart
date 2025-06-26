@@ -1,6 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 
-import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
 import '../repositories/credential_repository.dart';
 
