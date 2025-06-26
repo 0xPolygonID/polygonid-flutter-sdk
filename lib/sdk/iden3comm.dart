@@ -561,8 +561,6 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }) {
     _stacktraceManager.clearStacktrace();
     if (message is! AuthIden3MessageEntity) {
-      _stacktraceManager.addTrace(
-          '[authenticate] Invalid message type: ${message.messageType}');
       _stacktraceManager.addError(
           'Invalid message type: ${message.messageType}, expected: ${Iden3MessageType.authRequest}');
       throw InvalidIden3MsgTypeException(
@@ -609,8 +607,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     } on PolygonIdSDKException catch (_) {
       rethrow;
     } catch (e) {
-      _stacktraceManager.addTrace('[authenticateV2] Error: ${e.toString()}');
-      _stacktraceManager.addError(e.toString());
+      _stacktraceManager.addError('[authenticateV2] Error: ${e.toString()}');
       throw PolygonIdSDKException(
           errorMessage:
               "Error while authenticating with error: ${e.toString()}");

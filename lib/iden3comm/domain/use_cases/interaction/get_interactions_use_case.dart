@@ -79,8 +79,7 @@ class GetInteractionsUseCase
     } on PolygonIdSDKException catch (_) {
       rethrow;
     } catch (error) {
-      logger().e("[GetInteractionsUseCase] Error: $error");
-      _stacktraceManager.addTrace("[GetInteractionsUseCase] Error: $error");
+      _stacktraceManager.logError("[GetInteractionsUseCase] Error: $error");
       throw InteractionsNotFoundException(
         errorMessage: "Error getting interactions $error",
       );

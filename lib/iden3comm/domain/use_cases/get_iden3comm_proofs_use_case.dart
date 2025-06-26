@@ -1,31 +1,29 @@
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
-import 'package:ninja_prime/ninja_prime.dart';
-
 import 'package:intl/intl.dart';
+import 'package:ninja_prime/ninja_prime.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
-
-import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 
 class GetIden3commProofsParam {
   final Iden3MessageEntity message;
@@ -198,9 +196,7 @@ class GetIden3commProofsUseCase
           }
         }
       } else {
-        _stacktraceManager.addTrace(
-            "[GetIden3commProofsUseCase] CredentialsNotFoundException - requests: $requests");
-        _stacktraceManager.addError(
+        _stacktraceManager.logError(
             "[GetIden3commProofsUseCase] CredentialsNotFoundException - requests: $requests");
         throw CredentialsNotFoundException(
           errorMessage: "Credentials not found for requests",
@@ -212,9 +208,7 @@ class GetIden3commProofsUseCase
       /// as it could be we didn't find any associated [ClaimEntity]
       if (requests.isNotEmpty && proofs.isEmpty ||
           proofs.length != requests.length) {
-        _stacktraceManager.addTrace(
-            "[GetIden3commProofsUseCase] ProofsNotFoundException - requests: $requests");
-        _stacktraceManager.addError(
+        _stacktraceManager.logError(
             "[GetIden3commProofsUseCase] ProofsNotFoundException - requests: $requests");
         throw ProofsNotCreatedException(
           proofRequests: requests,
@@ -224,7 +218,7 @@ class GetIden3commProofsUseCase
 
       return proofs;
     } catch (e) {
-      _stacktraceManager.addTrace("[GetIden3commProofsUseCase] Exception: $e");
+      _stacktraceManager.logError("[GetIden3commProofsUseCase] Exception: $e");
       rethrow;
     }
   }

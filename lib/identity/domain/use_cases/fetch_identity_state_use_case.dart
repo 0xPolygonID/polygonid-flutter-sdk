@@ -1,4 +1,3 @@
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
@@ -29,16 +28,12 @@ class FetchIdentityStateUseCase extends FutureUseCase<String, String> {
         contractAddress: chain.stateContractAddr,
       );
 
-      _stacktraceManager.addTrace(
-          "[FetchIdentityStateUseCase] Fetched state for identifier $param");
-      logger().i(
+      _stacktraceManager.logTrace(
           "[FetchIdentityStateUseCase] Fetched state $state for identifier $param");
 
       return state;
     }).catchError((error) {
-      _stacktraceManager.addTrace("[FetchIdentityStateUseCase] Error: $error");
-      _stacktraceManager.addError("[FetchIdentityStateUseCase] Error: $error");
-      logger().e("[FetchIdentityStateUseCase] Error: $error");
+      _stacktraceManager.logError("[FetchIdentityStateUseCase] Error: $error");
       throw error;
     });
   }

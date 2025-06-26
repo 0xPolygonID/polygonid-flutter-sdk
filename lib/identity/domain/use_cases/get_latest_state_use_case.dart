@@ -1,4 +1,3 @@
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
@@ -56,14 +55,11 @@ class GetLatestStateUseCase
       final convertedState = await _smtRepository.convertState(state: state);
 
       _stacktraceManager
-          .addTrace("[GetLatestStateUseCase] State: $convertedState");
-      logger().i("[GetLatestStateUseCase] State: $convertedState");
+          .logTrace("[GetLatestStateUseCase] State: $convertedState");
 
       return convertedState;
     }).catchError((error) {
-      _stacktraceManager.addTrace("[GetLatestStateUseCase] Error: $error");
-      _stacktraceManager.addError("[GetLatestStateUseCase] Error: $error");
-      logger().e("[GetLatestStateUseCase] Error: $error");
+      _stacktraceManager.logError("[GetLatestStateUseCase] Error: $error");
 
       throw error;
     });

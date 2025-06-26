@@ -1,5 +1,4 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_all_claims_use_case.dart';
@@ -92,9 +91,7 @@ class RemoveIdentityUseCase extends FutureUseCase<RemoveIdentityParam, void> {
       _stacktraceManager.addTrace(
           "[RemoveIdentityUseCase] Identity removed, did: ${param.genesisDid}");
     } catch (error) {
-      logger().e("[RemoveIdentityUseCase] Error: $error");
-      _stacktraceManager.addTrace("[RemoveIdentityUseCase] Error: $error");
-      _stacktraceManager.addError("[RemoveIdentityUseCase] Error: $error");
+      _stacktraceManager.logError("[RemoveIdentityUseCase] Error: $error");
 
       rethrow;
     }

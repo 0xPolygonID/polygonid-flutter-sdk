@@ -6,7 +6,6 @@ import 'package:ffi/ffi.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-
 import 'package:polygonid_flutter_sdk/common/libs/polygonidcore/native_polygonidcore.dart';
 import 'package:polygonid_flutter_sdk/common/libs/polygonidcore/pidcore_base.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/generate_inputs_response.dart';
@@ -69,8 +68,6 @@ class PolygonIdCoreProof extends PolygonIdCore {
   }
 
   void _trackError(ConsumedStatusResult consumedStatus, String methodName) {
-    _stacktraceManager.addTrace(
-        "libpolygonid - $methodName: [${consumedStatus.statusCode}] - ${consumedStatus.message}");
     _stacktraceManager.addError(
         "libpolygonid - $methodName: [${consumedStatus.statusCode}] - ${consumedStatus.message}");
   }

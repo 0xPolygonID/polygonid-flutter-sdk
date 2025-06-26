@@ -39,9 +39,8 @@ class AddInteractionUseCase
         encryptionKey: param.encryptionKey,
       );
 
-      logger().i("[AddInteractionUseCase] Interaction: $addedInteraction");
       _stacktraceManager
-          .addTrace("[AddInteractionUseCase] Interaction: $addedInteraction");
+          .logTrace("[AddInteractionUseCase] Interaction: $addedInteraction");
 
       return addedInteraction;
     } on PolygonIdSDKException catch (_) {

@@ -1,5 +1,4 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
@@ -55,8 +54,6 @@ class CheckProfileAndDidCurrentEnvUseCase
     required CheckProfileAndDidCurrentEnvParam param,
   }) async {
     try {
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-
       final List<String> bjjPublicKey;
       if (param.publicKey.isNotEmpty) {
         bjjPublicKey = param.publicKey;
@@ -86,7 +83,7 @@ class CheckProfileAndDidCurrentEnvUseCase
 
       // we check if the did is the same as the one we got from param
       if (did != param.did) {
-        _stacktraceManager.addError(
+        _stacktraceManager.logError(
             "[CheckProfileAndDidCurrentEnvUseCase] DID does not match current environment DID");
         throw DidNotMatchCurrentEnvException(
           did: param.did,
@@ -95,20 +92,13 @@ class CheckProfileAndDidCurrentEnvUseCase
         );
       }
 
-      logger().d(
-          "[CheckProfileAndDidCurrentEnvUseCase] Profile and private key are valid for current env in ${DateTime.now().millisecondsSinceEpoch - timestamp} ms");
-      // _stacktraceManager.addTrace(
-      //     "[CheckProfileAndDidCurrentEnvUseCase] Profile ${param.profileNonce} and private key are valid for current env");
-      _stacktraceManager.addTrace(
+      _stacktraceManager.logTrace(
           "[CheckProfileAndDidCurrentEnvUseCase] Profile and private key are valid for current env");
     } on PolygonIdSDKException catch (_) {
       rethrow;
     } catch (error) {
-      logger().e("[CheckProfileAndDidCurrentEnvUseCase] Error: $error");
       _stacktraceManager
-          .addTrace("[CheckProfileAndDidCurrentEnvUseCase] Error: $error");
-      _stacktraceManager
-          .addError("[CheckProfileAndDidCurrentEnvUseCase] Error: $error");
+          .logError("[CheckProfileAndDidCurrentEnvUseCase] Error: $error");
       throw CheckProfileValidityException(
         errorMessage: "Error checking profile for current env",
         error: error,

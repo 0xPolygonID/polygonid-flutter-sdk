@@ -1,7 +1,6 @@
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
@@ -71,15 +70,11 @@ class AddIdentityUseCase
         );
       }
     } catch (error) {
-      logger().e("[AddIdentityUseCase] Error: $error");
-      _stacktraceManager.addTrace("[AddIdentityUseCase] Error: $error");
-      _stacktraceManager.addError("[AddIdentityUseCase] Error: $error");
+      _stacktraceManager.logError("[AddIdentityUseCase] Error: $error");
       rethrow;
     }
 
-    logger().i(
-        "[AddIdentityUseCase] Identity created and saved with did: ${identity.did}, for key ${param.bjjPublicKey}");
-    _stacktraceManager.addTrace(
+    _stacktraceManager.logTrace(
         "[AddIdentityUseCase] Identity created and saved with did: ${identity.did}, for key ${param.bjjPublicKey}");
 
     return identity;

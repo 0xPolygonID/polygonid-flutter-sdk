@@ -1,5 +1,4 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
@@ -48,8 +47,7 @@ class GetIdentityUseCase
         final identity = await _identityRepository.getIdentity(
           genesisDid: param.genesisDid,
         );
-        logger().i("[GetIdentityUseCase] Identity: $identity");
-        _stacktraceManager.addTrace(
+        _stacktraceManager.logTrace(
             "[GetIdentityUseCase] Identity DID: ${identity.did}, public key: ${identity.publicKey}");
 
         return identity;
@@ -100,15 +98,12 @@ class GetIdentityUseCase
         privateKey: bjjPrivateKey,
       );
 
-      logger().i("[GetIdentityUseCase] Identity: $identity");
-      _stacktraceManager.addTrace(
+      _stacktraceManager.logTrace(
           "[GetIdentityUseCase] Identity DID: ${identity.did}, public key: ${identity.publicKey}");
 
       return identity;
     } catch (error) {
-      logger().e("[GetIdentityUseCase] Error: $error");
-      _stacktraceManager.addTrace("[GetIdentityUseCase] Error: $error");
-      _stacktraceManager.addError("[GetIdentityUseCase] Error: $error");
+      _stacktraceManager.logError("[GetIdentityUseCase] Error: $error");
 
       rethrow;
     }

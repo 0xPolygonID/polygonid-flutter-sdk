@@ -1,5 +1,4 @@
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
@@ -42,7 +41,6 @@ class GetClaimsUseCase
     // if profileNonce is less than GENESIS_PROFILE_NONCE is invalid
     // because the profileNonce should be greater than or equal to GENESIS_PROFILE_NONCE
     if (param.profileNonce < GENESIS_PROFILE_NONCE) {
-      _stacktraceManager.addTrace("[GetClaimsUseCase] Invalid profile nonce");
       _stacktraceManager.addError(
           "[GetClaimsUseCase] Invalid profile nonce, less than $GENESIS_PROFILE_NONCE");
       throw InvalidProfileException(
@@ -62,10 +60,8 @@ class GetClaimsUseCase
     } on PolygonIdSDKException catch (_) {
       rethrow;
     } catch (error) {
-      _stacktraceManager.addTrace("[GetClaimsUseCase] Error: $error");
-      _stacktraceManager.addError(
+      _stacktraceManager.logError(
           "[GetClaimsUseCase] Error while getting claims from the DB\n${error.toString()}");
-      logger().e("[GetClaimsUseCase] Error: $error");
       throw GetClaimsException(
         errorMessage:
             'Error while getting claims from the DB\n${error.toString()}',

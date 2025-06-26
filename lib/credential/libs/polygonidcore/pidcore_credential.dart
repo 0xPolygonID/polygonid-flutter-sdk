@@ -218,8 +218,6 @@ class PolygonIdCoreCredential extends PolygonIdCore {
   }
 
   void _trackError(ConsumedStatusResult consumedStatus, String methodName) {
-    _stacktraceManager.addTrace(
-        "libpolygonid - $methodName: [${consumedStatus.statusCode}] - ${consumedStatus.message}");
     _stacktraceManager.addError(
         "libpolygonid - $methodName: [${consumedStatus.statusCode}] - ${consumedStatus.message}");
   }

@@ -1,4 +1,3 @@
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
@@ -38,15 +37,11 @@ class BackupIdentityUseCase extends FutureUseCase<BackupIdentityParam, String> {
         did: identity.did,
         encryptionKey: param.encryptionKey,
       );
-      logger().i(
-          "[BackupIdentityUseCase] Identity backed up with did: ${identity.did}");
-      _stacktraceManager.addTrace(
+      _stacktraceManager.logTrace(
           "[BackupIdentityUseCase] Identity backed up with did: ${identity.did}");
       return export;
     } catch (error) {
-      logger().e("[BackupIdentityUseCase] Error: $error");
-      _stacktraceManager.addTrace("[BackupIdentityUseCase] Error: $error");
-      _stacktraceManager.addError("[BackupIdentityUseCase] Error: $error");
+      _stacktraceManager.logError("[BackupIdentityUseCase] Error: $error");
       rethrow;
     }
   }

@@ -25,9 +25,7 @@ class GetPublicKeyUseCase extends FutureUseCase<String, List<String>> {
 
       return publicKeys;
     }).catchError((error) {
-      logger().e("[GetPublicKeysUseCase] Error: $error");
-      _stacktraceManager.addTrace("[GetPublicKeysUseCase] Error: $error");
-      _stacktraceManager.addError("[GetPublicKeysUseCase] Error: $error");
+      _stacktraceManager.logError("[GetPublicKeysUseCase] Error: $error");
 
       throw error;
     });

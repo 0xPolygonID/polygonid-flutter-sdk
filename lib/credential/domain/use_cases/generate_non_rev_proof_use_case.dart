@@ -1,4 +1,3 @@
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
@@ -62,15 +61,11 @@ class GenerateNonRevProofUseCase
         baseUrl: baseUrl,
         cachedNonRevProof: param.nonRevProof,
       );
-
-      _stacktraceManager.addTrace("[GenerateNonRevProofUseCase] Non rev proof");
-      logger().i("[GenerateNonRevProofUseCase] Non rev proof: $nonRevProof");
+      _stacktraceManager.logTrace("[GenerateNonRevProofUseCase] Non rev proof");
 
       return nonRevProof;
     } catch (error) {
-      _stacktraceManager.addTrace("[GenerateNonRevProofUseCase] Error: $error");
-      logger().e("[GenerateNonRevProofUseCase] Error: $error");
-      _stacktraceManager.addError("[GenerateNonRevProofUseCase] Error: $error");
+      _stacktraceManager.logError("[GenerateNonRevProofUseCase] Error: $error");
       rethrow;
     }
   }

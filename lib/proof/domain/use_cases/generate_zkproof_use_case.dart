@@ -1,12 +1,11 @@
 import 'dart:convert';
 
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/prove_use_case.dart';
@@ -92,9 +91,7 @@ class GenerateZKProofUseCase
       transactionData: param.transactionData,
     )
         .catchError((error) {
-      logger().e("[GenerateZKProofUseCase] Error: $error");
-      _stacktraceManager.addTrace("[GenerateZKProofUseCase] Error: $error");
-      _stacktraceManager.addError("[GenerateZKProofUseCase] Error: $error");
+      _stacktraceManager.logError("[GenerateZKProofUseCase] Error: $error");
 
       throw error;
     });
@@ -106,14 +103,11 @@ class GenerateZKProofUseCase
       final proof = await _proveUseCase.execute(
           param: ProveParam(atomicQueryInputs, param.circuitData));
 
-      logger().i("[GenerateZKProofUseCase] proof: $proof");
-      _stacktraceManager.addTrace("[GenerateZKProofUseCase] proof");
+      _stacktraceManager.logTrace("[GenerateZKProofUseCase] proof");
 
       return proof;
     } catch (error) {
-      _stacktraceManager.addTrace("[GenerateZKProofUseCase] Error: $error");
-      _stacktraceManager.addError("[GenerateZKProofUseCase] Error: $error");
-      logger().e("[GenerateZKProofUseCase] Error: $error");
+      _stacktraceManager.logError("[GenerateZKProofUseCase] Error: $error");
 
       rethrow;
     }

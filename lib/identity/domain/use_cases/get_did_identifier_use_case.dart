@@ -2,7 +2,6 @@ import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.d
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_genesis_state_use_case.dart';
 
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 
@@ -70,12 +69,12 @@ class GetDidIdentifierUseCase
         config: env.config,
         method: param.method,
       );
-      logger().i("[GetDidIdentifierUseCase] did: $did");
+      _stacktraceManager
+          .logTrace("[GetDidIdentifierUseCase] Generated DID: $did");
 
       return did;
     }).catchError((error) {
-      logger().e("[GetDidIdentifierUseCase] Error: $error");
-      _stacktraceManager.addTrace("[GetDidIdentifierUseCase] Error: $error");
+      _stacktraceManager.logError("[GetDidIdentifierUseCase] Error: $error");
       throw error;
     });
   }

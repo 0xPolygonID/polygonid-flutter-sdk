@@ -97,9 +97,7 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
     } on PolygonIdSDKException catch (_) {
       rethrow;
     } catch (error) {
-      logger().e("[GetAuthTokenUseCase] Error: $error");
-      _stacktraceManager.addTrace("[GetAuthTokenUseCase] Error: $error");
-      _stacktraceManager.addError("[GetAuthTokenUseCase] Error: $error");
+      _stacktraceManager.logError("[GetAuthTokenUseCase] Error: $error");
       throw GetAuthTokenException(
         errorMessage: "Error while getting auth token",
         error: error,

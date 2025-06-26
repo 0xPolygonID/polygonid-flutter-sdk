@@ -48,9 +48,7 @@ class GetGenesisStateUseCase
 
       return state;
     }).catchError((error) {
-      _stacktraceManager.addTrace("[GetGenesisStateUseCase] Error: $error");
-      _stacktraceManager.addError("[GetGenesisStateUseCase] Error: $error");
-      logger().e("[GetGenesisStateUseCase] Error: $error");
+      _stacktraceManager.logError("[GetGenesisStateUseCase] Error: $error");
 
       throw error;
     });

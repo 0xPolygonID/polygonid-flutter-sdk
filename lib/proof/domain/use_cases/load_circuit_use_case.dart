@@ -1,4 +1,3 @@
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
@@ -20,9 +19,7 @@ class LoadCircuitUseCase extends FutureUseCase<String, CircuitDataEntity> {
           await _proofRepository.loadCircuitFiles(param);
       return circuitDataEntity;
     } catch (error) {
-      logger().e("[LoadCircuitUseCase] Error: $error");
-      _stacktraceManager.addTrace("[LoadCircuitUseCase] Error: $error");
-      _stacktraceManager.addError("[LoadCircuitUseCase] Error: $error");
+      _stacktraceManager.logError("[LoadCircuitUseCase] Error: $error");
       rethrow;
     }
   }

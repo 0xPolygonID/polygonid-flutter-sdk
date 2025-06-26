@@ -1,7 +1,7 @@
-import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 
 /// Get the AuthClaim for a given baby jub jub public key
 class GetAuthClaimUseCase extends FutureUseCase<List<String>, List<String>> {
@@ -24,10 +24,7 @@ class GetAuthClaimUseCase extends FutureUseCase<List<String>, List<String>> {
       return authClaim;
     }).catchError((error) {
       _stacktraceManager
-          .addTrace("[GetIdentityAuthClaimUseCase] Error: $error");
-      _stacktraceManager
-          .addError("[GetIdentityAuthClaimUseCase] Error: $error");
-      logger().e("[GetIdentityAuthClaimUseCase] Error: $error");
+          .logError("[GetIdentityAuthClaimUseCase] Error: $error");
 
       throw error;
     });

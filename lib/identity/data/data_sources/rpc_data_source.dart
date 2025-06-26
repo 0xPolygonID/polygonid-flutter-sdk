@@ -100,8 +100,7 @@ class RPCDataSource {
     } on PolygonIdSDKException catch (_) {
       rethrow;
     } catch (e) {
-      logger().e(e.toString());
-      _stacktraceManager.addError("Error getting gist proof with error $e");
+      _stacktraceManager.logError("Error getting gist proof with error $e");
       throw PolygonIdSDKException(
           errorMessage: "Error getting gist proof with error $e");
     }

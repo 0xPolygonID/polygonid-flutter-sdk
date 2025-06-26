@@ -1,6 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 
-import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
 import '../repositories/credential_repository.dart';
 
@@ -30,13 +29,10 @@ class RemoveAllClaimsUseCase extends FutureUseCase<RemoveAllClaimsParam, void> {
         genesisDid: param.did,
         encryptionKey: param.encryptionKey,
       );
-      logger().i("[RemoveAllClaimsUseCase] Claims have been removed: $param");
-      _stacktraceManager.addTrace(
+      _stacktraceManager.logTrace(
           "[RemoveAllClaimsUseCase] Claims have been removed: $param");
     } catch (error) {
-      logger().e("[RemoveAllClaimsUseCase] Error: $error");
-      _stacktraceManager.addTrace("[RemoveAllClaimsUseCase] Error: $error");
-      _stacktraceManager.addError("[RemoveAllClaimsUseCase] Error: $error");
+      _stacktraceManager.logError("[RemoveAllClaimsUseCase] Error: $error");
       rethrow;
     }
   }

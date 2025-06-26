@@ -71,9 +71,7 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
     if (profiles.containsKey(param.profileNonce)) {
       // Profile already exists
       _stacktraceManager
-          .addTrace('ProfileAlreadyExistsException: ${param.profileNonce}');
-      _stacktraceManager
-          .addError('ProfileAlreadyExistsException: ${param.profileNonce}');
+          .logError('ProfileAlreadyExistsException: ${param.profileNonce}');
       throw ProfileAlreadyExistsException(
         genesisDid: param.genesisDid,
         profileNonce: param.profileNonce,
@@ -95,8 +93,6 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
       final newProfileDid = newProfiles[param.profileNonce];
       if (newProfileDid == null) {
         _stacktraceManager
-            .addTrace('UnknownProfileException: ${param.profileNonce}');
-        _stacktraceManager
             .addError('UnknownProfileException: ${param.profileNonce}');
         throw UnknownProfileException(
           profileNonce: param.profileNonce,
@@ -114,8 +110,6 @@ class AddProfileUseCase extends FutureUseCase<AddProfileParam, void> {
           .calculateProfileId(genesisDid, profileNonce);
 
       if (existingProfileDid != calculatedDid) {
-        _stacktraceManager.addTrace(
-            'InvalidProfileException: $existingProfileDid != $calculatedDid');
         _stacktraceManager.addError(
             'InvalidProfileException: $existingProfileDid != $calculatedDid');
         throw InvalidProfileException(

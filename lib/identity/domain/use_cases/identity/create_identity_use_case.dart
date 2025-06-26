@@ -3,7 +3,6 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
 
-import '../../../../common/domain/domain_logger.dart';
 import '../../../../common/domain/use_case.dart';
 
 class CreateIdentityParam {
@@ -49,9 +48,7 @@ class CreateIdentityUseCase
         profiles[profile] = identifier;
       }
 
-      logger().i(
-          "[CreateIdentityUseCase] Identity created with did: $didIdentifier");
-      _stacktraceManager.addTrace(
+      _stacktraceManager.logTrace(
           "[CreateIdentityUseCase] Identity created with did: $didIdentifier");
 
       return IdentityEntity(
@@ -60,11 +57,7 @@ class CreateIdentityUseCase
         profiles: profiles,
       );
     }).catchError((error) {
-      logger().e(
-          "[CreateIdentityUseCase] Error: $error for public key ${param.bjjPublicKey}");
-      _stacktraceManager.addTrace(
-          "[CreateIdentityUseCase] Error: $error for public key ${param.bjjPublicKey}");
-      _stacktraceManager.addError(
+      _stacktraceManager.logError(
           "[CreateIdentityUseCase] Error: $error for public key ${param.bjjPublicKey}");
 
       throw error;

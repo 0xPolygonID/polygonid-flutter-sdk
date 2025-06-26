@@ -83,7 +83,6 @@ class GetIden3MessageUseCase extends FutureUseCase<String, Iden3MessageEntity> {
           );
       }
     } catch (error) {
-      _stacktraceManager.addTrace("[GetIden3MessageUseCase] error: $error");
       _stacktraceManager.addError("[GetIden3MessageUseCase] error: $error");
       return Future.error(error);
     }

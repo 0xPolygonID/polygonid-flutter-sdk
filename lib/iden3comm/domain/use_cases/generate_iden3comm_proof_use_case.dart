@@ -12,9 +12,9 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/i
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_sd_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_vp_proof.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
@@ -23,9 +23,9 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_identity_aut
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_latest_state_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/sign_message_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
@@ -119,8 +119,6 @@ class GenerateIden3commProofUseCase
     // TODO (moria): remove this with v3 circuit release
     if (circuitId.startsWith(CircuitType.v3CircuitPrefix) &&
         !circuitId.endsWith(CircuitType.currentCircuitBetaPostfix)) {
-      _stacktraceManager.addTrace(
-          "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
       _stacktraceManager.addError(
           "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
       throw CircuitNotDownloadedException(
@@ -297,9 +295,6 @@ class GenerateIden3commProofUseCase
     } on PolygonIdSDKException catch (_) {
       rethrow;
     } catch (error) {
-      _stacktraceManager.addTrace(
-          "[GenerateIden3commProofUseCase] proveUseCase Error: $error");
-      logger().e("[GenerateProofUseCase] Error: $error");
       _stacktraceManager.addError(
           "[GenerateIden3commProofUseCase] proveUseCase Error: $error");
       throw ProofGenerationException(

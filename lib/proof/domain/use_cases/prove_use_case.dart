@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
@@ -43,9 +44,7 @@ class ProveUseCase extends FutureUseCase<ProveParam, ZKProofEntity> {
 
       return zkProofEntity;
     } catch (error) {
-      _stacktraceManager.addTrace("[ProveUseCase] Error: $error");
-      _stacktraceManager.addError("[ProveUseCase] Error: $error");
-      logger().e("[ProveUseCase] Error: $error");
+      _stacktraceManager.logError("[ProveUseCase] Error: $error");
       rethrow;
     }
   }

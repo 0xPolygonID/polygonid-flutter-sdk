@@ -1,4 +1,3 @@
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
@@ -36,17 +35,12 @@ class GetGistMTProofUseCase extends FutureUseCase<String, GistMTProofEntity> {
       );
 
       _stacktraceManager
-          .addTrace("[GetGistMTProofUseCase] Gist proof for identifier $param");
-      logger()
-          .i("[GetGistMTProofUseCase] Gist proof $proof for identifier $param");
+          .logTrace("[GetGistMTProofUseCase] Gist proof for identifier $param");
 
       return proof;
     } catch (error) {
-      _stacktraceManager.addTrace(
+      _stacktraceManager.logError(
           "[GetGistMTProofUseCase] Error: $error for identifier $param");
-      _stacktraceManager.addError(
-          "[GetGistMTProofUseCase] Error: $error for identifier $param");
-      logger().e("[GetGistMTProofUseCase] Error: $error");
 
       rethrow;
     }

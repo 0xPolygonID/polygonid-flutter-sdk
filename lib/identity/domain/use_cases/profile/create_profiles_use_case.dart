@@ -1,4 +1,3 @@
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_current_env_did_identifier_use_case.dart';
@@ -48,18 +47,12 @@ class CreateProfilesUseCase
 
       return profiles;
     }).then((profiles) {
-      _stacktraceManager.addTrace(
-          "[CreateProfilesUseCase] Profiles created for public key: ${param.bjjPublicKey}");
-      logger().i(
+      _stacktraceManager.logTrace(
           "[CreateProfilesUseCase] Profiles created for public key: ${param.bjjPublicKey}");
 
       return profiles;
     }).catchError((error) {
-      _stacktraceManager.addTrace(
-          "[CreateProfilesUseCase] Error: $error for pub key ${param.bjjPublicKey}");
-      _stacktraceManager.addError(
-          "[CreateProfilesUseCase] Error: $error for pub key ${param.bjjPublicKey}");
-      logger().e(
+      _stacktraceManager.logError(
           "[CreateProfilesUseCase] Error: $error for pub key ${param.bjjPublicKey}");
 
       throw error;

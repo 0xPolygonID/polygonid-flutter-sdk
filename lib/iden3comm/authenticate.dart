@@ -7,10 +7,10 @@ import 'package:collection/collection.dart';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
-import 'package:http_cache_hive_store/http_cache_hive_store.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_cache_hive_store/http_cache_hive_store.dart';
 import 'package:intl/intl.dart';
 import 'package:ninja_prime/ninja_prime.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -240,9 +240,7 @@ class Authenticate {
         proofRepository: proofRepository,
         env: env,
       );
-      _stacktraceManager.addTrace(
-        "[Authenticate] authToken: $authToken",
-      );
+      _stacktraceManager.addTrace("[Authenticate] authToken: $authToken");
 
       _proofGenerationStepsStreamManager
           .add("sending auth token to the requester...");
@@ -271,8 +269,7 @@ class Authenticate {
       ).timeout(const Duration(seconds: 30));
 
       _stacktraceManager.addTrace(
-        "[Authenticate] responseStatusCode: ${response.statusCode}\nresponseBody: ${response.body}",
-      );
+          "[Authenticate] responseStatusCode: ${response.statusCode}\nresponseBody: ${response.body}");
 
       if (response.statusCode != 200) {
         _stacktraceManager.addError(
