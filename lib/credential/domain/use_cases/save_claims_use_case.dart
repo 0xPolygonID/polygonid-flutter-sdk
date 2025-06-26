@@ -1,8 +1,7 @@
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 
 class SaveClaimsParam {
   final List<ClaimEntity> claims;
@@ -34,15 +33,11 @@ class SaveClaimsUseCase
         genesisDid: param.genesisDid,
         encryptionKey: param.encryptionKey,
       );
-      logger()
-          .i("[SaveClaimsUseCase] All claims have been saved: ${param.claims}");
-      _stacktraceManager
-          .addTrace("[SaveClaimsUseCase] All claims have been saved");
+      _stacktraceManager.logTrace(
+          "[SaveClaimsUseCase] All claims have been saved: ${param.claims}");
       return param.claims;
     } catch (error) {
-      logger().e("[SaveClaimsUseCase] Error: $error");
-      _stacktraceManager.addTrace("[SaveClaimsUseCase] Error: $error");
-      _stacktraceManager.addError("[SaveClaimsUseCase] Error: $error");
+      _stacktraceManager.logError("[SaveClaimsUseCase] Error: $error");
       rethrow;
     }
   }

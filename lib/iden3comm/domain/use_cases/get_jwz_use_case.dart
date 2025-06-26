@@ -46,9 +46,7 @@ class GetJWZUseCase extends FutureUseCase<GetJWZParam, String> {
     } on PolygonIdSDKException catch (_) {
       rethrow;
     } catch (error) {
-      logger().e("[GetJWZUseCase] Error: $error");
-      _stacktraceManager.addTrace("[GetJWZUseCase] Error: $error");
-      _stacktraceManager.addError("[GetJWZUseCase] Error: $error");
+      _stacktraceManager.logError("[GetJWZUseCase] Error: $error");
       throw PolygonIdSDKException(
         errorMessage: "Error getting JWZ, error: $error",
         error: error,

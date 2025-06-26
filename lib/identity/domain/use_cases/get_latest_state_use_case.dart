@@ -56,14 +56,11 @@ class GetLatestStateUseCase
       final convertedState = await _smtRepository.convertState(state: state);
 
       _stacktraceManager
-          .addTrace("[GetLatestStateUseCase] State: $convertedState");
-      logger().i("[GetLatestStateUseCase] State: $convertedState");
+          .logTrace("[GetLatestStateUseCase] State: $convertedState");
 
       return convertedState;
     }).catchError((error) {
-      _stacktraceManager.addTrace("[GetLatestStateUseCase] Error: $error");
-      _stacktraceManager.addError("[GetLatestStateUseCase] Error: $error");
-      logger().e("[GetLatestStateUseCase] Error: $error");
+      _stacktraceManager.logError("[GetLatestStateUseCase] Error: $error");
 
       throw error;
     });

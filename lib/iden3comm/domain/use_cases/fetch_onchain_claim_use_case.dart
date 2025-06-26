@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:polygonid_flutter_sdk/assets/onchain_non_merkelized_issuer_base.g.dart';
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
@@ -161,10 +160,6 @@ class FetchOnchainClaimUseCase
     } on PolygonIdSDKException catch (_) {
       rethrow;
     } catch (e) {
-      logger().e(
-          "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e");
-      _stacktraceManager.addTrace(
-          "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e");
       _stacktraceManager.addError(
           "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e");
       throw FetchClaimException(

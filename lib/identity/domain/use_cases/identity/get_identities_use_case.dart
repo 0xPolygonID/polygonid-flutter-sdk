@@ -22,9 +22,7 @@ class GetIdentitiesUseCase extends FutureUseCase<void, List<IdentityEntity>> {
 
       return identities;
     } catch (error) {
-      logger().e("[GetIdentitiesUseCase] Error: $error");
-      _stacktraceManager.addTrace("[GetIdentitiesUseCase] Error: $error");
-      _stacktraceManager.addError("[GetIdentitiesUseCase] Error: $error");
+      _stacktraceManager.logError("[GetIdentitiesUseCase] Error: $error");
 
       rethrow;
     }

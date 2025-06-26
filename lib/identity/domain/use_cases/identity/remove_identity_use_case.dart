@@ -92,9 +92,7 @@ class RemoveIdentityUseCase extends FutureUseCase<RemoveIdentityParam, void> {
       _stacktraceManager.addTrace(
           "[RemoveIdentityUseCase] Identity removed, did: ${param.genesisDid}");
     } catch (error) {
-      logger().e("[RemoveIdentityUseCase] Error: $error");
-      _stacktraceManager.addTrace("[RemoveIdentityUseCase] Error: $error");
-      _stacktraceManager.addError("[RemoveIdentityUseCase] Error: $error");
+      _stacktraceManager.logError("[RemoveIdentityUseCase] Error: $error");
 
       rethrow;
     }

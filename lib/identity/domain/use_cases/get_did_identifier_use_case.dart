@@ -70,12 +70,12 @@ class GetDidIdentifierUseCase
         config: env.config,
         method: param.method,
       );
-      logger().i("[GetDidIdentifierUseCase] did: $did");
+      _stacktraceManager
+          .logTrace("[GetDidIdentifierUseCase] Generated DID: $did");
 
       return did;
     }).catchError((error) {
-      logger().e("[GetDidIdentifierUseCase] Error: $error");
-      _stacktraceManager.addTrace("[GetDidIdentifierUseCase] Error: $error");
+      _stacktraceManager.logError("[GetDidIdentifierUseCase] Error: $error");
       throw error;
     });
   }

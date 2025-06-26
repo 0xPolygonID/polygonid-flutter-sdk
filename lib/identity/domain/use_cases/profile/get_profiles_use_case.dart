@@ -44,9 +44,7 @@ class GetProfilesUseCase
 
       return identity.profiles;
     } catch (error) {
-      _stacktraceManager.addTrace("[GetProfilesUseCase] Error: $error");
-      _stacktraceManager.addError("[GetProfilesUseCase] Error: $error");
-      logger().e("[GetProfilesUseCase] Error: $error");
+      _stacktraceManager.logError("[GetProfilesUseCase] Error: $error");
       rethrow;
     }
   }

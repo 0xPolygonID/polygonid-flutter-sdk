@@ -208,9 +208,7 @@ class GetIden3commClaimsUseCase
     /// as it could be we didn't find any associated [ClaimEntity]
     if (requests.isNotEmpty && claims.isEmpty ||
         claims.length != requests.length) {
-      _stacktraceManager.addTrace(
-          "[GetIden3commClaimsUseCase] error getting claims for requests: $requests");
-      _stacktraceManager.addError(
+      _stacktraceManager.logError(
           "[GetIden3commClaimsUseCase] error getting claims for requests: $requests");
       throw CredentialsNotFoundException(
         proofRequests: requests,

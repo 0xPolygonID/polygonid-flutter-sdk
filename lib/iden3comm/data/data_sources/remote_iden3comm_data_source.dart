@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:http_cache_hive_store/http_cache_hive_store.dart';
@@ -50,8 +51,6 @@ class RemoteIden3commDataSource {
       );
 
       if (response.statusCode != 200) {
-        logger().d(
-            'Auth Error: code: ${response.statusCode} msg: ${response.data}');
         _stacktraceManager.addError(
             'Auth Error: $url response with\ncode: ${response.statusCode}\nmsg: ${response.data}');
         throw NetworkException(
@@ -109,10 +108,10 @@ class RemoteIden3commDataSource {
       );
 
       if (response.statusCode != 200) {
-        logger().d(
-            'refreshCredential Error: code: ${response.statusCode} msg: ${response.data}');
         _stacktraceManager.addError(
-            'refreshCredential Error: $url response with\ncode: ${response.statusCode}\nmsg: ${response.data}');
+          'refreshCredential Error: $url response with\ncode: ${response.statusCode}\nmsg: ${response.data}',
+          log: true,
+        );
         throw NetworkException(
             errorMessage: response.data, statusCode: response.statusCode ?? 0);
       } else {
@@ -130,8 +129,6 @@ class RemoteIden3commDataSource {
             credentialRawValue: json.encode(response.data),
           );
         } else {
-          _stacktraceManager.addTrace(
-              "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException");
           _stacktraceManager.addError(
               "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException");
           throw UnsupportedFetchClaimTypeException(
@@ -166,9 +163,7 @@ class RemoteIden3commDataSource {
     required String url,
     required String did,
   }) async {
-    _stacktraceManager.addTrace(
-        "[RemoteIden3commDataSource] fetchClaim: did:$did\nurl: $url\nauthToken: $authToken");
-    logger().i(
+    _stacktraceManager.logTrace(
         "[RemoteIden3commDataSource] fetchClaim: did:$did\nurl: $url\nauthToken: $authToken");
 
     try {
@@ -184,9 +179,7 @@ class RemoteIden3commDataSource {
         ),
       );
 
-      logger()
-          .d("fetchClaim: code: ${response.statusCode} msg: ${response.data}");
-      _stacktraceManager.addTrace(
+      _stacktraceManager.logTrace(
           "[RemoteIden3commDataSource] fetchClaim: ${response.statusCode} ${response.data}");
       if (response.statusCode == 200) {
         final fetchResponse = FetchClaimResponseDTO.fromJson(response.data);
@@ -207,8 +200,6 @@ class RemoteIden3commDataSource {
               "[RemoteIden3commDataSource] fetchClaim: ${claimDTO.info.toJson()}");
           return claimDTO;
         } else {
-          _stacktraceManager.addTrace(
-              "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException");
           _stacktraceManager.addError(
               "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException");
           throw UnsupportedFetchClaimTypeException(
@@ -218,9 +209,7 @@ class RemoteIden3commDataSource {
           );
         }
       } else {
-        logger().d(
-            'fetchClaim Error: code: ${response.statusCode} msg: ${response.data}');
-        _stacktraceManager.addError(
+        _stacktraceManager.logError(
             'fetchClaim Error: $url response with\ncode: ${response.statusCode}\nmsg: ${response.data}');
         throw NetworkException(
           errorMessage: response.data,
@@ -267,9 +256,7 @@ class RemoteIden3commDataSource {
       }
 
       var schemaUri = Uri.parse(schemaUrl);
-      _stacktraceManager.addTrace(
-          "[RemoteIden3commDataSource] fetchSchema original url: $url");
-      logger().i(
+      _stacktraceManager.logTrace(
           "[RemoteIden3commDataSource] fetchSchema original url: $url\nschemaUrl: $schemaUrl");
 
       Dio dio = Dio();
@@ -287,9 +274,7 @@ class RemoteIden3commDataSource {
       );
 
       final schemaResponse = await dio.get(schemaUri.toString());
-      logger().d(
-          'fetchSchema: code: ${schemaResponse.statusCode} msg: ${schemaResponse.data}');
-      _stacktraceManager.addTrace(
+      _stacktraceManager.logTrace(
           "[RemoteIden3commDataSource] fetchSchema: ${schemaResponse.statusCode} ${schemaResponse.data}");
       if (schemaResponse.statusCode == 200 ||
           schemaResponse.statusCode == 304) {
@@ -303,8 +288,6 @@ class RemoteIden3commDataSource {
 
         return schema;
       } else {
-        _stacktraceManager.addTrace(
-            "[RemoteIden3commDataSource] fetchSchema: ${schemaResponse.statusCode} ${schemaResponse.data}");
         _stacktraceManager.addError(
             "[RemoteIden3commDataSource] fetchSchema: ${schemaResponse.statusCode} ${schemaResponse.data}");
         throw NetworkException(
@@ -315,8 +298,6 @@ class RemoteIden3commDataSource {
     } on PolygonIdSDKException catch (_) {
       rethrow;
     } catch (error) {
-      _stacktraceManager
-          .addTrace("[RemoteIden3commDataSource] fetchSchema: $error");
       _stacktraceManager
           .addError("[RemoteIden3commDataSource] fetchSchema: $error");
       throw FetchSchemaException(
@@ -377,8 +358,6 @@ class RemoteIden3commDataSource {
 
         return data;
       } else {
-        _stacktraceManager.addTrace(
-            "[RemoteIden3commDataSource] fetchDisplayType: ${response.statusCode} ${response.data}");
         _stacktraceManager.addError(
             "[RemoteIden3commDataSource] fetchDisplayType: ${response.statusCode} ${response.data}");
         throw NetworkException(
@@ -387,8 +366,6 @@ class RemoteIden3commDataSource {
         );
       }
     } catch (error) {
-      _stacktraceManager
-          .addTrace("[RemoteIden3commDataSource] fetchDisplayType: $error");
       _stacktraceManager
           .addError("[RemoteIden3commDataSource] fetchDisplayType: $error");
       throw FetchDisplayTypeException(

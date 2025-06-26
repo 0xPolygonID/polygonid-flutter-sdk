@@ -207,9 +207,7 @@ class ProofRepositoryImpl extends ProofRepository {
         wtnsBytes,
       );
 
-      _stacktraceManager.addTrace(
-          "[ProveUseCase][MainFlow] proof generated in ${stopwatch.elapsedMilliseconds} ms");
-      logger().i(
+      _stacktraceManager.logTrace(
           "[ProveUseCase][MainFlow] proof generated in ${stopwatch.elapsedMilliseconds} ms");
       logger().i("[ProveUseCase] proof: $proof");
 

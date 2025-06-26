@@ -29,14 +29,10 @@ class CheckIdentityValidityUseCase extends FutureUseCase<String, void> {
           profileNonce: BigInt.zero,
         ),
       );
-      logger().i("[CheckIdentityValidityUseCase] Identity is valid");
       _stacktraceManager
-          .addTrace("[CheckIdentityValidityUseCase] Identity is valid");
+          .logTrace("[CheckIdentityValidityUseCase] Identity is valid");
     }).catchError((error) {
-      logger().e("[CheckValidIdentityUseCase] Error: $error");
-
-      _stacktraceManager.addTrace("[CheckValidIdentityUseCase] Error: $error");
-      _stacktraceManager.addError("[CheckValidIdentityUseCase] Error: $error");
+      _stacktraceManager.logError("[CheckValidIdentityUseCase] Error: $error");
       throw error;
     });
   }

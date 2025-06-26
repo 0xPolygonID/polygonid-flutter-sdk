@@ -71,11 +71,9 @@ class AuthenticateUseCase
   Future<Iden3MessageEntity?> execute(
       {required AuthenticateParam param}) async {
     try {
-      _stacktraceManager.addTrace(
-        "[AuthenticateUseCase][MainFlow] auth request: " +
-            jsonEncode(param.message.toJson()),
-        log: true,
-      );
+      _stacktraceManager.logTrace(
+          "[AuthenticateUseCase][MainFlow] auth request: " +
+              jsonEncode(param.message.toJson()));
 
       // we want to misure the time of the whole process
       Stopwatch stopwatch = Stopwatch()..start();
@@ -174,16 +172,10 @@ class AuthenticateUseCase
       );
     } catch (error) {
       if (error is NullAtomicQueryInputsException) {
-        _stacktraceManager.addTrace(
-            "[AuthenticateUseCase] Error: $error\nerror: ${error.errorMessage}");
         _stacktraceManager
             .addError("[AuthenticateUseCase] error: ${error.errorMessage}");
-        logger().d(
-            "[AuthenticateUseCase] Error: $error\nerror: ${error.errorMessage}");
       } else {
-        _stacktraceManager.addTrace("[AuthenticateUseCase] Error: $error");
-        _stacktraceManager.addError("[AuthenticateUseCase] Error: $error");
-        logger().d("[AuthenticateUseCase] Error: $error");
+        _stacktraceManager.logError("[AuthenticateUseCase] Error: $error");
       }
       rethrow;
     }

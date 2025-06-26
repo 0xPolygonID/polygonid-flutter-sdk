@@ -10,6 +10,8 @@ const _stacktraceBoxName = 'stacktrace';
 class StacktraceManager {
   bool isEnabled = false;
 
+  bool logAll = false;
+
   String _errorTrace = '';
   String _stacktrace = '';
 
@@ -33,7 +35,7 @@ class StacktraceManager {
 
   /// Add new trace to the stacktrace
   void addTrace(String stepDescription, {bool log = false}) {
-    if (log) {
+    if (log || logAll) {
       logger().i(stepDescription);
     }
 
@@ -47,10 +49,18 @@ class StacktraceManager {
     _stacktraceStreamController.add(stepDescription);
   }
 
-  void addError(String error) {
+  void logTrace(String stepDescription) => addTrace(stepDescription, log: true);
+
+  void addError(String error, {bool log = false}) {
+    if (log || logAll) {
+      logger().e(error);
+    }
+    addTrace(error, log: false);
     _errorTrace += '\n***' + error + '\n***';
     _errorStreamController.add(error);
   }
+
+  void logError(String error) => addError(error, log: true);
 
   /// we reset the stream
   /// so we can use it again

@@ -93,9 +93,7 @@ class Iden3MessageDataSource {
           .process(Uint8List.fromList(json.encode(pushInfo).codeUnits));
       return base64.encode(encrypted);
     } else {
-      logger().d(
-          'getPublicKey Error: code: ${publicKeyResponse.statusCode} msg: ${publicKeyResponse.data}');
-      _stacktraceManager.addError(
+      _stacktraceManager.logError(
           'getPublicKey Error: code: ${publicKeyResponse.statusCode} msg: ${publicKeyResponse.data}');
       throw NetworkException(
         errorMessage: publicKeyResponse.data.toString(),

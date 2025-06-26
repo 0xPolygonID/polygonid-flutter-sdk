@@ -40,9 +40,7 @@ class AddNewIdentityUseCase
         ),
       );
 
-      logger().i(
-          "[AddNewIdentityUseCase] New Identity created and saved with did: ${identity.did}, for key $param");
-      _stacktraceManager.addTrace(
+      _stacktraceManager.logTrace(
           "[AddNewIdentityUseCase] New Identity created and saved with did: ${identity.did}, for key $param");
 
       return PrivateIdentityEntity(
@@ -52,9 +50,7 @@ class AddNewIdentityUseCase
         privateKey: privateKey,
       );
     }).catchError((error) {
-      logger().e("[AddNewIdentityUseCase] Error: $error");
-      _stacktraceManager.addTrace("[AddNewIdentityUseCase] Error: $error");
-      _stacktraceManager.addError("[AddNewIdentityUseCase] Error: $error");
+      _stacktraceManager.logError("[AddNewIdentityUseCase] Error: $error");
 
       throw error;
     });

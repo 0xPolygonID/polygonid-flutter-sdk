@@ -8,8 +8,8 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
@@ -156,16 +156,14 @@ class GetAuthInputsUseCase
         treeState: treeState,
         config: env.config.toJson(),
       );
-      logger().i("[GetAuthInputsUseCase] Auth inputs: $authInputs");
+
       _stacktraceManager
-          .addTrace("[GetAuthInputsUseCase] Auth inputs: success");
+          .logTrace("[GetAuthInputsUseCase] Auth inputs: success");
       return authInputs;
     } on PolygonIdSDKException catch (_) {
       rethrow;
     } catch (e) {
-      logger().e("[GetAuthInputsUseCase] Error: $e");
-      _stacktraceManager.addTrace("[GetAuthInputsUseCase] Error: $e");
-      _stacktraceManager.addError("[GetAuthInputsUseCase] Error: $e");
+      _stacktraceManager.logError("[GetAuthInputsUseCase] Error: $e");
       throw GetAuthInputsException(
         errorMessage: "Error getting auth inputs with error: $e",
         error: e,

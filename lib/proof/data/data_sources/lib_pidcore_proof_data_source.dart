@@ -100,9 +100,7 @@ class LibPolygonIdCoreProofDataSource {
     if (config != null) {
       configParam = EnvConfigEntity.fromJson(config);
 
-      logger().i(
-          "[LibPolygonIdCoreProofDataSource][MainFlow]getProofInputs config param: ${jsonEncode(configParam.toJson())}");
-      _stacktraceManager.addTrace(
+      _stacktraceManager.logTrace(
           "[LibPolygonIdCoreProofDataSource][MainFlow]getProofInputs config param: ${jsonEncode(configParam.toJson())}");
     }
 
@@ -156,18 +154,14 @@ class LibPolygonIdCoreProofDataSource {
       transactionData: transactionData,
     );
 
-    logger().i(
-        "[LibPolygonIdCoreProofDataSource][MainFlow]getProofInputs input param: ${jsonEncode(inputParam.toJson())}");
-    _stacktraceManager.addTrace(
+    _stacktraceManager.logTrace(
         "[LibPolygonIdCoreProofDataSource][MainFlow]getProofInputs input param: ${jsonEncode(inputParam.toJson())}");
 
     EnvConfigEntity? configParam;
     if (config != null) {
       configParam = EnvConfigEntity.fromJson(config);
 
-      logger().i(
-          "[LibPolygonIdCoreProofDataSource][MainFlow]getProofInputs config param: ${jsonEncode(configParam.toJson())}");
-      _stacktraceManager.addTrace(
+      _stacktraceManager.logTrace(
           "[LibPolygonIdCoreProofDataSource][MainFlow]getProofInputs config param: ${jsonEncode(configParam.toJson())}");
     }
 

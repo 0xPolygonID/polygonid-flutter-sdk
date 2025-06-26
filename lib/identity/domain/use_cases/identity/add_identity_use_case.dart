@@ -71,15 +71,11 @@ class AddIdentityUseCase
         );
       }
     } catch (error) {
-      logger().e("[AddIdentityUseCase] Error: $error");
-      _stacktraceManager.addTrace("[AddIdentityUseCase] Error: $error");
-      _stacktraceManager.addError("[AddIdentityUseCase] Error: $error");
+      _stacktraceManager.logError("[AddIdentityUseCase] Error: $error");
       rethrow;
     }
 
-    logger().i(
-        "[AddIdentityUseCase] Identity created and saved with did: ${identity.did}, for key ${param.bjjPublicKey}");
-    _stacktraceManager.addTrace(
+    _stacktraceManager.logTrace(
         "[AddIdentityUseCase] Identity created and saved with did: ${identity.did}, for key ${param.bjjPublicKey}");
 
     return identity;

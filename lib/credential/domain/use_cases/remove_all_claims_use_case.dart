@@ -30,13 +30,10 @@ class RemoveAllClaimsUseCase extends FutureUseCase<RemoveAllClaimsParam, void> {
         genesisDid: param.did,
         encryptionKey: param.encryptionKey,
       );
-      logger().i("[RemoveAllClaimsUseCase] Claims have been removed: $param");
-      _stacktraceManager.addTrace(
+      _stacktraceManager.logTrace(
           "[RemoveAllClaimsUseCase] Claims have been removed: $param");
     } catch (error) {
-      logger().e("[RemoveAllClaimsUseCase] Error: $error");
-      _stacktraceManager.addTrace("[RemoveAllClaimsUseCase] Error: $error");
-      _stacktraceManager.addError("[RemoveAllClaimsUseCase] Error: $error");
+      _stacktraceManager.logError("[RemoveAllClaimsUseCase] Error: $error");
       rethrow;
     }
   }

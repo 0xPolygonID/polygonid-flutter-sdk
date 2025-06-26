@@ -1,9 +1,7 @@
+import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
-
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
-import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 
 class RemoveIdentityStateParam {
   final String did;
@@ -44,14 +42,10 @@ class RemoveIdentityStateUseCase
         encryptionKey: param.encryptionKey,
       ),
     ]).then((did) {
-      _stacktraceManager.addTrace(
-          "[RemoveIdentityStateUseCase] State has been removed for did: $did");
-      logger().i(
+      _stacktraceManager.logTrace(
           "[RemoveIdentityStateUseCase] State has been removed for did: $did");
     }).catchError((error) {
-      _stacktraceManager.addTrace("[RemoveIdentityStateUseCase] Error: $error");
-      _stacktraceManager.addError("[RemoveIdentityStateUseCase] Error: $error");
-      logger().e("[RemoveIdentityStateUseCase] Error: $error");
+      _stacktraceManager.logError("[RemoveIdentityStateUseCase] Error: $error");
       throw error;
     });
   }

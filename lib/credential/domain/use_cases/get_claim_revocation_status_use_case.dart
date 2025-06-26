@@ -1,7 +1,6 @@
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/generate_non_rev_proof_use_case.dart';
 
-import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
 import '../entities/claim_entity.dart';
 import '../repositories/credential_repository.dart';
@@ -37,10 +36,7 @@ class GetClaimRevocationStatusUseCase
       useRHS = await _credentialRepository.isUsingRHS(claim: param.claim);
     } catch (error) {
       _stacktraceManager
-          .addTrace("[GetClaimRevocationStatusUseCase] Error: $error");
-      _stacktraceManager
-          .addError("[GetClaimRevocationStatusUseCase] Error: $error");
-      logger().e("[GetClaimRevocationStatusUseCase] Error: $error");
+          .logError("[GetClaimRevocationStatusUseCase] Error: $error");
       rethrow;
     }
 
@@ -59,17 +55,12 @@ class GetClaimRevocationStatusUseCase
         try {
           final nonRevProof = await _credentialRepository.getRevocationStatus(
               claim: param.claim);
-          _stacktraceManager.addTrace(
-              "[GetClaimRevocationStatusUseCase] Revocation status: $nonRevProof");
-          logger().i(
+          _stacktraceManager.logTrace(
               "[GetClaimRevocationStatusUseCase] Revocation status: $nonRevProof");
           return nonRevProof;
         } catch (error) {
           _stacktraceManager
-              .addTrace("[GetClaimRevocationStatusUseCase] Error: $error");
-          _stacktraceManager
-              .addError("[GetClaimRevocationStatusUseCase] Error: $error");
-          logger().e("[GetClaimRevocationStatusUseCase] Error: $error");
+              .logError("[GetClaimRevocationStatusUseCase] Error: $error");
           rethrow;
         }
       }
@@ -80,17 +71,13 @@ class GetClaimRevocationStatusUseCase
       try {
         final nonRevProof =
             await _credentialRepository.getRevocationStatus(claim: param.claim);
-        _stacktraceManager.addTrace(
+        _stacktraceManager.logTrace(
             "[GetClaimRevocationStatusUseCase] Revocation status: $nonRevProof");
-        logger().i(
-            "[GetClaimRevocationStatusUseCase] Revocation status: $nonRevProof");
+
         return nonRevProof;
       } catch (error) {
         _stacktraceManager
-            .addTrace("[GetClaimRevocationStatusUseCase] Error: $error");
-        _stacktraceManager
-            .addError("[GetClaimRevocationStatusUseCase] Error: $error");
-        logger().e("[GetClaimRevocationStatusUseCase] Error: $error");
+            .logError("[GetClaimRevocationStatusUseCase] Error: $error");
         rethrow;
       }
     }

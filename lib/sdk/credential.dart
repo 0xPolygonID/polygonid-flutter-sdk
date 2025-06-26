@@ -324,8 +324,6 @@ class Credential implements PolygonIdSdkCredential {
         nonRevProof: nonRevProof,
       ));
     } else {
-      _stacktraceManager.addTrace(
-          "PolygonIdSdk.Credential.getClaimRevocationStatus claim not found");
       _stacktraceManager.addError("Claim not found");
       throw ClaimNotFoundException(
         id: claimId,

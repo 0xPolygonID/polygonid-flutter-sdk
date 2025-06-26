@@ -49,9 +49,7 @@ class CreateIdentityUseCase
         profiles[profile] = identifier;
       }
 
-      logger().i(
-          "[CreateIdentityUseCase] Identity created with did: $didIdentifier");
-      _stacktraceManager.addTrace(
+      _stacktraceManager.logTrace(
           "[CreateIdentityUseCase] Identity created with did: $didIdentifier");
 
       return IdentityEntity(
@@ -60,11 +58,7 @@ class CreateIdentityUseCase
         profiles: profiles,
       );
     }).catchError((error) {
-      logger().e(
-          "[CreateIdentityUseCase] Error: $error for public key ${param.bjjPublicKey}");
-      _stacktraceManager.addTrace(
-          "[CreateIdentityUseCase] Error: $error for public key ${param.bjjPublicKey}");
-      _stacktraceManager.addError(
+      _stacktraceManager.logError(
           "[CreateIdentityUseCase] Error: $error for public key ${param.bjjPublicKey}");
 
       throw error;

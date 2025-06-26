@@ -35,9 +35,7 @@ class CacheCredentialsUseCase {
           ),
         );
       } catch (e) {
-        logger().e(
-            "[FetchAndSaveClaimsUseCase] Error while caching credential: $e");
-        _stacktraceManager.addTrace(
+        _stacktraceManager.logError(
             "[FetchAndSaveClaimsUseCase] Error while caching credential: $e");
       }
     }
