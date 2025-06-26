@@ -39,10 +39,6 @@ class LibPolygonIdCoreCredentialDataSource {
     return output;
   }
 
-  bool cacheCredentials(String input, String? config) {
-    return _polygonIdCoreCredential.cacheCredentials(input, config);
-  }
-
   String w3cCredentialsFromOnchainHex({
     required String issuerDID,
     required String hexdata,
@@ -61,6 +57,7 @@ class LibPolygonIdCoreCredentialDataSource {
 
   String credentialFromAnonAadhaar({
     required String qrData,
+    required int timeNow,
     required String did,
     required SelfIssuedCredentialParams selfIssuedCredentialParams,
     String? config,
@@ -68,6 +65,7 @@ class LibPolygonIdCoreCredentialDataSource {
     // This method accepts same inputs as the proof gen inputs calc
     final param = AnonAadhaarInputsParam.fromSelfIssuedCredentialParams(
       qrData: qrData,
+      timeNow: timeNow,
       credentialSubjectID: did,
       params: selfIssuedCredentialParams,
     );

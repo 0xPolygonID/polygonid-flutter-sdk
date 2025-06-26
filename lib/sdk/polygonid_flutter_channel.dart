@@ -12,20 +12,20 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.da
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/self_issuance/self_issued_credential_params.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/circuits_to_download_param.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/repositories/crosschain_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/generate_inputs_response.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/credential.dart';
@@ -638,8 +638,14 @@ class PolygonIdFlutterChannel
 
   /// Identity
   @override
-  Future<PrivateIdentityEntity> addIdentity({String? secret}) {
-    return _polygonIdSdk.identity.addIdentity(secret: secret);
+  Future<PrivateIdentityEntity> addIdentity({
+    String? secret,
+    bool useSecretAsPrivateKey = false,
+  }) {
+    return _polygonIdSdk.identity.addIdentity(
+      secret: secret,
+      useSecretAsPrivateKey: useSecretAsPrivateKey,
+    );
   }
 
   @override
@@ -994,6 +1000,12 @@ class PolygonIdFlutterChannel
   }
 
   @override
+  Future<void> cleanCredentialsCache({EnvConfigEntity? configParam}) {
+    // TODO: implement cleanCredentialsCache
+    throw UnimplementedError();
+  }
+
+  @override
   Future<List<ClaimEntity>> fetchCredentials(
       {required CredentialOfferMessageEntity<CredentialOfferBody>
           credentialOfferMessage,
@@ -1018,6 +1030,7 @@ class PolygonIdFlutterChannel
   @override
   Future<ClaimEntity> getAnonAadhaarCredential({
     required String qrData,
+    required int timeNow,
     required String profileDid,
     required SelfIssuedCredentialParams selfIssuedCredentialParams,
     required Map<String, dynamic> additionalFields,
@@ -1029,6 +1042,7 @@ class PolygonIdFlutterChannel
   @override
   Future<ZKProofEntity> getAnonAadhaarProof({
     required String qrData,
+    required int timeNow,
     required String profileDid,
     required SelfIssuedCredentialParams selfIssuedCredentialParams,
     required String circuitId,

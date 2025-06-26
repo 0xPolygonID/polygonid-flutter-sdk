@@ -211,7 +211,31 @@ class CircuitsDataSource {
 
   int zipFileSize({required String pathToFile}) {
     var file = File(pathToFile);
-    return file.lengthSync();
+    if (file.existsSync()) {
+      return file.lengthSync();
+    } else {
+      // file does not exist, return 0
+      return 0;
+    }
+  }
+
+  /// this method will retry to get the file size for a given number of retries
+  /// because the file might not be available immediately after download
+  /// [pathToFile] - the path to the file
+  /// [retries] - the number of retries to get the file size
+  Future<int> zipFileSizeWithRetry({
+    required String pathToFile,
+    int retries = 3,
+    Duration delay = const Duration(seconds: 1),
+  }) async {
+    var file = File(pathToFile);
+    for (int i = 0; i < retries; i++) {
+      if (file.existsSync()) {
+        return file.lengthSync();
+      }
+      await Future.delayed(delay);
+    }
+    return 0;
   }
 
   Future<String> getPathToCircuitZipFile({required String zipFileName}) async {

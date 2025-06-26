@@ -14,11 +14,13 @@ class AttestationResponseEntity
     required super.typ,
     required super.type,
     required super.thid,
-    required super.from,
     required super.body,
     super.to,
     super.nextRequest,
-  }) : super(messageType: Iden3MessageType.attestationResponse);
+  }) : super(
+          messageType: Iden3MessageType.attestationResponse,
+          from: "",
+        );
 
   /// Creates an instance from the given json
   ///
@@ -33,7 +35,6 @@ class AttestationResponseEntity
       typ: json['typ'],
       type: json['type'],
       thid: json['thid'],
-      from: json['from'],
       to: json['to'],
       body: body,
       nextRequest: json['next_request'],

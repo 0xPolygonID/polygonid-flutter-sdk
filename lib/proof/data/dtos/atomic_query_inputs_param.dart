@@ -133,6 +133,7 @@ class GenericAtomicQueryInputsParam extends AtomicQueryInputsParam {
 
 class AnonAadhaarInputsParam extends AtomicQueryInputsParam {
   final String qrData;
+  final int timeNow;
   final String credentialSubjectID;
   final int revocationNonce;
   final String credentialStatusID;
@@ -143,6 +144,7 @@ class AnonAadhaarInputsParam extends AtomicQueryInputsParam {
 
   AnonAadhaarInputsParam({
     required this.qrData,
+    required this.timeNow,
     required this.credentialSubjectID,
     required this.revocationNonce,
     required this.credentialStatusID,
@@ -155,6 +157,7 @@ class AnonAadhaarInputsParam extends AtomicQueryInputsParam {
   AnonAadhaarInputsParam.fromSelfIssuedCredentialParams({
     required this.qrData,
     required this.credentialSubjectID,
+    required this.timeNow,
     required SelfIssuedCredentialParams params,
   })  : revocationNonce = params.revocationNonce,
         credentialStatusID = params.credentialStatusID,
@@ -169,6 +172,7 @@ class AnonAadhaarInputsParam extends AtomicQueryInputsParam {
   @override
   Map<String, dynamic> toJson() => {
         "qrData": qrData,
+        "timeNow": timeNow,
         "credentialSubjectID": credentialSubjectID,
         "credentialStatusRevocationNonce": revocationNonce,
         "credentialStatusID": credentialStatusID,

@@ -8,6 +8,7 @@ class ClaimEntity {
   final String did;
   final ClaimState state;
   final String? expiration;
+  final String? issuanceDate;
   final Map<String, dynamic>? schema;
   final String type;
   final Map<String, dynamic> info;
@@ -21,6 +22,7 @@ class ClaimEntity {
     required this.did,
     required this.state,
     this.expiration,
+    this.issuanceDate,
     this.schema,
     required this.type,
     required this.info,
@@ -35,6 +37,7 @@ class ClaimEntity {
       did: json['did'],
       state: ClaimState.values.firstWhere((e) => e.name == json['state']),
       expiration: json['expiration'],
+      issuanceDate: json['issuanceDate'],
       schema: json['schema'],
       type: json['type'],
       info: json['info'],
@@ -50,6 +53,7 @@ class ClaimEntity {
         'did': did,
         'state': state.name,
         'expiration': expiration,
+        'issuanceDate': issuanceDate,
         'schema': schema,
         'type': type,
         'info': info,
@@ -58,10 +62,9 @@ class ClaimEntity {
       };
 
   @override
-  String toString() => "[ClaimEntity] {id: $id, "
-      "issuer: $issuer, did: $did, state: $state, "
-      "expiration: $expiration, schema: $schema, type: $type, info: $info, "
-      "displayType: $displayType}";
+  String toString() => "[ClaimEntity] {id: $id, issuer: $issuer, did: $did, "
+      "state: $state, expiration: $expiration, issuanceDate: $issuanceDate, "
+      "schema: $schema, type: $type, info: $info, displayType: $displayType}";
 
   @override
   bool operator ==(Object other) =>
@@ -73,6 +76,7 @@ class ClaimEntity {
           did == other.did &&
           state == other.state &&
           expiration == other.expiration &&
+          issuanceDate == other.issuanceDate &&
           schema == other.schema &&
           type == other.type &&
           info.toString() == other.info.toString() &&
@@ -88,6 +92,7 @@ class ClaimEntity {
     String? did,
     ClaimState? state,
     String? expiration,
+    String? issuanceDate,
     Map<String, dynamic>? schema,
     String? type,
     Map<String, dynamic>? info,
@@ -100,6 +105,7 @@ class ClaimEntity {
       did: did ?? this.did,
       state: state ?? this.state,
       expiration: expiration ?? this.expiration,
+      issuanceDate: issuanceDate ?? this.issuanceDate,
       schema: schema ?? this.schema,
       type: type ?? this.type,
       info: info ?? this.info,

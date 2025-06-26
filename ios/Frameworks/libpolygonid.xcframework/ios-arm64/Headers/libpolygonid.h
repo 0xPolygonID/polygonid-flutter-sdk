@@ -268,6 +268,7 @@ extern GoUint8 PLGNBabyJubJubVerifyPoseidon(char** jsonResponse, char* in, char*
 extern GoUint8 PLGNBabyJubJubPrivate2Public(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern GoUint8 PLGNBabyJubJubPublicUncompress(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern GoUint8 PLGNBabyJubJubPublicCompress(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+extern GoUint8 PLGNValidateAttestationDocument(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 
 #ifdef __cplusplus
 }

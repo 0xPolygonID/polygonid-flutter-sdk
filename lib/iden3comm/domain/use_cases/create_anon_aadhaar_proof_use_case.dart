@@ -14,12 +14,14 @@ import 'package:polygonid_flutter_sdk/proof/domain/use_cases/prove_use_case.dart
 
 class CreateAnonAadhaarProofParam {
   final String qrData;
+  final int timeNow;
   final String profileDid;
   final SelfIssuedCredentialParams selfIssuedCredentialParams;
   final String circuitId;
 
   CreateAnonAadhaarProofParam({
     required this.qrData,
+    required this.timeNow,
     required this.profileDid,
     required this.selfIssuedCredentialParams,
     required this.circuitId,
@@ -47,6 +49,7 @@ class CreateAnonAadhaarProofUseCase
     final anonAadhaarInputs =
         AnonAadhaarInputsParam.fromSelfIssuedCredentialParams(
       qrData: param.qrData,
+      timeNow: param.timeNow,
       credentialSubjectID: param.profileDid,
       params: param.selfIssuedCredentialParams,
     );

@@ -3,7 +3,7 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
-import 'package:polygonid_flutter_sdk/credential/data/data_sources/cache_claim_data_source.dart';
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/credential_cache_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/remote_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
@@ -19,7 +19,7 @@ class CredentialRepositoryImpl extends CredentialRepository {
   final RemoteClaimDataSource _remoteClaimDataSource;
   final StorageClaimDataSource _storageClaimDataSource;
   final LocalClaimDataSource _localClaimDataSource;
-  final CacheCredentialDataSource _cacheCredentialDataSource;
+  final CredentialCacheDataSource _cacheCredentialDataSource;
   final ClaimMapper _claimMapper;
   final FiltersMapper _filtersMapper;
   final StacktraceManager _stacktraceManager;
@@ -306,6 +306,13 @@ class CredentialRepositoryImpl extends CredentialRepository {
       credential: credential,
       config: config,
     );
+  }
+
+  @override
+  void cleanCache({
+    String? config,
+  }) {
+    _cacheCredentialDataSource.cleanCache(config);
   }
 
   @override

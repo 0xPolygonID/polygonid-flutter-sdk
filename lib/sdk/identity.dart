@@ -1,24 +1,23 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/fetch_identity_state_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/add_new_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/backup_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/check_identity_validity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identities_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_private_key_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/remove_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/restore_identity_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/sign_message_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/add_profile_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/get_profiles_use_case.dart';
-
-import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/fetch_identity_state_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/check_identity_validity_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/remove_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/sign_message_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/profile/remove_profile_use_case.dart';
 
 abstract class PolygonIdSdkIdentity {
@@ -55,8 +54,14 @@ abstract class PolygonIdSdkIdentity {
   /// - If the byte array is not 32 length, it will be padded with 0s.
   /// - If the byte array is longer than 32, an exception will be thrown.
   ///
+  /// If [useSecretAsPrivateKey] is true, [secret] must be non-null and exactly 32 bytes long,
+  /// and it will be used directly as the private key without padding.
+  ///
   /// The identity will be created using the current env set with [PolygonIdSdk.setEnv]
-  Future<PrivateIdentityEntity> addIdentity({String? secret});
+  Future<PrivateIdentityEntity> addIdentity({
+    String? secret,
+    bool useSecretAsPrivateKey = false,
+  });
 
   /// Restores an [IdentityEntity] from a privateKey and encrypted backup databases
   /// associated to the identity
@@ -292,10 +297,22 @@ class Identity implements PolygonIdSdkIdentity {
   }
 
   @override
-  Future<PrivateIdentityEntity> addIdentity({String? secret}) async {
+  Future<PrivateIdentityEntity> addIdentity({
+    String? secret,
+    bool useSecretAsPrivateKey = false,
+  }) async {
+    assert(
+      !useSecretAsPrivateKey ||
+          (secret != null && RegExp(r'^[0-9a-fA-F]{64}$').hasMatch(secret)),
+      'If useSecretAsPrivateKey is true, secret must be a non-null 64-character hex string',
+    );
     _stacktraceManager.clear();
     _stacktraceManager.addTrace("PolygonIdSdk.Identity.addIdentity called");
-    return _addNewIdentityUseCase.execute(param: secret);
+
+    return _addNewIdentityUseCase.execute(
+      param: secret,
+      useSecretAsPrivateKey: useSecretAsPrivateKey,
+    );
   }
 
   @override

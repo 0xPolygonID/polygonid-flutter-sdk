@@ -84,8 +84,14 @@ class CircuitsRepositoryImpl implements CircuitsRepository {
                 zipFileName: circuitsToDownload.zipFileName);
 
         // we get the size of the temp zip file
-        int zipFileSize =
-            circuitsDataSource.zipFileSize(pathToFile: pathForZipFileTemp);
+        int zipFileSize = await circuitsDataSource.zipFileSizeWithRetry(
+            pathToFile: pathForZipFileTemp);
+
+        if (zipFileSize == 0) {
+          yield DownloadInfo.onError(
+              errorMessage: "Temporary zip file missing or inaccessible");
+          return;
+        }
 
         totalZipFileSize += zipFileSize;
 

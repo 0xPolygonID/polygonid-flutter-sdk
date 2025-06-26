@@ -67,6 +67,10 @@ abstract class CredentialRepository {
     String? config,
   });
 
+  void cleanCache({
+    String? config,
+  });
+
   Future<String> coreClaimFromCredential({
     required String credential,
     String? config,

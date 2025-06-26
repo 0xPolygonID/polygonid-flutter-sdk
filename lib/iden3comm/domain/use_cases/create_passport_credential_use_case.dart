@@ -85,10 +85,11 @@ class CreatePassportCredentialUseCase
       type: claimInfoDto.credentialSubject.type,
       info: claimInfoDto,
       credentialRawValue: jsonEncode({
-        "from": param.issuerDid,
-        "body": claimJson,
-        // TODO Maybe use some other type
         "type": "https://iden3-communication.io/credentials/1.0/offer",
+        "from": param.issuerDid,
+        "body": {
+          'credential': claimJson,
+        },
       }),
     );
 
