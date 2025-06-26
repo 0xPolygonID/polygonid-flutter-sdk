@@ -54,8 +54,6 @@ class CheckProfileAndDidCurrentEnvUseCase
     required CheckProfileAndDidCurrentEnvParam param,
   }) async {
     try {
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-
       final List<String> bjjPublicKey;
       if (param.publicKey.isNotEmpty) {
         bjjPublicKey = param.publicKey;
