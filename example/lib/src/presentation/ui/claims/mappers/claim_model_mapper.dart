@@ -48,7 +48,9 @@ class ClaimModelMapper implements FromMapper<ClaimEntity, ClaimModel> {
         }
         proofTypes += '- ${proof['type']}\n';
       }
-      proofTypes = proofTypes.substring(0, proofTypes.length - 1);
+      proofTypes = proofTypes.isEmpty
+          ? proofTypes
+          : proofTypes.substring(0, proofTypes.length - 1);
     }
 
     bool refreshable = from.info.containsKey(["refreshService"]);

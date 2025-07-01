@@ -32,8 +32,8 @@ enum CircuitType {
       case CircuitType.mtp:
       case CircuitType.mtponchain:
         bool success = [
-          ProofType.BJJSignature2021.name,
-          ProofType.BJJSignature2021.name
+          ProofType.Iden3SparseMerkleProof.name,
+          ProofType.Iden3SparseMerkleTreeProof.name,
         ].any((element) => proofTypes.contains(element));
         return success;
       case CircuitType.sig:

@@ -4,6 +4,8 @@ class ProofRequestEntity {
   final ProofScopeRequest scope;
   final Map<String, dynamic> context;
 
+  bool get isOptional => scope.optional;
+
   ProofRequestEntity(this.scope, this.context);
 
   @override

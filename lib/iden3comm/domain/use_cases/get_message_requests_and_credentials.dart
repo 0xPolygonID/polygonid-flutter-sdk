@@ -79,7 +79,7 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
         bool supportedCircuit = await _isProofCircuitSupported.execute(
             param: request.scope.circuitId);
         if (!supportedCircuit) {
-          continue; //TODO maybe throw exception
+          continue;
         }
         List<FilterEntity> filterForSingleRequest =
             await _iden3commCredentialRepository.getFilters(request: request);
@@ -106,7 +106,7 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
           param: request.scope.circuitId);
       if (!supportedCircuit) {
         requestCredentialPairs.add((request: request, credentials: []));
-        continue; //TODO maybe throw exception
+        continue;
       }
 
       List<ClaimEntity> validCreds = [];
