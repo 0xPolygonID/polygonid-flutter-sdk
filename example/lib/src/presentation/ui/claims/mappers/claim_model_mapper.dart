@@ -1,9 +1,9 @@
 import 'package:intl/intl.dart';
 import 'package:polygonid_flutter_sdk/common/mappers/from_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/proof_type.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/mappers/proof_model_type_mapper.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/models/claim_detail_model.dart';
-
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/models/claim_model.dart';
 import 'package:polygonid_flutter_sdk_example/utils/claim_utils.dart';
 
@@ -36,18 +36,19 @@ class ClaimModelMapper implements FromMapper<ClaimEntity, ClaimModel> {
 
     // Creation date and proof name
     String creationDate = "None";
-    String proofType = '';
+    String proofTypes = '';
     if (from.info['proof'].isNotEmpty) {
       for (var proof in from.info['proof']) {
-        if (proof['type'] == "Iden3SparseMerkleProof" ||
-            proof['type'] == "Iden3SparseMerkleTreeProof") {
+        final proofType = proof['type'];
+        if (proofType == ProofType.Iden3SparseMerkleProof.name ||
+            proofType == ProofType.Iden3SparseMerkleTreeProof.name) {
           creationDate = DateFormat("d MMM yyyy").format(
               DateTime.fromMillisecondsSinceEpoch(
                   (proof['issuerData']['state']['blockTimestamp']) * 1000));
         }
-        proofType += '- ${proof['type']}\n';
+        proofTypes += '- ${proof['type']}\n';
       }
-      proofType = proofType.substring(0, proofType.length - 1);
+      proofTypes = proofTypes.substring(0, proofTypes.length - 1);
     }
 
     bool refreshable = from.info.containsKey(["refreshService"]);
@@ -86,7 +87,7 @@ class ClaimModelMapper implements FromMapper<ClaimEntity, ClaimModel> {
       ),
       ClaimDetailModel(
         name: 'Proof type',
-        value: proofType,
+        value: proofTypes,
       )
     ]);
 

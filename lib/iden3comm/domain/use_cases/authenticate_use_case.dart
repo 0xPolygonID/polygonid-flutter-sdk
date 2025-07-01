@@ -26,7 +26,6 @@ class AuthenticateParam {
   final BigInt profileNonce;
   final String privateKey;
   final String? pushToken;
-  final Map<int, Map<String, dynamic>>? nonRevocationProofs;
   final String? challenge;
 
   AuthenticateParam({
@@ -35,7 +34,6 @@ class AuthenticateParam {
     required this.profileNonce,
     required this.privateKey,
     this.pushToken,
-    this.nonRevocationProofs,
     this.challenge,
   });
 }
@@ -122,7 +120,6 @@ class AuthenticateUseCase
         profileNonce: param.profileNonce,
         privateKey: param.privateKey,
         config: env.config,
-        nonRevocationProofs: param.nonRevocationProofs,
         challenge: param.challenge,
       ));
       _stacktraceManager

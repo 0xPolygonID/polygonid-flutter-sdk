@@ -46,7 +46,7 @@ abstract class CredentialRepository {
 
   Future<bool> isUsingRHS({required ClaimEntity claim});
 
-  Future<String> getRhsRevocationId({required ClaimEntity claim});
+  Future<String?> getRhsRevocationId({required ClaimEntity claim});
 
   Future<String> getIssuerIdentifier({required ClaimEntity claim});
 

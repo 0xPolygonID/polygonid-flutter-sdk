@@ -79,7 +79,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/p
 class ProofScopeRequest {
   final int id;
   final String circuitId;
-  final bool? optional;
+  final bool optional;
   final ProofScopeQueryRequest query;
 
   final Map<String, dynamic>? params;
@@ -87,7 +87,7 @@ class ProofScopeRequest {
   ProofScopeRequest({
     required this.id,
     required this.circuitId,
-    this.optional,
+    this.optional = false,
     required this.query,
     this.params,
   });
@@ -102,7 +102,7 @@ class ProofScopeRequest {
     return ProofScopeRequest(
       id: json['id'],
       circuitId: json['circuitId'],
-      optional: json['optional'],
+      optional: json['optional'] ?? false,
       query: query,
       params: json['params'],
     );

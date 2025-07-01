@@ -17,6 +17,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/inte
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/self_issuance/self_issued_credential_params.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
@@ -486,7 +487,6 @@ class PolygonIdFlutterChannel
       profileNonce: profileNonce,
       privateKey: privateKey,
       pushToken: pushToken,
-      nonRevocationProofs: nonRevocationProofs,
       challenge: challenge,
     );
   }
@@ -521,12 +521,11 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<List<ClaimEntity?>> getClaimsFromIden3Message({
+  Future<List<ClaimEntity>> getClaimsFromIden3Message({
     required Iden3MessageEntity message,
     required String genesisDid,
     BigInt? profileNonce,
     required String privateKey,
-    Map<int, Map<String, dynamic>>? nonRevocationProofs,
     List<CredentialSortOrder> sortOrder = const [],
   }) {
     return _polygonIdSdk.iden3comm.getClaimsFromIden3Message(
@@ -534,8 +533,21 @@ class PolygonIdFlutterChannel
       genesisDid: genesisDid,
       profileNonce: profileNonce,
       privateKey: privateKey,
-      nonRevocationProofs: nonRevocationProofs,
       sortOrder: sortOrder,
+    );
+  }
+
+  Future<List<RequestAndCredentials>> getMessageRequestsAndCredentials({
+    required Iden3MessageEntity message,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String encryptionKey,
+  }) {
+    return _polygonIdSdk.iden3comm.getMessageRequestsAndCredentials(
+      message: message,
+      genesisDid: genesisDid,
+      profileNonce: profileNonce,
+      encryptionKey: encryptionKey,
     );
   }
 
@@ -599,7 +611,6 @@ class PolygonIdFlutterChannel
     required String privateKey,
     String? challenge,
     EnvConfigEntity? config,
-    Map<int, Map<String, dynamic>>? nonRevocationProofs,
     Map<String, dynamic>? transactionData,
   }) {
     return _polygonIdSdk.iden3comm.getProofs(
@@ -609,7 +620,6 @@ class PolygonIdFlutterChannel
       privateKey: privateKey,
       challenge: challenge,
       config: config,
-      nonRevocationProofs: nonRevocationProofs,
       transactionData: transactionData,
     );
   }

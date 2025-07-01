@@ -32,7 +32,6 @@ class GetIden3commProofsParam {
   final String privateKey;
   final String? challenge;
   final EnvConfigEntity? config;
-  final Map<int, Map<String, dynamic>>? nonRevocationProofs;
 
   final Map<String, dynamic>? transactionData;
 
@@ -43,7 +42,6 @@ class GetIden3commProofsParam {
     required this.privateKey,
     this.challenge,
     this.config,
-    this.nonRevocationProofs,
     this.transactionData,
   });
 }
@@ -93,7 +91,6 @@ class GetIden3commProofsUseCase
           genesisDid: param.genesisDid,
           profileNonce: param.profileNonce,
           encryptionKey: param.privateKey,
-          nonRevocationProofs: param.nonRevocationProofs ?? {},
           credentialSortOrderList: [CredentialSortOrder.ExpirationDescending],
         ),
       );

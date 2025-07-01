@@ -37,6 +37,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_c
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_schemas_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/add_interaction_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/get_interactions_use_case.dart';
@@ -118,13 +119,19 @@ abstract class PolygonIdSdkIden3comm {
   ///
   /// The [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
-  Future<List<ClaimEntity?>> getClaimsFromIden3Message({
+  Future<List<ClaimEntity>> getClaimsFromIden3Message({
     required Iden3MessageEntity message,
     required String genesisDid,
     BigInt? profileNonce,
     required String privateKey,
-    Map<int, Map<String, dynamic>>? nonRevocationProofs,
     List<CredentialSortOrder> sortOrder,
+  });
+
+  Future<List<RequestAndCredentials>> getMessageRequestsAndCredentials({
+    required Iden3MessageEntity message,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String encryptionKey,
   });
 
   /// Get a list of [int] revocation nonces of claims stored in Polygon Id Sdk that fulfills
@@ -164,7 +171,6 @@ abstract class PolygonIdSdkIden3comm {
     required String privateKey,
     String? challenge,
     EnvConfigEntity config,
-    Map<int, Map<String, dynamic>>? nonRevocationProofs,
     Map<String, dynamic>? transactionData,
   });
 
@@ -371,6 +377,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   final AuthenticateUseCase _authenticateUseCase;
   final GetFiltersUseCase _getFiltersUseCase;
   final GetIden3commClaimsUseCase _getIden3commClaimsUseCase;
+  final GetMessageRequestsAndCredsUseCase _getMessageRequestsAndCredsUseCase;
   final GetIden3commClaimsRevNonceUseCase _getIden3commClaimsRevNonceUseCase;
   final GetIden3commProofsUseCase _getIden3commProofsUseCase;
   final GetInteractionsUseCase _getInteractionsUseCase;
@@ -400,6 +407,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     this._authenticateUseCase,
     this._getFiltersUseCase,
     this._getIden3commClaimsUseCase,
+    this._getMessageRequestsAndCredsUseCase,
     this._getIden3commClaimsRevNonceUseCase,
     this._getIden3commProofsUseCase,
     this._getInteractionsUseCase,
@@ -487,12 +495,11 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }
 
   @override
-  Future<List<ClaimEntity?>> getClaimsFromIden3Message({
+  Future<List<ClaimEntity>> getClaimsFromIden3Message({
     required Iden3MessageEntity message,
     required String genesisDid,
     BigInt? profileNonce,
     required String privateKey,
-    Map<int, Map<String, dynamic>>? nonRevocationProofs,
     List<CredentialSortOrder> sortOrder = const [],
   }) {
     _stacktraceManager.clearStacktrace();
@@ -502,9 +509,26 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       genesisDid: genesisDid,
       profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
       encryptionKey: privateKey,
-      nonRevocationProofs: nonRevocationProofs ?? {},
       credentialSortOrderList: sortOrder,
     ));
+  }
+
+  @override
+  Future<List<RequestAndCredentials>> getMessageRequestsAndCredentials({
+    required Iden3MessageEntity message,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String encryptionKey,
+  }) {
+    _stacktraceManager.clearStacktrace();
+    return _getMessageRequestsAndCredsUseCase.execute(
+      param: GetMessageRequestsAndCredsParam(
+        message: message,
+        genesisDid: genesisDid,
+        profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
+        encryptionKey: encryptionKey,
+      ),
+    );
   }
 
   @override
@@ -532,7 +556,6 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     required String privateKey,
     String? challenge,
     EnvConfigEntity? config,
-    Map<int, Map<String, dynamic>>? nonRevocationProofs,
     Map<String, dynamic>? transactionData,
   }) {
     _stacktraceManager.clearStacktrace();
@@ -544,7 +567,6 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       privateKey: privateKey,
       challenge: challenge,
       config: config,
-      nonRevocationProofs: nonRevocationProofs,
       transactionData: transactionData,
     ));
   }
@@ -556,7 +578,6 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     BigInt? profileNonce,
     required String privateKey,
     String? pushToken,
-    Map<int, Map<String, dynamic>>? nonRevocationProofs,
     String? challenge,
   }) {
     _stacktraceManager.clearStacktrace();
@@ -578,7 +599,6 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
         privateKey: privateKey,
         pushToken: pushToken,
-        nonRevocationProofs: nonRevocationProofs,
         challenge: challenge,
       ),
     );

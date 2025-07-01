@@ -11,6 +11,7 @@ import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart'
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/proof_type.dart';
 
 import 'data_sources/local_claim_data_source.dart';
 import 'dtos/claim_info_dto.dart';
@@ -195,14 +196,14 @@ class CredentialRepositoryImpl extends CredentialRepository {
     }
   }
 
-  Future<String> getRhsRevocationId({required ClaimEntity claim}) {
+  @override
+  Future<String?> getRhsRevocationId({required ClaimEntity claim}) async {
     ClaimDTO claimDTO = _claimMapper.mapTo(claim);
     try {
-      return Future.value(claimDTO.info.proofs
-          ?.where((proof) => proof.type == "BJJSignature2021")
-          .first
-          .issuer
-          .id);
+      final signatureProofs = claimDTO.info.proofs
+          ?.where((proof) => proof.type == ProofType.BJJSignature2021.name)
+          .toList();
+      return signatureProofs?.firstOrNull?.issuer.id;
     } on PolygonIdSDKException catch (_) {
       rethrow;
     } catch (error) {
