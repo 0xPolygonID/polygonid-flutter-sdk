@@ -42,16 +42,14 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/response/jwz.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_sd_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_vp_proof.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/jwz_exceptions.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
@@ -151,14 +149,10 @@ class Authenticate {
       );
 
       // Get the credentials and proof requests by scope
-      final getProofRequestsUseCase = getItSdk<GetProofRequestsUseCase>();
-      List<ProofRequestEntity> proofRequests =
-          await getProofRequestsUseCase.execute(param: message);
-
       final getCredentialsUseCase =
-          await getItSdk.getAsync<GetIden3commClaimsUseCase>();
-      List<ClaimEntity> claims = await getCredentialsUseCase.execute(
-        param: GetIden3commClaimsParam(
+          await getItSdk.getAsync<GetMessageRequestsAndCredsUseCase>();
+      final requestsAndCreds = await getCredentialsUseCase.execute(
+        param: GetMessageRequestsAndCredsParam(
           message: message,
           genesisDid: genesisDid,
           profileNonce: profileNonce,
@@ -180,13 +174,10 @@ class Authenticate {
 
       // if there are proof requests and claims and they are the same length
       // then create the proof for every proof request
-      if (proofRequests.isNotEmpty &&
-          claims.isNotEmpty &&
-          proofRequests.length == claims.length) {
+      if (requestsAndCreds.isNotEmpty) {
         // it is assigning the proofs to the variable directly from the function call
         await createProofForEveryProofRequest(
-          proofRequests: proofRequests,
-          claims: claims,
+          requestsAndCreds: requestsAndCreds,
           identityEntity: identityEntity,
           groupIdLinkNonceMap: groupIdLinkNonceMap,
           genesisDid: genesisDid,
@@ -343,8 +334,7 @@ class Authenticate {
 
   ///
   Future<void> createProofForEveryProofRequest({
-    required List<ProofRequestEntity> proofRequests,
-    required List<ClaimEntity> claims,
+    required List<RequestAndCredentials> requestsAndCreds,
     required IdentityEntity identityEntity,
     required Map<int, String> groupIdLinkNonceMap,
     required String genesisDid,
@@ -359,9 +349,28 @@ class Authenticate {
     required AuthClaimCompanionObject authClaimCompanionObject,
     required List<Iden3commProofEntity> proofs,
   }) async {
-    for (int i = 0; i < proofRequests.length; i++) {
-      ProofRequestEntity proofRequest = proofRequests[i];
-      ClaimEntity claim = claims[i];
+    for (int i = 0; i < requestsAndCreds.length; i++) {
+      final request = requestsAndCreds[i].request;
+      final credentials = requestsAndCreds[i].credentials;
+
+      // if there are no credentials for the request
+      if (credentials.isEmpty) {
+        // if the request is optional, continue to the next request
+        if (request.isOptional) {
+          continue;
+        } else {
+          // if the request is not optional, throw an error
+          _stacktraceManager.addError(
+            "[Authenticate] No credentials found for request: ${request.scope.id}",
+          );
+          throw NoCredentialsFoundException(
+            proofRequest: request,
+            errorMessage:
+                "No credentials found for request: ${request.scope.id}",
+          );
+        }
+      }
+      ClaimEntity claim = credentials.first;
 
       if (claim.expiration != null) {
         claim = await _checkCredentialExpirationAndTryRefreshIfExpired(
@@ -371,19 +380,19 @@ class Authenticate {
         );
       }
 
-      _proofGenerationStepsStreamManager.add(
-          "#${i + 1} creating proof for ${proofRequest.scope.query.type}...");
+      _proofGenerationStepsStreamManager
+          .add("#${i + 1} creating proof for ${request.scope.query.type}...");
 
       final appDir = await getApplicationDocumentsDirectory();
       final circuitsDataSource = CircuitsFilesDataSource(appDir);
 
       final graphFileBytes =
-          await circuitsDataSource.loadGraphFile(proofRequest.scope.circuitId);
-      final zkeyFilePath = await circuitsDataSource
-          .getZkeyFilePath(proofRequest.scope.circuitId);
+          await circuitsDataSource.loadGraphFile(request.scope.circuitId);
+      final zkeyFilePath =
+          await circuitsDataSource.getZkeyFilePath(request.scope.circuitId);
 
       CircuitDataEntity circuitDataEntity = CircuitDataEntity(
-        proofRequest.scope.circuitId,
+        request.scope.circuitId,
         graphFileBytes,
         zkeyFilePath,
       );
@@ -392,7 +401,7 @@ class Authenticate {
           (k) => identityEntity.profiles[k] == claim.did,
           orElse: () => GENESIS_PROFILE_NONCE);
 
-      int? groupId = proofRequest.scope.query.groupId;
+      int? groupId = request.scope.query.groupId;
       String linkNonce = "0";
       // Check if groupId exists in the map
       if (groupId != null) {
@@ -410,9 +419,9 @@ class Authenticate {
       Map<String, dynamic>? config;
       String? signature;
 
-      if (proofRequest.scope.circuitId == CircuitType.mtponchain.name ||
-          proofRequest.scope.circuitId == CircuitType.sigonchain.name ||
-          proofRequest.scope.circuitId == CircuitType.circuitsV3onchain.name) {
+      if (request.scope.circuitId == CircuitType.mtponchain.name ||
+          request.scope.circuitId == CircuitType.sigonchain.name ||
+          request.scope.circuitId == CircuitType.circuitsV3onchain.name) {
         /// SIGN MESSAGE
         signature = await signMessage(
           privateKey: privateKeyBytes,
@@ -430,8 +439,8 @@ class Authenticate {
         profileNonce: profileNonce,
         claimSubjectProfileNonce: claimSubjectProfileNonce,
         claim: claim,
-        proofScopeRequest: proofRequest.scope.toJson(),
-        circuitId: proofRequest.scope.circuitId,
+        proofScopeRequest: request.scope.toJson(),
+        circuitId: request.scope.circuitId,
         incProof: authClaimCompanionObject.incProof,
         nonRevProof: authClaimCompanionObject.nonRevProof,
         gistProof: authClaimCompanionObject.gistProofEntity,
@@ -442,7 +451,7 @@ class Authenticate {
         config: config,
         verifierId: message.from,
         linkNonce: linkNonce,
-        scopeParams: proofRequest.scope.params,
+        scopeParams: request.scope.params,
         transactionData: transactionData,
       );
 
@@ -471,8 +480,8 @@ class Authenticate {
       Iden3commProofEntity proof;
       if (vpProof != null) {
         proof = Iden3commSDProofEntity(
-          id: proofRequest.scope.id,
-          circuitId: proofRequest.scope.circuitId,
+          id: request.scope.id,
+          circuitId: request.scope.circuitId,
           proof: zkProofEntity.proof,
           pubSignals: zkProofEntity.pubSignals,
           publicStatesInfo: generateInputsRes.publicStatesInfo,
@@ -480,8 +489,8 @@ class Authenticate {
         );
       } else {
         proof = Iden3commProofEntity(
-          id: proofRequest.scope.id,
-          circuitId: proofRequest.scope.circuitId,
+          id: request.scope.id,
+          circuitId: request.scope.circuitId,
           proof: zkProofEntity.proof,
           pubSignals: zkProofEntity.pubSignals,
           publicStatesInfo: generateInputsRes.publicStatesInfo,

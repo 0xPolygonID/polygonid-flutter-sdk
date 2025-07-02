@@ -197,6 +197,8 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3messag
     as _i897;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_jwz_use_case.dart'
     as _i249;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart'
+    as _i181;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_query_context_use_case.dart'
     as _i631;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart'
@@ -918,8 +920,8 @@ extension GetItInjectableX on _i174.GetIt {
               await getAsync<_i735.IsProofCircuitSupportedUseCase>(),
               gh<_i627.GetProofRequestsUseCase>(),
             ));
-    gh.factoryAsync<_i347.GetIden3commClaimsUseCase>(
-        () async => _i347.GetIden3commClaimsUseCase(
+    gh.factoryAsync<_i181.GetMessageRequestsAndCredsUseCase>(
+        () async => _i181.GetMessageRequestsAndCredsUseCase(
               gh<_i698.Iden3commCredentialRepository>(),
               gh<_i657.GetClaimsUseCase>(),
               await getAsync<_i735.IsProofCircuitSupportedUseCase>(),
@@ -977,6 +979,9 @@ extension GetItInjectableX on _i174.GetIt {
               gh<_i392.GetAuthClaimUseCase>(),
               gh<_i267.StacktraceManager>(),
             ));
+    gh.factoryAsync<_i347.GetIden3commClaimsUseCase>(() async =>
+        _i347.GetIden3commClaimsUseCase(
+            await getAsync<_i181.GetMessageRequestsAndCredsUseCase>()));
     gh.factory<_i1019.CrosschainRepository>(() => _i1019.CrosschainRepository(
           gh<_i800.ResolverDataSource>(),
           gh<_i26.IdentityRepository>(),
@@ -1237,6 +1242,17 @@ extension GetItInjectableX on _i174.GetIt {
               gh<_i958.RemoveClaimsUseCase>(),
               gh<_i635.SaveClaimsUseCase>(),
             ));
+    gh.factoryAsync<_i412.GetIden3commProofsUseCase>(
+        () async => _i412.GetIden3commProofsUseCase(
+              await getAsync<_i341.ProofRepository>(),
+              await getAsync<_i181.GetMessageRequestsAndCredsUseCase>(),
+              await getAsync<_i340.GenerateIden3commProofUseCase>(),
+              await getAsync<_i735.IsProofCircuitSupportedUseCase>(),
+              gh<_i743.GetIdentityUseCase>(),
+              gh<_i920.ProofGenerationStepsStreamManager>(),
+              gh<_i267.StacktraceManager>(),
+              await getAsync<_i143.RefreshCredentialUseCase>(),
+            ));
     gh.factoryAsync<_i501.Credential>(() async => _i501.Credential(
           gh<_i635.SaveClaimsUseCase>(),
           gh<_i657.GetClaimsUseCase>(),
@@ -1251,18 +1267,6 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i348.CacheCredentialUseCase>(),
           gh<_i732.CleanCredentialCacheUseCase>(),
         ));
-    gh.factoryAsync<_i412.GetIden3commProofsUseCase>(
-        () async => _i412.GetIden3commProofsUseCase(
-              await getAsync<_i341.ProofRepository>(),
-              await getAsync<_i347.GetIden3commClaimsUseCase>(),
-              await getAsync<_i340.GenerateIden3commProofUseCase>(),
-              await getAsync<_i735.IsProofCircuitSupportedUseCase>(),
-              gh<_i627.GetProofRequestsUseCase>(),
-              gh<_i743.GetIdentityUseCase>(),
-              gh<_i920.ProofGenerationStepsStreamManager>(),
-              gh<_i267.StacktraceManager>(),
-              await getAsync<_i143.RefreshCredentialUseCase>(),
-            ));
     gh.factoryAsync<_i411.AuthenticateUseCase>(
         () async => _i411.AuthenticateUseCase(
               gh<_i88.Iden3commRepository>(),
@@ -1285,6 +1289,7 @@ extension GetItInjectableX on _i174.GetIt {
           await getAsync<_i411.AuthenticateUseCase>(),
           await getAsync<_i539.GetFiltersUseCase>(),
           await getAsync<_i347.GetIden3commClaimsUseCase>(),
+          await getAsync<_i181.GetMessageRequestsAndCredsUseCase>(),
           await getAsync<_i369.GetIden3commClaimsRevNonceUseCase>(),
           await getAsync<_i412.GetIden3commProofsUseCase>(),
           gh<_i484.GetInteractionsUseCase>(),

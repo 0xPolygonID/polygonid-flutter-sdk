@@ -16,8 +16,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/p
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
@@ -49,10 +48,9 @@ class GetIden3commProofsParam {
 class GetIden3commProofsUseCase
     extends FutureUseCase<GetIden3commProofsParam, List<Iden3commProofEntity>> {
   final ProofRepository _proofRepository;
-  final GetIden3commClaimsUseCase _getIden3commClaimsUseCase;
+  final GetMessageRequestsAndCredsUseCase _getMessageRequestsAndCredsUseCase;
   final GenerateIden3commProofUseCase _generateIden3commProofUseCase;
   final IsProofCircuitSupportedUseCase _isProofCircuitSupported;
-  final GetProofRequestsUseCase _getProofRequestsUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
   final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
   final StacktraceManager _stacktraceManager;
@@ -61,10 +59,9 @@ class GetIden3commProofsUseCase
 
   GetIden3commProofsUseCase(
     this._proofRepository,
-    this._getIden3commClaimsUseCase,
+    this._getMessageRequestsAndCredsUseCase,
     this._generateIden3commProofUseCase,
     this._isProofCircuitSupported,
-    this._getProofRequestsUseCase,
     this._getIdentityUseCase,
     this._proofGenerationStepsStreamManager,
     this._stacktraceManager,
@@ -80,13 +77,9 @@ class GetIden3commProofsUseCase
       Map<int, String> groupIdLinkNonceMap = {};
 
       _proofGenerationStepsStreamManager.add("Getting proof requests");
-      List<ProofRequestEntity> requests =
-          await _getProofRequestsUseCase.execute(param: param.message);
-      _stacktraceManager
-          .addTrace("[GetIden3commProofsUseCase] requests: $requests");
 
-      List<ClaimEntity?> claims = await _getIden3commClaimsUseCase.execute(
-        param: GetIden3commClaimsParam(
+      final requestsAndCreds = await _getMessageRequestsAndCredsUseCase.execute(
+        param: GetMessageRequestsAndCredsParam(
           message: param.message,
           genesisDid: param.genesisDid,
           profileNonce: param.profileNonce,
@@ -94,111 +87,118 @@ class GetIden3commProofsUseCase
           credentialSortOrderList: [CredentialSortOrder.ExpirationDescending],
         ),
       );
-      _stacktraceManager.addTrace(
-          "[GetIden3commProofsUseCase] claims found: ${claims.length}");
 
-      if ((requests.isNotEmpty &&
-              claims.isNotEmpty &&
-              requests.length == claims.length) ||
-          requests.isEmpty) {
-        /// We got [ProofRequestEntity], let's find the associated [ClaimEntity]
-        /// and generate [ProofEntity]
-        for (int i = 0; i < requests.length; i++) {
-          ProofRequestEntity request = requests[i];
-          ClaimEntity? claim = claims[i];
+      final requests = requestsAndCreds.map((pair) => pair.request).toList();
 
-          if (claim == null) {
+      if (requests.isEmpty) {
+        _stacktraceManager
+            .logTrace("[GetIden3commProofsUseCase] No proof requests found");
+        return [];
+      }
+
+      /// Generate proof for each request
+      for (int i = 0; i < requestsAndCreds.length; i++) {
+        ProofRequestEntity request = requestsAndCreds[i].request;
+        List<ClaimEntity> credentials = requestsAndCreds[i].credentials;
+
+        // if there are no credentials for the request
+        if (credentials.isEmpty) {
+          // if the request is optional, continue to the next request
+          if (request.isOptional) {
             continue;
-          }
-
-          if (claim.expiration != null) {
-            claim = await _checkCredentialExpirationAndTryRefreshIfExpired(
-              claim: claim,
-              param: param,
+          } else {
+            // if the request is not optional, throw an error
+            _stacktraceManager.addError(
+              "[Authenticate] No credentials found for request: ${request.scope.id}",
             );
-          }
-
-          bool isCircuitSupported = await _isProofCircuitSupported.execute(
-            param: request.scope.circuitId,
-          );
-          bool isCorrectType = claim.type == request.scope.query.type;
-
-          if (isCorrectType && isCircuitSupported) {
-            String circuitId = request.scope.circuitId;
-            CircuitDataEntity circuitData =
-                await _proofRepository.loadCircuitFiles(circuitId);
-
-            String? challenge;
-            String? privKey;
-            if (circuitId == CircuitType.mtponchain.name ||
-                circuitId == CircuitType.sigonchain.name ||
-                circuitId == CircuitType.circuitsV3onchain.name) {
-              privKey = param.privateKey;
-              challenge = param.challenge;
-            }
-
-            var identityEntity = await _getIdentityUseCase.execute(
-              param: GetIdentityParam(
-                genesisDid: param.genesisDid,
-                privateKey: param.privateKey,
-              ),
+            throw NoCredentialsFoundException(
+              proofRequest: request,
+              errorMessage:
+                  "No credentials found for request: ${request.scope.id}",
             );
-
-            BigInt claimSubjectProfileNonce = identityEntity.profiles.keys
-                .firstWhere((k) => identityEntity.profiles[k] == claim!.did,
-                    orElse: () => GENESIS_PROFILE_NONCE);
-
-            int? groupId = request.scope.query.groupId;
-            String linkNonce = "0";
-            // Check if groupId exists in the map
-            if (groupId != null) {
-              if (groupIdLinkNonceMap.containsKey(groupId)) {
-                // Use the existing linkNonce for this groupId
-                linkNonce = groupIdLinkNonceMap[groupId]!;
-              } else {
-                // Generate a new linkNonce for this groupId
-                linkNonce =
-                    generateLinkNonce(); // Replace this with your linkNonce generation logic
-                groupIdLinkNonceMap[groupId] = linkNonce;
-              }
-            }
-
-            _proofGenerationStepsStreamManager
-                .add("#${i + 1} creating proof for ${claim.type}");
-
-            // Generate proof param
-            GenerateIden3commProofParam proofParam =
-                GenerateIden3commProofParam(
-              did: param.genesisDid,
-              profileNonce: param.profileNonce,
-              claimSubjectProfileNonce: claimSubjectProfileNonce,
-              credential: claim,
-              request: request.scope,
-              circuitData: circuitData,
-              privateKey: privKey,
-              challenge: challenge,
-              config: param.config,
-              verifierId: param.message.from,
-              linkNonce: linkNonce,
-              transactionData: param.transactionData,
-            );
-
-            // Generate proof
-            Iden3commProofEntity proof =
-                await _generateIden3commProofUseCase.execute(
-              param: proofParam,
-            );
-
-            proofs.add(proof);
           }
         }
-      } else {
-        _stacktraceManager.logError(
-            "[GetIden3commProofsUseCase] CredentialsNotFoundException - requests: $requests");
-        throw CredentialsNotFoundException(
-          errorMessage: "Credentials not found for requests",
-          proofRequests: requests,
+        ClaimEntity claim = credentials.first;
+
+        if (claim.expiration != null) {
+          claim = await _checkCredentialExpirationAndTryRefreshIfExpired(
+            claim: claim,
+            param: param,
+          );
+        }
+
+        bool isCircuitSupported = await _isProofCircuitSupported.execute(
+          param: request.scope.circuitId,
         );
+        bool isCorrectType = claim.type == request.scope.query.type;
+
+        if (isCorrectType && isCircuitSupported) {
+          String circuitId = request.scope.circuitId;
+          CircuitDataEntity circuitData =
+              await _proofRepository.loadCircuitFiles(circuitId);
+
+          String? challenge;
+          String? privKey;
+          if (circuitId == CircuitType.mtponchain.name ||
+              circuitId == CircuitType.sigonchain.name ||
+              circuitId == CircuitType.circuitsV3onchain.name) {
+            privKey = param.privateKey;
+            challenge = param.challenge;
+          }
+
+          var identityEntity = await _getIdentityUseCase.execute(
+            param: GetIdentityParam(
+              genesisDid: param.genesisDid,
+              privateKey: param.privateKey,
+            ),
+          );
+
+          BigInt claimSubjectProfileNonce = identityEntity.profiles.keys
+              .firstWhere((k) => identityEntity.profiles[k] == claim.did,
+                  orElse: () => GENESIS_PROFILE_NONCE);
+
+          int? groupId = request.scope.query.groupId;
+          String linkNonce = "0";
+          // Check if groupId exists in the map
+          if (groupId != null) {
+            if (groupIdLinkNonceMap.containsKey(groupId)) {
+              // Use the existing linkNonce for this groupId
+              linkNonce = groupIdLinkNonceMap[groupId]!;
+            } else {
+              // Generate a new linkNonce for this groupId
+              linkNonce =
+                  generateLinkNonce(); // Replace this with your linkNonce generation logic
+              groupIdLinkNonceMap[groupId] = linkNonce;
+            }
+          }
+
+          _proofGenerationStepsStreamManager
+              .add("#${i + 1} creating proof for ${claim.type}");
+
+          // Generate proof param
+          GenerateIden3commProofParam proofParam = GenerateIden3commProofParam(
+            did: param.genesisDid,
+            profileNonce: param.profileNonce,
+            claimSubjectProfileNonce: claimSubjectProfileNonce,
+            credential: claim,
+            request: request.scope,
+            circuitData: circuitData,
+            privateKey: privKey,
+            challenge: challenge,
+            config: param.config,
+            verifierId: param.message.from,
+            linkNonce: linkNonce,
+            transactionData: param.transactionData,
+          );
+
+          // Generate proof
+          Iden3commProofEntity proof =
+              await _generateIden3commProofUseCase.execute(
+            param: proofParam,
+          );
+
+          proofs.add(proof);
+        }
       }
 
       /// If we have requests but didn't get any proofs, we throw
