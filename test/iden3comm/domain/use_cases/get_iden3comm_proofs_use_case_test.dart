@@ -13,7 +13,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3c
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
@@ -53,8 +52,6 @@ MockGenerateIden3commProofUseCase generateIden3commProofUseCase =
     MockGenerateIden3commProofUseCase();
 MockIsProofCircuitSupportedUseCase isProofCircuitSupportedUseCase =
     MockIsProofCircuitSupportedUseCase();
-MockGetProofRequestsUseCase getProofRequestsUseCase =
-    MockGetProofRequestsUseCase();
 MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
 MockProofGenerationStepsStreamManager proofGenerationStepsStreamManager =
     MockProofGenerationStepsStreamManager();
@@ -84,7 +81,6 @@ GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   GetMessageRequestsAndCredsUseCase,
   GenerateIden3commProofUseCase,
   IsProofCircuitSupportedUseCase,
-  GetProofRequestsUseCase,
   GetIdentityUseCase,
   ProofGenerationStepsStreamManager,
   StacktraceManager,
@@ -100,12 +96,7 @@ main() {
     reset(getMessageRequestsAndCredsUseCase);
     reset(generateIden3commProofUseCase);
     reset(isProofCircuitSupportedUseCase);
-    reset(getProofRequestsUseCase);
     reset(getIdentityUseCase);
-
-    //Given
-    when(getProofRequestsUseCase.execute(param: anyNamed('param'))).thenAnswer(
-        (realInvocation) => Future.value(Iden3commMocks.proofRequestList));
 
     when(isProofCircuitSupportedUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value(true));
@@ -142,11 +133,6 @@ main() {
     expect(await useCase.execute(param: param), result);
 
     // Then
-    var getRequestsCaptured =
-        verify(getProofRequestsUseCase.execute(param: captureAnyNamed('param')))
-            .captured;
-    expect(getRequestsCaptured[0], Iden3commMocks.authRequest);
-
     var verifyIsFilterSupported = verify(isProofCircuitSupportedUseCase.execute(
         param: captureAnyNamed('param')));
     expect(verifyIsFilterSupported.callCount,
@@ -204,11 +190,6 @@ main() {
         useCase.execute(param: param), throwsA(CommonMocks.exception));
 
     // Then
-    var getRequestsCaptured =
-        verify(getProofRequestsUseCase.execute(param: captureAnyNamed('param')))
-            .captured;
-    expect(getRequestsCaptured[0], Iden3commMocks.authRequest);
-
     verifyNever(isProofCircuitSupportedUseCase.execute(
         param: captureAnyNamed('param')));
     verifyNever(proofRepository.loadCircuitFiles(captureAny));
