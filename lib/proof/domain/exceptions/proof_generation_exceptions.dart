@@ -81,3 +81,15 @@ class CircuitNotDownloadedException extends PolygonIdSDKException {
     super.error,
   });
 }
+
+class CredentialRevokedException extends CoreLibraryException {
+  final String credentialId;
+
+  CredentialRevokedException({
+    required this.credentialId,
+    required super.errorMessage,
+    super.error,
+    required super.coreLibraryName,
+    required super.methodName,
+  });
+}
