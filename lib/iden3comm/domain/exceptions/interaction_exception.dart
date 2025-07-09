@@ -1,5 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 
 class InteractionNotFoundException extends PolygonIdSDKException {
   final String id;

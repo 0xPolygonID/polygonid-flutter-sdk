@@ -15,7 +15,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/authenticate.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/self_issuance/self_issued_credential_params.dart';
@@ -202,7 +201,7 @@ abstract class PolygonIdSdkIden3comm {
   ///
   /// The [privateKey]  is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
-  Future<List<InteractionBaseEntity>> getInteractions({
+  Future<List<InteractionEntity>> getInteractions({
     String? genesisDid,
     BigInt? profileNonce,
     String? privateKey,
@@ -211,14 +210,14 @@ abstract class PolygonIdSdkIden3comm {
     List<FilterEntity>? filters,
   });
 
-  /// Saves an [InteractionBaseEntity] in the Polygon ID Sdk
+  /// Saves an [InteractionEntity] in the Polygon ID Sdk
   ///
   /// The [interaction] is the interaction to be saved
   /// The [genesisDid] is the unique id of the identity
   /// The [privateKey]  is the key used to access all the sensitive info from the identity
   /// to obtain the did identifier
-  Future<InteractionBaseEntity> addInteraction({
-    required InteractionBaseEntity interaction,
+  Future<InteractionEntity> addInteraction({
+    required InteractionEntity interaction,
     required String genesisDid,
     required String privateKey,
   });
@@ -234,7 +233,7 @@ abstract class PolygonIdSdkIden3comm {
     required List<String> ids,
   });
 
-  /// Updated the states of a [InteractionBaseEntity] in the Polygon ID Sdk
+  /// Updated the states of a [InteractionEntity] in the Polygon ID Sdk
   ///
   /// The [id] is the id of the notification to be updated
   /// The [genesisDid] is the unique id of the identity
@@ -242,7 +241,7 @@ abstract class PolygonIdSdkIden3comm {
   /// to obtain the did identifier
   /// The [privateKey]  is the key used to access all the sensitive info from the identity
   /// The [state] is the new state of the interaction
-  Future<InteractionBaseEntity> updateInteraction({
+  Future<InteractionEntity> updateInteraction({
     required String id,
     String? genesisDid,
     BigInt? profileNonce,
@@ -615,7 +614,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }
 
   @override
-  Future<List<InteractionBaseEntity>> getInteractions({
+  Future<List<InteractionEntity>> getInteractions({
     String? genesisDid,
     BigInt? profileNonce,
     String? privateKey,
@@ -651,8 +650,8 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }
 
   @override
-  Future<InteractionBaseEntity> addInteraction({
-    required InteractionBaseEntity interaction,
+  Future<InteractionEntity> addInteraction({
+    required InteractionEntity interaction,
     required String genesisDid,
     required String privateKey,
   }) {
@@ -667,7 +666,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }
 
   @override
-  Future<InteractionBaseEntity> updateInteraction({
+  Future<InteractionEntity> updateInteraction({
     required String id,
     String? genesisDid,
     BigInt? profileNonce,

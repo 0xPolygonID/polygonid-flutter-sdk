@@ -1,6 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/add_interaction_use_case.dart';
@@ -24,7 +23,7 @@ class UpdateInteractionParam {
 }
 
 class UpdateInteractionUseCase
-    extends FutureUseCase<UpdateInteractionParam, InteractionBaseEntity> {
+    extends FutureUseCase<UpdateInteractionParam, InteractionEntity> {
   final InteractionRepository _interactionRepository;
   final CheckProfileValidityUseCase _checkProfileValidityUseCase;
   final GetIdentityUseCase _getIdentityUseCase;
@@ -38,7 +37,7 @@ class UpdateInteractionUseCase
   );
 
   @override
-  Future<InteractionBaseEntity> execute({
+  Future<InteractionEntity> execute({
     required UpdateInteractionParam param,
   }) async {
     final genesisDid = param.genesisDid;
@@ -54,7 +53,7 @@ class UpdateInteractionUseCase
         param: GetIdentityParam(genesisDid: genesisDid, privateKey: null),
       );
 
-      InteractionBaseEntity interactionToBeUpdated;
+      InteractionEntity interactionToBeUpdated;
       try {
         // search if interaction is in base
         interactionToBeUpdated =
