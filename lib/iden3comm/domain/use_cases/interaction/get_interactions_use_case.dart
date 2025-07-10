@@ -4,7 +4,6 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/interaction_exception.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart';
@@ -28,7 +27,7 @@ class GetInteractionsParam {
 }
 
 class GetInteractionsUseCase
-    extends FutureUseCase<GetInteractionsParam, List<InteractionBaseEntity>> {
+    extends FutureUseCase<GetInteractionsParam, List<InteractionEntity>> {
   final InteractionRepository _interactionRepository;
   final StacktraceManager _stacktraceManager;
 
@@ -38,11 +37,11 @@ class GetInteractionsUseCase
   );
 
   @override
-  Future<List<InteractionBaseEntity>> execute({
+  Future<List<InteractionEntity>> execute({
     required GetInteractionsParam param,
   }) async {
     try {
-      List<InteractionBaseEntity> interactions =
+      List<InteractionEntity> interactions =
           await _interactionRepository.getInteractions(
         filters: param.filters,
         genesisDid: param.genesisDid,
@@ -68,8 +67,7 @@ class GetInteractionsUseCase
           param.profileNonce! > GENESIS_PROFILE_NONCE) {
         interactions = interactions
             .where((interaction) =>
-                param.profileNonce ==
-                (interaction as InteractionEntity).profileNonce)
+                param.profileNonce == (interaction).profileNonce)
             .toList();
       }
 

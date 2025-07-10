@@ -13,7 +13,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/re
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/self_issuance/self_issued_credential_params.dart';
@@ -121,13 +120,7 @@ class PolygonIdFlutterChannel
         /// Iden3comm
         case 'addInteraction':
           Map<String, dynamic> json = jsonDecode(call.arguments['interaction']);
-          InteractionBaseEntity interaction;
-
-          try {
-            interaction = InteractionEntity.fromJson(json);
-          } catch (e) {
-            interaction = InteractionBaseEntity.fromJson(json);
-          }
+          InteractionEntity interaction = InteractionEntity.fromJson(json);
 
           return addInteraction(
                   interaction: interaction,
@@ -459,8 +452,8 @@ class PolygonIdFlutterChannel
 
   /// Iden3comm
   @override
-  Future<InteractionBaseEntity> addInteraction({
-    required InteractionBaseEntity interaction,
+  Future<InteractionEntity> addInteraction({
+    required InteractionEntity interaction,
     required String genesisDid,
     required String privateKey,
   }) {
@@ -587,7 +580,7 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<List<InteractionBaseEntity>> getInteractions(
+  Future<List<InteractionEntity>> getInteractions(
       {String? genesisDid,
       BigInt? profileNonce,
       String? privateKey,
@@ -632,7 +625,7 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<InteractionBaseEntity> updateInteraction(
+  Future<InteractionEntity> updateInteraction(
       {required String id,
       String? genesisDid,
       BigInt? profileNonce,
