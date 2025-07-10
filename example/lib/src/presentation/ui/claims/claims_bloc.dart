@@ -93,7 +93,9 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
   ///
   Future<void> _getClaims(
-      GetClaimsEvent event, Emitter<ClaimsState> emit) async {
+    GetClaimsEvent event,
+    Emitter<ClaimsState> emit,
+  ) async {
     emit(const ClaimsState.loading());
 
     List<FilterEntity>? filters = event.filters;
@@ -140,7 +142,9 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
   ///
   Future<void> _getClaimsByIds(
-      GetClaimsByIdsEvent event, Emitter<ClaimsState> emit) async {
+    GetClaimsByIdsEvent event,
+    Emitter<ClaimsState> emit,
+  ) async {
     emit(const ClaimsState.loading());
 
     List<String> ids = event.ids;
@@ -189,7 +193,9 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
   ///
   Future<void> _removeClaim(
-      RemoveClaimEvent event, Emitter<ClaimsState> emit) async {
+    RemoveClaimEvent event,
+    Emitter<ClaimsState> emit,
+  ) async {
     String id = event.id;
 
     String? privateKey =
@@ -231,7 +237,9 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
   ///
   Future<void> _removeClaims(
-      RemoveClaimsEvent event, Emitter<ClaimsState> emit) async {
+    RemoveClaimsEvent event,
+    Emitter<ClaimsState> emit,
+  ) async {
     List<String> ids = event.ids;
 
     String? privateKey =
@@ -272,7 +280,9 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
   ///
   Future<void> _updateClaim(
-      UpdateClaimEvent event, Emitter<ClaimsState> emit) async {
+    UpdateClaimEvent event,
+    Emitter<ClaimsState> emit,
+  ) async {
     String id = event.id;
     String? issuer = event.issuer;
     String? did = event.did;
@@ -316,7 +326,9 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
   ///
   void _handleClickScanQrCode(
-      ClickScanQrCodeEvent event, Emitter<ClaimsState> emit) {
+    ClickScanQrCodeEvent event,
+    Emitter<ClaimsState> emit,
+  ) {
     emit(const ClaimsState.navigateToQrCodeScanner());
   }
 
@@ -345,7 +357,9 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
   ///
   void _handleRemoveClaimResponse(
-      OnClaimDetailRemoveResponse event, Emitter<ClaimsState> emit) {
+    OnClaimDetailRemoveResponse event,
+    Emitter<ClaimsState> emit,
+  ) {
     bool removed = event.removed ?? false;
 
     if (!removed) {
@@ -357,7 +371,9 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
   ///
   Future<void> _removeAllClaims(
-      RemoveAllClaimsEvent event, Emitter<ClaimsState> emit) async {
+    RemoveAllClaimsEvent event,
+    Emitter<ClaimsState> emit,
+  ) async {
     emit(const ClaimsState.loading());
 
     String? privateKey =
