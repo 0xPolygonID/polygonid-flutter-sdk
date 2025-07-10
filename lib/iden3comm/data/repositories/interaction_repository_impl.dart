@@ -4,7 +4,7 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/secure_storage_interaction_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/storage_interaction_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/interaction_mapper.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/interaction_exception.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart';
 import 'package:sembast/sembast.dart';
@@ -25,8 +25,8 @@ class InteractionRepositoryImpl implements InteractionRepository {
   );
 
   @override
-  Future<InteractionBaseEntity> addInteraction({
-    required InteractionBaseEntity interaction,
+  Future<InteractionEntity> addInteraction({
+    required InteractionEntity interaction,
     String? genesisDid,
     String? encryptionKey,
   }) {
@@ -46,7 +46,7 @@ class InteractionRepositoryImpl implements InteractionRepository {
   }
 
   @override
-  Future<List<InteractionBaseEntity>> getInteractions(
+  Future<List<InteractionEntity>> getInteractions(
       {List<FilterEntity>? filters,
       String? genesisDid,
       String? encryptionKey}) {
@@ -70,7 +70,7 @@ class InteractionRepositoryImpl implements InteractionRepository {
   }
 
   @override
-  Future<InteractionBaseEntity> getInteraction({
+  Future<InteractionEntity> getInteraction({
     required String id,
     String? genesisDid,
     String? encryptionKey,
@@ -90,9 +90,8 @@ class InteractionRepositoryImpl implements InteractionRepository {
         );
       } else {
         Map<String, dynamic> interaction = interactions.first;
-        InteractionBaseEntity interactionBaseEntity =
-            _interactionMapper.mapFrom(interaction);
-        return interactionBaseEntity;
+        final interactionEntity = _interactionMapper.mapFrom(interaction);
+        return interactionEntity;
       }
     } else {
       return _storageInteractionDataSource

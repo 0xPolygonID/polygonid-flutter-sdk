@@ -2,11 +2,11 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_base_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_repository.dart';
 
 class AddInteractionParam {
-  final InteractionBaseEntity interaction;
+  final InteractionEntity interaction;
   final String genesisDid;
   final String encryptionKey;
 
@@ -18,7 +18,7 @@ class AddInteractionParam {
 }
 
 class AddInteractionUseCase
-    extends FutureUseCase<AddInteractionParam, InteractionBaseEntity> {
+    extends FutureUseCase<AddInteractionParam, InteractionEntity> {
   final InteractionRepository _interactionRepository;
   final StacktraceManager _stacktraceManager;
 
@@ -28,7 +28,7 @@ class AddInteractionUseCase
   );
 
   @override
-  Future<InteractionBaseEntity> execute({
+  Future<InteractionEntity> execute({
     required AddInteractionParam param,
   }) async {
     try {
