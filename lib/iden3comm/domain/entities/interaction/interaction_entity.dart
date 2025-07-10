@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 enum InteractionType {
   offer,
   revocation,
@@ -19,7 +21,7 @@ class InteractionEntity {
   final InteractionType type;
   final InteractionState state;
   final int timestamp;
-  final String message;
+  final String? message;
   final String? to;
 
   final String genesisDid;
@@ -92,7 +94,7 @@ class InteractionEntity {
           to == other.to &&
           genesisDid == other.genesisDid &&
           profileNonce == other.profileNonce &&
-          tags == other.tags;
+          listEquals(tags, other.tags);
 
   @override
   int get hashCode =>
