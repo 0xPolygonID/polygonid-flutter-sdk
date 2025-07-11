@@ -144,7 +144,7 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
         credsFiltered: validCreds,
       );
 
-      if (!request.scope.optional && validCreds.isEmpty) {
+      if (!request.isOptional && validCreds.isEmpty) {
         _stacktraceManager
             .addTrace("[GetMessageRequestsAndCredsUseCase] claims is empty");
         requestCredentialPairs.add((request: request, credentials: []));
@@ -174,7 +174,7 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
         return circuitType.isAnyProofTypeSupported(proofTypes);
       }).toList();
 
-      if (!request.scope.optional && validCreds.isEmpty) {
+      if (!request.isOptional && validCreds.isEmpty) {
         _stacktraceManager.addTrace(
             "[GetMessageRequestsAndCredsUseCase] claims has no valid proof type");
         requestCredentialPairs.add((request: request, credentials: []));

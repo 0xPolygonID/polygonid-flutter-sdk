@@ -53,7 +53,7 @@ class GetIden3commClaimsUseCase
       final credential = requestAndCreds.credentials.firstOrNull;
       if (credential != null) {
         credentials.add(credential);
-      } else if (requestAndCreds.request.scope.optional) {
+      } else if (requestAndCreds.request.isOptional) {
         continue;
       } else {
         throw Exception(
