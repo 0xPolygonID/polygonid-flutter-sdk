@@ -146,3 +146,23 @@ class GetAuthInputsException extends PolygonIdSDKException {
     super.error,
   });
 }
+
+class NoCredentialsFoundException extends PolygonIdSDKException {
+  final ProofRequestEntity? proofRequest;
+
+  NoCredentialsFoundException({
+    this.proofRequest,
+    required super.errorMessage,
+    super.error,
+  });
+}
+
+class ProofRequestsNotFoundException extends PolygonIdSDKException {
+  final Iden3MessageEntity? message;
+
+  ProofRequestsNotFoundException({
+    this.message,
+    required super.errorMessage,
+    super.error,
+  });
+}

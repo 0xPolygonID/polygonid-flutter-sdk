@@ -56,10 +56,10 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     ChainConfigEntity chainConfig = await _polygonIdSdk.getSelectedChain();
 
     String didIdentifier = await _polygonIdSdk.identity.getDidIdentifier(
-        privateKey: privateKey,
-        blockchain: chainConfig.blockchain,
-        network: chainConfig.network,
-        method: chainConfig.method,
+      privateKey: privateKey,
+      blockchain: chainConfig.blockchain,
+      network: chainConfig.network,
+      method: chainConfig.method,
     );
 
     emit(const ClaimsState.loading());

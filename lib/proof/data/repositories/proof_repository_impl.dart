@@ -135,6 +135,16 @@ class ProofRepositoryImpl extends ProofRepository {
         scopeParams: scopeParams,
         transactionData: transactionData,
       );
+    } on CoreLibraryException catch (error) {
+      _stacktraceManager.addTrace(
+          "[calculateAtomicQueryInputs/libPolygonIdCoreProof] exception ${error.errorMessage}");
+      throw CredentialRevokedException(
+        credentialId: id,
+        errorMessage: error.errorMessage,
+        error: error,
+        coreLibraryName: error.coreLibraryName,
+        methodName: error.methodName,
+      );
     } on PolygonIdSDKException catch (error) {
       _stacktraceManager.addTrace(
           "[calculateAtomicQueryInputs/libPolygonIdCoreProof] exception ${error.errorMessage}");
@@ -149,7 +159,7 @@ class ProofRepositoryImpl extends ProofRepository {
 
     if (res.inputs.isEmpty) {
       _stacktraceManager.addTrace(
-          "[calculateAtomicQueryInputs/libPolygonIdCoreProof] NullAtomicQueryInputsException");
+          "[calculateAtomicQueryInputs/libPolygonIdCoreProof] Empty inputs result");
       throw NullAtomicQueryInputsException(
         id: id,
         errorMessage: "Empty inputs result",

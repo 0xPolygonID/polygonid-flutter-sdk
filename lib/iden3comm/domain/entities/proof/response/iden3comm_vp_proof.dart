@@ -95,7 +95,8 @@ class Iden3commVPProof {
         context: (json['@context'] as List<dynamic>)
             .map((e) => e as String)
             .toList(),
-        type: json['type'] as String,
+        // TODO: Remove this once clib is updated.
+        type: (json['type'] as String?) ?? (json['@type'] as String),
         verifiableCredential:
             (json['verifiableCredential'] as Map<String, dynamic>),
       );

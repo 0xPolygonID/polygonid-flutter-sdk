@@ -92,6 +92,8 @@ class ProofScopeRequest {
     this.params,
   });
 
+  bool get isOptional => optional ?? false;
+
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
@@ -111,7 +113,7 @@ class ProofScopeRequest {
   Map<String, dynamic> toJson() => {
         'id': id,
         'circuitId': circuitId,
-        'optional': optional,
+        if (optional != null) 'optional': optional,
         'query': query.toJson(),
         'params': params,
       }..removeWhere(

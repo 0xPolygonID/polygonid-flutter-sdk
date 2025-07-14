@@ -38,28 +38,33 @@ class ProofRequestFiltersMapper
           name: 'credential.@context',
           value: query.context!),
     ];
-    if (query.allowedIssuers != null &&
-        query.allowedIssuers is List &&
-        query.allowedIssuers!.isNotEmpty) {
-      if (query.allowedIssuers![0] != "*") {
-        filters.add(FilterEntity(
+    final allowedIssuers = query.allowedIssuers;
+    if (allowedIssuers != null && allowedIssuers.isNotEmpty) {
+      if (allowedIssuers[0] != "*") {
+        filters.add(
+          FilterEntity(
             operator: FilterOperator.inList,
             name: 'issuer',
-            value: query.allowedIssuers!));
+            value: allowedIssuers,
+          ),
+        );
       }
     }
 
-    if (query.skipClaimRevocationCheck == null ||
-        query.skipClaimRevocationCheck == false) {
-      filters.add(FilterEntity(
+    final skipClaimRevocationCheck = query.skipClaimRevocationCheck;
+    if (skipClaimRevocationCheck == null || skipClaimRevocationCheck == false) {
+      filters.add(
+        FilterEntity(
           operator: FilterOperator.nonEqual,
           name: 'state',
-          value: ClaimState.revoked.name));
+          value: ClaimState.revoked.name,
+        ),
+      );
     }
 
-    if (query.credentialSubject != null) {
-      Map<String, dynamic> request = query.credentialSubject!;
-      request.forEach((key, map) {
+    final credentialSubject = query.credentialSubject;
+    if (credentialSubject != null) {
+      credentialSubject.forEach((key, map) {
         if (map != null && map is Map && map.isNotEmpty && context != null) {
           String type = getValueFromNestedString(context, key);
           map.forEach((operator, value) {

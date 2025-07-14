@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/proof_type.dart';
 
 import 'claim_proof_bjj_dto.dart';
 import 'claim_proof_sm_dto.dart';
@@ -19,31 +20,30 @@ class ClaimProofDTO extends Equatable {
   factory ClaimProofDTO.fromJson(Map<String, dynamic> json) {
     String type = json['type'];
 
-    switch (type) {
-      case "BJJSignature2021":
-        return ClaimProofBJJDTO(
-          type,
-          ClaimProofIssuerBJJDTO.fromJson(
-              json['issuerData'] as Map<String, dynamic>),
-          json['coreClaim'] as String,
-          json['signature'] as String,
-        );
-      case "Iden3SparseMerkleProof":
-      case "Iden3SparseMerkleTreeProof":
-        return ClaimProofSMDTO(
-          type,
-          ClaimProofIssuerSMDTO.fromJson(
-              json['issuerData'] as Map<String, dynamic>),
-          json['coreClaim'] as String,
-          ClaimProofMTPDTO.fromJson(json['mtp'] as Map<String, dynamic>),
-        );
-      default:
-        return ClaimProofDTO(
-          type,
-          ClaimProofIssuerSMDTO.fromJson(
-              json['issuerData'] as Map<String, dynamic>),
-          json['coreClaim'] as String,
-        );
+    if (type == ProofType.BJJSignature2021.name) {
+      return ClaimProofBJJDTO(
+        type,
+        ClaimProofIssuerBJJDTO.fromJson(
+            json['issuerData'] as Map<String, dynamic>),
+        json['coreClaim'] as String,
+        json['signature'] as String,
+      );
+    } else if (type == ProofType.Iden3SparseMerkleProof.name ||
+        type == ProofType.Iden3SparseMerkleTreeProof.name) {
+      return ClaimProofSMDTO(
+        type,
+        ClaimProofIssuerSMDTO.fromJson(
+            json['issuerData'] as Map<String, dynamic>),
+        json['coreClaim'] as String,
+        ClaimProofMTPDTO.fromJson(json['mtp'] as Map<String, dynamic>),
+      );
+    } else {
+      return ClaimProofDTO(
+        type,
+        ClaimProofIssuerSMDTO.fromJson(
+            json['issuerData'] as Map<String, dynamic>),
+        json['coreClaim'] as String,
+      );
     }
   }
 

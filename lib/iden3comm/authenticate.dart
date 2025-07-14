@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:collection/collection.dart';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
@@ -20,25 +19,19 @@ import 'package:pointycastle/asymmetric/api.dart';
 import 'package:pointycastle/asymmetric/oaep.dart';
 import 'package:pointycastle/asymmetric/rsa.dart';
 import 'package:pointycastle/digests/sha512.dart';
-import 'package:polygonid_flutter_sdk/common/data/data_sources/mappers/filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
-import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/base_64.dart';
 import 'package:polygonid_flutter_sdk/common/utils/big_int_extension.dart';
-import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/common/utils/pinata_gateway_utils.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/lib_pidcore_credential_data_source.dart';
-import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
-import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
-import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_response_dto.dart';
@@ -47,12 +40,8 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_service_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/proof_request_filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_query_request.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/response/jwz.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_sd_proof_entity.dart';
@@ -60,6 +49,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/i
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/jwz_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
@@ -79,13 +69,11 @@ import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/gist_proof_cache.dart';
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:poseidon/poseidon.dart';
-import 'package:sembast/sembast.dart';
 import 'package:uuid/uuid.dart';
 import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
@@ -160,18 +148,16 @@ class Authenticate {
         ),
       );
 
-      List<ProofRequestEntity> proofRequests = [];
-      List<ClaimEntity> claims = [];
-
       // Get the credentials and proof requests by scope
-      // it is assigning the proofRequests and claims to the variables directly
-      // from the function call
-      await getCredentialsAndProofRequestsByScope(
-        message: message,
-        proofRequests: proofRequests,
-        genesisDid: genesisDid,
-        privateKey: privateKey,
-        claims: claims,
+      final getCredentialsUseCase =
+          await getItSdk.getAsync<GetMessageRequestsAndCredsUseCase>();
+      final requestsAndCreds = await getCredentialsUseCase.execute(
+        param: GetMessageRequestsAndCredsParam(
+          message: message,
+          genesisDid: genesisDid,
+          profileNonce: profileNonce,
+          encryptionKey: privateKey,
+        ),
       );
 
       // this authClaimCompanionObject is the one that is being used to get the
@@ -188,13 +174,10 @@ class Authenticate {
 
       // if there are proof requests and claims and they are the same length
       // then create the proof for every proof request
-      if (proofRequests.isNotEmpty &&
-          claims.isNotEmpty &&
-          proofRequests.length == claims.length) {
+      if (requestsAndCreds.isNotEmpty) {
         // it is assigning the proofs to the variable directly from the function call
         await createProofForEveryProofRequest(
-          proofRequests: proofRequests,
-          claims: claims,
+          requestsAndCreds: requestsAndCreds,
           identityEntity: identityEntity,
           groupIdLinkNonceMap: groupIdLinkNonceMap,
           genesisDid: genesisDid,
@@ -351,8 +334,7 @@ class Authenticate {
 
   ///
   Future<void> createProofForEveryProofRequest({
-    required List<ProofRequestEntity> proofRequests,
-    required List<ClaimEntity> claims,
+    required List<RequestAndCredentials> requestsAndCreds,
     required IdentityEntity identityEntity,
     required Map<int, String> groupIdLinkNonceMap,
     required String genesisDid,
@@ -367,9 +349,28 @@ class Authenticate {
     required AuthClaimCompanionObject authClaimCompanionObject,
     required List<Iden3commProofEntity> proofs,
   }) async {
-    for (int i = 0; i < proofRequests.length; i++) {
-      ProofRequestEntity proofRequest = proofRequests[i];
-      ClaimEntity claim = claims[i];
+    for (int i = 0; i < requestsAndCreds.length; i++) {
+      final request = requestsAndCreds[i].request;
+      final credentials = requestsAndCreds[i].credentials;
+
+      // if there are no credentials for the request
+      if (credentials.isEmpty) {
+        // if the request is optional, continue to the next request
+        if (request.isOptional) {
+          continue;
+        } else {
+          // if the request is not optional, throw an error
+          _stacktraceManager.addError(
+            "[Authenticate] No credentials found for request: ${request.scope.id}",
+          );
+          throw NoCredentialsFoundException(
+            proofRequest: request,
+            errorMessage:
+                "No credentials found for request: ${request.scope.id}",
+          );
+        }
+      }
+      ClaimEntity claim = credentials.first;
 
       if (claim.expiration != null) {
         claim = await _checkCredentialExpirationAndTryRefreshIfExpired(
@@ -379,19 +380,19 @@ class Authenticate {
         );
       }
 
-      _proofGenerationStepsStreamManager.add(
-          "#${i + 1} creating proof for ${proofRequest.scope.query.type}...");
+      _proofGenerationStepsStreamManager
+          .add("#${i + 1} creating proof for ${request.scope.query.type}...");
 
       final appDir = await getApplicationDocumentsDirectory();
       final circuitsDataSource = CircuitsFilesDataSource(appDir);
 
       final graphFileBytes =
-          await circuitsDataSource.loadGraphFile(proofRequest.scope.circuitId);
-      final zkeyFilePath = await circuitsDataSource
-          .getZkeyFilePath(proofRequest.scope.circuitId);
+          await circuitsDataSource.loadGraphFile(request.scope.circuitId);
+      final zkeyFilePath =
+          await circuitsDataSource.getZkeyFilePath(request.scope.circuitId);
 
       CircuitDataEntity circuitDataEntity = CircuitDataEntity(
-        proofRequest.scope.circuitId,
+        request.scope.circuitId,
         graphFileBytes,
         zkeyFilePath,
       );
@@ -400,7 +401,7 @@ class Authenticate {
           (k) => identityEntity.profiles[k] == claim.did,
           orElse: () => GENESIS_PROFILE_NONCE);
 
-      int? groupId = proofRequest.scope.query.groupId;
+      int? groupId = request.scope.query.groupId;
       String linkNonce = "0";
       // Check if groupId exists in the map
       if (groupId != null) {
@@ -418,9 +419,9 @@ class Authenticate {
       Map<String, dynamic>? config;
       String? signature;
 
-      if (proofRequest.scope.circuitId == CircuitType.mtponchain.name ||
-          proofRequest.scope.circuitId == CircuitType.sigonchain.name ||
-          proofRequest.scope.circuitId == CircuitType.circuitsV3onchain.name) {
+      if (request.scope.circuitId == CircuitType.mtponchain.name ||
+          request.scope.circuitId == CircuitType.sigonchain.name ||
+          request.scope.circuitId == CircuitType.circuitsV3onchain.name) {
         /// SIGN MESSAGE
         signature = await signMessage(
           privateKey: privateKeyBytes,
@@ -438,8 +439,8 @@ class Authenticate {
         profileNonce: profileNonce,
         claimSubjectProfileNonce: claimSubjectProfileNonce,
         claim: claim,
-        proofScopeRequest: proofRequest.scope.toJson(),
-        circuitId: proofRequest.scope.circuitId,
+        proofScopeRequest: request.scope.toJson(),
+        circuitId: request.scope.circuitId,
         incProof: authClaimCompanionObject.incProof,
         nonRevProof: authClaimCompanionObject.nonRevProof,
         gistProof: authClaimCompanionObject.gistProofEntity,
@@ -450,7 +451,7 @@ class Authenticate {
         config: config,
         verifierId: message.from,
         linkNonce: linkNonce,
-        scopeParams: proofRequest.scope.params,
+        scopeParams: request.scope.params,
         transactionData: transactionData,
       );
 
@@ -479,8 +480,8 @@ class Authenticate {
       Iden3commProofEntity proof;
       if (vpProof != null) {
         proof = Iden3commSDProofEntity(
-          id: proofRequest.scope.id,
-          circuitId: proofRequest.scope.circuitId,
+          id: request.scope.id,
+          circuitId: request.scope.circuitId,
           proof: zkProofEntity.proof,
           pubSignals: zkProofEntity.pubSignals,
           publicStatesInfo: generateInputsRes.publicStatesInfo,
@@ -488,178 +489,14 @@ class Authenticate {
         );
       } else {
         proof = Iden3commProofEntity(
-          id: proofRequest.scope.id,
-          circuitId: proofRequest.scope.circuitId,
+          id: request.scope.id,
+          circuitId: request.scope.circuitId,
           proof: zkProofEntity.proof,
           pubSignals: zkProofEntity.pubSignals,
           publicStatesInfo: generateInputsRes.publicStatesInfo,
         );
       }
       proofs.add(proof);
-    }
-  }
-
-  Future<void> getCredentialsAndProofRequestsByScope({
-    required List<ProofRequestEntity> proofRequests,
-    required List<ClaimEntity> claims,
-    required Iden3MessageEntity message,
-    required String genesisDid,
-    required String privateKey,
-  }) async {
-    List<ProofScopeRequest>? scopes = message.body.scope;
-    if (scopes == null || scopes.isEmpty) {
-      return;
-    }
-
-    final groupedByGroupId = groupBy(scopes, (obj) => obj.query.groupId);
-
-    Map<int, List<ClaimEntity>> claimsByGroupId = {};
-
-    // for each group of scopes
-    for (final group in groupedByGroupId.entries) {
-      int? groupId = group.key;
-      if (groupId == null) {
-        continue;
-      }
-
-      List<FilterEntity> filtersForQueryClaimDb = [];
-
-      List<ProofScopeRequest> groupScopes = group.value;
-      for (final scope in groupScopes) {
-        Map<String, dynamic> credentialSchema =
-            await fetchSchema(schemaUrl: scope.query.context!);
-        ProofRequestEntity proofRequest = ProofRequestEntity(
-          scope,
-          credentialSchema,
-        );
-        ProofRequestFiltersMapper proofRequestFiltersMapper =
-            getItSdk<ProofRequestFiltersMapper>();
-        List<FilterEntity> filterForSingleScope =
-            proofRequestFiltersMapper.mapFrom(proofRequest);
-        // we add the filters for each scope to the list of filters
-        filtersForQueryClaimDb.addAll(filterForSingleScope);
-        // we remove duplicates
-        filtersForQueryClaimDb = filtersForQueryClaimDb.toSet().toList();
-      }
-
-      FiltersMapper filtersMapper = getItSdk<FiltersMapper>();
-      Filter filter = filtersMapper.mapTo(filtersForQueryClaimDb);
-
-      StorageClaimDataSource storageClaimDataSource =
-          getItSdk<StorageClaimDataSource>();
-
-      List<ClaimDTO> claimDTO = await storageClaimDataSource.getClaims(
-        filter: filter,
-        did: genesisDid,
-        encryptionKey: privateKey,
-        credentialSortOrderList: [CredentialSortOrder.IssuanceDateDescending],
-      );
-      ClaimMapper claimMapper = getItSdk<ClaimMapper>();
-      List<ClaimEntity> validClaims =
-          claimDTO.map((e) => claimMapper.mapFrom(e)).toList();
-      claimsByGroupId[groupId] = validClaims;
-    }
-
-    for (final scope in scopes) {
-      List<ClaimEntity> validClaims = [];
-      Map<String, dynamic> credentialSchema =
-          await fetchSchema(schemaUrl: scope.query.context!);
-      ProofRequestEntity proofRequest = ProofRequestEntity(
-        scope,
-        credentialSchema,
-      );
-      proofRequests.add(proofRequest);
-
-      if (scope.query.groupId != null) {
-        validClaims = claimsByGroupId[scope.query.groupId] ?? [];
-      } else {
-        ProofRequestFiltersMapper proofRequestFiltersMapper =
-            getItSdk<ProofRequestFiltersMapper>();
-        List<FilterEntity> filtersForQueryClaimDb =
-            proofRequestFiltersMapper.mapFrom(proofRequest);
-        FiltersMapper filtersMapper = getItSdk<FiltersMapper>();
-        Filter filter = filtersMapper.mapTo(filtersForQueryClaimDb);
-
-        StorageClaimDataSource storageClaimDataSource =
-            getItSdk<StorageClaimDataSource>();
-
-        List<ClaimDTO> claimDTO = await storageClaimDataSource.getClaims(
-          filter: filter,
-          did: genesisDid,
-          encryptionKey: privateKey,
-          credentialSortOrderList: [CredentialSortOrder.IssuanceDateDescending],
-        );
-        ClaimMapper claimMapper = getItSdk<ClaimMapper>();
-        validClaims = claimDTO.map((e) => claimMapper.mapFrom(e)).toList();
-      }
-
-      validClaims = _filterManuallyIfPositiveInteger(
-        request: proofRequest,
-        claimsFiltered: validClaims,
-      );
-
-      validClaims = _filterManuallyIfQueryContainsProofType(
-        request: proofRequest,
-        claimsFiltered: validClaims,
-      );
-
-      if (validClaims.isEmpty) {
-        continue;
-      }
-
-      final validClaim = validClaims.firstWhereOrNull((element) {
-        List<Map<String, dynamic>> proofs = element.info["proof"];
-        List<String> proofTypes =
-            proofs.map((e) => e["type"] as String).toList();
-
-        final circuitId = scope.circuitId;
-        // TODO (moria): remove this with v3 circuit release
-        if (circuitId.startsWith(CircuitType.v3CircuitPrefix) &&
-            !circuitId.endsWith(CircuitType.currentCircuitBetaPostfix)) {
-          _stacktraceManager.addError(
-            "[Authenticate] V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}",
-          );
-          throw CircuitNotDownloadedException(
-              circuit: circuitId,
-              errorMessage:
-                  "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
-        }
-
-        CircuitType circuitType = CircuitType.fromString(circuitId);
-
-        switch (circuitType) {
-          case CircuitType.mtp:
-          case CircuitType.mtponchain:
-            bool success = [
-              'Iden3SparseMerkleProof',
-              'Iden3SparseMerkleTreeProof'
-            ].any((element) => proofTypes.contains(element));
-            return success;
-          case CircuitType.sig:
-          case CircuitType.sigonchain:
-            bool success = proofTypes.contains('BJJSignature2021');
-            return success;
-          case CircuitType.auth:
-          case CircuitType.unknown:
-            break;
-          case CircuitType.circuitsV3:
-          case CircuitType.circuitsV3onchain:
-          case CircuitType.linkedMultyQuery10:
-            bool success = [
-              'Iden3SparseMerkleProof',
-              'Iden3SparseMerkleTreeProof',
-              'BJJSignature2021',
-            ].any((element) => proofTypes.contains(element));
-            return success;
-        }
-        return false;
-      });
-
-      if (validClaim == null) {
-        continue;
-      }
-
-      claims.add(validClaim);
     }
   }
 
@@ -713,129 +550,6 @@ class Authenticate {
         errorMessage: schemaResponse.statusMessage ?? "",
       );
     }
-  }
-
-  List<ClaimEntity> _filterManuallyIfPositiveInteger({
-    required ProofRequestEntity request,
-    required List<ClaimEntity> claimsFiltered,
-  }) {
-    try {
-      if (request.scope.query.credentialSubject == null) return claimsFiltered;
-
-      ProofScopeQueryRequest query = request.scope.query;
-      Map<String, dynamic>? context =
-          request.context["@context"][0][query.type]["@context"];
-      if (context == null) return claimsFiltered;
-
-      Map<String, dynamic> requestMap = request.scope.query.credentialSubject!;
-      requestMap.forEach((key, map) {
-        if (map == null || map is! Map || map.isEmpty) return;
-
-        String type = _getTypeFromNestedObject(context, key);
-        if (!type.contains("positiveInteger")) return;
-
-        _processMap(map, key, claimsFiltered);
-      });
-    } catch (ignored) {
-      // Consider logging the exception
-    }
-    return claimsFiltered;
-  }
-
-  void _processMap(dynamic map, String key, List<ClaimEntity> claimsFiltered) {
-    map.forEach((operator, needle) {
-      _filterClaims(operator, needle, key, claimsFiltered);
-    });
-  }
-
-  void _filterClaims(String operator, dynamic needle, String key,
-      List<ClaimEntity> claimsFiltered) {
-    claimsFiltered.removeWhere((element) {
-      Map<String, dynamic> credentialSubject =
-          element.info["credentialSubject"];
-      dynamic value = _getNestedValue(credentialSubject, key);
-      if (value != null) {
-        BigInt valueBigInt = BigInt.parse(value);
-        switch (operator) {
-          case '\$gt':
-            return valueBigInt <= BigInt.from(needle);
-          case '\$gte':
-            return valueBigInt < BigInt.from(needle);
-          case '\$lt':
-            return valueBigInt >= BigInt.from(needle);
-          case '\$lte':
-            return valueBigInt > BigInt.from(needle);
-          case '\$eq':
-            return valueBigInt != BigInt.from(needle);
-          case '\$neq':
-            return valueBigInt == BigInt.from(needle);
-          case '\$in':
-            List<dynamic> values = List.from(needle);
-            List<String> stringList = values.map((e) => e.toString()).toList();
-            return !stringList.contains(value);
-          case '\$nin':
-            List<dynamic> values = List.from(needle);
-            List<String> stringList = values.map((e) => e.toString()).toList();
-            return stringList.contains(value);
-        }
-      }
-      return false;
-    });
-  }
-
-  List<ClaimEntity> _filterManuallyIfQueryContainsProofType({
-    required ProofRequestEntity request,
-    required List<ClaimEntity> claimsFiltered,
-  }) {
-    try {
-      if (request.scope.query.proofType == null ||
-          request.scope.query.proofType!.isEmpty) {
-        return claimsFiltered;
-      }
-
-      String proofType = request.scope.query.proofType!;
-      claimsFiltered.removeWhere((element) {
-        List<Map<String, dynamic>> proofs = element.info["proof"];
-        List<String> proofTypes =
-            proofs.map((e) => e["type"] as String).toList();
-        return !proofTypes.contains(proofType);
-      });
-    } catch (ignored) {
-      // Consider logging the exception
-    }
-    return claimsFiltered;
-  }
-
-  String _getTypeFromNestedObject(
-      Map<String, dynamic> contextMap, String nestedKey) {
-    List<String> keys = nestedKey.split('.');
-    dynamic value = contextMap;
-    for (String key in keys) {
-      if (value is Map<String, dynamic> && value[key].containsKey("@context")) {
-        value = value[key]["@context"];
-      } else if (value is Map<String, dynamic> &&
-          value[key].containsKey("@type")) {
-        value = value[key]["@type"];
-        break;
-      } else {
-        break;
-      }
-    }
-    return value;
-  }
-
-  ///
-  dynamic _getNestedValue(Map<String, dynamic> map, String key) {
-    List<String> keys = key.split('.');
-    dynamic value = map;
-    for (String key in keys) {
-      if (value is Map<String, dynamic> && value.containsKey(key)) {
-        value = value[key];
-      } else {
-        break;
-      }
-    }
-    return value;
   }
 
   String generateLinkNonce() {
