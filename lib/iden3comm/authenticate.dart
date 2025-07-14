@@ -419,9 +419,9 @@ class Authenticate {
       Map<String, dynamic>? config;
       String? signature;
 
-      if (request.scope.circuitId == CircuitType.mtponchain.name ||
-          request.scope.circuitId == CircuitType.sigonchain.name ||
-          request.scope.circuitId == CircuitType.circuitsV3onchain.name) {
+      if (request.scope.circuitId == CircuitTypes.mtpOnChain.id ||
+          request.scope.circuitId == CircuitTypes.sigOnChain.id ||
+          request.scope.circuitId == CircuitTypes.circuitsV3OnChain.id) {
         /// SIGN MESSAGE
         signature = await signMessage(
           privateKey: privateKeyBytes,

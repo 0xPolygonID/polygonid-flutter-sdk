@@ -40,6 +40,7 @@ class CircuitsDataSource {
   /// - [checksum]: the md5 checksum of the file
   Future<bool> circuitExistsAndValidChecksum({
     required String circuitFileName,
+    required String? circuitId,
     required String? checksum,
   }) async {
     try {

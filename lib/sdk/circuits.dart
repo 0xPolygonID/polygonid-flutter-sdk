@@ -12,7 +12,15 @@ abstract class PolygonIdSdkCircuits {
     required CircuitsToDownloadParam circuitsToDownload,
   });
 
+  @Deprecated('Use checkCircuits instead')
   Future<bool> circuitsIsAlreadyDownloadedAndChecksumAreValid({
+    required List<CircuitModel> circuitsToCheck,
+  });
+
+  Future<bool> checkCircuitId({required String circuitId});
+
+  /// Checks if the circuits are already downloaded and their checksums are valid.
+  Future<bool> checkCircuits({
     required List<CircuitModel> circuitsToCheck,
   });
 
@@ -26,14 +34,13 @@ abstract class PolygonIdSdkCircuits {
 @injectable
 class Circuits implements PolygonIdSdkCircuits {
   final DownloadCircuitsUseCase _downloadCircuitsUseCase;
-  final CircuitsAlreadyDownloadedAndChecksumAreValidUseCase
-      _circuitsAlreadyDownloadedAndChecksumAreValidUseCase;
+  final CheckCircuitsUseCase _checkCircuitsCase;
   final CancelCircuitsDownloadUseCase _cancelCircuitsDownloadUseCase;
   final RemoveCircuitsUseCase _removeCircuitsUseCase;
 
   Circuits(
     this._downloadCircuitsUseCase,
-    this._circuitsAlreadyDownloadedAndChecksumAreValidUseCase,
+    this._checkCircuitsCase,
     this._cancelCircuitsDownloadUseCase,
     this._removeCircuitsUseCase,
   );
@@ -51,7 +58,14 @@ class Circuits implements PolygonIdSdkCircuits {
   Future<bool> circuitsIsAlreadyDownloadedAndChecksumAreValid({
     required List<CircuitModel> circuitsToCheck,
   }) {
-    return _circuitsAlreadyDownloadedAndChecksumAreValidUseCase.execute(
+    return checkCircuits(circuitsToCheck: circuitsToCheck);
+  }
+
+  @override
+  Future<bool> checkCircuits({
+    required List<CircuitModel> circuitsToCheck,
+  }) {
+    return _checkCircuitsCase.execute(
       param: circuitsToCheck,
     );
   }
@@ -68,5 +82,11 @@ class Circuits implements PolygonIdSdkCircuits {
     return _removeCircuitsUseCase.execute(
       param: circuitFileNamesToRemove,
     );
+  }
+
+  @override
+  Future<bool> checkCircuitId({required String circuitId}) {
+    // TODO: implement checkCircuitId
+    throw UnimplementedError();
   }
 }

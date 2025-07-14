@@ -2,11 +2,11 @@ import 'package:polygonid_flutter_sdk/circuits/data/circuit_model.dart';
 import 'package:polygonid_flutter_sdk/circuits/domain/circuits_repository.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 
-class CircuitsAlreadyDownloadedAndChecksumAreValidUseCase
+class CheckCircuitsUseCase
     extends FutureUseCase<List<CircuitModel>, bool> {
   final CircuitsRepository _circuitsRepository;
 
-  CircuitsAlreadyDownloadedAndChecksumAreValidUseCase(this._circuitsRepository);
+  CheckCircuitsUseCase(this._circuitsRepository);
 
   @override
   Future<bool> execute({required List<CircuitModel> param}) async {
@@ -16,6 +16,7 @@ class CircuitsAlreadyDownloadedAndChecksumAreValidUseCase
       final existAndValid =
           await _circuitsRepository.circuitExistsAndValidChecksum(
         circuitFileName: circuitModel.fileName,
+        circuitId: circuitModel.circuitId,
         checksum: circuitModel.checksum,
       );
 

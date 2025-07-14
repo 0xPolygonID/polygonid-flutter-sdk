@@ -20,6 +20,7 @@ class DownloadCircuitsUseCase
       final existAndValid =
           await _circuitsRepository.circuitExistsAndValidChecksum(
         circuitFileName: circuitFile.fileName,
+        circuitId: circuitFile.circuitId,
         checksum: circuitFile.checksum,
       );
 

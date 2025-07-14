@@ -5,6 +5,7 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity
 abstract class CircuitsRepository {
   Future<bool> circuitExistsAndValidChecksum({
     required String circuitFileName,
+    required String? circuitId,
     required String? checksum,
   });
 
@@ -12,8 +13,9 @@ abstract class CircuitsRepository {
     required CircuitsToDownloadParam circuitsToDownload,
   });
 
-  Stream<DownloadInfo> circuitsDownloadInfoStream(
-      {required CircuitsToDownloadParam circuitsToDownload});
+  Stream<DownloadInfo> circuitsDownloadInfoStream({
+    required CircuitsToDownloadParam circuitsToDownload,
+  });
 
   Future<void> cancelCircuitsDownload();
 
@@ -30,10 +32,12 @@ class CircuitsRepositoryImpl implements CircuitsRepository {
   @override
   Future<bool> circuitExistsAndValidChecksum({
     required String circuitFileName,
+    required String? circuitId,
     required String? checksum,
   }) async {
     bool exists = await circuitsDataSource.circuitExistsAndValidChecksum(
       circuitFileName: circuitFileName,
+      circuitId: circuitId,
       checksum: checksum,
     );
     return exists;
@@ -57,8 +61,9 @@ class CircuitsRepositoryImpl implements CircuitsRepository {
   }
 
   @override
-  Stream<DownloadInfo> circuitsDownloadInfoStream(
-      {required CircuitsToDownloadParam circuitsToDownload}) async* {
+  Stream<DownloadInfo> circuitsDownloadInfoStream({
+    required CircuitsToDownloadParam circuitsToDownload,
+  }) async* {
     await for (final downloadResponse in circuitsDataSource.downloadStream) {
       int progress = downloadResponse.progress;
       int total = downloadResponse.total;

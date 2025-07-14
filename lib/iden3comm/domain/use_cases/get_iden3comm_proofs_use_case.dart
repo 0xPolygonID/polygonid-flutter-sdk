@@ -139,9 +139,9 @@ class GetIden3commProofsUseCase
 
           String? challenge;
           String? privKey;
-          if (circuitId == CircuitType.mtponchain.name ||
-              circuitId == CircuitType.sigonchain.name ||
-              circuitId == CircuitType.circuitsV3onchain.name) {
+          if (circuitId == CircuitTypes.mtpOnChain.id ||
+              circuitId == CircuitTypes.sigOnChain.id ||
+              circuitId == CircuitTypes.circuitsV3OnChain.id) {
             privKey = param.privateKey;
             challenge = param.challenge;
           }

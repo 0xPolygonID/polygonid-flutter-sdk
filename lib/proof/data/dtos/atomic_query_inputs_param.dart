@@ -1,7 +1,6 @@
 import 'package:polygonid_flutter_sdk/common/utils/format_utils.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/self_issuance/self_issued_credential_params.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 
 abstract class AtomicQueryInputsParam {
   String get id;
@@ -57,7 +56,6 @@ class AuthAtomicQueryInputsParam extends AtomicQueryInputsParam {
 }
 
 class GenericAtomicQueryInputsParam extends AtomicQueryInputsParam {
-  final CircuitType type;
   final String id;
   final BigInt profileNonce;
   final BigInt claimSubjectProfileNonce;
@@ -79,7 +77,6 @@ class GenericAtomicQueryInputsParam extends AtomicQueryInputsParam {
   final Map<String, dynamic>? transactionData;
 
   GenericAtomicQueryInputsParam({
-    required this.type,
     required this.id,
     required this.profileNonce,
     required this.claimSubjectProfileNonce,

@@ -5,6 +5,7 @@ class CircuitsToDownloadParam extends Equatable {
   final String bucketUrl;
   String? downloadPath;
 
+  @Deprecated('User PolygonIdSdk.circuits methods instead')
   CircuitsToDownloadParam({
     required this.circuitsName,
     required this.bucketUrl,

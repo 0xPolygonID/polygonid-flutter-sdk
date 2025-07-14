@@ -730,8 +730,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factoryAsync<_i737.RemoveCircuitsUseCase>(() async =>
         _i737.RemoveCircuitsUseCase(
             await getAsync<_i1000.CircuitsRepository>()));
-    gh.factoryAsync<_i515.CircuitsAlreadyDownloadedAndChecksumAreValidUseCase>(
-        () async => _i515.CircuitsAlreadyDownloadedAndChecksumAreValidUseCase(
+    gh.factoryAsync<_i515.CheckCircuitsUseCase>(() async =>
+        _i515.CheckCircuitsUseCase(
             await getAsync<_i1000.CircuitsRepository>()));
     gh.factory<_i737.GetSelectedChainUseCase>(
         () => _i737.GetSelectedChainUseCase(
@@ -808,6 +808,12 @@ extension GetItInjectableX on _i174.GetIt {
               gh<_i897.GetIden3MessageUseCase>(),
               gh<_i267.StacktraceManager>(),
             ));
+    gh.factoryAsync<_i610.Circuits>(() async => _i610.Circuits(
+          await getAsync<_i521.DownloadCircuitsUseCase>(),
+          await getAsync<_i515.CheckCircuitsUseCase>(),
+          await getAsync<_i37.CancelCircuitsDownloadUseCase>(),
+          await getAsync<_i737.RemoveCircuitsUseCase>(),
+        ));
     gh.factory<_i946.SMTRepository>(
         () => repositoriesModule.smtRepository(gh<_i328.SMTRepositoryImpl>()));
     gh.factoryAsync<_i341.ProofRepository>(() async => repositoriesModule
@@ -849,13 +855,6 @@ extension GetItInjectableX on _i174.GetIt {
               gh<_i41.LibPolygonIdCoreWrapper>(),
               await getAsync<_i310.ProveUseCase>(),
             ));
-    gh.factoryAsync<_i610.Circuits>(() async => _i610.Circuits(
-          await getAsync<_i521.DownloadCircuitsUseCase>(),
-          await getAsync<
-              _i515.CircuitsAlreadyDownloadedAndChecksumAreValidUseCase>(),
-          await getAsync<_i37.CancelCircuitsDownloadUseCase>(),
-          await getAsync<_i737.RemoveCircuitsUseCase>(),
-        ));
     gh.factoryAsync<_i746.GenerateZKProofUseCase>(
         () async => _i746.GenerateZKProofUseCase(
               await getAsync<_i341.ProofRepository>(),
