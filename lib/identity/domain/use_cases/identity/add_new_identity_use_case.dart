@@ -4,8 +4,23 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/add_identity_use_case.dart';
 
+class AddNewIdentityParam {
+  final String? seed;
+  final String? privateKey;
+
+  AddNewIdentityParam._({
+    this.seed,
+    this.privateKey,
+  });
+
+  AddNewIdentityParam.seed(String? seed) : this._(seed: seed);
+
+  AddNewIdentityParam.privateKey(String privateKey)
+      : this._(privateKey: privateKey);
+}
+
 class AddNewIdentityUseCase
-    extends FutureUseCase<String?, PrivateIdentityEntity> {
+    extends FutureUseCase<AddNewIdentityParam, PrivateIdentityEntity> {
   final IdentityRepository _identityRepository;
   final AddIdentityUseCase _addIdentityUseCase;
   final StacktraceManager _stacktraceManager;
@@ -18,20 +33,21 @@ class AddNewIdentityUseCase
 
   @override
   Future<PrivateIdentityEntity> execute({
-    String? param,
-    bool useSecretAsPrivateKey = false,
-  }) {
-    assert(
-      !useSecretAsPrivateKey ||
-          (param != null && RegExp(r'^[0-9a-fA-F]{64}$').hasMatch(param)),
-      'If useSecretAsPrivateKey is true, param must be a non-null 64-character hex string',
-    );
+    required AddNewIdentityParam param,
+  }) async {
     return Future(() async {
-      final String privateKey = useSecretAsPrivateKey
-          ? param!
-          : await _identityRepository.getPrivateKey(secret: param);
-      final publicKeys =
-          await _identityRepository.getPublicKeys(bjjPrivateKey: privateKey);
+      final String privateKey;
+      if (param.privateKey != null) {
+        privateKey = param.privateKey!;
+      } else {
+        privateKey = await _identityRepository.getPrivateKey(
+          secret: param.seed,
+        );
+      }
+
+      final publicKeys = await _identityRepository.getPublicKeys(
+        bjjPrivateKey: privateKey,
+      );
       final identity = await _addIdentityUseCase.execute(
         param: AddIdentityParam(
           bjjPublicKey: publicKeys,

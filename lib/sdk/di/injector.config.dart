@@ -400,7 +400,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i497.ClaimStateMapper>(() => _i497.ClaimStateMapper());
     gh.factory<_i590.DisplayTypeMapper>(() => _i590.DisplayTypeMapper());
     gh.factory<_i80.BabyjubjubLib>(() => _i80.BabyjubjubLib());
-    gh.factory<_i383.WalletLibWrapper>(() => _i383.WalletLibWrapper());
+    gh.factory<_i383.WalletDataSource>(() => _i383.WalletDataSource());
     gh.factory<_i200.EncryptionDbDataSource>(
         () => _i200.EncryptionDbDataSource());
     gh.factory<_i938.CreatePathWrapper>(() => _i938.CreatePathWrapper());
@@ -543,8 +543,6 @@ extension GetItInjectableX on _i174.GetIt {
         _i42.IdentitySMTStoreRefWrapper(
             gh<Map<String, _i310.StoreRef<String, Map<String, Object?>>>>(
                 instanceName: 'identityStateStore')));
-    gh.factory<_i383.WalletDataSource>(
-        () => _i383.WalletDataSource(gh<_i383.WalletLibWrapper>()));
     gh.factoryParamAsync<_i310.Database, String?, String?>(
       (
         identifier,

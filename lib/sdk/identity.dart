@@ -60,7 +60,10 @@ abstract class PolygonIdSdkIdentity {
   /// The identity will be created using the current env set with [PolygonIdSdk.setEnv]
   Future<PrivateIdentityEntity> addIdentity({
     String? secret,
-    bool useSecretAsPrivateKey = false,
+  });
+
+  Future<PrivateIdentityEntity> addIdentityWithPrivateKey({
+    required String privateKey,
   });
 
   /// Restores an [IdentityEntity] from a privateKey and encrypted backup databases
@@ -299,19 +302,28 @@ class Identity implements PolygonIdSdkIdentity {
   @override
   Future<PrivateIdentityEntity> addIdentity({
     String? secret,
-    bool useSecretAsPrivateKey = false,
+  }) async {
+    _stacktraceManager.clear();
+    _stacktraceManager.addTrace("PolygonIdSdk.Identity.addIdentity called");
+
+    return _addNewIdentityUseCase.execute(
+      param: AddNewIdentityParam.seed(secret),
+    );
+  }
+
+  @override
+  Future<PrivateIdentityEntity> addIdentityWithPrivateKey({
+    required String privateKey,
   }) async {
     assert(
-      !useSecretAsPrivateKey ||
-          (secret != null && RegExp(r'^[0-9a-fA-F]{64}$').hasMatch(secret)),
-      'If useSecretAsPrivateKey is true, secret must be a non-null 64-character hex string',
+      RegExp(r'^[0-9a-fA-F]{64}$').hasMatch(privateKey),
+      'Private key must be a non-null 64-character hex string',
     );
     _stacktraceManager.clear();
     _stacktraceManager.addTrace("PolygonIdSdk.Identity.addIdentity called");
 
     return _addNewIdentityUseCase.execute(
-      param: secret,
-      useSecretAsPrivateKey: useSecretAsPrivateKey,
+      param: AddNewIdentityParam.privateKey(privateKey),
     );
   }
 
