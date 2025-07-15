@@ -2,16 +2,42 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:flutter/services.dart';
+import 'package:path/path.dart' as pathLib;
+import 'package:polygonid_flutter_sdk/common/utils/collection_utils.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
-import 'package:path/path.dart' as pathLib;
 
 class CircuitsFilesDataSource {
   final Directory directory;
 
   CircuitsFilesDataSource(this.directory);
 
+  Directory? circuitDirectory(String circuitId) {
+    final dirContents = directory.listSync();
+    final circuitDir = dirContents.firstWhereOrNull(
+        (f) => f.path.endsWith(circuitId) && f is Directory) as Directory?;
+    return circuitDir;
+  }
+
   Future<Uint8List> loadGraphFile(String circuitId) async {
+    final dirContents = directory.listSync();
+    File? graphFile = dirContents
+        .firstWhereOrNull((f) => f.path.endsWith('$circuitId.wcd')) as File?;
+
+    if (graphFile != null && graphFile.existsSync()) {
+      return graphFile.readAsBytesSync();
+    }
+
+    final circuitDir = circuitDirectory(circuitId);
+    if (circuitDir != null) {
+      graphFile = circuitDir.listSync().firstWhereOrNull((f) =>
+              f.path.endsWith('$circuitId.wcd') || f.path.endsWith('graph.wcd'))
+          as File?;
+      if (graphFile != null && graphFile.existsSync()) {
+        return graphFile.readAsBytesSync();
+      }
+    }
+
     try {
       final path = "assets/$circuitId.wcd";
       final circuitGraphFile = await rootBundle.load(path);
@@ -26,18 +52,28 @@ class CircuitsFilesDataSource {
   }
 
   Future<String> getZkeyFilePath(String circuitId) async {
-    final circuitZkeyFileName = '$circuitId.zkey';
-    final circuitZkeyFilePath = '${directory.path}/$circuitZkeyFileName';
+    final dirContents = directory.listSync();
+    File? zkeyFile = dirContents
+        .firstWhereOrNull((f) => f.path.endsWith('$circuitId.zkey')) as File?;
 
-    final circuitZkeyFile = File(circuitZkeyFilePath);
-    if (!circuitZkeyFile.existsSync()) {
-      throw CircuitNotDownloadedException(
-        circuit: circuitId,
-        errorMessage: "Circuit $circuitId not downloaded or not found",
-      );
+    if (zkeyFile != null && !zkeyFile.existsSync()) {
+      return zkeyFile.path;
     }
 
-    return circuitZkeyFilePath;
+    final circuitDir = circuitDirectory(circuitId);
+    if (circuitDir != null) {
+      zkeyFile = circuitDir.listSync().firstWhereOrNull((f) =>
+          f.path.endsWith('$circuitId.zkey') ||
+          f.path.endsWith('circuit_final.zkey')) as File?;
+      if (zkeyFile != null && zkeyFile.existsSync()) {
+        return zkeyFile.path;
+      }
+    }
+
+    throw CircuitNotDownloadedException(
+      circuit: circuitId,
+      errorMessage: "Circuit $circuitId not downloaded or not found",
+    );
   }
 
   ///

@@ -841,18 +841,6 @@ extension GetItInjectableX on _i174.GetIt {
         .iden3commRepository(gh<_i588.Iden3commRepositoryImpl>()));
     gh.factory<_i359.CleanSchemaCacheUseCase>(
         () => _i359.CleanSchemaCacheUseCase(gh<_i88.Iden3commRepository>()));
-    gh.factoryAsync<_i139.CreatePassportProofUseCase>(
-        () async => _i139.CreatePassportProofUseCase(
-              gh<_i626.GetEnvUseCase>(),
-              gh<_i41.LibPolygonIdCoreWrapper>(),
-              await getAsync<_i310.ProveUseCase>(),
-            ));
-    gh.factoryAsync<_i39.CreateAnonAadhaarProofUseCase>(
-        () async => _i39.CreateAnonAadhaarProofUseCase(
-              gh<_i626.GetEnvUseCase>(),
-              gh<_i41.LibPolygonIdCoreWrapper>(),
-              await getAsync<_i310.ProveUseCase>(),
-            ));
     gh.factoryAsync<_i746.GenerateZKProofUseCase>(
         () async => _i746.GenerateZKProofUseCase(
               await getAsync<_i341.ProofRepository>(),
@@ -916,6 +904,20 @@ extension GetItInjectableX on _i174.GetIt {
               gh<_i53.GetClaimRevocationNonceUseCase>(),
               await getAsync<_i735.IsProofCircuitSupportedUseCase>(),
               gh<_i627.GetProofRequestsUseCase>(),
+            ));
+    gh.factoryAsync<_i139.CreatePassportProofUseCase>(
+        () async => _i139.CreatePassportProofUseCase(
+              gh<_i626.GetEnvUseCase>(),
+              gh<_i41.LibPolygonIdCoreWrapper>(),
+              await getAsync<_i310.ProveUseCase>(),
+              await getAsync<_i540.CircuitsFilesDataSource>(),
+            ));
+    gh.factoryAsync<_i39.CreateAnonAadhaarProofUseCase>(
+        () async => _i39.CreateAnonAadhaarProofUseCase(
+              gh<_i626.GetEnvUseCase>(),
+              gh<_i41.LibPolygonIdCoreWrapper>(),
+              await getAsync<_i310.ProveUseCase>(),
+              await getAsync<_i540.CircuitsFilesDataSource>(),
             ));
     gh.factoryAsync<_i181.GetMessageRequestsAndCredsUseCase>(
         () async => _i181.GetMessageRequestsAndCredsUseCase(
