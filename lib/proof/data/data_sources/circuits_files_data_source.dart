@@ -22,7 +22,7 @@ class CircuitsFilesDataSource {
   Future<Uint8List> loadGraphFile(String circuitId) async {
     final dirContents = directory.listSync();
     File? graphFile = dirContents
-        .firstWhereOrNull((f) => f.path.endsWith('$circuitId.wcd')) as File?;
+        .firstWhereOrNull((f) => f.name == ('$circuitId.wcd')) as File?;
 
     if (graphFile != null && graphFile.existsSync()) {
       return graphFile.readAsBytesSync();
@@ -30,8 +30,8 @@ class CircuitsFilesDataSource {
 
     final circuitDir = circuitDirectory(circuitId);
     if (circuitDir != null) {
-      graphFile = circuitDir.listSync().firstWhereOrNull((f) =>
-              f.path.endsWith('$circuitId.wcd') || f.path.endsWith('graph.wcd'))
+      graphFile = circuitDir.listSync().firstWhereOrNull(
+              (f) => f.name == ('$circuitId.wcd') || f.name == ('graph.wcd'))
           as File?;
       if (graphFile != null && graphFile.existsSync()) {
         return graphFile.readAsBytesSync();
@@ -54,17 +54,17 @@ class CircuitsFilesDataSource {
   Future<String> getZkeyFilePath(String circuitId) async {
     final dirContents = directory.listSync();
     File? zkeyFile = dirContents
-        .firstWhereOrNull((f) => f.path.endsWith('$circuitId.zkey')) as File?;
+        .firstWhereOrNull((f) => f.name == ('$circuitId.zkey')) as File?;
 
-    if (zkeyFile != null && !zkeyFile.existsSync()) {
+    if (zkeyFile != null && zkeyFile.existsSync()) {
       return zkeyFile.path;
     }
 
     final circuitDir = circuitDirectory(circuitId);
     if (circuitDir != null) {
       zkeyFile = circuitDir.listSync().firstWhereOrNull((f) =>
-          f.path.endsWith('$circuitId.zkey') ||
-          f.path.endsWith('circuit_final.zkey')) as File?;
+          f.name == ('$circuitId.zkey') ||
+          f.name == ('circuit_final.zkey')) as File?;
       if (zkeyFile != null && zkeyFile.existsSync()) {
         return zkeyFile.path;
       }
@@ -153,4 +153,8 @@ class CircuitsFilesDataSource {
       }
     }
   }
+}
+
+extension on FileSystemEntity {
+  String get name => pathLib.basename(path);
 }
