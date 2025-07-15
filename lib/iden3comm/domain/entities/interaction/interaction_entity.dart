@@ -27,7 +27,7 @@ class InteractionEntity {
   final String genesisDid;
   final BigInt profileNonce;
 
-  final List<String>? tags;
+  final List<String> tags;
 
   InteractionEntity({
     required this.id,
@@ -39,7 +39,7 @@ class InteractionEntity {
     required this.state,
     required this.timestamp,
     required this.message,
-    this.tags,
+    this.tags = const [],
   });
 
   factory InteractionEntity.fromJson(Map<String, dynamic> json) {
@@ -56,8 +56,9 @@ class InteractionEntity {
       timestamp: json['timestamp'],
       message: json['message'],
       tags: (json['tags'] as List<dynamic>?)
-          ?.map((tag) => tag.toString())
-          .toList(),
+              ?.map((tag) => tag.toString())
+              .toList() ??
+          [],
     );
   }
 
