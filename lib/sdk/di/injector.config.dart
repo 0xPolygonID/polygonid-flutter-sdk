@@ -23,8 +23,8 @@ import 'package:polygonid_flutter_sdk/circuits/data/circuits_data_source.dart'
     as _i769;
 import 'package:polygonid_flutter_sdk/circuits/domain/cancel_circuits_download_use_case.dart'
     as _i37;
-import 'package:polygonid_flutter_sdk/circuits/domain/circuits_already_downloaded_and_checksum_are_valid_use_case.dart'
-    as _i515;
+import 'package:polygonid_flutter_sdk/circuits/domain/check_circuits_use_case.dart'
+    as _i1068;
 import 'package:polygonid_flutter_sdk/circuits/domain/circuits_repository.dart'
     as _i1000;
 import 'package:polygonid_flutter_sdk/circuits/domain/download_circuits_use_case.dart'
@@ -728,8 +728,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factoryAsync<_i737.RemoveCircuitsUseCase>(() async =>
         _i737.RemoveCircuitsUseCase(
             await getAsync<_i1000.CircuitsRepository>()));
-    gh.factoryAsync<_i515.CheckCircuitsUseCase>(() async =>
-        _i515.CheckCircuitsUseCase(
+    gh.factoryAsync<_i1068.CheckCircuitsUseCase>(() async =>
+        _i1068.CheckCircuitsUseCase(
             await getAsync<_i1000.CircuitsRepository>()));
     gh.factory<_i737.GetSelectedChainUseCase>(
         () => _i737.GetSelectedChainUseCase(
@@ -759,6 +759,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i503.RemoveAllClaimsUseCase>(() => _i503.RemoveAllClaimsUseCase(
           gh<_i309.CredentialRepository>(),
           gh<_i267.StacktraceManager>(),
+        ));
+    gh.factoryAsync<_i610.Circuits>(() async => _i610.Circuits(
+          await getAsync<_i521.DownloadCircuitsUseCase>(),
+          await getAsync<_i1068.CheckCircuitsUseCase>(),
+          await getAsync<_i37.CancelCircuitsDownloadUseCase>(),
+          await getAsync<_i737.RemoveCircuitsUseCase>(),
         ));
     gh.factory<_i1054.FetchOnchainClaimUseCase>(
         () => _i1054.FetchOnchainClaimUseCase(
@@ -806,12 +812,6 @@ extension GetItInjectableX on _i174.GetIt {
               gh<_i897.GetIden3MessageUseCase>(),
               gh<_i267.StacktraceManager>(),
             ));
-    gh.factoryAsync<_i610.Circuits>(() async => _i610.Circuits(
-          await getAsync<_i521.DownloadCircuitsUseCase>(),
-          await getAsync<_i515.CheckCircuitsUseCase>(),
-          await getAsync<_i37.CancelCircuitsDownloadUseCase>(),
-          await getAsync<_i737.RemoveCircuitsUseCase>(),
-        ));
     gh.factory<_i946.SMTRepository>(
         () => repositoriesModule.smtRepository(gh<_i328.SMTRepositoryImpl>()));
     gh.factoryAsync<_i341.ProofRepository>(() async => repositoriesModule
