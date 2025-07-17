@@ -4,6 +4,7 @@ import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
 
 class GetIden3commClaimsParam {
@@ -56,8 +57,9 @@ class GetIden3commClaimsUseCase
       } else if (requestAndCreds.request.isOptional) {
         continue;
       } else {
-        throw Exception(
-          "No credentials found for request: ${requestAndCreds.request.scope.id}",
+        throw NoCredentialsFoundException(
+          proofRequest: requestAndCreds.request,
+          errorMessage: "No credentials found for request: ${requestAndCreds.request.scope.id}",
         );
       }
     }

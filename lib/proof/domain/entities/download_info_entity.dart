@@ -30,6 +30,7 @@ class DownloadInfoOnDone extends DownloadInfo {
   Map<String, dynamic> toJson() => {
         'contentLength': contentLength,
         'downloaded': downloaded,
+        'downloadInfoType': 'onDone',
       };
 }
 
@@ -42,6 +43,7 @@ class DownloadInfoOnError extends DownloadInfo {
 
   Map<String, dynamic> toJson() => {
         'errorMessage': errorMessage,
+        'downloadInfoType': 'onError',
       };
 }
 
@@ -57,5 +59,6 @@ class DownloadInfoOnProgress extends DownloadInfo {
   Map<String, dynamic> toJson() => {
         'contentLength': contentLength,
         'downloaded': downloaded,
+        'downloadInfoType': 'onProgress',
       };
 }
