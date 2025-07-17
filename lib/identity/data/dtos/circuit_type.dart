@@ -7,6 +7,10 @@ sealed class CircuitType {
   @Deprecated('Use id field instead')
   String get name => id;
 
+  String get displayName => id;
+
+  String get category => "";
+
   // Constants for circuit naming
   static const v3CircuitPrefix = "credentialAtomicQueryV3";
   static const currentCircuitBetaPostfix = "-beta.1";
