@@ -3,9 +3,8 @@ import 'package:polygonid_flutter_sdk/circuits/data/circuits_to_download_param.d
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
 
 abstract class CircuitsRepository {
-  Future<bool> circuitExistsAndValidChecksum({
-    required String circuitFileName,
-    required String? circuitId,
+  Future<bool> fileExistsAndValidChecksum({
+    required String fileName,
     required String? checksum,
   });
 
@@ -30,14 +29,12 @@ class CircuitsRepositoryImpl implements CircuitsRepository {
   });
 
   @override
-  Future<bool> circuitExistsAndValidChecksum({
-    required String circuitFileName,
-    required String? circuitId,
+  Future<bool> fileExistsAndValidChecksum({
+    required String fileName,
     required String? checksum,
   }) async {
-    bool exists = await circuitsDataSource.circuitExistsAndValidChecksum(
-      circuitFileName: circuitFileName,
-      circuitId: circuitId,
+    bool exists = await circuitsDataSource.fileExistsAndValidChecksum(
+      fileName: fileName,
       checksum: checksum,
     );
     return exists;

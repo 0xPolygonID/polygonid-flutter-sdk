@@ -2,7 +2,7 @@ import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/circuits/data/circuit_model.dart';
 import 'package:polygonid_flutter_sdk/circuits/data/circuits_to_download_param.dart';
 import 'package:polygonid_flutter_sdk/circuits/domain/cancel_circuits_download_use_case.dart';
-import 'package:polygonid_flutter_sdk/circuits/domain/circuits_already_downloaded_and_checksum_are_valid_use_case.dart';
+import 'package:polygonid_flutter_sdk/circuits/domain/check_circuits_use_case.dart';
 import 'package:polygonid_flutter_sdk/circuits/domain/download_circuits_use_case.dart';
 import 'package:polygonid_flutter_sdk/circuits/domain/remove_circuits_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
@@ -16,8 +16,6 @@ abstract class PolygonIdSdkCircuits {
   Future<bool> circuitsIsAlreadyDownloadedAndChecksumAreValid({
     required List<CircuitModel> circuitsToCheck,
   });
-
-  Future<bool> checkCircuitId({required String circuitId});
 
   /// Checks if the circuits are already downloaded and their checksums are valid.
   Future<bool> checkCircuits({
@@ -82,11 +80,5 @@ class Circuits implements PolygonIdSdkCircuits {
     return _removeCircuitsUseCase.execute(
       param: circuitFileNamesToRemove,
     );
-  }
-
-  @override
-  Future<bool> checkCircuitId({required String circuitId}) {
-    // TODO: implement checkCircuitId
-    throw UnimplementedError();
   }
 }

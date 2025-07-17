@@ -50,21 +50,20 @@ class InteractionEntity {
       genesisDid: json['genesisDid'],
       profileNonce: BigInt.parse(json['profileNonce']),
       type: InteractionType.values.firstWhere((type) =>
-      type.name == json['type'] || type.toString() == json['type']),
+          type.name == json['type'] || type.toString() == json['type']),
       state: InteractionState.values.firstWhere((type) =>
-      type.name == json['state'] || type.toString() == json['state']),
+          type.name == json['state'] || type.toString() == json['state']),
       timestamp: json['timestamp'],
       message: json['message'],
       tags: (json['tags'] as List<dynamic>?)
-          ?.map((tag) => tag.toString())
-          .toList() ??
+              ?.map((tag) => tag.toString())
+              .toList() ??
           [],
     );
   }
 
   @override
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'id': id,
         'from': from,
         'type': type.toString(),
@@ -85,18 +84,18 @@ class InteractionEntity {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is InteractionEntity &&
-              runtimeType == other.runtimeType &&
-              id == other.id &&
-              from == other.from &&
-              type == other.type &&
-              state == other.state &&
-              timestamp == other.timestamp &&
-              message == other.message &&
-              to == other.to &&
-              genesisDid == other.genesisDid &&
-              profileNonce == other.profileNonce &&
-              listEquals(tags, other.tags);
+      other is InteractionEntity &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          from == other.from &&
+          type == other.type &&
+          state == other.state &&
+          timestamp == other.timestamp &&
+          message == other.message &&
+          to == other.to &&
+          genesisDid == other.genesisDid &&
+          profileNonce == other.profileNonce &&
+          listEquals(tags, other.tags);
 
   @override
   int get hashCode =>

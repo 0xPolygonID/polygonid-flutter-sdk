@@ -36,16 +36,15 @@ class CircuitsDataSource {
 
   /// we check if the circuit file exists and if the checksum is valid
   /// parameters:
-  /// - [circuitFileName]: the name of the circuit file including the extension
+  /// - [fileName]: the name of the circuit file including the extension
   /// - [checksum]: the md5 checksum of the file
-  Future<bool> circuitExistsAndValidChecksum({
-    required String circuitFileName,
-    required String? circuitId,
+  Future<bool> fileExistsAndValidChecksum({
+    required String fileName,
     required String? checksum,
   }) async {
     try {
       String path = directory.path;
-      var file = File('$path/$circuitFileName');
+      var file = File('$path/$fileName');
       final bool fileExists = await file.exists();
       if (!fileExists) {
         return false;
