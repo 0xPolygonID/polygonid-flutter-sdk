@@ -59,7 +59,8 @@ class GetIden3commClaimsUseCase
       } else {
         throw NoCredentialsFoundException(
           proofRequest: requestAndCreds.request,
-          errorMessage: "No credentials found for request: ${requestAndCreds.request.scope.id}",
+          errorMessage:
+              "No credentials found for request: ${requestAndCreds.request.scope.id}",
         );
       }
     }
