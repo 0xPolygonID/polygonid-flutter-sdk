@@ -9,10 +9,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:injectable/injectable.dart';
 import 'package:md5_file_checksum/md5_file_checksum.dart';
+import 'package:path/path.dart' as pathLib;
 import 'package:polygonid_flutter_sdk/circuits/data/circuit_model.dart';
 import 'package:polygonid_flutter_sdk/circuits/data/download_response_dto.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
-import 'package:path/path.dart' as pathLib;
 
 import 'circuits_to_download_param.dart';
 
@@ -256,28 +256,32 @@ class CircuitsDataSource {
     // the path where the circuits are stored
     final circuitsPath = await getPath();
 
-    // read the zip file
-    var zipFile = File(pathForZipFile);
-    Uint8List zipBytes = await zipFile.readAsBytes();
+    // read the zip file as input stream
+    final inputStream = InputFileStream('test.zip');
     final zipDecoder = getItSdk.get<ZipDecoder>();
-    var archive = zipDecoder.decodeBytes(zipBytes);
+    final archive = zipDecoder.decodeStream(inputStream);
 
     bool allChecksumsAreValid = true;
 
     // iterate over the files in the zip
     for (final archiveFile in archive) {
-      final fileName =
-          pathLib.join(circuitsPath, pathLib.basename(archiveFile.name));
+      final fileName = pathLib.join(
+        circuitsPath,
+        pathLib.basename(archiveFile.name),
+      );
       if (archiveFile.isFile) {
+        // create file in local storage
+        final file = File(fileName);
+        if (!file.existsSync()) file.createSync();
+
         // write the file to local storage
-        var outFile = File(fileName);
-        outFile = await outFile.create(recursive: true);
-        await outFile.writeAsBytes(archiveFile.content);
+        final outputFileStream = OutputFileStream(fileName);
+        archiveFile.writeContent(outputFileStream);
 
         // we get the checksum from list
         final String? circuitToCheckChecksum = circuitsToCheck
             .firstWhere(
-              (element) => element.fileName == outFile.path.split('/').last,
+              (element) => element.fileName == file.path.split('/').last,
               orElse: () => CircuitModel(fileName: '', checksum: ''),
             )
             .checksum;
@@ -288,7 +292,7 @@ class CircuitsDataSource {
         }
 
         final circuitFromZipChecksumBase64 =
-            await Md5FileChecksum.getFileChecksum(filePath: outFile.path);
+            await Md5FileChecksum.getFileChecksum(filePath: file.path);
         final String circuitFromZipChecksum =
             _base64ToHex(circuitFromZipChecksumBase64);
 

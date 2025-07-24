@@ -138,17 +138,18 @@ class CircuitsFilesDataSource {
     required String path,
     required String zipPath,
   }) async {
-    var zipFile = File(zipPath);
-    Uint8List zipBytes = zipFile.readAsBytesSync();
+    // Decode zip file
     final zipDecoder = getItSdk.get<ZipDecoder>();
-    var archive = zipDecoder.decodeBytes(zipBytes);
+    final inputFileStream = InputFileStream(zipPath);
+    final archive = zipDecoder.decodeStream(inputFileStream);
 
-    for (var file in archive) {
-      var filename = pathLib.join(path, pathLib.basename(file.name));
-      if (file.isFile) {
+    for (var archiveFile in archive) {
+      var filename = pathLib.join(path, pathLib.basename(archiveFile.name));
+      if (archiveFile.isFile) {
         var outFile = File(filename);
         outFile = await outFile.create(recursive: true);
-        await outFile.writeAsBytes(file.content);
+
+        archiveFile.writeContent(OutputFileStream(filename));
       }
     }
   }
