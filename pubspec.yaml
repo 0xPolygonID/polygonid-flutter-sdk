@@ -54,7 +54,7 @@ dependencies:
   json_annotation: ^4.6.0
   equatable: ^2.0.7
   path_provider: ^2.0.15
-  archive: ^4.0.7
+  archive: ^3.5.1
   package_info_plus: ">=7.0.0"
   logger: ^2.0.1
   intl: ">=0.18.1"

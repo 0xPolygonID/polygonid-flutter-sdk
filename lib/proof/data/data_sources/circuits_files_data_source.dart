@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:archive/archive.dart';
+import 'package:archive/archive_io.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:polygonid_flutter_sdk/common/utils/collection_utils.dart';
@@ -141,7 +142,7 @@ class CircuitsFilesDataSource {
     // Decode zip file
     final zipDecoder = getItSdk.get<ZipDecoder>();
     final inputFileStream = InputFileStream(zipPath);
-    final archive = zipDecoder.decodeStream(inputFileStream);
+    final archive = zipDecoder.decodeBuffer(inputFileStream);
 
     for (var archiveFile in archive) {
       var filename = pathLib.join(path, pathLib.basename(archiveFile.name));

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:archive/archive.dart';
+import 'package:archive/archive_io.dart';
 import 'package:background_downloader/background_downloader.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -257,9 +257,9 @@ class CircuitsDataSource {
     final circuitsPath = await getPath();
 
     // read the zip file as input stream
-    final inputStream = InputFileStream('test.zip');
+    final inputStream = InputFileStream(pathForZipFile);
     final zipDecoder = getItSdk.get<ZipDecoder>();
-    final archive = zipDecoder.decodeStream(inputStream);
+    final archive = zipDecoder.decodeBuffer(inputStream);
 
     bool allChecksumsAreValid = true;
 
