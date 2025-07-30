@@ -259,7 +259,7 @@ class CircuitsDataSource {
     // read the zip file as input stream
     final inputStream = InputFileStream(pathForZipFile);
     final zipDecoder = getItSdk.get<ZipDecoder>();
-    final archive = zipDecoder.decodeBuffer(inputStream);
+    final archive = zipDecoder.decodeStream(inputStream);
 
     bool allChecksumsAreValid = true;
 

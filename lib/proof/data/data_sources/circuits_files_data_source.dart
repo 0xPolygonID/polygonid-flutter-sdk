@@ -142,7 +142,7 @@ class CircuitsFilesDataSource {
     // Decode zip file
     final zipDecoder = getItSdk.get<ZipDecoder>();
     final inputFileStream = InputFileStream(zipPath);
-    final archive = zipDecoder.decodeBuffer(inputFileStream);
+    final archive = zipDecoder.decodeStream(inputFileStream);
 
     for (var archiveFile in archive) {
       var filename = pathLib.join(path, pathLib.basename(archiveFile.name));
