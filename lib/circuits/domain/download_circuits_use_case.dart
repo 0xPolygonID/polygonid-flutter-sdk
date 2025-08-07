@@ -18,8 +18,8 @@ class DownloadCircuitsUseCase
     for (final circuitFile in param.circuitsToDownload.circuitsWithChecksum) {
       // check if the circuit exists and has a valid checksum
       final existAndValid =
-          await _circuitsRepository.circuitExistsAndValidChecksum(
-        circuitFileName: circuitFile.fileName,
+          await _circuitsRepository.fileExistsAndValidChecksum(
+        fileName: circuitFile.fileName,
         checksum: circuitFile.checksum,
       );
 

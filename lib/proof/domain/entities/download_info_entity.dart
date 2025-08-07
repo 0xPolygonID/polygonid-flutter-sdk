@@ -1,10 +1,7 @@
 enum DownloadInfoType { onDone, onError, onProgress }
 
-abstract class DownloadInfo {
-  final DownloadInfoType downloadInfoType;
-
-  //TODO refactor to sealed class as soon as we update to dart 3
-  const DownloadInfo._(this.downloadInfoType);
+sealed class DownloadInfo {
+  const DownloadInfo._();
 
   factory DownloadInfo.onDone({
     required int contentLength,
@@ -28,12 +25,12 @@ class DownloadInfoOnDone extends DownloadInfo {
   const DownloadInfoOnDone({
     required this.contentLength,
     required this.downloaded,
-  }) : super._(DownloadInfoType.onDone);
+  }) : super._();
 
   Map<String, dynamic> toJson() => {
-        'downloadInfoType': downloadInfoType.name,
         'contentLength': contentLength,
         'downloaded': downloaded,
+        'downloadInfoType': 'onDone',
       };
 }
 
@@ -42,11 +39,11 @@ class DownloadInfoOnError extends DownloadInfo {
 
   const DownloadInfoOnError({
     required this.errorMessage,
-  }) : super._(DownloadInfoType.onError);
+  }) : super._();
 
   Map<String, dynamic> toJson() => {
-        'downloadInfoType': downloadInfoType.name,
         'errorMessage': errorMessage,
+        'downloadInfoType': 'onError',
       };
 }
 
@@ -57,11 +54,11 @@ class DownloadInfoOnProgress extends DownloadInfo {
   const DownloadInfoOnProgress({
     required this.contentLength,
     required this.downloaded,
-  }) : super._(DownloadInfoType.onProgress);
+  }) : super._();
 
   Map<String, dynamic> toJson() => {
-        'downloadInfoType': downloadInfoType.name,
         'contentLength': contentLength,
         'downloaded': downloaded,
+        'downloadInfoType': 'onProgress',
       };
 }

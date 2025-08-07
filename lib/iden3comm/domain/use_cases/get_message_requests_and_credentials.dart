@@ -169,7 +169,7 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
                   "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
         }
 
-        CircuitType circuitType = CircuitType.fromString(circuitId);
+        CircuitType circuitType = CircuitTypes.fromId(circuitId);
 
         return circuitType.isAnyProofTypeSupported(proofTypes);
       }).toList();

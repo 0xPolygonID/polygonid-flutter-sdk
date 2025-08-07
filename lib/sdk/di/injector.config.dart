@@ -23,8 +23,8 @@ import 'package:polygonid_flutter_sdk/circuits/data/circuits_data_source.dart'
     as _i769;
 import 'package:polygonid_flutter_sdk/circuits/domain/cancel_circuits_download_use_case.dart'
     as _i37;
-import 'package:polygonid_flutter_sdk/circuits/domain/circuits_already_downloaded_and_checksum_are_valid_use_case.dart'
-    as _i515;
+import 'package:polygonid_flutter_sdk/circuits/domain/check_circuits_use_case.dart'
+    as _i1068;
 import 'package:polygonid_flutter_sdk/circuits/domain/circuits_repository.dart'
     as _i1000;
 import 'package:polygonid_flutter_sdk/circuits/domain/download_circuits_use_case.dart'
@@ -400,7 +400,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i497.ClaimStateMapper>(() => _i497.ClaimStateMapper());
     gh.factory<_i590.DisplayTypeMapper>(() => _i590.DisplayTypeMapper());
     gh.factory<_i80.BabyjubjubLib>(() => _i80.BabyjubjubLib());
-    gh.factory<_i383.WalletLibWrapper>(() => _i383.WalletLibWrapper());
+    gh.factory<_i383.WalletDataSource>(() => _i383.WalletDataSource());
     gh.factory<_i200.EncryptionDbDataSource>(
         () => _i200.EncryptionDbDataSource());
     gh.factory<_i938.CreatePathWrapper>(() => _i938.CreatePathWrapper());
@@ -543,8 +543,6 @@ extension GetItInjectableX on _i174.GetIt {
         _i42.IdentitySMTStoreRefWrapper(
             gh<Map<String, _i310.StoreRef<String, Map<String, Object?>>>>(
                 instanceName: 'identityStateStore')));
-    gh.factory<_i383.WalletDataSource>(
-        () => _i383.WalletDataSource(gh<_i383.WalletLibWrapper>()));
     gh.factoryParamAsync<_i310.Database, String?, String?>(
       (
         identifier,
@@ -730,8 +728,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factoryAsync<_i737.RemoveCircuitsUseCase>(() async =>
         _i737.RemoveCircuitsUseCase(
             await getAsync<_i1000.CircuitsRepository>()));
-    gh.factoryAsync<_i515.CircuitsAlreadyDownloadedAndChecksumAreValidUseCase>(
-        () async => _i515.CircuitsAlreadyDownloadedAndChecksumAreValidUseCase(
+    gh.factoryAsync<_i1068.CheckCircuitsUseCase>(() async =>
+        _i1068.CheckCircuitsUseCase(
             await getAsync<_i1000.CircuitsRepository>()));
     gh.factory<_i737.GetSelectedChainUseCase>(
         () => _i737.GetSelectedChainUseCase(
@@ -761,6 +759,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i503.RemoveAllClaimsUseCase>(() => _i503.RemoveAllClaimsUseCase(
           gh<_i309.CredentialRepository>(),
           gh<_i267.StacktraceManager>(),
+        ));
+    gh.factoryAsync<_i610.Circuits>(() async => _i610.Circuits(
+          await getAsync<_i521.DownloadCircuitsUseCase>(),
+          await getAsync<_i1068.CheckCircuitsUseCase>(),
+          await getAsync<_i37.CancelCircuitsDownloadUseCase>(),
+          await getAsync<_i737.RemoveCircuitsUseCase>(),
         ));
     gh.factory<_i1054.FetchOnchainClaimUseCase>(
         () => _i1054.FetchOnchainClaimUseCase(
@@ -837,25 +841,6 @@ extension GetItInjectableX on _i174.GetIt {
         .iden3commRepository(gh<_i588.Iden3commRepositoryImpl>()));
     gh.factory<_i359.CleanSchemaCacheUseCase>(
         () => _i359.CleanSchemaCacheUseCase(gh<_i88.Iden3commRepository>()));
-    gh.factoryAsync<_i139.CreatePassportProofUseCase>(
-        () async => _i139.CreatePassportProofUseCase(
-              gh<_i626.GetEnvUseCase>(),
-              gh<_i41.LibPolygonIdCoreWrapper>(),
-              await getAsync<_i310.ProveUseCase>(),
-            ));
-    gh.factoryAsync<_i39.CreateAnonAadhaarProofUseCase>(
-        () async => _i39.CreateAnonAadhaarProofUseCase(
-              gh<_i626.GetEnvUseCase>(),
-              gh<_i41.LibPolygonIdCoreWrapper>(),
-              await getAsync<_i310.ProveUseCase>(),
-            ));
-    gh.factoryAsync<_i610.Circuits>(() async => _i610.Circuits(
-          await getAsync<_i521.DownloadCircuitsUseCase>(),
-          await getAsync<
-              _i515.CircuitsAlreadyDownloadedAndChecksumAreValidUseCase>(),
-          await getAsync<_i37.CancelCircuitsDownloadUseCase>(),
-          await getAsync<_i737.RemoveCircuitsUseCase>(),
-        ));
     gh.factoryAsync<_i746.GenerateZKProofUseCase>(
         () async => _i746.GenerateZKProofUseCase(
               await getAsync<_i341.ProofRepository>(),
@@ -919,6 +904,20 @@ extension GetItInjectableX on _i174.GetIt {
               gh<_i53.GetClaimRevocationNonceUseCase>(),
               await getAsync<_i735.IsProofCircuitSupportedUseCase>(),
               gh<_i627.GetProofRequestsUseCase>(),
+            ));
+    gh.factoryAsync<_i139.CreatePassportProofUseCase>(
+        () async => _i139.CreatePassportProofUseCase(
+              gh<_i626.GetEnvUseCase>(),
+              gh<_i41.LibPolygonIdCoreWrapper>(),
+              await getAsync<_i310.ProveUseCase>(),
+              await getAsync<_i540.CircuitsFilesDataSource>(),
+            ));
+    gh.factoryAsync<_i39.CreateAnonAadhaarProofUseCase>(
+        () async => _i39.CreateAnonAadhaarProofUseCase(
+              gh<_i626.GetEnvUseCase>(),
+              gh<_i41.LibPolygonIdCoreWrapper>(),
+              await getAsync<_i310.ProveUseCase>(),
+              await getAsync<_i540.CircuitsFilesDataSource>(),
             ));
     gh.factoryAsync<_i181.GetMessageRequestsAndCredsUseCase>(
         () async => _i181.GetMessageRequestsAndCredsUseCase(

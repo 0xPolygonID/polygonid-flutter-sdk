@@ -43,7 +43,9 @@ void main() {
       "Given a secret, when I call execute, then I expect an identity to be returned",
       () async {
     // When
-    expect(await useCase.execute(param: CommonMocks.message),
+    expect(
+        await useCase.execute(
+            param: AddNewIdentityParam.seed(CommonMocks.message)),
         IdentityMocks.privateIdentity);
 
     // Then
@@ -63,7 +65,8 @@ void main() {
       "Given a private key which is null, when I call execute, then I expect an identifier to be returned",
       () async {
     // When
-    expect(await useCase.execute(), IdentityMocks.privateIdentity);
+    expect(await useCase.execute(param: AddNewIdentityParam.seed(null)),
+        IdentityMocks.privateIdentity);
 
     // Then
     var configCaptured = verify(identityRepository.getPrivateKey(
@@ -86,7 +89,8 @@ void main() {
         .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
     // When
-    await expectLater(useCase.execute(param: CommonMocks.message),
+    await expectLater(
+        useCase.execute(param: AddNewIdentityParam.seed(CommonMocks.message)),
         throwsA(CommonMocks.exception));
 
     // Then

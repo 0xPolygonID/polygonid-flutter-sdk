@@ -2,13 +2,13 @@ import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 
 class ProofCircuitDataSource {
   static const List<CircuitType> _supportedCircuits = [
-    CircuitType.mtp,
-    CircuitType.sig,
-    CircuitType.mtponchain,
-    CircuitType.sigonchain,
-    CircuitType.circuitsV3,
-    CircuitType.circuitsV3onchain,
-    CircuitType.linkedMultyQuery10,
+    CircuitTypes.mtp,
+    CircuitTypes.sig,
+    CircuitTypes.mtpOnChain,
+    CircuitTypes.sigOnChain,
+    CircuitTypes.circuitsV3,
+    CircuitTypes.circuitsV3OnChain,
+    CircuitTypes.linkedMultiQuery,
   ];
 
   Future<bool> isCircuitSupported({required CircuitType circuit}) {

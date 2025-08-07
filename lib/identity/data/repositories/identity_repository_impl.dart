@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:encrypt/encrypt.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
@@ -23,6 +24,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart'
 import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj_wallet.dart';
 import 'package:poseidon/poseidon.dart';
 import 'package:web3dart/crypto.dart';
 
@@ -54,17 +56,16 @@ class IdentityRepositoryImpl extends IdentityRepository {
   );
 
   @override
-  Future<String> getPrivateKey({required String? secret}) {
-    return _walletDataSource
-        .createWallet(secret: _privateKeyMapper.mapFrom(secret))
-        .then((wallet) => bytesToHex(wallet.privateKey));
+  Future<String> getPrivateKey({required String? secret}) async {
+    logger().i("CREATE_WALLET_CALLED");
+    final bytes = _privateKeyMapper.mapFrom(secret);
+    final wallet = await BjjWallet.createBjjWallet(secret: bytes);
+    return bytesToHex(wallet.privateKey);
   }
 
   @override
   Future<List<String>> getPublicKeys({required String bjjPrivateKey}) async {
-    final wallet = await _walletDataSource.getWallet(
-      privateKey: hexToBytes(bjjPrivateKey),
-    );
+    final wallet = BjjWallet(hexToBytes(bjjPrivateKey));
     final pubKeys = wallet.publicKey;
     return pubKeys;
   }

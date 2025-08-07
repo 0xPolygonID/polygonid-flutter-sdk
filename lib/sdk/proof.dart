@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
@@ -7,16 +8,16 @@ import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/circuits_to_download_param.dart';
+import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/data/repositories/crosschain_repository.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/generate_inputs_response.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/cancel_download_circuits_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/circuits_files_exist_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/download_circuits_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/generate_zkproof_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/gist_proof_cache.dart';
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
@@ -44,6 +45,9 @@ abstract class PolygonIdSdkProof {
     Map<String, dynamic>? config,
   });
 
+  /// Returns a [Stream] of [String] of proof generation steps
+  Stream<String> proofGenerationStepsStream();
+
   /// Get crosschain proofs from the universal resolver
   /// [universalResolverUrl] - the universal resolver URL
   /// [stateInfo] - the public states info
@@ -53,9 +57,12 @@ abstract class PolygonIdSdkProof {
     required List<PublicStatesInfo> stateInfo,
   });
 
+  Future<String> getProofFromSmartContract({required String inputs});
+
   /// Initialize the download of circuits and get the download info stream
   /// [circuitsToDownload] - the circuits to download
   /// Returns a [Stream] of [DownloadInfo] - the download info stream
+  @Deprecated('User PolygonIdSdk.circuits methods instead')
   Stream<DownloadInfo> initCircuitsDownloadAndGetInfoStream({
     required List<CircuitsToDownloadParam> circuitsToDownload,
   });
@@ -63,17 +70,14 @@ abstract class PolygonIdSdkProof {
   /// Check if the circuits are already downloaded from the server
   /// [circuitsFileName] - the circuits file name
   /// Returns a [Future] of [bool] - true if the circuits are already downloaded, false otherwise
+  @Deprecated('User PolygonIdSdk.circuits methods instead')
   Future<bool> isAlreadyDownloadedCircuitsFromServer({
     required String circuitsFileName,
   });
 
-  /// Returns a [Stream] of [String] of proof generation steps
-  Stream<String> proofGenerationStepsStream();
-
   /// Cancel the download of circuits
+  @Deprecated('User PolygonIdSdk.circuits methods instead')
   Future<void> cancelDownloadCircuits();
-
-  Future<String> getProofFromSmartContract({required String inputs});
 }
 
 @injectable
@@ -151,42 +155,10 @@ class Proof implements PolygonIdSdkProof {
     );
   }
 
-  /// Check if the circuits are already downloaded from the server
-  @override
-  Future<bool> isAlreadyDownloadedCircuitsFromServer({
-    required String circuitsFileName,
-  }) async {
-    _stacktraceManager.clear();
-    _stacktraceManager.addTrace(
-        "PolygonIdSdk.Proof.isAlreadyDownloadedCircuitsFromServer called");
-    return _circuitsFilesExistUseCase.execute(param: circuitsFileName);
-  }
-
-  /// Initialize the download of circuits and get the download info stream
-  /// [circuitsToDownload] - the circuits to download
-  /// Returns a [Stream] of [DownloadInfo] - the download info stream
-  @override
-  Stream<DownloadInfo> initCircuitsDownloadAndGetInfoStream({
-    required List<CircuitsToDownloadParam> circuitsToDownload,
-  }) {
-    return _downloadCircuitsUseCase.execute(
-      param: DownloadCircuitsParam(circuitsToDownload: circuitsToDownload),
-    );
-  }
-
   /// Returns a [Stream] of [String] of proof generation steps
   @override
   Stream<String> proofGenerationStepsStream() {
     return _proofGenerationStepsStreamManager.proofGenerationStepsStream;
-  }
-
-  /// Cancel the download of circuits
-  @override
-  Future<void> cancelDownloadCircuits() async {
-    _stacktraceManager.clear();
-    _stacktraceManager
-        .addTrace("PolygonIdSdk.Proof.cancelDownloadCircuits called");
-    return _cancelDownloadCircuitsUseCase.execute();
   }
 
   /// use getGistProof method to get the gist proof, inside the method it will check if the proof is already cached
@@ -226,5 +198,37 @@ class Proof implements PolygonIdSdkProof {
     String proof = await ProofFromSmartContract()
         .getProofFromSmartContract(inputs: inputs);
     return proof;
+  }
+
+  /// Check if the circuits are already downloaded from the server
+  @override
+  Future<bool> isAlreadyDownloadedCircuitsFromServer({
+    required String circuitsFileName,
+  }) async {
+    _stacktraceManager.clear();
+    _stacktraceManager.addTrace(
+        "PolygonIdSdk.Proof.isAlreadyDownloadedCircuitsFromServer called");
+    return _circuitsFilesExistUseCase.execute(param: circuitsFileName);
+  }
+
+  /// Initialize the download of circuits and get the download info stream
+  /// [circuitsToDownload] - the circuits to download
+  /// Returns a [Stream] of [DownloadInfo] - the download info stream
+  @override
+  Stream<DownloadInfo> initCircuitsDownloadAndGetInfoStream({
+    required List<CircuitsToDownloadParam> circuitsToDownload,
+  }) {
+    return _downloadCircuitsUseCase.execute(
+      param: DownloadCircuitsParam(circuitsToDownload: circuitsToDownload),
+    );
+  }
+
+  /// Cancel the download of circuits
+  @override
+  Future<void> cancelDownloadCircuits() async {
+    _stacktraceManager.clear();
+    _stacktraceManager
+        .addTrace("PolygonIdSdk.Proof.cancelDownloadCircuits called");
+    return _cancelDownloadCircuitsUseCase.execute();
   }
 }

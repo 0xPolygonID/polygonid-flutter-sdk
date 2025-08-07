@@ -643,11 +643,18 @@ class PolygonIdFlutterChannel
   @override
   Future<PrivateIdentityEntity> addIdentity({
     String? secret,
-    bool useSecretAsPrivateKey = false,
   }) {
     return _polygonIdSdk.identity.addIdentity(
       secret: secret,
-      useSecretAsPrivateKey: useSecretAsPrivateKey,
+    );
+  }
+
+  @override
+  Future<PrivateIdentityEntity> addIdentityWithPrivateKey({
+    required String privateKey,
+  }) {
+    return _polygonIdSdk.identity.addIdentityWithPrivateKey(
+      privateKey: privateKey,
     );
   }
 

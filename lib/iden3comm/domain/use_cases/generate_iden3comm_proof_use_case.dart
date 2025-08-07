@@ -127,9 +127,9 @@ class GenerateIden3commProofUseCase
               "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
     }
 
-    if (circuitId == CircuitType.mtponchain.name ||
-        circuitId == CircuitType.sigonchain.name ||
-        circuitId == CircuitType.circuitsV3onchain.name) {
+    if (circuitId == CircuitTypes.mtpOnChain.id ||
+        circuitId == CircuitTypes.sigOnChain.id ||
+        circuitId == CircuitTypes.circuitsV3OnChain.id) {
       //on chain start
       _stacktraceManager.addTrace(
           "[GenerateIden3commProofUseCase] OnChain ${param.request.circuitId}");
