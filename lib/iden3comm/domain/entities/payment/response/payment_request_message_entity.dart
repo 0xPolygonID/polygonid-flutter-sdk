@@ -1,6 +1,8 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_rails_erc20_request_v1_data.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_rails_request_v1_data.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_rails_solana_request_v1.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_rails_solana_spl_request_v1.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_request_crypto_v1_data.dart';
 
 /*
@@ -136,6 +138,8 @@ enum PaymentRequestDataType {
   cryptoV1,
   railsV1,
   railsERC20V1,
+  railsSolanaV1,
+  railsSolanaSPLV1,
 }
 
 class PaymentRequestDataFactory {
@@ -149,6 +153,10 @@ class PaymentRequestDataFactory {
         return Iden3PaymentRailsRequestV1Data.fromJson(json);
       case 'Iden3PaymentRailsERC20RequestV1':
         return Iden3PaymentRailsERC20RequestV1Data.fromJson(json);
+      case 'Iden3PaymentRailsSolanaRequestV1':
+        return Iden3PaymentRailsSolanaRequestV1Data.fromJson(json);
+      case 'Iden3PaymentRailsSolanaSPLRequestV1':
+        return Iden3PaymentRailsSolanaSPLRequestV1Data.fromJson(json);
       default:
         throw Exception('Unknown payment request data type: $type');
     }
