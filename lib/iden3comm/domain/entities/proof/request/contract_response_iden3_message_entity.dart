@@ -45,13 +45,12 @@ class ContractResponseIden3MessageEntity
   ContractResponseIden3MessageEntity({
     required super.id,
     String? typ,
-    required super.type,
     String? thid,
     required super.body,
     super.nextRequest,
     String? from,
   }) : super(
-          messageType: Iden3MessageType.proofContractInvokeResponse,
+          type: Iden3MessageType.proofContractInvokeResponse,
           thid: thid ?? '',
           typ: typ ?? '',
           from: from ?? '',
@@ -67,7 +66,6 @@ class ContractResponseIden3MessageEntity
     return ContractResponseIden3MessageEntity(
       id: json['id'],
       typ: json['typ'] ?? '',
-      type: json['type'],
       thid: json['thid'] ?? '',
       body: body,
       nextRequest: json['next_request'],

@@ -27,13 +27,13 @@ class GetProofRequestsUseCase
     if (![
       Iden3MessageType.authRequest,
       Iden3MessageType.proofContractInvokeRequest
-    ].contains(param.messageType)) {
+    ].contains(param.type)) {
       _stacktraceManager.addTrace(
-          "[GetProofRequestsUseCase] Error: Unsupported message type: ${param.messageType}\nExpected: ${Iden3MessageType.authRequest}, ${Iden3MessageType.proofContractInvokeRequest}");
+          "[GetProofRequestsUseCase] Error: Unsupported message type: ${param.type}\nExpected: ${Iden3MessageType.authRequest}, ${Iden3MessageType.proofContractInvokeRequest}");
       return Future.error(
         UnsupportedIden3MsgTypeException(
-          type: param.messageType,
-          errorMessage: "Unsupported message type: ${param.messageType}",
+          type: param.type,
+          errorMessage: "Unsupported message type: ${param.type}",
         ),
       );
     }

@@ -42,18 +42,16 @@ class PaymentRequestEntity extends Iden3MessageEntity<PaymentRequestBody> {
   PaymentRequestEntity({
     required super.id,
     required super.typ,
-    required super.type,
     required super.thid,
     required super.from,
     required super.to,
     required super.body,
-  }) : super(messageType: Iden3MessageType.paymentRequest);
+  }) : super(type: Iden3MessageType.paymentRequest);
 
   factory PaymentRequestEntity.fromJson(Map<String, dynamic> json) {
     return PaymentRequestEntity(
       id: json['id'],
       typ: json['typ'],
-      type: json['type'],
       thid: json['thid'],
       body: PaymentRequestBody.fromJson(json['body']),
       from: json['from'],
@@ -167,6 +165,8 @@ class PaymentRequestDataFactory {
 		}]
 */
 
+/// Represents information about a credential schema.
+/// Named `CredentialSchemaInfo` in JS SDK.
 class CredentialInfo {
   final String type;
   final String context;

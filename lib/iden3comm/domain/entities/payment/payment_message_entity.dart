@@ -5,18 +5,16 @@ class PaymentMessageEntity extends Iden3MessageEntity<PaymentBody> {
   PaymentMessageEntity({
     required super.id,
     required super.typ,
-    required super.type,
     required super.thid,
     required super.from,
     required super.to,
     required super.body,
-  }) : super(messageType: Iden3MessageType.payment);
+  }) : super(type: Iden3MessageType.payment);
 
   factory PaymentMessageEntity.fromJson(Map<String, dynamic> json) {
     return PaymentMessageEntity(
       id: json['id'],
       typ: json['typ'],
-      type: json['type'],
       thid: json['thid'],
       body: PaymentBody.fromJson(json['body']),
       from: json['from'],

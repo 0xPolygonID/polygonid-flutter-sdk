@@ -73,13 +73,12 @@ class OfferIden3MessageEntity
   OfferIden3MessageEntity({
     required super.id,
     required super.typ,
-    required super.type,
     required super.thid,
     required super.from,
     required super.body,
     super.to,
     super.nextRequest,
-  }) : super(messageType: Iden3MessageType.credentialOffer);
+  }) : super(type: Iden3MessageType.credentialOffer);
 
   /// Creates an instance from the given json
   ///
@@ -90,7 +89,6 @@ class OfferIden3MessageEntity
     return OfferIden3MessageEntity(
       id: json['id'],
       typ: json['typ'],
-      type: json['type'],
       thid: json['thid'],
       from: json['from'],
       to: json['to'],

@@ -16,12 +16,12 @@ class GetSchemasUseCase
     if (![
       Iden3MessageType.authRequest,
       Iden3MessageType.proofContractInvokeRequest,
-    ].contains(param.messageType)) {
+    ].contains(param.type)) {
       return Future.error(
         UnsupportedIden3MsgTypeException(
-          type: param.messageType,
+          type: param.type,
           errorMessage:
-              "Unsupported message type: ${param.messageType}\nExpected: ${Iden3MessageType.authRequest}, ${Iden3MessageType.proofContractInvokeRequest}",
+              "Unsupported message type: ${param.type}\nExpected: ${Iden3MessageType.authRequest}, ${Iden3MessageType.proofContractInvokeRequest}",
         ),
       );
     }

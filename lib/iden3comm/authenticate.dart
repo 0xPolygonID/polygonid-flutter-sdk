@@ -112,12 +112,12 @@ class Authenticate {
       if (![
         Iden3MessageType.authRequest,
         Iden3MessageType.proofContractInvokeRequest
-      ].contains(message.messageType)) {
+      ].contains(message.type)) {
         _stacktraceManager.addError(
-          "[Authenticate] Unsupported message type: ${message.messageType} It should be either authRequest or proofContractInvokeRequest",
+          "[Authenticate] Unsupported message type: ${message.type} It should be either authRequest or proofContractInvokeRequest",
         );
         throw UnsupportedIden3MsgTypeException(
-          type: message.messageType,
+          type: message.type,
           errorMessage: "Unsupported message type\nIt should be either "
               "authRequest or proofContractInvokeRequest",
         );

@@ -22,8 +22,6 @@ class GetFetchRequestsUseCase
         .map((credential) => jsonEncode(FetchIden3MessageEntity(
             id: const Uuid().v4(),
             typ: param.message.typ,
-            type:
-                "https://iden3-communication.io/credentials/1.0/fetch-request",
             thid: param.message.thid,
             body: FetchBodyRequest(id: credential.id),
             from: param.did,

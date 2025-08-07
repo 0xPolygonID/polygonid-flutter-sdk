@@ -1,3 +1,8 @@
+import 'dart:convert';
+
+import 'package:equatable/equatable.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/attachment.dart';
+
 enum Iden3MessageType {
   authRequest("https://iden3-communication.io/authorization/1.0/request"),
   authResponse("https://iden3-communication.io/authorization/1.0/response"),
@@ -27,6 +32,7 @@ enum Iden3MessageType {
       "https://iden3-communication.io/passport/0.1/verification-request"),
   verificationResponse(
       "https://iden3-communication.io/passport/0.1/verification-response"),
+  fetchRequest("https://iden3-communication.io/credentials/1.0/fetch-request"),
   unknown("");
 
   final String type;
@@ -41,63 +47,90 @@ enum Iden3MessageType {
   }
 }
 
-/// Represents an iden3 message.
-abstract class Iden3MessageEntity<T> {
+/// Represents an iden3 protocol message.
+/// https://identity.foundation/didcomm-messaging/spec/#message-headers
+abstract class Iden3MessageEntity<T> extends Equatable {
   final String id;
-  final String typ;
-  final String type;
-  final Iden3MessageType messageType;
+
+  /// The type of the message, e.g. "application/iden3-zkp-json".
+  final String? typ;
+
+  /// The type of the message, e.g. "https://iden3-communication.io/authorization/1.0/request".
+  final Iden3MessageType type;
+
+  /// The thread id of the message, used to link messages in a conversation.
+  // TODO: Make this optional according to protocol.
   final String thid;
+
+  /// The body of the message, which contains the actual data. Depends on the message type.
   final T body;
+
+  /// The sender of the message, usually a DID.
+  // TODO: Make this optional according to protocol.
   final String from;
+
+  /// The recipient of the message, usually a DID.
   final String? to;
+
+  /// The time when the message was created, represented as a Unix timestamp, seconds.
+  final int? createdTime;
+
+  /// The time when the message expires, represented as a Unix timestamp, seconds.
+  final int? expiresTime;
+
+  /// Attachments for the message, if any.
+  final List<Attachment> attachments;
+
+  /// Optional next request, used for chaining messages.
   final Map<String, dynamic>? nextRequest;
 
   const Iden3MessageEntity({
     required this.id,
-    required this.typ,
+    this.typ,
     required this.type,
-    this.messageType = Iden3MessageType.unknown,
     required this.thid,
+    required this.body,
     required this.from,
     this.to,
     this.nextRequest,
-    required this.body,
+    this.createdTime,
+    this.expiresTime,
+    this.attachments = const [],
   });
 
   @override
-  String toString() =>
-      "[Iden3MessageEntity] {id: $id, typ: $typ, type: $type, messageType: $messageType, thid: $thid, body: $body, from: $from, to: $to, nextRequest: $nextRequest}";
+  String toString() => "Iden3MessageEntity: ${jsonEncode(toJson())}";
 
   @override
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'typ': typ,
-        'type': type,
-        'messageType': messageType.name,
-        'thid': thid,
-        'body': (body as dynamic).toJson(),
-        'from': from,
-        'to': to,
-        'nextRequest': nextRequest,
-      }..removeWhere(
-          (dynamic key, dynamic value) => key == null || value == null);
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'typ': typ,
+      'type': type.name,
+      'thid': thid,
+      'body': (body as dynamic).toJson(),
+      'from': from,
+      'to': to,
+      'created_time': createdTime,
+      'expires_time': expiresTime,
+      'next_request': nextRequest,
+    }..removeWhere((_, value) => value == null);
+  }
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Iden3MessageEntity &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          typ == other.typ &&
-          type == other.type &&
-          messageType == other.messageType &&
-          thid == other.thid &&
-          body == other.body &&
-          from == other.from &&
-          to == other.to &&
-          nextRequest == other.nextRequest;
-
-  @override
-  int get hashCode => runtimeType.hashCode;
+  List<Object?> get props {
+    return [
+      id,
+      typ,
+      type,
+      thid,
+      body,
+      from,
+      to,
+      createdTime,
+      expiresTime,
+      attachments,
+      nextRequest,
+    ];
+  }
 }

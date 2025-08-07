@@ -12,13 +12,12 @@ class AttestationResponseEntity
   AttestationResponseEntity({
     required super.id,
     required super.typ,
-    required super.type,
     required super.thid,
     required super.body,
     super.to,
     super.nextRequest,
   }) : super(
-          messageType: Iden3MessageType.attestationResponse,
+          type: Iden3MessageType.attestationResponse,
           from: "",
         );
 
@@ -33,7 +32,6 @@ class AttestationResponseEntity
     return AttestationResponseEntity(
       id: json['id'],
       typ: json['typ'],
-      type: json['type'],
       thid: json['thid'],
       to: json['to'],
       body: body,

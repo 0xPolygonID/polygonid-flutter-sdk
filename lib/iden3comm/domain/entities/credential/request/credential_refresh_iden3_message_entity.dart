@@ -5,13 +5,12 @@ class CredentialRefreshIden3MessageEntity
   CredentialRefreshIden3MessageEntity({
     required super.id,
     required super.typ,
-    required super.type,
     required super.thid,
     required super.from,
     required super.body,
     required super.to,
     super.nextRequest,
-  }) : super(messageType: Iden3MessageType.credentialRefresh);
+  }) : super(type: Iden3MessageType.credentialRefresh);
 
   factory CredentialRefreshIden3MessageEntity.fromJson(
       Map<String, dynamic> json) {
@@ -21,7 +20,6 @@ class CredentialRefreshIden3MessageEntity
     return CredentialRefreshIden3MessageEntity(
       id: json['id'],
       typ: json['typ'],
-      type: json['type'],
       thid: json['thid'],
       from: json['from'],
       to: json['to'],

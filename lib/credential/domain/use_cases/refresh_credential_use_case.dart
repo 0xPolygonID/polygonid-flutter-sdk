@@ -78,7 +78,6 @@ class RefreshCredentialUseCase
         CredentialRefreshIden3MessageEntity(
       id: id,
       typ: "application/iden3comm-plain-json",
-      type: "https://iden3-communication.io/credentials/1.0/refresh",
       thid: id,
       body: CredentialRefreshBodyRequest(
         param.credential.id,
