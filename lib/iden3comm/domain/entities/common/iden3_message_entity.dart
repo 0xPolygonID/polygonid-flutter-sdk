@@ -103,7 +103,7 @@ abstract class Iden3MessageEntity<T> extends Equatable {
     return {
       'id': id,
       'typ': typ,
-      'type': type.name,
+      'type': type.type,
       'thid': thid,
       'body': (body as dynamic).toJson(),
       'from': from,

@@ -156,12 +156,12 @@ class ProblemReportBody {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ProblemReportBody &&
-          runtimeType == other.runtimeType &&
-          code == other.code &&
-          escalateTo == other.escalateTo &&
-          args == other.args &&
-          comment == other.comment;
+          other is ProblemReportBody &&
+              runtimeType == other.runtimeType &&
+              code == other.code &&
+              escalateTo == other.escalateTo &&
+              args == other.args &&
+              comment == other.comment;
 
   @override
   int get hashCode => runtimeType.hashCode;
