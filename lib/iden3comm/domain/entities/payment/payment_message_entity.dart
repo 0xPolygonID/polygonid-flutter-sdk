@@ -5,6 +5,7 @@ class PaymentMessageEntity extends Iden3MessageEntity<PaymentBody> {
   PaymentMessageEntity({
     required super.id,
     required super.typ,
+    @Deprecated('may be omitted, gonna be removed in the future') String? type,
     required super.thid,
     required super.from,
     required super.to,

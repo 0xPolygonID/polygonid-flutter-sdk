@@ -98,6 +98,9 @@ abstract class Iden3MessageEntity<T> extends Equatable {
     this.attachments = const [],
   });
 
+  @Deprecated('Use type instead.')
+  Iden3MessageType get messageType => type;
+
   @override
   String toString() => "Iden3MessageEntity: ${jsonEncode(toJson())}";
 
