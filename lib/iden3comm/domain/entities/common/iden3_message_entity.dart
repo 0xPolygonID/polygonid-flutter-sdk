@@ -95,6 +95,9 @@ abstract class Iden3MessageEntity<T> extends Equatable {
   @Deprecated('Use type instead')
   Iden3MessageType get messageType => type;
 
+  @Deprecated('Use type instead.')
+  Iden3MessageType get messageType => type;
+
   @override
   String toString() => "Iden3MessageEntity: ${jsonEncode(toJson())}";
 
