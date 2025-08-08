@@ -20,7 +20,8 @@ class GetCredentialByIdUseCase
 
   GetCredentialByIdUseCase(this._credentialRepository);
 
-  Future<CredentialEntity> execute({required GetCredentialByIdParam param}) async {
+  Future<CredentialEntity> execute(
+      {required GetCredentialByIdParam param}) async {
     return await _credentialRepository.getCredential(
       encryptionKey: param.encryptionKey,
       genesisDid: param.genesisDid,

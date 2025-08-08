@@ -234,7 +234,8 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
     return value;
   }
 
-  void _processMap(dynamic map, String key, List<CredentialEntity> claimsFiltered) {
+  void _processMap(
+      dynamic map, String key, List<CredentialEntity> claimsFiltered) {
     map.forEach((operator, needle) {
       _filterClaims(operator, needle, key, claimsFiltered);
     });

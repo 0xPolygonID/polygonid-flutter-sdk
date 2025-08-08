@@ -51,7 +51,8 @@ final stateMapper = MockCredentialStateMapper();
 final infoMapper = MockCredentialInfoMapper();
 MockDisplayTypeMapper displayTypeMapper = MockDisplayTypeMapper();
 // Tested instance
-CredentialMapper mapper = CredentialMapper(stateMapper, infoMapper, displayTypeMapper);
+CredentialMapper mapper =
+    CredentialMapper(stateMapper, infoMapper, displayTypeMapper);
 
 @GenerateMocks([
   CredentialStateMapper,

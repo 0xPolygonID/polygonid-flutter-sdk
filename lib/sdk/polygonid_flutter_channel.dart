@@ -358,7 +358,8 @@ class PolygonIdFlutterChannel
         case 'saveClaims':
           return saveClaims(
                   claims: (call.arguments['claims'] as List)
-                      .map((claim) => CredentialEntity.fromJson(jsonDecode(claim)))
+                      .map((claim) =>
+                          CredentialEntity.fromJson(jsonDecode(claim)))
                       .toList(),
                   genesisDid: call.arguments['genesisDid'] as String,
                   privateKey: call.arguments['privateKey'] as String)
@@ -1004,7 +1005,8 @@ class PolygonIdFlutterChannel
 
   @override
   Future<void> cacheCredentials(
-      {required List<CredentialEntity> credentials, EnvConfigEntity? configParam}) {
+      {required List<CredentialEntity> credentials,
+      EnvConfigEntity? configParam}) {
     // TODO: implement cacheCredentials
     throw UnimplementedError();
   }

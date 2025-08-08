@@ -26,7 +26,8 @@ class SaveClaimsUseCase
   );
 
   @override
-  Future<List<CredentialEntity>> execute({required SaveClaimsParam param}) async {
+  Future<List<CredentialEntity>> execute(
+      {required SaveClaimsParam param}) async {
     try {
       await _credentialRepository.saveCredentials(
         credentials: param.claims,

@@ -56,7 +56,8 @@ class CreatePassportCredentialUseCase
   }) async {
     final env = await _getEnvUseCase.execute();
 
-    final credentialJson = _libPolygonIdCoreCredentialDS.createW3CCredentialFromPassport(
+    final credentialJson =
+        _libPolygonIdCoreCredentialDS.createW3CCredentialFromPassport(
       passportData: param.passportData,
       dg2Hash: param.dg2Hash,
       did: param.profileDid,

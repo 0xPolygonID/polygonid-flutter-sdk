@@ -92,7 +92,8 @@ final database = MockDatabase();
 final storeRefWrapper = MockCredentialStoreRefWrapper();
 
 // Tested instance
-CredentialStorageDataSource dataSource = CredentialStorageDataSource(storeRefWrapper);
+CredentialStorageDataSource dataSource =
+    CredentialStorageDataSource(storeRefWrapper);
 
 @GenerateMocks([sem.Database, CredentialStoreRefWrapper])
 void main() {
@@ -254,7 +255,8 @@ void main() {
 
       // When
       await expectLater(
-          dataSource.removeCredentialsTransact(transaction: database, credentialIds: ids),
+          dataSource.removeCredentialsTransact(
+              transaction: database, credentialIds: ids),
           completes);
 
       // Then
@@ -278,7 +280,8 @@ void main() {
 
       // When
       await expectLater(
-          dataSource.removeCredentialsTransact(transaction: database, credentialIds: ids),
+          dataSource.removeCredentialsTransact(
+              transaction: database, credentialIds: ids),
           throwsA(exception));
 
       // Then

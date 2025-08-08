@@ -126,7 +126,8 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     }
 
     try {
-      List<CredentialEntity> claimList = await _polygonIdSdk.credential.getClaims(
+      List<CredentialEntity> claimList =
+          await _polygonIdSdk.credential.getClaims(
         filters: filters,
         genesisDid: did,
         privateKey: privateKey,
@@ -402,7 +403,8 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     }
 
     try {
-      List<CredentialEntity> claimList = await _polygonIdSdk.credential.getClaims(
+      List<CredentialEntity> claimList =
+          await _polygonIdSdk.credential.getClaims(
         genesisDid: did,
         privateKey: privateKey,
       );

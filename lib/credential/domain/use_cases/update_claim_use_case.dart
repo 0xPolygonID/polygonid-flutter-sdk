@@ -27,7 +27,8 @@ class UpdateClaimParam {
   });
 }
 
-class UpdateClaimUseCase extends FutureUseCase<UpdateClaimParam, CredentialEntity> {
+class UpdateClaimUseCase
+    extends FutureUseCase<UpdateClaimParam, CredentialEntity> {
   final CredentialRepository _credentialRepository;
   final StacktraceManager _stacktraceManager;
 

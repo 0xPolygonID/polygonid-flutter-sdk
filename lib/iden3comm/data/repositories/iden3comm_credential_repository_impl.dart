@@ -99,7 +99,8 @@ class Iden3commCredentialRepositoryImpl extends Iden3commCredentialRepository {
     required String profileDid,
   }) async {
     try {
-      CredentialDTO claimDTO = await _remoteIden3commDataSource.refreshCredential(
+      CredentialDTO claimDTO =
+          await _remoteIden3commDataSource.refreshCredential(
         url: url,
         authToken: authToken,
         profileDid: profileDid,

@@ -37,7 +37,8 @@ class GetClaimsUseCase
   );
 
   @override
-  Future<List<CredentialEntity>> execute({required GetClaimsParam param}) async {
+  Future<List<CredentialEntity>> execute(
+      {required GetClaimsParam param}) async {
     // if profileNonce is less than GENESIS_PROFILE_NONCE is invalid
     // because the profileNonce should be greater than or equal to GENESIS_PROFILE_NONCE
     if (param.profileNonce < GENESIS_PROFILE_NONCE) {
@@ -50,7 +51,8 @@ class GetClaimsUseCase
     }
 
     try {
-      List<CredentialEntity> claims = await _credentialRepository.getCredentials(
+      List<CredentialEntity> claims =
+          await _credentialRepository.getCredentials(
         filters: param.filters,
         genesisDid: param.genesisDid,
         encryptionKey: param.encryptionKey,
