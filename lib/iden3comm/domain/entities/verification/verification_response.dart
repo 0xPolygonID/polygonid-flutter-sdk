@@ -12,13 +12,12 @@ class VerificationResponseEntity
   VerificationResponseEntity({
     required super.id,
     required super.typ,
-    required super.type,
     required super.thid,
     required super.from,
     required super.body,
     super.to,
     super.nextRequest,
-  }) : super(messageType: Iden3MessageType.verificationResponse);
+  }) : super(type: Iden3MessageType.verificationResponse);
 
   /// Creates an instance from the given json
   ///
@@ -31,7 +30,6 @@ class VerificationResponseEntity
     return VerificationResponseEntity(
       id: json['id'],
       typ: json['typ'],
-      type: json['type'],
       thid: json['thid'],
       from: json['from'],
       to: json['to'],

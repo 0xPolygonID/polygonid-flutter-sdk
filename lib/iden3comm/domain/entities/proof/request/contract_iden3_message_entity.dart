@@ -46,13 +46,13 @@ class ContractIden3MessageEntity
   ContractIden3MessageEntity({
     required super.id,
     String? typ,
-    required super.type,
+    @Deprecated('may be omitted, gonna be removed in the future') String? type,
     String? thid,
     required super.body,
     super.nextRequest,
     String? from,
   }) : super(
-          messageType: Iden3MessageType.proofContractInvokeRequest,
+          type: Iden3MessageType.proofContractInvokeRequest,
           thid: thid ?? '',
           typ: typ ?? '',
           from: from ?? '',
@@ -68,7 +68,6 @@ class ContractIden3MessageEntity
     return ContractIden3MessageEntity(
       id: json['id'],
       typ: json['typ'] ?? '',
-      type: json['type'],
       thid: json['thid'] ?? '',
       body: body,
       nextRequest: json['next_request'],

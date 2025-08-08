@@ -11,14 +11,14 @@ class ProblemReportMessageEntity extends Iden3MessageEntity<ProblemReportBody> {
   ProblemReportMessageEntity({
     required super.id,
     required super.typ,
-    required super.type,
+    @Deprecated('may be omitted, gonna be removed in the future') String? type,
     super.thid = '',
     required this.pthid,
     required this.ack,
     required super.from,
     required super.body,
     super.to,
-  }) : super(messageType: Iden3MessageType.problemReport);
+  }) : super(type: Iden3MessageType.problemReport);
 
   factory ProblemReportMessageEntity.fromJson(Map<String, dynamic> json) {
     ProblemReportBody body = ProblemReportBody.fromJson(json['body']);
@@ -26,7 +26,6 @@ class ProblemReportMessageEntity extends Iden3MessageEntity<ProblemReportBody> {
     return ProblemReportMessageEntity(
       id: json['id'],
       typ: json['typ'],
-      type: json['type'],
       thid: json['thid'] ?? '',
       pthid: json['pthid'],
       ack: (json['ack'] as List?)?.map((e) => e.toString()).toList(),
@@ -76,7 +75,6 @@ class ProblemReportMessageEntity extends Iden3MessageEntity<ProblemReportBody> {
     return ProblemReportMessageEntity(
       id: messageId,
       typ: 'application/iden3comm-plain-json',
-      type: Iden3MessageType.problemReport.type,
       thid: tId,
       pthid: parentTId,
       ack: acknowledgements,
@@ -151,12 +149,12 @@ class ProblemReportBody {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ProblemReportBody &&
-          runtimeType == other.runtimeType &&
-          code == other.code &&
-          escalateTo == other.escalateTo &&
-          args == other.args &&
-          comment == other.comment;
+          other is ProblemReportBody &&
+              runtimeType == other.runtimeType &&
+              code == other.code &&
+              escalateTo == other.escalateTo &&
+              args == other.args &&
+              comment == other.comment;
 
   @override
   int get hashCode => runtimeType.hashCode;

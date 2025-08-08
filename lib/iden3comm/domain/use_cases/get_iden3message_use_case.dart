@@ -75,6 +75,8 @@ class GetIden3MessageUseCase extends FutureUseCase<String, Iden3MessageEntity> {
           return VerificationRequestEntity.fromJson(json);
         case Iden3MessageType.verificationResponse:
           return VerificationResponseEntity.fromJson(json);
+        case Iden3MessageType.fetchRequest:
+          return FetchIden3MessageEntity.fromJson(json);
         case Iden3MessageType.unknown:
           throw UnsupportedIden3MsgTypeException(
             type: Iden3MessageType.unknown,

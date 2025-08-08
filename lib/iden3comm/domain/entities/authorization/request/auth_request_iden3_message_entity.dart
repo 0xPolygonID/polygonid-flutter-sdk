@@ -72,13 +72,16 @@ class AuthIden3MessageEntity extends Iden3MessageEntity<AuthBodyRequest> {
   AuthIden3MessageEntity({
     required super.id,
     required super.typ,
-    required super.type,
+    @Deprecated('may be omitted, gonna be removed in the future') String? type,
     required super.thid,
     required super.from,
     required super.body,
     super.to,
     super.nextRequest,
-  }) : super(messageType: Iden3MessageType.authRequest);
+    super.createdTime,
+    super.expiresTime,
+    super.attachments,
+  }) : super(type: Iden3MessageType.authRequest);
 
   /// Creates an instance from the given json
   ///
@@ -90,7 +93,6 @@ class AuthIden3MessageEntity extends Iden3MessageEntity<AuthBodyRequest> {
     return AuthIden3MessageEntity(
       id: json['id'],
       typ: json['typ'],
-      type: json['type'],
       thid: json['thid'],
       from: json['from'],
       to: json['to'],

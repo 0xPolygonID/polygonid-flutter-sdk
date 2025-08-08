@@ -18,8 +18,7 @@ void main() {
       var fetchRequest = FetchIden3MessageEntity.fromJson(json);
       expect(fetchRequest.id, "4dd6479b-99b6-405c-ba9e-c7b18d251a5e");
       expect(fetchRequest.typ, "application/iden3comm-plain-json");
-      expect(fetchRequest.messageType,
-          Iden3MessageType.credentialIssuanceResponse);
+      expect(fetchRequest.type, Iden3MessageType.credentialIssuanceResponse);
       expect(fetchRequest.thid, "4dd6479b-99b6-405c-ba9e-c7b18d251a5e");
       expect(fetchRequest.from, "1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ");
       expect(fetchRequest.to, "1244GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ");

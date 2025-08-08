@@ -12,7 +12,6 @@ abstract class CredentialOfferMessageEntity<T extends CredentialOfferBody>
     required super.body,
     super.to,
     super.nextRequest,
-    super.messageType,
   });
 }
 

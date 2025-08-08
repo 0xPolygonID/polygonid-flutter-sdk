@@ -72,13 +72,12 @@ class FetchIden3MessageEntity extends Iden3MessageEntity<FetchBodyRequest> {
   FetchIden3MessageEntity({
     required super.id,
     required super.typ,
-    required super.type,
     required super.thid,
     required super.from,
     required super.body,
     required super.to,
     super.nextRequest,
-  }) : super(messageType: Iden3MessageType.credentialIssuanceResponse);
+  }) : super(type: Iden3MessageType.fetchRequest);
 
   /// Creates an instance from the given json
   ///
@@ -90,7 +89,6 @@ class FetchIden3MessageEntity extends Iden3MessageEntity<FetchBodyRequest> {
     return FetchIden3MessageEntity(
       id: json['id'],
       typ: json['typ'],
-      type: json['type'],
       thid: json['thid'],
       from: json['from'],
       to: json['to'],

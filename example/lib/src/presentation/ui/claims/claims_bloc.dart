@@ -65,7 +65,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     emit(const ClaimsState.loading());
 
     Iden3MessageEntity iden3message = event.iden3message;
-    if (event.iden3message.messageType != Iden3MessageType.credentialOffer) {
+    if (event.iden3message.type != Iden3MessageType.credentialOffer) {
       emit(const ClaimsState.error("Read message is not of type offer"));
       return;
     }

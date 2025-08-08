@@ -5,13 +5,12 @@ class CredentialStatusUpdateMessageEntity
   CredentialStatusUpdateMessageEntity({
     required super.id,
     required super.typ,
-    required super.type,
     required super.thid,
     required super.from,
     required super.to,
     required super.body,
     super.nextRequest,
-  }) : super(messageType: Iden3MessageType.credentialStatusUpdate);
+  }) : super(type: Iden3MessageType.credentialStatusUpdate);
 
   /// Creates an instance from the given json
   ///
@@ -25,7 +24,6 @@ class CredentialStatusUpdateMessageEntity
     return CredentialStatusUpdateMessageEntity(
       id: json['id'],
       typ: json['typ'],
-      type: json['type'],
       thid: json['thid'],
       from: json['from'],
       to: json['to'],

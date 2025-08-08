@@ -64,8 +64,8 @@
 
 */
 
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/onchain_offer_body_request.dart';
 
 class OnchainOfferIden3MessageEntity
@@ -73,13 +73,12 @@ class OnchainOfferIden3MessageEntity
   OnchainOfferIden3MessageEntity({
     required super.id,
     required super.typ,
-    required super.type,
     required super.thid,
     required super.from,
     required super.body,
     super.to,
     super.nextRequest,
-  }) : super(messageType: Iden3MessageType.onchainCredentialOffer);
+  }) : super(type: Iden3MessageType.onchainCredentialOffer);
 
   /// Creates an instance from the given json
   ///
@@ -91,7 +90,6 @@ class OnchainOfferIden3MessageEntity
     return OnchainOfferIden3MessageEntity(
       id: json['id'],
       typ: json['typ'],
-      type: json['type'],
       thid: json['thid'],
       from: json['from'],
       to: json['to'],

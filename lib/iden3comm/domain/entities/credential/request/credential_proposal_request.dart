@@ -135,13 +135,13 @@ class CredentialProposalRequest
   CredentialProposalRequest({
     required super.id,
     required super.typ,
-    required super.type,
+    @Deprecated('may be omitted, gonna be removed in the future') String? type,
     required super.thid,
     required super.from,
     required super.body,
     required super.to,
     super.nextRequest,
-  }) : super(messageType: Iden3MessageType.credentialProposalRequest);
+  }) : super(type: Iden3MessageType.credentialProposalRequest);
 
   /// Creates an instance from the given json
   ///
@@ -151,7 +151,6 @@ class CredentialProposalRequest
     return CredentialProposalRequest(
       id: json['id'],
       typ: json['typ'],
-      type: json['type'],
       thid: json['thid'],
       from: json['from'],
       to: json['to'],
