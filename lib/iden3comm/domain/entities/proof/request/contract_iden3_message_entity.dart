@@ -46,6 +46,7 @@ class ContractIden3MessageEntity
   ContractIden3MessageEntity({
     required super.id,
     String? typ,
+    @Deprecated('may be omitted, gonna be removed in the future') String? type,
     String? thid,
     required super.body,
     super.nextRequest,

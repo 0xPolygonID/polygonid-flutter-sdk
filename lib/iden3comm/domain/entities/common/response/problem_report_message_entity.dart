@@ -11,6 +11,7 @@ class ProblemReportMessageEntity extends Iden3MessageEntity<ProblemReportBody> {
   ProblemReportMessageEntity({
     required super.id,
     required super.typ,
+    @Deprecated('may be omitted, gonna be removed in the future') String? type,
     super.thid = '',
     required this.pthid,
     required this.ack,
@@ -148,12 +149,12 @@ class ProblemReportBody {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ProblemReportBody &&
-          runtimeType == other.runtimeType &&
-          code == other.code &&
-          escalateTo == other.escalateTo &&
-          args == other.args &&
-          comment == other.comment;
+          other is ProblemReportBody &&
+              runtimeType == other.runtimeType &&
+              code == other.code &&
+              escalateTo == other.escalateTo &&
+              args == other.args &&
+              comment == other.comment;
 
   @override
   int get hashCode => runtimeType.hashCode;

@@ -72,6 +72,7 @@ class AuthIden3MessageEntity extends Iden3MessageEntity<AuthBodyRequest> {
   AuthIden3MessageEntity({
     required super.id,
     required super.typ,
+    @Deprecated('may be omitted, gonna be removed in the future') String? type,
     required super.thid,
     required super.from,
     required super.body,
