@@ -80,7 +80,7 @@ abstract class Iden3MessageEntity<T> extends Equatable {
 
   const Iden3MessageEntity({
     required this.id,
-    this.typ,
+    required this.typ,
     required this.type,
     required this.thid,
     required this.body,

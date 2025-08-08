@@ -34,13 +34,13 @@ import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/lib_pidcore_credential_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_service_metadata_devices_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_service_metadata_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_service_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_body_response.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document_service.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document_service_metadata.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document_service_metadata_devices.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/response/jwz.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
@@ -307,23 +307,22 @@ class Authenticate {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     String packageName = packageInfo.packageName;
 
-    AuthBodyDidDocResponseDTO? didDocResponse = await _getDidDoc(
+    DIDDocument? didDocResponse = await _getDidDoc(
       pushUrl: pushUrl,
       pushToken: pushToken,
       packageName: packageName,
       profileDid: profileDid,
     );
 
-    AuthResponseDTO authResponse = AuthResponseDTO(
+    final authResponse = AuthorizationResponseMessage(
       id: const Uuid().v4(),
       thid: message.thid,
       to: message.from,
       from: profileDid,
       typ: "application/iden3-zkp-json",
-      type: "https://iden3-communication.io/authorization/1.0/response",
-      body: AuthBodyResponseDTO(
+      body: AuthorizationMessageResponseBody(
         message: (message as AuthorizationRequestMessage).body.message,
-        scope: proofs,
+        proofs: proofs,
         did_doc: didDocResponse,
       ),
     );
@@ -581,7 +580,7 @@ class Authenticate {
     return walletDs.signMessage(privateKey: privateKey, message: message);
   }
 
-  Future<AuthBodyDidDocResponseDTO?> _getDidDoc({
+  Future<DIDDocument?> _getDidDoc({
     required String? pushUrl,
     required String? pushToken,
     required String? packageName,
@@ -596,26 +595,28 @@ class Authenticate {
       return null;
     }
 
-    return AuthBodyDidDocResponseDTO(
+    return DIDDocument(
       context: const ["https://www.w3.org/ns/did/v1"],
       id: profileDid,
       service: [
-        AuthBodyDidDocServiceResponseDTO(
+        DIDDocumentService(
           id: '$profileDid#mobile',
           type: 'Iden3MobileServiceV1',
           serviceEndpoint: 'iden3comm:v0.1:callbackHandler',
         ),
-        AuthBodyDidDocServiceResponseDTO(
+        DIDDocumentService(
           id: "$profileDid#push",
           type: "push-notification",
           serviceEndpoint: pushUrl,
-          metadata: AuthBodyDidDocServiceMetadataResponseDTO(devices: [
-            AuthBodyDidDocServiceMetadataDevicesResponseDTO(
-              ciphertext:
-                  await _getPushCipherText(pushToken, pushUrl, packageName),
-              alg: "RSA-OAEP-512",
-            )
-          ]),
+          metadata: DIDDocumentServiceMetadata(
+            devices: [
+              DIDDocumentServiceMetadataDevices(
+                ciphertext:
+                    await _getPushCipherText(pushToken, pushUrl, packageName),
+                alg: "RSA-OAEP-512",
+              )
+            ],
+          ),
         )
       ],
     );

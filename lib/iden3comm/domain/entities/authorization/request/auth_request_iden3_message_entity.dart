@@ -1,3 +1,4 @@
+// ignore_for_file: overridden_fields
 /*
 {
   "type": "https://iden3-communication.io/authorization-request/v1",

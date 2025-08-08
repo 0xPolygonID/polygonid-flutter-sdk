@@ -1,3 +1,4 @@
+// ignore_for_file: overridden_fields
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 
 typedef PaymentMessageEntity = PaymentMessage;

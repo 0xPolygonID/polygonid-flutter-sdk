@@ -13,42 +13,44 @@ import 'package:pointycastle/asymmetric/rsa.dart';
 import 'package:pointycastle/digests/sha512.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_service_metadata_devices_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_service_metadata_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_service_response_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document_service.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document_service_metadata.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document_service_metadata_devices.dart';
 
 class Iden3MessageDataSource {
   final StacktraceManager _stacktraceManager;
 
   Iden3MessageDataSource(this._stacktraceManager);
 
-  Future<AuthBodyDidDocResponseDTO> getDidDocResponse(
+  Future<DIDDocument> getDidDocResponse(
     String pushUrl,
     String didIdentifier,
     String pushToken,
     String packageName,
   ) async {
-    return AuthBodyDidDocResponseDTO(
+    return DIDDocument(
       context: const ["https://www.w3.org/ns/did/v1"],
       id: didIdentifier,
       service: [
-        AuthBodyDidDocServiceResponseDTO(
+        DIDDocumentService(
           id: '$didIdentifier#mobile',
           type: 'Iden3MobileServiceV1',
           serviceEndpoint: 'iden3comm:v0.1:callbackHandler',
         ),
-        AuthBodyDidDocServiceResponseDTO(
+        DIDDocumentService(
           id: "$didIdentifier#push",
           type: "push-notification",
           serviceEndpoint: pushUrl,
-          metadata: AuthBodyDidDocServiceMetadataResponseDTO(devices: [
-            AuthBodyDidDocServiceMetadataDevicesResponseDTO(
-              ciphertext:
-                  await _getPushCipherText(pushToken, pushUrl, packageName),
-              alg: "RSA-OAEP-512",
-            )
-          ]),
+          metadata: DIDDocumentServiceMetadata(
+            devices: [
+              DIDDocumentServiceMetadataDevices(
+                ciphertext:
+                    await _getPushCipherText(pushToken, pushUrl, packageName),
+                alg: "RSA-OAEP-512",
+              )
+            ],
+          ),
         )
       ],
     );

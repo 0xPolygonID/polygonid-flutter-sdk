@@ -36,7 +36,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/crede
 
 typedef CredentialProposalRequest = ProposalRequestMessage;
 
-
 /// Represents a credential proposal request message
 /// https://iden3-communication.io/credentials/0.1/proposal-request
 class ProposalRequestMessage

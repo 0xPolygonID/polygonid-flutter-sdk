@@ -23,6 +23,7 @@ class CircuitsToDownloadParam extends Equatable {
     String? bucketUrl,
     String? downloadPath,
   }) {
+    // ignore: deprecated_member_use_from_same_package
     return CircuitsToDownloadParam(
       circuitsName: circuitsName ?? this.circuitsName,
       bucketUrl: bucketUrl ?? this.bucketUrl,
@@ -39,6 +40,7 @@ class CircuitsToDownloadParam extends Equatable {
   }
 
   factory CircuitsToDownloadParam.fromJson(Map<String, dynamic> map) {
+    // ignore: deprecated_member_use_from_same_package
     return CircuitsToDownloadParam(
       circuitsName: map['circuitsName'],
       bucketUrl: map['bucketUrl'],

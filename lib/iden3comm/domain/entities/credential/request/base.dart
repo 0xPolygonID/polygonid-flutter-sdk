@@ -1,7 +1,6 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/credential_offer_data.dart';
 
-
 @Deprecated('Use CredentialOfferMessageEntity instead')
 typedef CredentialOfferMessageEntity<T extends CredentialOfferBody>
     = BaseCredentialOfferMessage<T>;

@@ -60,7 +60,7 @@ class ContractInvokeResponseBody {
   /// @returns [ContractInvokeRequestBody]
   factory ContractInvokeResponseBody.fromJson(Map<String, dynamic> json) {
     ContractInvokeTransactionData transactionData =
-    ContractInvokeTransactionData.fromJson(json['transaction_data']);
+        ContractInvokeTransactionData.fromJson(json['transaction_data']);
     List<ProofScopeResponse> scope = (json['scope'] as List)
         .map((item) => ProofScopeResponse.fromJson(item))
         .toList();
@@ -72,10 +72,10 @@ class ContractInvokeResponseBody {
   }
 
   Map<String, dynamic> toJson() => {
-    'transaction_data': transactionData.toJson(),
-    'scope': scope.map((item) => item.toJson()).toList(),
-    'did_doc': didDoc,
-  };
+        'transaction_data': transactionData.toJson(),
+        'scope': scope.map((item) => item.toJson()).toList(),
+        'did_doc': didDoc,
+      };
 
   @override
   String toString() =>
@@ -84,11 +84,11 @@ class ContractInvokeResponseBody {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is ContractInvokeResponseBody &&
-              runtimeType == other.runtimeType &&
-              transactionData == other.transactionData &&
-              didDoc == other.didDoc &&
-              listEquals(scope, other.scope);
+      other is ContractInvokeResponseBody &&
+          runtimeType == other.runtimeType &&
+          transactionData == other.transactionData &&
+          didDoc == other.didDoc &&
+          listEquals(scope, other.scope);
 
   @override
   int get hashCode => runtimeType.hashCode;

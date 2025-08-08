@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
-
 /*
 {
   "type": "AnimaProofOfLife",
