@@ -13,6 +13,7 @@ import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/protocol_message_type.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
@@ -127,8 +128,7 @@ class FetchOnchainClaimUseCase
         type: claimInfoDto.credentialSubject.type,
         info: claimInfoDto,
         credentialRawValue: jsonEncode({
-          "type":
-              "https://iden3-communication.io/credentials/1.0/onchain-offer",
+          "type": ProtocolMessageType.credentialOnchainOfferMessageType,
           "from": param.issuerDid,
           "body": {
             'credential': claimJson,

@@ -111,9 +111,9 @@ class FetchAndSaveClaimsUseCase
 
       final message = param.message;
       if (message is CredentialsOfferMessage) {
-        claims = await _fetchClaims(message, param, profileDid);
+        claims = await _fetchCredentials(message, param, profileDid);
       } else if (message is CredentialsOnchainOfferMessage) {
-        claims = await _fetchOnchainClaims(message, profileDid, param);
+        claims = await _fetchOnchainCredentials(message, profileDid, param);
       } else {
         _stacktraceManager.addError(
             "[FetchAndSaveClaimsUseCase] Unknown message type: ${message.runtimeType}");
@@ -154,7 +154,7 @@ class FetchAndSaveClaimsUseCase
     }
   }
 
-  Future<List<ClaimEntity>> _fetchClaims(
+  Future<List<ClaimEntity>> _fetchCredentials(
     CredentialsOfferMessage message,
     FetchAndSaveClaimsParam param,
     String profileDid,
@@ -188,7 +188,7 @@ class FetchAndSaveClaimsUseCase
     return claims;
   }
 
-  Future<List<ClaimEntity>> _fetchOnchainClaims(
+  Future<List<ClaimEntity>> _fetchOnchainCredentials(
     CredentialsOnchainOfferMessage message,
     String profileDid,
     FetchAndSaveClaimsParam param,

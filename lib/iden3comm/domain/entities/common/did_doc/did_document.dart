@@ -55,8 +55,9 @@ class DIDDocument {
         '@context': context,
         'id': id,
         'service': service?.map((item) => item.toJson()).toList(),
-        'alsoKnownAs': alsoKnownAs,
-        'controller': controller,
-        'verificationMethod': verificationMethod,
+        if (alsoKnownAs != null) 'alsoKnownAs': alsoKnownAs,
+        if (controller != null) 'controller': controller,
+        if (verificationMethod != null)
+          'verificationMethod': verificationMethod,
       };
 }

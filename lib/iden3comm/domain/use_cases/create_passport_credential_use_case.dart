@@ -8,6 +8,7 @@ import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/protocol_message_type.dart';
 
 class CreatePassportCredentialParam {
   final String passportData;
@@ -85,7 +86,7 @@ class CreatePassportCredentialUseCase
       type: claimInfoDto.credentialSubject.type,
       info: claimInfoDto,
       credentialRawValue: jsonEncode({
-        "type": "https://iden3-communication.io/credentials/1.0/offer",
+        "type": ProtocolMessageType.credentialOfferMessageType,
         "from": param.issuerDid,
         "body": {
           'credential': claimJson,

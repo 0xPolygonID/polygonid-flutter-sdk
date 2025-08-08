@@ -48,7 +48,7 @@ class ContractInvokeTransactionData with EquatableMixin {
         'method_id': methodId,
         'chain_id': chainId,
         'network': network,
-        'txHash': txHash,
+        if (txHash != null) 'txHash': txHash,
       };
 
   @override

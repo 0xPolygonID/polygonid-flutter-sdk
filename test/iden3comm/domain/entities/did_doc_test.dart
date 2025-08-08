@@ -30,7 +30,7 @@ String data = '''
 var json = jsonDecode(data);
 
 void main() {
-  group('AuthBodyDidDocResponse', () {
+  group('DIDDocument', () {
     test('fromJson', () {
       var authBodyDidDocResponse = DIDDocument.fromJson(json);
       expect(authBodyDidDocResponse.id,
@@ -47,7 +47,7 @@ void main() {
           'RSA-OAEP-512');
     });
     test(
-      'AuthBodyDidDocResponse.toJson',
+      'DIDDocument.toJson',
       () {
         var authBodyDidDocResponse = DIDDocument.fromJson(json);
         expect(authBodyDidDocResponse.toJson(), json);

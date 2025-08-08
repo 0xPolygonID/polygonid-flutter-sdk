@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/protocol_message_type.dart';
 
 import '../../../../../credential/data/dtos/claim_info_dto.dart';
 
@@ -8,19 +9,17 @@ part 'fetch_claim_response_dto.g.dart';
 enum FetchClaimResponseType {
   @JsonValue("")
   unknown,
-  @JsonValue("https://iden3-communication.io/authorization/1.0/request")
+  @JsonValue(ProtocolMessageType.authorizationRequestMessageType)
   auth,
-  @JsonValue("https://iden3-communication.io/credentials/1.0/offer")
+  @JsonValue(ProtocolMessageType.credentialOfferMessageType)
   offer,
-  @JsonValue("https://iden3-communication.io/credentials/1.0/onchain-offer")
+  @JsonValue(ProtocolMessageType.credentialOnchainOfferMessageType)
   onchainOffer,
-  @JsonValue("https://iden3-communication.io/credentials/1.0/issuance-response")
+  @JsonValue(ProtocolMessageType.credentialIssuanceResponseMessageType)
   issuance,
-  @JsonValue(
-      "https://iden3-communication.io/proofs/1.0/contract-invoke-request")
+  @JsonValue(ProtocolMessageType.contractInvokeRequestMessageType)
   contractFunctionCall,
-  @JsonValue(
-      "https://iden3-communication.io/proofs/1.0/contract-invoke-response")
+  @JsonValue(ProtocolMessageType.contractInvokeResponseMessageType)
   contractFunctionCallResponse,
 }
 

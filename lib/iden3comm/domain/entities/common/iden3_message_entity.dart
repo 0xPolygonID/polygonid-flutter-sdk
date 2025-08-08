@@ -5,6 +5,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/attachmen
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/protocol_message_type.dart';
 
 enum Iden3MessageType {
+  /// Authorization
   authRequest(ProtocolMessageType.authorizationRequestMessageType),
   authResponse(ProtocolMessageType.authorizationResponseMessageType),
   credentialOffer(ProtocolMessageType.credentialOfferMessageType),

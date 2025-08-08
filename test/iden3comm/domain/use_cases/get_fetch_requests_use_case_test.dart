@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/fetch_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_fetch_requests_use_case.dart';
 
@@ -9,7 +10,7 @@ import '../../../common/iden3comm_mocks.dart';
 
 // Data
 const typ = "theTyp";
-const type = "https://iden3-communication.io/credentials/1.0/fetch-request";
+const type = Iden3MessageType.fetchRequest;
 final param =
     GetFetchRequestsParam(Iden3commMocks.offerRequest, CommonMocks.identifier);
 const claimIds = ["claimId", "otherClaimId"];

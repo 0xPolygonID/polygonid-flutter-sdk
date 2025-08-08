@@ -6,108 +6,92 @@ class ProtocolMessageType {
   // Private constructor to prevent instantiation
   ProtocolMessageType._();
 
-  // AuthorizationV2RequestMessageType defines auth request type of the communication protocol
+  ///
+  /// Authorization
+  ///
+
   static const authorizationRequestMessageType =
       '${_iden3Protocol}authorization/1.0/request';
 
-  // AuthorizationResponseMessageType defines auth response type of the communication protocol
   static const authorizationResponseMessageType =
       '${_iden3Protocol}authorization/1.0/response';
 
-  // CredentialIssuanceRequestMessageType accepts request for credential creation
+  ///
+  /// Credentials
+  ///
+
   static const credentialIssuanceRequestMessageType =
       '${_iden3Protocol}credentials/1.0/issuance-request';
 
-  // CredentialFetchRequestMessageType is type for request of credential generation
-  static const credentialFetchRequestMessageType =
-      '${_iden3Protocol}credentials/1.0/fetch-request';
-
-  // CredentialOfferMessageType is type of message with credential offering
-  static const credentialOfferMessageType =
-      '${_iden3Protocol}credentials/1.0/offer';
-
-  // CredentialIssuanceResponseMessageType is type for message with a credential issuance
   static const credentialIssuanceResponseMessageType =
       '${_iden3Protocol}credentials/1.0/issuance-response';
 
-  // CredentialRefreshMessageType is type for message with a credential issuance
-  static const credentialRefreshMessageType =
-      '${_iden3Protocol}credentials/1.0/refresh';
+  static const credentialFetchRequestMessageType =
+      '${_iden3Protocol}credentials/1.0/fetch-request';
 
-  // DeviceRegistrationRequestMessageType defines device registration request type of the communication protocol
-  static const deviceRegistrationRequestMessageType =
-      '${_iden3Protocol}devices/1.0/registration';
+  static const credentialOfferMessageType =
+      '${_iden3Protocol}credentials/1.0/offer';
 
-  // MessageFetMessageFetchRequestMessageType defines message fetch request type of the communication protocol.
-  static const messageFetchRequestMessageType =
-      '${_iden3Protocol}messages/1.0/fetch';
-
-  // ProofGenerationRequestMessageType is type for request of proof generation
-  static const proofGenerationRequestMessageType =
-      '${_iden3Protocol}proofs/1.0/request';
-
-  // ProofGenerationResponseMessageType is type for response of proof generation
-  static const proofGenerationResponseMessageType =
-      '${_iden3Protocol}proofs/1.0/response';
-
-  // RevocationStatusRequestMessageType is type for request of revocation status
-  static const revocationStatusRequestMessageType =
-      '${_iden3Protocol}revocation/1.0/request-status';
-
-  // RevocationStatusResponseMessageType is type for response with a revocation status
-  static const revocationStatusResponseMessageType =
-      '${_iden3Protocol}revocation/1.0/status';
-
-  // ContractInvokeRequestMessageType is type for request of contract invoke request
-  static const contractInvokeRequestMessageType =
-      '${_iden3Protocol}proofs/1.0/contract-invoke-request';
-
-  // ContractInvokeResponseMessageType is type for response of contract invoke request
-  static const contractInvokeResponseMessageType =
-      '${_iden3Protocol}proofs/1.0/contract-invoke-response';
-
-  // CredentialOnchainOfferMessageType is type of message with credential onchain offering
-  static const credentialOnchainOfferMessageType =
-      '${_iden3Protocol}credentials/1.0/onchain-offer';
-
-  // ProposalRequestMessageType is type for proposal-request message
-  static const proposalRequestMessageType =
-      '${_iden3Protocol}credentials/0.1/proposal-request';
-
-  // ProposalMessageType is type for proposal message
-  static const proposalMessageType =
-      '${_iden3Protocol}credentials/0.1/proposal';
-
-  // PaymentRequestMessageType is type for payment-request message
-  static const paymentRequestMessageType =
-      '${_iden3Protocol}credentials/0.1/payment-request';
-
-  // PaymentMessageType is type for payment message
-  static const paymentMessageType = '${_iden3Protocol}credentials/0.1/payment';
-
-  // DiscoveryProtocolQueriesMessageType is type for didcomm discovery protocol queries
-  static const discoveryProtocolQueriesMessageType =
-      '${_didcommProtocol}discover-features/2.0/queries';
-
-  // DiscoveryProtocolDiscloseMessageType is type for didcomm discovery protocol disclose
-  static const discoveryProtocolDiscloseMessageType =
-      '${_didcommProtocol}discover-features/2.0/disclose';
-
-  // ProblemReportMessageType is type for didcomm problem report
-  static const problemReportMessageType =
-      '${_didcommProtocol}report-problem/2.0/problem-report';
-
-  // CredentialStatusUpdateMessageType is type for credential status update message
   static const credentialStatusUpdateMessageType =
       '${_iden3Protocol}credentials/1.0/status-update';
 
-  // Attestation message types
+  static const credentialRefreshMessageType =
+      '${_iden3Protocol}credentials/1.0/refresh';
+
+  static const credentialOnchainOfferMessageType =
+      '${_iden3Protocol}credentials/1.0/onchain-offer';
+
+  ///
+  /// Credentials payments
+  ///
+
+  static const proposalRequestMessageType =
+      '${_iden3Protocol}credentials/0.1/proposal-request';
+
+  static const proposalMessageType =
+      '${_iden3Protocol}credentials/0.1/proposal';
+
+  static const paymentRequestMessageType =
+      '${_iden3Protocol}credentials/0.1/payment-request';
+
+  static const paymentMessageType = '${_iden3Protocol}credentials/0.1/payment';
+
+  ///
+  /// Proofs
+  ///
+
+  static const contractInvokeRequestMessageType =
+      '${_iden3Protocol}proofs/1.0/contract-invoke-request';
+
+  static const contractInvokeResponseMessageType =
+      '${_iden3Protocol}proofs/1.0/contract-invoke-response';
+
+  ///
+  /// Revocation
+  ///
+
+  static const revocationStatusRequestMessageType =
+      '${_iden3Protocol}revocation/1.0/request-status';
+
+  static const revocationStatusResponseMessageType =
+      '${_iden3Protocol}revocation/1.0/status';
+
+  ///
+  /// Problem report
+  ///
+
+  static const problemReportMessageType =
+      '${_didcommProtocol}report-problem/2.0/problem-report';
+
+  ///
+  /// Attestation and verification
+  ///
+
   static const attestationRequestMessageType =
       '${_iden3Protocol}attestation/0.1/request';
   static const attestationResponseMessageType =
       '${_iden3Protocol}attestation/0.1/response';
 
-  // Verification message types
   static const verificationRequestMessageType =
       '${_iden3Protocol}passport/0.1/verification-request';
   static const verificationResponseMessageType =
@@ -122,10 +106,6 @@ class ProtocolMessageType {
     credentialOfferMessageType,
     credentialIssuanceResponseMessageType,
     credentialRefreshMessageType,
-    deviceRegistrationRequestMessageType,
-    messageFetchRequestMessageType,
-    proofGenerationRequestMessageType,
-    proofGenerationResponseMessageType,
     revocationStatusRequestMessageType,
     revocationStatusResponseMessageType,
     contractInvokeRequestMessageType,
@@ -135,8 +115,6 @@ class ProtocolMessageType {
     proposalMessageType,
     paymentRequestMessageType,
     paymentMessageType,
-    discoveryProtocolQueriesMessageType,
-    discoveryProtocolDiscloseMessageType,
     problemReportMessageType,
   ];
 
