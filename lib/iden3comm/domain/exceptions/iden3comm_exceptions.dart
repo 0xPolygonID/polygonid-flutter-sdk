@@ -65,7 +65,7 @@ class UnsupportedSchemaException extends PolygonIdSDKException {
 }
 
 class NullAuthenticateCallbackException extends PolygonIdSDKException {
-  final AuthIden3MessageEntity authRequest;
+  final AuthorizationRequestMessage authRequest;
 
   NullAuthenticateCallbackException({
     required this.authRequest,

@@ -9,7 +9,7 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/generate_inputs_resp
 
 abstract class Iden3commRepository {
   Future<Iden3MessageEntity?> authenticate({
-    required AuthIden3MessageEntity request,
+    required AuthorizationRequestMessage request,
     required String authToken,
   });
 
@@ -29,7 +29,7 @@ abstract class Iden3commRepository {
 
   Future<String> getAuthResponse({
     required String did,
-    required AuthIden3MessageEntity request,
+    required AuthorizationRequestMessage request,
     required List<Iden3commProofEntity> scope,
     String? pushUrl,
     String? pushToken,

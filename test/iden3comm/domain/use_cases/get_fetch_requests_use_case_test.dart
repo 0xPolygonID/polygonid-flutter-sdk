@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_fetch_requests_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/fetch_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_fetch_requests_use_case.dart';
 
 import '../../../common/common_mocks.dart';
 import '../../../common/iden3comm_mocks.dart';
@@ -26,8 +26,8 @@ void main() {
       await useCase.execute(param: param).then((requests) {
         for (int i = 0; i < requests.length; i++) {
           /// We suppose [FetchIden3MessageEntity.fromJson] has been tested
-          FetchIden3MessageEntity entity =
-              FetchIden3MessageEntity.fromJson(jsonDecode(requests[i]));
+          CredentialFetchRequestMessage entity =
+              CredentialFetchRequestMessage.fromJson(jsonDecode(requests[i]));
           expect(entity.typ, typ);
           expect(entity.type, type);
           expect(entity.thid, param.message.thid);

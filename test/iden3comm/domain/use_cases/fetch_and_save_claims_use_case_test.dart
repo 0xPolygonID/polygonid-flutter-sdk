@@ -205,7 +205,7 @@ void main() {
         expect(fetchVerify.captured[i], CommonMocks.did);
         expect(fetchVerify.captured[i + 1], CommonMocks.token);
         expect(fetchVerify.captured[i + 2],
-            (param.message as OfferIden3MessageEntity).body.url);
+            (param.message as CredentialsOfferMessage).body.url);
       }
 
       // FIXME: This is verifying code that is currently commented out.
@@ -252,7 +252,7 @@ void main() {
       expect(fetchVerify.captured[0], CommonMocks.did);
       expect(fetchVerify.captured[1], CommonMocks.token);
       expect(fetchVerify.captured[2],
-          (param.message as OfferIden3MessageEntity).body.url);
+          (param.message as CredentialsOfferMessage).body.url);
 
       verifyNever(getClaimRevocationStatusUseCase.execute(
           param: captureAnyNamed('param')));

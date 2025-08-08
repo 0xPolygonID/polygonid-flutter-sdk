@@ -15,7 +15,7 @@ const String id = "theId";
 void main() {
   group("FetchIden3MessageEntity", () {
     test("fromJson", () {
-      var fetchRequest = FetchIden3MessageEntity.fromJson(json);
+      var fetchRequest = CredentialFetchRequestMessage.fromJson(json);
       expect(fetchRequest.id, "4dd6479b-99b6-405c-ba9e-c7b18d251a5e");
       expect(fetchRequest.typ, "application/iden3comm-plain-json");
       expect(fetchRequest.type, Iden3MessageType.credentialIssuanceResponse);

@@ -1,7 +1,7 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 
 class ProofRequestEntity {
-  final ProofScopeRequest scope;
+  final ZeroKnowledgeProofRequest scope;
   final Map<String, dynamic> context;
 
   bool get isOptional => scope.isOptional;

@@ -103,40 +103,36 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:polygonid_flutter_sdk/common/utils/number_extension.dart';
 
-class ProofScopeQueryRequest {
-  final List<String>? allowedIssuers;
-  final String? context;
-  final String? type;
-  final int? challenge;
-  final bool? skipClaimRevocationCheck;
+typedef ProofScopeQueryRequest = ZeroKnowledgeProofQuery;
+
+class ZeroKnowledgeProofQuery {
+  final List<String> allowedIssuers;
+  final String context;
   final Map<String, dynamic>? credentialSubject;
-
   final String? proofType;
-
+  final bool? skipClaimRevocationCheck;
   final int? groupId;
+  final String? type;
 
-  ProofScopeQueryRequest({
-    this.allowedIssuers,
-    this.context,
-    this.type,
-    this.challenge,
+  ZeroKnowledgeProofQuery({
+    required this.allowedIssuers,
+    required this.context,
     this.credentialSubject,
-    this.skipClaimRevocationCheck,
     this.proofType,
+    this.skipClaimRevocationCheck,
     this.groupId,
+    this.type,
   });
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
   /// @returns [ProofScopeRulesQueryRequest]
-  factory ProofScopeQueryRequest.fromJson(Map<String, dynamic>? json) {
+  factory ZeroKnowledgeProofQuery.fromJson(Map<String, dynamic>? json) {
     if (json != null) {
-      return ProofScopeQueryRequest(
+      return ZeroKnowledgeProofQuery(
         allowedIssuers: List<String>.from(json['allowedIssuers']),
         context: json['context'],
-        type: json['type'],
-        challenge: json['challenge'],
         proofType: json['proofType'],
 
         /// FIXME: flooring doubles without decimals to ints, this is because of protobuf
@@ -144,8 +140,8 @@ class ProofScopeQueryRequest {
         credentialSubject: (json['credentialSubject'] as Map<String, dynamic>?)
             ?.deepDoubleToInt(),
         skipClaimRevocationCheck: json['skipClaimRevocationCheck'],
-
         groupId: json['groupId'],
+        type: json['type'],
       );
       //schema: schema);
     } else {
@@ -157,7 +153,6 @@ class ProofScopeQueryRequest {
         'allowedIssuers': allowedIssuers,
         'context': context,
         'type': type,
-        'challenge': challenge,
         'credentialSubject': credentialSubject,
         'skipClaimRevocationCheck': skipClaimRevocationCheck,
         'proofType': proofType,
@@ -167,15 +162,14 @@ class ProofScopeQueryRequest {
 
   @override
   String toString() =>
-      "[ProofScopeRulesQueryRequest] {allowedIssuers: $allowedIssuers, challenge: $challenge, credentialSubject: $credentialSubject, context: $context, type: $type, skipClaimRevocationCheck: $skipClaimRevocationCheck, proofType: $proofType, groupId: $groupId}";
+      "[ProofScopeRulesQueryRequest] {allowedIssuers: $allowedIssuers, credentialSubject: $credentialSubject, context: $context, type: $type, skipClaimRevocationCheck: $skipClaimRevocationCheck, proofType: $proofType, groupId: $groupId}";
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ProofScopeQueryRequest &&
+      other is ZeroKnowledgeProofQuery &&
           runtimeType == other.runtimeType &&
           listEquals(allowedIssuers, other.allowedIssuers) &&
-          challenge == other.challenge &&
           context == other.context &&
           type == other.type &&
           proofType == other.proofType &&

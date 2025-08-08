@@ -38,9 +38,9 @@ class GetProofRequestsUseCase
       );
     }
 
-    List<ProofScopeRequest>? scopes = param.body.scope;
+    List<ZeroKnowledgeProofRequest>? scopes = param.body.scope;
     if (scopes != null && scopes.isNotEmpty) {
-      for (ProofScopeRequest scope in scopes) {
+      for (ZeroKnowledgeProofRequest scope in scopes) {
         var context = await _getProofQueryContextUseCase.execute(param: scope);
         _stacktraceManager.addTrace(
             "[GetProofRequestsUseCase] _getProofQueryContextUseCase: ${jsonEncode(context)}");

@@ -28,10 +28,10 @@ class GetSchemasUseCase
 
     List<Map<String, dynamic>> result = [];
 
-    for (ProofScopeRequest proofScopeRequest in param.body.scope) {
+    for (ZeroKnowledgeProofRequest proofScopeRequest in param.body.scope) {
       String? schemaUrl = proofScopeRequest.query.context;
 
-      if (schemaUrl != null && schemaUrl.isNotEmpty) {
+      if (schemaUrl.isNotEmpty) {
         Map<String, dynamic> schema = await _iden3commCredentialRepository
             .fetchSchema(url: schemaUrl)
             .catchError((error) => <String, dynamic>{});

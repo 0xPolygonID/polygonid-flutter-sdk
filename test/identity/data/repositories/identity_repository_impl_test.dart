@@ -6,7 +6,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/local_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_body_response.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
@@ -17,11 +17,11 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/secure_storage_
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/private_key/private_key_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/repositories/identity_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/data/repositories/identity_repository_impl.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
@@ -50,14 +50,13 @@ final mockDTO = IdentityEntity(
   profiles: CommonMocks.profiles,
 );
 
-final mockAuthResponse = AuthResponse(
+final mockAuthResponse = AuthorizationResponseMessage(
   id: "id",
   thid: Iden3commMocks.authRequest.thid,
   to: Iden3commMocks.authRequest.from,
   from: CommonMocks.identifier,
   typ: "application/iden3comm-plain-json",
-  type: "https://iden3-communication.io/authorization/1.0/response",
-  body: AuthBodyResponse(
+  body: AuthorizationMessageResponseBody(
     message: Iden3commMocks.authRequest.body.message,
     proofs: [],
     did_doc: null,

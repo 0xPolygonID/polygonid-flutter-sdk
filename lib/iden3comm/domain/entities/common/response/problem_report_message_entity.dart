@@ -1,28 +1,36 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:uuid/uuid.dart';
 
-class ProblemReportMessageEntity extends Iden3MessageEntity<ProblemReportBody> {
+@Deprecated('Use ProblemReportMessage instead')
+typedef ProblemReportMessageEntity = ProblemReportMessage;
+
+class ProblemReportMessage extends Iden3MessageEntity<ProblemReportBody> {
   // Parent thread
   final String pthid;
 
   // List of IDs of previous messages that triggered this one
   final List<String>? ack;
 
-  ProblemReportMessageEntity({
+  ProblemReportMessage({
     required super.id,
     required super.typ,
+    @Deprecated('may be omitted, gonna be removed in the future') String? type,
     super.thid = '',
     required this.pthid,
     required this.ack,
     required super.from,
     required super.body,
     super.to,
+    super.nextRequest,
+    super.createdTime,
+    super.expiresTime,
+    super.attachments = const [],
   }) : super(type: Iden3MessageType.problemReport);
 
-  factory ProblemReportMessageEntity.fromJson(Map<String, dynamic> json) {
+  factory ProblemReportMessage.fromJson(Map<String, dynamic> json) {
     ProblemReportBody body = ProblemReportBody.fromJson(json['body']);
 
-    return ProblemReportMessageEntity(
+    return ProblemReportMessage(
       id: json['id'],
       typ: json['typ'],
       thid: json['thid'] ?? '',
@@ -34,7 +42,7 @@ class ProblemReportMessageEntity extends Iden3MessageEntity<ProblemReportBody> {
     );
   }
 
-  /// Creates a new ProblemReportMessageEntity with predefined fields
+  /// Creates a new ProblemReportMessage with predefined fields
   ///
   /// [code] - Required problem code
   /// [threadId] - Thread ID for the message
@@ -43,7 +51,7 @@ class ProblemReportMessageEntity extends Iden3MessageEntity<ProblemReportBody> {
   /// [comment] - Optional human-friendly text describing the problem
   /// [args] - Optional list of arguments for placeholders in comment field
   /// [escalateTo] - Optional URI where more help could be received
-  static ProblemReportMessageEntity createProblemReport({
+  static ProblemReportMessage createProblemReport({
     required String from,
     String? to = "",
     required String code,
@@ -71,7 +79,7 @@ class ProblemReportMessageEntity extends Iden3MessageEntity<ProblemReportBody> {
       escalateTo: escalateTo,
     );
 
-    return ProblemReportMessageEntity(
+    return ProblemReportMessage(
       id: messageId,
       typ: 'application/iden3comm-plain-json',
       thid: tId,
@@ -93,11 +101,11 @@ class ProblemReportMessageEntity extends Iden3MessageEntity<ProblemReportBody> {
   }
 
   @override
-  String toString() => "[ProblemReportMessageEntity] {${super.toString()}}";
+  String toString() => "[ProblemReportMessage] {${super.toString()}}";
 
   @override
   bool operator ==(Object other) =>
-      super == other && other is ProblemReportMessageEntity;
+      super == other && other is ProblemReportMessage;
 
   @override
   int get hashCode => runtimeType.hashCode;

@@ -1,4 +1,5 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/credential_schema_info.dart';
 
 /*
 "body": {
@@ -33,36 +34,107 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_mes
   },
 */
 
-/*
-{
-        "type": "LivenessProof",
-        "context": "http://test.com"
-      },
-      {
-        "type": "KYC",
-        "context": "http://test.com"
-      }
-*/
-class CredentialObject {
-  final String type;
-  final String context;
+typedef CredentialProposalRequest = ProposalRequestMessage;
 
-  CredentialObject({required this.type, required this.context});
 
-  factory CredentialObject.fromJson(Map<String, dynamic> json) {
-    return CredentialObject(
-      type: json['type'],
-      context: json['context'],
+/// Represents a credential proposal request message
+/// https://iden3-communication.io/credentials/0.1/proposal-request
+class ProposalRequestMessage
+    extends Iden3MessageEntity<ProposalRequestMessageBody> {
+  ProposalRequestMessage({
+    required super.id,
+    required super.typ,
+    required super.thid,
+    @Deprecated('may be omitted, gonna be removed in the future') String? type,
+    required super.from,
+    required super.body,
+    required super.to,
+    super.nextRequest,
+    super.createdTime,
+    super.expiresTime,
+    super.attachments = const [],
+  }) : super(type: Iden3MessageType.credentialProposalRequest);
+
+  /// Creates an instance from the given json
+  ///
+  /// @param [Map<String, dynamic>] json
+  /// @returns [ProposalRequestMessage]
+  factory ProposalRequestMessage.fromJson(Map<String, dynamic> json) {
+    return ProposalRequestMessage(
+      id: json['id'],
+      typ: json['typ'],
+      thid: json['thid'],
+      from: json['from'],
+      to: json['to'],
+      body: ProposalRequestMessageBody.fromJson(json['body']),
+      nextRequest: json['next_request'],
+    );
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = super.toJson();
+    return data;
+  }
+
+  @override
+  String toString() =>
+      "[CredentialProposalRequestMessage] {${super.toString()}}";
+
+  @override
+  bool operator ==(Object other) =>
+      super == other && other is ProposalRequestMessage;
+
+  @override
+  int get hashCode => id.hashCode;
+}
+
+@Deprecated('Use ProposalRequestMessageBody instead')
+typedef CredentialProposalBodyRequest = ProposalRequestMessageBody;
+
+class ProposalRequestMessageBody {
+  final List<ProposalRequestCredential> credentials;
+  Map<String, dynamic>? didDoc;
+  MetadataObject? metadata;
+
+  ProposalRequestMessageBody({
+    required this.credentials,
+    this.metadata,
+    this.didDoc,
+  });
+
+  factory ProposalRequestMessageBody.fromJson(Map<String, dynamic> json) {
+    List<ProposalRequestCredential> credentials = (json['credentials'] as List)
+        .map((item) => ProposalRequestCredential.fromJson(item))
+        .toList();
+    MetadataObject? metadata;
+    if (json['metadata'] != null) {
+      metadata = MetadataObject.fromJson(json['metadata']);
+    }
+    Map<String, dynamic>? didDoc;
+    if (json['did_doc'] != null) {
+      didDoc = json['did_doc'];
+    }
+    return ProposalRequestMessageBody(
+      credentials: credentials,
+      metadata: metadata,
+      didDoc: didDoc,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'type': type,
-      'context': context,
+      'credentials': credentials.map((item) => item.toJson()).toList(),
+      'metadata': metadata?.toJson(),
+      'did_doc': didDoc,
     };
   }
 }
+
+@Deprecated('Use ProposalRequestCredential instead')
+typedef CredentialObject = ProposalRequestCredential;
+
+typedef ProposalRequestCredential = CredentialSchemaInfo;
 
 /*
  {
@@ -89,88 +161,4 @@ class MetadataObject {
       'data': data,
     };
   }
-}
-
-class CredentialProposalBodyRequest {
-  final List<CredentialObject> credentials;
-  MetadataObject? metadata;
-  Map<String, dynamic>? didDoc;
-
-  CredentialProposalBodyRequest({
-    required this.credentials,
-    this.metadata,
-    this.didDoc,
-  });
-
-  factory CredentialProposalBodyRequest.fromJson(Map<String, dynamic> json) {
-    List<CredentialObject> credentials = (json['credentials'] as List)
-        .map((item) => CredentialObject.fromJson(item))
-        .toList();
-    MetadataObject? metadata;
-    if (json['metadata'] != null) {
-      metadata = MetadataObject.fromJson(json['metadata']);
-    }
-    Map<String, dynamic>? didDoc;
-    if (json['did_doc'] != null) {
-      didDoc = json['did_doc'];
-    }
-    return CredentialProposalBodyRequest(
-      credentials: credentials,
-      metadata: metadata,
-      didDoc: didDoc,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'credentials': credentials.map((item) => item.toJson()).toList(),
-      'metadata': metadata?.toJson(),
-      'did_doc': didDoc,
-    };
-  }
-}
-
-class CredentialProposalRequest
-    extends Iden3MessageEntity<CredentialProposalBodyRequest> {
-  CredentialProposalRequest({
-    required super.id,
-    required super.typ,
-    required super.thid,
-    required super.from,
-    required super.body,
-    required super.to,
-    super.nextRequest,
-  }) : super(type: Iden3MessageType.credentialProposalRequest);
-
-  /// Creates an instance from the given json
-  ///
-  /// @param [Map<String, dynamic>] json
-  /// @returns [CredentialProposalRequest]
-  factory CredentialProposalRequest.fromJson(Map<String, dynamic> json) {
-    return CredentialProposalRequest(
-      id: json['id'],
-      typ: json['typ'],
-      thid: json['thid'],
-      from: json['from'],
-      to: json['to'],
-      body: CredentialProposalBodyRequest.fromJson(json['body']),
-      nextRequest: json['next_request'],
-    );
-  }
-
-  @override
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = super.toJson();
-    return data;
-  }
-
-  @override
-  String toString() => "[CredentialProposalRequest] {${super.toString()}}";
-
-  @override
-  bool operator ==(Object other) =>
-      super == other && other is CredentialProposalRequest;
-
-  @override
-  int get hashCode => id.hashCode;
 }

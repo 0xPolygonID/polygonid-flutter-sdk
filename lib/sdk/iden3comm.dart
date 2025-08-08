@@ -81,7 +81,7 @@ abstract class PolygonIdSdkIden3comm {
   /// The [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
   Future<List<ClaimEntity>> fetchAndSaveClaims({
-    required CredentialOfferMessageEntity message,
+    required BaseCredentialOfferMessage message,
     required String genesisDid,
     BigInt? profileNonce,
     required String privateKey,
@@ -314,7 +314,7 @@ abstract class PolygonIdSdkIden3comm {
   /// [blockchain] is optional param to specify the blockchain to fetch the credentials from
   /// [network] is optional param to specify the network to fetch the credentials from
   Future<List<ClaimEntity>> fetchCredentials({
-    required CredentialOfferMessageEntity credentialOfferMessage,
+    required BaseCredentialOfferMessage credentialOfferMessage,
     required String privateKey,
     required String genesisDid,
     required BigInt profileNonce,
@@ -455,7 +455,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
 
   @override
   Future<List<ClaimEntity>> fetchAndSaveClaims({
-    required CredentialOfferMessageEntity message,
+    required BaseCredentialOfferMessage message,
     required String genesisDid,
     BigInt? profileNonce,
     required String privateKey,
@@ -580,7 +580,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     String? challenge,
   }) {
     _stacktraceManager.clearStacktrace();
-    if (message is! AuthIden3MessageEntity) {
+    if (message is! AuthorizationRequestMessage) {
       _stacktraceManager.addError(
           'Invalid message type: ${message.type}, expected: ${Iden3MessageType.authRequest}');
       throw InvalidIden3MsgTypeException(
@@ -789,7 +789,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
 
   @override
   Future<List<ClaimEntity>> fetchCredentials({
-    required CredentialOfferMessageEntity credentialOfferMessage,
+    required BaseCredentialOfferMessage credentialOfferMessage,
     required String privateKey,
     required String genesisDid,
     required BigInt profileNonce,

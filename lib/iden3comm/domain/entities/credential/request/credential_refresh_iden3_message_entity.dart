@@ -1,23 +1,28 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 
-class CredentialRefreshIden3MessageEntity
+typedef CredentialRefreshIden3MessageEntity = CredentialRefreshMessage;
+
+class CredentialRefreshMessage
     extends Iden3MessageEntity<CredentialRefreshBodyRequest> {
-  CredentialRefreshIden3MessageEntity({
+  CredentialRefreshMessage({
     required super.id,
     required super.typ,
+    @Deprecated('may be omitted, gonna be removed in the future') String? type,
     required super.thid,
     required super.from,
     required super.body,
     required super.to,
     super.nextRequest,
+    super.createdTime,
+    super.expiresTime,
+    super.attachments = const [],
   }) : super(type: Iden3MessageType.credentialRefresh);
 
-  factory CredentialRefreshIden3MessageEntity.fromJson(
-      Map<String, dynamic> json) {
+  factory CredentialRefreshMessage.fromJson(Map<String, dynamic> json) {
     CredentialRefreshBodyRequest body =
         CredentialRefreshBodyRequest.fromJson(json['body']);
 
-    return CredentialRefreshIden3MessageEntity(
+    return CredentialRefreshMessage(
       id: json['id'],
       typ: json['typ'],
       thid: json['thid'],
@@ -29,12 +34,11 @@ class CredentialRefreshIden3MessageEntity
   }
 
   @override
-  String toString() =>
-      "[CredentialRefreshIden3MessageEntity] {${super.toString()}}";
+  String toString() => "[CredentialRefreshMessage] {${super.toString()}}";
 
   @override
   bool operator ==(Object other) =>
-      super == other && other is CredentialRefreshIden3MessageEntity;
+      super == other && other is CredentialRefreshMessage;
 
   @override
   int get hashCode => runtimeType.hashCode;

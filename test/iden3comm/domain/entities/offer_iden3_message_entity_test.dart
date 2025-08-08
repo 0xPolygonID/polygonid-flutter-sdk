@@ -11,7 +11,7 @@ var json = jsonDecode(Iden3commMocks.offerRequestJson);
 void main() {
   group("OfferIden3MessageEntity", () {
     test("fromJson", () {
-      var offerRequest = OfferIden3MessageEntity.fromJson(json);
+      var offerRequest = CredentialsOfferMessage.fromJson(json);
       expect(offerRequest.id, "1");
       expect(offerRequest.typ, "theTyp");
       expect(offerRequest.type, Iden3MessageType.credentialOffer);

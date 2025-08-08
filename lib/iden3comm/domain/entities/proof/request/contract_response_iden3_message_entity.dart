@@ -40,15 +40,22 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_function_call_body_response.dart';
 
-class ContractResponseIden3MessageEntity
-    extends Iden3MessageEntity<ContractFunctionCallResponseBody> {
-  ContractResponseIden3MessageEntity({
+typedef ContractResponseIden3MessageEntity = ContractInvokeResponseMessage;
+
+class ContractInvokeResponseMessage
+    extends Iden3MessageEntity<ContractInvokeResponseBody> {
+  ContractInvokeResponseMessage({
     required super.id,
     String? typ,
+    @Deprecated('may be omitted, gonna be removed in the future') String? type,
     String? thid,
     required super.body,
     super.nextRequest,
     String? from,
+    super.to,
+    super.createdTime,
+    super.expiresTime,
+    super.attachments = const [],
   }) : super(
           type: Iden3MessageType.proofContractInvokeResponse,
           thid: thid ?? '',
@@ -60,10 +67,9 @@ class ContractResponseIden3MessageEntity
   ///
   /// @param [Map<String, dynamic>] json
   /// @returns [ContractIden3MessageEntity]
-  factory ContractResponseIden3MessageEntity.fromJson(
-      Map<String, dynamic> json) {
-    final body = ContractFunctionCallResponseBody.fromJson(json['body']);
-    return ContractResponseIden3MessageEntity(
+  factory ContractInvokeResponseMessage.fromJson(Map<String, dynamic> json) {
+    final body = ContractInvokeResponseBody.fromJson(json['body']);
+    return ContractInvokeResponseMessage(
       id: json['id'],
       typ: json['typ'] ?? '',
       thid: json['thid'] ?? '',
@@ -74,11 +80,11 @@ class ContractResponseIden3MessageEntity
   }
 
   @override
-  String toString() => "[ContractIden3MessageEntity] {${super.toString()}";
+  String toString() => "[ContractInvokeResponseMessage] {${super.toString()}";
 
   @override
   bool operator ==(Object other) =>
-      super == other && other is ContractResponseIden3MessageEntity;
+      super == other && other is ContractInvokeResponseMessage;
 
   @override
   int get hashCode => runtimeType.hashCode;

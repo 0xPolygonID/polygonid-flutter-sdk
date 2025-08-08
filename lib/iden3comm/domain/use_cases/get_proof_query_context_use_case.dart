@@ -4,7 +4,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/p
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 
 class GetProofQueryContextUseCase
-    extends FutureUseCase<ProofScopeRequest, Map<String, dynamic>> {
+    extends FutureUseCase<ZeroKnowledgeProofRequest, Map<String, dynamic>> {
   final Iden3commCredentialRepository _iden3commCredentialRepository;
   final StacktraceManager _stacktraceManager;
 
@@ -15,9 +15,9 @@ class GetProofQueryContextUseCase
 
   @override
   Future<Map<String, dynamic>> execute({
-    required ProofScopeRequest param,
+    required ZeroKnowledgeProofRequest param,
   }) async {
-    String schemaUrl = param.query.context!;
+    String schemaUrl = param.query.context;
     _stacktraceManager
         .addTrace("[GetProofQueryContextUseCase] schemaUrl: $schemaUrl");
 

@@ -196,7 +196,7 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
     try {
       if (request.scope.query.credentialSubject == null) return claimsFiltered;
 
-      ProofScopeQueryRequest query = request.scope.query;
+      ZeroKnowledgeProofQuery query = request.scope.query;
       Map<String, dynamic>? context =
           request.context["@context"][0][query.type]["@context"];
       if (context == null) return claimsFiltered;

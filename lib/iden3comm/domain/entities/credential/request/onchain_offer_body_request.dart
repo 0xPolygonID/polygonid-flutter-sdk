@@ -67,11 +67,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/credential_offer_data.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_function_call_body_tx_data_request.dart';
 
-class OnchainOfferBodyRequest extends CredentialOfferBody {
-  final OnchainTransactionData transactionData;
+@Deprecated('Use CredentialsOnchainOfferMessageBody instead')
+typedef OnchainOfferBodyRequest = CredentialsOnchainOfferMessageBody;
 
-  OnchainOfferBodyRequest({
+class CredentialsOnchainOfferMessageBody extends CredentialOfferBody {
+  final ContractInvokeTransactionData transactionData;
+
+  CredentialsOnchainOfferMessageBody({
     required super.credentials,
     required this.transactionData,
   });
@@ -79,82 +83,37 @@ class OnchainOfferBodyRequest extends CredentialOfferBody {
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [OnchainOfferBodyRequest]
-  factory OnchainOfferBodyRequest.fromJson(Map<String, dynamic> json) {
-    List<CredentialOfferData> credentials = (json['credentials'] as List)
-        .map((item) => CredentialOfferData.fromJson(item))
+  /// @returns [CredentialsOnchainOfferMessageBody]
+  factory CredentialsOnchainOfferMessageBody.fromJson(
+      Map<String, dynamic> json) {
+    List<CredentialOffer> credentials = (json['credentials'] as List)
+        .map((item) => CredentialOffer.fromJson(item))
         .toList();
-    return OnchainOfferBodyRequest(
+    return CredentialsOnchainOfferMessageBody(
       credentials: credentials,
       transactionData:
-          OnchainTransactionData.fromJson(json['transaction_data']),
+          ContractInvokeTransactionData.fromJson(json['transaction_data']),
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        'credentials': credentials.map((item) => item.toJson()).toList(),
-        'transaction_data': transactionData.toJson(),
-      };
+  Map<String, dynamic> toJson() {
+    return {
+      'credentials': credentials.map((item) => item.toJson()).toList(),
+      'transaction_data': transactionData.toJson(),
+    };
+  }
 
   @override
   String toString() =>
-      "[OfferBodyRequest] {credentials: $credentials, transactionData: $transactionData}";
+      "[CredentialsOnchainOfferMessageBody] {credentials: $credentials, transactionData: $transactionData}";
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is OnchainOfferBodyRequest &&
+      other is CredentialsOnchainOfferMessageBody &&
           runtimeType == other.runtimeType &&
           listEquals(credentials, other.credentials) &&
           transactionData == other.transactionData;
-
-  @override
-  int get hashCode => runtimeType.hashCode;
-}
-
-class OnchainTransactionData {
-  final String contractAddress;
-  final String? methodId;
-  final int? chainId;
-  final String? network;
-
-  OnchainTransactionData({
-    required this.contractAddress,
-    required this.methodId,
-    required this.chainId,
-    required this.network,
-  });
-
-  factory OnchainTransactionData.fromJson(Map<String, dynamic> json) {
-    return OnchainTransactionData(
-      contractAddress: json['contract_address'],
-      methodId: json['method_id'],
-      chainId: json['chain_id'],
-      network: json['network'],
-    );
-  }
-
-  @override
-  Map<String, dynamic> toJson() => {
-        'contract_address': contractAddress,
-        'method_id': methodId,
-        'chain_id': chainId,
-        'network': network,
-      };
-
-  @override
-  String toString() =>
-      "[OnchainTransactionData] {contractAddress: $contractAddress, methodId: $methodId, chainId: $chainId, network: $network}";
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is OnchainTransactionData &&
-          runtimeType == other.runtimeType &&
-          contractAddress == other.contractAddress &&
-          methodId == other.methodId &&
-          chainId == other.chainId &&
-          network == other.network;
 
   @override
   int get hashCode => runtimeType.hashCode;

@@ -130,7 +130,7 @@ class PolygonIdFlutterChannel
 
         case 'authenticate':
           return authenticate(
-              message: AuthIden3MessageEntity.fromJson(
+              message: AuthorizationRequestMessage.fromJson(
                   jsonDecode(call.arguments['message'])),
               genesisDid: call.arguments['genesisDid'] as String,
               profileNonce: BigInt.tryParse(
@@ -140,7 +140,7 @@ class PolygonIdFlutterChannel
 
         case 'fetchAndSaveClaims':
           return fetchAndSaveClaims(
-                  message: OfferIden3MessageEntity.fromJson(
+                  message: CredentialsOfferMessage.fromJson(
                       jsonDecode(call.arguments['message'])),
                   genesisDid: call.arguments['genesisDid'] as String,
                   profileNonce: BigInt.tryParse(
@@ -486,7 +486,7 @@ class PolygonIdFlutterChannel
 
   @override
   Future<List<ClaimEntity>> fetchAndSaveClaims({
-    required CredentialOfferMessageEntity message,
+    required BaseCredentialOfferMessage message,
     required String genesisDid,
     BigInt? profileNonce,
     required String privateKey,
@@ -1017,7 +1017,7 @@ class PolygonIdFlutterChannel
 
   @override
   Future<List<ClaimEntity>> fetchCredentials(
-      {required CredentialOfferMessageEntity<CredentialOfferBody>
+      {required BaseCredentialOfferMessage<CredentialOfferBody>
           credentialOfferMessage,
       required String privateKey,
       required String genesisDid,

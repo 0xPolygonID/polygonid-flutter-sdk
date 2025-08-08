@@ -21,7 +21,7 @@ import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_e
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 
 class AuthenticateParam {
-  final AuthIden3MessageEntity message;
+  final AuthorizationRequestMessage message;
   final String genesisDid;
   final BigInt profileNonce;
   final String privateKey;

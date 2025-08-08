@@ -32,54 +32,41 @@
 "to": "1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ"
 }*/
 
-import 'auth_body_did_doc_service_response.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document_service_metadata.dart';
 
-class AuthBodyDidDocResponse {
-  final List<String>? context;
+typedef AuthBodyDidDocServiceResponse = DIDDocumentService;
+
+class DIDDocumentService {
   final String? id;
+  final String? type;
+  final String? serviceEndpoint;
+  final DIDDocumentServiceMetadata? metadata;
 
-  /*final List<String>? authentication;
-  final List<String>? keyAgreement;*/
-  final List<AuthBodyDidDocServiceResponse>? service;
-
-  AuthBodyDidDocResponse(
-      {this.context,
-      this.id,
-      /*this.authentication,
-      this.keyAgreement,*/
-      this.service});
+  DIDDocumentService({
+    this.id,
+    this.type,
+    this.serviceEndpoint,
+    this.metadata,
+  });
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [AuthBodyDidDocResponse]
-  factory AuthBodyDidDocResponse.fromJson(Map<String, dynamic> json) {
-    List<String>? context =
-        (json['@context'] as List?)?.map((item) => item as String).toList();
-    /*List<String>? authentication = (json['authentication'] as List?)
-        ?.map((item) => item as String)
-        .toList();
-    List<String>? keyAgreement =
-        (json['keyAgreement'] as List?)?.map((item) => item as String).toList();*/
-    List<AuthBodyDidDocServiceResponse>? service = (json['service'] as List?)
-        ?.map((item) => AuthBodyDidDocServiceResponse.fromJson(item))
-        .toList();
-    return AuthBodyDidDocResponse(
-      context: context,
+  /// @returns [DIDDocumentService]
+  factory DIDDocumentService.fromJson(Map<String, dynamic> json) {
+    final metadata = DIDDocumentServiceMetadata.fromJson(json['metadata']);
+    return DIDDocumentService(
       id: json['id'],
-      /*authentication: authentication,
-      keyAgreement: keyAgreement,*/
-      service: service,
+      type: json['type'],
+      serviceEndpoint: json['serviceEndpoint'],
+      metadata: metadata,
     );
   }
 
   Map<String, dynamic> toJson() => {
-        '@context': context,
         'id': id,
-        /*'authentication':
-            authentication,
-        'keyAgreement':
-            keyAgreement,*/
-        'service': service?.map((item) => item.toJson()).toList(),
+        'type': type,
+        'serviceEndpoint': serviceEndpoint,
+        'metadata': metadata?.toJson()
       };
 }

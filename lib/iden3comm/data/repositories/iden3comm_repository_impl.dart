@@ -44,12 +44,12 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
 
   @override
   Future<Iden3MessageEntity?> authenticate({
-    required AuthIden3MessageEntity request,
+    required AuthorizationRequestMessage request,
     required String authToken,
   }) async {
     String? url = request.body.callbackUrl;
 
-    if (url == null || url.isEmpty) {
+    if (url.isEmpty) {
       _stacktraceManager.addError("Callback url is null or empty");
       throw NullAuthenticateCallbackException(
         authRequest: request,
@@ -90,7 +90,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   @override
   Future<String> getAuthResponse({
     required String did,
-    required AuthIden3MessageEntity request,
+    required AuthorizationRequestMessage request,
     required List<Iden3commProofEntity> scope,
     String? pushUrl,
     String? pushToken,

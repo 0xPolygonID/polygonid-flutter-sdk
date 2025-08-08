@@ -32,35 +32,28 @@
 "to": "1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ"
 }*/
 
-import 'auth_body_did_doc_service_metadata_response.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document_service_metadata_devices.dart';
 
-class AuthBodyDidDocServiceResponse {
-  final String? id;
-  final String? type;
-  final String? serviceEndpoint;
-  final AuthBodyDidDocServiceMetadataResponse? metadata;
+class DIDDocumentServiceMetadata {
+  final List<DIDDocumentServiceMetadataDevices>? devices;
 
-  AuthBodyDidDocServiceResponse(
-      {this.id, this.type, this.serviceEndpoint, this.metadata});
+  DIDDocumentServiceMetadata({this.devices});
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [AuthBodyDidDocServiceResponse]
-  factory AuthBodyDidDocServiceResponse.fromJson(Map<String, dynamic> json) {
-    AuthBodyDidDocServiceMetadataResponse metadata =
-        AuthBodyDidDocServiceMetadataResponse.fromJson(json['metadata']);
-    return AuthBodyDidDocServiceResponse(
-        id: json['id'],
-        type: json['type'],
-        serviceEndpoint: json['serviceEndpoint'],
-        metadata: metadata);
+  /// @returns [DIDDocumentServiceMetadata]
+  factory DIDDocumentServiceMetadata.fromJson(Map<String, dynamic> json) {
+    List<DIDDocumentServiceMetadataDevices>? devices =
+        (json['devices'] as List?)
+            ?.map((item) => DIDDocumentServiceMetadataDevices.fromJson(item))
+            .toList();
+    return DIDDocumentServiceMetadata(
+      devices: devices,
+    );
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'type': type,
-        'serviceEndpoint': serviceEndpoint,
-        'metadata': metadata?.toJson()
+        'devices': devices?.map((item) => item.toJson()).toList(),
       };
 }

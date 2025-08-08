@@ -7,15 +7,21 @@
 
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 
-class AttestationResponseEntity
+typedef AttestationResponseEntity = AttestationResponseMessage;
+
+class AttestationResponseMessage
     extends Iden3MessageEntity<AttestationResponseBody> {
-  AttestationResponseEntity({
+  AttestationResponseMessage({
     required super.id,
     required super.typ,
+    @Deprecated('may be omitted, gonna be removed in the future') String? type,
     required super.thid,
     required super.body,
     super.to,
     super.nextRequest,
+    super.createdTime,
+    super.expiresTime,
+    super.attachments = const [],
   }) : super(
           type: Iden3MessageType.attestationResponse,
           from: "",
@@ -24,12 +30,12 @@ class AttestationResponseEntity
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [AttestationResponseEntity]
-  factory AttestationResponseEntity.fromJson(
+  /// @returns [AttestationResponseMessage]
+  factory AttestationResponseMessage.fromJson(
     Map<String, dynamic> json,
   ) {
     final body = AttestationResponseBody.fromJson(json['body']);
-    return AttestationResponseEntity(
+    return AttestationResponseMessage(
       id: json['id'],
       typ: json['typ'],
       thid: json['thid'],
@@ -40,11 +46,11 @@ class AttestationResponseEntity
   }
 
   @override
-  String toString() => "[AttestationResponseEntity] {${super.toString()}";
+  String toString() => "[AttestationResponseMessage] {${super.toString()}";
 
   @override
   bool operator ==(Object other) =>
-      super == other && other is AttestationResponseEntity;
+      super == other && other is AttestationResponseMessage;
 
   @override
   int get hashCode => runtimeType.hashCode;

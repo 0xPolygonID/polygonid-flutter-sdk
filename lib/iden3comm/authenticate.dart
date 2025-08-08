@@ -234,7 +234,7 @@ class Authenticate {
           "[Authenticate] Callback url is null or empty",
         );
         throw NullAuthenticateCallbackException(
-          authRequest: message as AuthIden3MessageEntity,
+          authRequest: message as AuthorizationRequestMessage,
           errorMessage: "Callback url is null or empty",
         );
       }
@@ -322,7 +322,7 @@ class Authenticate {
       typ: "application/iden3-zkp-json",
       type: "https://iden3-communication.io/authorization/1.0/response",
       body: AuthBodyResponseDTO(
-        message: (message as AuthIden3MessageEntity).body.message,
+        message: (message as AuthorizationRequestMessage).body.message,
         scope: proofs,
         did_doc: didDocResponse,
       ),

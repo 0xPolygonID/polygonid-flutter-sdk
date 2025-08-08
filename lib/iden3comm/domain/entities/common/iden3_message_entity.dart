@@ -2,37 +2,31 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/attachment.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/protocol_message_type.dart';
 
 enum Iden3MessageType {
-  authRequest("https://iden3-communication.io/authorization/1.0/request"),
-  authResponse("https://iden3-communication.io/authorization/1.0/response"),
-  credentialOffer("https://iden3-communication.io/credentials/1.0/offer"),
-  onchainCredentialOffer(
-      "https://iden3-communication.io/credentials/1.0/onchain-offer"),
+  authRequest(ProtocolMessageType.authorizationRequestMessageType),
+  authResponse(ProtocolMessageType.authorizationResponseMessageType),
+  credentialOffer(ProtocolMessageType.credentialOfferMessageType),
+  onchainCredentialOffer(ProtocolMessageType.credentialOnchainOfferMessageType),
   credentialIssuanceResponse(
-      "https://iden3-communication.io/credentials/1.0/issuance-response"),
+      ProtocolMessageType.credentialIssuanceResponseMessageType),
   proofContractInvokeRequest(
-      "https://iden3-communication.io/proofs/1.0/contract-invoke-request"),
+      ProtocolMessageType.contractInvokeRequestMessageType),
   proofContractInvokeResponse(
-      "https://iden3-communication.io/proofs/1.0/contract-invoke-response"),
-  credentialRefresh("https://iden3-communication.io/credentials/1.0/refresh"),
-  credentialProposalRequest(
-      "https://iden3-communication.io/credentials/0.1/proposal-request"),
-  credentialProposal("https://iden3-communication.io/credentials/0.1/proposal"),
-  credentialStatusUpdate(
-      "https://iden3-communication.io/credentials/1.0/status-update"),
-  paymentRequest(
-      "https://iden3-communication.io/credentials/0.1/payment-request"),
-  payment("https://iden3-communication.io/credentials/0.1/payment"),
-  problemReport("https://didcomm.org/report-problem/2.0/problem-report"),
-  attestationRequest("https://iden3-communication.io/attestation/0.1/request"),
-  attestationResponse(
-      "https://iden3-communication.io/attestation/0.1/response"),
-  verificationRequest(
-      "https://iden3-communication.io/passport/0.1/verification-request"),
-  verificationResponse(
-      "https://iden3-communication.io/passport/0.1/verification-response"),
-  fetchRequest("https://iden3-communication.io/credentials/1.0/fetch-request"),
+      ProtocolMessageType.contractInvokeResponseMessageType),
+  credentialRefresh(ProtocolMessageType.credentialRefreshMessageType),
+  credentialProposalRequest(ProtocolMessageType.proposalRequestMessageType),
+  credentialProposal(ProtocolMessageType.proposalMessageType),
+  credentialStatusUpdate(ProtocolMessageType.credentialStatusUpdateMessageType),
+  paymentRequest(ProtocolMessageType.paymentRequestMessageType),
+  payment(ProtocolMessageType.paymentMessageType),
+  problemReport(ProtocolMessageType.problemReportMessageType),
+  attestationRequest(ProtocolMessageType.attestationRequestMessageType),
+  attestationResponse(ProtocolMessageType.attestationResponseMessageType),
+  verificationRequest(ProtocolMessageType.verificationRequestMessageType),
+  verificationResponse(ProtocolMessageType.verificationResponseMessageType),
+  fetchRequest(ProtocolMessageType.credentialFetchRequestMessageType),
   unknown("");
 
   final String type;
@@ -91,12 +85,15 @@ abstract class Iden3MessageEntity<T> extends Equatable {
     required this.thid,
     required this.body,
     required this.from,
-    this.to,
+    required this.to,
     this.nextRequest,
-    this.createdTime,
-    this.expiresTime,
-    this.attachments = const [],
+    required this.createdTime,
+    required this.expiresTime,
+    required this.attachments,
   });
+
+  @Deprecated('Use type instead')
+  Iden3MessageType get messageType => type;
 
   @override
   String toString() => "Iden3MessageEntity: ${jsonEncode(toJson())}";

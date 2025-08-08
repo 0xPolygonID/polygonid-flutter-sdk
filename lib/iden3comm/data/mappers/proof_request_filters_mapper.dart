@@ -14,7 +14,7 @@ class ProofRequestFiltersMapper
 
   @override
   List<FilterEntity> mapFrom(ProofRequestEntity from) {
-    ProofScopeQueryRequest query = from.scope.query;
+    ZeroKnowledgeProofQuery query = from.scope.query;
 
     Map<String, dynamic>? context;
     try {
@@ -36,10 +36,10 @@ class ProofRequestFiltersMapper
       FilterEntity(
           operator: FilterOperator.equalsAnyInList,
           name: 'credential.@context',
-          value: query.context!),
+          value: query.context),
     ];
     final allowedIssuers = query.allowedIssuers;
-    if (allowedIssuers != null && allowedIssuers.isNotEmpty) {
+    if (allowedIssuers.isNotEmpty) {
       if (allowedIssuers[0] != "*") {
         filters.add(
           FilterEntity(

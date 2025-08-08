@@ -74,27 +74,33 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 
-class VerificationRequestEntity
+typedef VerificationRequestEntity = VerificationRequestMessage;
+
+class VerificationRequestMessage
     extends Iden3MessageEntity<VerificationRequestBody> {
-  VerificationRequestEntity({
+  VerificationRequestMessage({
     required super.id,
     required super.typ,
+    @Deprecated('may be omitted, gonna be removed in the future') String? type,
     required super.thid,
     required super.from,
     required super.body,
     super.to,
     super.nextRequest,
+    super.createdTime,
+    super.expiresTime,
+    super.attachments = const [],
   }) : super(type: Iden3MessageType.verificationRequest);
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [VerificationRequestEntity]
-  factory VerificationRequestEntity.fromJson(
+  /// @returns [VerificationRequestMessage]
+  factory VerificationRequestMessage.fromJson(
     Map<String, dynamic> json,
   ) {
     final body = VerificationRequestBody.fromJson(json['body']);
-    return VerificationRequestEntity(
+    return VerificationRequestMessage(
       id: json['id'],
       typ: json['typ'],
       thid: json['thid'],
@@ -112,7 +118,7 @@ class VerificationRequestEntity
 
   @override
   bool operator ==(Object other) =>
-      super == other && other is VerificationRequestEntity;
+      super == other && other is VerificationRequestMessage;
 
   @override
   int get hashCode => runtimeType.hashCode;

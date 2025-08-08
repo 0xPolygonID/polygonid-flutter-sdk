@@ -27,7 +27,7 @@ import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
 
 class FetchAndSaveClaimsParam {
-  final CredentialOfferMessageEntity message;
+  final BaseCredentialOfferMessage message;
   final String genesisDid;
   final BigInt profileNonce;
   final String privateKey;
@@ -110,9 +110,9 @@ class FetchAndSaveClaimsUseCase
       final List<ClaimEntity> claims;
 
       final message = param.message;
-      if (message is OfferIden3MessageEntity) {
+      if (message is CredentialsOfferMessage) {
         claims = await _fetchClaims(message, param, profileDid);
-      } else if (message is OnchainOfferIden3MessageEntity) {
+      } else if (message is CredentialsOnchainOfferMessage) {
         claims = await _fetchOnchainClaims(message, profileDid, param);
       } else {
         _stacktraceManager.addError(
@@ -155,7 +155,7 @@ class FetchAndSaveClaimsUseCase
   }
 
   Future<List<ClaimEntity>> _fetchClaims(
-    OfferIden3MessageEntity message,
+    CredentialsOfferMessage message,
     FetchAndSaveClaimsParam param,
     String profileDid,
   ) async {
@@ -189,15 +189,13 @@ class FetchAndSaveClaimsUseCase
   }
 
   Future<List<ClaimEntity>> _fetchOnchainClaims(
-    OnchainOfferIden3MessageEntity message,
+    CredentialsOnchainOfferMessage message,
     String profileDid,
     FetchAndSaveClaimsParam param,
   ) async {
     final env = await _getEnvUseCase.execute();
-    final chainId = message.body.transactionData.chainId?.toString();
-    final chain = chainId != null
-        ? env.chainConfigs[chainId]
-        : await _getSelectedChainUseCase.execute();
+    final chainId = message.body.transactionData.chainId.toString();
+    final chain = env.chainConfigs[chainId];
 
     /// FIXME: inject web3Client through constructor
     final web3Client = getItSdk<Web3Client>(param1: chain!.rpcUrl);
