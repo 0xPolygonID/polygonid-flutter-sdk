@@ -9,7 +9,7 @@ class UpdateClaimParam {
   final String id;
   final String? issuer;
   final String genesisDid;
-  final ClaimState? state;
+  final CredentialState? state;
   final String? expiration;
   final String? type;
   final Map<String, dynamic>? data;
@@ -27,7 +27,7 @@ class UpdateClaimParam {
   });
 }
 
-class UpdateClaimUseCase extends FutureUseCase<UpdateClaimParam, ClaimEntity> {
+class UpdateClaimUseCase extends FutureUseCase<UpdateClaimParam, CredentialEntity> {
   final CredentialRepository _credentialRepository;
   final StacktraceManager _stacktraceManager;
 
@@ -37,18 +37,18 @@ class UpdateClaimUseCase extends FutureUseCase<UpdateClaimParam, ClaimEntity> {
   );
 
   @override
-  Future<ClaimEntity> execute({required UpdateClaimParam param}) async {
+  Future<CredentialEntity> execute({required UpdateClaimParam param}) async {
     /// Get the [ClaimEntity] associated with the [param.id]
     /// If found, we update the info with the corresponding [param]
     /// then update in storage
     try {
-      final claim = await _credentialRepository.getClaim(
+      final claim = await _credentialRepository.getCredential(
         claimId: param.id,
         genesisDid: param.genesisDid,
         encryptionKey: param.encryptionKey,
       );
 
-      final updatedClaim = ClaimEntity(
+      final updatedClaim = CredentialEntity(
         id: param.id,
         issuer: param.issuer ?? claim.issuer,
         did: claim.did,
@@ -59,8 +59,8 @@ class UpdateClaimUseCase extends FutureUseCase<UpdateClaimParam, ClaimEntity> {
         credentialRawValue: claim.credentialRawValue,
       );
 
-      await _credentialRepository.saveClaims(
-        claims: [updatedClaim],
+      await _credentialRepository.saveCredentials(
+        credentials: [updatedClaim],
         genesisDid: param.genesisDid,
         encryptionKey: param.encryptionKey,
       );

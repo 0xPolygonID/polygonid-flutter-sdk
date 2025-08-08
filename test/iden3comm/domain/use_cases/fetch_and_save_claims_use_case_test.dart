@@ -40,13 +40,13 @@ final revStatus = {
   }
 };
 
-final claimEntity = ClaimEntity(
+final claimEntity = CredentialEntity(
   issuer: "",
   did: "",
   expiration: "",
   info: {},
   type: "",
-  state: ClaimState.active,
+  state: CredentialState.active,
   id: "id",
   credentialRawValue: "",
 );

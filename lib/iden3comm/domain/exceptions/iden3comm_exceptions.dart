@@ -105,13 +105,6 @@ class UnsupportedFetchClaimTypeException extends PolygonIdSDKException {
   });
 }
 
-class GetConnectionsException extends PolygonIdSDKException {
-  GetConnectionsException({
-    required super.errorMessage,
-    super.error,
-  });
-}
-
 class OperatorException extends PolygonIdSDKException {
   OperatorException({
     required super.errorMessage,
@@ -152,16 +145,6 @@ class NoCredentialsFoundException extends PolygonIdSDKException {
 
   NoCredentialsFoundException({
     this.proofRequest,
-    required super.errorMessage,
-    super.error,
-  });
-}
-
-class ProofRequestsNotFoundException extends PolygonIdSDKException {
-  final Iden3MessageEntity? message;
-
-  ProofRequestsNotFoundException({
-    this.message,
     required super.errorMessage,
     super.error,
   });

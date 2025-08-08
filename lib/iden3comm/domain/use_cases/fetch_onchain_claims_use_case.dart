@@ -36,7 +36,7 @@ class FetchOnchainClaimsParam {
 }
 
 class FetchOnchainClaimsUseCase
-    extends FutureUseCase<FetchOnchainClaimsParam, List<ClaimEntity>> {
+    extends FutureUseCase<FetchOnchainClaimsParam, List<CredentialEntity>> {
   final FetchOnchainClaimUseCase _fetchOnchainClaimUseCase;
   final GetEnvUseCase _getEnvUseCase;
   final GetSelectedChainUseCase _getSelectedChainUseCase;
@@ -60,7 +60,7 @@ class FetchOnchainClaimsUseCase
   );
 
   @override
-  Future<List<ClaimEntity>> execute({
+  Future<List<CredentialEntity>> execute({
     required FetchOnchainClaimsParam param,
   }) async {
     /// Get the corresponding fetch request from [OfferIden3MessageEntity]
@@ -88,7 +88,7 @@ class FetchOnchainClaimsUseCase
     }
   }
 
-  Future<List<ClaimEntity>> _fetchOnchainClaims(
+  Future<List<CredentialEntity>> _fetchOnchainClaims(
     String contractAddress,
     List<String> bjjPublicKey,
     FetchOnchainClaimsParam param,
@@ -167,7 +167,7 @@ class FetchOnchainClaimsUseCase
     final credentialIds =
         await issuer.getUserCredentialIds((userId: BigInt.parse(userId)));
 
-    final claims = <ClaimEntity>[];
+    final claims = <CredentialEntity>[];
     for (final credentialId in credentialIds) {
       try {
         final claim = await _fetchOnchainClaimUseCase.execute(

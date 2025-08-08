@@ -18,7 +18,7 @@ import 'iden3comm_credential_repository_impl_test.mocks.dart';
 // Dependencies
 MockRemoteIden3commDataSource remoteIden3commDataSource =
     MockRemoteIden3commDataSource();
-MockClaimMapper claimMapper = MockClaimMapper();
+MockCredentialMapper claimMapper = MockCredentialMapper();
 MockProofRequestFiltersMapper proofRequestFiltersMapper =
     MockProofRequestFiltersMapper();
 MockStacktraceManager stacktraceManager = MockStacktraceManager();
@@ -33,7 +33,7 @@ Iden3commCredentialRepository repository = Iden3commCredentialRepositoryImpl(
 
 @GenerateMocks([
   RemoteIden3commDataSource,
-  ClaimMapper,
+  CredentialMapper,
   ProofRequestFiltersMapper,
   StacktraceManager,
 ])

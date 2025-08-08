@@ -92,8 +92,8 @@ class ContractInvokeRequestBody {
         'reason': reason,
         'transaction_data': transactionData.toJson(),
         'scope': scope.map((item) => item.toJson()).toList(),
-        'did_doc': didDoc?.toJson(),
-        'accept': accept,
+        if (didDoc != null) 'did_doc': didDoc?.toJson(),
+        if (accept != null) 'accept': accept,
       };
 
   @override

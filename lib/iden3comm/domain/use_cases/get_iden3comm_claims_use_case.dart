@@ -27,7 +27,7 @@ class GetIden3commClaimsParam {
 }
 
 class GetIden3commClaimsUseCase
-    extends FutureUseCase<GetIden3commClaimsParam, List<ClaimEntity?>> {
+    extends FutureUseCase<GetIden3commClaimsParam, List<CredentialEntity?>> {
   final GetMessageRequestsAndCredsUseCase _getMessageRequestsAndCredsUseCase;
 
   GetIden3commClaimsUseCase(
@@ -35,7 +35,7 @@ class GetIden3commClaimsUseCase
   );
 
   @override
-  Future<List<ClaimEntity>> execute({
+  Future<List<CredentialEntity>> execute({
     required GetIden3commClaimsParam param,
   }) async {
     final requestsAndCreds = await _getMessageRequestsAndCredsUseCase.execute(
@@ -48,7 +48,7 @@ class GetIden3commClaimsUseCase
       ),
     );
 
-    final credentials = <ClaimEntity>[];
+    final credentials = <CredentialEntity>[];
 
     for (final requestAndCreds in requestsAndCreds) {
       final credential = requestAndCreds.credentials.firstOrNull;

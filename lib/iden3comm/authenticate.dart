@@ -48,7 +48,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/i
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_vp_proof.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/jwz_exceptions.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/iden3_message_factory.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
@@ -275,9 +275,10 @@ class Authenticate {
           return null;
         }
 
-        final _getIden3MessageUseCase = getItSdk<GetIden3MessageUseCase>();
-        final nextRequest = await _getIden3MessageUseCase.execute(
-          param: jsonEncode(messageJson),
+        final messageFactory =
+            Iden3MessageFactory(getItSdk<StacktraceManager>());
+        final nextRequest = messageFactory.createMessage(
+          rawMessage: response.body,
         );
 
         return nextRequest;
@@ -369,7 +370,7 @@ class Authenticate {
           );
         }
       }
-      ClaimEntity claim = credentials.first;
+      CredentialEntity claim = credentials.first;
 
       if (claim.expiration != null) {
         claim = await _checkCredentialExpirationAndTryRefreshIfExpired(
@@ -926,8 +927,8 @@ class Authenticate {
       ..authClaimNode = authClaimNode;
   }
 
-  Future<ClaimEntity> _checkCredentialExpirationAndTryRefreshIfExpired({
-    required ClaimEntity claim,
+  Future<CredentialEntity> _checkCredentialExpirationAndTryRefreshIfExpired({
+    required CredentialEntity claim,
     required String genesisDid,
     required String privateKey,
   }) async {
@@ -939,7 +940,7 @@ class Authenticate {
     var expirationTimeFormatted =
         DateFormat("yyyy-MM-dd HH:mm:ss").format(expirationTime);
     bool isExpired = nowFormatted.compareTo(expirationTimeFormatted) > 0 ||
-        claim.state == ClaimState.expired;
+        claim.state == CredentialState.expired;
 
     if (isExpired && claim.info.containsKey("refreshService")) {
       _proofGenerationStepsStreamManager
@@ -948,7 +949,7 @@ class Authenticate {
       RefreshCredentialUseCase _refreshCredentialUseCase =
           await getItSdk.getAsync<RefreshCredentialUseCase>();
 
-      ClaimEntity refreshedClaimEntity =
+      CredentialEntity refreshedClaimEntity =
           await _refreshCredentialUseCase.execute(
               param: RefreshCredentialParam(
         credential: claim,

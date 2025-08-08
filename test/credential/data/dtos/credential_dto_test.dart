@@ -103,7 +103,7 @@ void main() {
     setUp(() {});
 
     test("Serializable", () {
-      ClaimInfoDTO dto = ClaimInfoDTO.fromJson(json);
+      W3CCredential dto = W3CCredential.fromJson(json);
       dto.toJson();
     });
   });

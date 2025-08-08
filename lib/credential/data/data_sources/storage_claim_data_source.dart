@@ -11,13 +11,13 @@ import 'package:sembast/sembast.dart';
 import '../dtos/claim_dto.dart';
 
 /// [StoreRef] wrapper
-/// Delegates all call to [ClaimStoreRefWrapper._store]
+/// Delegates all call to [CredentialStoreRefWrapper._store]
 /// Needed for UT for mocking extension methods
 @injectable
-class ClaimStoreRefWrapper {
+class CredentialStoreRefWrapper {
   final StoreRef<String, Map<String, Object?>> _store;
 
-  ClaimStoreRefWrapper(@Named(claimStoreName) this._store);
+  CredentialStoreRefWrapper(@Named(claimStoreName) this._store);
 
   Future<List<RecordSnapshot<String, Map<String, Object?>>>> find(
       DatabaseClient databaseClient,
@@ -44,15 +44,15 @@ class ClaimStoreRefWrapper {
   }
 }
 
-class StorageClaimDataSource extends SecureIdentityStorageDataSource {
-  final ClaimStoreRefWrapper _storeRefWrapper;
+class CredentialStorageDataSource extends SecureIdentityStorageDataSource {
+  final CredentialStoreRefWrapper _storeRefWrapper;
 
-  StorageClaimDataSource(this._storeRefWrapper);
+  CredentialStorageDataSource(this._storeRefWrapper);
 
   /// Store all claims in a single transaction
   /// If one storing fails, they will all be reverted
-  Future<void> storeClaims({
-    required List<ClaimDTO> claims,
+  Future<void> storeCredentials({
+    required List<CredentialDTO> credentials,
     required String did,
     required String encryptionKey,
   }) async {
@@ -61,7 +61,8 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
     try {
       database = await getDatabase(did: did, encryptionKey: encryptionKey);
       await database.transaction(
-        (t) => storeClaimsTransact(transaction: t, claims: claims),
+        (t) =>
+            storeCredentialsTransact(transaction: t, credentials: credentials),
       );
     } finally {
       database?.close();
@@ -70,19 +71,20 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
 
   // For UT purpose
   @visibleForTesting
-  Future<void> storeClaimsTransact({
+  Future<void> storeCredentialsTransact({
     required DatabaseClient transaction,
-    required List<ClaimDTO> claims,
+    required List<CredentialDTO> credentials,
   }) async {
-    for (ClaimDTO claim in claims) {
-      await _storeRefWrapper.put(transaction, claim.id, claim.toJson());
+    for (CredentialDTO credential in credentials) {
+      await _storeRefWrapper.put(
+          transaction, credential.id, credential.toJson());
     }
   }
 
-  /// Remove all claims in a single transaction
+  /// Remove all credentials in a single transaction
   /// If one removing fails, they will all be reverted
-  Future<void> removeClaims({
-    required List<String> claimIds,
+  Future<void> removeCredential({
+    required List<String> credentialIds,
     required String did,
     required String encryptionKey,
   }) async {
@@ -90,7 +92,8 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
     try {
       database = await getDatabase(did: did, encryptionKey: encryptionKey);
       await database.transaction(
-        (t) => removeClaimsTransact(transaction: t, claimIds: claimIds),
+        (t) => removeCredentialsTransact(
+            transaction: t, credentialIds: credentialIds),
       );
     } finally {
       await database?.close();
@@ -99,19 +102,18 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
 
   // For UT purpose
   @visibleForTesting
-  Future<void> removeClaimsTransact({
+  Future<void> removeCredentialsTransact({
     required DatabaseClient transaction,
-    required List<String> claimIds,
+    required List<String> credentialIds,
   }) async {
-    for (String claimId in claimIds) {
-      // TODO check if identifiers inside each claim are from privateKey
-      await _storeRefWrapper.remove(transaction, claimId);
+    for (String credentialId in credentialIds) {
+      await _storeRefWrapper.remove(transaction, credentialId);
     }
   }
 
-  /// Remove all claims in a single transaction
+  /// Remove all credentials in a single transaction
   /// If one removing fails, they will all be reverted
-  Future<void> removeAllClaims({
+  Future<void> removeAllCredentials({
     required String did,
     required String encryptionKey,
   }) async {
@@ -119,7 +121,7 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
     try {
       database = await getDatabase(did: did, encryptionKey: encryptionKey);
       await database.transaction(
-        (t) => removeAllClaimsTransact(transaction: t),
+        (t) => removeAllCredentialsTransact(transaction: t),
       );
     } finally {
       database?.close();
@@ -127,13 +129,13 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
   }
 
   // For UT purpose
-  Future<void> removeAllClaimsTransact({
+  Future<void> removeAllCredentialsTransact({
     required DatabaseClient transaction,
   }) async {
     await _storeRefWrapper.removeAll(transaction);
   }
 
-  Future<List<ClaimDTO>> getClaims({
+  Future<List<CredentialDTO>> getCredentials({
     Filter? filter,
     required String did,
     required String encryptionKey,
@@ -142,44 +144,47 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
     Database database =
         await getDatabase(did: did, encryptionKey: encryptionKey);
 
-    List<SortOrder> sortOrders = [];
+    try {
+      List<SortOrder> sortOrders = [];
 
-    for (var element in credentialSortOrderList) {
-      switch (element) {
-        case CredentialSortOrder.ExpirationAscending:
-          sortOrders.add(SortOrder('expiration', true));
-          break;
-        case CredentialSortOrder.ExpirationDescending:
-          sortOrders.add(SortOrder('expiration', false));
-          break;
-        case CredentialSortOrder.IssuanceDateAscending:
-          sortOrders.add(SortOrder('credential.issuanceDate', true));
-          break;
-        case CredentialSortOrder.IssuanceDateDescending:
-          sortOrders.add(SortOrder('credential.issuanceDate', false));
-          break;
+      for (var element in credentialSortOrderList) {
+        switch (element) {
+          case CredentialSortOrder.ExpirationAscending:
+            sortOrders.add(SortOrder('expiration', true));
+            break;
+          case CredentialSortOrder.ExpirationDescending:
+            sortOrders.add(SortOrder('expiration', false));
+            break;
+          case CredentialSortOrder.IssuanceDateAscending:
+            sortOrders.add(SortOrder('credential.issuanceDate', true));
+            break;
+          case CredentialSortOrder.IssuanceDateDescending:
+            sortOrders.add(SortOrder('credential.issuanceDate', false));
+            break;
+        }
       }
+
+      List<RecordSnapshot<String, Map<String, Object?>>> snapshots =
+          await _storeRefWrapper.find(
+        database,
+        finder: Finder(
+          filter: filter,
+          sortOrders: sortOrders,
+        ),
+      );
+
+      List<CredentialDTO> credentials = snapshots.map((snapshot) {
+        CredentialDTO credentialDTO = CredentialDTO.fromJson(snapshot.value);
+        return credentialDTO;
+      }).toList();
+
+      return credentials;
+    } finally {
+      database.close();
     }
-
-    List<RecordSnapshot<String, Map<String, Object?>>> snapshots =
-        await _storeRefWrapper.find(
-      database,
-      finder: Finder(
-        filter: filter,
-        sortOrders: sortOrders,
-      ),
-    );
-
-    List<ClaimDTO> claims = snapshots.map((snapshot) {
-      ClaimDTO claimDTO = ClaimDTO.fromJson(snapshot.value);
-      return claimDTO;
-    }).toList();
-
-    database.close();
-    return claims;
   }
 
-  Future<List<ClaimDTO>> getCredentialByPartialId({
+  Future<List<CredentialDTO>> getCredentialByPartialId({
     required String did,
     required String partialId,
     required String encryptionKey,
@@ -199,34 +204,37 @@ class StorageClaimDataSource extends SecureIdentityStorageDataSource {
       );
 
       return snapshots.map((snapshot) {
-        return ClaimDTO.fromJson(snapshot.value);
+        return CredentialDTO.fromJson(snapshot.value);
       }).toList();
     } finally {
       database.close();
     }
   }
 
-  /// Get a [ClaimDTO] filtered by id associated to the identity previously stored
-  Future<ClaimDTO> getClaim({
+  /// Get a [CredentialDTO] filtered by id associated to the identity previously stored
+  Future<CredentialDTO> getCredential({
     required String credentialId,
     required String did,
     required String encryptionKey,
   }) async {
     Database db = await getDatabase(did: did, encryptionKey: encryptionKey);
 
-    Map<String, Object?>? credential =
-        await _storeRefWrapper.get(db, credentialId);
-    if (credential == null) {
-      StacktraceManager stacktraceManager = getItSdk<StacktraceManager>();
-      stacktraceManager.addError('Credential not found by id');
-      throw ClaimNotFoundException(
-        id: credentialId,
-        errorMessage: 'Credential not found by id',
-      );
-    }
+    try {
+      Map<String, Object?>? credential =
+          await _storeRefWrapper.get(db, credentialId);
+      if (credential == null) {
+        StacktraceManager stacktraceManager = getItSdk<StacktraceManager>();
+        stacktraceManager.addError('Credential not found by id');
+        throw CredentialNotFoundException(
+          id: credentialId,
+          errorMessage: 'Credential not found by id',
+        );
+      }
 
-    ClaimDTO claimDTO = ClaimDTO.fromJson(credential);
-    db.close();
-    return claimDTO;
+      CredentialDTO credentialDTO = CredentialDTO.fromJson(credential);
+      return credentialDTO;
+    } finally {
+      db.close();
+    }
   }
 }

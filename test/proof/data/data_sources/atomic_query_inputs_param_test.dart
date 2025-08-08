@@ -14,7 +14,7 @@ void main() {
         profileNonce: BigInt.from(123),
         claimSubjectProfileNonce: BigInt.from(456),
         credential:
-            ClaimInfoDTO.fromJson(jsonDecode(CredentialMocks.claimInfoJson)),
+            W3CCredential.fromJson(jsonDecode(CredentialMocks.claimInfoJson)),
         request: {'key': 'value'},
       );
 
@@ -32,7 +32,7 @@ void main() {
         profileNonce: BigInt.from(123),
         claimSubjectProfileNonce: BigInt.from(456),
         credential:
-            ClaimInfoDTO.fromJson(jsonDecode(CredentialMocks.claimInfoJson)),
+            W3CCredential.fromJson(jsonDecode(CredentialMocks.claimInfoJson)),
         request: {'key': 'value'},
       );
 
@@ -56,7 +56,7 @@ void main() {
         profileNonce: BigInt.from(123),
         claimSubjectProfileNonce: BigInt.from(456),
         credential:
-            ClaimInfoDTO.fromJson(jsonDecode(CredentialMocks.claimInfoJson)),
+            W3CCredential.fromJson(jsonDecode(CredentialMocks.claimInfoJson)),
         request: {'key': 'value'},
         transactionData: {'snake_case_key': 'value'},
       );
@@ -72,7 +72,7 @@ void main() {
         profileNonce: BigInt.from(123),
         claimSubjectProfileNonce: BigInt.from(456),
         credential:
-            ClaimInfoDTO.fromJson(jsonDecode(CredentialMocks.claimInfoJson)),
+            W3CCredential.fromJson(jsonDecode(CredentialMocks.claimInfoJson)),
         request: {'key': 'value'},
         verifierId: '',
       );

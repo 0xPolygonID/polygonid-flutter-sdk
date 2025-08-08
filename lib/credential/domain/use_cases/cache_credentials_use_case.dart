@@ -16,7 +16,7 @@ class CacheCredentialsUseCase {
   );
 
   Future<void> execute({
-    required List<ClaimEntity> credentials,
+    required List<CredentialEntity> credentials,
     EnvConfigEntity? configParam,
   }) async {
     // if we don't have the configParam, we get it from the environment

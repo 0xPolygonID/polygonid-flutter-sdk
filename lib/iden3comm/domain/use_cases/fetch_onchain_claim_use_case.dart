@@ -45,13 +45,13 @@ class FetchOnchainClaimParam {
 }
 
 class FetchOnchainClaimUseCase
-    extends FutureUseCase<FetchOnchainClaimParam, ClaimEntity> {
+    extends FutureUseCase<FetchOnchainClaimParam, CredentialEntity> {
   final GetSelectedChainUseCase _getSelectedChainUseCase;
   final GetEnvUseCase _getEnvUseCase;
   final LibPolygonIdCoreCredentialDataSource _coreCredentialDataSource;
   final LocalContractFilesDataSource _localContractFilesDataSource;
   final RemoteIden3commDataSource _remoteIden3commDataSource;
-  final ClaimMapper _claimMapper;
+  final CredentialMapper _claimMapper;
 
   final StacktraceManager _stacktraceManager;
 
@@ -66,7 +66,7 @@ class FetchOnchainClaimUseCase
   );
 
   @override
-  Future<ClaimEntity> execute({
+  Future<CredentialEntity> execute({
     required FetchOnchainClaimParam param,
   }) async {
     final env = await _getEnvUseCase.execute();
@@ -111,7 +111,7 @@ class FetchOnchainClaimUseCase
     );
 
     try {
-      final rawClaim = _coreCredentialDataSource.w3cCredentialsFromOnchainHex(
+      final rawClaim = _coreCredentialDataSource.getW3CCredentialFromOnchainHex(
         issuerDID: param.issuerDid,
         hexdata: rawCredential,
         version: param.adapterVersion,
@@ -119,9 +119,9 @@ class FetchOnchainClaimUseCase
       );
 
       final claimJson = jsonDecode(rawClaim);
-      final claimInfoDto = ClaimInfoDTO.fromJson(claimJson);
+      final claimInfoDto = W3CCredential.fromJson(claimJson);
 
-      final claimDto = ClaimDTO(
+      final claimDto = CredentialDTO(
         id: claimInfoDto.id,
         issuer: claimInfoDto.issuer,
         did: param.profileDid,

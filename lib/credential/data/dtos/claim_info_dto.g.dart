@@ -6,61 +6,61 @@ part of 'claim_info_dto.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-ClaimInfoDTO _$ClaimInfoDTOFromJson(Map<String, dynamic> json) => ClaimInfoDTO(
+W3CCredential _$W3CCredentialFromJson(Map<String, dynamic> json) =>
+    W3CCredential(
       json['id'] as String,
       (json['@context'] as List<dynamic>).map((e) => e as String).toList(),
       (json['type'] as List<dynamic>).map((e) => e as String).toList(),
       json['expirationDate'] as String?,
-      json['issuanceDate'] as String,
-      CredentialSubjectDTO.fromJson(
+      json['issuanceDate'] as String?,
+      CredentialSubject.fromJson(
           json['credentialSubject'] as Map<String, dynamic>),
-      CredentialStatusDTO.fromJson(
+      CredentialStatus.fromJson(
           json['credentialStatus'] as Map<String, dynamic>),
       json['issuer'] as String,
-      CredentialSchemaDTO.fromJson(
+      CredentialSchema.fromJson(
           json['credentialSchema'] as Map<String, dynamic>),
       (json['proof'] as List<dynamic>?)
           ?.map((e) => ClaimProofDTO.fromJson(e as Map<String, dynamic>))
           .toList(),
       json['refreshService'] == null
           ? null
-          : RefreshServiceDTO.fromJson(
+          : RefreshService.fromJson(
               json['refreshService'] as Map<String, dynamic>),
       json['displayMethod'] == null
           ? null
-          : DisplayMethodDTO.fromJson(
+          : DisplayMethod.fromJson(
               json['displayMethod'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$ClaimInfoDTOToJson(ClaimInfoDTO instance) =>
+Map<String, dynamic> _$W3CCredentialToJson(W3CCredential instance) =>
     <String, dynamic>{
       'id': instance.id,
       '@context': instance.context,
       'type': instance.type,
       'expirationDate': instance.expirationDate,
+      'refreshService': instance.refreshService?.toJson(),
+      'displayMethod': instance.displayMethod?.toJson(),
       'issuanceDate': instance.issuanceDate,
       'credentialSubject': instance.credentialSubject.toJson(),
       'credentialStatus': instance.credentialStatus.toJson(),
       'issuer': instance.issuer,
       'credentialSchema': instance.credentialSchema.toJson(),
-      'proof': instance.proofs?.map((e) => e.toJson()).toList(),
-      'refreshService': instance.refreshService?.toJson(),
-      'displayMethod': instance.displayMethod?.toJson(),
+      'proof': instance.proof?.map((e) => e.toJson()).toList(),
     };
 
-CredentialStatusDTO _$CredentialStatusDTOFromJson(Map<String, dynamic> json) =>
-    CredentialStatusDTO(
+CredentialStatus _$CredentialStatusFromJson(Map<String, dynamic> json) =>
+    CredentialStatus(
       json['id'] as String,
       (json['revocationNonce'] as num?)?.toInt(),
       $enumDecode(_$CredentialStatusTypeEnumMap, json['type']),
       json['statusIssuer'] == null
           ? null
-          : CredentialStatusDTO.fromJson(
+          : CredentialStatus.fromJson(
               json['statusIssuer'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$CredentialStatusDTOToJson(
-        CredentialStatusDTO instance) =>
+Map<String, dynamic> _$CredentialStatusToJson(CredentialStatus instance) =>
     <String, dynamic>{
       'id': instance.id,
       'revocationNonce': instance.revocationNonce,
@@ -69,35 +69,34 @@ Map<String, dynamic> _$CredentialStatusDTOToJson(
     };
 
 const _$CredentialStatusTypeEnumMap = {
+  CredentialStatusType.sparseMerkleTreeProof: 'SparseMerkleTreeProof',
   CredentialStatusType.reverseSparseMerkleTreeProof:
       'Iden3ReverseSparseMerkleTreeProof',
-  CredentialStatusType.sparseMerkleTreeProof: 'SparseMerkleTreeProof',
-  CredentialStatusType.iden3OnchainSparseMerkleTreeProof2023:
-      'Iden3OnchainSparseMerkleTreeProof2023',
   CredentialStatusType.iden3commRevocationStatusV1:
       'Iden3commRevocationStatusV1.0',
+  CredentialStatusType.iden3OnchainSparseMerkleTreeProof2023:
+      'Iden3OnchainSparseMerkleTreeProof2023',
 };
 
-CredentialSchemaDTO _$CredentialSchemaDTOFromJson(Map<String, dynamic> json) =>
-    CredentialSchemaDTO(
+CredentialSchema _$CredentialSchemaFromJson(Map<String, dynamic> json) =>
+    CredentialSchema(
       json['id'] as String,
       json['type'] as String,
     );
 
-Map<String, dynamic> _$CredentialSchemaDTOToJson(
-        CredentialSchemaDTO instance) =>
+Map<String, dynamic> _$CredentialSchemaToJson(CredentialSchema instance) =>
     <String, dynamic>{
       'id': instance.id,
       'type': instance.type,
     };
 
-DisplayMethodDTO _$DisplayMethodDTOFromJson(Map<String, dynamic> json) =>
-    DisplayMethodDTO(
+DisplayMethod _$DisplayMethodFromJson(Map<String, dynamic> json) =>
+    DisplayMethod(
       json['id'] as String,
       json['type'] as String,
     );
 
-Map<String, dynamic> _$DisplayMethodDTOToJson(DisplayMethodDTO instance) =>
+Map<String, dynamic> _$DisplayMethodToJson(DisplayMethod instance) =>
     <String, dynamic>{
       'id': instance.id,
       'type': instance.type,

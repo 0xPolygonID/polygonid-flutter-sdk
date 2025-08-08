@@ -29,7 +29,7 @@ class ClaimsEvent with _$ClaimsEvent {
     required String id,
     String? issuer,
     String? did,
-    ClaimState? state,
+    CredentialState? state,
     String? expiration,
     String? type,
     Map<String, dynamic>? data,

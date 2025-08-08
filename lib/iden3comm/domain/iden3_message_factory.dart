@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/attestation/attestation_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/attestation/attestation_response.dart';
@@ -23,17 +23,17 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/verification/ver
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/verification/verification_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 
-class GetIden3MessageUseCase extends FutureUseCase<String, Iden3MessageEntity> {
+@injectable
+class Iden3MessageFactory {
   final StacktraceManager _stacktraceManager;
 
-  GetIden3MessageUseCase(
-    this._stacktraceManager,
-  );
+  Iden3MessageFactory(this._stacktraceManager);
 
-  @override
-  Future<Iden3MessageEntity> execute({required String param}) async {
+  Iden3MessageEntity createMessage({
+    required String rawMessage,
+  }) {
     try {
-      Map<String, dynamic> json = jsonDecode(param);
+      Map<String, dynamic> json = jsonDecode(rawMessage);
 
       final rawType = json['type'] ?? '';
       final type = Iden3MessageType.fromType(rawType);
@@ -85,8 +85,8 @@ class GetIden3MessageUseCase extends FutureUseCase<String, Iden3MessageEntity> {
           );
       }
     } catch (error) {
-      _stacktraceManager.addError("[GetIden3MessageUseCase] error: $error");
-      return Future.error(error);
+      _stacktraceManager.addError("[Iden3MessageFactory] error: $error");
+      rethrow;
     }
   }
 }

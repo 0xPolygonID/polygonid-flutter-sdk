@@ -41,7 +41,7 @@ class FetchAndSaveClaimsParam {
 }
 
 class FetchAndSaveClaimsUseCase
-    extends FutureUseCase<FetchAndSaveClaimsParam, List<ClaimEntity>> {
+    extends FutureUseCase<FetchAndSaveClaimsParam, List<CredentialEntity>> {
   final Iden3commCredentialRepository _iden3commCredentialRepository;
   final FetchOnchainClaimUseCase _fetchOnchainClaimUseCase;
   final CheckProfileAndDidCurrentEnvUseCase
@@ -77,7 +77,7 @@ class FetchAndSaveClaimsUseCase
   );
 
   @override
-  Future<List<ClaimEntity>> execute({
+  Future<List<CredentialEntity>> execute({
     required FetchAndSaveClaimsParam param,
   }) async {
     /// Get the corresponding fetch request from [OfferIden3MessageEntity]
@@ -107,7 +107,7 @@ class FetchAndSaveClaimsUseCase
         ),
       );
 
-      final List<ClaimEntity> claims;
+      final List<CredentialEntity> claims;
 
       final message = param.message;
       if (message is CredentialsOfferMessage) {
@@ -154,7 +154,7 @@ class FetchAndSaveClaimsUseCase
     }
   }
 
-  Future<List<ClaimEntity>> _fetchCredentials(
+  Future<List<CredentialEntity>> _fetchCredentials(
     CredentialsOfferMessage message,
     FetchAndSaveClaimsParam param,
     String profileDid,
@@ -166,7 +166,7 @@ class FetchAndSaveClaimsUseCase
       ),
     );
 
-    final claims = <ClaimEntity>[];
+    final claims = <CredentialEntity>[];
     for (final request in requests) {
       final authToken = await _getAuthTokenUseCase.execute(
         param: GetAuthTokenParam(
@@ -188,7 +188,7 @@ class FetchAndSaveClaimsUseCase
     return claims;
   }
 
-  Future<List<ClaimEntity>> _fetchOnchainCredentials(
+  Future<List<CredentialEntity>> _fetchOnchainCredentials(
     CredentialsOnchainOfferMessage message,
     String profileDid,
     FetchAndSaveClaimsParam param,
@@ -247,7 +247,7 @@ class FetchAndSaveClaimsUseCase
 
     final adapterVersion = await issuer.getCredentialAdapterVersion();
 
-    final claims = <ClaimEntity>[];
+    final claims = <CredentialEntity>[];
     for (final credential in message.body.credentials) {
       final credentialId = BigInt.parse(credential.id);
 

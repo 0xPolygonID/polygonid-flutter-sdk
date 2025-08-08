@@ -50,7 +50,7 @@ class FetchCredentialsUseCase {
     this._getEnvUseCase,
   );
 
-  Future<List<ClaimEntity>> fetchCredentials({
+  Future<List<CredentialEntity>> fetchCredentials({
     required BaseCredentialOfferMessage credentialOfferMessage,
     required String privateKey,
     required String genesisDid,
@@ -89,7 +89,7 @@ class FetchCredentialsUseCase {
         ),
       );
 
-      final List<ClaimEntity> credentials;
+      final List<CredentialEntity> credentials;
       if (credentialOfferMessage is CredentialsOfferMessage) {
         credentials = await _fetchOffChainCredentials(
           credentialOfferMessage: credentialOfferMessage,
@@ -117,7 +117,7 @@ class FetchCredentialsUseCase {
     }
   }
 
-  Future<List<ClaimEntity>> _fetchOffChainCredentials({
+  Future<List<CredentialEntity>> _fetchOffChainCredentials({
     required CredentialsOfferMessage credentialOfferMessage,
     required String privateKey,
     required String genesisDid,
@@ -132,7 +132,7 @@ class FetchCredentialsUseCase {
       ),
     );
 
-    final List<ClaimEntity> credentials = [];
+    final List<CredentialEntity> credentials = [];
     for (final request in requests) {
       //for each request we get the authToken
       final String authToken = await _getAuthTokenUseCase.execute(
@@ -146,7 +146,7 @@ class FetchCredentialsUseCase {
 
       // we get the credential from the issuer using the authToken
       // and the url of the credential
-      final ClaimEntity credential =
+      final CredentialEntity credential =
           await _iden3commCredentialRepository.fetchClaim(
         did: profileDid,
         authToken: authToken,
@@ -158,7 +158,7 @@ class FetchCredentialsUseCase {
     return credentials;
   }
 
-  Future<List<ClaimEntity>> _fetchOnchainCredentials({
+  Future<List<CredentialEntity>> _fetchOnchainCredentials({
     required CredentialsOnchainOfferMessage message,
     required String profileDid,
   }) async {
@@ -216,7 +216,7 @@ class FetchCredentialsUseCase {
 
     final adapterVersion = await issuer.getCredentialAdapterVersion();
 
-    final claims = <ClaimEntity>[];
+    final claims = <CredentialEntity>[];
     for (final credential in message.body.credentials) {
       final credentialId = BigInt.parse(credential.id);
 

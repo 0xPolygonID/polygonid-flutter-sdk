@@ -16,7 +16,7 @@ import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_su
 
 typedef RequestAndCredentials = ({
   ProofRequestEntity request,
-  List<ClaimEntity> credentials,
+  List<CredentialEntity> credentials,
 });
 
 class GetMessageRequestsAndCredsParam {
@@ -66,7 +66,7 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
 
     var groupedByGroupId = groupBy(requests, (req) => req.scope.query.groupId);
 
-    Map<int, List<ClaimEntity>> claimsByGroupId = {};
+    Map<int, List<CredentialEntity>> claimsByGroupId = {};
 
     for (final group in groupedByGroupId.entries) {
       int? groupId = group.key;
@@ -87,7 +87,7 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
         filtersForQueryClaimDb = filtersForQueryClaimDb.toSet().toList();
       }
 
-      List<ClaimEntity> claimsFiltered = await _getClaimsUseCase.execute(
+      List<CredentialEntity> claimsFiltered = await _getClaimsUseCase.execute(
         param: GetClaimsParam(
           filters: filtersForQueryClaimDb,
           genesisDid: param.genesisDid,
@@ -109,7 +109,7 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
         continue;
       }
 
-      List<ClaimEntity> validCreds = [];
+      List<CredentialEntity> validCreds = [];
 
       int? requestGroupId = request.scope.query.groupId;
       if (requestGroupId != null &&
@@ -121,7 +121,7 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
         _stacktraceManager
             .addTrace("[GetMessageRequestsAndCredsUseCase] filters: $filters");
 
-        List<ClaimEntity> claimsFiltered = await _getClaimsUseCase.execute(
+        List<CredentialEntity> claimsFiltered = await _getClaimsUseCase.execute(
           param: GetClaimsParam(
             filters: filters,
             genesisDid: param.genesisDid,
@@ -189,9 +189,9 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
 
   /// The positiveInteger type is not supported by the filter 'cause this type
   /// is stored as a string in the database. So we need to filter manually
-  List<ClaimEntity> _filterManuallyIfPositiveInteger({
+  List<CredentialEntity> _filterManuallyIfPositiveInteger({
     required ProofRequestEntity request,
-    required List<ClaimEntity> claimsFiltered,
+    required List<CredentialEntity> claimsFiltered,
   }) {
     try {
       if (request.scope.query.credentialSubject == null) return claimsFiltered;
@@ -234,7 +234,7 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
     return value;
   }
 
-  void _processMap(dynamic map, String key, List<ClaimEntity> claimsFiltered) {
+  void _processMap(dynamic map, String key, List<CredentialEntity> claimsFiltered) {
     map.forEach((operator, needle) {
       _filterClaims(operator, needle, key, claimsFiltered);
     });
@@ -258,7 +258,7 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
     String operator,
     dynamic needle,
     String key,
-    List<ClaimEntity> claimsFiltered,
+    List<CredentialEntity> claimsFiltered,
   ) {
     // Implement the filtering logic here, similar to what you have in your switch case
     claimsFiltered.removeWhere((element) {
@@ -294,9 +294,9 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
     });
   }
 
-  List<ClaimEntity> _filterManuallyIfQueryContainsProofType({
+  List<CredentialEntity> _filterManuallyIfQueryContainsProofType({
     required String? proofType,
-    required List<ClaimEntity> credsFiltered,
+    required List<CredentialEntity> credsFiltered,
   }) {
     try {
       if (proofType == null || proofType.isEmpty) {

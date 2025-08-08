@@ -15,7 +15,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_ide
 import 'package:uuid/uuid.dart';
 
 class RefreshCredentialParam {
-  final ClaimEntity credential;
+  final CredentialEntity credential;
   final String genesisDid;
   final String privateKey;
 
@@ -27,7 +27,7 @@ class RefreshCredentialParam {
 }
 
 class RefreshCredentialUseCase
-    extends FutureUseCase<RefreshCredentialParam, ClaimEntity> {
+    extends FutureUseCase<RefreshCredentialParam, CredentialEntity> {
   final StacktraceManager _stacktraceManager;
   final GetIdentityUseCase _getIdentityUseCase;
   final GetAuthTokenUseCase _getAuthTokenUseCase;
@@ -45,7 +45,7 @@ class RefreshCredentialUseCase
   );
 
   @override
-  Future<ClaimEntity> execute({
+  Future<CredentialEntity> execute({
     required RefreshCredentialParam param,
   }) async {
     final encryptionKey = param.privateKey;
@@ -70,12 +70,11 @@ class RefreshCredentialUseCase
           errorMessage: "Refresh service not found");
     }
 
-    RefreshServiceDTO refreshService =
-        RefreshServiceDTO.fromJson(param.credential.info["refreshService"]);
+    RefreshService refreshService =
+        RefreshService.fromJson(param.credential.info["refreshService"]);
     String refreshServiceUrl = refreshService.id;
     String id = const Uuid().v4();
-    CredentialRefreshIden3MessageEntity credentialRefreshEntity =
-        CredentialRefreshIden3MessageEntity(
+    final credentialRefreshMessage = CredentialRefreshIden3MessageEntity(
       id: id,
       typ: "application/iden3comm-plain-json",
       thid: id,
@@ -92,13 +91,11 @@ class RefreshCredentialUseCase
         genesisDid: param.genesisDid,
         profileNonce: claimSubjectProfileNonce,
         privateKey: param.privateKey,
-        message: jsonEncode(credentialRefreshEntity),
+        message: jsonEncode(credentialRefreshMessage),
       ),
     );
 
-    ClaimEntity claimEntity;
-
-    claimEntity = await _iden3commCredentialRepository.refreshCredential(
+    final claimEntity = await _iden3commCredentialRepository.refreshCredential(
       authToken: authToken,
       url: refreshServiceUrl,
       profileDid: param.credential.did,

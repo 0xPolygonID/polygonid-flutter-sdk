@@ -36,7 +36,7 @@ class GenerateIden3commProofParam {
   final String did;
   final BigInt profileNonce;
   final BigInt claimSubjectProfileNonce;
-  final ClaimEntity credential;
+  final CredentialEntity credential;
   final ZeroKnowledgeProofRequest request;
   final CircuitDataEntity circuitData;
 

@@ -111,7 +111,7 @@ class PolygonIdCoreCredential extends PolygonIdCore {
     );
   }
 
-  String w3cCredentialsFromOnchainHex(String input, String? config) {
+  String getW3CCredentialFromOnchainHex(String input, String? config) {
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Char> cfg = ffi.nullptr;
     if (config != null) {
@@ -155,7 +155,8 @@ class PolygonIdCoreCredential extends PolygonIdCore {
     return result;
   }
 
-  String createCredentialFromAnonAadhaarInputs(String input, String? config) {
+  String createW3CCredentialFromAnonAadhaarInputs(
+      String input, String? config) {
     return callGenericCoreFunction(
       input: () => input,
       function: PolygonIdCore
@@ -164,7 +165,7 @@ class PolygonIdCoreCredential extends PolygonIdCore {
     );
   }
 
-  String createCredentialFromPassportInputs(String input, String? config) {
+  String createW3CCredentialFromPassportInputs(String input, String? config) {
     return callGenericCoreFunction(
       input: () => input,
       function: PolygonIdCore
@@ -173,7 +174,7 @@ class PolygonIdCoreCredential extends PolygonIdCore {
     );
   }
 
-  String coreClaimFromCredential(String input, String? config) {
+  String createCoreClaimFromW3CCredential(String input, String? config) {
     ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
     ffi.Pointer<ffi.Char> cfg = ffi.nullptr;
     if (config != null) {

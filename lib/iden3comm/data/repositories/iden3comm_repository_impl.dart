@@ -12,8 +12,8 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_mes
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/response/jwz.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/iden3_message_factory.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/lib_pidcore_proof_data_source.dart';
@@ -29,7 +29,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   final LibPolygonIdCoreProofDataSource _libPolygonIdCoreProofDataSource;
   final QMapper _qMapper;
   final JWZMapper _jwzMapper;
-  final GetIden3MessageUseCase _getIden3MessageUseCase;
+  final Iden3MessageFactory _messageFactory;
   final StacktraceManager _stacktraceManager;
 
   Iden3commRepositoryImpl(
@@ -38,7 +38,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     this._libPolygonIdCoreProofDataSource,
     this._qMapper,
     this._jwzMapper,
-    this._getIden3MessageUseCase,
+    this._messageFactory,
     this._stacktraceManager,
   );
 
@@ -72,8 +72,8 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
         return null;
       }
 
-      final nextRequest = await _getIden3MessageUseCase.execute(
-        param: jsonEncode(messageJson),
+      final nextRequest = _messageFactory.createMessage(
+        rawMessage: response.data,
       );
 
       return nextRequest;

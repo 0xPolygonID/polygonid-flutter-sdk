@@ -10,6 +10,8 @@ enum Iden3MessageType {
   authResponse(ProtocolMessageType.authorizationResponseMessageType),
   credentialOffer(ProtocolMessageType.credentialOfferMessageType),
   onchainCredentialOffer(ProtocolMessageType.credentialOnchainOfferMessageType),
+  credentialIssuanceRequest(
+      ProtocolMessageType.credentialIssuanceRequestMessageType),
   credentialIssuanceResponse(
       ProtocolMessageType.credentialIssuanceResponseMessageType),
   proofContractInvokeRequest(

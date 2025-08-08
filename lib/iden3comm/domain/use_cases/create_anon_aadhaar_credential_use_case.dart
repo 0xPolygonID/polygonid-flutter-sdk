@@ -28,11 +28,11 @@ class CreateAnonAadhaarCredentialParam {
 }
 
 class CreateAnonAadhaarCredentialUseCase
-    extends FutureUseCase<CreateAnonAadhaarCredentialParam, ClaimEntity> {
+    extends FutureUseCase<CreateAnonAadhaarCredentialParam, CredentialEntity> {
   final LibPolygonIdCoreCredentialDataSource _libPolygonIdCoreCredentialDS;
   final RemoteIden3commDataSource _remoteIden3commDataSource;
   final GetEnvUseCase _getEnvUseCase;
-  final ClaimMapper _claimMapper;
+  final CredentialMapper _claimMapper;
 
   CreateAnonAadhaarCredentialUseCase(
     this._libPolygonIdCoreCredentialDS,
@@ -42,13 +42,13 @@ class CreateAnonAadhaarCredentialUseCase
   );
 
   @override
-  Future<ClaimEntity> execute({
+  Future<CredentialEntity> execute({
     required CreateAnonAadhaarCredentialParam param,
   }) async {
     final env = await _getEnvUseCase.execute();
 
     final credentialJson =
-        _libPolygonIdCoreCredentialDS.credentialFromAnonAadhaar(
+        _libPolygonIdCoreCredentialDS.createW3CCredentialFromAnonAadhaar(
       qrData: param.qrData,
       timeNow: param.timeNow,
       did: param.profileDid,
@@ -64,9 +64,9 @@ class CreateAnonAadhaarCredentialUseCase
     final credentialWithAdditionalFields = jsonEncode(credentialJsonMap);
 
     final claimJson = jsonDecode(credentialWithAdditionalFields);
-    final claimInfoDto = ClaimInfoDTO.fromJson(claimJson);
+    final claimInfoDto = W3CCredential.fromJson(claimJson);
 
-    final claimDto = ClaimDTO(
+    final claimDto = CredentialDTO(
       id: claimInfoDto.id,
       issuer: claimInfoDto.issuer,
       did: param.profileDid,

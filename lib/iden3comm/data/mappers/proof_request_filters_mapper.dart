@@ -57,7 +57,7 @@ class ProofRequestFiltersMapper
         FilterEntity(
           operator: FilterOperator.nonEqual,
           name: 'state',
-          value: ClaimState.revoked.name,
+          value: CredentialState.revoked.name,
         ),
       );
     }

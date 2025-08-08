@@ -24,8 +24,8 @@ class Iden3MessageDataSource {
   Iden3MessageDataSource(this._stacktraceManager);
 
   Future<DIDDocument> getDidDocResponse(
-    String pushUrl,
     String didIdentifier,
+    String pushUrl,
     String pushToken,
     String packageName,
   ) async {

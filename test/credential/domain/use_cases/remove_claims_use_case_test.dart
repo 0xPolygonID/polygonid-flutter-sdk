@@ -35,7 +35,7 @@ void main() {
       reset(credentialRepository);
 
       // Given
-      when(credentialRepository.removeClaims(
+      when(credentialRepository.removeCredentials(
               genesisDid: identifier,
               encryptionKey: privateKey,
               claimIds: anyNamed("claimIds")))
@@ -49,7 +49,7 @@ void main() {
       await expectLater(useCase.execute(param: param), completes);
 
       // Then
-      var capturedRemove = verify(credentialRepository.removeClaims(
+      var capturedRemove = verify(credentialRepository.removeCredentials(
               genesisDid: captureAnyNamed('genesisDid'),
               encryptionKey: captureAnyNamed('encryptionKey'),
               claimIds: captureAnyNamed('claimIds')))
@@ -63,7 +63,7 @@ void main() {
         "Given a list of ids, when I call execute and an error occurred, then I expect an exception to be thrown",
         () async {
       // Given
-      when(credentialRepository.removeClaims(
+      when(credentialRepository.removeCredentials(
               genesisDid: identifier,
               encryptionKey: privateKey,
               claimIds: anyNamed("claimIds")))
@@ -73,7 +73,7 @@ void main() {
       await expectLater(useCase.execute(param: param), throwsA(exception));
 
       // Then
-      var capturedRemove = verify(credentialRepository.removeClaims(
+      var capturedRemove = verify(credentialRepository.removeCredentials(
               genesisDid: captureAnyNamed('genesisDid'),
               encryptionKey: captureAnyNamed('encryptionKey'),
               claimIds: captureAnyNamed('claimIds')))

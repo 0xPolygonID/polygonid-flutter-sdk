@@ -77,7 +77,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
         GENESIS_PROFILE_NONCE;
 
     try {
-      List<ClaimEntity> claimList =
+      List<CredentialEntity> claimList =
           await _polygonIdSdk.iden3comm.fetchAndSaveClaims(
         message: event.iden3message as CredentialsOfferMessage,
         genesisDid: didIdentifier,
@@ -126,7 +126,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     }
 
     try {
-      List<ClaimEntity> claimList = await _polygonIdSdk.credential.getClaims(
+      List<CredentialEntity> claimList = await _polygonIdSdk.credential.getClaims(
         filters: filters,
         genesisDid: did,
         privateKey: privateKey,
@@ -176,7 +176,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     }
 
     try {
-      List<ClaimEntity> claimList =
+      List<CredentialEntity> claimList =
           await _polygonIdSdk.credential.getClaimsByIds(
         claimIds: ids,
         genesisDid: did,
@@ -288,7 +288,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     String id = event.id;
     String? issuer = event.issuer;
     String? did = event.did;
-    ClaimState? state = event.state;
+    CredentialState? state = event.state;
     String? expiration = event.expiration;
     String? type = event.type;
     Map<String, dynamic>? data = event.data;
@@ -402,7 +402,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     }
 
     try {
-      List<ClaimEntity> claimList = await _polygonIdSdk.credential.getClaims(
+      List<CredentialEntity> claimList = await _polygonIdSdk.credential.getClaims(
         genesisDid: did,
         privateKey: privateKey,
       );

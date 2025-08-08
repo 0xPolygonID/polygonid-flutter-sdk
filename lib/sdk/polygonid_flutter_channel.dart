@@ -358,7 +358,7 @@ class PolygonIdFlutterChannel
         case 'saveClaims':
           return saveClaims(
                   claims: (call.arguments['claims'] as List)
-                      .map((claim) => ClaimEntity.fromJson(jsonDecode(claim)))
+                      .map((claim) => CredentialEntity.fromJson(jsonDecode(claim)))
                       .toList(),
                   genesisDid: call.arguments['genesisDid'] as String,
                   privateKey: call.arguments['privateKey'] as String)
@@ -371,7 +371,7 @@ class PolygonIdFlutterChannel
                   issuer: call.arguments['issuer'] as String?,
                   genesisDid: call.arguments['genesisDid'] as String,
                   state: call.arguments['state'] != null
-                      ? ClaimState.values.firstWhere(
+                      ? CredentialState.values.firstWhere(
                           (claimState) => claimState == call.arguments['state'])
                       : null,
                   expiration: call.arguments['expiration'] as String?,
@@ -420,7 +420,7 @@ class PolygonIdFlutterChannel
                 BigInt.parse(call.arguments['profileNonce'] as String),
             claimSubjectProfileNonce: BigInt.parse(
                 call.arguments['claimSubjectProfileNonce'] as String),
-            credential: ClaimEntity.fromJson(
+            credential: CredentialEntity.fromJson(
                 jsonDecode(call.arguments['credential'] as String)),
             circuitData: CircuitDataEntity.fromJson(
                 jsonDecode(call.arguments['circuitData'] as String)),
@@ -485,7 +485,7 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<List<ClaimEntity>> fetchAndSaveClaims({
+  Future<List<CredentialEntity>> fetchAndSaveClaims({
     required BaseCredentialOfferMessage message,
     required String genesisDid,
     BigInt? profileNonce,
@@ -499,7 +499,7 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<List<ClaimEntity>> fetchOnchainClaims({
+  Future<List<CredentialEntity>> fetchOnchainClaims({
     required String contractAddress,
     required String genesisDid,
     BigInt? profileNonce,
@@ -514,7 +514,7 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<List<ClaimEntity>> getClaimsFromIden3Message({
+  Future<List<CredentialEntity>> getClaimsFromIden3Message({
     required Iden3MessageEntity message,
     required String genesisDid,
     BigInt? profileNonce,
@@ -769,7 +769,7 @@ class PolygonIdFlutterChannel
 
   /// Credential
   @override
-  Future<List<ClaimEntity>> getClaims({
+  Future<List<CredentialEntity>> getClaims({
     List<FilterEntity>? filters,
     required String genesisDid,
     required String privateKey,
@@ -784,7 +784,7 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<List<ClaimEntity>> getClaimsByIds(
+  Future<List<CredentialEntity>> getClaimsByIds(
       {required List<String> claimIds,
       required String genesisDid,
       required String privateKey}) {
@@ -820,8 +820,8 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<List<ClaimEntity>> saveClaims(
-      {required List<ClaimEntity> claims,
+  Future<List<CredentialEntity>> saveClaims(
+      {required List<CredentialEntity> claims,
       required String genesisDid,
       required String privateKey}) {
     return _polygonIdSdk.credential.saveClaims(
@@ -829,11 +829,11 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<ClaimEntity> updateClaim(
+  Future<CredentialEntity> updateClaim(
       {required String claimId,
       String? issuer,
       required String genesisDid,
-      ClaimState? state,
+      CredentialState? state,
       String? expiration,
       String? type,
       Map<String, dynamic>? data,
@@ -881,7 +881,7 @@ class PolygonIdFlutterChannel
     required String identifier,
     required BigInt profileNonce,
     required BigInt claimSubjectProfileNonce,
-    required ClaimEntity credential,
+    required CredentialEntity credential,
     required CircuitDataEntity circuitData,
     required Map<String, dynamic> proofScopeRequest,
     List<String>? authClaim,
@@ -967,17 +967,17 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<ClaimEntity> refreshCredential({
+  Future<CredentialEntity> refreshCredential({
     required String genesisDid,
     required String privateKey,
-    required ClaimEntity credential,
+    required CredentialEntity credential,
   }) {
     // TODO: implement refreshCredential
     throw UnimplementedError();
   }
 
   @override
-  Future<ClaimEntity>? getCredentialById(
+  Future<CredentialEntity>? getCredentialById(
       {required String credentialId,
       required String genesisDid,
       required String privateKey}) {
@@ -986,7 +986,7 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<ClaimEntity>? getCredentialByPartialId({
+  Future<CredentialEntity>? getCredentialByPartialId({
     required String partialCredentialId,
     required String genesisDid,
     required String privateKey,
@@ -997,14 +997,14 @@ class PolygonIdFlutterChannel
 
   @override
   Future<void> cacheCredential(
-      {required ClaimEntity credential, EnvConfigEntity? configParam}) {
+      {required CredentialEntity credential, EnvConfigEntity? configParam}) {
     // TODO: implement cacheCredential
     throw UnimplementedError();
   }
 
   @override
   Future<void> cacheCredentials(
-      {required List<ClaimEntity> credentials, EnvConfigEntity? configParam}) {
+      {required List<CredentialEntity> credentials, EnvConfigEntity? configParam}) {
     // TODO: implement cacheCredentials
     throw UnimplementedError();
   }
@@ -1016,7 +1016,7 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<List<ClaimEntity>> fetchCredentials(
+  Future<List<CredentialEntity>> fetchCredentials(
       {required BaseCredentialOfferMessage<CredentialOfferBody>
           credentialOfferMessage,
       required String privateKey,
@@ -1038,7 +1038,7 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<ClaimEntity> getAnonAadhaarCredential({
+  Future<CredentialEntity> getAnonAadhaarCredential({
     required String qrData,
     required int timeNow,
     required String profileDid,
@@ -1062,7 +1062,7 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<ClaimEntity> getPassportCredential({
+  Future<CredentialEntity> getPassportCredential({
     required String passportData,
     required String dg2Hash,
     required String profileDid,

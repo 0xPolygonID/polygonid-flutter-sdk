@@ -1,10 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/credential/response/fetch_claim_response_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_issuance_response.dart';
 
 // Data
-String mockFetchClaim = '''
+String mockIssuanceMessage = '''
 {
   "body": {
     "credential": {
@@ -231,14 +232,14 @@ String mockFetchCredentialMTP = '''
   },
   "from": "did:polygonid:polygon:mumbai:2qMCebtitXNzau92r4JNV3y162hkzVZPn75UPMiE1G",
   "id": "166aa1b4-69d2-4355-aea1-d802c2341186",
-  "threadID": "5a23c836-8e4c-4c2b-bbdf-df3dd342884d",
+  "thid": "5a23c836-8e4c-4c2b-bbdf-df3dd342884d",
   "to": "did:polygonid:polygon:mumbai:2qFXVU2SPH9WvhPW1S4nqrY2zc9q8124hoj5hr2Tmy",
   "typ": "application/iden3comm-plain-json",
   "type": "https://iden3-communication.io/credentials/1.0/issuance-response"
 }
 ''';
 
-var json = jsonDecode(mockFetchClaim);
+var json = jsonDecode(mockIssuanceMessage);
 var jsonMTP = jsonDecode(mockFetchCredentialMTP);
 
 // Dependencies
@@ -251,17 +252,17 @@ void main() {
 
     test("Serializable", () {
       // ignore: unused_local_variable
-      FetchClaimResponseDTO dto = FetchClaimResponseDTO.fromJson(json);
+      CredentialIssuanceMessage dto = CredentialIssuanceMessage.fromJson(json);
     });
   });
 
   group("FetchClaimResponseDTO with MTP", () {
     test("should parse valid JSON with MTP correctly", () {
-      var dto = FetchClaimResponseDTO.fromJson(jsonMTP);
-      expect(dto.type, FetchClaimResponseType.issuance);
+      var dto = CredentialIssuanceMessage.fromJson(jsonMTP);
+      expect(dto.type, Iden3MessageType.credentialIssuanceResponse);
       expect(dto.from,
           "did:polygonid:polygon:mumbai:2qMCebtitXNzau92r4JNV3y162hkzVZPn75UPMiE1G");
-      expect(dto.credential.id,
+      expect(dto.body.credential.id,
           "https://issuer-admin.polygonid.me/v1/credentials/69b66264-a0b2-11ee-93b5-0242ac120009");
     });
   });

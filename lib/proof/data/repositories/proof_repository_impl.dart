@@ -42,7 +42,7 @@ class ProofRepositoryImpl extends ProofRepository {
   final StacktraceManager _stacktraceManager;
 
   // FIXME: those mappers shouldn't be used here as they are part of Credential
-  final ClaimMapper _claimMapper;
+  final CredentialMapper _claimMapper;
 
   ProofRepositoryImpl(
     this._witnessDataSource,
@@ -78,7 +78,7 @@ class ProofRepositoryImpl extends ProofRepository {
     required String id,
     required BigInt profileNonce,
     required BigInt claimSubjectProfileNonce,
-    required ClaimEntity claim,
+    required CredentialEntity claim,
     required Map<String, dynamic> proofScopeRequest,
     required String circuitId,
     MTProofEntity? incProof,
@@ -94,7 +94,7 @@ class ProofRepositoryImpl extends ProofRepository {
     Map<String, dynamic>? scopeParams,
     Map<String, dynamic>? transactionData,
   }) async {
-    ClaimDTO credentialDto = _claimMapper.mapTo(claim);
+    CredentialDTO credentialDto = _claimMapper.mapTo(claim);
 
     final gistProofMap = gistProof?.toJson();
     final incProofMap = incProof?.toJson();

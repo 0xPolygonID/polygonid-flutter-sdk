@@ -1,12 +1,16 @@
 import 'package:polygonid_flutter_sdk/credential/data/dtos/display_type/display_type.dart';
 
-enum ClaimState { active, expired, pending, revoked }
+typedef ClaimState = CredentialState;
 
-class ClaimEntity {
+enum CredentialState { active, expired, pending, revoked }
+
+typedef ClaimEntity = CredentialEntity;
+
+class CredentialEntity {
   final String id;
   final String issuer;
   final String did;
-  final ClaimState state;
+  final CredentialState state;
   final String? expiration;
   final String? issuanceDate;
   final Map<String, dynamic>? schema;
@@ -16,7 +20,7 @@ class ClaimEntity {
 
   final String credentialRawValue;
 
-  ClaimEntity({
+  CredentialEntity({
     required this.id,
     required this.issuer,
     required this.did,
@@ -30,12 +34,12 @@ class ClaimEntity {
     required this.credentialRawValue,
   });
 
-  factory ClaimEntity.fromJson(Map<String, dynamic> json) {
-    return ClaimEntity(
+  factory CredentialEntity.fromJson(Map<String, dynamic> json) {
+    return CredentialEntity(
       id: json['id'],
       issuer: json['issuer'],
       did: json['did'],
-      state: ClaimState.values.firstWhere((e) => e.name == json['state']),
+      state: CredentialState.values.firstWhere((e) => e.name == json['state']),
       expiration: json['expiration'],
       issuanceDate: json['issuanceDate'],
       schema: json['schema'],
@@ -69,7 +73,7 @@ class ClaimEntity {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ClaimEntity &&
+      other is CredentialEntity &&
           runtimeType == other.runtimeType &&
           id == other.id &&
           issuer == other.issuer &&
@@ -86,11 +90,11 @@ class ClaimEntity {
   int get hashCode => runtimeType.hashCode;
 
   //copyWith method
-  ClaimEntity copyWith({
+  CredentialEntity copyWith({
     String? id,
     String? issuer,
     String? did,
-    ClaimState? state,
+    CredentialState? state,
     String? expiration,
     String? issuanceDate,
     Map<String, dynamic>? schema,
@@ -99,7 +103,7 @@ class ClaimEntity {
     DisplayType? displayType,
     String? credentialRawValue,
   }) {
-    return ClaimEntity(
+    return CredentialEntity(
       id: id ?? this.id,
       issuer: issuer ?? this.issuer,
       did: did ?? this.did,

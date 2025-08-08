@@ -2,29 +2,29 @@ import 'package:polygonid_flutter_sdk/common/mappers/mapper.dart';
 
 import '../../domain/entities/claim_entity.dart';
 
-class ClaimStateMapper extends Mapper<String, ClaimState> {
+class CredentialStateMapper extends Mapper<String, CredentialState> {
   @override
-  ClaimState mapFrom(String from) {
+  CredentialState mapFrom(String from) {
     switch (from) {
       case "expired":
-        return ClaimState.expired;
+        return CredentialState.expired;
       case "pending":
-        return ClaimState.pending;
+        return CredentialState.pending;
       case "revoked":
-        return ClaimState.revoked;
+        return CredentialState.revoked;
       default:
-        return ClaimState.active;
+        return CredentialState.active;
     }
   }
 
   @override
-  String mapTo(ClaimState to) {
+  String mapTo(CredentialState to) {
     switch (to) {
-      case ClaimState.expired:
+      case CredentialState.expired:
         return "expired";
-      case ClaimState.pending:
+      case CredentialState.pending:
         return "pending";
-      case ClaimState.revoked:
+      case CredentialState.revoked:
         return "revoked";
       default:
         return "";

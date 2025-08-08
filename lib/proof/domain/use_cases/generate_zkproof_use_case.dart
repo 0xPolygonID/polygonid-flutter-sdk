@@ -14,7 +14,7 @@ class GenerateZKProofParam {
   final String identifier;
   final BigInt profileNonce;
   final BigInt claimSubjectProfileNonce;
-  final ClaimEntity credential;
+  final CredentialEntity credential;
   final CircuitDataEntity circuitData;
   final List<String>? authClaim;
   final MTProofEntity? incProof;

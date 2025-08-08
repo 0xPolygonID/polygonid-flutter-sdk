@@ -37,11 +37,11 @@ class CreatePassportCredentialParam {
 }
 
 class CreatePassportCredentialUseCase
-    extends FutureUseCase<CreatePassportCredentialParam, ClaimEntity> {
+    extends FutureUseCase<CreatePassportCredentialParam, CredentialEntity> {
   final LibPolygonIdCoreCredentialDataSource _libPolygonIdCoreCredentialDS;
   final RemoteIden3commDataSource _remoteIden3commDataSource;
   final GetEnvUseCase _getEnvUseCase;
-  final ClaimMapper _claimMapper;
+  final CredentialMapper _claimMapper;
 
   CreatePassportCredentialUseCase(
     this._libPolygonIdCoreCredentialDS,
@@ -51,12 +51,12 @@ class CreatePassportCredentialUseCase
   );
 
   @override
-  Future<ClaimEntity> execute({
+  Future<CredentialEntity> execute({
     required CreatePassportCredentialParam param,
   }) async {
     final env = await _getEnvUseCase.execute();
 
-    final credentialJson = _libPolygonIdCoreCredentialDS.credentialFromPassport(
+    final credentialJson = _libPolygonIdCoreCredentialDS.createW3CCredentialFromPassport(
       passportData: param.passportData,
       dg2Hash: param.dg2Hash,
       did: param.profileDid,
@@ -77,9 +77,9 @@ class CreatePassportCredentialUseCase
     final credentialWithAdditionalFields = jsonEncode(credentialJsonMap);
 
     final claimJson = jsonDecode(credentialWithAdditionalFields);
-    final claimInfoDto = ClaimInfoDTO.fromJson(claimJson);
+    final claimInfoDto = W3CCredential.fromJson(claimJson);
 
-    final claimDto = ClaimDTO(
+    final claimDto = CredentialDTO(
       id: claimInfoDto.id,
       issuer: claimInfoDto.issuer,
       did: param.profileDid,
