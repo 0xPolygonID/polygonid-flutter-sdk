@@ -8,6 +8,7 @@ import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/protocol_message_type.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/self_issuance/self_issued_credential_params.dart';
 
 class CreateAnonAadhaarCredentialParam {
@@ -27,11 +28,11 @@ class CreateAnonAadhaarCredentialParam {
 }
 
 class CreateAnonAadhaarCredentialUseCase
-    extends FutureUseCase<CreateAnonAadhaarCredentialParam, ClaimEntity> {
+    extends FutureUseCase<CreateAnonAadhaarCredentialParam, CredentialEntity> {
   final LibPolygonIdCoreCredentialDataSource _libPolygonIdCoreCredentialDS;
   final RemoteIden3commDataSource _remoteIden3commDataSource;
   final GetEnvUseCase _getEnvUseCase;
-  final ClaimMapper _claimMapper;
+  final CredentialMapper _claimMapper;
 
   CreateAnonAadhaarCredentialUseCase(
     this._libPolygonIdCoreCredentialDS,
@@ -41,13 +42,13 @@ class CreateAnonAadhaarCredentialUseCase
   );
 
   @override
-  Future<ClaimEntity> execute({
+  Future<CredentialEntity> execute({
     required CreateAnonAadhaarCredentialParam param,
   }) async {
     final env = await _getEnvUseCase.execute();
 
     final credentialJson =
-        _libPolygonIdCoreCredentialDS.credentialFromAnonAadhaar(
+        _libPolygonIdCoreCredentialDS.createW3CCredentialFromAnonAadhaar(
       qrData: param.qrData,
       timeNow: param.timeNow,
       did: param.profileDid,
@@ -63,16 +64,16 @@ class CreateAnonAadhaarCredentialUseCase
     final credentialWithAdditionalFields = jsonEncode(credentialJsonMap);
 
     final claimJson = jsonDecode(credentialWithAdditionalFields);
-    final claimInfoDto = ClaimInfoDTO.fromJson(claimJson);
+    final claimInfoDto = W3CCredential.fromJson(claimJson);
 
-    final claimDto = ClaimDTO(
+    final claimDto = CredentialDTO(
       id: claimInfoDto.id,
       issuer: claimInfoDto.issuer,
       did: param.profileDid,
       type: claimInfoDto.credentialSubject.type,
       info: claimInfoDto,
       credentialRawValue: jsonEncode({
-        "type": "https://iden3-communication.io/credentials/1.0/offer",
+        "type": ProtocolMessageType.credentialOfferMessageType,
         "from": param.selfIssuedCredentialParams.issuerDid,
         "body": {
           'credential': claimJson,

@@ -39,13 +39,13 @@ class LibPolygonIdCoreCredentialDataSource {
     return output;
   }
 
-  String w3cCredentialsFromOnchainHex({
+  String getW3CCredentialFromOnchainHex({
     required String issuerDID,
     required String hexdata,
     required String version,
     String? config,
   }) {
-    return _polygonIdCoreCredential.w3cCredentialsFromOnchainHex(
+    return _polygonIdCoreCredential.getW3CCredentialFromOnchainHex(
       jsonEncode({
         "issuerDID": issuerDID,
         "hexdata": hexdata,
@@ -55,7 +55,7 @@ class LibPolygonIdCoreCredentialDataSource {
     );
   }
 
-  String credentialFromAnonAadhaar({
+  String createW3CCredentialFromAnonAadhaar({
     required String qrData,
     required int timeNow,
     required String did,
@@ -70,13 +70,13 @@ class LibPolygonIdCoreCredentialDataSource {
       params: selfIssuedCredentialParams,
     );
 
-    return _polygonIdCoreCredential.createCredentialFromAnonAadhaarInputs(
+    return _polygonIdCoreCredential.createW3CCredentialFromAnonAadhaarInputs(
       jsonEncode(param.toJson()),
       config,
     );
   }
 
-  String credentialFromPassport({
+  String createW3CCredentialFromPassport({
     required String passportData,
     required String dg2Hash,
     required String did,
@@ -101,17 +101,17 @@ class LibPolygonIdCoreCredentialDataSource {
       circuitId: circuitId,
     );
 
-    return _polygonIdCoreCredential.createCredentialFromPassportInputs(
+    return _polygonIdCoreCredential.createW3CCredentialFromPassportInputs(
       jsonEncode(param.toJson()),
       config,
     );
   }
 
-  String coreClaimFromCredential({
+  String createCoreClaimFromCredential({
     required String credential,
     String? config,
   }) {
-    return _polygonIdCoreCredential.coreClaimFromCredential(
+    return _polygonIdCoreCredential.createCoreClaimFromW3CCredential(
       credential,
       config,
     );

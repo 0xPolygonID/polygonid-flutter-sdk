@@ -21,7 +21,7 @@ import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_e
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 
 class AuthenticateParam {
-  final AuthIden3MessageEntity message;
+  final AuthorizationRequestMessage message;
   final String genesisDid;
   final BigInt profileNonce;
   final String privateKey;
@@ -39,7 +39,7 @@ class AuthenticateParam {
 }
 
 class AuthenticateUseCase
-    extends FutureUseCase<AuthenticateParam, Iden3MessageEntity?> {
+    extends FutureUseCase<AuthenticateParam, Iden3Message?> {
   final Iden3commRepository _iden3commRepository;
   final GetAuthTokenUseCase _getAuthTokenUseCase;
   final GetIden3commProofsUseCase _getIden3commProofsUseCase;
@@ -66,8 +66,7 @@ class AuthenticateUseCase
   );
 
   @override
-  Future<Iden3MessageEntity?> execute(
-      {required AuthenticateParam param}) async {
+  Future<Iden3Message?> execute({required AuthenticateParam param}) async {
     try {
       _stacktraceManager.logTrace(
           "[AuthenticateUseCase][MainFlow] auth request: " +

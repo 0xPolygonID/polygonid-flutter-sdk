@@ -1,7 +1,10 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_request_message_entity.dart';
 
+@Deprecated('Use Iden3PaymentRequestCryptoV1 instead')
+typedef Iden3PaymentRequestCryptoV1Data = Iden3PaymentRequestCryptoV1;
+
 /// https://iden3-communication.io/credentials/0.1/payment-request/#:~:text=Iden3PaymentRequestCryptoV1%20iss
-class Iden3PaymentRequestCryptoV1Data extends PaymentRequestData {
+class Iden3PaymentRequestCryptoV1 extends PaymentRequestData {
   @override
   final String id;
   final String type;
@@ -13,7 +16,7 @@ class Iden3PaymentRequestCryptoV1Data extends PaymentRequestData {
   final String currency;
   final String? expiration; // historical backward compatibility
 
-  Iden3PaymentRequestCryptoV1Data({
+  Iden3PaymentRequestCryptoV1({
     required this.id,
     required this.type,
     required this.chainId,
@@ -23,8 +26,8 @@ class Iden3PaymentRequestCryptoV1Data extends PaymentRequestData {
     this.expiration,
   });
 
-  factory Iden3PaymentRequestCryptoV1Data.fromJson(Map<String, dynamic> json) {
-    return Iden3PaymentRequestCryptoV1Data(
+  factory Iden3PaymentRequestCryptoV1.fromJson(Map<String, dynamic> json) {
+    return Iden3PaymentRequestCryptoV1(
       id: json['id'],
       type: json['type'],
       chainId: json['chainId'],

@@ -18,7 +18,7 @@ abstract class ProofRepository {
     required String id,
     required BigInt profileNonce,
     required BigInt claimSubjectProfileNonce,
-    required ClaimEntity claim,
+    required CredentialEntity claim,
     required Map<String, dynamic> proofScopeRequest,
     required String circuitId,
     MTProofEntity? incProof,

@@ -32,28 +32,41 @@
 "to": "1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ"
 }*/
 
-import 'package:equatable/equatable.dart';
-import 'package:json_annotation/json_annotation.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document_service_metadata.dart';
 
-part 'auth_body_did_doc_service_metadata_devices_response_dto.g.dart';
+typedef AuthBodyDidDocServiceResponse = DIDDocumentService;
 
-@JsonSerializable()
-class AuthBodyDidDocServiceMetadataDevicesResponseDTO extends Equatable {
-  final String? ciphertext;
-  final String? alg;
+class DIDDocumentService {
+  final String? id;
+  final String? type;
+  final String? serviceEndpoint;
+  final DIDDocumentServiceMetadata? metadata;
 
-  const AuthBodyDidDocServiceMetadataDevicesResponseDTO({
-    required this.ciphertext,
-    required this.alg,
+  DIDDocumentService({
+    this.id,
+    this.type,
+    this.serviceEndpoint,
+    this.metadata,
   });
 
-  factory AuthBodyDidDocServiceMetadataDevicesResponseDTO.fromJson(
-          Map<String, dynamic> json) =>
-      _$AuthBodyDidDocServiceMetadataDevicesResponseDTOFromJson(json);
+  /// Creates an instance from the given json
+  ///
+  /// @param [Map<String, dynamic>] json
+  /// @returns [DIDDocumentService]
+  factory DIDDocumentService.fromJson(Map<String, dynamic> json) {
+    final metadata = DIDDocumentServiceMetadata.fromJson(json['metadata']);
+    return DIDDocumentService(
+      id: json['id'],
+      type: json['type'],
+      serviceEndpoint: json['serviceEndpoint'],
+      metadata: metadata,
+    );
+  }
 
-  Map<String, dynamic> toJson() =>
-      _$AuthBodyDidDocServiceMetadataDevicesResponseDTOToJson(this);
-
-  @override
-  List<Object?> get props => [ciphertext, alg];
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'type': type,
+        'serviceEndpoint': serviceEndpoint,
+        'metadata': metadata?.toJson()
+      };
 }

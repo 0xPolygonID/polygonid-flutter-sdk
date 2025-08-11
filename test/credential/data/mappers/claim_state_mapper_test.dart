@@ -5,14 +5,14 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.da
 // Data
 const states = ["expired", "pending", "revoked", ""];
 const stateEnums = [
-  ClaimState.expired,
-  ClaimState.pending,
-  ClaimState.revoked,
-  ClaimState.active
+  CredentialState.expired,
+  CredentialState.pending,
+  CredentialState.revoked,
+  CredentialState.active
 ];
 
 // Tested instance
-ClaimStateMapper mapper = ClaimStateMapper();
+CredentialStateMapper mapper = CredentialStateMapper();
 
 void main() {
   group("Map from", () {

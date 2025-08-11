@@ -4,59 +4,59 @@ import '../../../common/domain/entities/filter_entity.dart';
 import '../entities/claim_entity.dart';
 
 abstract class CredentialRepository {
-  Future<void> saveClaims({
-    required List<ClaimEntity> claims,
+  Future<void> saveCredentials({
+    required List<CredentialEntity> credentials,
     required String genesisDid,
     required String encryptionKey,
   });
 
-  Future<List<ClaimEntity>> getClaims({
+  Future<List<CredentialEntity>> getCredentials({
     List<FilterEntity>? filters,
     required String genesisDid,
     required String encryptionKey,
     List<CredentialSortOrder> credentialSortOrderList = const [],
   });
 
-  Future<ClaimEntity> getClaim({
+  Future<CredentialEntity> getCredential({
     required String claimId,
     required String genesisDid,
     required String encryptionKey,
   });
 
-  Future<ClaimEntity> getCredentialByPartialId({
+  Future<CredentialEntity> getCredentialByPartialId({
     required String partialId,
     required String genesisDid,
     required String encryptionKey,
   });
 
-  Future<void> removeClaims({
+  Future<void> removeCredentials({
     required List<String> claimIds,
     required String genesisDid,
     required String encryptionKey,
   });
 
-  Future<void> removeAllClaims({
+  Future<void> removeAllCredentials({
     required String genesisDid,
     required String encryptionKey,
   });
 
   Future<Map<String, dynamic>> getRevocationStatus({
-    required ClaimEntity claim,
+    required CredentialEntity claim,
   });
 
-  Future<bool> isUsingRHS({required ClaimEntity claim});
+  Future<bool> isUsingRHS({required CredentialEntity claim});
 
-  Future<String?> getRhsRevocationId({required ClaimEntity claim});
+  Future<String?> getRhsRevocationId({required CredentialEntity claim});
 
-  Future<String> getIssuerIdentifier({required ClaimEntity claim});
+  Future<String> getIssuerIdentifier({required CredentialEntity claim});
 
   Future<int> getRevocationNonce({
-    required ClaimEntity claim,
+    required CredentialEntity claim,
     required bool rhs,
   });
 
   Future<String> getRevocationUrl({
-    required ClaimEntity claim,
+    required CredentialEntity claim,
     required bool rhs,
   });
 

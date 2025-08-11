@@ -6,7 +6,7 @@ import '../entities/claim_entity.dart';
 import '../repositories/credential_repository.dart';
 
 class GetClaimRevocationStatusParam {
-  final ClaimEntity claim;
+  final CredentialEntity claim;
   final Map<String, dynamic>? nonRevProof;
 
   GetClaimRevocationStatusParam({

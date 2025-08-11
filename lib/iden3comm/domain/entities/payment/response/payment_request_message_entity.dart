@@ -1,4 +1,7 @@
+// ignore_for_file: overridden_fields
+
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/credential_schema_info.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_rails_erc20_request_v1_data.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_rails_request_v1_data.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_request_crypto_v1_data.dart';
@@ -38,18 +41,35 @@ https://iden3-communication.io/credentials/0.1/payment-request
   "from": "did:iden3:polygon:mumbai:x3HstHLj2rTp6HHXk2WczYP7w3rpCsRbwCMeaQ2H2"
 }
 */
-class PaymentRequestEntity extends Iden3MessageEntity<PaymentRequestBody> {
-  PaymentRequestEntity({
+@Deprecated('Use PaymentRequestMessage instead')
+typedef PaymentRequestEntity = PaymentRequestMessage;
+
+class PaymentRequestMessage extends Iden3Message<PaymentRequestBody> {
+  @override
+  final String from;
+
+  @override
+  final String to;
+
+  PaymentRequestMessage({
     required super.id,
     required super.typ,
+    @Deprecated('may be omitted, gonna be removed in the future') String? type,
     required super.thid,
-    required super.from,
-    required super.to,
+    required this.from,
+    required this.to,
     required super.body,
-  }) : super(type: Iden3MessageType.paymentRequest);
+    super.createdTime,
+    super.expiresTime,
+    super.attachments = const [],
+  }) : super(
+          type: Iden3MessageType.paymentRequest,
+          from: from,
+          to: to,
+        );
 
-  factory PaymentRequestEntity.fromJson(Map<String, dynamic> json) {
-    return PaymentRequestEntity(
+  factory PaymentRequestMessage.fromJson(Map<String, dynamic> json) {
+    return PaymentRequestMessage(
       id: json['id'],
       typ: json['typ'],
       thid: json['thid'],
@@ -70,7 +90,7 @@ class PaymentRequestEntity extends Iden3MessageEntity<PaymentRequestBody> {
 
 class PaymentRequestBody {
   final String agent;
-  final List<PaymentRequest> payments;
+  final List<PaymentRequestInfo> payments;
 
   PaymentRequestBody({
     required this.agent,
@@ -81,7 +101,7 @@ class PaymentRequestBody {
     return PaymentRequestBody(
       agent: json['agent'],
       payments: (json['payments'] as List<dynamic>)
-          .map((x) => PaymentRequest.fromJson(x))
+          .map((x) => PaymentRequestInfo.fromJson(x))
           .toList(),
     );
   }
@@ -94,22 +114,25 @@ class PaymentRequestBody {
   }
 }
 
-class PaymentRequest {
-  final List<CredentialInfo> credentials;
-  final List<PaymentRequestData> data;
-  final String description;
+@Deprecated('Use PaymentRequestInfo instead')
+typedef PaymentRequest = PaymentRequestInfo;
 
-  PaymentRequest({
+class PaymentRequestInfo {
+  final List<CredentialSchemaInfo> credentials;
+  final List<PaymentRequestData> data;
+  final String? description;
+
+  PaymentRequestInfo({
     required this.credentials,
     required this.data,
-    required this.description,
+    this.description,
   });
 
-  factory PaymentRequest.fromJson(Map<String, dynamic> json) {
-    return PaymentRequest(
+  factory PaymentRequestInfo.fromJson(Map<String, dynamic> json) {
+    return PaymentRequestInfo(
       description: json['description'],
       credentials: (json['credentials'] as List<dynamic>)
-          .map((x) => CredentialInfo.fromJson(x))
+          .map((x) => CredentialSchemaInfo.fromJson(x))
           .toList(),
       data: json['data'] is List
           ? (json['data'] as List<dynamic>)
@@ -142,11 +165,11 @@ class PaymentRequestDataFactory {
 
     switch (type) {
       case 'Iden3PaymentRequestCryptoV1':
-        return Iden3PaymentRequestCryptoV1Data.fromJson(json);
+        return Iden3PaymentRequestCryptoV1.fromJson(json);
       case 'Iden3PaymentRailsRequestV1':
-        return Iden3PaymentRailsRequestV1Data.fromJson(json);
+        return Iden3PaymentRailsRequestV1.fromJson(json);
       case 'Iden3PaymentRailsERC20RequestV1':
-        return Iden3PaymentRailsERC20RequestV1Data.fromJson(json);
+        return Iden3PaymentRailsERC20RequestV1.fromJson(json);
       default:
         throw Exception('Unknown payment request data type: $type');
     }
@@ -165,31 +188,8 @@ class PaymentRequestDataFactory {
 		}]
 */
 
-/// Represents information about a credential schema.
-/// Named `CredentialSchemaInfo` in JS SDK.
-class CredentialInfo {
-  final String type;
-  final String context;
-
-  CredentialInfo({
-    required this.type,
-    required this.context,
-  });
-
-  factory CredentialInfo.fromJson(Map<String, dynamic> json) {
-    return CredentialInfo(
-      type: json['type'],
-      context: json['context'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      "type": type,
-      "context": context,
-    };
-  }
-}
+@Deprecated('Use CredentialSchemaInfo instead')
+typedef CredentialInfo = CredentialSchemaInfo;
 
 abstract class PaymentRequestData {
   String get type;

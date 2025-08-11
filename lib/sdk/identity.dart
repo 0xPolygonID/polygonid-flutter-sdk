@@ -396,8 +396,10 @@ class Identity implements PolygonIdSdkIdentity {
   }
 
   @override
-  Future<String> sign(
-      {required String privateKey, required String message}) async {
+  Future<String> sign({
+    required String privateKey,
+    required String message,
+  }) async {
     _stacktraceManager.clear();
     _stacktraceManager.addTrace("PolygonIdSdk.Identity.sign called");
     return _signMessageUseCase.execute(

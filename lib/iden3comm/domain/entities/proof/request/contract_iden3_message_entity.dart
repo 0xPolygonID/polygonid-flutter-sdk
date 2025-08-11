@@ -38,34 +38,39 @@
 */
 
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_function_call_body_request.dart';
 
-import '../../proof/request/contract_function_call_body_request.dart';
+@Deprecated('Use ContractInvokeRequestMessage instead')
+typedef ContractIden3MessageEntity = ContractInvokeRequestMessage;
 
-class ContractIden3MessageEntity
-    extends Iden3MessageEntity<ContractFunctionCallBodyRequest> {
-  ContractIden3MessageEntity({
+class ContractInvokeRequestMessage
+    extends Iden3Message<ContractInvokeRequestBody> {
+  ContractInvokeRequestMessage({
     required super.id,
-    String? typ,
+    super.typ,
     @Deprecated('may be omitted, gonna be removed in the future') String? type,
     String? thid,
     required super.body,
     super.nextRequest,
     String? from,
+    super.to,
+    super.createdTime,
+    super.expiresTime,
+    super.attachments = const [],
   }) : super(
           type: Iden3MessageType.proofContractInvokeRequest,
           thid: thid ?? '',
-          typ: typ ?? '',
           from: from ?? '',
         );
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [ContractIden3MessageEntity]
-  factory ContractIden3MessageEntity.fromJson(Map<String, dynamic> json) {
-    ContractFunctionCallBodyRequest body =
-        ContractFunctionCallBodyRequest.fromJson(json['body']);
-    return ContractIden3MessageEntity(
+  /// @returns [ContractInvokeRequestMessage]
+  factory ContractInvokeRequestMessage.fromJson(Map<String, dynamic> json) {
+    ContractInvokeRequestBody body =
+        ContractInvokeRequestBody.fromJson(json['body']);
+    return ContractInvokeRequestMessage(
       id: json['id'],
       typ: json['typ'] ?? '',
       thid: json['thid'] ?? '',
@@ -76,11 +81,11 @@ class ContractIden3MessageEntity
   }
 
   @override
-  String toString() => "[ContractIden3MessageEntity] {${super.toString()}";
+  String toString() => "[ContractInvokeRequestMessage] {${super.toString()}";
 
   @override
   bool operator ==(Object other) =>
-      super == other && other is ContractIden3MessageEntity;
+      super == other && other is ContractInvokeRequestMessage;
 
   @override
   int get hashCode => runtimeType.hashCode;

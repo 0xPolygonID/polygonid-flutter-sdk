@@ -7,21 +7,24 @@ import 'lib_pidcore_credential_data_source.dart';
 
 @singleton
 class LocalClaimDataSource {
-  LibPolygonIdCoreCredentialDataSource _libPolygonIdCoreCredentialDataSource;
+  final LibPolygonIdCoreCredentialDataSource
+      _libPolygonIdCoreCredentialDataSource;
 
-  final _cache = <String, List<String>>{};
+  final _memCache = <String, List<String>>{};
 
   LocalClaimDataSource(this._libPolygonIdCoreCredentialDataSource);
 
   Future<List<String>> getAuthClaim({
     required List<String> publicKey,
     String? authClaimNonce,
-  }) {
+  }) async {
+    // TODO Might be sync
     final nonce = authClaimNonce ?? DEFAULT_AUTH_CLAIM_NONCE;
 
     final cacheKey = _cacheKey(publicKey.toString(), nonce);
-    if (_cache.containsKey(cacheKey)) {
-      return Future.value(_cache[cacheKey]!);
+    final cacheValue = _memCache[cacheKey];
+    if (cacheValue != null) {
+      return cacheValue;
     }
 
     String authClaimSchema = AUTH_CLAIM_SCHEMA;
@@ -32,9 +35,9 @@ class LocalClaimDataSource {
     );
     List<String> children = List.from(jsonDecode(authClaim));
 
-    _cache[cacheKey] = children;
+    _memCache[cacheKey] = children;
 
-    return Future.value(children);
+    return children;
   }
 
   Future<String> coreClaimFromCredential({
@@ -42,7 +45,7 @@ class LocalClaimDataSource {
     String? config,
   }) async {
     String coreClaim =
-        _libPolygonIdCoreCredentialDataSource.coreClaimFromCredential(
+        _libPolygonIdCoreCredentialDataSource.createCoreClaimFromCredential(
       credential: credential,
       config: config,
     );

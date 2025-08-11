@@ -37,50 +37,72 @@
 }
 */
 
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
-import 'contract_function_call_body_tx_data_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_function_call_body_tx_data_request.dart';
 
-class ContractFunctionCallBodyRequest {
-  final ContractFunctionCallBodyTxDataRequest transactionData;
+typedef ContractFunctionCallBodyRequest = ContractInvokeRequestBody;
+
+class ContractInvokeRequestBody {
   final String? reason;
-  final List<ProofScopeRequest>? scope;
+  final ContractInvokeTransactionData transactionData;
+  final List<ZeroKnowledgeProofRequest> scope;
+  final DIDDocument? didDoc;
+  final List<String>? accept;
 
-  ContractFunctionCallBodyRequest(
-      {required this.transactionData, this.reason, this.scope});
+  ContractInvokeRequestBody({
+    this.reason,
+    required this.transactionData,
+    required this.scope,
+    this.didDoc,
+    this.accept,
+  });
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [ContractFunctionCallBodyRequest]
-  factory ContractFunctionCallBodyRequest.fromJson(Map<String, dynamic> json) {
-    ContractFunctionCallBodyTxDataRequest transactionData =
-        ContractFunctionCallBodyTxDataRequest.fromJson(
-            json['transaction_data']);
-    List<ProofScopeRequest>? scope = (json['scope'] as List?)
-        ?.map((item) => ProofScopeRequest.fromJson(item))
-        .toList();
-    return ContractFunctionCallBodyRequest(
+  /// @returns [ContractInvokeRequestBody]
+  factory ContractInvokeRequestBody.fromJson(Map<String, dynamic> json) {
+    ContractInvokeTransactionData transactionData =
+        ContractInvokeTransactionData.fromJson(json['transaction_data']);
+    final scope = (json['scope'] as List?)
+            ?.map((item) => ZeroKnowledgeProofRequest.fromJson(item))
+            .toList() ??
+        [];
+
+    final didDoc =
+        json['did_doc'] != null ? DIDDocument.fromJson(json['did_doc']) : null;
+
+    final accept =
+        (json['accept'] as List?)?.map((item) => item as String).toList();
+
+    return ContractInvokeRequestBody(
       transactionData: transactionData,
       reason: json['reason'],
       scope: scope,
+      didDoc: didDoc,
+      accept: accept,
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'transaction_data': transactionData.toJson(),
         'reason': reason,
-        'scope': scope?.map((item) => item.toJson()).toList(),
+        'transaction_data': transactionData.toJson(),
+        'scope': scope.map((item) => item.toJson()).toList(),
+        if (didDoc != null) 'did_doc': didDoc?.toJson(),
+        if (accept != null) 'accept': accept,
       };
 
   @override
-  String toString() =>
-      "[ContractFunctionCallBodyRequest] {transactionData: $transactionData, reason: $reason, scope: $scope}";
+  String toString() => "ContractInvokeRequestBody: ${jsonEncode(toJson())}";
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ContractFunctionCallBodyRequest &&
+      other is ContractInvokeRequestBody &&
           runtimeType == other.runtimeType &&
           transactionData == other.transactionData &&
           reason == other.reason &&

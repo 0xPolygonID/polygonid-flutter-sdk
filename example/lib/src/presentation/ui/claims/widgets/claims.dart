@@ -263,7 +263,7 @@ class _ClaimsScreenState extends State<ClaimsScreen> {
   }
 
   ///
-  void _handleQrCodeScanned(Iden3MessageEntity iden3message) {
+  void _handleQrCodeScanned(Iden3Message iden3message) {
     widget._bloc
         .add(ClaimsEvent.fetchAndSaveClaims(iden3message: iden3message));
   }

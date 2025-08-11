@@ -66,7 +66,7 @@ class GenericAtomicQueryInputsParam extends AtomicQueryInputsParam {
   final Map<String, dynamic>? treeState;
   final String? challenge;
   final String? signature;
-  final ClaimInfoDTO credential;
+  final W3CCredential credential;
   final Map<String, dynamic> request;
 
   final String? verifierId;

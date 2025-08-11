@@ -9,11 +9,11 @@ import 'common_mocks.dart';
 class CredentialMocks {
   static List<String> authClaim = ["good", "auth", "claim"];
 
-  static ClaimEntity claim = ClaimEntity(
+  static CredentialEntity claim = CredentialEntity(
     id: CommonMocks.id,
     issuer: CommonMocks.issuer,
     did: CommonMocks.did,
-    state: ClaimState.active,
+    state: CredentialState.active,
     type: CommonMocks.type,
     info: CommonMocks.aMap,
     schema: CommonMocks.aMap,
@@ -21,7 +21,7 @@ class CredentialMocks {
     credentialRawValue: CommonMocks.credentialRawValue,
   );
 
-  /// We assume [ClaimInfoDTO] has been tested
+  /// We assume [W3CCredential] has been tested
   static String claimInfoJson = '''
 {
   "@context": [
@@ -106,12 +106,12 @@ class CredentialMocks {
   ]
 }
 ''';
-  static ClaimDTO claimDTO = ClaimDTO(
+  static CredentialDTO claimDTO = CredentialDTO(
     id: CommonMocks.did,
     issuer: CommonMocks.issuer,
     did: CommonMocks.did,
     type: CommonMocks.type,
-    info: ClaimInfoDTO.fromJson(jsonDecode(claimInfoJson)),
+    info: W3CCredential.fromJson(jsonDecode(claimInfoJson)),
     credentialRawValue: CommonMocks.credentialRawValue,
   );
 }

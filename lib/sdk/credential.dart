@@ -20,42 +20,42 @@ import 'package:polygonid_flutter_sdk/credential/domain/use_cases/update_claim_u
 import '../credential/domain/use_cases/save_claims_use_case.dart';
 
 abstract class PolygonIdSdkCredential {
-  /// Store in the the Polygon ID Sdk a list of [ClaimEntity] associated to
+  /// Store in the the Polygon ID Sdk a list of [CredentialEntity] associated to
   /// the identity.
   ///
-  /// The [claims] is the list of [ClaimEntity] to store associated to the identity
+  /// The [claims] is the list of [CredentialEntity] to store associated to the identity
   ///
   /// The [genesisDid] is the unique id of the identity
   ///
   /// The [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
-  Future<List<ClaimEntity>> saveClaims({
-    required List<ClaimEntity> claims,
+  Future<List<CredentialEntity>> saveClaims({
+    required List<CredentialEntity> claims,
     required String genesisDid,
     required String privateKey,
   });
 
-  /// Get a stored [ClaimEntity] associated to the identity by the genesis DID.
+  /// Get a stored [CredentialEntity] associated to the identity by the genesis DID.
   /// The [credentialId] is the unique id of the credential to get.
   /// The [genesisDid] is the unique id of the identity.
   /// The [privateKey] is the key used to access all the sensitive info from the identity.
-  Future<ClaimEntity>? getCredentialById({
+  Future<CredentialEntity>? getCredentialById({
     required String credentialId,
     required String genesisDid,
     required String privateKey,
   });
 
-  /// Get a stored [ClaimEntity] associated to the identity by the partial credential id.
+  /// Get a stored [CredentialEntity] associated to the identity by the partial credential id.
   /// The [partialCredentialId] is a partial unique id of the credential to get.
   /// The [genesisDid] is the unique id of the identity.
   /// The [privateKey] is the key used to access all the sensitive info from the identity.
-  Future<ClaimEntity>? getCredentialByPartialId({
+  Future<CredentialEntity>? getCredentialByPartialId({
     required String partialCredentialId,
     required String genesisDid,
     required String privateKey,
   });
 
-  /// Get a list of [ClaimEntity] associated to the identity previously stored
+  /// Get a list of [CredentialEntity] associated to the identity previously stored
   /// in the the Polygon ID Sdk.
   ///
   /// The list can be filtered by [filters]
@@ -64,14 +64,14 @@ abstract class PolygonIdSdkCredential {
   ///
   /// The [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
-  Future<List<ClaimEntity>> getClaims({
+  Future<List<CredentialEntity>> getClaims({
     List<FilterEntity>? filters,
     required String genesisDid,
     required String privateKey,
     List<CredentialSortOrder> credentialSortOrderList,
   });
 
-  /// Get a list of [ClaimEntity] filtered by ids associated to the identity previously stored
+  /// Get a list of [CredentialEntity] filtered by ids associated to the identity previously stored
   /// in the the Polygon ID Sdk.
   ///
   /// The [claimIds] is a list of claim ids to filter by
@@ -80,13 +80,13 @@ abstract class PolygonIdSdkCredential {
   ///
   /// The [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
-  Future<List<ClaimEntity>> getClaimsByIds({
+  Future<List<CredentialEntity>> getClaimsByIds({
     required List<String> claimIds,
     required String genesisDid,
     required String privateKey,
   });
 
-  /// Get the revocation status of a [ClaimEntity] associated to the identity previously stored
+  /// Get the revocation status of a [CredentialEntity] associated to the identity previously stored
   /// in the the Polygon ID SDK.
   Future<Map<String, dynamic>> getClaimRevocationStatus({
     required String claimId,
@@ -94,7 +94,7 @@ abstract class PolygonIdSdkCredential {
     required String privateKey,
   });
 
-  /// Remove a list of [ClaimEntity] filtered by ids associated to the identity previously stored
+  /// Remove a list of [CredentialEntity] filtered by ids associated to the identity previously stored
   /// in the the Polygon ID Sdk
   ///
   /// The [claimIds] is a list of claim ids to filter by
@@ -109,7 +109,7 @@ abstract class PolygonIdSdkCredential {
     required String privateKey,
   });
 
-  /// Remove a [ClaimEntity] filtered by id associated to the identity previously stored
+  /// Remove a [CredentialEntity] filtered by id associated to the identity previously stored
   /// in the the Polygon ID Sdk
   ///
   /// The [claimId] is a claim id to filter by
@@ -124,7 +124,7 @@ abstract class PolygonIdSdkCredential {
     required String privateKey,
   });
 
-  /// Update a [ClaimEntity] filtered by id associated to the identity previously stored
+  /// Update a [CredentialEntity] filtered by id associated to the identity previously stored
   /// in the the Polygon ID Sdk
   ///
   /// The [claimId] is the unique id of the claim to update.
@@ -135,43 +135,43 @@ abstract class PolygonIdSdkCredential {
   /// and also to realize operations like generating proofs.
   ///
   /// [data] could be subject to validation by the data layer
-  Future<ClaimEntity> updateClaim({
+  Future<CredentialEntity> updateClaim({
     required String claimId,
     required String genesisDid,
     required String privateKey,
     String? issuer,
-    ClaimState? state,
+    CredentialState? state,
     String? expiration,
     String? type,
     Map<String, dynamic>? data,
   });
 
-  /// Refresh a [ClaimEntity] associated to the identity previously stored
+  /// Refresh a [CredentialEntity] associated to the identity previously stored
   /// in the the Polygon ID SDK. This method will update the claim with the latest
   /// state from refresh service.
   /// The [credential] is the credential to refresh.
   /// The [genesisDid] is the unique id of the identity.
   /// The [privateKey]  is the key used to access all the sensitive info from the identity.
   /// Returns the refreshed credential.
-  Future<ClaimEntity> refreshCredential({
-    required ClaimEntity credential,
+  Future<CredentialEntity> refreshCredential({
+    required CredentialEntity credential,
     required String genesisDid,
     required String privateKey,
   });
 
-  /// Cache a [ClaimEntity] associated to the identity previously stored to speed up
+  /// Cache a [CredentialEntity] associated to the identity previously stored to speed up
   /// underlying PolygonID native libraries operations.
   /// The [credential] is the credential to cache.
   Future<void> cacheCredential({
-    required ClaimEntity credential,
+    required CredentialEntity credential,
     EnvConfigEntity? configParam,
   });
 
-  /// Cache a list of [ClaimEntity] associated to the identity previously stored to speed up
+  /// Cache a list of [CredentialEntity] associated to the identity previously stored to speed up
   /// underlying PolygonID native libraries operations.
   /// The [credentials] is the list of credentials to cache.
   Future<void> cacheCredentials({
-    required List<ClaimEntity> credentials,
+    required List<CredentialEntity> credentials,
     EnvConfigEntity? configParam,
   });
 
@@ -212,8 +212,8 @@ class Credential implements PolygonIdSdkCredential {
   );
 
   @override
-  Future<List<ClaimEntity>> saveClaims({
-    required List<ClaimEntity> claims,
+  Future<List<CredentialEntity>> saveClaims({
+    required List<CredentialEntity> claims,
     required String genesisDid,
     required String privateKey,
   }) {
@@ -229,7 +229,7 @@ class Credential implements PolygonIdSdkCredential {
   }
 
   @override
-  Future<ClaimEntity> getCredentialById({
+  Future<CredentialEntity> getCredentialById({
     required String credentialId,
     required String genesisDid,
     required String privateKey,
@@ -246,7 +246,7 @@ class Credential implements PolygonIdSdkCredential {
   }
 
   @override
-  Future<ClaimEntity> getCredentialByPartialId({
+  Future<CredentialEntity> getCredentialByPartialId({
     required String partialCredentialId,
     required String genesisDid,
     required String privateKey,
@@ -263,7 +263,7 @@ class Credential implements PolygonIdSdkCredential {
   }
 
   @override
-  Future<List<ClaimEntity>> getClaims({
+  Future<List<CredentialEntity>> getClaims({
     List<FilterEntity>? filters,
     required String genesisDid,
     required String privateKey,
@@ -282,7 +282,7 @@ class Credential implements PolygonIdSdkCredential {
   }
 
   @override
-  Future<List<ClaimEntity>> getClaimsByIds({
+  Future<List<CredentialEntity>> getClaimsByIds({
     required List<String> claimIds,
     required String genesisDid,
     required String privateKey,
@@ -312,7 +312,7 @@ class Credential implements PolygonIdSdkCredential {
     _stacktraceManager.clear();
     _stacktraceManager
         .addTrace("PolygonIdSdk.Credential.getClaimRevocationStatus called");
-    List<ClaimEntity> claimEntityList = await getClaimsByIds(
+    List<CredentialEntity> claimEntityList = await getClaimsByIds(
       claimIds: [claimId],
       genesisDid: genesisDid,
       privateKey: privateKey,
@@ -325,7 +325,7 @@ class Credential implements PolygonIdSdkCredential {
       ));
     } else {
       _stacktraceManager.addError("Claim not found");
-      throw ClaimNotFoundException(
+      throw CredentialNotFoundException(
         id: claimId,
         errorMessage: "Claim not found",
       );
@@ -367,11 +367,11 @@ class Credential implements PolygonIdSdkCredential {
   }
 
   @override
-  Future<ClaimEntity> updateClaim({
+  Future<CredentialEntity> updateClaim({
     required String claimId,
     String? issuer,
     required String genesisDid,
-    ClaimState? state,
+    CredentialState? state,
     String? expiration,
     String? type,
     Map<String, dynamic>? data,
@@ -394,10 +394,10 @@ class Credential implements PolygonIdSdkCredential {
   }
 
   @override
-  Future<ClaimEntity> refreshCredential({
+  Future<CredentialEntity> refreshCredential({
     required String genesisDid,
     required String privateKey,
-    required ClaimEntity credential,
+    required CredentialEntity credential,
   }) {
     return _refreshCredentialUseCase.execute(
       param: RefreshCredentialParam(
@@ -410,7 +410,7 @@ class Credential implements PolygonIdSdkCredential {
 
   @override
   Future<void> cacheCredential({
-    required ClaimEntity credential,
+    required CredentialEntity credential,
     EnvConfigEntity? configParam,
   }) {
     return _cacheCredentialUseCase.execute(
@@ -422,7 +422,7 @@ class Credential implements PolygonIdSdkCredential {
 
   @override
   Future<void> cacheCredentials({
-    required List<ClaimEntity> credentials,
+    required List<CredentialEntity> credentials,
     EnvConfigEntity? configParam,
   }) {
     return _cacheCredentialsUseCase.execute(

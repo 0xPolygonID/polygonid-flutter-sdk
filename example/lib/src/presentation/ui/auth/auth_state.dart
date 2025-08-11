@@ -16,8 +16,7 @@ class AuthState with _$AuthState {
   const factory AuthState.navigateToQrCodeScanner() =
       NavigateToQrCodeScannerAuthState;
 
-  const factory AuthState.loaded(Iden3MessageEntity iden3message) =
-      LoadedAuthState;
+  const factory AuthState.loaded(Iden3Message iden3message) = LoadedAuthState;
 
   const factory AuthState.error(String message) = ErrorAuthState;
 

@@ -15,62 +15,63 @@ import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/credential/response/fetch_claim_response_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_issuance_response.dart';
 import 'package:sembast/sembast.dart';
 
 import '../../../common/common_mocks.dart';
-import '../../../iden3comm/data/dtos/fetch_claim_response_dto_test.dart';
+import '../../../iden3comm/data/dtos/credential_issuance_message_test.dart';
 import 'credential_repository_impl_test.mocks.dart';
 
 // Data®
 const ids = ["theId", "theId1", "theId2"];
 final exception = Exception();
-final ClaimNotFoundException claimNotFoundException = ClaimNotFoundException(
+final CredentialNotFoundException claimNotFoundException =
+    CredentialNotFoundException(
   id: ids[0],
   errorMessage: "Claim not found",
 );
 
 /// We assume [FetchClaimResponseDTO] has been tested
-final fetchClaimDTO =
-    FetchClaimResponseDTO.fromJson(jsonDecode(mockFetchClaim));
+final issuanceMessage =
+    CredentialIssuanceMessage.fromJson(jsonDecode(mockIssuanceMessage));
 final claimDTOs = [
-  ClaimDTO(
+  CredentialDTO(
     id: "id1",
     issuer: "",
     did: "",
     type: '',
-    info: fetchClaimDTO.credential,
-    credentialRawValue: mockFetchClaim,
+    info: issuanceMessage.body.credential,
+    credentialRawValue: mockIssuanceMessage,
   ),
-  ClaimDTO(
+  CredentialDTO(
     id: "id2",
     issuer: "",
     did: "",
     type: '',
-    info: fetchClaimDTO.credential,
-    credentialRawValue: mockFetchClaim,
+    info: issuanceMessage.body.credential,
+    credentialRawValue: mockIssuanceMessage,
   ),
 ];
 final claimEntities = [
-  ClaimEntity(
+  CredentialEntity(
     issuer: "",
     did: "",
     expiration: "",
     info: {},
     type: "",
-    state: ClaimState.active,
+    state: CredentialState.active,
     id: "id1",
-    credentialRawValue: mockFetchClaim,
+    credentialRawValue: mockIssuanceMessage,
   ),
-  ClaimEntity(
+  CredentialEntity(
     issuer: "",
     did: "",
     expiration: "",
     info: {},
     type: "",
-    state: ClaimState.active,
+    state: CredentialState.active,
     id: "id2",
-    credentialRawValue: mockFetchClaim,
+    credentialRawValue: mockIssuanceMessage,
   )
 ];
 final filters = [
@@ -82,12 +83,12 @@ final filter = Filter.equals("theField", "theValue");
 
 // Dependencies
 MockRemoteClaimDataSource remoteClaimDataSource = MockRemoteClaimDataSource();
-MockStorageClaimDataSource storageClaimDataSource =
-    MockStorageClaimDataSource();
+MockCredentialStorageDataSource storageClaimDataSource =
+    MockCredentialStorageDataSource();
 MockLocalClaimDataSource localClaimDataSource = MockLocalClaimDataSource();
 MockCredentialCacheDataSource cacheCredentialDataSource =
     MockCredentialCacheDataSource();
-MockClaimMapper claimMapper = MockClaimMapper();
+MockCredentialMapper claimMapper = MockCredentialMapper();
 MockFiltersMapper filtersMapper = MockFiltersMapper();
 MockStacktraceManager stacktraceManager = MockStacktraceManager();
 
@@ -104,10 +105,10 @@ CredentialRepositoryImpl repository = CredentialRepositoryImpl(
 
 @GenerateMocks([
   RemoteClaimDataSource,
-  StorageClaimDataSource,
+  CredentialStorageDataSource,
   LocalClaimDataSource,
   CredentialCacheDataSource,
-  ClaimMapper,
+  CredentialMapper,
   FiltersMapper,
   StacktraceManager,
 ])
@@ -115,10 +116,10 @@ void main() {
   group("Save claims", () {
     setUp(() {
       // Given
-      when(storageClaimDataSource.storeClaims(
+      when(storageClaimDataSource.storeCredentials(
               did: anyNamed('did'),
               encryptionKey: anyNamed('encryptionKey'),
-              claims: anyNamed('claims')))
+              credentials: anyNamed('credentials')))
           .thenAnswer((realInvocation) => Future.value());
       when(claimMapper.mapTo(any)).thenReturn(claimDTOs[0]);
     });
@@ -128,17 +129,17 @@ void main() {
         () async {
       // When
       await expectLater(
-          repository.saveClaims(
+          repository.saveCredentials(
               genesisDid: CommonMocks.identifier,
               encryptionKey: CommonMocks.encryptionKey,
-              claims: claimEntities),
+              credentials: claimEntities),
           completes);
 
       // Then
-      var captureStore = verify(storageClaimDataSource.storeClaims(
+      var captureStore = verify(storageClaimDataSource.storeCredentials(
               did: captureAnyNamed('did'),
               encryptionKey: captureAnyNamed('encryptionKey'),
-              claims: captureAnyNamed('claims')))
+              credentials: captureAnyNamed('credentials')))
           .captured;
       expect(captureStore[0], CommonMocks.identifier);
       expect(captureStore[1], CommonMocks.encryptionKey);
@@ -155,18 +156,18 @@ void main() {
         "Given a list of ClaimEntity, when I call saveClaims and an error occurred, then I expect a SaveClaimException to be thrown",
         () async {
       // Given
-      when(storageClaimDataSource.storeClaims(
+      when(storageClaimDataSource.storeCredentials(
               did: anyNamed('did'),
               encryptionKey: anyNamed('encryptionKey'),
-              claims: anyNamed('claims')))
+              credentials: anyNamed('credentials')))
           .thenAnswer((realInvocation) => Future.error(exception));
 
       // When
       await repository
-          .saveClaims(
+          .saveCredentials(
               genesisDid: CommonMocks.identifier,
               encryptionKey: CommonMocks.encryptionKey,
-              claims: claimEntities)
+              credentials: claimEntities)
           .then((_) => expect(true, false))
           .catchError((error) {
         expect(error, isA<SaveClaimException>());
@@ -174,10 +175,10 @@ void main() {
       });
 
       // Then
-      var captureStore = verify(storageClaimDataSource.storeClaims(
+      var captureStore = verify(storageClaimDataSource.storeCredentials(
               did: captureAnyNamed('did'),
               encryptionKey: captureAnyNamed('encryptionKey'),
-              claims: captureAnyNamed('claims')))
+              credentials: captureAnyNamed('credentials')))
           .captured;
       expect(captureStore[0], CommonMocks.identifier);
       expect(captureStore[1], CommonMocks.encryptionKey);
@@ -190,7 +191,7 @@ void main() {
   group("Get claims", () {
     setUp(() {
       // Given
-      when(storageClaimDataSource.getClaims(
+      when(storageClaimDataSource.getCredentials(
               did: anyNamed('did'),
               encryptionKey: anyNamed('encryptionKey'),
               filter: anyNamed('filter')))
@@ -204,14 +205,14 @@ void main() {
         () async {
       // When
       expect(
-          await repository.getClaims(
+          await repository.getCredentials(
             genesisDid: CommonMocks.identifier,
             encryptionKey: CommonMocks.encryptionKey,
           ),
           [claimEntities[0], claimEntities[0]]);
 
       // Then
-      var captureGet = verify(storageClaimDataSource.getClaims(
+      var captureGet = verify(storageClaimDataSource.getCredentials(
               did: captureAnyNamed('did'),
               encryptionKey: captureAnyNamed('encryptionKey')))
           .captured;
@@ -232,14 +233,14 @@ void main() {
         () async {
       // When
       expect(
-          await repository.getClaims(
+          await repository.getCredentials(
               genesisDid: CommonMocks.identifier,
               encryptionKey: CommonMocks.encryptionKey,
               filters: filters),
           [claimEntities[0], claimEntities[0]]);
 
       // Then
-      var captureGet = verify(storageClaimDataSource.getClaims(
+      var captureGet = verify(storageClaimDataSource.getCredentials(
               did: captureAnyNamed('did'),
               encryptionKey: captureAnyNamed('encryptionKey'),
               filter: captureAnyNamed('filter')))
@@ -261,7 +262,7 @@ void main() {
         "Given a list of FilterEntity, when I call getClaims and an error occurred, then I expect an exception to be thrown",
         () async {
       // Given
-      when(storageClaimDataSource.getClaims(
+      when(storageClaimDataSource.getCredentials(
               did: anyNamed('did'),
               encryptionKey: anyNamed('encryptionKey'),
               filter: anyNamed('filter')))
@@ -269,7 +270,7 @@ void main() {
 
       // When
       await repository
-          .getClaims(
+          .getCredentials(
               genesisDid: CommonMocks.identifier,
               encryptionKey: CommonMocks.encryptionKey,
               filters: filters)
@@ -280,7 +281,7 @@ void main() {
       });
 
       // Then
-      var captureGet = verify(storageClaimDataSource.getClaims(
+      var captureGet = verify(storageClaimDataSource.getCredentials(
               did: captureAnyNamed('did'),
               encryptionKey: captureAnyNamed('encryptionKey'),
               filter: captureAnyNamed('filter')))
@@ -298,13 +299,13 @@ void main() {
   group("Get credential", () {
     setUp(() {
       // Given
-      when(storageClaimDataSource.getClaims(
+      when(storageClaimDataSource.getCredentials(
               did: anyNamed('did'),
               encryptionKey: anyNamed('encryptionKey'),
               filter: anyNamed('filter')))
           .thenAnswer((realInvocation) => Future.value([claimDTOs[0]]));
       when(
-        storageClaimDataSource.getClaim(
+        storageClaimDataSource.getCredential(
           credentialId: anyNamed('credentialId'),
           did: anyNamed('did'),
           encryptionKey: CommonMocks.encryptionKey,
@@ -320,7 +321,7 @@ void main() {
         () async {
       // When
       expect(
-        await repository.getClaim(
+        await repository.getCredential(
           genesisDid: CommonMocks.identifier,
           encryptionKey: CommonMocks.encryptionKey,
           claimId: ids[0],
@@ -329,7 +330,7 @@ void main() {
       );
 
       var captureGet = verify(
-        storageClaimDataSource.getClaim(
+        storageClaimDataSource.getCredential(
           credentialId: captureAnyNamed('credentialId'),
           did: captureAnyNamed('did'),
           encryptionKey: captureAnyNamed('encryptionKey'),
@@ -349,30 +350,30 @@ void main() {
         () async {
       // Given
       when(
-        storageClaimDataSource.getClaim(
+        storageClaimDataSource.getCredential(
           credentialId: anyNamed('credentialId'),
           did: anyNamed('did'),
           encryptionKey: anyNamed('encryptionKey'),
         ),
-      ).thenAnswer((realInvocation) => Future.error(ClaimNotFoundException(
+      ).thenAnswer((realInvocation) => Future.error(CredentialNotFoundException(
             id: ids[0],
             errorMessage: "Claim not found",
           )));
       // When
       await repository
-          .getClaim(
+          .getCredential(
             genesisDid: CommonMocks.identifier,
             encryptionKey: CommonMocks.encryptionKey,
             claimId: ids[0],
           )
           .then((value) => expect(true, false))
           .catchError((error) {
-        expect(error, isA<ClaimNotFoundException>());
+        expect(error, isA<CredentialNotFoundException>());
         expect(error.id, ids[0]);
       });
 
       var captureGet = verify(
-        storageClaimDataSource.getClaim(
+        storageClaimDataSource.getCredential(
           did: captureAnyNamed('did'),
           encryptionKey: captureAnyNamed('encryptionKey'),
           credentialId: captureAnyNamed('credentialId'),
@@ -391,7 +392,7 @@ void main() {
         () async {
       // Given
       when(
-        storageClaimDataSource.getClaim(
+        storageClaimDataSource.getCredential(
           did: anyNamed('did'),
           encryptionKey: anyNamed('encryptionKey'),
           credentialId: anyNamed('credentialId'),
@@ -401,7 +402,7 @@ void main() {
       );
 
       await expectLater(
-        repository.getClaim(
+        repository.getCredential(
           genesisDid: CommonMocks.identifier,
           claimId: ids[0],
           encryptionKey: CommonMocks.encryptionKey,
@@ -411,7 +412,7 @@ void main() {
 
       // Then
       final captureGet = verify(
-        storageClaimDataSource.getClaim(
+        storageClaimDataSource.getCredential(
           did: captureAnyNamed('did'),
           encryptionKey: captureAnyNamed('encryptionKey'),
           credentialId: captureAnyNamed('credentialId'),
@@ -429,7 +430,7 @@ void main() {
   group("Remove all claims", () {
     setUp(() {
       // Given
-      when(storageClaimDataSource.removeAllClaims(
+      when(storageClaimDataSource.removeAllCredentials(
               did: anyNamed('did'), encryptionKey: anyNamed('encryptionKey')))
           .thenAnswer((realInvocation) => Future.value());
     });
@@ -438,13 +439,13 @@ void main() {
         () async {
       // When
       await expectLater(
-          repository.removeAllClaims(
+          repository.removeAllCredentials(
               genesisDid: CommonMocks.identifier,
               encryptionKey: CommonMocks.encryptionKey),
           completes);
 
       // Then
-      var captureRemove = verify(storageClaimDataSource.removeAllClaims(
+      var captureRemove = verify(storageClaimDataSource.removeAllCredentials(
               did: captureAnyNamed('did'),
               encryptionKey: captureAnyNamed('encryptionKey')))
           .captured;
@@ -456,13 +457,13 @@ void main() {
         "When I call removeAllClaims and an error occurred, then I expect a RemoveClaimsException exception to be thrown",
         () async {
       // Given
-      when(storageClaimDataSource.removeAllClaims(
+      when(storageClaimDataSource.removeAllCredentials(
               did: anyNamed('did'), encryptionKey: anyNamed('encryptionKey')))
           .thenAnswer((realInvocation) => Future.error(exception));
 
       // When
       await repository
-          .removeAllClaims(
+          .removeAllCredentials(
               genesisDid: CommonMocks.identifier,
               encryptionKey: CommonMocks.encryptionKey)
           .then((_) => expect(true, false))
@@ -472,7 +473,7 @@ void main() {
       });
 
       // Then
-      var captureRemove = verify(storageClaimDataSource.removeAllClaims(
+      var captureRemove = verify(storageClaimDataSource.removeAllCredentials(
               did: captureAnyNamed('did'),
               encryptionKey: captureAnyNamed('encryptionKey')))
           .captured;
@@ -484,10 +485,10 @@ void main() {
   group("Remove credentials", () {
     setUp(() {
       // Given
-      when(storageClaimDataSource.removeClaims(
+      when(storageClaimDataSource.removeCredential(
               did: anyNamed('did'),
               encryptionKey: anyNamed('encryptionKey'),
-              claimIds: anyNamed('claimIds')))
+              credentialIds: anyNamed('credentialIds')))
           .thenAnswer((realInvocation) => Future.value());
     });
 
@@ -496,17 +497,17 @@ void main() {
         () async {
       // When
       await expectLater(
-          repository.removeClaims(
+          repository.removeCredentials(
               genesisDid: CommonMocks.identifier,
               encryptionKey: CommonMocks.encryptionKey,
               claimIds: ids),
           completes);
 
       // Then
-      var captureRemove = verify(storageClaimDataSource.removeClaims(
+      var captureRemove = verify(storageClaimDataSource.removeCredential(
               did: captureAnyNamed('did'),
               encryptionKey: captureAnyNamed('encryptionKey'),
-              claimIds: captureAnyNamed('claimIds')))
+              credentialIds: captureAnyNamed('credentialIds')))
           .captured;
       expect(captureRemove[0], CommonMocks.identifier);
       expect(captureRemove[1], CommonMocks.encryptionKey);
@@ -517,15 +518,15 @@ void main() {
         "Given a list of ids, when I call removeClaims and an error occurred, then I expect a RemoveClaimsException exception to be thrown",
         () async {
       // Given
-      when(storageClaimDataSource.removeClaims(
+      when(storageClaimDataSource.removeCredential(
               did: anyNamed('did'),
               encryptionKey: anyNamed('encryptionKey'),
-              claimIds: anyNamed('claimIds')))
+              credentialIds: anyNamed('credentialIds')))
           .thenAnswer((realInvocation) => Future.error(exception));
 
       // When
       await repository
-          .removeClaims(
+          .removeCredentials(
               genesisDid: CommonMocks.identifier,
               encryptionKey: CommonMocks.encryptionKey,
               claimIds: ids)
@@ -536,10 +537,10 @@ void main() {
       });
 
       // Then
-      var captureRemove = verify(storageClaimDataSource.removeClaims(
+      var captureRemove = verify(storageClaimDataSource.removeCredential(
               did: captureAnyNamed('did'),
               encryptionKey: captureAnyNamed('encryptionKey'),
-              claimIds: captureAnyNamed('claimIds')))
+              credentialIds: captureAnyNamed('credentialIds')))
           .captured;
       expect(captureRemove[0], CommonMocks.identifier);
       expect(captureRemove[1], CommonMocks.encryptionKey);

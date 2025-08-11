@@ -27,7 +27,7 @@ class RemoveClaimsUseCase extends FutureUseCase<RemoveClaimsParam, void> {
   @override
   Future<void> execute({required RemoveClaimsParam param}) async {
     try {
-      await _credentialRepository.removeClaims(
+      await _credentialRepository.removeCredentials(
         claimIds: param.claimIds,
         genesisDid: param.genesisDid,
         encryptionKey: param.encryptionKey,

@@ -25,7 +25,7 @@ import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_su
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 
 class GetIden3commProofsParam {
-  final Iden3MessageEntity message;
+  final Iden3Message message;
   final String genesisDid;
   final BigInt profileNonce;
   final String privateKey;
@@ -99,7 +99,7 @@ class GetIden3commProofsUseCase
       /// Generate proof for each request
       for (int i = 0; i < requestsAndCreds.length; i++) {
         ProofRequestEntity request = requestsAndCreds[i].request;
-        List<ClaimEntity> credentials = requestsAndCreds[i].credentials;
+        List<CredentialEntity> credentials = requestsAndCreds[i].credentials;
 
         // if there are no credentials for the request
         if (credentials.isEmpty) {
@@ -118,7 +118,7 @@ class GetIden3commProofsUseCase
             );
           }
         }
-        ClaimEntity claim = credentials.first;
+        CredentialEntity claim = credentials.first;
 
         if (claim.expiration != null) {
           claim = await _checkCredentialExpirationAndTryRefreshIfExpired(
@@ -243,8 +243,8 @@ class GetIden3commProofsUseCase
 
   /// Check if the credential is expired and try to refresh it if it is
   /// and if it has a refresh service
-  Future<ClaimEntity> _checkCredentialExpirationAndTryRefreshIfExpired({
-    required ClaimEntity claim,
+  Future<CredentialEntity> _checkCredentialExpirationAndTryRefreshIfExpired({
+    required CredentialEntity claim,
     required GetIden3commProofsParam param,
   }) async {
     var now = DateTime.now().toUtc();
@@ -255,13 +255,13 @@ class GetIden3commProofsUseCase
     var expirationTimeFormatted =
         DateFormat("yyyy-MM-dd HH:mm:ss").format(expirationTime);
     bool isExpired = nowFormatted.compareTo(expirationTimeFormatted) > 0 ||
-        claim.state == ClaimState.expired;
+        claim.state == CredentialState.expired;
 
     if (isExpired && claim.info.containsKey("refreshService")) {
       _proofGenerationStepsStreamManager
           .add("Refreshing expired credential...");
 
-      ClaimEntity refreshedClaimEntity =
+      CredentialEntity refreshedClaimEntity =
           await _refreshCredentialUseCase.execute(
               param: RefreshCredentialParam(
         credential: claim,

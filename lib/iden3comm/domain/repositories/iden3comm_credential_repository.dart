@@ -5,7 +5,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/p
 abstract class Iden3commCredentialRepository {
   Future<List<FilterEntity>> getFilters({required ProofRequestEntity request});
 
-  Future<ClaimEntity> fetchClaim({
+  Future<CredentialEntity> fetchClaim({
     required String url,
     required String did,
     required String authToken,
@@ -13,7 +13,7 @@ abstract class Iden3commCredentialRepository {
 
   Future<Map<String, dynamic>> fetchSchema({required String url});
 
-  Future<ClaimEntity> refreshCredential({
+  Future<CredentialEntity> refreshCredential({
     required String url,
     required String authToken,
     required String profileDid,

@@ -1,11 +1,14 @@
 import 'package:polygonid_flutter_sdk/common/utils/collection_utils.dart';
 
-class CredentialOfferData {
+@Deprecated('Use CredentialOffer instead')
+typedef CredentialOfferData = CredentialOffer;
+
+class CredentialOffer {
   final String id;
   final String? description;
   final CredentialOfferStatus? status;
 
-  CredentialOfferData({
+  CredentialOffer({
     required this.id,
     this.description,
     this.status,
@@ -14,9 +17,9 @@ class CredentialOfferData {
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [CredentialOfferData]
-  factory CredentialOfferData.fromJson(Map<String, dynamic> json) {
-    return CredentialOfferData(
+  /// @returns [CredentialOffer]
+  factory CredentialOffer.fromJson(Map<String, dynamic> json) {
+    return CredentialOffer(
       id: json['id'],
       description: json['description'],
       status: CredentialOfferStatus.values
@@ -32,12 +35,12 @@ class CredentialOfferData {
 
   @override
   String toString() =>
-      "[CredentialOfferData] {id: $id, description: $description, status: $status}";
+      "[CredentialOffer] {id: $id, description: $description, status: $status}";
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CredentialOfferData &&
+      other is CredentialOffer &&
           runtimeType == other.runtimeType &&
           id == other.id &&
           description == other.description &&

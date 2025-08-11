@@ -27,13 +27,6 @@ class NullWitnessException extends PolygonIdSDKException {
   });
 }
 
-class GenerateNonRevProofException extends PolygonIdSDKException {
-  GenerateNonRevProofException({
-    required super.errorMessage,
-    super.error,
-  });
-}
-
 class NullProofException extends PolygonIdSDKException {
   final String? circuit;
 
@@ -46,27 +39,6 @@ class NullProofException extends PolygonIdSDKException {
 
 class FetchGistProofException extends PolygonIdSDKException {
   FetchGistProofException({
-    required super.errorMessage,
-    super.error,
-  });
-}
-
-class ProofInputsException extends PolygonIdSDKException {
-  ProofInputsException({
-    required super.errorMessage,
-    super.error,
-  });
-}
-
-class CredentialInputsException extends PolygonIdSDKException {
-  CredentialInputsException({
-    required super.errorMessage,
-    super.error,
-  });
-}
-
-class IdentityInputsException extends PolygonIdSDKException {
-  IdentityInputsException({
     required super.errorMessage,
     super.error,
   });

@@ -6,11 +6,11 @@ import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/storage_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/credential/response/fetch_claim_response_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_issuance_response.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:sembast/sembast.dart' as sem;
 
-import '../../../iden3comm/data/dtos/fetch_claim_response_dto_test.dart';
+import '../../../iden3comm/data/dtos/credential_issuance_message_test.dart';
 import 'storage_claim_data_source_test.mocks.dart';
 
 class FakeRecordSnapshot
@@ -53,46 +53,49 @@ final sem.Filter filter =
 
 /// We assume [FetchClaimResponseDTO] has been tested
 final credential =
-    FetchClaimResponseDTO.fromJson(jsonDecode(mockFetchClaim)).credential;
+    CredentialIssuanceMessage.fromJson(jsonDecode(mockIssuanceMessage))
+        .body
+        .credential;
 final mockClaims = [
-  ClaimDTO(
+  CredentialDTO(
     id: credential.id,
     issuer: issuers[0],
     did: identifiers[0],
     expiration: expirations[0],
     type: types[0],
     info: credential,
-    credentialRawValue: mockFetchClaim,
+    credentialRawValue: mockIssuanceMessage,
   ),
-  ClaimDTO(
+  CredentialDTO(
     id: credential.id,
     issuer: issuers[1],
     did: identifiers[1],
     expiration: expirations[1],
     type: types[1],
     info: credential,
-    credentialRawValue: mockFetchClaim,
+    credentialRawValue: mockIssuanceMessage,
   ),
-  ClaimDTO(
+  CredentialDTO(
     id: credential.id,
     issuer: issuers[2],
     did: identifiers[2],
     expiration: expirations[2],
     type: types[2],
     info: credential,
-    credentialRawValue: mockFetchClaim,
+    credentialRawValue: mockIssuanceMessage,
   )
 ];
 final exception = Exception();
 
 // Dependencies
-MockDatabase database = MockDatabase();
-MockClaimStoreRefWrapper storeRefWrapper = MockClaimStoreRefWrapper();
+final database = MockDatabase();
+final storeRefWrapper = MockCredentialStoreRefWrapper();
 
 // Tested instance
-StorageClaimDataSource dataSource = StorageClaimDataSource(storeRefWrapper);
+CredentialStorageDataSource dataSource =
+    CredentialStorageDataSource(storeRefWrapper);
 
-@GenerateMocks([sem.Database, ClaimStoreRefWrapper])
+@GenerateMocks([sem.Database, CredentialStoreRefWrapper])
 void main() {
   setUp(() {
     if (getItSdk.isRegistered<sem.Database>(
@@ -117,8 +120,8 @@ void main() {
 
       // When
       await expectLater(
-          dataSource.storeClaimsTransact(
-              transaction: database, claims: mockClaims),
+          dataSource.storeCredentialsTransact(
+              transaction: database, credentials: mockClaims),
           completes);
 
       // Then
@@ -144,8 +147,8 @@ void main() {
 
       // When
       await expectLater(
-          dataSource.storeClaimsTransact(
-              transaction: database, claims: mockClaims),
+          dataSource.storeCredentialsTransact(
+              transaction: database, credentials: mockClaims),
           throwsA(exception));
 
       // Then
@@ -169,9 +172,9 @@ void main() {
 
       // When
       expect(
-          await dataSource.getClaims(
+          await dataSource.getCredentials(
               did: identifiers[0], encryptionKey: privateKey),
-          isA<List<ClaimDTO>>());
+          isA<List<CredentialDTO>>());
 
       // Then
       var storeCaptured = verify(storeRefWrapper.find(captureAny,
@@ -196,9 +199,9 @@ void main() {
 
       // When
       expect(
-          await dataSource.getClaims(
+          await dataSource.getCredentials(
               filter: filter, did: identifiers[0], encryptionKey: privateKey),
-          isA<List<ClaimDTO>>());
+          isA<List<CredentialDTO>>());
 
       // Then
       var storeCaptured = verify(storeRefWrapper.find(captureAny,
@@ -223,7 +226,7 @@ void main() {
 
       // When
       await expectLater(
-          dataSource.getClaims(
+          dataSource.getCredentials(
               filter: filter, did: identifiers[0], encryptionKey: privateKey),
           throwsA(exception));
 
@@ -252,7 +255,8 @@ void main() {
 
       // When
       await expectLater(
-          dataSource.removeClaimsTransact(transaction: database, claimIds: ids),
+          dataSource.removeCredentialsTransact(
+              transaction: database, credentialIds: ids),
           completes);
 
       // Then
@@ -276,7 +280,8 @@ void main() {
 
       // When
       await expectLater(
-          dataSource.removeClaimsTransact(transaction: database, claimIds: ids),
+          dataSource.removeCredentialsTransact(
+              transaction: database, credentialIds: ids),
           throwsA(exception));
 
       // Then

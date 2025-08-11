@@ -15,13 +15,14 @@ class GetCredentialByIdParam {
 }
 
 class GetCredentialByIdUseCase
-    extends FutureUseCase<GetCredentialByIdParam, ClaimEntity> {
+    extends FutureUseCase<GetCredentialByIdParam, CredentialEntity> {
   final CredentialRepository _credentialRepository;
 
   GetCredentialByIdUseCase(this._credentialRepository);
 
-  Future<ClaimEntity> execute({required GetCredentialByIdParam param}) async {
-    return await _credentialRepository.getClaim(
+  Future<CredentialEntity> execute(
+      {required GetCredentialByIdParam param}) async {
+    return await _credentialRepository.getCredential(
       encryptionKey: param.encryptionKey,
       genesisDid: param.genesisDid,
       claimId: param.id,

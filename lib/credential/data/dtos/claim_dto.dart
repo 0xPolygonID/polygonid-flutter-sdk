@@ -4,7 +4,9 @@ import 'package:equatable/equatable.dart';
 
 import 'claim_info_dto.dart';
 
-class ClaimDTO extends Equatable {
+typedef ClaimDTO = CredentialDTO;
+
+class CredentialDTO extends Equatable {
   final String id;
   final String issuer;
   final String did;
@@ -13,13 +15,13 @@ class ClaimDTO extends Equatable {
   final String? issuanceDate;
   Map<String, dynamic>? schema;
   final String type;
-  final ClaimInfoDTO info;
+  final W3CCredential info;
   Map<String, dynamic>? displayType;
 
   /// Raw value of credential represented as iden3 message
   final String credentialRawValue;
 
-  ClaimDTO({
+  CredentialDTO({
     required this.id,
     required this.issuer,
     required this.did,
@@ -33,8 +35,8 @@ class ClaimDTO extends Equatable {
     required this.credentialRawValue,
   });
 
-  factory ClaimDTO.fromJson(Map<String, dynamic> json) {
-    return ClaimDTO(
+  factory CredentialDTO.fromJson(Map<String, dynamic> json) {
+    return CredentialDTO(
       id: json['id'] as String,
       issuer: json['issuer'] as String,
       did: json['did'] as String,
@@ -42,7 +44,7 @@ class ClaimDTO extends Equatable {
       state: json['state'] as String? ?? '',
       expiration: json['expiration'] as String?,
       issuanceDate: json['issuanceDate'] as String?,
-      info: ClaimInfoDTO.fromJson(json['credential'] as Map<String, dynamic>),
+      info: W3CCredential.fromJson(json['credential'] as Map<String, dynamic>),
       schema: json['schema'] as Map<String, dynamic>?,
       displayType: json['displayType'] as Map<String, dynamic>?,
       credentialRawValue: json['credentialRawValue'] ?? jsonEncode(json),

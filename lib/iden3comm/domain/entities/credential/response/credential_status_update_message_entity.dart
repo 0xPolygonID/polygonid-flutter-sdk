@@ -1,27 +1,33 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 
-class CredentialStatusUpdateMessageEntity
-    extends Iden3MessageEntity<CredentialStatusUpdateBody> {
-  CredentialStatusUpdateMessageEntity({
+@Deprecated('Use CredentialStatusUpdateMessage instead')
+typedef CredentialStatusUpdateMessageEntity = CredentialStatusUpdateMessage;
+
+class CredentialStatusUpdateMessage
+    extends Iden3Message<CredentialStatusUpdateBody> {
+  CredentialStatusUpdateMessage({
     required super.id,
     required super.typ,
+    @Deprecated('may be omitted, gonna be removed in the future') String? type,
     required super.thid,
     required super.from,
     required super.to,
     required super.body,
     super.nextRequest,
+    super.createdTime,
+    super.expiresTime,
+    super.attachments = const [],
   }) : super(type: Iden3MessageType.credentialStatusUpdate);
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [CredentialStatusUpdateMessageEntity]
-  factory CredentialStatusUpdateMessageEntity.fromJson(
-      Map<String, dynamic> json) {
+  /// @returns [CredentialStatusUpdateMessage]
+  factory CredentialStatusUpdateMessage.fromJson(Map<String, dynamic> json) {
     CredentialStatusUpdateBody body =
         CredentialStatusUpdateBody.fromJson(json['body']);
 
-    return CredentialStatusUpdateMessageEntity(
+    return CredentialStatusUpdateMessage(
       id: json['id'],
       typ: json['typ'],
       thid: json['thid'],
@@ -40,12 +46,11 @@ class CredentialStatusUpdateMessageEntity
   }
 
   @override
-  String toString() =>
-      "[CredentialStatusUpdateMessageEntity] {${super.toString()}}";
+  String toString() => "[CredentialStatusUpdateMessage] {${super.toString()}}";
 
   @override
   bool operator ==(Object other) =>
-      super == other && other is CredentialStatusUpdateMessageEntity;
+      super == other && other is CredentialStatusUpdateMessage;
 
   @override
   int get hashCode => runtimeType.hashCode;

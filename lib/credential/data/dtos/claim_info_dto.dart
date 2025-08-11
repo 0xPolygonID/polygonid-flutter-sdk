@@ -7,24 +7,25 @@ import 'claim_proofs/claim_proof_dto.dart';
 
 part 'claim_info_dto.g.dart';
 
+typedef ClaimInfoDTO = W3CCredential;
+
 @JsonSerializable(explicitToJson: true)
-class ClaimInfoDTO extends Equatable {
+class W3CCredential extends Equatable {
   final String id;
   @JsonKey(name: '@context')
   final List<String> context;
   final List<String> type;
   final String? expirationDate;
-  final String issuanceDate;
-  final CredentialSubjectDTO credentialSubject;
-  final CredentialStatusDTO credentialStatus;
+  final RefreshService? refreshService;
+  final DisplayMethod? displayMethod;
+  final String? issuanceDate;
+  final CredentialSubject credentialSubject;
+  final CredentialStatus credentialStatus;
   final String issuer;
-  final CredentialSchemaDTO credentialSchema;
-  @JsonKey(name: 'proof')
-  final List<ClaimProofDTO>? proofs;
-  final RefreshServiceDTO? refreshService;
-  final DisplayMethodDTO? displayMethod;
+  final CredentialSchema credentialSchema;
+  final List<ClaimProofDTO>? proof;
 
-  const ClaimInfoDTO(
+  const W3CCredential(
     this.id,
     this.context,
     this.type,
@@ -34,16 +35,16 @@ class ClaimInfoDTO extends Equatable {
     this.credentialStatus,
     this.issuer,
     this.credentialSchema,
-    this.proofs,
+    this.proof,
     this.refreshService,
     this.displayMethod,
   );
 
-  factory ClaimInfoDTO.fromJson(Map<String, dynamic> json) =>
-      _$ClaimInfoDTOFromJson(json);
+  factory W3CCredential.fromJson(Map<String, dynamic> json) =>
+      _$W3CCredentialFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ClaimInfoDTOToJson(this)
-    ..removeWhere((dynamic key, dynamic value) => key == null || value == null);
+  Map<String, dynamic> toJson() =>
+      _$W3CCredentialToJson(this)..removeWhere((key, value) => value == null);
 
   @override
   List<Object?> get props => [
@@ -56,23 +57,25 @@ class ClaimInfoDTO extends Equatable {
         credentialStatus,
         issuer,
         credentialSchema,
-        proofs,
+        proof,
         refreshService,
       ];
 }
 
+typedef RefreshServiceDTO = RefreshService;
+
 /// If credential is refreshable, this is the data needed to refresh it
-class RefreshServiceDTO {
+class RefreshService {
   final String id;
   final String type;
 
-  const RefreshServiceDTO(this.id, this.type);
+  const RefreshService(this.id, this.type);
 
-  factory RefreshServiceDTO.fromJson(Map<String, dynamic> json) {
+  factory RefreshService.fromJson(Map<String, dynamic> json) {
     String id = json['id'] as String;
     String type = json['type'] as String;
 
-    return RefreshServiceDTO(id, type);
+    return RefreshService(id, type);
   }
 
   Map<String, dynamic> toJson() {
@@ -93,24 +96,28 @@ class RefreshServiceDTO {
   }
 }
 
-class CredentialSubjectDTO extends Equatable {
+typedef CredentialSubjectDTO = CredentialSubject;
+
+class CredentialSubject extends Equatable {
   final String id;
   final String type;
   final Map<String, dynamic>? data;
 
-  const CredentialSubjectDTO(this.id, this.type, this.data);
+  const CredentialSubject(this.id, this.type, this.data);
 
   /// There are dynamic field which depends on the [type]
   /// but since we don't want to set the possible [type] in stone, we unserialize
   /// them in [data] (removing the known fields)
-  factory CredentialSubjectDTO.fromJson(Map<String, dynamic> json) {
+  factory CredentialSubject.fromJson(Map<String, dynamic> json) {
+    // Make a deep copy of the json to avoid modifying the original
     Map<String, dynamic> data = jsonDecode(jsonEncode(json));
+
     String id = json['id'] as String;
     String type = json['type'] as String;
     data.remove('id');
     data.remove('type');
 
-    return CredentialSubjectDTO(id, type, data);
+    return CredentialSubject(id, type, data);
   }
 
   Map<String, dynamic> toJson() {
@@ -130,65 +137,71 @@ class CredentialSubjectDTO extends Equatable {
 
 @JsonEnum()
 enum CredentialStatusType {
-  @JsonValue("Iden3ReverseSparseMerkleTreeProof")
-  reverseSparseMerkleTreeProof,
   @JsonValue("SparseMerkleTreeProof")
   sparseMerkleTreeProof,
+  @JsonValue("Iden3ReverseSparseMerkleTreeProof")
+  reverseSparseMerkleTreeProof,
+  @JsonValue("Iden3commRevocationStatusV1.0")
+  iden3commRevocationStatusV1,
   @JsonValue("Iden3OnchainSparseMerkleTreeProof2023")
   iden3OnchainSparseMerkleTreeProof2023,
-  @JsonValue("Iden3commRevocationStatusV1.0")
-  iden3commRevocationStatusV1
 }
 
+typedef CredentialStatusDTO = CredentialStatus;
+
 @JsonSerializable(explicitToJson: true)
-class CredentialStatusDTO extends Equatable {
+class CredentialStatus extends Equatable {
   final String id;
   final int? revocationNonce;
   @JsonKey(name: 'type')
   final CredentialStatusType type;
-  final CredentialStatusDTO? statusIssuer;
+  final CredentialStatus? statusIssuer;
 
-  const CredentialStatusDTO(
+  const CredentialStatus(
       this.id, this.revocationNonce, this.type, this.statusIssuer);
 
-  factory CredentialStatusDTO.fromJson(Map<String, dynamic> json) =>
-      _$CredentialStatusDTOFromJson(json);
+  factory CredentialStatus.fromJson(Map<String, dynamic> json) =>
+      _$CredentialStatusFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CredentialStatusDTOToJson(this)
+  Map<String, dynamic> toJson() => _$CredentialStatusToJson(this)
     ..removeWhere((dynamic key, dynamic value) => key == null || value == null);
 
   @override
   List<Object?> get props => [id, revocationNonce, type, statusIssuer];
 }
 
+typedef CredentialSchemaDTO = CredentialSchema;
+
 @JsonSerializable()
-class CredentialSchemaDTO extends Equatable {
+class CredentialSchema extends Equatable {
   final String id;
   final String type;
 
-  const CredentialSchemaDTO(this.id, this.type);
+  const CredentialSchema(this.id, this.type);
 
-  factory CredentialSchemaDTO.fromJson(Map<String, dynamic> json) =>
-      _$CredentialSchemaDTOFromJson(json);
+  factory CredentialSchema.fromJson(Map<String, dynamic> json) =>
+      _$CredentialSchemaFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CredentialSchemaDTOToJson(this);
+  Map<String, dynamic> toJson() => _$CredentialSchemaToJson(this);
 
   @override
   List<Object?> get props => [id, type];
 }
 
+typedef DisplayMethodDTO = DisplayMethod;
+
 @JsonSerializable()
-class DisplayMethodDTO {
+class DisplayMethod {
   /// Contains url.
   final String id;
   final String type;
 
-  DisplayMethodDTO(this.id, this.type);
+  DisplayMethod(this.id, this.type);
 
-  factory DisplayMethodDTO.fromJson(Map<String, dynamic> json) =>
-      _$DisplayMethodDTOFromJson(json);
+  factory DisplayMethod.fromJson(Map<String, dynamic> json) =>
+      _$DisplayMethodFromJson(json);
 
-  Map<String, dynamic> toJson() => _$DisplayMethodDTOToJson(this);
+  Map<String, dynamic> toJson() => _$DisplayMethodToJson(this);
 
   @override
   List<Object?> get props => [id, type];

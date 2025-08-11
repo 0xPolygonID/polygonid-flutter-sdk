@@ -64,15 +64,20 @@
 
 */
 
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
-import 'auth_body_did_doc_response.dart';
 
-class AuthBodyResponse {
-  final AuthBodyDidDocResponse? did_doc;
+@Deprecated('Use AuthorizationMessageResponseBody instead')
+typedef AuthBodyResponse = AuthorizationMessageResponseBody;
+
+typedef ZeroKnowledgeProofResponse = Iden3commProofEntity;
+
+class AuthorizationMessageResponseBody {
+  final DIDDocument? did_doc;
   final String? message;
-  final List<Iden3commProofEntity>? proofs;
+  final List<ZeroKnowledgeProofResponse> proofs;
 
-  AuthBodyResponse({
+  AuthorizationMessageResponseBody({
     this.did_doc,
     required this.message,
     required this.proofs,
@@ -81,16 +86,16 @@ class AuthBodyResponse {
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [AuthBodyResponse]
-  factory AuthBodyResponse.fromJson(Map<String, dynamic> json) {
-    AuthBodyDidDocResponse? didDoc = json['did_doc'] != null
-        ? AuthBodyDidDocResponse.fromJson(json['did_doc'])
-        : null;
+  /// @returns [AuthorizationMessageResponseBody]
+  factory AuthorizationMessageResponseBody.fromJson(Map<String, dynamic> json) {
+    DIDDocument? didDoc =
+        json['did_doc'] != null ? DIDDocument.fromJson(json['did_doc']) : null;
 
-    List<Iden3commProofEntity>? scope = (json['scope'] as List?)
-        ?.map((item) => Iden3commProofEntity.fromJson(item))
-        .toList();
-    return AuthBodyResponse(
+    final scope = (json['scope'] as List?)
+            ?.map((item) => Iden3commProofEntity.fromJson(item))
+            .toList() ??
+        [];
+    return AuthorizationMessageResponseBody(
       did_doc: didDoc,
       message: json['message'],
       proofs: scope,
@@ -100,6 +105,6 @@ class AuthBodyResponse {
   Map<String, dynamic> toJson() => {
         'did_doc': did_doc,
         'message': message,
-        'scope': proofs?.map((scope) => scope.toJson()).toList(),
+        'scope': proofs.map((scope) => scope.toJson()).toList(),
       };
 }

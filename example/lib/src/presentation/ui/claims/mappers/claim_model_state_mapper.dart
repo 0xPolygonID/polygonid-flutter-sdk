@@ -2,15 +2,16 @@ import 'package:polygonid_flutter_sdk/common/mappers/mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/claims/models/claim_model_state.dart';
 
-class ClaimModelStateMapper implements Mapper<ClaimState, ClaimModelState> {
+class ClaimModelStateMapper
+    implements Mapper<CredentialState, ClaimModelState> {
   @override
-  ClaimModelState mapFrom(ClaimState from) {
+  ClaimModelState mapFrom(CredentialState from) {
     switch (from) {
-      case ClaimState.expired:
+      case CredentialState.expired:
         return ClaimModelState.expired;
-      case ClaimState.pending:
+      case CredentialState.pending:
         return ClaimModelState.pending;
-      case ClaimState.revoked:
+      case CredentialState.revoked:
         return ClaimModelState.revoked;
       default:
         return ClaimModelState.active;
@@ -18,16 +19,16 @@ class ClaimModelStateMapper implements Mapper<ClaimState, ClaimModelState> {
   }
 
   @override
-  ClaimState mapTo(ClaimModelState to) {
+  CredentialState mapTo(ClaimModelState to) {
     switch (to) {
       case ClaimModelState.expired:
-        return ClaimState.expired;
+        return CredentialState.expired;
       case ClaimModelState.pending:
-        return ClaimState.pending;
+        return CredentialState.pending;
       case ClaimModelState.revoked:
-        return ClaimState.revoked;
+        return CredentialState.revoked;
       default:
-        return ClaimState.active;
+        return CredentialState.active;
     }
   }
 }

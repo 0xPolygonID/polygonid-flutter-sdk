@@ -34,7 +34,7 @@ void main() {
       reset(credentialRepository);
 
       // Given
-      when(credentialRepository.removeAllClaims(
+      when(credentialRepository.removeAllCredentials(
               genesisDid: identifier, encryptionKey: privateKey))
           .thenAnswer((realInvocation) => Future.value());
     });
@@ -45,7 +45,7 @@ void main() {
       await expectLater(useCase.execute(param: param), completes);
 
       // Then
-      var capturedRemove = verify(credentialRepository.removeAllClaims(
+      var capturedRemove = verify(credentialRepository.removeAllCredentials(
               genesisDid: captureAnyNamed('genesisDid'),
               encryptionKey: captureAnyNamed('encryptionKey')))
           .captured;
@@ -57,7 +57,7 @@ void main() {
         "When I call execute and an error occurred, then I expect an exception to be thrown",
         () async {
       // Given
-      when(credentialRepository.removeAllClaims(
+      when(credentialRepository.removeAllCredentials(
               genesisDid: identifier, encryptionKey: privateKey))
           .thenAnswer((realInvocation) => Future.error(exception));
 
@@ -65,7 +65,7 @@ void main() {
       await expectLater(useCase.execute(param: param), throwsA(exception));
 
       // Then
-      var capturedRemove = verify(credentialRepository.removeAllClaims(
+      var capturedRemove = verify(credentialRepository.removeAllCredentials(
               genesisDid: captureAnyNamed('genesisDid'),
               encryptionKey: captureAnyNamed('encryptionKey')))
           .captured;

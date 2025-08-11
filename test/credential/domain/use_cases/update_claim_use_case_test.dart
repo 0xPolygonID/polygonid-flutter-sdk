@@ -14,7 +14,7 @@ const id = "theId";
 const issuer = "theIssuer";
 const otherIssuer = "theOtherIssuer";
 const identifier = "theIdentifier";
-const state = ClaimState.active;
+const state = CredentialState.active;
 const expiration = "theExpiration";
 const otherExpiration = "theOtherExpiration";
 const type = "theType";
@@ -31,24 +31,24 @@ final UpdateClaimParam param = UpdateClaimParam(
     expiration: otherExpiration,
     data: otherData);
 
-final claimEntity = ClaimEntity(
+final claimEntity = CredentialEntity(
   issuer: issuer,
   did: identifier,
   expiration: expiration,
   info: data,
   type: type,
-  state: ClaimState.active,
+  state: CredentialState.active,
   id: id,
   credentialRawValue: credentialRawValue,
 );
 
-final otherClaimEntity = ClaimEntity(
+final otherClaimEntity = CredentialEntity(
   issuer: otherIssuer,
   did: identifier,
   expiration: otherExpiration,
   info: otherData,
   type: type,
-  state: ClaimState.active,
+  state: CredentialState.active,
   id: id,
   credentialRawValue: credentialRawValue,
 );
@@ -70,15 +70,15 @@ void main() {
       reset(credentialRepository);
 
       // Given
-      when(credentialRepository.getClaim(
+      when(credentialRepository.getCredential(
               genesisDid: anyNamed('genesisDid'),
               encryptionKey: anyNamed('encryptionKey'),
               claimId: anyNamed('claimId')))
           .thenAnswer((realInvocation) => Future.value(claimEntity));
-      when(credentialRepository.saveClaims(
+      when(credentialRepository.saveCredentials(
               genesisDid: anyNamed('genesisDid'),
               encryptionKey: anyNamed('encryptionKey'),
-              claims: anyNamed('claims')))
+              credentials: anyNamed('credentials')))
           .thenAnswer((realInvocation) => Future.value(null));
     });
 
@@ -89,7 +89,7 @@ void main() {
       expect(await useCase.execute(param: param), otherClaimEntity);
 
       // Then
-      var capturedGet = verify(credentialRepository.getClaim(
+      var capturedGet = verify(credentialRepository.getCredential(
               genesisDid: captureAnyNamed('genesisDid'),
               encryptionKey: captureAnyNamed('encryptionKey'),
               claimId: captureAnyNamed('claimId')))
@@ -98,10 +98,10 @@ void main() {
       expect(capturedGet[1], CommonMocks.encryptionKey);
       expect(capturedGet[2], id);
 
-      var capturedSave = verify(credentialRepository.saveClaims(
+      var capturedSave = verify(credentialRepository.saveCredentials(
               genesisDid: captureAnyNamed('genesisDid'),
               encryptionKey: captureAnyNamed('encryptionKey'),
-              claims: captureAnyNamed('claims')))
+              credentials: captureAnyNamed('credentials')))
           .captured;
       expect(capturedSave[0], identifier);
       expect(capturedSave[1], CommonMocks.encryptionKey);
@@ -112,7 +112,7 @@ void main() {
         "Given an UpdateClaimParam, when I call execute and an error occurred, then I expect an exception to be thrown",
         () async {
       // Given
-      when(credentialRepository.getClaim(
+      when(credentialRepository.getCredential(
               genesisDid: anyNamed('genesisDid'),
               encryptionKey: anyNamed('encryptionKey'),
               claimId: anyNamed('claimId')))
@@ -122,7 +122,7 @@ void main() {
       await expectLater(useCase.execute(param: param), throwsA(exception));
 
       // Then
-      var capturedGet = verify(credentialRepository.getClaim(
+      var capturedGet = verify(credentialRepository.getCredential(
               genesisDid: captureAnyNamed('genesisDid'),
               encryptionKey: captureAnyNamed('encryptionKey'),
               claimId: captureAnyNamed('claimId')))
@@ -131,10 +131,10 @@ void main() {
       expect(capturedGet[1], CommonMocks.encryptionKey);
       expect(capturedGet[2], id);
 
-      verifyNever(credentialRepository.saveClaims(
+      verifyNever(credentialRepository.saveCredentials(
           genesisDid: captureAnyNamed('genesisDid'),
           encryptionKey: captureAnyNamed('encryptionKey'),
-          claims: captureAnyNamed('claims')));
+          credentials: captureAnyNamed('credentials')));
     });
   });
 }

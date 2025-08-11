@@ -9,14 +9,14 @@ import 'package:polygonid_flutter_sdk_example/utils/claim_utils.dart';
 
 import 'claim_model_state_mapper.dart';
 
-class ClaimModelMapper implements FromMapper<ClaimEntity, ClaimModel> {
+class ClaimModelMapper implements FromMapper<CredentialEntity, ClaimModel> {
   ClaimModelStateMapper stateMapper;
   ProofModelTypeMapper proofTypeMapper;
 
   ClaimModelMapper(this.stateMapper, this.proofTypeMapper);
 
   @override
-  ClaimModel mapFrom(ClaimEntity from) {
+  ClaimModel mapFrom(CredentialEntity from) {
     String type = from.type;
     Map<String, dynamic> subject = from.info['credentialSubject'];
 

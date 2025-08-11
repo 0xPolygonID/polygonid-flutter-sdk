@@ -8,6 +8,7 @@ import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/protocol_message_type.dart';
 
 class CreatePassportCredentialParam {
   final String passportData;
@@ -36,11 +37,11 @@ class CreatePassportCredentialParam {
 }
 
 class CreatePassportCredentialUseCase
-    extends FutureUseCase<CreatePassportCredentialParam, ClaimEntity> {
+    extends FutureUseCase<CreatePassportCredentialParam, CredentialEntity> {
   final LibPolygonIdCoreCredentialDataSource _libPolygonIdCoreCredentialDS;
   final RemoteIden3commDataSource _remoteIden3commDataSource;
   final GetEnvUseCase _getEnvUseCase;
-  final ClaimMapper _claimMapper;
+  final CredentialMapper _claimMapper;
 
   CreatePassportCredentialUseCase(
     this._libPolygonIdCoreCredentialDS,
@@ -50,12 +51,13 @@ class CreatePassportCredentialUseCase
   );
 
   @override
-  Future<ClaimEntity> execute({
+  Future<CredentialEntity> execute({
     required CreatePassportCredentialParam param,
   }) async {
     final env = await _getEnvUseCase.execute();
 
-    final credentialJson = _libPolygonIdCoreCredentialDS.credentialFromPassport(
+    final credentialJson =
+        _libPolygonIdCoreCredentialDS.createW3CCredentialFromPassport(
       passportData: param.passportData,
       dg2Hash: param.dg2Hash,
       did: param.profileDid,
@@ -76,16 +78,16 @@ class CreatePassportCredentialUseCase
     final credentialWithAdditionalFields = jsonEncode(credentialJsonMap);
 
     final claimJson = jsonDecode(credentialWithAdditionalFields);
-    final claimInfoDto = ClaimInfoDTO.fromJson(claimJson);
+    final claimInfoDto = W3CCredential.fromJson(claimJson);
 
-    final claimDto = ClaimDTO(
+    final claimDto = CredentialDTO(
       id: claimInfoDto.id,
       issuer: claimInfoDto.issuer,
       did: param.profileDid,
       type: claimInfoDto.credentialSubject.type,
       info: claimInfoDto,
       credentialRawValue: jsonEncode({
-        "type": "https://iden3-communication.io/credentials/1.0/offer",
+        "type": ProtocolMessageType.credentialOfferMessageType,
         "from": param.issuerDid,
         "body": {
           'credential': claimJson,

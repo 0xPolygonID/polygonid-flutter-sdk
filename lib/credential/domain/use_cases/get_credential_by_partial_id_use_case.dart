@@ -15,7 +15,7 @@ class GetCredentialByPartialIdParam {
 }
 
 class GetCredentialByPartialIdUseCase
-    extends FutureUseCase<GetCredentialByPartialIdParam, ClaimEntity> {
+    extends FutureUseCase<GetCredentialByPartialIdParam, CredentialEntity> {
   final CredentialRepository _credentialRepository;
 
   GetCredentialByPartialIdUseCase(
@@ -23,7 +23,7 @@ class GetCredentialByPartialIdUseCase
   );
 
   @override
-  Future<ClaimEntity> execute({
+  Future<CredentialEntity> execute({
     required GetCredentialByPartialIdParam param,
   }) async {
     return _credentialRepository.getCredentialByPartialId(

@@ -8,10 +8,10 @@ import '../../../common/iden3comm_mocks.dart';
 var json = jsonDecode(Iden3commMocks.contractFunctionCallRequestBodyTxJson);
 
 void main() {
-  group("ContractFunctionCallBodyTxDataRequest", () {
+  group("ContractInvokeTransactionData", () {
     test("fromJson", () {
       var contractFunctionCallBodyTxDataRequest =
-          ContractFunctionCallBodyTxDataRequest.fromJson(json);
+          ContractInvokeTransactionData.fromJson(json);
       expect(contractFunctionCallBodyTxDataRequest.contractAddress,
           "0x0000000000000000000000000000000000000000");
       expect(contractFunctionCallBodyTxDataRequest.methodId, "0x00000000");
@@ -20,7 +20,7 @@ void main() {
     });
     test("toJson", () {
       var contractFunctionCallBodyTxDataRequest =
-          ContractFunctionCallBodyTxDataRequest.fromJson(json);
+          ContractInvokeTransactionData.fromJson(json);
       expect(contractFunctionCallBodyTxDataRequest.toJson(), json);
     });
   });

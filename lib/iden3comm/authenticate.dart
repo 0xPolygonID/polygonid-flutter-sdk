@@ -34,13 +34,13 @@ import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/lib_pidcore_credential_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_service_metadata_devices_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_service_metadata_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_service_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_body_response.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document_service.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document_service_metadata.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document_service_metadata_devices.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/response/jwz.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
@@ -48,7 +48,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/i
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_vp_proof.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/jwz_exceptions.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/iden3_message_factory.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
@@ -82,12 +82,12 @@ class Authenticate {
   late ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
   late StacktraceManager _stacktraceManager;
 
-  Future<Iden3MessageEntity?> authenticate({
+  Future<Iden3Message?> authenticate({
     required String privateKey,
     required String genesisDid,
     required BigInt profileNonce,
     required IdentityEntity identityEntity,
-    required Iden3MessageEntity message,
+    required Iden3Message message,
     required EnvEntity env,
     required String? pushToken,
     String? challenge,
@@ -234,7 +234,7 @@ class Authenticate {
           "[Authenticate] Callback url is null or empty",
         );
         throw NullAuthenticateCallbackException(
-          authRequest: message as AuthIden3MessageEntity,
+          authRequest: message as AuthorizationRequestMessage,
           errorMessage: "Callback url is null or empty",
         );
       }
@@ -275,9 +275,10 @@ class Authenticate {
           return null;
         }
 
-        final _getIden3MessageUseCase = getItSdk<GetIden3MessageUseCase>();
-        final nextRequest = await _getIden3MessageUseCase.execute(
-          param: jsonEncode(messageJson),
+        final messageFactory =
+            Iden3MessageFactory(getItSdk<StacktraceManager>());
+        final nextRequest = messageFactory.createMessage(
+          rawMessage: response.body,
         );
 
         return nextRequest;
@@ -299,7 +300,7 @@ class Authenticate {
     required EnvEntity env,
     required String? pushToken,
     required String profileDid,
-    required Iden3MessageEntity message,
+    required Iden3Message message,
     required List<Iden3commProofEntity> proofs,
   }) async {
     String pushUrl = env.pushUrl;
@@ -307,23 +308,22 @@ class Authenticate {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     String packageName = packageInfo.packageName;
 
-    AuthBodyDidDocResponseDTO? didDocResponse = await _getDidDoc(
+    DIDDocument? didDocResponse = await _getDidDoc(
       pushUrl: pushUrl,
       pushToken: pushToken,
       packageName: packageName,
       profileDid: profileDid,
     );
 
-    AuthResponseDTO authResponse = AuthResponseDTO(
+    final authResponse = AuthorizationResponseMessage(
       id: const Uuid().v4(),
       thid: message.thid,
       to: message.from,
       from: profileDid,
       typ: "application/iden3-zkp-json",
-      type: "https://iden3-communication.io/authorization/1.0/response",
-      body: AuthBodyResponseDTO(
-        message: (message as AuthIden3MessageEntity).body.message,
-        scope: proofs,
+      body: AuthorizationMessageResponseBody(
+        message: (message as AuthorizationRequestMessage).body.message,
+        proofs: proofs,
         did_doc: didDocResponse,
       ),
     );
@@ -342,7 +342,7 @@ class Authenticate {
     required String privateKey,
     required String? challenge,
     required EnvEntity env,
-    required Iden3MessageEntity message,
+    required Iden3Message message,
     required Map<String, dynamic>? transactionData,
     required Uint8List privateKeyBytes,
     required ProofRepository proofRepository,
@@ -370,7 +370,7 @@ class Authenticate {
           );
         }
       }
-      ClaimEntity claim = credentials.first;
+      CredentialEntity claim = credentials.first;
 
       if (claim.expiration != null) {
         claim = await _checkCredentialExpirationAndTryRefreshIfExpired(
@@ -581,7 +581,7 @@ class Authenticate {
     return walletDs.signMessage(privateKey: privateKey, message: message);
   }
 
-  Future<AuthBodyDidDocResponseDTO?> _getDidDoc({
+  Future<DIDDocument?> _getDidDoc({
     required String? pushUrl,
     required String? pushToken,
     required String? packageName,
@@ -596,26 +596,28 @@ class Authenticate {
       return null;
     }
 
-    return AuthBodyDidDocResponseDTO(
+    return DIDDocument(
       context: const ["https://www.w3.org/ns/did/v1"],
       id: profileDid,
       service: [
-        AuthBodyDidDocServiceResponseDTO(
+        DIDDocumentService(
           id: '$profileDid#mobile',
           type: 'Iden3MobileServiceV1',
           serviceEndpoint: 'iden3comm:v0.1:callbackHandler',
         ),
-        AuthBodyDidDocServiceResponseDTO(
+        DIDDocumentService(
           id: "$profileDid#push",
           type: "push-notification",
           serviceEndpoint: pushUrl,
-          metadata: AuthBodyDidDocServiceMetadataResponseDTO(devices: [
-            AuthBodyDidDocServiceMetadataDevicesResponseDTO(
-              ciphertext:
-                  await _getPushCipherText(pushToken, pushUrl, packageName),
-              alg: "RSA-OAEP-512",
-            )
-          ]),
+          metadata: DIDDocumentServiceMetadata(
+            devices: [
+              DIDDocumentServiceMetadataDevices(
+                ciphertext:
+                    await _getPushCipherText(pushToken, pushUrl, packageName),
+                alg: "RSA-OAEP-512",
+              )
+            ],
+          ),
         )
       ],
     );
@@ -925,8 +927,8 @@ class Authenticate {
       ..authClaimNode = authClaimNode;
   }
 
-  Future<ClaimEntity> _checkCredentialExpirationAndTryRefreshIfExpired({
-    required ClaimEntity claim,
+  Future<CredentialEntity> _checkCredentialExpirationAndTryRefreshIfExpired({
+    required CredentialEntity claim,
     required String genesisDid,
     required String privateKey,
   }) async {
@@ -938,7 +940,7 @@ class Authenticate {
     var expirationTimeFormatted =
         DateFormat("yyyy-MM-dd HH:mm:ss").format(expirationTime);
     bool isExpired = nowFormatted.compareTo(expirationTimeFormatted) > 0 ||
-        claim.state == ClaimState.expired;
+        claim.state == CredentialState.expired;
 
     if (isExpired && claim.info.containsKey("refreshService")) {
       _proofGenerationStepsStreamManager
@@ -947,7 +949,7 @@ class Authenticate {
       RefreshCredentialUseCase _refreshCredentialUseCase =
           await getItSdk.getAsync<RefreshCredentialUseCase>();
 
-      ClaimEntity refreshedClaimEntity =
+      CredentialEntity refreshedClaimEntity =
           await _refreshCredentialUseCase.execute(
               param: RefreshCredentialParam(
         credential: claim,

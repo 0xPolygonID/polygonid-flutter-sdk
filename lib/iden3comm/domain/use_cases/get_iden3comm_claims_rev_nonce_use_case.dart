@@ -9,7 +9,7 @@ import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_su
 import 'get_proof_requests_use_case.dart';
 
 class GetIden3commClaimsRevNonceParam {
-  final Iden3MessageEntity message;
+  final Iden3Message message;
   final String genesisDid;
   final BigInt profileNonce;
   final String encryptionKey;

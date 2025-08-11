@@ -11,7 +11,8 @@ import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/pinata_gateway_utils.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/credential/response/fetch_claim_response_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/protocol_message_type.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_issuance_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 
 class RemoteIden3commDataSource {
@@ -81,7 +82,7 @@ class RemoteIden3commDataSource {
     }
   }
 
-  Future<ClaimDTO> refreshCredential({
+  Future<CredentialDTO> refreshCredential({
     required String authToken,
     required String url,
     required,
@@ -115,26 +116,27 @@ class RemoteIden3commDataSource {
         throw NetworkException(
             errorMessage: response.data, statusCode: response.statusCode ?? 0);
       } else {
-        FetchClaimResponseDTO fetchResponse =
-            FetchClaimResponseDTO.fromJson(response.data);
+        final type =
+            (response.data['type'] as Object?)?.toString() ?? 'unknown';
 
-        if (fetchResponse.type == FetchClaimResponseType.issuance) {
-          return ClaimDTO(
-            id: fetchResponse.credential.id,
-            issuer: fetchResponse.from,
+        if (type == ProtocolMessageType.credentialIssuanceResponseMessageType) {
+          final message = CredentialIssuanceMessage.fromJson(response.data);
+          return CredentialDTO(
+            id: message.body.credential.id,
+            issuer: message.from,
             did: profileDid,
-            type: fetchResponse.credential.credentialSubject.type,
-            expiration: fetchResponse.credential.expirationDate,
-            info: fetchResponse.credential,
+            type: message.body.credential.credentialSubject.type,
+            expiration: message.body.credential.expirationDate,
+            info: message.body.credential,
             credentialRawValue: json.encode(response.data),
           );
         } else {
           _stacktraceManager.addError(
               "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException");
           throw UnsupportedFetchClaimTypeException(
-            type: fetchResponse.type.name,
+            type: type,
             errorMessage:
-                'Unsupported fetch claim type: ${fetchResponse.type.name}\nShould be ${FetchClaimResponseType.issuance.name}',
+                'Unsupported fetch claim type: $type\nShould be ${ProtocolMessageType.credentialIssuanceResponseMessageType}',
           );
         }
       }
@@ -158,7 +160,7 @@ class RemoteIden3commDataSource {
     }
   }
 
-  Future<ClaimDTO> fetchClaim({
+  Future<CredentialDTO> fetchClaim({
     required String authToken,
     required String url,
     required String did,
@@ -182,18 +184,20 @@ class RemoteIden3commDataSource {
       _stacktraceManager.logTrace(
           "[RemoteIden3commDataSource] fetchClaim: ${response.statusCode} ${response.data}");
       if (response.statusCode == 200) {
-        final fetchResponse = FetchClaimResponseDTO.fromJson(response.data);
+        final type =
+            (response.data['type'] as Object?)?.toString() ?? 'unknown';
 
-        if (fetchResponse.type == FetchClaimResponseType.issuance) {
+        if (type == ProtocolMessageType.credentialIssuanceResponseMessageType) {
+          final message = CredentialIssuanceMessage.fromJson(response.data);
           logger().i(
-              "[RemoteIden3commDataSource] fetchClaim: ${fetchResponse.credential.toJson()}");
-          final claimDTO = ClaimDTO(
-            id: fetchResponse.credential.id,
-            issuer: fetchResponse.from,
+              "[RemoteIden3commDataSource] fetchClaim: ${message.body.credential.toJson()}");
+          final claimDTO = CredentialDTO(
+            id: message.body.credential.id,
+            issuer: message.from,
             did: did,
-            type: fetchResponse.credential.credentialSubject.type,
-            expiration: fetchResponse.credential.expirationDate,
-            info: fetchResponse.credential,
+            type: message.body.credential.credentialSubject.type,
+            expiration: message.body.credential.expirationDate,
+            info: message.body.credential,
             credentialRawValue: jsonEncode(response.data),
           );
           logger().i(
@@ -203,9 +207,9 @@ class RemoteIden3commDataSource {
           _stacktraceManager.addError(
               "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException");
           throw UnsupportedFetchClaimTypeException(
-            type: fetchResponse.type.name,
+            type: type,
             errorMessage:
-                'Unsupported fetch claim type: ${fetchResponse.type.name}\nShould be ${FetchClaimResponseType.issuance.name}',
+                'Unsupported fetch claim type: $type\nShould be ${ProtocolMessageType.credentialIssuanceResponseMessageType}',
           );
         }
       } else {

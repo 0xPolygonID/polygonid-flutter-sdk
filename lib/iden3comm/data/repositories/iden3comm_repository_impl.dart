@@ -3,17 +3,17 @@ import 'dart:convert';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/iden3_message_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_response_dto.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_response_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/jwz_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_body_response.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/response/jwz.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/iden3_message_factory.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3message_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/lib_pidcore_proof_data_source.dart';
@@ -29,7 +29,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   final LibPolygonIdCoreProofDataSource _libPolygonIdCoreProofDataSource;
   final QMapper _qMapper;
   final JWZMapper _jwzMapper;
-  final GetIden3MessageUseCase _getIden3MessageUseCase;
+  final Iden3MessageFactory _messageFactory;
   final StacktraceManager _stacktraceManager;
 
   Iden3commRepositoryImpl(
@@ -38,18 +38,18 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     this._libPolygonIdCoreProofDataSource,
     this._qMapper,
     this._jwzMapper,
-    this._getIden3MessageUseCase,
+    this._messageFactory,
     this._stacktraceManager,
   );
 
   @override
-  Future<Iden3MessageEntity?> authenticate({
-    required AuthIden3MessageEntity request,
+  Future<Iden3Message?> authenticate({
+    required AuthorizationRequestMessage request,
     required String authToken,
   }) async {
     String? url = request.body.callbackUrl;
 
-    if (url == null || url.isEmpty) {
+    if (url.isEmpty) {
       _stacktraceManager.addError("Callback url is null or empty");
       throw NullAuthenticateCallbackException(
         authRequest: request,
@@ -72,8 +72,8 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
         return null;
       }
 
-      final nextRequest = await _getIden3MessageUseCase.execute(
-        param: jsonEncode(messageJson),
+      final nextRequest = _messageFactory.createMessage(
+        rawMessage: response.data,
       );
 
       return nextRequest;
@@ -90,13 +90,13 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   @override
   Future<String> getAuthResponse({
     required String did,
-    required AuthIden3MessageEntity request,
+    required AuthorizationRequestMessage request,
     required List<Iden3commProofEntity> scope,
     String? pushUrl,
     String? pushToken,
     String? packageName,
   }) async {
-    AuthBodyDidDocResponseDTO? didDocResponse;
+    DIDDocument? didDocResponse;
     if (pushUrl != null &&
         pushUrl.isNotEmpty &&
         pushToken != null &&
@@ -107,7 +107,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
           pushUrl, did, pushToken, packageName);
     }
 
-    AuthResponseDTO authResponse = AuthResponseDTO(
+    final authResponse = AuthorizationResponseMessage(
       id: const Uuid().v4(),
       thid: request.thid,
       to: request.from,
@@ -115,10 +115,9 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       typ: "application/iden3-zkp-json",
       //request
       //.typ, // "application/iden3-zkp-json", // TODO if it's plain json typ: "application/iden3comm-plain-json",
-      type: "https://iden3-communication.io/authorization/1.0/response",
-      body: AuthBodyResponseDTO(
+      body: AuthorizationMessageResponseBody(
         message: request.body.message,
-        scope: scope,
+        proofs: scope,
         did_doc: didDocResponse,
       ),
     );

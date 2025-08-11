@@ -32,19 +32,19 @@
 "to": "1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ"
 }*/
 
-class AuthBodyDidDocServiceMetadataDevicesResponse {
+class DIDDocumentServiceMetadataDevices {
   final String? ciphertext;
   final String? alg;
 
-  AuthBodyDidDocServiceMetadataDevicesResponse({this.ciphertext, this.alg});
+  DIDDocumentServiceMetadataDevices({this.ciphertext, this.alg});
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [AuthBodyDidDocServiceMetadataDevicesResponse]
-  factory AuthBodyDidDocServiceMetadataDevicesResponse.fromJson(
+  /// @returns [DIDDocumentServiceMetadataDevices]
+  factory DIDDocumentServiceMetadataDevices.fromJson(
       Map<String, dynamic> json) {
-    return AuthBodyDidDocServiceMetadataDevicesResponse(
+    return DIDDocumentServiceMetadataDevices(
       ciphertext: json["ciphertext"],
       alg: json['alg'],
     );
