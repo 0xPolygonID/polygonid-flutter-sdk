@@ -5,14 +5,14 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exce
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 
 class GetSchemasUseCase
-    extends FutureUseCase<Iden3MessageEntity, List<Map<String, dynamic>>> {
+    extends FutureUseCase<Iden3Message, List<Map<String, dynamic>>> {
   final Iden3commCredentialRepository _iden3commCredentialRepository;
 
   GetSchemasUseCase(this._iden3commCredentialRepository);
 
   @override
   Future<List<Map<String, dynamic>>> execute(
-      {required Iden3MessageEntity param}) async {
+      {required Iden3Message param}) async {
     if (![
       Iden3MessageType.authRequest,
       Iden3MessageType.proofContractInvokeRequest,

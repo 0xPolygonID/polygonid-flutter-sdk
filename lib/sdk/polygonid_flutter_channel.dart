@@ -466,8 +466,8 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<Iden3MessageEntity?> authenticate({
-    required Iden3MessageEntity message,
+  Future<Iden3Message?> authenticate({
+    required Iden3Message message,
     required String genesisDid,
     BigInt? profileNonce,
     required String privateKey,
@@ -516,7 +516,7 @@ class PolygonIdFlutterChannel
 
   @override
   Future<List<CredentialEntity>> getClaimsFromIden3Message({
-    required Iden3MessageEntity message,
+    required Iden3Message message,
     required String genesisDid,
     BigInt? profileNonce,
     required String privateKey,
@@ -532,7 +532,7 @@ class PolygonIdFlutterChannel
   }
 
   Future<List<RequestAndCredentials>> getMessageRequestsAndCredentials({
-    required Iden3MessageEntity message,
+    required Iden3Message message,
     required String genesisDid,
     BigInt? profileNonce,
     required String encryptionKey,
@@ -547,7 +547,7 @@ class PolygonIdFlutterChannel
 
   @override
   Future<List<int>> getClaimsRevNonceFromIden3Message(
-      {required Iden3MessageEntity message,
+      {required Iden3Message message,
       required String genesisDid,
       BigInt? profileNonce,
       required String privateKey}) {
@@ -560,18 +560,18 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<List<FilterEntity>> getFilters({required Iden3MessageEntity message}) {
+  Future<List<FilterEntity>> getFilters({required Iden3Message message}) {
     return _polygonIdSdk.iden3comm.getFilters(message: message);
   }
 
   @override
-  Future<Iden3MessageEntity> getIden3Message({required String message}) {
+  Future<Iden3Message> getIden3Message({required String message}) {
     return _polygonIdSdk.iden3comm.getIden3Message(message: message);
   }
 
   @override
   Future<List<Map<String, dynamic>>> getSchemas(
-      {required Iden3MessageEntity message}) {
+      {required Iden3Message message}) {
     return _polygonIdSdk.iden3comm.getSchemas(message: message);
   }
 
@@ -599,7 +599,7 @@ class PolygonIdFlutterChannel
 
   @override
   Future<List<Iden3commProofEntity>> getProofs({
-    required Iden3MessageEntity message,
+    required Iden3Message message,
     required String genesisDid,
     BigInt? profileNonce,
     required String privateKey,

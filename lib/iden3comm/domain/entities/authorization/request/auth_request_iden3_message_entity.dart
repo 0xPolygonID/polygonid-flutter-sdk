@@ -29,7 +29,7 @@ import '../../authorization/request/auth_body_request.dart';
 typedef AuthIden3MessageEntity = AuthorizationRequestMessage;
 
 class AuthorizationRequestMessage
-    extends Iden3MessageEntity<AuthorizationRequestMessageBody> {
+    extends Iden3Message<AuthorizationRequestMessageBody> {
   @override
   final String from;
 

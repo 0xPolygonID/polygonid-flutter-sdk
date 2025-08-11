@@ -7,10 +7,11 @@
 
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 
+@Deprecated('Use VerificationResponseMessage instead')
 typedef VerificationResponseEntity = VerificationResponseMessage;
 
 class VerificationResponseMessage
-    extends Iden3MessageEntity<VerificationResponseBody> {
+    extends Iden3Message<VerificationResponseBody> {
   VerificationResponseMessage({
     required super.id,
     required super.typ,
@@ -45,7 +46,7 @@ class VerificationResponseMessage
   }
 
   @override
-  String toString() => "[VerificationResponseEntity] {${super.toString()}";
+  String toString() => "[VerificationResponseMessage] {${super.toString()}";
 
   @override
   bool operator ==(Object other) =>

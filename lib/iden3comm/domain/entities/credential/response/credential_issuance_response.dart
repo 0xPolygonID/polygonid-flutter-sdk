@@ -1,8 +1,7 @@
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 
-class CredentialIssuanceMessage
-    extends Iden3MessageEntity<IssuanceMessageBody> {
+class CredentialIssuanceMessage extends Iden3Message<IssuanceMessageBody> {
   CredentialIssuanceMessage({
     required super.id,
     required super.typ,

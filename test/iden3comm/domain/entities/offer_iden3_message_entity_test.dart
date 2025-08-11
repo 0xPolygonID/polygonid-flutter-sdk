@@ -9,7 +9,7 @@ import '../../../common/iden3comm_mocks.dart';
 var json = jsonDecode(Iden3commMocks.offerRequestJson);
 
 void main() {
-  group("OfferIden3MessageEntity", () {
+  group("CredentialsOfferMessage", () {
     test("fromJson", () {
       var offerRequest = CredentialsOfferMessage.fromJson(json);
       expect(offerRequest.id, "1");

@@ -1,9 +1,10 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 
+@Deprecated('Use CredentialStatusUpdateMessage instead')
 typedef CredentialStatusUpdateMessageEntity = CredentialStatusUpdateMessage;
 
 class CredentialStatusUpdateMessage
-    extends Iden3MessageEntity<CredentialStatusUpdateBody> {
+    extends Iden3Message<CredentialStatusUpdateBody> {
   CredentialStatusUpdateMessage({
     required super.id,
     required super.typ,

@@ -25,7 +25,7 @@ import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_su
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 
 class GetIden3commProofsParam {
-  final Iden3MessageEntity message;
+  final Iden3Message message;
   final String genesisDid;
   final BigInt profileNonce;
   final String privateKey;

@@ -119,7 +119,7 @@ void main() {
       when(storageClaimDataSource.storeCredentials(
               did: anyNamed('did'),
               encryptionKey: anyNamed('encryptionKey'),
-              credentials: anyNamed('claims')))
+              credentials: anyNamed('credentials')))
           .thenAnswer((realInvocation) => Future.value());
       when(claimMapper.mapTo(any)).thenReturn(claimDTOs[0]);
     });
@@ -139,7 +139,7 @@ void main() {
       var captureStore = verify(storageClaimDataSource.storeCredentials(
               did: captureAnyNamed('did'),
               encryptionKey: captureAnyNamed('encryptionKey'),
-              credentials: captureAnyNamed('claims')))
+              credentials: captureAnyNamed('credentials')))
           .captured;
       expect(captureStore[0], CommonMocks.identifier);
       expect(captureStore[1], CommonMocks.encryptionKey);
@@ -159,7 +159,7 @@ void main() {
       when(storageClaimDataSource.storeCredentials(
               did: anyNamed('did'),
               encryptionKey: anyNamed('encryptionKey'),
-              credentials: anyNamed('claims')))
+              credentials: anyNamed('credentials')))
           .thenAnswer((realInvocation) => Future.error(exception));
 
       // When
@@ -178,7 +178,7 @@ void main() {
       var captureStore = verify(storageClaimDataSource.storeCredentials(
               did: captureAnyNamed('did'),
               encryptionKey: captureAnyNamed('encryptionKey'),
-              credentials: captureAnyNamed('claims')))
+              credentials: captureAnyNamed('credentials')))
           .captured;
       expect(captureStore[0], CommonMocks.identifier);
       expect(captureStore[1], CommonMocks.encryptionKey);
@@ -488,7 +488,7 @@ void main() {
       when(storageClaimDataSource.removeCredential(
               did: anyNamed('did'),
               encryptionKey: anyNamed('encryptionKey'),
-              credentialIds: anyNamed('claimIds')))
+              credentialIds: anyNamed('credentialIds')))
           .thenAnswer((realInvocation) => Future.value());
     });
 
@@ -507,7 +507,7 @@ void main() {
       var captureRemove = verify(storageClaimDataSource.removeCredential(
               did: captureAnyNamed('did'),
               encryptionKey: captureAnyNamed('encryptionKey'),
-              credentialIds: captureAnyNamed('claimIds')))
+              credentialIds: captureAnyNamed('credentialIds')))
           .captured;
       expect(captureRemove[0], CommonMocks.identifier);
       expect(captureRemove[1], CommonMocks.encryptionKey);
@@ -521,7 +521,7 @@ void main() {
       when(storageClaimDataSource.removeCredential(
               did: anyNamed('did'),
               encryptionKey: anyNamed('encryptionKey'),
-              credentialIds: anyNamed('claimIds')))
+              credentialIds: anyNamed('credentialIds')))
           .thenAnswer((realInvocation) => Future.error(exception));
 
       // When
@@ -540,7 +540,7 @@ void main() {
       var captureRemove = verify(storageClaimDataSource.removeCredential(
               did: captureAnyNamed('did'),
               encryptionKey: captureAnyNamed('encryptionKey'),
-              credentialIds: captureAnyNamed('claimIds')))
+              credentialIds: captureAnyNamed('credentialIds')))
           .captured;
       expect(captureRemove[0], CommonMocks.identifier);
       expect(captureRemove[1], CommonMocks.encryptionKey);

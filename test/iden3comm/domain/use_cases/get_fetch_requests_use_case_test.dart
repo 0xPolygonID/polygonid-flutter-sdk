@@ -26,7 +26,7 @@ void main() {
       // When
       await useCase.execute(param: param).then((requests) {
         for (int i = 0; i < requests.length; i++) {
-          /// We suppose [FetchIden3MessageEntity.fromJson] has been tested
+          /// We suppose [CredentialFetchRequestMessage.fromJson] has been tested
           CredentialFetchRequestMessage entity =
               CredentialFetchRequestMessage.fromJson(jsonDecode(requests[i]));
           expect(entity.typ, typ);

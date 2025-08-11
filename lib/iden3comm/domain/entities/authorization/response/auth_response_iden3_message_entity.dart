@@ -52,7 +52,7 @@ import 'auth_body_response.dart';
 typedef AuthResponseIden3MessageEntity = AuthorizationResponseMessage;
 
 class AuthorizationResponseMessage
-    extends Iden3MessageEntity<AuthorizationMessageResponseBody> {
+    extends Iden3Message<AuthorizationMessageResponseBody> {
   @override
   final String from;
 
@@ -97,7 +97,7 @@ class AuthorizationResponseMessage
   }
 
   @override
-  String toString() => "[AuthResponseIden3MessageEntity] {${super.toString()}}";
+  String toString() => "[AuthorizationResponseMessage] {${super.toString()}}";
 
   @override
   bool operator ==(Object other) =>

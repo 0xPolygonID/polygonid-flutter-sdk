@@ -8,7 +8,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exce
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
 
 class GetIden3commClaimsParam {
-  final Iden3MessageEntity message;
+  final Iden3Message message;
   final String genesisDid;
   final BigInt profileNonce;
   final String encryptionKey;

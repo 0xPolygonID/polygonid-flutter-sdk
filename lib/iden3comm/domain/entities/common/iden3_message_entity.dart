@@ -44,9 +44,12 @@ enum Iden3MessageType {
   }
 }
 
+@Deprecated('Use Iden3Message instead')
+typedef Iden3MessageEntity<T> = Iden3Message<T>;
+
 /// Represents an iden3 protocol message.
 /// https://identity.foundation/didcomm-messaging/spec/#message-headers
-abstract class Iden3MessageEntity<T> extends Equatable {
+abstract class Iden3Message<T> extends Equatable {
   final String id;
 
   /// The type of the message, e.g. "application/iden3-zkp-json".
@@ -81,7 +84,7 @@ abstract class Iden3MessageEntity<T> extends Equatable {
   /// Optional next request, used for chaining messages.
   final Map<String, dynamic>? nextRequest;
 
-  const Iden3MessageEntity({
+  const Iden3Message({
     required this.id,
     required this.typ,
     required this.type,
@@ -99,7 +102,7 @@ abstract class Iden3MessageEntity<T> extends Equatable {
   Iden3MessageType get messageType => type;
 
   @override
-  String toString() => "Iden3MessageEntity: ${jsonEncode(toJson())}";
+  String toString() => "Iden3Message: ${jsonEncode(toJson())}";
 
   @override
   Map<String, dynamic> toJson() {

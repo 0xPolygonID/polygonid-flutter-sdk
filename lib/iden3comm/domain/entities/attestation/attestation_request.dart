@@ -6,10 +6,10 @@
 
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 
+@Deprecated('Use AttestationRequestMessage instead')
 typedef AttestationRequestEntity = AttestationRequestMessage;
 
-class AttestationRequestMessage
-    extends Iden3MessageEntity<AttestationRequestBody> {
+class AttestationRequestMessage extends Iden3Message<AttestationRequestBody> {
   AttestationRequestMessage({
     required super.id,
     required super.typ,
@@ -44,7 +44,7 @@ class AttestationRequestMessage
   }
 
   @override
-  String toString() => "[AttestationRequestEntity] {${super.toString()}";
+  String toString() => "[AttestationRequestMessage] {${super.toString()}";
 
   @override
   bool operator ==(Object other) =>

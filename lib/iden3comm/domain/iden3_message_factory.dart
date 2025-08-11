@@ -29,7 +29,7 @@ class Iden3MessageFactory {
 
   Iden3MessageFactory(this._stacktraceManager);
 
-  Iden3MessageEntity createMessage({
+  Iden3Message createMessage({
     required String rawMessage,
   }) {
     try {

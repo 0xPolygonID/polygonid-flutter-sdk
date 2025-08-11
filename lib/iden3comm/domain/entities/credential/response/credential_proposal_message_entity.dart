@@ -22,12 +22,12 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/crede
 	"to": "did:polygonid:polygon:amoy:2qRHzfG7yvULahKDg9eRNX4kTBJb6EZcCBLQoUKx8x"
 }
 */
-
+@Deprecated('Use ProposalMessage instead')
 typedef CredentialProposal = ProposalMessage;
 
 /// Represents a credential proposal message
 /// https://iden3-communication.io/credentials/0.1/proposal
-class ProposalMessage extends Iden3MessageEntity<ProposalMessageBody> {
+class ProposalMessage extends Iden3Message<ProposalMessageBody> {
   ProposalMessage({
     required super.id,
     required super.typ,

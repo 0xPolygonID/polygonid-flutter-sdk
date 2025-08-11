@@ -74,10 +74,10 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 
+@Deprecated('Use VerificationRequestMessage instead')
 typedef VerificationRequestEntity = VerificationRequestMessage;
 
-class VerificationRequestMessage
-    extends Iden3MessageEntity<VerificationRequestBody> {
+class VerificationRequestMessage extends Iden3Message<VerificationRequestBody> {
   VerificationRequestMessage({
     required super.id,
     required super.typ,
@@ -113,7 +113,7 @@ class VerificationRequestMessage
 
   @override
   String toString() {
-    return "[VerificationRequestEntity] {${super.toString()}";
+    return "[VerificationRequestMessage] {${super.toString()}";
   }
 
   @override

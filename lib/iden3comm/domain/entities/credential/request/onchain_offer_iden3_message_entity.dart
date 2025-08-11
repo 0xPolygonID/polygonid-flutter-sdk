@@ -99,7 +99,7 @@ class CredentialsOnchainOfferMessage
   }
 
   @override
-  String toString() => "[OfferIden3MessageEntity] {${super.toString()}";
+  String toString() => "[CredentialsOnchainOfferMessage] {${super.toString()}";
 
   @override
   bool operator ==(Object other) =>

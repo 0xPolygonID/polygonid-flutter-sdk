@@ -8,7 +8,7 @@ import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/generate_inputs_response.dart';
 
 abstract class Iden3commRepository {
-  Future<Iden3MessageEntity?> authenticate({
+  Future<Iden3Message?> authenticate({
     required AuthorizationRequestMessage request,
     required String authToken,
   });

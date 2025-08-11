@@ -13,7 +13,7 @@ const String to = "theTo";
 const String id = "theId";
 
 void main() {
-  group("FetchIden3MessageEntity", () {
+  group("CredentialFetchRequestMessage", () {
     test("fromJson", () {
       var fetchRequest = CredentialFetchRequestMessage.fromJson(json);
       expect(fetchRequest.id, "4dd6479b-99b6-405c-ba9e-c7b18d251a5e");
@@ -25,9 +25,9 @@ void main() {
       expect(fetchRequest.body.id, "fe4d9b5e-7b7e-4b9e-8c5a-1b5b4b4e4e4e");
     });
 
-    // test("toJson", () {
-    //   var fetchRequest = FetchIden3MessageEntity.fromJson(json);
-    //   expect(fetchRequest.toJson(), json);
-    // });
+    test("toJson", () {
+      var fetchRequest = CredentialFetchRequestMessage.fromJson(json);
+      expect(fetchRequest.toJson(), json);
+    });
   });
 }

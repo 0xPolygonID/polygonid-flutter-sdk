@@ -40,10 +40,11 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_function_call_body_request.dart';
 
+@Deprecated('Use ContractInvokeRequestMessage instead')
 typedef ContractIden3MessageEntity = ContractInvokeRequestMessage;
 
 class ContractInvokeRequestMessage
-    extends Iden3MessageEntity<ContractInvokeRequestBody> {
+    extends Iden3Message<ContractInvokeRequestBody> {
   ContractInvokeRequestMessage({
     required super.id,
     super.typ,

@@ -43,7 +43,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   );
 
   @override
-  Future<Iden3MessageEntity?> authenticate({
+  Future<Iden3Message?> authenticate({
     required AuthorizationRequestMessage request,
     required String authToken,
   }) async {

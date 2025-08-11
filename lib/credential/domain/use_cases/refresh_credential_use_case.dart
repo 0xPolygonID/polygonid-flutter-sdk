@@ -74,7 +74,7 @@ class RefreshCredentialUseCase
         RefreshService.fromJson(param.credential.info["refreshService"]);
     String refreshServiceUrl = refreshService.id;
     String id = const Uuid().v4();
-    final credentialRefreshMessage = CredentialRefreshIden3MessageEntity(
+    final credentialRefreshMessage = CredentialRefreshMessage(
       id: id,
       typ: "application/iden3comm-plain-json",
       thid: id,

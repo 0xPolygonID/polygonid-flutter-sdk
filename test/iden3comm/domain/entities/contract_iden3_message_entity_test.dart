@@ -9,10 +9,10 @@ import '../../../common/iden3comm_mocks.dart';
 var json = jsonDecode(Iden3commMocks.contractFunctionCallRequestJson);
 
 void main() {
-  group("ContractIden3MessageEntity", () {
+  group("ContractInvokeRequestMessage", () {
     test("fromJson", () {
       var contractFunctionCallRequest =
-          ContractIden3MessageEntity.fromJson(json);
+          ContractInvokeRequestMessage.fromJson(json);
       expect(contractFunctionCallRequest.id, "theId");
       expect(contractFunctionCallRequest.typ, "theTyp");
       expect(contractFunctionCallRequest.type,

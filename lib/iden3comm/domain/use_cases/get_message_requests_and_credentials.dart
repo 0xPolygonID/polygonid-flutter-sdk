@@ -20,7 +20,7 @@ typedef RequestAndCredentials = ({
 });
 
 class GetMessageRequestsAndCredsParam {
-  final Iden3MessageEntity message;
+  final Iden3Message message;
   final String genesisDid;
   final BigInt profileNonce;
   final String encryptionKey;

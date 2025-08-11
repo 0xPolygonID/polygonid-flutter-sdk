@@ -9,7 +9,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exce
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_query_context_use_case.dart';
 
 class GetProofRequestsUseCase
-    extends FutureUseCase<Iden3MessageEntity, List<ProofRequestEntity>> {
+    extends FutureUseCase<Iden3Message, List<ProofRequestEntity>> {
   final GetProofQueryContextUseCase _getProofQueryContextUseCase;
   final StacktraceManager _stacktraceManager;
 
@@ -20,7 +20,7 @@ class GetProofRequestsUseCase
 
   @override
   Future<List<ProofRequestEntity>> execute({
-    required Iden3MessageEntity param,
+    required Iden3Message param,
   }) async {
     List<ProofRequestEntity> proofRequests = [];
 

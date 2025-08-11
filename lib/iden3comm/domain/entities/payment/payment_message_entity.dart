@@ -1,9 +1,10 @@
 // ignore_for_file: overridden_fields
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 
+@Deprecated('Use PaymentMessage instead')
 typedef PaymentMessageEntity = PaymentMessage;
 
-class PaymentMessage extends Iden3MessageEntity<PaymentBody> {
+class PaymentMessage extends Iden3Message<PaymentBody> {
   @override
   final String from;
 

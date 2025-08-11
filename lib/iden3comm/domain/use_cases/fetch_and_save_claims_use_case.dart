@@ -80,7 +80,7 @@ class FetchAndSaveClaimsUseCase
   Future<List<CredentialEntity>> execute({
     required FetchAndSaveClaimsParam param,
   }) async {
-    /// Get the corresponding fetch request from [OfferIden3MessageEntity]
+    /// Get the corresponding fetch request from [CredentialsOfferMessage]
     /// For each, get the auth token
     /// With the auth token, fetch the [ClaimEntity]
     /// Then save the list of [ClaimEntity]

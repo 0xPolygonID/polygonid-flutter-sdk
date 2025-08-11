@@ -26,7 +26,7 @@ final messages = [
   Iden3commMocks.fetchRequestJson,
   Iden3commMocks.contractFunctionCallRequestJson
 ];
-final expectations = <Iden3MessageEntity>[
+final expectations = <Iden3Message>[
   Iden3commMocks.authRequest,
   Iden3commMocks.offerRequest,
   Iden3commMocks.fetchRequest,
@@ -90,7 +90,7 @@ void main() {
       final expectedMessage = expectations[i];
 
       final msg = factory.createMessage(rawMessage: rawMessage);
-      expect(msg, isA<Iden3MessageEntity>());
+      expect(msg, isA<Iden3Message>());
       expect(msg.type, expectedType);
       expect(msg.toJson(), expectedMessage.toJson());
     }

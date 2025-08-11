@@ -41,9 +41,10 @@ https://iden3-communication.io/credentials/0.1/payment-request
   "from": "did:iden3:polygon:mumbai:x3HstHLj2rTp6HHXk2WczYP7w3rpCsRbwCMeaQ2H2"
 }
 */
+@Deprecated('Use PaymentRequestMessage instead')
 typedef PaymentRequestEntity = PaymentRequestMessage;
 
-class PaymentRequestMessage extends Iden3MessageEntity<PaymentRequestBody> {
+class PaymentRequestMessage extends Iden3Message<PaymentRequestBody> {
   @override
   final String from;
 

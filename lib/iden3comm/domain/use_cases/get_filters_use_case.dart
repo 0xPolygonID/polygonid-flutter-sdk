@@ -8,7 +8,7 @@ import '../../../common/domain/entities/filter_entity.dart';
 import 'get_proof_requests_use_case.dart';
 
 class GetFiltersUseCase
-    extends FutureUseCase<Iden3MessageEntity, List<FilterEntity>> {
+    extends FutureUseCase<Iden3Message, List<FilterEntity>> {
   final Iden3commCredentialRepository _iden3commCredentialRepository;
   final IsProofCircuitSupportedUseCase _isProofCircuitSupported;
   final GetProofRequestsUseCase _getProofRequestsUseCase;
@@ -20,8 +20,7 @@ class GetFiltersUseCase
   );
 
   @override
-  Future<List<FilterEntity>> execute(
-      {required Iden3MessageEntity param}) async {
+  Future<List<FilterEntity>> execute({required Iden3Message param}) async {
     List<FilterEntity> filters = [];
 
     List<ProofRequestEntity> requests =

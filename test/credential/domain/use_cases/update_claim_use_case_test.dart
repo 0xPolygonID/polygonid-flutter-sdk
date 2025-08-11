@@ -78,7 +78,7 @@ void main() {
       when(credentialRepository.saveCredentials(
               genesisDid: anyNamed('genesisDid'),
               encryptionKey: anyNamed('encryptionKey'),
-              credentials: anyNamed('claims')))
+              credentials: anyNamed('credentials')))
           .thenAnswer((realInvocation) => Future.value(null));
     });
 
@@ -101,7 +101,7 @@ void main() {
       var capturedSave = verify(credentialRepository.saveCredentials(
               genesisDid: captureAnyNamed('genesisDid'),
               encryptionKey: captureAnyNamed('encryptionKey'),
-              credentials: captureAnyNamed('claims')))
+              credentials: captureAnyNamed('credentials')))
           .captured;
       expect(capturedSave[0], identifier);
       expect(capturedSave[1], CommonMocks.encryptionKey);
@@ -134,7 +134,7 @@ void main() {
       verifyNever(credentialRepository.saveCredentials(
           genesisDid: captureAnyNamed('genesisDid'),
           encryptionKey: captureAnyNamed('encryptionKey'),
-          credentials: captureAnyNamed('claims')));
+          credentials: captureAnyNamed('credentials')));
     });
   });
 }

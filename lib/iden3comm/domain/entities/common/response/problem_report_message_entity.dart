@@ -4,7 +4,7 @@ import 'package:uuid/uuid.dart';
 @Deprecated('Use ProblemReportMessage instead')
 typedef ProblemReportMessageEntity = ProblemReportMessage;
 
-class ProblemReportMessage extends Iden3MessageEntity<ProblemReportBody> {
+class ProblemReportMessage extends Iden3Message<ProblemReportBody> {
   // Parent thread
   final String pthid;
 

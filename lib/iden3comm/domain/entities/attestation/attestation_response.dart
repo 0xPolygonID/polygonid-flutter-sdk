@@ -7,10 +7,10 @@
 
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 
+@Deprecated('Use AttestationResponseMessage instead')
 typedef AttestationResponseEntity = AttestationResponseMessage;
 
-class AttestationResponseMessage
-    extends Iden3MessageEntity<AttestationResponseBody> {
+class AttestationResponseMessage extends Iden3Message<AttestationResponseBody> {
   AttestationResponseMessage({
     required super.id,
     required super.typ,

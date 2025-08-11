@@ -40,10 +40,11 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_function_call_body_response.dart';
 
+@Deprecated('Use ContractInvokeResponseMessage instead')
 typedef ContractResponseIden3MessageEntity = ContractInvokeResponseMessage;
 
 class ContractInvokeResponseMessage
-    extends Iden3MessageEntity<ContractInvokeResponseBody> {
+    extends Iden3Message<ContractInvokeResponseBody> {
   ContractInvokeResponseMessage({
     required super.id,
     String? typ,
@@ -66,7 +67,7 @@ class ContractInvokeResponseMessage
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [ContractIden3MessageEntity]
+  /// @returns [ContractInvokeRequestMessage]
   factory ContractInvokeResponseMessage.fromJson(Map<String, dynamic> json) {
     final body = ContractInvokeResponseBody.fromJson(json['body']);
     return ContractInvokeResponseMessage(

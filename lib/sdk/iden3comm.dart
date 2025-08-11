@@ -46,18 +46,18 @@ import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.d
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 
 abstract class PolygonIdSdkIden3comm {
-  /// Returns a [Iden3MessageEntity] from an iden3comm message string.
+  /// Returns a [Iden3Message] from an iden3comm message string.
   ///
   /// The [message] is the iden3comm message in string format
   ///
   /// When communicating through iden3comm with an Issuer or Verifier,
   /// iden3comm message string needs to be parsed to a supported
-  /// [Iden3MessageEntity] by the Polygon Id Sdk using this method.
-  Future<Iden3MessageEntity> getIden3Message({required String message});
+  /// [Iden3Message] by the Polygon Id Sdk using this method.
+  Future<Iden3Message> getIden3Message({required String message});
 
-  /// Returns the schemas from an [Iden3MessageEntity].
+  /// Returns the schemas from an [Iden3Message].
   Future<List<Map<String, dynamic>>> getSchemas(
-      {required Iden3MessageEntity message});
+      {required Iden3Message message});
 
   /// Fetches a schema from a given [schemaUrl].
   Future<Map<String, dynamic>> fetchSchema({required String schemaUrl});
@@ -66,7 +66,7 @@ abstract class PolygonIdSdkIden3comm {
   /// apply to [Credential.getCredentials]
   ///
   /// The [message] is the iden3comm message entity
-  Future<List<FilterEntity>> getFilters({required Iden3MessageEntity message});
+  Future<List<FilterEntity>> getFilters({required Iden3Message message});
 
   /// Fetch a list of [CredentialEntity] from issuer using iden3comm message
   /// and stores them in Polygon Id Sdk.
@@ -119,7 +119,7 @@ abstract class PolygonIdSdkIden3comm {
   /// The [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
   Future<List<CredentialEntity>> getClaimsFromIden3Message({
-    required Iden3MessageEntity message,
+    required Iden3Message message,
     required String genesisDid,
     BigInt? profileNonce,
     required String privateKey,
@@ -127,7 +127,7 @@ abstract class PolygonIdSdkIden3comm {
   });
 
   Future<List<RequestAndCredentials>> getMessageRequestsAndCredentials({
-    required Iden3MessageEntity message,
+    required Iden3Message message,
     required String genesisDid,
     BigInt? profileNonce,
     required String encryptionKey,
@@ -146,7 +146,7 @@ abstract class PolygonIdSdkIden3comm {
   /// The [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
   Future<List<int>> getClaimsRevNonceFromIden3Message({
-    required Iden3MessageEntity message,
+    required Iden3Message message,
     required String genesisDid,
     BigInt? profileNonce,
     required String privateKey,
@@ -164,7 +164,7 @@ abstract class PolygonIdSdkIden3comm {
   /// The [privateKey] is the key used to access all the sensitive info from the identity
   /// and also to realize operations like generating proofs
   Future<List<Iden3commProofEntity>> getProofs({
-    required Iden3MessageEntity message,
+    required Iden3Message message,
     required String genesisDid,
     BigInt? profileNonce,
     required String privateKey,
@@ -188,8 +188,8 @@ abstract class PolygonIdSdkIden3comm {
   ///
   /// The [pushToken] is the push notification registration token so the issuer/verifer
   /// can send notifications to the identity.
-  Future<Iden3MessageEntity?> authenticate({
-    required Iden3MessageEntity message,
+  Future<Iden3Message?> authenticate({
+    required Iden3Message message,
     required String genesisDid,
     BigInt? profileNonce,
     required String privateKey,
@@ -429,14 +429,14 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   );
 
   @override
-  Future<Iden3MessageEntity> getIden3Message({required String message}) async {
+  Future<Iden3Message> getIden3Message({required String message}) async {
     _stacktraceManager.clearStacktrace();
     return _iden3messageFactory.createMessage(rawMessage: message);
   }
 
   @override
   Future<List<Map<String, dynamic>>> getSchemas(
-      {required Iden3MessageEntity message}) {
+      {required Iden3Message message}) {
     _stacktraceManager.clearStacktrace();
     return _getSchemasUseCase.execute(param: message);
   }
@@ -448,7 +448,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }
 
   @override
-  Future<List<FilterEntity>> getFilters({required Iden3MessageEntity message}) {
+  Future<List<FilterEntity>> getFilters({required Iden3Message message}) {
     _stacktraceManager.clearStacktrace();
     return _getFiltersUseCase.execute(param: message);
   }
@@ -495,7 +495,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
 
   @override
   Future<List<CredentialEntity>> getClaimsFromIden3Message({
-    required Iden3MessageEntity message,
+    required Iden3Message message,
     required String genesisDid,
     BigInt? profileNonce,
     required String privateKey,
@@ -514,7 +514,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
 
   @override
   Future<List<RequestAndCredentials>> getMessageRequestsAndCredentials({
-    required Iden3MessageEntity message,
+    required Iden3Message message,
     required String genesisDid,
     BigInt? profileNonce,
     required String encryptionKey,
@@ -532,7 +532,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
 
   @override
   Future<List<int>> getClaimsRevNonceFromIden3Message({
-    required Iden3MessageEntity message,
+    required Iden3Message message,
     required String genesisDid,
     BigInt? profileNonce,
     required String privateKey,
@@ -549,7 +549,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
 
   @override
   Future<List<Iden3commProofEntity>> getProofs({
-    required Iden3MessageEntity message,
+    required Iden3Message message,
     required String genesisDid,
     BigInt? profileNonce,
     required String privateKey,
@@ -571,8 +571,8 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }
 
   @override
-  Future<Iden3MessageEntity?> authenticate({
-    required Iden3MessageEntity message,
+  Future<Iden3Message?> authenticate({
+    required Iden3Message message,
     required String genesisDid,
     BigInt? profileNonce,
     required String privateKey,
@@ -603,12 +603,12 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     );
   }
 
-  Future<Iden3MessageEntity?> authenticateV2({
+  Future<Iden3Message?> authenticateV2({
     required String privateKey,
     required String genesisDid,
     required BigInt profileNonce,
     required IdentityEntity identityEntity,
-    required Iden3MessageEntity message,
+    required Iden3Message message,
     required EnvEntity env,
     String? pushToken,
     String? challenge,

@@ -82,12 +82,12 @@ class Authenticate {
   late ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
   late StacktraceManager _stacktraceManager;
 
-  Future<Iden3MessageEntity?> authenticate({
+  Future<Iden3Message?> authenticate({
     required String privateKey,
     required String genesisDid,
     required BigInt profileNonce,
     required IdentityEntity identityEntity,
-    required Iden3MessageEntity message,
+    required Iden3Message message,
     required EnvEntity env,
     required String? pushToken,
     String? challenge,
@@ -300,7 +300,7 @@ class Authenticate {
     required EnvEntity env,
     required String? pushToken,
     required String profileDid,
-    required Iden3MessageEntity message,
+    required Iden3Message message,
     required List<Iden3commProofEntity> proofs,
   }) async {
     String pushUrl = env.pushUrl;
@@ -342,7 +342,7 @@ class Authenticate {
     required String privateKey,
     required String? challenge,
     required EnvEntity env,
-    required Iden3MessageEntity message,
+    required Iden3Message message,
     required Map<String, dynamic>? transactionData,
     required Uint8List privateKeyBytes,
     required ProofRepository proofRepository,

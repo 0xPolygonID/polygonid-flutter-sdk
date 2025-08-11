@@ -6,7 +6,7 @@ typedef CredentialOfferMessageEntity<T extends CredentialOfferBody>
     = BaseCredentialOfferMessage<T>;
 
 abstract class BaseCredentialOfferMessage<T extends CredentialOfferBody>
-    extends Iden3MessageEntity<T> {
+    extends Iden3Message<T> {
   BaseCredentialOfferMessage({
     required super.id,
     required super.typ,

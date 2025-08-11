@@ -5,7 +5,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/respo
 typedef FetchIden3MessageEntity = CredentialFetchRequestMessage;
 
 class CredentialFetchRequestMessage
-    extends Iden3MessageEntity<CredentialFetchRequestBody> {
+    extends Iden3Message<CredentialFetchRequestBody> {
   CredentialFetchRequestMessage({
     required super.id,
     required super.typ,

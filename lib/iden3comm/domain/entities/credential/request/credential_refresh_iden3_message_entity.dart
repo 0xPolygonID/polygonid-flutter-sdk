@@ -1,9 +1,10 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 
+@Deprecated('Use CredentialRefreshMessage instead')
 typedef CredentialRefreshIden3MessageEntity = CredentialRefreshMessage;
 
 class CredentialRefreshMessage
-    extends Iden3MessageEntity<CredentialRefreshBodyRequest> {
+    extends Iden3Message<CredentialRefreshBodyRequest> {
   CredentialRefreshMessage({
     required super.id,
     required super.typ,
