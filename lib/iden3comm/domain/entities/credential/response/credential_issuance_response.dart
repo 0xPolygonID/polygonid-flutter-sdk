@@ -9,7 +9,6 @@ class CredentialIssuanceMessage extends Iden3Message<IssuanceMessageBody> {
     required super.body,
     required super.from,
     super.to,
-    super.nextRequest,
     super.createdTime,
     super.expiresTime,
     super.attachments = const [],
@@ -31,7 +30,6 @@ class CredentialIssuanceMessage extends Iden3Message<IssuanceMessageBody> {
       from: json['from'],
       to: json['to'],
       body: body,
-      nextRequest: json['next_request'],
     );
   }
 

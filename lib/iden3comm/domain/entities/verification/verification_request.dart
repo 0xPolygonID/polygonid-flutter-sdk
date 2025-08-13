@@ -86,7 +86,6 @@ class VerificationRequestMessage extends Iden3Message<VerificationRequestBody> {
     required super.from,
     required super.body,
     super.to,
-    super.nextRequest,
     super.createdTime,
     super.expiresTime,
     super.attachments = const [],
@@ -107,7 +106,6 @@ class VerificationRequestMessage extends Iden3Message<VerificationRequestBody> {
       from: json['from'],
       to: json['to'],
       body: body,
-      nextRequest: json['next_request'],
     );
   }
 

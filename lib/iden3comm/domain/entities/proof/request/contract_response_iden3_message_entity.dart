@@ -51,7 +51,6 @@ class ContractInvokeResponseMessage
     @Deprecated('may be omitted, gonna be removed in the future') String? type,
     String? thid,
     required super.body,
-    super.nextRequest,
     String? from,
     super.to,
     super.createdTime,
@@ -75,7 +74,6 @@ class ContractInvokeResponseMessage
       typ: json['typ'] ?? '',
       thid: json['thid'] ?? '',
       body: body,
-      nextRequest: json['next_request'],
       from: json['from'] ?? '',
     );
   }

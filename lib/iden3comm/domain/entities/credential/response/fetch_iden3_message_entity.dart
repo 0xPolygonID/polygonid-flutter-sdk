@@ -14,7 +14,6 @@ class CredentialFetchRequestMessage
     required super.from,
     required super.body,
     required super.to,
-    super.nextRequest,
     super.createdTime,
     super.expiresTime,
     super.attachments = const [],
@@ -34,7 +33,6 @@ class CredentialFetchRequestMessage
       from: json['from'],
       to: json['to'],
       body: body,
-      nextRequest: json['next_request'],
     );
   }
 

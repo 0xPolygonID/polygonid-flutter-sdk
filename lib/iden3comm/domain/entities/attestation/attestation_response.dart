@@ -18,7 +18,6 @@ class AttestationResponseMessage extends Iden3Message<AttestationResponseBody> {
     required super.thid,
     required super.body,
     super.to,
-    super.nextRequest,
     super.createdTime,
     super.expiresTime,
     super.attachments = const [],
@@ -41,7 +40,6 @@ class AttestationResponseMessage extends Iden3Message<AttestationResponseBody> {
       thid: json['thid'],
       to: json['to'],
       body: body,
-      nextRequest: json['next_request'],
     );
   }
 

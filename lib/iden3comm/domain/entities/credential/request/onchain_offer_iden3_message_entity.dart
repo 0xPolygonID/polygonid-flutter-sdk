@@ -81,7 +81,6 @@ class CredentialsOnchainOfferMessage
     required super.from,
     required super.body,
     super.to,
-    super.nextRequest,
   }) : super(type: Iden3MessageType.onchainCredentialOffer);
 
   factory CredentialsOnchainOfferMessage.fromJson(Map<String, dynamic> json) {
@@ -94,7 +93,6 @@ class CredentialsOnchainOfferMessage
       from: json['from'],
       to: json['to'],
       body: body,
-      nextRequest: json['next_request'],
     );
   }
 
