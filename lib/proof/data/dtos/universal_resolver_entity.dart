@@ -1,11 +1,11 @@
 class ResolverResponse {
-  final String context;
+  final String? context;
   final dynamic didDocument;
   final DidResolutionMetadata didResolutionMetadata;
   final dynamic didDocumentMetadata;
 
   ResolverResponse({
-    required this.context,
+    this.context,
     required this.didDocument,
     required this.didResolutionMetadata,
     required this.didDocumentMetadata,
@@ -13,7 +13,7 @@ class ResolverResponse {
 
   factory ResolverResponse.fromJson(Map<String, dynamic> json) {
     return ResolverResponse(
-      context: json['@context'],
+      context: json['@context'] as String?,
       didDocument: json['didDocument'],
       didResolutionMetadata:
           DidResolutionMetadata.fromJson(json['didResolutionMetadata']),
