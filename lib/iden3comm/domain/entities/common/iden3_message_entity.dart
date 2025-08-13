@@ -42,6 +42,15 @@ enum Iden3MessageType {
       orElse: () => Iden3MessageType.unknown,
     );
   }
+
+  static Iden3MessageType fromJson(String json) {
+    return Iden3MessageType.fromType(json);
+  }
+
+  String toJson() => type;
+
+  @override
+  String toString() => type;
 }
 
 @Deprecated('Use Iden3Message instead')
