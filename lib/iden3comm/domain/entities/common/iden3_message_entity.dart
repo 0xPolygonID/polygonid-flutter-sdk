@@ -48,6 +48,9 @@ enum Iden3MessageType {
   }
 
   String toJson() => type;
+
+  @override
+  String toString() => type;
 }
 
 @Deprecated('Use Iden3Message instead')
