@@ -43,7 +43,7 @@ enum Iden3MessageType {
     );
   }
 
-  static fromJson(String json) {
+  static Iden3MessageType fromJson(String json) {
     return Iden3MessageType.fromType(json);
   }
 
