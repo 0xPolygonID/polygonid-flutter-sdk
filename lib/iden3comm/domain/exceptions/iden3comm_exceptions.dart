@@ -65,7 +65,7 @@ class UnsupportedSchemaException extends PolygonIdSDKException {
 }
 
 class NullAuthenticateCallbackException extends PolygonIdSDKException {
-  final AuthIden3MessageEntity authRequest;
+  final AuthorizationRequestMessage authRequest;
 
   NullAuthenticateCallbackException({
     required this.authRequest,
@@ -100,13 +100,6 @@ class UnsupportedFetchClaimTypeException extends PolygonIdSDKException {
 
   UnsupportedFetchClaimTypeException({
     required this.type,
-    required super.errorMessage,
-    super.error,
-  });
-}
-
-class GetConnectionsException extends PolygonIdSDKException {
-  GetConnectionsException({
     required super.errorMessage,
     super.error,
   });
@@ -152,16 +145,6 @@ class NoCredentialsFoundException extends PolygonIdSDKException {
 
   NoCredentialsFoundException({
     this.proofRequest,
-    required super.errorMessage,
-    super.error,
-  });
-}
-
-class ProofRequestsNotFoundException extends PolygonIdSDKException {
-  final Iden3MessageEntity? message;
-
-  ProofRequestsNotFoundException({
-    this.message,
     required super.errorMessage,
     super.error,
   });

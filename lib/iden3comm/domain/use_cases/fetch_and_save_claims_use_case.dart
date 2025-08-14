@@ -27,7 +27,7 @@ import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
 
 class FetchAndSaveClaimsParam {
-  final CredentialOfferMessageEntity message;
+  final BaseCredentialOfferMessage message;
   final String genesisDid;
   final BigInt profileNonce;
   final String privateKey;
@@ -41,7 +41,7 @@ class FetchAndSaveClaimsParam {
 }
 
 class FetchAndSaveClaimsUseCase
-    extends FutureUseCase<FetchAndSaveClaimsParam, List<ClaimEntity>> {
+    extends FutureUseCase<FetchAndSaveClaimsParam, List<CredentialEntity>> {
   final Iden3commCredentialRepository _iden3commCredentialRepository;
   final FetchOnchainClaimUseCase _fetchOnchainClaimUseCase;
   final CheckProfileAndDidCurrentEnvUseCase
@@ -77,10 +77,10 @@ class FetchAndSaveClaimsUseCase
   );
 
   @override
-  Future<List<ClaimEntity>> execute({
+  Future<List<CredentialEntity>> execute({
     required FetchAndSaveClaimsParam param,
   }) async {
-    /// Get the corresponding fetch request from [OfferIden3MessageEntity]
+    /// Get the corresponding fetch request from [CredentialsOfferMessage]
     /// For each, get the auth token
     /// With the auth token, fetch the [ClaimEntity]
     /// Then save the list of [ClaimEntity]
@@ -107,13 +107,13 @@ class FetchAndSaveClaimsUseCase
         ),
       );
 
-      final List<ClaimEntity> claims;
+      final List<CredentialEntity> claims;
 
       final message = param.message;
-      if (message is OfferIden3MessageEntity) {
-        claims = await _fetchClaims(message, param, profileDid);
-      } else if (message is OnchainOfferIden3MessageEntity) {
-        claims = await _fetchOnchainClaims(message, profileDid, param);
+      if (message is CredentialsOfferMessage) {
+        claims = await _fetchCredentials(message, param, profileDid);
+      } else if (message is CredentialsOnchainOfferMessage) {
+        claims = await _fetchOnchainCredentials(message, profileDid, param);
       } else {
         _stacktraceManager.addError(
             "[FetchAndSaveClaimsUseCase] Unknown message type: ${message.runtimeType}");
@@ -154,8 +154,8 @@ class FetchAndSaveClaimsUseCase
     }
   }
 
-  Future<List<ClaimEntity>> _fetchClaims(
-    OfferIden3MessageEntity message,
+  Future<List<CredentialEntity>> _fetchCredentials(
+    CredentialsOfferMessage message,
     FetchAndSaveClaimsParam param,
     String profileDid,
   ) async {
@@ -166,7 +166,7 @@ class FetchAndSaveClaimsUseCase
       ),
     );
 
-    final claims = <ClaimEntity>[];
+    final claims = <CredentialEntity>[];
     for (final request in requests) {
       final authToken = await _getAuthTokenUseCase.execute(
         param: GetAuthTokenParam(
@@ -188,16 +188,14 @@ class FetchAndSaveClaimsUseCase
     return claims;
   }
 
-  Future<List<ClaimEntity>> _fetchOnchainClaims(
-    OnchainOfferIden3MessageEntity message,
+  Future<List<CredentialEntity>> _fetchOnchainCredentials(
+    CredentialsOnchainOfferMessage message,
     String profileDid,
     FetchAndSaveClaimsParam param,
   ) async {
     final env = await _getEnvUseCase.execute();
-    final chainId = message.body.transactionData.chainId?.toString();
-    final chain = chainId != null
-        ? env.chainConfigs[chainId]
-        : await _getSelectedChainUseCase.execute();
+    final chainId = message.body.transactionData.chainId.toString();
+    final chain = env.chainConfigs[chainId];
 
     /// FIXME: inject web3Client through constructor
     final web3Client = getItSdk<Web3Client>(param1: chain!.rpcUrl);
@@ -249,7 +247,7 @@ class FetchAndSaveClaimsUseCase
 
     final adapterVersion = await issuer.getCredentialAdapterVersion();
 
-    final claims = <ClaimEntity>[];
+    final claims = <CredentialEntity>[];
     for (final credential in message.body.credentials) {
       final credentialId = BigInt.parse(credential.id);
 

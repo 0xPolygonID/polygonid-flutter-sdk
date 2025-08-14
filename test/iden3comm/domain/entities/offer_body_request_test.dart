@@ -10,13 +10,13 @@ var json = jsonDecode(Iden3commMocks.offerRequestBodyJson);
 void main() {
   group("OfferBodyRequest", () {
     test("fromJson", () {
-      var offerBodyRequest = OfferBodyRequest.fromJson(json);
+      var offerBodyRequest = CredentialsOfferMessageBody.fromJson(json);
       expect(offerBodyRequest.url, Iden3commMocks.offerUrl);
       expect(offerBodyRequest.credentials[0].id, "claimId");
       expect(offerBodyRequest.credentials[0].description, "claimDescription");
     });
     test("toJson", () {
-      var offerBodyRequest = OfferBodyRequest.fromJson(json);
+      var offerBodyRequest = CredentialsOfferMessageBody.fromJson(json);
       expect(offerBodyRequest.toJson(), json);
     });
   });

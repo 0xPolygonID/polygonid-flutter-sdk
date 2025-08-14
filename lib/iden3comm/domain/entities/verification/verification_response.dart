@@ -7,31 +7,36 @@
 
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 
-class VerificationResponseEntity
-    extends Iden3MessageEntity<VerificationResponseBody> {
-  VerificationResponseEntity({
+@Deprecated('Use VerificationResponseMessage instead')
+typedef VerificationResponseEntity = VerificationResponseMessage;
+
+class VerificationResponseMessage
+    extends Iden3Message<VerificationResponseBody> {
+  VerificationResponseMessage({
     required super.id,
     required super.typ,
-    required super.type,
+    @Deprecated('may be omitted, gonna be removed in the future') String? type,
     required super.thid,
     required super.from,
     required super.body,
     super.to,
     super.nextRequest,
-  }) : super(messageType: Iden3MessageType.verificationResponse);
+    super.createdTime,
+    super.expiresTime,
+    super.attachments = const [],
+  }) : super(type: Iden3MessageType.verificationResponse);
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [VerificationResponseEntity]
-  factory VerificationResponseEntity.fromJson(
+  /// @returns [VerificationResponseMessage]
+  factory VerificationResponseMessage.fromJson(
     Map<String, dynamic> json,
   ) {
     final body = VerificationResponseBody.fromJson(json['body']);
-    return VerificationResponseEntity(
+    return VerificationResponseMessage(
       id: json['id'],
       typ: json['typ'],
-      type: json['type'],
       thid: json['thid'],
       from: json['from'],
       to: json['to'],
@@ -41,11 +46,11 @@ class VerificationResponseEntity
   }
 
   @override
-  String toString() => "[VerificationResponseEntity] {${super.toString()}";
+  String toString() => "[VerificationResponseMessage] {${super.toString()}";
 
   @override
   bool operator ==(Object other) =>
-      super == other && other is VerificationResponseEntity;
+      super == other && other is VerificationResponseMessage;
 
   @override
   int get hashCode => runtimeType.hashCode;

@@ -10,7 +10,7 @@ class QrcodeParserUtils {
   QrcodeParserUtils(this._polygonIdSdk);
 
   ///
-  Future<Iden3MessageEntity> getIden3MessageFromQrCode(String message) async {
+  Future<Iden3Message> getIden3MessageFromQrCode(String message) async {
     try {
       String rawMessage = message;
       if (message.startsWith("iden3comm://?i_m")) {
@@ -21,7 +21,7 @@ class QrcodeParserUtils {
         rawMessage = await _getMessageFromRemote(message);
       }
 
-      Iden3MessageEntity? _iden3Message =
+      Iden3Message? _iden3Message =
           await _polygonIdSdk.iden3comm.getIden3Message(message: rawMessage);
       return _iden3Message;
     } catch (error) {

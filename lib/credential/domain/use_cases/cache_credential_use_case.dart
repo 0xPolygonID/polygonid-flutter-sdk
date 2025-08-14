@@ -7,7 +7,7 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.da
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 
 class CacheCredentialParam {
-  final ClaimEntity credential;
+  final CredentialEntity credential;
   final EnvConfigEntity? config;
 
   CacheCredentialParam({

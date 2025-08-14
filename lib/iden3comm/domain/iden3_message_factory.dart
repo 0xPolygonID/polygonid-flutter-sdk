@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
+import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/attestation/attestation_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/attestation/attestation_response.dart';
@@ -23,68 +23,70 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/verification/ver
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/verification/verification_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 
-class GetIden3MessageUseCase extends FutureUseCase<String, Iden3MessageEntity> {
+@injectable
+class Iden3MessageFactory {
   final StacktraceManager _stacktraceManager;
 
-  GetIden3MessageUseCase(
-    this._stacktraceManager,
-  );
+  Iden3MessageFactory(this._stacktraceManager);
 
-  @override
-  Future<Iden3MessageEntity> execute({required String param}) async {
+  Iden3Message createMessage({
+    required String rawMessage,
+  }) {
     try {
-      Map<String, dynamic> json = jsonDecode(param);
+      Map<String, dynamic> json = jsonDecode(rawMessage);
 
       final rawType = json['type'] ?? '';
       final type = Iden3MessageType.fromType(rawType);
 
       switch (type) {
         case Iden3MessageType.authRequest:
-          return AuthIden3MessageEntity.fromJson(json);
+          return AuthorizationRequestMessage.fromJson(json);
         case Iden3MessageType.authResponse:
-          return AuthResponseIden3MessageEntity.fromJson(json);
+          return AuthorizationResponseMessage.fromJson(json);
         case Iden3MessageType.credentialOffer:
-          return OfferIden3MessageEntity.fromJson(json);
+          return CredentialsOfferMessage.fromJson(json);
         case Iden3MessageType.onchainCredentialOffer:
-          return OnchainOfferIden3MessageEntity.fromJson(json);
+          return CredentialsOnchainOfferMessage.fromJson(json);
         case Iden3MessageType.credentialIssuanceResponse:
-          return FetchIden3MessageEntity.fromJson(json);
+          return CredentialFetchRequestMessage.fromJson(json);
         case Iden3MessageType.proofContractInvokeRequest:
-          return ContractIden3MessageEntity.fromJson(json);
+          return ContractInvokeRequestMessage.fromJson(json);
         case Iden3MessageType.proofContractInvokeResponse:
-          return ContractResponseIden3MessageEntity.fromJson(json);
+          return ContractInvokeResponseMessage.fromJson(json);
         case Iden3MessageType.credentialRefresh:
-          return CredentialRefreshIden3MessageEntity.fromJson(json);
+          return CredentialRefreshMessage.fromJson(json);
         case Iden3MessageType.credentialStatusUpdate:
-          return CredentialStatusUpdateMessageEntity.fromJson(json);
+          return CredentialStatusUpdateMessage.fromJson(json);
         case Iden3MessageType.credentialProposalRequest:
-          return CredentialProposalRequest.fromJson(json);
+          return ProposalRequestMessage.fromJson(json);
         case Iden3MessageType.credentialProposal:
-          return CredentialProposal.fromJson(json);
+          return ProposalMessage.fromJson(json);
         case Iden3MessageType.problemReport:
-          return ProblemReportMessageEntity.fromJson(json);
+          return ProblemReportMessage.fromJson(json);
         case Iden3MessageType.paymentRequest:
-          return PaymentRequestEntity.fromJson(json);
+          return PaymentRequestMessage.fromJson(json);
         case Iden3MessageType.payment:
-          return PaymentMessageEntity.fromJson(json);
+          return PaymentMessage.fromJson(json);
         case Iden3MessageType.attestationRequest:
-          return AttestationRequestEntity.fromJson(json);
+          return AttestationRequestMessage.fromJson(json);
         case Iden3MessageType.attestationResponse:
-          return AttestationResponseEntity.fromJson(json);
+          return AttestationResponseMessage.fromJson(json);
         case Iden3MessageType.verificationRequest:
-          return VerificationRequestEntity.fromJson(json);
+          return VerificationRequestMessage.fromJson(json);
         case Iden3MessageType.verificationResponse:
-          return VerificationResponseEntity.fromJson(json);
-        case Iden3MessageType.unknown:
+          return VerificationResponseMessage.fromJson(json);
+        case Iden3MessageType.fetchRequest:
+          return CredentialFetchRequestMessage.fromJson(json);
+        default:
           throw UnsupportedIden3MsgTypeException(
-            type: Iden3MessageType.unknown,
+            type: type,
             errorMessage: "Unsupported message type: $type",
             message: json,
           );
       }
     } catch (error) {
-      _stacktraceManager.addError("[GetIden3MessageUseCase] error: $error");
-      return Future.error(error);
+      _stacktraceManager.addError("[Iden3MessageFactory] error: $error");
+      rethrow;
     }
   }
 }

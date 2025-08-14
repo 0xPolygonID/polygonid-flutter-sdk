@@ -18,34 +18,34 @@ import 'dtos/claim_info_dto.dart';
 
 class CredentialRepositoryImpl extends CredentialRepository {
   final RemoteClaimDataSource _remoteClaimDataSource;
-  final StorageClaimDataSource _storageClaimDataSource;
+  final CredentialStorageDataSource _credentialStorageDataSource;
   final LocalClaimDataSource _localClaimDataSource;
   final CredentialCacheDataSource _cacheCredentialDataSource;
-  final ClaimMapper _claimMapper;
+  final CredentialMapper _credentialMapper;
   final FiltersMapper _filtersMapper;
   final StacktraceManager _stacktraceManager;
 
   CredentialRepositoryImpl(
     this._remoteClaimDataSource,
-    this._storageClaimDataSource,
+    this._credentialStorageDataSource,
     this._localClaimDataSource,
     this._cacheCredentialDataSource,
-    this._claimMapper,
+    this._credentialMapper,
     this._filtersMapper,
     this._stacktraceManager,
   );
 
   @override
-  Future<void> saveClaims({
-    required List<ClaimEntity> claims,
+  Future<void> saveCredentials({
+    required List<CredentialEntity> credentials,
     required String genesisDid,
     required String encryptionKey,
   }) async {
     try {
-      final List<ClaimDTO> claimDTOList =
-          claims.map((claim) => _claimMapper.mapTo(claim)).toList();
-      await _storageClaimDataSource.storeClaims(
-        claims: claimDTOList,
+      final List<CredentialDTO> credentialDTOList =
+          credentials.map((claim) => _credentialMapper.mapTo(claim)).toList();
+      await _credentialStorageDataSource.storeCredentials(
+        credentials: credentialDTOList,
         did: genesisDid,
         encryptionKey: encryptionKey,
       );
@@ -63,22 +63,22 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<List<ClaimEntity>> getClaims({
+  Future<List<CredentialEntity>> getCredentials({
     List<FilterEntity>? filters,
     required String genesisDid,
     required String encryptionKey,
     List<CredentialSortOrder> credentialSortOrderList = const [],
   }) async {
     try {
-      final claimDTOs = await _storageClaimDataSource.getClaims(
+      final claimDTOs = await _credentialStorageDataSource.getCredentials(
         filter: filters == null ? null : _filtersMapper.mapTo(filters),
         did: genesisDid,
         encryptionKey: encryptionKey,
         credentialSortOrderList: credentialSortOrderList,
       );
 
-      final List<ClaimEntity> claimEntityList =
-          claimDTOs.map((claim) => _claimMapper.mapFrom(claim)).toList();
+      final List<CredentialEntity> claimEntityList =
+          claimDTOs.map((claim) => _credentialMapper.mapFrom(claim)).toList();
       return claimEntityList;
     } on PolygonIdSDKException catch (_) {
       rethrow;
@@ -93,26 +93,26 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<ClaimEntity> getClaim({
+  Future<CredentialEntity> getCredential({
     required String claimId,
     required String genesisDid,
     required String encryptionKey,
   }) async {
     try {
-      ClaimDTO claimDTO = await _storageClaimDataSource.getClaim(
+      CredentialDTO claimDTO = await _credentialStorageDataSource.getCredential(
         credentialId: claimId,
         did: genesisDid,
         encryptionKey: encryptionKey,
       );
 
-      ClaimEntity claimEntity = _claimMapper.mapFrom(claimDTO);
+      CredentialEntity claimEntity = _credentialMapper.mapFrom(claimDTO);
       return claimEntity;
     } on PolygonIdSDKException catch (_) {
       rethrow;
     } catch (e) {
       _stacktraceManager
           .addError('Error while getting claim from DB\n${e.toString()}');
-      throw ClaimNotFoundException(
+      throw CredentialNotFoundException(
         id: claimId,
         errorMessage: 'Credential not found',
       );
@@ -120,13 +120,14 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<ClaimEntity> getCredentialByPartialId({
+  Future<CredentialEntity> getCredentialByPartialId({
     required String partialId,
     required String genesisDid,
     required String encryptionKey,
   }) async {
     try {
-      final claimDTOs = await _storageClaimDataSource.getCredentialByPartialId(
+      final claimDTOs =
+          await _credentialStorageDataSource.getCredentialByPartialId(
         partialId: partialId,
         did: genesisDid,
         encryptionKey: encryptionKey,
@@ -135,13 +136,13 @@ class CredentialRepositoryImpl extends CredentialRepository {
       if (claimDTOs.isEmpty || claimDTOs.length > 1) {
         _stacktraceManager
             .addError('Error while getting claim by partial id from DB\n');
-        throw ClaimNotFoundException(
+        throw CredentialNotFoundException(
           id: partialId,
           errorMessage: 'Credential by partial id not found',
         );
       }
 
-      ClaimEntity claimEntity = _claimMapper.mapFrom(claimDTOs.first);
+      CredentialEntity claimEntity = _credentialMapper.mapFrom(claimDTOs.first);
       return claimEntity;
     } catch (e) {
       rethrow;
@@ -149,14 +150,14 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<void> removeClaims({
+  Future<void> removeCredentials({
     required List<String> claimIds,
     required String genesisDid,
     required String encryptionKey,
   }) async {
     try {
-      await _storageClaimDataSource.removeClaims(
-        claimIds: claimIds,
+      await _credentialStorageDataSource.removeCredential(
+        credentialIds: claimIds,
         did: genesisDid,
         encryptionKey: encryptionKey,
       );
@@ -174,12 +175,12 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<void> removeAllClaims({
+  Future<void> removeAllCredentials({
     required String genesisDid,
     required String encryptionKey,
   }) async {
     try {
-      await _storageClaimDataSource.removeAllClaims(
+      await _credentialStorageDataSource.removeAllCredentials(
         did: genesisDid,
         encryptionKey: encryptionKey,
       );
@@ -197,10 +198,10 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<String?> getRhsRevocationId({required ClaimEntity claim}) async {
-    ClaimDTO claimDTO = _claimMapper.mapTo(claim);
+  Future<String?> getRhsRevocationId({required CredentialEntity claim}) async {
+    CredentialDTO claimDTO = _credentialMapper.mapTo(claim);
     try {
-      final signatureProofs = claimDTO.info.proofs
+      final signatureProofs = claimDTO.info.proof
           ?.where((proof) => proof.type == ProofType.BJJSignature2021.name)
           .toList();
       return signatureProofs?.firstOrNull?.issuer.id;
@@ -217,32 +218,32 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<String> getIssuerIdentifier({required ClaimEntity claim}) async {
-    return _claimMapper.mapTo(claim).info.issuer;
+  Future<String> getIssuerIdentifier({required CredentialEntity claim}) async {
+    return _credentialMapper.mapTo(claim).info.issuer;
   }
 
   @override
   Future<Map<String, dynamic>> getRevocationStatus({
-    required ClaimEntity claim,
+    required CredentialEntity claim,
   }) async {
     final revStatusUrl = await getRevocationUrl(claim: claim, rhs: false);
     return _remoteClaimDataSource.getClaimRevocationStatus(revStatusUrl);
   }
 
   @override
-  Future<bool> isUsingRHS({required ClaimEntity claim}) async {
-    final claimDTO = _claimMapper.mapTo(claim);
+  Future<bool> isUsingRHS({required CredentialEntity claim}) async {
+    final claimDTO = _credentialMapper.mapTo(claim);
     return claimDTO.info.credentialStatus.type ==
         CredentialStatusType.reverseSparseMerkleTreeProof;
   }
 
   @override
   Future<int> getRevocationNonce({
-    required ClaimEntity claim,
+    required CredentialEntity claim,
     required bool rhs,
   }) {
     try {
-      return Future.value(_claimMapper.mapTo(claim)).then(
+      return Future.value(_credentialMapper.mapTo(claim)).then(
         (claimDTO) => (claimDTO.info.credentialStatus.type ==
                 CredentialStatusType.reverseSparseMerkleTreeProof
             ? (rhs
@@ -267,34 +268,31 @@ class CredentialRepositoryImpl extends CredentialRepository {
 
   @override
   Future<String> getRevocationUrl({
-    required ClaimEntity claim,
+    required CredentialEntity claim,
     required bool rhs,
-  }) {
-    try {
-      return Future.value(_claimMapper.mapTo(claim)).then((claimDTO) =>
-          (claimDTO.info.credentialStatus.type ==
-                  CredentialStatusType.reverseSparseMerkleTreeProof
-              ? (rhs
-                  ? claimDTO.info.credentialStatus.id
-                  : claimDTO.info.credentialStatus.statusIssuer!.id)
-              : (rhs == false
-                  ? claimDTO.info.credentialStatus.id
-                  : throw NullRevocationStatusException(
-                      claim: claim,
-                      errorMessage: 'Revocation url not found',
-                    ))));
-    } catch (error) {
-      _stacktraceManager
-          .addError('Error while getting revocation url\n${error.toString()}');
+  }) async {
+    final credentialDTO = _credentialMapper.mapTo(claim);
+    final type = credentialDTO.info.credentialStatus.type;
+    if (type == CredentialStatusType.reverseSparseMerkleTreeProof) {
+      if (rhs) {
+        return credentialDTO.info.credentialStatus.id;
+      } else {
+        return credentialDTO.info.credentialStatus.statusIssuer!.id;
+      }
+    } else if (rhs == false) {
+      return credentialDTO.info.credentialStatus.id;
+    } else {
+      _stacktraceManager.addError(
+          'Error while getting revocation url\nRevocation url not found');
       throw NullRevocationStatusException(
         claim: claim,
-        errorMessage: 'error while getting revocation url',
+        errorMessage: 'Revocation url not found',
       );
     }
   }
 
   @override
-  Future<List<String>> getAuthClaim({required List<String> publicKey}) {
+  Future<List<String>> getAuthClaim({required List<String> publicKey}) async {
     return _localClaimDataSource.getAuthClaim(publicKey: publicKey);
   }
 

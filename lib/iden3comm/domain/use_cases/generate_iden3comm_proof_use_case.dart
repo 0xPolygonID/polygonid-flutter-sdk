@@ -36,8 +36,8 @@ class GenerateIden3commProofParam {
   final String did;
   final BigInt profileNonce;
   final BigInt claimSubjectProfileNonce;
-  final ClaimEntity credential;
-  final ProofScopeRequest request;
+  final CredentialEntity credential;
+  final ZeroKnowledgeProofRequest request;
   final CircuitDataEntity circuitData;
 
   /// FIXME: remove nullables

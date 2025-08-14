@@ -10,11 +10,11 @@ import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/credential/response/fetch_claim_response_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_issuance_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 
 import '../../../common/common_mocks.dart';
-import '../dtos/fetch_claim_response_dto_test.dart';
+import '../dtos/credential_issuance_message_test.dart';
 import 'remote_iden3comm_data_source_test.mocks.dart';
 
 //DATA
@@ -22,7 +22,7 @@ const token = "theToken";
 const url = "theUrl";
 const identifier = "theIdentifier";
 Response dioResponse = Response(
-    data: jsonDecode(mockFetchClaim),
+    data: jsonDecode(mockIssuanceMessage),
     statusCode: 200,
     requestOptions: RequestOptions(path: url));
 Response dioErrorResponse = Response(
@@ -36,16 +36,16 @@ Response otherTypeResponse = Response(
 final exception = Exception();
 
 /// We assume [FetchClaimResponseDTO] has been tested
-final fetchClaimDTO =
-    FetchClaimResponseDTO.fromJson(jsonDecode(mockFetchClaim));
-final claim = ClaimDTO(
-  id: fetchClaimDTO.credential.id,
-  issuer: fetchClaimDTO.from,
+final issuanceMessage =
+    CredentialIssuanceMessage.fromJson(jsonDecode(mockIssuanceMessage));
+final claim = CredentialDTO(
+  id: issuanceMessage.body.credential.id,
+  issuer: issuanceMessage.from,
   did: identifier,
-  expiration: fetchClaimDTO.credential.expirationDate,
-  type: fetchClaimDTO.credential.credentialSubject.type,
-  info: fetchClaimDTO.credential,
-  credentialRawValue: jsonEncode(jsonDecode(mockFetchClaim)),
+  expiration: issuanceMessage.body.credential.expirationDate,
+  type: issuanceMessage.body.credential.credentialSubject.type,
+  info: issuanceMessage.body.credential,
+  credentialRawValue: jsonEncode(jsonDecode(mockIssuanceMessage)),
 );
 
 //DEPENDENCIES

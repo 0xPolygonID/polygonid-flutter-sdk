@@ -9,7 +9,7 @@ part 'claims_event.freezed.dart';
 @freezed
 class ClaimsEvent with _$ClaimsEvent {
   const factory ClaimsEvent.fetchAndSaveClaims(
-      {required Iden3MessageEntity iden3message}) = FetchAndSaveClaimsEvent;
+      {required Iden3Message iden3message}) = FetchAndSaveClaimsEvent;
 
   const factory ClaimsEvent.getClaims({List<FilterEntity>? filters}) =
       GetClaimsEvent;
@@ -29,7 +29,7 @@ class ClaimsEvent with _$ClaimsEvent {
     required String id,
     String? issuer,
     String? did,
-    ClaimState? state,
+    CredentialState? state,
     String? expiration,
     String? type,
     Map<String, dynamic>? data,

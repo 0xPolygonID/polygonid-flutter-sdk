@@ -4,7 +4,7 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.da
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 
 class SaveClaimsParam {
-  final List<ClaimEntity> claims;
+  final List<CredentialEntity> claims;
   final String genesisDid;
   final String encryptionKey;
 
@@ -16,7 +16,7 @@ class SaveClaimsParam {
 }
 
 class SaveClaimsUseCase
-    extends FutureUseCase<SaveClaimsParam, List<ClaimEntity>> {
+    extends FutureUseCase<SaveClaimsParam, List<CredentialEntity>> {
   final CredentialRepository _credentialRepository;
   final StacktraceManager _stacktraceManager;
 
@@ -26,10 +26,11 @@ class SaveClaimsUseCase
   );
 
   @override
-  Future<List<ClaimEntity>> execute({required SaveClaimsParam param}) async {
+  Future<List<CredentialEntity>> execute(
+      {required SaveClaimsParam param}) async {
     try {
-      await _credentialRepository.saveClaims(
-        claims: param.claims,
+      await _credentialRepository.saveCredentials(
+        credentials: param.claims,
         genesisDid: param.genesisDid,
         encryptionKey: param.encryptionKey,
       );

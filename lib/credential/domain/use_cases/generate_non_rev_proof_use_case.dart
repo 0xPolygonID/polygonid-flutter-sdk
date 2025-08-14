@@ -6,7 +6,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repo
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/fetch_identity_state_use_case.dart';
 
 class GenerateNonRevProofParam {
-  final ClaimEntity claim;
+  final CredentialEntity claim;
   final Map<String, dynamic>? nonRevProof;
 
   GenerateNonRevProofParam({

@@ -10,9 +10,9 @@ import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart'
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_state_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/display_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/credential/response/fetch_claim_response_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_issuance_response.dart';
 
-import '../../../iden3comm/data/dtos/fetch_claim_response_dto_test.dart';
+import '../../../iden3comm/data/dtos/credential_issuance_message_test.dart';
 import 'claim_mapper_test.mocks.dart';
 
 // Data
@@ -20,41 +20,43 @@ const privateKey = "thePrivateKey";
 const identifier = "theIdentifier";
 const authClaim = "theAuthClaim";
 
-/// We assume [FetchClaimResponseDTO] has been tested
-final fetchClaimDTO =
-    FetchClaimResponseDTO.fromJson(jsonDecode(mockFetchClaim));
-final Map<String, dynamic> info = fetchClaimDTO.credential.toJson();
-final dto = ClaimDTO(
-  id: fetchClaimDTO.credential.id,
-  issuer: fetchClaimDTO.from,
+/// We assume [CredentialIssuanceMessage] has been tested
+final issuanceMessage =
+    CredentialIssuanceMessage.fromJson(jsonDecode(mockIssuanceMessage));
+
+final Map<String, dynamic> info = issuanceMessage.body.credential.toJson();
+final dto = CredentialDTO(
+  id: issuanceMessage.body.credential.id,
+  issuer: issuanceMessage.from,
   did: identifier,
-  expiration: fetchClaimDTO.credential.expirationDate,
-  type: fetchClaimDTO.credential.credentialSubject.type,
-  info: fetchClaimDTO.credential,
-  credentialRawValue: mockFetchClaim,
+  expiration: issuanceMessage.body.credential.expirationDate,
+  type: issuanceMessage.body.credential.credentialSubject.type,
+  info: issuanceMessage.body.credential,
+  credentialRawValue: mockIssuanceMessage,
 );
-final entity = ClaimEntity(
-  issuer: fetchClaimDTO.from,
+final entity = CredentialEntity(
+  issuer: issuanceMessage.from,
   did: identifier,
-  expiration: fetchClaimDTO.credential.expirationDate,
+  expiration: issuanceMessage.body.credential.expirationDate,
   info: info,
-  type: fetchClaimDTO.credential.credentialSubject.type,
-  state: ClaimState.active,
-  id: fetchClaimDTO.credential.id,
-  credentialRawValue: mockFetchClaim,
+  type: issuanceMessage.body.credential.credentialSubject.type,
+  state: CredentialState.active,
+  id: issuanceMessage.body.credential.id,
+  credentialRawValue: mockIssuanceMessage,
 );
 final displayType = UnknownDisplayType({});
 
 // Dependencies
-MockClaimStateMapper stateMapper = MockClaimStateMapper();
-MockClaimInfoMapper infoMapper = MockClaimInfoMapper();
+final stateMapper = MockCredentialStateMapper();
+final infoMapper = MockCredentialInfoMapper();
 MockDisplayTypeMapper displayTypeMapper = MockDisplayTypeMapper();
 // Tested instance
-ClaimMapper mapper = ClaimMapper(stateMapper, infoMapper, displayTypeMapper);
+CredentialMapper mapper =
+    CredentialMapper(stateMapper, infoMapper, displayTypeMapper);
 
 @GenerateMocks([
-  ClaimStateMapper,
-  ClaimInfoMapper,
+  CredentialStateMapper,
+  CredentialInfoMapper,
   DisplayTypeMapper,
 ])
 void main() {
@@ -66,7 +68,7 @@ void main() {
         () {
       // Given
       when(infoMapper.mapFrom(any)).thenReturn(info);
-      when(stateMapper.mapFrom(any)).thenReturn(ClaimState.active);
+      when(stateMapper.mapFrom(any)).thenReturn(CredentialState.active);
       when(displayTypeMapper.mapFrom(any)).thenReturn(displayType);
 
       // When
@@ -74,7 +76,7 @@ void main() {
 
       // Then
       expect(verify(infoMapper.mapFrom(captureAny)).captured.first,
-          fetchClaimDTO.credential);
+          issuanceMessage.body.credential);
       expect(verify(stateMapper.mapFrom(captureAny)).captured.first, '');
       verifyNever(displayTypeMapper.mapFrom(captureAny));
     });
@@ -85,7 +87,7 @@ void main() {
         "Given a ClaimEntity, when I call mapTo, then I expect an ClaimDTO to be returned",
         () {
       // Given
-      when(infoMapper.mapTo(any)).thenReturn(fetchClaimDTO.credential);
+      when(infoMapper.mapTo(any)).thenReturn(issuanceMessage.body.credential);
       when(stateMapper.mapTo(any)).thenReturn('');
       when(displayTypeMapper.mapTo(any)).thenReturn({});
 
@@ -95,7 +97,7 @@ void main() {
       // Then
       expect(verify(infoMapper.mapTo(captureAny)).captured.first, info);
       expect(verify(stateMapper.mapTo(captureAny)).captured.first,
-          ClaimState.active);
+          CredentialState.active);
     });
   });
 }

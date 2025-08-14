@@ -64,8 +64,8 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
 
     emit(const ClaimsState.loading());
 
-    Iden3MessageEntity iden3message = event.iden3message;
-    if (event.iden3message.messageType != Iden3MessageType.credentialOffer) {
+    Iden3Message iden3message = event.iden3message;
+    if (event.iden3message.type != Iden3MessageType.credentialOffer) {
       emit(const ClaimsState.error("Read message is not of type offer"));
       return;
     }
@@ -77,9 +77,9 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
         GENESIS_PROFILE_NONCE;
 
     try {
-      List<ClaimEntity> claimList =
+      List<CredentialEntity> claimList =
           await _polygonIdSdk.iden3comm.fetchAndSaveClaims(
-        message: event.iden3message as OfferIden3MessageEntity,
+        message: event.iden3message as CredentialsOfferMessage,
         genesisDid: didIdentifier,
         profileNonce: nonce,
         privateKey: privateKey,
@@ -126,7 +126,8 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     }
 
     try {
-      List<ClaimEntity> claimList = await _polygonIdSdk.credential.getClaims(
+      List<CredentialEntity> claimList =
+          await _polygonIdSdk.credential.getClaims(
         filters: filters,
         genesisDid: did,
         privateKey: privateKey,
@@ -176,7 +177,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     }
 
     try {
-      List<ClaimEntity> claimList =
+      List<CredentialEntity> claimList =
           await _polygonIdSdk.credential.getClaimsByIds(
         claimIds: ids,
         genesisDid: did,
@@ -288,7 +289,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     String id = event.id;
     String? issuer = event.issuer;
     String? did = event.did;
-    ClaimState? state = event.state;
+    CredentialState? state = event.state;
     String? expiration = event.expiration;
     String? type = event.type;
     Map<String, dynamic>? data = event.data;
@@ -343,7 +344,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     }
 
     try {
-      final Iden3MessageEntity iden3message =
+      final Iden3Message iden3message =
           await _qrcodeParserUtils.getIden3MessageFromQrCode(qrCodeResponse!);
       emit(ClaimsState.qrCodeScanned(iden3message));
     } catch (error) {
@@ -402,7 +403,8 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     }
 
     try {
-      List<ClaimEntity> claimList = await _polygonIdSdk.credential.getClaims(
+      List<CredentialEntity> claimList =
+          await _polygonIdSdk.credential.getClaims(
         genesisDid: did,
         privateKey: privateKey,
       );

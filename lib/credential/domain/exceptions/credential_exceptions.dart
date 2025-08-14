@@ -1,22 +1,13 @@
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 
-import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
+typedef ClaimNotFoundException = CredentialNotFoundException;
 
-class ClaimNotFoundException extends PolygonIdSDKException {
+class CredentialNotFoundException extends PolygonIdSDKException {
   final String id;
 
-  ClaimNotFoundException({
+  CredentialNotFoundException({
     required this.id,
-    required super.errorMessage,
-    super.error,
-  });
-}
-
-class ClaimWrongIdentityException extends PolygonIdSDKException {
-  final String identifier;
-
-  ClaimWrongIdentityException({
-    required this.identifier,
     required super.errorMessage,
     super.error,
   });
@@ -39,7 +30,7 @@ class UpdateClaimException extends PolygonIdSDKException {
 }
 
 class NullRevocationStatusException extends PolygonIdSDKException {
-  final ClaimEntity claim;
+  final CredentialEntity claim;
 
   NullRevocationStatusException({
     required this.claim,

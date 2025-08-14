@@ -8,7 +8,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exce
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
 
 class GetIden3commClaimsParam {
-  final Iden3MessageEntity message;
+  final Iden3Message message;
   final String genesisDid;
   final BigInt profileNonce;
   final String encryptionKey;
@@ -27,7 +27,7 @@ class GetIden3commClaimsParam {
 }
 
 class GetIden3commClaimsUseCase
-    extends FutureUseCase<GetIden3commClaimsParam, List<ClaimEntity?>> {
+    extends FutureUseCase<GetIden3commClaimsParam, List<CredentialEntity?>> {
   final GetMessageRequestsAndCredsUseCase _getMessageRequestsAndCredsUseCase;
 
   GetIden3commClaimsUseCase(
@@ -35,7 +35,7 @@ class GetIden3commClaimsUseCase
   );
 
   @override
-  Future<List<ClaimEntity>> execute({
+  Future<List<CredentialEntity>> execute({
     required GetIden3commClaimsParam param,
   }) async {
     final requestsAndCreds = await _getMessageRequestsAndCredsUseCase.execute(
@@ -48,7 +48,7 @@ class GetIden3commClaimsUseCase
       ),
     );
 
-    final credentials = <ClaimEntity>[];
+    final credentials = <CredentialEntity>[];
 
     for (final requestAndCreds in requestsAndCreds) {
       final credential = requestAndCreds.credentials.firstOrNull;
@@ -59,7 +59,8 @@ class GetIden3commClaimsUseCase
       } else {
         throw NoCredentialsFoundException(
           proofRequest: requestAndCreds.request,
-          errorMessage: "No credentials found for request: ${requestAndCreds.request.scope.id}",
+          errorMessage:
+              "No credentials found for request: ${requestAndCreds.request.scope.id}",
         );
       }
     }

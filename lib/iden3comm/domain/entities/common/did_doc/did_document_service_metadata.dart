@@ -32,25 +32,28 @@
 "to": "1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ"
 }*/
 
-import 'package:equatable/equatable.dart';
-import 'package:json_annotation/json_annotation.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/dtos/authorization/response/auth_body_did_doc_service_metadata_devices_response_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document_service_metadata_devices.dart';
 
-part 'auth_body_did_doc_service_metadata_response_dto.g.dart';
+class DIDDocumentServiceMetadata {
+  final List<DIDDocumentServiceMetadataDevices>? devices;
 
-@JsonSerializable()
-class AuthBodyDidDocServiceMetadataResponseDTO extends Equatable {
-  final List<AuthBodyDidDocServiceMetadataDevicesResponseDTO>? devices;
+  DIDDocumentServiceMetadata({this.devices});
 
-  const AuthBodyDidDocServiceMetadataResponseDTO({required this.devices});
+  /// Creates an instance from the given json
+  ///
+  /// @param [Map<String, dynamic>] json
+  /// @returns [DIDDocumentServiceMetadata]
+  factory DIDDocumentServiceMetadata.fromJson(Map<String, dynamic> json) {
+    List<DIDDocumentServiceMetadataDevices>? devices =
+        (json['devices'] as List?)
+            ?.map((item) => DIDDocumentServiceMetadataDevices.fromJson(item))
+            .toList();
+    return DIDDocumentServiceMetadata(
+      devices: devices,
+    );
+  }
 
-  factory AuthBodyDidDocServiceMetadataResponseDTO.fromJson(
-          Map<String, dynamic> json) =>
-      _$AuthBodyDidDocServiceMetadataResponseDTOFromJson(json);
-
-  Map<String, dynamic> toJson() =>
-      _$AuthBodyDidDocServiceMetadataResponseDTOToJson(this);
-
-  @override
-  List<Object?> get props => [devices];
+  Map<String, dynamic> toJson() => {
+        'devices': devices?.map((item) => item.toJson()).toList(),
+      };
 }

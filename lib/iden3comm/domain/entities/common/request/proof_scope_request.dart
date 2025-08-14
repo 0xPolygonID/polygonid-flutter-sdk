@@ -76,15 +76,16 @@
 
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_query_request.dart';
 
-class ProofScopeRequest {
+typedef ProofScopeRequest = ZeroKnowledgeProofRequest;
+
+class ZeroKnowledgeProofRequest {
   final int id;
   final String circuitId;
   final bool? optional;
-  final ProofScopeQueryRequest query;
-
+  final ZeroKnowledgeProofQuery query;
   final Map<String, dynamic>? params;
 
-  ProofScopeRequest({
+  ZeroKnowledgeProofRequest({
     required this.id,
     required this.circuitId,
     this.optional,
@@ -97,11 +98,11 @@ class ProofScopeRequest {
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [ProofScopeRequest]
-  factory ProofScopeRequest.fromJson(Map<String, dynamic> json) {
-    ProofScopeQueryRequest query =
-        ProofScopeQueryRequest.fromJson(json['query']);
-    return ProofScopeRequest(
+  /// @returns [ZeroKnowledgeProofRequest]
+  factory ZeroKnowledgeProofRequest.fromJson(Map<String, dynamic> json) {
+    ZeroKnowledgeProofQuery query =
+        ZeroKnowledgeProofQuery.fromJson(json['query']);
+    return ZeroKnowledgeProofRequest(
       id: json['id'],
       circuitId: json['circuitId'],
       optional: json['optional'],
@@ -126,7 +127,7 @@ class ProofScopeRequest {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ProofScopeRequest &&
+      other is ZeroKnowledgeProofRequest &&
           runtimeType == other.runtimeType &&
           id == other.id &&
           circuitId == other.circuitId &&

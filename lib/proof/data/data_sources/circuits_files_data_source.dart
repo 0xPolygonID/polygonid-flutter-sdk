@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:archive/archive.dart';
+import 'package:archive/archive_io.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:polygonid_flutter_sdk/common/utils/collection_utils.dart';
@@ -22,7 +23,7 @@ class CircuitsFilesDataSource {
   Future<Uint8List> loadGraphFile(String circuitId) async {
     final dirContents = directory.listSync();
     File? graphFile = dirContents
-        .firstWhereOrNull((f) => f.name == ('$circuitId.wcd')) as File?;
+        .firstWhereOrNull((f) => f.name == '$circuitId.wcd') as File?;
 
     if (graphFile != null && graphFile.existsSync()) {
       return graphFile.readAsBytesSync();
@@ -31,8 +32,7 @@ class CircuitsFilesDataSource {
     final circuitDir = circuitDirectory(circuitId);
     if (circuitDir != null) {
       graphFile = circuitDir.listSync().firstWhereOrNull(
-              (f) => f.name == ('$circuitId.wcd') || f.name == ('graph.wcd'))
-          as File?;
+          (f) => f.name == '$circuitId.wcd' || f.name == 'graph.wcd') as File?;
       if (graphFile != null && graphFile.existsSync()) {
         return graphFile.readAsBytesSync();
       }
@@ -54,7 +54,7 @@ class CircuitsFilesDataSource {
   Future<String> getZkeyFilePath(String circuitId) async {
     final dirContents = directory.listSync();
     File? zkeyFile = dirContents
-        .firstWhereOrNull((f) => f.name == ('$circuitId.zkey')) as File?;
+        .firstWhereOrNull((f) => f.name == '$circuitId.zkey') as File?;
 
     if (zkeyFile != null && zkeyFile.existsSync()) {
       return zkeyFile.path;
@@ -63,8 +63,8 @@ class CircuitsFilesDataSource {
     final circuitDir = circuitDirectory(circuitId);
     if (circuitDir != null) {
       zkeyFile = circuitDir.listSync().firstWhereOrNull((f) =>
-          f.name == ('$circuitId.zkey') ||
-          f.name == ('circuit_final.zkey')) as File?;
+              f.name == '$circuitId.zkey' || f.name == 'circuit_final.zkey')
+          as File?;
       if (zkeyFile != null && zkeyFile.existsSync()) {
         return zkeyFile.path;
       }
@@ -139,17 +139,18 @@ class CircuitsFilesDataSource {
     required String path,
     required String zipPath,
   }) async {
-    var zipFile = File(zipPath);
-    Uint8List zipBytes = zipFile.readAsBytesSync();
+    // Decode zip file
     final zipDecoder = getItSdk.get<ZipDecoder>();
-    var archive = zipDecoder.decodeBytes(zipBytes);
+    final inputFileStream = InputFileStream(zipPath);
+    final archive = zipDecoder.decodeStream(inputFileStream);
 
-    for (var file in archive) {
-      var filename = pathLib.join(path, pathLib.basename(file.name));
-      if (file.isFile) {
+    for (var archiveFile in archive) {
+      var filename = pathLib.join(path, pathLib.basename(archiveFile.name));
+      if (archiveFile.isFile) {
         var outFile = File(filename);
         outFile = await outFile.create(recursive: true);
-        await outFile.writeAsBytes(file.content);
+
+        archiveFile.writeContent(OutputFileStream(filename));
       }
     }
   }

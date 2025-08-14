@@ -64,33 +64,36 @@
 
 */
 
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_body_request.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 
-class OfferIden3MessageEntity
-    extends CredentialOfferMessageEntity<OfferBodyRequest> {
-  OfferIden3MessageEntity({
+@Deprecated('Use CredentialsOfferMessage instead')
+typedef OfferIden3MessageEntity = CredentialsOfferMessage;
+
+class CredentialsOfferMessage
+    extends BaseCredentialOfferMessage<CredentialsOfferMessageBody> {
+  CredentialsOfferMessage({
     required super.id,
     required super.typ,
-    required super.type,
+    @Deprecated('may be omitted, gonna be removed in the future') String? type,
     required super.thid,
     required super.from,
     required super.body,
     super.to,
     super.nextRequest,
-  }) : super(messageType: Iden3MessageType.credentialOffer);
+  }) : super(type: Iden3MessageType.credentialOffer);
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [OfferIden3MessageEntity]
-  factory OfferIden3MessageEntity.fromJson(Map<String, dynamic> json) {
-    OfferBodyRequest body = OfferBodyRequest.fromJson(json['body']);
-    return OfferIden3MessageEntity(
+  /// @returns [CredentialsOfferMessage]
+  factory CredentialsOfferMessage.fromJson(Map<String, dynamic> json) {
+    CredentialsOfferMessageBody body =
+        CredentialsOfferMessageBody.fromJson(json['body']);
+    return CredentialsOfferMessage(
       id: json['id'],
       typ: json['typ'],
-      type: json['type'],
       thid: json['thid'],
       from: json['from'],
       to: json['to'],
@@ -100,11 +103,11 @@ class OfferIden3MessageEntity
   }
 
   @override
-  String toString() => "[OfferIden3MessageEntity] {${super.toString()}";
+  String toString() => "[CredentialsOfferMessage] {${super.toString()}";
 
   @override
   bool operator ==(Object other) =>
-      super == other && other is OfferIden3MessageEntity;
+      super == other && other is CredentialsOfferMessage;
 
   @override
   int get hashCode => runtimeType.hashCode;

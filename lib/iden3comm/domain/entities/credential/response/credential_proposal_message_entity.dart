@@ -1,8 +1,7 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/credential_schema_info.dart';
 
 /*
-https://iden3-communication.io/credentials/0.1/proposal
-
 {
 	"id": "45f13336-80e3-41b6-8430-f80cc7e32979",
 	"typ": "application/iden3comm-plain-json",
@@ -23,24 +22,31 @@ https://iden3-communication.io/credentials/0.1/proposal
 	"to": "did:polygonid:polygon:amoy:2qRHzfG7yvULahKDg9eRNX4kTBJb6EZcCBLQoUKx8x"
 }
 */
-class CredentialProposal extends Iden3MessageEntity<CredentialProposalBody> {
-  CredentialProposal({
+@Deprecated('Use ProposalMessage instead')
+typedef CredentialProposal = ProposalMessage;
+
+/// Represents a credential proposal message
+/// https://iden3-communication.io/credentials/0.1/proposal
+class ProposalMessage extends Iden3Message<ProposalMessageBody> {
+  ProposalMessage({
     required super.id,
     required super.typ,
-    required super.type,
+    @Deprecated('may be omitted, gonna be removed in the future') String? type,
     required super.thid,
     required super.body,
     required super.from,
     required super.to,
-  }) : super(messageType: Iden3MessageType.credentialProposal);
+    super.createdTime,
+    super.expiresTime,
+    super.attachments = const [],
+  }) : super(type: Iden3MessageType.credentialProposal);
 
-  factory CredentialProposal.fromJson(Map<String, dynamic> json) {
-    return CredentialProposal(
+  factory ProposalMessage.fromJson(Map<String, dynamic> json) {
+    return ProposalMessage(
       id: json['id'],
       typ: json['typ'],
-      type: json['type'],
       thid: json['thid'],
-      body: CredentialProposalBody.fromJson(json['body']),
+      body: ProposalMessageBody.fromJson(json['body']),
       from: json['from'],
       to: json['to'],
     );
@@ -59,24 +65,24 @@ class CredentialProposal extends Iden3MessageEntity<CredentialProposalBody> {
   }
 }
 
-class CredentialProposalBody {
-  final List<CredentialProposalProposal> proposals;
+class ProposalMessageBody {
+  final List<Proposal> proposals;
 
-  CredentialProposalBody({
+  ProposalMessageBody({
     required this.proposals,
   });
 
-  factory CredentialProposalBody.fromJson(Map<String, dynamic> json) {
-    return CredentialProposalBody(
-      proposals: List<CredentialProposalProposal>.from(
-          json['proposals'].map((x) => CredentialProposalProposal.fromJson(x))),
+  factory ProposalMessageBody.fromJson(Map<String, dynamic> json) {
+    return ProposalMessageBody(
+      proposals: List<Proposal>.from(
+          json['proposals'].map((x) => Proposal.fromJson(x))),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      "proposals": List<dynamic>.from(
-          proposals.map((CredentialProposalProposal x) => x.toJson())),
+      "proposals":
+          List<dynamic>.from(proposals.map((Proposal x) => x.toJson())),
     };
   }
 }
@@ -92,24 +98,27 @@ class CredentialProposalBody {
 			"description": "Synaps credential proposal"
 		}]
 */
-class CredentialProposalProposal {
-  final List<CredentialProposalProposalCredential> credentials;
+
+@Deprecated('Use Proposal instead')
+typedef CredentialProposalEntity = Proposal;
+
+class Proposal {
+  final List<ProposalRequestCredential> credentials;
   final String type;
   final String url;
   final String description;
 
-  CredentialProposalProposal({
+  Proposal({
     required this.credentials,
     required this.type,
     required this.url,
     required this.description,
   });
 
-  factory CredentialProposalProposal.fromJson(Map<String, dynamic> json) {
-    return CredentialProposalProposal(
-      credentials: List<CredentialProposalProposalCredential>.from(
-          json['credentials']
-              .map((x) => CredentialProposalProposalCredential.fromJson(x))),
+  factory Proposal.fromJson(Map<String, dynamic> json) {
+    return Proposal(
+      credentials: List<ProposalRequestCredential>.from(json['credentials']
+          .map((x) => ProposalRequestCredential.fromJson(x))),
       type: json['type'],
       url: json['url'],
       description: json['description'],
@@ -118,8 +127,8 @@ class CredentialProposalProposal {
 
   Map<String, dynamic> toJson() {
     return {
-      "credentials": List<dynamic>.from(credentials
-          .map((CredentialProposalProposalCredential x) => x.toJson())),
+      "credentials": List<dynamic>.from(
+          credentials.map((ProposalRequestCredential x) => x.toJson())),
       "type": type,
       "url": url,
       "description": description,
@@ -127,33 +136,7 @@ class CredentialProposalProposal {
   }
 }
 
-/*
-"credentials": [{
-				"type": "AnimaProofOfLife",
-				"context": "https://raw.githubusercontent.com/anima-protocol/claims-polygonid/main/schemas/json-ld/pol-v1.json-ld"
-			}],
-			*/
-class CredentialProposalProposalCredential {
-  final String type;
-  final String context;
+@Deprecated('Use ProposalRequestCredential instead')
+typedef CredentialProposalProposalCredential = ProposalRequestCredential;
 
-  CredentialProposalProposalCredential({
-    required this.type,
-    required this.context,
-  });
-
-  factory CredentialProposalProposalCredential.fromJson(
-      Map<String, dynamic> json) {
-    return CredentialProposalProposalCredential(
-      type: json['type'],
-      context: json['context'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      "type": type,
-      "context": context,
-    };
-  }
-}
+typedef ProposalRequestCredential = CredentialSchemaInfo;

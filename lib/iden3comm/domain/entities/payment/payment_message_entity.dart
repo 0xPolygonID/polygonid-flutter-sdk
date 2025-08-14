@@ -1,22 +1,33 @@
+// ignore_for_file: overridden_fields
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 
-/// Payment Message Entity
-class PaymentMessageEntity extends Iden3MessageEntity<PaymentBody> {
-  PaymentMessageEntity({
+@Deprecated('Use PaymentMessage instead')
+typedef PaymentMessageEntity = PaymentMessage;
+
+class PaymentMessage extends Iden3Message<PaymentBody> {
+  @override
+  final String from;
+
+  @override
+  final String to;
+
+  PaymentMessage({
     required super.id,
     required super.typ,
-    required super.type,
+    @Deprecated('may be omitted, gonna be removed in the future') String? type,
     required super.thid,
-    required super.from,
-    required super.to,
+    required this.from,
+    required this.to,
     required super.body,
-  }) : super(messageType: Iden3MessageType.payment);
+    super.createdTime,
+    super.expiresTime,
+    super.attachments = const [],
+  }) : super(type: Iden3MessageType.payment, from: from, to: to);
 
-  factory PaymentMessageEntity.fromJson(Map<String, dynamic> json) {
-    return PaymentMessageEntity(
+  factory PaymentMessage.fromJson(Map<String, dynamic> json) {
+    return PaymentMessage(
       id: json['id'],
       typ: json['typ'],
-      type: json['type'],
       thid: json['thid'],
       body: PaymentBody.fromJson(json['body']),
       from: json['from'],

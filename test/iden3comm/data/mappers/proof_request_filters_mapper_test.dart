@@ -78,23 +78,23 @@ String mockQueryRequestNotSupportedOperator = '''
 }
 ''';
 
-ProofScopeRequest proofScopeRequest = ProofScopeRequest(
+ZeroKnowledgeProofRequest proofScopeRequest = ZeroKnowledgeProofRequest(
   id: 1,
   circuitId: "credentialAtomicQuerySig",
-  query: ProofScopeQueryRequest(
+  query: ZeroKnowledgeProofQuery(
+    allowedIssuers: ["*"],
     context: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
-    challenge: 74657374,
     type: "KYCAgeCredential",
     credentialSubject: jsonDecode(mockQueryRequestLT),
   ),
 );
 ProofRequestEntity mockProofRequestEntityLT = ProofRequestEntity(
-  ProofScopeRequest(
+  ZeroKnowledgeProofRequest(
     id: 1,
     circuitId: "credentialAtomicQuerySig",
-    query: ProofScopeQueryRequest(
+    query: ZeroKnowledgeProofQuery(
+      allowedIssuers: ["*"],
       context: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
-      challenge: 74657374,
       type: "KYCAgeCredential",
       credentialSubject: jsonDecode(mockQueryRequestLT),
     ),
@@ -103,12 +103,12 @@ ProofRequestEntity mockProofRequestEntityLT = ProofRequestEntity(
 );
 
 ProofRequestEntity mockProofRequestEntityGT = ProofRequestEntity(
-  ProofScopeRequest(
+  ZeroKnowledgeProofRequest(
     id: 1,
     circuitId: "credentialAtomicQuerySig",
-    query: ProofScopeQueryRequest(
+    query: ZeroKnowledgeProofQuery(
+      allowedIssuers: ["*"],
       context: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
-      challenge: 74657374,
       type: "KYCAgeCredential",
       credentialSubject: jsonDecode(mockQueryRequestGT),
     ),
@@ -117,12 +117,12 @@ ProofRequestEntity mockProofRequestEntityGT = ProofRequestEntity(
 );
 
 ProofRequestEntity mockProofRequestEntityEQ = ProofRequestEntity(
-  ProofScopeRequest(
+  ZeroKnowledgeProofRequest(
     id: 1,
     circuitId: "credentialAtomicQuerySig",
-    query: ProofScopeQueryRequest(
+    query: ZeroKnowledgeProofQuery(
+      allowedIssuers: ["*"],
       context: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
-      challenge: 74657374,
       type: "KYCAgeCredential",
       credentialSubject: jsonDecode(mockQueryRequestEQ),
     ),
@@ -131,12 +131,12 @@ ProofRequestEntity mockProofRequestEntityEQ = ProofRequestEntity(
 );
 
 ProofRequestEntity mockProofRequestEntityIN = ProofRequestEntity(
-  ProofScopeRequest(
+  ZeroKnowledgeProofRequest(
     id: 1,
     circuitId: "credentialAtomicQuerySig",
-    query: ProofScopeQueryRequest(
+    query: ZeroKnowledgeProofQuery(
+      allowedIssuers: ["*"],
       context: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
-      challenge: 74657374,
       type: "KYCAgeCredential",
       credentialSubject: jsonDecode(mockQueryRequestIN),
     ),
@@ -145,12 +145,12 @@ ProofRequestEntity mockProofRequestEntityIN = ProofRequestEntity(
 );
 
 ProofRequestEntity mockProofRequestEntityNIN = ProofRequestEntity(
-  ProofScopeRequest(
+  ZeroKnowledgeProofRequest(
     id: 1,
     circuitId: "credentialAtomicQuerySig",
-    query: ProofScopeQueryRequest(
+    query: ZeroKnowledgeProofQuery(
+      allowedIssuers: ["*"],
       context: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
-      challenge: 74657374,
       type: "KYCAgeCredential",
       credentialSubject: jsonDecode(mockQueryRequestNIN),
     ),
@@ -159,12 +159,12 @@ ProofRequestEntity mockProofRequestEntityNIN = ProofRequestEntity(
 );
 
 ProofRequestEntity mockProofRequestEntityNINCountry = ProofRequestEntity(
-  ProofScopeRequest(
+  ZeroKnowledgeProofRequest(
     id: 1,
     circuitId: "credentialAtomicQuerySig",
-    query: ProofScopeQueryRequest(
+    query: ZeroKnowledgeProofQuery(
+      allowedIssuers: ["*"],
       context: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
-      challenge: 74657374,
       type: "KYCCountryOfResidenceCredential",
       credentialSubject: jsonDecode(mockQueryRequestNINCountry),
     ),
@@ -174,12 +174,12 @@ ProofRequestEntity mockProofRequestEntityNINCountry = ProofRequestEntity(
 
 ProofRequestEntity mockProofRequestEntityNotSupportedOperator =
     ProofRequestEntity(
-  ProofScopeRequest(
+  ZeroKnowledgeProofRequest(
     id: 1,
     circuitId: "credentialAtomicQuerySig",
-    query: ProofScopeQueryRequest(
+    query: ZeroKnowledgeProofQuery(
+      allowedIssuers: ["*"],
       context: "0x8b5b5a6b4e6b0b6b2b6b4b6b6b6b6b6b6b6b6b6b",
-      challenge: 74657374,
       type: "KYCCountryOfResidenceCredential",
       credentialSubject: jsonDecode(mockQueryRequestNotSupportedOperator),
     ),

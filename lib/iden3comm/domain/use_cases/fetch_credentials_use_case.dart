@@ -50,8 +50,8 @@ class FetchCredentialsUseCase {
     this._getEnvUseCase,
   );
 
-  Future<List<ClaimEntity>> fetchCredentials({
-    required CredentialOfferMessageEntity credentialOfferMessage,
+  Future<List<CredentialEntity>> fetchCredentials({
+    required BaseCredentialOfferMessage credentialOfferMessage,
     required String privateKey,
     required String genesisDid,
     required BigInt profileNonce,
@@ -61,8 +61,8 @@ class FetchCredentialsUseCase {
   }) async {
     try {
       // we check the type of the credential offer message
-      if (credentialOfferMessage is! OfferIden3MessageEntity &&
-          credentialOfferMessage is! OnchainOfferIden3MessageEntity) {
+      if (credentialOfferMessage is! CredentialsOfferMessage &&
+          credentialOfferMessage is! CredentialsOnchainOfferMessage) {
         throw FetchClaimException(
           errorMessage: "Invalid credential offer message type",
         );
@@ -89,8 +89,8 @@ class FetchCredentialsUseCase {
         ),
       );
 
-      final List<ClaimEntity> credentials;
-      if (credentialOfferMessage is OfferIden3MessageEntity) {
+      final List<CredentialEntity> credentials;
+      if (credentialOfferMessage is CredentialsOfferMessage) {
         credentials = await _fetchOffChainCredentials(
           credentialOfferMessage: credentialOfferMessage,
           privateKey: privateKey,
@@ -101,7 +101,7 @@ class FetchCredentialsUseCase {
         return credentials;
       }
 
-      if (credentialOfferMessage is OnchainOfferIden3MessageEntity) {
+      if (credentialOfferMessage is CredentialsOnchainOfferMessage) {
         credentials = await _fetchOnchainCredentials(
           message: credentialOfferMessage,
           profileDid: profileDid,
@@ -117,8 +117,8 @@ class FetchCredentialsUseCase {
     }
   }
 
-  Future<List<ClaimEntity>> _fetchOffChainCredentials({
-    required OfferIden3MessageEntity credentialOfferMessage,
+  Future<List<CredentialEntity>> _fetchOffChainCredentials({
+    required CredentialsOfferMessage credentialOfferMessage,
     required String privateKey,
     required String genesisDid,
     required BigInt profileNonce,
@@ -132,7 +132,7 @@ class FetchCredentialsUseCase {
       ),
     );
 
-    final List<ClaimEntity> credentials = [];
+    final List<CredentialEntity> credentials = [];
     for (final request in requests) {
       //for each request we get the authToken
       final String authToken = await _getAuthTokenUseCase.execute(
@@ -146,7 +146,7 @@ class FetchCredentialsUseCase {
 
       // we get the credential from the issuer using the authToken
       // and the url of the credential
-      final ClaimEntity credential =
+      final CredentialEntity credential =
           await _iden3commCredentialRepository.fetchClaim(
         did: profileDid,
         authToken: authToken,
@@ -158,15 +158,13 @@ class FetchCredentialsUseCase {
     return credentials;
   }
 
-  Future<List<ClaimEntity>> _fetchOnchainCredentials({
-    required OnchainOfferIden3MessageEntity message,
+  Future<List<CredentialEntity>> _fetchOnchainCredentials({
+    required CredentialsOnchainOfferMessage message,
     required String profileDid,
   }) async {
     final env = await _getEnvUseCase.execute();
-    final chainId = message.body.transactionData.chainId?.toString();
-    final chain = chainId != null
-        ? env.chainConfigs[chainId]
-        : await _getSelectedChainUseCase.execute();
+    final chainId = message.body.transactionData.chainId.toString();
+    final chain = env.chainConfigs[chainId];
 
     /// FIXME: inject web3Client through constructor
     final web3Client = getItSdk<Web3Client>(param1: chain!.rpcUrl);
@@ -218,7 +216,7 @@ class FetchCredentialsUseCase {
 
     final adapterVersion = await issuer.getCredentialAdapterVersion();
 
-    final claims = <ClaimEntity>[];
+    final claims = <CredentialEntity>[];
     for (final credential in message.body.credentials) {
       final credentialId = BigInt.parse(credential.id);
 

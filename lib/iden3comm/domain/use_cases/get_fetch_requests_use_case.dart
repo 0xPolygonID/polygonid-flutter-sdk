@@ -8,7 +8,7 @@ import '../../../common/domain/use_case.dart';
 import '../entities/credential/request/offer_iden3_message_entity.dart';
 
 class GetFetchRequestsParam {
-  final OfferIden3MessageEntity message;
+  final CredentialsOfferMessage message;
   final String did;
 
   GetFetchRequestsParam(this.message, this.did);
@@ -19,15 +19,18 @@ class GetFetchRequestsUseCase
   @override
   Future<List<String>> execute({required GetFetchRequestsParam param}) async {
     return param.message.body.credentials
-        .map((credential) => jsonEncode(FetchIden3MessageEntity(
-            id: const Uuid().v4(),
-            typ: param.message.typ,
-            type:
-                "https://iden3-communication.io/credentials/1.0/fetch-request",
-            thid: param.message.thid,
-            body: FetchBodyRequest(id: credential.id),
-            from: param.did,
-            to: param.message.from)))
+        .map(
+          (credential) => jsonEncode(
+            CredentialFetchRequestMessage(
+                    id: const Uuid().v4(),
+                    typ: param.message.typ,
+                    thid: param.message.thid,
+                    body: CredentialFetchRequestBody(id: credential.id),
+                    from: param.did,
+                    to: param.message.from)
+                .toJson(),
+          ),
+        )
         .toList();
   }
 }

@@ -1,7 +1,10 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_request_data_proof.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_request_message_entity.dart';
 
-class Iden3PaymentRailsRequestV1Data extends PaymentRequestData {
+@Deprecated('Use Iden3PaymentRailsRequestV1 instead')
+typedef Iden3PaymentRailsRequestV1Data = Iden3PaymentRailsRequestV1;
+
+class Iden3PaymentRailsRequestV1 extends PaymentRequestData {
   @override
   final String type;
   final List<String> context;
@@ -16,7 +19,7 @@ class Iden3PaymentRailsRequestV1Data extends PaymentRequestData {
   PaymentRequestDataType get paymentRequestDataType =>
       PaymentRequestDataType.railsV1;
 
-  Iden3PaymentRailsRequestV1Data({
+  Iden3PaymentRailsRequestV1({
     required this.type,
     required this.context,
     required this.recipient,
@@ -27,8 +30,8 @@ class Iden3PaymentRailsRequestV1Data extends PaymentRequestData {
     required this.proof,
   });
 
-  factory Iden3PaymentRailsRequestV1Data.fromJson(Map<String, dynamic> json) {
-    return Iden3PaymentRailsRequestV1Data(
+  factory Iden3PaymentRailsRequestV1.fromJson(Map<String, dynamic> json) {
+    return Iden3PaymentRailsRequestV1(
       type: json['type'],
       context: List<String>.from(json['@context']),
       recipient: json['recipient'],

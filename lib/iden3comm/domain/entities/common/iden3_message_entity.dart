@@ -1,32 +1,35 @@
+import 'dart:convert';
+
+import 'package:equatable/equatable.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/attachment.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/protocol_message_type.dart';
+
 enum Iden3MessageType {
-  authRequest("https://iden3-communication.io/authorization/1.0/request"),
-  authResponse("https://iden3-communication.io/authorization/1.0/response"),
-  credentialOffer("https://iden3-communication.io/credentials/1.0/offer"),
-  onchainCredentialOffer(
-      "https://iden3-communication.io/credentials/1.0/onchain-offer"),
+  /// Authorization
+  authRequest(ProtocolMessageType.authorizationRequestMessageType),
+  authResponse(ProtocolMessageType.authorizationResponseMessageType),
+  credentialOffer(ProtocolMessageType.credentialOfferMessageType),
+  onchainCredentialOffer(ProtocolMessageType.credentialOnchainOfferMessageType),
+  credentialIssuanceRequest(
+      ProtocolMessageType.credentialIssuanceRequestMessageType),
   credentialIssuanceResponse(
-      "https://iden3-communication.io/credentials/1.0/issuance-response"),
+      ProtocolMessageType.credentialIssuanceResponseMessageType),
   proofContractInvokeRequest(
-      "https://iden3-communication.io/proofs/1.0/contract-invoke-request"),
+      ProtocolMessageType.contractInvokeRequestMessageType),
   proofContractInvokeResponse(
-      "https://iden3-communication.io/proofs/1.0/contract-invoke-response"),
-  credentialRefresh("https://iden3-communication.io/credentials/1.0/refresh"),
-  credentialProposalRequest(
-      "https://iden3-communication.io/credentials/0.1/proposal-request"),
-  credentialProposal("https://iden3-communication.io/credentials/0.1/proposal"),
-  credentialStatusUpdate(
-      "https://iden3-communication.io/credentials/1.0/status-update"),
-  paymentRequest(
-      "https://iden3-communication.io/credentials/0.1/payment-request"),
-  payment("https://iden3-communication.io/credentials/0.1/payment"),
-  problemReport("https://didcomm.org/report-problem/2.0/problem-report"),
-  attestationRequest("https://iden3-communication.io/attestation/0.1/request"),
-  attestationResponse(
-      "https://iden3-communication.io/attestation/0.1/response"),
-  verificationRequest(
-      "https://iden3-communication.io/passport/0.1/verification-request"),
-  verificationResponse(
-      "https://iden3-communication.io/passport/0.1/verification-response"),
+      ProtocolMessageType.contractInvokeResponseMessageType),
+  credentialRefresh(ProtocolMessageType.credentialRefreshMessageType),
+  credentialProposalRequest(ProtocolMessageType.proposalRequestMessageType),
+  credentialProposal(ProtocolMessageType.proposalMessageType),
+  credentialStatusUpdate(ProtocolMessageType.credentialStatusUpdateMessageType),
+  paymentRequest(ProtocolMessageType.paymentRequestMessageType),
+  payment(ProtocolMessageType.paymentMessageType),
+  problemReport(ProtocolMessageType.problemReportMessageType),
+  attestationRequest(ProtocolMessageType.attestationRequestMessageType),
+  attestationResponse(ProtocolMessageType.attestationResponseMessageType),
+  verificationRequest(ProtocolMessageType.verificationRequestMessageType),
+  verificationResponse(ProtocolMessageType.verificationResponseMessageType),
+  fetchRequest(ProtocolMessageType.credentialFetchRequestMessageType),
   unknown("");
 
   final String type;
@@ -39,65 +42,107 @@ enum Iden3MessageType {
       orElse: () => Iden3MessageType.unknown,
     );
   }
+
+  static Iden3MessageType fromJson(String json) {
+    return Iden3MessageType.fromType(json);
+  }
+
+  String toJson() => type;
+
+  @override
+  String toString() => type;
 }
 
-/// Represents an iden3 message.
-abstract class Iden3MessageEntity<T> {
+@Deprecated('Use Iden3Message instead')
+typedef Iden3MessageEntity<T> = Iden3Message<T>;
+
+/// Represents an iden3 protocol message.
+/// https://identity.foundation/didcomm-messaging/spec/#message-headers
+abstract class Iden3Message<T> extends Equatable {
   final String id;
-  final String typ;
-  final String type;
-  final Iden3MessageType messageType;
+
+  /// The type of the message, e.g. "application/iden3-zkp-json".
+  final String? typ;
+
+  /// The type of the message, e.g. "https://iden3-communication.io/authorization/1.0/request".
+  final Iden3MessageType type;
+
+  /// The thread id of the message, used to link messages in a conversation.
+  // TODO: Make this optional according to protocol.
   final String thid;
+
+  /// The body of the message, which contains the actual data. Depends on the message type.
   final T body;
+
+  /// The sender of the message, usually a DID.
+  // TODO: Make this optional according to protocol.
   final String from;
+
+  /// The recipient of the message, usually a DID.
   final String? to;
+
+  /// The time when the message was created, represented as a Unix timestamp, seconds.
+  final int? createdTime;
+
+  /// The time when the message expires, represented as a Unix timestamp, seconds.
+  final int? expiresTime;
+
+  /// Attachments for the message, if any.
+  final List<Attachment> attachments;
+
+  /// Optional next request, used for chaining messages.
   final Map<String, dynamic>? nextRequest;
 
-  const Iden3MessageEntity({
+  const Iden3Message({
     required this.id,
     required this.typ,
     required this.type,
-    this.messageType = Iden3MessageType.unknown,
     required this.thid,
-    required this.from,
-    this.to,
-    this.nextRequest,
     required this.body,
+    required this.from,
+    required this.to,
+    this.nextRequest,
+    required this.createdTime,
+    required this.expiresTime,
+    required this.attachments,
   });
 
-  @override
-  String toString() =>
-      "[Iden3MessageEntity] {id: $id, typ: $typ, type: $type, messageType: $messageType, thid: $thid, body: $body, from: $from, to: $to, nextRequest: $nextRequest}";
+  @Deprecated('Use type instead')
+  Iden3MessageType get messageType => type;
 
   @override
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'typ': typ,
-        'type': type,
-        'messageType': messageType.name,
-        'thid': thid,
-        'body': (body as dynamic).toJson(),
-        'from': from,
-        'to': to,
-        'nextRequest': nextRequest,
-      }..removeWhere(
-          (dynamic key, dynamic value) => key == null || value == null);
+  String toString() => "Iden3Message: ${jsonEncode(toJson())}";
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Iden3MessageEntity &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          typ == other.typ &&
-          type == other.type &&
-          messageType == other.messageType &&
-          thid == other.thid &&
-          body == other.body &&
-          from == other.from &&
-          to == other.to &&
-          nextRequest == other.nextRequest;
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'typ': typ,
+      'type': type.type,
+      'thid': thid,
+      'body': (body as dynamic).toJson(),
+      'from': from,
+      'to': to,
+      'created_time': createdTime,
+      'expires_time': expiresTime,
+      'next_request': nextRequest,
+    }..removeWhere((_, value) => value == null);
+  }
 
   @override
-  int get hashCode => runtimeType.hashCode;
+  List<Object?> get props {
+    return [
+      id,
+      typ,
+      type,
+      thid,
+      body,
+      from,
+      to,
+      createdTime,
+      expiresTime,
+      attachments,
+      nextRequest,
+    ];
+  }
 }

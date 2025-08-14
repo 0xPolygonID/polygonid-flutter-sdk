@@ -13,9 +13,8 @@ class CheckCircuitsUseCase extends FutureUseCase<List<CircuitModel>, bool> {
 
     for (final circuitModel in param) {
       final existAndValid =
-          await _circuitsRepository.circuitExistsAndValidChecksum(
-        circuitFileName: circuitModel.fileName,
-        circuitId: circuitModel.circuitId,
+          await _circuitsRepository.fileExistsAndValidChecksum(
+        fileName: circuitModel.fileName,
         checksum: circuitModel.checksum,
       );
 

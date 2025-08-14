@@ -1,6 +1,7 @@
 import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_body_did_doc_service_metadata_devices_response.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document_service_metadata_devices.dart';
 
 String data = '''
 {
@@ -11,16 +12,16 @@ String data = '''
 var json = jsonDecode(data);
 
 main() {
-  group("AuthBodyDidDocServiceMetadataDevicesResponse", () {
+  group("DIDDocumentServiceMetadataDevices", () {
     test("fromJson", () {
-      var dto = AuthBodyDidDocServiceMetadataDevicesResponse.fromJson(json);
+      final dto = DIDDocumentServiceMetadataDevices.fromJson(json);
       expect(dto.ciphertext, json["ciphertext"]);
       expect(dto.alg, json["alg"]);
     });
 
     test("toJson", () {
-      var authBodyDidDocServiceMetadataDevicesResponse =
-          AuthBodyDidDocServiceMetadataDevicesResponse.fromJson(json);
+      final authBodyDidDocServiceMetadataDevicesResponse =
+          DIDDocumentServiceMetadataDevices.fromJson(json);
       expect(authBodyDidDocServiceMetadataDevicesResponse.toJson(), json);
     });
   });

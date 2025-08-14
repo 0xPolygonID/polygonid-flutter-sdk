@@ -48,65 +48,65 @@ final GetClaimsParam profileParam = GetClaimsParam(
   encryptionKey: privateKey,
 );
 final claimEntities = [
-  ClaimEntity(
+  CredentialEntity(
     issuer: "",
     did: "",
     expiration: "",
     info: {},
     type: "",
-    state: ClaimState.active,
+    state: CredentialState.active,
     id: "id1",
     credentialRawValue: "",
   ),
-  ClaimEntity(
+  CredentialEntity(
     issuer: "",
     did: "",
     expiration: "",
     info: {},
     type: "",
-    state: ClaimState.pending,
+    state: CredentialState.pending,
     id: "id2",
     credentialRawValue: "",
   ),
-  ClaimEntity(
+  CredentialEntity(
     issuer: "",
     did: "",
     expiration: "",
     info: {},
     type: "",
-    state: ClaimState.revoked,
+    state: CredentialState.revoked,
     id: "id3",
     credentialRawValue: "",
   )
 ];
 final profilesClaimEntities = [
-  ClaimEntity(
+  CredentialEntity(
     issuer: "",
     did: "",
     expiration: "",
     info: {},
     type: "",
-    state: ClaimState.active,
+    state: CredentialState.active,
     id: "id1",
     credentialRawValue: "",
   ),
-  ClaimEntity(
+  CredentialEntity(
     issuer: "",
     did: "",
     expiration: "",
     info: {},
     type: "",
-    state: ClaimState.pending,
+    state: CredentialState.pending,
     id: "id2",
     credentialRawValue: "",
   ),
-  ClaimEntity(
+  CredentialEntity(
     issuer: "",
     did: "",
     expiration: "",
     info: {},
     type: "",
-    state: ClaimState.revoked,
+    state: CredentialState.revoked,
     id: "id3",
     credentialRawValue: "",
   )
@@ -137,7 +137,7 @@ void main() {
       reset(getIdentityUseCase);
 
       // Given
-      when(credentialRepository.getClaims(
+      when(credentialRepository.getCredentials(
               genesisDid: anyNamed('genesisDid'),
               encryptionKey: anyNamed('encryptionKey'),
               filters: anyNamed("filters")))
@@ -159,7 +159,7 @@ void main() {
           .first;
       expect(capturedDid.privateKey, privateKey);*/
 
-      var capturedGet = verify(credentialRepository.getClaims(
+      var capturedGet = verify(credentialRepository.getCredentials(
               genesisDid: captureAnyNamed('genesisDid'),
               encryptionKey: captureAnyNamed('encryptionKey'),
               filters: captureAnyNamed('filters')))
@@ -184,7 +184,7 @@ void main() {
 
       verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
 
-      var capturedGet = verify(credentialRepository.getClaims(
+      var capturedGet = verify(credentialRepository.getCredentials(
               genesisDid: captureAnyNamed('genesisDid'),
               encryptionKey: captureAnyNamed('encryptionKey'),
               filters: captureAnyNamed('filters')))
@@ -201,7 +201,7 @@ void main() {
       await expectLater(useCase.execute(param: negativeParam),
           throwsA(isA<InvalidProfileException>()));
 
-      verifyNever(credentialRepository.getClaims(
+      verifyNever(credentialRepository.getCredentials(
           genesisDid: captureAnyNamed('genesisDid'),
           encryptionKey: captureAnyNamed('encryptionKey'),
           filters: captureAnyNamed('filters')));
@@ -220,7 +220,7 @@ void main() {
           .first;
       expect(capturedDid.privateKey, privateKey);*/
 
-      var capturedGet = verify(credentialRepository.getClaims(
+      var capturedGet = verify(credentialRepository.getCredentials(
               genesisDid: captureAnyNamed('genesisDid'),
               encryptionKey: captureAnyNamed('encryptionKey'),
               filters: captureAnyNamed('filters')))
@@ -234,7 +234,7 @@ void main() {
         "Given a list of FilterEntity, when I call execute and an error occurred, then I expect an exception to be thrown",
         () async {
       // Given
-      when(credentialRepository.getClaims(
+      when(credentialRepository.getCredentials(
               genesisDid: captureAnyNamed('genesisDid'),
               encryptionKey: captureAnyNamed('encryptionKey'),
               filters: anyNamed("filters")))
@@ -251,7 +251,7 @@ void main() {
           .first;
       expect(capturedDid.privateKey, privateKey);*/
 
-      var capturedGet = verify(credentialRepository.getClaims(
+      var capturedGet = verify(credentialRepository.getCredentials(
               genesisDid: captureAnyNamed('genesisDid'),
               encryptionKey: captureAnyNamed('encryptionKey'),
               filters: captureAnyNamed('filters')))
@@ -265,7 +265,7 @@ void main() {
         "Given no filters and a non genesis profile, when I call execute and an error occurred, then I expect an exception to be thrown",
         () async {
       // Given
-      when(credentialRepository.getClaims(
+      when(credentialRepository.getCredentials(
               genesisDid: captureAnyNamed('genesisDid'),
               encryptionKey: captureAnyNamed('encryptionKey')))
           .thenAnswer((realInvocation) => Future.error(getClaimsException));
@@ -283,7 +283,7 @@ void main() {
 
       verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
 
-      var capturedGet = verify(credentialRepository.getClaims(
+      var capturedGet = verify(credentialRepository.getCredentials(
               genesisDid: captureAnyNamed('genesisDid'),
               encryptionKey: captureAnyNamed('encryptionKey'),
               filters: captureAnyNamed('filters')))

@@ -39,14 +39,16 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_response.dart';
-import 'contract_function_call_body_tx_data_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_function_call_body_tx_data_request.dart';
 
-class ContractFunctionCallResponseBody {
-  final ContractFunctionCallBodyTxDataRequest transactionData;
+typedef ContractFunctionCallResponseBody = ContractInvokeResponseBody;
+
+class ContractInvokeResponseBody {
+  final ContractInvokeTransactionData transactionData;
   final List<ProofScopeResponse> scope;
   final Map<String, dynamic>? didDoc;
 
-  ContractFunctionCallResponseBody({
+  ContractInvokeResponseBody({
     required this.transactionData,
     required this.scope,
     this.didDoc,
@@ -55,15 +57,14 @@ class ContractFunctionCallResponseBody {
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [ContractFunctionCallBodyRequest]
-  factory ContractFunctionCallResponseBody.fromJson(Map<String, dynamic> json) {
-    ContractFunctionCallBodyTxDataRequest transactionData =
-        ContractFunctionCallBodyTxDataRequest.fromJson(
-            json['transaction_data']);
+  /// @returns [ContractInvokeRequestBody]
+  factory ContractInvokeResponseBody.fromJson(Map<String, dynamic> json) {
+    ContractInvokeTransactionData transactionData =
+        ContractInvokeTransactionData.fromJson(json['transaction_data']);
     List<ProofScopeResponse> scope = (json['scope'] as List)
         .map((item) => ProofScopeResponse.fromJson(item))
         .toList();
-    return ContractFunctionCallResponseBody(
+    return ContractInvokeResponseBody(
       transactionData: transactionData,
       scope: scope,
       didDoc: json['did_doc'],
@@ -78,12 +79,12 @@ class ContractFunctionCallResponseBody {
 
   @override
   String toString() =>
-      "[ContractFunctionCallBodyRequest] {transactionData: $transactionData, didDoc: $didDoc, scope: $scope}";
+      "[ContractInvokeRequestBody] {transactionData: $transactionData, didDoc: $didDoc, scope: $scope}";
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ContractFunctionCallResponseBody &&
+      other is ContractInvokeResponseBody &&
           runtimeType == other.runtimeType &&
           transactionData == other.transactionData &&
           didDoc == other.didDoc &&

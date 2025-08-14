@@ -2,8 +2,10 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_request_data_proof.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_request_message_entity.dart';
 
-class Iden3PaymentRailsERC20RequestV1Data
-    extends Iden3PaymentRailsRequestV1Data {
+@Deprecated('Use Iden3PaymentRailsERC20RequestV1 instead')
+typedef Iden3PaymentRailsERC20RequestV1Data = Iden3PaymentRailsERC20RequestV1;
+
+class Iden3PaymentRailsERC20RequestV1 extends Iden3PaymentRailsRequestV1 {
   final String tokenAddress;
   final List<String>? features;
 
@@ -11,7 +13,7 @@ class Iden3PaymentRailsERC20RequestV1Data
   PaymentRequestDataType get paymentRequestDataType =>
       PaymentRequestDataType.railsERC20V1;
 
-  Iden3PaymentRailsERC20RequestV1Data({
+  Iden3PaymentRailsERC20RequestV1({
     required super.type,
     required super.context,
     required super.recipient,
@@ -24,9 +26,8 @@ class Iden3PaymentRailsERC20RequestV1Data
     this.features,
   });
 
-  factory Iden3PaymentRailsERC20RequestV1Data.fromJson(
-      Map<String, dynamic> json) {
-    return Iden3PaymentRailsERC20RequestV1Data(
+  factory Iden3PaymentRailsERC20RequestV1.fromJson(Map<String, dynamic> json) {
+    return Iden3PaymentRailsERC20RequestV1(
       type: json['type'],
       context: List<String>.from(json['@context']),
       tokenAddress: json['tokenAddress'],

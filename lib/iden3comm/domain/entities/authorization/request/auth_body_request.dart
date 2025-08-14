@@ -65,44 +65,51 @@
 */
 
 import 'package:flutter/foundation.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_body_credentials_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 
-class AuthBodyRequest {
-  final String? callbackUrl;
+typedef AuthBodyRequest = AuthorizationRequestMessageBody;
+
+class AuthorizationRequestMessageBody {
+  final String callbackUrl;
   final String? reason;
   final String? message;
-  final List<ProofScopeRequest>? scope;
-  final String? url;
-  final List<AuthBodyCredentialsRequest>? credentials;
+  final DIDDocument? didDoc;
+  final List<ZeroKnowledgeProofRequest> scope;
+  final List<String>? accept;
 
-  AuthBodyRequest(
-      {this.callbackUrl,
-      this.reason,
-      this.message,
-      this.scope,
-      this.url,
-      this.credentials});
+  AuthorizationRequestMessageBody({
+    required this.callbackUrl,
+    required this.reason,
+    this.message,
+    this.didDoc,
+    required this.scope,
+    this.accept,
+  });
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [AuthBodyRequest]
-  factory AuthBodyRequest.fromJson(Map<String, dynamic> json) {
-    List<ProofScopeRequest>? scope = (json['scope'] as List?)
-        ?.map((item) => ProofScopeRequest.fromJson(item))
-        .toList();
-    List<AuthBodyCredentialsRequest>? credentials =
-        (json['credentials'] as List?)
-            ?.map((item) => AuthBodyCredentialsRequest.fromJson(item))
-            .toList();
-    return AuthBodyRequest(
+  /// @returns [AuthorizationRequestMessageBody]
+  factory AuthorizationRequestMessageBody.fromJson(Map<String, dynamic> json) {
+    final scope = (json['scope'] as List?)
+            ?.map((item) => ZeroKnowledgeProofRequest.fromJson(item))
+            .toList() ??
+        [];
+
+    final didDoc =
+        json['did_doc'] != null ? DIDDocument.fromJson(json['did_doc']) : null;
+
+    final accept =
+        (json['accept'] as List?)?.map((item) => item.toString()).toList();
+
+    return AuthorizationRequestMessageBody(
       callbackUrl: json['callbackUrl'],
       reason: json['reason'],
       message: json['message'],
       scope: scope,
-      url: json['url'],
-      credentials: credentials,
+      didDoc: didDoc,
+      accept: accept,
     );
   }
 
@@ -110,26 +117,22 @@ class AuthBodyRequest {
         'callbackUrl': callbackUrl,
         'reason': reason,
         'message': message,
-        'scope': scope?.map((item) => item.toJson()).toList(),
-        'url': url,
-        'credentials': credentials?.map((item) => item.toJson()).toList(),
+        'scope': scope.map((item) => item.toJson()).toList(),
       };
 
   @override
   String toString() =>
-      "[AuthBodyRequest] {callbackUrl: $callbackUrl, reason: $reason, message: $message, scope: $scope,url: $url,credentials: $credentials}";
+      "[AuthBodyRequest] {callbackUrl: $callbackUrl, reason: $reason, message: $message, scope: $scope}";
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is AuthBodyRequest &&
+      other is AuthorizationRequestMessageBody &&
           runtimeType == other.runtimeType &&
           callbackUrl == other.callbackUrl &&
           reason == other.reason &&
           message == other.message &&
-          listEquals(scope, other.scope) &&
-          url == other.url &&
-          listEquals(credentials, other.credentials);
+          listEquals(scope, other.scope);
 
   @override
   int get hashCode => runtimeType.hashCode;

@@ -120,7 +120,7 @@ class LibPolygonIdCoreProofDataSource {
     Map<String, dynamic>? gistProof,
     String? challenge,
     String? signature,
-    required ClaimInfoDTO credential,
+    required W3CCredential credential,
     required Map<String, dynamic> request,
     required String circuitId,
     Map<String, dynamic>? config,

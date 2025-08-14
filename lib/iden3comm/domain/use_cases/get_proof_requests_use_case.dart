@@ -9,7 +9,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exce
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_query_context_use_case.dart';
 
 class GetProofRequestsUseCase
-    extends FutureUseCase<Iden3MessageEntity, List<ProofRequestEntity>> {
+    extends FutureUseCase<Iden3Message, List<ProofRequestEntity>> {
   final GetProofQueryContextUseCase _getProofQueryContextUseCase;
   final StacktraceManager _stacktraceManager;
 
@@ -20,27 +20,27 @@ class GetProofRequestsUseCase
 
   @override
   Future<List<ProofRequestEntity>> execute({
-    required Iden3MessageEntity param,
+    required Iden3Message param,
   }) async {
     List<ProofRequestEntity> proofRequests = [];
 
     if (![
       Iden3MessageType.authRequest,
       Iden3MessageType.proofContractInvokeRequest
-    ].contains(param.messageType)) {
+    ].contains(param.type)) {
       _stacktraceManager.addTrace(
-          "[GetProofRequestsUseCase] Error: Unsupported message type: ${param.messageType}\nExpected: ${Iden3MessageType.authRequest}, ${Iden3MessageType.proofContractInvokeRequest}");
+          "[GetProofRequestsUseCase] Error: Unsupported message type: ${param.type}\nExpected: ${Iden3MessageType.authRequest}, ${Iden3MessageType.proofContractInvokeRequest}");
       return Future.error(
         UnsupportedIden3MsgTypeException(
-          type: param.messageType,
-          errorMessage: "Unsupported message type: ${param.messageType}",
+          type: param.type,
+          errorMessage: "Unsupported message type: ${param.type}",
         ),
       );
     }
 
-    List<ProofScopeRequest>? scopes = param.body.scope;
+    List<ZeroKnowledgeProofRequest>? scopes = param.body.scope;
     if (scopes != null && scopes.isNotEmpty) {
-      for (ProofScopeRequest scope in scopes) {
+      for (ZeroKnowledgeProofRequest scope in scopes) {
         var context = await _getProofQueryContextUseCase.execute(param: scope);
         _stacktraceManager.addTrace(
             "[GetProofRequestsUseCase] _getProofQueryContextUseCase: ${jsonEncode(context)}");
