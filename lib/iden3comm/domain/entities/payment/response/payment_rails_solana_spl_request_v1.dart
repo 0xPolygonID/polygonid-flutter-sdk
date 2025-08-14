@@ -1,6 +1,6 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_request_message_entity.dart';
 
-class Iden3PaymentRailsSolanaSPLRequestV1Data extends PaymentRequestData {
+class Iden3PaymentRailsSolanaSPLRequestV1 extends PaymentRequestData {
   final String type;
   final List<String> context;
   final String recipient;
@@ -8,7 +8,7 @@ class Iden3PaymentRailsSolanaSPLRequestV1Data extends PaymentRequestData {
   final String expirationDate;
   final String nonce;
   final String metadata;
-  final List<PaymentRequestDataSolanaProof> proof;
+  final List<PaymentRequestSolanaProof> proof;
   final String tokenAddress;
   final List<String>? features;
 
@@ -16,7 +16,7 @@ class Iden3PaymentRailsSolanaSPLRequestV1Data extends PaymentRequestData {
   PaymentRequestDataType get paymentRequestDataType =>
       PaymentRequestDataType.railsSolanaSPLV1;
 
-  Iden3PaymentRailsSolanaSPLRequestV1Data({
+  Iden3PaymentRailsSolanaSPLRequestV1({
     required this.type,
     required this.context,
     required this.recipient,
@@ -29,9 +29,9 @@ class Iden3PaymentRailsSolanaSPLRequestV1Data extends PaymentRequestData {
     this.features,
   });
 
-  factory Iden3PaymentRailsSolanaSPLRequestV1Data.fromJson(
+  factory Iden3PaymentRailsSolanaSPLRequestV1.fromJson(
       Map<String, dynamic> json) {
-    return Iden3PaymentRailsSolanaSPLRequestV1Data(
+    return Iden3PaymentRailsSolanaSPLRequestV1(
       type: json['type'],
       context: List<String>.from(json['@context']),
       recipient: json['recipient'],
@@ -40,7 +40,7 @@ class Iden3PaymentRailsSolanaSPLRequestV1Data extends PaymentRequestData {
       nonce: json['nonce'],
       metadata: json['metadata'],
       proof: (json['proof'] as List<dynamic>)
-          .map((e) => PaymentRequestDataSolanaProof.fromJson(e))
+          .map((e) => PaymentRequestSolanaProof.fromJson(e))
           .toList(),
       tokenAddress: json['tokenAddress'],
       features:
@@ -65,35 +65,32 @@ class Iden3PaymentRailsSolanaSPLRequestV1Data extends PaymentRequestData {
   }
 }
 
-class PaymentRequestDataSolanaProof {
+class PaymentRequestSolanaProof {
   final String type;
   final String proofPurpose;
   final String proofValue;
-  final String signedMessage;
   final String created;
-  final String pubKey;
+  final String verificationMethod;
 
-  final PaymentRequestDataSolanaProofDomain domain;
+  final PaymentRequestSolanaProofDomain domain;
 
-  PaymentRequestDataSolanaProof({
+  PaymentRequestSolanaProof({
     required this.type,
     required this.proofPurpose,
     required this.proofValue,
-    required this.signedMessage,
     required this.created,
-    required this.pubKey,
+    required this.verificationMethod,
     required this.domain,
   });
 
-  factory PaymentRequestDataSolanaProof.fromJson(Map<String, dynamic> json) {
-    return PaymentRequestDataSolanaProof(
+  factory PaymentRequestSolanaProof.fromJson(Map<String, dynamic> json) {
+    return PaymentRequestSolanaProof(
       type: json['type'],
       proofPurpose: json['proofPurpose'],
       proofValue: json['proofValue'],
-      signedMessage: json['signedMessage'],
       created: json['created'],
-      pubKey: json['pubKey'],
-      domain: PaymentRequestDataSolanaProofDomain.fromJson(json['domain']),
+      verificationMethod: json['verificationMethod'],
+      domain: PaymentRequestSolanaProofDomain.fromJson(json['domain']),
     );
   }
 
@@ -102,28 +99,27 @@ class PaymentRequestDataSolanaProof {
       "type": type,
       "proofPurpose": proofPurpose,
       "proofValue": proofValue,
-      "signedMessage": signedMessage,
       "created": created,
-      "pubKey": pubKey,
+      "verificationMethod": verificationMethod,
       "domain": domain.toJson(),
     };
   }
 }
 
-class PaymentRequestDataSolanaProofDomain {
+class PaymentRequestSolanaProofDomain {
   final String version;
   final String chainId;
   final String verifyingContract;
 
-  PaymentRequestDataSolanaProofDomain({
+  PaymentRequestSolanaProofDomain({
     required this.version,
     required this.chainId,
     required this.verifyingContract,
   });
 
-  factory PaymentRequestDataSolanaProofDomain.fromJson(
+  factory PaymentRequestSolanaProofDomain.fromJson(
       Map<String, dynamic> json) {
-    return PaymentRequestDataSolanaProofDomain(
+    return PaymentRequestSolanaProofDomain(
       version: json['version'],
       chainId: json['chainId'],
       verifyingContract: json['verifyingContract'],

@@ -875,10 +875,10 @@ packages:
     dependency: transitive
     description:
       name: md5_file_checksum
-      sha256: e02a8f99ff1255f0cc6e055532fd845982d2b1cecdd643f385e1611c6dc81e6c
+      sha256: "4189903e9ca84a4ac50a8048f3d7602039d13a82593b4b3bb924eb25045ce29a"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.7"
+    version: "1.1.0"
   meta:
     dependency: transitive
     description:
