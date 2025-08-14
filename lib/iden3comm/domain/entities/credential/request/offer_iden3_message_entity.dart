@@ -81,7 +81,6 @@ class CredentialsOfferMessage
     required super.from,
     required super.body,
     super.to,
-    super.nextRequest,
   }) : super(type: Iden3MessageType.credentialOffer);
 
   /// Creates an instance from the given json
@@ -98,7 +97,6 @@ class CredentialsOfferMessage
       from: json['from'],
       to: json['to'],
       body: body,
-      nextRequest: json['next_request'],
     );
   }
 

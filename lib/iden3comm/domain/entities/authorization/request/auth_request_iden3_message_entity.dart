@@ -41,7 +41,6 @@ class AuthorizationRequestMessage
     required this.from,
     required super.body,
     super.to,
-    super.nextRequest,
     super.createdTime,
     super.expiresTime,
     super.attachments = const [],
@@ -65,7 +64,6 @@ class AuthorizationRequestMessage
       from: json['from'],
       to: json['to'],
       body: body,
-      nextRequest: json['next_request'],
     );
   }
 

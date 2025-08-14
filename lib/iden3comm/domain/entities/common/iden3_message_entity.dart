@@ -90,9 +90,6 @@ abstract class Iden3Message<T> extends Equatable {
   /// Attachments for the message, if any.
   final List<Attachment> attachments;
 
-  /// Optional next request, used for chaining messages.
-  final Map<String, dynamic>? nextRequest;
-
   const Iden3Message({
     required this.id,
     required this.typ,
@@ -101,7 +98,6 @@ abstract class Iden3Message<T> extends Equatable {
     required this.body,
     required this.from,
     required this.to,
-    this.nextRequest,
     required this.createdTime,
     required this.expiresTime,
     required this.attachments,
@@ -125,7 +121,6 @@ abstract class Iden3Message<T> extends Equatable {
       'to': to,
       'created_time': createdTime,
       'expires_time': expiresTime,
-      'next_request': nextRequest,
     }..removeWhere((_, value) => value == null);
   }
 
@@ -142,7 +137,6 @@ abstract class Iden3Message<T> extends Equatable {
       createdTime,
       expiresTime,
       attachments,
-      nextRequest,
     ];
   }
 }

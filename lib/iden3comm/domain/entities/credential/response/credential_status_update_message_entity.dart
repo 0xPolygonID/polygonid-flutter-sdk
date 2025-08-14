@@ -13,7 +13,6 @@ class CredentialStatusUpdateMessage
     required super.from,
     required super.to,
     required super.body,
-    super.nextRequest,
     super.createdTime,
     super.expiresTime,
     super.attachments = const [],
@@ -34,7 +33,6 @@ class CredentialStatusUpdateMessage
       from: json['from'],
       to: json['to'],
       body: body,
-      nextRequest: json['nextRequest'],
     );
   }
 

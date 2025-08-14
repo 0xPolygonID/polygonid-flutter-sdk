@@ -21,7 +21,6 @@ class ProblemReportMessage extends Iden3Message<ProblemReportBody> {
     required super.from,
     required super.body,
     super.to,
-    super.nextRequest,
     super.createdTime,
     super.expiresTime,
     super.attachments = const [],
