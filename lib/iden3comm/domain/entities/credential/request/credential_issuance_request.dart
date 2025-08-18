@@ -5,11 +5,10 @@ class CredentialIssuanceRequestMessage
   CredentialIssuanceRequestMessage({
     required super.id,
     required super.typ,
-    required super.thid,
+    super.thid,
     required super.body,
     required super.from,
     super.to,
-    super.nextRequest,
     super.createdTime,
     super.expiresTime,
     super.attachments = const [],
@@ -31,7 +30,6 @@ class CredentialIssuanceRequestMessage
       from: json['from'],
       to: json['to'],
       body: body,
-      nextRequest: json['next_request'],
     );
   }
 

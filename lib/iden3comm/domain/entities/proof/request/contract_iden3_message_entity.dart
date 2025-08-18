@@ -49,9 +49,8 @@ class ContractInvokeRequestMessage
     required super.id,
     super.typ,
     @Deprecated('may be omitted, gonna be removed in the future') String? type,
-    String? thid,
+    super.thid = '',
     required super.body,
-    super.nextRequest,
     String? from,
     super.to,
     super.createdTime,
@@ -59,7 +58,6 @@ class ContractInvokeRequestMessage
     super.attachments = const [],
   }) : super(
           type: Iden3MessageType.proofContractInvokeRequest,
-          thid: thid ?? '',
           from: from ?? '',
         );
 
@@ -75,7 +73,6 @@ class ContractInvokeRequestMessage
       typ: json['typ'] ?? '',
       thid: json['thid'] ?? '',
       body: body,
-      nextRequest: json['next_request'],
       from: json['from'] ?? '',
     );
   }

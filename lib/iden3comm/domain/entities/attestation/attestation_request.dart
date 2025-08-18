@@ -14,11 +14,10 @@ class AttestationRequestMessage extends Iden3Message<AttestationRequestBody> {
     required super.id,
     required super.typ,
     @Deprecated('may be omitted, gonna be removed in the future') String? type,
-    required super.thid,
+    super.thid,
     required super.from,
     required super.body,
     super.to,
-    super.nextRequest,
     super.createdTime,
     super.expiresTime,
     super.attachments = const [],
@@ -39,7 +38,6 @@ class AttestationRequestMessage extends Iden3Message<AttestationRequestBody> {
       from: json['from'],
       to: json['to'],
       body: body,
-      nextRequest: json['next_request'],
     );
   }
 

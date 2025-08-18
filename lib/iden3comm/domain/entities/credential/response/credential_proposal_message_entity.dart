@@ -32,7 +32,7 @@ class ProposalMessage extends Iden3Message<ProposalMessageBody> {
     required super.id,
     required super.typ,
     @Deprecated('may be omitted, gonna be removed in the future') String? type,
-    required super.thid,
+    super.thid,
     required super.body,
     required super.from,
     required super.to,

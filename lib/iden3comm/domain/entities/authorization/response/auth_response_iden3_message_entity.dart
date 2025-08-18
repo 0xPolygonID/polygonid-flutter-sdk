@@ -63,11 +63,10 @@ class AuthorizationResponseMessage
     required super.id,
     required super.typ,
     @Deprecated('may be omitted, gonna be removed in the future') String? type,
-    required super.thid,
+    super.thid,
     required this.from,
     required this.to,
     required super.body,
-    super.nextRequest,
     super.createdTime,
     super.expiresTime,
     super.attachments = const [],
@@ -92,7 +91,6 @@ class AuthorizationResponseMessage
       from: json['from'],
       to: json['to'],
       body: body,
-      nextRequest: json['next_request'],
     );
   }
 
