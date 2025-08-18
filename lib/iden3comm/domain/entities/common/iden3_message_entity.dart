@@ -68,8 +68,7 @@ abstract class Iden3Message<T> extends Equatable {
   final Iden3MessageType type;
 
   /// The thread id of the message, used to link messages in a conversation.
-  // TODO: Make this optional according to protocol.
-  final String thid;
+  final String? thid;
 
   /// The body of the message, which contains the actual data. Depends on the message type.
   final T body;
