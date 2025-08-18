@@ -11,7 +11,7 @@ abstract class BaseCredentialOfferMessage<T extends CredentialOfferBody>
     required super.id,
     required super.typ,
     required super.type,
-    required super.thid,
+    super.thid,
     required super.from,
     required super.body,
     super.to,

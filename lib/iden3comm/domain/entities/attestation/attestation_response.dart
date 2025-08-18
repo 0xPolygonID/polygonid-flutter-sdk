@@ -15,7 +15,7 @@ class AttestationResponseMessage extends Iden3Message<AttestationResponseBody> {
     required super.id,
     required super.typ,
     @Deprecated('may be omitted, gonna be removed in the future') String? type,
-    required super.thid,
+    super.thid,
     required super.body,
     super.to,
     super.createdTime,

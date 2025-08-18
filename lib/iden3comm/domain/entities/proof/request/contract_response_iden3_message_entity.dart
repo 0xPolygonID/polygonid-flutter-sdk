@@ -49,7 +49,7 @@ class ContractInvokeResponseMessage
     required super.id,
     String? typ,
     @Deprecated('may be omitted, gonna be removed in the future') String? type,
-    String? thid,
+    super.thid = '',
     required super.body,
     String? from,
     super.to,
@@ -58,7 +58,6 @@ class ContractInvokeResponseMessage
     super.attachments = const [],
   }) : super(
           type: Iden3MessageType.proofContractInvokeResponse,
-          thid: thid ?? '',
           typ: typ ?? '',
           from: from ?? '',
         );

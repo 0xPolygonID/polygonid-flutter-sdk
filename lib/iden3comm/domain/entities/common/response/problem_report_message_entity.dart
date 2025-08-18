@@ -15,7 +15,7 @@ class ProblemReportMessage extends Iden3Message<ProblemReportBody> {
     required super.id,
     required super.typ,
     @Deprecated('may be omitted, gonna be removed in the future') String? type,
-    super.thid = '',
+    super.thid,
     required this.pthid,
     required this.ack,
     required super.from,

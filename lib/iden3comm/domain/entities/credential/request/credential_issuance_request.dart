@@ -5,7 +5,7 @@ class CredentialIssuanceRequestMessage
   CredentialIssuanceRequestMessage({
     required super.id,
     required super.typ,
-    required super.thid,
+    super.thid,
     required super.body,
     required super.from,
     super.to,
