@@ -93,6 +93,7 @@ class Authenticate {
     String? challenge,
     final Map<String, dynamic>? transactionData,
     String? authClaimNonce,
+    List<RequestAndCredentials>? requestsAndCreds,
   }) async {
     final nonce = authClaimNonce ?? DEFAULT_AUTH_CLAIM_NONCE;
     try {
@@ -148,17 +149,24 @@ class Authenticate {
         ),
       );
 
-      // Get the credentials and proof requests by scope
-      final getCredentialsUseCase =
-          await getItSdk.getAsync<GetMessageRequestsAndCredsUseCase>();
-      final requestsAndCreds = await getCredentialsUseCase.execute(
-        param: GetMessageRequestsAndCredsParam(
-          message: message,
-          genesisDid: genesisDid,
-          profileNonce: profileNonce,
-          encryptionKey: privateKey,
-        ),
-      );
+      List<RequestAndCredentials> requestsAndCredsLocal;
+      if (requestsAndCreds == null) {
+        // Get the credentials and proof requests by scope
+        final getCredentialsUseCase =
+            await getItSdk.getAsync<GetMessageRequestsAndCredsUseCase>();
+        final requestsAndCredentials = await getCredentialsUseCase.execute(
+          param: GetMessageRequestsAndCredsParam(
+            message: message,
+            genesisDid: genesisDid,
+            profileNonce: profileNonce,
+            encryptionKey: privateKey,
+          ),
+        );
+
+        requestsAndCredsLocal = requestsAndCredentials;
+      } else {
+        requestsAndCredsLocal = requestsAndCreds;
+      }
 
       // this authClaimCompanionObject is the one that is being used to get the
       // authClaim, incProof, nonRevProof, treeState, authClaimNode, gistProofEntity
@@ -174,10 +182,10 @@ class Authenticate {
 
       // if there are proof requests and claims and they are the same length
       // then create the proof for every proof request
-      if (requestsAndCreds.isNotEmpty) {
+      if (requestsAndCredsLocal.isNotEmpty) {
         // it is assigning the proofs to the variable directly from the function call
         await createProofForEveryProofRequest(
-          requestsAndCreds: requestsAndCreds,
+          requestsAndCreds: requestsAndCredsLocal,
           identityEntity: identityEntity,
           groupIdLinkNonceMap: groupIdLinkNonceMap,
           genesisDid: genesisDid,

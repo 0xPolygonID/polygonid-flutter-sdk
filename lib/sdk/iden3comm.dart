@@ -610,6 +610,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     required IdentityEntity identityEntity,
     required Iden3Message message,
     required EnvEntity env,
+    List<RequestAndCredentials>? requestsAndCreds,
     String? pushToken,
     String? challenge,
   }) async {
@@ -622,6 +623,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         message: message,
         env: env,
         pushToken: pushToken,
+        requestsAndCreds: requestsAndCreds,
       );
     } on PolygonIdSDKException catch (_) {
       rethrow;
