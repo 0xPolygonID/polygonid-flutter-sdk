@@ -23,7 +23,7 @@ class ProofRequestFiltersMapper
       _stacktraceManager.addError(
           "Error getting context from schema: ${query.type}\nSchema does not have a context, please check the schema is json-ld compliant");
       throw UnsupportedSchemaException(
-        schema: query.type ?? "",
+        schema: query.type,
         errorMessage:
             "Schema does not have a context, please check the schema is json-ld compliant",
         error: e,
@@ -32,11 +32,14 @@ class ProofRequestFiltersMapper
 
     List<FilterEntity> filters = [
       FilterEntity(
-          name: 'credential.credentialSubject.type', value: query.type!),
+        name: 'credential.credentialSubject.type',
+        value: query.type,
+      ),
       FilterEntity(
-          operator: FilterOperator.equalsAnyInList,
-          name: 'credential.@context',
-          value: query.context),
+        operator: FilterOperator.equalsAnyInList,
+        name: 'credential.@context',
+        value: query.context,
+      ),
     ];
     final allowedIssuers = query.allowedIssuers;
     if (allowedIssuers.isNotEmpty) {
