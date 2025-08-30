@@ -112,7 +112,7 @@ class ZeroKnowledgeProofQuery {
   final String? proofType;
   final bool? skipClaimRevocationCheck;
   final int? groupId;
-  final String? type;
+  final String type;
 
   ZeroKnowledgeProofQuery({
     required this.allowedIssuers,
@@ -121,7 +121,7 @@ class ZeroKnowledgeProofQuery {
     this.proofType,
     this.skipClaimRevocationCheck,
     this.groupId,
-    this.type,
+    required this.type,
   });
 
   /// Creates an instance from the given json
