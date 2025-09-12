@@ -398,7 +398,7 @@ class Authenticate {
       );
 
       BigInt claimSubjectProfileNonce = identityEntity.profiles.keys.firstWhere(
-          (k) => identityEntity.profiles[k] == claim.did,
+          (k) => identityEntity.profiles[k] == claim.info["credentialSubject"]["id"],
           orElse: () => GENESIS_PROFILE_NONCE);
 
       int? groupId = request.scope.query.groupId;
@@ -466,6 +466,10 @@ class Authenticate {
       if (verifiablePresentation != null) {
         vpProof = Iden3commVPProof.fromJson(verifiablePresentation);
       }
+
+      _stacktraceManager.addTrace(
+        "[Authenticate] AtomicQueryInputs: $atomicQueryInputs",
+      );
 
       Uint8List witnessBytes = await proofRepository.calculateWitness(
         circuitData: circuitDataEntity,
