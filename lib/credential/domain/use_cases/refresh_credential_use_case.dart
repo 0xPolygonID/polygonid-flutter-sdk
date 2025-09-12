@@ -58,7 +58,9 @@ class RefreshCredentialUseCase
     );
 
     BigInt claimSubjectProfileNonce = identityEntity.profiles.keys.firstWhere(
-      (k) => identityEntity.profiles[k] == param.credential.did,
+      (k) =>
+          identityEntity.profiles[k] ==
+          param.credential.info["credentialSubject"]["id"],
       orElse: () => GENESIS_PROFILE_NONCE,
     );
 

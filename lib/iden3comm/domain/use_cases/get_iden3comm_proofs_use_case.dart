@@ -91,8 +91,9 @@ class GetIden3commProofsUseCase
       final requests = requestsAndCreds.map((pair) => pair.request).toList();
 
       if (requests.isEmpty) {
-        _stacktraceManager
-            .logTrace("[GetIden3commProofsUseCase] No proof requests found");
+        _stacktraceManager.logTrace(
+          "[GetIden3commProofsUseCase] No proof requests found",
+        );
         return [];
       }
 
@@ -153,9 +154,13 @@ class GetIden3commProofsUseCase
             ),
           );
 
-          BigInt claimSubjectProfileNonce = identityEntity.profiles.keys
-              .firstWhere((k) => identityEntity.profiles[k] == claim.did,
-                  orElse: () => GENESIS_PROFILE_NONCE);
+          BigInt claimSubjectProfileNonce =
+              identityEntity.profiles.keys.firstWhere(
+            (k) =>
+                identityEntity.profiles[k] ==
+                claim.info["credentialSubject"]["id"],
+            orElse: () => GENESIS_PROFILE_NONCE,
+          );
 
           int? groupId = request.scope.query.groupId;
           String linkNonce = "0";
@@ -172,8 +177,9 @@ class GetIden3commProofsUseCase
             }
           }
 
-          _proofGenerationStepsStreamManager
-              .add("#${i + 1} creating proof for ${claim.type}");
+          _proofGenerationStepsStreamManager.add(
+            "#${i + 1} creating proof for ${claim.type}",
+          );
 
           // Generate proof param
           GenerateIden3commProofParam proofParam = GenerateIden3commProofParam(
@@ -206,7 +212,8 @@ class GetIden3commProofsUseCase
       if (requests.isNotEmpty && proofs.isEmpty ||
           proofs.length != requests.length) {
         _stacktraceManager.logError(
-            "[GetIden3commProofsUseCase] ProofsNotFoundException - requests: $requests");
+          "[GetIden3commProofsUseCase] ProofsNotFoundException - requests: $requests",
+        );
         throw ProofsNotCreatedException(
           proofRequests: requests,
           errorMessage: "Proofs not created for requests",
@@ -223,7 +230,8 @@ class GetIden3commProofsUseCase
   /// We generate a random linkNonce for each groupId
   String generateLinkNonce() {
     final BigInt safeMaxVal = BigInt.parse(
-        "21888242871839275222246405745257275088548364400416034343698204186575808495617");
+      "21888242871839275222246405745257275088548364400416034343698204186575808495617",
+    );
     // get max value of 2 ^ 248
     BigInt base = BigInt.parse('2');
     int exponent = 248;
@@ -248,26 +256,30 @@ class GetIden3commProofsUseCase
     required GetIden3commProofsParam param,
   }) async {
     var now = DateTime.now().toUtc();
-    DateTime expirationTime =
-        DateFormat("yyyy-MM-ddTHH:mm:ssZ").parse(claim.expiration!);
+    DateTime expirationTime = DateFormat(
+      "yyyy-MM-ddTHH:mm:ssZ",
+    ).parse(claim.expiration!);
 
     var nowFormatted = DateFormat("yyyy-MM-dd HH:mm:ss").format(now);
-    var expirationTimeFormatted =
-        DateFormat("yyyy-MM-dd HH:mm:ss").format(expirationTime);
+    var expirationTimeFormatted = DateFormat(
+      "yyyy-MM-dd HH:mm:ss",
+    ).format(expirationTime);
     bool isExpired = nowFormatted.compareTo(expirationTimeFormatted) > 0 ||
         claim.state == CredentialState.expired;
 
     if (isExpired && claim.info.containsKey("refreshService")) {
-      _proofGenerationStepsStreamManager
-          .add("Refreshing expired credential...");
+      _proofGenerationStepsStreamManager.add(
+        "Refreshing expired credential...",
+      );
 
       CredentialEntity refreshedClaimEntity =
           await _refreshCredentialUseCase.execute(
-              param: RefreshCredentialParam(
-        credential: claim,
-        genesisDid: param.genesisDid,
-        privateKey: param.privateKey,
-      ));
+        param: RefreshCredentialParam(
+          credential: claim,
+          genesisDid: param.genesisDid,
+          privateKey: param.privateKey,
+        ),
+      );
 
       claim = refreshedClaimEntity;
     }

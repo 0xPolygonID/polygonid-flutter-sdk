@@ -111,7 +111,7 @@ class Authenticate {
       // Check if the message type is supported
       if (![
         Iden3MessageType.authRequest,
-        Iden3MessageType.proofContractInvokeRequest
+        Iden3MessageType.proofContractInvokeRequest,
       ].contains(message.type)) {
         _stacktraceManager.addError(
           "[Authenticate] Unsupported message type: ${message.type} It should be either authRequest or proofContractInvokeRequest",
@@ -195,8 +195,9 @@ class Authenticate {
       }
 
       // prepare the auth response message
-      _proofGenerationStepsStreamManager
-          .add("preparing authentication parameters...");
+      _proofGenerationStepsStreamManager.add(
+        "preparing authentication parameters...",
+      );
       String authResponseString = await prepareAuthResponseMessage(
         env: env,
         pushToken: pushToken,
@@ -206,8 +207,9 @@ class Authenticate {
       );
 
       // get the auth token
-      _proofGenerationStepsStreamManager
-          .add("preparing authentication token...");
+      _proofGenerationStepsStreamManager.add(
+        "preparing authentication token...",
+      );
       String authToken = await _getAuthToken(
         genesisDid: genesisDid,
         profileNonce: profileNonce,
@@ -225,8 +227,9 @@ class Authenticate {
       );
       _stacktraceManager.addTrace("[Authenticate] authToken: $authToken");
 
-      _proofGenerationStepsStreamManager
-          .add("sending auth token to the requester...");
+      _proofGenerationStepsStreamManager.add(
+        "sending auth token to the requester...",
+      );
       String? callbackUrl = message.body.callbackUrl;
 
       if (callbackUrl == null || callbackUrl.isEmpty) {
@@ -252,7 +255,8 @@ class Authenticate {
       ).timeout(const Duration(seconds: 30));
 
       _stacktraceManager.addTrace(
-          "[Authenticate] responseStatusCode: ${response.statusCode}\nresponseBody: ${response.body}");
+        "[Authenticate] responseStatusCode: ${response.statusCode}\nresponseBody: ${response.body}",
+      );
 
       if (response.statusCode != 200) {
         _stacktraceManager.addError(
@@ -275,8 +279,9 @@ class Authenticate {
           return null;
         }
 
-        final messageFactory =
-            Iden3MessageFactory(getItSdk<StacktraceManager>());
+        final messageFactory = Iden3MessageFactory(
+          getItSdk<StacktraceManager>(),
+        );
         final nextRequest = messageFactory.createMessage(
           rawMessage: response.body,
         );
@@ -288,9 +293,10 @@ class Authenticate {
     } on TimeoutException catch (e) {
       String waitingTime = e.duration?.inSeconds.toString() ?? "unknown";
       throw NetworkException(
-          statusCode: 504,
-          errorMessage:
-              "Connection timeout while sending auth token to the requester.\nwaited for $waitingTime seconds.");
+        statusCode: 504,
+        errorMessage:
+            "Connection timeout while sending auth token to the requester.\nwaited for $waitingTime seconds.",
+      );
     } catch (e) {
       rethrow;
     }
@@ -380,16 +386,19 @@ class Authenticate {
         );
       }
 
-      _proofGenerationStepsStreamManager
-          .add("#${i + 1} creating proof for ${request.scope.query.type}...");
+      _proofGenerationStepsStreamManager.add(
+        "#${i + 1} creating proof for ${request.scope.query.type}...",
+      );
 
       final appDir = await getApplicationDocumentsDirectory();
       final circuitsDataSource = CircuitsFilesDataSource(appDir);
 
-      final graphFileBytes =
-          await circuitsDataSource.loadGraphFile(request.scope.circuitId);
-      final zkeyFilePath =
-          await circuitsDataSource.getZkeyFilePath(request.scope.circuitId);
+      final graphFileBytes = await circuitsDataSource.loadGraphFile(
+        request.scope.circuitId,
+      );
+      final zkeyFilePath = await circuitsDataSource.getZkeyFilePath(
+        request.scope.circuitId,
+      );
 
       CircuitDataEntity circuitDataEntity = CircuitDataEntity(
         request.scope.circuitId,
@@ -398,8 +407,10 @@ class Authenticate {
       );
 
       BigInt claimSubjectProfileNonce = identityEntity.profiles.keys.firstWhere(
-          (k) => identityEntity.profiles[k] == claim.info["credentialSubject"]["id"],
-          orElse: () => GENESIS_PROFILE_NONCE);
+        (k) =>
+            identityEntity.profiles[k] == claim.info["credentialSubject"]["id"],
+        orElse: () => GENESIS_PROFILE_NONCE,
+      );
 
       int? groupId = request.scope.query.groupId;
       String linkNonce = "0";
@@ -558,7 +569,8 @@ class Authenticate {
 
   String generateLinkNonce() {
     final BigInt safeMaxVal = BigInt.parse(
-        "21888242871839275222246405745257275088548364400416034343698204186575808495617");
+      "21888242871839275222246405745257275088548364400416034343698204186575808495617",
+    );
     // get max value of 2 ^ 248
     BigInt base = BigInt.parse('2');
     int exponent = 248;
@@ -616,13 +628,16 @@ class Authenticate {
           metadata: DIDDocumentServiceMetadata(
             devices: [
               DIDDocumentServiceMetadataDevices(
-                ciphertext:
-                    await _getPushCipherText(pushToken, pushUrl, packageName),
+                ciphertext: await _getPushCipherText(
+                  pushToken,
+                  pushUrl,
+                  packageName,
+                ),
                 alg: "RSA-OAEP-512",
-              )
+              ),
             ],
           ),
-        )
+        ),
       ],
     );
   }
@@ -651,18 +666,22 @@ class Authenticate {
       ),
     );
 
-    var publicKeyResponse =
-        await dio.get(Uri.parse("$serviceEndpoint/public").toString());
+    var publicKeyResponse = await dio.get(
+      Uri.parse("$serviceEndpoint/public").toString(),
+    );
 
     if (publicKeyResponse.statusCode == 200 ||
         publicKeyResponse.statusCode == 304) {
       String publicKeyPem = publicKeyResponse.data;
       final publicKey = RSAKeyParser().parse(publicKeyPem) as RSAPublicKey;
-      final encrypter =
-          OAEPEncoding.withCustomDigest(() => SHA512Digest(), RSAEngine());
+      final encrypter = OAEPEncoding.withCustomDigest(
+        () => SHA512Digest(),
+        RSAEngine(),
+      );
       encrypter.init(true, PublicKeyParameter<RSAPublicKey>(publicKey));
-      Uint8List encrypted = encrypter
-          .process(Uint8List.fromList(json.encode(pushInfo).codeUnits));
+      Uint8List encrypted = encrypter.process(
+        Uint8List.fromList(json.encode(pushInfo).codeUnits),
+      );
       return base64.encode(encrypted);
     } else {
       _stacktraceManager.addError(
@@ -706,7 +725,8 @@ class Authenticate {
     String jwzString = stringFromJwz(jwz);
 
     Uint8List sha = Uint8List.fromList(
-        sha256.convert(Uint8ArrayUtils.uint8ListfromString(jwzString)).bytes);
+      sha256.convert(Uint8ArrayUtils.uint8ListfromString(jwzString)).bytes,
+    );
 
     // Endianness
     BigInt endian = Uint8ArrayUtils.leBuff2int(sha);
@@ -738,8 +758,9 @@ class Authenticate {
     final appDir = await getApplicationDocumentsDirectory();
     final circuitsDataSource = CircuitsFilesDataSource(appDir);
 
-    final circuitDatFileBytes =
-        await circuitsDataSource.loadGraphFile('authV2');
+    final circuitDatFileBytes = await circuitsDataSource.loadGraphFile(
+      'authV2',
+    );
     final zkeyFilePath = await circuitsDataSource.getZkeyFilePath('authV2');
 
     CircuitDataEntity circuitDataEntity = CircuitDataEntity(
@@ -809,8 +830,9 @@ class Authenticate {
         getItSdk<LibPolygonIdCoreCredentialDataSource>();
 
     final identityRepo = getItSdk<IdentityRepository>();
-    final publicKey =
-        await identityRepo.getPublicKeys(bjjPrivateKey: privateKey);
+    final publicKey = await identityRepo.getPublicKeys(
+      bjjPrivateKey: privateKey,
+    );
 
     String authClaimSchema = AUTH_CLAIM_SCHEMA;
     String issuedAuthClaim = libPolygonIdCredential.issueClaim(
@@ -908,9 +930,12 @@ class Authenticate {
     var libPolygonIdIdentity = getItSdk<LibPolygonIdCoreIdentityDataSource>();
     String convertedId = libPolygonIdIdentity.genesisIdToBigInt(id);
     ContractAbi contractAbi = ContractAbi.fromJson(
-        jsonEncode(jsonDecode(stateAbiJson)["abi"]), 'State');
-    EthereumAddress ethereumAddress =
-        EthereumAddress.fromHex(chain.stateContractAddr);
+      jsonEncode(jsonDecode(stateAbiJson)["abi"]),
+      'State',
+    );
+    EthereumAddress ethereumAddress = EthereumAddress.fromHex(
+      chain.stateContractAddr,
+    );
     DeployedContract contract = DeployedContract(contractAbi, ethereumAddress);
 
     String gistProof = await GistProofCache().getGistProof(
@@ -937,29 +962,33 @@ class Authenticate {
     required String privateKey,
   }) async {
     var now = DateTime.now().toUtc();
-    DateTime expirationTime =
-        DateFormat("yyyy-MM-ddTHH:mm:ssZ").parse(claim.expiration!);
+    DateTime expirationTime = DateFormat(
+      "yyyy-MM-ddTHH:mm:ssZ",
+    ).parse(claim.expiration!);
 
     var nowFormatted = DateFormat("yyyy-MM-dd HH:mm:ss").format(now);
-    var expirationTimeFormatted =
-        DateFormat("yyyy-MM-dd HH:mm:ss").format(expirationTime);
+    var expirationTimeFormatted = DateFormat(
+      "yyyy-MM-dd HH:mm:ss",
+    ).format(expirationTime);
     bool isExpired = nowFormatted.compareTo(expirationTimeFormatted) > 0 ||
         claim.state == CredentialState.expired;
 
     if (isExpired && claim.info.containsKey("refreshService")) {
-      _proofGenerationStepsStreamManager
-          .add("Refreshing expired credential...");
+      _proofGenerationStepsStreamManager.add(
+        "Refreshing expired credential...",
+      );
 
       RefreshCredentialUseCase _refreshCredentialUseCase =
           await getItSdk.getAsync<RefreshCredentialUseCase>();
 
       CredentialEntity refreshedClaimEntity =
           await _refreshCredentialUseCase.execute(
-              param: RefreshCredentialParam(
-        credential: claim,
-        genesisDid: genesisDid,
-        privateKey: privateKey,
-      ));
+        param: RefreshCredentialParam(
+          credential: claim,
+          genesisDid: genesisDid,
+          privateKey: privateKey,
+        ),
+      );
 
       claim = refreshedClaimEntity;
     }
