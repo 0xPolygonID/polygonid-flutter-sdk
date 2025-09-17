@@ -101,16 +101,22 @@ main() {
     when(isProofCircuitSupportedUseCase.execute(param: anyNamed('param')))
         .thenAnswer((realInvocation) => Future.value(true));
 
+    final claim = CredentialMocks.claim.copyWith(info: {
+      'credentialSubject': {
+        'id': IdentityMocks.did.did,
+      },
+    });
+
     when(getMessageRequestsAndCredsUseCase.execute(param: anyNamed('param')))
         .thenAnswer(
       (realInvocation) async => [
         (
           request: Iden3commMocks.proofRequest,
-          credentials: [CredentialMocks.claim],
+          credentials: [claim],
         ),
         (
           request: Iden3commMocks.proofRequest,
-          credentials: [CredentialMocks.claim],
+          credentials: [claim],
         ),
       ],
     );
