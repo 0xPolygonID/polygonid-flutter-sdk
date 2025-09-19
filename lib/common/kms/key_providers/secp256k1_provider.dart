@@ -2,12 +2,12 @@ import 'dart:typed_data';
 
 import 'package:polygonid_flutter_sdk/common/kms/keys/private_key.dart';
 import 'package:polygonid_flutter_sdk/common/kms/keys/public_key.dart';
-import 'package:polygonid_flutter_sdk/common/kms/keys/types.dart';
 import 'package:polygonid_flutter_sdk/common/kms/kms.dart';
 import 'package:polygonid_flutter_sdk/common/kms/provider_helpers.dart';
 import 'package:polygonid_flutter_sdk/common/kms/store/abstract_key_store.dart';
+import 'package:polygonid_flutter_sdk/common/kms/keys/types.dart';
+import 'package:web3dart/crypto.dart';
 import 'package:secp256k1/secp256k1.dart' as secp256k1;
-import 'package:web3dart/web3dart.dart';
 
 /// Provider for Secp256k1
 /// @public

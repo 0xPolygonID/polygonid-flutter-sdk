@@ -23,7 +23,6 @@ import 'package:polygonid_flutter_sdk/proof/gist_proof_cache.dart';
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/proof/proof_from_smart_contract.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
-import 'package:wallet/wallet.dart';
 import 'package:web3dart/web3dart.dart';
 
 abstract class PolygonIdSdkProof {

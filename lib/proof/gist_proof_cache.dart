@@ -90,7 +90,7 @@ class GistProofCache {
   }) async {
     String? cachedGistProof = await _getGistProofCached(
       id: id,
-      contractAddress: deployedContract.address.with0x,
+      contractAddress: deployedContract.address.hex,
       env: envEntity,
     );
 
@@ -132,7 +132,7 @@ class GistProofCache {
         try {
           await _saveGistProof(
             id: id,
-            contractAddress: deployedContract.address.with0x,
+            contractAddress: deployedContract.address.hex,
             gistProofString: gistProof,
           );
         } catch (_) {

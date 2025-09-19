@@ -5,7 +5,7 @@ import 'package:polygonid_flutter_sdk/common/kms/keys/private_key.dart';
 import 'package:polygonid_flutter_sdk/common/kms/keys/public_key.dart';
 import 'package:polygonid_flutter_sdk/common/kms/keys/types.dart';
 import 'package:poseidon/poseidon.dart';
-import 'package:web3dart/web3dart.dart';
+import 'package:web3dart/crypto.dart';
 
 import '../../../common/utils/hex_utils.dart';
 import '../../../common/utils/uint8_list_utils.dart';
@@ -34,15 +34,17 @@ class BjjSignature {
 
     final pointsSublist = buf.sublist(0, 32);
     // uncompressPoint is used to unpack R8 X and Y
-    final unpackedPoint =
-        bjjLib.uncompressPoint(HEX.encode(pointsSublist.toList()));
+    final unpackedPoint = bjjLib.uncompressPoint(
+      HEX.encode(pointsSublist.toList()),
+    );
 
     final x = BigInt.parse(unpackedPoint[0]);
     final y = BigInt.parse(unpackedPoint[1]);
 
     // S is decoded manually
     BigInt s = Uint8ArrayUtils.beBuff2int(
-        Uint8List.fromList(buf.sublist(32, 64).reversed.toList()));
+      Uint8List.fromList(buf.sublist(32, 64).reversed.toList()),
+    );
     return BjjSignature((x: x, y: y), s);
   }
 

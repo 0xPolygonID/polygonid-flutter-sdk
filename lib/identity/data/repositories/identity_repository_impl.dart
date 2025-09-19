@@ -26,7 +26,7 @@ import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_except
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj_wallet.dart';
 import 'package:poseidon/poseidon.dart';
-import 'package:web3dart/web3dart.dart';
+import 'package:web3dart/crypto.dart';
 
 class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
@@ -84,11 +84,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
       BigInt.parse(children[6]),
       BigInt.parse(children[7]),
     ]);
-    BigInt hashClaimNode = poseidon3([
-      hashIndex,
-      hashValue,
-      BigInt.one,
-    ]);
+    BigInt hashClaimNode = poseidon3([hashIndex, hashValue, BigInt.one]);
     NodeEntity authClaimNode = NodeEntity(
       children: [
         HashEntity.fromBigInt(hashIndex),
@@ -118,7 +114,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
   /// Throws an [UnknownIdentityException] if not found.
   @override
   Future<IdentityEntity> getIdentity({required String genesisDid}) {
-    return _storageIdentityDataSource.getIdentity(did: genesisDid).catchError(
+    return _storageIdentityDataSource
+        .getIdentity(did: genesisDid)
+        .catchError(
           (error) => throw IdentityException(
             errorMessage: "Error getting identity with error: $error",
             error: error,
@@ -130,11 +128,11 @@ class IdentityRepositoryImpl extends IdentityRepository {
   @override
   Future<List<IdentityEntity>> getIdentities() {
     return _storageIdentityDataSource.getIdentities().catchError(
-          (error) => throw IdentityException(
-            errorMessage: "Error getting identities with error: $error",
-            error: error,
-          ),
-        );
+      (error) => throw IdentityException(
+        errorMessage: "Error getting identities with error: $error",
+        error: error,
+      ),
+    );
   }
 
   @override
@@ -262,14 +260,14 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }) async {
     try {
       // Get the genesis id
-      final genesisDid =
-          _libPolygonIdCoreIdentityDataSource.calculateGenesisIdFromEth(
-        ethAddress: ethAddress,
-        blockchain: blockchain,
-        network: network,
-        config: config.toJson(),
-        method: method,
-      );
+      final genesisDid = _libPolygonIdCoreIdentityDataSource
+          .calculateGenesisIdFromEth(
+            ethAddress: ethAddress,
+            blockchain: blockchain,
+            network: network,
+            config: config.toJson(),
+            method: method,
+          );
 
       if (profileNonce == GENESIS_PROFILE_NONCE) {
         return Future.value(genesisDid);
@@ -290,7 +288,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
     required BigInt profileNonce,
   }) {
     return _libPolygonIdCoreIdentityDataSource.calculateProfileId(
-        genesisDid, profileNonce);
+      genesisDid,
+      profileNonce,
+    );
   }
 
   @override
@@ -322,10 +322,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
 
     final key = Key.fromBase16(encryptionKey);
 
-    return _encryptionDbDataSource.encryptData(
-      data: exportableDb,
-      key: key,
-    );
+    return _encryptionDbDataSource.encryptData(data: exportableDb, key: key);
   }
 
   @override
@@ -341,8 +338,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
       key: key,
     );
 
-    String destinationPath =
-        await _destinationPathDataSource.getDestinationPath(did: did);
+    String destinationPath = await _destinationPathDataSource
+        .getDestinationPath(did: did);
 
     return _storageIdentityDataSource.saveIdentityDb(
       exportableDb: decryptedDb,

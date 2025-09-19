@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+
+import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
 
 /// An object that can be encoded to ABI.

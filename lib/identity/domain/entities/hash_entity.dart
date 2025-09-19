@@ -1,14 +1,15 @@
 import 'dart:typed_data';
 
 import 'package:equatable/equatable.dart';
-import 'package:web3dart/web3dart.dart';
+import 'package:web3dart/crypto.dart';
 
 import '../../../common/utils/uint8_list_utils.dart';
 
 //part 'hash_dto.g.dart';
 
 final _q = BigInt.parse(
-    "21888242871839275222246405745257275088548364400416034343698204186575808495617");
+  "21888242871839275222246405745257275088548364400416034343698204186575808495617",
+);
 
 /// Represents an identity state hash DTO.
 //@JsonSerializable(explicitToJson: true)

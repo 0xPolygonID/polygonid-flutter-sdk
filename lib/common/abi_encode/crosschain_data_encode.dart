@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:polygonid_flutter_sdk/common/abi_encode/abi_encode.dart';
 import 'package:polygonid_flutter_sdk/common/utils/hex_utils.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/universal_resolver_entity.dart';
+import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
 
 ///

@@ -732,10 +732,10 @@ packages:
     dependency: transitive
     description:
       name: json_rpc_2
-      sha256: "3c46c2633aec07810c3d6a2eb08d575b5b4072980db08f1344e66aeb53d6e4a7"
+      sha256: "246b321532f0e8e2ba474b4d757eaa558ae4fdd0688fdbc1e1ca9705f9b8ca0e"
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.0"
+    version: "3.0.3"
   json_serializable:
     dependency: "direct dev"
     description:
@@ -1240,10 +1240,10 @@ packages:
     dependency: transitive
     description:
       name: web3dart
-      sha256: bde2c92aac6f086988b6a1935c9d884f42a6acb772c93e1e2810f64af0db5600
+      sha256: "885e5e8f0cc3c87c09f160a7fce6279226ca41316806f7ece2001959c62ecced"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.1"
+    version: "2.7.3"
   webdriver:
     dependency: transitive
     description:

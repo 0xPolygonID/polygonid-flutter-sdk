@@ -5,7 +5,6 @@
 // ignore_for_file: unused_local_variable, unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:web3dart/web3dart.dart' as _i1;
-import 'package:wallet/wallet.dart' as _i2;
 
 final _contractAbi = _i1.ContractAbi.fromJson(
   '[{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint8","name":"version","type":"uint8"}],"name":"Initialized","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"id","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"blockN","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"state","type":"uint256"}],"name":"StateUpdated","type":"event"},{"inputs":[],"name":"VERSION","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"acceptOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"getGISTProof","outputs":[{"components":[{"internalType":"uint256","name":"root","type":"uint256"},{"internalType":"bool","name":"existence","type":"bool"},{"internalType":"uint256[64]","name":"siblings","type":"uint256[64]"},{"internalType":"uint256","name":"index","type":"uint256"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bool","name":"auxExistence","type":"bool"},{"internalType":"uint256","name":"auxIndex","type":"uint256"},{"internalType":"uint256","name":"auxValue","type":"uint256"}],"internalType":"structIState.GistProof","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"blockNumber","type":"uint256"}],"name":"getGISTProofByBlock","outputs":[{"components":[{"internalType":"uint256","name":"root","type":"uint256"},{"internalType":"bool","name":"existence","type":"bool"},{"internalType":"uint256[64]","name":"siblings","type":"uint256[64]"},{"internalType":"uint256","name":"index","type":"uint256"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bool","name":"auxExistence","type":"bool"},{"internalType":"uint256","name":"auxIndex","type":"uint256"},{"internalType":"uint256","name":"auxValue","type":"uint256"}],"internalType":"structIState.GistProof","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"root","type":"uint256"}],"name":"getGISTProofByRoot","outputs":[{"components":[{"internalType":"uint256","name":"root","type":"uint256"},{"internalType":"bool","name":"existence","type":"bool"},{"internalType":"uint256[64]","name":"siblings","type":"uint256[64]"},{"internalType":"uint256","name":"index","type":"uint256"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bool","name":"auxExistence","type":"bool"},{"internalType":"uint256","name":"auxIndex","type":"uint256"},{"internalType":"uint256","name":"auxValue","type":"uint256"}],"internalType":"structIState.GistProof","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"getGISTProofByTime","outputs":[{"components":[{"internalType":"uint256","name":"root","type":"uint256"},{"internalType":"bool","name":"existence","type":"bool"},{"internalType":"uint256[64]","name":"siblings","type":"uint256[64]"},{"internalType":"uint256","name":"index","type":"uint256"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bool","name":"auxExistence","type":"bool"},{"internalType":"uint256","name":"auxIndex","type":"uint256"},{"internalType":"uint256","name":"auxValue","type":"uint256"}],"internalType":"structIState.GistProof","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getGISTRoot","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"start","type":"uint256"},{"internalType":"uint256","name":"length","type":"uint256"}],"name":"getGISTRootHistory","outputs":[{"components":[{"internalType":"uint256","name":"root","type":"uint256"},{"internalType":"uint256","name":"replacedByRoot","type":"uint256"},{"internalType":"uint256","name":"createdAtTimestamp","type":"uint256"},{"internalType":"uint256","name":"replacedAtTimestamp","type":"uint256"},{"internalType":"uint256","name":"createdAtBlock","type":"uint256"},{"internalType":"uint256","name":"replacedAtBlock","type":"uint256"}],"internalType":"structIState.GistRootInfo[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getGISTRootHistoryLength","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"root","type":"uint256"}],"name":"getGISTRootInfo","outputs":[{"components":[{"internalType":"uint256","name":"root","type":"uint256"},{"internalType":"uint256","name":"replacedByRoot","type":"uint256"},{"internalType":"uint256","name":"createdAtTimestamp","type":"uint256"},{"internalType":"uint256","name":"replacedAtTimestamp","type":"uint256"},{"internalType":"uint256","name":"createdAtBlock","type":"uint256"},{"internalType":"uint256","name":"replacedAtBlock","type":"uint256"}],"internalType":"structIState.GistRootInfo","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"blockNumber","type":"uint256"}],"name":"getGISTRootInfoByBlock","outputs":[{"components":[{"internalType":"uint256","name":"root","type":"uint256"},{"internalType":"uint256","name":"replacedByRoot","type":"uint256"},{"internalType":"uint256","name":"createdAtTimestamp","type":"uint256"},{"internalType":"uint256","name":"replacedAtTimestamp","type":"uint256"},{"internalType":"uint256","name":"createdAtBlock","type":"uint256"},{"internalType":"uint256","name":"replacedAtBlock","type":"uint256"}],"internalType":"structIState.GistRootInfo","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"getGISTRootInfoByTime","outputs":[{"components":[{"internalType":"uint256","name":"root","type":"uint256"},{"internalType":"uint256","name":"replacedByRoot","type":"uint256"},{"internalType":"uint256","name":"createdAtTimestamp","type":"uint256"},{"internalType":"uint256","name":"replacedAtTimestamp","type":"uint256"},{"internalType":"uint256","name":"createdAtBlock","type":"uint256"},{"internalType":"uint256","name":"replacedAtBlock","type":"uint256"}],"internalType":"structIState.GistRootInfo","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"getStateInfoById","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"state","type":"uint256"},{"internalType":"uint256","name":"replacedByState","type":"uint256"},{"internalType":"uint256","name":"createdAtTimestamp","type":"uint256"},{"internalType":"uint256","name":"replacedAtTimestamp","type":"uint256"},{"internalType":"uint256","name":"createdAtBlock","type":"uint256"},{"internalType":"uint256","name":"replacedAtBlock","type":"uint256"}],"internalType":"structIState.StateInfo","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"state","type":"uint256"}],"name":"getStateInfoByIdAndState","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"state","type":"uint256"},{"internalType":"uint256","name":"replacedByState","type":"uint256"},{"internalType":"uint256","name":"createdAtTimestamp","type":"uint256"},{"internalType":"uint256","name":"replacedAtTimestamp","type":"uint256"},{"internalType":"uint256","name":"createdAtBlock","type":"uint256"},{"internalType":"uint256","name":"replacedAtBlock","type":"uint256"}],"internalType":"structIState.StateInfo","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"startIndex","type":"uint256"},{"internalType":"uint256","name":"length","type":"uint256"}],"name":"getStateInfoHistoryById","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"state","type":"uint256"},{"internalType":"uint256","name":"replacedByState","type":"uint256"},{"internalType":"uint256","name":"createdAtTimestamp","type":"uint256"},{"internalType":"uint256","name":"replacedAtTimestamp","type":"uint256"},{"internalType":"uint256","name":"createdAtBlock","type":"uint256"},{"internalType":"uint256","name":"replacedAtBlock","type":"uint256"}],"internalType":"structIState.StateInfo[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"getStateInfoHistoryLengthById","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getVerifier","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"idExists","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"contractIStateTransitionVerifier","name":"verifierContractAddr","type":"address"}],"name":"initialize","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pendingOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newVerifierAddr","type":"address"}],"name":"setVerifier","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"state","type":"uint256"}],"name":"stateExists","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"oldState","type":"uint256"},{"internalType":"uint256","name":"newState","type":"uint256"},{"internalType":"bool","name":"isOldStateGenesis","type":"bool"},{"internalType":"uint256[2]","name":"a","type":"uint256[2]"},{"internalType":"uint256[2][2]","name":"b","type":"uint256[2][2]"},{"internalType":"uint256[2]","name":"c","type":"uint256[2]"}],"name":"transitState","outputs":[],"stateMutability":"nonpayable","type":"function"}]',
@@ -14,7 +13,7 @@ final _contractAbi = _i1.ContractAbi.fromJson(
 
 class State extends _i1.GeneratedContract {
   State({
-    required _i2.EthereumAddress address,
+    required _i1.EthereumAddress address,
     required _i1.Web3Client client,
     int? chainId,
   }) : super(
@@ -327,7 +326,7 @@ class State extends _i1.GeneratedContract {
   /// The optional [atBlock] parameter can be used to view historical data. When
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
-  Future<_i2.EthereumAddress> getVerifier({_i1.BlockNum? atBlock}) async {
+  Future<_i1.EthereumAddress> getVerifier({_i1.BlockNum? atBlock}) async {
     final function = self.abi.functions[16];
     assert(checkSignature(function, '46657fe9'));
     final params = [];
@@ -336,7 +335,7 @@ class State extends _i1.GeneratedContract {
       params,
       atBlock,
     );
-    return (response[0] as _i2.EthereumAddress);
+    return (response[0] as _i1.EthereumAddress);
   }
 
   /// The optional [atBlock] parameter can be used to view historical data. When
@@ -361,7 +360,7 @@ class State extends _i1.GeneratedContract {
   /// like the gas price, nonce and max gas. The `data` and `to` fields will be
   /// set by the contract.
   Future<String> initialize(
-    ({_i2.EthereumAddress verifierContractAddr}) args, {
+    ({_i1.EthereumAddress verifierContractAddr}) args, {
     required _i1.Credentials credentials,
     _i1.Transaction? transaction,
   }) async {
@@ -379,7 +378,7 @@ class State extends _i1.GeneratedContract {
   /// The optional [atBlock] parameter can be used to view historical data. When
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
-  Future<_i2.EthereumAddress> owner({_i1.BlockNum? atBlock}) async {
+  Future<_i1.EthereumAddress> owner({_i1.BlockNum? atBlock}) async {
     final function = self.abi.functions[19];
     assert(checkSignature(function, '8da5cb5b'));
     final params = [];
@@ -388,13 +387,13 @@ class State extends _i1.GeneratedContract {
       params,
       atBlock,
     );
-    return (response[0] as _i2.EthereumAddress);
+    return (response[0] as _i1.EthereumAddress);
   }
 
   /// The optional [atBlock] parameter can be used to view historical data. When
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
-  Future<_i2.EthereumAddress> pendingOwner({_i1.BlockNum? atBlock}) async {
+  Future<_i1.EthereumAddress> pendingOwner({_i1.BlockNum? atBlock}) async {
     final function = self.abi.functions[20];
     assert(checkSignature(function, 'e30c3978'));
     final params = [];
@@ -403,7 +402,7 @@ class State extends _i1.GeneratedContract {
       params,
       atBlock,
     );
-    return (response[0] as _i2.EthereumAddress);
+    return (response[0] as _i1.EthereumAddress);
   }
 
   /// The optional [transaction] parameter can be used to override parameters
@@ -428,7 +427,7 @@ class State extends _i1.GeneratedContract {
   /// like the gas price, nonce and max gas. The `data` and `to` fields will be
   /// set by the contract.
   Future<String> setVerifier(
-    ({_i2.EthereumAddress newVerifierAddr}) args, {
+    ({_i1.EthereumAddress newVerifierAddr}) args, {
     required _i1.Credentials credentials,
     _i1.Transaction? transaction,
   }) async {
@@ -468,7 +467,7 @@ class State extends _i1.GeneratedContract {
   /// like the gas price, nonce and max gas. The `data` and `to` fields will be
   /// set by the contract.
   Future<String> transferOwnership(
-    ({_i2.EthereumAddress newOwner}) args, {
+    ({_i1.EthereumAddress newOwner}) args, {
     required _i1.Credentials credentials,
     _i1.Transaction? transaction,
   }) async {
@@ -630,12 +629,12 @@ class OwnershipTransferStarted {
   OwnershipTransferStarted(
     List<dynamic> response,
     this.event,
-  )   : previousOwner = (response[0] as _i2.EthereumAddress),
-        newOwner = (response[1] as _i2.EthereumAddress);
+  )   : previousOwner = (response[0] as _i1.EthereumAddress),
+        newOwner = (response[1] as _i1.EthereumAddress);
 
-  final _i2.EthereumAddress previousOwner;
+  final _i1.EthereumAddress previousOwner;
 
-  final _i2.EthereumAddress newOwner;
+  final _i1.EthereumAddress newOwner;
 
   final _i1.FilterEvent event;
 }
@@ -644,12 +643,12 @@ class OwnershipTransferred {
   OwnershipTransferred(
     List<dynamic> response,
     this.event,
-  )   : previousOwner = (response[0] as _i2.EthereumAddress),
-        newOwner = (response[1] as _i2.EthereumAddress);
+  )   : previousOwner = (response[0] as _i1.EthereumAddress),
+        newOwner = (response[1] as _i1.EthereumAddress);
 
-  final _i2.EthereumAddress previousOwner;
+  final _i1.EthereumAddress previousOwner;
 
-  final _i2.EthereumAddress newOwner;
+  final _i1.EthereumAddress newOwner;
 
   final _i1.FilterEvent event;
 }

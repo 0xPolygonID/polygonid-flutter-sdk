@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:hex/hex.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
-import 'package:web3dart/web3dart.dart';
+import 'package:web3dart/crypto.dart';
 
 class PrivateKeyMapper {
   @override
