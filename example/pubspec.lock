@@ -68,11 +68,9 @@ packages:
   bip32:
     dependency: transitive
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "9db7cf7c9e3a4e61f145ca43b01469c6464dce89"
-      url: "git@github.com:5eeman/bip32-dart.git"
-    source: git
+      path: "../packages/bip32-dart"
+      relative: true
+    source: path
     version: "2.0.1"
   bloc:
     dependency: "direct main"

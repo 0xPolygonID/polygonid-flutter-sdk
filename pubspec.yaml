@@ -23,8 +23,7 @@ dependencies:
   web3dart: ^2.7.3
   # Using fork because it supports pointycastle 4.0.0
   bip32:
-    git:
-      url: git@github.com:5eeman/bip32-dart.git
+    path: packages/bip32-dart
 
   # Crypto
   crypto: ^3.0.1
@@ -76,8 +75,7 @@ dev_dependencies:
   mockito: ^5.3.2
   # Using fork because it uses newer build and dart_analyze packages
   web3dart_builders:
-    git:
-      url: git@github.com:5eeman/web3dart_builders.git
+    path: packages/web3dart_builders
 
 dependency_overrides:
   pointycastle: 4.0.0

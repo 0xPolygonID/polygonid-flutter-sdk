@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Setup Flutter SDK
         uses: subosito/flutter-action@v2
@@ -31,7 +33,7 @@ jobs:
         run: flutter --version
 
       - name: Clean, dependencies and generate for SDK
-        run: flutter clean&&flutter pub get&&dart run build_runner build --delete-conflicting-outputs
+        run: flutter clean && flutter pub get && dart run build_runner build -d
 
       - name: Clean, dependencies and generate for Example
         env:
@@ -39,7 +41,7 @@ jobs:
           STACKTRACE_ENCRYPTION_KEY: ${{ secrets.STACKTRACE_ENCRYPTION }}
           PINATA_GATEWAY: ${{ secrets.PINATA_GATEWAY }}
           PINATA_GATEWAY_TOKEN: ${{ secrets.PINATA_GATEWAY_TOKEN }}
-        run: cd example&&flutter clean&&flutter pub get&&dart run build_runner build --delete-conflicting-outputs
+        run: cd example && flutter clean && flutter pub get & &dart run build_runner build -d
 
       - name: Format
         run: dart format --set-exit-if-changed lib test example
