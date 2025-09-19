@@ -309,12 +309,11 @@ packages:
   encrypt:
     dependency: transitive
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: bf71120d0017677f8043dba8bb2a3c0a1db14f1b
-      url: "git@github.com:5eeman/encrypt.git"
-    source: git
-    version: "5.0.4"
+      name: encrypt
+      sha256: "62d9aa4670cc2a8798bab89b39fc71b6dfbacf615de6cf5001fb39f7e4a996a2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.3"
   envied:
     dependency: "direct main"
     description:
@@ -422,7 +421,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_lints:
-    dependency: "direct dev"
+    dependency: "direct overridden"
     description:
       name: flutter_lints
       sha256: a25a15ebbdfc33ab1cd26c63a6ee519df92338a9c10f122adda92938253bef04
@@ -970,7 +969,7 @@ packages:
     source: hosted
     version: "2.1.8"
   pointycastle:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: pointycastle
       sha256: "92aa3841d083cc4b0f4709b5c74fd6409a3e6ba833ffc7dc6a8fee096366acf5"
