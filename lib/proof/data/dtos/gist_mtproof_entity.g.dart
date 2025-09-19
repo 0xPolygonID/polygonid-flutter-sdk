@@ -13,7 +13,4 @@ GistMTProofEntity _$GistMTProofEntityFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$GistMTProofEntityToJson(GistMTProofEntity instance) =>
-    <String, dynamic>{
-      'root': instance.root,
-      'proof': instance.proof.toJson(),
-    };
+    <String, dynamic>{'root': instance.root, 'proof': instance.proof.toJson()};

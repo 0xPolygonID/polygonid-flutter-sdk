@@ -23,22 +23,23 @@ Map<String, dynamic> _$ClaimProofBJJDTOToJson(ClaimProofBJJDTO instance) =>
     };
 
 ClaimProofIssuerBJJDTO _$ClaimProofIssuerBJJDTOFromJson(
-        Map<String, dynamic> json) =>
-    ClaimProofIssuerBJJDTO(
-      json['id'] as String,
-      ClaimProofIssuerStateDTO.fromJson(json['state'] as Map<String, dynamic>),
-      json['authCoreClaim'] as String,
-      ClaimProofMTPDTO.fromJson(json['mtp'] as Map<String, dynamic>),
-      ClaimProofIssuerCredStatusDTO.fromJson(
-          json['credentialStatus'] as Map<String, dynamic>),
-    );
+  Map<String, dynamic> json,
+) => ClaimProofIssuerBJJDTO(
+  json['id'] as String,
+  ClaimProofIssuerStateDTO.fromJson(json['state'] as Map<String, dynamic>),
+  json['authCoreClaim'] as String,
+  ClaimProofMTPDTO.fromJson(json['mtp'] as Map<String, dynamic>),
+  ClaimProofIssuerCredStatusDTO.fromJson(
+    json['credentialStatus'] as Map<String, dynamic>,
+  ),
+);
 
 Map<String, dynamic> _$ClaimProofIssuerBJJDTOToJson(
-        ClaimProofIssuerBJJDTO instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'state': instance.state.toJson(),
-      'authCoreClaim': instance.authCoreClaim,
-      'mtp': instance.mtp.toJson(),
-      'credentialStatus': instance.credentialStatus.toJson(),
-    };
+  ClaimProofIssuerBJJDTO instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'state': instance.state.toJson(),
+  'authCoreClaim': instance.authCoreClaim,
+  'mtp': instance.mtp.toJson(),
+  'credentialStatus': instance.credentialStatus.toJson(),
+};

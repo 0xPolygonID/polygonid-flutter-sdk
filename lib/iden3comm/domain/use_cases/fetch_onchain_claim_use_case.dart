@@ -17,7 +17,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/protocol_
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
-import 'package:web3dart/crypto.dart';
+import 'package:web3dart/web3dart.dart';
 import 'package:web3dart/web3dart.dart';
 
 class FetchOnchainClaimParam {

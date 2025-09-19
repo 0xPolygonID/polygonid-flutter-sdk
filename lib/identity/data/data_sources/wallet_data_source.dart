@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/eddsa_babyjub.dart';
-import 'package:web3dart/crypto.dart';
+import 'package:web3dart/web3dart.dart';
 
 @injectable
 class WalletDataSource {

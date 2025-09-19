@@ -1,10 +1,10 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:web3dart/credentials.dart';
+import 'package:bip32/bip32.dart' as bip32;
+import 'package:web3dart/web3dart.dart';
 
 import 'eddsa_babyjub.dart';
-import 'package:bip32/bip32.dart' as bip32;
 
 // TODO: move impl to a DS and transform this class to an entity
 /// @class

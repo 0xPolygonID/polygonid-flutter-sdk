@@ -29,25 +29,26 @@ Map<String, dynamic> _$ClaimProofMTPDTOToJson(ClaimProofMTPDTO instance) =>
     };
 
 ClaimProofIssuerCredStatusDTO _$ClaimProofIssuerCredStatusDTOFromJson(
-        Map<String, dynamic> json) =>
-    ClaimProofIssuerCredStatusDTO(
-      json['id'] as String,
-      (json['revocationNonce'] as num?)?.toInt(),
-      $enumDecode(_$ClaimProofIssuerCredStatusTypeEnumMap, json['type']),
-      json['statusIssuer'] == null
-          ? null
-          : ClaimProofIssuerCredStatusDTO.fromJson(
-              json['statusIssuer'] as Map<String, dynamic>),
-    );
+  Map<String, dynamic> json,
+) => ClaimProofIssuerCredStatusDTO(
+  json['id'] as String,
+  (json['revocationNonce'] as num?)?.toInt(),
+  $enumDecode(_$ClaimProofIssuerCredStatusTypeEnumMap, json['type']),
+  json['statusIssuer'] == null
+      ? null
+      : ClaimProofIssuerCredStatusDTO.fromJson(
+          json['statusIssuer'] as Map<String, dynamic>,
+        ),
+);
 
 Map<String, dynamic> _$ClaimProofIssuerCredStatusDTOToJson(
-        ClaimProofIssuerCredStatusDTO instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'revocationNonce': instance.revocationNonce,
-      'type': _$ClaimProofIssuerCredStatusTypeEnumMap[instance.type]!,
-      'statusIssuer': instance.statusIssuer?.toJson(),
-    };
+  ClaimProofIssuerCredStatusDTO instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'revocationNonce': instance.revocationNonce,
+  'type': _$ClaimProofIssuerCredStatusTypeEnumMap[instance.type]!,
+  'statusIssuer': instance.statusIssuer?.toJson(),
+};
 
 const _$ClaimProofIssuerCredStatusTypeEnumMap = {
   ClaimProofIssuerCredStatusType.reverseSparseMerkleTreeProof:
@@ -60,23 +61,22 @@ const _$ClaimProofIssuerCredStatusTypeEnumMap = {
 };
 
 ClaimProofIssuerStateDTO _$ClaimProofIssuerStateDTOFromJson(
-        Map<String, dynamic> json) =>
-    ClaimProofIssuerStateDTO(
-      json['claimsTreeRoot'] as String,
-      json['revocationTreeRoot'] as String?,
-      json['rootOfRoots'] as String?,
-      json['value'] as String,
-    );
+  Map<String, dynamic> json,
+) => ClaimProofIssuerStateDTO(
+  json['claimsTreeRoot'] as String,
+  json['revocationTreeRoot'] as String?,
+  json['rootOfRoots'] as String?,
+  json['value'] as String,
+);
 
 Map<String, dynamic> _$ClaimProofIssuerStateDTOToJson(
-        ClaimProofIssuerStateDTO instance) =>
-    <String, dynamic>{
-      'claimsTreeRoot': instance.claimsTreeRoot,
-      if (instance.revocationTreeRoot case final value?)
-        'revocationTreeRoot': value,
-      if (instance.rootOfRoots case final value?) 'rootOfRoots': value,
-      'value': instance.value,
-    };
+  ClaimProofIssuerStateDTO instance,
+) => <String, dynamic>{
+  'claimsTreeRoot': instance.claimsTreeRoot,
+  'revocationTreeRoot': ?instance.revocationTreeRoot,
+  'rootOfRoots': ?instance.rootOfRoots,
+  'value': instance.value,
+};
 
 ClaimProofIssuerDTO _$ClaimProofIssuerDTOFromJson(Map<String, dynamic> json) =>
     ClaimProofIssuerDTO(
@@ -85,8 +85,5 @@ ClaimProofIssuerDTO _$ClaimProofIssuerDTOFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$ClaimProofIssuerDTOToJson(
-        ClaimProofIssuerDTO instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'state': instance.state.toJson(),
-    };
+  ClaimProofIssuerDTO instance,
+) => <String, dynamic>{'id': instance.id, 'state': instance.state.toJson()};

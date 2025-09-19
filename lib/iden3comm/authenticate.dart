@@ -75,7 +75,7 @@ import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stre
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:poseidon/poseidon.dart';
 import 'package:uuid/uuid.dart';
-import 'package:web3dart/crypto.dart';
+import 'package:wallet/wallet.dart';
 import 'package:web3dart/web3dart.dart';
 
 class Authenticate {

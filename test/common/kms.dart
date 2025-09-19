@@ -6,7 +6,7 @@ import 'package:polygonid_flutter_sdk/common/kms/index.dart';
 import 'package:polygonid_flutter_sdk/common/kms/keys/types.dart';
 import 'package:polygonid_flutter_sdk/common/kms/store/memory_key_store.dart';
 import 'package:polygonid_flutter_sdk/common/utils/big_int_extension.dart';
-import 'package:web3dart/crypto.dart';
+import 'package:web3dart/web3dart.dart';
 
 Future<void> testFlow(IKeyProvider provider) async {
   final seed1 = getRandomBytes(32);

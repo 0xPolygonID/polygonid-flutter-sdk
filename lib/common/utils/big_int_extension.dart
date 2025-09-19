@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:web3dart/crypto.dart';
+import 'package:web3dart/web3dart.dart';
 
 extension BigIntQ on BigInt {
   static BigInt Q = BigInt.parse(
