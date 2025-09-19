@@ -91,6 +91,12 @@ GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   RefreshCredentialUseCase,
 ])
 main() {
+  final claim = CredentialMocks.claim.copyWith(info: {
+    'credentialSubject': {
+      'id': IdentityMocks.did.did,
+    },
+  });
+
   setUp(() {
     reset(proofRepository);
     reset(getMessageRequestsAndCredsUseCase);
@@ -106,11 +112,11 @@ main() {
       (realInvocation) async => [
         (
           request: Iden3commMocks.proofRequest,
-          credentials: [CredentialMocks.claim],
+          credentials: [claim],
         ),
         (
           request: Iden3commMocks.proofRequest,
-          credentials: [CredentialMocks.claim],
+          credentials: [claim],
         ),
       ],
     );
@@ -164,7 +170,7 @@ main() {
       expect(verifyGenerateProof.captured[i].profileNonce, param.profileNonce);
       expect(verifyGenerateProof.captured[i].claimSubjectProfileNonce,
           CommonMocks.genesisNonce);
-      expect(verifyGenerateProof.captured[i].credential, CredentialMocks.claim);
+      expect(verifyGenerateProof.captured[i].credential, claim);
       expect(verifyGenerateProof.captured[i].request,
           Iden3commMocks.proofRequestList[i].scope);
       expect(

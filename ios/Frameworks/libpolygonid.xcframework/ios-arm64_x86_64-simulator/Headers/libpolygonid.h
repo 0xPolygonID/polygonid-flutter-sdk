@@ -12,6 +12,8 @@
 
 #ifndef GO_CGO_GOSTRING_TYPEDEF
 typedef struct { const char *p; ptrdiff_t n; } _GoString_;
+extern size_t _GoStringLen(_GoString_ s);
+extern const char *_GoStringPtr(_GoString_ s);
 #endif
 
 #endif
@@ -26,30 +28,30 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 
 typedef enum
 {
-    PLGNSTATUSCODE_ERROR,
-    PLGNSTATUSCODE_NIL_POINTER,
-    // error extracting credential status from verifiable credential
-    PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_EXTRACTION_ERROR,
-    // error resolving credential status (e.g. getting the status from chain of DHS)
-    PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_RESOLVE_ERROR,
-    // error getting merkletree proof from credential status
-    PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_MT_BUILD_ERROR,
-    // merkletree proof is invalid
-    PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_MT_STATE_ERROR,
-    // credential is revoked
-    PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_REVOKED_ERROR,
-    // the same as above but for issuer credential (for signature proofs)
-    PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_EXTRACTION_ERROR,
-    PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_RESOLVE_ERROR,
-    PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_MT_BUILD_ERROR,
-    PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_MT_STATE_ERROR,
-    PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_REVOKED_ERROR,
+	PLGNSTATUSCODE_ERROR,
+	PLGNSTATUSCODE_NIL_POINTER,
+	// error extracting credential status from verifiable credential
+	PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_EXTRACTION_ERROR,
+	// error resolving credential status (e.g. getting the status from chain of DHS)
+	PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_RESOLVE_ERROR,
+	// error getting merkletree proof from credential status
+	PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_MT_BUILD_ERROR,
+	// merkletree proof is invalid
+	PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_MT_STATE_ERROR,
+	// credential is revoked
+	PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_REVOKED_ERROR,
+	// the same as above but for issuer credential (for signature proofs)
+	PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_EXTRACTION_ERROR,
+	PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_RESOLVE_ERROR,
+	PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_MT_BUILD_ERROR,
+	PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_MT_STATE_ERROR,
+	PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_REVOKED_ERROR,
 } PLGNStatusCode;
 
 typedef struct _PLGNStatus
 {
-    PLGNStatusCode status;
-    char *error_msg;
+	PLGNStatusCode status;
+	char *error_msg;
 } PLGNStatus;
 
 #line 1 "cgo-generated-wrapper"
@@ -78,9 +80,15 @@ typedef size_t GoUintptr;
 typedef float GoFloat32;
 typedef double GoFloat64;
 #ifdef _MSC_VER
+#if !defined(__cplusplus) || _MSVC_LANG <= 201402L
 #include <complex.h>
 typedef _Fcomplex GoComplex64;
 typedef _Dcomplex GoComplex128;
+#else
+#include <complex>
+typedef std::complex<float> GoComplex64;
+typedef std::complex<double> GoComplex128;
+#endif
 #else
 typedef float _Complex GoComplex64;
 typedef double _Complex GoComplex128;
