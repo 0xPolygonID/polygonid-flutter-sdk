@@ -41,7 +41,7 @@ jobs:
           STACKTRACE_ENCRYPTION_KEY: ${{ secrets.STACKTRACE_ENCRYPTION }}
           PINATA_GATEWAY: ${{ secrets.PINATA_GATEWAY }}
           PINATA_GATEWAY_TOKEN: ${{ secrets.PINATA_GATEWAY_TOKEN }}
-        run: cd example && flutter clean && flutter pub get & &dart run build_runner build -d
+        run: cd example && flutter clean && flutter pub get && dart run build_runner build -d
 
       - name: Format
         run: dart format --set-exit-if-changed lib test example
