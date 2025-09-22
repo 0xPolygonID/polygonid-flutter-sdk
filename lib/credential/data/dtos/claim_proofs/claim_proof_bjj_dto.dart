@@ -4,7 +4,7 @@ import 'claim_proof_dto.dart';
 
 part 'claim_proof_bjj_dto.g.dart';
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
 class ClaimProofBJJDTO extends ClaimProofDTO {
   final String signature;
 
@@ -28,8 +28,13 @@ class ClaimProofIssuerBJJDTO extends ClaimProofIssuerDTO {
   final ClaimProofMTPDTO mtp;
   final ClaimProofIssuerCredStatusDTO credentialStatus;
 
-  ClaimProofIssuerBJJDTO(super.id, super.state, this.authCoreClaim, this.mtp,
-      this.credentialStatus);
+  ClaimProofIssuerBJJDTO(
+    super.id,
+    super.state,
+    this.authCoreClaim,
+    this.mtp,
+    this.credentialStatus,
+  );
 
   factory ClaimProofIssuerBJJDTO.fromJson(Map<String, dynamic> json) =>
       _$ClaimProofIssuerBJJDTOFromJson(json);
