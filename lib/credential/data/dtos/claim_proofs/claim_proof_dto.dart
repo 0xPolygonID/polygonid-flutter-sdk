@@ -7,7 +7,11 @@ import 'claim_proof_sm_dto.dart';
 
 part 'claim_proof_dto.g.dart';
 
-@JsonSerializable(explicitToJson: true, createFactory: false)
+@JsonSerializable(
+  explicitToJson: true,
+  createFactory: false,
+  includeIfNull: false,
+)
 class ClaimProofDTO extends Equatable {
   @JsonKey(name: 'type')
   final String type;
@@ -24,7 +28,8 @@ class ClaimProofDTO extends Equatable {
       return ClaimProofBJJDTO(
         type,
         ClaimProofIssuerBJJDTO.fromJson(
-            json['issuerData'] as Map<String, dynamic>),
+          json['issuerData'] as Map<String, dynamic>,
+        ),
         json['coreClaim'] as String,
         json['signature'] as String,
       );
@@ -33,7 +38,8 @@ class ClaimProofDTO extends Equatable {
       return ClaimProofSMDTO(
         type,
         ClaimProofIssuerSMDTO.fromJson(
-            json['issuerData'] as Map<String, dynamic>),
+          json['issuerData'] as Map<String, dynamic>,
+        ),
         json['coreClaim'] as String,
         ClaimProofMTPDTO.fromJson(json['mtp'] as Map<String, dynamic>),
       );
@@ -41,7 +47,8 @@ class ClaimProofDTO extends Equatable {
       return ClaimProofDTO(
         type,
         ClaimProofIssuerSMDTO.fromJson(
-            json['issuerData'] as Map<String, dynamic>),
+          json['issuerData'] as Map<String, dynamic>,
+        ),
         json['coreClaim'] as String,
       );
     }
@@ -51,9 +58,7 @@ class ClaimProofDTO extends Equatable {
     ..removeWhere((dynamic key, dynamic value) => key == null || value == null);
 
   @override
-  List<Object?> get props => [
-        type,
-      ]; // , issuer]; For UT but we could compare more thoroughly
+  List<Object?> get props => [type]; // , issuer]; For UT but we could compare more thoroughly
 }
 
 @JsonSerializable()
@@ -78,7 +83,7 @@ enum ClaimProofIssuerCredStatusType {
   @JsonValue("Iden3OnchainSparseMerkleTreeProof2023")
   iden3OnchainSparseMerkleTreeProof2023,
   @JsonValue("Iden3commRevocationStatusV1.0")
-  iden3commRevocationStatusV1
+  iden3commRevocationStatusV1,
 }
 
 @JsonSerializable(explicitToJson: true)
@@ -90,7 +95,11 @@ class ClaimProofIssuerCredStatusDTO {
   final ClaimProofIssuerCredStatusDTO? statusIssuer;
 
   ClaimProofIssuerCredStatusDTO(
-      this.id, this.revocationNonce, this.type, this.statusIssuer);
+    this.id,
+    this.revocationNonce,
+    this.type,
+    this.statusIssuer,
+  );
 
   factory ClaimProofIssuerCredStatusDTO.fromJson(Map<String, dynamic> json) =>
       _$ClaimProofIssuerCredStatusDTOFromJson(json);
@@ -109,8 +118,12 @@ class ClaimProofIssuerStateDTO {
   @JsonKey(name: 'value')
   final String value;
 
-  ClaimProofIssuerStateDTO(this.claimsTreeRoot, this.revocationTreeRoot,
-      this.rootOfRoots, this.value);
+  ClaimProofIssuerStateDTO(
+    this.claimsTreeRoot,
+    this.revocationTreeRoot,
+    this.rootOfRoots,
+    this.value,
+  );
 
   factory ClaimProofIssuerStateDTO.fromJson(Map<String, dynamic> json) =>
       _$ClaimProofIssuerStateDTOFromJson(json);
