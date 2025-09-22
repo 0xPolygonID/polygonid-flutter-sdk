@@ -22,8 +22,7 @@ dependencies:
   # Web3
   web3dart: ^2.7.3
   # Using fork because it supports pointycastle 4.0.0
-  bip32:
-    path: packages/bip32-dart
+  bip32_plus: ^1.0.0
 
   # Crypto
   crypto: ^3.0.1

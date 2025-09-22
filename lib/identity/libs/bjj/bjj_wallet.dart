@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:bip32/bip32.dart' as bip32;
+import 'package:bip32_plus/bip32_plus.dart' as bip32;
 import 'package:web3dart/web3dart.dart';
 
 import 'eddsa_babyjub.dart';
