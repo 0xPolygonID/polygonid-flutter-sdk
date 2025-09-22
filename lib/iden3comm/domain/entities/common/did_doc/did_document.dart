@@ -8,7 +8,7 @@ class DIDDocument {
   final List<String>? alsoKnownAs;
   final List<String>? controller;
   final List<DIDDocumentService>? service;
-  final List<String>? verificationMethod;
+  final List<Map<String, dynamic>>? verificationMethod;
 
   DIDDocument({
     this.context,
@@ -37,9 +37,10 @@ class DIDDocument {
     List<String>? controller =
         (json['controller'] as List?)?.map((item) => item as String).toList();
 
-    List<String>? verificationMethod = (json['verificationMethod'] as List?)
-        ?.map((item) => item as String)
-        .toList();
+    List<Map<String, dynamic>>? verificationMethod =
+        (json['verificationMethod'] as List?)
+            ?.map((item) => item as Map<String, dynamic>)
+            .toList();
 
     return DIDDocument(
       context: context,

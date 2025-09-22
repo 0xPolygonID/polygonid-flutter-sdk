@@ -270,6 +270,14 @@ extern GoUint8 PLGNBabyJubJubPublicUncompress(char** jsonResponse, char* in, cha
 extern GoUint8 PLGNBabyJubJubPublicCompress(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern GoUint8 PLGNValidateAttestationDocument(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 
+// PLGNAAnonPack an jwe token for the input data.
+//
+extern GoUint8 PLGNAAnonPack(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
+// PLGNAAnonUnpack decrypt jwe message to iden3comm basic message.
+//
+extern GoUint8 PLGNAAnonUnpack(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
 #ifdef __cplusplus
 }
 #endif

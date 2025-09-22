@@ -888,6 +888,56 @@ class NativePolygonIdCoreLib {
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+
+  int PLGNAAnonPack(
+    ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
+    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> cfg,
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNAAnonPack(
+      jsonResponse,
+      in1,
+      cfg,
+      status,
+    );
+  }
+
+  late final _PLGNAAnonPackPtr = _lookup<
+      ffi.NativeFunction<
+          GoUint8 Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNAAnonPack');
+  late final _PLGNAAnonPack = _PLGNAAnonPackPtr.asFunction<
+      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+
+  int PLGNAAnonUnpack(
+    ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
+    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> cfg,
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNAAnonUnpack(
+      jsonResponse,
+      in1,
+      cfg,
+      status,
+    );
+  }
+
+  late final _PLGNAAnonUnpackPtr = _lookup<
+      ffi.NativeFunction<
+          GoUint8 Function(
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNAAnonUnpack');
+  late final _PLGNAAnonUnpack = _PLGNAAnonUnpackPtr.asFunction<
+      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
 }
 
 typedef __int8_t = ffi.SignedChar;
@@ -1524,6 +1574,8 @@ const int _DARWIN_FEATURE_UNIX_CONFORMANCE = 3;
 
 const int __has_ptrcheck = 0;
 
+const int __has_bounds_safety_attributes = 0;
+
 const int __DARWIN_NULL = 0;
 
 const int __PTHREAD_SIZE__ = 8176;
@@ -1560,17 +1612,31 @@ const int __API_TO_BE_DEPRECATED = 100000;
 
 const int __API_TO_BE_DEPRECATED_MACOS = 100000;
 
+const int __API_TO_BE_DEPRECATED_MACOSAPPLICATIONEXTENSION = 100000;
+
 const int __API_TO_BE_DEPRECATED_IOS = 100000;
+
+const int __API_TO_BE_DEPRECATED_IOSAPPLICATIONEXTENSION = 100000;
 
 const int __API_TO_BE_DEPRECATED_MACCATALYST = 100000;
 
+const int __API_TO_BE_DEPRECATED_MACCATALYSTAPPLICATIONEXTENSION = 100000;
+
 const int __API_TO_BE_DEPRECATED_WATCHOS = 100000;
 
+const int __API_TO_BE_DEPRECATED_WATCHOSAPPLICATIONEXTENSION = 100000;
+
 const int __API_TO_BE_DEPRECATED_TVOS = 100000;
+
+const int __API_TO_BE_DEPRECATED_TVOSAPPLICATIONEXTENSION = 100000;
 
 const int __API_TO_BE_DEPRECATED_DRIVERKIT = 100000;
 
 const int __API_TO_BE_DEPRECATED_VISIONOS = 100000;
+
+const int __API_TO_BE_DEPRECATED_VISIONOSAPPLICATIONEXTENSION = 100000;
+
+const int __API_TO_BE_DEPRECATED_KERNELKIT = 100000;
 
 const int __MAC_10_0 = 1000;
 
@@ -1682,6 +1748,8 @@ const int __MAC_13_5 = 130500;
 
 const int __MAC_13_6 = 130600;
 
+const int __MAC_13_7 = 130700;
+
 const int __MAC_14_0 = 140000;
 
 const int __MAC_14_1 = 140100;
@@ -1694,11 +1762,21 @@ const int __MAC_14_4 = 140400;
 
 const int __MAC_14_5 = 140500;
 
+const int __MAC_14_6 = 140600;
+
+const int __MAC_14_7 = 140700;
+
 const int __MAC_15_0 = 150000;
 
 const int __MAC_15_1 = 150100;
 
 const int __MAC_15_2 = 150200;
+
+const int __MAC_15_3 = 150300;
+
+const int __MAC_15_4 = 150400;
+
+const int __MAC_15_5 = 150500;
 
 const int __IPHONE_2_0 = 20000;
 
@@ -1858,11 +1936,21 @@ const int __IPHONE_17_4 = 170400;
 
 const int __IPHONE_17_5 = 170500;
 
+const int __IPHONE_17_6 = 170600;
+
+const int __IPHONE_17_7 = 170700;
+
 const int __IPHONE_18_0 = 180000;
 
 const int __IPHONE_18_1 = 180100;
 
 const int __IPHONE_18_2 = 180200;
+
+const int __IPHONE_18_3 = 180300;
+
+const int __IPHONE_18_4 = 180400;
+
+const int __IPHONE_18_5 = 180500;
 
 const int __WATCHOS_1_0 = 10000;
 
@@ -1958,11 +2046,21 @@ const int __WATCHOS_10_4 = 100400;
 
 const int __WATCHOS_10_5 = 100500;
 
+const int __WATCHOS_10_6 = 100600;
+
+const int __WATCHOS_10_7 = 100700;
+
 const int __WATCHOS_11_0 = 110000;
 
 const int __WATCHOS_11_1 = 110100;
 
 const int __WATCHOS_11_2 = 110200;
+
+const int __WATCHOS_11_3 = 110300;
+
+const int __WATCHOS_11_4 = 110400;
+
+const int __WATCHOS_11_5 = 110500;
 
 const int __TVOS_9_0 = 90000;
 
@@ -2060,11 +2158,19 @@ const int __TVOS_17_4 = 170400;
 
 const int __TVOS_17_5 = 170500;
 
+const int __TVOS_17_6 = 170600;
+
 const int __TVOS_18_0 = 180000;
 
 const int __TVOS_18_1 = 180100;
 
 const int __TVOS_18_2 = 180200;
+
+const int __TVOS_18_3 = 180300;
+
+const int __TVOS_18_4 = 180400;
+
+const int __TVOS_18_5 = 180500;
 
 const int __BRIDGEOS_2_0 = 20000;
 
@@ -2118,11 +2224,19 @@ const int __BRIDGEOS_8_4 = 80400;
 
 const int __BRIDGEOS_8_5 = 80500;
 
+const int __BRIDGEOS_8_6 = 80600;
+
 const int __BRIDGEOS_9_0 = 90000;
 
 const int __BRIDGEOS_9_1 = 90100;
 
 const int __BRIDGEOS_9_2 = 90200;
+
+const int __BRIDGEOS_9_3 = 90300;
+
+const int __BRIDGEOS_9_4 = 90400;
+
+const int __BRIDGEOS_9_5 = 90500;
 
 const int __DRIVERKIT_19_0 = 190000;
 
@@ -2150,11 +2264,19 @@ const int __DRIVERKIT_23_4 = 230400;
 
 const int __DRIVERKIT_23_5 = 230500;
 
+const int __DRIVERKIT_23_6 = 230600;
+
 const int __DRIVERKIT_24_0 = 240000;
 
 const int __DRIVERKIT_24_1 = 240100;
 
 const int __DRIVERKIT_24_2 = 240200;
+
+const int __DRIVERKIT_24_3 = 240300;
+
+const int __DRIVERKIT_24_4 = 240400;
+
+const int __DRIVERKIT_24_5 = 240500;
 
 const int __VISIONOS_1_0 = 10000;
 
@@ -2162,11 +2284,19 @@ const int __VISIONOS_1_1 = 10100;
 
 const int __VISIONOS_1_2 = 10200;
 
+const int __VISIONOS_1_3 = 10300;
+
 const int __VISIONOS_2_0 = 20000;
 
 const int __VISIONOS_2_1 = 20100;
 
 const int __VISIONOS_2_2 = 20200;
+
+const int __VISIONOS_2_3 = 20300;
+
+const int __VISIONOS_2_4 = 20400;
+
+const int __VISIONOS_2_5 = 20500;
 
 const int MAC_OS_X_VERSION_10_0 = 1000;
 
@@ -2278,6 +2408,8 @@ const int MAC_OS_VERSION_13_5 = 130500;
 
 const int MAC_OS_VERSION_13_6 = 130600;
 
+const int MAC_OS_VERSION_13_7 = 130700;
+
 const int MAC_OS_VERSION_14_0 = 140000;
 
 const int MAC_OS_VERSION_14_1 = 140100;
@@ -2290,15 +2422,31 @@ const int MAC_OS_VERSION_14_4 = 140400;
 
 const int MAC_OS_VERSION_14_5 = 140500;
 
+const int MAC_OS_VERSION_14_6 = 140600;
+
+const int MAC_OS_VERSION_14_7 = 140700;
+
 const int MAC_OS_VERSION_15_0 = 150000;
 
 const int MAC_OS_VERSION_15_1 = 150100;
 
 const int MAC_OS_VERSION_15_2 = 150200;
 
-const int __MAC_OS_X_VERSION_MIN_REQUIRED = 140000;
+const int MAC_OS_VERSION_15_3 = 150300;
 
-const int __MAC_OS_X_VERSION_MAX_ALLOWED = 150200;
+const int MAC_OS_VERSION_15_4 = 150400;
+
+const int MAC_OS_VERSION_15_5 = 150500;
+
+const int __AVAILABILITY_VERSIONS_VERSION_HASH = 93585900;
+
+const String __AVAILABILITY_VERSIONS_VERSION_STRING = 'Local';
+
+const String __AVAILABILITY_FILE = 'AvailabilityVersions.h';
+
+const int __MAC_OS_X_VERSION_MIN_REQUIRED = 150000;
+
+const int __MAC_OS_X_VERSION_MAX_ALLOWED = 150500;
 
 const int __ENABLE_LEGACY_MAC_AVAILABILITY = 1;
 
@@ -2785,6 +2933,8 @@ const int IOPOL_VFS_IGNORE_PERMISSIONS_ON = 1;
 const int IOPOL_VFS_SKIP_MTIME_UPDATE_OFF = 0;
 
 const int IOPOL_VFS_SKIP_MTIME_UPDATE_ON = 1;
+
+const int IOPOL_VFS_SKIP_MTIME_UPDATE_IGNORE = 2;
 
 const int IOPOL_VFS_ALLOW_LOW_SPACE_WRITES_OFF = 0;
 
