@@ -111,7 +111,9 @@ class VerificationMethod {
       publicKeyMultibase: json['publicKeyMultibase'],
       blockchainAccountId: json['blockchainAccountId'],
       ethereumAddress: json['ethereumAddress'],
-      publicKeyJwk: json['publicKeyJwk'],
+      publicKeyJwk: json['publicKeyJwk'] is Map<String, dynamic>
+          ? Map<String, dynamic>.from(json['publicKeyJwk'])
+          : null,
     );
   }
 
