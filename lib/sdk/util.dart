@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/pidcore_util.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 
 @injectable
 class Util {
@@ -21,6 +24,48 @@ class Util {
       publicKey: publicKey,
       userData: userData,
     );
+  }
+
+  /// Encrypts the input plaintext using provided keyset into JWE format.
+  /// [message] - The plaintext message to be encrypted.
+  /// [recipientDidDocs] - List of recipient DID Documents.
+  /// [recipientAlg] - Optional map of recipient algorithms. DID as key and algorithm as value.
+  /// Returns the encrypted message in JWE format.
+  String anonPack({
+    required String message,
+    required List<DIDDocument> recipientDidDocs,
+    Map<String, String>? recipientAlg,
+  }) {
+    final json = {
+      'message': message,
+      'recipientDidDocs': recipientDidDocs.map((e) {
+        return {
+          'didDocument': e.toJson(),
+          'didResolutionMetadata': null,
+          'didDocumentMetadata': null
+        };
+      }).toList(),
+      if (recipientAlg != null) 'recipientAlg': recipientAlg,
+    };
+    final input = jsonEncode(json);
+
+    return _polygonIdCoreUtil.anonPack(input);
+  }
+
+  /// Decrypts the input cyphertext using provided keyset from JWE format.
+  /// [cyphertext] - The encrypted message in JWE format.
+  /// [keys] - List of keys to decrypt the message.
+  /// Returns the decrypted plaintext message.
+  String anonUnpack(String cyphertext, List<Map<String, dynamic>> keys) {
+    final json = {
+      'cyphertext': cyphertext,
+      'keyset': {
+        'keys': keys,
+      },
+    };
+    final input = jsonEncode(json);
+
+    return _polygonIdCoreUtil.anonUnpack(input);
   }
 }
 

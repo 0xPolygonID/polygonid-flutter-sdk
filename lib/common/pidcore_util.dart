@@ -18,4 +18,24 @@ class PolygonIdCoreUtil extends PolygonIdCore {
       },
     );
   }
+
+  String anonPack(String input) {
+    return callGenericCoreFunction(
+      input: () => input,
+      function: PolygonIdCore.nativePolygonIdCoreLib.PLGNAAnonPack,
+      parse: (result) {
+        return result;
+      },
+    );
+  }
+
+  String anonUnpack(String input) {
+    return callGenericCoreFunction(
+      input: () => input,
+      function: PolygonIdCore.nativePolygonIdCoreLib.PLGNAAnonUnpack,
+      parse: (result) {
+        return result;
+      },
+    );
+  }
 }
