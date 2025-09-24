@@ -1,4 +1,5 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/response/jwz.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
@@ -31,9 +32,7 @@ abstract class Iden3commRepository {
     required String did,
     required AuthorizationRequestMessage request,
     required List<Iden3commProofEntity> scope,
-    String? pushUrl,
-    String? pushToken,
-    String? packageName,
+    DIDDocument? didDocument,
   });
 
   Future<String> encodeJWZ({required JWZEntity jwz});

@@ -9,6 +9,8 @@ import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.d
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/common/utils/did_doc_compose.dart';
+import 'package:polygonid_flutter_sdk/common/utils/push_service.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
@@ -125,24 +127,29 @@ class AuthenticateUseCase
           .addTrace("[AuthenticateUseCase] _getIden3commProofsUseCase success");
       logger().i("stopwatch after getProofs ${stopwatch.elapsedMilliseconds}");
 
-      String pushUrl = env.pushUrl;
-      _stacktraceManager.addTrace("[AuthenticateUseCase] pushUrl: $pushUrl");
+      PushServiceData? pushServiceData;
+      if (param.pushToken != null) {
+        String packageName = await _getPackageNameUseCase.execute();
+        pushServiceData = PushServiceData(
+          pushToken: param.pushToken!,
+          serviceEndpoint: env.pushUrl,
+          packageName: packageName,
+        );
+      }
 
-      String packageName = await _getPackageNameUseCase.execute();
-      _stacktraceManager
-          .addTrace("[AuthenticateUseCase] packageName: $packageName");
-      logger().i(
-          "stopwatch after getPackageNameUseCase ${stopwatch.elapsedMilliseconds}");
+      final didDocument = await composeDidDoc(
+        did: profileDid,
+        pushServiceData: pushServiceData,
+      );
 
       _proofGenerationStepsStreamManager
           .add("preparing authentication parameters...");
       String authResponse = await _iden3commRepository.getAuthResponse(
-          did: profileDid,
-          request: param.message,
-          scope: proofs,
-          pushUrl: pushUrl,
-          pushToken: param.pushToken,
-          packageName: packageName);
+        did: profileDid,
+        request: param.message,
+        scope: proofs,
+        didDocument: didDocument,
+      );
       _stacktraceManager.addTrace(
           "[AuthenticateUseCase] _iden3commRepository.getAuthResponse success\nauthResponse: $authResponse");
       logger().i(

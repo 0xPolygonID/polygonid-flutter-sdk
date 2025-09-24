@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/pidcore_util.dart';
+import 'package:polygonid_flutter_sdk/common/utils/did_doc_compose.dart';
+import 'package:polygonid_flutter_sdk/common/utils/push_service.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 
 @injectable
@@ -66,6 +68,19 @@ class Util {
     final input = jsonEncode(json);
 
     return _polygonIdCoreUtil.anonUnpack(input);
+  }
+
+  Future<DIDDocument> createDidDocument(
+    String profileDid, {
+    PushServiceData? pushServiceData,
+    String? redirectUrl,
+    List<VerificationMethod>? verificationMethod,
+  }) async {
+    return composeDidDoc(
+      did: profileDid,
+      pushServiceData: pushServiceData,
+      verificationMethod: verificationMethod,
+    );
   }
 }
 

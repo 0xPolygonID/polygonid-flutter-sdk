@@ -6,7 +6,6 @@ import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
-import 'package:encrypt/encrypt.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_cache_hive_store/http_cache_hive_store.dart';
@@ -14,11 +13,6 @@ import 'package:intl/intl.dart';
 import 'package:ninja_prime/ninja_prime.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:pointycastle/api.dart';
-import 'package:pointycastle/asymmetric/api.dart';
-import 'package:pointycastle/asymmetric/oaep.dart';
-import 'package:pointycastle/asymmetric/rsa.dart';
-import 'package:pointycastle/digests/sha512.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
@@ -28,7 +22,9 @@ import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/base_64.dart';
 import 'package:polygonid_flutter_sdk/common/utils/big_int_extension.dart';
+import 'package:polygonid_flutter_sdk/common/utils/did_doc_compose.dart';
 import 'package:polygonid_flutter_sdk/common/utils/pinata_gateway_utils.dart';
+import 'package:polygonid_flutter_sdk/common/utils/push_service.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/lib_pidcore_credential_data_source.dart';
@@ -38,9 +34,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/re
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_body_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document_service.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document_service_metadata.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document_service_metadata_devices.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/response/jwz.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
@@ -89,7 +82,8 @@ class Authenticate {
     required IdentityEntity identityEntity,
     required Iden3Message message,
     required EnvEntity env,
-    required String? pushToken,
+    DIDDocument? didDocument,
+    String? pushToken,
     String? challenge,
     final Map<String, dynamic>? transactionData,
     String? authClaimNonce,
@@ -206,12 +200,31 @@ class Authenticate {
       _proofGenerationStepsStreamManager.add(
         "preparing authentication parameters...",
       );
+      DIDDocument didDoc;
+      if (didDocument != null) {
+        didDoc = didDocument;
+      } else {
+        PushServiceData? pushServiceData;
+        if (pushToken != null && pushToken.isNotEmpty) {
+          final info = await PackageInfo.fromPlatform();
+          pushServiceData = PushServiceData(
+            pushToken: pushToken,
+            serviceEndpoint: env.pushUrl,
+            packageName: info.packageName,
+          );
+        }
+
+        didDoc = await composeDidDoc(
+          did: profileDid,
+          pushServiceData: pushServiceData,
+        );
+      }
+
       String authResponseString = await prepareAuthResponseMessage(
-        env: env,
-        pushToken: pushToken,
         profileDid: profileDid,
         message: message,
         proofs: proofs,
+        didDocument: didDoc,
       );
 
       // get the auth token
@@ -311,24 +324,11 @@ class Authenticate {
   }
 
   Future<String> prepareAuthResponseMessage({
-    required EnvEntity env,
-    required String? pushToken,
     required String profileDid,
     required Iden3Message message,
     required List<Iden3commProofEntity> proofs,
+    required DIDDocument didDocument,
   }) async {
-    String pushUrl = env.pushUrl;
-
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    String packageName = packageInfo.packageName;
-
-    DIDDocument? didDocResponse = await _getDidDoc(
-      pushUrl: pushUrl,
-      pushToken: pushToken,
-      packageName: packageName,
-      profileDid: profileDid,
-    );
-
     final authResponse = AuthorizationResponseMessage(
       id: const Uuid().v4(),
       thid: message.thid,
@@ -338,7 +338,7 @@ class Authenticate {
       body: AuthorizationMessageResponseBody(
         message: (message as AuthorizationRequestMessage).body.message,
         proofs: proofs,
-        did_doc: didDocResponse,
+        did_doc: didDocument,
       ),
     );
 
@@ -603,103 +603,6 @@ class Authenticate {
   }) async {
     final walletDs = getItSdk<WalletDataSource>();
     return walletDs.signMessage(privateKey: privateKey, message: message);
-  }
-
-  Future<DIDDocument?> _getDidDoc({
-    required String? pushUrl,
-    required String? pushToken,
-    required String? packageName,
-    required String profileDid,
-  }) async {
-    if (pushUrl == null ||
-        pushToken == null ||
-        packageName == null ||
-        pushUrl.isEmpty ||
-        pushToken.isEmpty ||
-        packageName.isEmpty) {
-      return null;
-    }
-
-    return DIDDocument(
-      context: const ["https://www.w3.org/ns/did/v1"],
-      id: profileDid,
-      service: [
-        DIDDocumentService(
-          id: '$profileDid#mobile',
-          type: 'Iden3MobileServiceV1',
-          serviceEndpoint: 'iden3comm:v0.1:callbackHandler',
-        ),
-        DIDDocumentService(
-          id: "$profileDid#push",
-          type: "push-notification",
-          serviceEndpoint: pushUrl,
-          metadata: DIDDocumentServiceMetadata(
-            devices: [
-              DIDDocumentServiceMetadataDevices(
-                ciphertext: await _getPushCipherText(
-                  pushToken,
-                  pushUrl,
-                  packageName,
-                ),
-                alg: "RSA-OAEP-512",
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Future<String> _getPushCipherText(
-    String pushToken,
-    String serviceEndpoint,
-    String packageName,
-  ) async {
-    var pushInfo = {
-      "app_id": packageName, //"com.polygonid.wallet",
-      "pushkey": pushToken,
-    };
-
-    Dio dio = Dio();
-    final dir = await getApplicationDocumentsDirectory();
-    final path = dir.path;
-    dio.interceptors.add(
-      DioCacheInterceptor(
-        options: CacheOptions(
-          store: HiveCacheStore(path),
-          policy: CachePolicy.request,
-          maxStale: const Duration(days: 7),
-          priority: CachePriority.high,
-        ),
-      ),
-    );
-
-    var publicKeyResponse = await dio.get(
-      Uri.parse("$serviceEndpoint/public").toString(),
-    );
-
-    if (publicKeyResponse.statusCode == 200 ||
-        publicKeyResponse.statusCode == 304) {
-      String publicKeyPem = publicKeyResponse.data;
-      final publicKey = RSAKeyParser().parse(publicKeyPem) as RSAPublicKey;
-      final encrypter = OAEPEncoding.withCustomDigest(
-        () => SHA512Digest(),
-        RSAEngine(),
-      );
-      encrypter.init(true, PublicKeyParameter<RSAPublicKey>(publicKey));
-      Uint8List encrypted = encrypter.process(
-        Uint8List.fromList(json.encode(pushInfo).codeUnits),
-      );
-      return base64.encode(encrypted);
-    } else {
-      _stacktraceManager.addError(
-        "[Authenticate] Error fetching public key: ${publicKeyResponse.statusCode} ${publicKeyResponse.statusMessage}",
-      );
-      throw NetworkException(
-        statusCode: publicKeyResponse.statusCode ?? 0,
-        errorMessage: publicKeyResponse.statusMessage ?? "",
-      );
-    }
   }
 
   Future<String> _getAuthToken({

@@ -13,6 +13,7 @@ import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_did_profil
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_did_profile_info_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/authenticate.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
@@ -610,8 +611,9 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     required IdentityEntity identityEntity,
     required Iden3Message message,
     required EnvEntity env,
-    List<RequestAndCredentials>? requestsAndCreds,
+    DIDDocument? didDocument,
     String? pushToken,
+    List<RequestAndCredentials>? requestsAndCreds,
     String? challenge,
   }) async {
     try {
@@ -622,7 +624,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         identityEntity: identityEntity,
         message: message,
         env: env,
-        pushToken: pushToken,
+        didDocument: didDocument,
         requestsAndCreds: requestsAndCreds,
       );
     } on PolygonIdSDKException catch (_) {

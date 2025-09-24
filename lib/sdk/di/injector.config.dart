@@ -117,8 +117,6 @@ import 'package:polygonid_flutter_sdk/credential/domain/use_cases/update_claim_u
     as _i168;
 import 'package:polygonid_flutter_sdk/credential/libs/polygonidcore/pidcore_credential.dart'
     as _i328;
-import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/iden3_message_data_source.dart'
-    as _i296;
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart'
     as _i409;
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/secure_storage_did_profile_info_data_source.dart'
@@ -490,8 +488,6 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i839.RemoteIdentityDataSource(gh<_i267.StacktraceManager>()));
     gh.factory<_i795.ErrorHandling>(
         () => _i795.ErrorHandling(gh<_i267.StacktraceManager>()));
-    gh.factory<_i296.Iden3MessageDataSource>(
-        () => _i296.Iden3MessageDataSource(gh<_i267.StacktraceManager>()));
     gh.factory<_i96.ProofRequestFiltersMapper>(
         () => _i96.ProofRequestFiltersMapper(gh<_i267.StacktraceManager>()));
     gh.factory<_i98.JWZMapper>(
@@ -653,16 +649,6 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i575.SMTDataSource>(),
           gh<_i42.StorageSMTDataSource>(),
         ));
-    gh.factory<_i588.Iden3commRepositoryImpl>(
-        () => _i588.Iden3commRepositoryImpl(
-              gh<_i296.Iden3MessageDataSource>(),
-              gh<_i409.RemoteIden3commDataSource>(),
-              gh<_i41.LibPolygonIdCoreProofDataSource>(),
-              gh<_i599.QMapper>(),
-              gh<_i98.JWZMapper>(),
-              gh<_i167.Iden3MessageFactory>(),
-              gh<_i267.StacktraceManager>(),
-            ));
     gh.factory<_i361.SecureStorageDidProfileInfoDataSource>(() =>
         _i361.SecureStorageDidProfileInfoDataSource(
             gh<_i361.SecureDidProfileInfoStoreRefWrapper>()));
@@ -755,6 +741,15 @@ extension GetItInjectableX on _i174.GetIt {
               gh<_i22.LocalContractFilesDataSource>(),
               gh<_i409.RemoteIden3commDataSource>(),
               gh<_i294.CredentialMapper>(),
+              gh<_i267.StacktraceManager>(),
+            ));
+    gh.factory<_i588.Iden3commRepositoryImpl>(
+        () => _i588.Iden3commRepositoryImpl(
+              gh<_i409.RemoteIden3commDataSource>(),
+              gh<_i41.LibPolygonIdCoreProofDataSource>(),
+              gh<_i599.QMapper>(),
+              gh<_i98.JWZMapper>(),
+              gh<_i167.Iden3MessageFactory>(),
               gh<_i267.StacktraceManager>(),
             ));
     gh.factory<_i946.SMTRepository>(

@@ -6,15 +6,23 @@ part of 'claim_proof_dto.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Map<String, dynamic> _$ClaimProofDTOToJson(ClaimProofDTO instance) =>
-    <String, dynamic>{
-      'stringify': instance.stringify,
-      'hashCode': instance.hashCode,
-      'type': instance.type,
-      'issuerData': instance.issuer.toJson(),
-      'coreClaim': instance.coreClaim,
-      'props': instance.props,
-    };
+Map<String, dynamic> _$ClaimProofDTOToJson(ClaimProofDTO instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('stringify', instance.stringify);
+  val['hashCode'] = instance.hashCode;
+  val['type'] = instance.type;
+  val['issuerData'] = instance.issuer.toJson();
+  val['coreClaim'] = instance.coreClaim;
+  val['props'] = instance.props;
+  return val;
+}
 
 ClaimProofMTPDTO _$ClaimProofMTPDTOFromJson(Map<String, dynamic> json) =>
     ClaimProofMTPDTO(
