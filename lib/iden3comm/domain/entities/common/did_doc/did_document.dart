@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document_service.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/context_parser.dart';
 
 part 'did_document.g.dart';
 
@@ -9,6 +10,7 @@ typedef AuthBodyDidDocResponse = DIDDocument;
 @JsonSerializable(explicitToJson: true)
 class DIDDocument with EquatableMixin {
   final String id;
+  @JsonKey(name: '@context', fromJson: parseContext)
   final List<String>? context;
   final List<String>? alsoKnownAs;
   final List<String>? controller;
