@@ -12,6 +12,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
+
 import '../../../common/common_mocks.dart';
 import '../../../common/iden3comm_mocks.dart';
 import 'authenticate_use_case_test.mocks.dart';
@@ -49,7 +50,6 @@ AuthenticateParam param = AuthenticateParam(
   message: Iden3commMocks.authRequest,
   genesisDid: CommonMocks.did,
   profileNonce: CommonMocks.genesisNonce,
-  pushToken: CommonMocks.token,
   privateKey: CommonMocks.privateKey,
 );
 
@@ -93,13 +93,11 @@ void main() {
             .thenAnswer((realInvocation) => Future.value(CommonMocks.config));
 
         when(iden3commRepository.getAuthResponse(
-                did: anyNamed('did'),
-                request: anyNamed('request'),
-                scope: anyNamed('scope'),
-                pushUrl: anyNamed('pushUrl'),
-                pushToken: anyNamed('pushToken'),
-                packageName: anyNamed('packageName')))
-            .thenAnswer((realInvocation) => Future.value(CommonMocks.message));
+          did: anyNamed('did'),
+          request: anyNamed('request'),
+          scope: anyNamed('scope'),
+          didDocument: anyNamed('didDocument'),
+        )).thenAnswer((realInvocation) => Future.value(CommonMocks.message));
 
         when(getAuthTokenUseCase.execute(param: anyNamed('param')))
             .thenAnswer((realInvocation) => Future.value(CommonMocks.id));
@@ -147,22 +145,15 @@ void main() {
           expect(captureCheck.privateKey, CommonMocks.privateKey);
           expect(captureCheck.profileNonce, CommonMocks.genesisNonce);
 
-          verify(getPackageNameUseCase.execute());
-
           var capturedAuthResponse = verify(iden3commRepository.getAuthResponse(
-                  did: captureAnyNamed('did'),
-                  request: captureAnyNamed('request'),
-                  scope: captureAnyNamed('scope'),
-                  pushUrl: captureAnyNamed('pushUrl'),
-                  pushToken: captureAnyNamed('pushToken'),
-                  packageName: captureAnyNamed('packageName')))
-              .captured;
+            did: captureAnyNamed('did'),
+            request: captureAnyNamed('request'),
+            scope: captureAnyNamed('scope'),
+            didDocument: captureAnyNamed('didDocument'),
+          )).captured;
           expect(capturedAuthResponse[0], CommonMocks.did);
           expect(capturedAuthResponse[1], Iden3commMocks.authRequest);
           expect(capturedAuthResponse[2], []);
-          expect(capturedAuthResponse[3], CommonMocks.url);
-          expect(capturedAuthResponse[4], CommonMocks.token);
-          expect(capturedAuthResponse[5], CommonMocks.config);
 
           var capturedAuthToken = verify(
                   getAuthTokenUseCase.execute(param: captureAnyNamed('param')))
@@ -186,14 +177,12 @@ void main() {
         () async {
           // Given
           when(iden3commRepository.getAuthResponse(
-                  did: anyNamed('did'),
-                  request: anyNamed('request'),
-                  scope: anyNamed('scope'),
-                  pushUrl: anyNamed('pushUrl'),
-                  pushToken: anyNamed('pushToken'),
-                  packageName: anyNamed('packageName')))
-              .thenAnswer(
-                  (realInvocation) => Future.error(CommonMocks.exception));
+            did: anyNamed('did'),
+            request: anyNamed('request'),
+            scope: anyNamed('scope'),
+            didDocument: anyNamed('didDocument'),
+          )).thenAnswer(
+              (realInvocation) => Future.error(CommonMocks.exception));
 
           // When
           await expectLater(
@@ -222,22 +211,15 @@ void main() {
           expect(captureCheck.privateKey, CommonMocks.privateKey);
           expect(captureCheck.profileNonce, CommonMocks.genesisNonce);
 
-          verify(getPackageNameUseCase.execute());
-
           var capturedAuthResponse = verify(iden3commRepository.getAuthResponse(
-                  did: captureAnyNamed('did'),
-                  request: captureAnyNamed('request'),
-                  scope: captureAnyNamed('scope'),
-                  pushUrl: captureAnyNamed('pushUrl'),
-                  pushToken: captureAnyNamed('pushToken'),
-                  packageName: captureAnyNamed('packageName')))
-              .captured;
+            did: captureAnyNamed('did'),
+            request: captureAnyNamed('request'),
+            scope: captureAnyNamed('scope'),
+            didDocument: captureAnyNamed('didDocument'),
+          )).captured;
           expect(capturedAuthResponse[0], CommonMocks.did);
           expect(capturedAuthResponse[1], Iden3commMocks.authRequest);
           expect(capturedAuthResponse[2], []);
-          expect(capturedAuthResponse[3], CommonMocks.url);
-          expect(capturedAuthResponse[4], CommonMocks.token);
-          expect(capturedAuthResponse[5], CommonMocks.config);
 
           verifyNever(
               getAuthTokenUseCase.execute(param: captureAnyNamed('param')));

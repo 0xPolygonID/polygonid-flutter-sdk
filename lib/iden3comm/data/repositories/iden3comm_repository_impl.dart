@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/iden3_message_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/jwz_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
@@ -24,7 +23,6 @@ import 'package:poseidon/poseidon.dart';
 import 'package:uuid/uuid.dart';
 
 class Iden3commRepositoryImpl extends Iden3commRepository {
-  final Iden3MessageDataSource _iden3messageDataSource;
   final RemoteIden3commDataSource _remoteIden3commDataSource;
   final LibPolygonIdCoreProofDataSource _libPolygonIdCoreProofDataSource;
   final QMapper _qMapper;
@@ -33,7 +31,6 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
   final StacktraceManager _stacktraceManager;
 
   Iden3commRepositoryImpl(
-    this._iden3messageDataSource,
     this._remoteIden3commDataSource,
     this._libPolygonIdCoreProofDataSource,
     this._qMapper,
@@ -92,33 +89,18 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     required String did,
     required AuthorizationRequestMessage request,
     required List<Iden3commProofEntity> scope,
-    String? pushUrl,
-    String? pushToken,
-    String? packageName,
+    DIDDocument? didDocument,
   }) async {
-    DIDDocument? didDocResponse;
-    if (pushUrl != null &&
-        pushUrl.isNotEmpty &&
-        pushToken != null &&
-        pushToken.isNotEmpty &&
-        packageName != null &&
-        packageName.isNotEmpty) {
-      didDocResponse = await _iden3messageDataSource.getDidDocResponse(
-          pushUrl, did, pushToken, packageName);
-    }
-
     final authResponse = AuthorizationResponseMessage(
       id: const Uuid().v4(),
       thid: request.thid,
       to: request.from,
       from: did,
       typ: "application/iden3-zkp-json",
-      //request
-      //.typ, // "application/iden3-zkp-json", // TODO if it's plain json typ: "application/iden3comm-plain-json",
       body: AuthorizationMessageResponseBody(
         message: request.body.message,
         proofs: scope,
-        did_doc: didDocResponse,
+        did_doc: didDocument,
       ),
     );
     return jsonEncode(authResponse.toJson());

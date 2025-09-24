@@ -32,26 +32,25 @@
 "to": "1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ"
 }*/
 
-class DIDDocumentServiceMetadataDevices {
+import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+part 'did_document_service_metadata_devices.g.dart';
+
+@JsonSerializable(explicitToJson: true)
+class DIDDocumentServiceMetadataDevices with EquatableMixin {
   final String? ciphertext;
   final String? alg;
 
   DIDDocumentServiceMetadataDevices({this.ciphertext, this.alg});
 
-  /// Creates an instance from the given json
-  ///
-  /// @param [Map<String, dynamic>] json
-  /// @returns [DIDDocumentServiceMetadataDevices]
   factory DIDDocumentServiceMetadataDevices.fromJson(
-      Map<String, dynamic> json) {
-    return DIDDocumentServiceMetadataDevices(
-      ciphertext: json["ciphertext"],
-      alg: json['alg'],
-    );
-  }
+          Map<String, dynamic> json) =>
+      _$DIDDocumentServiceMetadataDevicesFromJson(json);
 
-  Map<String, dynamic> toJson() => {
-        'ciphertext': ciphertext,
-        'alg': alg,
-      };
+  Map<String, dynamic> toJson() =>
+      _$DIDDocumentServiceMetadataDevicesToJson(this);
+
+  @override
+  List<Object?> get props => [ciphertext, alg];
 }

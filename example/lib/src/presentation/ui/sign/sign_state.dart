@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'sign_state.freezed.dart';
 
 @freezed
-class SignState with _$SignState {
+sealed class SignState with _$SignState {
   const factory SignState.initial({String? signature}) = InitialSignState;
 
   const factory SignState.loading({String? signature}) = LoadingSignState;

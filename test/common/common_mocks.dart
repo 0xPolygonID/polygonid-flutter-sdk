@@ -5,6 +5,7 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/utils/push_service.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/generate_inputs_response.dart';
 
 class CommonMocks {
@@ -62,6 +63,11 @@ class CommonMocks {
   static EnvConfigEntity envConfig = EnvConfigEntity(
     ipfsNodeUrl: '',
     ipfsGatewayUrl: '',
+  );
+  static PushServiceData pushData = PushServiceData(
+    pushToken: 'theToken',
+    serviceEndpoint: 'theUrl',
+    packageName: 'theConfig',
   );
 
   static FilterEntity filter = FilterEntity(name: name, value: aMap);
