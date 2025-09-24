@@ -26,17 +26,26 @@ DIDDocument _$DIDDocumentFromJson(Map<String, dynamic> json) => DIDDocument(
           .toList(),
     );
 
-Map<String, dynamic> _$DIDDocumentToJson(DIDDocument instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      '@context': instance.context,
-      'alsoKnownAs': instance.alsoKnownAs,
-      'controller': instance.controller,
-      'service': instance.service?.map((e) => e.toJson()).toList(),
-      'verificationMethod':
-          instance.verificationMethod?.map((e) => e.toJson()).toList(),
-      'keyAgreement': instance.keyAgreement,
-    };
+Map<String, dynamic> _$DIDDocumentToJson(DIDDocument instance) {
+  final val = <String, dynamic>{
+    'id': instance.id,
+  };
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('@context', instance.context);
+  writeNotNull('alsoKnownAs', instance.alsoKnownAs);
+  writeNotNull('controller', instance.controller);
+  writeNotNull('service', instance.service?.map((e) => e.toJson()).toList());
+  writeNotNull('verificationMethod',
+      instance.verificationMethod?.map((e) => e.toJson()).toList());
+  writeNotNull('keyAgreement', instance.keyAgreement);
+  return val;
+}
 
 VerificationMethod _$VerificationMethodFromJson(Map<String, dynamic> json) =>
     VerificationMethod(

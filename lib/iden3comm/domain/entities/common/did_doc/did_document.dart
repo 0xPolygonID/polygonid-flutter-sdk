@@ -7,7 +7,7 @@ part 'did_document.g.dart';
 
 typedef AuthBodyDidDocResponse = DIDDocument;
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
 class DIDDocument with EquatableMixin {
   final String id;
   @JsonKey(name: '@context', fromJson: parseContext)
