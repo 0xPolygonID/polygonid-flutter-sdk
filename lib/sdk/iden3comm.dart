@@ -624,6 +624,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         identityEntity: identityEntity,
         message: message,
         env: env,
+        pushToken: pushToken,
         didDocument: didDocument,
         requestsAndCreds: requestsAndCreds,
       );
