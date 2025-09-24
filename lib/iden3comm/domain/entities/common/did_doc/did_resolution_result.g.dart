@@ -8,7 +8,7 @@ part of 'did_resolution_result.dart';
 
 DIDResolutionResult _$DIDResolutionResultFromJson(Map<String, dynamic> json) =>
     DIDResolutionResult(
-      context: _contextFromJson(json['@context']),
+      context: parseContext(json['@context']),
       didResolutionMetadata: DIDResolutionMetadata.fromJson(
           json['didResolutionMetadata'] as Map<String, dynamic>),
       didDocument: json['didDocument'] == null

@@ -8,8 +8,7 @@ part of 'did_document.dart';
 
 DIDDocument _$DIDDocumentFromJson(Map<String, dynamic> json) => DIDDocument(
       id: json['id'] as String,
-      context:
-          (json['context'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      context: parseContext(json['@context']),
       service: (json['service'] as List<dynamic>?)
           ?.map((e) => DIDDocumentService.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -30,7 +29,7 @@ DIDDocument _$DIDDocumentFromJson(Map<String, dynamic> json) => DIDDocument(
 Map<String, dynamic> _$DIDDocumentToJson(DIDDocument instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'context': instance.context,
+      '@context': instance.context,
       'alsoKnownAs': instance.alsoKnownAs,
       'controller': instance.controller,
       'service': instance.service?.map((e) => e.toJson()).toList(),
