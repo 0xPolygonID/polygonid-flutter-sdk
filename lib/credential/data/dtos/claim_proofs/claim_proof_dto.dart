@@ -58,7 +58,8 @@ class ClaimProofDTO extends Equatable {
     ..removeWhere((dynamic key, dynamic value) => key == null || value == null);
 
   @override
-  List<Object?> get props => [type]; // , issuer]; For UT but we could compare more thoroughly
+  List<Object?> get props =>
+      [type]; // , issuer]; For UT but we could compare more thoroughly
 }
 
 @JsonSerializable()

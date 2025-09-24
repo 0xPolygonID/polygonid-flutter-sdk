@@ -18,9 +18,9 @@ abstract class PolygonIdSdkErrorHandling {
   /// to get the error of the latest flow execution
   String getErrorTrace();
 
-    /// A getter to check if the stacktrace feature is enabled.
-    /// Returns `true` if stacktrace is enabled, otherwise `false`.
-    bool get isStacktraceEnabled;
+  /// A getter to check if the stacktrace feature is enabled.
+  /// Returns `true` if stacktrace is enabled, otherwise `false`.
+  bool get isStacktraceEnabled;
 }
 
 @injectable
