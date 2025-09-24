@@ -50,7 +50,6 @@ AuthenticateParam param = AuthenticateParam(
   message: Iden3commMocks.authRequest,
   genesisDid: CommonMocks.did,
   profileNonce: CommonMocks.genesisNonce,
-  pushToken: CommonMocks.token,
   privateKey: CommonMocks.privateKey,
 );
 
@@ -146,8 +145,6 @@ void main() {
           expect(captureCheck.privateKey, CommonMocks.privateKey);
           expect(captureCheck.profileNonce, CommonMocks.genesisNonce);
 
-          verify(getPackageNameUseCase.execute());
-
           var capturedAuthResponse = verify(iden3commRepository.getAuthResponse(
             did: captureAnyNamed('did'),
             request: captureAnyNamed('request'),
@@ -213,8 +210,6 @@ void main() {
           expect(captureCheck.did, CommonMocks.did);
           expect(captureCheck.privateKey, CommonMocks.privateKey);
           expect(captureCheck.profileNonce, CommonMocks.genesisNonce);
-
-          verify(getPackageNameUseCase.execute());
 
           var capturedAuthResponse = verify(iden3commRepository.getAuthResponse(
             did: captureAnyNamed('did'),
