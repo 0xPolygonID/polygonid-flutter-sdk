@@ -54,13 +54,13 @@ class Util {
     return _polygonIdCoreUtil.anonPack(input);
   }
 
-  /// Decrypts the input cyphertext using provided keyset from JWE format.
-  /// [cyphertext] - The encrypted message in JWE format.
+  /// Decrypts the input ciphertext using provided keyset from JWE format.
+  /// [ciphertext] - The encrypted message in JWE format.
   /// [keys] - List of keys to decrypt the message.
   /// Returns the decrypted plaintext message.
-  String anonUnpack(String cyphertext, List<Map<String, dynamic>> keys) {
+  String anonUnpack(String ciphertext, List<Map<String, dynamic>> keys) {
     final json = {
-      'cyphertext': cyphertext,
+      'ciphertext': ciphertext,
       'keyset': {
         'keys': keys,
       },
