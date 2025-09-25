@@ -1,4 +1,5 @@
-import 'package:flutter/foundation.dart';
+import 'package:equatable/equatable.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 
 enum InteractionType {
   offer,
@@ -15,7 +16,7 @@ enum InteractionState {
   declined,
 }
 
-class InteractionEntity {
+class InteractionEntity with EquatableMixin {
   final String id;
   final String from;
   final InteractionType type;
@@ -28,6 +29,7 @@ class InteractionEntity {
   final BigInt profileNonce;
 
   final List<String> tags;
+  final DIDDocument? didDocument;
 
   InteractionEntity({
     required this.id,
@@ -40,26 +42,29 @@ class InteractionEntity {
     required this.timestamp,
     required this.message,
     this.tags = const [],
+    this.didDocument,
   });
 
   factory InteractionEntity.fromJson(Map<String, dynamic> json) {
     return InteractionEntity(
-      id: json['id'],
-      from: json['from'],
-      to: json['to'],
-      genesisDid: json['genesisDid'],
-      profileNonce: BigInt.parse(json['profileNonce']),
-      type: InteractionType.values.firstWhere((type) =>
-          type.name == json['type'] || type.toString() == json['type']),
-      state: InteractionState.values.firstWhere((type) =>
-          type.name == json['state'] || type.toString() == json['state']),
-      timestamp: json['timestamp'],
-      message: json['message'],
-      tags: (json['tags'] as List<dynamic>?)
-              ?.map((tag) => tag.toString())
-              .toList() ??
-          [],
-    );
+        id: json['id'],
+        from: json['from'],
+        to: json['to'],
+        genesisDid: json['genesisDid'],
+        profileNonce: BigInt.parse(json['profileNonce']),
+        type: InteractionType.values.firstWhere((type) =>
+            type.name == json['type'] || type.toString() == json['type']),
+        state: InteractionState.values.firstWhere((type) =>
+            type.name == json['state'] || type.toString() == json['state']),
+        timestamp: json['timestamp'],
+        message: json['message'],
+        tags: (json['tags'] as List<dynamic>?)
+                ?.map((tag) => tag.toString())
+                .toList() ??
+            [],
+        didDocument: json['didDocument'] != null
+            ? DIDDocument.fromJson(json['didDocument'])
+            : null);
   }
 
   @override
@@ -74,39 +79,26 @@ class InteractionEntity {
         'tags': tags,
         'genesisDid': genesisDid,
         'profileNonce': profileNonce.toString(),
+        'didDocument': didDocument?.toJson(),
       };
 
   @override
   String toString() {
-    return 'InteractionEntity{id: $id, from: $from, type: $type, state: $state, timestamp: $timestamp, message: $message, to: $to, genesisDid: $genesisDid, profileNonce: $profileNonce, tags: $tags}';
+    return 'InteractionEntity{id: $id, from: $from, type: $type, state: $state, timestamp: $timestamp, message: $message, to: $to, genesisDid: $genesisDid, profileNonce: $profileNonce, tags: $tags, didDocument: $didDocument}';
   }
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is InteractionEntity &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          from == other.from &&
-          type == other.type &&
-          state == other.state &&
-          timestamp == other.timestamp &&
-          message == other.message &&
-          to == other.to &&
-          genesisDid == other.genesisDid &&
-          profileNonce == other.profileNonce &&
-          listEquals(tags, other.tags);
-
-  @override
-  int get hashCode =>
-      id.hashCode ^
-      from.hashCode ^
-      type.hashCode ^
-      state.hashCode ^
-      timestamp.hashCode ^
-      message.hashCode ^
-      to.hashCode ^
-      genesisDid.hashCode ^
-      profileNonce.hashCode ^
-      tags.hashCode;
+  List<Object?> get props => [
+        id,
+        from,
+        type,
+        state,
+        timestamp,
+        message,
+        to,
+        genesisDid,
+        profileNonce,
+        tags,
+        didDocument,
+      ];
 }
