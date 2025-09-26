@@ -21,6 +21,7 @@
 
 */
 
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/attachment.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 
 import '../../authorization/request/auth_body_request.dart';
@@ -63,24 +64,17 @@ class AuthorizationRequestMessage
       thid: json['thid'],
       from: json['from'],
       to: json['to'],
+      createdTime: json['created_time'],
+      expiresTime: json['expires_time'],
       body: body,
+      attachments: json['attachments'] != null
+          ? List<Map<String, dynamic>>.from(json['attachments'])
+              .map((j) => Attachment.fromJson(j))
+              .toList()
+          : [],
     );
   }
 
   @override
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = super.toJson();
-    data['body'] = body.toJson();
-    return data;
-  }
-
-  @override
   String toString() => "[AuthorizationRequestMessage] {${super.toString()}}";
-
-  @override
-  bool operator ==(Object other) =>
-      super == other && other is AuthorizationRequestMessage;
-
-  @override
-  int get hashCode => runtimeType.hashCode;
 }

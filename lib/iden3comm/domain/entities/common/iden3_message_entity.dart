@@ -30,6 +30,12 @@ enum Iden3MessageType {
   verificationRequest(ProtocolMessageType.verificationRequestMessageType),
   verificationResponse(ProtocolMessageType.verificationResponseMessageType),
   fetchRequest(ProtocolMessageType.credentialFetchRequestMessageType),
+  resourceRequest(ProtocolMessageType.resourceRequestMessageType),
+  resourcePermissionsUpdateRequest(
+      ProtocolMessageType.resourcePermissionsUpdateRequestMessageType),
+  resourcePermissionsUpdate(
+      ProtocolMessageType.resourcePermissionsUpdateMessageType),
+  resourceDelivery(ProtocolMessageType.resourceDeliveryMessageType),
   unknown("");
 
   final String type;
@@ -91,14 +97,14 @@ abstract class Iden3Message<T> extends Equatable {
 
   const Iden3Message({
     required this.id,
-    required this.typ,
+    this.typ,
     required this.type,
-    required this.thid,
+    this.thid,
     required this.body,
     required this.from,
-    required this.to,
-    required this.createdTime,
-    required this.expiresTime,
+    this.to,
+    this.createdTime,
+    this.expiresTime,
     required this.attachments,
   });
 

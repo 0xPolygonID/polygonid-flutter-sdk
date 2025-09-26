@@ -8,6 +8,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/re
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/response/problem_report_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/credential_issuance_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/credential_proposal_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/credential_refresh_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
@@ -19,6 +20,10 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/payment_
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_request_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_response_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/resource_management/resource_delivery.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/resource_management/resource_permissions_update.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/resource_management/resource_permissions_update_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/resource_management/resource_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/verification/verification_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/verification/verification_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
@@ -77,7 +82,17 @@ class Iden3MessageFactory {
           return VerificationResponseMessage.fromJson(json);
         case Iden3MessageType.fetchRequest:
           return CredentialFetchRequestMessage.fromJson(json);
-        default:
+        case Iden3MessageType.credentialIssuanceRequest:
+          return CredentialIssuanceRequestMessage.fromJson(json);
+        case Iden3MessageType.resourceRequest:
+          return ResourceRequestMessage.fromJson(json);
+        case Iden3MessageType.resourcePermissionsUpdateRequest:
+          return ResourcePermissionsUpdateRequestMessage.fromJson(json);
+        case Iden3MessageType.resourcePermissionsUpdate:
+          return ResourcePermissionsUpdateMessage.fromJson(json);
+        case Iden3MessageType.resourceDelivery:
+          return ResourceDeliveryMessage.fromJson(json);
+        case Iden3MessageType.unknown:
           throw UnsupportedIden3MsgTypeException(
             type: type,
             errorMessage: "Unsupported message type: $type",

@@ -97,29 +97,16 @@ class ProtocolMessageType {
   static const verificationResponseMessageType =
       '${_iden3Protocol}passport/0.1/verification-response';
 
-  // List of all message types for iteration or validation
-  static const List<String> allMessageTypes = [
-    authorizationRequestMessageType,
-    authorizationResponseMessageType,
-    credentialIssuanceRequestMessageType,
-    credentialFetchRequestMessageType,
-    credentialOfferMessageType,
-    credentialIssuanceResponseMessageType,
-    credentialRefreshMessageType,
-    revocationStatusRequestMessageType,
-    revocationStatusResponseMessageType,
-    contractInvokeRequestMessageType,
-    contractInvokeResponseMessageType,
-    credentialOnchainOfferMessageType,
-    proposalRequestMessageType,
-    proposalMessageType,
-    paymentRequestMessageType,
-    paymentMessageType,
-    problemReportMessageType,
-  ];
+  ///
+  /// Resource management
+  ///
 
-  // Helper method to check if a string is a valid message type
-  static bool isValidMessageType(String type) {
-    return allMessageTypes.contains(type);
-  }
+  static const resourceRequestMessageType =
+      '$_iden3Protocol/resource-management/0.1/request';
+  static const resourcePermissionsUpdateRequestMessageType =
+      '$_iden3Protocol/resource-management/0.1/permissions-update-request';
+  static const resourcePermissionsUpdateMessageType =
+      '$_iden3Protocol/resource-management/0.1/permissions-update';
+  static const resourceDeliveryMessageType =
+      '$_iden3Protocol/resource-management/0.1/delivery';
 }
