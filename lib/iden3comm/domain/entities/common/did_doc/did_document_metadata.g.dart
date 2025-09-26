@@ -8,14 +8,14 @@ part of 'did_document_metadata.dart';
 
 DIDDocumentMetadata _$DIDDocumentMetadataFromJson(Map<String, dynamic> json) =>
     DIDDocumentMetadata(
-      created: json['created'] as String,
-      updated: json['updated'] as String,
-      deactivated: json['deactivated'] as bool,
-      versionId: json['versionId'] as String,
-      nextUpdate: json['nextUpdate'] as String,
-      nextVersionId: json['nextVersionId'] as String,
-      equivalentId: json['equivalentId'] as String,
-      canonicalId: json['canonicalId'] as String,
+      created: json['created'] as String?,
+      updated: json['updated'] as String?,
+      deactivated: json['deactivated'] as bool?,
+      versionId: json['versionId'] as String?,
+      nextUpdate: json['nextUpdate'] as String?,
+      nextVersionId: json['nextVersionId'] as String?,
+      equivalentId: json['equivalentId'] as String?,
+      canonicalId: json['canonicalId'] as String?,
     );
 
 Map<String, dynamic> _$DIDDocumentMetadataToJson(

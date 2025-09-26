@@ -5,24 +5,24 @@ part 'did_document_metadata.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class DIDDocumentMetadata with EquatableMixin {
-  final String created;
-  final String updated;
-  final bool deactivated;
-  final String versionId;
-  final String nextUpdate;
-  final String nextVersionId;
-  final String equivalentId;
-  final String canonicalId;
+  final String? created;
+  final String? updated;
+  final bool? deactivated;
+  final String? versionId;
+  final String? nextUpdate;
+  final String? nextVersionId;
+  final String? equivalentId;
+  final String? canonicalId;
 
   DIDDocumentMetadata({
-    required this.created,
-    required this.updated,
-    required this.deactivated,
-    required this.versionId,
-    required this.nextUpdate,
-    required this.nextVersionId,
-    required this.equivalentId,
-    required this.canonicalId,
+    this.created,
+    this.updated,
+    this.deactivated,
+    this.versionId,
+    this.nextUpdate,
+    this.nextVersionId,
+    this.equivalentId,
+    this.canonicalId,
   });
 
   factory DIDDocumentMetadata.fromJson(Map<String, dynamic> json) =>
