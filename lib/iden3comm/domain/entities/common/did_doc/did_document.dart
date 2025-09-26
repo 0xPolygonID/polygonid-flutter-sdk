@@ -45,7 +45,7 @@ class DIDDocument with EquatableMixin {
       ];
 }
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
 class VerificationMethod with EquatableMixin {
   final String id;
   final String type;

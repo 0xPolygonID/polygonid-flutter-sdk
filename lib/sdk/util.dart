@@ -78,6 +78,7 @@ class Util {
   }) async {
     return composeDidDoc(
       did: profileDid,
+      redirectUrl: redirectUrl,
       pushServiceData: pushServiceData,
       verificationMethod: verificationMethod,
     );

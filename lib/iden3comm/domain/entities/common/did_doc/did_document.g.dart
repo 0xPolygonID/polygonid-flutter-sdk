@@ -61,16 +61,25 @@ VerificationMethod _$VerificationMethodFromJson(Map<String, dynamic> json) =>
       publicKeyJwk: json['publicKeyJwk'] as Map<String, dynamic>?,
     );
 
-Map<String, dynamic> _$VerificationMethodToJson(VerificationMethod instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'type': instance.type,
-      'controller': instance.controller,
-      'publicKeyBase58': instance.publicKeyBase58,
-      'publicKeyBase64': instance.publicKeyBase64,
-      'publicKeyHex': instance.publicKeyHex,
-      'publicKeyMultibase': instance.publicKeyMultibase,
-      'blockchainAccountId': instance.blockchainAccountId,
-      'ethereumAddress': instance.ethereumAddress,
-      'publicKeyJwk': instance.publicKeyJwk,
-    };
+Map<String, dynamic> _$VerificationMethodToJson(VerificationMethod instance) {
+  final val = <String, dynamic>{
+    'id': instance.id,
+    'type': instance.type,
+    'controller': instance.controller,
+  };
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('publicKeyBase58', instance.publicKeyBase58);
+  writeNotNull('publicKeyBase64', instance.publicKeyBase64);
+  writeNotNull('publicKeyHex', instance.publicKeyHex);
+  writeNotNull('publicKeyMultibase', instance.publicKeyMultibase);
+  writeNotNull('blockchainAccountId', instance.blockchainAccountId);
+  writeNotNull('ethereumAddress', instance.ethereumAddress);
+  writeNotNull('publicKeyJwk', instance.publicKeyJwk);
+  return val;
+}
