@@ -6,7 +6,6 @@ class ResourceRequestMessage extends Iden3Message<ResourceRequestBody> {
   ResourceRequestMessage({
     required super.id,
     super.typ,
-    required super.type,
     super.thid,
     required super.body,
     required super.from,
@@ -14,13 +13,12 @@ class ResourceRequestMessage extends Iden3Message<ResourceRequestBody> {
     super.createdTime,
     super.expiresTime,
     required super.attachments,
-  });
+  }): super(type: Iden3MessageType.resourceRequest);
 
   factory ResourceRequestMessage.fromJson(Map<String, dynamic> json) {
     return ResourceRequestMessage(
       id: json['id'],
       typ: json['typ'],
-      type: json['type'],
       thid: json['thid'],
       body: ResourceRequestBody.fromJson(json['body']),
       from: json['from'],

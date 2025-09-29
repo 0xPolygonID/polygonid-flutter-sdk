@@ -1,0 +1,73 @@
+import 'package:equatable/equatable.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/attachment.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+
+/// Message sent to respond to a [ResourcePermissionsListFetchMessage] or
+/// [ResourcePermissionsRequestsListMessage] with the list of permissions
+/// or permission requests sent or received.
+class ResourcePermissionsListMessage
+    extends Iden3Message<ResourcePermissionsListBody> {
+  ResourcePermissionsListMessage({
+    required super.id,
+    super.typ,
+    super.thid,
+    required super.body,
+    required super.from,
+    super.to,
+    super.createdTime,
+    super.expiresTime,
+    required super.attachments,
+  }) : super(type: Iden3MessageType.permissionsListFetch);
+
+  factory ResourcePermissionsListMessage.fromJson(Map<String, dynamic> json) {
+    return ResourcePermissionsListMessage(
+      id: json['id'],
+      typ: json['typ'],
+      thid: json['thid'],
+      body: ResourcePermissionsListBody.fromJson(json['body'] ?? {}),
+      from: json['from'],
+      to: json['to'],
+      createdTime: json['created_time'],
+      expiresTime: json['expires_time'],
+      attachments: (json['attachments'] as List<dynamic>?)
+              ?.map((e) => Attachment.fromJson(e))
+              .toList() ??
+          [],
+    );
+  }
+
+  @override
+  String toString() => "[ResourcePermissionsListMessage] {${super.toString()}}";
+}
+
+class ResourcePermissionsListBody with EquatableMixin {
+  final List<String> granted;
+  final List<String> pending;
+  final List<String> denied;
+
+  ResourcePermissionsListBody({
+    required this.granted,
+    required this.pending,
+    required this.denied,
+  });
+
+  factory ResourcePermissionsListBody.fromJson(Map<String, dynamic> json) {
+    return ResourcePermissionsListBody(
+      granted: (json['granted'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
+      pending: (json['pending'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
+      denied: (json['denied'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
+    );
+  }
+
+  @override
+  List<Object?> get props => [granted, pending, denied];
+}

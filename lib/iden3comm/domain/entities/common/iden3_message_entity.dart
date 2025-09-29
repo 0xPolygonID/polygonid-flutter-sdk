@@ -4,6 +4,10 @@ import 'package:equatable/equatable.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/attachment.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/protocol_message_type.dart';
 
+const String messageTypePlain = "application/iden3comm-plain-json";
+const String messageTypeZkp = "application/iden3-zkp-json";
+const String messageTypeEnc = "application/iden3-encrypted-json";
+
 enum Iden3MessageType {
   /// Authorization
   authRequest(ProtocolMessageType.authorizationRequestMessageType),
@@ -36,6 +40,11 @@ enum Iden3MessageType {
   resourcePermissionsUpdate(
       ProtocolMessageType.resourcePermissionsUpdateMessageType),
   resourceDelivery(ProtocolMessageType.resourceDeliveryMessageType),
+  permissionsRequestsList(
+      ProtocolMessageType.resourcePermissionsRequestsListMessageType),
+  permissionsList(ProtocolMessageType.resourcePermissionsListMessageType),
+  permissionsListFetch(
+      ProtocolMessageType.resourcePermissionsListFetchMessageType),
   unknown("");
 
   final String type;

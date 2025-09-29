@@ -7,7 +7,6 @@ class ResourcePermissionsUpdateMessage
   ResourcePermissionsUpdateMessage({
     required super.id,
     super.typ,
-    required super.type,
     super.thid,
     required super.body,
     required super.from,
@@ -15,13 +14,12 @@ class ResourcePermissionsUpdateMessage
     super.createdTime,
     super.expiresTime,
     required super.attachments,
-  });
+  }): super(type: Iden3MessageType.resourcePermissionsUpdate);
 
   factory ResourcePermissionsUpdateMessage.fromJson(Map<String, dynamic> json) {
     return ResourcePermissionsUpdateMessage(
       id: json['id'],
       typ: json['typ'],
-      type: json['type'],
       thid: json['thid'],
       body: ResourcePermissionsUpdateBody.fromJson(json['body']),
       from: json['from'],
