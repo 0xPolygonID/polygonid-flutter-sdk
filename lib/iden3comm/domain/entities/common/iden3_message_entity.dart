@@ -106,14 +106,14 @@ abstract class Iden3Message<T> extends Equatable {
 
   const Iden3Message({
     required this.id,
-    this.typ,
+    required this.typ,
     required this.type,
-    this.thid,
+    required this.thid,
     required this.body,
     required this.from,
-    this.to,
-    this.createdTime,
-    this.expiresTime,
+    required this.to,
+    required this.createdTime,
+    required this.expiresTime,
     required this.attachments,
   });
 
@@ -135,6 +135,7 @@ abstract class Iden3Message<T> extends Equatable {
       'to': to,
       'created_time': createdTime,
       'expires_time': expiresTime,
+      'attachments': attachments.map((e) => e.toJson()).toList(),
     }..removeWhere((_, value) => value == null);
   }
 

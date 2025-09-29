@@ -102,18 +102,18 @@ class ProtocolMessageType {
   ///
 
   static const resourceRequestMessageType =
-      '$_iden3Protocol/resource-management/0.1/request';
+      '${_iden3Protocol}resource-management/0.1/request';
   static const resourcePermissionsUpdateRequestMessageType =
-      '$_iden3Protocol/resource-management/0.1/permissions-update-request';
+      '${_iden3Protocol}resource-management/0.1/permissions-update-request';
   static const resourcePermissionsUpdateMessageType =
-      '$_iden3Protocol/resource-management/0.1/permissions-update';
+      '${_iden3Protocol}resource-management/0.1/permissions-update';
   static const resourceDeliveryMessageType =
-      '$_iden3Protocol/resource-management/0.1/delivery';
+      '${_iden3Protocol}resource-management/0.1/delivery';
 
   static const resourcePermissionsRequestsListMessageType =
-      '$_iden3Protocol/resource-management/0.1/permissions-requests-list';
+      '${_iden3Protocol}resource-management/0.1/permissions-requests-list';
   static const resourcePermissionsListFetchMessageType =
-      '$_iden3Protocol/resource-management/0.1/permissions-list-fetch';
+      '${_iden3Protocol}resource-management/0.1/permissions-list-fetch';
   static const resourcePermissionsListMessageType =
-      '$_iden3Protocol/resource-management/0.1/permissions-list';
+      '${_iden3Protocol}resource-management/0.1/permissions-list';
 }
