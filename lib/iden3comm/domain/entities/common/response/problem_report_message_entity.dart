@@ -33,7 +33,7 @@ class ProblemReportMessage extends Iden3Message<ProblemReportBody> {
       id: json['id'],
       typ: json['typ'],
       thid: json['thid'] ?? '',
-      pthid: json['pthid'],
+      pthid: json['pthid'] ?? '',
       ack: (json['ack'] as List?)?.map((e) => e.toString()).toList(),
       from: json['from'] ?? "",
       body: body,
