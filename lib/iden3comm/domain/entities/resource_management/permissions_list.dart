@@ -16,8 +16,8 @@ class ResourcePermissionsListMessage
     super.to,
     super.createdTime,
     super.expiresTime,
-    required super.attachments,
-  }) : super(type: Iden3MessageType.permissionsListFetch);
+    super.attachments = const [],
+  }) : super(type: Iden3MessageType.permissionsList);
 
   factory ResourcePermissionsListMessage.fromJson(Map<String, dynamic> json) {
     return ResourcePermissionsListMessage(

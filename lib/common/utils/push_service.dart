@@ -18,23 +18,31 @@ class PushServiceData with EquatableMixin {
   final String pushToken;
   final String serviceEndpoint;
   final String packageName;
+  final String? uniqueId;
 
   PushServiceData({
     required this.pushToken,
     required this.serviceEndpoint,
     required this.packageName,
+    this.uniqueId,
   });
 
   @override
-  List<Object?> get props => [pushToken, serviceEndpoint, packageName];
+  List<Object?> get props => [
+        pushToken,
+        serviceEndpoint,
+        packageName,
+        uniqueId,
+      ];
 }
 
 Future<String> fetchPushCipherText(
   PushServiceData data,
 ) async {
   var pushInfo = {
-    "app_id": data.packageName, //"com.polygonid.wallet",
+    "app_id": data.packageName, // "com.polygonid.wallet",
     "pushkey": data.pushToken,
+    if (data.uniqueId != null) "unique_id": data.uniqueId,
   };
 
   Dio dio = Dio();

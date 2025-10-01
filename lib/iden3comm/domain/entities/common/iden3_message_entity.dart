@@ -41,7 +41,7 @@ enum Iden3MessageType {
       ProtocolMessageType.resourcePermissionsUpdateMessageType),
   resourceDelivery(ProtocolMessageType.resourceDeliveryMessageType),
   permissionsRequestsList(
-      ProtocolMessageType.resourcePermissionsRequestsListMessageType),
+      ProtocolMessageType.resourcePermissionsRequestsListFetchMessageType),
   permissionsList(ProtocolMessageType.resourcePermissionsListMessageType),
   permissionsListFetch(
       ProtocolMessageType.resourcePermissionsListFetchMessageType),
@@ -154,4 +154,10 @@ abstract class Iden3Message<T> extends Equatable {
       attachments,
     ];
   }
+}
+
+class EmptyBody {
+  const EmptyBody();
+
+  Map<String, dynamic> toJson() => {};
 }

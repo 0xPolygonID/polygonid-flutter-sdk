@@ -12,8 +12,8 @@ class ResourceRequestMessage extends Iden3Message<ResourceRequestBody> {
     super.to,
     super.createdTime,
     super.expiresTime,
-    required super.attachments,
-  }): super(type: Iden3MessageType.resourceRequest);
+    super.attachments = const [],
+  }) : super(type: Iden3MessageType.resourceRequest);
 
   factory ResourceRequestMessage.fromJson(Map<String, dynamic> json) {
     return ResourceRequestMessage(

@@ -12,7 +12,7 @@ class ResourceDeliveryMessage extends Iden3Message<ResourceDeliveryBody> {
     super.to,
     super.createdTime,
     super.expiresTime,
-    required super.attachments,
+    super.attachments = const [],
   }): super(type: Iden3MessageType.resourceDelivery);
 
   factory ResourceDeliveryMessage.fromJson(Map<String, dynamic> json) {
