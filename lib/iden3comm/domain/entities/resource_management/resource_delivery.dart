@@ -13,7 +13,7 @@ class ResourceDeliveryMessage extends Iden3Message<ResourceDeliveryBody> {
     super.createdTime,
     super.expiresTime,
     super.attachments = const [],
-  }): super(type: Iden3MessageType.resourceDelivery);
+  }) : super(type: Iden3MessageType.resourceDelivery);
 
   factory ResourceDeliveryMessage.fromJson(Map<String, dynamic> json) {
     return ResourceDeliveryMessage(
@@ -37,28 +37,28 @@ class ResourceDeliveryMessage extends Iden3Message<ResourceDeliveryBody> {
 }
 
 class ResourceDeliveryBody extends Equatable {
-  final String id;
+  final String attachmentId;
   final String status;
 
   ResourceDeliveryBody({
-    required this.id,
+    required this.attachmentId,
     required this.status,
   });
 
   factory ResourceDeliveryBody.fromJson(Map<String, dynamic> json) {
     return ResourceDeliveryBody(
-      id: json['id'],
+      attachmentId: json['attachment_id'],
       status: json['status'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      'attachment_id': attachmentId,
       'status': status,
     };
   }
 
   @override
-  List<Object?> get props => [id, status];
+  List<Object?> get props => [attachmentId, status];
 }

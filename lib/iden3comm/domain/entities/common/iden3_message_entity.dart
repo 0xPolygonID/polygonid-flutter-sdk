@@ -6,7 +6,8 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/protocol_
 
 const String messageTypePlain = "application/iden3comm-plain-json";
 const String messageTypeZkp = "application/iden3-zkp-json";
-const String messageTypeEnc = "application/iden3-encrypted-json";
+const String messageTypeEnc = "application/iden3comm-encrypted-json";
+const String messageTypeSigned = "application/iden3comm-signed-json";
 
 enum Iden3MessageType {
   /// Authorization

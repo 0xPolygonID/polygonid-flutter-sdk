@@ -34,7 +34,7 @@ class Util {
   /// [recipientAlg] - Optional map of recipient algorithms. DID as key and algorithm as value.
   /// Returns the encrypted message in JWE format.
   String anonPack({
-    required String message,
+    required Map<String, dynamic> message,
     required List<DIDDocument> recipientDidDocs,
     Map<String, String>? recipientAlg,
   }) {
@@ -58,10 +58,11 @@ class Util {
   /// [ciphertext] - The encrypted message in JWE format.
   /// [keys] - List of keys to decrypt the message.
   /// Returns the decrypted plaintext message.
-  String anonUnpack(String ciphertext, List<Map<String, dynamic>> keys) {
+  String anonUnpack(
+      Map<String, dynamic> ciphertext, List<Map<String, dynamic>> keys) {
     final json = {
       'ciphertext': ciphertext,
-      'keyset': {
+      'keySet': {
         'keys': keys,
       },
     };
@@ -74,12 +75,14 @@ class Util {
     String profileDid, {
     PushServiceData? pushServiceData,
     String? redirectUrl,
+    List<String>? keyAgreement,
     List<VerificationMethod>? verificationMethod,
   }) async {
     return composeDidDoc(
       did: profileDid,
       redirectUrl: redirectUrl,
       pushServiceData: pushServiceData,
+      keyAgreement: keyAgreement,
       verificationMethod: verificationMethod,
     );
   }

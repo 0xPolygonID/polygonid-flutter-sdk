@@ -8,6 +8,7 @@ Future<DIDDocument> composeDidDoc({
   required String did,
   PushServiceData? pushServiceData,
   String? redirectUrl,
+  List<String>? keyAgreement,
   List<VerificationMethod>? verificationMethod,
 }) async {
   return DIDDocument(
@@ -40,6 +41,7 @@ Future<DIDDocument> composeDidDoc({
           ),
         ),
     ],
+    keyAgreement: keyAgreement,
     verificationMethod: verificationMethod,
   );
 }
