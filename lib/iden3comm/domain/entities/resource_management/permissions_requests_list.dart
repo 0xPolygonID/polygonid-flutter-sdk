@@ -3,8 +3,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_mes
 
 /// Message sent to agent to track status of requests user sent for resource access.
 /// The response should be a [ResourcePermissionsListMessage].
-class ResourcePermissionsRequestsListMessage
-    extends Iden3Message<EmptyBody> {
+class ResourcePermissionsRequestsListMessage extends Iden3Message<EmptyBody> {
   ResourcePermissionsRequestsListMessage({
     required super.id,
     super.typ,

@@ -14,7 +14,7 @@ class ResourcePermissionsUpdateMessage
     super.createdTime,
     super.expiresTime,
     super.attachments = const [],
-  }): super(type: Iden3MessageType.resourcePermissionsUpdate);
+  }) : super(type: Iden3MessageType.resourcePermissionsUpdate);
 
   factory ResourcePermissionsUpdateMessage.fromJson(Map<String, dynamic> json) {
     return ResourcePermissionsUpdateMessage(
