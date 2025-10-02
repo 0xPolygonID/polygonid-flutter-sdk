@@ -63,6 +63,7 @@
 */
 
 import 'dart:convert';
+
 import 'package:polygonid_flutter_sdk/proof/domain/entities/generate_inputs_response.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 
@@ -85,7 +86,12 @@ class Iden3commProofEntity extends ZKProofEntity {
   /// @returns [Iden3commProofEntity]
   factory Iden3commProofEntity.fromJson(Map<String, dynamic> json) {
     ZKProofBaseEntity proof = ZKProofBaseEntity.fromJson(json['proof']);
-    List<String> pubSig = List.from(jsonDecode(json['pub_signals']));
+    List<String> pubSig;
+    if (json['pub_signals'] is String) {
+      pubSig = List<String>.from(jsonDecode(json['pub_signals']));
+    } else {
+      pubSig = List<String>.from(json['pub_signals']);
+    }
 
     PublicStatesInfo? publicStatesInfo;
     if (json.containsKey('publicStatesInfo')) {
