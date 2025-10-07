@@ -80,7 +80,7 @@ class AuthorizationMessageResponseBody {
 
   AuthorizationMessageResponseBody({
     this.did_doc,
-    required this.message,
+    this.message,
     required this.proofs,
   });
 
@@ -109,7 +109,7 @@ class AuthorizationMessageResponseBody {
 
   Map<String, dynamic> toJson() => {
         if (did_doc != null) 'did_doc': did_doc,
-        'message': message,
+        if (message != null) 'message': message,
         'scope': proofs.map((scope) => scope.toJson()).toList(),
       };
 }
