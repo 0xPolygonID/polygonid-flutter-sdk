@@ -108,7 +108,7 @@ class AuthorizationMessageResponseBody {
   }
 
   Map<String, dynamic> toJson() => {
-        'did_doc': did_doc,
+        if (did_doc != null) 'did_doc': did_doc,
         'message': message,
         'scope': proofs.map((scope) => scope.toJson()).toList(),
       };
