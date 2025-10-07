@@ -156,9 +156,3 @@ abstract class Iden3Message<T> extends Equatable {
     ];
   }
 }
-
-class EmptyBody {
-  const EmptyBody();
-
-  Map<String, dynamic> toJson() => {};
-}
