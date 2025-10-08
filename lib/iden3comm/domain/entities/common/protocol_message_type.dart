@@ -101,8 +101,8 @@ class ProtocolMessageType {
   /// Resource management
   ///
 
-  static const resourceRequestMessageType =
-      '${_iden3Protocol}resource-management/0.1/request';
+  static const resourcePermissionRequestMessageType =
+      '${_iden3Protocol}resource-management/0.1/permissions-request';
   static const resourcePermissionsUpdateRequestMessageType =
       '${_iden3Protocol}resource-management/0.1/permissions-update-request';
   static const resourcePermissionsUpdateMessageType =

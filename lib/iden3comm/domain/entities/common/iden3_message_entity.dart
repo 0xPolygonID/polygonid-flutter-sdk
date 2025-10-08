@@ -35,7 +35,7 @@ enum Iden3MessageType {
   verificationRequest(ProtocolMessageType.verificationRequestMessageType),
   verificationResponse(ProtocolMessageType.verificationResponseMessageType),
   fetchRequest(ProtocolMessageType.credentialFetchRequestMessageType),
-  resourceRequest(ProtocolMessageType.resourceRequestMessageType),
+  resourceRequest(ProtocolMessageType.resourcePermissionRequestMessageType),
   resourcePermissionsUpdateRequest(
       ProtocolMessageType.resourcePermissionsUpdateRequestMessageType),
   resourcePermissionsUpdate(
