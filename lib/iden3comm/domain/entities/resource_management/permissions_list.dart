@@ -41,9 +41,9 @@ class ResourcePermissionsListMessage
 }
 
 class ResourcePermissionsListBody with EquatableMixin {
-  final List<String> granted;
-  final List<String> pending;
-  final List<String> denied;
+  final List<Permission> granted;
+  final List<Permission> pending;
+  final List<Permission> denied;
 
   ResourcePermissionsListBody({
     required this.granted,
@@ -54,15 +54,15 @@ class ResourcePermissionsListBody with EquatableMixin {
   factory ResourcePermissionsListBody.fromJson(Map<String, dynamic> json) {
     return ResourcePermissionsListBody(
       granted: (json['granted'] as List<dynamic>?)
-              ?.map((e) => e as String)
+              ?.map((e) => Permission.fromJson(e))
               .toList() ??
           [],
       pending: (json['pending'] as List<dynamic>?)
-              ?.map((e) => e as String)
+              ?.map((e) => Permission.fromJson(e))
               .toList() ??
           [],
       denied: (json['denied'] as List<dynamic>?)
-              ?.map((e) => e as String)
+              ?.map((e) => Permission.fromJson(e))
               .toList() ??
           [],
     );
@@ -70,4 +70,40 @@ class ResourcePermissionsListBody with EquatableMixin {
 
   @override
   List<Object?> get props => [granted, pending, denied];
+}
+
+class Permission with EquatableMixin {
+  final String did;
+
+  // timestamp - Unix epoch time in seconds.
+  final int? timestamp;
+
+  Permission({
+    required this.did,
+    required this.timestamp,
+  });
+
+  factory Permission.fromJson(dynamic json) {
+    if (json is String) {
+      return Permission(
+        did: json,
+        timestamp: null,
+      );
+    }
+
+    return Permission(
+      did: json['did'],
+      timestamp: json['timestamp'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'did': did,
+      'timestamp': timestamp,
+    };
+  }
+
+  @override
+  List<Object?> get props => [did, timestamp];
 }
