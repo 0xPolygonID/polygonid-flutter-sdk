@@ -111,7 +111,8 @@ class Iden3commMocks {
   "thid": "4dd6479b-99b6-405c-ba9e-c7b18d251a5e",
   "from": "1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ",
   "to": "1244GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ",
-  "body": $fetchRequestBodyJson
+  "body": $fetchRequestBodyJson,
+  "attachments": []
 }
 ''';
   static CredentialFetchRequestMessage fetchRequest =
