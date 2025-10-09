@@ -43,6 +43,26 @@ class DIDDocument with EquatableMixin {
         verificationMethod,
         keyAgreement
       ];
+
+  DIDDocument copyWith({
+    String? id,
+    List<String>? context,
+    List<DIDDocumentService>? service,
+    List<String>? alsoKnownAs,
+    List<String>? controller,
+    List<VerificationMethod>? verificationMethod,
+    List<String>? keyAgreement,
+  }) {
+    return DIDDocument(
+      id: id ?? this.id,
+      context: context ?? this.context,
+      service: service ?? this.service,
+      alsoKnownAs: alsoKnownAs ?? this.alsoKnownAs,
+      controller: controller ?? this.controller,
+      verificationMethod: verificationMethod ?? this.verificationMethod,
+      keyAgreement: keyAgreement ?? this.keyAgreement,
+    );
+  }
 }
 
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
