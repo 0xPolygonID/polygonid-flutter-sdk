@@ -42,14 +42,14 @@ typedef AuthBodyDidDocServiceResponse = DIDDocumentService;
 
 @JsonSerializable(explicitToJson: true)
 class DIDDocumentService with EquatableMixin {
-  final String? id;
-  final String? type;
+  final String id;
+  final String type;
   final String? serviceEndpoint;
   final DIDDocumentServiceMetadata? metadata;
 
   DIDDocumentService({
-    this.id,
-    this.type,
+    required this.id,
+    required this.type,
     this.serviceEndpoint,
     this.metadata,
   });
@@ -61,4 +61,18 @@ class DIDDocumentService with EquatableMixin {
 
   @override
   List<Object?> get props => [id, type, serviceEndpoint, metadata];
+
+  DIDDocumentService copyWith({
+    String? id,
+    String? type,
+    String? serviceEndpoint,
+    DIDDocumentServiceMetadata? metadata,
+  }) {
+    return DIDDocumentService(
+      id: id ?? this.id,
+      type: type ?? this.type,
+      serviceEndpoint: serviceEndpoint ?? this.serviceEndpoint,
+      metadata: metadata ?? this.metadata,
+    );
+  }
 }

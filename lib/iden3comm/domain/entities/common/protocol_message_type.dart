@@ -101,8 +101,8 @@ class ProtocolMessageType {
   /// Resource management
   ///
 
-  static const resourceRequestMessageType =
-      '${_iden3Protocol}resource-management/0.1/request';
+  static const resourcePermissionRequestMessageType =
+      '${_iden3Protocol}resource-management/0.1/permissions-request';
   static const resourcePermissionsUpdateRequestMessageType =
       '${_iden3Protocol}resource-management/0.1/permissions-update-request';
   static const resourcePermissionsUpdateMessageType =
@@ -110,8 +110,8 @@ class ProtocolMessageType {
   static const resourceDeliveryMessageType =
       '${_iden3Protocol}resource-management/0.1/delivery';
 
-  static const resourcePermissionsRequestsListMessageType =
-      '${_iden3Protocol}resource-management/0.1/permissions-requests-list';
+  static const resourcePermissionsRequestsListFetchMessageType =
+      '${_iden3Protocol}resource-management/0.1/permissions-requests-list-fetch';
   static const resourcePermissionsListFetchMessageType =
       '${_iden3Protocol}resource-management/0.1/permissions-list-fetch';
   static const resourcePermissionsListMessageType =

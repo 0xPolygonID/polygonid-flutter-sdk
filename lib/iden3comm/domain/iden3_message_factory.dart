@@ -20,6 +20,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/payment_
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_request_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_response_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/resource_management/permissions_list.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/resource_management/permissions_list_fetch.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/resource_management/permissions_requests_list.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/resource_management/resource_delivery.dart';
@@ -97,7 +98,7 @@ class Iden3MessageFactory {
         case Iden3MessageType.permissionsRequestsList:
           throw ResourcePermissionsRequestsListMessage.fromJson(json);
         case Iden3MessageType.permissionsList:
-          return ResourcePermissionsRequestsListMessage.fromJson(json);
+          return ResourcePermissionsListMessage.fromJson(json);
         case Iden3MessageType.permissionsListFetch:
           return ResourcePermissionsListFetchMessage.fromJson(json);
         case Iden3MessageType.unknown:

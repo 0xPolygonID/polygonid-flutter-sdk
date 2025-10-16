@@ -62,8 +62,12 @@
 
 */
 
+import 'dart:convert';
+
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_vp_proof.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/generate_inputs_response.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 
 /// Sample
 /// ``` "vp":{
@@ -99,16 +103,27 @@ class Iden3commSDProofEntity extends Iden3commProofEntity {
   /// @param [Map<String, dynamic>] json
   /// @returns [Iden3commSDProofEntity]
   factory Iden3commSDProofEntity.fromJson(Map<String, dynamic> json) {
-    final proof = Iden3commProofEntity.fromJson(json);
+    ZKProofBaseEntity proof = ZKProofBaseEntity.fromJson(json['proof']);
+    List<String> pubSig;
+    if (json['pub_signals'] is String) {
+      pubSig = List<String>.from(jsonDecode(json['pub_signals']));
+    } else {
+      pubSig = List<String>.from(json['pub_signals']);
+    }
+
+    PublicStatesInfo? publicStatesInfo;
+    if (json.containsKey('publicStatesInfo')) {
+      publicStatesInfo = PublicStatesInfo.fromJson(json['publicStatesInfo']);
+    }
 
     Iden3commVPProof vp = Iden3commVPProof.fromJson(json["vp"]);
 
     return Iden3commSDProofEntity(
-      id: proof.id,
-      circuitId: proof.circuitId,
-      proof: proof.proof,
-      pubSignals: proof.pubSignals,
-      publicStatesInfo: proof.publicStatesInfo,
+      id: json['id'],
+      circuitId: json['circuitId'],
+      proof: proof,
+      pubSignals: pubSig,
+      publicStatesInfo: publicStatesInfo,
       vp: vp,
     );
   }

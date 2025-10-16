@@ -8,8 +8,8 @@ part of 'did_document_service.dart';
 
 DIDDocumentService _$DIDDocumentServiceFromJson(Map<String, dynamic> json) =>
     DIDDocumentService(
-      id: json['id'] as String?,
-      type: json['type'] as String?,
+      id: json['id'] as String,
+      type: json['type'] as String,
       serviceEndpoint: json['serviceEndpoint'] as String?,
       metadata: json['metadata'] == null
           ? null

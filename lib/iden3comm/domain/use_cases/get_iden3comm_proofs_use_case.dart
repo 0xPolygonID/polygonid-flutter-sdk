@@ -207,19 +207,6 @@ class GetIden3commProofsUseCase
         }
       }
 
-      /// If we have requests but didn't get any proofs, we throw
-      /// as it could be we didn't find any associated [ClaimEntity]
-      if (requests.isNotEmpty && proofs.isEmpty ||
-          proofs.length != requests.length) {
-        _stacktraceManager.logError(
-          "[GetIden3commProofsUseCase] ProofsNotFoundException - requests: $requests",
-        );
-        throw ProofsNotCreatedException(
-          proofRequests: requests,
-          errorMessage: "Proofs not created for requests",
-        );
-      }
-
       return proofs;
     } catch (e) {
       _stacktraceManager.logError("[GetIden3commProofsUseCase] Exception: $e");

@@ -6,7 +6,8 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/protocol_
 
 const String messageTypePlain = "application/iden3comm-plain-json";
 const String messageTypeZkp = "application/iden3-zkp-json";
-const String messageTypeEnc = "application/iden3-encrypted-json";
+const String messageTypeEnc = "application/iden3comm-encrypted-json";
+const String messageTypeSigned = "application/iden3comm-signed-json";
 
 enum Iden3MessageType {
   /// Authorization
@@ -34,14 +35,14 @@ enum Iden3MessageType {
   verificationRequest(ProtocolMessageType.verificationRequestMessageType),
   verificationResponse(ProtocolMessageType.verificationResponseMessageType),
   fetchRequest(ProtocolMessageType.credentialFetchRequestMessageType),
-  resourceRequest(ProtocolMessageType.resourceRequestMessageType),
+  resourceRequest(ProtocolMessageType.resourcePermissionRequestMessageType),
   resourcePermissionsUpdateRequest(
       ProtocolMessageType.resourcePermissionsUpdateRequestMessageType),
   resourcePermissionsUpdate(
       ProtocolMessageType.resourcePermissionsUpdateMessageType),
   resourceDelivery(ProtocolMessageType.resourceDeliveryMessageType),
   permissionsRequestsList(
-      ProtocolMessageType.resourcePermissionsRequestsListMessageType),
+      ProtocolMessageType.resourcePermissionsRequestsListFetchMessageType),
   permissionsList(ProtocolMessageType.resourcePermissionsListMessageType),
   permissionsListFetch(
       ProtocolMessageType.resourcePermissionsListFetchMessageType),
