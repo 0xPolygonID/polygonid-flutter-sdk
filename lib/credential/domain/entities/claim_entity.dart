@@ -116,7 +116,5 @@ class CredentialEntity with EquatableMixin {
         info,
         displayType,
         credentialRawValue,
-        credentialSubject,
-        context,
       ];
 }
