@@ -102,39 +102,47 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<void> storeIdentity({required IdentityEntity identity}) {
-    return _storageIdentityDataSource
-        .storeIdentity(did: identity.did, identity: identity)
-        .catchError(
-          (error) => throw IdentityException(
-            errorMessage: "Error storing identity with error: $error",
-            error: error,
-          ),
-        );
+  Future<void> storeIdentity({required IdentityEntity identity}) async {
+    try {
+      await _storageIdentityDataSource.storeIdentity(
+        did: identity.did,
+        identity: identity,
+      );
+    } catch (error) {
+      throw IdentityException(
+        errorMessage: "Error storing identity with error: $error",
+        error: error,
+      );
+    }
   }
 
   /// Get an [IdentityEntity] from an identifier
   /// The [IdentityEntity] is the one previously stored and associated to the identifier
   /// Throws an [UnknownIdentityException] if not found.
   @override
-  Future<IdentityEntity> getIdentity({required String genesisDid}) {
-    return _storageIdentityDataSource.getIdentity(did: genesisDid).catchError(
-          (error) => throw IdentityException(
-            errorMessage: "Error getting identity with error: $error",
-            error: error,
-          ),
-          test: (error) => error is! UnknownIdentityException,
-        );
+  Future<IdentityEntity> getIdentity({required String genesisDid}) async {
+    try {
+      return await _storageIdentityDataSource.getIdentity(did: genesisDid);
+    } on UnknownIdentityException {
+      rethrow;
+    } catch (error) {
+      throw IdentityException(
+        errorMessage: "Error getting identity with error: $error",
+        error: error,
+      );
+    }
   }
 
   @override
-  Future<List<IdentityEntity>> getIdentities() {
-    return _storageIdentityDataSource.getIdentities().catchError(
-          (error) => throw IdentityException(
-            errorMessage: "Error getting identities with error: $error",
-            error: error,
-          ),
-        );
+  Future<List<IdentityEntity>> getIdentities() async {
+    try {
+      return await _storageIdentityDataSource.getIdentities();
+    } catch (error) {
+      throw IdentityException(
+        errorMessage: "Error getting identities with error: $error",
+        error: error,
+      );
+    }
   }
 
   @override
@@ -171,19 +179,20 @@ class IdentityRepositoryImpl extends IdentityRepository {
   Future<String> getState({
     required String identifier,
     required String contractAddress,
-  }) {
-    return _localContractFilesDataSource
-        .loadStateContract(contractAddress)
-        .then(
-          (contract) => _rpcDataSource
-              .getState(_stateIdentifierMapper.mapTo(identifier), contract)
-              .catchError(
-                (error) => throw FetchIdentityStateException(
-                  errorMessage: "Error fetching state with error: $error",
-                  error: error,
-                ),
-              ),
-        );
+  }) async {
+    final contract =
+        await _localContractFilesDataSource.loadStateContract(contractAddress);
+    try {
+      return await _rpcDataSource.getState(
+        _stateIdentifierMapper.mapTo(identifier),
+        contract,
+      );
+    } catch (error) {
+      throw FetchIdentityStateException(
+        errorMessage: "Error fetching state with error: $error",
+        error: error,
+      );
+    }
   }
 
   @override
@@ -207,16 +216,20 @@ class IdentityRepositoryImpl extends IdentityRepository {
     required BigInt nonce,
     required String baseUrl,
     Map<String, dynamic>? cachedNonRevProof,
-  }) {
-    return _remoteIdentityDataSource
-        .getNonRevocationProof(identityState, nonce, baseUrl, cachedNonRevProof)
-        .catchError(
-          (error) => throw NonRevProofException(
-            errorMessage:
-                "Error fetching non revocation proof with error: $error",
-            error: error,
-          ),
-        );
+  }) async {
+    try {
+      return await _remoteIdentityDataSource.getNonRevocationProof(
+        identityState,
+        nonce,
+        baseUrl,
+        cachedNonRevProof,
+      );
+    } catch (error) {
+      throw NonRevProofException(
+        errorMessage: "Error fetching non revocation proof with error: $error",
+        error: error,
+      );
+    }
   }
 
   @override
