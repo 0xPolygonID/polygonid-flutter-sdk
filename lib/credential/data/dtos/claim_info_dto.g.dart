@@ -6,32 +6,28 @@ part of 'claim_info_dto.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-W3CCredential _$W3CCredentialFromJson(Map<String, dynamic> json) =>
-    W3CCredential(
-      json['id'] as String,
-      (json['@context'] as List<dynamic>).map((e) => e as String).toList(),
-      (json['type'] as List<dynamic>).map((e) => e as String).toList(),
-      json['expirationDate'] as String?,
-      json['issuanceDate'] as String?,
-      CredentialSubject.fromJson(
-          json['credentialSubject'] as Map<String, dynamic>),
-      CredentialStatus.fromJson(
-          json['credentialStatus'] as Map<String, dynamic>),
-      json['issuer'] as String,
-      CredentialSchema.fromJson(
-          json['credentialSchema'] as Map<String, dynamic>),
-      (json['proof'] as List<dynamic>?)
-          ?.map((e) => ClaimProofDTO.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      json['refreshService'] == null
-          ? null
-          : RefreshService.fromJson(
-              json['refreshService'] as Map<String, dynamic>),
-      json['displayMethod'] == null
-          ? null
-          : DisplayMethod.fromJson(
-              json['displayMethod'] as Map<String, dynamic>),
-    );
+W3CCredential _$W3CCredentialFromJson(
+  Map<String, dynamic> json,
+) => W3CCredential(
+  json['id'] as String,
+  (json['@context'] as List<dynamic>).map((e) => e as String).toList(),
+  (json['type'] as List<dynamic>).map((e) => e as String).toList(),
+  json['expirationDate'] as String?,
+  json['issuanceDate'] as String?,
+  CredentialSubject.fromJson(json['credentialSubject'] as Map<String, dynamic>),
+  CredentialStatus.fromJson(json['credentialStatus'] as Map<String, dynamic>),
+  json['issuer'] as String,
+  CredentialSchema.fromJson(json['credentialSchema'] as Map<String, dynamic>),
+  (json['proof'] as List<dynamic>?)
+      ?.map((e) => ClaimProofDTO.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  json['refreshService'] == null
+      ? null
+      : RefreshService.fromJson(json['refreshService'] as Map<String, dynamic>),
+  json['displayMethod'] == null
+      ? null
+      : DisplayMethod.fromJson(json['displayMethod'] as Map<String, dynamic>),
+);
 
 Map<String, dynamic> _$W3CCredentialToJson(W3CCredential instance) =>
     <String, dynamic>{
@@ -57,7 +53,8 @@ CredentialStatus _$CredentialStatusFromJson(Map<String, dynamic> json) =>
       json['statusIssuer'] == null
           ? null
           : CredentialStatus.fromJson(
-              json['statusIssuer'] as Map<String, dynamic>),
+              json['statusIssuer'] as Map<String, dynamic>,
+            ),
     );
 
 Map<String, dynamic> _$CredentialStatusToJson(CredentialStatus instance) =>
@@ -79,25 +76,13 @@ const _$CredentialStatusTypeEnumMap = {
 };
 
 CredentialSchema _$CredentialSchemaFromJson(Map<String, dynamic> json) =>
-    CredentialSchema(
-      json['id'] as String,
-      json['type'] as String,
-    );
+    CredentialSchema(json['id'] as String, json['type'] as String);
 
 Map<String, dynamic> _$CredentialSchemaToJson(CredentialSchema instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'type': instance.type,
-    };
+    <String, dynamic>{'id': instance.id, 'type': instance.type};
 
 DisplayMethod _$DisplayMethodFromJson(Map<String, dynamic> json) =>
-    DisplayMethod(
-      json['id'] as String,
-      json['type'] as String,
-    );
+    DisplayMethod(json['id'] as String, json['type'] as String);
 
 Map<String, dynamic> _$DisplayMethodToJson(DisplayMethod instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'type': instance.type,
-    };
+    <String, dynamic>{'id': instance.id, 'type': instance.type};

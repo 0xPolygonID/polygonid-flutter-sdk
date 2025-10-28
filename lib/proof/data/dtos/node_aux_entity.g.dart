@@ -7,13 +7,7 @@ part of 'node_aux_entity.dart';
 // **************************************************************************
 
 NodeAuxEntity _$NodeAuxEntityFromJson(Map<String, dynamic> json) =>
-    NodeAuxEntity(
-      key: json['key'] as String,
-      value: json['value'] as String,
-    );
+    NodeAuxEntity(key: json['key'] as String, value: json['value'] as String);
 
 Map<String, dynamic> _$NodeAuxEntityToJson(NodeAuxEntity instance) =>
-    <String, dynamic>{
-      'key': instance.key,
-      'value': instance.value,
-    };
+    <String, dynamic>{'key': instance.key, 'value': instance.value};

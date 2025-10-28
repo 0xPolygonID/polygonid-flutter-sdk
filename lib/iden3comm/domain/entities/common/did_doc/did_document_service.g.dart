@@ -14,7 +14,8 @@ DIDDocumentService _$DIDDocumentServiceFromJson(Map<String, dynamic> json) =>
       metadata: json['metadata'] == null
           ? null
           : DIDDocumentServiceMetadata.fromJson(
-              json['metadata'] as Map<String, dynamic>),
+              json['metadata'] as Map<String, dynamic>,
+            ),
     );
 
 Map<String, dynamic> _$DIDDocumentServiceToJson(DIDDocumentService instance) =>

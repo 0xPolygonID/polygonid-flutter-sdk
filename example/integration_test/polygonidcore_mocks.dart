@@ -1,9 +1,3 @@
-import 'dart:typed_data';
-
-import 'package:encrypt/encrypt.dart';
-import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
-import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
-
 class PolygonIdCoreMocks {
   static String calculateGenesisIdInputJson = '''
 {
@@ -232,8 +226,7 @@ class PolygonIdCoreMocks {
         }
       }
     }
-  }
-}''';
+  }''';
 
   static String sigV2InputConfigJson = '''{
   "ethereumUrl": "http://localhost:8545",
@@ -378,7 +371,7 @@ class PolygonIdCoreMocks {
       "type": "KYCAgeCredential",
       "credentialSubject": {
         "birthday": {
-          "\$gt": 1
+          "\$in": [1, 19960424]
         }
       }
     }
