@@ -58,12 +58,12 @@ class PolygonIdCoreUtil extends PolygonIdCore {
     );
   }
 
-  String verifyProof(String input) {
+  bool verifyProof(String input) {
     return callGenericCoreFunction(
       input: () => input,
       function: PolygonIdCore.nativePolygonIdCoreLib.PLGNVerifyProof,
       parse: (result) {
-        return result;
+        return jsonDecode(result)['valid'] as bool? ?? false;
       },
     );
   }

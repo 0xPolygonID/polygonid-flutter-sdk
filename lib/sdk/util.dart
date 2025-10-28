@@ -80,7 +80,7 @@ class Util {
     return _polygonIdCoreUtil.decryptJwe(input);
   }
 
-  String decryptEncryptedCredential(
+  W3CCredential decryptEncryptedCredential(
     Map<String, dynamic> encryptedCredentialIssuanceMessage,
     List<Map<String, dynamic>> keys,
   ) {
@@ -90,10 +90,12 @@ class Util {
     };
     final input = jsonEncode(json);
 
-    return _polygonIdCoreUtil.decryptEncryptedCredential(input);
+    final result = _polygonIdCoreUtil.decryptEncryptedCredential(input);
+
+    return W3CCredential.fromJson(jsonDecode(result));
   }
 
-  String verifyProof(W3CCredential credential) {
+  bool verifyProof(W3CCredential credential) {
     final input = jsonEncode(credential.toJson());
 
     return _polygonIdCoreUtil.verifyProof(input);
