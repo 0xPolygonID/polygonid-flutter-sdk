@@ -7,11 +7,12 @@ part of 'node_entity.dart';
 // **************************************************************************
 
 NodeEntity _$NodeEntityFromJson(Map<String, dynamic> json) => NodeEntity(
-      children:
-          (json['children'] as List<dynamic>).map(HashEntity.fromJson).toList(),
-      hash: HashEntity.fromJson(json['hash']),
-      type: $enumDecode(_$NodeTypeEnumMap, json['type']),
-    );
+  children: (json['children'] as List<dynamic>)
+      .map(HashEntity.fromJson)
+      .toList(),
+  hash: HashEntity.fromJson(json['hash']),
+  type: $enumDecode(_$NodeTypeEnumMap, json['type']),
+);
 
 Map<String, dynamic> _$NodeEntityToJson(NodeEntity instance) =>
     <String, dynamic>{

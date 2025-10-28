@@ -1,23 +1,20 @@
 import 'dart:convert';
 
-import 'package:encrypt/encrypt.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
+import 'package:polygonid_flutter_sdk/common/crypto/symmetric.dart';
 
 class EncryptionDbDataSource {
   /// Decrypt the given [encryptedData] using the given [key] and [iv]
   /// Returns the decrypted data as Map<String, Object>
   Map<String, Object?> decryptData({
     required String encryptedData,
-    required Key key,
+    required SymmetricKey key,
   }) {
-    final encrypter = getItSdk.get<Encrypter>(
+    final cipher = getItSdk.get<AesCipher>(
       instanceName: 'encryptAES',
       param1: key,
     );
-
-    final decrypted =
-        encrypter.decrypt64(encryptedData, iv: IV.allZerosOfLength(16));
-
+    final decrypted = cipher.decryptBase64(encryptedData, iv: SymmetricIV.zeros(16));
     Map<String, Object?> decryptedDbMap = jsonDecode(decrypted);
     return decryptedDbMap;
   }
@@ -26,17 +23,14 @@ class EncryptionDbDataSource {
   /// Returns the encrypted data as String
   String encryptData({
     required Map<String, Object?> data,
-    required Key key,
+    required SymmetricKey key,
   }) {
     String json = jsonEncode(data);
-
-    final encrypter = getItSdk.get<Encrypter>(
+    final cipher = getItSdk.get<AesCipher>(
       instanceName: 'encryptAES',
       param1: key,
     );
-
-    final encrypted = encrypter.encrypt(json, iv: IV.allZerosOfLength(16));
-
+    final encrypted = cipher.encrypt(json, iv: SymmetricIV.zeros(16));
     return encrypted.base64;
   }
 }

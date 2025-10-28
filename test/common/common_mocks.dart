@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:encrypt/encrypt.dart';
+import 'package:polygonid_flutter_sdk/common/crypto/symmetric.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
@@ -72,7 +72,7 @@ class CommonMocks {
 
   static FilterEntity filter = FilterEntity(name: name, value: aMap);
 
-  static Key key = Key.fromBase16(CommonMocks.privateKey);
+  static SymmetricKey key = SymmetricKey.fromBase16(CommonMocks.privateKey);
 
   static Map<String, dynamic> envJson = {
     'pushUrl': url,

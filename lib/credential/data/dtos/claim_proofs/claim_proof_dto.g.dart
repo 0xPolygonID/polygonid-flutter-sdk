@@ -6,23 +6,15 @@ part of 'claim_proof_dto.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Map<String, dynamic> _$ClaimProofDTOToJson(ClaimProofDTO instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('stringify', instance.stringify);
-  val['hashCode'] = instance.hashCode;
-  val['type'] = instance.type;
-  val['issuerData'] = instance.issuer.toJson();
-  val['coreClaim'] = instance.coreClaim;
-  val['props'] = instance.props;
-  return val;
-}
+Map<String, dynamic> _$ClaimProofDTOToJson(ClaimProofDTO instance) =>
+    <String, dynamic>{
+      'stringify': ?instance.stringify,
+      'hashCode': instance.hashCode,
+      'type': instance.type,
+      'issuerData': instance.issuer.toJson(),
+      'coreClaim': instance.coreClaim,
+      'props': instance.props,
+    };
 
 ClaimProofMTPDTO _$ClaimProofMTPDTOFromJson(Map<String, dynamic> json) =>
     ClaimProofMTPDTO(
@@ -37,25 +29,26 @@ Map<String, dynamic> _$ClaimProofMTPDTOToJson(ClaimProofMTPDTO instance) =>
     };
 
 ClaimProofIssuerCredStatusDTO _$ClaimProofIssuerCredStatusDTOFromJson(
-        Map<String, dynamic> json) =>
-    ClaimProofIssuerCredStatusDTO(
-      json['id'] as String,
-      (json['revocationNonce'] as num?)?.toInt(),
-      $enumDecode(_$ClaimProofIssuerCredStatusTypeEnumMap, json['type']),
-      json['statusIssuer'] == null
-          ? null
-          : ClaimProofIssuerCredStatusDTO.fromJson(
-              json['statusIssuer'] as Map<String, dynamic>),
-    );
+  Map<String, dynamic> json,
+) => ClaimProofIssuerCredStatusDTO(
+  json['id'] as String,
+  (json['revocationNonce'] as num?)?.toInt(),
+  $enumDecode(_$ClaimProofIssuerCredStatusTypeEnumMap, json['type']),
+  json['statusIssuer'] == null
+      ? null
+      : ClaimProofIssuerCredStatusDTO.fromJson(
+          json['statusIssuer'] as Map<String, dynamic>,
+        ),
+);
 
 Map<String, dynamic> _$ClaimProofIssuerCredStatusDTOToJson(
-        ClaimProofIssuerCredStatusDTO instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'revocationNonce': instance.revocationNonce,
-      'type': _$ClaimProofIssuerCredStatusTypeEnumMap[instance.type]!,
-      'statusIssuer': instance.statusIssuer?.toJson(),
-    };
+  ClaimProofIssuerCredStatusDTO instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'revocationNonce': instance.revocationNonce,
+  'type': _$ClaimProofIssuerCredStatusTypeEnumMap[instance.type]!,
+  'statusIssuer': instance.statusIssuer?.toJson(),
+};
 
 const _$ClaimProofIssuerCredStatusTypeEnumMap = {
   ClaimProofIssuerCredStatusType.reverseSparseMerkleTreeProof:
@@ -68,31 +61,22 @@ const _$ClaimProofIssuerCredStatusTypeEnumMap = {
 };
 
 ClaimProofIssuerStateDTO _$ClaimProofIssuerStateDTOFromJson(
-        Map<String, dynamic> json) =>
-    ClaimProofIssuerStateDTO(
-      json['claimsTreeRoot'] as String,
-      json['revocationTreeRoot'] as String?,
-      json['rootOfRoots'] as String?,
-      json['value'] as String,
-    );
+  Map<String, dynamic> json,
+) => ClaimProofIssuerStateDTO(
+  json['claimsTreeRoot'] as String,
+  json['revocationTreeRoot'] as String?,
+  json['rootOfRoots'] as String?,
+  json['value'] as String,
+);
 
 Map<String, dynamic> _$ClaimProofIssuerStateDTOToJson(
-    ClaimProofIssuerStateDTO instance) {
-  final val = <String, dynamic>{
-    'claimsTreeRoot': instance.claimsTreeRoot,
-  };
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('revocationTreeRoot', instance.revocationTreeRoot);
-  writeNotNull('rootOfRoots', instance.rootOfRoots);
-  val['value'] = instance.value;
-  return val;
-}
+  ClaimProofIssuerStateDTO instance,
+) => <String, dynamic>{
+  'claimsTreeRoot': instance.claimsTreeRoot,
+  'revocationTreeRoot': ?instance.revocationTreeRoot,
+  'rootOfRoots': ?instance.rootOfRoots,
+  'value': instance.value,
+};
 
 ClaimProofIssuerDTO _$ClaimProofIssuerDTOFromJson(Map<String, dynamic> json) =>
     ClaimProofIssuerDTO(
@@ -101,8 +85,5 @@ ClaimProofIssuerDTO _$ClaimProofIssuerDTOFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$ClaimProofIssuerDTOToJson(
-        ClaimProofIssuerDTO instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'state': instance.state.toJson(),
-    };
+  ClaimProofIssuerDTO instance,
+) => <String, dynamic>{'id': instance.id, 'state': instance.state.toJson()};

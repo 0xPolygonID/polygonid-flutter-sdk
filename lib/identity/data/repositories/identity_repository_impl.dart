@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:encrypt/encrypt.dart';
+import 'package:polygonid_flutter_sdk/common/crypto/symmetric.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
@@ -332,9 +332,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }) async {
     Map<String, Object?> exportableDb = await _storageIdentityDataSource
         .getIdentityDb(did: did, encryptionKey: encryptionKey);
-
-    final key = Key.fromBase16(encryptionKey);
-
+    final key = SymmetricKey.fromBase16(encryptionKey);
     return _encryptionDbDataSource.encryptData(
       data: exportableDb,
       key: key,
@@ -347,16 +345,13 @@ class IdentityRepositoryImpl extends IdentityRepository {
     required String encryptedDb,
     required String encryptionKey,
   }) async {
-    final key = Key.fromBase16(encryptionKey);
-
+    final key = SymmetricKey.fromBase16(encryptionKey);
     Map<String, Object?> decryptedDb = _encryptionDbDataSource.decryptData(
       encryptedData: encryptedDb,
       key: key,
     );
-
     String destinationPath =
         await _destinationPathDataSource.getDestinationPath(did: did);
-
     return _storageIdentityDataSource.saveIdentityDb(
       exportableDb: decryptedDb,
       destinationPath: destinationPath,

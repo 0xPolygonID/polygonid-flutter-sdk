@@ -19,14 +19,14 @@ DIDDocumentMetadata _$DIDDocumentMetadataFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$DIDDocumentMetadataToJson(
-        DIDDocumentMetadata instance) =>
-    <String, dynamic>{
-      'created': instance.created,
-      'updated': instance.updated,
-      'deactivated': instance.deactivated,
-      'versionId': instance.versionId,
-      'nextUpdate': instance.nextUpdate,
-      'nextVersionId': instance.nextVersionId,
-      'equivalentId': instance.equivalentId,
-      'canonicalId': instance.canonicalId,
-    };
+  DIDDocumentMetadata instance,
+) => <String, dynamic>{
+  'created': instance.created,
+  'updated': instance.updated,
+  'deactivated': instance.deactivated,
+  'versionId': instance.versionId,
+  'nextUpdate': instance.nextUpdate,
+  'nextVersionId': instance.nextVersionId,
+  'equivalentId': instance.equivalentId,
+  'canonicalId': instance.canonicalId,
+};

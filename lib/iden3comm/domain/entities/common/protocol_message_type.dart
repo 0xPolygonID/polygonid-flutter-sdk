@@ -41,6 +41,9 @@ class ProtocolMessageType {
   static const credentialOnchainOfferMessageType =
       '${_iden3Protocol}credentials/1.0/onchain-offer';
 
+  static const credentialEncryptedIssuanceResponseType =
+      '${_iden3Protocol}credentials/0.1/encrypted-issuance-response';
+
   ///
   /// Credentials payments
   ///

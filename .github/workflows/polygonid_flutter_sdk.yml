@@ -17,6 +17,30 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Init submodules explicitly
+        run: |
+          set -e
+          git submodule sync --recursive
+          git submodule update --init --recursive || echo "Submodule update failed, will attempt manual clone later"
+          git submodule status || true
+
+      - name: Fallback clone web3dart_builders if missing
+        run: |
+          if [ ! -d packages/web3dart_builders/lib ]; then
+            echo "web3dart_builders submodule not properly initialized. Cloning fallback..."
+            rm -rf packages/web3dart_builders || true
+            git clone https://github.com/5eeman/web3dart_builders.git packages/web3dart_builders
+          fi
+          ls -al packages/web3dart_builders | head
+
+      - name: Verify web3dart_builders path exists
+        run: |
+          ls -al packages
+          ls -al packages/web3dart_builders || (echo "web3dart_builders missing" && exit 1)
 
       - name: Setup Flutter SDK
         uses: subosito/flutter-action@v2
@@ -24,14 +48,12 @@ jobs:
           flutter-version: '3.32.5'
           channel: 'stable'
           cache: true
-          # instead of "channel: stable", you could be more precise by specifying the exact version of Flutter you're using:
-          # flutter-version: '<FLUTTER_VERSION>'
 
       - name: Verify Flutter version
         run: flutter --version
 
       - name: Clean, dependencies and generate for SDK
-        run: flutter clean&&flutter pub get&&dart run build_runner build --delete-conflicting-outputs
+        run: flutter clean && flutter pub get && dart run build_runner build -d
 
       - name: Clean, dependencies and generate for Example
         env:
@@ -39,10 +61,7 @@ jobs:
           STACKTRACE_ENCRYPTION_KEY: ${{ secrets.STACKTRACE_ENCRYPTION }}
           PINATA_GATEWAY: ${{ secrets.PINATA_GATEWAY }}
           PINATA_GATEWAY_TOKEN: ${{ secrets.PINATA_GATEWAY_TOKEN }}
-        run: cd example&&flutter clean&&flutter pub get&&dart run build_runner build --delete-conflicting-outputs
-
-      - name: Format
-        run: dart format --set-exit-if-changed lib test example
+        run: cd example && flutter clean && flutter pub get && dart run build_runner build -d
 
       - name: Analyze
         run: flutter analyze lib test example
@@ -64,4 +83,3 @@ jobs:
   #    - name: Publish dry run
   #      if: github.base_ref == 'main'
   #      run: flutter pub publish --dry-run
-

@@ -1,6 +1,5 @@
 import "dart:typed_data";
 
-import "package:encrypt/encrypt.dart";
 import "package:flutter/foundation.dart";
 import "package:polygonid_flutter_sdk/common/kms/index.dart";
 import "package:polygonid_flutter_sdk/common/kms/keys/private_key.dart";
@@ -41,10 +40,7 @@ class BjjProvider implements IKeyProvider {
 
     final publicKey = privateKey.publicKey();
 
-    final kmsId = KeyId(
-      type: keyType,
-      id: keyPath(keyType, publicKey.hex),
-    );
+    final kmsId = KeyId(type: keyType, id: keyPath(keyType, publicKey.hex));
     await _keyStore.importKey(alias: publicKey.keyId.id, key: privateKey.hex);
 
     return kmsId;
@@ -108,6 +104,6 @@ class BjjProvider implements IKeyProvider {
   Future<BjjPrivateKey> _privateKey(KeyId keyId) async {
     final privateKeyHex = await _keyStore.get(alias: keyId.id);
 
-    return BjjPrivateKey(decodeHexString(privateKeyHex));
+    return BjjPrivateKey(hexToBytes(privateKeyHex));
   }
 }

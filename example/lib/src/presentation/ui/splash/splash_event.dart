@@ -4,9 +4,11 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity
 part 'splash_event.freezed.dart';
 
 @freezed
-class SplashEvent {
+class SplashEvent with _$SplashEvent {
   const factory SplashEvent.startDownload() = StartDownloadSplashEvent;
+
   const factory SplashEvent.downloadProgressEvent(DownloadInfo downloadInfo) =
       DownloadProgressSplashEvent;
+
   const factory SplashEvent.cancelDownloadEvent() = CancelDownloadSplashEvent;
 }

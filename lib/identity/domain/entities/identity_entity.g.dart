@@ -9,8 +9,9 @@ part of 'identity_entity.dart';
 IdentityEntity _$IdentityEntityFromJson(Map<String, dynamic> json) =>
     IdentityEntity(
       did: json['did'] as String,
-      publicKey:
-          (json['publicKey'] as List<dynamic>).map((e) => e as String).toList(),
+      publicKey: (json['publicKey'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
       profiles: (json['profiles'] as Map<String, dynamic>).map(
         (k, e) => MapEntry(BigInt.parse(k), e as String),
       ),

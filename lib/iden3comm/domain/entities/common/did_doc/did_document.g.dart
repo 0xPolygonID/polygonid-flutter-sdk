@@ -7,45 +7,37 @@ part of 'did_document.dart';
 // **************************************************************************
 
 DIDDocument _$DIDDocumentFromJson(Map<String, dynamic> json) => DIDDocument(
-      id: json['id'] as String,
-      context: parseContext(json['@context']),
-      service: (json['service'] as List<dynamic>?)
-          ?.map((e) => DIDDocumentService.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      alsoKnownAs: (json['alsoKnownAs'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-      controller: (json['controller'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-      verificationMethod: (json['verificationMethod'] as List<dynamic>?)
-          ?.map((e) => VerificationMethod.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      keyAgreement: (json['keyAgreement'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-    );
+  id: json['id'] as String,
+  context: parseContext(json['@context']),
+  service: (json['service'] as List<dynamic>?)
+      ?.map((e) => DIDDocumentService.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  alsoKnownAs: (json['alsoKnownAs'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  controller: (json['controller'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  verificationMethod: (json['verificationMethod'] as List<dynamic>?)
+      ?.map((e) => VerificationMethod.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  keyAgreement: (json['keyAgreement'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+);
 
-Map<String, dynamic> _$DIDDocumentToJson(DIDDocument instance) {
-  final val = <String, dynamic>{
-    'id': instance.id,
-  };
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('@context', instance.context);
-  writeNotNull('alsoKnownAs', instance.alsoKnownAs);
-  writeNotNull('controller', instance.controller);
-  writeNotNull('service', instance.service?.map((e) => e.toJson()).toList());
-  writeNotNull('verificationMethod',
-      instance.verificationMethod?.map((e) => e.toJson()).toList());
-  writeNotNull('keyAgreement', instance.keyAgreement);
-  return val;
-}
+Map<String, dynamic> _$DIDDocumentToJson(DIDDocument instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      '@context': ?instance.context,
+      'alsoKnownAs': ?instance.alsoKnownAs,
+      'controller': ?instance.controller,
+      'service': ?instance.service?.map((e) => e.toJson()).toList(),
+      'verificationMethod': ?instance.verificationMethod
+          ?.map((e) => e.toJson())
+          .toList(),
+      'keyAgreement': ?instance.keyAgreement,
+    };
 
 VerificationMethod _$VerificationMethodFromJson(Map<String, dynamic> json) =>
     VerificationMethod(
@@ -61,25 +53,16 @@ VerificationMethod _$VerificationMethodFromJson(Map<String, dynamic> json) =>
       publicKeyJwk: json['publicKeyJwk'] as Map<String, dynamic>?,
     );
 
-Map<String, dynamic> _$VerificationMethodToJson(VerificationMethod instance) {
-  final val = <String, dynamic>{
-    'id': instance.id,
-    'type': instance.type,
-    'controller': instance.controller,
-  };
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('publicKeyBase58', instance.publicKeyBase58);
-  writeNotNull('publicKeyBase64', instance.publicKeyBase64);
-  writeNotNull('publicKeyHex', instance.publicKeyHex);
-  writeNotNull('publicKeyMultibase', instance.publicKeyMultibase);
-  writeNotNull('blockchainAccountId', instance.blockchainAccountId);
-  writeNotNull('ethereumAddress', instance.ethereumAddress);
-  writeNotNull('publicKeyJwk', instance.publicKeyJwk);
-  return val;
-}
+Map<String, dynamic> _$VerificationMethodToJson(VerificationMethod instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'type': instance.type,
+      'controller': instance.controller,
+      'publicKeyBase58': ?instance.publicKeyBase58,
+      'publicKeyBase64': ?instance.publicKeyBase64,
+      'publicKeyHex': ?instance.publicKeyHex,
+      'publicKeyMultibase': ?instance.publicKeyMultibase,
+      'blockchainAccountId': ?instance.blockchainAccountId,
+      'ethereumAddress': ?instance.ethereumAddress,
+      'publicKeyJwk': ?instance.publicKeyJwk,
+    };
