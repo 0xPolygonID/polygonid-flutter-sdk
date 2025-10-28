@@ -9,7 +9,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/respo
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_sd_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_vp_proof.dart';
 
 import 'common_mocks.dart';
@@ -17,7 +16,8 @@ import 'proof_mocks.dart';
 
 class Iden3commMocks {
   /// [ZeroKnowledgeProofRequest]
-  static String proofScopeRequestJson = '''
+  static String proofScopeRequestJson =
+      '''
     {
       "id": 1,
       "circuitId": "${CommonMocks.circuitId}",
@@ -36,7 +36,8 @@ class Iden3commMocks {
       }
     }
   ''';
-  static String otherProofScopeRequestJson = '''
+  static String otherProofScopeRequestJson =
+      '''
     {
       "id": 1,
       "circuitId": "${CommonMocks.circuitId}",
@@ -61,10 +62,12 @@ class Iden3commMocks {
 
   static ZeroKnowledgeProofRequest otherProofScopeRequest =
       ZeroKnowledgeProofRequest.fromJson(
-          jsonDecode(otherProofScopeRequestJson));
+        jsonDecode(otherProofScopeRequestJson),
+      );
 
   /// [AuthorizationRequestMessage]
-  static String authRequestBodyJson = '''
+  static String authRequestBodyJson =
+      '''
   {
   "reason": "test flow",
   "message": "",
@@ -82,7 +85,8 @@ class Iden3commMocks {
 }
   ''';
 
-  static String authRequestJson = '''
+  static String authRequestJson =
+      '''
 {
   "id": "4dd6479b-99b6-405c-ba9e-c7b18d251a5e",
   "thid": "4dd6479b-99b6-405c-ba9e-c7b18d251a5e",
@@ -103,7 +107,8 @@ class Iden3commMocks {
   }
   ''';
 
-  static String fetchRequestJson = '''
+  static String fetchRequestJson =
+      '''
 {
   "id": "4dd6479b-99b6-405c-ba9e-c7b18d251a5e",
   "typ": "application/iden3comm-plain-json",
@@ -121,7 +126,8 @@ class Iden3commMocks {
   /// [CredentialsOfferMessage]
   static String offerUrl = "theOfferUrl";
 
-  static String offerRequestBodyJson = '''
+  static String offerRequestBodyJson =
+      '''
   {
       "url": "$offerUrl",
       "credentials": [
@@ -136,7 +142,8 @@ class Iden3commMocks {
       ]
   }
 ''';
-  static String offerRequestJson = '''
+  static String offerRequestJson =
+      '''
 {
   "id": "1",
   "typ": "theTyp",
@@ -158,7 +165,8 @@ class Iden3commMocks {
   "network": "mainnet"
 }
 ''';
-  static String contractFunctionCallRequestBodyJson = '''
+  static String contractFunctionCallRequestBodyJson =
+      '''
 {
   "transaction_data": $contractFunctionCallRequestBodyTxJson,
   "reason": "theTransactionReason",
@@ -168,7 +176,8 @@ class Iden3commMocks {
 }
 ''';
 
-  static String contractFunctionCallRequestJson = '''
+  static String contractFunctionCallRequestJson =
+      '''
 {
   "id": "theId",
   "typ": "theTyp",
@@ -179,7 +188,8 @@ class Iden3commMocks {
 
   static ContractInvokeRequestMessage contractFunctionCallRequest =
       ContractInvokeRequestMessage.fromJson(
-          jsonDecode(contractFunctionCallRequestJson));
+        jsonDecode(contractFunctionCallRequestJson),
+      );
 
   static Map<String, dynamic> mockContext = {
     "@context": [
@@ -202,9 +212,9 @@ class Iden3commMocks {
             "birthday": {"@id": "kyc-vocab:birthday", "@type": "xsd:integer"},
             "documentType": {
               "@id": "kyc-vocab:documentType",
-              "@type": "xsd:integer"
-            }
-          }
+              "@type": "xsd:integer",
+            },
+          },
         },
         "KYCCountryOfResidenceCredential": {
           "@id":
@@ -219,16 +229,16 @@ class Iden3commMocks {
             "xsd": "http://www.w3.org/2001/XMLSchema#",
             "countryCode": {
               "@id": "kyc-vocab:countryCode",
-              "@type": "xsd:integer"
+              "@type": "xsd:integer",
             },
             "documentType": {
               "@id": "kyc-vocab:documentType",
-              "@type": "xsd:integer"
-            }
-          }
-        }
-      }
-    ]
+              "@type": "xsd:integer",
+            },
+          },
+        },
+      },
+    ],
   };
 
   /// [Iden3commVPProof]
@@ -258,8 +268,10 @@ class Iden3commMocks {
   }
   ''';
 
-  static ProofRequestEntity proofRequest =
-      ProofRequestEntity(Iden3commMocks.proofScopeRequest, mockContext);
+  static ProofRequestEntity proofRequest = ProofRequestEntity(
+    Iden3commMocks.proofScopeRequest,
+    mockContext,
+  );
 
   static List<ProofRequestEntity> proofRequestList = [
     ProofRequestEntity(Iden3commMocks.proofScopeRequest, mockContext),
@@ -274,7 +286,7 @@ class Iden3commMocks {
     publicStatesInfo: ProofMocks.publicStatesInfo,
   );
 
-  static Iden3commSDProofEntity iden3commSDProof = Iden3commSDProofEntity(
+  static Iden3commProofEntity iden3commSDProof = Iden3commProofEntity(
     id: proofRequestList[0].scope.id,
     circuitId: proofRequestList[0].scope.circuitId,
     proof: ProofMocks.zkProof.proof,
@@ -283,15 +295,19 @@ class Iden3commMocks {
     vp: vp,
   );
 
-  static Iden3commVPProof vp =
-      Iden3commVPProof.fromJson(jsonDecode(iden3commVpProofJson));
+  static Iden3commVPProof vp = Iden3commVPProof.fromJson(
+    jsonDecode(iden3commVpProofJson),
+  );
 
   static JWZHeader jwzHeader = JWZHeader.fromJson(jsonDecode(jwzHeaderJson));
 
   static JWZPayload jwzPayload = JWZPayload(payload: CommonMocks.message);
 
   static JWZEntity jwz = JWZEntity(
-      header: jwzHeader, payload: jwzPayload, proof: ProofMocks.zkProof);
+    header: jwzHeader,
+    payload: jwzPayload,
+    proof: ProofMocks.zkProof,
+  );
 
   static String encodedJWZ =
       'eyJhbGciOiJncm90aDE2IiwiY2lyY3VpdElkIjoiYXV0aFYyIiwiY3JpdCI6WyJjaXJjdWl0SWQiXSwidHlwIjoiYXBwbGljYXRpb24vaWRlbjMtemtwLWpzb24ifQ.dGhlTWVzc2FnZQ.eyJwcm9vZiI6eyJwaV9hIjpbIjEyOTcyMjU3NDc4MDU1Mzg1Mjg3MjU0MzY1MjQyOTI5NTAxMzEzMzIwNTU4NzQ4OTM5MDExNjYwMDg5NjA4NzQzMDk5NzQ1MTExMTgwIiwiMjE2MjI3OTU4MTgyODMzOTA4MDI2NjU1MDQ3Njc2NDcwNjA0NjE2MzE4OTAxODM1MjU3OTY3NTM0MTQ0NTAyNDE2MDYyNDk1NzA4MDMiLCIxIl0sInBpX2IiOltbIjEyODQ3MDk5NjgxNDgzNjIwMjQ0ODkxODk2ODg5NTA5NTY1OTA1MjAwODQ3NjM5MTU2NjYyNTY2NjQ2ODMxNjQ0NDI1NTg3NzY3NjA1IiwiNzcyNjkwNjY1ODg3NDM1NTkyODU2NjEzNjU4MjIzMzc1MzQyMjMwODY5OTgzMDI4MjEyODQyNTgwMTc5MjEwMDUyMjc0MDg0MjcxNCJdLFsiNjk4MDQ2NzkwNjI1NzAxNDE0NzIzOTE1NDQ0MTc5ODE5MDAzODM4MDMxNTMwNTAzNjkyNjM2ODM0MDAwODUyMDgyODQ1NTYwNjc1MiIsIjIyMzAyNDk3NTU5MzM0MDI2NDU1ODI3NTAzNzYxNzgzMDA0NTYyNjMwMDQ4NzQwNjk3ODcyMjI2MzEyNDA5OTk2NDI0NDQ4NzQ4MDUiXSxbIjEiLCIwIl1dLCJwaV9jIjpbIjE2OTg2MDg3OTA1MDQ4NDg1NDg4NzQzODYxNTE0MjM4OTY3MDIxMTM2MjI1NzcwMjM1MzI2OTQxNDYwOTM4OTkzOTE1NTY1MTIxNzU1IiwiNjIzODMyNTA3NzU1ODQ4NzA4MjIwOTYyMzU5NTUyMzEyNjYyMjc0ODM2MDk5OTI0NjAxOTg3ODM4ODExMTU4MzEwNjUxNjMzODQzNiIsIjEiXSwicHJvdG9jb2wiOiJncm90aDE2IiwiY3VydmUiOiJibjEyOCJ9LCJwdWJfc2lnbmFscyI6WyIxNzMxNjAwOTUyOTcyODI1NTE3OTQwNzczMjIzMTMwOTQ0MTU4NzEzMzMzMjA4MjYzOTY0OTg5NDc4ODk2MjgxNDQwMjI4NTgzODYxMiIsIjQyMTkzOTQyNTU5MDQ2NDYyMDE1MjQ5Njc4MjY0NzIwMDQyNTgzNTkzMzg2OTE4MTIxMjcyNTA4Mjk0ODAxMjg2MzA3NjM1NDE5OTIiLCIzNTQyMDAxMzc0NzIyNDk2Mzg3NzE5OTE2MjI0NjcyODcwNzI2MDMyNDk1MDI1NjUxMjExNjU5Nzc1NjU3MzU5NDEzNzMyOTY2NCJdfQ';

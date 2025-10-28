@@ -64,6 +64,7 @@
 
 import 'dart:convert';
 
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_vp_proof.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/generate_inputs_response.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 
@@ -71,6 +72,7 @@ class Iden3commProofEntity extends ZKProofEntity {
   final int id;
   final String circuitId;
   final PublicStatesInfo? publicStatesInfo;
+  final Iden3commVPProof? vp;
 
   Iden3commProofEntity({
     required this.id,
@@ -78,6 +80,7 @@ class Iden3commProofEntity extends ZKProofEntity {
     required super.proof,
     required super.pubSignals,
     required this.publicStatesInfo,
+    this.vp,
   });
 
   /// Creates an instance from the given json
@@ -98,21 +101,28 @@ class Iden3commProofEntity extends ZKProofEntity {
       publicStatesInfo = PublicStatesInfo.fromJson(json['publicStatesInfo']);
     }
 
+    Iden3commVPProof? vp;
+    if (json.containsKey('vp')) {
+      vp = Iden3commVPProof.fromJson(json['vp']);
+    }
+
     return Iden3commProofEntity(
       id: json['id'],
       circuitId: json['circuitId'],
       proof: proof,
       pubSignals: pubSig,
       publicStatesInfo: publicStatesInfo,
+      vp: vp,
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'circuitId': circuitId,
-        'proof': proof.toJson(),
-        'pub_signals': pubSignals,
-        if (publicStatesInfo != null)
-          'publicStatesInfo': publicStatesInfo?.toJson(),
-      };
+    'id': id,
+    'circuitId': circuitId,
+    'proof': proof.toJson(),
+    'pub_signals': pubSignals,
+    if (publicStatesInfo != null)
+      'publicStatesInfo': publicStatesInfo?.toJson(),
+    if (vp != null) 'vp': vp?.toJson(),
+  };
 }
