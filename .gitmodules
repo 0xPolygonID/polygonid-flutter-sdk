@@ -1,0 +1,7 @@
+[submodule "packages/jose"]
+	path = packages/jose
+	url = https://github.com/5eeman/jose.git
+[submodule "packages/web3dart_builders"]
+	path = packages/web3dart_builders
+	url = https://github.com/5eeman/web3dart_builders.git
+
