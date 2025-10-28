@@ -17,7 +17,7 @@ class TestCipher extends AesCipher {
   String? capturedDecryptCiphertext;
   SymmetricIV? capturedDecryptIV;
 
-  TestCipher(SymmetricKey key) : super(key);
+  TestCipher(super.key);
 
   @override
   SymmetricEncrypted encrypt(String plaintext, {required SymmetricIV iv}) {
