@@ -4,6 +4,7 @@ import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/pidcore_util.dart';
 import 'package:polygonid_flutter_sdk/common/utils/did_doc_compose.dart';
 import 'package:polygonid_flutter_sdk/common/utils/push_service.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 
 @injectable
@@ -17,15 +18,13 @@ class Util {
   /// Returns an [AttestationResult] containing the public key and its components.
   /// If the attestation document is invalid, it will throw an [CoreLibraryException].
   AttestationResult validateAttestationDocument(String attestationDocument) {
-    final result =
-        _polygonIdCoreUtil.validateAttestationDocument(attestationDocument);
+    final result = _polygonIdCoreUtil.validateAttestationDocument(
+      attestationDocument,
+    );
     final publicKey = result['public_key'] as String?;
     final userData = result['user_data'] as String?;
 
-    return AttestationResult(
-      publicKey: publicKey,
-      userData: userData,
-    );
+    return AttestationResult(publicKey: publicKey, userData: userData);
   }
 
   /// Encrypts the input plaintext using provided keyset into JWE format.
@@ -44,7 +43,7 @@ class Util {
         return {
           'didDocument': e.toJson(),
           'didResolutionMetadata': null,
-          'didDocumentMetadata': null
+          'didDocumentMetadata': null,
         };
       }).toList(),
       if (recipientAlg != null) 'recipientAlg': recipientAlg,
@@ -59,16 +58,45 @@ class Util {
   /// [keys] - List of keys to decrypt the message.
   /// Returns the decrypted plaintext message.
   String anonUnpack(
-      Map<String, dynamic> ciphertext, List<Map<String, dynamic>> keys) {
+    Map<String, dynamic> ciphertext,
+    List<Map<String, dynamic>> keys,
+  ) {
     final json = {
       'ciphertext': ciphertext,
-      'keySet': {
-        'keys': keys,
-      },
+      'keySet': {'keys': keys},
     };
     final input = jsonEncode(json);
 
     return _polygonIdCoreUtil.anonUnpack(input);
+  }
+
+  String decryptJwe(Map<String, dynamic> jwe, List<Map<String, dynamic>> keys) {
+    final json = {
+      'ciphertext': jwe,
+      'keySet': {'keys': keys},
+    };
+    final input = jsonEncode(json);
+
+    return _polygonIdCoreUtil.decryptJwe(input);
+  }
+
+  String decryptEncryptedCredential(
+    Map<String, dynamic> encryptedCredentialIssuanceMessage,
+    List<Map<String, dynamic>> keys,
+  ) {
+    final json = {
+      'encryptedCredentialIssuanceMessage': encryptedCredentialIssuanceMessage,
+      'keySet': {'keys': keys},
+    };
+    final input = jsonEncode(json);
+
+    return _polygonIdCoreUtil.decryptEncryptedCredential(input);
+  }
+
+  String verifyProof(W3CCredential credential) {
+    final input = jsonEncode(credential.toJson());
+
+    return _polygonIdCoreUtil.verifyProof(input);
   }
 
   Future<DIDDocument> createDidDocument(
@@ -93,10 +121,7 @@ class AttestationResult {
   final String? publicKey;
   final String? userData;
 
-  AttestationResult({
-    this.publicKey,
-    this.userData,
-  });
+  AttestationResult({this.publicKey, this.userData});
 
   @override
   String toString() {
