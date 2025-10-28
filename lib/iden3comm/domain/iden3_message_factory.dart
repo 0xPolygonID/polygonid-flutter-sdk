@@ -13,6 +13,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/reque
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/credential_refresh_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/onchain_offer_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_encrypted_issuance_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_proposal_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_status_update_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/fetch_iden3_message_entity.dart';
@@ -37,9 +38,7 @@ class Iden3MessageFactory {
 
   Iden3MessageFactory(this._stacktraceManager);
 
-  Iden3Message createMessage({
-    required String rawMessage,
-  }) {
+  Iden3Message createMessage({required String rawMessage}) {
     try {
       Map<String, dynamic> json = jsonDecode(rawMessage);
 
@@ -57,6 +56,8 @@ class Iden3MessageFactory {
           return CredentialsOnchainOfferMessage.fromJson(json);
         case Iden3MessageType.credentialIssuanceResponse:
           return CredentialFetchRequestMessage.fromJson(json);
+        case Iden3MessageType.credentialEncryptedIssuanceResponse:
+          return CredentialEncryptedIssuanceResponse.fromJson(json);
         case Iden3MessageType.proofContractInvokeRequest:
           return ContractInvokeRequestMessage.fromJson(json);
         case Iden3MessageType.proofContractInvokeResponse:
@@ -96,7 +97,7 @@ class Iden3MessageFactory {
         case Iden3MessageType.resourceDelivery:
           return ResourceDeliveryMessage.fromJson(json);
         case Iden3MessageType.permissionsRequestsList:
-          throw ResourcePermissionsRequestsListMessage.fromJson(json);
+          return ResourcePermissionsRequestsListMessage.fromJson(json);
         case Iden3MessageType.permissionsList:
           return ResourcePermissionsListMessage.fromJson(json);
         case Iden3MessageType.permissionsListFetch:

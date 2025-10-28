@@ -6,7 +6,7 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_sd_proof_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
@@ -27,9 +27,9 @@ import 'get_iden3comm_proofs_use_case_test.mocks.dart';
 
 // Data
 List<FilterEntity> filters = [CommonMocks.filter, CommonMocks.filter];
-List<Iden3commSDProofEntity> result = [
+List<Iden3commProofEntity> result = [
   Iden3commMocks.iden3commSDProof,
-  Iden3commMocks.iden3commSDProof
+  Iden3commMocks.iden3commSDProof,
 ];
 
 GetIden3commProofsParam param = GetIden3commProofsParam(
@@ -91,11 +91,11 @@ GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   RefreshCredentialUseCase,
 ])
 main() {
-  final claim = CredentialMocks.claim.copyWith(info: {
-    'credentialSubject': {
-      'id': IdentityMocks.did.did,
+  final claim = CredentialMocks.claim.copyWith(
+    info: {
+      'credentialSubject': {'id': IdentityMocks.did.did},
     },
-  });
+  );
 
   setUp(() {
     reset(proofRepository);
@@ -104,103 +104,135 @@ main() {
     reset(isProofCircuitSupportedUseCase);
     reset(getIdentityUseCase);
 
-    when(isProofCircuitSupportedUseCase.execute(param: anyNamed('param')))
-        .thenAnswer((realInvocation) => Future.value(true));
+    when(
+      isProofCircuitSupportedUseCase.execute(param: anyNamed('param')),
+    ).thenAnswer((realInvocation) => Future.value(true));
 
-    when(getMessageRequestsAndCredsUseCase.execute(param: anyNamed('param')))
-        .thenAnswer(
+    when(
+      getMessageRequestsAndCredsUseCase.execute(param: anyNamed('param')),
+    ).thenAnswer(
       (realInvocation) async => [
-        (
-          request: Iden3commMocks.proofRequest,
-          credentials: [claim],
-        ),
-        (
-          request: Iden3commMocks.proofRequest,
-          credentials: [claim],
-        ),
+        (request: Iden3commMocks.proofRequest, credentials: [claim]),
+        (request: Iden3commMocks.proofRequest, credentials: [claim]),
       ],
     );
 
-    when(proofRepository.loadCircuitFiles(any))
-        .thenAnswer((realInvocation) => Future.value(ProofMocks.circuitData));
+    when(
+      proofRepository.loadCircuitFiles(any),
+    ).thenAnswer((realInvocation) => Future.value(ProofMocks.circuitData));
 
-    when(generateIden3commProofUseCase.execute(param: anyNamed('param')))
-        .thenAnswer(
-            (realInvocation) => Future.value(Iden3commMocks.iden3commSDProof));
+    when(
+      generateIden3commProofUseCase.execute(param: anyNamed('param')),
+    ).thenAnswer(
+      (realInvocation) => Future.value(Iden3commMocks.iden3commSDProof),
+    );
 
     when(getIdentityUseCase.execute(param: anyNamed('param'))).thenAnswer(
-        (realInvocation) => Future.value(IdentityMocks.privateIdentity));
+      (realInvocation) => Future.value(IdentityMocks.privateIdentity),
+    );
   });
 
   test(
-      "given GetProofsParam as param, when call execute, then expect a list of ProofEntity to be returned",
-      () async {
-    // When
-    expect(await useCase.execute(param: param), result);
+    "given GetProofsParam as param, when call execute, then expect a list of ProofEntity to be returned",
+    () async {
+      // When
+      expect(await useCase.execute(param: param), result);
 
-    // Then
-    var verifyIsFilterSupported = verify(isProofCircuitSupportedUseCase.execute(
-        param: captureAnyNamed('param')));
-    expect(verifyIsFilterSupported.callCount,
-        Iden3commMocks.proofRequestList.length);
-
-    var verifyGetClaims = verify(getMessageRequestsAndCredsUseCase.execute(
-        param: captureAnyNamed('param')));
-    expect(verifyGetClaims.callCount, 1);
-    expect(verifyGetClaims.captured.first.genesisDid, param.genesisDid);
-    expect(verifyGetClaims.captured.first.encryptionKey, param.privateKey);
-
-    var verifyLoadCircuit =
-        verify(proofRepository.loadCircuitFiles(captureAny));
-    expect(verifyLoadCircuit.callCount, Iden3commMocks.proofRequestList.length);
-
-    var verifyGenerateProof = verify(
-        generateIden3commProofUseCase.execute(param: captureAnyNamed('param')));
-    expect(
-        verifyGenerateProof.callCount, Iden3commMocks.proofRequestList.length);
-
-    for (int i = 0; i < Iden3commMocks.proofRequestList.length; i++) {
-      expect(verifyIsFilterSupported.captured[i],
-          Iden3commMocks.proofRequestList[i].scope.circuitId);
-
-      expect(verifyLoadCircuit.captured[i],
-          Iden3commMocks.proofRequestList[i].scope.circuitId);
-
-      expect(verifyGenerateProof.captured[i].did, IdentityMocks.did.did);
-      expect(verifyGenerateProof.captured[i].profileNonce, param.profileNonce);
-      expect(verifyGenerateProof.captured[i].claimSubjectProfileNonce,
-          CommonMocks.genesisNonce);
-      expect(verifyGenerateProof.captured[i].credential, claim);
-      expect(verifyGenerateProof.captured[i].request,
-          Iden3commMocks.proofRequestList[i].scope);
+      // Then
+      var verifyIsFilterSupported = verify(
+        isProofCircuitSupportedUseCase.execute(param: captureAnyNamed('param')),
+      );
       expect(
-          verifyGenerateProof.captured[i].circuitData, ProofMocks.circuitData);
-    }
+        verifyIsFilterSupported.callCount,
+        Iden3commMocks.proofRequestList.length,
+      );
 
-    var getIdentityCapture =
-        verify(getIdentityUseCase.execute(param: captureAnyNamed('param')))
-            .captured
-            .first;
-    expect(getIdentityCapture.genesisDid, CommonMocks.did);
-  });
+      var verifyGetClaims = verify(
+        getMessageRequestsAndCredsUseCase.execute(
+          param: captureAnyNamed('param'),
+        ),
+      );
+      expect(verifyGetClaims.callCount, 1);
+      expect(verifyGetClaims.captured.first.genesisDid, param.genesisDid);
+      expect(verifyGetClaims.captured.first.encryptionKey, param.privateKey);
+
+      var verifyLoadCircuit = verify(
+        proofRepository.loadCircuitFiles(captureAny),
+      );
+      expect(
+        verifyLoadCircuit.callCount,
+        Iden3commMocks.proofRequestList.length,
+      );
+
+      var verifyGenerateProof = verify(
+        generateIden3commProofUseCase.execute(param: captureAnyNamed('param')),
+      );
+      expect(
+        verifyGenerateProof.callCount,
+        Iden3commMocks.proofRequestList.length,
+      );
+
+      for (int i = 0; i < Iden3commMocks.proofRequestList.length; i++) {
+        expect(
+          verifyIsFilterSupported.captured[i],
+          Iden3commMocks.proofRequestList[i].scope.circuitId,
+        );
+
+        expect(
+          verifyLoadCircuit.captured[i],
+          Iden3commMocks.proofRequestList[i].scope.circuitId,
+        );
+
+        expect(verifyGenerateProof.captured[i].did, IdentityMocks.did.did);
+        expect(
+          verifyGenerateProof.captured[i].profileNonce,
+          param.profileNonce,
+        );
+        expect(
+          verifyGenerateProof.captured[i].claimSubjectProfileNonce,
+          CommonMocks.genesisNonce,
+        );
+        expect(verifyGenerateProof.captured[i].credential, claim);
+        expect(
+          verifyGenerateProof.captured[i].request,
+          Iden3commMocks.proofRequestList[i].scope,
+        );
+        expect(
+          verifyGenerateProof.captured[i].circuitData,
+          ProofMocks.circuitData,
+        );
+      }
+
+      var getIdentityCapture = verify(
+        getIdentityUseCase.execute(param: captureAnyNamed('param')),
+      ).captured.first;
+      expect(getIdentityCapture.genesisDid, CommonMocks.did);
+    },
+  );
 
   test(
-      "Given GetProofsFromIden3MsgParam as param, when call execute and error occurred, then I expect an exception to be thrown",
-      () async {
-    // Given
-    when(getMessageRequestsAndCredsUseCase.execute(param: anyNamed('param')))
-        .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
+    "Given GetProofsFromIden3MsgParam as param, when call execute and error occurred, then I expect an exception to be thrown",
+    () async {
+      // Given
+      when(
+        getMessageRequestsAndCredsUseCase.execute(param: anyNamed('param')),
+      ).thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
-    // When
-    await expectLater(
-        useCase.execute(param: param), throwsA(CommonMocks.exception));
+      // When
+      await expectLater(
+        useCase.execute(param: param),
+        throwsA(CommonMocks.exception),
+      );
 
-    // Then
-    verifyNever(isProofCircuitSupportedUseCase.execute(
-        param: captureAnyNamed('param')));
-    verifyNever(proofRepository.loadCircuitFiles(captureAny));
-    verifyNever(
-        generateIden3commProofUseCase.execute(param: captureAnyNamed('param')));
-    verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
-  });
+      // Then
+      verifyNever(
+        isProofCircuitSupportedUseCase.execute(param: captureAnyNamed('param')),
+      );
+      verifyNever(proofRepository.loadCircuitFiles(captureAny));
+      verifyNever(
+        generateIden3commProofUseCase.execute(param: captureAnyNamed('param')),
+      );
+      verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
+    },
+  );
 }

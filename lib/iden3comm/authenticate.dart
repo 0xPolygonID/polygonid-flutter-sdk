@@ -37,7 +37,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/d
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/response/jwz.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_sd_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_vp_proof.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/jwz_exceptions.dart';
@@ -95,8 +94,8 @@ class Authenticate {
       Map<int, String> groupIdLinkNonceMap = {};
 
       AuthClaimCompanionObject? authClaimCompanionObject;
-      ProofRepository proofRepository =
-          await getItSdk.getAsync<ProofRepository>();
+      ProofRepository proofRepository = await getItSdk
+          .getAsync<ProofRepository>();
       _proofGenerationStepsStreamManager =
           getItSdk<ProofGenerationStepsStreamManager>();
       _stacktraceManager = getItSdk<StacktraceManager>();
@@ -113,15 +112,16 @@ class Authenticate {
         );
         throw UnsupportedIden3MsgTypeException(
           type: message.type,
-          errorMessage: "Unsupported message type\nIt should be either "
+          errorMessage:
+              "Unsupported message type\nIt should be either "
               "authRequest or proofContractInvokeRequest",
         );
       }
 
       Uint8List privateKeyBytes = hexToBytes(privateKey);
 
-      GetSelectedChainUseCase getSelectedChainUseCase =
-          getItSdk.get<GetSelectedChainUseCase>();
+      GetSelectedChainUseCase getSelectedChainUseCase = getItSdk
+          .get<GetSelectedChainUseCase>();
 
       ChainConfigEntity chain = await getSelectedChainUseCase.execute();
       _stacktraceManager.addTrace(
@@ -146,8 +146,8 @@ class Authenticate {
       List<RequestAndCredentials> requestsAndCredsLocal;
       if (requestsAndCreds == null) {
         // Get the credentials and proof requests by scope
-        final getCredentialsUseCase =
-            await getItSdk.getAsync<GetMessageRequestsAndCredsUseCase>();
+        final getCredentialsUseCase = await getItSdk
+            .getAsync<GetMessageRequestsAndCredsUseCase>();
         final requestsAndCredentials = await getCredentialsUseCase.execute(
           param: GetMessageRequestsAndCredsParam(
             message: message,
@@ -266,14 +266,16 @@ class Authenticate {
       // perform the authentication with the auth token calling the callback url
       http.Client httpClient = http.Client();
       Uri uri = Uri.parse(callbackUrl);
-      http.Response response = await httpClient.post(
-        uri,
-        body: authToken,
-        headers: {
-          HttpHeaders.acceptHeader: '*/*',
-          HttpHeaders.contentTypeHeader: 'text/plain',
-        },
-      ).timeout(const Duration(seconds: 30));
+      http.Response response = await httpClient
+          .post(
+            uri,
+            body: authToken,
+            headers: {
+              HttpHeaders.acceptHeader: '*/*',
+              HttpHeaders.contentTypeHeader: 'text/plain',
+            },
+          )
+          .timeout(const Duration(seconds: 30));
 
       _stacktraceManager.addTrace(
         "[Authenticate] responseStatusCode: ${response.statusCode}\nresponseBody: ${response.body}",
@@ -452,27 +454,27 @@ class Authenticate {
 
       List<String> splittedDid = genesisDid.split(":");
       String id = splittedDid[4];
-      final generateInputsRes =
-          await proofRepository.calculateAtomicQueryInputs(
-        id: id,
-        profileNonce: profileNonce,
-        claimSubjectProfileNonce: claimSubjectProfileNonce,
-        claim: claim,
-        proofScopeRequest: request.scope.toJson(),
-        circuitId: request.scope.circuitId,
-        incProof: authClaimCompanionObject.incProof,
-        nonRevProof: authClaimCompanionObject.nonRevProof,
-        gistProof: authClaimCompanionObject.gistProofEntity,
-        authClaim: authClaimCompanionObject.authClaim,
-        treeState: authClaimCompanionObject.treeState,
-        challenge: challenge,
-        signature: signature,
-        config: config,
-        verifierId: message.from,
-        linkNonce: linkNonce,
-        scopeParams: request.scope.params,
-        transactionData: transactionData,
-      );
+      final generateInputsRes = await proofRepository
+          .calculateAtomicQueryInputs(
+            id: id,
+            profileNonce: profileNonce,
+            claimSubjectProfileNonce: claimSubjectProfileNonce,
+            claim: claim,
+            proofScopeRequest: request.scope.toJson(),
+            circuitId: request.scope.circuitId,
+            incProof: authClaimCompanionObject.incProof,
+            nonRevProof: authClaimCompanionObject.nonRevProof,
+            gistProof: authClaimCompanionObject.gistProofEntity,
+            authClaim: authClaimCompanionObject.authClaim,
+            treeState: authClaimCompanionObject.treeState,
+            challenge: challenge,
+            signature: signature,
+            config: config,
+            verifierId: message.from,
+            linkNonce: linkNonce,
+            scopeParams: request.scope.params,
+            transactionData: transactionData,
+          );
 
       final atomicQueryInputs = json.encode(generateInputsRes.inputs);
       if (kDebugMode) {
@@ -500,25 +502,15 @@ class Authenticate {
         wtnsBytes: witnessBytes,
       );
 
-      Iden3commProofEntity proof;
-      if (vpProof != null) {
-        proof = Iden3commSDProofEntity(
-          id: request.scope.id,
-          circuitId: request.scope.circuitId,
-          proof: zkProofEntity.proof,
-          pubSignals: zkProofEntity.pubSignals,
-          publicStatesInfo: generateInputsRes.publicStatesInfo,
-          vp: vpProof,
-        );
-      } else {
-        proof = Iden3commProofEntity(
-          id: request.scope.id,
-          circuitId: request.scope.circuitId,
-          proof: zkProofEntity.proof,
-          pubSignals: zkProofEntity.pubSignals,
-          publicStatesInfo: generateInputsRes.publicStatesInfo,
-        );
-      }
+      final proof = Iden3commProofEntity(
+        id: request.scope.id,
+        circuitId: request.scope.circuitId,
+        proof: zkProofEntity.proof,
+        pubSignals: zkProofEntity.pubSignals,
+        publicStatesInfo: generateInputsRes.publicStatesInfo,
+        vp: vpProof,
+      );
+
       proofs.add(proof);
     }
   }
@@ -527,10 +519,8 @@ class Authenticate {
   Future<Map<String, dynamic>> fetchSchema({required String schemaUrl}) async {
     if (schemaUrl.toLowerCase().startsWith("ipfs://")) {
       String fileHash = schemaUrl.replaceFirst("ipfs://", "");
-      String? pinataGatewayUrl =
-          await PinataGatewayUtils().retrievePinataGatewayUrlFromEnvironment(
-        fileHash: fileHash,
-      );
+      String? pinataGatewayUrl = await PinataGatewayUtils()
+          .retrievePinataGatewayUrlFromEnvironment(fileHash: fileHash);
 
       if (pinataGatewayUrl != null) {
         schemaUrl = pinataGatewayUrl;
@@ -628,10 +618,7 @@ class Authenticate {
     );
 
     JWZPayload payload = JWZPayload(payload: message);
-    JWZEntity jwz = JWZEntity(
-      header: header,
-      payload: payload,
-    );
+    JWZEntity jwz = JWZEntity(header: header, payload: payload);
 
     String jwzString = stringFromJwz(jwz);
 
@@ -702,16 +689,12 @@ class Authenticate {
 
   String stringFromJwz(JWZEntity jwzEntity) {
     if (jwzEntity.header == null) {
-      _stacktraceManager.addError(
-        "[Authenticate] JWZ header is null",
-      );
+      _stacktraceManager.addError("[Authenticate] JWZ header is null");
       throw NullJWZHeaderException(errorMessage: "JWZ header is null");
     }
 
     if (jwzEntity.payload == null) {
-      _stacktraceManager.addError(
-        "[Authenticate] JWZ payload is null",
-      );
+      _stacktraceManager.addError("[Authenticate] JWZ payload is null");
       throw NullJWZPayloadException(errorMessage: "JWZ payload is null");
     }
 
@@ -764,11 +747,7 @@ class Authenticate {
       BigInt.parse(authClaim[6]),
       BigInt.parse(authClaim[7]),
     ]);
-    BigInt hashClaimNode = poseidon3([
-      hashIndex,
-      hashValue,
-      BigInt.one,
-    ]);
+    BigInt hashClaimNode = poseidon3([hashIndex, hashValue, BigInt.one]);
     NodeEntity authClaimNode = NodeEntity(
       children: [
         HashEntity.fromBigInt(hashIndex),
@@ -797,26 +776,23 @@ class Authenticate {
     );
 
     // TREE STATE
-    List<HashEntity> trees = await Future.wait(
-      [
-        smtRepository.getRoot(
-          type: TreeType.claims,
-          did: genesisDid,
-          encryptionKey: privateKey,
-        ),
-        smtRepository.getRoot(
-          type: TreeType.revocation,
-          did: genesisDid,
-          encryptionKey: privateKey,
-        ),
-        smtRepository.getRoot(
-          type: TreeType.roots,
-          did: genesisDid,
-          encryptionKey: privateKey,
-        ),
-      ],
-      eagerError: true,
-    );
+    List<HashEntity> trees = await Future.wait([
+      smtRepository.getRoot(
+        type: TreeType.claims,
+        did: genesisDid,
+        encryptionKey: privateKey,
+      ),
+      smtRepository.getRoot(
+        type: TreeType.revocation,
+        did: genesisDid,
+        encryptionKey: privateKey,
+      ),
+      smtRepository.getRoot(
+        type: TreeType.roots,
+        did: genesisDid,
+        encryptionKey: privateKey,
+      ),
+    ], eagerError: true);
 
     String hash = await smtRepository.hashState(
       claims: trees[0].string(),
@@ -831,9 +807,7 @@ class Authenticate {
       trees[2],
     );
 
-    treeState = await smtRepository.convertState(
-      state: treeStateEntity,
-    );
+    treeState = await smtRepository.convertState(state: treeStateEntity);
 
     //GIST
     List<String> splittedDid = genesisDid.split(":");
@@ -881,7 +855,8 @@ class Authenticate {
     var expirationTimeFormatted = DateFormat(
       "yyyy-MM-dd HH:mm:ss",
     ).format(expirationTime);
-    bool isExpired = nowFormatted.compareTo(expirationTimeFormatted) > 0 ||
+    bool isExpired =
+        nowFormatted.compareTo(expirationTimeFormatted) > 0 ||
         claim.state == CredentialState.expired;
 
     if (isExpired && claim.info.containsKey("refreshService")) {
@@ -889,17 +864,17 @@ class Authenticate {
         "Refreshing expired credential...",
       );
 
-      RefreshCredentialUseCase _refreshCredentialUseCase =
-          await getItSdk.getAsync<RefreshCredentialUseCase>();
+      RefreshCredentialUseCase _refreshCredentialUseCase = await getItSdk
+          .getAsync<RefreshCredentialUseCase>();
 
-      CredentialEntity refreshedClaimEntity =
-          await _refreshCredentialUseCase.execute(
-        param: RefreshCredentialParam(
-          credential: claim,
-          genesisDid: genesisDid,
-          privateKey: privateKey,
-        ),
-      );
+      CredentialEntity refreshedClaimEntity = await _refreshCredentialUseCase
+          .execute(
+            param: RefreshCredentialParam(
+              credential: claim,
+              genesisDid: genesisDid,
+              privateKey: privateKey,
+            ),
+          );
 
       claim = refreshedClaimEntity;
     }
