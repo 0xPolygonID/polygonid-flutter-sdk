@@ -10,20 +10,20 @@ import 'dart:ffi' as ffi;
 class NativePolygonIdCoreLib {
   /// Holds the symbol lookup function.
   final ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
-      _lookup;
+  _lookup;
 
   /// The symbols are looked up in [dynamicLibrary].
   NativePolygonIdCoreLib(ffi.DynamicLibrary dynamicLibrary)
-      : _lookup = dynamicLibrary.lookup;
+    : _lookup = dynamicLibrary.lookup;
 
   /// The symbols are looked up with [lookup].
   NativePolygonIdCoreLib.fromLookup(
-      ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
-          lookup)
-      : _lookup = lookup;
+    ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName) lookup,
+  ) : _lookup = lookup;
 
-  late final ffi.Pointer<ffi.Int> ___mb_cur_max =
-      _lookup<ffi.Int>('__mb_cur_max');
+  late final ffi.Pointer<ffi.Int> ___mb_cur_max = _lookup<ffi.Int>(
+    '__mb_cur_max',
+  );
 
   int get __mb_cur_max => ___mb_cur_max.value;
 
@@ -38,906 +38,1081 @@ class NativePolygonIdCoreLib {
 
   int PLGNAuthV2InputsMarshal(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNAuthV2InputsMarshal(
-      jsonResponse,
-      in1,
-      status,
-    );
+    return _PLGNAuthV2InputsMarshal(jsonResponse, in$, status);
   }
 
-  late final _PLGNAuthV2InputsMarshalPtr = _lookup<
-          ffi.NativeFunction<
-              GoUint8 Function(
-                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
-      'PLGNAuthV2InputsMarshal');
-  late final _PLGNAuthV2InputsMarshal = _PLGNAuthV2InputsMarshalPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+  late final _PLGNAuthV2InputsMarshalPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNAuthV2InputsMarshal');
+  late final _PLGNAuthV2InputsMarshal =
+      _PLGNAuthV2InputsMarshalPtr.asFunction<
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNCalculateGenesisID(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNCalculateGenesisID(
-      jsonResponse,
-      in1,
-      status,
-    );
+    return _PLGNCalculateGenesisID(jsonResponse, in$, status);
   }
 
-  late final _PLGNCalculateGenesisIDPtr = _lookup<
-      ffi.NativeFunction<
+  late final _PLGNCalculateGenesisIDPtr =
+      _lookup<
+        ffi.NativeFunction<
           GoUint8 Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNCalculateGenesisID');
-  late final _PLGNCalculateGenesisID = _PLGNCalculateGenesisIDPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNCalculateGenesisID');
+  late final _PLGNCalculateGenesisID =
+      _PLGNCalculateGenesisIDPtr.asFunction<
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNNewGenesisID(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNNewGenesisID(
-      jsonResponse,
-      in1,
-      cfg,
-      status,
-    );
+    return _PLGNNewGenesisID(jsonResponse, in$, cfg, status);
   }
 
-  late final _PLGNNewGenesisIDPtr = _lookup<
-      ffi.NativeFunction<
+  late final _PLGNNewGenesisIDPtr =
+      _lookup<
+        ffi.NativeFunction<
           GoUint8 Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNNewGenesisID');
-  late final _PLGNNewGenesisID = _PLGNNewGenesisIDPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNNewGenesisID');
+  late final _PLGNNewGenesisID =
+      _PLGNNewGenesisIDPtr.asFunction<
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNNewGenesisIDFromEth(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNNewGenesisIDFromEth(
-      jsonResponse,
-      in1,
-      cfg,
-      status,
-    );
+    return _PLGNNewGenesisIDFromEth(jsonResponse, in$, cfg, status);
   }
 
-  late final _PLGNNewGenesisIDFromEthPtr = _lookup<
-          ffi.NativeFunction<
-              GoUint8 Function(
-                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
-      'PLGNNewGenesisIDFromEth');
-  late final _PLGNNewGenesisIDFromEth = _PLGNNewGenesisIDFromEthPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+  late final _PLGNNewGenesisIDFromEthPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNNewGenesisIDFromEth');
+  late final _PLGNNewGenesisIDFromEth =
+      _PLGNNewGenesisIDFromEthPtr.asFunction<
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNW3CCredentialToCoreClaim(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNW3CCredentialToCoreClaim(
-      jsonResponse,
-      in1,
-      cfg,
-      status,
-    );
+    return _PLGNW3CCredentialToCoreClaim(jsonResponse, in$, cfg, status);
   }
 
-  late final _PLGNW3CCredentialToCoreClaimPtr = _lookup<
-          ffi.NativeFunction<
-              GoUint8 Function(
-                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
-      'PLGNW3CCredentialToCoreClaim');
+  late final _PLGNW3CCredentialToCoreClaimPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNW3CCredentialToCoreClaim');
   late final _PLGNW3CCredentialToCoreClaim =
       _PLGNW3CCredentialToCoreClaimPtr.asFunction<
-          int Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNCreateClaim(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNCreateClaim(
-      jsonResponse,
-      in1,
-      status,
-    );
+    return _PLGNCreateClaim(jsonResponse, in$, status);
   }
 
-  late final _PLGNCreateClaimPtr = _lookup<
-      ffi.NativeFunction<
+  late final _PLGNCreateClaimPtr =
+      _lookup<
+        ffi.NativeFunction<
           GoUint8 Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNCreateClaim');
-  late final _PLGNCreateClaim = _PLGNCreateClaimPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNCreateClaim');
+  late final _PLGNCreateClaim =
+      _PLGNCreateClaimPtr.asFunction<
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNIDToInt(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNIDToInt(
-      jsonResponse,
-      in1,
-      status,
-    );
+    return _PLGNIDToInt(jsonResponse, in$, status);
   }
 
-  late final _PLGNIDToIntPtr = _lookup<
-      ffi.NativeFunction<
+  late final _PLGNIDToIntPtr =
+      _lookup<
+        ffi.NativeFunction<
           GoUint8 Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNIDToInt');
-  late final _PLGNIDToInt = _PLGNIDToIntPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNIDToInt');
+  late final _PLGNIDToInt =
+      _PLGNIDToIntPtr.asFunction<
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNProofFromSmartContract(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNProofFromSmartContract(
-      jsonResponse,
-      in1,
-      status,
-    );
+    return _PLGNProofFromSmartContract(jsonResponse, in$, status);
   }
 
-  late final _PLGNProofFromSmartContractPtr = _lookup<
-          ffi.NativeFunction<
-              GoUint8 Function(
-                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
-      'PLGNProofFromSmartContract');
+  late final _PLGNProofFromSmartContractPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNProofFromSmartContract');
   late final _PLGNProofFromSmartContract =
       _PLGNProofFromSmartContractPtr.asFunction<
-          int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNProfileID(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNProfileID(
-      jsonResponse,
-      in1,
-      status,
-    );
+    return _PLGNProfileID(jsonResponse, in$, status);
   }
 
-  late final _PLGNProfileIDPtr = _lookup<
-      ffi.NativeFunction<
+  late final _PLGNProfileIDPtr =
+      _lookup<
+        ffi.NativeFunction<
           GoUint8 Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNProfileID');
-  late final _PLGNProfileID = _PLGNProfileIDPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNProfileID');
+  late final _PLGNProfileID =
+      _PLGNProfileIDPtr.asFunction<
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNAtomicQuerySigV2Inputs(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNAtomicQuerySigV2Inputs(
-      jsonResponse,
-      in1,
-      cfg,
-      status,
-    );
+    return _PLGNAtomicQuerySigV2Inputs(jsonResponse, in$, cfg, status);
   }
 
-  late final _PLGNAtomicQuerySigV2InputsPtr = _lookup<
-          ffi.NativeFunction<
-              GoUint8 Function(
-                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
-      'PLGNAtomicQuerySigV2Inputs');
+  late final _PLGNAtomicQuerySigV2InputsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNAtomicQuerySigV2Inputs');
   late final _PLGNAtomicQuerySigV2Inputs =
       _PLGNAtomicQuerySigV2InputsPtr.asFunction<
-          int Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNSigV2Inputs(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNSigV2Inputs(
-      jsonResponse,
-      in1,
-      status,
-    );
+    return _PLGNSigV2Inputs(jsonResponse, in$, status);
   }
 
-  late final _PLGNSigV2InputsPtr = _lookup<
-      ffi.NativeFunction<
+  late final _PLGNSigV2InputsPtr =
+      _lookup<
+        ffi.NativeFunction<
           GoUint8 Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNSigV2Inputs');
-  late final _PLGNSigV2Inputs = _PLGNSigV2InputsPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNSigV2Inputs');
+  late final _PLGNSigV2Inputs =
+      _PLGNSigV2InputsPtr.asFunction<
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNAtomicQueryMtpV2Inputs(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNAtomicQueryMtpV2Inputs(
-      jsonResponse,
-      in1,
-      cfg,
-      status,
-    );
+    return _PLGNAtomicQueryMtpV2Inputs(jsonResponse, in$, cfg, status);
   }
 
-  late final _PLGNAtomicQueryMtpV2InputsPtr = _lookup<
-          ffi.NativeFunction<
-              GoUint8 Function(
-                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
-      'PLGNAtomicQueryMtpV2Inputs');
+  late final _PLGNAtomicQueryMtpV2InputsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNAtomicQueryMtpV2Inputs');
   late final _PLGNAtomicQueryMtpV2Inputs =
       _PLGNAtomicQueryMtpV2InputsPtr.asFunction<
-          int Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNMtpV2Inputs(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNMtpV2Inputs(
-      jsonResponse,
-      in1,
-      status,
-    );
+    return _PLGNMtpV2Inputs(jsonResponse, in$, status);
   }
 
-  late final _PLGNMtpV2InputsPtr = _lookup<
-      ffi.NativeFunction<
+  late final _PLGNMtpV2InputsPtr =
+      _lookup<
+        ffi.NativeFunction<
           GoUint8 Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNMtpV2Inputs');
-  late final _PLGNMtpV2Inputs = _PLGNMtpV2InputsPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNMtpV2Inputs');
+  late final _PLGNMtpV2Inputs =
+      _PLGNMtpV2InputsPtr.asFunction<
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNAtomicQuerySigV2OnChainInputs(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNAtomicQuerySigV2OnChainInputs(
-      jsonResponse,
-      in1,
-      cfg,
-      status,
-    );
+    return _PLGNAtomicQuerySigV2OnChainInputs(jsonResponse, in$, cfg, status);
   }
 
-  late final _PLGNAtomicQuerySigV2OnChainInputsPtr = _lookup<
-          ffi.NativeFunction<
-              GoUint8 Function(
-                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
-      'PLGNAtomicQuerySigV2OnChainInputs');
+  late final _PLGNAtomicQuerySigV2OnChainInputsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNAtomicQuerySigV2OnChainInputs');
   late final _PLGNAtomicQuerySigV2OnChainInputs =
       _PLGNAtomicQuerySigV2OnChainInputsPtr.asFunction<
-          int Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNAtomicQueryMtpV2OnChainInputs(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNAtomicQueryMtpV2OnChainInputs(
-      jsonResponse,
-      in1,
-      cfg,
-      status,
-    );
+    return _PLGNAtomicQueryMtpV2OnChainInputs(jsonResponse, in$, cfg, status);
   }
 
-  late final _PLGNAtomicQueryMtpV2OnChainInputsPtr = _lookup<
-          ffi.NativeFunction<
-              GoUint8 Function(
-                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
-      'PLGNAtomicQueryMtpV2OnChainInputs');
+  late final _PLGNAtomicQueryMtpV2OnChainInputsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNAtomicQueryMtpV2OnChainInputs');
   late final _PLGNAtomicQueryMtpV2OnChainInputs =
       _PLGNAtomicQueryMtpV2OnChainInputsPtr.asFunction<
-          int Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNAtomicQueryV3Inputs(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNAtomicQueryV3Inputs(
-      jsonResponse,
-      in1,
-      cfg,
-      status,
-    );
+    return _PLGNAtomicQueryV3Inputs(jsonResponse, in$, cfg, status);
   }
 
-  late final _PLGNAtomicQueryV3InputsPtr = _lookup<
-          ffi.NativeFunction<
-              GoUint8 Function(
-                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
-      'PLGNAtomicQueryV3Inputs');
-  late final _PLGNAtomicQueryV3Inputs = _PLGNAtomicQueryV3InputsPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+  late final _PLGNAtomicQueryV3InputsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNAtomicQueryV3Inputs');
+  late final _PLGNAtomicQueryV3Inputs =
+      _PLGNAtomicQueryV3InputsPtr.asFunction<
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNAtomicQueryV3OnChainInputs(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNAtomicQueryV3OnChainInputs(
-      jsonResponse,
-      in1,
-      cfg,
-      status,
-    );
+    return _PLGNAtomicQueryV3OnChainInputs(jsonResponse, in$, cfg, status);
   }
 
-  late final _PLGNAtomicQueryV3OnChainInputsPtr = _lookup<
-          ffi.NativeFunction<
-              GoUint8 Function(
-                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
-      'PLGNAtomicQueryV3OnChainInputs');
+  late final _PLGNAtomicQueryV3OnChainInputsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNAtomicQueryV3OnChainInputs');
   late final _PLGNAtomicQueryV3OnChainInputs =
       _PLGNAtomicQueryV3OnChainInputsPtr.asFunction<
-          int Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNALinkedMultiQueryInputs(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNALinkedMultiQueryInputs(
-      jsonResponse,
-      in1,
-      cfg,
-      status,
-    );
+    return _PLGNALinkedMultiQueryInputs(jsonResponse, in$, cfg, status);
   }
 
-  late final _PLGNALinkedMultiQueryInputsPtr = _lookup<
-          ffi.NativeFunction<
-              GoUint8 Function(
-                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
-      'PLGNALinkedMultiQueryInputs');
+  late final _PLGNALinkedMultiQueryInputsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNALinkedMultiQueryInputs');
   late final _PLGNALinkedMultiQueryInputs =
       _PLGNALinkedMultiQueryInputsPtr.asFunction<
-          int Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNAGenerateInputs(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNAGenerateInputs(
-      jsonResponse,
-      in1,
-      cfg,
-      status,
-    );
+    return _PLGNAGenerateInputs(jsonResponse, in$, cfg, status);
   }
 
-  late final _PLGNAGenerateInputsPtr = _lookup<
-      ffi.NativeFunction<
+  late final _PLGNAGenerateInputsPtr =
+      _lookup<
+        ffi.NativeFunction<
           GoUint8 Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNAGenerateInputs');
-  late final _PLGNAGenerateInputs = _PLGNAGenerateInputsPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNAGenerateInputs');
+  late final _PLGNAGenerateInputs =
+      _PLGNAGenerateInputsPtr.asFunction<
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
-  void PLGNFreeStatus(
-    ffi.Pointer<PLGNStatus> status,
-  ) {
-    return _PLGNFreeStatus(
-      status,
-    );
+  void PLGNFreeStatus(ffi.Pointer<PLGNStatus> status) {
+    return _PLGNFreeStatus(status);
   }
 
   late final _PLGNFreeStatusPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<PLGNStatus>)>>(
-          'PLGNFreeStatus');
+        'PLGNFreeStatus',
+      );
   late final _PLGNFreeStatus =
       _PLGNFreeStatusPtr.asFunction<void Function(ffi.Pointer<PLGNStatus>)>();
 
-  int PLGNCleanCache(
-    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
-  ) {
-    return _PLGNCleanCache(
-      status,
-    );
+  int PLGNCleanCache(ffi.Pointer<ffi.Pointer<PLGNStatus>> status) {
+    return _PLGNCleanCache(status);
   }
 
-  late final _PLGNCleanCachePtr = _lookup<
-      ffi.NativeFunction<
-          GoUint8 Function(
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNCleanCache');
-  late final _PLGNCleanCache = _PLGNCleanCachePtr.asFunction<
-      int Function(ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+  late final _PLGNCleanCachePtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(ffi.Pointer<ffi.Pointer<PLGNStatus>>)
+        >
+      >('PLGNCleanCache');
+  late final _PLGNCleanCache =
+      _PLGNCleanCachePtr.asFunction<
+        int Function(ffi.Pointer<ffi.Pointer<PLGNStatus>>)
+      >();
 
   int PLGNCleanCache2(
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNCleanCache2(
-      cfg,
-      status,
-    );
+    return _PLGNCleanCache2(cfg, status);
   }
 
-  late final _PLGNCleanCache2Ptr = _lookup<
-      ffi.NativeFunction<
-          GoUint8 Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNCleanCache2');
-  late final _PLGNCleanCache2 = _PLGNCleanCache2Ptr.asFunction<
-      int Function(
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+  late final _PLGNCleanCache2Ptr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNCleanCache2');
+  late final _PLGNCleanCache2 =
+      _PLGNCleanCache2Ptr.asFunction<
+        int Function(
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNCacheCredentials(
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNCacheCredentials(
-      in1,
-      cfg,
-      status,
-    );
+    return _PLGNCacheCredentials(in$, cfg, status);
   }
 
-  late final _PLGNCacheCredentialsPtr = _lookup<
-      ffi.NativeFunction<
-          GoUint8 Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNCacheCredentials');
-  late final _PLGNCacheCredentials = _PLGNCacheCredentialsPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+  late final _PLGNCacheCredentialsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNCacheCredentials');
+  late final _PLGNCacheCredentials =
+      _PLGNCacheCredentialsPtr.asFunction<
+        int Function(
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNW3CCredentialFromOnchainHex(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNW3CCredentialFromOnchainHex(
-      jsonResponse,
-      in1,
-      cfg,
-      status,
-    );
+    return _PLGNW3CCredentialFromOnchainHex(jsonResponse, in$, cfg, status);
   }
 
-  late final _PLGNW3CCredentialFromOnchainHexPtr = _lookup<
-          ffi.NativeFunction<
-              GoUint8 Function(
-                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
-      'PLGNW3CCredentialFromOnchainHex');
+  late final _PLGNW3CCredentialFromOnchainHexPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNW3CCredentialFromOnchainHex');
   late final _PLGNW3CCredentialFromOnchainHex =
       _PLGNW3CCredentialFromOnchainHexPtr.asFunction<
-          int Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNW3CCredentialFromAnonAadhaarInputs(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
     return _PLGNW3CCredentialFromAnonAadhaarInputs(
       jsonResponse,
-      in1,
+      in$,
       cfg,
       status,
     );
   }
 
-  late final _PLGNW3CCredentialFromAnonAadhaarInputsPtr = _lookup<
-          ffi.NativeFunction<
-              GoUint8 Function(
-                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
-      'PLGNW3CCredentialFromAnonAadhaarInputs');
+  late final _PLGNW3CCredentialFromAnonAadhaarInputsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNW3CCredentialFromAnonAadhaarInputs');
   late final _PLGNW3CCredentialFromAnonAadhaarInputs =
       _PLGNW3CCredentialFromAnonAadhaarInputsPtr.asFunction<
-          int Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNW3CCredentialFromPassportInputs(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNW3CCredentialFromPassportInputs(
-      jsonResponse,
-      in1,
-      cfg,
-      status,
-    );
+    return _PLGNW3CCredentialFromPassportInputs(jsonResponse, in$, cfg, status);
   }
 
-  late final _PLGNW3CCredentialFromPassportInputsPtr = _lookup<
-          ffi.NativeFunction<
-              GoUint8 Function(
-                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
-      'PLGNW3CCredentialFromPassportInputs');
+  late final _PLGNW3CCredentialFromPassportInputsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNW3CCredentialFromPassportInputs');
   late final _PLGNW3CCredentialFromPassportInputs =
       _PLGNW3CCredentialFromPassportInputsPtr.asFunction<
-          int Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNDescribeID(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNDescribeID(
-      jsonResponse,
-      in1,
-      cfg,
-      status,
-    );
+    return _PLGNDescribeID(jsonResponse, in$, cfg, status);
   }
 
-  late final _PLGNDescribeIDPtr = _lookup<
-      ffi.NativeFunction<
+  late final _PLGNDescribeIDPtr =
+      _lookup<
+        ffi.NativeFunction<
           GoUint8 Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNDescribeID');
-  late final _PLGNDescribeID = _PLGNDescribeIDPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNDescribeID');
+  late final _PLGNDescribeID =
+      _PLGNDescribeIDPtr.asFunction<
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNBabyJubJubSignPoseidon(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNBabyJubJubSignPoseidon(
-      jsonResponse,
-      in1,
-      cfg,
-      status,
-    );
+    return _PLGNBabyJubJubSignPoseidon(jsonResponse, in$, cfg, status);
   }
 
-  late final _PLGNBabyJubJubSignPoseidonPtr = _lookup<
-          ffi.NativeFunction<
-              GoUint8 Function(
-                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
-      'PLGNBabyJubJubSignPoseidon');
+  late final _PLGNBabyJubJubSignPoseidonPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNBabyJubJubSignPoseidon');
   late final _PLGNBabyJubJubSignPoseidon =
       _PLGNBabyJubJubSignPoseidonPtr.asFunction<
-          int Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNBabyJubJubVerifyPoseidon(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNBabyJubJubVerifyPoseidon(
-      jsonResponse,
-      in1,
-      cfg,
-      status,
-    );
+    return _PLGNBabyJubJubVerifyPoseidon(jsonResponse, in$, cfg, status);
   }
 
-  late final _PLGNBabyJubJubVerifyPoseidonPtr = _lookup<
-          ffi.NativeFunction<
-              GoUint8 Function(
-                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
-      'PLGNBabyJubJubVerifyPoseidon');
+  late final _PLGNBabyJubJubVerifyPoseidonPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNBabyJubJubVerifyPoseidon');
   late final _PLGNBabyJubJubVerifyPoseidon =
       _PLGNBabyJubJubVerifyPoseidonPtr.asFunction<
-          int Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNBabyJubJubPrivate2Public(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNBabyJubJubPrivate2Public(
-      jsonResponse,
-      in1,
-      cfg,
-      status,
-    );
+    return _PLGNBabyJubJubPrivate2Public(jsonResponse, in$, cfg, status);
   }
 
-  late final _PLGNBabyJubJubPrivate2PublicPtr = _lookup<
-          ffi.NativeFunction<
-              GoUint8 Function(
-                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
-      'PLGNBabyJubJubPrivate2Public');
+  late final _PLGNBabyJubJubPrivate2PublicPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNBabyJubJubPrivate2Public');
   late final _PLGNBabyJubJubPrivate2Public =
       _PLGNBabyJubJubPrivate2PublicPtr.asFunction<
-          int Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNBabyJubJubPublicUncompress(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNBabyJubJubPublicUncompress(
-      jsonResponse,
-      in1,
-      cfg,
-      status,
-    );
+    return _PLGNBabyJubJubPublicUncompress(jsonResponse, in$, cfg, status);
   }
 
-  late final _PLGNBabyJubJubPublicUncompressPtr = _lookup<
-          ffi.NativeFunction<
-              GoUint8 Function(
-                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
-      'PLGNBabyJubJubPublicUncompress');
+  late final _PLGNBabyJubJubPublicUncompressPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNBabyJubJubPublicUncompress');
   late final _PLGNBabyJubJubPublicUncompress =
       _PLGNBabyJubJubPublicUncompressPtr.asFunction<
-          int Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNBabyJubJubPublicCompress(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNBabyJubJubPublicCompress(
-      jsonResponse,
-      in1,
-      cfg,
-      status,
-    );
+    return _PLGNBabyJubJubPublicCompress(jsonResponse, in$, cfg, status);
   }
 
-  late final _PLGNBabyJubJubPublicCompressPtr = _lookup<
-          ffi.NativeFunction<
-              GoUint8 Function(
-                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
-      'PLGNBabyJubJubPublicCompress');
+  late final _PLGNBabyJubJubPublicCompressPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNBabyJubJubPublicCompress');
   late final _PLGNBabyJubJubPublicCompress =
       _PLGNBabyJubJubPublicCompressPtr.asFunction<
-          int Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNValidateAttestationDocument(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNValidateAttestationDocument(
-      jsonResponse,
-      in1,
-      cfg,
-      status,
-    );
+    return _PLGNValidateAttestationDocument(jsonResponse, in$, cfg, status);
   }
 
-  late final _PLGNValidateAttestationDocumentPtr = _lookup<
-          ffi.NativeFunction<
-              GoUint8 Function(
-                  ffi.Pointer<ffi.Pointer<ffi.Char>>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Char>,
-                  ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>(
-      'PLGNValidateAttestationDocument');
+  late final _PLGNValidateAttestationDocumentPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNValidateAttestationDocument');
   late final _PLGNValidateAttestationDocument =
       _PLGNValidateAttestationDocumentPtr.asFunction<
-          int Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNAAnonPack(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNAAnonPack(
-      jsonResponse,
-      in1,
-      cfg,
-      status,
-    );
+    return _PLGNAAnonPack(jsonResponse, in$, cfg, status);
   }
 
-  late final _PLGNAAnonPackPtr = _lookup<
-      ffi.NativeFunction<
+  late final _PLGNAAnonPackPtr =
+      _lookup<
+        ffi.NativeFunction<
           GoUint8 Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNAAnonPack');
-  late final _PLGNAAnonPack = _PLGNAAnonPackPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNAAnonPack');
+  late final _PLGNAAnonPack =
+      _PLGNAAnonPackPtr.asFunction<
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 
   int PLGNAAnonUnpack(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
-    ffi.Pointer<ffi.Char> in1,
+    ffi.Pointer<ffi.Char> in$,
     ffi.Pointer<ffi.Char> cfg,
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
-    return _PLGNAAnonUnpack(
-      jsonResponse,
-      in1,
-      cfg,
-      status,
-    );
+    return _PLGNAAnonUnpack(jsonResponse, in$, cfg, status);
   }
 
-  late final _PLGNAAnonUnpackPtr = _lookup<
-      ffi.NativeFunction<
+  late final _PLGNAAnonUnpackPtr =
+      _lookup<
+        ffi.NativeFunction<
           GoUint8 Function(
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<PLGNStatus>>)>>('PLGNAAnonUnpack');
-  late final _PLGNAAnonUnpack = _PLGNAAnonUnpackPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<PLGNStatus>>)>();
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNAAnonUnpack');
+  late final _PLGNAAnonUnpack =
+      _PLGNAAnonUnpackPtr.asFunction<
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
+
+  int PLGNDecryptJWE(
+    ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
+    ffi.Pointer<ffi.Char> in$,
+    ffi.Pointer<ffi.Char> cfg,
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNDecryptJWE(jsonResponse, in$, cfg, status);
+  }
+
+  late final _PLGNDecryptJWEPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNDecryptJWE');
+  late final _PLGNDecryptJWE =
+      _PLGNDecryptJWEPtr.asFunction<
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
+
+  int PLGNDecryptEncryptedCredential(
+    ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
+    ffi.Pointer<ffi.Char> in$,
+    ffi.Pointer<ffi.Char> cfg,
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNDecryptEncryptedCredential(jsonResponse, in$, cfg, status);
+  }
+
+  late final _PLGNDecryptEncryptedCredentialPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNDecryptEncryptedCredential');
+  late final _PLGNDecryptEncryptedCredential =
+      _PLGNDecryptEncryptedCredentialPtr.asFunction<
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
+
+  int PLGNVerifyProof(
+    ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
+    ffi.Pointer<ffi.Char> in$,
+    ffi.Pointer<ffi.Char> cfg,
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNVerifyProof(jsonResponse, in$, cfg, status);
+  }
+
+  late final _PLGNVerifyProofPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNVerifyProof');
+  late final _PLGNVerifyProof =
+      _PLGNVerifyProofPtr.asFunction<
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
 }
 
 typedef __int8_t = ffi.SignedChar;
@@ -1012,9 +1187,10 @@ typedef __darwin_uid_t = __uint32_t;
 typedef __darwin_useconds_t = __uint32_t;
 
 final class __darwin_pthread_handler_rec extends ffi.Struct {
-  external ffi
-      .Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>
-      __routine;
+  external ffi.Pointer<
+    ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+  >
+  __routine;
 
   external ffi.Pointer<ffi.Void> __arg;
 
@@ -1153,11 +1329,11 @@ enum idtype_t {
   const idtype_t(this.value);
 
   static idtype_t fromValue(int value) => switch (value) {
-        0 => P_ALL,
-        1 => P_PID,
-        2 => P_PGID,
-        _ => throw ArgumentError("Unknown value for idtype_t: $value"),
-      };
+    0 => P_ALL,
+    1 => P_PID,
+    2 => P_PGID,
+    _ => throw ArgumentError('Unknown value for idtype_t: $value'),
+  };
 }
 
 typedef pid_t = __darwin_pid_t;
@@ -1244,13 +1420,14 @@ typedef siginfo_t = __siginfo;
 
 final class __sigaction_u extends ffi.Union {
   external ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int)>>
-      __sa_handler;
+  __sa_handler;
 
   external ffi.Pointer<
-          ffi.NativeFunction<
-              ffi.Void Function(
-                  ffi.Int, ffi.Pointer<__siginfo>, ffi.Pointer<ffi.Void>)>>
-      __sa_sigaction;
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.Int, ffi.Pointer<__siginfo>, ffi.Pointer<ffi.Void>)
+    >
+  >
+  __sa_sigaction;
 }
 
 typedef sig_tFunction = ffi.Void Function(ffi.Int);
@@ -1480,20 +1657,20 @@ enum PLGNStatusCode {
   const PLGNStatusCode(this.value);
 
   static PLGNStatusCode fromValue(int value) => switch (value) {
-        0 => PLGNSTATUSCODE_ERROR,
-        1 => PLGNSTATUSCODE_NIL_POINTER,
-        2 => PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_EXTRACTION_ERROR,
-        3 => PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_RESOLVE_ERROR,
-        4 => PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_MT_BUILD_ERROR,
-        5 => PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_MT_STATE_ERROR,
-        6 => PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_REVOKED_ERROR,
-        7 => PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_EXTRACTION_ERROR,
-        8 => PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_RESOLVE_ERROR,
-        9 => PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_MT_BUILD_ERROR,
-        10 => PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_MT_STATE_ERROR,
-        11 => PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_REVOKED_ERROR,
-        _ => throw ArgumentError("Unknown value for PLGNStatusCode: $value"),
-      };
+    0 => PLGNSTATUSCODE_ERROR,
+    1 => PLGNSTATUSCODE_NIL_POINTER,
+    2 => PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_EXTRACTION_ERROR,
+    3 => PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_RESOLVE_ERROR,
+    4 => PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_MT_BUILD_ERROR,
+    5 => PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_MT_STATE_ERROR,
+    6 => PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_REVOKED_ERROR,
+    7 => PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_EXTRACTION_ERROR,
+    8 => PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_RESOLVE_ERROR,
+    9 => PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_MT_BUILD_ERROR,
+    10 => PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_MT_STATE_ERROR,
+    11 => PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_REVOKED_ERROR,
+    _ => throw ArgumentError('Unknown value for PLGNStatusCode: $value'),
+  };
 }
 
 final class _PLGNStatus extends ffi.Struct {

@@ -83,7 +83,7 @@ ffigen:
   output: 'lib/common/libs/polygonidcore/native_polygonidcore.dart'
   headers:
     entry-points:
-      - 'ios/Frameworks/libpolygonid.xcframework/libpolygonid.h'
+      - 'ios/polygonid_flutter_sdk/Frameworks/libpolygonid.xcframework/libpolygonid.h'
   functions:
     include:
       - PLGN.*
