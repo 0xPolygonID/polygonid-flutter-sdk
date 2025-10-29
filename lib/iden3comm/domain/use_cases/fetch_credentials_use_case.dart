@@ -1,3 +1,4 @@
+import 'package:jose_plus/jose.dart';
 import 'package:polygonid_flutter_sdk/assets/get_issuer_id_interface.g.dart';
 import 'package:polygonid_flutter_sdk/assets/onchain_non_merkelized_issuer_base.g.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
@@ -55,6 +56,7 @@ class FetchCredentialsUseCase {
     required String privateKey,
     required String genesisDid,
     required BigInt profileNonce,
+    required List<JsonWebKey> keys,
     String? blockchain,
     String? network,
     String? method,
@@ -70,8 +72,8 @@ class FetchCredentialsUseCase {
 
       // we get the current network chain selected
       if (network == null || blockchain == null) {
-        final ChainConfigEntity chain =
-            await _getSelectedChainUseCase.execute();
+        final ChainConfigEntity chain = await _getSelectedChainUseCase
+            .execute();
         network = chain.network;
         blockchain = chain.blockchain;
         method = chain.method;
@@ -97,6 +99,7 @@ class FetchCredentialsUseCase {
           genesisDid: genesisDid,
           profileNonce: profileNonce,
           profileDid: profileDid,
+          keys: keys,
         );
         return credentials;
       }
@@ -123,13 +126,11 @@ class FetchCredentialsUseCase {
     required String genesisDid,
     required BigInt profileNonce,
     required String profileDid,
+    required List<JsonWebKey> keys,
   }) async {
     // we get all the requests of the credential offer
     final List<String> requests = await _getFetchRequestsUseCase.execute(
-      param: GetFetchRequestsParam(
-        credentialOfferMessage,
-        profileDid,
-      ),
+      param: GetFetchRequestsParam(credentialOfferMessage, profileDid),
     );
 
     final List<CredentialEntity> credentials = [];
@@ -146,12 +147,13 @@ class FetchCredentialsUseCase {
 
       // we get the credential from the issuer using the authToken
       // and the url of the credential
-      final CredentialEntity credential =
-          await _iden3commCredentialRepository.fetchClaim(
-        did: profileDid,
-        authToken: authToken,
-        url: credentialOfferMessage.body.url,
-      );
+      final CredentialEntity credential = await _iden3commCredentialRepository
+          .fetchClaim(
+            did: profileDid,
+            authToken: authToken,
+            url: credentialOfferMessage.body.url,
+            keys: keys,
+          );
 
       credentials.add(credential);
     }
@@ -183,36 +185,38 @@ class FetchCredentialsUseCase {
     );
 
     // TODO (moria): Maybe refactor this to a separate use case
-    final supportsInterfaceCheck = await issuer.supportsInterface(
-      (interfaceId: hexToBytes(interfaceCheckInterface)),
-    );
-    final supportsNonMerklizedIssuerInterface = await issuer.supportsInterface(
-      (interfaceId: hexToBytes(nonMerklizedIssuerInterface)),
-    );
+    final supportsInterfaceCheck = await issuer.supportsInterface((
+      interfaceId: hexToBytes(interfaceCheckInterface),
+    ));
+    final supportsNonMerklizedIssuerInterface = await issuer.supportsInterface((
+      interfaceId: hexToBytes(nonMerklizedIssuerInterface),
+    ));
 
-    final supportsGetIssuerIdInterface = await issuer.supportsInterface(
-      (interfaceId: hexToBytes(getIssuerIdInterface)),
-    );
+    final supportsGetIssuerIdInterface = await issuer.supportsInterface((
+      interfaceId: hexToBytes(getIssuerIdInterface),
+    ));
 
     if (!supportsInterfaceCheck ||
         !supportsNonMerklizedIssuerInterface ||
         !supportsGetIssuerIdInterface) {
       _stacktraceManager.addError(
-          "Contract at address $address does not support non-merkelized issuer interface");
+        "Contract at address $address does not support non-merkelized issuer interface",
+      );
       throw FetchClaimException(
-          errorMessage:
-              "Contract at address $address does not support non-merkelized issuer interface");
+        errorMessage:
+            "Contract at address $address does not support non-merkelized issuer interface",
+      );
     }
     final issuerIdInt = await getIssuerId.getId();
     final issuerDid = (await _identityRepository.describeId(
       id: issuerIdInt,
       config: env.config,
-    ))
-        .did;
+    )).did;
 
     final didEntity = await _getDidUseCase.execute(param: profileDid);
-    final userId =
-        await _identityRepository.convertIdToBigInt(id: didEntity.identifier);
+    final userId = await _identityRepository.convertIdToBigInt(
+      id: didEntity.identifier,
+    );
 
     final adapterVersion = await issuer.getCredentialAdapterVersion();
 
@@ -239,7 +243,8 @@ class FetchCredentialsUseCase {
         rethrow;
       } catch (e) {
         _stacktraceManager.addError(
-            "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e");
+          "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e",
+        );
         throw FetchClaimException(
           errorMessage: "Error while fetching onchain claim",
           error: e,

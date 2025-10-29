@@ -43,77 +43,98 @@ void main() {
       reset(remoteIden3commDataSource);
 
       // Given
-      when(remoteIden3commDataSource.fetchSchema(url: anyNamed('url')))
-          .thenAnswer((realInvocation) => Future.value(CommonMocks.aMap));
-      when(remoteIden3commDataSource.fetchClaim(
-              authToken: anyNamed('authToken'),
-              url: anyNamed('url'),
-              did: anyNamed('did')))
-          .thenAnswer(
-              (realInvocation) => Future.value(CredentialMocks.claimDTO));
+      when(
+        remoteIden3commDataSource.fetchSchema(url: anyNamed('url')),
+      ).thenAnswer((realInvocation) => Future.value(CommonMocks.aMap));
+      when(
+        remoteIden3commDataSource.fetchClaim(
+          authToken: anyNamed('authToken'),
+          url: anyNamed('url'),
+          did: anyNamed('did'),
+          keys: anyNamed('keys'),
+        ),
+      ).thenAnswer((realInvocation) => Future.value(CredentialMocks.claimDTO));
       when(claimMapper.mapFrom(any)).thenReturn(CredentialMocks.claim);
     });
 
     test(
-        "Given parameters, when I call fetchClaim, then I expect a ClaimEntity to be returned",
-        () async {
-      // When
-      expect(
+      "Given parameters, when I call fetchClaim, then I expect a ClaimEntity to be returned",
+      () async {
+        // When
+        expect(
           await repository.fetchClaim(
-              did: CommonMocks.identifier,
-              authToken: CommonMocks.token,
-              url: CommonMocks.url),
-          CredentialMocks.claim);
+            did: CommonMocks.identifier,
+            authToken: CommonMocks.token,
+            url: CommonMocks.url,
+            keys: [],
+          ),
+          CredentialMocks.claim,
+        );
 
-      // Then
-      var fetchCaptured = verify(remoteIden3commDataSource.fetchClaim(
-              authToken: captureAnyNamed('authToken'),
-              url: captureAnyNamed('url'),
-              did: captureAnyNamed('did')))
-          .captured;
+        // Then
+        var fetchCaptured = verify(
+          remoteIden3commDataSource.fetchClaim(
+            authToken: captureAnyNamed('authToken'),
+            url: captureAnyNamed('url'),
+            did: captureAnyNamed('did'),
+            keys: captureAnyNamed('keys'),
+          ),
+        ).captured;
 
-      expect(fetchCaptured[0], CommonMocks.token);
-      expect(fetchCaptured[1], CommonMocks.url);
-      expect(fetchCaptured[2], CommonMocks.identifier);
+        expect(fetchCaptured[0], CommonMocks.token);
+        expect(fetchCaptured[1], CommonMocks.url);
+        expect(fetchCaptured[2], CommonMocks.identifier);
 
-      expect(verify(claimMapper.mapFrom(captureAny)).captured.first,
-          CredentialMocks.claimDTO);
-    });
+        expect(
+          verify(claimMapper.mapFrom(captureAny)).captured.first,
+          CredentialMocks.claimDTO,
+        );
+      },
+    );
 
     test(
-        "Given parameters, when I call fetchClaim and an error occurred, then I expect a FetchClaimException to be thrown",
-        () async {
-      // Given
-      when(remoteIden3commDataSource.fetchClaim(
-              authToken: anyNamed('authToken'),
-              url: anyNamed('url'),
-              did: anyNamed('did')))
-          .thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
+      "Given parameters, when I call fetchClaim and an error occurred, then I expect a FetchClaimException to be thrown",
+      () async {
+        // Given
+        when(
+          remoteIden3commDataSource.fetchClaim(
+            authToken: anyNamed('authToken'),
+            url: anyNamed('url'),
+            did: anyNamed('did'),
+            keys: anyNamed('keys'),
+          ),
+        ).thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
-      // When
-      await repository
-          .fetchClaim(
+        // When
+        await repository
+            .fetchClaim(
               did: CommonMocks.identifier,
               authToken: CommonMocks.token,
-              url: CommonMocks.url)
-          .then((_) => expect(true, false))
-          .catchError((error) {
-        expect(error, isA<FetchClaimException>());
-        expect(error.error, CommonMocks.exception);
-      });
+              url: CommonMocks.url,
+              keys: [],
+            )
+            .then((_) => expect(true, false))
+            .catchError((error) {
+              expect(error, isA<FetchClaimException>());
+              expect(error.error, CommonMocks.exception);
+            });
 
-      // Then
-      var fetchCaptured = verify(remoteIden3commDataSource.fetchClaim(
-              authToken: captureAnyNamed('authToken'),
-              url: captureAnyNamed('url'),
-              did: captureAnyNamed('did')))
-          .captured;
+        // Then
+        var fetchCaptured = verify(
+          remoteIden3commDataSource.fetchClaim(
+            authToken: captureAnyNamed('authToken'),
+            url: captureAnyNamed('url'),
+            did: captureAnyNamed('did'),
+            keys: captureAnyNamed('keys'),
+          ),
+        ).captured;
 
-      expect(fetchCaptured[0], CommonMocks.token);
-      expect(fetchCaptured[1], CommonMocks.url);
-      expect(fetchCaptured[2], CommonMocks.identifier);
+        expect(fetchCaptured[0], CommonMocks.token);
+        expect(fetchCaptured[1], CommonMocks.url);
+        expect(fetchCaptured[2], CommonMocks.identifier);
 
-      verifyNever(claimMapper.mapFrom(captureAny));
-    });
+        verifyNever(claimMapper.mapFrom(captureAny));
+      },
+    );
   });
 }

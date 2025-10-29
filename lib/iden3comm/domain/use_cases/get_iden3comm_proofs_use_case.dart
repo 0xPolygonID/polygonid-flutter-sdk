@@ -135,8 +135,8 @@ class GetIden3commProofsUseCase
 
         if (isCorrectType && isCircuitSupported) {
           String circuitId = request.scope.circuitId;
-          CircuitDataEntity circuitData =
-              await _proofRepository.loadCircuitFiles(circuitId);
+          CircuitDataEntity circuitData = await _proofRepository
+              .loadCircuitFiles(circuitId);
 
           String? challenge;
           String? privKey;
@@ -154,13 +154,13 @@ class GetIden3commProofsUseCase
             ),
           );
 
-          BigInt claimSubjectProfileNonce =
-              identityEntity.profiles.keys.firstWhere(
-            (k) =>
-                identityEntity.profiles[k] ==
-                claim.info["credentialSubject"]["id"],
-            orElse: () => GENESIS_PROFILE_NONCE,
-          );
+          BigInt claimSubjectProfileNonce = identityEntity.profiles.keys
+              .firstWhere(
+                (k) =>
+                    identityEntity.profiles[k] ==
+                    claim.info["credentialSubject"]["id"],
+                orElse: () => GENESIS_PROFILE_NONCE,
+              );
 
           int? groupId = request.scope.query.groupId;
           String linkNonce = "0";
@@ -198,10 +198,8 @@ class GetIden3commProofsUseCase
           );
 
           // Generate proof
-          Iden3commProofEntity proof =
-              await _generateIden3commProofUseCase.execute(
-            param: proofParam,
-          );
+          Iden3commProofEntity proof = await _generateIden3commProofUseCase
+              .execute(param: proofParam);
 
           proofs.add(proof);
         }
@@ -251,7 +249,8 @@ class GetIden3commProofsUseCase
     var expirationTimeFormatted = DateFormat(
       "yyyy-MM-dd HH:mm:ss",
     ).format(expirationTime);
-    bool isExpired = nowFormatted.compareTo(expirationTimeFormatted) > 0 ||
+    bool isExpired =
+        nowFormatted.compareTo(expirationTimeFormatted) > 0 ||
         claim.state == CredentialState.expired;
 
     if (isExpired && claim.info.containsKey("refreshService")) {
@@ -259,14 +258,16 @@ class GetIden3commProofsUseCase
         "Refreshing expired credential...",
       );
 
-      CredentialEntity refreshedClaimEntity =
-          await _refreshCredentialUseCase.execute(
-        param: RefreshCredentialParam(
-          credential: claim,
-          genesisDid: param.genesisDid,
-          privateKey: param.privateKey,
-        ),
-      );
+      CredentialEntity refreshedClaimEntity = await _refreshCredentialUseCase
+          .execute(
+            param: RefreshCredentialParam(
+              credential: claim,
+              genesisDid: param.genesisDid,
+              privateKey: param.privateKey,
+              // TODO Maybe add keys here
+              keys: [],
+            ),
+          );
 
       claim = refreshedClaimEntity;
     }

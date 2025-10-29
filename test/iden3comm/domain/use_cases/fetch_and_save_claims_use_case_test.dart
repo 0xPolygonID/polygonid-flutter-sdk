@@ -28,16 +28,10 @@ import 'fetch_and_save_claims_use_case_test.mocks.dart';
 // Data
 final exception = Exception();
 
-final requests = [
-  "theRequest",
-  "theOtherRequest",
-  "theThirdRequest",
-];
+final requests = ["theRequest", "theOtherRequest", "theThirdRequest"];
 
 final revStatus = {
-  "mtp": {
-    "existence": false,
-  }
+  "mtp": {"existence": false},
 };
 
 final claimEntity = CredentialEntity(
@@ -54,10 +48,12 @@ final claimEntity = CredentialEntity(
 final result = [claimEntity, claimEntity, claimEntity];
 
 final param = FetchAndSaveClaimsParam(
-    message: Iden3commMocks.offerRequest,
-    genesisDid: CommonMocks.identifier,
-    profileNonce: CommonMocks.genesisNonce,
-    privateKey: CommonMocks.privateKey);
+  message: Iden3commMocks.offerRequest,
+  genesisDid: CommonMocks.identifier,
+  profileNonce: CommonMocks.genesisNonce,
+  privateKey: CommonMocks.privateKey,
+  keys: [],
+);
 
 // Dependencies
 MockIden3commCredentialRepository iden3commCredentialRepository =
@@ -132,130 +128,163 @@ void main() {
       reset(getClaimRevocationStatusUseCase);
 
       // Given
-      when(getFetchRequestsUseCase.execute(param: anyNamed('param')))
-          .thenAnswer((realInvocation) => Future.value(requests));
-      when(getAuthTokenUseCase.execute(param: anyNamed('param')))
-          .thenAnswer((realInvocation) => Future.value(CommonMocks.token));
-      when(saveClaimsUseCase.execute(param: anyNamed('param')))
-          .thenAnswer((realInvocation) => Future.value(result));
-      when(iden3commCredentialRepository.fetchClaim(
-              did: anyNamed('did'),
-              authToken: anyNamed('authToken'),
-              url: anyNamed('url')))
-          .thenAnswer((realInvocation) => Future.value(claimEntity));
-      when(getClaimRevocationStatusUseCase.execute(param: anyNamed('param')))
-          .thenAnswer((realInvocation) => Future.value(revStatus));
-      when(getDidIdentifierUseCase.execute(param: anyNamed('param')))
-          .thenAnswer((realInvocation) => Future.value(CommonMocks.did));
-      when(getEnvUseCase.execute(param: anyNamed('param')))
-          .thenAnswer((realInvocation) => Future.value(CommonMocks.env));
-      when(getSelectedChainUseCase.execute(param: anyNamed('param')))
-          .thenAnswer((realInvocation) => Future.value(CommonMocks.chain));
-      when(checkProfileAndDidCurrentEnvUseCase.execute(
-              param: anyNamed('param')))
-          .thenAnswer((realInvocation) => Future.value(null));
+      when(
+        getFetchRequestsUseCase.execute(param: anyNamed('param')),
+      ).thenAnswer((realInvocation) => Future.value(requests));
+      when(
+        getAuthTokenUseCase.execute(param: anyNamed('param')),
+      ).thenAnswer((realInvocation) => Future.value(CommonMocks.token));
+      when(
+        saveClaimsUseCase.execute(param: anyNamed('param')),
+      ).thenAnswer((realInvocation) => Future.value(result));
+      when(
+        iden3commCredentialRepository.fetchClaim(
+          did: anyNamed('did'),
+          authToken: anyNamed('authToken'),
+          url: anyNamed('url'),
+          keys: anyNamed('keys'),
+        ),
+      ).thenAnswer((realInvocation) => Future.value(claimEntity));
+      when(
+        getClaimRevocationStatusUseCase.execute(param: anyNamed('param')),
+      ).thenAnswer((realInvocation) => Future.value(revStatus));
+      when(
+        getDidIdentifierUseCase.execute(param: anyNamed('param')),
+      ).thenAnswer((realInvocation) => Future.value(CommonMocks.did));
+      when(
+        getEnvUseCase.execute(param: anyNamed('param')),
+      ).thenAnswer((realInvocation) => Future.value(CommonMocks.env));
+      when(
+        getSelectedChainUseCase.execute(param: anyNamed('param')),
+      ).thenAnswer((realInvocation) => Future.value(CommonMocks.chain));
+      when(
+        checkProfileAndDidCurrentEnvUseCase.execute(param: anyNamed('param')),
+      ).thenAnswer((realInvocation) => Future.value(null));
     });
 
     test(
-        "Given a FetchAndSaveClaimsParam, when I call execute, then I expect a list of ClaimEntity to be returned",
-        () async {
-      // When
-      expect(await useCase.execute(param: param), result);
+      "Given a FetchAndSaveClaimsParam, when I call execute, then I expect a list of ClaimEntity to be returned",
+      () async {
+        // When
+        expect(await useCase.execute(param: param), result);
 
-      // Then
-      var fetchMessageCaptures = verify(
-              getFetchRequestsUseCase.execute(param: captureAnyNamed('param')))
-          .captured
-          .first;
+        // Then
+        var fetchMessageCaptures = verify(
+          getFetchRequestsUseCase.execute(param: captureAnyNamed('param')),
+        ).captured.first;
 
-      expect(fetchMessageCaptures.message, param.message);
-      expect(fetchMessageCaptures.did, CommonMocks.did);
+        expect(fetchMessageCaptures.message, param.message);
+        expect(fetchMessageCaptures.did, CommonMocks.did);
 
-      var authVerify =
-          verify(getAuthTokenUseCase.execute(param: captureAnyNamed('param')));
+        var authVerify = verify(
+          getAuthTokenUseCase.execute(param: captureAnyNamed('param')),
+        );
 
-      expect(authVerify.callCount, requests.length);
-      for (int i = 0; i < requests.length; i++) {
-        expect(authVerify.captured[i].genesisDid, param.genesisDid);
-        expect(authVerify.captured[i].privateKey, param.privateKey);
-        expect(authVerify.captured[i].message, requests[i]);
-      }
+        expect(authVerify.callCount, requests.length);
+        for (int i = 0; i < requests.length; i++) {
+          expect(authVerify.captured[i].genesisDid, param.genesisDid);
+          expect(authVerify.captured[i].privateKey, param.privateKey);
+          expect(authVerify.captured[i].message, requests[i]);
+        }
 
-      var verifyConfig =
-          verify(getEnvUseCase.execute(param: captureAnyNamed('param')));
-      expect(verifyConfig.callCount, 1);
-      var capturedConfig = verifyConfig.captured;
-      expect(capturedConfig[0], null);
+        var verifyConfig = verify(
+          getEnvUseCase.execute(param: captureAnyNamed('param')),
+        );
+        expect(verifyConfig.callCount, 1);
+        var capturedConfig = verifyConfig.captured;
+        expect(capturedConfig[0], null);
 
-      var captureCheck = verify(checkProfileAndDidCurrentEnvUseCase.execute(
-              param: captureAnyNamed('param')))
-          .captured
-          .first;
-      expect(captureCheck.did, param.genesisDid);
-      expect(captureCheck.privateKey, CommonMocks.privateKey);
-      expect(captureCheck.profileNonce, CommonMocks.genesisNonce);
+        var captureCheck = verify(
+          checkProfileAndDidCurrentEnvUseCase.execute(
+            param: captureAnyNamed('param'),
+          ),
+        ).captured.first;
+        expect(captureCheck.did, param.genesisDid);
+        expect(captureCheck.privateKey, CommonMocks.privateKey);
+        expect(captureCheck.profileNonce, CommonMocks.genesisNonce);
 
-      var fetchVerify = verify(iden3commCredentialRepository.fetchClaim(
-          did: captureAnyNamed('did'),
-          authToken: captureAnyNamed('authToken'),
-          url: captureAnyNamed('url')));
+        var fetchVerify = verify(
+          iden3commCredentialRepository.fetchClaim(
+            did: captureAnyNamed('did'),
+            authToken: captureAnyNamed('authToken'),
+            url: captureAnyNamed('url'),
+            keys: captureAnyNamed('keys'),
+          ),
+        );
 
-      expect(fetchVerify.callCount, requests.length);
-      for (int i = 0; i < requests.length * 3; i += 3) {
-        expect(fetchVerify.captured[i], CommonMocks.did);
-        expect(fetchVerify.captured[i + 1], CommonMocks.token);
-        expect(fetchVerify.captured[i + 2],
-            (param.message as CredentialsOfferMessage).body.url);
-      }
+        expect(fetchVerify.callCount, requests.length);
+        for (int i = 0; i < requests.length * 3; i += 4) {
+          expect(fetchVerify.captured[i], CommonMocks.did);
+          expect(fetchVerify.captured[i + 1], CommonMocks.token);
+          expect(
+            fetchVerify.captured[i + 2],
+            (param.message as CredentialsOfferMessage).body.url,
+          );
+          expect(fetchVerify.captured[i + 3], []);
+        }
 
-      // FIXME: This is verifying code that is currently commented out.
-      // var revStatusVerify = verify(getClaimRevocationStatusUseCase.execute(
-      //     param: captureAnyNamed('param')));
-    });
+        // FIXME: This is verifying code that is currently commented out.
+        // var revStatusVerify = verify(getClaimRevocationStatusUseCase.execute(
+        //     param: captureAnyNamed('param')));
+      },
+    );
 
     test(
-        "Given a FetchAndSaveClaimsParam, when I call execute and an error occurred, then I expect an exception to be thrown",
-        () async {
-      // Given
-      when(iden3commCredentialRepository.fetchClaim(
-              did: anyNamed('did'),
-              authToken: anyNamed('authToken'),
-              url: anyNamed('url')))
-          .thenAnswer((realInvocation) => Future.error(exception));
-      // When
-      await expectLater(useCase.execute(param: param), throwsA(exception));
+      "Given a FetchAndSaveClaimsParam, when I call execute and an error occurred, then I expect an exception to be thrown",
+      () async {
+        // Given
+        when(
+          iden3commCredentialRepository.fetchClaim(
+            did: anyNamed('did'),
+            authToken: anyNamed('authToken'),
+            url: anyNamed('url'),
+            keys: anyNamed('keys'),
+          ),
+        ).thenAnswer((realInvocation) => Future.error(exception));
+        // When
+        await expectLater(useCase.execute(param: param), throwsA(exception));
 
-      // Then
-      var fetchMessageCaptures = verify(
-              getFetchRequestsUseCase.execute(param: captureAnyNamed('param')))
-          .captured
-          .first;
+        // Then
+        var fetchMessageCaptures = verify(
+          getFetchRequestsUseCase.execute(param: captureAnyNamed('param')),
+        ).captured.first;
 
-      expect(fetchMessageCaptures.message, param.message);
-      expect(fetchMessageCaptures.did, CommonMocks.did);
+        expect(fetchMessageCaptures.message, param.message);
+        expect(fetchMessageCaptures.did, CommonMocks.did);
 
-      var authVerify =
-          verify(getAuthTokenUseCase.execute(param: captureAnyNamed('param')));
+        var authVerify = verify(
+          getAuthTokenUseCase.execute(param: captureAnyNamed('param')),
+        );
 
-      expect(authVerify.callCount, 1);
-      expect(authVerify.captured[0].genesisDid, param.genesisDid);
-      expect(authVerify.captured[0].privateKey, param.privateKey);
-      expect(authVerify.captured[0].message, requests[0]);
+        expect(authVerify.callCount, 1);
+        expect(authVerify.captured[0].genesisDid, param.genesisDid);
+        expect(authVerify.captured[0].privateKey, param.privateKey);
+        expect(authVerify.captured[0].message, requests[0]);
 
-      var fetchVerify = verify(iden3commCredentialRepository.fetchClaim(
-          did: captureAnyNamed('did'),
-          authToken: captureAnyNamed('authToken'),
-          url: captureAnyNamed('url')));
+        var fetchVerify = verify(
+          iden3commCredentialRepository.fetchClaim(
+            did: captureAnyNamed('did'),
+            authToken: captureAnyNamed('authToken'),
+            url: captureAnyNamed('url'),
+            keys: captureAnyNamed('keys'),
+          ),
+        );
 
-      expect(fetchVerify.callCount, 1);
+        expect(fetchVerify.callCount, 1);
 
-      expect(fetchVerify.captured[0], CommonMocks.did);
-      expect(fetchVerify.captured[1], CommonMocks.token);
-      expect(fetchVerify.captured[2],
-          (param.message as CredentialsOfferMessage).body.url);
+        expect(fetchVerify.captured[0], CommonMocks.did);
+        expect(fetchVerify.captured[1], CommonMocks.token);
+        expect(
+          fetchVerify.captured[2],
+          (param.message as CredentialsOfferMessage).body.url,
+        );
 
-      verifyNever(getClaimRevocationStatusUseCase.execute(
-          param: captureAnyNamed('param')));
-    });
+        verifyNever(
+          getClaimRevocationStatusUseCase.execute(
+            param: captureAnyNamed('param'),
+          ),
+        );
+      },
+    );
   });
 }

@@ -873,6 +873,8 @@ class Authenticate {
               credential: claim,
               genesisDid: genesisDid,
               privateKey: privateKey,
+              // TODO Maybe provide keys here?
+              keys: [],
             ),
           );
 

@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+import 'package:jose_plus/jose.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
@@ -157,6 +158,7 @@ abstract class PolygonIdSdkCredential {
     required CredentialEntity credential,
     required String genesisDid,
     required String privateKey,
+    required List<JsonWebKey> keys,
   });
 
   /// Cache a [CredentialEntity] associated to the identity previously stored to speed up
@@ -398,12 +400,14 @@ class Credential implements PolygonIdSdkCredential {
     required String genesisDid,
     required String privateKey,
     required CredentialEntity credential,
+    required List<JsonWebKey> keys,
   }) {
     return _refreshCredentialUseCase.execute(
       param: RefreshCredentialParam(
         credential: credential,
         genesisDid: genesisDid,
         privateKey: privateKey,
+        keys: keys,
       ),
     );
   }
