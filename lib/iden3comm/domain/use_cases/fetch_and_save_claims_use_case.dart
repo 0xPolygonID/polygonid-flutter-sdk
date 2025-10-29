@@ -1,3 +1,4 @@
+import 'package:jose_plus/jose.dart';
 import 'package:polygonid_flutter_sdk/assets/get_issuer_id_interface.g.dart';
 import 'package:polygonid_flutter_sdk/assets/onchain_non_merkelized_issuer_base.g.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
@@ -31,12 +32,14 @@ class FetchAndSaveClaimsParam {
   final String genesisDid;
   final BigInt profileNonce;
   final String privateKey;
+  final List<JsonWebKey> keys;
 
   FetchAndSaveClaimsParam({
     required this.message,
     required this.genesisDid,
     required this.profileNonce,
     required this.privateKey,
+    required this.keys,
   });
 }
 
@@ -45,7 +48,7 @@ class FetchAndSaveClaimsUseCase
   final Iden3commCredentialRepository _iden3commCredentialRepository;
   final FetchOnchainClaimUseCase _fetchOnchainClaimUseCase;
   final CheckProfileAndDidCurrentEnvUseCase
-      _checkProfileAndDidCurrentEnvUseCase;
+  _checkProfileAndDidCurrentEnvUseCase;
   final GetEnvUseCase _getEnvUseCase;
   final GetSelectedChainUseCase _getSelectedChainUseCase;
   final GetDidIdentifierUseCase _getDidIdentifierUseCase;
@@ -116,7 +119,8 @@ class FetchAndSaveClaimsUseCase
         claims = await _fetchOnchainCredentials(message, profileDid, param);
       } else {
         _stacktraceManager.addError(
-            "[FetchAndSaveClaimsUseCase] Unknown message type: ${message.runtimeType}");
+          "[FetchAndSaveClaimsUseCase] Unknown message type: ${message.runtimeType}",
+        );
         throw Exception("Unknown message type: ${message.runtimeType}");
       }
 
@@ -129,21 +133,20 @@ class FetchAndSaveClaimsUseCase
       );
 
       _stacktraceManager.logTrace(
-          "[FetchAndSaveClaimsUseCase] All claims have been saved: claimsLength ${claims.length}");
+        "[FetchAndSaveClaimsUseCase] All claims have been saved: claimsLength ${claims.length}",
+      );
 
       final config = env.config;
       for (final claim in claims) {
         // cache claim
         try {
           await _cacheCredentialUseCase.execute(
-            param: CacheCredentialParam(
-              credential: claim,
-              config: config,
-            ),
+            param: CacheCredentialParam(credential: claim, config: config),
           );
         } catch (e) {
           _stacktraceManager.logError(
-              "[FetchAndSaveClaimsUseCase] Error while caching claim: $e");
+            "[FetchAndSaveClaimsUseCase] Error while caching claim: $e",
+          );
         }
       }
 
@@ -160,10 +163,7 @@ class FetchAndSaveClaimsUseCase
     String profileDid,
   ) async {
     final requests = await _getFetchRequestsUseCase.execute(
-      param: GetFetchRequestsParam(
-        message,
-        profileDid,
-      ),
+      param: GetFetchRequestsParam(message, profileDid),
     );
 
     final claims = <CredentialEntity>[];
@@ -181,6 +181,7 @@ class FetchAndSaveClaimsUseCase
         did: profileDid,
         authToken: authToken,
         url: message.body.url,
+        keys: param.keys,
       );
 
       claims.add(claimEntity);
@@ -214,36 +215,38 @@ class FetchAndSaveClaimsUseCase
     );
 
     // TODO (moria): Maybe refactor this to a separate use case
-    final supportsInterfaceCheck = await issuer.supportsInterface(
-      (interfaceId: hexToBytes(interfaceCheckInterface)),
-    );
-    final supportsNonMerklizedIssuerInterface = await issuer.supportsInterface(
-      (interfaceId: hexToBytes(nonMerklizedIssuerInterface)),
-    );
+    final supportsInterfaceCheck = await issuer.supportsInterface((
+      interfaceId: hexToBytes(interfaceCheckInterface),
+    ));
+    final supportsNonMerklizedIssuerInterface = await issuer.supportsInterface((
+      interfaceId: hexToBytes(nonMerklizedIssuerInterface),
+    ));
 
-    final supportsGetIssuerIdInterface = await issuer.supportsInterface(
-      (interfaceId: hexToBytes(getIssuerIdInterface)),
-    );
+    final supportsGetIssuerIdInterface = await issuer.supportsInterface((
+      interfaceId: hexToBytes(getIssuerIdInterface),
+    ));
 
     if (!supportsInterfaceCheck ||
         !supportsNonMerklizedIssuerInterface ||
         !supportsGetIssuerIdInterface) {
       _stacktraceManager.addError(
-          "Contract at address $address does not support non-merkelized issuer interface");
+        "Contract at address $address does not support non-merkelized issuer interface",
+      );
       throw FetchClaimException(
-          errorMessage:
-              "Contract at address $address does not support non-merkelized issuer interface");
+        errorMessage:
+            "Contract at address $address does not support non-merkelized issuer interface",
+      );
     }
     final issuerIdInt = await getIssuerId.getId();
     final issuerDid = (await _identityRepository.describeId(
       id: issuerIdInt,
       config: env.config,
-    ))
-        .did;
+    )).did;
 
     final didEntity = await _getDidUseCase.execute(param: profileDid);
-    final userId =
-        await _identityRepository.convertIdToBigInt(id: didEntity.identifier);
+    final userId = await _identityRepository.convertIdToBigInt(
+      id: didEntity.identifier,
+    );
 
     final adapterVersion = await issuer.getCredentialAdapterVersion();
 
@@ -270,7 +273,8 @@ class FetchAndSaveClaimsUseCase
         rethrow;
       } catch (e) {
         _stacktraceManager.logError(
-            "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e");
+          "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e",
+        );
         throw FetchClaimException(
           errorMessage: "Error while fetching onchain claim",
           error: e,

@@ -22,22 +22,26 @@ const token = "theToken";
 const url = "theUrl";
 const identifier = "theIdentifier";
 Response dioResponse = Response(
-    data: jsonDecode(mockIssuanceMessage),
-    statusCode: 200,
-    requestOptions: RequestOptions(path: url));
+  data: jsonDecode(mockIssuanceMessage),
+  statusCode: 200,
+  requestOptions: RequestOptions(path: url),
+);
 Response dioErrorResponse = Response(
-    data: 'Error message',
-    statusCode: 444,
-    requestOptions: RequestOptions(path: url));
+  data: 'Error message',
+  statusCode: 444,
+  requestOptions: RequestOptions(path: url),
+);
 Response otherTypeResponse = Response(
-    data: jsonDecode(mockOtherTypeFetchClaim),
-    statusCode: 200,
-    requestOptions: RequestOptions(path: url));
+  data: jsonDecode(mockOtherTypeFetchClaim),
+  statusCode: 200,
+  requestOptions: RequestOptions(path: url),
+);
 final exception = Exception();
 
 /// We assume [FetchClaimResponseDTO] has been tested
-final issuanceMessage =
-    CredentialIssuanceMessage.fromJson(jsonDecode(mockIssuanceMessage));
+final issuanceMessage = CredentialIssuanceMessage.fromJson(
+  jsonDecode(mockIssuanceMessage),
+);
 final claim = CredentialDTO(
   id: issuanceMessage.body.credential.id,
   issuer: issuanceMessage.from,
@@ -57,66 +61,52 @@ RemoteIden3commDataSource dataSource = RemoteIden3commDataSource(
   stacktraceStreamManager,
 );
 
-@GenerateMocks([
-  Dio,
-  http.Client,
-  StacktraceManager,
-])
+@GenerateMocks([Dio, http.Client, StacktraceManager])
 void main() {
   group("Authenticate with token", () {
     test(
-        "Given token and authRequest, when called authWithToken, then I expect statusCode 200 response",
-        () async {
-      //
-      when(
-        dio.post(
-          any,
-          data: anyNamed("data"),
-          options: anyNamed("options"),
-        ),
-      ).thenAnswer((realInvocation) => Future.value(dioResponse));
+      "Given token and authRequest, when called authWithToken, then I expect statusCode 200 response",
+      () async {
+        //
+        when(
+          dio.post(any, data: anyNamed("data"), options: anyNamed("options")),
+        ).thenAnswer((realInvocation) => Future.value(dioResponse));
 
-      //
-      expect(
-        await dataSource.authWithToken(
-          url: CommonMocks.url,
-          token: CommonMocks.token,
-        ),
-        dioResponse,
-      );
+        //
+        expect(
+          await dataSource.authWithToken(
+            url: CommonMocks.url,
+            token: CommonMocks.token,
+          ),
+          dioResponse,
+        );
 
-      //
-      var captured = verify(dio.post(
-        captureAny,
-        data: captureAnyNamed('data'),
-        options: captureAnyNamed('options'),
-      )).captured;
+        //
+        var captured = verify(
+          dio.post(
+            captureAny,
+            data: captureAnyNamed('data'),
+            options: captureAnyNamed('options'),
+          ),
+        ).captured;
 
-      expect(captured[0], CommonMocks.url);
-      expect(captured[1], CommonMocks.token);
+        expect(captured[0], CommonMocks.url);
+        expect(captured[1], CommonMocks.token);
 
-      expect(
-        captured[2].headers,
-        {
+        expect(captured[2].headers, {
           HttpHeaders.acceptHeader: '*/*',
           HttpHeaders.contentTypeHeader: 'text/plain',
-        },
-      );
-    });
+        });
+      },
+    );
 
     test(
       "Given token and authRequest, when I call authWithToken and a server error occurred with status code 450, then I expect a DioException to be thrown",
       () async {
         // Arrange
         when(
-          dio.post(
-            any,
-            data: anyNamed('data'),
-            options: anyNamed('options'),
-          ),
-        ).thenAnswer(
-          (_) => Future.value(dioErrorResponse),
-        );
+          dio.post(any, data: anyNamed('data'), options: anyNamed('options')),
+        ).thenAnswer((_) => Future.value(dioErrorResponse));
 
         // Act & Assert
         await expectLater(
@@ -138,125 +128,154 @@ void main() {
 
         expect(captured[0], CommonMocks.url);
         expect(captured[1], CommonMocks.token);
-        expect(
-          captured[2].headers,
-          {
-            HttpHeaders.acceptHeader: '*/*',
-            HttpHeaders.contentTypeHeader: 'text/plain',
-          },
-        );
+        expect(captured[2].headers, {
+          HttpHeaders.acceptHeader: '*/*',
+          HttpHeaders.contentTypeHeader: 'text/plain',
+        });
       },
     );
   });
 
   group("Fetch credential", () {
     test(
-        "Given parameters, when I call fetchClaim, then I expect a Claim to be returned",
-        () async {
-      // Given
-      when(dio.post(any, data: anyNamed('data'), options: anyNamed('options')))
-          .thenAnswer((realInvocation) => Future.value(dioResponse));
+      "Given parameters, when I call fetchClaim, then I expect a Claim to be returned",
+      () async {
+        // Given
+        when(
+          dio.post(any, data: anyNamed('data'), options: anyNamed('options')),
+        ).thenAnswer((realInvocation) => Future.value(dioResponse));
 
-      // When
-      expect(
+        // When
+        expect(
           await dataSource.fetchClaim(
-              authToken: token, url: url, did: identifier),
-          claim);
+            authToken: token,
+            url: url,
+            did: identifier,
+            keys: [],
+          ),
+          claim,
+        );
 
-      // Then
-      var captured = verify(dio.post(captureAny,
-              data: captureAnyNamed('data'),
-              options: captureAnyNamed('options')))
-          .captured;
+        // Then
+        var captured = verify(
+          dio.post(
+            captureAny,
+            data: captureAnyNamed('data'),
+            options: captureAnyNamed('options'),
+          ),
+        ).captured;
 
-      expect(captured[0], url);
-      expect(captured[1], token);
-      expect(captured[2].headers, {
-        HttpHeaders.acceptHeader: '*/*',
-        HttpHeaders.contentTypeHeader: 'text/plain',
-      });
-    });
-
-    test(
-        "Given parameters, when I call fetchClaim and a server error occurred, then I expect an NetworkException to be thrown",
-        () async {
-      // Given
-      when(dio.post(any, data: anyNamed('data'), options: anyNamed('options')))
-          .thenAnswer((realInvocation) => Future.value(dioErrorResponse));
-
-      // When
-      await expectLater(
-          dataSource.fetchClaim(authToken: token, url: url, did: identifier),
-          throwsA(isA<NetworkException>()));
-
-      // Then
-      var captured = verify(dio.post(captureAny,
-              data: captureAnyNamed('data'),
-              options: captureAnyNamed('options')))
-          .captured;
-
-      expect(captured[0], url);
-      expect(captured[1], token);
-      expect(captured[2].headers, {
-        HttpHeaders.acceptHeader: '*/*',
-        HttpHeaders.contentTypeHeader: 'text/plain',
-      });
-    });
+        expect(captured[0], url);
+        expect(captured[1], token);
+        expect(captured[2].headers, {
+          HttpHeaders.acceptHeader: '*/*',
+          HttpHeaders.contentTypeHeader: 'text/plain',
+        });
+      },
+    );
 
     test(
-        "Given parameters, when I call fetchClaim and an unsupported FetchClaimResponseType is returned, then I expect an UnsupportedFetchClaimTypeException to be thrown",
-        () async {
-      // Given
-      when(dio.post(any, data: anyNamed('data'), options: anyNamed('options')))
-          .thenAnswer((realInvocation) => Future.value(otherTypeResponse));
+      "Given parameters, when I call fetchClaim and a server error occurred, then I expect an NetworkException to be thrown",
+      () async {
+        // Given
+        when(
+          dio.post(any, data: anyNamed('data'), options: anyNamed('options')),
+        ).thenAnswer((realInvocation) => Future.value(dioErrorResponse));
 
-      // When
-      await dataSource
-          .fetchClaim(authToken: token, url: url, did: identifier)
-          .then((_) => expect(true, false)) // Be sure we don't succeed
-          .catchError((error) {
-        expect(error, (isA<UnsupportedFetchClaimTypeException>()));
-        expect(error.error, null);
-      });
+        // When
+        await expectLater(
+          dataSource.fetchClaim(
+            authToken: token,
+            url: url,
+            did: identifier,
+            keys: [],
+          ),
+          throwsA(isA<NetworkException>()),
+        );
 
-      // Then
-      var captured = verify(dio.post(captureAny,
-              data: captureAnyNamed('data'),
-              options: captureAnyNamed('options')))
-          .captured;
+        // Then
+        var captured = verify(
+          dio.post(
+            captureAny,
+            data: captureAnyNamed('data'),
+            options: captureAnyNamed('options'),
+          ),
+        ).captured;
 
-      expect(captured[0], url);
-      expect(captured[1], token);
-      expect(captured[2].headers, {
-        HttpHeaders.acceptHeader: '*/*',
-        HttpHeaders.contentTypeHeader: 'text/plain',
-      });
-    });
+        expect(captured[0], url);
+        expect(captured[1], token);
+        expect(captured[2].headers, {
+          HttpHeaders.acceptHeader: '*/*',
+          HttpHeaders.contentTypeHeader: 'text/plain',
+        });
+      },
+    );
 
     test(
-        "Given parameters, when I call fetchClaim and an error occurred, then I expect an exception to be thrown",
-        () async {
-      // Given
-      when(dio.post(any, data: anyNamed('data'), options: anyNamed('options')))
-          .thenAnswer((realInvocation) => Future.error(exception));
+      "Given parameters, when I call fetchClaim and an unsupported FetchClaimResponseType is returned, then I expect an UnsupportedFetchClaimTypeException to be thrown",
+      () async {
+        // Given
+        when(
+          dio.post(any, data: anyNamed('data'), options: anyNamed('options')),
+        ).thenAnswer((realInvocation) => Future.value(otherTypeResponse));
 
-      // When
-      await expectLater(
-          dataSource.fetchClaim(authToken: token, url: url, did: identifier),
-          throwsA(exception));
+        // When
+        await dataSource
+            .fetchClaim(authToken: token, url: url, did: identifier, keys: [])
+            .then((_) => expect(true, false)) // Be sure we don't succeed
+            .catchError((error) {
+              expect(error, (isA<UnsupportedFetchClaimTypeException>()));
+              expect(error.error, null);
+            });
 
-      // Then
-      var captured = verify(dio.post(captureAny,
-              data: captureAnyNamed('data'),
-              options: captureAnyNamed('options')))
-          .captured;
+        // Then
+        var captured = verify(
+          dio.post(
+            captureAny,
+            data: captureAnyNamed('data'),
+            options: captureAnyNamed('options'),
+          ),
+        ).captured;
 
-      expect(captured[0], url);
-      expect(captured[1], token);
-      expect(captured[2].headers, {
-        HttpHeaders.acceptHeader: '*/*',
-        HttpHeaders.contentTypeHeader: 'text/plain',
-      });
-    });
+        expect(captured[0], url);
+        expect(captured[1], token);
+        expect(captured[2].headers, {
+          HttpHeaders.acceptHeader: '*/*',
+          HttpHeaders.contentTypeHeader: 'text/plain',
+        });
+      },
+    );
+
+    test(
+      "Given parameters, when I call fetchClaim and an error occurred, then I expect an exception to be thrown",
+      () async {
+        // Given
+        when(
+          dio.post(any, data: anyNamed('data'), options: anyNamed('options')),
+        ).thenAnswer((realInvocation) => Future.error(exception));
+
+        // When
+        await expectLater(
+          dataSource.fetchClaim(authToken: token, url: url, did: identifier, keys: []),
+          throwsA(exception),
+        );
+
+        // Then
+        var captured = verify(
+          dio.post(
+            captureAny,
+            data: captureAnyNamed('data'),
+            options: captureAnyNamed('options'),
+          ),
+        ).captured;
+
+        expect(captured[0], url);
+        expect(captured[1], token);
+        expect(captured[2].headers, {
+          HttpHeaders.acceptHeader: '*/*',
+          HttpHeaders.contentTypeHeader: 'text/plain',
+        });
+      },
+    );
   });
 }

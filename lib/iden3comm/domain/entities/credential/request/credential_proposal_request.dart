@@ -1,3 +1,4 @@
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/credential_schema_info.dart';
 
@@ -90,7 +91,7 @@ typedef CredentialProposalBodyRequest = ProposalRequestMessageBody;
 
 class ProposalRequestMessageBody {
   final List<ProposalRequestCredential> credentials;
-  Map<String, dynamic>? didDoc;
+  final DIDDocument? didDoc;
   MetadataObject? metadata;
 
   ProposalRequestMessageBody({
@@ -104,12 +105,12 @@ class ProposalRequestMessageBody {
         .map((item) => ProposalRequestCredential.fromJson(item))
         .toList();
     MetadataObject? metadata;
-    if (json['metadata'] != null) {
+    if (json.containsKey('metadata')) {
       metadata = MetadataObject.fromJson(json['metadata']);
     }
-    Map<String, dynamic>? didDoc;
-    if (json['did_doc'] != null) {
-      didDoc = json['did_doc'];
+    DIDDocument? didDoc;
+    if (json.containsKey('did_doc')) {
+      didDoc = DIDDocument.fromJson(json['did_doc']);
     }
     return ProposalRequestMessageBody(
       credentials: credentials,
@@ -121,8 +122,8 @@ class ProposalRequestMessageBody {
   Map<String, dynamic> toJson() {
     return {
       'credentials': credentials.map((item) => item.toJson()).toList(),
-      'metadata': metadata?.toJson(),
-      'did_doc': didDoc,
+      if (metadata != null) 'metadata': metadata?.toJson(),
+      if (didDoc != null) 'did_doc': didDoc?.toJson(),
     };
   }
 }
@@ -145,16 +146,10 @@ class MetadataObject {
   MetadataObject({required this.type, required this.data});
 
   factory MetadataObject.fromJson(Map<String, dynamic> json) {
-    return MetadataObject(
-      type: json['type'],
-      data: json['data'],
-    );
+    return MetadataObject(type: json['type'], data: json['data']);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'type': type,
-      'data': data,
-    };
+    return {'type': type, 'data': data};
   }
 }

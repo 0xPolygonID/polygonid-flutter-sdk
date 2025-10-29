@@ -66,7 +66,6 @@
 
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_sd_proof_entity.dart';
 
 @Deprecated('Use AuthorizationMessageResponseBody instead')
 typedef AuthBodyResponse = AuthorizationMessageResponseBody;
@@ -89,16 +88,13 @@ class AuthorizationMessageResponseBody {
   /// @param [Map<String, dynamic>] json
   /// @returns [AuthorizationMessageResponseBody]
   factory AuthorizationMessageResponseBody.fromJson(Map<String, dynamic> json) {
-    DIDDocument? didDoc =
-        json['did_doc'] != null ? DIDDocument.fromJson(json['did_doc']) : null;
+    DIDDocument? didDoc = json['did_doc'] != null
+        ? DIDDocument.fromJson(json['did_doc'])
+        : null;
 
-    final scope = (json['scope'] as List?)?.map((p) {
-      if (p['vp'] != null) {
-        return Iden3commSDProofEntity.fromJson(p);
-      }
-
-      return Iden3commProofEntity.fromJson(p);
-    }).toList();
+    final scope = (json['scope'] as List?)
+        ?.map((p) => Iden3commProofEntity.fromJson(p))
+        .toList();
 
     return AuthorizationMessageResponseBody(
       did_doc: didDoc,
@@ -108,8 +104,8 @@ class AuthorizationMessageResponseBody {
   }
 
   Map<String, dynamic> toJson() => {
-        if (did_doc != null) 'did_doc': did_doc,
-        if (message != null) 'message': message,
-        'scope': proofs.map((scope) => scope.toJson()).toList(),
-      };
+    if (did_doc != null) 'did_doc': did_doc,
+    if (message != null) 'message': message,
+    'scope': proofs.map((scope) => scope.toJson()).toList(),
+  };
 }

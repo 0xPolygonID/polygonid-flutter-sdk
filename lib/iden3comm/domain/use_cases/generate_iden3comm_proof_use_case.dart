@@ -9,7 +9,6 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_sd_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_vp_proof.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
@@ -120,11 +119,13 @@ class GenerateIden3commProofUseCase
     if (circuitId.startsWith(CircuitType.v3CircuitPrefix) &&
         !circuitId.endsWith(CircuitType.currentCircuitBetaPostfix)) {
       _stacktraceManager.addError(
-          "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
+        "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}",
+      );
       throw CircuitNotDownloadedException(
-          circuit: circuitId,
-          errorMessage:
-              "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
+        circuit: circuitId,
+        errorMessage:
+            "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}",
+      );
     }
 
     if (circuitId == CircuitTypes.mtpOnChain.id ||
@@ -132,7 +133,8 @@ class GenerateIden3commProofUseCase
         circuitId == CircuitTypes.circuitsV3OnChain.id) {
       //on chain start
       _stacktraceManager.addTrace(
-          "[GenerateIden3commProofUseCase] OnChain ${param.request.circuitId}");
+        "[GenerateIden3commProofUseCase] OnChain ${param.request.circuitId}",
+      );
 
       IdentityEntity identity = await _getIdentityUseCase.execute(
         param: GetIdentityParam(
@@ -141,23 +143,27 @@ class GenerateIden3commProofUseCase
         ),
       );
       _stacktraceManager.addTrace(
-          "[GenerateIden3commProofUseCase] identity: ${identity.did}");
-      logger().i(
-          "GENERATION PROOF getIdentityUseCase executed in ${stopwatch.elapsed}");
-
-      authClaim = await _getAuthClaimUseCase.execute(
-        param: identity.publicKey,
+        "[GenerateIden3commProofUseCase] identity: ${identity.did}",
       );
       logger().i(
-          "GENERATION PROOF getAuthClaimUseCase executed in ${stopwatch.elapsed}");
+        "GENERATION PROOF getIdentityUseCase executed in ${stopwatch.elapsed}",
+      );
 
-      NodeEntity authClaimNode =
-          await _identityRepository.getAuthClaimNode(children: authClaim);
-
-      _stacktraceManager
-          .addTrace("[GenerateIden3commProofUseCase] authClaimNode");
+      authClaim = await _getAuthClaimUseCase.execute(param: identity.publicKey);
       logger().i(
-          "GENERATION PROOF getAuthClaimNode executed in ${stopwatch.elapsed}");
+        "GENERATION PROOF getAuthClaimUseCase executed in ${stopwatch.elapsed}",
+      );
+
+      NodeEntity authClaimNode = await _identityRepository.getAuthClaimNode(
+        children: authClaim,
+      );
+
+      _stacktraceManager.addTrace(
+        "[GenerateIden3commProofUseCase] authClaimNode",
+      );
+      logger().i(
+        "GENERATION PROOF getAuthClaimNode executed in ${stopwatch.elapsed}",
+      );
 
       incProof = await _smtRepository.generateProof(
         key: authClaimNode.hash,
@@ -174,10 +180,12 @@ class GenerateIden3commProofUseCase
         did: param.did,
         encryptionKey: encryptionKey,
       );
-      _stacktraceManager
-          .addTrace("[GenerateIden3commProofUseCase] nonRevProof");
-      logger()
-          .i("GENERATION PROOF nonRevProof executed in ${stopwatch.elapsed}");
+      _stacktraceManager.addTrace(
+        "[GenerateIden3commProofUseCase] nonRevProof",
+      );
+      logger().i(
+        "GENERATION PROOF nonRevProof executed in ${stopwatch.elapsed}",
+      );
 
       // hash of clatr, revtr, rootr
       treeState = await _getLatestStateUseCase.execute(
@@ -194,10 +202,7 @@ class GenerateIden3commProofUseCase
       logger().i("GENERATION PROOF gistProof executed in ${stopwatch.elapsed}");
 
       signature = await _signMessageUseCase.execute(
-        param: SignMessageParam(
-          param.privateKey!,
-          param.challenge!,
-        ),
+        param: SignMessageParam(param.privateKey!, param.challenge!),
       );
       _stacktraceManager.addTrace("[GenerateIden3commProofUseCase] signature");
       //onchain end
@@ -208,47 +213,52 @@ class GenerateIden3commProofUseCase
     if (envConfig != null) {
       config = envConfig.toJson();
       _stacktraceManager.addTrace(
-          "[GenerateIden3commProofUseCase] AtomicQueryInputsConfigParam: success");
+        "[GenerateIden3commProofUseCase] AtomicQueryInputsConfigParam: success",
+      );
     }
 
     DidEntity didEntity = await _getDidUseCase.execute(param: param.did);
     _stacktraceManager.addTrace(
-        "[GenerateIden3commProofUseCase] didEntity: ${didEntity.did}");
+      "[GenerateIden3commProofUseCase] didEntity: ${didEntity.did}",
+    );
     logger().i("GENERATION PROOF didEntity executed in ${stopwatch.elapsed}");
 
     // Prepare atomic query inputs
     final generateInputsResponse = await _proofRepository
         .calculateAtomicQueryInputs(
-      id: didEntity.identifier,
-      profileNonce: param.profileNonce,
-      claimSubjectProfileNonce: param.claimSubjectProfileNonce,
-      authClaim: authClaim,
-      incProof: incProof,
-      nonRevProof: nonRevProof,
-      gistProof: gistProof,
-      treeState: treeState,
-      challenge: param.challenge,
-      signature: signature,
-      claim: param.credential,
-      proofScopeRequest: param.request.toJson(),
-      circuitId: param.request.circuitId,
-      config: config,
-      verifierId: param.verifierId,
-      linkNonce: param.linkNonce,
-      scopeParams: param.request.params,
-      transactionData: param.transactionData,
-    )
+          id: didEntity.identifier,
+          profileNonce: param.profileNonce,
+          claimSubjectProfileNonce: param.claimSubjectProfileNonce,
+          authClaim: authClaim,
+          incProof: incProof,
+          nonRevProof: nonRevProof,
+          gistProof: gistProof,
+          treeState: treeState,
+          challenge: param.challenge,
+          signature: signature,
+          claim: param.credential,
+          proofScopeRequest: param.request.toJson(),
+          circuitId: param.request.circuitId,
+          config: config,
+          verifierId: param.verifierId,
+          linkNonce: param.linkNonce,
+          scopeParams: param.request.params,
+          transactionData: param.transactionData,
+        )
         .catchError((error) {
-      _stacktraceManager
-          .addTrace("[GenerateIden3commProofUseCase] Error: $error");
-      logger().e("[GenerateProofUseCase] Error: $error");
+          _stacktraceManager.addTrace(
+            "[GenerateIden3commProofUseCase] Error: $error",
+          );
+          logger().e("[GenerateProofUseCase] Error: $error");
 
-      throw error;
-    });
-    _stacktraceManager
-        .addTrace("[GenerateIden3commProofUseCase] atomicQueryInputs: success");
+          throw error;
+        });
+    _stacktraceManager.addTrace(
+      "[GenerateIden3commProofUseCase] atomicQueryInputs: success",
+    );
     logger().i(
-        "GENERATION PROOF calculateAtomicQueryInputs executed in ${stopwatch.elapsed}");
+      "GENERATION PROOF calculateAtomicQueryInputs executed in ${stopwatch.elapsed}",
+    );
 
     final inputs = json.encode(generateInputsResponse.inputs);
 
@@ -268,35 +278,27 @@ class GenerateIden3commProofUseCase
     logger().i(vpProof ?? generateInputsResponse.verifiablePresentation);
 
     logger().i(
-        "GENERATION PROOF atomicQueryInputs executed in ${stopwatch.elapsed}");
+      "GENERATION PROOF atomicQueryInputs executed in ${stopwatch.elapsed}",
+    );
 
     try {
       ZKProofEntity proof = await _proveUseCase.execute(
         param: ProveParam(inputs, param.circuitData),
       );
-      if (vpProof != null) {
-        return Iden3commSDProofEntity(
-          id: param.request.id,
-          circuitId: param.circuitData.circuitId,
-          proof: proof.proof,
-          pubSignals: proof.pubSignals,
-          publicStatesInfo: generateInputsResponse.publicStatesInfo,
-          vp: vpProof,
-        );
-      } else {
-        return Iden3commProofEntity(
-          id: param.request.id,
-          circuitId: param.circuitData.circuitId,
-          proof: proof.proof,
-          pubSignals: proof.pubSignals,
-          publicStatesInfo: generateInputsResponse.publicStatesInfo,
-        );
-      }
+      return Iden3commProofEntity(
+        id: param.request.id,
+        circuitId: param.circuitData.circuitId,
+        proof: proof.proof,
+        pubSignals: proof.pubSignals,
+        publicStatesInfo: generateInputsResponse.publicStatesInfo,
+        vp: vpProof,
+      );
     } on PolygonIdSDKException catch (_) {
       rethrow;
     } catch (error) {
       _stacktraceManager.addError(
-          "[GenerateIden3commProofUseCase] proveUseCase Error: $error");
+        "[GenerateIden3commProofUseCase] proveUseCase Error: $error",
+      );
       throw ProofGenerationException(
         errorMessage: "Error while generating proof with error: $error",
         error: error,

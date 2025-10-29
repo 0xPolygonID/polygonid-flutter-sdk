@@ -19,6 +19,8 @@ enum Iden3MessageType {
       ProtocolMessageType.credentialIssuanceRequestMessageType),
   credentialIssuanceResponse(
       ProtocolMessageType.credentialIssuanceResponseMessageType),
+  credentialEncryptedIssuanceResponse(
+      ProtocolMessageType.credentialEncryptedIssuanceResponseType),
   proofContractInvokeRequest(
       ProtocolMessageType.contractInvokeRequestMessageType),
   proofContractInvokeResponse(

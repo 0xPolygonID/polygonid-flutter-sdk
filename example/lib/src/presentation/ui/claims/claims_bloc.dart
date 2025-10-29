@@ -83,6 +83,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
         genesisDid: didIdentifier,
         profileNonce: nonce,
         privateKey: privateKey,
+        keys: [],
       );
 
       if (claimList.isNotEmpty) {
