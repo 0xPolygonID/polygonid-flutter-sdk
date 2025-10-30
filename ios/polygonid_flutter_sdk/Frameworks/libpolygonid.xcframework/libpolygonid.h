@@ -290,6 +290,10 @@ extern GoUint8 PLGNDecryptEncryptedCredential(char** jsonResponse, char* in, cha
 //
 extern GoUint8 PLGNVerifyProof(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 
+// PLGNVerifyAuthResponse verifies an authentication response.
+//
+extern GoUint8 PLGNVerifyAuthResponse(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
 #ifdef __cplusplus
 }
 #endif
