@@ -2,14 +2,12 @@ import 'package:equatable/equatable.dart';
 import 'package:jose_plus/jose.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/attachment.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 
 class CredentialEncryptedIssuanceResponse
     extends Iden3Message<CredentialEncryptedIssuanceResponseBody> {
   CredentialEncryptedIssuanceResponse({
     required super.id,
     required super.typ,
-    required super.type,
     required super.thid,
     required super.body,
     required super.from,
@@ -17,7 +15,7 @@ class CredentialEncryptedIssuanceResponse
     required super.createdTime,
     required super.expiresTime,
     required super.attachments,
-  });
+  }) : super(type: Iden3MessageType.credentialEncryptedIssuanceResponse);
 
   factory CredentialEncryptedIssuanceResponse.fromJson(
     Map<String, dynamic> json,
@@ -25,7 +23,6 @@ class CredentialEncryptedIssuanceResponse
     return CredentialEncryptedIssuanceResponse(
       id: json['id'],
       typ: json['typ'],
-      type: json['type'],
       thid: json['thid'],
       body: CredentialEncryptedIssuanceResponseBody.fromJson(json['body']),
       from: json['from'],
@@ -46,7 +43,7 @@ class CredentialEncryptedIssuanceResponseBody with EquatableMixin {
   final String context;
   final String type;
   final JsonWebEncryption data;
-  final List<Iden3commProofEntity> proof;
+  final List<Map<String, dynamic>> proof;
 
   CredentialEncryptedIssuanceResponseBody({
     required this.id,
@@ -61,11 +58,11 @@ class CredentialEncryptedIssuanceResponseBody with EquatableMixin {
   ) {
     return CredentialEncryptedIssuanceResponseBody(
       id: json['id'],
-      context: json['@context'],
+      context: json['context'],
       type: json['type'],
       data: JsonWebEncryption.fromJson(json['data']),
       proof: (json['proof'] as List<dynamic>)
-          .map((p) => Iden3commProofEntity.fromJson(p))
+          .map((p) => p as Map<String, dynamic>)
           .toList(),
     );
   }

@@ -10,6 +10,8 @@ import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/common/utils/collection_utils.dart';
+import 'package:polygonid_flutter_sdk/common/utils/hex_utils.dart';
 import 'package:polygonid_flutter_sdk/common/utils/pinata_gateway_utils.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/protocol_message_type.dart';
@@ -17,6 +19,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/respo
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_issuance_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
+import 'package:web3dart/crypto.dart';
 
 class RemoteIden3commDataSource {
   final Dio dio;
@@ -138,14 +141,14 @@ class RemoteIden3commDataSource {
           final message = CredentialEncryptedIssuanceResponse.fromJson(
             response.data,
           );
-          final keyIds = message.body.data.recipients
-              .map((r) => r.header.keyId)
+          final requiredKeyIds = message.body.data.recipients
+              .map((r) => r.header.keyId!)
               .toList();
 
-          final eligibleKeys = keys.where((k) {
-            return keyIds.contains(k.keyId);
-          }).toList();
-          if (eligibleKeys.isEmpty) {
+          JsonWebKey? eligibleKey = keys.firstWhereOrNull((k) {
+            return requiredKeyIds.any((keyId) => keyId.endsWith(k.alias));
+          });
+          if (eligibleKey == null) {
             _stacktraceManager.addError(
               "[RemoteIden3commDataSource] refreshCredential: No eligible keys found for decryption",
             );
@@ -156,7 +159,7 @@ class RemoteIden3commDataSource {
 
           final decryptedCred = PolygonIdSdk.I.util.decryptEncryptedCredential(
             response.data,
-            eligibleKeys.map((k) => k.toJson()).toList(),
+            [eligibleKey.toJson()],
           );
 
           final claimDTO = CredentialDTO(
@@ -259,14 +262,14 @@ class RemoteIden3commDataSource {
             response.data,
           );
 
-          final keyIds = message.body.data.recipients
-              .map((r) => r.header.keyId)
+          final requiredKeyIds = message.body.data.recipients
+              .map((r) => r.header.keyId!)
               .toList();
 
-          final eligibleKeys = keys.where((k) {
-            return keyIds.contains(k.keyId);
-          }).toList();
-          if (eligibleKeys.isEmpty) {
+          JsonWebKey? eligibleKey = keys.firstWhereOrNull((k) {
+            return requiredKeyIds.any((keyId) => keyId.endsWith(k.alias));
+          });
+          if (eligibleKey == null) {
             _stacktraceManager.addError(
               "[RemoteIden3commDataSource] refreshCredential: No eligible keys found for decryption",
             );
@@ -277,7 +280,7 @@ class RemoteIden3commDataSource {
 
           final decryptedCred = PolygonIdSdk.I.util.decryptEncryptedCredential(
             response.data,
-            eligibleKeys.map((k) => k.toJson()).toList(),
+            [eligibleKey.toJson()],
           );
 
           final claimDTO = CredentialDTO(
@@ -483,5 +486,19 @@ class RemoteIden3commDataSource {
     final path = dir.path;
     await HiveCacheStore(path).clean();
     return;
+  }
+}
+
+extension on JsonWebKey {
+  String get alias {
+    final alg = this['alg'] as String;
+
+    final n = this['n'] as String;
+    final e = this['e'] as String;
+    final bytes = utf8.encode(n.toString() + e.toString());
+    final keccakBytes = keccak256(bytes);
+    final keccak = keccakBytes.bytesToHex(include0x: true);
+
+    return "$alg:$keccak";
   }
 }
