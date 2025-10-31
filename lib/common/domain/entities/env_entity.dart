@@ -7,6 +7,7 @@ class EnvEntity {
   final String pushUrl;
   final String ipfsUrl;
   final String ipfsGatewayUrl;
+  final String? didResolverUrl;
 
   final Map<String, ChainConfigEntity> chainConfigs;
   final List<DidMethodEntity> didMethods;
@@ -22,6 +23,7 @@ class EnvEntity {
     required this.pushUrl,
     required this.ipfsUrl,
     required this.ipfsGatewayUrl,
+    this.didResolverUrl,
     this.chainConfigs = const {},
     this.didMethods = const [],
     this.stacktraceEncryptionKey,
@@ -35,6 +37,7 @@ class EnvEntity {
     required this.pushUrl,
     required this.ipfsUrl,
     required this.ipfsGatewayUrl,
+    this.didResolverUrl,
     required this.chainConfigs,
     required this.didMethods,
     this.stacktraceEncryptionKey,
@@ -49,11 +52,9 @@ class EnvEntity {
       pushUrl: json['pushUrl'],
       ipfsUrl: json['ipfsUrl'],
       ipfsGatewayUrl: json['ipfsGatewayUrl'],
+      didResolverUrl: json['didResolverUrl'],
       chainConfigs: (json['chainConfigs'] as Map<String, dynamic>).map(
-        (key, value) => MapEntry(
-          key,
-          ChainConfigEntity.fromJson(value),
-        ),
+        (key, value) => MapEntry(key, ChainConfigEntity.fromJson(value)),
       ),
       didMethods: (json['didMethods'] as List<dynamic>)
           .map((e) => DidMethodEntity.fromJson(e))
@@ -68,21 +69,19 @@ class EnvEntity {
 
   @override
   Map<String, dynamic> toJson() => {
-        'pushUrl': pushUrl,
-        'ipfsUrl': ipfsUrl,
-        'chainConfigs': chainConfigs.map(
-          (key, value) => MapEntry(
-            key,
-            value.toJson(),
-          ),
-        ),
-        'didMethods': didMethods.map((e) => e.toJson()).toList(),
-        'stacktraceEncryptionKey': stacktraceEncryptionKey,
-        'pinataGateway': pinataGateway,
-        'pinataGatewayToken': pinataGatewayToken,
-        'cacheDir': cacheDir,
-        'method': method,
-      };
+    'pushUrl': pushUrl,
+    'ipfsUrl': ipfsUrl,
+    'didResolverUrl': didResolverUrl,
+    'chainConfigs': chainConfigs.map(
+      (key, value) => MapEntry(key, value.toJson()),
+    ),
+    'didMethods': didMethods.map((e) => e.toJson()).toList(),
+    'stacktraceEncryptionKey': stacktraceEncryptionKey,
+    'pinataGateway': pinataGateway,
+    'pinataGatewayToken': pinataGatewayToken,
+    'cacheDir': cacheDir,
+    'method': method,
+  };
 
   @override
   String toString() {
@@ -95,6 +94,7 @@ class EnvEntity {
       other is EnvEntity &&
           pushUrl == other.pushUrl &&
           ipfsUrl == other.ipfsUrl &&
+          didResolverUrl == other.didResolverUrl &&
           mapEquals(chainConfigs, other.chainConfigs) &&
           listEquals(didMethods, other.didMethods) &&
           stacktraceEncryptionKey == other.stacktraceEncryptionKey &&
@@ -113,6 +113,7 @@ class EnvEntity {
     String? pushUrl,
     String? ipfsUrl,
     String? ipfsGatewayUrl,
+    String? didResolverUrl,
     Map<String, ChainConfigEntity>? chainConfigs,
     List<DidMethodEntity>? didMethods,
     String? stacktraceEncryptionKey,
@@ -125,6 +126,7 @@ class EnvEntity {
       pushUrl: pushUrl ?? this.pushUrl,
       ipfsUrl: ipfsUrl ?? this.ipfsUrl,
       ipfsGatewayUrl: ipfsGatewayUrl ?? this.ipfsGatewayUrl,
+      didResolverUrl: didResolverUrl ?? this.didResolverUrl,
       chainConfigs: chainConfigs ?? this.chainConfigs,
       didMethods: didMethods ?? this.didMethods,
       stacktraceEncryptionKey:
@@ -143,6 +145,7 @@ class EnvEntity {
       chainConfigs: chainConfigs,
       didMethods: didMethods,
       cacheDir: cacheDir,
+      didResolverUrl: didResolverUrl,
     );
   }
 }

@@ -92,7 +92,9 @@ class Util {
 
     final result = _polygonIdCoreUtil.decryptEncryptedCredential(input);
 
-    return W3CCredential.fromJson(jsonDecode(result));
+    final decodedResult = utf8.decode(base64Decode(result.replaceAll('"', '')));
+
+    return W3CCredential.fromJson(jsonDecode(decodedResult));
   }
 
   bool verifyProof(W3CCredential credential) {

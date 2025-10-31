@@ -8,6 +8,7 @@ class EnvConfigEntity {
   final Map<String, ChainConfigEntity> chainConfigs;
   final List<DidMethodEntity> didMethods;
   final String? cacheDir;
+  final String? didResolverUrl;
 
   EnvConfigEntity({
     required this.ipfsNodeUrl,
@@ -15,6 +16,7 @@ class EnvConfigEntity {
     this.chainConfigs = const {},
     this.didMethods = const [],
     this.cacheDir,
+    this.didResolverUrl,
   });
 
   factory EnvConfigEntity.fromJson(Map<String, dynamic> json) {
@@ -27,6 +29,7 @@ class EnvConfigEntity {
           .map((value) => DidMethodEntity.fromJson(value))
           .toList(),
       cacheDir: json['cacheDir'],
+      didResolverUrl: json['didResolverUrl'],
     );
   }
 
@@ -38,6 +41,7 @@ class EnvConfigEntity {
           chainConfigs.map((key, value) => MapEntry(key, value.toJson())),
       'didMethods': didMethods.map((e) => e.toJson()).toList(),
       'cacheDir': cacheDir,
+      'didResolverUrl': didResolverUrl,
     };
   }
 }
