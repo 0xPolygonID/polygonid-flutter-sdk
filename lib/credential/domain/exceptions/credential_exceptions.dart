@@ -1,4 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 
 typedef ClaimNotFoundException = CredentialNotFoundException;
@@ -30,10 +31,10 @@ class UpdateClaimException extends PolygonIdSDKException {
 }
 
 class NullRevocationStatusException extends PolygonIdSDKException {
-  final CredentialEntity claim;
+  final CredentialDTO credential;
 
   NullRevocationStatusException({
-    required this.claim,
+    required this.credential,
     required super.errorMessage,
     super.error,
   });

@@ -5,6 +5,8 @@ import 'package:polygonid_flutter_sdk/common/pidcore_util.dart';
 import 'package:polygonid_flutter_sdk/common/utils/did_doc_compose.dart';
 import 'package:polygonid_flutter_sdk/common/utils/push_service.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 
 @injectable
@@ -92,15 +94,29 @@ class Util {
 
     final result = _polygonIdCoreUtil.decryptEncryptedCredential(input);
 
-    final decodedResult = utf8.decode(base64Decode(result.replaceAll('"', '')));
-
-    return W3CCredential.fromJson(jsonDecode(decodedResult));
+    return W3CCredential.fromJson(jsonDecode(result));
   }
 
   bool verifyProof(W3CCredential credential) {
     final input = jsonEncode(credential.toJson());
 
     return _polygonIdCoreUtil.verifyProof(input);
+  }
+
+  String verifyAuthResponse(
+    AuthorizationRequestMessage request,
+    AuthorizationResponseMessage response,
+  ) {
+    final input = jsonEncode({
+      'request': request.toJson(),
+      'response': response.toJson(),
+      'options': {
+        "accepted_state_transition_delay": "8784h",
+        "accepted_proof_generation_delay": "8784h",
+      },
+    });
+
+    return _polygonIdCoreUtil.verifyAuthResponse(input);
   }
 
   Future<DIDDocument> createDidDocument(

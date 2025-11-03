@@ -378,7 +378,7 @@ void main() {
 
       // When
       expect(
-          await repository.getNonRevProof(
+          await repository.getRHSNonRevProof(
               identityState: CommonMocks.state,
               nonce: CommonMocks.nonce,
               baseUrl: CommonMocks.url),
@@ -403,7 +403,7 @@ void main() {
 
       // When
       await repository
-          .getNonRevProof(
+          .getRHSNonRevProof(
               identityState: CommonMocks.state,
               nonce: CommonMocks.nonce,
               baseUrl: CommonMocks.url)
