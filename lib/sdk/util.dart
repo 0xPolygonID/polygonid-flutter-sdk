@@ -117,8 +117,8 @@ class Util {
     String acceptedProofGenerationDelay = '8784h',
   }) {
     final input = jsonEncode({
-      'request': request,
-      'response': response.toJson(),
+      'request': request.toJson(),
+      'response': response,
       'keySet': keys,
       'options': {
         'accepted_state_transition_delay': acceptedStateTransitionDelay,
