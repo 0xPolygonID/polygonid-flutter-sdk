@@ -103,20 +103,32 @@ class Util {
     return _polygonIdCoreUtil.verifyProof(input);
   }
 
-  String verifyAuthResponse(
-    AuthorizationRequestMessage request,
-    AuthorizationResponseMessage response,
-  ) {
+  /// Verifies an authorization response against the original request and a set of keys.
+  /// [request] - The original authorization request.
+  /// [response] - The authorization response to be verified. Can be plain iden3
+  /// message, JWE or JWZ format.
+  /// [keys] - List of keys to verify the response if it is JWE format.
+  /// Returns a string indicating the verification result.
+  AuthorizationResponseMessage verifyAuthResponse({
+    required AuthorizationRequestMessage request,
+    required dynamic response,
+    List<Map<String, dynamic>> keys = const [],
+    String acceptedStateTransitionDelay = '8784h',
+    String acceptedProofGenerationDelay = '8784h',
+  }) {
     final input = jsonEncode({
-      'request': request.toJson(),
+      'request': request,
       'response': response.toJson(),
+      'keySet': keys,
       'options': {
-        "accepted_state_transition_delay": "8784h",
-        "accepted_proof_generation_delay": "8784h",
+        'accepted_state_transition_delay': acceptedStateTransitionDelay,
+        'accepted_proof_generation_delay': acceptedProofGenerationDelay,
       },
     });
 
-    return _polygonIdCoreUtil.verifyAuthResponse(input);
+    final result = _polygonIdCoreUtil.verifyAuthResponse(input);
+
+    return AuthorizationResponseMessage.fromJson(jsonDecode(result));
   }
 
   Future<DIDDocument> createDidDocument(
