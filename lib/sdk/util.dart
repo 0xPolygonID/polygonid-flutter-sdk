@@ -119,7 +119,7 @@ class Util {
     final input = jsonEncode({
       'request': request.toJson(),
       'response': response,
-      'keySet': keys,
+      'keySet': {'keys': keys},
       'options': {
         'accepted_state_transition_delay': acceptedStateTransitionDelay,
         'accepted_proof_generation_delay': acceptedProofGenerationDelay,
