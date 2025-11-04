@@ -1,5 +1,6 @@
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_nonce_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
@@ -26,14 +27,17 @@ class GetIden3commClaimsRevNonceUseCase
     extends FutureUseCase<GetIden3commClaimsRevNonceParam, List<int>> {
   final Iden3commCredentialRepository _iden3commCredentialRepository;
   final GetClaimsUseCase _getClaimsUseCase;
-  final GetClaimRevocationNonceUseCase _getClaimRevNonceUseCase;
+  final CredentialRepository _credentialRepository;
+  final CredentialMapper _credentialMapper;
+
   final IsProofCircuitSupportedUseCase _isProofCircuitSupported;
   final GetProofRequestsUseCase _getProofRequestsUseCase;
 
   GetIden3commClaimsRevNonceUseCase(
     this._iden3commCredentialRepository,
     this._getClaimsUseCase,
-    this._getClaimRevNonceUseCase,
+    this._credentialRepository,
+    this._credentialMapper,
     this._isProofCircuitSupported,
     this._getProofRequestsUseCase,
   );
@@ -51,7 +55,8 @@ class GetIden3commClaimsRevNonceUseCase
     /// We got [ProofRequestEntity], let's find the associated [ClaimEntity]
     for (ProofRequestEntity request in requests) {
       final isProofCircuitSupported = await _isProofCircuitSupported.execute(
-          param: request.scope.circuitId);
+        param: request.scope.circuitId,
+      );
 
       if (isProofCircuitSupported) {
         // Claims
@@ -68,8 +73,9 @@ class GetIden3commClaimsRevNonceUseCase
         );
 
         for (int i = 0; i < claims.length; i++) {
-          int revNonce = await _getClaimRevNonceUseCase.execute(
-            param: claims[i],
+          final credential = _credentialMapper.mapTo(claims[i]);
+          int revNonce = await _credentialRepository.getRevocationNonce(
+            credential: credential,
           );
           claimsRevNonce.add(revNonce);
         }

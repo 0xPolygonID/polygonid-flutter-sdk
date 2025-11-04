@@ -211,7 +211,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<Map<String, dynamic>> getNonRevProof({
+  Future<Map<String, dynamic>> getRHSNonRevProof({
     required String identityState,
     required BigInt nonce,
     required String baseUrl,

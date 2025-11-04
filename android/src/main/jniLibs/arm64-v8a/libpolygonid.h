@@ -216,6 +216,7 @@ extern GoUint8 PLGNALinkedMultiQueryInputs(char** jsonResponse, char* in, char* 
 // request.circuitId field.
 //
 extern GoUint8 PLGNAGenerateInputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+extern GoUint8 PLGNACredentialStatusCheck(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern void PLGNFreeStatus(PLGNStatus* status);
 
 // Deprecated: Use PLGNCleanCache2 instead. We need to support consistent path
@@ -289,6 +290,10 @@ extern GoUint8 PLGNDecryptEncryptedCredential(char** jsonResponse, char* in, cha
 // PLGNVerifyProof verifies a W3C credential's proofs (BJJSignature2021, etc.).
 //
 extern GoUint8 PLGNVerifyProof(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
+// PLGNVerifyAuthResponse verifies an authentication response.
+//
+extern GoUint8 PLGNVerifyAuthResponse(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 
 #ifdef __cplusplus
 }

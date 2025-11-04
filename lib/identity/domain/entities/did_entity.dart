@@ -13,6 +13,22 @@ class DidEntity {
     this.method,
   });
 
+  factory DidEntity.parse(String did) {
+    List<String> splits = did.split(":");
+
+    if (splits.length == 5 && splits[0] == "did") {
+      return DidEntity(
+        did: did,
+        method: splits[1],
+        blockchain: splits[2],
+        network: splits[3],
+        identifier: splits[4],
+      );
+    } else {
+      throw FormatException("Invalid DID string representation");
+    }
+  }
+
   @override
   String toString() =>
       "[DidEntity] {did: $did, identifier: $identifier, blockchain: $blockchain, network: $network, method: $method}";
@@ -32,18 +48,18 @@ class DidEntity {
   int get hashCode => runtimeType.hashCode;
 
   Map<String, dynamic> toJson() => {
-        'did': did,
-        'identifier': identifier,
-        'blockchain': blockchain,
-        'network': network,
-        'method': method,
-      };
+    'did': did,
+    'identifier': identifier,
+    'blockchain': blockchain,
+    'network': network,
+    'method': method,
+  };
 
   factory DidEntity.fromJson(Map<String, dynamic> json) => DidEntity(
-        did: json['did'],
-        identifier: json['identifier'],
-        blockchain: json['blockchain'],
-        network: json['network'],
-        method: json['method'],
-      );
+    did: json['did'],
+    identifier: json['identifier'],
+    blockchain: json['blockchain'],
+    network: json['network'],
+    method: json['method'],
+  );
 }

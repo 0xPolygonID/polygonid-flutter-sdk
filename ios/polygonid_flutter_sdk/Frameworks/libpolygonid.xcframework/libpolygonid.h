@@ -216,6 +216,7 @@ extern GoUint8 PLGNALinkedMultiQueryInputs(char** jsonResponse, char* in, char* 
 // request.circuitId field.
 //
 extern GoUint8 PLGNAGenerateInputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+extern GoUint8 PLGNACredentialStatusCheck(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern void PLGNFreeStatus(PLGNStatus* status);
 
 // Deprecated: Use PLGNCleanCache2 instead. We need to support consistent path

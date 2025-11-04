@@ -1236,4 +1236,10 @@ class PolygonIdFlutterChannel
     // TODO: implement getProofFromSmartContract
     throw UnimplementedError();
   }
+
+  @override
+  Future<bool> credentialStatusCheck({required CredentialEntity credential}) {
+    // TODO: implement credentialStatusCheck
+    throw UnimplementedError();
+  }
 }

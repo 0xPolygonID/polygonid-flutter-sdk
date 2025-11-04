@@ -67,4 +67,14 @@ class PolygonIdCoreUtil extends PolygonIdCore {
       },
     );
   }
+
+  String verifyAuthResponse(String input) {
+    return callGenericCoreFunction(
+      input: () => input,
+      function: PolygonIdCore.nativePolygonIdCoreLib.PLGNVerifyAuthResponse,
+      parse: (result) {
+        return result;
+      },
+    );
+  }
 }

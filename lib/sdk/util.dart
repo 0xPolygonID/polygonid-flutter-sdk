@@ -5,6 +5,8 @@ import 'package:polygonid_flutter_sdk/common/pidcore_util.dart';
 import 'package:polygonid_flutter_sdk/common/utils/did_doc_compose.dart';
 import 'package:polygonid_flutter_sdk/common/utils/push_service.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 
 @injectable
@@ -92,15 +94,41 @@ class Util {
 
     final result = _polygonIdCoreUtil.decryptEncryptedCredential(input);
 
-    final decodedResult = utf8.decode(base64Decode(result.replaceAll('"', '')));
-
-    return W3CCredential.fromJson(jsonDecode(decodedResult));
+    return W3CCredential.fromJson(jsonDecode(result));
   }
 
   bool verifyProof(W3CCredential credential) {
     final input = jsonEncode(credential.toJson());
 
     return _polygonIdCoreUtil.verifyProof(input);
+  }
+
+  /// Verifies an authorization response against the original request and a set of keys.
+  /// [request] - The original authorization request.
+  /// [response] - The authorization response to be verified. Can be plain iden3
+  /// message, JWE or JWZ format.
+  /// [keys] - List of keys to verify the response if it is JWE format.
+  /// Returns a string indicating the verification result.
+  AuthorizationResponseMessage verifyAuthResponse({
+    required AuthorizationRequestMessage request,
+    required dynamic response,
+    List<Map<String, dynamic>> keys = const [],
+    String acceptedStateTransitionDelay = '8784h',
+    String acceptedProofGenerationDelay = '8784h',
+  }) {
+    final input = jsonEncode({
+      'request': request,
+      'response': response.toJson(),
+      'keySet': keys,
+      'options': {
+        'accepted_state_transition_delay': acceptedStateTransitionDelay,
+        'accepted_proof_generation_delay': acceptedProofGenerationDelay,
+      },
+    });
+
+    final result = _polygonIdCoreUtil.verifyAuthResponse(input);
+
+    return AuthorizationResponseMessage.fromJson(jsonDecode(result));
   }
 
   Future<DIDDocument> createDidDocument(

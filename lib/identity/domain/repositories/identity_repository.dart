@@ -50,8 +50,7 @@ abstract class IdentityRepository {
     required BigInt profileNonce,
   });
 
-  // RHS
-  Future<Map<String, dynamic>> getNonRevProof({
+  Future<Map<String, dynamic>> getRHSNonRevProof({
     required String identityState,
     required BigInt nonce,
     required String baseUrl,

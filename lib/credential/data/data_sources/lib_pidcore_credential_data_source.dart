@@ -9,9 +9,7 @@ import '../../libs/polygonidcore/pidcore_credential.dart';
 class LibPolygonIdCoreCredentialDataSource {
   final PolygonIdCoreCredential _polygonIdCoreCredential;
 
-  LibPolygonIdCoreCredentialDataSource(
-    this._polygonIdCoreCredential,
-  );
+  LibPolygonIdCoreCredentialDataSource(this._polygonIdCoreCredential);
 
   /// - schema - schema hash hex string
   /// - nonce - nonce as big int string
@@ -115,5 +113,20 @@ class LibPolygonIdCoreCredentialDataSource {
       credential,
       config,
     );
+  }
+
+  bool credentialStatusCheck({
+    required String issuerDid,
+    required String profileDid,
+    required Map<String, dynamic> credentialStatus,
+    String? config,
+  }) {
+    final input = jsonEncode({
+      'issuer': issuerDid,
+      'user': profileDid,
+      'credentialStatus': credentialStatus,
+    });
+
+    return _polygonIdCoreCredential.credentialStatusCheck(input, config);
   }
 }

@@ -582,6 +582,36 @@ class NativePolygonIdCoreLib {
         )
       >();
 
+  int PLGNACredentialStatusCheck(
+    ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
+    ffi.Pointer<ffi.Char> in$,
+    ffi.Pointer<ffi.Char> cfg,
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNACredentialStatusCheck(jsonResponse, in$, cfg, status);
+  }
+
+  late final _PLGNACredentialStatusCheckPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNACredentialStatusCheck');
+  late final _PLGNACredentialStatusCheck =
+      _PLGNACredentialStatusCheckPtr.asFunction<
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
+
   void PLGNFreeStatus(ffi.Pointer<PLGNStatus> status) {
     return _PLGNFreeStatus(status);
   }
@@ -1106,6 +1136,36 @@ class NativePolygonIdCoreLib {
       >('PLGNVerifyProof');
   late final _PLGNVerifyProof =
       _PLGNVerifyProofPtr.asFunction<
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
+
+  int PLGNVerifyAuthResponse(
+    ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
+    ffi.Pointer<ffi.Char> in$,
+    ffi.Pointer<ffi.Char> cfg,
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNVerifyAuthResponse(jsonResponse, in$, cfg, status);
+  }
+
+  late final _PLGNVerifyAuthResponsePtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNVerifyAuthResponse');
+  late final _PLGNVerifyAuthResponse =
+      _PLGNVerifyAuthResponsePtr.asFunction<
         int Function(
           ffi.Pointer<ffi.Pointer<ffi.Char>>,
           ffi.Pointer<ffi.Char>,
