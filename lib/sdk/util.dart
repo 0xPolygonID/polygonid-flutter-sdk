@@ -59,10 +59,8 @@ class Util {
   /// [ciphertext] - The encrypted message in JWE format.
   /// [keys] - List of keys to decrypt the message.
   /// Returns the decrypted plaintext message.
-  String anonUnpack(
-    Map<String, dynamic> ciphertext,
-    List<Map<String, dynamic>> keys,
-  ) {
+  String anonUnpack(Map<String, dynamic> ciphertext,
+      List<Map<String, dynamic>> keys,) {
     final json = {
       'ciphertext': ciphertext,
       'keySet': {'keys': keys},
@@ -83,9 +81,8 @@ class Util {
   }
 
   W3CCredential decryptEncryptedCredential(
-    Map<String, dynamic> encryptedCredentialIssuanceMessage,
-    List<Map<String, dynamic>> keys,
-  ) {
+      Map<String, dynamic> encryptedCredentialIssuanceMessage,
+      List<Map<String, dynamic>> keys,) {
     final json = {
       'encryptedCredentialIssuanceMessage': encryptedCredentialIssuanceMessage,
       'keySet': {'keys': keys},
@@ -117,8 +114,8 @@ class Util {
     String acceptedProofGenerationDelay = '8784h',
   }) {
     final input = jsonEncode({
-      'request': request.toJson(),
-      'response': response,
+      'authRequest': request.toJson(),
+      'authResponse': response,
       'keySet': {'keys': keys},
       'options': {
         'accepted_state_transition_delay': acceptedStateTransitionDelay,
@@ -131,8 +128,7 @@ class Util {
     return AuthorizationResponseMessage.fromJson(jsonDecode(result));
   }
 
-  Future<DIDDocument> createDidDocument(
-    String profileDid, {
+  Future<DIDDocument> createDidDocument(String profileDid, {
     PushServiceData? pushServiceData,
     String? redirectUrl,
     List<String>? keyAgreement,
@@ -163,10 +159,10 @@ class AttestationResult {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is AttestationResult &&
-          runtimeType == other.runtimeType &&
-          publicKey == other.publicKey &&
-          userData == other.userData;
+          other is AttestationResult &&
+              runtimeType == other.runtimeType &&
+              publicKey == other.publicKey &&
+              userData == other.userData;
 
   @override
   int get hashCode => publicKey.hashCode ^ userData.hashCode;
