@@ -1510,7 +1510,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i657.GetClaimsUseCase>(),
         gh<_i958.RemoveClaimsUseCase>(),
         gh<_i610.GetClaimRevocationStatusUseCase>(),
-        gh<InvalidType>(),
+        gh<_i19.CredentialStatusCheckUseCase>(),
         gh<_i168.UpdateClaimUseCase>(),
         gh<_i267.StacktraceManager>(),
         await getAsync<_i143.RefreshCredentialUseCase>(),
