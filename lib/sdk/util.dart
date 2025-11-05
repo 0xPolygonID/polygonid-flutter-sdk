@@ -118,8 +118,8 @@ class Util {
       'authResponse': response,
       'keySet': {'keys': keys},
       'options': {
-        'accepted_state_transition_delay': acceptedStateTransitionDelay,
-        'accepted_proof_generation_delay': acceptedProofGenerationDelay,
+        'acceptedStateTransitionDelay': acceptedStateTransitionDelay,
+        'acceptedProofGenerationDelay': acceptedProofGenerationDelay,
       },
     });
 
