@@ -35,7 +35,10 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/re
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/response/jwz.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_vp_proof.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
@@ -108,12 +111,13 @@ class Authenticate {
         Iden3MessageType.proofContractInvokeRequest,
       ].contains(message.type)) {
         _stacktraceManager.addError(
-          "[Authenticate] Unsupported message type: ${message.type} It should be either authRequest or proofContractInvokeRequest",
+          "[Authenticate] Unsupported message type: ${message
+              .type} It should be either authRequest or proofContractInvokeRequest",
         );
         throw UnsupportedIden3MsgTypeException(
           type: message.type,
           errorMessage:
-              "Unsupported message type\nIt should be either "
+          "Unsupported message type\nIt should be either "
               "authRequest or proofContractInvokeRequest",
         );
       }
@@ -128,7 +132,7 @@ class Authenticate {
         "[Authenticate] Chain: ${chain.blockchain} ${chain.network}",
       );
       GetDidIdentifierUseCase getDidIdentifierUseCase =
-          getItSdk<GetDidIdentifierUseCase>();
+      getItSdk<GetDidIdentifierUseCase>();
 
       final getPubKeyUseCase = getItSdk<GetPublicKeyUseCase>();
       final bjjPublicKey = await getPubKeyUseCase.execute(param: privateKey);
@@ -143,6 +147,18 @@ class Authenticate {
         ),
       );
 
+      final List<ProofScopeRequest> requests;
+      if (message is AuthorizationRequestMessage) {
+        requests = message.body.scope;
+      } else if (message is ContractInvokeRequestMessage) {
+        requests = message.body.scope;
+      } else {
+        throw UnsupportedIden3MsgTypeException(
+          type: message.type,
+          errorMessage: "Unsupported message type - ${message.type}",
+        );
+      }
+
       List<RequestAndCredentials> requestsAndCredsLocal;
       if (requestsAndCreds == null) {
         // Get the credentials and proof requests by scope
@@ -150,7 +166,7 @@ class Authenticate {
             .getAsync<GetMessageRequestsAndCredsUseCase>();
         final requestsAndCredentials = await getCredentialsUseCase.execute(
           param: GetMessageRequestsAndCredsParam(
-            message: message,
+            proofRequests: requests,
             genesisDid: genesisDid,
             profileNonce: profileNonce,
             encryptionKey: privateKey,
@@ -268,22 +284,24 @@ class Authenticate {
       Uri uri = Uri.parse(callbackUrl);
       http.Response response = await httpClient
           .post(
-            uri,
-            body: authToken,
-            headers: {
-              HttpHeaders.acceptHeader: '*/*',
-              HttpHeaders.contentTypeHeader: 'text/plain',
-            },
-          )
+        uri,
+        body: authToken,
+        headers: {
+          HttpHeaders.acceptHeader: '*/*',
+          HttpHeaders.contentTypeHeader: 'text/plain',
+        },
+      )
           .timeout(const Duration(seconds: 30));
 
       _stacktraceManager.addTrace(
-        "[Authenticate] responseStatusCode: ${response.statusCode}\nresponseBody: ${response.body}",
+        "[Authenticate] responseStatusCode: ${response
+            .statusCode}\nresponseBody: ${response.body}",
       );
 
       if (response.statusCode != 200) {
         _stacktraceManager.addError(
-          "[Authenticate] Error sending auth token to the requester: ${response.statusCode} ${response.body}",
+          "[Authenticate] Error sending auth token to the requester: ${response
+              .statusCode} ${response.body}",
         );
         throw NetworkException(
           statusCode: response.statusCode,
@@ -318,7 +336,7 @@ class Authenticate {
       throw NetworkException(
         statusCode: 504,
         errorMessage:
-            "Connection timeout while sending auth token to the requester.\nwaited for $waitingTime seconds.",
+        "Connection timeout while sending auth token to the requester.\nwaited for $waitingTime seconds.",
       );
     } catch (e) {
       rethrow;
@@ -377,12 +395,12 @@ class Authenticate {
         } else {
           // if the request is not optional, throw an error
           _stacktraceManager.addError(
-            "[Authenticate] No credentials found for request: ${request.scope.id}",
+            "[Authenticate] No credentials found for request: ${request.id}",
           );
           throw NoCredentialsFoundException(
             proofRequest: request,
             errorMessage:
-                "No credentials found for request: ${request.scope.id}",
+            "No credentials found for request: ${request.id}",
           );
         }
       }
@@ -397,32 +415,32 @@ class Authenticate {
       }
 
       _proofGenerationStepsStreamManager.add(
-        "#${i + 1} creating proof for ${request.scope.query.type}...",
+        "#${i + 1} creating proof for ${request.query.type}...",
       );
 
       final appDir = await getApplicationDocumentsDirectory();
       final circuitsDataSource = CircuitsFilesDataSource(appDir);
 
       final graphFileBytes = await circuitsDataSource.loadGraphFile(
-        request.scope.circuitId,
+        request.circuitId,
       );
       final zkeyFilePath = await circuitsDataSource.getZkeyFilePath(
-        request.scope.circuitId,
+        request.circuitId,
       );
 
       CircuitDataEntity circuitDataEntity = CircuitDataEntity(
-        request.scope.circuitId,
+        request.circuitId,
         graphFileBytes,
         zkeyFilePath,
       );
 
       BigInt claimSubjectProfileNonce = identityEntity.profiles.keys.firstWhere(
-        (k) =>
-            identityEntity.profiles[k] == claim.info["credentialSubject"]["id"],
+            (k) =>
+        identityEntity.profiles[k] == claim.info["credentialSubject"]["id"],
         orElse: () => GENESIS_PROFILE_NONCE,
       );
 
-      int? groupId = request.scope.query.groupId;
+      int? groupId = request.query.groupId;
       String linkNonce = "0";
       // Check if groupId exists in the map
       if (groupId != null) {
@@ -440,9 +458,9 @@ class Authenticate {
       Map<String, dynamic>? config;
       String? signature;
 
-      if (request.scope.circuitId == CircuitTypes.mtpOnChain.id ||
-          request.scope.circuitId == CircuitTypes.sigOnChain.id ||
-          request.scope.circuitId == CircuitTypes.circuitsV3OnChain.id) {
+      if (request.circuitId == CircuitTypes.mtpOnChain.id ||
+          request.circuitId == CircuitTypes.sigOnChain.id ||
+          request.circuitId == CircuitTypes.circuitsV3OnChain.id) {
         /// SIGN MESSAGE
         signature = await signMessage(
           privateKey: privateKeyBytes,
@@ -456,25 +474,25 @@ class Authenticate {
       String id = splittedDid[4];
       final generateInputsRes = await proofRepository
           .calculateAtomicQueryInputs(
-            id: id,
-            profileNonce: profileNonce,
-            claimSubjectProfileNonce: claimSubjectProfileNonce,
-            claim: claim,
-            proofScopeRequest: request.scope.toJson(),
-            circuitId: request.scope.circuitId,
-            incProof: authClaimCompanionObject.incProof,
-            nonRevProof: authClaimCompanionObject.nonRevProof,
-            gistProof: authClaimCompanionObject.gistProofEntity,
-            authClaim: authClaimCompanionObject.authClaim,
-            treeState: authClaimCompanionObject.treeState,
-            challenge: challenge,
-            signature: signature,
-            config: config,
-            verifierId: message.from,
-            linkNonce: linkNonce,
-            scopeParams: request.scope.params,
-            transactionData: transactionData,
-          );
+        id: id,
+        profileNonce: profileNonce,
+        claimSubjectProfileNonce: claimSubjectProfileNonce,
+        claim: claim,
+        proofScopeRequest: request.toJson(),
+        circuitId: request.circuitId,
+        incProof: authClaimCompanionObject.incProof,
+        nonRevProof: authClaimCompanionObject.nonRevProof,
+        gistProof: authClaimCompanionObject.gistProofEntity,
+        authClaim: authClaimCompanionObject.authClaim,
+        treeState: authClaimCompanionObject.treeState,
+        challenge: challenge,
+        signature: signature,
+        config: config,
+        verifierId: message.from,
+        linkNonce: linkNonce,
+        scopeParams: request.params,
+        transactionData: transactionData,
+      );
 
       final atomicQueryInputs = json.encode(generateInputsRes.inputs);
       if (kDebugMode) {
@@ -503,8 +521,8 @@ class Authenticate {
       );
 
       final proof = Iden3commProofEntity(
-        id: request.scope.id,
-        circuitId: request.scope.circuitId,
+        id: request.id,
+        circuitId: request.circuitId,
         proof: zkProofEntity.proof,
         pubSignals: zkProofEntity.pubSignals,
         publicStatesInfo: generateInputsRes.publicStatesInfo,
@@ -556,7 +574,8 @@ class Authenticate {
       return schema;
     } else {
       _stacktraceManager.addError(
-        "[Authenticate] Error fetching schema: ${schemaResponse.statusCode} ${schemaResponse.statusMessage}",
+        "[Authenticate] Error fetching schema: ${schemaResponse
+            .statusCode} ${schemaResponse.statusMessage}",
       );
       throw NetworkException(
         statusCode: schemaResponse.statusCode ?? 0,
@@ -623,7 +642,9 @@ class Authenticate {
     String jwzString = stringFromJwz(jwz);
 
     Uint8List sha = Uint8List.fromList(
-      sha256.convert(Uint8ArrayUtils.uint8ListfromString(jwzString)).bytes,
+      sha256
+          .convert(Uint8ArrayUtils.uint8ListfromString(jwzString))
+          .bytes,
     );
 
     // Endianness
@@ -721,7 +742,7 @@ class Authenticate {
     GistMTProofEntity? gistProofEntity;
     Map<String, dynamic>? treeState;
     var libPolygonIdCredential =
-        getItSdk<LibPolygonIdCoreCredentialDataSource>();
+    getItSdk<LibPolygonIdCoreCredentialDataSource>();
 
     final identityRepo = getItSdk<IdentityRepository>();
     final publicKey = await identityRepo.getPublicKeys(
@@ -857,7 +878,7 @@ class Authenticate {
     ).format(expirationTime);
     bool isExpired =
         nowFormatted.compareTo(expirationTimeFormatted) > 0 ||
-        claim.state == CredentialState.expired;
+            claim.state == CredentialState.expired;
 
     if (isExpired && claim.info.containsKey("refreshService")) {
       _proofGenerationStepsStreamManager.add(
@@ -869,14 +890,14 @@ class Authenticate {
 
       CredentialEntity refreshedClaimEntity = await _refreshCredentialUseCase
           .execute(
-            param: RefreshCredentialParam(
-              credential: claim,
-              genesisDid: genesisDid,
-              privateKey: privateKey,
-              // TODO Maybe provide keys here?
-              keys: [],
-            ),
-          );
+        param: RefreshCredentialParam(
+          credential: claim,
+          genesisDid: genesisDid,
+          privateKey: privateKey,
+          // TODO Maybe provide keys here?
+          keys: [],
+        ),
+      );
 
       claim = refreshedClaimEntity;
     }

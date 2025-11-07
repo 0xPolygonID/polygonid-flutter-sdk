@@ -268,11 +268,6 @@ class Iden3commMocks {
   }
   ''';
 
-  static ProofRequestEntity proofRequest = ProofRequestEntity(
-    Iden3commMocks.proofScopeRequest,
-    mockContext,
-  );
-
   static List<ProofRequestEntity> proofRequestList = [
     ProofRequestEntity(Iden3commMocks.proofScopeRequest, mockContext),
     ProofRequestEntity(Iden3commMocks.proofScopeRequest, mockContext),
