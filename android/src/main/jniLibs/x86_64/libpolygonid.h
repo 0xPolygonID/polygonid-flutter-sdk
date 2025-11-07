@@ -295,6 +295,10 @@ extern GoUint8 PLGNVerifyProof(char** jsonResponse, char* in, char* cfg, PLGNSta
 //
 extern GoUint8 PLGNVerifyAuthResponse(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 
+// PLGNVerifyAnonAadhaarQR verifies an AnonAadhaar QR code.
+//
+extern GoUint8 PLGNVerifyAnonAadhaarQR(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
 #ifdef __cplusplus
 }
 #endif

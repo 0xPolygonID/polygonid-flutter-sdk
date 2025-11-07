@@ -77,4 +77,14 @@ class PolygonIdCoreUtil extends PolygonIdCore {
       },
     );
   }
+
+  bool verifyAnonAadhaarQR(String input){
+    return callGenericCoreFunction(
+      input: () => input,
+      function: PolygonIdCore.nativePolygonIdCoreLib.PLGNVerifyAnonAadhaarQR,
+      parse: (result) {
+        return jsonDecode(result)['isValid'] as bool? ?? false;
+      },
+    );
+  }
 }

@@ -142,6 +142,10 @@ class Util {
       verificationMethod: verificationMethod,
     );
   }
+
+  bool verifyAnonAadhaarQR(String anonAadhaarQRCode) {
+    return _polygonIdCoreUtil.verifyAnonAadhaarQR(anonAadhaarQRCode);
+  }
 }
 
 class AttestationResult {
