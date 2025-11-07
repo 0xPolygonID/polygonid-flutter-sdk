@@ -53,4 +53,5 @@ void libpolygonid_dummy(void) {
     (void)(void*)PLGNDecryptJWE;
     (void)(void*)PLGNDecryptEncryptedCredential;
     (void)(void*)PLGNVerifyProof;
+    (void)(void*)PLGNVerifyAnonAadhaarQR;
 }
