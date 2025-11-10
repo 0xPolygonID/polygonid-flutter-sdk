@@ -25,6 +25,7 @@ import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stre
 
 class GetIden3commProofParam {
   final ZeroKnowledgeProofRequest request;
+  final CredentialEntity? credential;
   final String verifierDid;
   final String genesisDid;
   final BigInt profileNonce;
@@ -36,6 +37,7 @@ class GetIden3commProofParam {
 
   GetIden3commProofParam({
     required this.request,
+    this.credential,
     required this.verifierDid,
     required this.genesisDid,
     required this.profileNonce,
@@ -76,38 +78,45 @@ class GetIden3commProofUseCase
     try {
       Map<int, String> groupIdLinkNonceMap = {};
 
-      _proofGenerationStepsStreamManager.add("Getting proof requests");
+      CredentialEntity credential;
+      final request = param.request;
+      if (param.credential case var existingCred?) {
+        credential = existingCred;
+      } else {
+        _proofGenerationStepsStreamManager.add("Getting proof requests");
 
-      final requestsAndCreds = await _getMessageRequestsAndCredsUseCase.execute(
-        param: GetMessageRequestsAndCredsParam(
-          proofRequests: [param.request],
-          genesisDid: param.genesisDid,
-          profileNonce: param.profileNonce,
-          encryptionKey: param.privateKey,
-          credentialSortOrderList: [CredentialSortOrder.ExpirationDescending],
-        ),
-      );
+        final requestsAndCreds = await _getMessageRequestsAndCredsUseCase
+            .execute(
+              param: GetMessageRequestsAndCredsParam(
+                proofRequests: [param.request],
+                genesisDid: param.genesisDid,
+                profileNonce: param.profileNonce,
+                encryptionKey: param.privateKey,
+                credentialSortOrderList: [
+                  CredentialSortOrder.ExpirationDescending,
+                ],
+              ),
+            );
 
-      final request = requestsAndCreds.first.request;
-      final credentials = requestsAndCreds.first.credentials;
+        final credentials = requestsAndCreds.first.credentials;
 
-      /// Generate proof for each request
-
-      if (credentials.isEmpty) {
-        // if there are no credentials for the request - throw an error
-        _stacktraceManager.addError(
-          "[Authenticate] No credentials found for request: ${request.id}",
-        );
-        throw NoCredentialsFoundException(
-          proofRequest: request,
-          errorMessage: "No credentials found for request: ${request.id}",
-        );
+        /// Generate proof for each request
+        if (credentials.isEmpty) {
+          // if there are no credentials for the request - throw an error
+          _stacktraceManager.addError(
+            "[Authenticate] No credentials found for request: ${request.id}",
+          );
+          throw NoCredentialsFoundException(
+            proofRequest: request,
+            errorMessage: "No credentials found for request: ${request.id}",
+          );
+        }
+        credential = credentials.first;
       }
-      CredentialEntity claim = credentials.first;
 
-      if (claim.expiration != null) {
-        claim = await _checkCredentialExpirationAndTryRefreshIfExpired(
-          claim: claim,
+      if (credential.expiration != null) {
+        credential = await _checkCredentialExpirationAndTryRefreshIfExpired(
+          claim: credential,
           param: param,
         );
       }
@@ -148,8 +157,7 @@ class GetIden3commProofUseCase
       );
 
       BigInt claimSubjectProfileNonce = identityEntity.profiles.keys.firstWhere(
-        (k) =>
-            identityEntity.profiles[k] == claim.info["credentialSubject"]["id"],
+        (k) => identityEntity.profiles[k] == credential.credentialSubject["id"],
         orElse: () => GENESIS_PROFILE_NONCE,
       );
 
@@ -168,7 +176,7 @@ class GetIden3commProofUseCase
       }
 
       _proofGenerationStepsStreamManager.add(
-        "creating proof for ${claim.type}",
+        "creating proof for ${credential.type}",
       );
 
       // Generate proof param
@@ -176,7 +184,7 @@ class GetIden3commProofUseCase
         did: param.genesisDid,
         profileNonce: param.profileNonce,
         claimSubjectProfileNonce: claimSubjectProfileNonce,
-        credential: claim,
+        credential: credential,
         request: request,
         circuitData: circuitData,
         privateKey: privKey,
