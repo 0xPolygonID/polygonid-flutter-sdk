@@ -162,8 +162,7 @@ class GetIden3commProofUseCase
           linkNonce = groupIdLinkNonceMap[groupId]!;
         } else {
           // Generate a new linkNonce for this groupId
-          linkNonce =
-              generateLinkNonce(); // Replace this with your linkNonce generation logic
+          linkNonce = generateLinkNonce();
           groupIdLinkNonceMap[groupId] = linkNonce;
         }
       }
