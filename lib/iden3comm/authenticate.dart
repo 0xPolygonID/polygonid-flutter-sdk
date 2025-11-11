@@ -35,7 +35,9 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/re
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/response/jwz.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_vp_proof.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
@@ -143,6 +145,18 @@ class Authenticate {
         ),
       );
 
+      final List<ProofScopeRequest> requests;
+      if (message is AuthorizationRequestMessage) {
+        requests = message.body.scope;
+      } else if (message is ContractInvokeRequestMessage) {
+        requests = message.body.scope;
+      } else {
+        throw UnsupportedIden3MsgTypeException(
+          type: message.type,
+          errorMessage: "Unsupported message type - ${message.type}",
+        );
+      }
+
       List<RequestAndCredentials> requestsAndCredsLocal;
       if (requestsAndCreds == null) {
         // Get the credentials and proof requests by scope
@@ -150,7 +164,7 @@ class Authenticate {
             .getAsync<GetMessageRequestsAndCredsUseCase>();
         final requestsAndCredentials = await getCredentialsUseCase.execute(
           param: GetMessageRequestsAndCredsParam(
-            message: message,
+            proofRequests: requests,
             genesisDid: genesisDid,
             profileNonce: profileNonce,
             encryptionKey: privateKey,
@@ -377,12 +391,11 @@ class Authenticate {
         } else {
           // if the request is not optional, throw an error
           _stacktraceManager.addError(
-            "[Authenticate] No credentials found for request: ${request.scope.id}",
+            "[Authenticate] No credentials found for request: ${request.id}",
           );
           throw NoCredentialsFoundException(
             proofRequest: request,
-            errorMessage:
-                "No credentials found for request: ${request.scope.id}",
+            errorMessage: "No credentials found for request: ${request.id}",
           );
         }
       }
@@ -397,21 +410,21 @@ class Authenticate {
       }
 
       _proofGenerationStepsStreamManager.add(
-        "#${i + 1} creating proof for ${request.scope.query.type}...",
+        "#${i + 1} creating proof for ${request.query.type}...",
       );
 
       final appDir = await getApplicationDocumentsDirectory();
       final circuitsDataSource = CircuitsFilesDataSource(appDir);
 
       final graphFileBytes = await circuitsDataSource.loadGraphFile(
-        request.scope.circuitId,
+        request.circuitId,
       );
       final zkeyFilePath = await circuitsDataSource.getZkeyFilePath(
-        request.scope.circuitId,
+        request.circuitId,
       );
 
       CircuitDataEntity circuitDataEntity = CircuitDataEntity(
-        request.scope.circuitId,
+        request.circuitId,
         graphFileBytes,
         zkeyFilePath,
       );
@@ -422,7 +435,7 @@ class Authenticate {
         orElse: () => GENESIS_PROFILE_NONCE,
       );
 
-      int? groupId = request.scope.query.groupId;
+      int? groupId = request.query.groupId;
       String linkNonce = "0";
       // Check if groupId exists in the map
       if (groupId != null) {
@@ -431,8 +444,7 @@ class Authenticate {
           linkNonce = groupIdLinkNonceMap[groupId]!;
         } else {
           // Generate a new linkNonce for this groupId
-          linkNonce =
-              generateLinkNonce(); // Replace this with your linkNonce generation logic
+          linkNonce = generateLinkNonce();
           groupIdLinkNonceMap[groupId] = linkNonce;
         }
       }
@@ -440,9 +452,9 @@ class Authenticate {
       Map<String, dynamic>? config;
       String? signature;
 
-      if (request.scope.circuitId == CircuitTypes.mtpOnChain.id ||
-          request.scope.circuitId == CircuitTypes.sigOnChain.id ||
-          request.scope.circuitId == CircuitTypes.circuitsV3OnChain.id) {
+      if (request.circuitId == CircuitTypes.mtpOnChain.id ||
+          request.circuitId == CircuitTypes.sigOnChain.id ||
+          request.circuitId == CircuitTypes.circuitsV3OnChain.id) {
         /// SIGN MESSAGE
         signature = await signMessage(
           privateKey: privateKeyBytes,
@@ -460,8 +472,8 @@ class Authenticate {
             profileNonce: profileNonce,
             claimSubjectProfileNonce: claimSubjectProfileNonce,
             claim: claim,
-            proofScopeRequest: request.scope.toJson(),
-            circuitId: request.scope.circuitId,
+            proofScopeRequest: request.toJson(),
+            circuitId: request.circuitId,
             incProof: authClaimCompanionObject.incProof,
             nonRevProof: authClaimCompanionObject.nonRevProof,
             gistProof: authClaimCompanionObject.gistProofEntity,
@@ -472,7 +484,7 @@ class Authenticate {
             config: config,
             verifierId: message.from,
             linkNonce: linkNonce,
-            scopeParams: request.scope.params,
+            scopeParams: request.params,
             transactionData: transactionData,
           );
 
@@ -503,8 +515,8 @@ class Authenticate {
       );
 
       final proof = Iden3commProofEntity(
-        id: request.scope.id,
-        circuitId: request.scope.circuitId,
+        id: request.id,
+        circuitId: request.circuitId,
         proof: zkProofEntity.proof,
         pubSignals: zkProofEntity.pubSignals,
         publicStatesInfo: generateInputsRes.publicStatesInfo,

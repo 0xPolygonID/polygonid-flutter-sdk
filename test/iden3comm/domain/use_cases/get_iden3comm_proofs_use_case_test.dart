@@ -112,8 +112,8 @@ main() {
       getMessageRequestsAndCredsUseCase.execute(param: anyNamed('param')),
     ).thenAnswer(
       (realInvocation) async => [
-        (request: Iden3commMocks.proofRequest, credentials: [claim]),
-        (request: Iden3commMocks.proofRequest, credentials: [claim]),
+        (request: Iden3commMocks.proofScopeRequest, credentials: [claim]),
+        (request: Iden3commMocks.proofScopeRequest, credentials: [claim]),
       ],
     );
 

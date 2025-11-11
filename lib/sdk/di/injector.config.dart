@@ -192,6 +192,8 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_c
     as _i369;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart'
     as _i347;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proof_use_case.dart'
+    as _i481;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart'
     as _i412;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_jwz_use_case.dart'
@@ -1492,6 +1494,18 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i635.SaveClaimsUseCase>(),
       ),
     );
+    gh.factoryAsync<_i481.GetIden3commProofUseCase>(
+      () async => _i481.GetIden3commProofUseCase(
+        await getAsync<_i341.ProofRepository>(),
+        await getAsync<_i181.GetMessageRequestsAndCredsUseCase>(),
+        await getAsync<_i340.GenerateIden3commProofUseCase>(),
+        await getAsync<_i735.IsProofCircuitSupportedUseCase>(),
+        gh<_i743.GetIdentityUseCase>(),
+        gh<_i920.ProofGenerationStepsStreamManager>(),
+        gh<_i267.StacktraceManager>(),
+        await getAsync<_i143.RefreshCredentialUseCase>(),
+      ),
+    );
     gh.factoryAsync<_i412.GetIden3commProofsUseCase>(
       () async => _i412.GetIden3commProofsUseCase(
         await getAsync<_i341.ProofRepository>(),
@@ -1548,6 +1562,7 @@ extension GetItInjectableX on _i174.GetIt {
         await getAsync<_i181.GetMessageRequestsAndCredsUseCase>(),
         await getAsync<_i369.GetIden3commClaimsRevNonceUseCase>(),
         await getAsync<_i412.GetIden3commProofsUseCase>(),
+        await getAsync<_i481.GetIden3commProofUseCase>(),
         gh<_i484.GetInteractionsUseCase>(),
         gh<_i1031.AddInteractionUseCase>(),
         gh<_i975.RemoveInteractionsUseCase>(),

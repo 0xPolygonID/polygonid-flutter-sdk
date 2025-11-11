@@ -71,7 +71,7 @@ class AuthorizationRequestMessage
           ? List<Map<String, dynamic>>.from(json['attachments'])
               .map((j) => Attachment.fromJson(j))
               .toList()
-          : [],
+          : const [],
     );
   }
 

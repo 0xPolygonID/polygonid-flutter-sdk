@@ -12,6 +12,7 @@ import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
@@ -684,6 +685,29 @@ class PolygonIdFlutterChannel
   }) {
     return _polygonIdSdk.iden3comm.getProofs(
       message: message,
+      genesisDid: genesisDid,
+      profileNonce: profileNonce,
+      privateKey: privateKey,
+      challenge: challenge,
+      config: config,
+      transactionData: transactionData,
+    );
+  }
+
+  @override
+  Future<Iden3commProofEntity> getProof({
+    required ZeroKnowledgeProofRequest request,
+    required String verifierDid,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String privateKey,
+    String? challenge,
+    EnvConfigEntity? config,
+    Map<String, dynamic>? transactionData,
+  }) {
+    return _polygonIdSdk.iden3comm.getProof(
+      request: request,
+      verifierDid: verifierDid,
       genesisDid: genesisDid,
       profileNonce: profileNonce,
       privateKey: privateKey,
