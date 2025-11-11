@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 
@@ -9,12 +11,7 @@ enum InteractionType {
   credentialProposal,
 }
 
-enum InteractionState {
-  received,
-  opened,
-  accepted,
-  declined,
-}
+enum InteractionState { received, opened, accepted, declined }
 
 class InteractionEntity with EquatableMixin {
   final String id;
@@ -30,6 +27,7 @@ class InteractionEntity with EquatableMixin {
 
   final List<String> tags;
   final DIDDocument? didDocument;
+  final Map<String, dynamic>? metadata;
 
   InteractionEntity({
     required this.id,
@@ -43,62 +41,72 @@ class InteractionEntity with EquatableMixin {
     required this.message,
     this.tags = const [],
     this.didDocument,
+    this.metadata,
   });
 
   factory InteractionEntity.fromJson(Map<String, dynamic> json) {
     return InteractionEntity(
-        id: json['id'],
-        from: json['from'],
-        to: json['to'],
-        genesisDid: json['genesisDid'],
-        profileNonce: BigInt.parse(json['profileNonce']),
-        type: InteractionType.values.firstWhere((type) =>
-            type.name == json['type'] || type.toString() == json['type']),
-        state: InteractionState.values.firstWhere((type) =>
-            type.name == json['state'] || type.toString() == json['state']),
-        timestamp: json['timestamp'],
-        message: json['message'],
-        tags: (json['tags'] as List<dynamic>?)
-                ?.map((tag) => tag.toString())
-                .toList() ??
-            [],
-        didDocument: json['didDocument'] != null
-            ? DIDDocument.fromJson(json['didDocument'])
-            : null);
+      id: json['id'],
+      from: json['from'],
+      to: json['to'],
+      genesisDid: json['genesisDid'],
+      profileNonce: BigInt.parse(json['profileNonce']),
+      type: InteractionType.values.firstWhere(
+        (type) => type.name == json['type'] || type.toString() == json['type'],
+      ),
+      state: InteractionState.values.firstWhere(
+        (type) =>
+            type.name == json['state'] || type.toString() == json['state'],
+      ),
+      timestamp: json['timestamp'],
+      message: json['message'],
+      tags:
+          (json['tags'] as List<dynamic>?)
+              ?.map((tag) => tag.toString())
+              .toList() ??
+          [],
+      didDocument: json['didDocument'] != null
+          ? DIDDocument.fromJson(json['didDocument'])
+          : null,
+      metadata: json['metadata'] != null
+          ? Map<String, dynamic>.from(json['metadata'])
+          : null,
+    );
   }
 
   @override
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'from': from,
-        'type': type.toString(),
-        'state': state.toString(),
-        'timestamp': timestamp,
-        'message': message,
-        'to': to,
-        'tags': tags,
-        'genesisDid': genesisDid,
-        'profileNonce': profileNonce.toString(),
-        'didDocument': didDocument?.toJson(),
-      };
+    'id': id,
+    'from': from,
+    'type': type.toString(),
+    'state': state.toString(),
+    'timestamp': timestamp,
+    'message': message,
+    'to': to,
+    'tags': tags,
+    'genesisDid': genesisDid,
+    'profileNonce': profileNonce.toString(),
+    if (didDocument != null) 'didDocument': didDocument?.toJson(),
+    if (metadata != null) 'metadata': metadata,
+  };
 
   @override
   String toString() {
-    return 'InteractionEntity{id: $id, from: $from, type: $type, state: $state, timestamp: $timestamp, message: $message, to: $to, genesisDid: $genesisDid, profileNonce: $profileNonce, tags: $tags, didDocument: $didDocument}';
+    return 'InteractionEntity ${jsonEncode(toJson())}';
   }
 
   @override
   List<Object?> get props => [
-        id,
-        from,
-        type,
-        state,
-        timestamp,
-        message,
-        to,
-        genesisDid,
-        profileNonce,
-        tags,
-        didDocument,
-      ];
+    id,
+    from,
+    type,
+    state,
+    timestamp,
+    message,
+    to,
+    genesisDid,
+    profileNonce,
+    tags,
+    didDocument,
+  ];
 }
