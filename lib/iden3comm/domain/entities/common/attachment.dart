@@ -5,12 +5,14 @@ class Attachment extends Equatable {
   final String id;
   final String? description;
   final String? mediaType;
+  final String? format;
   final AttachData data;
 
   Attachment({
     required this.id,
-    required this.description,
-    required this.mediaType,
+    this.description,
+    this.mediaType,
+    this.format,
     required this.data,
   });
 
@@ -19,6 +21,7 @@ class Attachment extends Equatable {
       id: json['id'],
       description: json['description'],
       mediaType: json['media_type'],
+      format: json['format'],
       data: AttachData.fromJson(json['data'] ?? {}),
     );
   }
@@ -26,14 +29,15 @@ class Attachment extends Equatable {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'description': description,
-      'media_type': mediaType,
+      if (description != null) 'description': description,
+      if (mediaType != null) 'media_type': mediaType,
+      if (format != null) 'format': format,
       'data': data.toJson(),
     };
   }
 
   @override
-  List<Object?> get props => [id, description, mediaType, data];
+  List<Object?> get props => [id, description, mediaType, format, data];
 }
 
 /// Represents the data contained in an attachment, which can be a JSON object
