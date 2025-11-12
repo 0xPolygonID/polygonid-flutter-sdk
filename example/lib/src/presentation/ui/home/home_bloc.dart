@@ -59,7 +59,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(HomeState.loaded(identifier: identity.did));
     } on IdentityException catch (identityException) {
       emit(HomeState.error(message: identityException.error));
-    } catch (_) {
+    } catch (e) {
+      print("Error creating identity: $e");
       emit(const HomeState.error(message: CustomStrings.genericError));
     }
   }
