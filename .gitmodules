@@ -1,4 +1,0 @@
-[submodule "packages/jose"]
-        path = packages/jose
-        url = https://github.com/5eeman/jose.git
-
