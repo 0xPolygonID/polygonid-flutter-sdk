@@ -1,19 +1,17 @@
 import 'dart:convert';
+import 'dart:isolate';
 
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/libs/polygonidcore/pidcore_base.dart';
 
 @injectable
 class PolygonIdCoreUtil extends PolygonIdCore {
-  Map<String, dynamic> validateAttestationDocument(String attestationDocument) {
+  String validateAttestationDocument(String input) {
     return callGenericCoreFunction(
-      input: () => jsonEncode({"attestation_document": attestationDocument}),
+      input: () => input,
       function:
           PolygonIdCore.nativePolygonIdCoreLib.PLGNValidateAttestationDocument,
-      parse: (jsonString) {
-        final json = jsonDecode(jsonString);
-        return json;
-      },
+      parse: (result) => result,
     );
   }
 
@@ -68,17 +66,21 @@ class PolygonIdCoreUtil extends PolygonIdCore {
     );
   }
 
-  String verifyAuthResponse(String input) {
-    return callGenericCoreFunction(
-      input: () => input,
-      function: PolygonIdCore.nativePolygonIdCoreLib.PLGNVerifyAuthResponse,
-      parse: (result) {
-        return result;
-      },
+  // Async version running heavy native verification in a background isolate
+  Future<String> verifyAuthResponse(String input) async {
+    // Capture current env config before spawning isolate (late static vars are isolate-local)
+    final config = PolygonIdCore.envConfigJson;
+    return Isolate.run(
+      () => callGenericCoreFunction(
+        input: () => input,
+        function: PolygonIdCore.nativePolygonIdCoreLib.PLGNVerifyAuthResponse,
+        config: config,
+        parse: (res) => res,
+      ),
     );
   }
 
-  bool verifyAnonAadhaarQR(String input){
+  bool verifyAnonAadhaarQR(String input) {
     return callGenericCoreFunction(
       input: () => input,
       function: PolygonIdCore.nativePolygonIdCoreLib.PLGNVerifyAnonAadhaarQR,

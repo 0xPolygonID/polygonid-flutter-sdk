@@ -15,15 +15,18 @@ import 'native_polygonidcore.dart';
 
 typedef ConsumedStatusResult = ({PLGNStatusCode statusCode, String message});
 
-typedef GenericPolygonIdFunction = int Function(
-  ffi.Pointer<ffi.Pointer<ffi.Char>>,
-  ffi.Pointer<ffi.Char>,
-  ffi.Pointer<ffi.Char>,
-  ffi.Pointer<ffi.Pointer<PLGNStatus>>,
-);
+typedef GenericPolygonIdFunction =
+    int Function(
+      ffi.Pointer<ffi.Pointer<ffi.Char>>,
+      ffi.Pointer<ffi.Char>,
+      ffi.Pointer<ffi.Char>,
+      ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+    );
 
 ConsumedStatusResult _createConsumedStatusResult(
-    PLGNStatusCode statusCode, String message) {
+  PLGNStatusCode statusCode,
+  String message,
+) {
   return (statusCode: statusCode, message: message);
 }
 
@@ -50,6 +53,9 @@ class PolygonIdCore {
     _envConfigJson = jsonEncode(envConfig.toJson());
   }
 
+  // Expose env config for isolate usage
+  static String get envConfigJson => _envConfigJson;
+
   PolygonIdCore();
 
   T callGenericCoreFunction<T>({
@@ -67,13 +73,15 @@ class PolygonIdCore {
     }
 
     final inputPointer = input().toNativeUtf8().cast<ffi.Char>();
-    final cfgPointer =
-        (config ?? _envConfigJson).toNativeUtf8().cast<ffi.Char>();
+    final cfgPointer = (config ?? _envConfigJson)
+        .toNativeUtf8()
+        .cast<ffi.Char>();
 
     final res = function(response, inputPointer, cfgPointer, status);
 
-    final PLGNStatusCode? statusCode =
-        PLGNStatusCode.values.firstWhereOrNull((e) => e.value == res);
+    final PLGNStatusCode? statusCode = PLGNStatusCode.values.firstWhereOrNull(
+      (e) => e.value == res,
+    );
 
     /// Handle error status codes
     if (statusCode == PLGNStatusCode.PLGNSTATUSCODE_ERROR) {
@@ -111,7 +119,8 @@ class PolygonIdCore {
   }
 
   ConsumedStatusResult consumeStatus(
-      ffi.Pointer<ffi.Pointer<PLGNStatus>> status) {
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
     if (status == ffi.nullptr || status.value == ffi.nullptr) {
       _logError("unable to allocate status");
 
@@ -132,7 +141,8 @@ class PolygonIdCore {
       try {
         errorMessage = jsonString.toDartString();
         _logError(
-            "${status.value.ref.status.toString()} - Error: $errorMessage");
+          "${status.value.ref.status.toString()} - Error: $errorMessage",
+        );
       } catch (e) {
         _logError(status.value.ref.status.toString());
       }

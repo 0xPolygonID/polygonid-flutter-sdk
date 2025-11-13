@@ -21,10 +21,13 @@ class Util {
   /// If the attestation document is invalid, it will throw an [CoreLibraryException].
   AttestationResult validateAttestationDocument(String attestationDocument) {
     final result = _polygonIdCoreUtil.validateAttestationDocument(
-      attestationDocument,
+      jsonEncode({"attestation_document": attestationDocument}),
     );
-    final publicKey = result['public_key'] as String?;
-    final userData = result['user_data'] as String?;
+
+    final parsed = jsonDecode(result);
+
+    final publicKey = parsed['public_key'] as String?;
+    final userData = parsed['user_data'] as String?;
 
     return AttestationResult(publicKey: publicKey, userData: userData);
   }
@@ -59,8 +62,10 @@ class Util {
   /// [ciphertext] - The encrypted message in JWE format.
   /// [keys] - List of keys to decrypt the message.
   /// Returns the decrypted plaintext message.
-  String anonUnpack(Map<String, dynamic> ciphertext,
-      List<Map<String, dynamic>> keys,) {
+  String anonUnpack(
+    Map<String, dynamic> ciphertext,
+    List<Map<String, dynamic>> keys,
+  ) {
     final json = {
       'ciphertext': ciphertext,
       'keySet': {'keys': keys},
@@ -81,8 +86,9 @@ class Util {
   }
 
   W3CCredential decryptEncryptedCredential(
-      Map<String, dynamic> encryptedCredentialIssuanceMessage,
-      List<Map<String, dynamic>> keys,) {
+    Map<String, dynamic> encryptedCredentialIssuanceMessage,
+    List<Map<String, dynamic>> keys,
+  ) {
     final json = {
       'encryptedCredentialIssuanceMessage': encryptedCredentialIssuanceMessage,
       'keySet': {'keys': keys},
@@ -105,14 +111,14 @@ class Util {
   /// [response] - The authorization response to be verified. Can be plain iden3
   /// message, JWE or JWZ format.
   /// [keys] - List of keys to verify the response if it is JWE format.
-  /// Returns a string indicating the verification result.
-  AuthorizationResponseMessage verifyAuthResponse({
+  /// Returns AuthorizationResponseMessage parsed from native response.
+  Future<AuthorizationResponseMessage> verifyAuthResponse({
     required AuthorizationRequestMessage request,
     required dynamic response,
     List<Map<String, dynamic>> keys = const [],
     String acceptedStateTransitionDelay = '8784h',
     String acceptedProofGenerationDelay = '8784h',
-  }) {
+  }) async {
     final input = jsonEncode({
       'authRequest': request.toJson(),
       'authResponse': response,
@@ -123,12 +129,13 @@ class Util {
       },
     });
 
-    final result = _polygonIdCoreUtil.verifyAuthResponse(input);
+    final result = await _polygonIdCoreUtil.verifyAuthResponse(input);
 
     return AuthorizationResponseMessage.fromJson(jsonDecode(result));
   }
 
-  Future<DIDDocument> createDidDocument(String profileDid, {
+  Future<DIDDocument> createDidDocument(
+    String profileDid, {
     PushServiceData? pushServiceData,
     String? redirectUrl,
     List<String>? keyAgreement,
@@ -163,10 +170,10 @@ class AttestationResult {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is AttestationResult &&
-              runtimeType == other.runtimeType &&
-              publicKey == other.publicKey &&
-              userData == other.userData;
+      other is AttestationResult &&
+          runtimeType == other.runtimeType &&
+          publicKey == other.publicKey &&
+          userData == other.userData;
 
   @override
   int get hashCode => publicKey.hashCode ^ userData.hashCode;
