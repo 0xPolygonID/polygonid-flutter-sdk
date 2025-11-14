@@ -6,52 +6,62 @@
 //
 
 #include "libpolygonid_bridge.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// Forward declare all symbols if not already via included headers (libpolygonid.h should be included transitively).
+// We create a global array marked used so the linker keeps these symbols even if otherwise unreferenced.
+// Using const and attribute((used)) prevents dead-strip and LTO elimination.
+static void* const __attribute__((used)) libpolygonid_force_link[] = {
+    (void*)PLGNAuthV2InputsMarshal,
+    (void*)PLGNCalculateGenesisID,
+    (void*)PLGNNewGenesisID,
+    (void*)PLGNNewGenesisIDFromEth,
+    (void*)PLGNW3CCredentialToCoreClaim,
+    (void*)PLGNCreateClaim,
+    (void*)PLGNIDToInt,
+    (void*)PLGNProofFromSmartContract,
+    (void*)PLGNProfileID,
+    (void*)PLGNAtomicQuerySigV2Inputs,
+    (void*)PLGNSigV2Inputs,
+    (void*)PLGNAtomicQueryMtpV2Inputs,
+    (void*)PLGNMtpV2Inputs,
+    (void*)PLGNAtomicQuerySigV2OnChainInputs,
+    (void*)PLGNAtomicQueryMtpV2OnChainInputs,
+    (void*)PLGNAtomicQueryV3Inputs,
+    (void*)PLGNAtomicQueryV3OnChainInputs,
+    (void*)PLGNALinkedMultiQueryInputs,
+    (void*)PLGNAGenerateInputs,
+    (void*)PLGNFreeStatus,
+    (void*)PLGNCleanCache,
+    (void*)PLGNCleanCache2,
+    (void*)PLGNCacheCredentials,
+    (void*)PLGNW3CCredentialFromOnchainHex,
+    (void*)PLGNW3CCredentialFromAnonAadhaarInputs,
+    (void*)PLGNW3CCredentialFromPassportInputs,
+    (void*)PLGNDescribeID,
+    (void*)PLGNBabyJubJubSignPoseidon,
+    (void*)PLGNBabyJubJubVerifyPoseidon,
+    (void*)PLGNBabyJubJubPrivate2Public,
+    (void*)PLGNBabyJubJubPublicUncompress,
+    (void*)PLGNBabyJubJubPublicCompress,
+    (void*)PLGNValidateAttestationDocument,
+    (void*)PLGNAAnonPack,
+    (void*)PLGNAAnonUnpack,
+    (void*)PLGNDecryptJWE,
+    (void*)PLGNDecryptEncryptedCredential,
+    (void*)PLGNVerifyProof,
+    (void*)PLGNVerifyAnonAadhaarQR,
+};
 
 void libpolygonid_dummy(void) {
-    // Reference libpolygonid exported symbols to prevent dead stripping.
-    // We do this by taking their addresses instead of calling them with NULL arguments.
-    // Cast to void* then void to silence any warnings about unused values.
-    (void)(void*)PLGNAuthV2InputsMarshal;
-    (void)(void*)PLGNCalculateGenesisID;
-    (void)(void*)PLGNNewGenesisID;
-    (void)(void*)PLGNNewGenesisIDFromEth;
-    (void)(void*)PLGNW3CCredentialToCoreClaim;
-    (void)(void*)PLGNCreateClaim;
-    (void)(void*)PLGNIDToInt;
-    (void)(void*)PLGNProofFromSmartContract;
-    (void)(void*)PLGNProfileID;
-    (void)(void*)PLGNAtomicQuerySigV2Inputs;
-    (void)(void*)PLGNSigV2Inputs;
-    (void)(void*)PLGNAtomicQueryMtpV2Inputs;
-    (void)(void*)PLGNMtpV2Inputs;
-    (void)(void*)PLGNAtomicQuerySigV2OnChainInputs;
-    (void)(void*)PLGNAtomicQueryMtpV2OnChainInputs;
-    (void)(void*)PLGNAtomicQueryV3Inputs;
-    (void)(void*)PLGNAtomicQueryV3OnChainInputs;
-    (void)(void*)PLGNALinkedMultiQueryInputs;
-    (void)(void*)PLGNAGenerateInputs;
-    (void)(void*)PLGNFreeStatus;
-
-    (void)(void*)PLGNCleanCache;
-    (void)(void*)PLGNCleanCache2;
-    (void)(void*)PLGNCacheCredentials;
-
-    (void)(void*)PLGNW3CCredentialFromOnchainHex;
-    (void)(void*)PLGNW3CCredentialFromAnonAadhaarInputs;
-    (void)(void*)PLGNW3CCredentialFromPassportInputs;
-
-    (void)(void*)PLGNDescribeID;
-    (void)(void*)PLGNBabyJubJubSignPoseidon;
-    (void)(void*)PLGNBabyJubJubVerifyPoseidon;
-    (void)(void*)PLGNBabyJubJubPrivate2Public;
-    (void)(void*)PLGNBabyJubJubPublicUncompress;
-    (void)(void*)PLGNBabyJubJubPublicCompress;
-    (void)(void*)PLGNValidateAttestationDocument;
-
-    (void)(void*)PLGNAAnonPack;
-    (void)(void*)PLGNAAnonUnpack;
-    (void)(void*)PLGNDecryptJWE;
-    (void)(void*)PLGNDecryptEncryptedCredential;
-    (void)(void*)PLGNVerifyProof;
-    (void)(void*)PLGNVerifyAnonAadhaarQR;
+    // Touch the array so the compiler cannot optimize it away entirely.
+    // The volatile read enforces a side-effect.
+    volatile void* sink = libpolygonid_force_link[0];
+    (void)sink;
 }
+
+#ifdef __cplusplus
+}
+#endif
