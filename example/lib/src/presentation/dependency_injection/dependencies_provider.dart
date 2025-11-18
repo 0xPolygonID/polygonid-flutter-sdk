@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:get_it/get_it.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/common/env.dart';
@@ -22,7 +23,7 @@ final getIt = GetIt.instance;
 
 /// Dependency Injection initializer
 Future<void> init() async {
-  registerEnv();
+  await registerEnv();
   await registerProviders();
   registerSplashDependencies();
   registerHomeDependencies();
@@ -37,7 +38,7 @@ Future<void> init() async {
   registerUtilities();
 }
 
-void registerEnv() {
+Future<void> registerEnv() async {
   Map<String, dynamic> defaultEnv = jsonDecode(Env.defaultEnvironment);
   String stacktraceEncryptionKey = Env.stacktraceEncryptionKey;
   String pinataGateway = Env.pinataGateway;
@@ -55,6 +56,9 @@ void registerEnv() {
   if (pinataGatewayToken.isNotEmpty) {
     envV1 = envV1.copyWith(pinataGatewayToken: pinataGatewayToken);
   }
+
+  final cacheDir = await getTemporaryDirectory();
+  envV1 = envV1.copyWith(cacheDir: cacheDir.path);
 
   getIt.registerSingleton<EnvEntity>(envV1);
 }

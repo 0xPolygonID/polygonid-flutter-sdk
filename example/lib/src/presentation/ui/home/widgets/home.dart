@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:polygonid_flutter_sdk/common/libs/polygonidcore/pidcore_base.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_body_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_body_response.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/dependency_injection/dependencies_provider.dart';
 import 'package:polygonid_flutter_sdk_example/src/presentation/navigations/routes.dart';
@@ -166,12 +168,40 @@ class _HomeScreenState extends State<HomeScreen> {
 
   ///
   Widget _buildDescription() {
-    return const Padding(
+    return Padding(
       padding: EdgeInsets.symmetric(horizontal: 24),
-      child: Text(
-        CustomStrings.homeDescription,
-        textAlign: TextAlign.center,
-        style: CustomTextStyles.descriptionTextStyle,
+      child: GestureDetector(
+        onTap: () {
+          try {
+            print('Verifying auth response...');
+            PolygonIdSdk.I.util.verifyAuthResponse(
+              request: AuthorizationRequestMessage(
+                id: '',
+                typ: 'typ',
+                from: '',
+                body: AuthorizationRequestMessageBody(
+                  callbackUrl: 'callbackUrl',
+                  reason: 'reason',
+                  scope: [],
+                ),
+              ),
+              response: AuthorizationResponseMessage(
+                  id: 'id',
+                  typ: 'typ',
+                  from: 'from',
+                  to: 'to',
+                  body: AuthorizationMessageResponseBody(proofs: [])),
+            );
+          } catch (e) {
+            // ignore
+            print('Error verifying auth response: $e');
+          }
+        },
+        child: Text(
+          CustomStrings.homeDescription,
+          textAlign: TextAlign.center,
+          style: CustomTextStyles.descriptionTextStyle,
+        ),
       ),
     );
   }
