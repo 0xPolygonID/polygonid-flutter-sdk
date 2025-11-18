@@ -738,9 +738,11 @@ packages:
   jose_plus:
     dependency: transitive
     description:
-      path: "../packages/jose"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "599835223a5291252b2080ed866523b6ccffbe7d"
+      url: "git@github.com:5eeman/jose.git"
+    source: git
     version: "0.4.8"
   js:
     dependency: transitive
