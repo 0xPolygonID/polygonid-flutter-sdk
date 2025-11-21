@@ -894,6 +894,196 @@ class Authenticate {
     }
     return claim;
   }
+
+  Future<String> getAuthTokenOnly({
+    required String privateKey,
+    required String genesisDid,
+    required BigInt profileNonce,
+    required IdentityEntity identityEntity,
+    required Iden3Message message,
+    required EnvEntity env,
+    DIDDocument? didDocument,
+    String? pushToken,
+    String? challenge,
+    final Map<String, dynamic>? transactionData,
+    String? authClaimNonce,
+    List<RequestAndCredentials>? requestsAndCreds,
+  }) async {
+    final nonce = authClaimNonce ?? DEFAULT_AUTH_CLAIM_NONCE;
+    try {
+      List<Iden3commProofEntity> proofs = [];
+      Map<int, String> groupIdLinkNonceMap = {};
+
+      AuthClaimCompanionObject? authClaimCompanionObject;
+      ProofRepository proofRepository = await getItSdk
+          .getAsync<ProofRepository>();
+      _proofGenerationStepsStreamManager =
+          getItSdk<ProofGenerationStepsStreamManager>();
+      _stacktraceManager = getItSdk<StacktraceManager>();
+
+      _proofGenerationStepsStreamManager.add("preparing authentication...");
+
+      // Check if the message type is supported
+      if (![
+        Iden3MessageType.authRequest,
+        Iden3MessageType.proofContractInvokeRequest,
+      ].contains(message.type)) {
+        _stacktraceManager.addError(
+          "[Authenticate] Unsupported message type: ${message.type} It should be either authRequest or proofContractInvokeRequest",
+        );
+        throw UnsupportedIden3MsgTypeException(
+          type: message.type,
+          errorMessage:
+              "Unsupported message type\nIt should be either "
+              "authRequest or proofContractInvokeRequest",
+        );
+      }
+
+      Uint8List privateKeyBytes = hexToBytes(privateKey);
+
+      GetSelectedChainUseCase getSelectedChainUseCase = getItSdk
+          .get<GetSelectedChainUseCase>();
+
+      ChainConfigEntity chain = await getSelectedChainUseCase.execute();
+      _stacktraceManager.addTrace(
+        "[Authenticate] Chain: ${chain.blockchain} ${chain.network}",
+      );
+      GetDidIdentifierUseCase getDidIdentifierUseCase =
+          getItSdk<GetDidIdentifierUseCase>();
+
+      final getPubKeyUseCase = getItSdk<GetPublicKeyUseCase>();
+      final bjjPublicKey = await getPubKeyUseCase.execute(param: privateKey);
+
+      String profileDid = await getDidIdentifierUseCase.execute(
+        param: GetDidIdentifierParam(
+          bjjPublicKey: bjjPublicKey,
+          blockchain: chain.blockchain,
+          network: chain.network,
+          profileNonce: profileNonce,
+          method: chain.method,
+        ),
+      );
+
+      final List<ProofScopeRequest> requests;
+      if (message is AuthorizationRequestMessage) {
+        requests = message.body.scope;
+      } else if (message is ContractInvokeRequestMessage) {
+        requests = message.body.scope;
+      } else {
+        throw UnsupportedIden3MsgTypeException(
+          type: message.type,
+          errorMessage: "Unsupported message type - ${message.type}",
+        );
+      }
+
+      List<RequestAndCredentials> requestsAndCredsLocal;
+      if (requestsAndCreds == null) {
+        // Get the credentials and proof requests by scope
+        final getCredentialsUseCase = await getItSdk
+            .getAsync<GetMessageRequestsAndCredsUseCase>();
+        final requestsAndCredentials = await getCredentialsUseCase.execute(
+          param: GetMessageRequestsAndCredsParam(
+            proofRequests: requests,
+            genesisDid: genesisDid,
+            profileNonce: profileNonce,
+            encryptionKey: privateKey,
+          ),
+        );
+
+        requestsAndCredsLocal = requestsAndCredentials;
+      } else {
+        requestsAndCredsLocal = requestsAndCreds;
+      }
+
+      // this authClaimCompanionObject is the one that is being used to get the
+      // authClaim, incProof, nonRevProof, treeState, authClaimNode, gistProofEntity
+      _proofGenerationStepsStreamManager.add("getting auth claim...");
+      authClaimCompanionObject ??= await getAuthClaim(
+        genesisDid: genesisDid,
+        env: env,
+        chain: chain,
+        privateKey: privateKey,
+        privateKeyBytes: privateKeyBytes,
+        authClaimNonce: nonce,
+      );
+
+      // if there are proof requests and claims and they are the same length
+      // then create the proof for every proof request
+      if (requestsAndCredsLocal.isNotEmpty) {
+        // it is assigning the proofs to the variable directly from the function call
+        await createProofForEveryProofRequest(
+          requestsAndCreds: requestsAndCredsLocal,
+          identityEntity: identityEntity,
+          groupIdLinkNonceMap: groupIdLinkNonceMap,
+          genesisDid: genesisDid,
+          profileNonce: profileNonce,
+          privateKey: privateKey,
+          challenge: challenge,
+          env: env,
+          message: message,
+          transactionData: transactionData,
+          privateKeyBytes: privateKeyBytes,
+          proofRepository: proofRepository,
+          authClaimCompanionObject: authClaimCompanionObject,
+          proofs: proofs,
+        );
+      }
+
+      // prepare the auth response message
+      _proofGenerationStepsStreamManager.add(
+        "preparing authentication parameters...",
+      );
+      DIDDocument didDoc;
+      if (didDocument != null) {
+        didDoc = didDocument;
+      } else {
+        PushServiceData? pushServiceData;
+        if (pushToken != null && pushToken.isNotEmpty) {
+          final info = await PackageInfo.fromPlatform();
+          pushServiceData = PushServiceData(
+            pushToken: pushToken,
+            serviceEndpoint: env.pushUrl,
+            packageName: info.packageName,
+          );
+        }
+
+        didDoc = await composeDidDoc(
+          did: profileDid,
+          pushServiceData: pushServiceData,
+        );
+      }
+
+      String authResponseString = await prepareAuthResponseMessage(
+        profileDid: profileDid,
+        message: message,
+        proofs: proofs,
+        didDocument: didDoc,
+      );
+
+      // get the auth token
+      _proofGenerationStepsStreamManager.add(
+        "preparing authentication token...",
+      );
+      String authToken = await _getAuthToken(
+        genesisDid: genesisDid,
+        profileNonce: profileNonce,
+        privateKey: privateKey,
+        privateKeyBytes: privateKeyBytes,
+        message: authResponseString,
+        authClaim: authClaimCompanionObject.authClaim!,
+        incProof: authClaimCompanionObject.incProof!,
+        nonRevProof: authClaimCompanionObject.nonRevProof!,
+        treeState: authClaimCompanionObject.treeState!,
+        authClaimNode: authClaimCompanionObject.authClaimNode!,
+        gistProofEntity: authClaimCompanionObject.gistProofEntity!,
+        proofRepository: proofRepository,
+        env: env,
+      );
+      return authToken;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
 
 class AuthClaimCompanionObject {
