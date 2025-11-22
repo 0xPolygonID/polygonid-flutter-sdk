@@ -24,26 +24,16 @@ class ProverLibDataSource {
     String zKeyPath,
     Uint8List wtnsBytes,
   ) async {
-    final rootToken = RootIsolateToken.instance!;
+    print('ProverLibDataSource.prove called at ${DateTime.now().millisecondsSinceEpoch}');
 
-    return compute(
-      _computeProof,
-      ProveParam(zKeyPath, wtnsBytes, rootToken),
+    final result = await Rapidsnark().groth16Prove(
+      zkeyPath: zKeyPath,
+      witness: wtnsBytes,
     );
+
+    return {
+      'proof': jsonDecode(result.proof),
+      'pub_signals': jsonDecode(result.publicSignals),
+    };
   }
-}
-
-///
-Future<Map<String, dynamic>?> _computeProof(ProveParam param) async {
-  BackgroundIsolateBinaryMessenger.ensureInitialized(param.rootToken);
-
-  final result = await Rapidsnark().groth16Prove(
-    zkeyPath: param.zKeyPath,
-    witness: param.wtns,
-  );
-
-  return {
-    'proof': jsonDecode(result.proof),
-    'pub_signals': jsonDecode(result.publicSignals),
-  };
 }
