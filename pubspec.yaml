@@ -31,7 +31,7 @@ dependencies:
   poseidon: ^0.0.1
   jose_plus:
     git:
-      url: git@github.com:5eeman/jose.git
+      url: https://github.com/5eeman/jose.git
 
   # ZK proof
   flutter_rapidsnark: 0.0.1-beta.4
