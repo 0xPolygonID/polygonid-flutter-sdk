@@ -716,7 +716,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     String? challenge,
   }) async {
     try {
-      return await Authenticate().getAuthTokenOnly(
+      return await Authenticate().getAuthToken(
         privateKey: privateKey,
         genesisDid: genesisDid,
         profileNonce: profileNonce,
