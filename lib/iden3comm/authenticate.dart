@@ -76,7 +76,7 @@ class Authenticate {
   late ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
   late StacktraceManager _stacktraceManager;
 
-  Future<Iden3Message?> authenticate({
+  Future<String> getAuthToken({
     required String privateKey,
     required String genesisDid,
     required BigInt profileNonce,
@@ -259,6 +259,41 @@ class Authenticate {
         gistProofEntity: authClaimCompanionObject.gistProofEntity!,
         proofRepository: proofRepository,
         env: env,
+      );
+      return authToken;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Iden3Message?> authenticate({
+    required String privateKey,
+    required String genesisDid,
+    required BigInt profileNonce,
+    required IdentityEntity identityEntity,
+    required Iden3Message message,
+    required EnvEntity env,
+    DIDDocument? didDocument,
+    String? pushToken,
+    String? challenge,
+    final Map<String, dynamic>? transactionData,
+    String? authClaimNonce,
+    List<RequestAndCredentials>? requestsAndCreds,
+  }) async {
+    try {
+      String authToken = await getAuthToken(
+        privateKey: privateKey,
+        genesisDid: genesisDid,
+        profileNonce: profileNonce,
+        identityEntity: identityEntity,
+        message: message,
+        env: env,
+        didDocument: didDocument,
+        pushToken: pushToken,
+        challenge: challenge,
+        transactionData: transactionData,
+        authClaimNonce: authClaimNonce,
+        requestsAndCreds: requestsAndCreds,
       );
       _stacktraceManager.addTrace("[Authenticate] authToken: $authToken");
 

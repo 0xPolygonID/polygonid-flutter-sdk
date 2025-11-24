@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:flutter/services.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/libs/polygonidcore/pidcore_base.dart';
 import 'package:polygonid_flutter_sdk/common/pidcore_util.dart';
 import 'package:polygonid_flutter_sdk/common/utils/did_doc_compose.dart';
 import 'package:polygonid_flutter_sdk/common/utils/push_service.dart';
@@ -8,6 +10,8 @@ import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
+
+const _nativeChannel = MethodChannel('polygonid_flutter_sdk');
 
 @injectable
 class Util {
@@ -129,7 +133,11 @@ class Util {
       },
     });
 
-    final result = await _polygonIdCoreUtil.verifyAuthResponse(input);
+    final cfg = PolygonIdCore.envConfigJson;
+    final result = await _nativeChannel.invokeMethod('verifyAuthResponse', {
+      "in": input,
+      "cfg": cfg,
+    });
 
     return AuthorizationResponseMessage.fromJson(jsonDecode(result));
   }

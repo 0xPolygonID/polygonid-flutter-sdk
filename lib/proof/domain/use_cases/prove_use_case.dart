@@ -18,10 +18,7 @@ class ProveUseCase extends FutureUseCase<ProveParam, ZKProofEntity> {
   final ProofRepository _proofRepository;
   final StacktraceManager _stacktraceManager;
 
-  ProveUseCase(
-    this._proofRepository,
-    this._stacktraceManager,
-  );
+  ProveUseCase(this._proofRepository, this._stacktraceManager);
 
   @override
   Future<ZKProofEntity> execute({required ProveParam param}) async {
@@ -34,7 +31,8 @@ class ProveUseCase extends FutureUseCase<ProveParam, ZKProofEntity> {
         atomicQueryInputs: param.inputs,
       );
       logger().i(
-          'ProveUseCase: calculateWitness: ${stopwatch.elapsedMilliseconds} ms');
+        'ProveUseCase: calculateWitness: ${stopwatch.elapsedMilliseconds} ms',
+      );
 
       // Generate proof
       ZKProofEntity zkProofEntity = await _proofRepository.prove(

@@ -703,6 +703,41 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     }
   }
 
+  Future<String> getAuthTokenOnly({
+    required String privateKey,
+    required String genesisDid,
+    required BigInt profileNonce,
+    required IdentityEntity identityEntity,
+    required Iden3Message message,
+    required EnvEntity env,
+    DIDDocument? didDocument,
+    String? pushToken,
+    List<RequestAndCredentials>? requestsAndCreds,
+    String? challenge,
+  }) async {
+    try {
+      return await Authenticate().getAuthToken(
+        privateKey: privateKey,
+        genesisDid: genesisDid,
+        profileNonce: profileNonce,
+        identityEntity: identityEntity,
+        message: message,
+        env: env,
+        pushToken: pushToken,
+        didDocument: didDocument,
+        requestsAndCreds: requestsAndCreds,
+      );
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
+    } catch (e) {
+      _stacktraceManager.addError('[getAuthTokenOnly] Error: ${e.toString()}');
+      throw PolygonIdSDKException(
+        errorMessage:
+            "Error while getting auth token with error: ${e.toString()}",
+      );
+    }
+  }
+
   @override
   Future<List<InteractionEntity>> getInteractions({
     String? genesisDid,
