@@ -168,40 +168,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   ///
   Widget _buildDescription() {
-    return Padding(
+    return const Padding(
       padding: EdgeInsets.symmetric(horizontal: 24),
-      child: GestureDetector(
-        onTap: () {
-          try {
-            print('Verifying auth response...');
-            PolygonIdSdk.I.util.verifyAuthResponse(
-              request: AuthorizationRequestMessage(
-                id: '',
-                typ: 'typ',
-                from: '',
-                body: AuthorizationRequestMessageBody(
-                  callbackUrl: 'callbackUrl',
-                  reason: 'reason',
-                  scope: [],
-                ),
-              ),
-              response: AuthorizationResponseMessage(
-                  id: 'id',
-                  typ: 'typ',
-                  from: 'from',
-                  to: 'to',
-                  body: AuthorizationMessageResponseBody(proofs: [])),
-            );
-          } catch (e) {
-            // ignore
-            print('Error verifying auth response: $e');
-          }
-        },
-        child: Text(
-          CustomStrings.homeDescription,
-          textAlign: TextAlign.center,
-          style: CustomTextStyles.descriptionTextStyle,
-        ),
+      child: Text(
+        CustomStrings.homeDescription,
+        textAlign: TextAlign.center,
+        style: CustomTextStyles.descriptionTextStyle,
       ),
     );
   }
