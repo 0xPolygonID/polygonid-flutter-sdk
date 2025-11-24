@@ -1,20 +1,7 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rapidsnark/flutter_rapidsnark.dart';
-
-class ProveParam {
-  final String zKeyPath;
-  final Uint8List wtns;
-  final RootIsolateToken rootToken;
-
-  ProveParam(
-    this.zKeyPath,
-    this.wtns,
-    this.rootToken,
-  );
-}
 
 class ProverLibDataSource {
   ProverLibDataSource();
@@ -24,8 +11,6 @@ class ProverLibDataSource {
     String zKeyPath,
     Uint8List wtnsBytes,
   ) async {
-    print('ProverLibDataSource.prove called at ${DateTime.now().millisecondsSinceEpoch}');
-
     final result = await Rapidsnark().groth16Prove(
       zkeyPath: zKeyPath,
       witness: wtnsBytes,

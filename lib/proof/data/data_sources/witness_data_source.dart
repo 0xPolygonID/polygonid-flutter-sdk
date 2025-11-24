@@ -1,18 +1,5 @@
 import 'package:circom_witnesscalc/circom_witnesscalc.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-
-class WitnessParam {
-  final String inputsJson;
-  final Uint8List circuitGraphFile;
-  final RootIsolateToken rootToken;
-
-  WitnessParam(
-    this.inputsJson,
-    this.circuitGraphFile,
-    this.rootToken,
-  );
-}
 
 class WitnessDataSource {
   WitnessDataSource();
