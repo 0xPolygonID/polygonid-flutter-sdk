@@ -17,7 +17,8 @@ class ResourcePermissionsUpdateRequestMessage
   }) : super(type: Iden3MessageType.resourcePermissionsUpdateRequest);
 
   factory ResourcePermissionsUpdateRequestMessage.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     return ResourcePermissionsUpdateRequestMessage(
       id: json['id'],
       typ: json['typ'],
@@ -27,7 +28,8 @@ class ResourcePermissionsUpdateRequestMessage
       to: json['to'],
       createdTime: json['created_time'],
       expiresTime: json['expires_time'],
-      attachments: (json['attachments'] as List<dynamic>?)
+      attachments:
+          (json['attachments'] as List<dynamic>?)
               ?.map((e) => Attachment.fromJson(e))
               .toList() ??
           [],
@@ -53,14 +55,17 @@ class ResourcePermissionsUpdateRequestBody extends Equatable {
   });
 
   factory ResourcePermissionsUpdateRequestBody.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     return ResourcePermissionsUpdateRequestBody(
       id: json['id'],
-      current:
-          (json['current'] as List<dynamic>).map((e) => e as String).toList(),
+      current: (json['current'] as List<dynamic>? ?? [])
+          .map((e) => e as String)
+          .toList(),
       add: (json['add'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      remove:
-          (json['remove'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      remove: (json['remove'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
     );
   }
 
