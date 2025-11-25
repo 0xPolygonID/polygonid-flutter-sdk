@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:injectable/injectable.dart';
-import 'package:jose_plus/jose.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
@@ -22,6 +21,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_req
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
+import 'package:polygonid_flutter_sdk/jose/jwk.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/circuits_to_download_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';

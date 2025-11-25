@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:jose_plus/jose.dart';
+import 'package:polygonid_flutter_sdk/jose/jwk.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';

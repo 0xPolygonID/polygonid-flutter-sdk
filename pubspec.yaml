@@ -14,7 +14,7 @@ dependencies:
     sdk: flutter
 
   # Network
-  http: ">=1.0.0"
+  http: ^1.0.0
   dio: ^5.4.3+1
   dio_cache_interceptor: ^4.0.0
   http_cache_hive_store: ^5.0.0
@@ -29,9 +29,8 @@ dependencies:
   ed25519_edwards: ^0.3.1
   secp256k1: ^0.3.0
   poseidon: ^0.0.1
-  jose_plus:
-    git:
-      url: https://github.com/5eeman/jose.git
+  crypto_keys_plus: ^0.5.0
+  x509_plus: ^0.3.3
 
   # ZK proof
   flutter_rapidsnark: 0.0.1-beta.4
@@ -53,9 +52,9 @@ dependencies:
   hex: ^0.2.0
   uuid: ^4.0.0
   json_annotation: ^4.6.0
-  equatable: ^2.0.7
-  path_provider: ^2.0.15
-  archive: ^4.0.7
+  equatable: ^2.0.0
+  path_provider: ^2.0.0
+  archive: ^4.0.0
   package_info_plus: ">=7.0.0"
   logger: ^2.0.1
   intl: ">=0.18.1"

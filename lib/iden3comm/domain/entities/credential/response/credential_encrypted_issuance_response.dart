@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:jose_plus/jose.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/attachment.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/jose/jwe.dart';
 
 class CredentialEncryptedIssuanceResponse
     extends Iden3Message<CredentialEncryptedIssuanceResponseBody> {

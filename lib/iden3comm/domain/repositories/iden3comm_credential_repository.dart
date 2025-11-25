@@ -1,4 +1,4 @@
-import 'package:jose_plus/jose.dart';
+import 'package:polygonid_flutter_sdk/jose/jwk.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
