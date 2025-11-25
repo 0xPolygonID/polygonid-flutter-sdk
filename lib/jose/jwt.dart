@@ -1,18 +1,12 @@
-/// [JSON Web Token](https://tools.ietf.org/html/rfc7519)
-library jose.jwt;
-
 import 'package:clock/clock.dart';
 
 import 'jose.dart';
-import 'jwk.dart';
-import 'util.dart';
 import 'dart:async';
-import 'jws.dart';
 
 /// The set of claims conveyed by the [JsonWebToken]
 class JsonWebTokenClaims extends JsonObject {
   /// Constructs a [JsonWebTokenClaims] from a [json] map
-  JsonWebTokenClaims.fromJson(Map<String, dynamic>? json) : super.from(json);
+  JsonWebTokenClaims.fromJson(super.json) : super.from();
 
   /// Identifies the principal that issued the JWT.
   Uri? get issuer => getTyped('iss');

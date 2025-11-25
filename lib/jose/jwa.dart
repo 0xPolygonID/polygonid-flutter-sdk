@@ -1,12 +1,9 @@
 /// [JSON Web Algorithms](https://tools.ietf.org/html/rfc7518)
 // ignore_for_file: constant_identifier_names
 
-library jose.jwa;
-
 import 'package:crypto_keys_plus/crypto_keys.dart';
 import 'package:meta/meta.dart';
-import 'package:polygonid_flutter_sdk/jose/jwk.dart';
-import 'package:polygonid_flutter_sdk/jose/util.dart';
+import 'package:polygonid_flutter_sdk/jose/jose.dart';
 
 class JsonWebAlgorithm {
   /// Name of the algorithm as used in the `alg` or `enc` header parameter

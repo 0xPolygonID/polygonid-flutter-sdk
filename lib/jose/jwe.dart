@@ -1,12 +1,7 @@
-/// [JSON Web Encryption](https://tools.ietf.org/html/rfc7516)
-library jose.jwe;
-
 import 'dart:math';
 import 'dart:typed_data';
 
 import 'jose.dart';
-import 'jwk.dart';
-import 'util.dart';
 
 /// JSON Web Encryption (JWE) represents encrypted content using JSON-based data
 /// structures

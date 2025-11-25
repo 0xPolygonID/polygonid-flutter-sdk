@@ -13,8 +13,6 @@ import 'package:meta/meta.dart';
 import 'package:x509_plus/x509.dart' as x509;
 
 import 'jose.dart';
-import 'jwa.dart';
-import 'util.dart';
 
 /// JSON Web Key (JWK) represents a cryptographic key
 class JsonWebKey extends JsonObject {
