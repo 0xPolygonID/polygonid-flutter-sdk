@@ -24,7 +24,7 @@ dependencies:
 
   # Crypto
   crypto: ^3.0.1
-  pointycastle: any
+  pointycastle: 3.9.1
   ninja_prime: ^2.0.0
   ed25519_edwards: ^0.3.1
   secp256k1: ^0.3.0
