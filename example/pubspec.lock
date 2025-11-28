@@ -245,10 +245,10 @@ packages:
     dependency: transitive
     description:
       name: crypto_keys_plus
-      sha256: a64dc8b3555e730aa183067fbb666efd9996bc2d0cfda4517c77607d9e2adf91
+      sha256: fbebe8a45c68cd3c8b1ad3145172cfa276a30d9bbe9a4bf4cc03efc32b9b7a00
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.0"
+    version: "0.4.0"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -1335,10 +1335,10 @@ packages:
     dependency: transitive
     description:
       name: x509_plus
-      sha256: f9f5caade6077c9a605125428d0bf79c002afa35a475d400849adb1a25ebeee6
+      sha256: "8b91d07aead69d2644f53cbd1fa1df4413e0874f2622d9a612eb44a43bc80639"
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.3"
+    version: "0.3.2"
   xdg_directories:
     dependency: transitive
     description:
