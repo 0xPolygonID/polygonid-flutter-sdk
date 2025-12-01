@@ -43,12 +43,12 @@ class ResourcePermissionsListMessage
 class ResourcePermissionsListBody with EquatableMixin {
   final List<Permission> granted;
   final List<Permission> pending;
-  final List<Permission> denied;
+  final List<Permission> rejected;
 
   ResourcePermissionsListBody({
     required this.granted,
     required this.pending,
-    required this.denied,
+    required this.rejected,
   });
 
   factory ResourcePermissionsListBody.fromJson(Map<String, dynamic> json) {
@@ -61,7 +61,7 @@ class ResourcePermissionsListBody with EquatableMixin {
               ?.map((e) => Permission.fromJson(e))
               .toList() ??
           [],
-      denied: (json['denied'] as List<dynamic>?)
+      rejected: (json['rejected'] as List<dynamic>?)
               ?.map((e) => Permission.fromJson(e))
               .toList() ??
           [],
@@ -69,7 +69,7 @@ class ResourcePermissionsListBody with EquatableMixin {
   }
 
   @override
-  List<Object?> get props => [granted, pending, denied];
+  List<Object?> get props => [granted, pending, rejected];
 }
 
 class Permission with EquatableMixin {
