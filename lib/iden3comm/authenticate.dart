@@ -44,6 +44,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exce
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/jwz_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/iden3_message_factory.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/util/generate_link_nonce.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
@@ -610,27 +611,6 @@ class Authenticate {
         errorMessage: schemaResponse.statusMessage ?? "",
       );
     }
-  }
-
-  String generateLinkNonce() {
-    final BigInt safeMaxVal = BigInt.parse(
-      "21888242871839275222246405745257275088548364400416034343698204186575808495617",
-    );
-    // get max value of 2 ^ 248
-    BigInt base = BigInt.parse('2');
-    int exponent = 248;
-    final maxVal = base.pow(exponent) - BigInt.one;
-    final random = Random.secure();
-    BigInt randomNumber;
-    do {
-      randomNumber = randomBigInt(248, max: maxVal, random: random);
-      if (kDebugMode) {
-        logger().i("random number $randomNumber");
-        logger().i("less than safeMax ${randomNumber < safeMaxVal}");
-      }
-    } while (randomNumber >= safeMaxVal);
-
-    return randomNumber.toString();
   }
 
   /// SIGN MESSAGE WITH BJJ KEY

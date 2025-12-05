@@ -1,10 +1,5 @@
-import 'dart:math';
-
-import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
-import 'package:ninja_prime/ninja_prime.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
@@ -16,6 +11,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/i
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/util/generate_link_nonce.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
@@ -213,28 +209,6 @@ class GetIden3commProofUseCase
       _stacktraceManager.logError("[GetIden3commProofsUseCase] Exception: $e");
       rethrow;
     }
-  }
-
-  /// We generate a random linkNonce for each groupId
-  String generateLinkNonce() {
-    final BigInt safeMaxVal = BigInt.parse(
-      "21888242871839275222246405745257275088548364400416034343698204186575808495617",
-    );
-    // get max value of 2 ^ 248
-    BigInt base = BigInt.parse('2');
-    int exponent = 248;
-    final maxVal = base.pow(exponent) - BigInt.one;
-    final random = Random.secure();
-    BigInt randomNumber;
-    do {
-      randomNumber = randomBigInt(248, max: maxVal, random: random);
-      if (kDebugMode) {
-        logger().i("random number $randomNumber");
-        logger().i("less than safeMax ${randomNumber < safeMaxVal}");
-      }
-    } while (randomNumber >= safeMaxVal);
-
-    return randomNumber.toString();
   }
 
   /// Check if the credential is expired and try to refresh it if it is
