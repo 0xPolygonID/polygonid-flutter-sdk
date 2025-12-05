@@ -29,6 +29,7 @@ class GetIden3commProofParam {
   final String verifierDid;
   final String genesisDid;
   final BigInt profileNonce;
+  final String? linkNonce;
   final String privateKey;
   final String? challenge;
   final EnvConfigEntity? config;
@@ -41,6 +42,7 @@ class GetIden3commProofParam {
     required this.verifierDid,
     required this.genesisDid,
     required this.profileNonce,
+    this.linkNonce,
     required this.privateKey,
     this.challenge,
     this.config,
@@ -162,9 +164,12 @@ class GetIden3commProofUseCase
       );
 
       int? groupId = request.query.groupId;
-      String linkNonce = "0";
-      // Check if groupId exists in the map
-      if (groupId != null) {
+      String linkNonce;
+
+      if (param.linkNonce != null) {
+        // Use the provided linkNonce
+        linkNonce = param.linkNonce!;
+      } else if (groupId != null) {
         if (groupIdLinkNonceMap.containsKey(groupId)) {
           // Use the existing linkNonce for this groupId
           linkNonce = groupIdLinkNonceMap[groupId]!;
@@ -173,6 +178,9 @@ class GetIden3commProofUseCase
           linkNonce = generateLinkNonce();
           groupIdLinkNonceMap[groupId] = linkNonce;
         }
+      } else {
+        // No groupId and no provided linkNonce, use default '0'
+        linkNonce = '0';
       }
 
       _proofGenerationStepsStreamManager.add(
