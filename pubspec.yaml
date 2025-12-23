@@ -33,7 +33,7 @@ dependencies:
   x509_plus: ^0.3.3
 
   # ZK proof
-  flutter_rapidsnark: 0.0.1-beta.5
+  flutter_rapidsnark: 0.0.1-beta.4
   circom_witnesscalc: 0.0.1-beta.1
 
   # FFI
