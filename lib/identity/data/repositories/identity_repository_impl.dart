@@ -64,14 +64,14 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<List<String>> getPublicKeys({required String bjjPrivateKey}) async {
+  List<String> getPublicKeys({required String bjjPrivateKey})  {
     final wallet = BjjWallet(hexToBytes(bjjPrivateKey));
     final pubKeys = wallet.publicKey;
     return pubKeys;
   }
 
   @override
-  Future<NodeEntity> getAuthClaimNode({required List<String> children}) {
+  NodeEntity getAuthClaimNode({required List<String> children}) {
     BigInt hashIndex = poseidon4([
       BigInt.parse(children[0]),
       BigInt.parse(children[1]),
@@ -98,7 +98,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
       hash: HashEntity.fromBigInt(hashClaimNode),
       type: NodeType.leaf,
     );
-    return Future.value(authClaimNode);
+    return authClaimNode;
   }
 
   @override

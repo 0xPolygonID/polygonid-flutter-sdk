@@ -37,11 +37,31 @@ sealed class CircuitType {
 }
 
 // Predefined circuit types
-class AuthCircuit extends CircuitType {
-  const AuthCircuit();
+class AuthV2Circuit extends CircuitType {
+  const AuthV2Circuit();
 
   @override
   String get id => "authV2";
+
+  @override
+  bool isAnyProofTypeSupported(List<String> proofTypes) => false;
+}
+
+class AuthV3Circuit extends CircuitType {
+  const AuthV3Circuit();
+
+  @override
+  String get id => "authV3";
+
+  @override
+  bool isAnyProofTypeSupported(List<String> proofTypes) => false;
+}
+
+class AuthV3_8_32_Circuit extends CircuitType {
+  const AuthV3_8_32_Circuit();
+
+  @override
+  String get id => "authV3-8-32";
 
   @override
   bool isAnyProofTypeSupported(List<String> proofTypes) => false;
@@ -235,7 +255,7 @@ enum ProofType {
 // Utility class for creating and managing circuit types
 class CircuitTypes {
   // Predefined circuit type instances
-  static const auth = AuthCircuit();
+  static const auth = AuthV2Circuit();
   static const mtp = MtpCircuit();
   static const sig = SigCircuit();
   static const mtpOnChain = MtpOnChainCircuit();

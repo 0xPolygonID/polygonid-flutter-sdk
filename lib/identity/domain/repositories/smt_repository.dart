@@ -61,13 +61,9 @@ abstract class SMTRepository {
     required String encryptionKey,
   });
 
-  Future<String> hashState({
-    required String claims,
-    required String revocation,
-    required String roots,
-  });
-
-  Future<Map<String, dynamic>> convertState({
-    required TreeStateEntity state,
+  String hashState({
+    required BigInt claims,
+    required BigInt revocation,
+    required BigInt roots,
   });
 }

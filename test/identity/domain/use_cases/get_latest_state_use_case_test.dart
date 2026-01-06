@@ -43,17 +43,19 @@ void main() {
           claims: anyNamed('claims'),
           revocation: anyNamed('revocation'),
           roots: anyNamed('roots'),
-        )).thenAnswer((realInvocation) => Future.value(CommonMocks.hash));
-
-        when(smtRepository.convertState(state: anyNamed('state')))
-            .thenAnswer((realInvocation) => Future.value(CommonMocks.aMap));
+        )).thenAnswer((realInvocation) => CommonMocks.hash);
       });
 
       test(
         'Given a param, when I call execute, then I expect a map to be returned',
         () async {
           // When
-          expect(await useCase.execute(param: param), CommonMocks.aMap);
+          expect(await useCase.execute(param: param), {
+            'state': CommonMocks.hash,
+            'claimsRoot': IdentityMocks.hash.string(),
+            'revocationRoot': IdentityMocks.hash.string(),
+            'rootOfRoots': IdentityMocks.hash.string(),
+          });
 
           // Then
           var verifyRoot = verify(smtRepository.getRoot(
@@ -76,16 +78,9 @@ void main() {
             revocation: captureAnyNamed('revocation'),
             roots: captureAnyNamed('roots'),
           )).captured;
-          expect(captureHash[0], IdentityMocks.hash.string());
-          expect(captureHash[1], IdentityMocks.hash.string());
-          expect(captureHash[2], IdentityMocks.hash.string());
-
-          expect(
-              verify(smtRepository.convertState(
-                      state: captureAnyNamed('state')))
-                  .captured
-                  .first,
-              IdentityMocks.treeState);
+          expect(captureHash[0], IdentityMocks.hash.toBigInt());
+          expect(captureHash[1], IdentityMocks.hash.toBigInt());
+          expect(captureHash[2], IdentityMocks.hash.toBigInt());
         },
       );
 
@@ -125,9 +120,6 @@ void main() {
             revocation: captureAnyNamed('revocation'),
             roots: captureAnyNamed('roots'),
           ));
-
-          verifyNever(
-              smtRepository.convertState(state: captureAnyNamed('state')));
         },
       );
     },

@@ -218,12 +218,27 @@ abstract class PolygonIdSdkIden3comm {
   ///
   /// The [pushToken] is the push notification registration token so the issuer/verifer
   /// can send notifications to the identity.
+  @Deprecated('Use authenticateV2')
   Future<Iden3Message?> authenticate({
     required Iden3Message message,
     required String genesisDid,
     BigInt? profileNonce,
     required String privateKey,
     String? pushToken,
+    String? challenge,
+  });
+
+
+  Future<Iden3Message?> authenticateV2({
+    required String privateKey,
+    required String genesisDid,
+    required BigInt profileNonce,
+    required IdentityEntity identityEntity,
+    required Iden3Message message,
+    required EnvEntity env,
+    DIDDocument? didDocument,
+    String? pushToken,
+    List<RequestAndCredentials>? requestsAndCreds,
     String? challenge,
   });
 
@@ -705,41 +720,6 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     }
   }
 
-  Future<String> getAuthTokenOnly({
-    required String privateKey,
-    required String genesisDid,
-    required BigInt profileNonce,
-    required IdentityEntity identityEntity,
-    required Iden3Message message,
-    required EnvEntity env,
-    DIDDocument? didDocument,
-    String? pushToken,
-    List<RequestAndCredentials>? requestsAndCreds,
-    String? challenge,
-  }) async {
-    try {
-      return await Authenticate().getAuthToken(
-        privateKey: privateKey,
-        genesisDid: genesisDid,
-        profileNonce: profileNonce,
-        identityEntity: identityEntity,
-        message: message,
-        env: env,
-        pushToken: pushToken,
-        didDocument: didDocument,
-        requestsAndCreds: requestsAndCreds,
-      );
-    } on PolygonIdSDKException catch (_) {
-      rethrow;
-    } catch (e) {
-      _stacktraceManager.addError('[getAuthTokenOnly] Error: ${e.toString()}');
-      throw PolygonIdSDKException(
-        errorMessage:
-            "Error while getting auth token with error: ${e.toString()}",
-      );
-    }
-  }
-
   @override
   Future<List<InteractionEntity>> getInteractions({
     String? genesisDid,
@@ -880,6 +860,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     );
   }
 
+  @Deprecated('Use getAuthTokenV2')
   Future<String> getAuthToken({
     required String genesisDid,
     required String privateKey,
@@ -894,6 +875,41 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         message: iden3message,
       ),
     );
+  }
+
+  Future<String> getAuthTokenV2({
+    required String privateKey,
+    required String genesisDid,
+    required BigInt profileNonce,
+    required IdentityEntity identityEntity,
+    required Iden3Message message,
+    required EnvEntity env,
+    DIDDocument? didDocument,
+    String? pushToken,
+    List<RequestAndCredentials>? requestsAndCreds,
+    String? challenge,
+  }) async {
+    try {
+      return await Authenticate().getAuthToken(
+        privateKey: privateKey,
+        genesisDid: genesisDid,
+        profileNonce: profileNonce,
+        identityEntity: identityEntity,
+        message: message,
+        env: env,
+        pushToken: pushToken,
+        didDocument: didDocument,
+        requestsAndCreds: requestsAndCreds,
+      );
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
+    } catch (e) {
+      _stacktraceManager.addError('[getAuthTokenOnly] Error: ${e.toString()}');
+      throw PolygonIdSDKException(
+        errorMessage:
+        "Error while getting auth token with error: ${e.toString()}",
+      );
+    }
   }
 
   @override

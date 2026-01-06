@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
@@ -10,7 +9,6 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_cache_hive_store/http_cache_hive_store.dart';
 import 'package:intl/intl.dart';
-import 'package:ninja_prime/ninja_prime.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
@@ -77,6 +75,114 @@ class Authenticate {
   late ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
   late StacktraceManager _stacktraceManager;
 
+  Future<Iden3Message?> authenticate({
+    required String privateKey,
+    required String genesisDid,
+    required BigInt profileNonce,
+    required IdentityEntity identityEntity,
+    required Iden3Message message,
+    required EnvEntity env,
+    DIDDocument? didDocument,
+    String? pushToken,
+    String? challenge,
+    final Map<String, dynamic>? transactionData,
+    String? authClaimNonce,
+    List<RequestAndCredentials>? requestsAndCreds,
+  }) async {
+    try {
+      String authToken = await getAuthToken(
+        privateKey: privateKey,
+        genesisDid: genesisDid,
+        profileNonce: profileNonce,
+        identityEntity: identityEntity,
+        message: message,
+        env: env,
+        didDocument: didDocument,
+        pushToken: pushToken,
+        challenge: challenge,
+        transactionData: transactionData,
+        authClaimNonce: authClaimNonce,
+        requestsAndCreds: requestsAndCreds,
+      );
+      _stacktraceManager.addTrace("[Authenticate] authToken: $authToken");
+
+      _proofGenerationStepsStreamManager.add(
+        "sending auth token to the requester...",
+      );
+      String? callbackUrl = message.body.callbackUrl;
+
+      if (callbackUrl == null || callbackUrl.isEmpty) {
+        _stacktraceManager.addError(
+          "[Authenticate] Callback url is null or empty",
+        );
+        throw NullAuthenticateCallbackException(
+          authRequest: message as AuthorizationRequestMessage,
+          errorMessage: "Callback url is null or empty",
+        );
+      }
+
+      // perform the authentication with the auth token calling the callback url
+      http.Client httpClient = http.Client();
+      Uri uri = Uri.parse(callbackUrl);
+      http.Response response = await httpClient
+          .post(
+            uri,
+            body: authToken,
+            headers: {
+              HttpHeaders.acceptHeader: '*/*',
+              HttpHeaders.contentTypeHeader: 'text/plain',
+            },
+          )
+          .timeout(const Duration(seconds: 30));
+
+      _stacktraceManager.addTrace(
+        "[Authenticate] responseStatusCode: ${response.statusCode}\nresponseBody: ${response.body}",
+      );
+
+      if (response.statusCode != 200) {
+        _stacktraceManager.addError(
+          "[Authenticate] Error sending auth token to the requester: ${response.statusCode} ${response.body}",
+        );
+        throw NetworkException(
+          statusCode: response.statusCode,
+          errorMessage: response.body,
+        );
+      }
+
+      if (response.body.isEmpty) {
+        return null;
+      }
+
+      try {
+        final messageJson = jsonDecode(response.body);
+
+        if (messageJson is! Map<String, dynamic> || messageJson.isEmpty) {
+          return null;
+        }
+
+        final messageFactory = Iden3MessageFactory(
+          getItSdk<StacktraceManager>(),
+        );
+        final nextRequest = messageFactory.createMessage(
+          rawMessage: response.body,
+        );
+
+        return nextRequest;
+      } catch (e) {
+        return null;
+      }
+    } on TimeoutException catch (e) {
+      String waitingTime = e.duration?.inSeconds.toString() ?? "unknown";
+      throw NetworkException(
+        statusCode: 504,
+        errorMessage:
+            "Connection timeout while sending auth token to the requester.\nwaited for $waitingTime seconds.",
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<String> getAuthToken({
     required String privateKey,
     required String genesisDid,
@@ -104,22 +210,6 @@ class Authenticate {
       _stacktraceManager = getItSdk<StacktraceManager>();
 
       _proofGenerationStepsStreamManager.add("preparing authentication...");
-
-      // Check if the message type is supported
-      if (![
-        Iden3MessageType.authRequest,
-        Iden3MessageType.proofContractInvokeRequest,
-      ].contains(message.type)) {
-        _stacktraceManager.addError(
-          "[Authenticate] Unsupported message type: ${message.type} It should be either authRequest or proofContractInvokeRequest",
-        );
-        throw UnsupportedIden3MsgTypeException(
-          type: message.type,
-          errorMessage:
-              "Unsupported message type\nIt should be either "
-              "authRequest or proofContractInvokeRequest",
-        );
-      }
 
       Uint8List privateKeyBytes = hexToBytes(privateKey);
 
@@ -152,10 +242,7 @@ class Authenticate {
       } else if (message is ContractInvokeRequestMessage) {
         requests = message.body.scope;
       } else {
-        throw UnsupportedIden3MsgTypeException(
-          type: message.type,
-          errorMessage: "Unsupported message type - ${message.type}",
-        );
+        requests = [];
       }
 
       List<RequestAndCredentials> requestsAndCredsLocal;
@@ -262,114 +349,6 @@ class Authenticate {
         env: env,
       );
       return authToken;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<Iden3Message?> authenticate({
-    required String privateKey,
-    required String genesisDid,
-    required BigInt profileNonce,
-    required IdentityEntity identityEntity,
-    required Iden3Message message,
-    required EnvEntity env,
-    DIDDocument? didDocument,
-    String? pushToken,
-    String? challenge,
-    final Map<String, dynamic>? transactionData,
-    String? authClaimNonce,
-    List<RequestAndCredentials>? requestsAndCreds,
-  }) async {
-    try {
-      String authToken = await getAuthToken(
-        privateKey: privateKey,
-        genesisDid: genesisDid,
-        profileNonce: profileNonce,
-        identityEntity: identityEntity,
-        message: message,
-        env: env,
-        didDocument: didDocument,
-        pushToken: pushToken,
-        challenge: challenge,
-        transactionData: transactionData,
-        authClaimNonce: authClaimNonce,
-        requestsAndCreds: requestsAndCreds,
-      );
-      _stacktraceManager.addTrace("[Authenticate] authToken: $authToken");
-
-      _proofGenerationStepsStreamManager.add(
-        "sending auth token to the requester...",
-      );
-      String? callbackUrl = message.body.callbackUrl;
-
-      if (callbackUrl == null || callbackUrl.isEmpty) {
-        _stacktraceManager.addError(
-          "[Authenticate] Callback url is null or empty",
-        );
-        throw NullAuthenticateCallbackException(
-          authRequest: message as AuthorizationRequestMessage,
-          errorMessage: "Callback url is null or empty",
-        );
-      }
-
-      // perform the authentication with the auth token calling the callback url
-      http.Client httpClient = http.Client();
-      Uri uri = Uri.parse(callbackUrl);
-      http.Response response = await httpClient
-          .post(
-            uri,
-            body: authToken,
-            headers: {
-              HttpHeaders.acceptHeader: '*/*',
-              HttpHeaders.contentTypeHeader: 'text/plain',
-            },
-          )
-          .timeout(const Duration(seconds: 30));
-
-      _stacktraceManager.addTrace(
-        "[Authenticate] responseStatusCode: ${response.statusCode}\nresponseBody: ${response.body}",
-      );
-
-      if (response.statusCode != 200) {
-        _stacktraceManager.addError(
-          "[Authenticate] Error sending auth token to the requester: ${response.statusCode} ${response.body}",
-        );
-        throw NetworkException(
-          statusCode: response.statusCode,
-          errorMessage: response.body,
-        );
-      }
-
-      if (response.body.isEmpty) {
-        return null;
-      }
-
-      try {
-        final messageJson = jsonDecode(response.body);
-
-        if (messageJson is! Map<String, dynamic> || messageJson.isEmpty) {
-          return null;
-        }
-
-        final messageFactory = Iden3MessageFactory(
-          getItSdk<StacktraceManager>(),
-        );
-        final nextRequest = messageFactory.createMessage(
-          rawMessage: response.body,
-        );
-
-        return nextRequest;
-      } catch (e) {
-        return null;
-      }
-    } on TimeoutException catch (e) {
-      String waitingTime = e.duration?.inSeconds.toString() ?? "unknown";
-      throw NetworkException(
-        statusCode: 504,
-        errorMessage:
-            "Connection timeout while sending auth token to the requester.\nwaited for $waitingTime seconds.",
-      );
     } catch (e) {
       rethrow;
     }
@@ -742,52 +721,23 @@ class Authenticate {
     required Uint8List privateKeyBytes,
     required String authClaimNonce,
   }) async {
-    List<String>? authClaim;
-    MTProofEntity? incProof;
-    MTProofEntity? nonRevProof;
-    GistMTProofEntity? gistProofEntity;
-    Map<String, dynamic>? treeState;
-    var libPolygonIdCredential =
-        getItSdk<LibPolygonIdCoreCredentialDataSource>();
-
+    final libPidCredentialDS = getItSdk<LibPolygonIdCoreCredentialDataSource>();
     final identityRepo = getItSdk<IdentityRepository>();
-    final publicKey = await identityRepo.getPublicKeys(
-      bjjPrivateKey: privateKey,
-    );
+    final publicKey = identityRepo.getPublicKeys(bjjPrivateKey: privateKey);
 
-    String authClaimSchema = AUTH_CLAIM_SCHEMA;
-    String issuedAuthClaim = libPolygonIdCredential.issueClaim(
-      schema: authClaimSchema,
+    String issuedAuthClaim = libPidCredentialDS.issueClaim(
+      schema: AUTH_CLAIM_SCHEMA,
       nonce: authClaimNonce,
       publicKey: publicKey,
     );
-    authClaim = List.from(jsonDecode(issuedAuthClaim));
-    BigInt hashIndex = poseidon4([
-      BigInt.parse(authClaim[0]),
-      BigInt.parse(authClaim[1]),
-      BigInt.parse(authClaim[2]),
-      BigInt.parse(authClaim[3]),
-    ]);
-    BigInt hashValue = poseidon4([
-      BigInt.parse(authClaim[4]),
-      BigInt.parse(authClaim[5]),
-      BigInt.parse(authClaim[6]),
-      BigInt.parse(authClaim[7]),
-    ]);
-    BigInt hashClaimNode = poseidon3([hashIndex, hashValue, BigInt.one]);
-    NodeEntity authClaimNode = NodeEntity(
-      children: [
-        HashEntity.fromBigInt(hashIndex),
-        HashEntity.fromBigInt(hashValue),
-        HashEntity.fromBigInt(BigInt.one),
-      ],
-      hash: HashEntity.fromBigInt(hashClaimNode),
-      type: NodeType.leaf,
+    final authClaim = List<String>.from(jsonDecode(issuedAuthClaim));
+    NodeEntity authClaimNode = identityRepo.getAuthClaimNode(
+      children: authClaim,
     );
 
     // INC PROOF
     SMTRepository smtRepository = getItSdk<SMTRepository>();
-    incProof = await smtRepository.generateProof(
+    final MTProofEntity incProof = await smtRepository.generateProof(
       key: authClaimNode.hash,
       type: TreeType.claims,
       did: genesisDid,
@@ -795,7 +745,7 @@ class Authenticate {
     );
 
     // NON REV PROOF
-    nonRevProof = await smtRepository.generateProof(
+    final MTProofEntity nonRevProof = await smtRepository.generateProof(
       key: authClaimNode.hash,
       type: TreeType.revocation,
       did: genesisDid,
@@ -821,10 +771,10 @@ class Authenticate {
       ),
     ], eagerError: true);
 
-    String hash = await smtRepository.hashState(
-      claims: trees[0].string(),
-      revocation: trees[1].string(),
-      roots: trees[2].string(),
+    String hash = smtRepository.hashState(
+      claims: trees[0].toBigInt(),
+      revocation: trees[1].toBigInt(),
+      roots: trees[2].toBigInt(),
     );
 
     TreeStateEntity treeStateEntity = TreeStateEntity(
@@ -834,7 +784,7 @@ class Authenticate {
       trees[2],
     );
 
-    treeState = await smtRepository.convertState(state: treeStateEntity);
+    final Map<String, dynamic> treeState = treeStateEntity.toJson();
 
     //GIST
     List<String> splittedDid = genesisDid.split(":");
@@ -857,7 +807,8 @@ class Authenticate {
     );
 
     final gistMTProofDataSource = getItSdk<GistMTProofDataSource>();
-    gistProofEntity = gistMTProofDataSource.getGistMTProof(gistProof);
+    final GistMTProofEntity gistProofEntity = gistMTProofDataSource
+        .getGistMTProof(gistProof);
 
     return AuthClaimCompanionObject()
       ..authClaim = authClaim

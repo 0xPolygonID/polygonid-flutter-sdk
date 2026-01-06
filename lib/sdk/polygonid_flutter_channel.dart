@@ -10,6 +10,7 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart'
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
@@ -1264,6 +1265,23 @@ class PolygonIdFlutterChannel
   @override
   Future<bool> credentialStatusCheck({required CredentialEntity credential}) {
     // TODO: implement credentialStatusCheck
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Iden3Message<dynamic>?> authenticateV2({
+    required String privateKey,
+    required String genesisDid,
+    required BigInt profileNonce,
+    required IdentityEntity identityEntity,
+    required Iden3Message<dynamic> message,
+    required EnvEntity env,
+    DIDDocument? didDocument,
+    String? pushToken,
+    List<RequestAndCredentials>? requestsAndCreds,
+    String? challenge,
+  }) {
+    // TODO: implement authenticateV2
     throw UnimplementedError();
   }
 }

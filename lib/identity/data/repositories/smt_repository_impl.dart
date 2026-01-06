@@ -179,20 +179,11 @@ class SMTRepositoryImpl implements SMTRepository {
   }
 
   @override
-  Future<String> hashState({
-    required String claims,
-    required String revocation,
-    required String roots,
-  }) async {
-    return poseidon3([
-      BigInt.parse(claims),
-      BigInt.parse(revocation),
-      BigInt.parse(roots),
-    ]).toString();
-  }
-
-  @override
-  Future<Map<String, dynamic>> convertState({required TreeStateEntity state}) {
-    return Future.value(state.toJson());
+  String hashState({
+    required BigInt claims,
+    required BigInt revocation,
+    required BigInt roots,
+  }) {
+    return poseidon3([claims, revocation, roots,]).toString();
   }
 }

@@ -92,7 +92,7 @@ void main() {
     ).thenAnswer(
         (realInvocation) => Future.value(CommonMocks.generateInputsResponse));
     when(identityRepository.getAuthClaimNode(children: anyNamed('children')))
-        .thenAnswer((realInvocation) => Future.value(IdentityMocks.node));
+        .thenAnswer((realInvocation) => IdentityMocks.node);
     when(smtRepository.generateProof(
             key: anyNamed('key'),
             type: anyNamed('type'),

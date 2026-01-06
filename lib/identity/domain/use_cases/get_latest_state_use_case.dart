@@ -45,14 +45,14 @@ class GetLatestStateUseCase
         ),
       ],
       eagerError: true,
-    ).then((trees) async {
-      final hash = await _smtRepository.hashState(
-        claims: trees[0].string(),
-        revocation: trees[1].string(),
-        roots: trees[2].string(),
+    ).then((trees) {
+      final hash = _smtRepository.hashState(
+        claims: trees[0].toBigInt(),
+        revocation: trees[1].toBigInt(),
+        roots: trees[2].toBigInt(),
       );
       final state = TreeStateEntity(hash, trees[0], trees[1], trees[2]);
-      final convertedState = await _smtRepository.convertState(state: state);
+      final convertedState = state.toJson();
 
       _stacktraceManager
           .logTrace("[GetLatestStateUseCase] State: $convertedState");

@@ -34,7 +34,7 @@ void main() {
         .thenAnswer((realInvocation) => Future.value(CommonMocks.privateKey));
     when(identityRepository.getPublicKeys(
             bjjPrivateKey: anyNamed('bjjPrivateKey')))
-        .thenAnswer((realInvocation) => Future.value(CommonMocks.publicKey));
+        .thenAnswer((realInvocation) => CommonMocks.publicKey);
     when(addIdentityUseCase.execute(param: anyNamed('param'))).thenAnswer(
         (realInvocation) => Future.value(IdentityMocks.privateIdentity));
   });
