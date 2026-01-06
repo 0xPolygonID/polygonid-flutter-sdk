@@ -1,20 +1,25 @@
 import 'package:equatable/equatable.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/attachment.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:uuid/uuid.dart';
 
 class ResourcePermissionsUpdateMessage
     extends Iden3Message<ResourcePermissionsUpdateBody> {
   ResourcePermissionsUpdateMessage({
-    required super.id,
+    String? id,
     super.typ,
-    super.thid,
+    String? thid,
     required super.body,
     required super.from,
     super.to,
     super.createdTime,
     super.expiresTime,
     super.attachments = const [],
-  }) : super(type: Iden3MessageType.resourcePermissionsUpdate);
+  }) : super(
+         type: Iden3MessageType.resourcePermissionsUpdate,
+         id: id ?? const Uuid().v4(),
+         thid: thid ?? const Uuid().v4(),
+       );
 
   factory ResourcePermissionsUpdateMessage.fromJson(Map<String, dynamic> json) {
     return ResourcePermissionsUpdateMessage(
@@ -26,7 +31,8 @@ class ResourcePermissionsUpdateMessage
       to: json['to'],
       createdTime: json['created_time'],
       expiresTime: json['expires_time'],
-      attachments: (json['attachments'] as List<dynamic>?)
+      attachments:
+          (json['attachments'] as List<dynamic>?)
               ?.map((e) => Attachment.fromJson(e))
               .toList() ??
           [],
@@ -52,11 +58,13 @@ class ResourcePermissionsUpdateBody extends Equatable {
   factory ResourcePermissionsUpdateBody.fromJson(Map<String, dynamic> json) {
     return ResourcePermissionsUpdateBody(
       id: json['id'],
-      grant: (json['grant'] as List<dynamic>?)
+      grant:
+          (json['grant'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],
-      reject: (json['reject'] as List<dynamic>?)
+      reject:
+          (json['reject'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],
@@ -64,11 +72,7 @@ class ResourcePermissionsUpdateBody extends Equatable {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'grant': grant,
-      'reject': reject,
-    };
+    return {'id': id, 'grant': grant, 'reject': reject};
   }
 
   @override

@@ -1,19 +1,24 @@
 import 'package:equatable/equatable.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/attachment.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:uuid/uuid.dart';
 
 class ResourceRequestMessage extends Iden3Message<ResourceRequestBody> {
   ResourceRequestMessage({
-    required super.id,
+    String? id,
     super.typ,
-    super.thid,
+    String? thid,
     required super.body,
     required super.from,
     super.to,
     super.createdTime,
     super.expiresTime,
     super.attachments = const [],
-  }) : super(type: Iden3MessageType.resourceRequest);
+  }) : super(
+         type: Iden3MessageType.resourceRequest,
+         id: id ?? const Uuid().v4(),
+         thid: thid ?? const Uuid().v4(),
+       );
 
   factory ResourceRequestMessage.fromJson(Map<String, dynamic> json) {
     return ResourceRequestMessage(
@@ -25,7 +30,8 @@ class ResourceRequestMessage extends Iden3Message<ResourceRequestBody> {
       to: json['to'],
       createdTime: json['created_time'],
       expiresTime: json['expires_time'],
-      attachments: (json['attachments'] as List<dynamic>?)
+      attachments:
+          (json['attachments'] as List<dynamic>?)
               ?.map((e) => Attachment.fromJson(e))
               .toList() ??
           [],
@@ -41,11 +47,7 @@ class ResourceRequestBody extends Equatable {
   final String? reason;
   final String? owner;
 
-  ResourceRequestBody({
-    required this.id,
-    this.reason,
-    this.owner,
-  });
+  ResourceRequestBody({required this.id, this.reason, this.owner});
 
   factory ResourceRequestBody.fromJson(Map<String, dynamic> json) {
     return ResourceRequestBody(

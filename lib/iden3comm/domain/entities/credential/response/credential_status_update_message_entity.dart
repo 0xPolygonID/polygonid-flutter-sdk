@@ -1,4 +1,5 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:uuid/uuid.dart';
 
 @Deprecated('Use CredentialStatusUpdateMessage instead')
 typedef CredentialStatusUpdateMessageEntity = CredentialStatusUpdateMessage;
@@ -6,25 +7,30 @@ typedef CredentialStatusUpdateMessageEntity = CredentialStatusUpdateMessage;
 class CredentialStatusUpdateMessage
     extends Iden3Message<CredentialStatusUpdateBody> {
   CredentialStatusUpdateMessage({
-    required super.id,
+    String? id,
     required super.typ,
     @Deprecated('may be omitted, gonna be removed in the future') String? type,
-    super.thid,
+    String? thid,
     required super.from,
     required super.to,
     required super.body,
     super.createdTime,
     super.expiresTime,
     super.attachments = const [],
-  }) : super(type: Iden3MessageType.credentialStatusUpdate);
+  }) : super(
+         id: id ?? const Uuid().v4(),
+         type: Iden3MessageType.credentialStatusUpdate,
+         thid: thid ?? const Uuid().v4(),
+       );
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
   /// @returns [CredentialStatusUpdateMessage]
   factory CredentialStatusUpdateMessage.fromJson(Map<String, dynamic> json) {
-    CredentialStatusUpdateBody body =
-        CredentialStatusUpdateBody.fromJson(json['body']);
+    CredentialStatusUpdateBody body = CredentialStatusUpdateBody.fromJson(
+      json['body'],
+    );
 
     return CredentialStatusUpdateMessage(
       id: json['id'],
@@ -58,27 +64,18 @@ class CredentialStatusUpdateBody {
   final String id;
   final String reason;
 
-  CredentialStatusUpdateBody({
-    required this.id,
-    required this.reason,
-  });
+  CredentialStatusUpdateBody({required this.id, required this.reason});
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
   /// @returns [CredentialStatusUpdateBody]
   factory CredentialStatusUpdateBody.fromJson(Map<String, dynamic> json) {
-    return CredentialStatusUpdateBody(
-      id: json['id'],
-      reason: json['reason'],
-    );
+    return CredentialStatusUpdateBody(id: json['id'], reason: json['reason']);
   }
 
   @override
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'reason': reason,
-      };
+  Map<String, dynamic> toJson() => {'id': id, 'reason': reason};
 
   @override
   String toString() =>

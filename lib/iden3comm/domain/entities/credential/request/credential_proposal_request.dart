@@ -1,6 +1,7 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/credential_schema_info.dart';
+import 'package:uuid/uuid.dart';
 
 /*
 "body": {
@@ -41,17 +42,21 @@ typedef CredentialProposalRequest = ProposalRequestMessage;
 /// https://iden3-communication.io/credentials/0.1/proposal-request
 class ProposalRequestMessage extends Iden3Message<ProposalRequestMessageBody> {
   ProposalRequestMessage({
-    required super.id,
+    String? id,
     required super.typ,
     @Deprecated('may be omitted, gonna be removed in the future') String? type,
-    super.thid,
+    String? thid,
     required super.from,
     required super.body,
     required super.to,
     super.createdTime,
     super.expiresTime,
     super.attachments = const [],
-  }) : super(type: Iden3MessageType.credentialProposalRequest);
+  }) : super(
+         id: id ?? const Uuid().v4(),
+         type: Iden3MessageType.credentialProposalRequest,
+         thid: thid ?? const Uuid().v4(),
+       );
 
   /// Creates an instance from the given json
   ///

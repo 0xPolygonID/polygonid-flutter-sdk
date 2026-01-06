@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/attachment.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:uuid/uuid.dart';
 
 /// Message sent to respond to a [ResourcePermissionsListFetchMessage] or
 /// [ResourcePermissionsRequestsListMessage] with the list of permissions
@@ -8,16 +9,20 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_mes
 class ResourcePermissionsListMessage
     extends Iden3Message<ResourcePermissionsListBody> {
   ResourcePermissionsListMessage({
-    required super.id,
+    String? id,
     super.typ,
-    super.thid,
+    String? thid,
     required super.body,
     required super.from,
     super.to,
     super.createdTime,
     super.expiresTime,
     super.attachments = const [],
-  }) : super(type: Iden3MessageType.permissionsList);
+  }) : super(
+         type: Iden3MessageType.permissionsList,
+         id: id ?? const Uuid().v4(),
+         thid: thid ?? const Uuid().v4(),
+       );
 
   factory ResourcePermissionsListMessage.fromJson(Map<String, dynamic> json) {
     return ResourcePermissionsListMessage(
@@ -29,7 +34,8 @@ class ResourcePermissionsListMessage
       to: json['to'],
       createdTime: json['created_time'],
       expiresTime: json['expires_time'],
-      attachments: (json['attachments'] as List<dynamic>?)
+      attachments:
+          (json['attachments'] as List<dynamic>?)
               ?.map((e) => Attachment.fromJson(e))
               .toList() ??
           [],
@@ -53,15 +59,18 @@ class ResourcePermissionsListBody with EquatableMixin {
 
   factory ResourcePermissionsListBody.fromJson(Map<String, dynamic> json) {
     return ResourcePermissionsListBody(
-      granted: (json['granted'] as List<dynamic>?)
+      granted:
+          (json['granted'] as List<dynamic>?)
               ?.map((e) => Permission.fromJson(e))
               .toList() ??
           [],
-      pending: (json['pending'] as List<dynamic>?)
+      pending:
+          (json['pending'] as List<dynamic>?)
               ?.map((e) => Permission.fromJson(e))
               .toList() ??
           [],
-      rejected: (json['rejected'] as List<dynamic>?)
+      rejected:
+          (json['rejected'] as List<dynamic>?)
               ?.map((e) => Permission.fromJson(e))
               .toList() ??
           [],
@@ -78,30 +87,18 @@ class Permission with EquatableMixin {
   // timestamp - Unix epoch time in seconds.
   final int? timestamp;
 
-  Permission({
-    required this.did,
-    required this.timestamp,
-  });
+  Permission({required this.did, required this.timestamp});
 
   factory Permission.fromJson(dynamic json) {
     if (json is String) {
-      return Permission(
-        did: json,
-        timestamp: null,
-      );
+      return Permission(did: json, timestamp: null);
     }
 
-    return Permission(
-      did: json['did'],
-      timestamp: json['timestamp'],
-    );
+    return Permission(did: json['did'], timestamp: json['timestamp']);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'did': did,
-      'timestamp': timestamp,
-    };
+    return {'did': did, 'timestamp': timestamp};
   }
 
   @override

@@ -1,5 +1,6 @@
 // ignore_for_file: overridden_fields
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:uuid/uuid.dart';
 
 @Deprecated('Use PaymentMessage instead')
 typedef PaymentMessageEntity = PaymentMessage;
@@ -12,17 +13,23 @@ class PaymentMessage extends Iden3Message<PaymentBody> {
   final String to;
 
   PaymentMessage({
-    required super.id,
+    String? id,
     required super.typ,
     @Deprecated('may be omitted, gonna be removed in the future') String? type,
-    super.thid,
+    String? thid,
     required this.from,
     required this.to,
     required super.body,
     super.createdTime,
     super.expiresTime,
     super.attachments = const [],
-  }) : super(type: Iden3MessageType.payment, from: from, to: to);
+  }) : super(
+         id: id ?? const Uuid().v4(),
+         type: Iden3MessageType.payment,
+         thid: thid ?? const Uuid().v4(),
+         from: from,
+         to: to,
+       );
 
   factory PaymentMessage.fromJson(Map<String, dynamic> json) {
     return PaymentMessage(
@@ -37,10 +44,7 @@ class PaymentMessage extends Iden3Message<PaymentBody> {
 
   @override
   Map<String, dynamic> toJson() {
-    return {
-      ...super.toJson(),
-      'body': body.toJson(),
-    };
+    return {...super.toJson(), 'body': body.toJson()};
   }
 }
 
@@ -48,21 +52,18 @@ class PaymentMessage extends Iden3Message<PaymentBody> {
 class PaymentBody {
   final List<Payment> payments;
 
-  PaymentBody({
-    required this.payments,
-  });
+  PaymentBody({required this.payments});
 
   factory PaymentBody.fromJson(Map<String, dynamic> json) {
     return PaymentBody(
-      payments:
-          List<Payment>.from(json['payments'].map((x) => Payment.fromJson(x))),
+      payments: List<Payment>.from(
+        json['payments'].map((x) => Payment.fromJson(x)),
+      ),
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'payments': payments.map((e) => e.toJson()).toList(),
-    };
+    return {'payments': payments.map((e) => e.toJson()).toList()};
   }
 }
 
@@ -72,11 +73,7 @@ abstract class Payment {
   final String? context;
   final PaymentData paymentData;
 
-  Payment({
-    required this.type,
-    this.context,
-    required this.paymentData,
-  });
+  Payment({required this.type, this.context, required this.paymentData});
 
   factory Payment.fromJson(Map<String, dynamic> json) {
     final String type = json['type'];
@@ -104,9 +101,7 @@ class Iden3PaymentCryptoV1 extends Payment {
     required this.id,
     super.context,
     required super.paymentData,
-  }) : super(
-          type: "Iden3PaymentCryptoV1",
-        );
+  }) : super(type: "Iden3PaymentCryptoV1");
 
   factory Iden3PaymentCryptoV1.fromJson(Map<String, dynamic> json) {
     String? id = json['id'];
@@ -141,9 +136,7 @@ class Iden3PaymentRailsV1 extends Payment {
     required this.nonce,
     super.context,
     required super.paymentData,
-  }) : super(
-          type: "Iden3PaymentRailsV1",
-        );
+  }) : super(type: "Iden3PaymentRailsV1");
 
   factory Iden3PaymentRailsV1.fromJson(Map<String, dynamic> json) {
     String? nonce = json['nonce'];
@@ -178,15 +171,14 @@ class Iden3PaymentRailsERC20V1 extends Payment {
     required this.nonce,
     super.context,
     required super.paymentData,
-  }) : super(
-          type: "Iden3PaymentRailsERC20V1",
-        );
+  }) : super(type: "Iden3PaymentRailsERC20V1");
 
   factory Iden3PaymentRailsERC20V1.fromJson(Map<String, dynamic> json) {
     String? nonce = json['nonce'];
     if (nonce == null) {
       throw Exception(
-          'Missing required field "nonce" for Iden3PaymentRailsERC20V1');
+        'Missing required field "nonce" for Iden3PaymentRailsERC20V1',
+      );
     }
     String? context = json['@context'];
 
@@ -245,10 +237,7 @@ class Iden3PaymentRailsV1Data extends PaymentData {
 
   @override
   Map<String, dynamic> toJson() {
-    return {
-      'txId': txId,
-      'chainId': chainId,
-    };
+    return {'txId': txId, 'chainId': chainId};
   }
 }
 
@@ -274,10 +263,6 @@ class Iden3PaymentRailsERC20V1Data extends PaymentData {
 
   @override
   Map<String, dynamic> toJson() {
-    return {
-      'txId': txId,
-      'chainId': chainId,
-      'tokenAddress': tokenAddress,
-    };
+    return {'txId': txId, 'chainId': chainId, 'tokenAddress': tokenAddress};
   }
 }

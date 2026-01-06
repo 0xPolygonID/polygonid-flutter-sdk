@@ -67,6 +67,7 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_body_request.dart';
+import 'package:uuid/uuid.dart';
 
 @Deprecated('Use CredentialsOfferMessage instead')
 typedef OfferIden3MessageEntity = CredentialsOfferMessage;
@@ -74,22 +75,27 @@ typedef OfferIden3MessageEntity = CredentialsOfferMessage;
 class CredentialsOfferMessage
     extends BaseCredentialOfferMessage<CredentialsOfferMessageBody> {
   CredentialsOfferMessage({
-    required super.id,
+    String? id,
     required super.typ,
     @Deprecated('may be omitted, gonna be removed in the future') String? type,
-    super.thid,
+    String? thid,
     required super.from,
     required super.body,
     super.to,
-  }) : super(type: Iden3MessageType.credentialOffer);
+  }) : super(
+         id: id ?? const Uuid().v4(),
+         type: Iden3MessageType.credentialOffer,
+         thid: thid ?? const Uuid().v4(),
+       );
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
   /// @returns [CredentialsOfferMessage]
   factory CredentialsOfferMessage.fromJson(Map<String, dynamic> json) {
-    CredentialsOfferMessageBody body =
-        CredentialsOfferMessageBody.fromJson(json['body']);
+    CredentialsOfferMessageBody body = CredentialsOfferMessageBody.fromJson(
+      json['body'],
+    );
     return CredentialsOfferMessage(
       id: json['id'],
       typ: json['typ'],

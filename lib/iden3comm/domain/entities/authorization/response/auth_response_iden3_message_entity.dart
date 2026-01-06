@@ -45,6 +45,7 @@
 */
 
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:uuid/uuid.dart';
 
 import 'auth_body_response.dart';
 
@@ -60,10 +61,10 @@ class AuthorizationResponseMessage
   final String to;
 
   AuthorizationResponseMessage({
-    required super.id,
+    String? id,
     required super.typ,
     @Deprecated('may be omitted, gonna be removed in the future') String? type,
-    super.thid,
+    String? thid,
     required this.from,
     required this.to,
     required super.body,
@@ -71,10 +72,12 @@ class AuthorizationResponseMessage
     super.expiresTime,
     super.attachments = const [],
   }) : super(
-          type: Iden3MessageType.authResponse,
-          from: from,
-          to: to,
-        );
+         id: id ?? const Uuid().v4(),
+         type: Iden3MessageType.authResponse,
+         thid: thid ?? const Uuid().v4(),
+         from: from,
+         to: to,
+       );
 
   /// Creates an instance from the given json
   ///

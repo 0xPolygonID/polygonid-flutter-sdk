@@ -1,11 +1,12 @@
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:uuid/uuid.dart';
 
 class CredentialIssuanceMessage extends Iden3Message<IssuanceMessageBody> {
   CredentialIssuanceMessage({
-    required super.id,
+    String? id,
     required super.typ,
-    super.thid,
+    String? thid,
     required super.body,
     required super.from,
     super.to,
@@ -13,8 +14,10 @@ class CredentialIssuanceMessage extends Iden3Message<IssuanceMessageBody> {
     super.expiresTime,
     super.attachments = const [],
   }) : super(
-          type: Iden3MessageType.credentialIssuanceResponse,
-        );
+         id: id ?? const Uuid().v4(),
+         type: Iden3MessageType.credentialIssuanceResponse,
+         thid: thid ?? const Uuid().v4(),
+       );
 
   /// Creates an instance from the given json
   ///
@@ -56,8 +59,6 @@ class IssuanceMessageBody {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'credential': credential.toJson(),
-    };
+    return {'credential': credential.toJson()};
   }
 }

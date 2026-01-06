@@ -19,8 +19,8 @@ class ResourcePermissionsListFetchMessage
     super.attachments = const [],
   }) : super(
           id: id ?? Uuid().v4(),
-          thid: thid ?? Uuid().v4(),
           type: Iden3MessageType.permissionsListFetch,
+          thid: thid ?? Uuid().v4(),
         );
 
   factory ResourcePermissionsListFetchMessage.fromJson(
