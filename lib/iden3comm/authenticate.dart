@@ -211,6 +211,22 @@ class Authenticate {
 
       _proofGenerationStepsStreamManager.add("preparing authentication...");
 
+      // Check if the message type is supported
+      if (![
+        Iden3MessageType.authRequest,
+        Iden3MessageType.proofContractInvokeRequest,
+      ].contains(message.type)) {
+        _stacktraceManager.addError(
+          "[Authenticate] Unsupported message type: ${message.type} It should be either authRequest or proofContractInvokeRequest",
+        );
+        throw UnsupportedIden3MsgTypeException(
+          type: message.type,
+          errorMessage:
+              "Unsupported message type\nIt should be either "
+              "authRequest or proofContractInvokeRequest",
+        );
+      }
+
       Uint8List privateKeyBytes = hexToBytes(privateKey);
 
       GetSelectedChainUseCase getSelectedChainUseCase = getItSdk
@@ -242,7 +258,10 @@ class Authenticate {
       } else if (message is ContractInvokeRequestMessage) {
         requests = message.body.scope;
       } else {
-        requests = [];
+        throw UnsupportedIden3MsgTypeException(
+          type: message.type,
+          errorMessage: "Unsupported message type - ${message.type}",
+        );
       }
 
       List<RequestAndCredentials> requestsAndCredsLocal;

@@ -860,7 +860,6 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     );
   }
 
-  @Deprecated('Use getAuthTokenV2')
   Future<String> getAuthToken({
     required String genesisDid,
     required String privateKey,
