@@ -228,6 +228,9 @@ class JsonWebAlgorithm {
             (keyPair.privateKey as RsaPrivateKey).firstPrimeFactor),
         'q': encodeBigInt(
             (keyPair.privateKey as RsaPrivateKey).secondPrimeFactor),
+        'dp': encodeBigInt(_calculateDp(keyPair.privateKey as RsaPrivateKey)),
+        'dq': encodeBigInt(_calculateDq(keyPair.privateKey as RsaPrivateKey)),
+        'qi': encodeBigInt(_calculateQi(keyPair.privateKey as RsaPrivateKey)),
       },
       if (type == 'EC') ...{
         'd': encodeBigInt((keyPair.privateKey as EcPrivateKey).eccPrivateKey),
@@ -237,7 +240,7 @@ class JsonWebAlgorithm {
       },
       'alg': name,
       'use': use,
-      'keyOperations': keyOperations
+      'keyOperations': keyOperations,
     });
   }
 
@@ -271,5 +274,23 @@ class JsonWebAlgorithm {
           'Minimum key length for algorithm $name is $minKeyBitLength');
     }
     return keyBitLength;
+  }
+
+  /// Calculate dp = d mod (p-1)
+  /// First factor CRT exponent
+  BigInt _calculateDp(RsaPrivateKey pk) {
+    return pk.privateExponent % (pk.firstPrimeFactor - BigInt.one);
+  }
+
+  /// Calculate dq = d mod (q-1)
+  /// Second factor CRT exponent
+  BigInt _calculateDq(RsaPrivateKey pk) {
+    return pk.privateExponent % (pk.secondPrimeFactor - BigInt.one);
+  }
+
+  /// Calculate qi = q^(-1) mod p
+  /// First CRT coefficient (inverse of q modulo p)
+  BigInt _calculateQi(RsaPrivateKey pk) {
+    return pk.secondPrimeFactor.modInverse(pk.firstPrimeFactor);
   }
 }

@@ -65,6 +65,7 @@ class JsonWebKey extends JsonObject {
     PublicKey? publicKey,
     PrivateKey? privateKey,
     String? keyId,
+    bool? extractable,
   }) {
     if (publicKey == null && privateKey == null) {
       throw ArgumentError('Either publicKey or privateKey should be non null');
@@ -79,13 +80,26 @@ class JsonWebKey extends JsonObject {
         );
       }
 
+      final k = privateKey;
+      // Calculate CRT coefficients
+      // dp = d mod (p-1)
+      BigInt dp = k.privateExponent % (k.firstPrimeFactor - BigInt.one);
+      // dq = d mod (q-1)
+      BigInt dq = k.privateExponent % (k.secondPrimeFactor - BigInt.one);
+      // qi = q^(-1) mod p
+      BigInt qi = k.secondPrimeFactor.modInverse(k.firstPrimeFactor);
+
       return JsonWebKey.rsa(
         modulus: privateKey.modulus,
         exponent: (publicKey as RsaPublicKey?)?.exponent,
         privateExponent: privateKey.privateExponent,
         firstPrimeFactor: privateKey.firstPrimeFactor,
         secondPrimeFactor: privateKey.secondPrimeFactor,
+        firstFactorCRTExponent: dp,
+        secondFactorCRTExponent: dq,
+        firstCRTCoefficient: qi,
         keyId: keyId,
+        extractable: extractable,
       );
     }
 
@@ -110,6 +124,7 @@ class JsonWebKey extends JsonObject {
         xCoordinate: (publicKey as EcPublicKey?)?.xCoordinate,
         yCoordinate: publicKey?.yCoordinate,
         keyId: keyId,
+        extractable: extractable,
       );
     }
 
@@ -124,6 +139,7 @@ class JsonWebKey extends JsonObject {
         modulus: publicKey.modulus,
         exponent: publicKey.exponent,
         keyId: keyId,
+        extractable: extractable,
       );
     }
 
@@ -133,6 +149,7 @@ class JsonWebKey extends JsonObject {
         xCoordinate: publicKey.xCoordinate,
         yCoordinate: publicKey.yCoordinate,
         keyId: keyId,
+        extractable: extractable,
       );
     }
 
@@ -148,8 +165,12 @@ class JsonWebKey extends JsonObject {
     BigInt? privateExponent,
     BigInt? firstPrimeFactor,
     BigInt? secondPrimeFactor,
+    BigInt? firstFactorCRTExponent,
+    BigInt? secondFactorCRTExponent,
+    BigInt? firstCRTCoefficient,
     String? keyId,
     String? algorithm,
+    bool? extractable,
   }) => JsonWebKey.fromJson({
     'kty': 'RSA',
     'n': _intToBase64(modulus),
@@ -157,8 +178,14 @@ class JsonWebKey extends JsonObject {
     if (privateExponent != null) 'd': _intToBase64(privateExponent),
     if (firstPrimeFactor != null) 'p': _intToBase64(firstPrimeFactor),
     if (secondPrimeFactor != null) 'q': _intToBase64(secondPrimeFactor),
+    if (firstFactorCRTExponent != null)
+      'dp': _intToBase64(firstFactorCRTExponent),
+    if (secondFactorCRTExponent != null)
+      'dq': _intToBase64(secondFactorCRTExponent),
+    if (firstCRTCoefficient != null) 'qi': _intToBase64(firstCRTCoefficient),
     if (keyId != null) 'kid': keyId,
     if (algorithm != null) 'alg': algorithm,
+    if (extractable != null) 'ext': extractable,
   })!;
 
   /// Creates a JsonWebKey of type EC
@@ -169,6 +196,7 @@ class JsonWebKey extends JsonObject {
     BigInt? privateKey,
     String? keyId,
     String? algorithm,
+    bool? extractable,
   }) => JsonWebKey.fromJson({
     'kty': 'EC',
     'crv': curve,
@@ -177,15 +205,20 @@ class JsonWebKey extends JsonObject {
     if (privateKey != null) 'd': _intToBase64(privateKey),
     if (keyId != null) 'kid': keyId,
     if (algorithm != null) 'alg': algorithm,
+    if (extractable != null) 'ext': extractable,
   })!;
 
   /// Creates a JsonWebKey of type oct
-  static JsonWebKey symmetric({required BigInt key, String? keyId}) =>
-      JsonWebKey.fromJson({
-        'kty': 'oct',
-        'k': _intToBase64(key),
-        if (keyId != null) 'kid': keyId,
-      })!;
+  static JsonWebKey symmetric({
+    required BigInt key,
+    String? keyId,
+    bool? extractable,
+  }) => JsonWebKey.fromJson({
+    'kty': 'oct',
+    'k': _intToBase64(key),
+    if (keyId != null) 'kid': keyId,
+    if (extractable != null) 'ext': extractable,
+  })!;
 
   /// Parses a PEM encoded public or private key
   factory JsonWebKey.fromPem(String pem, {String? keyId}) {
@@ -264,6 +297,8 @@ class JsonWebKey extends JsonObject {
 
   /// A resource for an X.509 public key certificate or certificate chain.
   Uri? get x509Url => this['x5u'] == null ? null : Uri.parse(this['x5u']);
+
+  bool? get extractable => this['ext'];
 
   /// A chain of one or more PKIX certificates.
   List<x509.X509Certificate>? get x509CertificateChain =>
