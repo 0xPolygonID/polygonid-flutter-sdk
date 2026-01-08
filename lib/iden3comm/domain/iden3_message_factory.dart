@@ -14,6 +14,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/reque
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/onchain_offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_encrypted_issuance_response.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_issuance_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_proposal_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_status_update_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/fetch_iden3_message_entity.dart';
@@ -55,7 +56,7 @@ class Iden3MessageFactory {
         case Iden3MessageType.onchainCredentialOffer:
           return CredentialsOnchainOfferMessage.fromJson(json);
         case Iden3MessageType.credentialIssuanceResponse:
-          return CredentialFetchRequestMessage.fromJson(json);
+          return CredentialIssuanceMessage.fromJson(json);
         case Iden3MessageType.credentialEncryptedIssuanceResponse:
           return CredentialEncryptedIssuanceResponse.fromJson(json);
         case Iden3MessageType.proofContractInvokeRequest:
