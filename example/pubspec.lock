@@ -439,10 +439,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_rapidsnark
-      sha256: "8df1e0007e443441aae8098636d6be1e339e03e3c53c4f54bfd32801031f3e39"
+      sha256: c625adb6cfcfe9589e33693b350a295663ad42c88ef2ef0f168f653385d1dc62
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.1-beta.4"
+    version: "0.0.1-beta.7"
   flutter_secure_storage:
     dependency: "direct main"
     description:
