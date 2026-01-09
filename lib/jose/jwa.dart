@@ -241,6 +241,7 @@ class JsonWebAlgorithm {
       'alg': name,
       'use': use,
       'keyOperations': keyOperations,
+      'ext': true,
     });
   }
 
