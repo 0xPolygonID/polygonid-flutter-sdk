@@ -19,13 +19,15 @@ class JsonObject {
 
   /// Constructs a [JsonObject] from a [bytes] representation of the json string
   JsonObject.fromBytes(List<int> bytes)
-      : this._(_clone(convert.json.decode(convert.utf8.decode(bytes))),
-            encodeBase64EncodedBytes(bytes));
+    : this._(
+        _clone(convert.json.decode(convert.utf8.decode(bytes))),
+        encodeBase64EncodedBytes(bytes),
+      );
 
   /// Constructs a [JsonObject] from a base64 [encodedString] representation of
   /// the json string
   JsonObject.decode(String encodedString)
-      : this.fromBytes(decodeBase64EncodedBytes(encodedString));
+    : this.fromBytes(decodeBase64EncodedBytes(encodedString));
 
   /// Returns a JSON representation
   Map<String, dynamic> toJson() => _json;
@@ -41,8 +43,11 @@ class JsonObject {
   static dynamic _clone(dynamic v) {
     if (v is Map) {
       return Map<String, dynamic>.unmodifiable(
-          Map<String, dynamic>.fromIterables(
-              v.keys as Iterable<String>, v.values.map(_clone)));
+        Map<String, dynamic>.fromIterables(
+          v.keys as Iterable<String>,
+          v.values.map(_clone),
+        ),
+      );
     }
     if (v is List) return List.unmodifiable(v.map(_clone));
     if (v == null || v is num || v is bool || v is String) return v;
@@ -53,8 +58,9 @@ class JsonObject {
   List<int> toBytes() => decodeBase64EncodedBytes(toBase64EncodedString());
 
   /// Returns the base64 representation
-  String toBase64EncodedString() => _encodedString ??=
-      encodeBase64EncodedBytes(convert.utf8.encode(convert.json.encode(_json)));
+  String toBase64EncodedString() => _encodedString ??= encodeBase64EncodedBytes(
+    convert.utf8.encode(convert.json.encode(_json)),
+  );
 
   /// Returns the property [key] as a core dart value
   dynamic operator [](String key) => _json[key];
@@ -62,7 +68,9 @@ class JsonObject {
   /// Returns the property [key] as a typed object
   T? getTyped<T>(String key, {T Function(dynamic v)? factory}) {
     return _typedMap.putIfAbsent(
-        key, () => _convert(this[key], factory: factory));
+      key,
+      () => _convert(this[key], factory: factory),
+    );
   }
 
   /// Returns the property [key] as a typed list
@@ -73,7 +81,8 @@ class JsonObject {
 
       if (v is List) {
         return List<T>.unmodifiable(
-            v.map((i) => _convert(i, factory: factory)));
+          v.map((i) => _convert(i, factory: factory)),
+        );
       }
 
       return List<T>.unmodifiable([_convert(v, factory: factory)]);
@@ -106,8 +115,10 @@ class JsonObject {
 }
 
 List<int> decodeBase64EncodedBytes(String encodedString) =>
-    convert.base64Url.decode(encodedString +
-        List.filled((4 - encodedString.length % 4) % 4, '=').join());
+    convert.base64Url.decode(
+      encodedString +
+          List.filled((4 - encodedString.length % 4) % 4, '=').join(),
+    );
 
 String encodeBase64EncodedBytes(List<int> data) =>
     convert.base64Url.encode(data).replaceAll('=', '');
@@ -120,6 +131,16 @@ String encodeBigInt(BigInt? v) {
     v = v ~/ b256;
   }
   return convert.base64Url.encode(bytes.reversed.toList());
+}
+
+BigInt decodeBigInt(String s) {
+  final b256 = BigInt.from(256);
+  var bytes = convert.base64Url.decode(s + '=' * ((4 - s.length % 4) % 4));
+  BigInt v = BigInt.zero;
+  for (var b in bytes) {
+    v = (v * b256) + BigInt.from(b);
+  }
+  return v;
 }
 
 Map<String, dynamic> safeUnion(Iterable<Map<String, dynamic>?> items) {
@@ -154,5 +175,5 @@ final curvesByName = <String, Identifier>{
   'P-256': curves.p256,
   'P-256K': curves.p256k,
   'P-384': curves.p384,
-  'P-521': curves.p521
+  'P-521': curves.p521,
 };

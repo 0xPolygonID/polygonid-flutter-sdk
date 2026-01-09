@@ -228,9 +228,9 @@ class JsonWebAlgorithm {
             (keyPair.privateKey as RsaPrivateKey).firstPrimeFactor),
         'q': encodeBigInt(
             (keyPair.privateKey as RsaPrivateKey).secondPrimeFactor),
-        'dp': encodeBigInt(_calculateDp(keyPair.privateKey as RsaPrivateKey)),
-        'dq': encodeBigInt(_calculateDq(keyPair.privateKey as RsaPrivateKey)),
-        'qi': encodeBigInt(_calculateQi(keyPair.privateKey as RsaPrivateKey)),
+        'dp': encodeBigInt((keyPair.privateKey as RsaPrivateKey).calculateDp()),
+        'dq': encodeBigInt((keyPair.privateKey as RsaPrivateKey).calculateDq()),
+        'qi': encodeBigInt((keyPair.privateKey as RsaPrivateKey).calculateQi()),
       },
       if (type == 'EC') ...{
         'd': encodeBigInt((keyPair.privateKey as EcPrivateKey).eccPrivateKey),
@@ -276,22 +276,50 @@ class JsonWebAlgorithm {
     }
     return keyBitLength;
   }
+}
 
+extension RsaPrivateKeyCRTCalcExtension on RsaPrivateKey {
   /// Calculate dp = d mod (p-1)
   /// First factor CRT exponent
-  BigInt _calculateDp(RsaPrivateKey pk) {
-    return pk.privateExponent % (pk.firstPrimeFactor - BigInt.one);
+  BigInt calculateDp() {
+    return privateExponent % (firstPrimeFactor - BigInt.one);
   }
 
   /// Calculate dq = d mod (q-1)
   /// Second factor CRT exponent
-  BigInt _calculateDq(RsaPrivateKey pk) {
-    return pk.privateExponent % (pk.secondPrimeFactor - BigInt.one);
+  BigInt calculateDq() {
+    return privateExponent % (secondPrimeFactor - BigInt.one);
   }
 
   /// Calculate qi = q^(-1) mod p
   /// First CRT coefficient (inverse of q modulo p)
-  BigInt _calculateQi(RsaPrivateKey pk) {
-    return pk.secondPrimeFactor.modInverse(pk.firstPrimeFactor);
+  BigInt calculateQi() {
+    return secondPrimeFactor.modInverse(firstPrimeFactor);
+  }
+}
+
+extension JsonWebKeyCRTCalcExtension on JsonWebKey {
+  /// Calculate dp = d mod (p-1)
+  /// First factor CRT exponent
+  BigInt calculateDp() {
+    final d = decodeBigInt(this['d'] as String);
+    final p = decodeBigInt(this['p'] as String);
+    return d % (p - BigInt.one);
+  }
+
+  /// Calculate dq = d mod (q-1)
+  /// Second factor CRT exponent
+  BigInt calculateDq() {
+    final d = decodeBigInt(this['d'] as String);
+    final q = decodeBigInt(this['q'] as String);
+    return d % (q - BigInt.one);
+  }
+
+  /// Calculate qi = q^(-1) mod p
+  /// First CRT coefficient (inverse of q modulo p)
+  BigInt calculateQi() {
+    final p = decodeBigInt(this['p'] as String);
+    final q = decodeBigInt(this['q'] as String);
+    return q.modInverse(p);
   }
 }
