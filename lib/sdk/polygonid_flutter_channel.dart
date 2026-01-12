@@ -1290,4 +1290,32 @@ class PolygonIdFlutterChannel
     // TODO: implement fetchDisplayMethod
     throw UnimplementedError();
   }
+
+  @override
+  Future<String> getAuthResponseToken({
+    required String privateKey,
+    required String genesisDid,
+    required BigInt profileNonce,
+    required IdentityEntity identityEntity,
+    required Iden3Message<dynamic> message,
+    required EnvEntity env,
+    DIDDocument? didDocument,
+    String? pushToken,
+    List<RequestAndCredentials>? requestsAndCreds,
+    String? challenge,
+  }) {
+    // TODO: implement getAuthResponseToken
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String> getAuthToken({
+    required String genesisDid,
+    required String privateKey,
+    required BigInt profileNonce,
+    required String iden3message,
+  }) {
+    // TODO: implement getAuthToken
+    throw UnimplementedError();
+  }
 }

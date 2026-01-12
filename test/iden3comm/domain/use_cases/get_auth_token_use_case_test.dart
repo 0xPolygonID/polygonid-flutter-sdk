@@ -7,6 +7,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_challenge_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_jwz_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/load_circuit_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/prove_use_case.dart';
 
@@ -17,10 +18,12 @@ import 'get_auth_token_use_case_test.mocks.dart';
 
 // Data
 final param = GetAuthTokenParam(
-    genesisDid: CommonMocks.did,
-    profileNonce: CommonMocks.genesisNonce,
-    privateKey: CommonMocks.privateKey,
-    message: CommonMocks.message);
+  genesisDid: CommonMocks.did,
+  profileNonce: CommonMocks.genesisNonce,
+  privateKey: CommonMocks.privateKey,
+  message: CommonMocks.message,
+  circuitType: const AuthV2Circuit(),
+);
 const result = "token";
 var exception = Exception();
 var getAuthTokenException = GetAuthTokenException(errorMessage: "Error");

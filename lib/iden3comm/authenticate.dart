@@ -88,9 +88,10 @@ class Authenticate {
     final Map<String, dynamic>? transactionData,
     String? authClaimNonce,
     List<RequestAndCredentials>? requestsAndCreds,
+    CircuitType circuitType = const AuthV2Circuit(),
   }) async {
     try {
-      String authToken = await getAuthToken(
+      String authToken = await getAuthResponseToken(
         privateKey: privateKey,
         genesisDid: genesisDid,
         profileNonce: profileNonce,
@@ -103,6 +104,7 @@ class Authenticate {
         transactionData: transactionData,
         authClaimNonce: authClaimNonce,
         requestsAndCreds: requestsAndCreds,
+        circuitType: circuitType,
       );
       _stacktraceManager.addTrace("[Authenticate] authToken: $authToken");
 
@@ -183,7 +185,7 @@ class Authenticate {
     }
   }
 
-  Future<String> getAuthToken({
+  Future<String> getAuthResponseToken({
     required String privateKey,
     required String genesisDid,
     required BigInt profileNonce,
@@ -196,6 +198,7 @@ class Authenticate {
     final Map<String, dynamic>? transactionData,
     String? authClaimNonce,
     List<RequestAndCredentials>? requestsAndCreds,
+    CircuitType circuitType = const AuthV2Circuit(),
   }) async {
     final nonce = authClaimNonce ?? DEFAULT_AUTH_CLAIM_NONCE;
     try {
@@ -365,6 +368,7 @@ class Authenticate {
         authClaimNode: authClaimCompanionObject.authClaimNode!,
         gistProofEntity: authClaimCompanionObject.gistProofEntity!,
         proofRepository: proofRepository,
+        circuitType: circuitType,
         env: env,
       );
       return authToken;
@@ -633,6 +637,7 @@ class Authenticate {
     required Map<String, dynamic> treeState,
     required GistMTProofEntity gistProofEntity,
     required ProofRepository proofRepository,
+    required CircuitType circuitType,
     required EnvEntity env,
   }) async {
     JWZHeader header = JWZHeader(
@@ -675,6 +680,7 @@ class Authenticate {
       treeState: treeState,
       challenge: authChallenge,
       signature: signature,
+      circuitType: circuitType,
       config: env.config.toJson(),
     );
 

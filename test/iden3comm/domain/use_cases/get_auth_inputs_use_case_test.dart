@@ -7,6 +7,7 @@ import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_latest_state_use_case.dart';
@@ -37,6 +38,7 @@ GetAuthInputsParam param = GetAuthInputsParam(
   profileNonce: CommonMocks.nonce,
   privateKey: CommonMocks.privateKey,
   encryptionKey: CommonMocks.privateKey,
+  circuitType: AuthV2Circuit(),
 );
 var claims = [CommonMocks.authClaim, CommonMocks.authClaim];
 var getAuthInputsException = GetAuthInputsException(errorMessage: "error");
@@ -87,6 +89,7 @@ void main() {
         nonRevProof: anyNamed('nonRevProof'),
         gistProof: anyNamed('gistProof'),
         treeState: anyNamed('treeState'),
+        circuitType: anyNamed('circuitType'),
         config: anyNamed('config'),
       ),
     ).thenAnswer(
@@ -141,6 +144,7 @@ void main() {
           nonRevProof: captureAnyNamed('nonRevProof'),
           gistProof: captureAnyNamed('gistProof'),
           treeState: captureAnyNamed('treeState'),
+          circuitType: anyNamed('circuitType'),
           config: captureAnyNamed('config'),
         ),
       ).captured;
@@ -189,6 +193,7 @@ void main() {
           incProof: captureAnyNamed('incProof'),
           nonRevProof: captureAnyNamed('nonRevProof'),
           gistProof: captureAnyNamed('gistProof'),
+          circuitType: anyNamed('circuitType'),
           treeState: captureAnyNamed('treeState')));
     },
   );

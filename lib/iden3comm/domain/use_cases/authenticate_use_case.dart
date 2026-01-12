@@ -18,6 +18,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_re
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
@@ -29,6 +30,7 @@ class AuthenticateParam {
   final String privateKey;
   final String? pushToken;
   final String? challenge;
+  final CircuitType circuitType;
 
   AuthenticateParam({
     required this.message,
@@ -37,6 +39,7 @@ class AuthenticateParam {
     required this.privateKey,
     this.pushToken,
     this.challenge,
+    this.circuitType = const AuthV2Circuit(),
   });
 }
 
@@ -162,7 +165,10 @@ class AuthenticateUseCase
               genesisDid: param.genesisDid,
               profileNonce: param.profileNonce,
               privateKey: param.privateKey,
-              message: authResponse));
+              message: authResponse,
+            circuitType: param.circuitType,
+          ),
+      );
       logger()
           .i("stopwatch after getAuthToken ${stopwatch.elapsedMilliseconds}");
       _stacktraceManager.addTrace(

@@ -46,6 +46,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/add
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/get_interactions_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/remove_interactions_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/update_interaction_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/jose/jwk.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
@@ -352,6 +353,30 @@ abstract class PolygonIdSdkIden3comm {
     required String did,
     required String privateKey,
     required String interactedWithDid,
+  });
+
+  /// Accepts any message as string and generate JWZ token containing this
+  /// message
+  Future<String> getAuthToken({
+    required String genesisDid,
+    required String privateKey,
+    required BigInt profileNonce,
+    required String iden3message,
+  });
+
+  /// Accepts auth request or contract invocation iden3 message and generates
+  /// JWZ token which contains the response to this message.
+  Future<String> getAuthResponseToken({
+    required String privateKey,
+    required String genesisDid,
+    required BigInt profileNonce,
+    required IdentityEntity identityEntity,
+    required Iden3Message message,
+    required EnvEntity env,
+    DIDDocument? didDocument,
+    String? pushToken,
+    List<RequestAndCredentials>? requestsAndCreds,
+    String? challenge,
   });
 
   /// Fetches credential using the [credentialOfferMessage] and returns it without saving.
@@ -671,6 +696,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     required String privateKey,
     String? pushToken,
     String? challenge,
+    CircuitType circuitType = const AuthV2Circuit(),
   }) {
     _stacktraceManager.clearStacktrace();
     if (message is! AuthorizationRequestMessage) {
@@ -693,6 +719,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         privateKey: privateKey,
         pushToken: pushToken,
         challenge: challenge,
+        circuitType: circuitType,
       ),
     );
   }
@@ -708,6 +735,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     String? pushToken,
     List<RequestAndCredentials>? requestsAndCreds,
     String? challenge,
+    CircuitType circuitType = const AuthV2Circuit(),
   }) async {
     try {
       return await Authenticate().authenticate(
@@ -876,6 +904,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     required String privateKey,
     required BigInt profileNonce,
     required String iden3message,
+    CircuitType circuitType = const AuthV2Circuit(),
   }) {
     return _getAuthTokenUseCase.execute(
       param: GetAuthTokenParam(
@@ -883,11 +912,12 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         profileNonce: profileNonce,
         privateKey: privateKey,
         message: iden3message,
+        circuitType: circuitType,
       ),
     );
   }
 
-  Future<String> getAuthTokenV2({
+  Future<String> getAuthResponseToken({
     required String privateKey,
     required String genesisDid,
     required BigInt profileNonce,
@@ -898,9 +928,10 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     String? pushToken,
     List<RequestAndCredentials>? requestsAndCreds,
     String? challenge,
+    CircuitType circuitType = const AuthV2Circuit(),
   }) async {
     try {
-      return await Authenticate().getAuthToken(
+      return await Authenticate().getAuthResponseToken(
         privateKey: privateKey,
         genesisDid: genesisDid,
         profileNonce: profileNonce,
@@ -910,6 +941,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         pushToken: pushToken,
         didDocument: didDocument,
         requestsAndCreds: requestsAndCreds,
+        circuitType: circuitType,
       );
     } on PolygonIdSDKException catch (_) {
       rethrow;

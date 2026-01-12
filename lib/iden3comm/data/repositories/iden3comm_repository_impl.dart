@@ -13,6 +13,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/i
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/iden3_message_factory.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/identity/data/mappers/q_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/lib_pidcore_proof_data_source.dart';
@@ -118,6 +119,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     required MTProofEntity nonRevProof,
     required GistMTProofEntity gistProof,
     required Map<String, dynamic> treeState,
+    required CircuitType circuitType,
     Map<String, dynamic>? config,
   }) {
     return _libPolygonIdCoreProofDataSource.getAuthInputs(
@@ -131,6 +133,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       challenge: challenge,
       signature: signature,
       config: config,
+      circuitType: circuitType,
     );
   }
 
