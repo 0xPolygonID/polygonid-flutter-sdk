@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/data/data_sources/secure_identity_storage_data_source.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
@@ -14,8 +13,9 @@ class SecureInteractionStoreRefWrapper {
   SecureInteractionStoreRefWrapper(@Named(interactionStoreName) this._store);
 
   Future<List<RecordSnapshot<String, Map<String, Object?>>>> find(
-      DatabaseClient databaseClient,
-      {Finder? finder}) {
+    DatabaseClient databaseClient, {
+    Finder? finder,
+  }) {
     return _store.find(databaseClient, finder: finder);
   }
 
@@ -28,8 +28,11 @@ class SecureInteractionStoreRefWrapper {
   }
 
   Future<Map<String, Object?>> put(
-      DatabaseClient database, String key, Map<String, Object?> value,
-      {bool? merge}) {
+    DatabaseClient database,
+    String key,
+    Map<String, Object?> value, {
+    bool? merge,
+  }) {
     return _store.record(key).put(database, value, merge: merge);
   }
 
@@ -56,39 +59,40 @@ class SecureStorageInteractionDataSource
     required List<Map<String, dynamic>> interactions,
     required String did,
     required String encryptionKey,
-  }) {
-    return getDatabase(did: did, encryptionKey: encryptionKey).then(
-        (database) => database
-            .transaction((transaction) => storeInteractionsTransact(
-                transaction: transaction, interactions: interactions))
-            .whenComplete(() => database.close()));
-  }
-
-  @visibleForTesting
-  Future<List<Map<String, dynamic>>> storeInteractionsTransact({
-    required DatabaseClient transaction,
-    required List<Map<String, dynamic>> interactions,
   }) async {
-    List<Map<String, dynamic>> storedInteractions = [];
+    Database? database;
+    try {
+      database = await getDatabase(did: did, encryptionKey: encryptionKey);
 
-    for (Map<String, dynamic> interaction in interactions) {
-      /// Id is null when the interaction is not stored yet
-      await (interaction['id'] == null
-              ? _storeRefWrapper.add(transaction, interaction).then((id) {
-                  interaction['id'] = id;
+      return await database.transaction((transaction) async {
+        List<Map<String, dynamic>> storedInteractions = [];
 
-                  return interaction;
-                })
+        for (Map<String, dynamic> interaction in interactions) {
+          Map<String, dynamic> storedInteraction;
+          if (interaction['id'] == null) {
+            /// Id is null when the interaction is not stored yet
+            final id = await _storeRefWrapper.add(transaction, interaction);
+            interaction['id'] = id;
 
-              /// Id is not null, we update the interaction
-              : _storeRefWrapper
-                  .put(transaction, interaction['id'], interaction)
-                  .then((_) => interaction))
-          .then(
-              (storedInteraction) => storedInteractions.add(storedInteraction));
+            storedInteraction = interaction;
+          } else {
+            /// Id is not null, we update the interaction
+            await _storeRefWrapper.put(
+              transaction,
+              interaction['id'],
+              interaction,
+            );
+            storedInteraction = interaction;
+          }
+
+          storedInteractions.add(storedInteraction);
+        }
+
+        return storedInteractions;
+      });
+    } finally {
+      database?.close();
     }
-
-    return storedInteractions;
   }
 
   /// Remove all interactions in a single transaction
@@ -97,21 +101,17 @@ class SecureStorageInteractionDataSource
     required List<String> ids,
     required String did,
     required String encryptionKey,
-  }) {
-    return getDatabase(did: did, encryptionKey: encryptionKey).then(
-        (database) => database
-            .transaction((transaction) =>
-                removeInteractionsTransact(transaction: transaction, ids: ids))
-            .whenComplete(() => database.close()));
-  }
-
-  @visibleForTesting
-  Future<void> removeInteractionsTransact({
-    required DatabaseClient transaction,
-    required List<String> ids,
   }) async {
-    for (String interactionId in ids) {
-      await _storeRefWrapper.remove(transaction, interactionId);
+    Database? database;
+    try {
+      database = await getDatabase(did: did, encryptionKey: encryptionKey);
+      await database.transaction((t) async {
+        for (String interactionId in ids) {
+          await _storeRefWrapper.remove(t, interactionId);
+        }
+      });
+    } finally {
+      await database?.close();
     }
   }
 
@@ -120,31 +120,31 @@ class SecureStorageInteractionDataSource
   Future<void> removeAllInteractions({
     required String did,
     required String encryptionKey,
-  }) {
-    return getDatabase(did: did, encryptionKey: encryptionKey).then(
-        (database) => database
-            .transaction((transaction) =>
-                removeAllInteractionsTransact(transaction: transaction))
-            .whenComplete(() => database.close()));
-  }
-
-  @visibleForTesting
-  Future<void> removeAllInteractionsTransact({
-    required DatabaseClient transaction,
   }) async {
-    await _storeRefWrapper.removeAll(transaction);
+    Database? database;
+    try {
+      database = await getDatabase(did: did, encryptionKey: encryptionKey);
+      await database.transaction((t) => _storeRefWrapper.removeAll(t));
+    } finally {
+      await database?.close();
+    }
   }
 
   Future<List<Map<String, dynamic>>> getInteractions({
     Filter? filter,
     required String did,
     required String encryptionKey,
-  }) {
-    return getDatabase(did: did, encryptionKey: encryptionKey).then(
-        (database) => _storeRefWrapper
-            .find(database, finder: Finder(filter: filter))
-            .then((snapshots) =>
-                snapshots.map((snapshot) => snapshot.value).toList())
-            .whenComplete(() => database.close()));
+  }) async {
+    Database? database;
+    try {
+      database = await getDatabase(did: did, encryptionKey: encryptionKey);
+      final snapshots = await _storeRefWrapper.find(
+        database,
+        finder: Finder(filter: filter),
+      );
+      return snapshots.map((snapshot) => snapshot.value).toList();
+    } finally {
+      database?.close();
+    }
   }
 }

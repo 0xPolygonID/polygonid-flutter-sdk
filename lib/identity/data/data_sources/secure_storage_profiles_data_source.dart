@@ -1,7 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/data/data_sources/secure_identity_storage_data_source.dart';
-import 'package:sembast/sembast.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
+import 'package:sembast/sembast.dart';
 
 @injectable
 class SecureStorageProfilesStoreRefWrapper {
@@ -10,8 +10,9 @@ class SecureStorageProfilesStoreRefWrapper {
   SecureStorageProfilesStoreRefWrapper(@Named(profilesStoreName) this._store);
 
   Future<List<RecordSnapshot<String, Map<String, Object?>>>> find(
-      DatabaseClient databaseClient,
-      {Finder? finder}) {
+    DatabaseClient databaseClient, {
+    Finder? finder,
+  }) {
     return _store.find(databaseClient, finder: finder);
   }
 
@@ -24,8 +25,11 @@ class SecureStorageProfilesStoreRefWrapper {
   }
 
   Future<Map<String, Object?>> put(
-      DatabaseClient database, String key, Map<String, Object?> value,
-      {bool? merge}) {
+    DatabaseClient database,
+    String key,
+    Map<String, Object?> value, {
+    bool? merge,
+  }) {
     return _store.record(key).put(database, value, merge: merge);
   }
 
@@ -48,44 +52,47 @@ class SecureStorageProfilesDataSource extends SecureIdentityStorageDataSource {
     required String did,
     required String encryptionKey,
   }) {
-    return getDatabase(did: did, encryptionKey: encryptionKey)
-        .then((database) => database
-            .transaction(
-              (transaction) => storeProfilesTransact(
-                transaction: transaction,
-                profiles: profiles,
-              ),
-            )
-            .whenComplete(() => database.close()));
+    return getDatabase(did: did, encryptionKey: encryptionKey).then(
+      (database) => database
+          .transaction(
+            (transaction) => storeProfilesTransact(
+              transaction: transaction,
+              profiles: profiles,
+            ),
+          )
+          .whenComplete(() => database.close()),
+    );
   }
 
   Future<void> storeProfilesTransact({
     required Transaction transaction,
     required Map<BigInt, String> profiles,
   }) {
-    Map<String, Object> profilesJson =
-        profiles.map((key, value) => MapEntry(key.toString(), value));
-    return _storeRefWrapper.put(
-      transaction,
-      "profiles",
-      profilesJson,
+    Map<String, Object> profilesJson = profiles.map(
+      (key, value) => MapEntry(key.toString(), value),
     );
+    return _storeRefWrapper.put(transaction, "profiles", profilesJson);
   }
 
   Future<Map<BigInt, String>> getProfiles({
     required String did,
     required String encryptionKey,
-  }) {
-    return getDatabase(did: did, encryptionKey: encryptionKey)
-        .then((database) => _storeRefWrapper.find(database).then((snapshots) {
-              if (snapshots.isEmpty) {
-                return {BigInt.zero: did};
-              }
-              Map<String, Object?> snapshot =
-                  snapshots.map((snapshot) => snapshot.value).first;
-              Map<BigInt, String> profiles = snapshot.map(
-                  (key, value) => MapEntry(BigInt.parse(key), value as String));
-              return profiles;
-            }).whenComplete(() => database.close()));
+  }) async {
+    Database? database;
+    try {
+      database = await getDatabase(did: did, encryptionKey: encryptionKey);
+      final snapshots = await _storeRefWrapper.find(database);
+
+      if (snapshots.isEmpty) {
+        return {BigInt.zero: did};
+      }
+      final snapshot = snapshots.map((snapshot) => snapshot.value).first;
+      final profiles = snapshot.map(
+        (k, v) => MapEntry(BigInt.parse(k), v as String),
+      );
+      return profiles;
+    } finally {
+      database?.close();
+    }
   }
 }

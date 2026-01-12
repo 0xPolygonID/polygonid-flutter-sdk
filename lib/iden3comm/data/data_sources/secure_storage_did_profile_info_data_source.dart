@@ -1,19 +1,20 @@
-import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/data/data_sources/secure_identity_storage_data_source.dart';
-import 'package:sembast/sembast.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
+import 'package:sembast/sembast.dart';
 
 @injectable
 class SecureDidProfileInfoStoreRefWrapper {
   final StoreRef<String, Map<String, Object?>> _store;
 
   SecureDidProfileInfoStoreRefWrapper(
-      @Named(didProfileInfoStoreName) this._store);
+    @Named(didProfileInfoStoreName) this._store,
+  );
 
   Future<List<RecordSnapshot<String, Map<String, Object?>>>> find(
-      DatabaseClient databaseClient,
-      {Finder? finder}) {
+    DatabaseClient databaseClient, {
+    Finder? finder,
+  }) {
     return _store.find(databaseClient, finder: finder);
   }
 
@@ -26,8 +27,11 @@ class SecureDidProfileInfoStoreRefWrapper {
   }
 
   Future<Map<String, Object?>> put(
-      DatabaseClient database, String key, Map<String, Object?> value,
-      {bool? merge}) {
+    DatabaseClient database,
+    String key,
+    Map<String, Object?> value, {
+    bool? merge,
+  }) {
     return _store.record(key).put(database, value, merge: merge);
   }
 
@@ -51,90 +55,74 @@ class SecureStorageDidProfileInfoDataSource
     required String interactedDid,
     required String did,
     required String encryptionKey,
-  }) {
-    return getDatabase(did: did, encryptionKey: encryptionKey)
-        .then((database) => database
-            .transaction(
-              (transaction) => storeDidProfileInfoTransact(
-                transaction: transaction,
-                didProfileInfo: didProfileInfo,
-                interactedDid: interactedDid,
-              ),
-            )
-            .whenComplete(() => database.close()));
-  }
-
-  @visibleForTesting
-  Future<void> storeDidProfileInfoTransact({
-    required DatabaseClient transaction,
-    required Map<String, dynamic> didProfileInfo,
-    required String interactedDid,
   }) async {
-    await _storeRefWrapper.put(transaction, interactedDid, didProfileInfo);
+    final database = await getDatabase(did: did, encryptionKey: encryptionKey);
+    try {
+      await database.transaction(
+        (t) => _storeRefWrapper.put(t, interactedDid, didProfileInfo),
+      );
+    } finally {
+      await database.close();
+    }
   }
 
   Future<void> removeDidProfileInfo({
     required String interactedDid,
     required String did,
     required String encryptionKey,
-  }) {
-    return getDatabase(did: did, encryptionKey: encryptionKey).then(
-        (database) =>
-            database.transaction((transaction) => removeDidProfileInfoTransact(
-                  transaction: transaction,
-                  interactedDid: interactedDid,
-                )));
-  }
-
-  @visibleForTesting
-  Future<void> removeDidProfileInfoTransact({
-    required DatabaseClient transaction,
-    required String interactedDid,
   }) async {
-    await _storeRefWrapper.remove(transaction, interactedDid);
+    final database = await getDatabase(did: did, encryptionKey: encryptionKey);
+    try {
+      await database.transaction(
+        (transaction) => _storeRefWrapper.remove(transaction, interactedDid),
+      );
+    } finally {
+      await database.close();
+    }
   }
 
   Future<void> removeAllDidProfileInfo({
     required String did,
     required String encryptionKey,
-  }) {
-    return getDatabase(did: did, encryptionKey: encryptionKey).then(
-      (database) => database.transaction(
-        (transaction) =>
-            removeAllDidProfileInfoTransact(transaction: transaction),
-      ),
-    );
-  }
-
-  @visibleForTesting
-  Future<void> removeAllDidProfileInfoTransact({
-    required DatabaseClient transaction,
   }) async {
-    await _storeRefWrapper.removeAll(transaction);
+    final database = await getDatabase(did: did, encryptionKey: encryptionKey);
+    try {
+      await database.transaction(
+        (transaction) => _storeRefWrapper.removeAll(transaction),
+      );
+    } finally {
+      await database.close();
+    }
   }
 
   Future<Map<String, dynamic>> getDidProfileInfosByInteractedWithDid({
     required String did,
     required String interactedWithDid,
     required String encryptionKey,
-  }) {
-    return getDatabase(did: did, encryptionKey: encryptionKey).then(
-        (database) => _storeRefWrapper
-            .get(database, interactedWithDid)
-            .then((value) => value ?? {}));
-    //.whenComplete(() => database.close()));
+  }) async {
+    final database = await getDatabase(did: did, encryptionKey: encryptionKey);
+    try {
+      final value = await _storeRefWrapper.get(database, interactedWithDid);
+      return value ?? {};
+    } finally {
+      await database.close();
+    }
   }
 
   Future<List<Map<String, dynamic>>> getDidProfileInfos({
     Filter? filter,
     required String did,
     required String encryptionKey,
-  }) {
-    return getDatabase(did: did, encryptionKey: encryptionKey).then(
-        (database) => _storeRefWrapper
-            .find(database, finder: Finder(filter: filter))
-            .then((snapshots) =>
-                snapshots.map((snapshot) => snapshot.value).toList())
-            .whenComplete(() => database.close()));
+  }) async {
+    final database = await getDatabase(did: did, encryptionKey: encryptionKey);
+    try {
+      final snapshots = await _storeRefWrapper.find(
+        database,
+        finder: Finder(filter: filter),
+      );
+      return snapshots.map((snapshot) => snapshot.value).toList();
+    } finally {
+      await database.close();
+    }
   }
 }
