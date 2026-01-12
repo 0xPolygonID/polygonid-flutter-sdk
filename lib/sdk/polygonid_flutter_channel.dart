@@ -1284,4 +1284,10 @@ class PolygonIdFlutterChannel
     // TODO: implement authenticateV2
     throw UnimplementedError();
   }
+
+  @override
+  Future<Map<String, dynamic>> fetchDisplayMethod({required String url}) {
+    // TODO: implement fetchDisplayMethod
+    throw UnimplementedError();
+  }
 }

@@ -12,6 +12,7 @@ import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_did_profil
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_did_profile_info_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_did_profile_info_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/authenticate.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
@@ -66,6 +67,9 @@ abstract class PolygonIdSdkIden3comm {
 
   /// Fetches a schema from a given [schemaUrl].
   Future<Map<String, dynamic>> fetchSchema({required String schemaUrl});
+
+  /// Fetches a schema from a given [schemaUrl].
+  Future<Map<String, dynamic>> fetchDisplayMethod({required String url});
 
   /// Returns a list of [FilterEntity] from an iden3comm message to
   /// apply to [Credential.getCredentials]
@@ -227,7 +231,6 @@ abstract class PolygonIdSdkIden3comm {
     String? pushToken,
     String? challenge,
   });
-
 
   Future<Iden3Message?> authenticateV2({
     required String privateKey,
@@ -443,6 +446,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   final CreatePassportCredentialUseCase _createPassportCredentialUseCase;
   final CreatePassportProofUseCase _createPassportProofUseCase;
   final CoreClaimFromCredentialUseCase _coreClaimFromCredentialUseCase;
+  final RemoteIden3commDataSource _remoteIden3commDataSource;
 
   Iden3comm(
     this._fetchAndSaveClaimsUseCase,
@@ -474,6 +478,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     this._createPassportCredentialUseCase,
     this._createPassportProofUseCase,
     this._coreClaimFromCredentialUseCase,
+    this._remoteIden3commDataSource,
   );
 
   @override
@@ -494,6 +499,12 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   Future<Map<String, dynamic>> fetchSchema({required String schemaUrl}) {
     _stacktraceManager.clearStacktrace();
     return _fetchSchemaUseCase.execute(param: schemaUrl);
+  }
+
+  @override
+  Future<Map<String, dynamic>> fetchDisplayMethod({required String url}) {
+    _stacktraceManager.clearStacktrace();
+    return _remoteIden3commDataSource.fetchDisplayType(url: url);
   }
 
   @override
@@ -906,7 +917,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       _stacktraceManager.addError('[getAuthTokenOnly] Error: ${e.toString()}');
       throw PolygonIdSDKException(
         errorMessage:
-        "Error while getting auth token with error: ${e.toString()}",
+            "Error while getting auth token with error: ${e.toString()}",
       );
     }
   }
