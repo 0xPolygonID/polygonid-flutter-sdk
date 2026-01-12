@@ -1580,6 +1580,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i185.CreatePassportCredentialUseCase>(),
         await getAsync<_i139.CreatePassportProofUseCase>(),
         gh<_i351.CoreClaimFromCredentialUseCase>(),
+        gh<_i409.RemoteIden3commDataSource>(),
       ),
     );
     return this;
