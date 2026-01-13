@@ -394,6 +394,7 @@ class Authenticate {
         proofs: proofs,
         did_doc: didDocument,
       ),
+      createdTime: DateTime.now().millisecondsSinceEpoch ~/ 1000,
     );
 
     String authResponseString = jsonEncode(authResponse.toJson());
