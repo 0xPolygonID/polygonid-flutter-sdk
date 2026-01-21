@@ -97,7 +97,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       thid: request.thid,
       to: request.from,
       from: did,
-      typ: "application/iden3-zkp-json",
+      typ: messageTypeZkp,
       body: AuthorizationMessageResponseBody(
         message: request.body.message,
         proofs: scope,

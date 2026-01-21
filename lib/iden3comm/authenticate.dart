@@ -388,7 +388,7 @@ class Authenticate {
       thid: message.thid,
       to: message.from,
       from: profileDid,
-      typ: "application/iden3-zkp-json",
+      typ: messageTypeZkp,
       body: AuthorizationMessageResponseBody(
         message: (message as AuthorizationRequestMessage).body.message,
         proofs: proofs,
@@ -642,9 +642,9 @@ class Authenticate {
     required EnvEntity env,
   }) async {
     JWZHeader header = JWZHeader(
-      circuitId: "authV2",
+      circuitId: circuitType.id,
       crit: ["circuitId"],
-      typ: "application/iden3-zkp-json",
+      typ: messageTypeZkp,
       alg: "groth16",
     );
 

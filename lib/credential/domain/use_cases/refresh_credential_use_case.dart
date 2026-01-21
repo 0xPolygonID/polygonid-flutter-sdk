@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/jose/jwk.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
@@ -84,7 +85,7 @@ class RefreshCredentialUseCase
     String id = const Uuid().v4();
     final credentialRefreshMessage = CredentialRefreshMessage(
       id: id,
-      typ: "application/iden3comm-plain-json",
+      typ: messageTypePlain,
       thid: id,
       body: CredentialRefreshBodyRequest(param.credential.id, "expired"),
       from: param.credential.did,
