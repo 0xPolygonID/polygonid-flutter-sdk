@@ -689,12 +689,12 @@ class Authenticate {
     final circuitsDataSource = CircuitsFilesDataSource(appDir);
 
     final circuitDatFileBytes = await circuitsDataSource.loadGraphFile(
-      'authV2',
+      circuitType.id,
     );
-    final zkeyFilePath = await circuitsDataSource.getZkeyFilePath('authV2');
+    final zkeyFilePath = await circuitsDataSource.getZkeyFilePath(circuitType.id);
 
     CircuitDataEntity circuitDataEntity = CircuitDataEntity(
-      "authV2",
+      circuitType.id,
       circuitDatFileBytes,
       zkeyFilePath,
     );
