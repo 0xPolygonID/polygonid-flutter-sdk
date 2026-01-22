@@ -18,6 +18,8 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/respo
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_proposal_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_status_update_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/fetch_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/discovery/disclose.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/discovery/query.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/payment_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_request_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_iden3_message_entity.dart';
@@ -103,6 +105,10 @@ class Iden3MessageFactory {
           return ResourcePermissionsListMessage.fromJson(json);
         case Iden3MessageType.permissionsListFetch:
           return ResourcePermissionsListFetchMessage.fromJson(json);
+          case Iden3MessageType.discoveryQueries:
+          return DiscoverFeatureQueriesMessage.fromJson(json);
+          case Iden3MessageType.discoveryDisclose:
+          return DiscoverFeatureDiscloseMessage.fromJson(json);
         case Iden3MessageType.unknown:
           throw UnsupportedIden3MsgTypeException(
             type: type,

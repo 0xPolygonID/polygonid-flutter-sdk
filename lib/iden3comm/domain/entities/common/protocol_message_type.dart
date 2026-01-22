@@ -119,4 +119,13 @@ class ProtocolMessageType {
       '${_iden3Protocol}resource-management/0.1/permissions-list-fetch';
   static const resourcePermissionsListMessageType =
       '${_iden3Protocol}resource-management/0.1/permissions-list';
+
+  ///
+  /// Discovery
+  ///
+
+  static const discoveryQueriesMessageType =
+      '${_didcommProtocol}discover-features/2.0/queries';
+  static const discoveryDiscloseMessageType =
+      '${_didcommProtocol}discover-features/2.0/discose';
 }

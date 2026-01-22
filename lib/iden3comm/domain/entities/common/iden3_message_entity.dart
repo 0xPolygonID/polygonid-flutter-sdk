@@ -16,15 +16,20 @@ enum Iden3MessageType {
   credentialOffer(ProtocolMessageType.credentialOfferMessageType),
   onchainCredentialOffer(ProtocolMessageType.credentialOnchainOfferMessageType),
   credentialIssuanceRequest(
-      ProtocolMessageType.credentialIssuanceRequestMessageType),
+    ProtocolMessageType.credentialIssuanceRequestMessageType,
+  ),
   credentialIssuanceResponse(
-      ProtocolMessageType.credentialIssuanceResponseMessageType),
+    ProtocolMessageType.credentialIssuanceResponseMessageType,
+  ),
   credentialEncryptedIssuanceResponse(
-      ProtocolMessageType.credentialEncryptedIssuanceResponseType),
+    ProtocolMessageType.credentialEncryptedIssuanceResponseType,
+  ),
   proofContractInvokeRequest(
-      ProtocolMessageType.contractInvokeRequestMessageType),
+    ProtocolMessageType.contractInvokeRequestMessageType,
+  ),
   proofContractInvokeResponse(
-      ProtocolMessageType.contractInvokeResponseMessageType),
+    ProtocolMessageType.contractInvokeResponseMessageType,
+  ),
   credentialRefresh(ProtocolMessageType.credentialRefreshMessageType),
   credentialProposalRequest(ProtocolMessageType.proposalRequestMessageType),
   credentialProposal(ProtocolMessageType.proposalMessageType),
@@ -39,15 +44,21 @@ enum Iden3MessageType {
   fetchRequest(ProtocolMessageType.credentialFetchRequestMessageType),
   resourceRequest(ProtocolMessageType.resourcePermissionRequestMessageType),
   resourcePermissionsUpdateRequest(
-      ProtocolMessageType.resourcePermissionsUpdateRequestMessageType),
+    ProtocolMessageType.resourcePermissionsUpdateRequestMessageType,
+  ),
   resourcePermissionsUpdate(
-      ProtocolMessageType.resourcePermissionsUpdateMessageType),
+    ProtocolMessageType.resourcePermissionsUpdateMessageType,
+  ),
   resourceDelivery(ProtocolMessageType.resourceDeliveryMessageType),
   permissionsRequestsList(
-      ProtocolMessageType.resourcePermissionsRequestsListFetchMessageType),
+    ProtocolMessageType.resourcePermissionsRequestsListFetchMessageType,
+  ),
   permissionsList(ProtocolMessageType.resourcePermissionsListMessageType),
   permissionsListFetch(
-      ProtocolMessageType.resourcePermissionsListFetchMessageType),
+    ProtocolMessageType.resourcePermissionsListFetchMessageType,
+  ),
+  discoveryQueries(ProtocolMessageType.discoveryQueriesMessageType),
+  discoveryDisclose(ProtocolMessageType.discoveryDiscloseMessageType),
   unknown("");
 
   final String type;
@@ -92,8 +103,7 @@ abstract class Iden3Message<T> extends Equatable {
   final T body;
 
   /// The sender of the message, usually a DID.
-  // TODO: Make this optional according to protocol.
-  final String from;
+  final String? from;
 
   /// The recipient of the message, usually a DID.
   final String? to;
@@ -130,15 +140,16 @@ abstract class Iden3Message<T> extends Equatable {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'typ': typ,
+      if (typ != null) 'typ': typ,
       'type': type.type,
-      'thid': thid,
+      if (thid != null) 'thid': thid,
       'body': (body as dynamic).toJson(),
-      'from': from,
-      'to': to,
-      'created_time': createdTime,
-      'expires_time': expiresTime,
-      'attachments': attachments.map((e) => e.toJson()).toList(),
+      if (from != null) 'from': from,
+      if (to != null) 'to': to,
+      if (createdTime != null) 'created_time': createdTime,
+      if (expiresTime != null) 'expires_time': expiresTime,
+      if (attachments.isNotEmpty)
+        'attachments': attachments.map((e) => e.toJson()).toList(),
     }..removeWhere((_, value) => value == null);
   }
 
@@ -157,4 +168,31 @@ abstract class Iden3Message<T> extends Equatable {
       attachments,
     ];
   }
+}
+
+class RequiredIden3Message<T> extends Iden3Message<T> {
+  @override
+  final String typ;
+
+  @override
+  final String thid;
+
+  @override
+  final String from;
+
+  @override
+  final String to;
+
+  const RequiredIden3Message({
+    required super.id,
+    required this.typ,
+    required super.type,
+    required this.thid,
+    required super.body,
+    required this.from,
+    required this.to,
+    required super.createdTime,
+    required super.expiresTime,
+    required super.attachments,
+  }) : super(typ: typ, thid: thid, from: from, to: to);
 }

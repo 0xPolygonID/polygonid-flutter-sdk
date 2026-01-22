@@ -386,7 +386,7 @@ class Authenticate {
     final authResponse = AuthorizationResponseMessage(
       id: const Uuid().v4(),
       thid: message.thid,
-      to: message.from,
+      to: message.from!,
       from: profileDid,
       typ: messageTypeZkp,
       body: AuthorizationMessageResponseBody(
@@ -691,7 +691,9 @@ class Authenticate {
     final circuitDatFileBytes = await circuitsDataSource.loadGraphFile(
       circuitType.id,
     );
-    final zkeyFilePath = await circuitsDataSource.getZkeyFilePath(circuitType.id);
+    final zkeyFilePath = await circuitsDataSource.getZkeyFilePath(
+      circuitType.id,
+    );
 
     CircuitDataEntity circuitDataEntity = CircuitDataEntity(
       circuitType.id,
