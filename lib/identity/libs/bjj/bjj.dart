@@ -15,6 +15,7 @@ class BabyjubjubLib extends PolygonIdCore {
       }),
       function:
           PolygonIdCore.nativePolygonIdCoreLib.PLGNBabyJubJubPublicCompress,
+      methodName: 'PLGNBabyJubJubPublicCompress',
       parse: (jsonString) {
         final json = jsonDecode(jsonString);
         return json["public_key"] as String;
@@ -29,6 +30,7 @@ class BabyjubjubLib extends PolygonIdCore {
       }),
       function:
           PolygonIdCore.nativePolygonIdCoreLib.PLGNBabyJubJubPublicUncompress,
+      methodName: 'PLGNBabyJubJubPublicUncompress',
       parse: (jsonString) {
         final json = jsonDecode(jsonString);
         return [
@@ -46,6 +48,7 @@ class BabyjubjubLib extends PolygonIdCore {
         "msg_int": msg,
       }),
       function: PolygonIdCore.nativePolygonIdCoreLib.PLGNBabyJubJubSignPoseidon,
+      methodName: 'PLGNBabyJubJubSignPoseidon',
       parse: (jsonString) {
         final json = jsonDecode(jsonString);
         return json["signature"];
@@ -66,6 +69,7 @@ class BabyjubjubLib extends PolygonIdCore {
       }),
       function:
           PolygonIdCore.nativePolygonIdCoreLib.PLGNBabyJubJubVerifyPoseidon,
+      methodName: 'PLGNBabyJubJubVerifyPoseidon',
       parse: (jsonString) {
         final json = jsonDecode(jsonString);
         return json["valid"] as bool;
@@ -80,6 +84,7 @@ class BabyjubjubLib extends PolygonIdCore {
       }),
       function:
           PolygonIdCore.nativePolygonIdCoreLib.PLGNBabyJubJubPrivate2Public,
+      methodName: 'PLGNBabyJubJubPrivate2Public',
       parse: (jsonString) {
         final json = jsonDecode(jsonString);
         return json["public_key"] as String;

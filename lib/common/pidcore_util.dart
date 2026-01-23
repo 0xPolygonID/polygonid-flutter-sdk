@@ -11,6 +11,7 @@ class PolygonIdCoreUtil extends PolygonIdCore {
       input: () => input,
       function:
           PolygonIdCore.nativePolygonIdCoreLib.PLGNValidateAttestationDocument,
+      methodName: 'PLGNValidateAttestationDocument',
       parse: (result) => result,
     );
   }
@@ -19,6 +20,7 @@ class PolygonIdCoreUtil extends PolygonIdCore {
     return callGenericCoreFunction(
       input: () => input,
       function: PolygonIdCore.nativePolygonIdCoreLib.PLGNAAnonPack,
+      methodName: 'PLGNAAnonPack',
       parse: (result) {
         return result;
       },
@@ -29,6 +31,7 @@ class PolygonIdCoreUtil extends PolygonIdCore {
     return callGenericCoreFunction(
       input: () => input,
       function: PolygonIdCore.nativePolygonIdCoreLib.PLGNAAnonUnpack,
+      methodName: 'PLGNAAnonUnpack',
       parse: (result) {
         return result;
       },
@@ -39,6 +42,7 @@ class PolygonIdCoreUtil extends PolygonIdCore {
     return callGenericCoreFunction(
       input: () => input,
       function: PolygonIdCore.nativePolygonIdCoreLib.PLGNDecryptJWE,
+      methodName: 'PLGNDecryptJWE',
       parse: (result) {
         return result;
       },
@@ -50,6 +54,7 @@ class PolygonIdCoreUtil extends PolygonIdCore {
       input: () => input,
       function:
           PolygonIdCore.nativePolygonIdCoreLib.PLGNDecryptEncryptedCredential,
+      methodName: 'PLGNDecryptEncryptedCredential',
       parse: (result) {
         return result;
       },
@@ -60,6 +65,7 @@ class PolygonIdCoreUtil extends PolygonIdCore {
     return callGenericCoreFunction(
       input: () => input,
       function: PolygonIdCore.nativePolygonIdCoreLib.PLGNVerifyProof,
+      methodName: 'PLGNVerifyProof',
       parse: (result) {
         return jsonDecode(result)['valid'] as bool? ?? false;
       },
@@ -74,6 +80,7 @@ class PolygonIdCoreUtil extends PolygonIdCore {
       () => callGenericCoreFunction(
         input: () => input,
         function: PolygonIdCore.nativePolygonIdCoreLib.PLGNVerifyAuthResponse,
+        methodName: 'PLGNVerifyAuthResponse',
         config: config,
         parse: (res) => res,
       ),
@@ -84,6 +91,7 @@ class PolygonIdCoreUtil extends PolygonIdCore {
     return callGenericCoreFunction(
       input: () => input,
       function: PolygonIdCore.nativePolygonIdCoreLib.PLGNVerifyAnonAadhaarQR,
+      methodName: 'PLGNVerifyAnonAadhaarQR',
       parse: (result) {
         return jsonDecode(result)['isValid'] as bool? ?? false;
       },

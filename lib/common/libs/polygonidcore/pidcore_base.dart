@@ -62,6 +62,7 @@ class PolygonIdCore {
     required String Function() input,
     String? config,
     required GenericPolygonIdFunction function,
+    required String methodName,
     void Function(PLGNStatusCode)? statusCodeHandler,
     required T Function(String) parse,
   }) {
@@ -91,7 +92,7 @@ class PolygonIdCore {
       // _trackError(consumedStatus, "callCoreFunction");
       throw CoreLibraryException(
         coreLibraryName: "libpolygonid",
-        methodName: "callCoreFunction",
+        methodName: "callCoreFunction.$methodName",
         errorMessage: consumedStatus.message,
         statusCode: consumedStatus.statusCode,
       );
