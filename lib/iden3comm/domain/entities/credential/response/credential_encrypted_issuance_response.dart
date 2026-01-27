@@ -67,6 +67,16 @@ class CredentialEncryptedIssuanceResponseBody with EquatableMixin {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'context': context,
+      'type': type,
+      'data': data.toJson(),
+      'proof': proof,
+    };
+  }
+
   @override
   List<Object?> get props => [id, context, type, data, proof];
 }
