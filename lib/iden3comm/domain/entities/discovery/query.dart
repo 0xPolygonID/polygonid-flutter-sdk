@@ -56,14 +56,18 @@ class DiscoverFeatureQueriesMessageBody {
 
 class DiscoverFeatureQuery {
   final String featureType;
+  final String? match;
 
-  DiscoverFeatureQuery({required this.featureType});
+  const DiscoverFeatureQuery({required this.featureType, this.match});
 
   factory DiscoverFeatureQuery.fromJson(Map<String, dynamic> json) {
-    return DiscoverFeatureQuery(featureType: json['feature-type']);
+    return DiscoverFeatureQuery(
+      featureType: json['feature-type'],
+      match: json['match'],
+    );
   }
 
   Map<String, dynamic> toJson() {
-    return {'feature-type': featureType};
+    return {'feature-type': featureType, if (match != null) 'match': match};
   }
 }

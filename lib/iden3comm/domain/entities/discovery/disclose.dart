@@ -1,18 +1,24 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/attachment.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:uuid/uuid.dart';
 
 class DiscoverFeatureDiscloseMessage extends Iden3Message {
   DiscoverFeatureDiscloseMessage({
-    required super.id,
+    String? id,
     super.typ,
-    required super.thid,
+    String? thid,
     required super.body,
     super.from,
     super.to,
     super.createdTime,
     super.expiresTime,
-    required super.attachments,
-  }) : super(type: Iden3MessageType.discoveryDisclose);
+    List<Attachment>? attachments,
+  }) : super(
+         type: Iden3MessageType.discoveryDisclose,
+         id: id ?? const Uuid().v4(),
+         thid: thid ?? const Uuid().v4(),
+         attachments: attachments ?? [],
+       );
 
   factory DiscoverFeatureDiscloseMessage.fromJson(Map<String, dynamic> json) {
     return DiscoverFeatureDiscloseMessage(
@@ -34,7 +40,7 @@ class DiscoverFeatureDiscloseMessage extends Iden3Message {
 }
 
 class DiscoverFeatureDiscloseMessageBody {
-  final List<DiscoverFeatureDisclose> disclosures;
+  final List<DiscoverFeatureDisclosure> disclosures;
 
   DiscoverFeatureDiscloseMessageBody({required this.disclosures});
 
@@ -43,7 +49,7 @@ class DiscoverFeatureDiscloseMessageBody {
   ) {
     return DiscoverFeatureDiscloseMessageBody(
       disclosures: (json['disclosures'] as List<dynamic>)
-          .map((e) => DiscoverFeatureDisclose.fromJson(e))
+          .map((e) => DiscoverFeatureDisclosure.fromJson(e))
           .toList(),
     );
   }
@@ -53,13 +59,13 @@ class DiscoverFeatureDiscloseMessageBody {
   }
 }
 
-class DiscoverFeatureDisclose {
+class DiscoverFeatureDisclosure {
   final String featureType;
   final String id;
 
-  DiscoverFeatureDisclose({required this.featureType, required this.id});
+  DiscoverFeatureDisclosure({required this.featureType, required this.id});
 
-  DiscoverFeatureDisclose.fromJson(Map<String, dynamic> json)
+  DiscoverFeatureDisclosure.fromJson(Map<String, dynamic> json)
     : featureType = json['feature_type'],
       id = json['id'];
 

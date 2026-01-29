@@ -9,6 +9,33 @@ const String messageTypeZkp = "application/iden3-zkp-json";
 const String messageTypeEnc = "application/iden3comm-encrypted-json";
 const String messageTypeSigned = "application/iden3comm-signed-json";
 
+enum MediaType {
+  plainMessage(messageTypePlain),
+  zkpMessage(messageTypeZkp),
+  encryptedMessage(messageTypeEnc),
+  signedMessage(messageTypeSigned);
+
+  final String value;
+
+  const MediaType(this.value);
+
+  factory MediaType.fromType(String type) {
+    return MediaType.values.firstWhere(
+      (element) => element.value == type,
+      orElse: () => throw Exception("Unknown media type: $type"),
+    );
+  }
+
+  static MediaType fromJson(String json) {
+    return MediaType.fromType(json);
+  }
+
+  String toJson() => value;
+
+  @override
+  String toString() => value;
+}
+
 enum Iden3MessageType {
   /// Authorization
   authRequest(ProtocolMessageType.authorizationRequestMessageType),

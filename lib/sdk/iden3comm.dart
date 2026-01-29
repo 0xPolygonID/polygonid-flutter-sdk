@@ -5,6 +5,8 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/common/package_manager/package_manager_impl.dart';
+import 'package:polygonid_flutter_sdk/common/package_manager/plain_packer.dart';
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/add_did_profile_info_use_case.dart';
@@ -13,11 +15,14 @@ import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_did_profil
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_did_profile_info_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/authenticate.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/discovery_protocol.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/discovery/disclose.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/discovery/query.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/self_issuance/self_issued_credential_params.dart';
@@ -437,6 +442,11 @@ abstract class PolygonIdSdkIden3comm {
     required String linkNonce,
     required String circuitId,
     Map<String, dynamic>? additionalFields,
+  });
+
+  Future<DiscoverFeatureDiscloseMessage> handleDiscoveryMessage({
+    required DiscoverFeatureQueriesMessage message,
+    DiscoveryProtocolHandlerOptions? opts,
   });
 }
 
@@ -1081,5 +1091,20 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         revNonce: revNonce,
       ),
     );
+  }
+
+  @override
+  Future<DiscoverFeatureDiscloseMessage> handleDiscoveryMessage({
+    required DiscoverFeatureQueriesMessage message,
+    DiscoveryProtocolHandlerOptions? opts,
+  }) {
+    final packageManager = PackageManager();
+    packageManager.packers[MediaType.plainMessage] = PlainPacker();
+
+    IDiscoveryProtocolHandler handler = DiscoveryProtocolHandler(
+      DiscoveryProtocolOptions(packageManager: packageManager),
+    );
+
+    return handler.handleDiscoveryQuery(message, opts);
   }
 }
