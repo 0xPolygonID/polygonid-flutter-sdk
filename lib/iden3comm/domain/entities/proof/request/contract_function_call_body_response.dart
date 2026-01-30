@@ -38,12 +38,13 @@
 */
 
 import 'package:flutter/foundation.dart';
+import 'package:polygonid_flutter_sdk/common/json.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_function_call_body_tx_data_request.dart';
 
 typedef ContractFunctionCallResponseBody = ContractInvokeResponseBody;
 
-class ContractInvokeResponseBody {
+class ContractInvokeResponseBody implements JsonEncodable {
   final ContractInvokeTransactionData transactionData;
   final List<ProofScopeResponse> scope;
   final Map<String, dynamic>? didDoc;
@@ -72,10 +73,10 @@ class ContractInvokeResponseBody {
   }
 
   Map<String, dynamic> toJson() => {
-        'transaction_data': transactionData.toJson(),
-        'scope': scope.map((item) => item.toJson()).toList(),
-        'did_doc': didDoc,
-      };
+    'transaction_data': transactionData.toJson(),
+    'scope': scope.map((item) => item.toJson()).toList(),
+    'did_doc': didDoc,
+  };
 
   @override
   String toString() =>

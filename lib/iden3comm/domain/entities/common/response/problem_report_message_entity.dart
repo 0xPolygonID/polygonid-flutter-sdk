@@ -110,7 +110,7 @@ class ProblemReportMessage extends Iden3Message<ProblemReportBody> {
   int get hashCode => runtimeType.hashCode;
 }
 
-class ProblemReportBody {
+class ProblemReportBody implements JsonEncodable {
   // (optional) List of arguments matching the placeholders in comment field
   final List<String>? args;
 

@@ -44,7 +44,7 @@ class ResourcePermissionsUpdateMessage
       "[ResourcePermissionsUpdateMessage] {${super.toString()}}";
 }
 
-class ResourcePermissionsUpdateBody extends Equatable {
+class ResourcePermissionsUpdateBody extends Equatable implements JsonEncodable {
   final String id;
   final List<String> grant;
   final List<String> reject;

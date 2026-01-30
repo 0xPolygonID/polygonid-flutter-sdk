@@ -11,9 +11,9 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart'
 class GetJWZParam {
   final String message;
   final ZKProofEntity? proof;
-  final CircuitType circuitType;
+  final CircuitId circuitId;
 
-  GetJWZParam({required this.message, this.proof, required this.circuitType});
+  GetJWZParam({required this.message, this.proof, required this.circuitId});
 }
 
 class GetJWZUseCase extends FutureUseCase<GetJWZParam, String> {
@@ -26,7 +26,7 @@ class GetJWZUseCase extends FutureUseCase<GetJWZParam, String> {
   Future<String> execute({required GetJWZParam param}) async {
     try {
       JWZHeader header = JWZHeader(
-        circuitId: param.circuitType.id,
+        circuitId: param.circuitId.id,
         crit: ["circuitId"],
         typ: messageTypeZkp,
         alg: "groth16",

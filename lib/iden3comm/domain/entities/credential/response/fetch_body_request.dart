@@ -1,21 +1,19 @@
+import 'package:polygonid_flutter_sdk/common/json.dart';
+
 @Deprecated('Use CredentialFetchRequestBody instead')
 typedef FetchBodyRequest = CredentialFetchRequestBody;
 
-class CredentialFetchRequestBody {
+class CredentialFetchRequestBody implements JsonEncodable {
   final String id;
 
   CredentialFetchRequestBody({required this.id});
 
   factory CredentialFetchRequestBody.fromJson(Map<String, dynamic> json) {
-    return CredentialFetchRequestBody(
-      id: json['id'],
-    );
+    return CredentialFetchRequestBody(id: json['id']);
   }
 
   @override
-  Map<String, dynamic> toJson() => {
-        'id': id,
-      };
+  Map<String, dynamic> toJson() => {'id': id};
 
   @override
   String toString() => "[CredentialFetchRequestBody] {id: $id}";

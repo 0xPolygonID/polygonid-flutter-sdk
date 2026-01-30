@@ -60,7 +60,7 @@ class CredentialStatusUpdateMessage
   int get hashCode => runtimeType.hashCode;
 }
 
-class CredentialStatusUpdateBody {
+class CredentialStatusUpdateBody implements JsonEncodable {
   final String id;
   final String reason;
 

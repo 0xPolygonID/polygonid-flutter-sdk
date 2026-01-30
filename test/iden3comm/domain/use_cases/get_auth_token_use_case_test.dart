@@ -22,7 +22,7 @@ final param = GetAuthTokenParam(
   profileNonce: CommonMocks.genesisNonce,
   privateKey: CommonMocks.privateKey,
   message: CommonMocks.message,
-  circuitType: const AuthV2Circuit(),
+  circuitId: const AuthV2Circuit(),
 );
 const result = "token";
 var exception = Exception();

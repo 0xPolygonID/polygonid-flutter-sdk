@@ -70,7 +70,7 @@ class ProposalMessage extends Iden3Message<ProposalMessageBody> {
   }
 }
 
-class ProposalMessageBody {
+class ProposalMessageBody implements JsonEncodable {
   final List<Proposal> proposals;
 
   ProposalMessageBody({required this.proposals});

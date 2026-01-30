@@ -94,7 +94,7 @@ class ProposalRequestMessage extends Iden3Message<ProposalRequestMessageBody> {
 @Deprecated('Use ProposalRequestMessageBody instead')
 typedef CredentialProposalBodyRequest = ProposalRequestMessageBody;
 
-class ProposalRequestMessageBody {
+class ProposalRequestMessageBody implements JsonEncodable {
   final List<ProposalRequestCredential> credentials;
   final DIDDocument? didDoc;
   MetadataObject? metadata;

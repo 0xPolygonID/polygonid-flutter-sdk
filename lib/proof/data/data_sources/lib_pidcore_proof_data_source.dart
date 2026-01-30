@@ -83,7 +83,7 @@ class LibPolygonIdCoreProofDataSource {
     required String challenge,
     required String signature,
     Map<String, dynamic>? config,
-    required CircuitType circuitType,
+    required CircuitId circuitId,
   }) async {
     final input = AuthAtomicQueryInputsParam(
       genesisDid: genesisDid,
@@ -95,7 +95,7 @@ class LibPolygonIdCoreProofDataSource {
       gistProof: gistProof,
       signature: signature,
       challenge: challenge,
-      circuitId: circuitType.id,
+      circuitId: circuitId.id,
     );
 
     EnvConfigEntity? configParam;

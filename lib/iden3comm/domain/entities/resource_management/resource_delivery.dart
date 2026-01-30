@@ -42,7 +42,7 @@ class ResourceDeliveryMessage extends Iden3Message<ResourceDeliveryBody> {
   String toString() => "[ResourceDeliveryMessage] {${super.toString()}}";
 }
 
-class ResourceDeliveryBody extends Equatable {
+class ResourceDeliveryBody extends Equatable implements JsonEncodable {
   final String id;
   final String? attachmentId;
   final String status;

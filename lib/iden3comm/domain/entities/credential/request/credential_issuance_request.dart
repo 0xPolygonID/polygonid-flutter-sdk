@@ -48,7 +48,7 @@ class CredentialIssuanceRequestMessage
   int get hashCode => runtimeType.hashCode;
 }
 
-class CredentialIssuanceRequestMessageBody {
+class CredentialIssuanceRequestMessageBody implements JsonEncodable {
   final Schema schema;
   final Map<String, dynamic> data;
   final int expiration;

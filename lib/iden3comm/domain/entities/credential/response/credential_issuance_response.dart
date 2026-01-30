@@ -2,14 +2,15 @@ import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:uuid/uuid.dart';
 
-class CredentialIssuanceMessage extends Iden3Message<IssuanceMessageBody> {
+class CredentialIssuanceMessage
+    extends RequiredIden3Message<IssuanceMessageBody> {
   CredentialIssuanceMessage({
     String? id,
     required super.typ,
     String? thid,
     required super.body,
     required super.from,
-    super.to,
+    required super.to,
     super.createdTime,
     super.expiresTime,
     super.attachments = const [],
@@ -47,7 +48,7 @@ class CredentialIssuanceMessage extends Iden3Message<IssuanceMessageBody> {
   int get hashCode => runtimeType.hashCode;
 }
 
-class IssuanceMessageBody {
+class IssuanceMessageBody implements JsonEncodable {
   final W3CCredential credential;
 
   IssuanceMessageBody({required this.credential});

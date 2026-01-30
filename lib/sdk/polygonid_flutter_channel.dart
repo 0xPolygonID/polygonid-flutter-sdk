@@ -9,12 +9,15 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/discovery_protocol.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/discovery/disclose.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/discovery/query.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/self_issuance/self_issued_credential_params.dart';
@@ -1269,12 +1272,12 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<Iden3Message<dynamic>?> authenticateV2({
+  Future<Iden3Message?> authenticateV2({
     required String privateKey,
     required String genesisDid,
     required BigInt profileNonce,
     required IdentityEntity identityEntity,
-    required Iden3Message<dynamic> message,
+    required Iden3Message message,
     required EnvEntity env,
     DIDDocument? didDocument,
     String? pushToken,
@@ -1316,6 +1319,15 @@ class PolygonIdFlutterChannel
     required String iden3message,
   }) {
     // TODO: implement getAuthToken
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<DiscoverFeatureDiscloseMessage> handleDiscoveryMessage({
+    required DiscoverFeatureQueriesMessage message,
+    DiscoveryProtocolHandlerOptions? opts,
+  }) {
+    // TODO: implement handleDiscoveryMessage
     throw UnimplementedError();
   }
 }

@@ -49,7 +49,7 @@ class PaymentMessage extends Iden3Message<PaymentBody> {
 }
 
 /// Payment Body
-class PaymentBody {
+class PaymentBody implements JsonEncodable {
   final List<Payment> payments;
 
   PaymentBody({required this.payments});

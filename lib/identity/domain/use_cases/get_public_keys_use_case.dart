@@ -16,7 +16,7 @@ class GetPublicKeyUseCase extends FutureUseCase<String, List<String>> {
   Future<List<String>> execute({required String param}) {
     return Future(() async {
       final publicKeys =
-          await _identityRepository.getPublicKeys(bjjPrivateKey: param);
+          _identityRepository.getPublicKeys(bjjPrivateKey: param);
 
       logger()
           .i("[GetPublicKeysUseCase] Message $param publicKeys: $publicKeys");

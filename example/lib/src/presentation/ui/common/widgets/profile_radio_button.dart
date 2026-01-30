@@ -18,24 +18,31 @@ class ProfileRadio extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        _makeRadioListTile(
-            CustomStrings.authPublicProfile, SelectedProfile.public),
-        _makeRadioListTile(
-            CustomStrings.authPrivateProfile, SelectedProfile.private),
-      ],
+    return RadioGroup(
+      groupValue: _profile,
+      onChanged: (SelectedProfile? value) {
+        _profileCallback(value!);
+      },
+      child: Column(
+        children: <Widget>[
+          _makeRadioListTile(
+            CustomStrings.authPublicProfile,
+            SelectedProfile.public,
+          ),
+          _makeRadioListTile(
+            CustomStrings.authPrivateProfile,
+            SelectedProfile.private,
+          ),
+        ],
+      ),
     );
   }
 
   Widget _makeRadioListTile(String text, SelectedProfile value) {
     return RadioListTile(
-        title: Text(text),
-        value: value,
-        groupValue: _profile,
-        activeColor: CustomColors.primaryButton,
-        onChanged: (SelectedProfile? value) {
-          _profileCallback(value!);
-        });
+      title: Text(text),
+      value: value,
+      activeColor: CustomColors.primaryButton,
+    );
   }
 }

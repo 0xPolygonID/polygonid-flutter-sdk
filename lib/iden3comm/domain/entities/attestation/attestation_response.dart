@@ -55,7 +55,7 @@ class AttestationResponseMessage extends Iden3Message<AttestationResponseBody> {
   int get hashCode => runtimeType.hashCode;
 }
 
-class AttestationResponseBody {
+class AttestationResponseBody implements JsonEncodable {
   final String type;
   final dynamic payload;
 

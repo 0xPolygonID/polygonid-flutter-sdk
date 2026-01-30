@@ -21,7 +21,7 @@ abstract class BaseCredentialOfferMessage<T extends CredentialOfferBody>
   });
 }
 
-abstract class CredentialOfferBody {
+abstract class CredentialOfferBody  implements JsonEncodable {
   final List<CredentialOffer> credentials;
 
   CredentialOfferBody({required this.credentials});

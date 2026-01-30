@@ -29,9 +29,7 @@ class VerificationResponseMessage
   ///
   /// @param [Map<String, dynamic>] json
   /// @returns [VerificationResponseMessage]
-  factory VerificationResponseMessage.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory VerificationResponseMessage.fromJson(Map<String, dynamic> json) {
     final body = VerificationResponseBody.fromJson(json['body']);
     return VerificationResponseMessage(
       id: json['id'],
@@ -54,14 +52,11 @@ class VerificationResponseMessage
   int get hashCode => runtimeType.hashCode;
 }
 
-class VerificationResponseBody {
+class VerificationResponseBody implements JsonEncodable {
   final String status;
   final String? txHash;
 
-  VerificationResponseBody({
-    required this.status,
-    this.txHash,
-  });
+  VerificationResponseBody({required this.status, this.txHash});
 
   /// Creates an instance from the given json
   ///
@@ -74,10 +69,7 @@ class VerificationResponseBody {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        'status': status,
-        'txHash': txHash,
-      };
+  Map<String, dynamic> toJson() => {'status': status, 'txHash': txHash};
 
   @override
   String toString() =>

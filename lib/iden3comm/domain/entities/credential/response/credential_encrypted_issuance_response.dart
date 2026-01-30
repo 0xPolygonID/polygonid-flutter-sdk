@@ -4,7 +4,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_mes
 import 'package:polygonid_flutter_sdk/jose/jwe.dart';
 
 class CredentialEncryptedIssuanceResponse
-    extends Iden3Message<CredentialEncryptedIssuanceResponseBody> {
+    extends RequiredIden3Message<CredentialEncryptedIssuanceResponseBody> {
   CredentialEncryptedIssuanceResponse({
     required super.id,
     required super.typ,
@@ -38,7 +38,9 @@ class CredentialEncryptedIssuanceResponse
   }
 }
 
-class CredentialEncryptedIssuanceResponseBody with EquatableMixin {
+class CredentialEncryptedIssuanceResponseBody
+    with EquatableMixin
+    implements JsonEncodable {
   final String id;
   final String context;
   final String type;

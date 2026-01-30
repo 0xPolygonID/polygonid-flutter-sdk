@@ -19,8 +19,9 @@ class CredentialRefreshMessage
   }) : super(type: Iden3MessageType.credentialRefresh);
 
   factory CredentialRefreshMessage.fromJson(Map<String, dynamic> json) {
-    CredentialRefreshBodyRequest body =
-        CredentialRefreshBodyRequest.fromJson(json['body']);
+    CredentialRefreshBodyRequest body = CredentialRefreshBodyRequest.fromJson(
+      json['body'],
+    );
 
     return CredentialRefreshMessage(
       id: json['id'],
@@ -43,24 +44,18 @@ class CredentialRefreshMessage
   int get hashCode => runtimeType.hashCode;
 }
 
-class CredentialRefreshBodyRequest {
+class CredentialRefreshBodyRequest implements JsonEncodable {
   final String id;
   final String reason;
 
   CredentialRefreshBodyRequest(this.id, this.reason);
 
   factory CredentialRefreshBodyRequest.fromJson(Map<String, dynamic> json) {
-    return CredentialRefreshBodyRequest(
-      json['id'],
-      json['reason'],
-    );
+    return CredentialRefreshBodyRequest(json['id'], json['reason']);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'reason': reason,
-    };
+    return {'id': id, 'reason': reason};
   }
 
   @override

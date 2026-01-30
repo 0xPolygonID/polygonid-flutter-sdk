@@ -1,5 +1,5 @@
+// ignore_for_file: constant_identifier_names, dangling_library_doc_comments
 /// [JSON Web Algorithms](https://tools.ietf.org/html/rfc7518)
-// ignore_for_file: constant_identifier_names
 
 import 'package:crypto_keys_plus/crypto_keys.dart';
 import 'package:meta/meta.dart';

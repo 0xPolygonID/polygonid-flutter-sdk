@@ -28,7 +28,7 @@ GetJWZUseCase useCase = GetJWZUseCase(
 GetJWZParam param = GetJWZParam(
   message: CommonMocks.message,
   proof: ProofMocks.zkProof,
-  circuitType: AuthV2Circuit(),
+  circuitId: AuthV2Circuit(),
 );
 
 @GenerateMocks([

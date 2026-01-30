@@ -1,6 +1,6 @@
 // Base sealed class for circuit types
-sealed class CircuitType {
-  const CircuitType();
+sealed class CircuitId {
+  const CircuitId();
 
   String get id;
 
@@ -26,7 +26,7 @@ sealed class CircuitType {
 
   @override
   bool operator ==(Object other) {
-    return other is CircuitType && other.id == id;
+    return other is CircuitId && other.id == id;
   }
 
   @override
@@ -37,7 +37,7 @@ sealed class CircuitType {
 }
 
 // Predefined circuit types
-class AuthV2Circuit extends CircuitType {
+class AuthV2Circuit extends CircuitId {
   const AuthV2Circuit();
 
   @override
@@ -47,7 +47,7 @@ class AuthV2Circuit extends CircuitType {
   bool isAnyProofTypeSupported(List<String> proofTypes) => false;
 }
 
-class AuthV3Circuit extends CircuitType {
+class AuthV3Circuit extends CircuitId {
   const AuthV3Circuit();
 
   @override
@@ -57,7 +57,7 @@ class AuthV3Circuit extends CircuitType {
   bool isAnyProofTypeSupported(List<String> proofTypes) => false;
 }
 
-class AuthV3_8_32_Circuit extends CircuitType {
+class AuthV3_8_32_Circuit extends CircuitId {
   const AuthV3_8_32_Circuit();
 
   @override
@@ -67,7 +67,7 @@ class AuthV3_8_32_Circuit extends CircuitType {
   bool isAnyProofTypeSupported(List<String> proofTypes) => false;
 }
 
-class MtpCircuit extends CircuitType {
+class MtpCircuit extends CircuitId {
   const MtpCircuit();
 
   @override
@@ -88,7 +88,7 @@ class MtpCircuit extends CircuitType {
   }
 }
 
-class SigCircuit extends CircuitType {
+class SigCircuit extends CircuitId {
   const SigCircuit();
 
   @override
@@ -100,7 +100,7 @@ class SigCircuit extends CircuitType {
   }
 }
 
-class MtpOnChainCircuit extends CircuitType {
+class MtpOnChainCircuit extends CircuitId {
   const MtpOnChainCircuit();
 
   @override
@@ -118,7 +118,7 @@ class MtpOnChainCircuit extends CircuitType {
   }
 }
 
-class SigOnChainCircuit extends CircuitType {
+class SigOnChainCircuit extends CircuitId {
   const SigOnChainCircuit();
 
   @override
@@ -133,12 +133,12 @@ class SigOnChainCircuit extends CircuitType {
   }
 }
 
-class CircuitsV3Circuit extends CircuitType {
+class CircuitsV3Circuit extends CircuitId {
   const CircuitsV3Circuit();
 
   @override
   String get id =>
-      "credentialAtomicQueryV3${CircuitType.currentCircuitBetaPostfix}";
+      "credentialAtomicQueryV3${CircuitId.currentCircuitBetaPostfix}";
 
   @override
   bool isAnyProofTypeSupported(List<String> proofTypes) {
@@ -150,12 +150,12 @@ class CircuitsV3Circuit extends CircuitType {
   }
 }
 
-class CircuitsV3OnChainCircuit extends CircuitType {
+class CircuitsV3OnChainCircuit extends CircuitId {
   const CircuitsV3OnChainCircuit();
 
   @override
   String get id =>
-      "credentialAtomicQueryV3OnChain${CircuitType.currentCircuitBetaPostfix}";
+      "credentialAtomicQueryV3OnChain${CircuitId.currentCircuitBetaPostfix}";
 
   @override
   bool get isOnChain => true;
@@ -170,11 +170,11 @@ class CircuitsV3OnChainCircuit extends CircuitType {
   }
 }
 
-class LinkedMultiQueryCircuit extends CircuitType {
+class LinkedMultiQueryCircuit extends CircuitId {
   const LinkedMultiQueryCircuit();
 
   @override
-  String get id => "linkedMultiQuery10${CircuitType.currentCircuitBetaPostfix}";
+  String get id => "linkedMultiQuery10${CircuitId.currentCircuitBetaPostfix}";
 
   @override
   String get displayName => "Linked Multi Query 10 (Beta)";
@@ -193,7 +193,7 @@ class LinkedMultiQueryCircuit extends CircuitType {
 }
 
 // Custom circuit type for user-defined circuits
-class CustomCircuit extends CircuitType {
+class CustomCircuit extends CircuitId {
   final String _id;
   final List<ProofType> _supportedProofTypes;
   final bool _isOnchain;
@@ -204,8 +204,8 @@ class CustomCircuit extends CircuitType {
     String? category,
     List<ProofType> supportedProofTypes = const [],
     bool supportsOnChain = false,
-  })  : _supportedProofTypes = supportedProofTypes,
-        _isOnchain = supportsOnChain;
+  }) : _supportedProofTypes = supportedProofTypes,
+       _isOnchain = supportsOnChain;
 
   @override
   String get id => _id;
@@ -253,7 +253,7 @@ enum ProofType {
 }
 
 // Utility class for creating and managing circuit types
-class CircuitTypes {
+class CircuitIds {
   // Predefined circuit type instances
   static const auth = AuthV2Circuit();
   static const mtp = MtpCircuit();
@@ -265,7 +265,7 @@ class CircuitTypes {
   static const linkedMultiQuery = LinkedMultiQueryCircuit();
 
   // List of all predefined types
-  static const List<CircuitType> predefined = [
+  static const List<CircuitId> predefined = [
     auth,
     mtp,
     sig,
@@ -277,7 +277,7 @@ class CircuitTypes {
   ];
 
   // Factory method to create circuit type from ID (replaces fromString)
-  static CircuitType fromId(String id) {
+  static CircuitId fromId(String id) {
     for (final type in predefined) {
       if (type.id == id) {
         return type;
@@ -288,7 +288,7 @@ class CircuitTypes {
   }
 
   // Legacy method for backward compatibility
-  static CircuitType fromString(String value) => fromId(value);
+  static CircuitId fromString(String value) => fromId(value);
 
   // Create custom circuit type with enhanced configuration
   static CustomCircuit custom(

@@ -38,7 +38,7 @@ GetAuthInputsParam param = GetAuthInputsParam(
   profileNonce: CommonMocks.nonce,
   privateKey: CommonMocks.privateKey,
   encryptionKey: CommonMocks.privateKey,
-  circuitType: AuthV2Circuit(),
+  circuitId: AuthV2Circuit(),
 );
 var claims = [CommonMocks.authClaim, CommonMocks.authClaim];
 var getAuthInputsException = GetAuthInputsException(errorMessage: "error");
@@ -89,7 +89,7 @@ void main() {
         nonRevProof: anyNamed('nonRevProof'),
         gistProof: anyNamed('gistProof'),
         treeState: anyNamed('treeState'),
-        circuitType: anyNamed('circuitType'),
+        circuitId: anyNamed('circuitType'),
         config: anyNamed('config'),
       ),
     ).thenAnswer(
@@ -144,7 +144,7 @@ void main() {
           nonRevProof: captureAnyNamed('nonRevProof'),
           gistProof: captureAnyNamed('gistProof'),
           treeState: captureAnyNamed('treeState'),
-          circuitType: anyNamed('circuitType'),
+          circuitId: anyNamed('circuitType'),
           config: captureAnyNamed('config'),
         ),
       ).captured;
@@ -193,7 +193,7 @@ void main() {
           incProof: captureAnyNamed('incProof'),
           nonRevProof: captureAnyNamed('nonRevProof'),
           gistProof: captureAnyNamed('gistProof'),
-          circuitType: anyNamed('circuitType'),
+          circuitId: anyNamed('circuitType'),
           treeState: captureAnyNamed('treeState')));
     },
   );

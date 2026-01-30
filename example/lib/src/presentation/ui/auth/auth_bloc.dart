@@ -108,7 +108,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final BigInt nonce = selectedProfile == SelectedProfile.public
           ? GENESIS_PROFILE_NONCE
           : await NonceUtils(getIt()).getPrivateProfileNonce(
-              did: did, privateKey: privateKey, from: iden3message.from);
+              did: did, privateKey: privateKey, from: iden3message.from!);
 
       final didDocument = await _polygonIdSdk.util.createDidDocument(
         identityEntity.did,

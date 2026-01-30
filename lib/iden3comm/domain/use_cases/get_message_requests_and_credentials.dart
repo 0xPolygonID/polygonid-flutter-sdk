@@ -38,8 +38,12 @@ class GetMessageRequestsAndCredsParam {
   });
 }
 
-class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
-    GetMessageRequestsAndCredsParam, List<RequestAndCredentials>> {
+class GetMessageRequestsAndCredsUseCase
+    extends
+        FutureUseCase<
+          GetMessageRequestsAndCredsParam,
+          List<RequestAndCredentials>
+        > {
   final Iden3commCredentialRepository _iden3commCredentialRepository;
   final GetClaimsUseCase _getClaimsUseCase;
   final IsProofCircuitSupportedUseCase _isProofCircuitSupported;
@@ -183,23 +187,23 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
             .map((e) => e["type"] as String)
             .toList();
 
-        final circuitId = request.scope.circuitId;
+        final rawCircuitId = request.scope.circuitId;
         // TODO (moria): remove this with v3 circuit release
-        if (circuitId.startsWith(CircuitType.v3CircuitPrefix) &&
-            !circuitId.endsWith(CircuitType.currentCircuitBetaPostfix)) {
+        if (rawCircuitId.startsWith(CircuitId.v3CircuitPrefix) &&
+            !rawCircuitId.endsWith(CircuitId.currentCircuitBetaPostfix)) {
           _stacktraceManager.addTrace(
-            "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}",
+            "V3 circuit beta version mismatch $rawCircuitId is not supported, current is ${CircuitId.currentCircuitBetaPostfix}",
           );
           throw CircuitNotDownloadedException(
-            circuit: circuitId,
+            circuit: rawCircuitId,
             errorMessage:
-                "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}",
+                "V3 circuit beta version mismatch $rawCircuitId is not supported, current is ${CircuitId.currentCircuitBetaPostfix}",
           );
         }
 
-        CircuitType circuitType = CircuitTypes.fromId(circuitId);
+        CircuitId circuitId = CircuitIds.fromId(rawCircuitId);
 
-        return circuitType.isAnyProofTypeSupported(proofTypes);
+        return circuitId.isAnyProofTypeSupported(proofTypes);
       }).toList();
 
       if (!request.isOptional && validCreds.isEmpty) {

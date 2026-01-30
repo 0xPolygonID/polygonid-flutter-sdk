@@ -46,7 +46,7 @@ class ResourcePermissionsListMessage
   String toString() => "[ResourcePermissionsListMessage] {${super.toString()}}";
 }
 
-class ResourcePermissionsListBody with EquatableMixin {
+class ResourcePermissionsListBody with EquatableMixin implements JsonEncodable {
   final List<Permission> granted;
   final List<Permission> pending;
   final List<Permission> rejected;
@@ -79,6 +79,15 @@ class ResourcePermissionsListBody with EquatableMixin {
 
   @override
   List<Object?> get props => [granted, pending, rejected];
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'granted': granted.map((e) => e.toJson()).toList(),
+      'pending': pending.map((e) => e.toJson()).toList(),
+      'rejected': rejected.map((e) => e.toJson()).toList(),
+    };
+  }
 }
 
 class Permission with EquatableMixin {

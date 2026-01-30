@@ -18,13 +18,14 @@ class ResourcePermissionsRequestsListMessage
     super.expiresTime,
     super.attachments = const [],
   }) : super(
-          id: id ?? Uuid().v4(),
-          type: Iden3MessageType.permissionsRequestsList,
-          thid: thid ?? Uuid().v4(),
-        );
+         id: id ?? Uuid().v4(),
+         type: Iden3MessageType.permissionsRequestsList,
+         thid: thid ?? Uuid().v4(),
+       );
 
   factory ResourcePermissionsRequestsListMessage.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     return ResourcePermissionsRequestsListMessage(
       id: json['id'],
       typ: json['typ'],
@@ -34,7 +35,8 @@ class ResourcePermissionsRequestsListMessage
       to: json['to'],
       createdTime: json['created_time'],
       expiresTime: json['expires_time'],
-      attachments: (json['attachments'] as List<dynamic>?)
+      attachments:
+          (json['attachments'] as List<dynamic>?)
               ?.map((e) => Attachment.fromJson(e))
               .toList() ??
           [],
@@ -46,22 +48,21 @@ class ResourcePermissionsRequestsListMessage
       "[ResourcePermissionsRequestsListMessage] {${super.toString()}}";
 }
 
-class ResourcePermissionsRequestsListBody with EquatableMixin {
+class ResourcePermissionsRequestsListBody
+    with EquatableMixin
+    implements JsonEncodable {
   final String id;
 
   ResourcePermissionsRequestsListBody({required this.id});
 
   factory ResourcePermissionsRequestsListBody.fromJson(
-      Map<String, dynamic> json) {
-    return ResourcePermissionsRequestsListBody(
-      id: json['id'],
-    );
+    Map<String, dynamic> json,
+  ) {
+    return ResourcePermissionsRequestsListBody(id: json['id']);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-    };
+    return {'id': id};
   }
 
   @override
