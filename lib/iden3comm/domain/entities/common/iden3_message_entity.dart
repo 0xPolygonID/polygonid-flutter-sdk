@@ -173,7 +173,7 @@ abstract class Iden3Message<T extends JsonEncodable> extends Equatable {
       if (typ != null) 'typ': typ,
       'type': type.type,
       if (thid != null) 'thid': thid,
-      'body': (body as dynamic).toJson(),
+      'body': body.toJson(),
       if (from != null) 'from': from,
       if (to != null) 'to': to,
       if (createdTime != null) 'created_time': createdTime,
