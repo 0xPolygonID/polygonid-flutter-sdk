@@ -116,21 +116,21 @@ class GenerateIden3commProofUseCase
     final circuitId = param.request.circuitId;
 
     // TODO (moria): remove this with v3 circuit release
-    if (circuitId.startsWith(CircuitType.v3CircuitPrefix) &&
-        !circuitId.endsWith(CircuitType.currentCircuitBetaPostfix)) {
+    if (circuitId.startsWith(CircuitId.v3CircuitPrefix) &&
+        !circuitId.endsWith(CircuitId.currentCircuitBetaPostfix)) {
       _stacktraceManager.addError(
-        "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}",
+        "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitId.currentCircuitBetaPostfix}",
       );
       throw CircuitNotDownloadedException(
         circuit: circuitId,
         errorMessage:
-            "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}",
+            "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitId.currentCircuitBetaPostfix}",
       );
     }
 
-    if (circuitId == CircuitTypes.mtpOnChain.id ||
-        circuitId == CircuitTypes.sigOnChain.id ||
-        circuitId == CircuitTypes.circuitsV3OnChain.id) {
+    if (circuitId == CircuitIds.mtpOnChain.id ||
+        circuitId == CircuitIds.sigOnChain.id ||
+        circuitId == CircuitIds.circuitsV3OnChain.id) {
       //on chain start
       _stacktraceManager.addTrace(
         "[GenerateIden3commProofUseCase] OnChain ${param.request.circuitId}",

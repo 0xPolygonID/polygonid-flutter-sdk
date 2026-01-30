@@ -177,7 +177,7 @@ class ProofRepositoryImpl extends ProofRepository {
   }) async {
     _stacktraceManager.addTrace(
         "[calculateWitness] circuitData.circuitId ${circuitData.circuitId}");
-    final circuitType = CircuitTypes.fromString(circuitData.circuitId);
+    final circuitType = CircuitIds.fromString(circuitData.circuitId);
     try {
       Uint8List? witness = await _witnessDataSource.computeWitness(
         inputsJson: atomicQueryInputs,
@@ -245,8 +245,8 @@ class ProofRepositoryImpl extends ProofRepository {
 
   @override
   Future<bool> isCircuitSupported({required String circuitId}) async {
-    final circuitType = CircuitTypes.fromString(circuitId);
-    return _proofCircuitDataSource.isCircuitSupported(circuit: circuitType);
+    final circuitType = CircuitIds.fromString(circuitId);
+    return _proofCircuitDataSource.isCircuitSupported(circuitId: circuitType);
   }
 
   @override

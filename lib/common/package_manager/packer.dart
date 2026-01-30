@@ -73,11 +73,7 @@ class PlainPackerParams extends PackerParams {
 
 /// Signature of auth signals function preparer
 typedef AuthDataPrepareFunc =
-    Future<Uint8List> Function(
-      Uint8List hash,
-      String did,
-      CircuitType circuitId,
-    );
+    Future<Uint8List> Function(Uint8List hash, String did, CircuitId circuitId);
 
 /// Signature of state function verifier
 typedef StateVerificationFunc =
@@ -142,11 +138,7 @@ class VerificationParams {
 }
 
 typedef DataPrepareHandlerFunc =
-    Future<Uint8List> Function(
-      Uint8List hash,
-      String did,
-      CircuitType circuitId,
-    );
+    Future<Uint8List> Function(Uint8List hash, String did, CircuitId circuitId);
 
 /// Params for generation of proof for auth circuit
 class ProvingParams {

@@ -28,7 +28,7 @@ class GetAuthInputsParam {
   final BigInt profileNonce;
   final String privateKey;
   final String encryptionKey;
-  final CircuitType circuitType;
+  final CircuitId circuitId;
 
   GetAuthInputsParam({
     required this.challenge,
@@ -36,7 +36,7 @@ class GetAuthInputsParam {
     required this.profileNonce,
     required this.privateKey,
     required this.encryptionKey,
-    required this.circuitType,
+    required this.circuitId,
   });
 }
 
@@ -157,7 +157,7 @@ class GetAuthInputsUseCase
         nonRevProof: nonRevProof,
         gistProof: gistProof,
         treeState: treeState,
-        circuitType: param.circuitType,
+        circuitId: param.circuitId,
         config: env.config.toJson(),
       );
 

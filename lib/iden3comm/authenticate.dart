@@ -88,7 +88,7 @@ class Authenticate {
     final Map<String, dynamic>? transactionData,
     String? authClaimNonce,
     List<RequestAndCredentials>? requestsAndCreds,
-    CircuitType circuitType = const AuthV2Circuit(),
+    CircuitId circuitId = const AuthV2Circuit(),
   }) async {
     try {
       String authToken = await getAuthResponseToken(
@@ -104,7 +104,7 @@ class Authenticate {
         transactionData: transactionData,
         authClaimNonce: authClaimNonce,
         requestsAndCreds: requestsAndCreds,
-        circuitType: circuitType,
+        circuitId: circuitId,
       );
       _stacktraceManager.addTrace("[Authenticate] authToken: $authToken");
 
@@ -201,7 +201,7 @@ class Authenticate {
     final Map<String, dynamic>? transactionData,
     String? authClaimNonce,
     List<RequestAndCredentials>? requestsAndCreds,
-    CircuitType circuitType = const AuthV2Circuit(),
+    CircuitId circuitId = const AuthV2Circuit(),
   }) async {
     final nonce = authClaimNonce ?? DEFAULT_AUTH_CLAIM_NONCE;
     try {
@@ -371,7 +371,7 @@ class Authenticate {
         authClaimNode: authClaimCompanionObject.authClaimNode!,
         gistProofEntity: authClaimCompanionObject.gistProofEntity!,
         proofRepository: proofRepository,
-        circuitType: circuitType,
+        circuitId: circuitId,
         env: env,
       );
       return authToken;
@@ -494,9 +494,9 @@ class Authenticate {
       Map<String, dynamic>? config;
       String? signature;
 
-      if (request.circuitId == CircuitTypes.mtpOnChain.id ||
-          request.circuitId == CircuitTypes.sigOnChain.id ||
-          request.circuitId == CircuitTypes.circuitsV3OnChain.id) {
+      if (request.circuitId == CircuitIds.mtpOnChain.id ||
+          request.circuitId == CircuitIds.sigOnChain.id ||
+          request.circuitId == CircuitIds.circuitsV3OnChain.id) {
         /// SIGN MESSAGE
         signature = await signMessage(
           privateKey: privateKeyBytes,
@@ -641,11 +641,11 @@ class Authenticate {
     required Map<String, dynamic> treeState,
     required GistMTProofEntity gistProofEntity,
     required ProofRepository proofRepository,
-    required CircuitType circuitType,
+    required CircuitId circuitId,
     required EnvEntity env,
   }) async {
     JWZHeader header = JWZHeader(
-      circuitId: circuitType.id,
+      circuitId: circuitId.id,
       crit: ["circuitId"],
       typ: messageTypeZkp,
       alg: "groth16",
@@ -684,7 +684,7 @@ class Authenticate {
       treeState: treeState,
       challenge: authChallenge,
       signature: signature,
-      circuitType: circuitType,
+      circuitId: circuitId,
       config: env.config.toJson(),
     );
 
@@ -692,14 +692,14 @@ class Authenticate {
     final circuitsDataSource = CircuitsFilesDataSource(appDir);
 
     final circuitDatFileBytes = await circuitsDataSource.loadGraphFile(
-      circuitType.id,
+      circuitId.id,
     );
     final zkeyFilePath = await circuitsDataSource.getZkeyFilePath(
-      circuitType.id,
+      circuitId.id,
     );
 
     CircuitDataEntity circuitDataEntity = CircuitDataEntity(
-      circuitType.id,
+      circuitId.id,
       circuitDatFileBytes,
       zkeyFilePath,
     );

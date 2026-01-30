@@ -706,7 +706,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     required String privateKey,
     String? pushToken,
     String? challenge,
-    CircuitType circuitType = const AuthV2Circuit(),
+    CircuitId circuitId = const AuthV2Circuit(),
   }) {
     _stacktraceManager.clearStacktrace();
     if (message is! AuthorizationRequestMessage) {
@@ -729,7 +729,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         privateKey: privateKey,
         pushToken: pushToken,
         challenge: challenge,
-        circuitType: circuitType,
+        circuitId: circuitId,
       ),
     );
   }
@@ -745,7 +745,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     String? pushToken,
     List<RequestAndCredentials>? requestsAndCreds,
     String? challenge,
-    CircuitType circuitType = const AuthV2Circuit(),
+    CircuitId circuitId = const AuthV2Circuit(),
   }) async {
     try {
       return await Authenticate().authenticate(
@@ -914,7 +914,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     required String privateKey,
     required BigInt profileNonce,
     required String iden3message,
-    CircuitType circuitType = const AuthV2Circuit(),
+    CircuitId circuitId = const AuthV2Circuit(),
   }) {
     return _getAuthTokenUseCase.execute(
       param: GetAuthTokenParam(
@@ -922,7 +922,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         profileNonce: profileNonce,
         privateKey: privateKey,
         message: iden3message,
-        circuitType: circuitType,
+        circuitId: circuitId,
       ),
     );
   }
@@ -938,7 +938,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     String? pushToken,
     List<RequestAndCredentials>? requestsAndCreds,
     String? challenge,
-    CircuitType circuitType = const AuthV2Circuit(),
+    CircuitId circuitId = const AuthV2Circuit(),
   }) async {
     try {
       return await Authenticate().getAuthResponseToken(
@@ -951,7 +951,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         pushToken: pushToken,
         didDocument: didDocument,
         requestsAndCreds: requestsAndCreds,
-        circuitType: circuitType,
+        circuitId: circuitId,
       );
     } on PolygonIdSDKException catch (_) {
       rethrow;

@@ -1,17 +1,17 @@
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 
 class ProofCircuitDataSource {
-  static const List<CircuitType> _supportedCircuits = [
-    CircuitTypes.mtp,
-    CircuitTypes.sig,
-    CircuitTypes.mtpOnChain,
-    CircuitTypes.sigOnChain,
-    CircuitTypes.circuitsV3,
-    CircuitTypes.circuitsV3OnChain,
-    CircuitTypes.linkedMultiQuery,
+  static const List<CircuitId> _supportedCircuits = [
+    CircuitIds.mtp,
+    CircuitIds.sig,
+    CircuitIds.mtpOnChain,
+    CircuitIds.sigOnChain,
+    CircuitIds.circuitsV3,
+    CircuitIds.circuitsV3OnChain,
+    CircuitIds.linkedMultiQuery,
   ];
 
-  Future<bool> isCircuitSupported({required CircuitType circuit}) {
-    return Future.value(_supportedCircuits.contains(circuit));
+  Future<bool> isCircuitSupported({required CircuitId circuitId}) {
+    return Future.value(_supportedCircuits.contains(circuitId));
   }
 }

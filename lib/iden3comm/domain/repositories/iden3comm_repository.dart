@@ -26,7 +26,7 @@ abstract class Iden3commRepository {
     required MTProofEntity nonRevProof,
     required GistMTProofEntity gistProof,
     required Map<String, dynamic> treeState,
-    required CircuitType circuitType,
+    required CircuitId circuitId,
     Map<String, dynamic>? config,
   });
 

@@ -119,7 +119,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
     required MTProofEntity nonRevProof,
     required GistMTProofEntity gistProof,
     required Map<String, dynamic> treeState,
-    required CircuitType circuitType,
+    required CircuitId circuitId,
     Map<String, dynamic>? config,
   }) {
     return _libPolygonIdCoreProofDataSource.getAuthInputs(
@@ -133,7 +133,7 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       challenge: challenge,
       signature: signature,
       config: config,
-      circuitType: circuitType,
+      circuitId: circuitId,
     );
   }
 

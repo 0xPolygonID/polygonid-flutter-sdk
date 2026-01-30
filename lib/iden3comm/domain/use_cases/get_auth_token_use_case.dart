@@ -18,14 +18,14 @@ class GetAuthTokenParam {
   final BigInt profileNonce;
   final String privateKey;
   final String message;
-  final CircuitType circuitType;
+  final CircuitId circuitId;
 
   GetAuthTokenParam({
     required this.genesisDid,
     required this.profileNonce,
     required this.privateKey,
     required this.message,
-    this.circuitType = const AuthV2Circuit(),
+    this.circuitId = const AuthV2Circuit(),
   });
 }
 
@@ -54,7 +54,7 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
       final jwz = await _getJWZUseCase.execute(
         param: GetJWZParam(
           message: param.message,
-          circuitType: param.circuitType,
+          circuitId: param.circuitId,
         ),
       );
 
@@ -75,7 +75,7 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
           profileNonce: param.profileNonce,
           privateKey: param.privateKey,
           encryptionKey: param.privateKey,
-          circuitType: param.circuitType,
+          circuitId: param.circuitId,
         ),
       );
       final authInputs = jsonEncode(generateInputsResponse.inputs);
@@ -85,7 +85,7 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
       );
 
       final circuit = await _loadCircuitUseCase.execute(
-        param: param.circuitType.id,
+        param: param.circuitId.id,
       );
 
       logger().i(
@@ -104,7 +104,7 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
         param: GetJWZParam(
           message: param.message,
           proof: zkProofEntity,
-          circuitType: param.circuitType,
+          circuitId: param.circuitId,
         ),
       );
 

@@ -30,7 +30,7 @@ class AuthenticateParam {
   final String privateKey;
   final String? pushToken;
   final String? challenge;
-  final CircuitType circuitType;
+  final CircuitId circuitId;
 
   AuthenticateParam({
     required this.message,
@@ -39,7 +39,7 @@ class AuthenticateParam {
     required this.privateKey,
     this.pushToken,
     this.challenge,
-    this.circuitType = const AuthV2Circuit(),
+    this.circuitId = const AuthV2Circuit(),
   });
 }
 
@@ -166,7 +166,7 @@ class AuthenticateUseCase
               profileNonce: param.profileNonce,
               privateKey: param.privateKey,
               message: authResponse,
-            circuitType: param.circuitType,
+            circuitId: param.circuitId,
           ),
       );
       logger()
