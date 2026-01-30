@@ -127,5 +127,5 @@ class ProtocolMessageType {
   static const discoveryQueriesMessageType =
       '${_didcommProtocol}discover-features/2.0/queries';
   static const discoveryDiscloseMessageType =
-      '${_didcommProtocol}discover-features/2.0/discose';
+      '${_didcommProtocol}discover-features/2.0/disclose';
 }

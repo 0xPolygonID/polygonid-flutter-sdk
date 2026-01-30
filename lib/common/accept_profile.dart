@@ -104,9 +104,9 @@ String buildAcceptFromProvingMethodAlg(ProvingMethodAlg provingMethodAlg) {
 }
 
 bool acceptHasProvingMethodAlg(
-    List<String> accept,
-    ProvingMethodAlg provingMethodAlg,
-    ) {
+  List<String> accept,
+  ProvingMethodAlg provingMethodAlg,
+) {
   final parts = provingMethodAlg.toString().split(':');
   final provingAlg = parts[0];
   final provingCircuitId = parts[1];
@@ -179,11 +179,12 @@ AcceptProfile parseAcceptProfile(String profile) {
         .split(',')
         .map((i) => i.trim())
         .map((i) {
-      if (!_isAcceptAuthCircuits(i)) {
-        throw Exception("Circuit '$i' not supported");
-      }
-      return _parseAcceptAuthCircuits(i);
-    }).toList();
+          if (!_isAcceptAuthCircuits(i)) {
+            throw Exception("Circuit '$i' not supported");
+          }
+          return _parseAcceptAuthCircuits(i);
+        })
+        .toList();
   }
 
   final algIndex = params.indexWhere((i) => i.contains('alg='));
@@ -213,7 +214,7 @@ AcceptProfile parseAcceptProfile(String profile) {
         }
         return JwzAlgorithm(_parseAcceptJwzAlgorithms(i));
       }).toList();
-
+      break;
     case MediaType.signedMessage:
       alg = algValues.map((i) {
         if (!_isAcceptJwsAlgorithms(i)) {
@@ -221,7 +222,7 @@ AcceptProfile parseAcceptProfile(String profile) {
         }
         return JwsAlgorithm(_parseAcceptJwsAlgorithms(i));
       }).toList();
-
+      break;
     case MediaType.encryptedMessage:
       alg = algValues.map((i) {
         if (!_isAcceptJweAlgorithms(i)) {
@@ -229,7 +230,7 @@ AcceptProfile parseAcceptProfile(String profile) {
         }
         return JweAlgorithm(_parseAcceptJweAlgorithms(i));
       }).toList();
-
+      break;
     default:
       throw Exception("Algorithms not supported for '$envStr'");
   }

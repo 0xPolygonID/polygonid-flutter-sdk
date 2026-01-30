@@ -1272,12 +1272,12 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<Iden3Message<dynamic>?> authenticateV2({
+  Future<Iden3Message?> authenticateV2({
     required String privateKey,
     required String genesisDid,
     required BigInt profileNonce,
     required IdentityEntity identityEntity,
-    required Iden3Message<dynamic> message,
+    required Iden3Message message,
     required EnvEntity env,
     DIDDocument? didDocument,
     String? pushToken,

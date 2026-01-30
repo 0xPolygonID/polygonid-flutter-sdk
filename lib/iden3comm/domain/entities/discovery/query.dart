@@ -1,3 +1,4 @@
+import 'package:polygonid_flutter_sdk/common/json.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/attachment.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 
@@ -34,7 +35,7 @@ class DiscoverFeatureQueriesMessage
   }
 }
 
-class DiscoverFeatureQueriesMessageBody {
+class DiscoverFeatureQueriesMessageBody implements JsonEncodable {
   final List<DiscoverFeatureQuery> queries;
 
   DiscoverFeatureQueriesMessageBody({required this.queries});

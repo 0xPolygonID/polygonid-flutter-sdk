@@ -108,6 +108,7 @@ class DiscoveryProtocolHandler extends AbstractMessageHandler
       disclosures,
       to: message.from,
       from: message.to,
+      thid: message.thid,
       expiresTime: expiresDate != null ? getUnixTimestamp(expiresDate) : null,
     );
   }
@@ -118,14 +119,19 @@ class DiscoveryProtocolHandler extends AbstractMessageHandler
     switch (query.featureType) {
       case DiscoveryProtocolFeatureType.accept:
         result = _handleAcceptQuery();
+        break;
       case DiscoveryProtocolFeatureType.protocol:
         result = _handleProtocolQuery();
+        break;
       case DiscoveryProtocolFeatureType.goalCode:
         result = _handleGoalCodeQuery();
+        break;
       case DiscoveryProtocolFeatureType.header:
         result = _handleHeaderQuery();
+        break;
       default:
         result = [];
+        break;
     }
 
     return _handleMatch(result, query.match);
@@ -205,11 +211,13 @@ DiscoverFeatureDiscloseMessage createDiscoveryFeatureDiscloseMessage(
   List<DiscoverFeatureDisclosure> disclosures, {
   String? from,
   String? to,
+  String? thid,
   int? expiresTime,
 }) {
   return DiscoverFeatureDiscloseMessage(
     typ: messageTypePlain,
-    body: {disclosures},
+    thid: thid,
+    body: DiscoverFeatureDiscloseMessageBody(disclosures: disclosures),
     from: from,
     to: to,
     createdTime: getUnixTimestamp(DateTime.now()),

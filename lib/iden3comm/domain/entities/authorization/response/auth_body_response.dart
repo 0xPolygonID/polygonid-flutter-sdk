@@ -64,6 +64,7 @@
 
 */
 
+import 'package:polygonid_flutter_sdk/common/json.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 
@@ -72,7 +73,7 @@ typedef AuthBodyResponse = AuthorizationMessageResponseBody;
 
 typedef ZeroKnowledgeProofResponse = Iden3commProofEntity;
 
-class AuthorizationMessageResponseBody {
+class AuthorizationMessageResponseBody implements JsonEncodable {
   final DIDDocument? did_doc;
   final String? message;
   final List<ZeroKnowledgeProofResponse> proofs;

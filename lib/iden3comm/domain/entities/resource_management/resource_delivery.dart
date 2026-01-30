@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:polygonid_flutter_sdk/common/json.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/attachment.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:uuid/uuid.dart';
@@ -42,7 +43,7 @@ class ResourceDeliveryMessage extends Iden3Message<ResourceDeliveryBody> {
   String toString() => "[ResourceDeliveryMessage] {${super.toString()}}";
 }
 
-class ResourceDeliveryBody extends Equatable {
+class ResourceDeliveryBody extends Equatable implements JsonEncodable {
   final String id;
   final String? attachmentId;
   final String status;

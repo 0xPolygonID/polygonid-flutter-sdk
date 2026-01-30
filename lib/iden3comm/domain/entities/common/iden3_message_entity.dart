@@ -1,8 +1,11 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
+import 'package:polygonid_flutter_sdk/common/json.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/attachment.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/protocol_message_type.dart';
+
+export 'package:polygonid_flutter_sdk/common/json.dart';
 
 const String messageTypePlain = "application/iden3comm-plain-json";
 const String messageTypeZkp = "application/iden3-zkp-json";
@@ -110,11 +113,11 @@ enum Iden3MessageType {
 }
 
 @Deprecated('Use Iden3Message instead')
-typedef Iden3MessageEntity<T> = Iden3Message<T>;
+typedef Iden3MessageEntity<T extends JsonEncodable> = Iden3Message<T>;
 
 /// Represents an iden3 protocol message.
 /// https://identity.foundation/didcomm-messaging/spec/#message-headers
-abstract class Iden3Message<T> extends Equatable {
+abstract class Iden3Message<T extends JsonEncodable> extends Equatable {
   final String id;
 
   /// The type of the message, e.g. "application/iden3-zkp-json".
@@ -197,7 +200,7 @@ abstract class Iden3Message<T> extends Equatable {
   }
 }
 
-class RequiredIden3Message<T> extends Iden3Message<T> {
+class RequiredIden3Message<T extends JsonEncodable> extends Iden3Message<T> {
   @override
   final String typ;
 

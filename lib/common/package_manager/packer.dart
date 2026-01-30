@@ -94,14 +94,14 @@ abstract interface class IPacker {
   /// [payload] - The payload to be packed.
   /// [param] - The packing parameters.
   /// Returns a future that resolves to the packed data as a Uint8List.
-  Future<Uint8List> pack(Uint8List payload, PackerParams param);
+  Future<Uint8List> pack(Uint8List payload, PackerParams? param);
 
   /// Packs the given message and returns a future that resolves to the packed data.
   ///
   /// [msg] - The message to be packed.
   /// [param] - The packing parameters.
   /// Returns a future that resolves to the packed data as a Uint8List.
-  Future<Uint8List> packMessage(Iden3Message msg, PackerParams param);
+  Future<Uint8List> packMessage(Iden3Message msg, PackerParams? param);
 
   /// Unpacks the given envelope and returns a future that resolves to the unpacked message.
   ///

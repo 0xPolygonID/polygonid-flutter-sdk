@@ -5,6 +5,7 @@
 }
 */
 
+import 'package:polygonid_flutter_sdk/common/json.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:uuid/uuid.dart';
 
@@ -55,7 +56,7 @@ class AttestationResponseMessage extends Iden3Message<AttestationResponseBody> {
   int get hashCode => runtimeType.hashCode;
 }
 
-class AttestationResponseBody {
+class AttestationResponseBody implements JsonEncodable {
   final String type;
   final dynamic payload;
 

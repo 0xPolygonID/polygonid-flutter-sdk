@@ -1,3 +1,4 @@
+import 'package:polygonid_flutter_sdk/common/json.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/credential_offer_data.dart';
 
@@ -21,7 +22,7 @@ abstract class BaseCredentialOfferMessage<T extends CredentialOfferBody>
   });
 }
 
-abstract class CredentialOfferBody {
+abstract class CredentialOfferBody  implements JsonEncodable {
   final List<CredentialOffer> credentials;
 
   CredentialOfferBody({required this.credentials});

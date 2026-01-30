@@ -1,3 +1,4 @@
+import 'package:polygonid_flutter_sdk/common/json.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:uuid/uuid.dart';
 
@@ -48,7 +49,7 @@ class CredentialIssuanceRequestMessage
   int get hashCode => runtimeType.hashCode;
 }
 
-class CredentialIssuanceRequestMessageBody {
+class CredentialIssuanceRequestMessageBody implements JsonEncodable {
   final Schema schema;
   final Map<String, dynamic> data;
   final int expiration;

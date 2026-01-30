@@ -2,7 +2,8 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/attachmen
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:uuid/uuid.dart';
 
-class DiscoverFeatureDiscloseMessage extends Iden3Message {
+class DiscoverFeatureDiscloseMessage
+    extends Iden3Message<DiscoverFeatureDiscloseMessageBody> {
   DiscoverFeatureDiscloseMessage({
     String? id,
     super.typ,
@@ -39,7 +40,7 @@ class DiscoverFeatureDiscloseMessage extends Iden3Message {
   }
 }
 
-class DiscoverFeatureDiscloseMessageBody {
+class DiscoverFeatureDiscloseMessageBody implements JsonEncodable {
   final List<DiscoverFeatureDisclosure> disclosures;
 
   DiscoverFeatureDiscloseMessageBody({required this.disclosures});
@@ -66,10 +67,10 @@ class DiscoverFeatureDisclosure {
   DiscoverFeatureDisclosure({required this.featureType, required this.id});
 
   DiscoverFeatureDisclosure.fromJson(Map<String, dynamic> json)
-    : featureType = json['feature_type'],
+    : featureType = json['feature-type'],
       id = json['id'];
 
   Map<String, dynamic> toJson() {
-    return {'feature_type': featureType, 'id': id};
+    return {'feature-type': featureType, 'id': id};
   }
 }

@@ -1,5 +1,6 @@
 // ignore_for_file: overridden_fields
 
+import 'package:polygonid_flutter_sdk/common/json.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/credential_schema_info.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_rails_erc20_request_v1_data.dart';
@@ -88,7 +89,7 @@ class PaymentRequestMessage extends Iden3Message<PaymentRequestBody> {
   }
 }
 
-class PaymentRequestBody {
+class PaymentRequestBody implements JsonEncodable {
   final String agent;
   final List<PaymentRequestInfo> payments;
 

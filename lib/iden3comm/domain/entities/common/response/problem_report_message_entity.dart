@@ -1,3 +1,4 @@
+import 'package:polygonid_flutter_sdk/common/json.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:uuid/uuid.dart';
 
@@ -110,7 +111,7 @@ class ProblemReportMessage extends Iden3Message<ProblemReportBody> {
   int get hashCode => runtimeType.hashCode;
 }
 
-class ProblemReportBody {
+class ProblemReportBody implements JsonEncodable {
   // (optional) List of arguments matching the placeholders in comment field
   final List<String>? args;
 

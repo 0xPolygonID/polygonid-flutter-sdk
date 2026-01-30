@@ -105,9 +105,9 @@ class Iden3MessageFactory {
           return ResourcePermissionsListMessage.fromJson(json);
         case Iden3MessageType.permissionsListFetch:
           return ResourcePermissionsListFetchMessage.fromJson(json);
-          case Iden3MessageType.discoveryQueries:
+        case Iden3MessageType.discoveryQueries:
           return DiscoverFeatureQueriesMessage.fromJson(json);
-          case Iden3MessageType.discoveryDisclose:
+        case Iden3MessageType.discoveryDisclose:
           return DiscoverFeatureDiscloseMessage.fromJson(json);
         case Iden3MessageType.unknown:
           throw UnsupportedIden3MsgTypeException(

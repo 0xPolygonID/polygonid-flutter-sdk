@@ -5,7 +5,8 @@ import 'package:polygonid_flutter_sdk/common/accept_profile.dart';
 import 'package:polygonid_flutter_sdk/common/common.dart';
 import 'package:polygonid_flutter_sdk/common/package_manager/packer.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
-import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/iden3_message_factory.dart';
+import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
 /// Plain packer just serializes bytes to JSON and adds media type
 class PlainPacker implements IPacker {
@@ -17,7 +18,7 @@ class PlainPacker implements IPacker {
   /// [param] - The packer parameters (not used).
   /// Returns a future that resolves to a Uint8List representing the packed message.
   @override
-  Future<Uint8List> packMessage(Iden3Message msg, [PackerParams? param]) async {
+  Future<Uint8List> packMessage(Iden3Message msg, PackerParams? param) async {
     final msgMap = _messageToMap(msg);
     msgMap['typ'] = MediaType.plainMessage.value;
     return Uint8List.fromList(utf8.encode(jsonEncode(msgMap)));
@@ -29,7 +30,7 @@ class PlainPacker implements IPacker {
   /// [param] - not used here
   /// Returns packed message as Uint8List
   @override
-  Future<Uint8List> pack(Uint8List payload, [PackerParams? param]) async {
+  Future<Uint8List> pack(Uint8List payload, PackerParams? param) async {
     final msg = jsonDecode(utf8.decode(payload)) as Map<String, dynamic>;
     msg['typ'] = MediaType.plainMessage.value;
     return Uint8List.fromList(utf8.encode(jsonEncode(msg)));
@@ -89,14 +90,14 @@ class PlainPacker implements IPacker {
     return {
       'id': msg.id,
       if (msg.typ != null) 'typ': msg.typ!,
-      'type': msg.type,
+      'type': msg.type.type,
       if (msg.thid != null) 'thid': msg.thid,
-      if (msg.body != null) 'body': msg.body,
+      'body': msg.body.toJson(),
       if (msg.from != null) 'from': msg.from,
       if (msg.to != null) 'to': msg.to,
       if (msg.createdTime != null) 'created_time': msg.createdTime,
       if (msg.expiresTime != null) 'expires_time': msg.expiresTime,
-      'attachments': msg.attachments,
+      'attachments': msg.attachments.map((a) => a.toJson()).toList(),
     };
   }
 
@@ -116,8 +117,9 @@ class PlainPacker implements IPacker {
           ?.map((a) => a as Attachment)
           .toList(),
     );*/
-    // TODO Rewrite this.
-    return PolygonIdSdk.I.iden3comm.getIden3Message(message: jsonEncode(map));
+    return getItSdk<Iden3MessageFactory>().createMessage(
+      rawMessage: jsonEncode(map),
+    );
   }
 
   MediaType? _parseMediaType(String value) {

@@ -1,3 +1,4 @@
+import 'package:polygonid_flutter_sdk/common/json.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/credential_schema_info.dart';
@@ -94,7 +95,7 @@ class ProposalRequestMessage extends Iden3Message<ProposalRequestMessageBody> {
 @Deprecated('Use ProposalRequestMessageBody instead')
 typedef CredentialProposalBodyRequest = ProposalRequestMessageBody;
 
-class ProposalRequestMessageBody {
+class ProposalRequestMessageBody implements JsonEncodable {
   final List<ProposalRequestCredential> credentials;
   final DIDDocument? didDoc;
   MetadataObject? metadata;

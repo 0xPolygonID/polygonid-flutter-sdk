@@ -65,12 +65,13 @@
 */
 
 import 'package:flutter/foundation.dart';
+import 'package:polygonid_flutter_sdk/common/json.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 
 typedef AuthBodyRequest = AuthorizationRequestMessageBody;
 
-class AuthorizationRequestMessageBody {
+class AuthorizationRequestMessageBody implements JsonEncodable {
   final String callbackUrl;
   final String? reason;
   final String? message;

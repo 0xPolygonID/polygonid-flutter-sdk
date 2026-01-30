@@ -111,7 +111,10 @@ class Authenticate {
       _proofGenerationStepsStreamManager.add(
         "sending auth token to the requester...",
       );
-      String? callbackUrl = message.body.callbackUrl;
+      String? callbackUrl;
+      if (message is AuthorizationRequestMessage) {
+        callbackUrl = message.body.callbackUrl;
+      }
 
       if (callbackUrl == null || callbackUrl.isEmpty) {
         _stacktraceManager.addError(

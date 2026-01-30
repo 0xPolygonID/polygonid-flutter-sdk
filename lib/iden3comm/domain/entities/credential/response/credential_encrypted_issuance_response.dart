@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:polygonid_flutter_sdk/common/json.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/attachment.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/jose/jwe.dart';
@@ -38,7 +39,9 @@ class CredentialEncryptedIssuanceResponse
   }
 }
 
-class CredentialEncryptedIssuanceResponseBody with EquatableMixin {
+class CredentialEncryptedIssuanceResponseBody
+    with EquatableMixin
+    implements JsonEncodable {
   final String id;
   final String context;
   final String type;
@@ -65,6 +68,16 @@ class CredentialEncryptedIssuanceResponseBody with EquatableMixin {
           .map((p) => p as Map<String, dynamic>)
           .toList(),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'context': context,
+      'type': type,
+      'data': data.toJson(),
+      'proof': proof,
+    };
   }
 
   @override
