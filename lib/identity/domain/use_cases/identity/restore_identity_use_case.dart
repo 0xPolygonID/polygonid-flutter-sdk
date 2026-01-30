@@ -44,7 +44,7 @@ class RestoreIdentityUseCase
   }) async {
     late IdentityEntity identity;
     final encryptionKey = param.privateKey;
-    final publicKey = await _identityRepository.getPublicKeys(
+    final publicKey = _identityRepository.getPublicKeys(
       bjjPrivateKey: param.privateKey,
     );
 

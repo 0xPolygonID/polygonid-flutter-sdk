@@ -202,25 +202,25 @@ abstract class Iden3Message<T extends JsonEncodable> extends Equatable {
 
 class RequiredIden3Message<T extends JsonEncodable> extends Iden3Message<T> {
   @override
-  final String typ;
+  String get typ => super.typ!;
 
   @override
-  final String thid;
+  String get thid => super.thid!;
 
   @override
-  final String from;
+  String get from => super.from!;
 
   @override
-  final String to;
+  String get to => super.to!;
 
   const RequiredIden3Message({
     required super.id,
-    required this.typ,
+    required String typ,
     required super.type,
-    required this.thid,
+    required String thid,
     required super.body,
-    required this.from,
-    required this.to,
+    required String from,
+    required String to,
     required super.createdTime,
     required super.expiresTime,
     required super.attachments,

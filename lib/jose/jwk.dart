@@ -515,7 +515,7 @@ class JsonWebKeySet extends JsonObject {
       });
 
   /// Constructs a [JsonWebKeySet] from its JSON representation
-  JsonWebKeySet.fromJson(Map<String, dynamic> json) : super.from(json);
+  JsonWebKeySet.fromJson(super.json) : super.from();
 }
 
 /// A key store to lookup [JsonWebKey]s

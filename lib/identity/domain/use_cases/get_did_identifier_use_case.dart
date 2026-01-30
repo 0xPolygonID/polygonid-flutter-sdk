@@ -52,7 +52,7 @@ class GetDidIdentifierUseCase
       if (param.bjjPublicKey.isNotEmpty) {
         publicKey = param.bjjPublicKey;
       } else {
-        publicKey = await _identityRepository.getPublicKeys(
+        publicKey = _identityRepository.getPublicKeys(
           bjjPrivateKey: param.bjjPrivateKey,
         );
       }

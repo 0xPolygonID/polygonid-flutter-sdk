@@ -154,7 +154,7 @@ class GenerateIden3commProofUseCase
         "GENERATION PROOF getAuthClaimUseCase executed in ${stopwatch.elapsed}",
       );
 
-      NodeEntity authClaimNode = await _identityRepository.getAuthClaimNode(
+      NodeEntity authClaimNode = _identityRepository.getAuthClaimNode(
         children: authClaim,
       );
 

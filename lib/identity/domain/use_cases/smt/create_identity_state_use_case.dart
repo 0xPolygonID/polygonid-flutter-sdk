@@ -58,7 +58,7 @@ class CreateIdentityStateUseCase
         param: param.bjjPublicKey,
       );
       NodeEntity authClaimNode =
-          await _identityRepository.getAuthClaimNode(children: authClaim);
+          _identityRepository.getAuthClaimNode(children: authClaim);
       await _smtRepository.addLeaf(
         leaf: authClaimNode,
         type: TreeType.claims,

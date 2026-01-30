@@ -45,7 +45,7 @@ class AddNewIdentityUseCase
         );
       }
 
-      final publicKeys = await _identityRepository.getPublicKeys(
+      final publicKeys = _identityRepository.getPublicKeys(
         bjjPrivateKey: privateKey,
       );
       final identity = await _addIdentityUseCase.execute(

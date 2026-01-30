@@ -103,31 +103,8 @@ class PlainPacker implements IPacker {
 
   /// Converts a Map to a Iden3Message
   Future<Iden3Message> _mapToMessage(Map<String, dynamic> map) async {
-    /*return Iden3Message(
-      id: map['id'] as String,
-      typ: map['typ'] != null ? _parseMediaType(map['typ'] as String) : null,
-      type: map['type'] as String,
-      thid: map['thid'] as String?,
-      body: map['body'],
-      from: map['from'] as String?,
-      to: map['to'] as String?,
-      createdTime: map['created_time'] as int?,
-      expiresTime: map['expires_time'] as int?,
-      attachments: (map['attachments'] as List<dynamic>?)
-          ?.map((a) => a as Attachment)
-          .toList(),
-    );*/
     return getItSdk<Iden3MessageFactory>().createMessage(
       rawMessage: jsonEncode(map),
     );
-  }
-
-  MediaType? _parseMediaType(String value) {
-    for (final mediaType in MediaType.values) {
-      if (mediaType.value == value) {
-        return mediaType;
-      }
-    }
-    return null;
   }
 }

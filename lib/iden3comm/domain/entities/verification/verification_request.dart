@@ -71,7 +71,6 @@
   }
 */
 
-import 'package:polygonid_flutter_sdk/common/json.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 
