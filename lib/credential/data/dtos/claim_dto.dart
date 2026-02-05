@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/display_type/display_type.dart';
 
 import 'claim_info_dto.dart';
 
@@ -16,7 +17,7 @@ class CredentialDTO extends Equatable {
   Map<String, dynamic>? schema;
   final String type;
   final W3CCredential info;
-  Map<String, dynamic>? displayType;
+  DisplayType? displayType;
 
   /// Raw value of credential represented as iden3 message
   final String credentialRawValue;
@@ -46,7 +47,9 @@ class CredentialDTO extends Equatable {
       issuanceDate: json['issuanceDate'] as String?,
       info: W3CCredential.fromJson(json['credential'] as Map<String, dynamic>),
       schema: json['schema'] as Map<String, dynamic>?,
-      displayType: json['displayType'] as Map<String, dynamic>?,
+      displayType: json['displayType'] != null
+          ? DisplayType.fromJson(json['displayType'] as Map<String, dynamic>)
+          : null,
       credentialRawValue: json['credentialRawValue'] ?? jsonEncode(json),
     );
   }
@@ -62,25 +65,25 @@ class CredentialDTO extends Equatable {
       'issuanceDate': issuanceDate,
       'type': type,
       'schema': schema,
-      'displayType': displayType,
+      'displayType': displayType?.toJson(),
       'credentialRawValue': credentialRawValue,
     };
   }
 
   @override
   List<Object?> get props => [
-        id,
-        issuer,
-        did,
-        state,
-        info,
-        expiration,
-        issuanceDate,
-        type,
-        schema,
-        displayType,
-        credentialRawValue
-      ];
+    id,
+    issuer,
+    did,
+    state,
+    info,
+    expiration,
+    issuanceDate,
+    type,
+    schema,
+    displayType,
+    credentialRawValue,
+  ];
 
   @override
   String toString() {

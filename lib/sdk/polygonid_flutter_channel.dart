@@ -8,6 +8,8 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.d
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/display_type/display_type.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/discovery_protocol.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
@@ -1289,7 +1291,7 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<Map<String, dynamic>> fetchDisplayMethod({required String url}) {
+  Future<DisplayType> fetchDisplayType({required DisplayMethod displayMethod}) {
     // TODO: implement fetchDisplayMethod
     throw UnimplementedError();
   }
