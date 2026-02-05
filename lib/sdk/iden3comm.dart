@@ -76,8 +76,8 @@ abstract class PolygonIdSdkIden3comm {
   /// Fetches a schema from a given [schemaUrl].
   Future<Map<String, dynamic>> fetchSchema({required String schemaUrl});
 
-  /// Fetches a schema from a given [schemaUrl].
-  Future<Map<String, dynamic>> fetchDisplayMethod({required String schemaUrl});
+  /// Fetches a schema from a given [url].
+  Future<Map<String, dynamic>> fetchDisplayMethod({required String url});
 
   /// Fetches and parses [DisplayType] for given [DisplayMethod].
   Future<DisplayType> fetchDisplayType({required DisplayMethod displayMethod});
