@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/did_method_entity.dart';
@@ -5,7 +7,7 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.d
 
 class EnvEntity {
   final String pushUrl;
-  final String ipfsUrl;
+  final String? ipfsUrl;
   final String ipfsGatewayUrl;
   final String? didResolverUrl;
 
@@ -13,36 +15,30 @@ class EnvEntity {
   final List<DidMethodEntity> didMethods;
 
   final String? stacktraceEncryptionKey;
-  final String? pinataGateway;
-  final String? pinataGatewayToken;
 
   final String? cacheDir;
   final String? method;
 
   EnvEntity._({
     required this.pushUrl,
-    required this.ipfsUrl,
+    this.ipfsUrl,
     required this.ipfsGatewayUrl,
     this.didResolverUrl,
     this.chainConfigs = const {},
     this.didMethods = const [],
     this.stacktraceEncryptionKey,
-    this.pinataGateway,
-    this.pinataGatewayToken,
     this.cacheDir,
     this.method,
   });
 
   EnvEntity({
     required this.pushUrl,
-    required this.ipfsUrl,
+    this.ipfsUrl,
     required this.ipfsGatewayUrl,
     this.didResolverUrl,
     required this.chainConfigs,
     required this.didMethods,
     this.stacktraceEncryptionKey,
-    this.pinataGateway,
-    this.pinataGatewayToken,
     this.cacheDir,
     this.method,
   });
@@ -60,8 +56,6 @@ class EnvEntity {
           .map((e) => DidMethodEntity.fromJson(e))
           .toList(),
       stacktraceEncryptionKey: json['stacktraceEncryptionKey'],
-      pinataGateway: json['pinataGateway'],
-      pinataGatewayToken: json['pinataGatewayToken'],
       cacheDir: json['cacheDir'],
       method: json['method'],
     );
@@ -71,21 +65,20 @@ class EnvEntity {
   Map<String, dynamic> toJson() => {
     'pushUrl': pushUrl,
     'ipfsUrl': ipfsUrl,
+    'ipfsGatewayUrl': ipfsGatewayUrl,
     'didResolverUrl': didResolverUrl,
     'chainConfigs': chainConfigs.map(
       (key, value) => MapEntry(key, value.toJson()),
     ),
     'didMethods': didMethods.map((e) => e.toJson()).toList(),
     'stacktraceEncryptionKey': stacktraceEncryptionKey,
-    'pinataGateway': pinataGateway,
-    'pinataGatewayToken': pinataGatewayToken,
     'cacheDir': cacheDir,
     'method': method,
   };
 
   @override
   String toString() {
-    return 'EnvEntity{pushUrl: $pushUrl, ipfsUrl: $ipfsUrl, chainConfig: $chainConfigs, didMethods: $didMethods, stacktraceEncryptionKey: $stacktraceEncryptionKey, , pinataGateway: $pinataGateway, pinataGatewayToken: $pinataGatewayToken, cacheDir: $cacheDir}';
+    return 'EnvEntity: ${jsonEncode(toJson())}';
   }
 
   @override
@@ -94,12 +87,11 @@ class EnvEntity {
       other is EnvEntity &&
           pushUrl == other.pushUrl &&
           ipfsUrl == other.ipfsUrl &&
+          ipfsGatewayUrl == other.ipfsGatewayUrl &&
           didResolverUrl == other.didResolverUrl &&
           mapEquals(chainConfigs, other.chainConfigs) &&
           listEquals(didMethods, other.didMethods) &&
           stacktraceEncryptionKey == other.stacktraceEncryptionKey &&
-          pinataGateway == other.pinataGateway &&
-          pinataGatewayToken == other.pinataGatewayToken &&
           cacheDir == other.cacheDir;
 
   @override
@@ -117,8 +109,6 @@ class EnvEntity {
     Map<String, ChainConfigEntity>? chainConfigs,
     List<DidMethodEntity>? didMethods,
     String? stacktraceEncryptionKey,
-    String? pinataGateway,
-    String? pinataGatewayToken,
     String? cacheDir,
     String? method,
   }) {
@@ -131,8 +121,6 @@ class EnvEntity {
       didMethods: didMethods ?? this.didMethods,
       stacktraceEncryptionKey:
           stacktraceEncryptionKey ?? this.stacktraceEncryptionKey,
-      pinataGateway: pinataGateway ?? this.pinataGateway,
-      pinataGatewayToken: pinataGatewayToken ?? this.pinataGatewayToken,
       cacheDir: cacheDir ?? this.cacheDir,
       method: method ?? this.method,
     );

@@ -41,24 +41,17 @@ Future<void> init() async {
 Future<void> registerEnv() async {
   Map<String, dynamic> defaultEnv = jsonDecode(Env.defaultEnvironment);
   String stacktraceEncryptionKey = Env.stacktraceEncryptionKey;
-  String pinataGateway = Env.pinataGateway;
-  String pinataGatewayToken = Env.pinataGatewayToken;
 
   EnvEntity envV1 = EnvEntity.fromJson(defaultEnv);
   if (stacktraceEncryptionKey.isNotEmpty) {
     envV1 = envV1.copyWith(stacktraceEncryptionKey: stacktraceEncryptionKey);
   }
 
-  if (pinataGateway.isNotEmpty) {
-    envV1 = envV1.copyWith(pinataGateway: pinataGateway);
-  }
-
-  if (pinataGatewayToken.isNotEmpty) {
-    envV1 = envV1.copyWith(pinataGatewayToken: pinataGatewayToken);
-  }
-
   final cacheDir = await getTemporaryDirectory();
   envV1 = envV1.copyWith(cacheDir: cacheDir.path);
+
+  String ipfsGatewayUrl = Env.ipfsGatewayUrl;
+  envV1 = envV1.copyWith(ipfsGatewayUrl: ipfsGatewayUrl);
 
   getIt.registerSingleton<EnvEntity>(envV1);
 }
