@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/did_method_entity.dart';
@@ -5,7 +7,7 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.d
 
 class EnvEntity {
   final String pushUrl;
-  final String ipfsUrl;
+  final String? ipfsUrl;
   final String ipfsGatewayUrl;
   final String? didResolverUrl;
 
@@ -19,7 +21,7 @@ class EnvEntity {
 
   EnvEntity._({
     required this.pushUrl,
-    required this.ipfsUrl,
+    this.ipfsUrl,
     required this.ipfsGatewayUrl,
     this.didResolverUrl,
     this.chainConfigs = const {},
@@ -31,7 +33,7 @@ class EnvEntity {
 
   EnvEntity({
     required this.pushUrl,
-    required this.ipfsUrl,
+    this.ipfsUrl,
     required this.ipfsGatewayUrl,
     this.didResolverUrl,
     required this.chainConfigs,
@@ -63,6 +65,7 @@ class EnvEntity {
   Map<String, dynamic> toJson() => {
     'pushUrl': pushUrl,
     'ipfsUrl': ipfsUrl,
+    'ipfsGatewayUrl': ipfsGatewayUrl,
     'didResolverUrl': didResolverUrl,
     'chainConfigs': chainConfigs.map(
       (key, value) => MapEntry(key, value.toJson()),
@@ -75,7 +78,7 @@ class EnvEntity {
 
   @override
   String toString() {
-    return 'EnvEntity{pushUrl: $pushUrl, ipfsUrl: $ipfsUrl, chainConfig: $chainConfigs, didMethods: $didMethods, stacktraceEncryptionKey: $stacktraceEncryptionKey, cacheDir: $cacheDir}';
+    return 'EnvEntity: ${jsonEncode(toJson())}';
   }
 
   @override
@@ -84,6 +87,7 @@ class EnvEntity {
       other is EnvEntity &&
           pushUrl == other.pushUrl &&
           ipfsUrl == other.ipfsUrl &&
+          ipfsGatewayUrl == other.ipfsGatewayUrl &&
           didResolverUrl == other.didResolverUrl &&
           mapEquals(chainConfigs, other.chainConfigs) &&
           listEquals(didMethods, other.didMethods) &&
