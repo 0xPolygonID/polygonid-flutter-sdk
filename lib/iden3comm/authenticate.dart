@@ -21,7 +21,7 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 import 'package:polygonid_flutter_sdk/common/utils/base_64.dart';
 import 'package:polygonid_flutter_sdk/common/utils/big_int_extension.dart';
 import 'package:polygonid_flutter_sdk/common/utils/did_doc_compose.dart';
-import 'package:polygonid_flutter_sdk/common/utils/pinata_gateway_utils.dart';
+import 'package:polygonid_flutter_sdk/common/utils/ipfs.dart';
 import 'package:polygonid_flutter_sdk/common/utils/push_service.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
@@ -572,15 +572,7 @@ class Authenticate {
   /// Fetches the schema from the given URL
   Future<Map<String, dynamic>> fetchSchema({required String schemaUrl}) async {
     if (schemaUrl.toLowerCase().startsWith("ipfs://")) {
-      String fileHash = schemaUrl.replaceFirst("ipfs://", "");
-      String? pinataGatewayUrl = await PinataGatewayUtils()
-          .retrievePinataGatewayUrlFromEnvironment(fileHash: fileHash);
-
-      if (pinataGatewayUrl != null) {
-        schemaUrl = pinataGatewayUrl;
-      } else {
-        schemaUrl = "https://ipfs.io/ipfs/$fileHash";
-      }
+      schemaUrl = await IPFSUtils.getIpfsFileUrl(schemaUrl);
     }
 
     final schemaUri = Uri.parse(schemaUrl);
@@ -694,9 +686,7 @@ class Authenticate {
     final circuitDatFileBytes = await circuitsDataSource.loadGraphFile(
       circuitId.id,
     );
-    final zkeyFilePath = await circuitsDataSource.getZkeyFilePath(
-      circuitId.id,
-    );
+    final zkeyFilePath = await circuitsDataSource.getZkeyFilePath(circuitId.id);
 
     CircuitDataEntity circuitDataEntity = CircuitDataEntity(
       circuitId.id,

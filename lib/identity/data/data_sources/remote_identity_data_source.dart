@@ -3,19 +3,18 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
-import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
-import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/common/utils/pinata_gateway_utils.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/node_type_entity_mapper.dart';
-import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
-
 import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
+import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/common/utils/ipfs.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/node_type_entity_mapper.dart';
+import 'package:polygonid_flutter_sdk/identity/data/mappers/state_identifier_mapper.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/entities/rhs_node_entity.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
 
 class RemoteIdentityDataSource {
   final StacktraceManager _stacktraceManager;
@@ -28,18 +27,7 @@ class RemoteIdentityDataSource {
       String rhsId = url;
       String rhsUrl = rhsId;
       if (rhsId.toLowerCase().startsWith("ipfs://")) {
-        String fileHash = rhsId.toLowerCase().replaceFirst("ipfs://", "");
-
-        String? pinataGatewayUrl =
-            await PinataGatewayUtils().retrievePinataGatewayUrlFromEnvironment(
-          fileHash: fileHash,
-        );
-
-        if (pinataGatewayUrl != null) {
-          rhsUrl = pinataGatewayUrl;
-        } else {
-          rhsUrl = "https://ipfs.io/ipfs/$fileHash";
-        }
+        rhsUrl = await IPFSUtils.getIpfsFileUrl(rhsId);
       }
 
       var rhsUri = Uri.parse(rhsUrl);
@@ -50,8 +38,9 @@ class RemoteIdentityDataSource {
             (rhsNode['node']['children'] as List<dynamic>)
                 .map((e) => HashEntity.fromHex(e as String).toJson())
                 .toList();
-        rhsNode['node']['hash'] =
-            HashEntity.fromHex((rhsNode['node']['hash'] as String)).toJson();
+        rhsNode['node']['hash'] = HashEntity.fromHex(
+          (rhsNode['node']['hash'] as String),
+        ).toJson();
         rhsNode['node']['type'] = "unknown";
         rhsNode['node']['type'] = NodeTypeEntityMapper()
             .mapFrom(NodeEntity.fromJson(rhsNode['node']))
@@ -61,7 +50,8 @@ class RemoteIdentityDataSource {
         return rhsNodeResponse;
       } else {
         _stacktraceManager.addError(
-            "Error fetching state roots with error: ${rhsResponse.statusCode} ${rhsResponse.body}");
+          "Error fetching state roots with error: ${rhsResponse.statusCode} ${rhsResponse.body}",
+        );
         throw NetworkException(
           statusCode: rhsResponse.statusCode,
           errorMessage: rhsResponse.body,
@@ -87,8 +77,9 @@ class RemoteIdentityDataSource {
     try {
       /// FIXME: this 2 lines should go to a DS and be called in a repo
       // 1. Fetch state roots from RHS
-      final rhsNode =
-          await fetchStateRoots(url: rhsBaseUrl + "/" + identityState);
+      final rhsNode = await fetchStateRoots(
+        url: rhsBaseUrl + "/" + identityState,
+      );
       final rhsNodeType = rhsNode.node.type;
       StateIdentifierMapper identifierMapper = StateIdentifierMapper();
 
@@ -99,12 +90,15 @@ class RemoteIdentityDataSource {
         revTreeRootHash = rhsNode.node.children[1].toString();
         issuer = {
           "state": identifierMapper.mapTo(rhsNode.node.hash.toString()),
-          "rootOfRoots":
-              identifierMapper.mapTo(rhsNode.node.children[2].toString()),
-          "claimsTreeRoot":
-              identifierMapper.mapTo(rhsNode.node.children[0].toString()),
-          "revocationTreeRoot":
-              identifierMapper.mapTo(rhsNode.node.children[1].toString()),
+          "rootOfRoots": identifierMapper.mapTo(
+            rhsNode.node.children[2].toString(),
+          ),
+          "claimsTreeRoot": identifierMapper.mapTo(
+            rhsNode.node.children[0].toString(),
+          ),
+          "revocationTreeRoot": identifierMapper.mapTo(
+            rhsNode.node.children[1].toString(),
+          ),
         };
       }
 
@@ -171,18 +165,19 @@ class RemoteIdentityDataSource {
     return byte[n ~/ 8] & (1 << (n % 8)) != 0;
   }
 
-  Map<String, dynamic> _mkProof(Map<String, dynamic>? issuer, bool exists,
-      List<String> siblings, Map<String, String>? nodeAux) {
+  Map<String, dynamic> _mkProof(
+    Map<String, dynamic>? issuer,
+    bool exists,
+    List<String> siblings,
+    Map<String, String>? nodeAux,
+  ) {
     Map<String, dynamic> result = {};
 
     if (issuer != null) {
       result["issuer"] = issuer;
     }
 
-    Map<String, dynamic> mtp = {
-      "existence": exists,
-      "siblings": siblings,
-    };
+    Map<String, dynamic> mtp = {"existence": exists, "siblings": siblings};
     if (nodeAux != null) {
       mtp["nodeAux"] = nodeAux;
     }

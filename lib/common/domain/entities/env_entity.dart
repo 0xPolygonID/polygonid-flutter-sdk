@@ -13,8 +13,6 @@ class EnvEntity {
   final List<DidMethodEntity> didMethods;
 
   final String? stacktraceEncryptionKey;
-  final String? pinataGateway;
-  final String? pinataGatewayToken;
 
   final String? cacheDir;
   final String? method;
@@ -27,8 +25,6 @@ class EnvEntity {
     this.chainConfigs = const {},
     this.didMethods = const [],
     this.stacktraceEncryptionKey,
-    this.pinataGateway,
-    this.pinataGatewayToken,
     this.cacheDir,
     this.method,
   });
@@ -41,8 +37,6 @@ class EnvEntity {
     required this.chainConfigs,
     required this.didMethods,
     this.stacktraceEncryptionKey,
-    this.pinataGateway,
-    this.pinataGatewayToken,
     this.cacheDir,
     this.method,
   });
@@ -60,8 +54,6 @@ class EnvEntity {
           .map((e) => DidMethodEntity.fromJson(e))
           .toList(),
       stacktraceEncryptionKey: json['stacktraceEncryptionKey'],
-      pinataGateway: json['pinataGateway'],
-      pinataGatewayToken: json['pinataGatewayToken'],
       cacheDir: json['cacheDir'],
       method: json['method'],
     );
@@ -77,15 +69,13 @@ class EnvEntity {
     ),
     'didMethods': didMethods.map((e) => e.toJson()).toList(),
     'stacktraceEncryptionKey': stacktraceEncryptionKey,
-    'pinataGateway': pinataGateway,
-    'pinataGatewayToken': pinataGatewayToken,
     'cacheDir': cacheDir,
     'method': method,
   };
 
   @override
   String toString() {
-    return 'EnvEntity{pushUrl: $pushUrl, ipfsUrl: $ipfsUrl, chainConfig: $chainConfigs, didMethods: $didMethods, stacktraceEncryptionKey: $stacktraceEncryptionKey, , pinataGateway: $pinataGateway, pinataGatewayToken: $pinataGatewayToken, cacheDir: $cacheDir}';
+    return 'EnvEntity{pushUrl: $pushUrl, ipfsUrl: $ipfsUrl, chainConfig: $chainConfigs, didMethods: $didMethods, stacktraceEncryptionKey: $stacktraceEncryptionKey, cacheDir: $cacheDir}';
   }
 
   @override
@@ -98,8 +88,6 @@ class EnvEntity {
           mapEquals(chainConfigs, other.chainConfigs) &&
           listEquals(didMethods, other.didMethods) &&
           stacktraceEncryptionKey == other.stacktraceEncryptionKey &&
-          pinataGateway == other.pinataGateway &&
-          pinataGatewayToken == other.pinataGatewayToken &&
           cacheDir == other.cacheDir;
 
   @override
@@ -117,8 +105,6 @@ class EnvEntity {
     Map<String, ChainConfigEntity>? chainConfigs,
     List<DidMethodEntity>? didMethods,
     String? stacktraceEncryptionKey,
-    String? pinataGateway,
-    String? pinataGatewayToken,
     String? cacheDir,
     String? method,
   }) {
@@ -131,8 +117,6 @@ class EnvEntity {
       didMethods: didMethods ?? this.didMethods,
       stacktraceEncryptionKey:
           stacktraceEncryptionKey ?? this.stacktraceEncryptionKey,
-      pinataGateway: pinataGateway ?? this.pinataGateway,
-      pinataGatewayToken: pinataGatewayToken ?? this.pinataGatewayToken,
       cacheDir: cacheDir ?? this.cacheDir,
       method: method ?? this.method,
     );
