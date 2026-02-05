@@ -403,11 +403,9 @@ class RemoteIden3commDataSource {
     }
   }
 
-  Future<DisplayType> fetchDisplayType({
-    required DisplayMethod displayMethod,
-  }) async {
+  Future<Map<String, dynamic>> fetchDisplayMethod({required String url}) async {
     try {
-      String displayTypeUrl = displayMethod.id;
+      String displayTypeUrl = url;
 
       if (displayTypeUrl.toLowerCase().startsWith("ipfs://")) {
         displayTypeUrl = await IPFSUtils.getIpfsFileUrl(displayTypeUrl);
@@ -445,7 +443,7 @@ class RemoteIden3commDataSource {
           data = response.data;
         }
 
-        return DisplayType.fromJson(data, type: displayMethod.type);
+        return data;
       } else {
         _stacktraceManager.addError(
           "[RemoteIden3commDataSource] fetchDisplayType: ${response.statusCode} ${response.data}",
@@ -464,6 +462,13 @@ class RemoteIden3commDataSource {
         errorMessage: error.toString(),
       );
     }
+  }
+
+  Future<DisplayType> fetchDisplayType({
+    required DisplayMethod displayMethod,
+  }) async {
+    final displayType = await fetchDisplayMethod(url: displayMethod.id);
+    return DisplayType.fromJson(displayType, type: displayMethod.type);
   }
 
   ///

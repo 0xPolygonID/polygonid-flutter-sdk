@@ -77,6 +77,9 @@ abstract class PolygonIdSdkIden3comm {
   Future<Map<String, dynamic>> fetchSchema({required String schemaUrl});
 
   /// Fetches a schema from a given [schemaUrl].
+  Future<Map<String, dynamic>> fetchDisplayMethod({required String schemaUrl});
+
+  /// Fetches and parses [DisplayType] for given [DisplayMethod].
   Future<DisplayType> fetchDisplayType({required DisplayMethod displayMethod});
 
   /// Returns a list of [FilterEntity] from an iden3comm message to
@@ -536,6 +539,12 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   Future<Map<String, dynamic>> fetchSchema({required String schemaUrl}) {
     _stacktraceManager.clearStacktrace();
     return _fetchSchemaUseCase.execute(param: schemaUrl);
+  }
+
+  @override
+  Future<Map<String, dynamic>> fetchDisplayMethod({required String schemaUrl}) {
+    _stacktraceManager.clearStacktrace();
+    return _remoteIden3commDataSource.fetchDisplayMethod(url: schemaUrl);
   }
 
   @override

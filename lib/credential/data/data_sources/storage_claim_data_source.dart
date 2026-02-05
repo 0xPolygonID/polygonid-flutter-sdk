@@ -20,9 +20,8 @@ class CredentialStoreRefWrapper {
   CredentialStoreRefWrapper(@Named(claimStoreName) this._store);
 
   Future<List<RecordSnapshot<String, Map<String, Object?>>>> find(
-    DatabaseClient databaseClient, {
-    Finder? finder,
-  }) {
+      DatabaseClient databaseClient,
+      {Finder? finder}) {
     return _store.find(databaseClient, finder: finder);
   }
 
@@ -31,11 +30,8 @@ class CredentialStoreRefWrapper {
   }
 
   Future<Map<String, Object?>> put(
-    DatabaseClient database,
-    String key,
-    Map<String, Object?> value, {
-    bool? merge,
-  }) {
+      DatabaseClient database, String key, Map<String, Object?> value,
+      {bool? merge}) {
     return _store.record(key).put(database, value, merge: merge);
   }
 
@@ -81,10 +77,7 @@ class CredentialStorageDataSource extends SecureIdentityStorageDataSource {
   }) async {
     for (CredentialDTO credential in credentials) {
       await _storeRefWrapper.put(
-        transaction,
-        credential.id,
-        credential.toJson(),
-      );
+          transaction, credential.id, credential.toJson());
     }
   }
 
@@ -100,9 +93,7 @@ class CredentialStorageDataSource extends SecureIdentityStorageDataSource {
       database = await getDatabase(did: did, encryptionKey: encryptionKey);
       await database.transaction(
         (t) => removeCredentialsTransact(
-          transaction: t,
-          credentialIds: credentialIds,
-        ),
+            transaction: t, credentialIds: credentialIds),
       );
     } finally {
       await database?.close();
@@ -150,10 +141,8 @@ class CredentialStorageDataSource extends SecureIdentityStorageDataSource {
     required String encryptionKey,
     List<CredentialSortOrder> credentialSortOrderList = const [],
   }) async {
-    Database database = await getDatabase(
-      did: did,
-      encryptionKey: encryptionKey,
-    );
+    Database database =
+        await getDatabase(did: did, encryptionKey: encryptionKey);
 
     try {
       List<SortOrder> sortOrders = [];
@@ -177,9 +166,12 @@ class CredentialStorageDataSource extends SecureIdentityStorageDataSource {
 
       List<RecordSnapshot<String, Map<String, Object?>>> snapshots =
           await _storeRefWrapper.find(
-            database,
-            finder: Finder(filter: filter, sortOrders: sortOrders),
-          );
+        database,
+        finder: Finder(
+          filter: filter,
+          sortOrders: sortOrders,
+        ),
+      );
 
       List<CredentialDTO> credentials = snapshots.map((snapshot) {
         CredentialDTO credentialDTO = CredentialDTO.fromJson(snapshot.value);
@@ -200,13 +192,11 @@ class CredentialStorageDataSource extends SecureIdentityStorageDataSource {
     final database = await getDatabase(did: did, encryptionKey: encryptionKey);
 
     try {
-      final partialIdFiler = Filter.custom(
-        (record) =>
-            (record.value as Map<String, Object?>)['id']?.toString().contains(
-              partialId,
-            ) ??
-            false,
-      );
+      final partialIdFiler = Filter.custom((record) =>
+          (record.value as Map<String, Object?>)['id']
+              ?.toString()
+              .contains(partialId) ??
+          false);
 
       final snapshots = await _storeRefWrapper.find(
         database,
@@ -230,10 +220,8 @@ class CredentialStorageDataSource extends SecureIdentityStorageDataSource {
     Database db = await getDatabase(did: did, encryptionKey: encryptionKey);
 
     try {
-      Map<String, Object?>? credential = await _storeRefWrapper.get(
-        db,
-        credentialId,
-      );
+      Map<String, Object?>? credential =
+          await _storeRefWrapper.get(db, credentialId);
       if (credential == null) {
         StacktraceManager stacktraceManager = getItSdk<StacktraceManager>();
         stacktraceManager.addError('Credential not found by id');
