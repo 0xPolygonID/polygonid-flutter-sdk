@@ -144,7 +144,7 @@ void main() {
           nonRevProof: captureAnyNamed('nonRevProof'),
           gistProof: captureAnyNamed('gistProof'),
           treeState: captureAnyNamed('treeState'),
-          circuitId: anyNamed('circuitType'),
+          circuitId: anyNamed('circuitId'),
           config: captureAnyNamed('config'),
         ),
       ).captured;
