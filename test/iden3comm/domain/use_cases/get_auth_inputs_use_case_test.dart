@@ -89,7 +89,7 @@ void main() {
         nonRevProof: anyNamed('nonRevProof'),
         gistProof: anyNamed('gistProof'),
         treeState: anyNamed('treeState'),
-        circuitId: anyNamed('circuitType'),
+        circuitId: anyNamed('circuitId'),
         config: anyNamed('config'),
       ),
     ).thenAnswer(
@@ -193,7 +193,7 @@ void main() {
           incProof: captureAnyNamed('incProof'),
           nonRevProof: captureAnyNamed('nonRevProof'),
           gistProof: captureAnyNamed('gistProof'),
-          circuitId: anyNamed('circuitType'),
+          circuitId: anyNamed('circuitId'),
           treeState: captureAnyNamed('treeState')));
     },
   );
