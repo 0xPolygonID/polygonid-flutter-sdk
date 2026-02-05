@@ -542,9 +542,9 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }
 
   @override
-  Future<Map<String, dynamic>> fetchDisplayMethod({required String schemaUrl}) {
+  Future<Map<String, dynamic>> fetchDisplayMethod({required String url}) {
     _stacktraceManager.clearStacktrace();
-    return _remoteIden3commDataSource.fetchDisplayMethod(url: schemaUrl);
+    return _remoteIden3commDataSource.fetchDisplayMethod(url: url);
   }
 
   @override
