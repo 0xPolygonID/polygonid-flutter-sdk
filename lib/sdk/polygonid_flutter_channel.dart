@@ -1291,7 +1291,7 @@ class PolygonIdFlutterChannel
   }
 
   @override
-  Future<Map<String, dynamic>> fetchDisplayMethod({required String schemaUrl}) {
+  Future<Map<String, dynamic>> fetchDisplayMethod({required String url}) {
     // TODO: implement fetchDisplayMethod
     throw UnimplementedError();
   }
