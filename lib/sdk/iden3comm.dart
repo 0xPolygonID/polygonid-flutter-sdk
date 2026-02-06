@@ -8,6 +8,8 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 import 'package:polygonid_flutter_sdk/common/package_manager/package_manager_impl.dart';
 import 'package:polygonid_flutter_sdk/common/package_manager/plain_packer.dart';
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/display_type/display_type.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/add_did_profile_info_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_did_profile_info_list_use_case.dart';
@@ -74,8 +76,11 @@ abstract class PolygonIdSdkIden3comm {
   /// Fetches a schema from a given [schemaUrl].
   Future<Map<String, dynamic>> fetchSchema({required String schemaUrl});
 
-  /// Fetches a schema from a given [schemaUrl].
+  /// Fetches a display method JSON from a given [url].
   Future<Map<String, dynamic>> fetchDisplayMethod({required String url});
+
+  /// Fetches and parses [DisplayType] for given [DisplayMethod].
+  Future<DisplayType> fetchDisplayType({required DisplayMethod displayMethod});
 
   /// Returns a list of [FilterEntity] from an iden3comm message to
   /// apply to [Credential.getCredentials]
@@ -539,7 +544,15 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   @override
   Future<Map<String, dynamic>> fetchDisplayMethod({required String url}) {
     _stacktraceManager.clearStacktrace();
-    return _remoteIden3commDataSource.fetchDisplayType(url: url);
+    return _remoteIden3commDataSource.fetchDisplayMethod(url: url);
+  }
+
+  @override
+  Future<DisplayType> fetchDisplayType({required DisplayMethod displayMethod}) {
+    _stacktraceManager.clearStacktrace();
+    return _remoteIden3commDataSource.fetchDisplayType(
+      displayMethod: displayMethod,
+    );
   }
 
   @override

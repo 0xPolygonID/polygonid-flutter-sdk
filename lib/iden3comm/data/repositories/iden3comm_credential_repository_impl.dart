@@ -1,4 +1,3 @@
-import 'package:polygonid_flutter_sdk/jose/jwk.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
@@ -11,6 +10,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/proof_request_filte
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
+import 'package:polygonid_flutter_sdk/jose/jwk.dart';
 
 class Iden3commCredentialRepositoryImpl extends Iden3commCredentialRepository {
   final RemoteIden3commDataSource _remoteIden3commDataSource;
@@ -66,11 +66,9 @@ class Iden3commCredentialRepositoryImpl extends Iden3commCredentialRepository {
       dto.schema = schema;
 
       if (displayMethod != null) {
-        final Map<String, dynamic> displayType =
-            await _remoteIden3commDataSource.fetchDisplayType(
-              url: displayMethod.id,
-            );
-        displayType['type'] = displayMethod.type;
+        final displayType = await _remoteIden3commDataSource.fetchDisplayType(
+          displayMethod: displayMethod,
+        );
         dto.displayType = displayType;
       }
     } catch (_) {

@@ -13,6 +13,8 @@ import 'package:polygonid_flutter_sdk/common/utils/collection_utils.dart';
 import 'package:polygonid_flutter_sdk/common/utils/hex_utils.dart';
 import 'package:polygonid_flutter_sdk/common/utils/ipfs.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/display_type/display_type.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/protocol_message_type.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_encrypted_issuance_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_issuance_response.dart';
@@ -401,7 +403,7 @@ class RemoteIden3commDataSource {
     }
   }
 
-  Future<Map<String, dynamic>> fetchDisplayType({required String url}) async {
+  Future<Map<String, dynamic>> fetchDisplayMethod({required String url}) async {
     try {
       String displayTypeUrl = url;
 
@@ -411,7 +413,7 @@ class RemoteIden3commDataSource {
 
       final displayTypeUri = Uri.parse(displayTypeUrl);
       _stacktraceManager.addTrace(
-        "[RemoteIden3commDataSource] fetchDisplayType original url: $url",
+        "[RemoteIden3commDataSource] fetchDisplayType original url: $displayTypeUrl",
       );
 
       final dio = Dio();
@@ -460,6 +462,13 @@ class RemoteIden3commDataSource {
         errorMessage: error.toString(),
       );
     }
+  }
+
+  Future<DisplayType> fetchDisplayType({
+    required DisplayMethod displayMethod,
+  }) async {
+    final displayType = await fetchDisplayMethod(url: displayMethod.id);
+    return DisplayType.fromJson(displayType, type: displayMethod.type);
   }
 
   ///

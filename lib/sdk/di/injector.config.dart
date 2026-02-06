@@ -76,8 +76,6 @@ import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart'
     as _i294;
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_state_mapper.dart'
     as _i497;
-import 'package:polygonid_flutter_sdk/credential/data/mappers/display_type_mapper.dart'
-    as _i590;
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart'
     as _i309;
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/add_did_profile_info_use_case.dart'
@@ -393,7 +391,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i497.CredentialStateMapper>(
       () => _i497.CredentialStateMapper(),
     );
-    gh.factory<_i590.DisplayTypeMapper>(() => _i590.DisplayTypeMapper());
     gh.factory<_i1026.InteractionMapper>(() => _i1026.InteractionMapper());
     gh.factory<_i968.GetFetchRequestsUseCase>(
       () => _i968.GetFetchRequestsUseCase(),
@@ -459,13 +456,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i310.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.didProfileInfoStore,
       instanceName: 'didProfileInfoStore',
-    );
-    gh.factory<_i294.CredentialMapper>(
-      () => _i294.CredentialMapper(
-        gh<_i497.CredentialStateMapper>(),
-        gh<_i894.CredentialInfoMapper>(),
-        gh<_i590.DisplayTypeMapper>(),
-      ),
     );
     gh.factory<_i310.StoreRef<String, Map<String, Object?>>>(
       () => databaseModule.identityStore,
@@ -553,12 +543,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i310.StoreRef<String, dynamic>>(instanceName: 'keyValueStore'),
       ),
     );
-    gh.factory<_i19.CredentialStatusCheckUseCase>(
-      () => _i19.CredentialStatusCheckUseCase(
-        gh<_i758.LibPolygonIdCoreCredentialDataSource>(),
-        gh<_i294.CredentialMapper>(),
-      ),
-    );
     gh.factory<_i136.LibPolygonIdCoreIdentityDataSource>(
       () => _i136.LibPolygonIdCoreIdentityDataSource(
         gh<_i852.PolygonIdCoreIdentity>(),
@@ -576,6 +560,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<Map<String, _i310.StoreRef<String, Map<String, Object?>>>>(
           instanceName: 'identityStateStore',
         ),
+      ),
+    );
+    gh.factory<_i294.CredentialMapper>(
+      () => _i294.CredentialMapper(
+        gh<_i497.CredentialStateMapper>(),
+        gh<_i894.CredentialInfoMapper>(),
       ),
     );
     gh.factoryParamAsync<_i310.Database, String?, String?>(
@@ -689,6 +679,12 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i41.LibPolygonIdCoreProofDataSource(
         gh<_i41.LibPolygonIdCoreWrapper>(),
         gh<_i267.StacktraceManager>(),
+      ),
+    );
+    gh.factory<_i19.CredentialStatusCheckUseCase>(
+      () => _i19.CredentialStatusCheckUseCase(
+        gh<_i758.LibPolygonIdCoreCredentialDataSource>(),
+        gh<_i294.CredentialMapper>(),
       ),
     );
     gh.factoryAsync<_i1000.CircuitsRepositoryImpl>(
