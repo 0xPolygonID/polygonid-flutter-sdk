@@ -11,10 +11,7 @@ class CrosschainRepository {
   final ResolverDataSource _crosschainDataSource;
   final IdentityRepository _identityRepository;
 
-  CrosschainRepository(
-    this._crosschainDataSource,
-    this._identityRepository,
-  );
+  CrosschainRepository(this._crosschainDataSource, this._identityRepository);
 
   Future<List<MessageWithSignature>> getCrosschainStatesWithSignatures({
     required String universalResolverUrl,
@@ -32,16 +29,14 @@ class CrosschainRepository {
 
     final responses = await Future.wait(requests);
 
-    final statesWithSignatures = responses.fold(
-      <ResolverResponse>[],
-      (a, b) => [...a, ...b],
-    ).map((m) {
-      final proof = m.didResolutionMetadata.proof.first;
-      return (
-        message: proof.eip712.message,
-        signature: proof.proofValue,
-      );
-    }).toList();
+    final statesWithSignatures = responses
+        .fold(<ResolverResponse>[], (a, b) => [...a, ...b])
+        .where((m) => m.didResolutionMetadata.proof != null)
+        .map((m) {
+          final proof = m.didResolutionMetadata.proof!.first;
+          return (message: proof.eip712.message, signature: proof.proofValue);
+        })
+        .toList();
 
     return statesWithSignatures;
   }
