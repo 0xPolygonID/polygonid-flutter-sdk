@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/circuits_to_download_param.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
@@ -55,6 +57,17 @@ abstract class PolygonIdSdkProof {
   Future<List<MessageWithSignature>> getCrosschainProofs({
     required String universalResolverUrl,
     required List<PublicStatesInfo> stateInfo,
+  });
+
+  /// Get crosschain proofs from the universal resolver
+  /// [universalResolverUrl] - the universal resolver URL
+  /// [proofs] - ZK proofs
+  /// [config] - the config
+  /// Returns a list of [MessageWithSignature]
+  Future<List<MessageWithSignature>> getCrosschainProofsForProofs({
+    required String universalResolverUrl,
+    required List<Iden3commProofEntity> proofs,
+    required EnvConfigEntity config,
   });
 
   Future<String> getProofFromSmartContract({required String inputs});
@@ -123,25 +136,26 @@ class Proof implements PolygonIdSdkProof {
     _stacktraceManager.clear();
     _stacktraceManager.addTrace("PolygonIdSdk.Proof.prove called");
     return generateZKProofUseCase.execute(
-        param: GenerateZKProofParam(
-      identifier,
-      profileNonce,
-      claimSubjectProfileNonce,
-      credential,
-      circuitData,
-      authClaim,
-      incProof,
-      nonRevProof,
-      gistProof,
-      treeState,
-      challenge,
-      signature,
-      proofScopeRequest,
-      config,
-      verifierId,
-      linkNonce,
-      transactionData,
-    ));
+      param: GenerateZKProofParam(
+        identifier,
+        profileNonce,
+        claimSubjectProfileNonce,
+        credential,
+        circuitData,
+        authClaim,
+        incProof,
+        nonRevProof,
+        gistProof,
+        treeState,
+        challenge,
+        signature,
+        proofScopeRequest,
+        config,
+        verifierId,
+        linkNonce,
+        transactionData,
+      ),
+    );
   }
 
   @override
@@ -152,6 +166,19 @@ class Proof implements PolygonIdSdkProof {
     return _crosschainRepository.getCrosschainStatesWithSignatures(
       universalResolverUrl: universalResolverUrl,
       stateInfo: stateInfo,
+    );
+  }
+
+  @override
+  Future<List<MessageWithSignature>> getCrosschainProofsForProofs({
+    required String universalResolverUrl,
+    required List<Iden3commProofEntity> proofs,
+    required EnvConfigEntity config,
+  }) async {
+    return _crosschainRepository.getCrosschainStatesWithSignaturesForProofs(
+      universalResolverUrl: universalResolverUrl,
+      proofs: proofs,
+      config: config,
     );
   }
 
@@ -176,11 +203,16 @@ class Proof implements PolygonIdSdkProof {
       var libPolygonIdIdentity = getItSdk<LibPolygonIdCoreIdentityDataSource>();
       String convertedId = libPolygonIdIdentity.genesisIdToBigInt(id);
       ContractAbi contractAbi = ContractAbi.fromJson(
-          jsonEncode(jsonDecode(stateAbiJson)["abi"]), 'State');
-      EthereumAddress ethereumAddress =
-          EthereumAddress.fromHex(stateContractAddress);
-      DeployedContract contract =
-          DeployedContract(contractAbi, ethereumAddress);
+        jsonEncode(jsonDecode(stateAbiJson)["abi"]),
+        'State',
+      );
+      EthereumAddress ethereumAddress = EthereumAddress.fromHex(
+        stateContractAddress,
+      );
+      DeployedContract contract = DeployedContract(
+        contractAbi,
+        ethereumAddress,
+      );
       String? cachedGistProof = await GistProofCache().getGistProof(
         id: convertedId,
         deployedContract: contract,
@@ -188,15 +220,17 @@ class Proof implements PolygonIdSdkProof {
       );
       return cachedGistProof;
     } catch (e) {
-      _stacktraceManager
-          .addTrace("PolygonIdSdk.Proof.preCacheGistProof error: $e");
+      _stacktraceManager.addTrace(
+        "PolygonIdSdk.Proof.preCacheGistProof error: $e",
+      );
       return null;
     }
   }
 
   Future<String> getProofFromSmartContract({required String inputs}) async {
-    String proof = await ProofFromSmartContract()
-        .getProofFromSmartContract(inputs: inputs);
+    String proof = await ProofFromSmartContract().getProofFromSmartContract(
+      inputs: inputs,
+    );
     return proof;
   }
 
@@ -207,7 +241,8 @@ class Proof implements PolygonIdSdkProof {
   }) async {
     _stacktraceManager.clear();
     _stacktraceManager.addTrace(
-        "PolygonIdSdk.Proof.isAlreadyDownloadedCircuitsFromServer called");
+      "PolygonIdSdk.Proof.isAlreadyDownloadedCircuitsFromServer called",
+    );
     return _circuitsFilesExistUseCase.execute(param: circuitsFileName);
   }
 
@@ -227,8 +262,9 @@ class Proof implements PolygonIdSdkProof {
   @override
   Future<void> cancelDownloadCircuits() async {
     _stacktraceManager.clear();
-    _stacktraceManager
-        .addTrace("PolygonIdSdk.Proof.cancelDownloadCircuits called");
+    _stacktraceManager.addTrace(
+      "PolygonIdSdk.Proof.cancelDownloadCircuits called",
+    );
     return _cancelDownloadCircuitsUseCase.execute();
   }
 }

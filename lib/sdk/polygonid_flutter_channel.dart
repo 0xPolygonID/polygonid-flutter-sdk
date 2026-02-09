@@ -1338,4 +1338,14 @@ class PolygonIdFlutterChannel
     // TODO: implement handleDiscoveryMessage
     throw UnimplementedError();
   }
+
+  @override
+  Future<List<MessageWithSignature>> getCrosschainProofsForProofs({
+    required String universalResolverUrl,
+    required List<Iden3commProofEntity> proofs,
+    required EnvConfigEntity config,
+  }) {
+    // TODO: implement getCrosschainProofsForProofs
+    throw UnimplementedError();
+  }
 }
