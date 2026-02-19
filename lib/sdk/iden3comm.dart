@@ -719,7 +719,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     required String privateKey,
     String? pushToken,
     String? challenge,
-    CircuitId circuitId = const AuthV2Circuit(),
+    CircuitId circuitId = CircuitId.authV2,
   }) {
     _stacktraceManager.clearStacktrace();
     if (message is! AuthorizationRequestMessage) {
@@ -758,7 +758,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     String? pushToken,
     List<RequestAndCredentials>? requestsAndCreds,
     String? challenge,
-    CircuitId circuitId = const AuthV2Circuit(),
+    CircuitId circuitId = CircuitId.authV2,
   }) async {
     try {
       return await Authenticate().authenticate(
@@ -927,7 +927,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     required String privateKey,
     required BigInt profileNonce,
     required String iden3message,
-    CircuitId circuitId = const AuthV2Circuit(),
+    CircuitId circuitId = CircuitId.authV2,
   }) {
     return _getAuthTokenUseCase.execute(
       param: GetAuthTokenParam(
@@ -951,7 +951,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     String? pushToken,
     List<RequestAndCredentials>? requestsAndCreds,
     String? challenge,
-    CircuitId circuitId = const AuthV2Circuit(),
+    CircuitId circuitId = CircuitId.authV2,
   }) async {
     try {
       return await Authenticate().getAuthResponseToken(

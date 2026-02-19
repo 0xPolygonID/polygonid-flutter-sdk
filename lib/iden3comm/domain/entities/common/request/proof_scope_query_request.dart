@@ -150,15 +150,14 @@ class ZeroKnowledgeProofQuery {
   }
 
   Map<String, dynamic> toJson() => {
-        'allowedIssuers': allowedIssuers,
-        'context': context,
-        'type': type,
-        'credentialSubject': credentialSubject,
-        'skipClaimRevocationCheck': skipClaimRevocationCheck,
-        'proofType': proofType,
-        'groupId': groupId,
-      }..removeWhere(
-          (dynamic key, dynamic value) => key == null || value == null);
+    'allowedIssuers': allowedIssuers,
+    'context': context,
+    'type': type,
+    'credentialSubject': credentialSubject,
+    'skipClaimRevocationCheck': skipClaimRevocationCheck,
+    'proofType': proofType,
+    'groupId': groupId,
+  }..removeWhere((dynamic key, dynamic value) => key == null || value == null);
 
   @override
   String toString() =>
@@ -175,9 +174,32 @@ class ZeroKnowledgeProofQuery {
           proofType == other.proofType &&
           skipClaimRevocationCheck == other.skipClaimRevocationCheck &&
           groupId == other.groupId &&
-          const DeepCollectionEquality()
-              .equals(credentialSubject, other.credentialSubject);
+          const DeepCollectionEquality().equals(
+            credentialSubject,
+            other.credentialSubject,
+          );
 
   @override
   int get hashCode => runtimeType.hashCode;
+
+  ZeroKnowledgeProofQuery copyWith({
+    List<String>? allowedIssuers,
+    String? context,
+    Map<String, dynamic>? credentialSubject,
+    String? proofType,
+    bool? skipClaimRevocationCheck,
+    int? groupId,
+    String? type,
+  }) {
+    return ZeroKnowledgeProofQuery(
+      allowedIssuers: allowedIssuers ?? this.allowedIssuers,
+      context: context ?? this.context,
+      credentialSubject: credentialSubject ?? this.credentialSubject,
+      proofType: proofType ?? this.proofType,
+      skipClaimRevocationCheck:
+          skipClaimRevocationCheck ?? this.skipClaimRevocationCheck,
+      groupId: groupId ?? this.groupId,
+      type: type ?? this.type,
+    );
+  }
 }

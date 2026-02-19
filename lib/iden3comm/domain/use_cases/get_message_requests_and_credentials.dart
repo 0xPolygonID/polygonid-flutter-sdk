@@ -201,7 +201,7 @@ class GetMessageRequestsAndCredsUseCase
           );
         }
 
-        CircuitId circuitId = CircuitIds.fromId(rawCircuitId);
+        CircuitId circuitId = CircuitId.fromId(rawCircuitId);
 
         return circuitId.isAnyProofTypeSupported(proofTypes);
       }).toList();

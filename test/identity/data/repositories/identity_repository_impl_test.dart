@@ -56,9 +56,9 @@ final mockAuthResponse = AuthorizationResponseMessage(
   to: Iden3commMocks.authRequest.from,
   from: CommonMocks.identifier,
   typ: "application/iden3comm-plain-json",
-  body: AuthorizationMessageResponseBody(
+  body: AuthorizationResponseMessageBody(
     message: Iden3commMocks.authRequest.body.message,
-    proofs: [],
+    scope: [],
     did_doc: null,
   ),
 );

@@ -18,39 +18,61 @@ typedef JsonObject = Map<String, JsonValue>;
 typedef JsonDocumentObject = Map<String, JsonDocumentObjectValue>;
 
 /// JSON document object allowed values
-typedef JsonDocumentObjectValue =
-    Object; // String | num | bool | JsonDocumentObject | List<JsonDocumentObjectValue>
+/// String | num | bool | JsonDocumentObject | List<JsonDocumentObjectValue>
+typedef JsonDocumentObjectValue = Object;
 
 /// Parameters for any packer
+/// Base class that acts as a dynamic map for arbitrary parameters
 class PackerParams {
-  final Map<String, dynamic> params;
+  final Map<String, dynamic> _params;
 
-  const PackerParams([this.params = const {}]);
+  const PackerParams([Map<String, dynamic>? params])
+    : _params = params ?? const {};
 
-  dynamic operator [](String key) => params[key];
+  /// Get a parameter by key
+  dynamic operator [](String key) => _params[key];
+
+  /// Check if a parameter exists
+  bool containsKey(String key) => _params.containsKey(key);
+
+  /// Get all parameters as a map
+  Map<String, dynamic> toMap() => Map.unmodifiable(_params);
+
+  /// Create a new PackerParams with additional parameters
+  PackerParams copyWith(Map<String, dynamic> additional) {
+    return PackerParams({..._params, ...additional});
+  }
 }
+
+/// Parameters for plain packer (alias for PackerParams)
+typedef PlainPackerParams = PackerParams;
 
 /// Parameters for ZKP packer
 class ZKPPackerParams extends PackerParams {
   final String senderDID;
-  @Deprecated('Use other methods instead')
-  final Object? profileNonce; // num | String
+
   final ProvingMethodAlg provingMethodAlg;
 
   const ZKPPackerParams({
     required this.senderDID,
-    this.profileNonce,
     required this.provingMethodAlg,
-    Map<String, dynamic> params = const {},
+    Map<String, dynamic>? params,
   }) : super(params);
+
+  @override
+  Map<String, dynamic> toMap() => {
+    ...super.toMap(),
+    'senderDID': senderDID,
+    'provingMethodAlg': provingMethodAlg,
+  };
 }
 
-/// Function to sign data with a verification method
+/// SignerFn is a function to sign data with a verification method
 /// Returns Promise of signature bytes
 typedef SignerFn =
     Future<Uint8List> Function(VerificationMethod vm, Uint8List dataToSign);
 
-/// JWS packer parameters
+/// Parameters for JWS packer
 class JWSPackerParams extends PackerParams {
   final String alg;
   final String? kid;
@@ -62,13 +84,41 @@ class JWSPackerParams extends PackerParams {
     this.kid,
     this.didDocument,
     this.signer,
-    Map<String, dynamic> params = const {},
+    Map<String, dynamic>? params,
   }) : super(params);
+
+  @override
+  Map<String, dynamic> toMap() => {
+    ...super.toMap(),
+    'alg': alg,
+    if (kid != null) 'kid': kid,
+    if (didDocument != null) 'didDocument': didDocument,
+    // Note: signer function cannot be serialized to map
+  };
 }
 
-/// Parameters for plain packer
-class PlainPackerParams extends PackerParams {
-  const PlainPackerParams([super.params]);
+/// Parameters for JWE packer
+class JWEPackerParams extends PackerParams {
+  final String? alg;
+  final String? enc;
+  final String? kid;
+
+  // Add other JWE-specific fields as needed
+
+  const JWEPackerParams({
+    this.alg,
+    this.enc,
+    this.kid,
+    Map<String, dynamic>? params,
+  }) : super(params);
+
+  @override
+  Map<String, dynamic> toMap() => {
+    ...super.toMap(),
+    if (alg != null) 'alg': alg,
+    if (enc != null) 'enc': enc,
+    if (kid != null) 'kid': kid,
+  };
 }
 
 /// Signature of auth signals function preparer

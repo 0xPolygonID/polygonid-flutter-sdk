@@ -98,9 +98,9 @@ class Iden3commRepositoryImpl extends Iden3commRepository {
       to: request.from,
       from: did,
       typ: messageTypeZkp,
-      body: AuthorizationMessageResponseBody(
+      body: AuthorizationResponseMessageBody(
         message: request.body.message,
-        proofs: scope,
+        scope: scope,
         did_doc: didDocument,
       ),
     );

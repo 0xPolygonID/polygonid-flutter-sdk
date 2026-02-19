@@ -128,9 +128,8 @@ class GenerateIden3commProofUseCase
       );
     }
 
-    if (circuitId == CircuitIds.mtpOnChain.id ||
-        circuitId == CircuitIds.sigOnChain.id ||
-        circuitId == CircuitIds.circuitsV3OnChain.id) {
+    final parsedCircuitId = CircuitId.fromId(circuitId);
+    if (parsedCircuitId.isOnChain) {
       //on chain start
       _stacktraceManager.addTrace(
         "[GenerateIden3commProofUseCase] OnChain ${param.request.circuitId}",

@@ -53,7 +53,7 @@ import 'auth_body_response.dart';
 typedef AuthResponseIden3MessageEntity = AuthorizationResponseMessage;
 
 class AuthorizationResponseMessage
-    extends Iden3Message<AuthorizationMessageResponseBody> {
+    extends Iden3Message<AuthorizationResponseMessageBody> {
   @override
   final String from;
 
@@ -84,8 +84,8 @@ class AuthorizationResponseMessage
   /// @param [Map<String, dynamic>] json
   /// @returns [AuthorizationRequestMessage]
   factory AuthorizationResponseMessage.fromJson(Map<String, dynamic> json) {
-    AuthorizationMessageResponseBody body =
-        AuthorizationMessageResponseBody.fromJson(json['body']);
+    AuthorizationResponseMessageBody body =
+        AuthorizationResponseMessageBody.fromJson(json['body']);
 
     return AuthorizationResponseMessage(
       id: json['id'],

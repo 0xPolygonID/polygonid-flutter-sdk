@@ -39,7 +39,7 @@ class AuthenticateParam {
     required this.privateKey,
     this.pushToken,
     this.challenge,
-    this.circuitId = const AuthV2Circuit(),
+    this.circuitId = CircuitId.authV2,
   });
 }
 

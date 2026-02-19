@@ -124,6 +124,8 @@ class ZKProofBaseEntity {
 ///   }
 /// ```
 
+typedef ZKProof = ZKProofEntity;
+
 class ZKProofEntity {
   final ZKProofBaseEntity proof;
   final List<String> pubSignals;
