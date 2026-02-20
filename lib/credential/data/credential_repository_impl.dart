@@ -273,8 +273,8 @@ class CredentialRepositoryImpl extends CredentialRepository {
 
     final web3Client = getItSdk<Web3Client>(param1: chain!.rpcUrl);
 
-    final deployedContract = await _localContractFilesDataSource
-        .loadOnchainNonMerkelizedIssuerBaseContract(id.contractAddress!);
+    final deployedContract = _localContractFilesDataSource
+        .loadOnchainIssuerContract(id.contractAddress!);
 
     final abi = Onchain_non_merkelized_issuer_base(
       address: deployedContract.address,
@@ -394,7 +394,7 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<List<String>> getAuthClaim({required List<String> publicKey}) async {
+  List<String> getAuthClaim({required List<String> publicKey}) {
     return _localClaimDataSource.getAuthClaim(publicKey: publicKey);
   }
 

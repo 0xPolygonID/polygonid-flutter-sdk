@@ -25,7 +25,7 @@ import 'package:polygonid_flutter_sdk/common/utils/ipfs.dart';
 import 'package:polygonid_flutter_sdk/common/utils/push_service.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
-import 'package:polygonid_flutter_sdk/credential/data/data_sources/lib_pidcore_credential_data_source.dart';
+import 'package:polygonid_flutter_sdk/credential/data/data_sources/local_claim_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
@@ -44,23 +44,21 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/iden3_message_factory.dar
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/util/generate_link_nonce.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
+import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/wallet_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_latest_state_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_public_keys_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/gist_mtproof_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/lib_pidcore_proof_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/gist_proof_cache.dart';
@@ -69,7 +67,6 @@ import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:poseidon/poseidon.dart';
 import 'package:uuid/uuid.dart';
 import 'package:web3dart/crypto.dart';
-import 'package:web3dart/web3dart.dart';
 
 class Authenticate {
   late ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
@@ -206,7 +203,6 @@ class Authenticate {
     final nonce = authClaimNonce ?? DEFAULT_AUTH_CLAIM_NONCE;
     try {
       List<Iden3commProofEntity> proofs = [];
-      Map<int, String> groupIdLinkNonceMap = {};
 
       AuthClaimCompanionObject? authClaimCompanionObject;
       ProofRepository proofRepository = await getItSdk
@@ -232,8 +228,6 @@ class Authenticate {
               "authRequest or proofContractInvokeRequest",
         );
       }
-
-      Uint8List privateKeyBytes = hexToBytes(privateKey);
 
       GetSelectedChainUseCase getSelectedChainUseCase = getItSdk
           .get<GetSelectedChainUseCase>();
@@ -295,9 +289,8 @@ class Authenticate {
       authClaimCompanionObject ??= await getAuthClaim(
         genesisDid: genesisDid,
         env: env,
-        chain: chain,
+        stateContractAddress: chain.stateContractAddr,
         privateKey: privateKey,
-        privateKeyBytes: privateKeyBytes,
         authClaimNonce: nonce,
       );
 
@@ -308,16 +301,14 @@ class Authenticate {
         await createProofForEveryProofRequest(
           requestsAndCreds: requestsAndCredsLocal,
           identityEntity: identityEntity,
-          groupIdLinkNonceMap: groupIdLinkNonceMap,
           genesisDid: genesisDid,
           profileNonce: profileNonce,
           privateKey: privateKey,
           challenge: challenge,
           env: env,
-          message: message,
+          verifierDid: message.from,
           transactionData: transactionData,
-          privateKeyBytes: privateKeyBytes,
-          proofRepository: proofRepository,
+          proofRepo: proofRepository,
           authClaimCompanionObject: authClaimCompanionObject,
           proofs: proofs,
         );
@@ -362,7 +353,6 @@ class Authenticate {
         genesisDid: genesisDid,
         profileNonce: profileNonce,
         privateKey: privateKey,
-        privateKeyBytes: privateKeyBytes,
         message: authResponseString,
         authClaim: authClaimCompanionObject.authClaim!,
         incProof: authClaimCompanionObject.incProof!,
@@ -408,19 +398,19 @@ class Authenticate {
   Future<void> createProofForEveryProofRequest({
     required List<RequestAndCredentials> requestsAndCreds,
     required IdentityEntity identityEntity,
-    required Map<int, String> groupIdLinkNonceMap,
     required String genesisDid,
     required BigInt profileNonce,
     required String privateKey,
     required String? challenge,
     required EnvEntity env,
-    required Iden3Message message,
+    required String? verifierDid,
     required Map<String, dynamic>? transactionData,
-    required Uint8List privateKeyBytes,
-    required ProofRepository proofRepository,
+    required ProofRepository proofRepo,
     required AuthClaimCompanionObject authClaimCompanionObject,
     required List<Iden3commProofEntity> proofs,
   }) async {
+    final groupIdLinkNonceMap = <int, String>{};
+
     for (int i = 0; i < requestsAndCreds.length; i++) {
       final request = requestsAndCreds[i].request;
       final credentials = requestsAndCreds[i].credentials;
@@ -455,27 +445,16 @@ class Authenticate {
         "#${i + 1} creating proof for ${request.query.type}...",
       );
 
-      final appDir = await getApplicationDocumentsDirectory();
-      final circuitsDataSource = CircuitsFilesDataSource(appDir);
+      final circuitData = await proofRepo.loadCircuitFiles(request.circuitId);
 
-      final graphFileBytes = await circuitsDataSource.loadGraphFile(
-        request.circuitId,
-      );
-      final zkeyFilePath = await circuitsDataSource.getZkeyFilePath(
-        request.circuitId,
-      );
-
-      CircuitDataEntity circuitDataEntity = CircuitDataEntity(
-        request.circuitId,
-        graphFileBytes,
-        zkeyFilePath,
-      );
-
-      BigInt claimSubjectProfileNonce = identityEntity.profiles.keys.firstWhere(
-        (k) =>
-            identityEntity.profiles[k] == claim.info["credentialSubject"]["id"],
-        orElse: () => GENESIS_PROFILE_NONCE,
-      );
+      final credentialSubjectDid = claim.credentialSubject['id'];
+      final profileEntries = identityEntity.profiles.entries;
+      final credentialSubjectNonce = profileEntries
+          .firstWhere(
+            (profile) => profile.value == credentialSubjectDid,
+            orElse: () => MapEntry(GENESIS_PROFILE_NONCE, ''),
+          )
+          .key;
 
       int? groupId = request.query.groupId;
       String linkNonce = "0";
@@ -491,43 +470,37 @@ class Authenticate {
         }
       }
 
-      Map<String, dynamic>? config;
       String? signature;
-
-      final circuitId = CircuitId.fromId(request.circuitId);
-      if (circuitId.isOnChain) {
+      if (CircuitId.fromId(request.circuitId).isOnChain) {
         /// SIGN MESSAGE
         signature = await signMessage(
-          privateKey: privateKeyBytes,
+          privateKey: hexToBytes(privateKey),
           message: challenge!,
         );
       }
 
-      config = env.config.toJson();
-
       List<String> splittedDid = genesisDid.split(":");
       String id = splittedDid[4];
-      final generateInputsRes = await proofRepository
-          .calculateAtomicQueryInputs(
-            id: id,
-            profileNonce: profileNonce,
-            claimSubjectProfileNonce: claimSubjectProfileNonce,
-            claim: claim,
-            proofScopeRequest: request.toJson(),
-            circuitId: request.circuitId,
-            incProof: authClaimCompanionObject.incProof,
-            nonRevProof: authClaimCompanionObject.nonRevProof,
-            gistProof: authClaimCompanionObject.gistProofEntity,
-            authClaim: authClaimCompanionObject.authClaim,
-            treeState: authClaimCompanionObject.treeState,
-            challenge: challenge,
-            signature: signature,
-            config: config,
-            verifierId: message.from,
-            linkNonce: linkNonce,
-            scopeParams: request.params,
-            transactionData: transactionData,
-          );
+      final generateInputsRes = await proofRepo.calculateAtomicQueryInputs(
+        id: id,
+        profileNonce: profileNonce,
+        claimSubjectProfileNonce: credentialSubjectNonce,
+        claim: claim,
+        proofScopeRequest: request.toJson(),
+        circuitId: request.circuitId,
+        incProof: authClaimCompanionObject.incProof,
+        nonRevProof: authClaimCompanionObject.nonRevProof,
+        gistProof: authClaimCompanionObject.gistProofEntity,
+        authClaim: authClaimCompanionObject.authClaim,
+        treeState: authClaimCompanionObject.treeState,
+        challenge: challenge,
+        signature: signature,
+        config: env.config.toJson(),
+        verifierId: verifierDid,
+        linkNonce: linkNonce,
+        scopeParams: request.params,
+        transactionData: transactionData,
+      );
 
       final atomicQueryInputs = json.encode(generateInputsRes.inputs);
       if (kDebugMode) {
@@ -545,13 +518,13 @@ class Authenticate {
         "[Authenticate] AtomicQueryInputs: $atomicQueryInputs",
       );
 
-      Uint8List witnessBytes = await proofRepository.calculateWitness(
-        circuitData: circuitDataEntity,
+      Uint8List witnessBytes = await proofRepo.calculateWitness(
+        circuitData: circuitData,
         atomicQueryInputs: atomicQueryInputs,
       );
 
-      ZKProofEntity zkProofEntity = await proofRepository.prove(
-        circuitData: circuitDataEntity,
+      ZKProofEntity zkProofEntity = await proofRepo.prove(
+        circuitData: circuitData,
         wtnsBytes: witnessBytes,
       );
 
@@ -623,7 +596,6 @@ class Authenticate {
     required String genesisDid,
     required BigInt profileNonce,
     required String privateKey,
-    required Uint8List privateKeyBytes,
     required String message,
     required List<String> authClaim,
     required NodeEntity authClaimNode,
@@ -653,13 +625,11 @@ class Authenticate {
 
     // Endianness
     BigInt endian = Uint8ArrayUtils.leBuff2int(sha);
-
     BigInt qNormalized = endian.qNormalize();
-
     String authChallenge = poseidon1([qNormalized]).toString();
 
     String signature = await signMessage(
-      privateKey: privateKeyBytes,
+      privateKey: hexToBytes(privateKey),
       message: authChallenge,
     );
 
@@ -679,27 +649,15 @@ class Authenticate {
       config: env.config.toJson(),
     );
 
-    final appDir = await getApplicationDocumentsDirectory();
-    final circuitsDataSource = CircuitsFilesDataSource(appDir);
-
-    final circuitDatFileBytes = await circuitsDataSource.loadGraphFile(
-      circuitId.id,
-    );
-    final zkeyFilePath = await circuitsDataSource.getZkeyFilePath(circuitId.id);
-
-    CircuitDataEntity circuitDataEntity = CircuitDataEntity(
-      circuitId.id,
-      circuitDatFileBytes,
-      zkeyFilePath,
-    );
+    final circuitData = await proofRepository.loadCircuitFiles(circuitId.id);
 
     Uint8List witnessBytes = await proofRepository.calculateWitness(
-      circuitData: circuitDataEntity,
+      circuitData: circuitData,
       atomicQueryInputs: jsonEncode(inputsResponse.inputs),
     );
 
     ZKProofEntity zkProofEntity = await proofRepository.prove(
-      circuitData: circuitDataEntity,
+      circuitData: circuitData,
       wtnsBytes: witnessBytes,
     );
 
@@ -737,23 +695,19 @@ class Authenticate {
     required String privateKey,
     required String genesisDid,
     required EnvEntity env,
-    required ChainConfigEntity chain,
-    required Uint8List privateKeyBytes,
+    required String stateContractAddress,
     required String authClaimNonce,
   }) async {
-    final libPidCredentialDS = getItSdk<LibPolygonIdCoreCredentialDataSource>();
+    final localClaimDS = getItSdk<LocalClaimDataSource>();
     final identityRepo = getItSdk<IdentityRepository>();
     final publicKey = identityRepo.getPublicKeys(bjjPrivateKey: privateKey);
 
-    String issuedAuthClaim = libPidCredentialDS.issueClaim(
-      schema: AUTH_CLAIM_SCHEMA,
-      nonce: authClaimNonce,
+    final authClaim = localClaimDS.getAuthClaim(
       publicKey: publicKey,
+      authClaimNonce: authClaimNonce,
     );
-    final authClaim = List<String>.from(jsonDecode(issuedAuthClaim));
-    NodeEntity authClaimNode = identityRepo.getAuthClaimNode(
-      children: authClaim,
-    );
+
+    final authClaimNode = identityRepo.getAuthClaimNode(children: authClaim);
 
     // INC PROOF
     SMTRepository smtRepository = getItSdk<SMTRepository>();
@@ -772,54 +726,20 @@ class Authenticate {
       encryptionKey: privateKey,
     );
 
-    // TREE STATE
-    List<HashEntity> trees = await Future.wait([
-      smtRepository.getRoot(
-        type: TreeType.claims,
-        did: genesisDid,
-        encryptionKey: privateKey,
-      ),
-      smtRepository.getRoot(
-        type: TreeType.revocation,
-        did: genesisDid,
-        encryptionKey: privateKey,
-      ),
-      smtRepository.getRoot(
-        type: TreeType.roots,
-        did: genesisDid,
-        encryptionKey: privateKey,
-      ),
-    ], eagerError: true);
-
-    String hash = smtRepository.hashState(
-      claims: trees[0].toBigInt(),
-      revocation: trees[1].toBigInt(),
-      roots: trees[2].toBigInt(),
+    final getLatestStateUC = getItSdk<GetLatestStateUseCase>();
+    final Map<String, dynamic> treeState = await getLatestStateUC.execute(
+      param: GetLatestStateParam(did: genesisDid, encryptionKey: privateKey),
     );
-
-    TreeStateEntity treeStateEntity = TreeStateEntity(
-      hash,
-      trees[0],
-      trees[1],
-      trees[2],
-    );
-
-    final Map<String, dynamic> treeState = treeStateEntity.toJson();
 
     //GIST
     List<String> splittedDid = genesisDid.split(":");
     String id = splittedDid[4];
     var libPolygonIdIdentity = getItSdk<LibPolygonIdCoreIdentityDataSource>();
     String convertedId = libPolygonIdIdentity.genesisIdToBigInt(id);
-    ContractAbi contractAbi = ContractAbi.fromJson(
-      jsonEncode(jsonDecode(stateAbiJson)["abi"]),
-      'State',
-    );
-    EthereumAddress ethereumAddress = EthereumAddress.fromHex(
-      chain.stateContractAddr,
-    );
-    DeployedContract contract = DeployedContract(contractAbi, ethereumAddress);
 
+    final contract = LocalContractFilesDataSource().loadStateContract(
+      stateContractAddress,
+    );
     String gistProof = await GistProofCache().getGistProof(
       id: convertedId,
       deployedContract: contract,
@@ -827,8 +747,7 @@ class Authenticate {
     );
 
     final gistMTProofDataSource = getItSdk<GistMTProofDataSource>();
-    final GistMTProofEntity gistProofEntity = gistMTProofDataSource
-        .getGistMTProof(gistProof);
+    final gistProofEntity = gistMTProofDataSource.getGistMTProof(gistProof);
 
     return AuthClaimCompanionObject()
       ..authClaim = authClaim
@@ -849,32 +768,25 @@ class Authenticate {
       "yyyy-MM-ddTHH:mm:ssZ",
     ).parse(claim.expiration!);
 
-    var nowFormatted = DateFormat("yyyy-MM-dd HH:mm:ss").format(now);
-    var expirationTimeFormatted = DateFormat(
-      "yyyy-MM-dd HH:mm:ss",
-    ).format(expirationTime);
     bool isExpired =
-        nowFormatted.compareTo(expirationTimeFormatted) > 0 ||
-        claim.state == CredentialState.expired;
+        claim.state == CredentialState.expired ||
+        now.compareTo(expirationTime) > 0;
 
     if (isExpired && claim.info.containsKey("refreshService")) {
       _proofGenerationStepsStreamManager.add(
         "Refreshing expired credential...",
       );
 
-      RefreshCredentialUseCase _refreshCredentialUseCase = await getItSdk
-          .getAsync<RefreshCredentialUseCase>();
-
-      CredentialEntity refreshedClaimEntity = await _refreshCredentialUseCase
-          .execute(
-            param: RefreshCredentialParam(
-              credential: claim,
-              genesisDid: genesisDid,
-              privateKey: privateKey,
-              // TODO Maybe provide keys here?
-              keys: [],
-            ),
-          );
+      final refreshCredUC = await getItSdk.getAsync<RefreshCredentialUseCase>();
+      CredentialEntity refreshedClaimEntity = await refreshCredUC.execute(
+        param: RefreshCredentialParam(
+          credential: claim,
+          genesisDid: genesisDid,
+          privateKey: privateKey,
+          // TODO Maybe provide keys here?
+          keys: [],
+        ),
+      );
 
       claim = refreshedClaimEntity;
     }

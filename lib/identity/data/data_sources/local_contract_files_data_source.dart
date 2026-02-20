@@ -1,6 +1,5 @@
-import 'dart:convert';
-
-import 'package:polygonid_flutter_sdk/constants.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/abi/onchain_non_merkelized_issuer_base_abi.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/abi/state_abi.dart';
 import 'package:web3dart/contracts.dart';
 import 'package:web3dart/credentials.dart';
 
@@ -11,25 +10,22 @@ class LocalContractFilesDataSource {
   //
   // LocalContractFilesDataSource(this._assetBundle);
 
-  Future<DeployedContract> loadStateContract(String address) {
-    return
-        // _assetBundle
-        //   .loadString('packages/polygonid_flutter_sdk/lib/assets/state.abi.json')
-        Future.value(stateAbiJson).then((json) => DeployedContract(
-            ContractAbi.fromJson(jsonEncode(jsonDecode(json)["abi"]), 'State'),
-            EthereumAddress.fromHex(address)));
+  DeployedContract loadStateContract(String address) {
+    return DeployedContract(
+      ContractAbi.fromJson(stateAbiJson, 'State'),
+      EthereumAddress.fromHex(address),
+    );
   }
 
-  Future<DeployedContract> loadOnchainNonMerkelizedIssuerBaseContract(
-      String onchainNonMerkelizedIssuerBaseAddress) {
-    return
-        // _assetBundle
-        //   .loadString('packages/polygonid_flutter_sdk/lib/assets/onchain_non_merkelized_issuer_base.abi.json')
-        Future.value(onchainNonMerkelizedIssuerBaseAbiJson).then((json) =>
-            DeployedContract(
-                ContractAbi.fromJson(jsonEncode(jsonDecode(json)["abi"]),
-                    'OnchainNonMerkelizedIssuerBase'),
-                EthereumAddress.fromHex(
-                    onchainNonMerkelizedIssuerBaseAddress)));
+  DeployedContract loadOnchainIssuerContract(
+    String onchainNonMerkelizedIssuerBaseAddress,
+  ) {
+    return DeployedContract(
+      ContractAbi.fromJson(
+        onchainNonMerkelizedIssuerBaseAbiJson,
+        'OnchainNonMerkelizedIssuerBase',
+      ),
+      EthereumAddress.fromHex(onchainNonMerkelizedIssuerBaseAddress),
+    );
   }
 }

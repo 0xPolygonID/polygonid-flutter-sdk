@@ -294,7 +294,7 @@ void main() {
 
       // Given
       when(localContractFilesDataSource.loadStateContract(any))
-          .thenAnswer((realInvocation) => Future.value(contract));
+          .thenAnswer((realInvocation) => contract);
       when(stateIdentifierMapper.mapTo(any))
           .thenAnswer((realInvocation) => CommonMocks.id);
       when(rpcDataSource.getState(any, any))

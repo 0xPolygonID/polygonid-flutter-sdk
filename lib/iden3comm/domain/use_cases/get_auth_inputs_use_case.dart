@@ -82,7 +82,7 @@ class GetAuthInputsUseCase
       logger().i(
           'GetAuthInputsUseCase: got identity at: ${stopwatch.elapsedMilliseconds} ms');
 
-      List<String> authClaim = await _credentialRepository.getAuthClaim(
+      List<String> authClaim = _credentialRepository.getAuthClaim(
           publicKey: identity.publicKey);
       logger().i(
           'GetAuthInputsUseCase: got authClaim at: ${stopwatch.elapsedMilliseconds} ms');

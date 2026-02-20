@@ -256,7 +256,7 @@ class ProofRepositoryImpl extends ProofRepository {
   }) async {
     try {
       final envEntity = await _getEnvUseCase.execute();
-      final contract = await _localContractFilesDataSource.loadStateContract(
+      final contract = _localContractFilesDataSource.loadStateContract(
         contractAddress,
       );
 
