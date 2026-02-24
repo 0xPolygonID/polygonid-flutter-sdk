@@ -3,6 +3,10 @@ import 'package:polygonid_flutter_sdk/common/accept_profile.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 
 class Proving {
+  static const provingMethodGroth16AuthV2ProvingAlgInstance = ProvingMethodAlg(
+    alg: 'groth16',
+    circuitId: 'authV2',
+  );
   static const provingMethodGroth16AuthV3_8_32ProvingAlgInstance =
       ProvingMethodAlg(alg: 'groth16', circuitId: 'authV3-8-32');
   static const provingMethodGroth16AuthV3ProvingAlgInstance = ProvingMethodAlg(

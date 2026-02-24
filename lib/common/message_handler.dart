@@ -1,10 +1,8 @@
 import 'package:polygonid_flutter_sdk/common/common.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 
-const defaultProvingMethodAlg = ProvingMethodAlg(
-  alg: "groth16",
-  circuitId: "authV2",
-);
+const defaultProvingMethodAlg =
+    Proving.provingMethodGroth16AuthV2ProvingAlgInstance;
 
 class BasicHandlerOptions {
   final bool? allowExpiredMessages;
