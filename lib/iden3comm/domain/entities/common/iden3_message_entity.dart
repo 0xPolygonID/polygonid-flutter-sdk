@@ -121,7 +121,7 @@ abstract class Iden3Message<T extends JsonEncodable> extends Equatable {
   final String id;
 
   /// The type of the message, e.g. "application/iden3-zkp-json".
-  final String? typ;
+  final String typ;
 
   /// The type of the message, e.g. "https://iden3-communication.io/authorization/1.0/request".
   final Iden3MessageType type;
@@ -149,7 +149,7 @@ abstract class Iden3Message<T extends JsonEncodable> extends Equatable {
 
   const Iden3Message({
     required this.id,
-    required this.typ,
+    this.typ = messageTypePlain,
     required this.type,
     required this.thid,
     required this.body,
@@ -170,7 +170,7 @@ abstract class Iden3Message<T extends JsonEncodable> extends Equatable {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      if (typ != null) 'typ': typ,
+      'typ': typ,
       'type': type.type,
       if (thid != null) 'thid': thid,
       'body': body.toJson(),
@@ -201,8 +201,6 @@ abstract class Iden3Message<T extends JsonEncodable> extends Equatable {
 }
 
 class RequiredIden3Message<T extends JsonEncodable> extends Iden3Message<T> {
-  @override
-  String get typ => super.typ!;
 
   @override
   String get thid => super.thid!;
@@ -215,7 +213,7 @@ class RequiredIden3Message<T extends JsonEncodable> extends Iden3Message<T> {
 
   const RequiredIden3Message({
     required super.id,
-    required String typ,
+    required super.typ,
     required super.type,
     required String thid,
     required super.body,
@@ -224,5 +222,5 @@ class RequiredIden3Message<T extends JsonEncodable> extends Iden3Message<T> {
     required super.createdTime,
     required super.expiresTime,
     required super.attachments,
-  }) : super(typ: typ, thid: thid, from: from, to: to);
+  }) : super(thid: thid, from: from, to: to);
 }

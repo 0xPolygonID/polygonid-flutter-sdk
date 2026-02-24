@@ -89,7 +89,7 @@ class PlainPacker implements IPacker {
   Map<String, dynamic> _messageToMap(Iden3Message msg) {
     return {
       'id': msg.id,
-      if (msg.typ != null) 'typ': msg.typ!,
+      'typ': msg.typ,
       'type': msg.type.type,
       if (msg.thid != null) 'thid': msg.thid,
       'body': msg.body.toJson(),
