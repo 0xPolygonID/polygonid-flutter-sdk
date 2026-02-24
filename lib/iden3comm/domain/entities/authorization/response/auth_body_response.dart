@@ -68,12 +68,10 @@ import 'package:polygonid_flutter_sdk/common/json.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 
-@Deprecated('Use AuthorizationMessageResponseBody instead')
+@Deprecated('Use AuthorizationResponseMessageBody instead')
 typedef AuthBodyResponse = AuthorizationResponseMessageBody;
 
 typedef ZeroKnowledgeProofResponse = Iden3commProofEntity;
-
-typedef AuthorizationMessageResponseBody = AuthorizationResponseMessageBody;
 
 class AuthorizationResponseMessageBody implements JsonEncodable {
   final DIDDocument? did_doc;
@@ -115,4 +113,14 @@ class AuthorizationResponseMessageBody implements JsonEncodable {
     if (message != null) 'message': message,
     'scope': scope.map((scope) => scope.toJson()).toList(),
   };
+}
+
+@Deprecated("Use AuthorizationResponseMessageBody instead")
+class AuthorizationMessageResponseBody
+    extends AuthorizationResponseMessageBody {
+  AuthorizationMessageResponseBody({
+    super.did_doc,
+    super.message,
+    super.proofs,
+  });
 }
