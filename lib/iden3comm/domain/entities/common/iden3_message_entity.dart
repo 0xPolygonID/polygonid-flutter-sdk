@@ -149,7 +149,7 @@ abstract class Iden3Message<T extends JsonEncodable> extends Equatable {
 
   const Iden3Message({
     required this.id,
-    this.typ = messageTypePlain,
+    String? typ,
     required this.type,
     required this.thid,
     required this.body,
@@ -158,7 +158,7 @@ abstract class Iden3Message<T extends JsonEncodable> extends Equatable {
     required this.createdTime,
     required this.expiresTime,
     required this.attachments,
-  });
+  }): this.typ = typ ?? messageTypePlain;
 
   @Deprecated('Use type instead')
   Iden3MessageType get messageType => type;
