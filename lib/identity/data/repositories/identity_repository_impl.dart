@@ -64,7 +64,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  List<String> getPublicKeys({required String bjjPrivateKey})  {
+  List<String> getPublicKeys({required String bjjPrivateKey}) {
     final wallet = BjjWallet(hexToBytes(bjjPrivateKey));
     final pubKeys = wallet.publicKey;
     return pubKeys;
@@ -84,11 +84,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
       BigInt.parse(children[6]),
       BigInt.parse(children[7]),
     ]);
-    BigInt hashClaimNode = poseidon3([
-      hashIndex,
-      hashValue,
-      BigInt.one,
-    ]);
+    BigInt hashClaimNode = poseidon3([hashIndex, hashValue, BigInt.one]);
     NodeEntity authClaimNode = NodeEntity(
       children: [
         HashEntity.fromBigInt(hashIndex),
@@ -180,8 +176,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
     required String identifier,
     required String contractAddress,
   }) async {
-    final contract =
-        await _localContractFilesDataSource.loadStateContract(contractAddress);
+    final contract = _localContractFilesDataSource.loadStateContract(
+      contractAddress,
+    );
     try {
       return await _rpcDataSource.getState(
         _stateIdentifierMapper.mapTo(identifier),
@@ -275,14 +272,14 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }) async {
     try {
       // Get the genesis id
-      final genesisDid =
-          _libPolygonIdCoreIdentityDataSource.calculateGenesisIdFromEth(
-        ethAddress: ethAddress,
-        blockchain: blockchain,
-        network: network,
-        config: config.toJson(),
-        method: method,
-      );
+      final genesisDid = _libPolygonIdCoreIdentityDataSource
+          .calculateGenesisIdFromEth(
+            ethAddress: ethAddress,
+            blockchain: blockchain,
+            network: network,
+            config: config.toJson(),
+            method: method,
+          );
 
       if (profileNonce == GENESIS_PROFILE_NONCE) {
         return Future.value(genesisDid);
@@ -303,7 +300,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
     required BigInt profileNonce,
   }) {
     return _libPolygonIdCoreIdentityDataSource.calculateProfileId(
-        genesisDid, profileNonce);
+      genesisDid,
+      profileNonce,
+    );
   }
 
   @override
@@ -333,10 +332,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
     Map<String, Object?> exportableDb = await _storageIdentityDataSource
         .getIdentityDb(did: did, encryptionKey: encryptionKey);
     final key = SymmetricKey.fromBase16(encryptionKey);
-    return _encryptionDbDataSource.encryptData(
-      data: exportableDb,
-      key: key,
-    );
+    return _encryptionDbDataSource.encryptData(data: exportableDb, key: key);
   }
 
   @override
@@ -350,8 +346,8 @@ class IdentityRepositoryImpl extends IdentityRepository {
       encryptedData: encryptedDb,
       key: key,
     );
-    String destinationPath =
-        await _destinationPathDataSource.getDestinationPath(did: did);
+    String destinationPath = await _destinationPathDataSource
+        .getDestinationPath(did: did);
     return _storageIdentityDataSource.saveIdentityDb(
       exportableDb: decryptedDb,
       destinationPath: destinationPath,

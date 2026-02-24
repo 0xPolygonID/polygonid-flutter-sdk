@@ -1,12 +1,11 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/abi/state_abi.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/circuits_to_download_param.dart';
@@ -202,10 +201,7 @@ class Proof implements PolygonIdSdkProof {
       String id = splittedDid[4];
       var libPolygonIdIdentity = getItSdk<LibPolygonIdCoreIdentityDataSource>();
       String convertedId = libPolygonIdIdentity.genesisIdToBigInt(id);
-      ContractAbi contractAbi = ContractAbi.fromJson(
-        jsonEncode(jsonDecode(stateAbiJson)["abi"]),
-        'State',
-      );
+      ContractAbi contractAbi = ContractAbi.fromJson(stateAbiJson, 'State');
       EthereumAddress ethereumAddress = EthereumAddress.fromHex(
         stateContractAddress,
       );

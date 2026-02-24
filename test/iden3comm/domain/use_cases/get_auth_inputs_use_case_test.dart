@@ -76,7 +76,7 @@ void main() {
     when(signMessageUseCase.execute(param: anyNamed("param")))
         .thenAnswer((realInvocation) => Future.value(CommonMocks.signature));
     when(credentialRepository.getAuthClaim(publicKey: anyNamed("publicKey")))
-        .thenAnswer((realInvocation) => Future.value(claims));
+        .thenAnswer((realInvocation) => claims);
     when(
       iden3commRepository.getAuthInputs(
         genesisDid: anyNamed('genesisDid'),

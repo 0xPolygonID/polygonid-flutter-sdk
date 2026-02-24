@@ -53,7 +53,7 @@ abstract class CredentialRepository {
 
   Future<String> getRevocationUrl({required CredentialDTO credential});
 
-  Future<List<String>> getAuthClaim({required List<String> publicKey});
+  List<String> getAuthClaim({required List<String> publicKey});
 
   Future<bool> cacheCredential({required String credential, String? config});
 

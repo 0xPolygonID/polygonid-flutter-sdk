@@ -27,7 +27,7 @@ void main() {
 
     when(credentialRepository.getAuthClaim(publicKey: anyNamed('publicKey')))
         .thenAnswer(
-            (realInvocation) => Future.value(CredentialMocks.authClaim));
+            (realInvocation) => CredentialMocks.authClaim);
   });
 
   test(

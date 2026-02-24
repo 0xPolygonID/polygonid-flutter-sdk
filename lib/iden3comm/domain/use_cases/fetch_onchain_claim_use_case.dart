@@ -6,12 +6,12 @@ import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/data/data_sources/lib_pidcore_credential_data_source.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/abi/constants.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/protocol_message_type.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
@@ -76,8 +76,8 @@ class FetchOnchainClaimUseCase
 
     final web3Client = getItSdk<Web3Client>(param1: chain!.rpcUrl);
 
-    final deployedContract = await _localContractFilesDataSource
-        .loadOnchainNonMerkelizedIssuerBaseContract(param.contractAddress);
+    final deployedContract = _localContractFilesDataSource
+        .loadOnchainIssuerContract(param.contractAddress);
 
     final contract = Onchain_non_merkelized_issuer_base(
       address: deployedContract.address,
@@ -85,21 +85,23 @@ class FetchOnchainClaimUseCase
     );
 
     if (!param.skipInterfaceSupportCheck) {
-      final supportsInterfaceCheck = await contract.supportsInterface(
-        (interfaceId: hexToBytes(interfaceCheckInterface)),
-      );
+      final supportsInterfaceCheck = await contract.supportsInterface((
+        interfaceId: hexToBytes(interfaceCheckInterface),
+      ));
 
-      final supportsNonMerklizedIssuerInterface =
-          await contract.supportsInterface(
-        (interfaceId: hexToBytes(nonMerklizedIssuerInterface)),
-      );
+      final supportsNonMerklizedIssuerInterface = await contract
+          .supportsInterface((
+            interfaceId: hexToBytes(nonMerklizedIssuerInterface),
+          ));
 
       if (!supportsInterfaceCheck || !supportsNonMerklizedIssuerInterface) {
         _stacktraceManager.addError(
-            "[FetchAndSaveClaimsUseCase] Contract at address ${param.contractAddress} does not support non-merkelized issuer interface");
+          "[FetchAndSaveClaimsUseCase] Contract at address ${param.contractAddress} does not support non-merkelized issuer interface",
+        );
         throw FetchClaimException(
-            errorMessage:
-                "Contract at address ${param.contractAddress} does not support non-merkelized issuer interface");
+          errorMessage:
+              "Contract at address ${param.contractAddress} does not support non-merkelized issuer interface",
+        );
       }
     }
 
@@ -130,9 +132,7 @@ class FetchOnchainClaimUseCase
         credentialRawValue: jsonEncode({
           "type": ProtocolMessageType.credentialOnchainOfferMessageType,
           "from": param.issuerDid,
-          "body": {
-            'credential': claimJson,
-          },
+          "body": {'credential': claimJson},
         }),
       );
 
@@ -141,18 +141,20 @@ class FetchOnchainClaimUseCase
         _remoteIden3commDataSource
             .fetchSchema(url: claimInfoDto.credentialSchema.id)
             .then((schema) {
-          claimDto.schema = schema;
-          return claimDto;
-        }).catchError((_) => claimDto),
+              claimDto.schema = schema;
+              return claimDto;
+            })
+            .catchError((_) => claimDto),
         if (displayMethod != null)
           _remoteIden3commDataSource
               .fetchDisplayType(displayMethod: displayMethod)
               .then((displayType) {
-            claimDto.displayType = displayType;
-            return claimDto;
-          }).catchError((_) {
-            return claimDto;
-          }),
+                claimDto.displayType = displayType;
+                return claimDto;
+              })
+              .catchError((_) {
+                return claimDto;
+              }),
       ]);
 
       return _claimMapper.mapFrom(claimDto);
@@ -160,7 +162,8 @@ class FetchOnchainClaimUseCase
       rethrow;
     } catch (e) {
       _stacktraceManager.addError(
-          "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e");
+        "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e",
+      );
       throw FetchClaimException(
         errorMessage: "Error while fetching onchain claim",
         error: e,
@@ -177,10 +180,7 @@ class FetchOnchainClaimUseCase
     BigInt credentialId,
   ) async {
     final function = contract.self.abi.functions[5];
-    final params = [
-      userId,
-      credentialId,
-    ];
+    final params = [userId, credentialId];
 
     final result = await web3client.callRaw(
       contract: contract.self.address,

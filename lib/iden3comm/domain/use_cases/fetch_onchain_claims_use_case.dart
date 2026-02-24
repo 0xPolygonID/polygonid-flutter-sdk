@@ -6,8 +6,8 @@ import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/abi/constants.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/did_profile_info_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_onchain_claim_use_case.dart';
@@ -99,8 +99,8 @@ class FetchOnchainClaimsUseCase
         : await _getSelectedChainUseCase.execute();
 
     final web3Client = getItSdk<Web3Client>(param1: chain!.rpcUrl);
-    final deployedContract = await _localContractFilesDataSource
-        .loadOnchainNonMerkelizedIssuerBaseContract(contractAddress);
+    final deployedContract = _localContractFilesDataSource
+        .loadOnchainIssuerContract(contractAddress);
 
     final issuer = Onchain_non_merkelized_issuer_base(
       address: deployedContract.address,
