@@ -88,7 +88,7 @@ class Authenticate {
     final Map<String, dynamic>? transactionData,
     String? authClaimNonce,
     List<RequestAndCredentials>? requestsAndCreds,
-    CircuitId circuitId = const AuthV2Circuit(),
+    CircuitId circuitId = CircuitId.authV2,
   }) async {
     try {
       String authToken = await getAuthResponseToken(
@@ -201,7 +201,7 @@ class Authenticate {
     final Map<String, dynamic>? transactionData,
     String? authClaimNonce,
     List<RequestAndCredentials>? requestsAndCreds,
-    CircuitId circuitId = const AuthV2Circuit(),
+    CircuitId circuitId = CircuitId.authV2,
   }) async {
     final nonce = authClaimNonce ?? DEFAULT_AUTH_CLAIM_NONCE;
     try {
@@ -392,9 +392,9 @@ class Authenticate {
       to: message.from!,
       from: profileDid,
       typ: messageTypeZkp,
-      body: AuthorizationMessageResponseBody(
+      body: AuthorizationResponseMessageBody(
         message: (message as AuthorizationRequestMessage).body.message,
-        proofs: proofs,
+        scope: proofs,
         did_doc: didDocument,
       ),
       createdTime: DateTime.now().millisecondsSinceEpoch ~/ 1000,
@@ -494,9 +494,8 @@ class Authenticate {
       Map<String, dynamic>? config;
       String? signature;
 
-      if (request.circuitId == CircuitIds.mtpOnChain.id ||
-          request.circuitId == CircuitIds.sigOnChain.id ||
-          request.circuitId == CircuitIds.circuitsV3OnChain.id) {
+      final circuitId = CircuitId.fromId(request.circuitId);
+      if (circuitId.isOnChain) {
         /// SIGN MESSAGE
         signature = await signMessage(
           privateKey: privateKeyBytes,

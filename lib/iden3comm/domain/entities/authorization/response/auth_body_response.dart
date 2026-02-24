@@ -68,27 +68,31 @@ import 'package:polygonid_flutter_sdk/common/json.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 
-@Deprecated('Use AuthorizationMessageResponseBody instead')
-typedef AuthBodyResponse = AuthorizationMessageResponseBody;
+@Deprecated('Use AuthorizationResponseMessageBody instead')
+typedef AuthBodyResponse = AuthorizationResponseMessageBody;
 
 typedef ZeroKnowledgeProofResponse = Iden3commProofEntity;
 
-class AuthorizationMessageResponseBody implements JsonEncodable {
+class AuthorizationResponseMessageBody implements JsonEncodable {
   final DIDDocument? did_doc;
   final String? message;
-  final List<ZeroKnowledgeProofResponse> proofs;
+  final List<ZeroKnowledgeProofResponse> scope;
 
-  AuthorizationMessageResponseBody({
+  AuthorizationResponseMessageBody({
     this.did_doc,
     this.message,
-    required this.proofs,
-  });
+    List<ZeroKnowledgeProofResponse>? scope,
+    @Deprecated('Use scope instead') List<ZeroKnowledgeProofResponse>? proofs,
+  }) : scope = scope ?? proofs ?? [];
+
+  @Deprecated('Use scope instead')
+  List<ZeroKnowledgeProofResponse> get proofs => scope;
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
-  /// @returns [AuthorizationMessageResponseBody]
-  factory AuthorizationMessageResponseBody.fromJson(Map<String, dynamic> json) {
+  /// @returns [AuthorizationResponseMessageBody]
+  factory AuthorizationResponseMessageBody.fromJson(Map<String, dynamic> json) {
     DIDDocument? didDoc = json['did_doc'] != null
         ? DIDDocument.fromJson(json['did_doc'])
         : null;
@@ -97,16 +101,26 @@ class AuthorizationMessageResponseBody implements JsonEncodable {
         ?.map((p) => Iden3commProofEntity.fromJson(p))
         .toList();
 
-    return AuthorizationMessageResponseBody(
+    return AuthorizationResponseMessageBody(
       did_doc: didDoc,
       message: json['message'],
-      proofs: scope ?? [],
+      scope: scope ?? [],
     );
   }
 
   Map<String, dynamic> toJson() => {
     if (did_doc != null) 'did_doc': did_doc,
     if (message != null) 'message': message,
-    'scope': proofs.map((scope) => scope.toJson()).toList(),
+    'scope': scope.map((scope) => scope.toJson()).toList(),
   };
+}
+
+@Deprecated("Use AuthorizationResponseMessageBody instead")
+class AuthorizationMessageResponseBody
+    extends AuthorizationResponseMessageBody {
+  AuthorizationMessageResponseBody({
+    super.did_doc,
+    super.message,
+    super.proofs,
+  });
 }

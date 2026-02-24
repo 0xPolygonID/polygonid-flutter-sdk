@@ -135,9 +135,9 @@ class GetIden3commProofsUseCase
 
           String? challenge;
           String? privKey;
-          if (circuitId == CircuitIds.mtpOnChain.id ||
-              circuitId == CircuitIds.sigOnChain.id ||
-              circuitId == CircuitIds.circuitsV3OnChain.id) {
+
+          final parsedCircuitId = CircuitId.fromId(circuitId);
+          if (parsedCircuitId.isOnChain) {
             privKey = param.privateKey;
             challenge = param.challenge;
           }

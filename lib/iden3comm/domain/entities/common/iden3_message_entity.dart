@@ -115,6 +115,8 @@ enum Iden3MessageType {
 @Deprecated('Use Iden3Message instead')
 typedef Iden3MessageEntity<T extends JsonEncodable> = Iden3Message<T>;
 
+typedef BasicMessage<T extends JsonEncodable> = Iden3Message<T>;
+
 /// Represents an iden3 protocol message.
 /// https://identity.foundation/didcomm-messaging/spec/#message-headers
 abstract class Iden3Message<T extends JsonEncodable> extends Equatable {

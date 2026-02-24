@@ -1,11 +1,25 @@
 import 'package:equatable/equatable.dart';
+import 'package:polygonid_flutter_sdk/common/accept_profile.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+
+class Proving {
+  static const provingMethodGroth16AuthV2ProvingAlgInstance = ProvingMethodAlg(
+    alg: 'groth16',
+    circuitId: 'authV2',
+  );
+  static const provingMethodGroth16AuthV3_8_32ProvingAlgInstance =
+      ProvingMethodAlg(alg: 'groth16', circuitId: 'authV3-8-32');
+  static const provingMethodGroth16AuthV3ProvingAlgInstance = ProvingMethodAlg(
+    alg: 'groth16',
+    circuitId: 'authV3',
+  );
+}
 
 class ProvingMethodAlg with EquatableMixin {
   final String alg;
   final String circuitId;
 
-  ProvingMethodAlg({required this.alg, required this.circuitId});
+  const ProvingMethodAlg({required this.alg, required this.circuitId});
 
   @override
   String toString() {
@@ -27,15 +41,14 @@ int getUnixTimestamp(DateTime dateTime) {
   return dateTime.toUtc().millisecondsSinceEpoch ~/ 1000;
 }
 
-class StateVerificationOpts {
-  // acceptedStateTransitionDelay is the period of time in milliseconds that a revoked state remains valid.
-  final int? acceptedStateTransitionDelay;
-
-  StateVerificationOpts({required this.acceptedStateTransitionDelay});
+/// State verification options - reusable across different contexts
+abstract class StateVerificationOpts {
+  int? get acceptedStateTransitionDelay;
 }
 
 enum ProtocolVersion {
   v1;
+
   String get value {
     switch (this) {
       case ProtocolVersion.v1:
@@ -51,6 +64,7 @@ enum AcceptAuthCircuits {
   authV3_8_32('authV3-8-32');
 
   final String value;
+
   const AcceptAuthCircuits(this.value);
 }
 
@@ -59,6 +73,7 @@ enum AcceptJwzAlgorithms {
   groth16('groth16');
 
   final String value;
+
   const AcceptJwzAlgorithms(this.value);
 }
 
@@ -68,6 +83,7 @@ enum AcceptJwsAlgorithms {
   es256kr('ES256K-R');
 
   final String value;
+
   const AcceptJwsAlgorithms(this.value);
 }
 
@@ -77,5 +93,13 @@ enum AcceptJweKEKAlgorithms {
   rsaOaep256('RSA-OAEP-256');
 
   final String value;
+
   const AcceptJweKEKAlgorithms(this.value);
 }
+
+const defaultAcceptProfile = AcceptProfile(
+  protocolVersion: ProtocolVersion.v1,
+  env: MediaType.zkpMessage,
+  circuits: [AcceptAuthCircuits.authV2],
+  alg: [JwzAlgorithm(AcceptJwzAlgorithms.groth16)],
+);

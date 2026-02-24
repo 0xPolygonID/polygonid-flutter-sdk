@@ -25,7 +25,7 @@ class GetAuthTokenParam {
     required this.profileNonce,
     required this.privateKey,
     required this.message,
-    this.circuitId = const AuthV2Circuit(),
+    this.circuitId = CircuitId.authV2,
   });
 }
 

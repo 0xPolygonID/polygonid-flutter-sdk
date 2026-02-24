@@ -18,13 +18,14 @@ class AcceptProfile {
 
 /// Sealed class for algorithm types (union of JWS, JWZ, JWE algorithms)
 sealed class AcceptAlgorithm {
+  const AcceptAlgorithm();
   String get value;
 }
 
 class JwsAlgorithm extends AcceptAlgorithm {
   final AcceptJwsAlgorithms algorithm;
 
-  JwsAlgorithm(this.algorithm);
+  const JwsAlgorithm(this.algorithm);
 
   @override
   String get value => algorithm.value;
@@ -33,7 +34,7 @@ class JwsAlgorithm extends AcceptAlgorithm {
 class JwzAlgorithm extends AcceptAlgorithm {
   final AcceptJwzAlgorithms algorithm;
 
-  JwzAlgorithm(this.algorithm);
+  const JwzAlgorithm(this.algorithm);
 
   @override
   String get value => algorithm.value;
@@ -42,7 +43,7 @@ class JwzAlgorithm extends AcceptAlgorithm {
 class JweAlgorithm extends AcceptAlgorithm {
   final AcceptJweKEKAlgorithms algorithm;
 
-  JweAlgorithm(this.algorithm);
+  const JweAlgorithm(this.algorithm);
 
   @override
   String get value => algorithm.value;
