@@ -37,7 +37,7 @@ class AuthorizationRequestMessage
 
   AuthorizationRequestMessage({
     String? id,
-    required super.typ,
+    super.typ,
     @Deprecated('may be omitted, gonna be removed in the future') String? type,
     String? thid,
     required this.from,

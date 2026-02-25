@@ -121,7 +121,7 @@ class ZeroKnowledgeProofRequest {
     'id': id,
     'circuitId': circuitId,
     if (optional != null) 'optional': optional,
-    if (!query.empty) 'query': query.toJson(),
+    if (!query.isEmpty) 'query': query.toJson(),
     'params': params,
   }..removeWhere((dynamic key, dynamic value) => key == null || value == null);
 

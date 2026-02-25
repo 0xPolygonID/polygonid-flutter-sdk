@@ -50,11 +50,18 @@ class GetProofRequestsUseCase
 
     if (scopes != null && scopes.isNotEmpty) {
       for (ZeroKnowledgeProofRequest scope in scopes) {
-        var context = await _getProofQueryContextUseCase.execute(param: scope);
-        _stacktraceManager.addTrace(
-          "[GetProofRequestsUseCase] _getProofQueryContextUseCase: ${jsonEncode(context)}",
-        );
-        proofRequests.add(ProofRequestEntity(scope, context));
+        if (scope.query.isEmpty) {
+          proofRequests.add(ProofRequestEntity(scope, {}));
+          continue;
+        }
+        try {
+          var context = await _getProofQueryContextUseCase.execute(param: scope);
+          _stacktraceManager.addTrace("[GetProofRequestsUseCase] _getProofQueryContextUseCase: ${jsonEncode(context)}",);
+          proofRequests.add(ProofRequestEntity(scope, context));
+        } catch (_) {
+          proofRequests.add(ProofRequestEntity(scope, {}));
+          continue;
+        }
       }
     }
 

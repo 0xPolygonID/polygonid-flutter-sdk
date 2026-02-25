@@ -4,17 +4,11 @@ import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_claims_use_case.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/save_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 
@@ -22,7 +16,6 @@ import '../../../common/common_mocks.dart';
 import '../../../common/credential_mocks.dart';
 import '../../../common/iden3comm_mocks.dart';
 import '../../../common/identity_mocks.dart';
-import '../../../common/proof_mocks.dart';
 import 'get_iden3comm_proofs_use_case_test.mocks.dart';
 
 // Data
@@ -45,52 +38,37 @@ var exception = ProofsNotCreatedException(
 );
 
 // Mocked dependencies
-MockProofRepository proofRepository = MockProofRepository();
 MockGetMessageRequestsAndCredsUseCase getMessageRequestsAndCredsUseCase =
     MockGetMessageRequestsAndCredsUseCase();
-MockGenerateIden3commProofUseCase generateIden3commProofUseCase =
-    MockGenerateIden3commProofUseCase();
+MockGetIden3commProofUseCase getIden3commProofUseCase =
+    MockGetIden3commProofUseCase();
 MockIsProofCircuitSupportedUseCase isProofCircuitSupportedUseCase =
     MockIsProofCircuitSupportedUseCase();
-MockGetIdentityUseCase getIdentityUseCase = MockGetIdentityUseCase();
 MockProofGenerationStepsStreamManager proofGenerationStepsStreamManager =
     MockProofGenerationStepsStreamManager();
 MockStacktraceManager stacktraceStreamManager = MockStacktraceManager();
-MockGetAuthTokenUseCase getAuthTokenUseCase = MockGetAuthTokenUseCase();
-MockIden3commCredentialRepository iden3commCredentialRepository =
-    MockIden3commCredentialRepository();
-MockRemoveClaimsUseCase removeClaimsUseCase = MockRemoveClaimsUseCase();
-MockSaveClaimsUseCase saveClaimsUseCase = MockSaveClaimsUseCase();
 MockRefreshCredentialUseCase refreshCredentialUseCase =
     MockRefreshCredentialUseCase();
 
 // Tested instance
 GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
-  proofRepository,
   getMessageRequestsAndCredsUseCase,
-  generateIden3commProofUseCase,
+  getIden3commProofUseCase,
   isProofCircuitSupportedUseCase,
-  getIdentityUseCase,
   proofGenerationStepsStreamManager,
   stacktraceStreamManager,
   refreshCredentialUseCase,
 );
 
 @GenerateMocks([
-  ProofRepository,
   GetMessageRequestsAndCredsUseCase,
-  GenerateIden3commProofUseCase,
+  GetIden3commProofUseCase,
   IsProofCircuitSupportedUseCase,
-  GetIdentityUseCase,
   ProofGenerationStepsStreamManager,
   StacktraceManager,
-  GetAuthTokenUseCase,
-  Iden3commCredentialRepository,
-  RemoveClaimsUseCase,
-  SaveClaimsUseCase,
   RefreshCredentialUseCase,
 ])
-main() {
+void main() {
   final claim = CredentialMocks.claim.copyWith(
     info: {
       'credentialSubject': {'id': IdentityMocks.did.did},
@@ -98,11 +76,9 @@ main() {
   );
 
   setUp(() {
-    reset(proofRepository);
     reset(getMessageRequestsAndCredsUseCase);
-    reset(generateIden3commProofUseCase);
+    reset(getIden3commProofUseCase);
     reset(isProofCircuitSupportedUseCase);
-    reset(getIdentityUseCase);
 
     when(
       isProofCircuitSupportedUseCase.execute(param: anyNamed('param')),
@@ -117,18 +93,8 @@ main() {
       ],
     );
 
-    when(
-      proofRepository.loadCircuitFiles(any),
-    ).thenAnswer((realInvocation) => Future.value(ProofMocks.circuitData));
-
-    when(
-      generateIden3commProofUseCase.execute(param: anyNamed('param')),
-    ).thenAnswer(
+    when(getIden3commProofUseCase.execute(param: anyNamed('param'))).thenAnswer(
       (realInvocation) => Future.value(Iden3commMocks.iden3commSDProof),
-    );
-
-    when(getIdentityUseCase.execute(param: anyNamed('param'))).thenAnswer(
-      (realInvocation) => Future.value(IdentityMocks.privateIdentity),
     );
   });
 
@@ -156,16 +122,8 @@ main() {
       expect(verifyGetClaims.captured.first.genesisDid, param.genesisDid);
       expect(verifyGetClaims.captured.first.encryptionKey, param.privateKey);
 
-      var verifyLoadCircuit = verify(
-        proofRepository.loadCircuitFiles(captureAny),
-      );
-      expect(
-        verifyLoadCircuit.callCount,
-        Iden3commMocks.proofRequestList.length,
-      );
-
       var verifyGenerateProof = verify(
-        generateIden3commProofUseCase.execute(param: captureAnyNamed('param')),
+        getIden3commProofUseCase.execute(param: captureAnyNamed('param')),
       );
       expect(
         verifyGenerateProof.callCount,
@@ -179,34 +137,19 @@ main() {
         );
 
         expect(
-          verifyLoadCircuit.captured[i],
-          Iden3commMocks.proofRequestList[i].scope.circuitId,
+          verifyGenerateProof.captured[i].genesisDid,
+          IdentityMocks.did.did,
         );
-
-        expect(verifyGenerateProof.captured[i].did, IdentityMocks.did.did);
         expect(
           verifyGenerateProof.captured[i].profileNonce,
           param.profileNonce,
-        );
-        expect(
-          verifyGenerateProof.captured[i].claimSubjectProfileNonce,
-          CommonMocks.genesisNonce,
         );
         expect(verifyGenerateProof.captured[i].credential, claim);
         expect(
           verifyGenerateProof.captured[i].request,
           Iden3commMocks.proofRequestList[i].scope,
         );
-        expect(
-          verifyGenerateProof.captured[i].circuitData,
-          ProofMocks.circuitData,
-        );
       }
-
-      var getIdentityCapture = verify(
-        getIdentityUseCase.execute(param: captureAnyNamed('param')),
-      ).captured.first;
-      expect(getIdentityCapture.genesisDid, CommonMocks.did);
     },
   );
 
@@ -228,11 +171,9 @@ main() {
       verifyNever(
         isProofCircuitSupportedUseCase.execute(param: captureAnyNamed('param')),
       );
-      verifyNever(proofRepository.loadCircuitFiles(captureAny));
       verifyNever(
-        generateIden3commProofUseCase.execute(param: captureAnyNamed('param')),
+        getIden3commProofUseCase.execute(param: captureAnyNamed('param')),
       );
-      verifyNever(getIdentityUseCase.execute(param: captureAnyNamed('param')));
     },
   );
 }

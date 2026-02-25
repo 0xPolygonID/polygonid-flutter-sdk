@@ -115,7 +115,7 @@ class ZeroKnowledgeProofQuery {
   final String type;
 
   // Local field to check if the query is empty.
-  final bool empty;
+  final bool isEmpty;
 
   const ZeroKnowledgeProofQuery({
     required this.allowedIssuers,
@@ -125,7 +125,7 @@ class ZeroKnowledgeProofQuery {
     this.skipClaimRevocationCheck,
     this.groupId,
     required this.type,
-  }) : empty = false;
+  }) : isEmpty = false;
 
   const ZeroKnowledgeProofQuery.empty()
     : allowedIssuers = const ['*'],
@@ -135,7 +135,7 @@ class ZeroKnowledgeProofQuery {
       skipClaimRevocationCheck = null,
       groupId = null,
       type = '',
-      empty = true;
+      isEmpty = true;
 
   /// Creates an instance from the given json
   ///

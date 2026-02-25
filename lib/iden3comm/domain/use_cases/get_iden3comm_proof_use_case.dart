@@ -6,15 +6,16 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/authenticate.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_body_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/util/generate_link_nonce.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
@@ -22,10 +23,10 @@ import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stre
 class GetIden3commProofParam {
   final ZeroKnowledgeProofRequest request;
   final CredentialEntity? credential;
-  final String verifierDid;
+  final String? verifierDid;
   final String genesisDid;
   final BigInt profileNonce;
-  final String? linkNonce;
+  final String linkNonce;
   final String privateKey;
   final String? challenge;
   final EnvConfigEntity? config;
@@ -38,7 +39,7 @@ class GetIden3commProofParam {
     required this.verifierDid,
     required this.genesisDid,
     required this.profileNonce,
-    this.linkNonce,
+    required this.linkNonce,
     required this.privateKey,
     this.challenge,
     this.config,
@@ -74,50 +75,7 @@ class GetIden3commProofUseCase
     required GetIden3commProofParam param,
   }) async {
     try {
-      Map<int, String> groupIdLinkNonceMap = {};
-
-      CredentialEntity credential;
       final request = param.request;
-      if (param.credential case var existingCred?) {
-        credential = existingCred;
-      } else {
-        _proofGenerationStepsStreamManager.add("Getting proof requests");
-
-        final requestsAndCreds = await _getMessageRequestsAndCredsUseCase
-            .execute(
-              param: GetMessageRequestsAndCredsParam(
-                proofRequests: [param.request],
-                genesisDid: param.genesisDid,
-                profileNonce: param.profileNonce,
-                encryptionKey: param.privateKey,
-                credentialSortOrderList: [
-                  CredentialSortOrder.ExpirationDescending,
-                ],
-              ),
-            );
-
-        final credentials = requestsAndCreds.first.credentials;
-
-        /// Generate proof for each request
-        if (credentials.isEmpty) {
-          // if there are no credentials for the request - throw an error
-          _stacktraceManager.addError(
-            "[Authenticate] No credentials found for request: ${request.id}",
-          );
-          throw NoCredentialsFoundException(
-            proofRequest: request,
-            errorMessage: "No credentials found for request: ${request.id}",
-          );
-        }
-        credential = credentials.first;
-      }
-
-      if (credential.expiration != null) {
-        credential = await _checkCredentialExpirationAndTryRefreshIfExpired(
-          claim: credential,
-          param: param,
-        );
-      }
 
       bool isCircuitSupported = await _isProofCircuitSupported.execute(
         param: request.circuitId,
@@ -134,9 +92,7 @@ class GetIden3commProofUseCase
       }
 
       String circuitId = request.circuitId;
-      CircuitDataEntity circuitData = await _proofRepository.loadCircuitFiles(
-        circuitId,
-      );
+      final circuitData = await _proofRepository.loadCircuitFiles(circuitId);
 
       String? challenge;
       String? privKey;
@@ -153,30 +109,22 @@ class GetIden3commProofUseCase
         ),
       );
 
+      if (circuitId.startsWith('auth')) {
+        return Authenticate().generateAuthProof(
+          genesisDid: param.genesisDid,
+          privateKey: param.privateKey,
+          request: request,
+          profileNonce: param.profileNonce,
+          identityEntity: identityEntity,
+          proofRepo: _proofRepository,
+        );
+      }
+
+      final credential = await _getCredential(param: param);
       BigInt claimSubjectProfileNonce = identityEntity.profiles.keys.firstWhere(
         (k) => identityEntity.profiles[k] == credential.credentialSubject["id"],
         orElse: () => GENESIS_PROFILE_NONCE,
       );
-
-      int? groupId = request.query.groupId;
-      String linkNonce;
-
-      if (param.linkNonce != null) {
-        // Use the provided linkNonce
-        linkNonce = param.linkNonce!;
-      } else if (groupId != null) {
-        if (groupIdLinkNonceMap.containsKey(groupId)) {
-          // Use the existing linkNonce for this groupId
-          linkNonce = groupIdLinkNonceMap[groupId]!;
-        } else {
-          // Generate a new linkNonce for this groupId
-          linkNonce = generateLinkNonce();
-          groupIdLinkNonceMap[groupId] = linkNonce;
-        }
-      } else {
-        // No groupId and no provided linkNonce, use default '0'
-        linkNonce = '0';
-      }
 
       _proofGenerationStepsStreamManager.add(
         "creating proof for ${credential.type}",
@@ -194,7 +142,7 @@ class GetIden3commProofUseCase
         challenge: challenge,
         config: param.config,
         verifierId: param.verifierDid,
-        linkNonce: linkNonce,
+        linkNonce: param.linkNonce,
         transactionData: param.transactionData,
       );
 
@@ -208,6 +156,60 @@ class GetIden3commProofUseCase
       _stacktraceManager.logError("[GetIden3commProofsUseCase] Exception: $e");
       rethrow;
     }
+  }
+
+  Future<CredentialEntity> _getCredential({
+    required GetIden3commProofParam param,
+  }) async {
+    CredentialEntity credential;
+    final request = param.request;
+    if (param.credential case var existingCred?) {
+      credential = existingCred;
+    } else {
+      _proofGenerationStepsStreamManager.add("Getting proof requests");
+
+      final requestsAndCreds = await _getMessageRequestsAndCredsUseCase.execute(
+        param: GetMessageRequestsAndCredsParam(
+          // Mock message
+          message: AuthorizationRequestMessage(
+            from: '',
+            body: AuthorizationRequestMessageBody(
+              callbackUrl: '',
+              reason: '',
+              scope: [param.request],
+            ),
+          ),
+          genesisDid: param.genesisDid,
+          profileNonce: param.profileNonce,
+          encryptionKey: param.privateKey,
+          credentialSortOrderList: [CredentialSortOrder.ExpirationDescending],
+        ),
+      );
+
+      final credentials = requestsAndCreds.first.credentials;
+
+      /// Generate proof for each request
+      if (credentials.isEmpty) {
+        // if there are no credentials for the request - throw an error
+        _stacktraceManager.addError(
+          "[Authenticate] No credentials found for request: ${request.id}",
+        );
+        throw NoCredentialsFoundException(
+          proofRequest: request,
+          errorMessage: "No credentials found for request: ${request.id}",
+        );
+      }
+      credential = credentials.first;
+    }
+
+    if (credential.expiration != null) {
+      credential = await _checkCredentialExpirationAndTryRefreshIfExpired(
+        claim: credential,
+        param: param,
+      );
+    }
+
+    return credential;
   }
 
   /// Check if the credential is expired and try to refresh it if it is

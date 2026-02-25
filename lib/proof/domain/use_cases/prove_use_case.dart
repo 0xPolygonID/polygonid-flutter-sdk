@@ -28,7 +28,7 @@ class ProveUseCase extends FutureUseCase<ProveParam, ZKProofEntity> {
       // Calculate witness
       Uint8List wtnsBytes = await _proofRepository.calculateWitness(
         circuitData: param.circuitData,
-        atomicQueryInputs: param.inputs,
+        inputs: param.inputs,
       );
       logger().i(
         'ProveUseCase: calculateWitness: ${stopwatch.elapsedMilliseconds} ms',
