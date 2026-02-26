@@ -463,12 +463,11 @@ class Authenticate {
   }) async {
     final getAuthInputsUseCase = getItSdk<GetAuthInputsUseCase>();
 
-    // TODO Figure out what we should use as auth challenge.
-    final String authChallenge = '';
+    final challenge = request.params!['challenge'];
 
     final generateInputsResponse = await getAuthInputsUseCase.execute(
       param: GetAuthInputsParam(
-        challenge: authChallenge,
+        challenge: challenge,
         genesisDid: genesisDid,
         profileNonce: profileNonce,
         privateKey: privateKey,
