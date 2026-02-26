@@ -14,7 +14,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/p
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 
 typedef RequestAndCredentials = ({
@@ -190,21 +189,7 @@ class GetMessageRequestsAndCredsUseCase
             .map((e) => e["type"] as String)
             .toList();
 
-        final rawCircuitId = request.scope.circuitId;
-        // TODO (moria): remove this with v3 circuit release
-        if (rawCircuitId.startsWith(CircuitId.v3CircuitPrefix) &&
-            !rawCircuitId.endsWith(CircuitId.currentCircuitBetaPostfix)) {
-          _stacktraceManager.addTrace(
-            "V3 circuit beta version mismatch $rawCircuitId is not supported, current is ${CircuitId.currentCircuitBetaPostfix}",
-          );
-          throw CircuitNotDownloadedException(
-            circuit: rawCircuitId,
-            errorMessage:
-                "V3 circuit beta version mismatch $rawCircuitId is not supported, current is ${CircuitId.currentCircuitBetaPostfix}",
-          );
-        }
-
-        CircuitId circuitId = CircuitId.fromId(rawCircuitId);
+        CircuitId circuitId = CircuitId.fromId(request.scope.circuitId);
 
         return circuitId.isAnyProofTypeSupported(proofTypes);
       }).toList();
