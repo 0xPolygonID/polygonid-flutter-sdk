@@ -83,7 +83,7 @@ class Iden3commMocks {
     "typ": "application/iden3comm-plain-json",
     "type": "https://iden3-communication.io/authorization/1.0/request",
     "thid": "f8aee09d-f592-4fcc-8d2a-8938aa26676c",
-    "from": "identity dasboard did", // (?)
+    "from": "did:iden3:billions:main:2VwqkgA2dNEwsnmojaay7C5jJEb8ZygecqsomeDID",
     "body": {
       "callbackUrl": "https://relay.com?encoded_attestation=base64EncodedAtt",
       "reason": "agent_pairing:v1",
