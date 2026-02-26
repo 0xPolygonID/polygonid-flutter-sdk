@@ -384,6 +384,7 @@ class Authenticate {
 
     for (int i = 0; i < requestsAndCreds.length; i++) {
       final request = requestsAndCreds[i].request;
+      final isAuthQuery = request.circuitId.startsWith('auth');
       final credentials = requestsAndCreds[i].credentials;
 
       // if there are no credentials for the request
@@ -391,8 +392,9 @@ class Authenticate {
         // if the request is optional, continue to the next request
         if (request.isOptional) {
           continue;
-        } else if (request.query.isEmpty) {
-          // if request is empty, skip check
+        } else if (request.query.isEmpty && isAuthQuery) {
+          // if request query is empty and it's an auth circuit,
+          // skip credential check as auth proofs don't need credentials
         } else {
           // if the request is not optional, throw an error
           _stacktraceManager.addError(
@@ -410,9 +412,17 @@ class Authenticate {
       );
 
       final Iden3commProofEntity proof;
-      if (request.circuitId.startsWith('auth')) {
+      if (isAuthQuery) {
         final generateAuthProofUseCase = await getItSdk
             .getAsync<GenerateAuthProofUseCase>();
+
+        final challenge = request.params?['challenge'];
+        if (challenge == null) {
+          throw NullAuthChallengeException(
+            proofRequest: request,
+            errorMessage: "Challenge is null",
+          );
+        }
 
         proof = await generateAuthProofUseCase.execute(
           param: GenerateAuthProofParam(
@@ -421,7 +431,7 @@ class Authenticate {
             profileNonce: profileNonce,
             requestId: request.id,
             circuitId: request.circuitId,
-            challenge: request.params!['challenge'],
+            challenge: challenge,
           ),
         );
       } else {

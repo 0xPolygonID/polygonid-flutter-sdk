@@ -101,6 +101,14 @@ class GetIden3commProofUseCase
       );
 
       if (circuitId.startsWith('auth')) {
+        final challenge = request.params?['challenge'];
+        if (challenge == null) {
+          throw NullAuthChallengeException(
+            proofRequest: request,
+            errorMessage: "Challenge is null",
+          );
+        }
+
         return _generateAuthProofUseCase.execute(
           param: GenerateAuthProofParam(
             genesisDid: param.genesisDid,
@@ -108,7 +116,7 @@ class GetIden3commProofUseCase
             profileNonce: param.profileNonce,
             requestId: request.id,
             circuitId: request.circuitId,
-            challenge: request.params?['challenge'] ?? '',
+            challenge: challenge,
           ),
         );
       }
