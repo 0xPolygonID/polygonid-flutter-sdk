@@ -5,6 +5,8 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_body_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_query_request.dart';
@@ -34,6 +36,21 @@ class GetMessageRequestsAndCredsParam {
     required this.encryptionKey,
     this.credentialSortOrderList = const [],
   });
+
+  GetMessageRequestsAndCredsParam.fromRequest({
+    required ZeroKnowledgeProofRequest request,
+    required this.genesisDid,
+    required this.profileNonce,
+    required this.encryptionKey,
+    this.credentialSortOrderList = const [],
+  }) : message = AuthorizationRequestMessage(
+         from: '',
+         body: AuthorizationRequestMessageBody(
+           callbackUrl: '',
+           reason: '',
+           scope: [request],
+         ),
+       );
 }
 
 class GetMessageRequestsAndCredsUseCase

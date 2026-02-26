@@ -164,16 +164,8 @@ class GetIden3commProofUseCase
       _proofGenerationStepsStreamManager.add("Getting proof requests");
 
       final requestsAndCreds = await _getMessageRequestsAndCredsUseCase.execute(
-        param: GetMessageRequestsAndCredsParam(
-          // Mock message
-          message: AuthorizationRequestMessage(
-            from: '',
-            body: AuthorizationRequestMessageBody(
-              callbackUrl: '',
-              reason: '',
-              scope: [param.request],
-            ),
-          ),
+        param: GetMessageRequestsAndCredsParam.fromRequest(
+          request: request,
           genesisDid: param.genesisDid,
           profileNonce: param.profileNonce,
           encryptionKey: param.privateKey,
